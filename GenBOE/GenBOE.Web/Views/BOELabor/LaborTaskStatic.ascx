@@ -544,47 +544,94 @@
             </div>
             <div class="module-content-data expanded-content">
                 <div class="form-element">
-                    <div class="SkillMixTable skillMixTable">
-                        <table name="currentSkillMix" class="grid editable">
-                            <thead>
-                                <tr>
-                                    <th>Resource ID</th>
-                                    <th>Current Resource ID</th>
-                                    <th>Historical Hours</th>
-                                    <th>Labor Skill Mix</th>
-                                    <th>Included</th>
-                                    <th>BOE Skill Mix</th>
-                                    <th>Proposed Hours</th>
-                                    <th>Rationale**</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Display the data for each of the Skill Mix Table rows. -->
-                                <tr ng-repeat="row in skillMixRationale.data.SkillMixRows">
-                                    <td>{{row.ResourceOld}}</td>
-                                    <td>{{row.ResourceNew}}</td>
-                                    <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>
-                                    <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
-                                    <td>{{row.Included | yesNo}}</td>
-                                    <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
-                                    <td style="text-align: right">{{row.ProposedHours}}</td>
-                                    <td>{{row.Rationale}}</td>
-                                </tr>
-                                <!-- Display the Skill Mix Totals row. -->
-                                <tr>
-                                    <td>Totals</td>
-                                    <td></td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.HistoricalHours | number:2}}</td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.LaborSkillMix | number:1}}%</td>
-                                    <td></td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.BoeSkillMix | number:1}}%</td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.ProposedHours}}</td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+    <!-- Skill Mix Table -->
+    <div class="form-label">
+        Skill Mix Table (Pre-2028)
+    </div>
+    <div class="SkillMixTable skillMixTable">
+        <table name="currentSkillMix" class="grid editable">
+            <thead>
+                <tr>
+                    <th>Resource ID</th>
+                    <th>Current Resource ID</th>
+                    <th>Historical Hours</th>
+                    <th>Labor Skill Mix</th>
+                    <th>Included</th>
+                    <th>BOE Skill Mix</th>
+                    <th>Proposed Hours</th>
+                    <th>Rationale**</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Display the data for each of the Skill Mix Table rows. -->
+                <tr ng-repeat="row in skillMixRationale.data.SkillMixRows">
+                    <td>{{row.ResourceOld}}</td>
+                    <td>{{row.ResourceNew}}</td>
+                    <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>
+                    <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
+                    <td>{{row.Included | yesNo}}</td>
+                    <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
+                    <td style="text-align: right">{{row.ProposedHours}}</td>
+                    <td>{{row.Rationale}}</td>
+                </tr>
+                <!-- Display the Skill Mix Totals row. -->
+                <tr>
+                    <td>Totals</td>
+                    <td></td>
+                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.HistoricalHours | number:2}}</td>
+                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.LaborSkillMix | number:1}}%</td>
+                    <td></td>
+                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.BoeSkillMix | number:1}}%</td>
+                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.ProposedHours}}</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- Common Disclosure Skill Mix Table -->
+    <div class="form-label">
+        Common Disclosure Skill Mix Table (Post-2028)
+    </div>
+    <div class="SkillMixTable skillMixTable">
+        <table name="currentSkillMix" class="grid editable">
+            <thead>
+                <tr>
+                    <th>Resource ID</th>
+                    <th>Business Resource Code</th>
+                    <th>Historical Hours</th>
+                    <th>Labor Skill Mix</th>
+                    <th>Included</th>
+                    <th>BOE Skill Mix</th>
+                    <th>Proposed Hours</th>
+                    <th>Rationale**</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Display the data for each of the Common Disclosure Skill Mix Table rows. -->
+                <tr ng-repeat="row in skillMixRationale.data.CommonDisclosureRows">
+                    <td>{{row.ResourceID}}</td>
+                    <td>{{row.BusinessResourceID}}</td>
+                    <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>
+                    <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
+                    <td>{{row.Included | yesNo}}</td>
+                    <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
+                    <td style="text-align: right">{{row.ProposedHours}}</td>
+                    <td>{{row.Rationale}}</td>
+                </tr>
+                <!-- Display the Common Disclosure Totals row. -->
+                <tr>
+                    <td>Totals</td>
+                    <td></td>
+                    <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.HistoricalHours | number:2}}</td>
+                    <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.LaborSkillMix | number:1}}%</td>
+                    <td></td>
+                    <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.BoeSkillMix | number:1}}%</td>
+                    <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.ProposedHours}}</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
             </div>
         </div>
     </div>

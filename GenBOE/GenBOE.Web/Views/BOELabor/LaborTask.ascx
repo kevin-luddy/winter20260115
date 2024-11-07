@@ -1040,7 +1040,7 @@
                                     <td style="text-align: right">{{row.ProposedHours}}</td>
                                     <td>{{row.Rationale}}</td>
                                 </tr>
-                                <!-- Display the Skill Mix Totals row. -->
+                                <!-- Display the Common Disclosure Totals row. -->
                                 <tr>
                                     <td>Totals</td>
                                     <td></td>
