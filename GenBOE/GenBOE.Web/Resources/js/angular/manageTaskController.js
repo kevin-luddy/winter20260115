@@ -49,25 +49,31 @@
     $scope.setSkillMixIsUserInput = function (index, value) {
         if (value === true) {
             $scope.skillMixRationale.data.SkillMixRows[index].IsUserInput = true;
+            $scope.model.SkillMixData[index].IsUserInput = true;
             $scope.refreshSkillMixTables();
         }
         else {
             $scope.skillMixRationale.data.SkillMixRows[index].IsUserInput = false;
+            $scope.model.SkillMixData[index].IsUserInput = false;
         }
 
         $scope.skillMixRationale.data.SkillMixRows[index].Included = value;
+        $scope.model.SkillMixData[index].IsUserInput = value;
     };
 
     $scope.setCommonDisclosureIsUserInput = function (index, value) {
         if (value === true) {
             $scope.skillMixRationale.data.CommonDisclosureRows[index].IsUserInput = true;
+            $scope.model.CommonDisclosureSkillMixData[index].IsUserInput = true;
             $scope.refreshSkillMixTables();
         }
         else {
             $scope.skillMixRationale.data.CommonDisclosureRows[index].IsUserInput = false;
+            $scope.model.CommonDisclosureSkillMixData[index].IsUserInput = false;
         }
 
         $scope.skillMixRationale.data.CommonDisclosureRows[index].Included = value;
+        $scope.model.CommonDisclosureSkillMixData[index].IsUserInput = value;
     };
 
     $scope.refreshSkillMixTables = function () {
