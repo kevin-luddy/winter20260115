@@ -894,7 +894,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				ICollection<int> resourceIds = taskElement.taskElementLabors.Where(x => x.ResourceID.HasValue).Select(t => t.ResourceID.Value).Distinct().ToList();
 				ICollection<ResourceDTO> resourcesUsed = this._ResourceLoader.GetByIds(resourceIds);
 				ICollection<int> tmResourceIds = resourcesUsed.Where(a => a.SegRegion == WebConstants.SPACE_LEGACY_TM).Select(x => x.Id).ToList();
-				
+
 				foreach (ResourceTypeDto dto in taskElement.taskElementLabors)
 				{
 					if (dto.Updateable != UpdateType.Deleted)
@@ -3976,9 +3976,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="resourceHours">MOQ Table Resource Hours</param>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
 		/// <param name="addBlankSkillMixRow">Adds a blank skill mix row.</param>
+		/// <param name="isBRCEnabled">Is BRC Enabled for CD row check.</param>
 		/// <returns></returns>
 		public RefreshSkillMixModelView RefreshSkillMixTables(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
-			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool addBlankSkillMixRow)
+			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool addBlankSkillMixRow, bool isBRCEnabled)
 		{
 			RefreshSkillMixModelView refreshedModel = new RefreshSkillMixModelView();
 
@@ -4035,7 +4036,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}
 
 				CopyMatchingSkillMixRowData(laborTypes, currentSkillMixData, refreshedModel);
-				CreateCommonDisclosureRows(laborTypes, currentCommonDisclosureData, refreshedModel);
+
+				if (isBRCEnabled)
+				{
+					CreateCommonDisclosureRows(laborTypes, currentCommonDisclosureData, refreshedModel);
+				}
+				else
+				{
+					refreshedModel.CommonDisclosureRows?.Clear();
+				}
 			}
 
 			CalculateSkillMixTotals(refreshedModel);
@@ -4139,14 +4148,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		{
 			if (currentSkillMixData != null && currentSkillMixData.Any())
 			{
-				foreach(SkillMixModelView refreshedRow in refreshedModel.SkillMixRows.ToList())
+				foreach (SkillMixModelView refreshedRow in refreshedModel.SkillMixRows.ToList())
 				{
 					// Find the matching current rows
 					ICollection<SkillMixModelView> currentRows = currentSkillMixData.Where(r => r.ResourceOld == refreshedRow.ResourceOld).ToList();
 					if (currentRows.Any())
 					{
 						bool anyValidCurrentRows = false;
-						
+
 						foreach (SkillMixModelView currentRow in currentRows)
 						{
 							// make sure we have a Labor Types match for Resource
@@ -4158,12 +4167,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
 								currentRow.ResourceNew = string.Empty;
 								currentRow.Included = false;
 							}
-							
+
 							// Merge the two rows
 							currentRow.HistoricalHours = anyValidCurrentRows ? 0m : refreshedRow.HistoricalHours;
 							currentRow.LaborSkillMix = anyValidCurrentRows ? 0m : refreshedRow.LaborSkillMix;
 							currentRow.ResourceNew = currentRow.ResourceNew ?? string.Empty;
-							
+
 							anyValidCurrentRows = true;
 							refreshedModel.SkillMixRows.Add(currentRow);
 
@@ -4173,6 +4182,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 								// Find the Proposed Hours for this Resource
 								currentRow.ProposedHours = laborTypeDataModelViews.SelectMany(x => x.Spreads).Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) < Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
+							}
+							else
+							{
+								currentRow.ProposedHours = 0m;
 							}
 
 							// Create matching rows in Common Disclosures for ResourceNew
@@ -4194,7 +4207,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 									}
 								}
 							}
-							else
+							else if (!string.IsNullOrWhiteSpace(currentRow.ResourceNew))
 							{
 								// create a Not included row
 								refreshedModel.CommonDisclosureRows.Add(
