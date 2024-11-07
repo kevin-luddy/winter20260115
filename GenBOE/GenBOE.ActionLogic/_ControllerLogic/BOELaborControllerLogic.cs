@@ -4079,7 +4079,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 					// Historical Hours of CD are based off the ratio of the BRCs being used in Labor Types multiplied by the Sum of Historical Hours for the matching Resource in SM table
 					decimal totalBRCLaborHours = laborTypeDataModelViews.Sum(lt => lt.HourSpread ?? 0.0m);
-					refreshedRow.HistoricalHours = totalResourceHistoricalHours * totalBRCLaborHours / totalResourceLaborHours;
+					refreshedRow.HistoricalHours = totalResourceLaborHours == 0m ? 0m : totalResourceHistoricalHours * totalBRCLaborHours / totalResourceLaborHours;
 					refreshedRow.ProposedHours = laborTypeDataModelViews.SelectMany(x => x.Spreads).Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) >= Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
 
 					if (currentCommonDisclosureData != null)
@@ -4116,10 +4116,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				// add the overridden data back in
 				foreach (CommonDisclosureModelView currentRow in currentCommonDisclosureData.Where(c => string.IsNullOrWhiteSpace(c.ResourceID)))
 				{
-					ICollection<LaborTypeDataModelView> laborTypeDataModelViews = resourceLaborTypes.Where(l => l.BusinessResourceCodeName == currentRow.BusinessResourceID).ToList();
+					ICollection<LaborTypeDataModelView> laborTypeDataModelViews = resourceLaborTypes.Where(l => !string.IsNullOrWhiteSpace(currentRow.BusinessResourceID) && l.BusinessResourceCodeName == currentRow.BusinessResourceID).ToList();
 					// Historical Hours of CD are based off the ratio of the BRCs being used in Labor Types multiplied by the Sum of Historical Hours for the matching Resource in SM table
 					decimal totalBRCLaborHours = laborTypeDataModelViews.Sum(lt => lt.HourSpread ?? 0.0m);
-					currentRow.HistoricalHours = totalResourceHistoricalHours * totalBRCLaborHours / totalResourceLaborHours;
+					currentRow.HistoricalHours = totalResourceLaborHours == 0m ? 0m : totalResourceHistoricalHours * totalBRCLaborHours / totalResourceLaborHours;
 					currentRow.ProposedHours = laborTypeDataModelViews.SelectMany(x => x.Spreads).Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) >= Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
 					currentRow.ResourceID = string.Empty;
 					currentRow.IsUserInput = true;
@@ -4150,7 +4150,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						foreach (SkillMixModelView currentRow in currentRows)
 						{
 							// make sure we have a Labor Types match for Resource
-							ICollection<LaborTypeDataModelView> laborTypeDataModelViews = laborTypes.Where(l => l.ResourceName == currentRow.ResourceNew).ToList();
+							ICollection<LaborTypeDataModelView> laborTypeDataModelViews = laborTypes.Where(l => !string.IsNullOrWhiteSpace(currentRow.ResourceNew) && l.ResourceName == currentRow.ResourceNew).ToList();
 
 							// Check for an invalid Resource selected, remove the Resource selected
 							if (!laborTypeDataModelViews.Any())
@@ -4243,7 +4243,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				if (row.Included == true && refreshedModel.CommonDisclosureTotals.ProposedHours != 0.0m)
 				{
 					row.BOESkillMix = row.ProposedHours * 100.0m / refreshedModel.CommonDisclosureTotals.ProposedHours;
-					row.LaborSkillMix = row.HistoricalHours * 100.0m / refreshedModel.CommonDisclosureTotals.HistoricalHours;
+					row.LaborSkillMix = refreshedModel.CommonDisclosureTotals.HistoricalHours == 0m ? 0m : row.HistoricalHours * 100.0m / refreshedModel.CommonDisclosureTotals.HistoricalHours;
 				}
 				else
 				{
