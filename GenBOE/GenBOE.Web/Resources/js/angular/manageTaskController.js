@@ -31,7 +31,6 @@
     $scope.IsSkillMixEnabled = ManageTaskModel.IsSkillMixEnabled;
     $scope.loadedTaskData = false;
     $scope.initialSkillMixLoad = false;
-    $scope.addBlankSkillMixRow = false;
     $scope.skillMixRationale = [];
     $scope.skillMixRationaleLaborTypeSelections = [];
     $scope.commonDisclosureLaborTypeSelections = [];
@@ -40,7 +39,6 @@
     $scope.$on('MOQ_TYPE_SELECTION_CHANGED', function (event, selectedMoqTypes) {
         $scope.SelectedMoqTypes = selectedMoqTypes;
         $scope.loadedMoqData = true;
-        $scope.addBlankSkillMixRow = false;
 
         $scope.refreshSkillMixTables();
 
@@ -50,7 +48,6 @@
         if (value === true) {
             $scope.skillMixRationale.data.SkillMixRows[index].IsUserInput = true;
             $scope.model.SkillMixData[index].IsUserInput = true;
-            $scope.refreshSkillMixTables();
         }
         else {
             $scope.skillMixRationale.data.SkillMixRows[index].IsUserInput = false;
@@ -59,13 +56,15 @@
 
         $scope.skillMixRationale.data.SkillMixRows[index].Included = value;
         $scope.model.SkillMixData[index].IsUserInput = value;
+
+
+        $scope.refreshSkillMixTables();
     };
 
     $scope.setCommonDisclosureIsUserInput = function (index, value) {
         if (value === true) {
             $scope.skillMixRationale.data.CommonDisclosureRows[index].IsUserInput = true;
             $scope.model.CommonDisclosureSkillMixData[index].IsUserInput = true;
-            $scope.refreshSkillMixTables();
         }
         else {
             $scope.skillMixRationale.data.CommonDisclosureRows[index].IsUserInput = false;
@@ -74,6 +73,8 @@
 
         $scope.skillMixRationale.data.CommonDisclosureRows[index].Included = value;
         $scope.model.CommonDisclosureSkillMixData[index].IsUserInput = value;
+
+        $scope.refreshSkillMixTables();
     };
 
     $scope.addSkillMixRow = function (resourceId) {
@@ -99,13 +100,13 @@
     $scope.refreshSkillMixTables = function () {
         if (ManageTaskModel.IsSkillMixEnabled && $scope.loadedTaskData) {
             $(document).trigger("SHOW_LOADING_BOX");
+            $scope.setDirty();
             var data = {
                 boeId: ManageTaskModel.boeId,
                 selectedMoqTypes: $scope.SelectedMoqTypes,
                 laborTypes: $scope.model.LaborTypesData,
                 currentSkillMixData: $scope.model.SkillMixData,
-                currentCommonDisclosureData: $scope.model.CommonDisclosureSkillMixData,
-                addBlankSkillMixRow: $scope.addBlankSkillMixRow
+                currentCommonDisclosureData: $scope.model.CommonDisclosureSkillMixData
             };
 
             return $http({
@@ -1099,7 +1100,6 @@
         $scope.laborSpreadPasteErrors = [];
         $scope.errors = [];
         $scope.SelectedMoqTypes = [];
-        $scope.addBlankSkillMixRow = true;
         var data = { boeId: ManageTaskModel.boeId, taskElementId: $scope.taskElementId };
 
         return $http({
@@ -1186,7 +1186,7 @@
             );
 
             $scope.commonDisclosureLaborTypeSelections.forEach(function (option, index) {
-                $scope.commonDisclosureLaborTypeSelections[index] = option.BusinessResouceCodeName || '';
+                $scope.commonDisclosureLaborTypeSelections[index] = (option.ResourceInput === undefined || option.ResourceInput === '') ? option.BusinessResourceCodeName || '' : '';
             });
 
             $scope.commonDisclosureLaborTypeSelections = $scope.commonDisclosureLaborTypeSelections.filter((option, index, self) =>
@@ -1679,7 +1679,7 @@
         if ((item.BusinessResourceCodeInput === undefined || item.BusinessResourceCodeInput === '') && item.BusinessResourceCodeDescription !== undefined) {
             $scope.setDirty();
             item.BusinessResourceCodeDescription = undefined;
-            item.BusinessResouceCodeName = undefined;
+            item.BusinessResourceCodeName = undefined;
             item.BusinessResourceCodeType = undefined;
             item.BusinessResourceCodeID = undefined;
         }
@@ -1810,7 +1810,7 @@
         );
 
         $scope.commonDisclosureLaborTypeSelections.forEach(function (option, index) {
-            $scope.commonDisclosureLaborTypeSelections[index] = option.BusinessResouceCodeName || '';
+            $scope.commonDisclosureLaborTypeSelections[index] = (option.ResourceInput === undefined || option.ResourceInput === '') ? option.BusinessResourceCodeName || '' : '';
         });
 
         $scope.commonDisclosureLaborTypeSelections = $scope.commonDisclosureLaborTypeSelections.filter((option, index, self) =>
@@ -2148,7 +2148,7 @@
             ResourceType: undefined,
             BusinessResourceCodeID: undefined,
             BusinessResourceCodeInput: undefined,
-            BusinessResouceCodeName: undefined,
+            BusinessResourceCodeName: undefined,
             BusinessResourceCodeType: undefined,
             BusinessResourceCodeDescription: undefined,
             SelectedMOQType: undefined,
@@ -2209,7 +2209,7 @@
             BusinessResourceCodeDescription: laborType.BusinessResourceCodeDescription,
             BusinessResourceCodeID: laborType.BusinessResourceCodeID,
             BusinessResourceCodeInput: laborType.BusinessResourceCodeInput,
-            BusinessResouceCodeName: laborType.BusinessResouceCodeName,
+            BusinessResourceCodeName: laborType.BusinessResourceCodeName,
             BusinessResourceCodeType: laborType.BusinessResourceCodeType,
             SpreadCurveID: laborType.SpreadCurveID,
             SpreadData: angular.copy(laborType.SpreadData),
