@@ -393,6 +393,7 @@
     <Compile Include="StopwatchTimer.cs" />
     <Compile Include="StoredProcedureHelper.cs" />
     <Compile Include="Utilities\NonceUtility.cs" />
+    <Compile Include="Utilities\StringExtensions.cs" />
     <Compile Include="Utilities\TokenHandling.cs" />
     <Compile Include="Utilities\Token\ITokenService.cs" />
     <Compile Include="Utilities\Token\Token.cs" />

@@ -3314,7 +3314,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		public void RefreshSkillMix_Empty_Test()
 		{
 			BOELaborControllerLogic sut = CreateSystem();
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(null, null, null, null, true, true);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(null, null, null, null, true);
 			Assert.IsNotNull(result);
 		}
 
@@ -3357,7 +3357,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, null, null, null, true, true);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, null, null, null, true);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -3373,12 +3373,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual(50.0m, result.SkillMixRows.ElementAt(0).LaborSkillMix);
 			Assert.AreEqual(4000.0m / 300m, result.SkillMixRows.ElementAt(1).LaborSkillMix);
 			Assert.AreEqual(11000.0m / 300m, result.SkillMixRows.ElementAt(2).LaborSkillMix);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(0).Included.Value);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(1).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included.Value);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(1).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included.Value);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(0).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included);
 		}
 
 		/// <summary>
@@ -3443,7 +3440,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, null, null,true, true);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, null, null, true);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -3462,12 +3459,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(0).BOESkillMix);
 			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(1).BOESkillMix);
 			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(2).BOESkillMix);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(0).Included.Value);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(1).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included.Value);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(2).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included.Value);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(0).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included);
 		}
 
 		/// <summary>
@@ -3541,7 +3535,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, null, true, true);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, null, true);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -3561,12 +3555,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(1).BOESkillMix);
 			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(2).BOESkillMix);
 			Assert.AreEqual(RESOURCE_NAME1, result.SkillMixRows.First().ResourceNew);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included.HasValue);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included.Value);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(1).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included.Value);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(2).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included.Value);
+			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included);
 		}
 
 		/// <summary>
@@ -3640,7 +3631,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, null, true, true);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, null, true);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -3664,12 +3655,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(1).BOESkillMix);
 			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(2).BOESkillMix);
 			Assert.AreEqual(string.Empty, result.SkillMixRows.First().ResourceNew);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(0).Included.Value);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(1).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included.Value);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(2).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included.Value);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(0).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included);
 		}
 
 		/// <summary>
@@ -3756,7 +3744,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, true);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -3776,14 +3764,10 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual(100.0m, result.SkillMixRows.ElementAt(0).BOESkillMix);
 			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(1).BOESkillMix);
 			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(2).BOESkillMix);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included.HasValue);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included.Value);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(1).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included.Value);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(2).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included.Value);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(3).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(3).Included.Value);
+			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(3).Included);
 			Assert.AreEqual(Rationale1, result.SkillMixRows.ElementAt(0).Rationale);
 
 			Assert.AreEqual(1, result.CommonDisclosureRows.Count);
@@ -3926,7 +3910,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, true);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -3950,12 +3934,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual(100.0m, result.SkillMixRows.ElementAt(0).BOESkillMix);
 			Assert.AreEqual(0m, result.SkillMixRows.ElementAt(1).BOESkillMix);
 			Assert.AreEqual(0m, result.SkillMixRows.ElementAt(2).BOESkillMix);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included.HasValue);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included.Value);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(1).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included.Value);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(2).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included.Value);
+			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included);
 			Assert.AreEqual(Rationale1, result.SkillMixRows.ElementAt(0).Rationale);
 
 			Assert.AreEqual(2, result.CommonDisclosureRows.Count);
@@ -4118,7 +4099,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, true);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -4149,14 +4130,11 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual(10m, result.SkillMixRows.ElementAt(1).BOESkillMix);
 			Assert.AreEqual(0m, result.SkillMixRows.ElementAt(2).BOESkillMix);
 			Assert.AreEqual(0m, result.SkillMixRows.ElementAt(3).BOESkillMix);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included.HasValue);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included.Value);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(1).Included.HasValue);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(1).Included.Value);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(2).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included.Value);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(3).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(3).Included.Value);
+			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included);
+			Assert.IsTrue(result.SkillMixRows.ElementAt(1).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(3).Included);
+
 			Assert.AreEqual(Rationale1, result.SkillMixRows.ElementAt(0).Rationale);
 			Assert.AreEqual(Rationale2, result.SkillMixRows.ElementAt(1).Rationale);
 
@@ -4332,7 +4310,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, true);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -4363,14 +4341,10 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual(10m, result.SkillMixRows.ElementAt(1).BOESkillMix);
 			Assert.AreEqual(0m, result.SkillMixRows.ElementAt(2).BOESkillMix);
 			Assert.AreEqual(0m, result.SkillMixRows.ElementAt(3).BOESkillMix);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included.HasValue);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included.Value);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(1).Included.HasValue);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(1).Included.Value);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(2).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included.Value);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(3).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(3).Included.Value);
+			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included);
+			Assert.IsTrue(result.SkillMixRows.ElementAt(1).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(3).Included);
 			Assert.AreEqual(Rationale1, result.SkillMixRows.ElementAt(0).Rationale);
 			Assert.AreEqual(Rationale2, result.SkillMixRows.ElementAt(1).Rationale);
 
@@ -4546,7 +4520,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, true);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -4577,14 +4551,10 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual(10m, result.SkillMixRows.ElementAt(1).BOESkillMix);
 			Assert.AreEqual(0m, result.SkillMixRows.ElementAt(2).BOESkillMix);
 			Assert.AreEqual(0m, result.SkillMixRows.ElementAt(3).BOESkillMix);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included.HasValue);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included.Value);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(1).Included.HasValue);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(1).Included.Value);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(2).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included.Value);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(3).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(3).Included.Value);
+			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included);
+			Assert.IsTrue(result.SkillMixRows.ElementAt(1).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(3).Included);
 			Assert.AreEqual(Rationale1, result.SkillMixRows.ElementAt(0).Rationale);
 			Assert.AreEqual(Rationale2, result.SkillMixRows.ElementAt(1).Rationale);
 
@@ -4728,12 +4698,14 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 					ResourceOld = HISTORICAL_RESOURCE_NAME1,
 					ResourceNew = null,
 					Included = true,
+					IsUserInput = true,
 					Rationale = Rationale1
 				},
 				new SkillMixModelView {
 					ResourceOld = HISTORICAL_RESOURCE_NAME2,
 					ResourceNew = string.Empty,
 					Included = true,
+					IsUserInput = true,
 					Rationale = Rationale2
 				}
 			};
@@ -4754,7 +4726,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, true);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -4779,12 +4751,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(0).BOESkillMix);
 			Assert.AreEqual(0m, result.SkillMixRows.ElementAt(1).BOESkillMix);
 			Assert.AreEqual(0m, result.SkillMixRows.ElementAt(2).BOESkillMix);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(0).Included.Value);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(1).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included.Value);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(2).Included.HasValue);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included.Value);
+			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included);
+			Assert.IsTrue(result.SkillMixRows.ElementAt(1).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included);
 			Assert.AreEqual(Rationale1, result.SkillMixRows.ElementAt(0).Rationale);
 			Assert.AreEqual(Rationale2, result.SkillMixRows.ElementAt(1).Rationale);
 			Assert.IsTrue(string.IsNullOrEmpty(result.SkillMixRows.ElementAt(2).Rationale));
@@ -4797,7 +4766,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual(Rationale3, result.CommonDisclosureRows.ElementAt(0).Rationale);
 			Assert.AreEqual(Rationale1, result.CommonDisclosureRows.ElementAt(1).Rationale);
 			Assert.AreEqual(true, result.CommonDisclosureRows.ElementAt(0).Included);
-			Assert.AreEqual(true, result.CommonDisclosureRows.ElementAt(0).Included);
+			Assert.AreEqual(true, result.CommonDisclosureRows.ElementAt(1).Included);
 			Assert.AreEqual(75.0m, result.CommonDisclosureRows.ElementAt(0).ProposedHours);
 			Assert.AreEqual(60.0m, result.CommonDisclosureRows.ElementAt(1).ProposedHours);
 			AssertHelpers.AssertAreEqualEpsilon(75.0m / 135.0m * 100m, result.CommonDisclosureRows.ElementAt(0).BOESkillMix.Value);
@@ -4807,10 +4776,10 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			CheckSkillMixTotals(result);
 
 			// Historical Hours is percentage the brc is linked to in the labor types for this resource multiplied by historical hours in skill mix for this resource
-			AssertHelpers.AssertAreEqualEpsilon(0m, result.CommonDisclosureRows.ElementAt(0).HistoricalHours);
-			AssertHelpers.AssertAreEqualEpsilon(0m, result.CommonDisclosureRows.ElementAt(1).HistoricalHours);
-			AssertHelpers.AssertAreEqualEpsilon(0m, result.CommonDisclosureRows.ElementAt(0).LaborSkillMix);
-			AssertHelpers.AssertAreEqualEpsilon(0m, result.CommonDisclosureRows.ElementAt(1).LaborSkillMix);
+			AssertHelpers.AssertAreEqualEpsilon(105.55555m, result.CommonDisclosureRows.ElementAt(0).HistoricalHours);
+			AssertHelpers.AssertAreEqualEpsilon(84.44444m, result.CommonDisclosureRows.ElementAt(1).HistoricalHours);
+			AssertHelpers.AssertAreEqualEpsilon(55.555555m, result.CommonDisclosureRows.ElementAt(0).LaborSkillMix);
+			AssertHelpers.AssertAreEqualEpsilon(44.444444m, result.CommonDisclosureRows.ElementAt(1).LaborSkillMix);
 
 
 

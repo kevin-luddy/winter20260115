@@ -85,7 +85,7 @@ namespace GenBOE.DataBridge.DTO
 								  ResourceOld = sm.ResourceOld,
 								  ResourceNew = sm.ResourceNew,
 								  BOEID = sm.BOEID,
-								  Included = sm.Included,
+								  Included = sm.Included ?? false,
 								  BOETaskElementID = sm.BOETaskElementID,
 								  IsUserInput = sm.IsUserInput
 							  }).ToList();
@@ -123,7 +123,7 @@ namespace GenBOE.DataBridge.DTO
 								  ResourceOld = sm.ResourceOld,
 								  ResourceNew = sm.ResourceNew,
 								  BOEID = sm.BOEID,
-								  Included = sm.Included,
+								  Included = sm.Included ?? false,
 								  BOETaskElementID = sm.BOETaskElementID,
 								  IsUserInput = sm.IsUserInput
 							  }).ToList();
@@ -194,7 +194,7 @@ namespace GenBOE.DataBridge.DTO
 								  ResourceOld = sm.ResourceOld,
 								  ResourceNew = sm.ResourceNew,
 								  BOEID = sm.BOEID,
-								  Included = sm.Included,
+								  Included = sm.Included ?? false,
 								  BOETaskElementID = sm.BOETaskElementID,
 								  IsUserInput = sm.IsUserInput
 							  }).ToList();
