@@ -1367,69 +1367,69 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	};
 
 	$scope.refreshSkillMixTable = function (moqType) {
-		// Get all the data tables
-		const data = {
-			resourceHours: [],
-			currentSkillMixData: []
-		};
+		//// Get all the data tables
+		//const data = {
+		//	resourceHours: [],
+		//	currentSkillMixData: []
+		//};
 
 		
-		if (moqType.TableData) {
-			moqType.TableData.forEach(tableData => {
-				if ($scope.IsSapEnabledAndSetAsRepository(tableData.RepositoryName)) {
+		//if (moqType.TableData) {
+		//	moqType.TableData.forEach(tableData => {
+		//		if ($scope.IsSapEnabledAndSetAsRepository(tableData.RepositoryName)) {
 
-					tableData.ResourceHours.forEach(hours => {
-						data.resourceHours.push(hours);
-					});
-				}
-			});
-		}
+		//			tableData.ResourceHours.forEach(hours => {
+		//				data.resourceHours.push(hours);
+		//			});
+		//		}
+		//	});
+		//}
 
-		data.boeId = ManageTaskModel.boeId;
-		// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
-		// data.currentSkillMixData = moqType.SkillMixTable;
+		//data.boeId = ManageTaskModel.boeId;
+		//// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+		//// data.currentSkillMixData = moqType.SkillMixTable;
 
-		if (data.resourceHours.length > 0) {
-			// send to backend
-			// display response to user
-			$(document).trigger("SHOW_LOADING_BOX");
+		//if (data.resourceHours.length > 0) {
+		//	// send to backend
+		//	// display response to user
+		//	$(document).trigger("SHOW_LOADING_BOX");
 
-			$http({
-				method: 'POST',
-				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshSkillMixTableAction, ''),
-				data: data
-			}).then(function (response) {
-				// place returned html into the content div
-				if (response.data.IsSuccessful === true) {
-					// the response is wrapped inside response.data.data array
-					if (response.data.data) {
-						// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
-						//moqType.SkillMixTable = response.data.data;
+		//	$http({
+		//		method: 'POST',
+		//		url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshSkillMixTableAction, ''),
+		//		data: data
+		//	}).then(function (response) {
+		//		// place returned html into the content div
+		//		if (response.data.IsSuccessful === true) {
+		//			// the response is wrapped inside response.data.data array
+		//			if (response.data.data) {
+		//				// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+		//				//moqType.SkillMixTable = response.data.data;
 
-						//// Recalculate Totals for Skill Mix
-						//$scope.setSkillMixTotals(moqType);
+		//				//// Recalculate Totals for Skill Mix
+		//				//$scope.setSkillMixTotals(moqType);
 
-						//if ($scope.model.CommonDisclosureEnabled) {
-						//	$scope.refreshCommonDisclosureTable(moqType);
+		//				//if ($scope.model.CommonDisclosureEnabled) {
+		//				//	$scope.refreshCommonDisclosureTable(moqType);
 
-						//	// Recalculate Totals for Common Disclosure Table
-						//	$scope.setCommonDisclosureTotals(moqType);
-						//}
-					}
-				} else {
-					RaiseNotification('Error talking to backend to Refresh Skill Mix Table');
-				}
+		//				//	// Recalculate Totals for Common Disclosure Table
+		//				//	$scope.setCommonDisclosureTotals(moqType);
+		//				//}
+		//			}
+		//		} else {
+		//			RaiseNotification('Error talking to backend to Refresh Skill Mix Table');
+		//		}
 
-				$(document).trigger("HIDE_LOADING_BOX");
-			}).catch(function () {
-				RaiseNotification('Error talking to backend to Refresh Skill Mix Table');
-				$(document).trigger("HIDE_LOADING_BOX");
-			});
-		}
-		else {
-			// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
-			// moqType.SkillMixTable = [];
-		}
+		//		$(document).trigger("HIDE_LOADING_BOX");
+		//	}).catch(function () {
+		//		RaiseNotification('Error talking to backend to Refresh Skill Mix Table');
+		//		$(document).trigger("HIDE_LOADING_BOX");
+		//	});
+		//}
+		//else {
+		//	// TODO Skill Mix V2: No longer using a property off MOQ Type Selection ID but rather the BOE Task Element ID, kept logic in so that we can reuse for Task Element in future story.
+		//	// moqType.SkillMixTable = [];
+		//}
 	};
 
 	$scope.getMOQTotal = function () {
