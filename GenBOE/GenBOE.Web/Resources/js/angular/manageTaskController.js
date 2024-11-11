@@ -76,6 +76,26 @@
         $scope.model.CommonDisclosureSkillMixData[index].IsUserInput = value;
     };
 
+    $scope.addSkillMixRow = function (resourceId) {
+        var newRow = {
+            ResourceOld: resourceId,
+            ResourceNew: '',
+            HistoricalHours: 0,
+            LaborSkillMix: 0,
+            Included: false,
+            BOESkillMix: 0,
+            ProposedHours: 0,
+            Rationale: ''
+        };
+        $scope.skillMixRationale.data.SkillMixRows.push(newRow);
+        $scope.refreshSkillMixTables();
+    };
+
+    $scope.deleteSkillMixRow = function (index) {
+        $scope.skillMixRationale.data.SkillMixRows.splice(index, 1);
+        $scope.refreshSkillMixTables();
+    };
+
     $scope.refreshSkillMixTables = function () {
         if (ManageTaskModel.IsSkillMixEnabled && $scope.loadedTaskData) {
             $(document).trigger("SHOW_LOADING_BOX");
