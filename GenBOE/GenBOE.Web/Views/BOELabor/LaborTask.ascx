@@ -935,7 +935,7 @@
                                     <th>Included</th>
                                     <th>BOE Skill Mix</th>
                                     <th>Proposed Hours</th>
-                                    <th>Rationale**</th>
+                                    <th colspan="3">Rationale**</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -970,12 +970,13 @@
                                     </td>
                                     <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{row.ProposedHours}}</td>
-                                    <td>
+                                    <td colspan="3">
                                         <div id="skill-mix-table-rationale">
-                                            <input type="text" maxlength="255" id="rationale" data-ng-model="row.Rationale" />
+                                            <textarea id="rationale" data-ng-model="row.Rationale" style="width: 100%; height: 28px; max-height: 25px; overflow-y: auto; resize: none;"></textarea>
                                         </div>
                                     </td>
-                                    <td style="width: 5px; border: none;">
+                                    <!-- Action Buttons for adding (+) and deleting (-) rows. -->
+                                    <td style="border: none;">
                                         <button ng-click="addSkillMixRow(row.ResourceOld)" style="width: 20px; height: 20px; font-size: 14px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
                                         <button ng-click="deleteSkillMixRow($index)" style="width: 20px; height: 20px; font-size: 14px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">-</button>
                                     </td>
@@ -989,7 +990,7 @@
                                     <td></td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.BoeSkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.ProposedHours}}</td>
-                                    <td></td>
+                                    <td colspan="3"></td>
                                 </tr>
                             </tbody>
                         </table>

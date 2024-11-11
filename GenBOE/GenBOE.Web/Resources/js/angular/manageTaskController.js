@@ -1224,6 +1224,7 @@
                 callback();
             }
 
+            // TODO Thomas: Remove this and just set the skill mix data since refresh doesn't call the database.
             // Set the loaded task data to true, therefore the Moq event knows to refresh skill mix data with the complete data.
             $scope.loadedTaskData = true;
 
