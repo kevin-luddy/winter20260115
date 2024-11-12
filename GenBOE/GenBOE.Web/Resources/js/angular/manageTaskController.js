@@ -77,9 +77,9 @@
         $scope.refreshSkillMixTables();
     };
 
-    $scope.addSkillMixRow = function (resourceId) {
+    $scope.addSkillMixRow = function (currentIndex) {
         var newRow = {
-            ResourceOld: resourceId,
+            ResourceOld: $scope.skillMixRationale.data.SkillMixRows[currentIndex].ResourceOld,
             ResourceNew: '',
             HistoricalHours: 0,
             LaborSkillMix: 0,
@@ -88,7 +88,7 @@
             ProposedHours: 0,
             Rationale: ''
         };
-        $scope.skillMixRationale.data.SkillMixRows.push(newRow);
+        $scope.skillMixRationale.data.SkillMixRows.splice(currentIndex + 1, 0, newRow);
         $scope.refreshSkillMixTables();
     };
 
