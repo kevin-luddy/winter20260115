@@ -548,7 +548,7 @@
                     <div class="form-label">
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                             {  %>
-                                    Legacy Skill Mix table
+                                    Legacy Skill Mix Table
                         <% } %>
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
                             {  %>
