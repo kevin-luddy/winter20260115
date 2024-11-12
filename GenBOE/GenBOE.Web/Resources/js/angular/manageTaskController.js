@@ -117,6 +117,18 @@
         $scope.refreshSkillMixTables();
     };
 
+    $scope.checkMultipleSkillMixRows = function (resourceOld) {
+        return $scope.skillMixRationale.data.SkillMixRows.filter(function (row) {
+            return row.ResourceOld === resourceOld;
+        }).length > 1;
+    };
+
+    $scope.checkMultipleCommonDisclosureRows = function (businessResourceID) {
+        return $scope.skillMixRationale.data.CommonDisclosureRows.filter(function (row) {
+            return row.BusinessResourceID === businessResourceID;
+        }).length > 1;
+    };
+
     $scope.refreshSkillMixTables = function () {
         if (ManageTaskModel.IsSkillMixEnabled && $scope.loadedTaskData) {
             $(document).trigger("SHOW_LOADING_BOX");

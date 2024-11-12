@@ -986,7 +986,7 @@
                                     <!-- Action Buttons for adding (+) and deleting (-) rows. -->
                                     <td>
                                         <button ng-click="addSkillMixRow($index)" style="width: 20px; height: 20px; font-size: 14px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
-                                        <button ng-click="deleteSkillMixRow($index)" ng-show="skillMixRationale.data.SkillMixRows.length > 1" style="width: 20px; height: 20px; font-size: 14px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">-</button>
+                                        <button ng-click="deleteSkillMixRow($index)" ng-show="checkMultipleSkillMixRows(row.ResourceOld)" style="width: 20px; height: 20px; font-size: 14px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">-</button>
                                     </td>
                                 </tr>
                                 <!-- Display the Skill Mix Totals row. -->
@@ -1050,7 +1050,7 @@
                                     <!-- Action Buttons for adding (+) and deleting (-) rows. -->
                                     <td>
                                         <button ng-click="addCommonDisclosureRow($index)" style="width: 20px; height: 20px; font-size: 14px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
-                                        <button ng-click="deleteCommonDisclosureRow($index)" ng-show="skillMixRationale.data.CommonDisclosureRows.length > 1" style="width: 20px; height: 20px; font-size: 14px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">-</button>
+                                        <button ng-click="deleteCommonDisclosureRow($index)" ng-show="checkMultipleCommonDisclosureRows(row.BusinessResourceID)" style="width: 20px; height: 20px; font-size: 14px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">-</button>
                                     </td>
                                 </tr>
                                 <!-- Display the Common Disclosure Totals row. -->
