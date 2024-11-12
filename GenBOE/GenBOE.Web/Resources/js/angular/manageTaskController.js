@@ -129,6 +129,29 @@
         }).length > 1;
     };
 
+    $scope.filterResourceSelections = function () {
+        $scope.skillMixRationaleLaborTypeSelections = [...$scope.model.LaborTypesData];
+        $scope.commonDisclosureLaborTypeSelections = [...$scope.model.LaborTypesData];
+
+        // Filter out the proper Labor Type selections by Resource Names.
+        $scope.skillMixRationaleLaborTypeSelections.forEach(function (option, index) {
+            $scope.skillMixRationaleLaborTypeSelections[index] = option.ResourceName || '';
+        });
+
+        $scope.skillMixRationaleLaborTypeSelections = $scope.skillMixRationaleLaborTypeSelections.filter((option, index, self) =>
+            index === self.findIndex((t) => (t === option))
+        );
+
+        // Filter out the proper BRC Selections.
+        $scope.commonDisclosureLaborTypeSelections.forEach(function (option, index) {
+            $scope.commonDisclosureLaborTypeSelections[index] = (option.ResourceInput === undefined || option.ResourceInput === '') ? option.BusinessResourceCodeName || '' : '';
+        });
+
+        $scope.commonDisclosureLaborTypeSelections = $scope.commonDisclosureLaborTypeSelections.filter((option, index, self) =>
+            index === self.findIndex((t) => (t === option))
+        );
+    };
+
     $scope.refreshSkillMixTables = function () {
         if (ManageTaskModel.IsSkillMixEnabled && $scope.loadedTaskData) {
             $(document).trigger("SHOW_LOADING_BOX");
@@ -1205,25 +1228,7 @@
             }
 
             $scope.tableData = $scope.model.LaborTypesData;
-            $scope.skillMixRationaleLaborTypeSelections = [...$scope.model.LaborTypesData];
-            $scope.commonDisclosureLaborTypeSelections = [...$scope.model.LaborTypesData];
-
-            // Filter out the proper Labor Type selections by Resource Names.
-            $scope.skillMixRationaleLaborTypeSelections.forEach(function (option, index) {
-                $scope.skillMixRationaleLaborTypeSelections[index] = option.ResourceName || '';
-            });
-
-            $scope.skillMixRationaleLaborTypeSelections = $scope.skillMixRationaleLaborTypeSelections.filter((option, index, self) =>
-                index === self.findIndex((t) => (t === option))
-            );
-
-            $scope.commonDisclosureLaborTypeSelections.forEach(function (option, index) {
-                $scope.commonDisclosureLaborTypeSelections[index] = (option.ResourceInput === undefined || option.ResourceInput === '') ? option.BusinessResourceCodeName || '' : '';
-            });
-
-            $scope.commonDisclosureLaborTypeSelections = $scope.commonDisclosureLaborTypeSelections.filter((option, index, self) =>
-                index === self.findIndex((t) => (t === option))
-            );
+            $scope.filterResourceSelections();
 
             angular.forEach($scope.tableData, function (value) {
                 value.NumberOfDuplicates = 0;
@@ -1827,26 +1832,7 @@
         }
 
         $scope.checkIfNewRowNeeded(model);
-
-        $scope.skillMixRationaleLaborTypeSelections = [...$scope.model.LaborTypesData];
-        $scope.commonDisclosureLaborTypeSelections = [...$scope.model.LaborTypesData];
-
-        // Filter out the proper Labor Type selections by Resource Names.
-        $scope.skillMixRationaleLaborTypeSelections.forEach(function (option, index) {
-            $scope.skillMixRationaleLaborTypeSelections[index] = option.ResourceName || '';
-        });
-
-        $scope.skillMixRationaleLaborTypeSelections = $scope.skillMixRationaleLaborTypeSelections.filter((option, index, self) =>
-            index === self.findIndex((t) => (t === option))
-        );
-
-        $scope.commonDisclosureLaborTypeSelections.forEach(function (option, index) {
-            $scope.commonDisclosureLaborTypeSelections[index] = (option.ResourceInput === undefined || option.ResourceInput === '') ? option.BusinessResourceCodeName || '' : '';
-        });
-
-        $scope.commonDisclosureLaborTypeSelections = $scope.commonDisclosureLaborTypeSelections.filter((option, index, self) =>
-            index === self.findIndex((t) => (t === option))
-        );
+        $scope.filterResourceSelections();
     };
 
     $scope.businessResourceCodeSelected = function (item, model) {

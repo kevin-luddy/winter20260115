@@ -943,7 +943,7 @@
                                     <th style="width: 90px;">BOE Skill Mix</th>
                                     <th style="width: 95px;">Proposed Hours</th>
                                     <th>Rationale**</th>
-                                    <th style="width: 42px;"></th>
+                                    <th style="width: 38px;"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -985,8 +985,8 @@
                                     </td>
                                     <!-- Action Buttons for adding (+) and deleting (-) rows. -->
                                     <td>
-                                        <button ng-click="addSkillMixRow($index)" style="width: 20px; height: 20px; font-size: 14px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
-                                        <button ng-click="deleteSkillMixRow($index)" ng-show="checkMultipleSkillMixRows(row.ResourceOld)" style="width: 20px; height: 20px; font-size: 14px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">-</button>
+                                        <button ng-click="addSkillMixRow($index)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
+                                        <button ng-click="deleteSkillMixRow($index)" ng-show="checkMultipleSkillMixRows(row.ResourceOld)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">-</button>
                                     </td>
                                 </tr>
                                 <!-- Display the Skill Mix Totals row. -->
@@ -1020,7 +1020,7 @@
                                     <th style="width: 90px;">BOE Skill Mix</th>
                                     <th style="width: 95px;">Proposed Hours</th>
                                     <th>Rationale**</th>
-                                    <th style="width: 42px;"></th>
+                                    <th style="width: 38px;"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1049,8 +1049,8 @@
                                     </td>
                                     <!-- Action Buttons for adding (+) and deleting (-) rows. -->
                                     <td>
-                                        <button ng-click="addCommonDisclosureRow($index)" style="width: 20px; height: 20px; font-size: 14px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
-                                        <button ng-click="deleteCommonDisclosureRow($index)" ng-show="checkMultipleCommonDisclosureRows(row.BusinessResourceID)" style="width: 20px; height: 20px; font-size: 14px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">-</button>
+                                        <button ng-click="addCommonDisclosureRow($index)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
+                                        <button ng-click="deleteCommonDisclosureRow($index)" ng-show="checkMultipleCommonDisclosureRows(row.BusinessResourceID)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">-</button>
                                     </td>
                                 </tr>
                                 <!-- Display the Common Disclosure Totals row. -->
