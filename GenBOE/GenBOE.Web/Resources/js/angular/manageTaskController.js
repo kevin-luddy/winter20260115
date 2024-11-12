@@ -77,6 +77,81 @@
         $scope.refreshSkillMixTables();
     };
 
+    $scope.addSkillMixRow = function (currentIndex) {
+        var newRow = {
+            ResourceOld: $scope.skillMixRationale.data.SkillMixRows[currentIndex].ResourceOld,
+            ResourceNew: '',
+            HistoricalHours: 0,
+            LaborSkillMix: 0,
+            Included: false,
+            BOESkillMix: 0,
+            ProposedHours: 0,
+            Rationale: ''
+        };
+        $scope.skillMixRationale.data.SkillMixRows.splice(currentIndex + 1, 0, newRow);
+        $scope.refreshSkillMixTables();
+    };
+
+    $scope.deleteSkillMixRow = function (index) {
+        $scope.skillMixRationale.data.SkillMixRows.splice(index, 1);
+        $scope.refreshSkillMixTables();
+    };
+
+    $scope.addCommonDisclosureRow = function (currentIndex) {
+        var newRow = {
+            ResourceID: $scope.skillMixRationale.data.CommonDisclosureRows[currentIndex].ResourceID,
+            BusinessResourceID: '',
+            HistoricalHours: 0,
+            LaborSkillMix: 0,
+            Included: false,
+            BOESkillMix: 0,
+            ProposedHours: 0,
+            Rationale: ''
+        };
+        $scope.skillMixRationale.data.CommonDisclosureRows.splice(currentIndex + 1, 0, newRow);
+        $scope.refreshSkillMixTables();
+    };
+
+    $scope.deleteCommonDisclosureRow = function (index) {
+        $scope.skillMixRationale.data.CommonDisclosureRows.splice(index, 1);
+        $scope.refreshSkillMixTables();
+    };
+
+    $scope.checkMultipleSkillMixRows = function (resourceOld) {
+        return $scope.skillMixRationale.data.SkillMixRows.filter(function (row) {
+            return row.ResourceOld === resourceOld;
+        }).length > 1;
+    };
+
+    $scope.checkMultipleCommonDisclosureRows = function (businessResourceID) {
+        return $scope.skillMixRationale.data.CommonDisclosureRows.filter(function (row) {
+            return row.BusinessResourceID === businessResourceID;
+        }).length > 1;
+    };
+
+    $scope.filterResourceSelections = function () {
+        $scope.skillMixRationaleLaborTypeSelections = [...$scope.model.LaborTypesData];
+        $scope.commonDisclosureLaborTypeSelections = [...$scope.model.LaborTypesData];
+
+        // Filter out the proper Labor Type selections by Resource Names.
+        $scope.skillMixRationaleLaborTypeSelections.forEach(function (option, index) {
+            $scope.skillMixRationaleLaborTypeSelections[index] = option.ResourceName || '';
+        });
+
+        $scope.skillMixRationaleLaborTypeSelections = $scope.skillMixRationaleLaborTypeSelections.filter((option, index, self) =>
+            index === self.findIndex((t) => (t === option))
+        );
+
+        // Filter out the proper BRC Selections.
+        $scope.commonDisclosureLaborTypeSelections.forEach(function (option, index) {
+            $scope.commonDisclosureLaborTypeSelections[index] = (option.ResourceInput === undefined || option.ResourceInput === '') ? option.BusinessResourceCodeName || '' : '';
+        });
+
+        $scope.commonDisclosureLaborTypeSelections = $scope.commonDisclosureLaborTypeSelections.filter((option, index, self) =>
+            index === self.findIndex((t) => (t === option))
+        );
+    };
+
     $scope.refreshSkillMixTables = function () {
         if (ManageTaskModel.IsSkillMixEnabled && $scope.loadedTaskData) {
             $(document).trigger("SHOW_LOADING_BOX");
@@ -1153,25 +1228,7 @@
             }
 
             $scope.tableData = $scope.model.LaborTypesData;
-            $scope.skillMixRationaleLaborTypeSelections = [...$scope.model.LaborTypesData];
-            $scope.commonDisclosureLaborTypeSelections = [...$scope.model.LaborTypesData];
-
-            // Filter out the proper Labor Type selections by Resource Names.
-            $scope.skillMixRationaleLaborTypeSelections.forEach(function (option, index) {
-                $scope.skillMixRationaleLaborTypeSelections[index] = option.ResourceName || '';
-            });
-
-            $scope.skillMixRationaleLaborTypeSelections = $scope.skillMixRationaleLaborTypeSelections.filter((option, index, self) =>
-                index === self.findIndex((t) => (t === option))
-            );
-
-            $scope.commonDisclosureLaborTypeSelections.forEach(function (option, index) {
-                $scope.commonDisclosureLaborTypeSelections[index] = (option.ResourceInput === undefined || option.ResourceInput === '') ? option.BusinessResourceCodeName || '' : '';
-            });
-
-            $scope.commonDisclosureLaborTypeSelections = $scope.commonDisclosureLaborTypeSelections.filter((option, index, self) =>
-                index === self.findIndex((t) => (t === option))
-            );
+            $scope.filterResourceSelections();
 
             angular.forEach($scope.tableData, function (value) {
                 value.NumberOfDuplicates = 0;
@@ -1204,9 +1261,9 @@
                 callback();
             }
 
-            // Set the loaded task data to true, therefore the Moq event knows to refresh skill mix data with the complete data.
+            // TODO Future Story: Remove loadedTaskData bool and the call to refreshSkillMixTables() and set the skill mix data from the database.
+            // TODO Future Story: Remove this comment - Set the loaded task data to true, therefore the Moq event knows to refresh skill mix data with the complete data.
             $scope.loadedTaskData = true;
-
             $scope.refreshSkillMixTables();
         }, function errorCallback(response) {
             if (response.data && response.data.MessageList) {
@@ -1775,26 +1832,7 @@
         }
 
         $scope.checkIfNewRowNeeded(model);
-
-        $scope.skillMixRationaleLaborTypeSelections = [...$scope.model.LaborTypesData];
-        $scope.commonDisclosureLaborTypeSelections = [...$scope.model.LaborTypesData];
-
-        // Filter out the proper Labor Type selections by Resource Names.
-        $scope.skillMixRationaleLaborTypeSelections.forEach(function (option, index) {
-            $scope.skillMixRationaleLaborTypeSelections[index] = option.ResourceName || '';
-        });
-
-        $scope.skillMixRationaleLaborTypeSelections = $scope.skillMixRationaleLaborTypeSelections.filter((option, index, self) =>
-            index === self.findIndex((t) => (t === option))
-        );
-
-        $scope.commonDisclosureLaborTypeSelections.forEach(function (option, index) {
-            $scope.commonDisclosureLaborTypeSelections[index] = (option.ResourceInput === undefined || option.ResourceInput === '') ? option.BusinessResourceCodeName || '' : '';
-        });
-
-        $scope.commonDisclosureLaborTypeSelections = $scope.commonDisclosureLaborTypeSelections.filter((option, index, self) =>
-            index === self.findIndex((t) => (t === option))
-        );
+        $scope.filterResourceSelections();
     };
 
     $scope.businessResourceCodeSelected = function (item, model) {
