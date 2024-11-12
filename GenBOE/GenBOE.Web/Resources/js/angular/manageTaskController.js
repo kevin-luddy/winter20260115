@@ -120,7 +120,6 @@
     $scope.refreshSkillMixTables = function () {
         if (ManageTaskModel.IsSkillMixEnabled && $scope.loadedTaskData) {
             $(document).trigger("SHOW_LOADING_BOX");
-            $scope.setDirty();
             var data = {
                 boeId: ManageTaskModel.boeId,
                 selectedMoqTypes: $scope.SelectedMoqTypes,
