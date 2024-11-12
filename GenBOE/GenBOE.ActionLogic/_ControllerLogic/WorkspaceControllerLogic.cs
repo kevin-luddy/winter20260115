@@ -829,7 +829,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		#endregion
 
 		/// <summary>
-		/// This method provides a basic DateTime parser that is more forgiving than those provided as exentsion methods.  
+		/// This method provides a basic DateTime parser that is more forgiving than those provided as extension methods.  
 		/// It will also set the day of month to the 15th
 		/// This method won't throw, but will return a DateTime.MinValue if parse fails
 		/// </summary>
