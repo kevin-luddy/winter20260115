@@ -1216,9 +1216,9 @@
   <!--<Target Name="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
     <AspNetCompiler VirtualPath="temp" PhysicalPath="$(ProjectDir)" />
   </Target>-->
-  <Target Name="AfterBuild">
+  <!--<Target Name="AfterBuild">
     <TransformXml Condition="Exists('$(OutDir)\_PublishedWebsites\$(TargetName)')" Source="Web.config" Transform="$(ProjectConfigTransformFileName)" Destination="$(OutDir)\_PublishedWebsites\$(TargetName)\Web.config" />
-  </Target>
+  </Target>-->
   <!--<Target Name="AfterBuild">
     <RemoveDir Directories="$(BaseIntermediateOutputPath)" />
   </Target>-->
