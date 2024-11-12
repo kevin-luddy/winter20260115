@@ -1244,10 +1244,9 @@
                 callback();
             }
 
-            // TODO Thomas: Remove this and just set the skill mix data since refresh doesn't call the database.
-            // Set the loaded task data to true, therefore the Moq event knows to refresh skill mix data with the complete data.
+            // TODO Future Story: Remove loadedTaskData bool and the call to refreshSkillMixTables() and set the skill mix data from the database.
+            // TODO Future Story: Remove this comment - Set the loaded task data to true, therefore the Moq event knows to refresh skill mix data with the complete data.
             $scope.loadedTaskData = true;
-
             $scope.refreshSkillMixTables();
         }, function errorCallback(response) {
             if (response.data && response.data.MessageList) {
