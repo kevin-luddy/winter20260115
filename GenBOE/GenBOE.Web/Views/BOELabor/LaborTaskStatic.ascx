@@ -544,111 +544,113 @@
             </div>
             <div class="module-content-data expanded-content">
                 <div class="form-element">
-    <!-- Skill Mix Table -->
-    <div class="form-label">
-        Skill Mix Table (Pre-2028)
-    </div>
-    <div class="SkillMixTable skillMixTable">
-        <table name="currentSkillMix" class="grid editable">
-            <thead>
-                <tr>
-                    <th>Resource ID</th>
-                    <th>Current Resource ID</th>
-                    <th>Historical Hours</th>
-                    <th>Labor Skill Mix</th>
-                    <th>Included</th>
-                    <th>BOE Skill Mix</th>
-                    <th>Proposed Hours</th>
-                    <th>Rationale**</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Display the data for each of the Skill Mix Table rows. -->
-                <tr ng-repeat="row in skillMixRationale.data.SkillMixRows">
-                    <td>{{row.ResourceOld}}</td>
-                    <td>{{row.ResourceNew}}</td>
-                    <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>
-                    <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
-                    <td>{{row.Included | yesNo}}</td>
-                    <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
-                    <td style="text-align: right">{{row.ProposedHours}}</td>
-                    <td>{{row.Rationale}}</td>
-                </tr>
-                <!-- Display the Skill Mix Totals row. -->
-                <tr>
-                    <td>Totals</td>
-                    <td></td>
-                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.HistoricalHours | number:2}}</td>
-                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.LaborSkillMix | number:1}}%</td>
-                    <td></td>
-                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.BoeSkillMix | number:1}}%</td>
-                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.ProposedHours}}</td>
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <!-- Common Disclosure Skill Mix Table -->
-    <div class="form-label" data-ng-show="IsBRCEnabled">
-        Common Disclosure Skill Mix Table (Post-2028)
-    </div>
-    <div class="SkillMixTable skillMixTable" data-ng-show="IsBRCEnabled">
-        <table name="currentSkillMix" class="grid editable">
-            <thead>
-                <tr>
-                    <th>Resource ID</th>
-                    <th>Business Resource Code</th>
-                    <th>Historical Hours</th>
-                    <th>Labor Skill Mix</th>
-                    <th>Included</th>
-                    <th>BOE Skill Mix</th>
-                    <th>Proposed Hours</th>
-                    <th>Rationale**</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Display the data for each of the Common Disclosure Skill Mix Table rows. -->
-                <tr ng-repeat="row in skillMixRationale.data.CommonDisclosureRows">
-                    <td>{{row.ResourceID}}</td>
-                    <td>{{row.BusinessResourceID}}</td>
-                    <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>
-                    <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
-                    <td>{{row.Included | yesNo}}</td>
-                    <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
-                    <td style="text-align: right">{{row.ProposedHours}}</td>
-                    <td>{{row.Rationale}}</td>
-                </tr>
-                <!-- Display the Common Disclosure Totals row. -->
-                <tr>
-                    <td>Totals</td>
-                    <td></td>
-                    <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.HistoricalHours | number:2}}</td>
-                    <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.LaborSkillMix | number:1}}%</td>
-                    <td></td>
-                    <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.BoeSkillMix | number:1}}%</td>
-                    <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.ProposedHours}}</td>
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+                    <!-- Skill Mix Table -->
+                    <div class="form-label">
+                        Skill Mix Table (Pre-2028)
+                    </div>
+                    <div class="SkillMixTable skillMixTable">
+                        <table name="currentSkillMix" class="grid editable">
+                            <thead>
+                                <tr>
+                                    <th>Resource ID</th>
+                                    <th style="width: 130px;">Current Resource ID</th>
+                                    <th>Historical Hours</th>
+                                    <th style="width: 80px;">Labor Skill Mix</th>
+                                    <th style="width: 50px">Included</th>
+                                    <th style="width: 80px;">BOE Skill Mix</th>
+                                    <th style="width: 90px;">Proposed Hours</th>
+                                    <th style="width: 40%;">Rationale**</th>
+                                    <th style="width: 44px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Display the data for each of the Skill Mix Table rows. -->
+                                <tr ng-repeat="row in skillMixRationale.data.SkillMixRows">
+                                    <td>{{row.ResourceOld}}</td>
+                                    <td>{{row.ResourceNew}}</td>
+                                    <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>
+                                    <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
+                                    <td>{{row.Included | yesNo}}</td>
+                                    <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
+                                    <td style="text-align: right">{{row.ProposedHours}}</td>
+                                    <td>{{row.Rationale}}</td>
+                                </tr>
+                                <!-- Display the Skill Mix Totals row. -->
+                                <tr>
+                                    <td>Totals</td>
+                                    <td></td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.HistoricalHours | number:2}}</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.LaborSkillMix | number:1}}%</td>
+                                    <td></td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.BoeSkillMix | number:1}}%</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.ProposedHours}}</td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Common Disclosure Skill Mix Table -->
+                    <div class="form-label" data-ng-show="IsBRCEnabled">
+                        Common Disclosure Skill Mix Table (Post-2028)
+                    </div>
+                    <div class="SkillMixTable skillMixTable" data-ng-show="IsBRCEnabled">
+                        <table name="currentSkillMix" class="grid editable">
+                            <thead>
+                                <tr>
+                                    <th>Resource ID</th>
+                                    <th style="width: 130px;">Business Resource Code</th>
+                                    <th>Historical Hours</th>
+                                    <th style="width: 80px;">Labor Skill Mix</th>
+                                    <th style="width: 50px">Included</th>
+                                    <th style="width: 80px;">BOE Skill Mix</th>
+                                    <th style="width: 90px;">Proposed Hours</th>
+                                    <th style="width: 40%;">Rationale**</th>
+                                    <th style="width: 45px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Display the data for each of the Common Disclosure Skill Mix Table rows. -->
+                                <tr ng-repeat="row in skillMixRationale.data.CommonDisclosureRows">
+                                    <td>{{row.ResourceID}}</td>
+                                    <td>{{row.BusinessResourceID}}</td>
+                                    <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>
+                                    <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
+                                    <td>{{row.Included | yesNo}}</td>
+                                    <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
+                                    <td style="text-align: right">{{row.ProposedHours}}</td>
+                                    <td>{{row.Rationale}}</td>
+                                </tr>
+                                <!-- Display the Common Disclosure Totals row. -->
+                                <tr>
+                                    <td>Totals</td>
+                                    <td></td>
+                                    <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.HistoricalHours | number:2}}</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.LaborSkillMix | number:1}}%</td>
+                                    <td></td>
+                                    <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.BoeSkillMix | number:1}}%</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.ProposedHours}}</td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <% } %>
-    <div class="buttons-left"></div>
+        <% } %>
+        <div class="buttons-left"></div>
 
-    <div class="buttons">
-        <div class="required-note">
-            <div>* required for saving as draft.</div>
-            <div>** required for validating and submitting for approval</div>
+        <div class="buttons">
+            <div class="required-note">
+                <div>* required for saving as draft.</div>
+                <div>** required for validating and submitting for approval</div>
+            </div>
+            <div class="oci-note"><b>Note: </b><span id="Task-OCINote"></span></div>
+            <button id="Save-BOEUpdatesAndClose" data-ng-hide="isSaving" data-ng-click="saveAndClose(true)" class="ies-action stateful_button" name="save-button" type="button">Save & Close</button>
+            <div id="Loader-BOEUpdates" class="loader" data-ng-show="isSaving"></div>
+            <button id="Cancel-BOEUpdates" class="ies" name="cancel-button" type="button">Cancel</button>
+            <button id="Next-Task" data-ng-disabled="isNextTaskDisabled()" data-ng-click="navigateToNext()" class="ies" name="next-task-button" type="button">Next Task</button>
+            <button id="Previous-Task" data-ng-disabled="isPreviousTaskDisabled()" data-ng-click="navigateToPrevious()" class="ies" name="previous-task-button" type="button">Previous Task</button>
         </div>
-        <div class="oci-note"><b>Note: </b><span id="Task-OCINote"></span></div>
-        <button id="Save-BOEUpdatesAndClose" data-ng-hide="isSaving" data-ng-click="saveAndClose(true)" class="ies-action stateful_button" name="save-button" type="button">Save & Close</button>
-        <div id="Loader-BOEUpdates" class="loader" data-ng-show="isSaving"></div>
-        <button id="Cancel-BOEUpdates" class="ies" name="cancel-button" type="button">Cancel</button>
-        <button id="Next-Task" data-ng-disabled="isNextTaskDisabled()" data-ng-click="navigateToNext()" class="ies" name="next-task-button" type="button">Next Task</button>
-        <button id="Previous-Task" data-ng-disabled="isPreviousTaskDisabled()" data-ng-click="navigateToPrevious()" class="ies" name="previous-task-button" type="button">Previous Task</button>
+        <div class="buttons-right"></div>
     </div>
-    <div class="buttons-right"></div>
-</div>

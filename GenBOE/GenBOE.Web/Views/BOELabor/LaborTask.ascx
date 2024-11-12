@@ -922,7 +922,14 @@
                 <div class="form-element">
                     <!-- Skill Mix Table -->
                     <div class="form-label">
-                        Skill Mix Table (Pre-2028)
+                        <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+                            {  %>
+                                    Legacy Skill Mix table
+                        <% } %>
+                        <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+                            {  %>
+                                    Current Skill Mix Table
+                        <%  } %>
                     </div>
                     <div class="SkillMixTable skillMixTable">
                         <table name="currentSkillMix" class="grid editable">
@@ -999,7 +1006,7 @@
                     </div>
                     <!-- Common Disclosure Skill Mix Table -->
                     <div class="form-label" data-ng-show="IsBRCEnabled">
-                        Common Disclosure Skill Mix Table (Post-2028)
+                        LM Enterprise Skill Mix Table
                     </div>
                     <div class="SkillMixTable skillMixTable" data-ng-show="IsBRCEnabled">
                         <table name="currentSkillMix" class="grid editable">
@@ -1037,7 +1044,7 @@
                                     <td style="text-align: right">{{row.ProposedHours}}</td>
                                     <td>
                                         <div id="cd-table-rationale">
-                                            <textarea id="cd-rationale" data-ng-model="row.Rationale" style="width: 100%; height: 14px; max-height: 42px; overflow-y: auto; resize: vertical;" maxlength="255"></textarea>
+                                            <textarea id="cd-rationale" data-ng-model="row.Rationale" style="width: 100%; height: 14px; max-height: 45px; overflow-y: auto; resize: vertical;" maxlength="255"></textarea>
                                         </div>
                                     </td>
                                     <!-- Action Buttons for adding (+) and deleting (-) rows. -->
