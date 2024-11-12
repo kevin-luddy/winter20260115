@@ -546,7 +546,14 @@
                 <div class="form-element">
                     <!-- Skill Mix Table -->
                     <div class="form-label">
-                        Skill Mix Table (Pre-2028)
+                        <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+                            {  %>
+                                    Legacy Skill Mix table
+                        <% } %>
+                        <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+                            {  %>
+                                    Current Skill Mix Table
+                        <%  } %>
                     </div>
                     <div class="SkillMixTable skillMixTable">
                         <table name="currentSkillMix" class="grid editable">
@@ -590,7 +597,7 @@
                     </div>
                     <!-- Common Disclosure Skill Mix Table -->
                     <div class="form-label" data-ng-show="IsBRCEnabled">
-                        Common Disclosure Skill Mix Table (Post-2028)
+                        LM Enterprise Skill Mix Table
                     </div>
                     <div class="SkillMixTable skillMixTable" data-ng-show="IsBRCEnabled">
                         <table name="currentSkillMix" class="grid editable">
