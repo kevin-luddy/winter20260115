@@ -44,6 +44,10 @@
 
     });
 
+    $scope.$on('SAP_HOURS_CHANGED', function (e) {
+        $scope.refreshSkillMixTables();
+    });
+
     $scope.setSkillMixIsUserInput = function (index, value) {
         if (value === true) {
             $scope.skillMixRationale.data.SkillMixRows[index].IsUserInput = true;
