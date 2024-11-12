@@ -929,13 +929,13 @@
                             <thead>
                                 <tr>
                                     <th>Resource ID</th>
-                                    <th>Current Resource ID</th>
+                                    <th style="width: 130px;">Current Resource ID</th>
                                     <th>Historical Hours</th>
-                                    <th>Labor Skill Mix</th>
+                                    <th style="width: 80px;">Labor Skill Mix</th>
                                     <th style="width: 50px">Included</th>
-                                    <th>BOE Skill Mix</th>
-                                    <th>Proposed Hours</th>
-                                    <th style="width: 35%;">Rationale**</th>
+                                    <th style="width: 80px;">BOE Skill Mix</th>
+                                    <th style="width: 90px;">Proposed Hours</th>
+                                    <th style="width: 40%;">Rationale**</th>
                                     <th style="width: 44px;"></th>
                                 </tr>
                             </thead>
@@ -953,7 +953,7 @@
                                     </td>
                                     <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
-                                    <td style="width: 50px">
+                                    <td>
                                         <!-- Read only for Included when loaded in as True -->
                                         <span ng-if="!row.metadata.ManuallySetIncluded && row.Included">
                                             <span ng-switch="row.Included">
@@ -971,13 +971,13 @@
                                     </td>
                                     <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{row.ProposedHours}}</td>
-                                    <td style="width: 35%;">
+                                    <td>
                                         <div id="skill-mix-table-rationale">
-                                            <textarea id="skill-mix-rationale" data-ng-model="row.Rationale" style="width: 100%; height: 14px; max-height: 40px; overflow-y: auto; resize: vertical;" maxlength="255"></textarea>
+                                            <textarea id="skill-mix-rationale" data-ng-model="row.Rationale" style="width: 100%; height: 14px; max-height: 42px; overflow-y: auto; resize: vertical;" maxlength="255"></textarea>
                                         </div>
                                     </td>
                                     <!-- Action Buttons for adding (+) and deleting (-) rows. -->
-                                    <td style="width: 44px">
+                                    <td>
                                         <button ng-click="addSkillMixRow($index)" style="width: 20px; height: 20px; font-size: 14px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
                                         <button ng-click="deleteSkillMixRow($index)" style="width: 20px; height: 20px; font-size: 14px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">-</button>
                                     </td>
@@ -988,11 +988,11 @@
                                     <td></td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.LaborSkillMix | number:1}}%</td>
-                                    <td style="width: 50px"></td>
+                                    <td></td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.BoeSkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.ProposedHours}}</td>
-                                    <td style="width: 35%;"></td>
-                                    <td style="width: 44px"></td>
+                                    <td></td>
+                                    <td></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1006,13 +1006,13 @@
                             <thead>
                                 <tr>
                                     <th>Resource ID</th>
-                                    <th>Business Resource Code</th>
+                                    <th style="width: 130px;">Business Resource Code</th>
                                     <th>Historical Hours</th>
-                                    <th>Labor Skill Mix</th>
+                                    <th style="width: 80px;">Labor Skill Mix</th>
                                     <th style="width: 50px">Included</th>
-                                    <th>BOE Skill Mix</th>
-                                    <th>Proposed Hours</th>
-                                    <th style="width: 35%;">Rationale**</th>
+                                    <th style="width: 80px;">BOE Skill Mix</th>
+                                    <th style="width: 90px;">Proposed Hours</th>
+                                    <th style="width: 40%;">Rationale**</th>
                                     <th style="width: 45px;"></th>
                                 </tr>
                             </thead>
@@ -1035,15 +1035,15 @@
                                     <td>{{row.Included | yesNo}}</td>
                                     <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{row.ProposedHours}}</td>
-                                    <td style="width: 35%;">
+                                    <td>
                                         <div id="cd-table-rationale">
-                                            <textarea id="cd-rationale" data-ng-model="row.Rationale" style="width: 100%; height: 14px; max-height: 40px; overflow-y: auto; resize: vertical;" maxlength="255"></textarea>
+                                            <textarea id="cd-rationale" data-ng-model="row.Rationale" style="width: 100%; height: 14px; max-height: 42px; overflow-y: auto; resize: vertical;" maxlength="255"></textarea>
                                         </div>
                                     </td>
                                     <!-- Action Buttons for adding (+) and deleting (-) rows. -->
-                                    <td style="width: 45px">
-                                        <button ng-click="addSkillMixRow($index)" style="width: 20px; height: 20px; font-size: 14px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
-                                        <button ng-click="deleteSkillMixRow($index)" style="width: 20px; height: 20px; font-size: 14px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">-</button>
+                                    <td>
+                                        <button ng-click="addCommonDisclosureRow($index)" style="width: 20px; height: 20px; font-size: 14px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
+                                        <button ng-click="deleteCommonDisclosureRow($index)" style="width: 20px; height: 20px; font-size: 14px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">-</button>
                                     </td>
                                 </tr>
                                 <!-- Display the Common Disclosure Totals row. -->
@@ -1055,8 +1055,8 @@
                                     <td></td>
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.BoeSkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.ProposedHours}}</td>
-                                    <td style="width: 35%;"></td>
-                                    <td style="width: 45px"></td>
+                                    <td></td>
+                                    <td></td>
                                 </tr>
                             </tbody>
                         </table>
