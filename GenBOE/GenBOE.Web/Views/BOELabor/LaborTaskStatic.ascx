@@ -552,15 +552,14 @@
                         <table name="currentSkillMix" class="grid editable">
                             <thead>
                                 <tr>
-                                    <th>Resource ID</th>
+                                    <th style="width: 95px;">Resource ID</th>
                                     <th style="width: 130px;">Current Resource ID</th>
-                                    <th>Historical Hours</th>
-                                    <th style="width: 80px;">Labor Skill Mix</th>
-                                    <th style="width: 50px">Included</th>
-                                    <th style="width: 80px;">BOE Skill Mix</th>
-                                    <th style="width: 90px;">Proposed Hours</th>
-                                    <th style="width: 40%;">Rationale**</th>
-                                    <th style="width: 44px;"></th>
+                                    <th style="width: 100px;">Historical Hours</th>
+                                    <th style="width: 90px;">Labor Skill Mix</th>
+                                    <th style="width: 55px">Included</th>
+                                    <th style="width: 90px;">BOE Skill Mix</th>
+                                    <th style="width: 95px;">Proposed Hours</th>
+                                    <th>Rationale**</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -597,15 +596,14 @@
                         <table name="currentSkillMix" class="grid editable">
                             <thead>
                                 <tr>
-                                    <th>Resource ID</th>
+                                    <th style="width: 95px;">Resource ID</th>
                                     <th style="width: 130px;">Business Resource Code</th>
-                                    <th>Historical Hours</th>
-                                    <th style="width: 80px;">Labor Skill Mix</th>
-                                    <th style="width: 50px">Included</th>
-                                    <th style="width: 80px;">BOE Skill Mix</th>
-                                    <th style="width: 90px;">Proposed Hours</th>
-                                    <th style="width: 40%;">Rationale**</th>
-                                    <th style="width: 45px;"></th>
+                                    <th style="width: 100px;">Historical Hours</th>
+                                    <th style="width: 90px;">Labor Skill Mix</th>
+                                    <th style="width: 55px">Included</th>
+                                    <th style="width: 90px;">BOE Skill Mix</th>
+                                    <th style="width: 95px;">Proposed Hours</th>
+                                    <th>Rationale**</th>
                                 </tr>
                             </thead>
                             <tbody>
