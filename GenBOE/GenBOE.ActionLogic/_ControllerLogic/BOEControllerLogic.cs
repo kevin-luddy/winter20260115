@@ -3007,7 +3007,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         }
 
         /// <summary>
-        /// Save Bulk Boe Roles. This is a kill and fill, so the assumption is that all BOEs from a workspace with roles will be include in Boe Roles To Save
+        /// Save Bulk Boe Roles. This is no longer a kill and fill, only saving BOEs roles from a workspace where the ids match the boeRolesToSave
         /// </summary>
         /// <param name="ws">Workspace</param>
         /// <param name="boeRolesToSave">Boe Roles to Save</param>
@@ -3020,8 +3020,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IList<string> errorMessages = this.ValidateBoeBulkRoles(ws, boeRolesToSave);
             if (errorMessages.Any()) { return errorMessages; }
 
-            // Get existing data
-            ICollection<FullBoe> originalBoes = ws.Boes.Where(boe => boe.State == BOEState.Draft || boe.State == BOEState.Unassigned || boe.State == BOEState.None).ToList();
+			// Get existing data
+			ICollection<int> boeIdsToSave = boeRolesToSave.Select(b => b.BoeID).ToList();
+            ICollection<FullBoe> originalBoes = ws.Boes.Where(boe => boeIdsToSave.Contains(boe.Id) && (boe.State == BOEState.Draft || boe.State == BOEState.Unassigned || boe.State == BOEState.None)).ToList();
             ICollection<BoeDTO> boesToSave = originalBoes.Select(boe => boe as BoeDTO).ToList().DeepClone();
             ICollection<PermissionsDTO> boePermissions = this.PermissionsLoader.GetBOEPermissions(originalBoes.Select(x => x.Id).ToList());
             ICollection<UserDTO> wsUsers = this.UserLoader.GetByIds(boePermissions.Select(x => x.ETIUserId).Distinct().ToList());
