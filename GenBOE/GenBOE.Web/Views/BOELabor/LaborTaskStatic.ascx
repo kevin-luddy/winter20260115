@@ -546,21 +546,27 @@
                 <div class="form-element">
                     <!-- Skill Mix Table -->
                     <div class="form-label">
-                        Skill Mix Table (Pre-2028)
+                        <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+                            {  %>
+                                    Legacy Skill Mix Table
+                        <% } %>
+                        <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+                            {  %>
+                                    Current Skill Mix Table
+                        <%  } %>
                     </div>
                     <div class="SkillMixTable skillMixTable">
                         <table name="currentSkillMix" class="grid editable">
                             <thead>
                                 <tr>
-                                    <th>Resource ID</th>
+                                    <th style="width: 95px;">Resource ID</th>
                                     <th style="width: 130px;">Current Resource ID</th>
-                                    <th>Historical Hours</th>
-                                    <th style="width: 80px;">Labor Skill Mix</th>
-                                    <th style="width: 50px">Included</th>
-                                    <th style="width: 80px;">BOE Skill Mix</th>
-                                    <th style="width: 90px;">Proposed Hours</th>
-                                    <th style="width: 40%;">Rationale**</th>
-                                    <th style="width: 44px;"></th>
+                                    <th style="width: 100px;">Historical Hours</th>
+                                    <th style="width: 90px;">Labor Skill Mix</th>
+                                    <th style="width: 55px">Included</th>
+                                    <th style="width: 90px;">BOE Skill Mix</th>
+                                    <th style="width: 95px;">Proposed Hours</th>
+                                    <th>Rationale**</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -591,21 +597,20 @@
                     </div>
                     <!-- Common Disclosure Skill Mix Table -->
                     <div class="form-label" data-ng-show="IsBRCEnabled">
-                        Common Disclosure Skill Mix Table (Post-2028)
+                        LM Enterprise Skill Mix Table
                     </div>
                     <div class="SkillMixTable skillMixTable" data-ng-show="IsBRCEnabled">
                         <table name="currentSkillMix" class="grid editable">
                             <thead>
                                 <tr>
-                                    <th>Resource ID</th>
+                                    <th style="width: 95px;">Resource ID</th>
                                     <th style="width: 130px;">Business Resource Code</th>
-                                    <th>Historical Hours</th>
-                                    <th style="width: 80px;">Labor Skill Mix</th>
-                                    <th style="width: 50px">Included</th>
-                                    <th style="width: 80px;">BOE Skill Mix</th>
-                                    <th style="width: 90px;">Proposed Hours</th>
-                                    <th style="width: 40%;">Rationale**</th>
-                                    <th style="width: 45px;"></th>
+                                    <th style="width: 100px;">Historical Hours</th>
+                                    <th style="width: 90px;">Labor Skill Mix</th>
+                                    <th style="width: 55px">Included</th>
+                                    <th style="width: 90px;">BOE Skill Mix</th>
+                                    <th style="width: 95px;">Proposed Hours</th>
+                                    <th>Rationale**</th>
                                 </tr>
                             </thead>
                             <tbody>
