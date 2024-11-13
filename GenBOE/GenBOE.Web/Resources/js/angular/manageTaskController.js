@@ -1331,6 +1331,8 @@
         });
     };
 
+
+    // TODO Thomas: Look into this when saving.
     var save = function (callback, wsLocked) {
         if (wsLocked === undefined) {
             wsLocked = false;
