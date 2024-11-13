@@ -78,6 +78,7 @@ namespace GenTRAC.Models
         public virtual DbSet<ContractActionTypeLU> ContractActionTypeLUs { get; set; }
         public virtual DbSet<CostVolumeToolLU> CostVolumeToolLUs { get; set; }
         public virtual DbSet<CcopdReasonsNo> CcopdReasonsNoes { get; set; }
+        public virtual DbSet<InsuranceTypeLU> InsuranceTypeLUs { get; set; }
     
         public virtual ObjectResult<Nullable<int>> archiveProposal(Nullable<System.DateTime> createStartDate, Nullable<System.DateTime> createEndDate, string lineOfBusinessID, string programAreaID)
         {
@@ -1367,7 +1368,7 @@ namespace GenTRAC.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteProposalContractsOffer", proposalContractsOfferIdParameter, updateDTParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> upsertProposalContractsData(Nullable<int> proposalContractsDataId, Nullable<System.DateTime> updateDT, Nullable<int> proposalID, Nullable<int> previouslySubmittedROM, Nullable<System.DateTime> customerSubmittalDate, string contractsCorrespondLogNumber, Nullable<long> finalNegotiatedValue, Nullable<System.DateTime> finalNegotiatedDate, Nullable<int> eppDelegationAuthority, Nullable<System.DateTime> programEppDate, Nullable<System.DateTime> lobEppDate, Nullable<System.DateTime> preSpaceEppDate, Nullable<System.DateTime> spaceEppDate, Nullable<System.DateTime> preCorporateEppDate, Nullable<System.DateTime> corporateEppDate, string eppRosDelegationNotes, Nullable<bool> lmWon, Nullable<System.DateTime> modCompletedDate, string cageCode, Nullable<System.DateTime> customerDueDate)
+        public virtual ObjectResult<Nullable<int>> upsertProposalContractsData(Nullable<int> proposalContractsDataId, Nullable<System.DateTime> updateDT, Nullable<int> proposalID, Nullable<int> previouslySubmittedROM, Nullable<System.DateTime> customerSubmittalDate, string contractsCorrespondLogNumber, Nullable<long> finalNegotiatedValue, Nullable<System.DateTime> finalNegotiatedDate, Nullable<int> eppDelegationAuthority, Nullable<System.DateTime> programEppDate, Nullable<System.DateTime> lobEppDate, Nullable<System.DateTime> preSpaceEppDate, Nullable<System.DateTime> spaceEppDate, Nullable<System.DateTime> preCorporateEppDate, Nullable<System.DateTime> corporateEppDate, string eppRosDelegationNotes, Nullable<bool> lmWon, Nullable<System.DateTime> modCompletedDate, string cageCode, Nullable<System.DateTime> customerDueDate, Nullable<int> isInsuranceDirect, Nullable<int> insuranceType, Nullable<long> proposedInsurance, Nullable<long> negotiatedInsurance)
         {
             var proposalContractsDataIdParameter = proposalContractsDataId.HasValue ?
                 new ObjectParameter("ProposalContractsDataId", proposalContractsDataId) :
@@ -1449,7 +1450,23 @@ namespace GenTRAC.Models
                 new ObjectParameter("CustomerDueDate", customerDueDate) :
                 new ObjectParameter("CustomerDueDate", typeof(System.DateTime));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertProposalContractsData", proposalContractsDataIdParameter, updateDTParameter, proposalIDParameter, previouslySubmittedROMParameter, customerSubmittalDateParameter, contractsCorrespondLogNumberParameter, finalNegotiatedValueParameter, finalNegotiatedDateParameter, eppDelegationAuthorityParameter, programEppDateParameter, lobEppDateParameter, preSpaceEppDateParameter, spaceEppDateParameter, preCorporateEppDateParameter, corporateEppDateParameter, eppRosDelegationNotesParameter, lmWonParameter, modCompletedDateParameter, cageCodeParameter, customerDueDateParameter);
+            var isInsuranceDirectParameter = isInsuranceDirect.HasValue ?
+                new ObjectParameter("IsInsuranceDirect", isInsuranceDirect) :
+                new ObjectParameter("IsInsuranceDirect", typeof(int));
+    
+            var insuranceTypeParameter = insuranceType.HasValue ?
+                new ObjectParameter("InsuranceType", insuranceType) :
+                new ObjectParameter("InsuranceType", typeof(int));
+    
+            var proposedInsuranceParameter = proposedInsurance.HasValue ?
+                new ObjectParameter("ProposedInsurance", proposedInsurance) :
+                new ObjectParameter("ProposedInsurance", typeof(long));
+    
+            var negotiatedInsuranceParameter = negotiatedInsurance.HasValue ?
+                new ObjectParameter("NegotiatedInsurance", negotiatedInsurance) :
+                new ObjectParameter("NegotiatedInsurance", typeof(long));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertProposalContractsData", proposalContractsDataIdParameter, updateDTParameter, proposalIDParameter, previouslySubmittedROMParameter, customerSubmittalDateParameter, contractsCorrespondLogNumberParameter, finalNegotiatedValueParameter, finalNegotiatedDateParameter, eppDelegationAuthorityParameter, programEppDateParameter, lobEppDateParameter, preSpaceEppDateParameter, spaceEppDateParameter, preCorporateEppDateParameter, corporateEppDateParameter, eppRosDelegationNotesParameter, lmWonParameter, modCompletedDateParameter, cageCodeParameter, customerDueDateParameter, isInsuranceDirectParameter, insuranceTypeParameter, proposedInsuranceParameter, negotiatedInsuranceParameter);
         }
     
         public virtual int upsertProposalContractsOffer(Nullable<int> proposalContractsOfferId, Nullable<System.DateTime> updateDT, Nullable<int> contractsDataId, Nullable<long> customerOfferAmount, Nullable<System.DateTime> customerOfferDate, Nullable<System.DateTime> lMCounterOfferDate, Nullable<long> lMCounterOfferCost, Nullable<long> lMCounterOfferCOM, Nullable<long> lMCounterOfferProfitFee)

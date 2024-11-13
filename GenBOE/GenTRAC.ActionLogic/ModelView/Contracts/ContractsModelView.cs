@@ -246,10 +246,34 @@ namespace GenTRAC.ActionLogic.ModelView
         [Display(Name = "Contract Won?")]
         public bool? LmWon { get; set; }
 
-        /// <summary>
-        /// MOD Completed Date
-        /// </summary>
-        [Display(Name = "MOD Completed Date")]
+		/// <summary>
+		/// Is Insurance Direct
+		/// </summary>
+		[Display(Name = "Has insurance been proposed direct")]
+		public TripleBooleanState? IsInsuranceDirect { get; set; }
+
+		/// <summary>
+		/// Insurance Type
+		/// </summary>
+		public InsuranceType? InsuranceType { get; set; }
+
+		/// <summary>
+		/// Proposed Insurance Value
+		/// </summary>
+		[Display(Name = "Proposed Insurance Value")]
+		public long? ProposedInsurance { get; set; }
+
+		/// <summary>
+		/// Negotiated Insurance Value
+		/// </summary>
+		[Display(Name = "Negotiated Insurance Value")]
+		public long? NegotiatedInsurance { get; set; }
+
+
+		/// <summary>
+		/// MOD Completed Date
+		/// </summary>
+		[Display(Name = "MOD Completed Date")]
         public DateTime? ModCompletedDate { get; set; }
 
         /// <summary>
@@ -257,11 +281,21 @@ namespace GenTRAC.ActionLogic.ModelView
         /// </summary>
         public ICollection<SelectListItem> EppOptions { get; set; }
 
-#region Buttons
-        /// <summary>
-        /// Should the "Set Lost" button be enabled
-        /// </summary>
-        public bool SetLostButtonEnabled { get; set; }
+		/// <summary>
+		/// Select options for Insurance Proposed Direct
+		/// </summary>
+		public ICollection<SelectListItem> InsuranceProposedDirectOptions { get; set; }
+
+		/// <summary>
+		/// Select options for Insurance Type
+		/// </summary>
+		public ICollection<SelectListItem> InsuranceTypeOptions { get; set; }
+
+		#region Buttons
+		/// <summary>
+		/// Should the "Set Lost" button be enabled
+		/// </summary>
+		public bool SetLostButtonEnabled { get; set; }
 
         /// <summary>
         /// Should the "No Bid" button be enabled

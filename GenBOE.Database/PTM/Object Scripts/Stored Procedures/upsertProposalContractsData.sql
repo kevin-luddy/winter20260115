@@ -28,7 +28,11 @@ CREATE PROCEDURE [dbo].[upsertProposalContractsData]
 	@LmWon [bit],
 	@ModCompletedDate [date],
 	@CageCode [varchar](10),
-	@CustomerDueDate [date]
+	@CustomerDueDate [date],
+	@IsInsuranceDirect [int] = NULL,
+	@InsuranceType [int] = NULL,
+	@ProposedInsurance [bigint] = NULL,
+	@NegotiatedInsurance [bigint] = NULL
 )
 AS
 /******************************************************************************
@@ -48,6 +52,7 @@ AS
 **      02/16/22    Koovackal           Add upsert for EPP fields
 **		07/18/22	ranzalon			Add CageCode
 **		02/22/23	ranzalon			Add CustomerDueDate
+**		11/12/24	twilson3			Add Insurance fields
 *******************************************************************************/
 SET NOCOUNT ON
 
@@ -58,12 +63,12 @@ SET NOCOUNT ON
 														ContractsCorrespondLogNumber, FinalNegotiatedValue, FinalNegotiatedDate,
 														EppDelegationAuthority, ProgramEppDate, LobEppDate, PreSpaceEppDate, 
 														SpaceEppDate, PreCorporateEppDate, CorporateEppDate, EppRosDelegationNotes, 
-														LmWon, ModCompletedDate, CageCode, CustomerDueDate)
+														LmWon, ModCompletedDate, CageCode, CustomerDueDate, IsInsuranceDirect, InsuranceType, ProposedInsurance, NegotiatedInsurance)
 				OUTPUT inserted.ProposalContractsDataId INTO @Inserted
 				VALUES (GETDATE(), @ProposalID, @PreviouslySubmittedROM, @CustomerSubmittalDate, @ContractsCorrespondLogNumber,
 						@FinalNegotiatedValue, @FinalNegotiatedDate, @EppDelegationAuthority, @ProgramEppDate, @LobEppDate, 
 						@PreSpaceEppDate, @SpaceEppDate, @PreCorporateEppDate, @CorporateEppDate, @EppRosDelegationNotes, @LmWon, 
-						@ModCompletedDate, @CageCode, @CustomerDueDate)
+						@ModCompletedDate, @CageCode, @CustomerDueDate, @IsInsuranceDirect, @InsuranceType, @ProposedInsurance, @NegotiatedInsurance)
 			SELECT @ProposalContractsDataId = Id FROM @Inserted
 		END
 	ELSE -- updating existing
@@ -88,7 +93,11 @@ SET NOCOUNT ON
 						LmWon = @LmWon,
 						ModCompletedDate = @ModCompletedDate,
 						CageCode = @CageCode,
-						CustomerDueDate = @CustomerDueDate
+						CustomerDueDate = @CustomerDueDate,
+						IsInsuranceDirect = @IsInsuranceDirect, 
+						InsuranceType = @InsuranceType, 
+						ProposedInsurance = @ProposedInsurance, 
+						NegotiatedInsurance = @NegotiatedInsurance
 					WHERE ProposalContractsDataId = @ProposalContractsDataId
 			ELSE
 				BEGIN
