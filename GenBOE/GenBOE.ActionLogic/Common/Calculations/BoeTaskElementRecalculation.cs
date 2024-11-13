@@ -791,7 +791,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
             foreach (FullWbs wbs in AllWbs)
             {
                 // do not include the WBS we are searching for
-                if (inWBS.WbsNumber.StartsWith(wbs.WbsNumber) && inWBS.WbsNumber != wbs.WbsNumber)
+                if (inWBS.WbsNumber.StartsWith(wbs.WbsNumber, StringComparison.CurrentCultureIgnoreCase) && inWBS.WbsNumber != wbs.WbsNumber)
                 {
                     AllParentWbs.Add(wbs);
                 }

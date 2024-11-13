@@ -115,7 +115,7 @@ namespace GenBOE.ActionLogic.WBS
             {
                 foreach (WbsDTO wbsToCheck in WbsDTOs)
                 {
-                    if (wbsToCheck.WbsNumber.StartsWith(wbs.WbsNumber + "."))
+                    if (wbsToCheck.WbsNumber.StartsWith(wbs.WbsNumber + ".", StringComparison.CurrentCultureIgnoreCase))
                     {
                         wbsToCheck.inUse = true;
                     }

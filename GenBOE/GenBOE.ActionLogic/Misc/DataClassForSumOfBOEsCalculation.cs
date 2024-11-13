@@ -437,7 +437,7 @@ namespace GenBOE.ActionLogic
             // A nested boe is a boe that is assigned to a nested wbs
             foreach (WbsDTO wbs in wbsElements)
             {
-                if (wbs.Id == parentWbs.Id || wbs.WbsNumber.StartsWith(parentWbs.WbsNumber + "."))
+                if (wbs.Id == parentWbs.Id || wbs.WbsNumber.StartsWith(parentWbs.WbsNumber + ".", StringComparison.CurrentCultureIgnoreCase))
                 {
                     List<BoeDTO> matchingBoes = boes.Where(b => b.WBSID == wbs.Id).ToList();
 
