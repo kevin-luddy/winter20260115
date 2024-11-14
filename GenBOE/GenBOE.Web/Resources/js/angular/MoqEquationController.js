@@ -1141,6 +1141,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 								// Trigger the event to update the Selected MOQ Types in manageTaskController.js.
 								$scope.$emit('MOQ_TYPE_SELECTION_CHANGED', $scope.model.SelectedMoqTypes);
+
+								// Trigger the event to refresh the Skill Mix tables
+								$scope.$emit('SAP_HOURS_CHANGED');
 							}
 						});
 					}
