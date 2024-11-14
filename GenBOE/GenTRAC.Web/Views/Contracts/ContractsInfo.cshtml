@@ -249,6 +249,8 @@
 			GenTRAC.numericCommaSeparator(ContractsInfoWidget, dollarValue, 'input[name="NegotiatedInsurance"]', false);
 		});
 
+		$('#ProposedInsurance').trigger('change');
+		$('#NegotiatedInsurance').trigger('change');
         ContractsInfoWidget.insuranceChanged();
     });
 </script>
