@@ -187,7 +187,7 @@
     <Compile Include="GenBOE.Dtos\DTOs\OrdinaryVariableDto.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\OtherDirectCostSpread.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\OtherDirectCostType.cs" />
-    <Compile Include="GenBOE.Dtos\DTOs\PboeClinContractDto.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\ClinContractDto.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\PBOEDataDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\PerDiemDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\PerformingOrgDTO.cs" />
