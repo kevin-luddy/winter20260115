@@ -94,7 +94,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				if (historicalHoursTotals != relevantHoursTotals)
 				{
-					allValidationMessages.Add(new ValidationMessage(string.Format("Skill Mix Historical Hours do not match the sum of the Total Relevant Hours.")));
+					allValidationMessages.Add(new ValidationMessage(string.Format("Skill Mix Total Historical Hours do not match the sum of the Total Relevant Hours.")));
 				}
 
 			}
