@@ -138,6 +138,8 @@ namespace GenTRAC.ActionLogic
 
 			// populate calculated properties
 			model.EppOptions = this.GetEppSelectOptions(model.EppDelegationAuthority);
+			model.InsuranceProposedDirectOptions = this.GetInsuranceProposedOptions(model.IsInsuranceDirect);
+			model.InsuranceTypeOptions = this.GetInsuranceTypeOptions(model.InsuranceType);
 			model.SetLostButtonEnabled = this.IsValidForLostStatus(dto, fullProposal);
 			model.NoBidButtonEnabled = this.IsValidForNoBidStatus(fullProposal);
 			model.CompleteButtonEnabled = this.IsValidForCompleteStatus(dto, fullProposal);
@@ -296,6 +298,60 @@ namespace GenTRAC.ActionLogic
 		}
 
 		/// <summary>
+		/// Gets the Insurance Type Options
+		/// </summary>
+		/// <param name="insuranceType"></param>
+		/// <returns></returns>
+		private ICollection<SelectListItem> GetInsuranceTypeOptions(InsuranceType? insuranceType)
+		{
+			ICollection<SelectListItem> result = new List<SelectListItem>();
+
+			InsuranceType[] enums = (InsuranceType[])Enum.GetValues(typeof(InsuranceType));
+
+			// add blank option
+			result.Add(new SelectListItem { Value = null, Text = null, Selected = insuranceType == null });
+
+			foreach (InsuranceType item in enums)
+			{
+				result.Add(new SelectListItem
+				{
+					Value = item.ToString(),
+					Text = item.GetDescription<InsuranceType>(),
+					Selected = item == insuranceType
+				});
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Gets the Insurance Proposed Options
+		/// </summary>
+		/// <param name="isInsuranceDirect"></param>
+		/// <returns></returns>
+		private ICollection<SelectListItem> GetInsuranceProposedOptions(TripleBooleanState? isInsuranceDirect)
+		{
+			ICollection<SelectListItem> result = new List<SelectListItem>();
+
+			TripleBooleanState[] enums = (TripleBooleanState[])Enum.GetValues(typeof(TripleBooleanState));
+
+			// add blank option
+			result.Add(new SelectListItem { Value = null, Text = null, Selected = isInsuranceDirect == null });
+
+			foreach (TripleBooleanState item in enums)
+			{
+				result.Add(new SelectListItem
+				{
+					Value = item.ToString(),
+					Text = item.GetDescription<TripleBooleanState>(),
+					Selected = item == isInsuranceDirect
+				});
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Orchestrates the setting of the proposal status to "Lost"
 		/// </summary>
 		/// <param name="proposalId">Proposal Id for status update</param>
@@ -359,6 +415,14 @@ namespace GenTRAC.ActionLogic
 			dto.LmWon = model.LmWon;
 			dto.ModCompletedDate = model.ModCompletedDate;
 			dto.CageCode = model.CageCode;
+			dto.NegotiatedInsurance = string.IsNullOrEmpty(model.NegotiatedInsurance) ? null : (long?)long.Parse(model.NegotiatedInsurance.Replace(",", string.Empty));
+			dto.ProposedInsurance = string.IsNullOrEmpty(model.ProposedInsurance) ? null : (long?)long.Parse(model.ProposedInsurance.Replace(",", string.Empty));
+			dto.IsInsuranceDirect = model.IsInsuranceDirect;
+			// Insurance Type value is only valid if IsInsuranceDirect is Yes
+			if (dto.IsInsuranceDirect == TripleBooleanState.Yes)
+			{
+				dto.InsuranceType = model.InsuranceType;
+			}
 
 			return dto;
 		}
@@ -398,6 +462,10 @@ namespace GenTRAC.ActionLogic
 			model.LmWon = dto.LmWon;
 			model.ModCompletedDate = dto.ModCompletedDate;
 			model.CageCode = dto.CageCode;
+			model.IsInsuranceDirect = dto.IsInsuranceDirect;
+			model.InsuranceType = dto.InsuranceType;
+			model.NegotiatedInsurance = dto.NegotiatedInsurance.ToString();
+			model.ProposedInsurance = dto.ProposedInsurance.ToString();
 
 			return model;
 		}
@@ -656,6 +724,21 @@ namespace GenTRAC.ActionLogic
 			messages = messages ?? new List<string>();
 
 			bool isValid = true;
+			
+			// Customer Due Date required for validation
+			if (dto.CustomerDueDate is null)
+			{
+				isValid = false;
+				messages.Add(Constants.INVALID_CUSTOMER_DUE_DATE);
+			}
+
+			// Cage Code required for validation
+			if (dto.CageCode == null)
+			{
+				isValid = false;
+				messages.Add(Constants.INVALID_CAGE_CODE);
+			}
+
 			EppDelegationDatesHelper edc = new EppDelegationDatesHelper();
 
 			switch ((EppDelegationAuthority?)dto?.EppDelegationAuthority)
@@ -676,20 +759,6 @@ namespace GenTRAC.ActionLogic
 					messages.Add(msg);
 					isValid = false;
 					break;
-			}
-
-			// Customer Due Date required for validation
-			if (dto.CustomerDueDate is null)
-			{
-				isValid = false;
-				messages.Add(Constants.INVALID_CUSTOMER_DUE_DATE);
-			}
-
-			// Cage Code required for validation
-			if (dto.CageCode == null)
-			{
-				isValid = false;
-				messages.Add(Constants.INVALID_CAGE_CODE);
 			}
 
 			if (!fullProposal.IsRomNte && dto.LmWon.HasValue && dto.LmWon.Value)
@@ -721,6 +790,29 @@ namespace GenTRAC.ActionLogic
 			{
 				isValid = false;
 				messages.Add(Constants.INVALID_LM_WIN_LOSS);
+			}
+
+			if (dto.IsInsuranceDirect is null)
+			{
+				isValid = false;
+				messages.Add(Constants.INVALID_INSURANCE_DIRECT);
+			}
+			else if (dto.IsInsuranceDirect == TripleBooleanState.Yes && dto.InsuranceType is null)
+			{
+				isValid = false;
+				messages.Add(Constants.INVALID_INSURANCE_TYPE);
+			}
+
+			if (dto.ProposedInsurance is null)
+			{
+				isValid = false;
+				messages.Add(Constants.INVALID_PROPOSED_INSURANCE);
+			}
+
+			if (dto.NegotiatedInsurance is null)
+			{
+				isValid = false;
+				messages.Add(Constants.INVALID_NEGOTIATED_INSURANCE);
 			}
 
 			messages.AddRange(ValidateContractModelView(ConvertContractsDtoToModel(dto), fullProposal));

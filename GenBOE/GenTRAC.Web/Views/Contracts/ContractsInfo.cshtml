@@ -60,7 +60,19 @@
                     }
                 });
             }
-        }
+        };
+
+		ContractsInfoWidget.insuranceChanged = function () {
+			var isInsuranceProposedDirect = ContractsInfoWidget.getElement('#IsInsuranceDirect').val();
+            
+			if (isInsuranceProposedDirect && isInsuranceProposedDirect === 'Yes') {
+                // Show the Insurance Type dropdown
+				$('#InsuranceTypeDiv').show();
+            } else {
+                // Hide the Insurance Type dropdown
+				$('#InsuranceTypeDiv').hide();
+            }
+        };
 
         const handleDateSelect = function () {
             ContractsInfoWidget.setDirty('contractsForm');
@@ -226,6 +238,18 @@
             GenTRAC.numericCommaSeparator(ContractsInfoWidget, dollarValue, 'input[name="FinalNegotiatedValue"]', false);
             $('#FinalNegotiatedValue').val('$' + $('#FinalNegotiatedValue').val());
         });
+
+		$('#ProposedInsurance').on('change', function () {
+			const dollarValue = $('#ProposedInsurance').val().trim().replace('$', '').replace(/\,/g, '');
+			GenTRAC.numericCommaSeparator(ContractsInfoWidget, dollarValue, 'input[name="ProposedInsurance"]', false);
+        });
+
+		$('#NegotiatedInsurance').on('change', function () {
+			const dollarValue = $('#NegotiatedInsurance').val().trim().replace('$', '').replace(/\,/g, '');
+			GenTRAC.numericCommaSeparator(ContractsInfoWidget, dollarValue, 'input[name="NegotiatedInsurance"]', false);
+		});
+
+        ContractsInfoWidget.insuranceChanged();
     });
 </script>
 
@@ -373,40 +397,45 @@
 					<textarea id="EppRosDelegationNotes" name="EppRosDelegationNotes" rows="3">@Model.EppRosDelegationNotes</textarea>
 				</div>
 			</div>
-			if (!Model.IsRomNte)
-			{
-				<div class="form-row">
-					<div class="form-label">@Html.LabelFor(x => x.LmWon)</div>
-					<div class="form-element">
-						<label>Yes</label> @Html.RadioButtonFor(x => x.LmWon, true)
-						<label>No</label>  @Html.RadioButtonFor(x => x.LmWon, false)
-					</div>
+            if (!Model.IsRomNte)
+            {
+			<div class="form-row">
+				<div class="form-label">@Html.LabelFor(x => x.LmWon)</div>
+				<div class="form-element">
+					<label>Yes</label> @Html.RadioButtonFor(x => x.LmWon, true)
+					<label>No</label>  @Html.RadioButtonFor(x => x.LmWon, false)
 				</div>
-				<div class="form-row">
-					<div class="form-label">@Html.LabelFor(x => x.IsInsuranceDirect)</div>
-					<div class="form-element">
-						@Html.DropDownListFor(model => model.IsInsuranceDirect, Model.InsuranceProposedDirectOptions, new { name = "IsInsuranceDirect", @class = "half" })
-						@Html.DropDownListFor(model => model.InsuranceType, Model.InsuranceTypeOptions, new { name = "InsuranceType", @class = "half" })
-					</div>
+			</div>
+            }
+			<div class="form-row">
+				<div class="form-label">@Html.LabelFor(x => x.IsInsuranceDirect)</div>
+				<div class="form-element">
+					@Html.DropDownListFor(model => model.IsInsuranceDirect, Model.InsuranceProposedDirectOptions, new { name = "IsInsuranceDirect", @class = "half", onchange = "ContractsInfoWidget.insuranceChanged()" })
+
+                    <div style="display:inline" id="InsuranceTypeDiv"><span style="font-weight:bold">&nbsp;&nbsp;Select Insurance Type: </span>@Html.DropDownListFor(model => model.InsuranceType, Model.InsuranceTypeOptions, new { name = "InsuranceType", @class = "half" })
+                    </div>
 				</div>
-				<div class="form-row">
-					<div class="form-label">@Html.LabelFor(x => x.ProposedInsurance)</div>
-					<div class="form-element">
-						@Html.TextBoxFor(x => x.ProposedInsurance, new { @class = "half" })
-					</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label"><span helptext="Enter in U.S. whole dollars">@Html.LabelFor(x => x.ProposedInsurance)</span></div>
+				<div class="form-element">
+					@Html.TextBoxFor(x => x.ProposedInsurance, new { @class = "half" })
 				</div>
-				<div class="form-row">
-					<div class="form-label">@Html.LabelFor(x => x.NegotiatedInsurance)</div>
-					<div class="form-element">
-						@Html.TextBoxFor(x => x.NegotiatedInsurance, new { @class = "half" })
-					</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label"><span helptext="Enter in U.S. whole dollars">@Html.LabelFor(x => x.NegotiatedInsurance)</span></div>
+				<div class="form-element">
+					@Html.TextBoxFor(x => x.NegotiatedInsurance, new { @class = "half" })
 				</div>
-				<div class="form-row">
-					<div class="form-label">@Html.LabelFor(x => x.ModCompletedDate)</div>
-					<div class="form-element">
-						@Html.TextBoxFor(x => x.ModCompletedDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
-					</div>
+			</div>
+            if (!Model.IsRomNte)
+            {
+			<div class="form-row">
+				<div class="form-label">@Html.LabelFor(x => x.ModCompletedDate)</div>
+				<div class="form-element">
+					@Html.TextBoxFor(x => x.ModCompletedDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 				</div>
+			</div>
 			}
 		}
 	</div>

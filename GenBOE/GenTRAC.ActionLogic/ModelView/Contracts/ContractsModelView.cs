@@ -12,6 +12,7 @@ namespace GenTRAC.ActionLogic.ModelView
 	using System.Linq;
 	using System.Web.Mvc;
 	using GenTRAC.ActionLogic.ModelView.Contracts;
+	using GenTRAC.ActionLogic.Validation;
 	using IES.Common;
 
 	/// <summary>
@@ -249,7 +250,7 @@ namespace GenTRAC.ActionLogic.ModelView
 		/// <summary>
 		/// Is Insurance Direct
 		/// </summary>
-		[Display(Name = "Has insurance been proposed direct")]
+		[Display(Name = "Has insurance been proposed direct?")]
 		public TripleBooleanState? IsInsuranceDirect { get; set; }
 
 		/// <summary>
@@ -260,14 +261,16 @@ namespace GenTRAC.ActionLogic.ModelView
 		/// <summary>
 		/// Proposed Insurance Value
 		/// </summary>
-		[Display(Name = "Proposed Insurance Value")]
-		public long? ProposedInsurance { get; set; }
+		[RegularExpression(Validation.ValidationConstants.PRICE_RANGE_FORMAT, ErrorMessage = ValidationConstants.ProposalValidationConstants.PROPOSED_INSURANCE_VALUE_IN_DOLLARS)]
+		[Display(Name = "Proposed Insurance Value ($)")]
+		public string ProposedInsurance { get; set; }
 
 		/// <summary>
 		/// Negotiated Insurance Value
 		/// </summary>
-		[Display(Name = "Negotiated Insurance Value")]
-		public long? NegotiatedInsurance { get; set; }
+		[RegularExpression(Validation.ValidationConstants.PRICE_RANGE_FORMAT, ErrorMessage = ValidationConstants.ProposalValidationConstants.NEGOTIATED_INSURANCE_VALUE_IN_DOLLARS)]
+		[Display(Name = "Negotiated Insurance Value ($)")]
+		public string NegotiatedInsurance { get; set; }
 
 
 		/// <summary>
