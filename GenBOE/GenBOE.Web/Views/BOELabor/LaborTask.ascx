@@ -985,8 +985,8 @@
                                     </td>
                                     <!-- Action Buttons for adding (+) and deleting (-) rows. -->
                                     <td>
-                                        <button ng-click="addSkillMixRow($index)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
-                                        <button ng-click="deleteSkillMixRow($index)" ng-show="checkMultipleSkillMixRows(row.ResourceOld)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">-</button>
+                                        <button ng-click="addSkillMixRow($index)" ng-show="!checkEmptyString(row.ResourceNew)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
+                                        <button ng-click="deleteSkillMixRow($index)" ng-show="showSkillMixDeleteButton(row.ResourceOld)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">-</button>
                                     </td>
                                 </tr>
                                 <!-- Display the Skill Mix Totals row. -->
@@ -1049,8 +1049,8 @@
                                     </td>
                                     <!-- Action Buttons for adding (+) and deleting (-) rows. -->
                                     <td>
-                                        <button ng-click="addCommonDisclosureRow($index)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
-                                        <button ng-click="deleteCommonDisclosureRow($index)" ng-show="checkMultipleCommonDisclosureRows(row.BusinessResourceID)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">-</button>
+                                        <button ng-click="addCommonDisclosureRow($index)" ng-show="checkEmptyString(row.ResourceID)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
+                                        <button ng-click="deleteCommonDisclosureRow($index)" ng-show="showCommonDisclosureDeleteButton(row.ResourceID)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">-</button>
                                     </td>
                                 </tr>
                                 <!-- Display the Common Disclosure Totals row. -->
