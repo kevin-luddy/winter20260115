@@ -2262,6 +2262,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			toReturn.WorkspaceVariableIDs = modelview.TaskElementData.WorkspaceVariableIDs;
 			toReturn.TaskElementType = TaskElementType.Labor;
 			toReturn.BOETaskElementOrder = modelview.TaskElementData.BOETaskElementOrder;
+			toReturn.SkillMixTable = modelview.SkillMixData;
+			toReturn.CommonDisclosureTable = modelview.CommonDisclosureSkillMixData;
+
 			//if the taskelement is new we will save the order id with 2000. This is so the taskelement always goes to the bottom of the page.
 			if (toReturn.Id < 0)
 			{
