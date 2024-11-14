@@ -55,5 +55,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="rteSizeLimit">The RTE Size limit for the workspace if overridden.</param>
         /// <returns>Validation warnings.</returns>
         ICollection<ValidationMessage> ValidateRteAnswers(ICollection<RTECustomTemplateQuestionAnswerModelView> answers, ICollection<RteCustomTemplateSourceModelView> sources, int? rteSizeLimit);
+		ICollection<ValidationMessage> ValidateSkillMixHistoricalHours(LaborTaskDataModelView modelView);
 	}
 }
