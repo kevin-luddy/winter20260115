@@ -6,15 +6,17 @@
 
 namespace GenBOE.Tests.ActionLogic.ControllerLogic
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using GenBOE.ActionLogic.ControllerLogic;
-    using GenBOE.Dtos;
-    using IES.Common;
-    using IES.Common.Exceptions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using GenBOE.ActionLogic.ControllerLogic;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
+	using IES.Common;
+	using IES.Common.Exceptions;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using System.Collections.Generic;
+	using System.Linq;
 
-    [TestClass]
+	[TestClass]
     public class GenboeControllerLogicTest : MOQObject
     {
         /// <summary>
@@ -125,5 +127,57 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             Assert.IsTrue(messages.None());
         }
-    }
+
+		/// <summary>
+		/// Test Skill Mix Historical Hours.
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMixHistoricalHours()
+		{
+			// Setup base Labor Task.
+			LaborTaskDataModelView testLaborTask = new LaborTaskDataModelView()
+			{
+				MOQTypes = new List<MoqTypeSelection>(),
+				SkillMixData = new List<SkillMixModelView>()
+			};
+
+			// Setup MOQ Type Selection Data.
+			MoqTypeSelection moqTypeSelectionData = new MoqTypeSelection() { TableData = new List<MoqTableData>() };
+
+
+			// Setup MOQ rows.
+			MoqTableData moqTypeSelectionDataRow1 = new MoqTableData() { TotalRelevantHours = 200 };
+			MoqTableData moqTypeSelectionDataRow2 = new MoqTableData() { TotalRelevantHours = 300 };
+			MoqTableData moqTypeSelectionDataRow3 = new MoqTableData() { TotalRelevantHours = 400 };
+
+			moqTypeSelectionData.TableData.Add(moqTypeSelectionDataRow1);
+			moqTypeSelectionData.TableData.Add(moqTypeSelectionDataRow2);
+			moqTypeSelectionData.TableData.Add(moqTypeSelectionDataRow3);
+
+			// Setup Skill Mix rows.
+			SkillMixModelView skillMixDataRow1 = new SkillMixModelView() { HistoricalHours = 200  };
+			SkillMixModelView skillMixDataRow2 = new SkillMixModelView() { HistoricalHours = 300 };
+			SkillMixModelView skillMixDataRow3 = new SkillMixModelView() { HistoricalHours = 400 };
+
+			// Add data into each table.
+			testLaborTask.MOQTypes.Add(moqTypeSelectionData);
+			testLaborTask.SkillMixData.Add(skillMixDataRow1);
+			testLaborTask.SkillMixData.Add(skillMixDataRow2);
+			testLaborTask.SkillMixData.Add(skillMixDataRow3);
+
+			GenBOEControllerLogic sut = CreateSystem();
+
+			ICollection<ValidationMessage> messages = sut.ValidateSkillMixHistoricalHours(testLaborTask);
+
+			Assert.IsTrue(messages.None());
+
+			// Fail the test with unequal sum.
+			SkillMixModelView skillMixDataRow4 = new SkillMixModelView() { HistoricalHours = 100 };
+			testLaborTask.SkillMixData.Add(skillMixDataRow4);
+
+			ICollection<ValidationMessage> failMessages = sut.ValidateSkillMixHistoricalHours(testLaborTask);
+
+			Assert.IsFalse(failMessages.None());
+		}
+	}
 }

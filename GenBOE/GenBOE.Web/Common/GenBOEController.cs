@@ -915,14 +915,25 @@ namespace GenBOE.Web.Common
             return this._ControllerLogic.ScrubRichTextPropertiesForSave(model);
         }
 
-        /// <summary>
-        /// Validates the RTE Answers
-        /// </summary>
-        /// <param name="answers">The answers to validate.</param>
-        /// <param name="sources">The sources for RTE Templates.</param>
-        /// <param name="rteSizeLimit">The RTE Size limit for the workspace if overridden.</param>
-        /// <returns>Validation warnings.</returns>
-        protected ICollection<ValidationMessage> ValidateRteAnswers(ICollection<RTECustomTemplateQuestionAnswerModelView> answers, ICollection<RteCustomTemplateSourceModelView> sources, int? rteSizeLimit)
+		/// <summary>
+		/// Validates the Skill Mix historical hours against the MOQ Type table data relevant hours.
+		/// </summary>
+		/// <param name="model">View model to be validated.</param>
+		/// <returns>List of validation messages, if any</returns>
+		/// <seealso cref="IES.Common.RichTextAttribute"/>
+		protected ICollection<ValidationMessage> ValidateSkillMixHistoricalHours(LaborTaskDataModelView modelView)
+		{
+			return this._ControllerLogic.ValidateSkillMixHistoricalHours(modelView);
+		}
+
+		/// <summary>
+		/// Validates the RTE Answers
+		/// </summary>
+		/// <param name="answers">The answers to validate.</param>
+		/// <param name="sources">The sources for RTE Templates.</param>
+		/// <param name="rteSizeLimit">The RTE Size limit for the workspace if overridden.</param>
+		/// <returns>Validation warnings.</returns>
+		protected ICollection<ValidationMessage> ValidateRteAnswers(ICollection<RTECustomTemplateQuestionAnswerModelView> answers, ICollection<RteCustomTemplateSourceModelView> sources, int? rteSizeLimit)
         {
             return this._ControllerLogic.ValidateRteAnswers(answers, sources, rteSizeLimit);
         }
