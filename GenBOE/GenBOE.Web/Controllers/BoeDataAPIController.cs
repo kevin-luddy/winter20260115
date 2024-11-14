@@ -90,6 +90,11 @@ namespace GenBOE.Web.Controllers
 		private readonly IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader;
 
 		/// <summary>
+		/// BOE Form IBOE Data Loader
+		/// </summary>
+		private readonly IBOEFormIBOEDTODataLoader boeFormIBOEDTODataLoader;
+
+		/// <summary>
 		/// Active Directory Utilities
 		/// </summary>
 		private readonly IActiveDirectoryUtilities activeDirectoryUtilities;
@@ -145,7 +150,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="traceTableExporter">Trace Table data exporter</param>
 		/// <param name="boeFormControllerLogic">BOE Form Controller logic</param>
 		/// <param name="contractTypeLoader">Pick List loader for Contract Types</param>
-		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, IActiveDirectoryUtilities activeDirectoryUtilities, IUserDTODataLoader userDataLoader, ContractTypeLoader contractTypeLoader, IResourceDTODataLoader resourceLoader, ITMResourceRateDTODataLoader tmResourceRateLoader, TMCalculator tmCalculator, IInUseDataLoader inUseDataLoader)
+		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, IBOEFormIBOEDTODataLoader boeFormIBOEDTODataLoader, IActiveDirectoryUtilities activeDirectoryUtilities, IUserDTODataLoader userDataLoader, ContractTypeLoader contractTypeLoader, IResourceDTODataLoader resourceLoader, ITMResourceRateDTODataLoader tmResourceRateLoader, TMCalculator tmCalculator, IInUseDataLoader inUseDataLoader)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.loader = loader;
@@ -157,6 +162,7 @@ namespace GenBOE.Web.Controllers
 			this.traceTableExporter = traceTableExporter;
 			this.boeFormControllerLogic = boeFormControllerLogic;
 			this.boeFormPBOEDTODataLoader = boeFormPBOEDTODataLoader;
+			this.boeFormIBOEDTODataLoader = boeFormIBOEDTODataLoader;
 			this.activeDirectoryUtilities = activeDirectoryUtilities;
 			this.userDataLoader = userDataLoader;
 			this.contractTypeLoader = contractTypeLoader;
@@ -951,8 +957,8 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Get all PBOEs for a given Workspace.
 		/// </summary>
-		/// <param name="workspaceID">Workspace ID</param>
-		/// <returns>Collection of PBOEs by Workspace ID</returns>
+		/// <param name="trackingNumber">Tracking Number</param>
+		/// <returns>Collection of PBOEs by Tracking Number</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
 		public IESResponse<PBOEData> GetPBOEsForTrackingNumber(string trackingNumber)
@@ -1084,7 +1090,69 @@ namespace GenBOE.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown Error occured returning Material PBoe Data for given Workspace with tracking number: {trackingNumber}: {ex.Message}");
+				result.Messages.Add($"Unknown Error occured returning PBOE Data for given Workspace with tracking number: {trackingNumber}: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get all IBOEs for a given Workspace.
+		/// </summary>
+		/// <param name="trackingNumber">Tracking Number</param>
+		/// <returns>Collection of IBOEs by Tracking Number</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public IESResponse<IBOEData> GetIBOEsForTrackingNumber(string trackingNumber)
+		{
+			IESResponse<IBOEData> result = new IESResponse<IBOEData>();
+
+			try
+			{
+				tokenHandler.ValidateAuthorizationToken();
+
+				result.Data = boeFormIBOEDTODataLoader.GetByTrackingNumber(trackingNumber).Select<BOEFormIBOEDTO, IBOEData>(x =>
+				{
+					UserData poc = activeDirectoryUtilities.SearchUsers(x.Poc, ActiveDirectorySearchBy.LastName, ActiveDirectoryMatchType.StartsWith).FirstOrDefault();
+					UserData approver = activeDirectoryUtilities.SearchUsers(x.Approver, ActiveDirectorySearchBy.LastName, ActiveDirectoryMatchType.StartsWith).FirstOrDefault();
+
+					return new IBOEData()
+					{
+						UpdateDT = DateTime.UtcNow,
+						PTMTrackingNumber = trackingNumber,
+						FormName = x.FormName,
+						Description = x.Description,
+						BasisAndRationale = x.BasisAndRationale,
+						ProposalTitle = x.ProposalTitle,
+						ProposalDate = x.ProposalDate,
+						Poc = poc != null ? poc.DisplayName : string.Empty,
+						PocPhone = poc != null ? poc.Phone : string.Empty,
+						PocEmail = poc != null ? poc.Email : string.Empty,
+						Approver = approver != null ? approver.DisplayName : string.Empty,
+						ApproverPhone = approver != null ? approver.Phone : string.Empty,
+						ApproverEmail = approver != null ? approver.Email : string.Empty,
+						Revision = x.Revision,
+						FormVersion = x.Version,
+						BusinessArea = x.BusinessArea,
+						Resources = x.Resources,
+						IBOEClinContractXREF = x.ClinContractXrefs
+					};
+				}).ToList();
+
+				result.IsSuccessful = true;
+			}
+			catch (UnauthorizedAccessException ex)
+			{
+				string message = "Invalid permission to Workspace with tracking number:" + trackingNumber + ". ";
+				logger.Error(message + ex);
+				result.Messages.Add(message);
+				result.IsSuccessful = false;
+				result.Data = null;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown Error occured returning IBOE Data for given Workspace with tracking number: {trackingNumber}: {ex.Message}");
 			}
 
 			return result;

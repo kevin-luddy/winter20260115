@@ -510,7 +510,7 @@ namespace GenBOE.Web.ModelView
 		/// <summary>
 		/// Collection of clin-contract xrefs
 		/// </summary>
-		public ICollection<PboeClinContractDto> ClinContractXrefs { get; set; }
+		public ICollection<ClinContractDto> ClinContractXrefs { get; set; }
 
 		/// <summary>
 		/// Workspace ID

@@ -63,7 +63,7 @@ namespace GenBOE.Dtos
 			this.LeadEstimatorDisplayName = null;
 			this.LeadEstimatorEmail = null;
 			this.TrackingNumber = null;
-			ClinContractXrefs = new Collection<PboeClinContractDto>();
+			ClinContractXrefs = new Collection<ClinContractDto>();
 		}
 
 		/// <summary>
@@ -601,6 +601,6 @@ namespace GenBOE.Dtos
 		/// <summary>
 		/// Collection of clin-contract xrefs
 		/// </summary>
-		public ICollection<PboeClinContractDto> ClinContractXrefs { get; set; }
+		public ICollection<ClinContractDto> ClinContractXrefs { get; set; }
 	}
 }

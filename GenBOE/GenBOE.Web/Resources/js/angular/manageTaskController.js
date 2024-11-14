@@ -44,6 +44,10 @@
 
     });
 
+    $scope.$on('SAP_HOURS_CHANGED', function (e) {
+        $scope.refreshSkillMixTables();
+    });
+
     $scope.setSkillMixIsUserInput = function (index, value) {
         if (value === true) {
             $scope.skillMixRationale.data.SkillMixRows[index].IsUserInput = true;
@@ -117,15 +121,20 @@
         $scope.refreshSkillMixTables();
     };
 
-    $scope.checkMultipleSkillMixRows = function (resourceOld) {
+    $scope.showSkillMixDeleteButton = function (resourceOld) {
         return $scope.skillMixRationale.data.SkillMixRows.filter(function (row) {
             return row.ResourceOld === resourceOld;
         }).length > 1;
     };
 
-    $scope.checkMultipleCommonDisclosureRows = function (businessResourceID) {
-        return $scope.skillMixRationale.data.CommonDisclosureRows.filter(function (row) {
-            return row.BusinessResourceID === businessResourceID;
+    $scope.checkEmptyString = function (value) {
+        return value === undefined || value === '';
+    };
+
+    $scope.showCommonDisclosureDeleteButton = function (resourceID) {
+        // show Delete if the resource is empty and there are multiple where ResourceID is empty
+        return $scope.checkEmptyString(resourceID) && $scope.skillMixRationale.data.CommonDisclosureRows.filter(function (row) {
+            return $scope.checkEmptyString(row.ResourceID);
         }).length > 1;
     };
 
