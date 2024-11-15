@@ -210,6 +210,10 @@
     <Build Include="_Full Script Files For Specific Versions\PTM - 2024.13 Generated On 8_19_2024.sql" />
     <Build Include="Release Scripts\Release 2024.14\1 - Release 2024.14 Script.sql" />
     <Build Include="_Full Script Files For Specific Versions\PTM - 2024.14 Generated On 10_16_2024.sql" />
+    <Build Include="_Other Scripts\FixClassifiedChecklistsPt1.sql" />
+    <Build Include="_Other Scripts\FindAndFixProposalsMissingChecklists.sql" />
+    <Build Include="_Other Scripts\FixClassifiedChecklistsPt3.sql" />
+    <Build Include="_Other Scripts\FixClassifiedChecklistsPt2.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="_Other Scripts\FindProposalsForMigrationToLockedState.sql" />
