@@ -828,6 +828,7 @@ namespace GenBOE.Web.Controllers
 			// Validate DTO 
 			if (!isLocked)
 			{
+				// TODO Thomas: Look into passing relevant hours.
 				validationErrors.AddRange(this._BoeLaborControllerLogic.ValidateTaskElementDto(ws, dto));
 			}
 

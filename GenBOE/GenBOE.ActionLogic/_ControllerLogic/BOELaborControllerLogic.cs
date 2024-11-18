@@ -876,7 +876,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 			#endregion
 
-			// Validate Skill Mix Historical Hours w/ Total Relevant Hours
+			// TODO Thomas: Validate Skill Mix Historical Hours w/ Total Relevant Hours
 			decimal historicalHoursTotals = 0;
 
 			foreach (SkillMixModelView row in taskElement.SkillMixTable)
