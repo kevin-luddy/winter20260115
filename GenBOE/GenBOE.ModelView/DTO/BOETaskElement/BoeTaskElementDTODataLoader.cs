@@ -717,10 +717,51 @@ namespace GenBOE.DataBridge.DTO
 							gbe.refreshCustomFieldInUseFlagByWorkspaceID(workspaceId);
 						}
 					}
+
+					LoadSkillMixRationale(dtosToSave);
 				}
 			}
 
 			return toReturn;
+		}
+
+		private void LoadSkillMixRationale(ICollection<BoeTaskElementDTO> dtosToSave)
+		{
+			foreach (BoeTaskElementDTO inTaskDetail in dtosToSave)
+			{
+				if (Utilities.IsSkillMixEnabledForSystem)
+				{
+					// Save the Skill Mix tables
+					if (inTaskDetail.SkillMixTable != null && inTaskDetail.SkillMixTable.Any())
+					{
+						List<SkillMixDTO> dtos = new List<SkillMixDTO>();
+						foreach (SkillMixModelView skillMixModelView in inTaskDetail.SkillMixTable)
+						{
+							SkillMixDTO dto = skillMixModelView.ToDto();
+							dto.BOEID = inTaskDetail.BoeID;
+							dto.BOETaskElementID = inTaskDetail.Id;
+							dtos.Add(dto);
+						}
+
+						this.skillMixDTOLoader.InsertSkillMix(dtos);
+					}
+
+					// Save the Common Disclosure DTOs
+					if (inTaskDetail.CommonDisclosureTable != null && inTaskDetail.CommonDisclosureTable.Any())
+					{
+						List<CommonDisclosureSkillMixDTO> dtos = new List<CommonDisclosureSkillMixDTO>();
+						foreach (CommonDisclosureModelView commonDisclosure in inTaskDetail.CommonDisclosureTable)
+						{
+							CommonDisclosureSkillMixDTO dto = commonDisclosure.ToDto();
+							dto.BOEID = inTaskDetail.BoeID;
+							dto.BOETaskElementID = inTaskDetail.Id;
+							dtos.Add(dto);
+						}
+
+						this.commonDisclosureSMDTODataLoader.InsertCommonDisclosureSM(dtos);
+					}
+				}
+			}
 		}
 
 		/// <summary>

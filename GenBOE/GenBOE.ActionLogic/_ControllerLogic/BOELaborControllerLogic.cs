@@ -55,6 +55,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		private readonly IOrdinaryVariableLoader _taskVariableLoader;
 		private readonly IRteTemplateDataLoader rteTemplateDataLoader;
 		private readonly IMoqTypeDataLoader moqTypeDataLoader;
+		private readonly ISkillMixDTOLoader skillMixDTOLoader;
+		private readonly ICommonDisclosureSMDTODataLoader commonDisclosureDTOLoader;
 		private readonly IValidateBOE validateBOE;
 		private readonly IMoqTableExporter moqTableExporter;
 		private readonly IMoqTableImporter moqTableImporter;
@@ -90,6 +92,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			ICommonDataMapper commonDataMapper,
 			IRteTemplateDataLoader rteTemplateDataLoader,
 			IMoqTypeDataLoader moqTypeDataLoader,
+			ISkillMixDTOLoader skillMixDTOLoader,
+			ICommonDisclosureSMDTODataLoader commonDisclosureDTOLoader,
 			IValidateBOE validateBOE,
 			IMoqTableExporter moqTableExporter,
 			IMoqTableImporter moqTableImporter,
@@ -116,6 +120,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			this.CommonDataMapper = commonDataMapper;
 			this.rteTemplateDataLoader = rteTemplateDataLoader;
 			this.moqTypeDataLoader = moqTypeDataLoader;
+			this.skillMixDTOLoader = skillMixDTOLoader;
+			this.commonDisclosureDTOLoader = commonDisclosureDTOLoader;
 			this.validateBOE = validateBOE;
 			this.moqTableExporter = moqTableExporter;
 			this.moqTableImporter = moqTableImporter;
@@ -2214,6 +2220,19 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				toReturn.LaborTypesData.Add(laborToAdd);
 			}
 
+			List<SkillMixDTO> skillMixFromDB = new List<SkillMixDTO>(this.skillMixDTOLoader.GetByWorkspaceId(ws.Id));
+			List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixFromDB = new List<CommonDisclosureSkillMixDTO>(this.commonDisclosureDTOLoader.GetByWorkspaceId(ws.Id));
+
+			foreach (SkillMixDTO skillMixDTO in skillMixFromDB)
+			{
+				toReturn.SkillMixData.Add(new SkillMixModelView(skillMixDTO));
+			}
+
+			foreach (CommonDisclosureSkillMixDTO commonDisclosureSkillMixDTO in commonDisclosureSkillMixFromDB)
+			{
+				toReturn.CommonDisclosureSkillMixData.Add(new CommonDisclosureModelView(commonDisclosureSkillMixDTO));
+			}
+
 			toReturn.ContainsDiscrete = toReturn.LaborTypesData.Select(x => x.SpreadCurveID).Any(x => x.Value == SpreadCurves.DiscreteCost || x.Value == SpreadCurves.DiscreteHours);
 
 			return toReturn;
@@ -4196,7 +4215,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					if (currentRows.Any())
 					{
 						bool anyValidCurrentRows = false;
-						
+
 						foreach (SkillMixModelView currentRow in currentRows)
 						{
 							// make sure we have a Labor Types match for Resource
