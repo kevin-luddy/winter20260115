@@ -884,7 +884,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				historicalHoursTotals += row.HistoricalHours;
 			}
 
-			if (historicalHoursTotals != taskElement.TotalHours)
+			if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
 			{
 				validationErrors.Add(new ValidationMessage(string.Format("Skill Mix Total Historical Hours do not match the sum of the Total Relevant Hours.")));
 			}
@@ -2247,7 +2247,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				Updateable = UpdateType.Upsert
 			};
 
-
 			// Convert Task Element Data
 			toReturn.BoeID = modelview.TaskElementData.BOEID;
 			toReturn.Id = modelview.TaskElementData.TaskElementDetailID ?? -1;
@@ -2256,6 +2255,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			toReturn.Description = modelview.TaskElementData.TaskDescription;
 			toReturn.MOQType = modelview.TaskElementData.MOQType;
 			toReturn.MOQTypeName = modelview.TaskElementData.MOQType == MOQType.None ? null : moqTypes[(int)modelview.TaskElementData.MOQType].MOQTypeName;
+			toReturn.MOQTotalRelevantHours += modelview.MOQTypes?.Sum(t => t.TableData?.Sum(td => td.TotalRelevantHours) ?? 0) ?? 0;
 			toReturn.MOQText = modelview.TaskElementData.MOQText;
 			toReturn.UpdateDate = modelview.TaskElementData.UpdateDate;
 			toReturn.LaborTypeWarningFlag = modelview.TaskElementData.LaborTypeWarning;
