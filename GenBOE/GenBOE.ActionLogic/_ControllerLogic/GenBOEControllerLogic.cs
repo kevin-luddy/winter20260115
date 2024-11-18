@@ -65,44 +65,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
         }
 
 		/// <summary>
-		/// Validates the Skill Mix historical hours against the MOQ Type table data relevant hours.
-		/// </summary>
-		/// <param name="modelView">Labor Task data.</param>
-		/// <returns>List of validation messages, if any</returns>
-		/// <seealso cref="IES.Common.RichTextAttribute"/>
-		public ICollection<ValidationMessage> ValidateSkillMixHistoricalHours(LaborTaskDataModelView modelView)
-		{
-			List<ValidationMessage> allValidationMessages = new List<ValidationMessage>();
-
-			if (modelView != null)
-			{
-				decimal historicalHoursTotals = 0;
-				decimal relevantHoursTotals = 0;
-
-				foreach (SkillMixModelView row in modelView.SkillMixData)
-				{
-					historicalHoursTotals += row.HistoricalHours;
-				}
-
-				foreach (MoqTypeSelection moqType in modelView.MOQTypes)
-				{
-					foreach (MoqTableData moqTableDataRow in moqType.TableData)
-					{
-						relevantHoursTotals += moqTableDataRow.TotalRelevantHours;
-					}
-				}
-
-				if (historicalHoursTotals != relevantHoursTotals)
-				{
-					allValidationMessages.Add(new ValidationMessage(string.Format("Skill Mix Total Historical Hours do not match the sum of the Total Relevant Hours.")));
-				}
-
-			}
-
-			return allValidationMessages;
-		}
-
-		/// <summary>
 		/// For any properties marked as rich-text, remove styling and/or markup that are known to cause problems
 		/// for the third-party HTML conversion utility.
 		/// </summary>

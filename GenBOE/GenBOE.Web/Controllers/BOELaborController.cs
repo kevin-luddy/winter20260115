@@ -802,13 +802,6 @@ namespace GenBOE.Web.Controllers
 				}
 			}
 
-			// Validate Skill Mix Historical hours w/ Total Relevant Hours
-			ICollection<ValidationMessage> skillMixHistoricalHoursErrors = this.ValidateSkillMixHistoricalHours(modelView);
-			if (skillMixHistoricalHoursErrors.Any())
-			{
-				validationErrors.AddRange(skillMixHistoricalHoursErrors);
-			}
-
 			// Validate Rich Text
 			ICollection<ValidationMessage> richTextValidationErrors = this.ScrubViewModelRichTextForSave(modelView.TaskElementData);
 			if (richTextValidationErrors.Any())
@@ -828,7 +821,6 @@ namespace GenBOE.Web.Controllers
 			// Validate DTO 
 			if (!isLocked)
 			{
-				// TODO Thomas: Look into passing relevant hours.
 				validationErrors.AddRange(this._BoeLaborControllerLogic.ValidateTaskElementDto(ws, dto));
 			}
 

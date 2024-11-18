@@ -876,7 +876,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 			#endregion
 
-			// TODO Thomas: Validate Skill Mix Historical Hours w/ Total Relevant Hours
 			decimal historicalHoursTotals = 0;
 
 			foreach (SkillMixModelView row in taskElement.SkillMixTable)
@@ -888,7 +887,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			{
 				validationErrors.Add(new ValidationMessage(string.Format("Skill Mix Total Historical Hours do not match the sum of the Total Relevant Hours.")));
 			}
-
 
 			return validationErrors;
 		}

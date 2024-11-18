@@ -55,12 +55,5 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="rteSizeLimit">The RTE Size limit for the workspace if overridden.</param>
         /// <returns>Validation warnings.</returns>
         ICollection<ValidationMessage> ValidateRteAnswers(ICollection<RTECustomTemplateQuestionAnswerModelView> answers, ICollection<RteCustomTemplateSourceModelView> sources, int? rteSizeLimit);
-
-		/// <summary>
-		/// Validates the Skill Mix historical hours against the MOQ Type table data relevant hours.
-		/// </summary>
-		/// <param name="modelView">Labor Task data.</param>
-		/// <returns>List of validation messages, if any</returns>
-		ICollection<ValidationMessage> ValidateSkillMixHistoricalHours(LaborTaskDataModelView modelView);
 	}
 }
