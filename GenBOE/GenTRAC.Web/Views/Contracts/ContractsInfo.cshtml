@@ -414,7 +414,7 @@
 				<div class="form-element">
 					@Html.DropDownListFor(model => model.IsInsuranceDirect, Model.InsuranceProposedDirectOptions, new { name = "IsInsuranceDirect", @class = "half", onchange = "ContractsInfoWidget.insuranceChanged()" })
 
-                    <div style="display:inline" id="InsuranceTypeDiv"><span style="font-weight:bold">&nbsp;&nbsp;Select Insurance Type: </span>@Html.DropDownListFor(model => model.InsuranceType, Model.InsuranceTypeOptions, new { name = "InsuranceType", @class = "half" })
+                    <div id="InsuranceTypeDiv"><span>&nbsp;&nbsp;Select Insurance Type: </span>@Html.DropDownListFor(model => model.InsuranceType, Model.InsuranceTypeOptions, new { name = "InsuranceType", @class = "half" })
                     </div>
 				</div>
 			</div>
