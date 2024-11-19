@@ -718,14 +718,18 @@ namespace GenBOE.DataBridge.DTO
 						}
 					}
 
-					LoadSkillMixRationale(dtosToSave);
+					SaveSkillMixRationale(dtosToSave);
 				}
 			}
 
 			return toReturn;
 		}
 
-		private void LoadSkillMixRationale(ICollection<BoeTaskElementDTO> dtosToSave)
+		/// <summary>
+		/// Saves the skill mix rationale.
+		/// </summary>
+		/// <param name="dtosToSave">Boe Task Element Dto</param>
+		private void SaveSkillMixRationale(ICollection<BoeTaskElementDTO> dtosToSave)
 		{
 			foreach (BoeTaskElementDTO inTaskDetail in dtosToSave)
 			{

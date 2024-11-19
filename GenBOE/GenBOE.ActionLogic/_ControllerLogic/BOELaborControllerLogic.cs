@@ -2220,8 +2220,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				toReturn.LaborTypesData.Add(laborToAdd);
 			}
 
-			List<SkillMixDTO> skillMixFromDB = new List<SkillMixDTO>(this.skillMixDTOLoader.GetByWorkspaceId(ws.Id));
-			List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixFromDB = new List<CommonDisclosureSkillMixDTO>(this.commonDisclosureDTOLoader.GetByWorkspaceId(ws.Id));
+			List<SkillMixDTO> skillMixFromDB = new List<SkillMixDTO>(this.skillMixDTOLoader.GetByBOETaskElementID(dto.Id));
+			List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixFromDB = new List<CommonDisclosureSkillMixDTO>(this.commonDisclosureDTOLoader.GetByBOETaskElementID(dto.Id));
 
 			foreach (SkillMixDTO skillMixDTO in skillMixFromDB)
 			{
