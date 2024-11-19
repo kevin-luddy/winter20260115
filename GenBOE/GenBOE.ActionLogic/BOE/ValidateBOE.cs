@@ -148,6 +148,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 			ws.LoadTaskElementRTEData();
 
 			// Let's begin the validation....
+			inBOE.
 
 			// validate BOE Date is either within the CLIN Date 
 			if (inBOE.Clin != null)
@@ -240,10 +241,18 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 			this.ValidateTemplateMoqTypes(ws, inBOE, ValidationBOE);
 
-			ActionLogicUtility.ValidateSkillMixTable()
-			if (ws.IsUsingTM)
+			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.IsUsingTM))
 			{
-				this.
+				inBOE.TaskElements.ForEach(x =>
+				{
+					ICollection<string> errorMessages = new List<string>();
+					errorMessages = ActionLogicUtility.ValidateSkillMixTable(x.SkillMixTable, ws.CreationDate);
+
+					if (Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
+					{
+						errorMessages.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(x.CommonDisclosureTable, x.SkillMixTable, ws.CreationDate));
+					}
+				});
 			}
 
 			// Setting the name for the WBS - incase we have multiple WBS's we would want to list them out.
