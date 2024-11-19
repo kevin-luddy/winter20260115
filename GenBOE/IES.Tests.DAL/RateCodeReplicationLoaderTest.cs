@@ -34,7 +34,23 @@ namespace IES.Tests
         {
             IRateCodeReplicationLoader sut = this.testData.RateCodeReplicationLoader;
 
-            RateCodeModelView item = new RateCodeModelView
+			// First delete any old data
+			using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
+			{
+				ICollection<RateCodeModelView> rateCodes = sut.GetAll();
+				foreach (RateCodeModelView rateCode in rateCodes)
+				{
+					if ((rateCode.From == "Sample Text" && rateCode.To == "XYZ") || (rateCode.From == "Bubbly" && rateCode.To == "Champagne"))
+					{
+						rateCode.Updateable = UpdateType.Deleted;
+						sut.Save(rateCode);
+					}
+				}
+
+				scope.Complete();
+			}
+
+			RateCodeModelView item = new RateCodeModelView
             {
                 Id = -3,
                 Updateable = UpdateType.Upsert,
