@@ -45,46 +45,43 @@ namespace GenBOE.ActionLogic.Common
 		/// Validate the Skill Mix Table for any errors
 		/// </summary>
 		/// <param name="skillMixModels">SkillMix Models</param>
-		/// <param name="workspaceCreationDate">The workspace creation date</param>
 		/// <returns>A collection of any validation errors/messages</returns>
-		public static ICollection<string> ValidateSkillMixTable(ICollection<SkillMixModelView> skillMixModels, DateTime? workspaceCreationDate)
+		public static ICollection<string> ValidateSkillMixTable(ICollection<SkillMixModelView> skillMixModels)
 		{
 			ICollection<string> errorMessages = new Collection<string>();
 
-			if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(workspaceCreationDate))
+			IList<SkillMixModelView> skillMixRowsEmptyBoeMixWhenIncluded = skillMixModels.Where(x => x.Included && !x.BOESkillMix.HasValue).ToList();
+			IList<SkillMixModelView> skillMixRowsInvalidBoeMixWhenIncluded = skillMixModels.Where(x => x.Included && x.BOESkillMix.HasValue && x.BOESkillMix.Value <= 0).ToList();
+			IList<SkillMixModelView> skillMixRowsExceedChars = skillMixModels.Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
+			bool doesEmptyNullCurrentResourceExist = skillMixModels.Any(x => string.IsNullOrEmpty(x.ResourceNew) && x.Included);
+			decimal totalSKillMixRowsBOESkillMix = skillMixModels.Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
+
+			// This check applies to both Space and RMS
+			if (doesEmptyNullCurrentResourceExist)
 			{
-				IList<SkillMixModelView> skillMixRowsEmptyBoeMixWhenIncluded = skillMixModels.Where(x => x.Included && !x.BOESkillMix.HasValue).ToList();
-				IList<SkillMixModelView> skillMixRowsInvalidBoeMixWhenIncluded = skillMixModels.Where(x => x.Included && x.BOESkillMix.HasValue && x.BOESkillMix.Value <= 0).ToList();
-				IList<SkillMixModelView> skillMixRowsExceedChars = skillMixModels.Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
-				bool doesEmptyNullCurrentResourceExist = skillMixModels.Any(x => string.IsNullOrEmpty(x.ResourceNew) && x.Included);
-				decimal totalSKillMixRowsBOESkillMix = skillMixModels.Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
-
-				// This check applies to both Space and RMS
-				if (doesEmptyNullCurrentResourceExist)
-				{
-					errorMessages.Add("Current Skill Mix Table: Included cannot be set to 'Yes' for an empty/null Current Resource.");
-				}
-
-				foreach (string skillMixResourceNew in skillMixRowsEmptyBoeMixWhenIncluded.Select(x => x.ResourceNew))
-				{
-					errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix is missing for {0}.", skillMixResourceNew));
-				}
-
-				foreach (string skillMixResourceNew in skillMixRowsInvalidBoeMixWhenIncluded.Select(x => x.ResourceNew))
-				{
-					errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix has invalid value for {0}.", skillMixResourceNew));
-				}
-
-				if (totalSKillMixRowsBOESkillMix != 100)
-				{
-					errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix total must be 100%"));
-				}
-
-				foreach (string skillMixResourceNew in skillMixRowsExceedChars.Select(x => x.ResourceNew))
-				{
-					errorMessages.Add(string.Format("Current Skill Mix Table: The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceNew, 255));
-				}
+				errorMessages.Add("Current Skill Mix Table: Included cannot be set to 'Yes' for an empty/null Current Resource.");
 			}
+
+			foreach (string skillMixResourceNew in skillMixRowsEmptyBoeMixWhenIncluded.Select(x => x.ResourceNew))
+			{
+				errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix is missing for {0}.", skillMixResourceNew));
+			}
+
+			foreach (string skillMixResourceNew in skillMixRowsInvalidBoeMixWhenIncluded.Select(x => x.ResourceNew))
+			{
+				errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix has invalid value for {0}.", skillMixResourceNew));
+			}
+
+			if (totalSKillMixRowsBOESkillMix != 100)
+			{
+				errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix total must be 100%"));
+			}
+
+			foreach (string skillMixResourceNew in skillMixRowsExceedChars.Select(x => x.ResourceNew))
+			{
+				errorMessages.Add(string.Format("Current Skill Mix Table: The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceNew, 255));
+			}
+			
 
 			return errorMessages;
 		}
@@ -94,60 +91,55 @@ namespace GenBOE.ActionLogic.Common
 		/// </summary>
 		/// <param name="commonDisclosures">Common Disclosures</param>
 		/// <param name="skillMixModels">SkillMix Models</param>
-		/// <param name="workspaceCreationDate">The workspace creation date</param>
 		/// <returns>A collection of validation errors/messages</returns>
-		public static ICollection<string> ValidateCommonDisclosureSkillMixTable(ICollection<CommonDisclosureModelView> commonDisclosures, ICollection<SkillMixModelView> skillMixModels, DateTime? workspaceCreationDate)
+		public static ICollection<string> ValidateCommonDisclosureSkillMixTable(ICollection<CommonDisclosureModelView> commonDisclosures, ICollection<SkillMixModelView> skillMixModels)
 		{
 			ICollection<string> errorMessages = new Collection<string>();
 
-			if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(workspaceCreationDate))
+			IList<CommonDisclosureModelView> commonDisclosureRowsExceedChars = commonDisclosures
+																			.Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
+			IList<CommonDisclosureModelView> commonDisclosureRowsEmptyBoeSkillMixWhenIncluded = commonDisclosures
+																			.Where(x => x.Included && !x.BOESkillMix.HasValue).ToList();
+			IList<CommonDisclosureModelView> commonDisclosureRowsInvalidBoeSkillMixWhenIncluded = commonDisclosures
+																			.Where(x => x.Included && x.BOESkillMix.HasValue && x.BOESkillMix.Value <= 0).ToList();
+			IList<CommonDisclosureModelView> commonDisclosureIncludedHasTrueValue = commonDisclosures.Where(x => x.Included).ToList();
+			decimal totalCommonDisclosureRowsBOESkillMix = commonDisclosures.Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
+			IList<CommonDisclosureModelView> commonDisclosureHasBRC = commonDisclosures
+																			.Where(x => string.IsNullOrEmpty(x.BusinessResourceID)).ToList();
+
+			foreach (string skillMixResourceNew in commonDisclosureRowsExceedChars.Select(x => x.ResourceID))
 			{
-				IList<CommonDisclosureModelView> commonDisclosureRowsExceedChars = commonDisclosures
-																				.Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
-				IList<CommonDisclosureModelView> commonDisclosureRowsEmptyBoeSkillMixWhenIncluded = commonDisclosures
-																				.Where(x => x.Included && !x.BOESkillMix.HasValue).ToList();
-				IList<CommonDisclosureModelView> commonDisclosureRowsInvalidBoeSkillMixWhenIncluded = commonDisclosures
-																				.Where(x => x.Included && x.BOESkillMix.HasValue && x.BOESkillMix.Value <= 0).ToList();
-				IList<CommonDisclosureModelView> commonDisclosureIncludedHasTrueValue = commonDisclosures.Where(x => x.Included).ToList();
-				decimal totalCommonDisclosureRowsBOESkillMix = commonDisclosures.Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
-				IList<CommonDisclosureModelView> commonDisclosureHasBRC = commonDisclosures
-																				.Where(x => string.IsNullOrEmpty(x.BusinessResourceID)).ToList();
-
-				foreach (string skillMixResourceNew in commonDisclosureRowsExceedChars.Select(x => x.ResourceID))
-				{
-					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceNew, 255));
-				}
-
-				foreach (string skillMixResourceNew in commonDisclosureRowsEmptyBoeSkillMixWhenIncluded.Select(x => x.ResourceID))
-				{
-					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BOE Skill Mix is missing for {0}.", skillMixResourceNew));
-				}
-
-				foreach (string skillMixResourceNew in commonDisclosureRowsInvalidBoeSkillMixWhenIncluded.Select(x => x.ResourceID))
-				{
-					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BOE skill Mix has invalid value for {0}.", skillMixResourceNew));
-				}
-
-				if (commonDisclosureIncludedHasTrueValue.Count <= 0)
-				{
-					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: At least one Resource has to be included"));
-				}
-
-				if (totalCommonDisclosureRowsBOESkillMix != 100)
-				{
-					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BOE Skill Mix total must be 100%"));
-				}
-
-				foreach (string commonDisclosureRow in commonDisclosureHasBRC.Select(x => x.ResourceID).Distinct())
-				{
-					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BRC must be selected for each occurance of Resource {0}.", commonDisclosureRow));
-				}
-
-				ValidateResourceAndBRCCombos(commonDisclosures, errorMessages);
-
-				ValidateHistoricalHours(commonDisclosures, skillMixModels, errorMessages);
-
+				errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceNew, 255));
 			}
+
+			foreach (string skillMixResourceNew in commonDisclosureRowsEmptyBoeSkillMixWhenIncluded.Select(x => x.ResourceID))
+			{
+				errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BOE Skill Mix is missing for {0}.", skillMixResourceNew));
+			}
+
+			foreach (string skillMixResourceNew in commonDisclosureRowsInvalidBoeSkillMixWhenIncluded.Select(x => x.ResourceID))
+			{
+				errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BOE skill Mix has invalid value for {0}.", skillMixResourceNew));
+			}
+
+			if (commonDisclosureIncludedHasTrueValue.Count <= 0)
+			{
+				errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: At least one Resource has to be included"));
+			}
+
+			if (totalCommonDisclosureRowsBOESkillMix != 100)
+			{
+				errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BOE Skill Mix total must be 100%"));
+			}
+
+			foreach (string commonDisclosureRow in commonDisclosureHasBRC.Select(x => x.ResourceID).Distinct())
+			{
+				errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BRC must be selected for each occurance of Resource {0}.", commonDisclosureRow));
+			}
+
+			ValidateResourceAndBRCCombos(commonDisclosures, errorMessages);
+
+			ValidateHistoricalHours(commonDisclosures, skillMixModels, errorMessages);
 
 			return errorMessages;
 		}

@@ -11,6 +11,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
+	using System.Threading.Tasks;
 	using Common;
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.IO.Import;
@@ -148,7 +149,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
 			ws.LoadTaskElementRTEData();
 
 			// Let's begin the validation....
-			inBOE.
 
 			// validate BOE Date is either within the CLIN Date 
 			if (inBOE.Clin != null)
@@ -229,8 +229,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
 				this._ValidateODC(inBOE, ws, ValidationBOE, ref odcTasks, ref OdcTaskElementMessages, odcType, ref OdcTypeMessages, ref TotalLaborSpreadValue);
 			}
 
-
-
 			// Valid Comments and Approvals
 			// validate that all boe comments have a response
 			bool boeCommentResponseValidator = this._BOECommentsResponsesValidator.AllBOEAuthorCommentsResponses(inBOE.Id);
@@ -243,14 +241,26 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.IsUsingTM))
 			{
-				inBOE.TaskElements.ForEach(x =>
+				inBOE.TaskElements.ForEach(task =>
 				{
 					ICollection<string> errorMessages = new List<string>();
-					errorMessages = ActionLogicUtility.ValidateSkillMixTable(x.SkillMixTable, ws.CreationDate);
+					errorMessages = ActionLogicUtility.ValidateSkillMixTable(task.SkillMixTable);
 
 					if (Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
 					{
-						errorMessages.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(x.CommonDisclosureTable, x.SkillMixTable, ws.CreationDate));
+						errorMessages.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(task.CommonDisclosureTable, task.SkillMixTable));
+					}
+
+					if (errorMessages.Any()) 
+					{
+						ValidationBOETasks taskValidation = ValidationBOE.Tasks.FirstOrDefault(x => x.TaskId == task.Id);
+						if (taskValidation == null)
+						{
+							taskValidation = new ValidationBOETasks() { TaskId = task.Id, TaskMessage = $"Task: {task.Id} {task.TaskTitle}", TaskElementDetails = new ValidationBOETaskElementDetails() { TaskElementDetailsHeader = "Task Element Details" } };
+						}
+
+						taskValidation.TaskElementDetails.TaskElementDetailValidationMessages.AddRange(errorMessages);
+						ValidationBOE.Tasks.Add(taskValidation);
 					}
 				});
 			}
