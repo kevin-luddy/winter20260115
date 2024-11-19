@@ -882,16 +882,19 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 			#endregion
 
-			decimal historicalHoursTotals = 0;
-
-			foreach (SkillMixModelView row in taskElement.SkillMixTable)
+			if (Utilities.IsSkillMixEnabledForSystem)
 			{
-				historicalHoursTotals += row.HistoricalHours;
-			}
+				decimal historicalHoursTotals = 0;
 
-			if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
-			{
-				validationErrors.Add(new ValidationMessage(string.Format("Skill Mix Total Historical Hours do not match the sum of the Total Relevant Hours.")));
+				foreach (SkillMixModelView row in taskElement.SkillMixTable)
+				{
+					historicalHoursTotals += row.HistoricalHours;
+				}
+
+				if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
+				{
+					validationErrors.Add(new ValidationMessage(string.Format("Skill Mix Total Historical Hours do not match the sum of the Total Relevant Hours.")));
+				}
 			}
 
 			return validationErrors;
