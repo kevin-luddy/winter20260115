@@ -39,6 +39,7 @@ namespace GenBOE.Dtos
             this.IsAddOrDelete = null;
             this.LaborTypeOrder = 2000; // New resource types should be put at bottom of order
             this.BusinessResourceCodeID = 0;
+			this.OriginalID = 0;
         }
 
 		/*
@@ -69,6 +70,7 @@ namespace GenBOE.Dtos
                 this.TieredPercentage = inBOELaborType.TieredPercentage;
                 this.LaborTypeOrder = inBOELaborType.LaborTypeOrder;
                 this.BusinessResourceCodeID = inBOELaborType.BusinessResourceCodeID;
+				this.OriginalID = inBOELaborType.OriginalID;
             }
         }
 
@@ -312,6 +314,11 @@ namespace GenBOE.Dtos
         /// The BRC Resource ID
         /// </summary>
         public int? BusinessResourceCodeID { get; set; }
+
+		/// <summary>
+		/// The Original ID, used for BRCs
+		/// </summary>
+		public int OriginalID { get; set; }
 	}
 
 	public static class BOELaborTypeExtensions

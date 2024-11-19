@@ -204,7 +204,7 @@ namespace GenBOE.Web.Controllers
 			};
 
 			this._BoeLaborControllerLogic.GetMetricSearchDialogParameters(modelView);
-			
+
 			bool missingBRCs = false;
 			if (Utilities.IsBRCEnabledForWorkspace(workspace) && boe.EndDate >= Utilities.OneLmxStartDate)
 			{
@@ -595,7 +595,7 @@ namespace GenBOE.Web.Controllers
 					ViewData["EnableCommonDisclosure"] = true;
 				}
 				//check if ws contains BRCs, if not, mark moq equation as read only
-				ICollection <ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true, workspace);
+				ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true, workspace);
 				if (resources.Count == 0)
 				{
 					ViewData["READONLY"] = true;
@@ -1816,7 +1816,7 @@ namespace GenBOE.Web.Controllers
 				ICollection<ImportLaborTypeModelView> laborTypesToUpdate = (from i in importResults
 																			where i.ImportTypes.Contains((int)LaborTypeImportResult.UpdateLaborType)
 																			select i).ToList();
-				
+
 				ICollection<ResourceDTO> originalResourceList = workspace.ResourcesForWsResourceListId.ToList();
 
 				foreach (ImportLaborTypeModelView laborTypeToUpdate in laborTypesToUpdate)

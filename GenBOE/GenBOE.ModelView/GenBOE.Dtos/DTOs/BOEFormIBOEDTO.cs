@@ -7,8 +7,9 @@
 namespace GenBOE.Dtos
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
-    using IES.Common;
+	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
+	using IES.Common;
 
     [ExcludeFromCodeCoverage]
     [Serializable()]
@@ -37,5 +38,29 @@ namespace GenBOE.Dtos
                 return BOEFormType.IBOE;
             }
         }
-    }
+
+		#region NLF-only fields
+
+		/// <summary>
+		/// Workspace Proposal Title - used when there is no IBOE Proposal Title
+		/// </summary>
+		public string WorkspaceProposalTitle { get; set; }
+
+		/// <summary>
+		/// Workspace RFP Number - used when there is no IBOE Proposal Title
+		/// </summary>
+		public string WorkspaceRfpNumber { get; set; }
+
+		/// <summary>
+		/// The selected IWTA Resource Names
+		/// </summary>
+		public ICollection<string> Resources { get; set; }
+
+		/// <summary>
+		/// Collection of clin-contract xrefs
+		/// </summary>
+		public ICollection<ClinContractDto> ClinContractXrefs { get; set; }
+
+		#endregion NLF-only fields
+	}
 }

@@ -6,15 +6,17 @@
 
 namespace GenBOE.Tests.ActionLogic.ControllerLogic
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using GenBOE.ActionLogic.ControllerLogic;
-    using GenBOE.Dtos;
-    using IES.Common;
-    using IES.Common.Exceptions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using GenBOE.ActionLogic.ControllerLogic;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
+	using IES.Common;
+	using IES.Common.Exceptions;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using System.Collections.Generic;
+	using System.Linq;
 
-    [TestClass]
+	[TestClass]
     public class GenboeControllerLogicTest : MOQObject
     {
         /// <summary>
@@ -125,5 +127,5 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             Assert.IsTrue(messages.None());
         }
-    }
+	}
 }

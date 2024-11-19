@@ -32,5 +32,12 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="boeFormId">The boe Form Id to not include when finding the in-use resources.</param>
         /// <returns>A list of resource ids used in a workspace.</returns>
         ICollection<int> CurrentlyUsedResources(int wsId, int boeFormId);
-    }
+
+		/// <summary>
+		/// Get IBOEs for current workspaces with the given tracking number
+		/// </summary>
+		/// <param name="ptmTrackingNumber">PTM Tracking Number</param>
+		/// <returns>collection of IBOE DTOs</returns>
+		ICollection<BOEFormIBOEDTO> GetByTrackingNumber(string ptmTrackingNumber);
+	}
 }

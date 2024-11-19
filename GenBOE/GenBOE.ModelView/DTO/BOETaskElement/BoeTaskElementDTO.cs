@@ -143,6 +143,9 @@ namespace GenBOE.DataBridge.DTO
         // The MOQ Type
         public string MOQTypeName { get; set; }
 
+		// The Total Relevant Hours
+		public decimal MOQTotalRelevantHours { get; set; }
+
         // the labor types associated with a task element
         public Collection<ResourceTypeDto> taskElementLabors { get; set; }
 

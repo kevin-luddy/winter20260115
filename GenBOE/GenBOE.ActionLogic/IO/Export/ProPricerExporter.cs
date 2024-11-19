@@ -24,7 +24,6 @@ namespace GenBOE.ActionLogic.IO.Export
 	using IES.Common;
 	using IES.Common.Compression;
 	using IES.Common.Exceptions;
-	using Microsoft.Practices.ObjectBuilder2;
 
 	/// <summary>
 	/// Exports all EOC elements to ProPricer
@@ -103,6 +102,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		public string ExportReport(ProPricerDTO inProPricer, string inZipPathFile, FullWorkspace inWorkspace)
 		{
 			PpDataReadyForExport ppDataToExport = this.ExportProPricer(inProPricer, inWorkspace);
+
 
 			// create the task data export stream
 			string taskData = this.CreateDataOutputString(ppDataToExport.TaskData);
@@ -417,7 +417,6 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="offloading">if set to <c>true</c> [offloading].</param>
 		/// <param name="has1LMXResources">if set to <c>true</c>, we need to account for splitting labor type for 1LMX</param>
 		/// <param name="workspaceShortname">Workspace shortname</param>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		private void ProcessTaskElements(WsLevelInputsForExport wsLevelData, BoeLevelExportData inputsForExport, Collection<BoeTaskElementDTO> taskElements,
 			ElementOfCostType elementOfCost, Collection<int> resourceIDs, bool isUsingEquivalentPerson, bool offloading, bool has1LMXResources, string workspaceShortname)
 		{
@@ -425,28 +424,11 @@ namespace GenBOE.ActionLogic.IO.Export
 
 			IDictionary<int, string> resourceIdToSegmentRegion = wsLevelData.Resources.ToDictionary(r => r.Id, d => d.SegRegion);
 
-			bool shouldSeparateBRC = false;
-			if (Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
-			{
-				foreach (ProPricerTasks taskField in wsLevelData.PPInputsToExport.ProPricerTasks)
-				{
-					switch (taskField.Task)
-					{
-						case ProPricerField_Task.ResourceID:
-						case ProPricerField_Task.ResourceSegmentRegion:
-						case ProPricerField_Task.ProjMapResourceSegmentRegion:
-							shouldSeparateBRC = true;
-							break;
-						default:
-							break;
-					}
-				}
-			}
-
 			if (!inputsForExport.MultiBoe)
 			{
 				// the data within the BOE Task Element will be part of the Resource Cost/Hours file
 				int startingIndex = -1;
+
 				foreach (BoeTaskElementDTO boeTask in taskElements)
 				{
 					// do not export to ProPricer if task doesn't have any total hours or cost or if there no offsets
@@ -474,12 +456,12 @@ namespace GenBOE.ActionLogic.IO.Export
 						}
 
 						IDictionary<int, string> laborTypeIdToProPricerIdMappings = this.GenerateTaskRow(wsLevelData, inputsForExport, inputsForExport.Clin, inputsForExport.Wbs,
-							elementOfCost, resourcesSplitforBrc, boeTask, resourcesSplitforBrc.Any(x => x.IsOffloaded), workspaceShortname, shouldSeparateBRC);
+							elementOfCost, resourcesSplitforBrc, boeTask, resourcesSplitforBrc.Any(x => x.IsOffloaded), workspaceShortname);
 
 						foreach (ResourceTypeDto labor in resourcesSplitforBrc)
 						{
 							this.GenerateResourceRow(wsLevelData, inputsForExport, inputsForExport.Clin, inputsForExport.Wbs, resourceIDs, boeTask,
-								laborTypeIdToProPricerIdMappings, labor, isUsingEquivalentPerson, labor.IsOffloaded, workspaceShortname, shouldSeparateBRC);
+								laborTypeIdToProPricerIdMappings, labor, isUsingEquivalentPerson, labor.IsOffloaded, workspaceShortname);
 						}
 					}
 				}
@@ -517,7 +499,7 @@ namespace GenBOE.ActionLogic.IO.Export
 							WbsDTO resourceWbs = wsLevelData.Wbses.FirstOrDefault(i => i.Id == labor.WBSID.GetValueOrDefault(-1));
 
 							IDictionary<int, string> mappings = this.GenerateTaskRow(wsLevelData, inputsForExport, resourceClin,
-								resourceWbs, elementOfCost, new List<ResourceTypeDto>() { labor }, boeTask, labor.IsOffloaded, workspaceShortname, shouldSeparateBRC);
+								resourceWbs, elementOfCost, new List<ResourceTypeDto>() { labor }, boeTask, labor.IsOffloaded, workspaceShortname);
 							// merge the mappings
 							foreach (KeyValuePair<int, string> kvp in mappings)
 							{
@@ -534,7 +516,7 @@ namespace GenBOE.ActionLogic.IO.Export
 							WbsDTO resourceWbs = wsLevelData.Wbses.FirstOrDefault(i => i.Id == labor.WBSID.GetValueOrDefault(-1));
 
 							this.GenerateResourceRow(wsLevelData, inputsForExport, resourceClin, resourceWbs, resourceIDs,
-								boeTask, laborTypeIdToProPricerIdMappings, labor, isUsingEquivalentPerson, labor.IsOffloaded, workspaceShortname, shouldSeparateBRC);
+								boeTask, laborTypeIdToProPricerIdMappings, labor, isUsingEquivalentPerson, labor.IsOffloaded, workspaceShortname);
 						}
 					}
 				}
@@ -1042,128 +1024,37 @@ namespace GenBOE.ActionLogic.IO.Export
 		[SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals")]
 		private IDictionary<int, string> GenerateTaskRow(WsLevelInputsForExport wsLevelData, BoeLevelExportData inputsForExport, ClinDTO clin, WbsDTO wbs,
 			ElementOfCostType elementOfCost, List<ResourceTypeDto> taskResourcesEntriesForElementOfCost,
-			BoeTaskElementDTO boeTask, bool isResourceOffloaded, string workspaceShortname, bool shouldSeparateBRC)
+			BoeTaskElementDTO boeTask, bool isResourceOffloaded, string workspaceShortname)
 		{
+			// Key - labor type ID, value - ProPricer Task ID
 			IDictionary<int, string> laborTypeIdToProPricerIdMappings = new Dictionary<int, string>();
-			
-			string proPricerId = null;
+
+			// Pseudocode for updated task row generation - PROPH-2463
+			// Generate the line WITHOUT the ProPricer ID in front
+			// Keep track of the last generated line and previous generated task ID outside of this method, do a compare of the line
+			//	If the same line, use (set in the dictionary) the previous line's ProPricer ID
+			//	If different, increment the correct ProPricer ID, prepend to the line, add the entire line to the correct list of lines,
+			//	  and reset the previous generated task ID and previous generated line with the current values
+			// Use the isResourceOffloaded flag for the if check (see below)
+
 			bool firstResourceTypeEntry = true;
-			int previousResourceTypeId = 0;
+			string proPricerId = null;
 
-				/*
-				 * Loop over the list of resource type entries (for the current task) that correspond to the designated Element of Cost (input parameter).
-				 * 
-				 */
+			// Default values for the previously generated task row, used for comparing and incrementing the task ID as needed
+			string previousGeneratedTaskRow = string.Empty;
+			string previousGeneratedTaskId = string.Empty;
+			int previousLaborTypeId = -1;
 
-				// Bool - Should the task increment?
-				// Int - The previous Business Resource Code ID
-				Tuple<bool, int> shouldTaskIncrementAndPrevID = Tuple.Create(true, 0);
+			/*
+             * Loop over the list of resource type entries (for the current task) that correspond to the designated Element of Cost (input parameter).
+             * 
+             */
 			foreach (ResourceTypeDto resourceTypeEntry in taskResourcesEntriesForElementOfCost)
 			{
 				// ProjectMap only wants the task exported once whereas everyone else wants it 1:1 with the number of ResourceTypes inside it
 				bool generateNewTask = firstResourceTypeEntry || !wsLevelData.IsProjectMapWorkspace;
 
-				// Not generating new Task if this is a split resource for 1LMX
-				//keep this for brc in general
-				if (!shouldSeparateBRC && generateNewTask && previousResourceTypeId == resourceTypeEntry.Id)
-				{
-					generateNewTask = false;
-				}
-
-				if (generateNewTask)
-				{
-					// Pro Pricer Task ID. This may or may not be selected, but we may need to keep track of it for Resources too
-					string taskIDString = string.Empty;
-
-					shouldTaskIncrementAndPrevID = ShouldTaskIncrement(resourceTypeEntry, shouldTaskIncrementAndPrevID.Item2, workspaceShortname, shouldSeparateBRC);
-
-					int incrementCount = 0;
-					if (elementOfCost == ElementOfCostType.LMLabor)
-					{
-						taskIDString = ISGS_LABOR_LIDN;
-
-						if (shouldTaskIncrementAndPrevID.Item1)
-						{
-							incrementCount = ++wsLevelData.ItemCounters.LaborId;
-						}
-						else
-						{
-							incrementCount = wsLevelData.ItemCounters.LaborId;
-						}
-					}
-					else if (elementOfCost == ElementOfCostType.IWTA)
-					{
-						taskIDString = IWTA_IIDN;
-
-						if (shouldTaskIncrementAndPrevID.Item1)
-						{
-							incrementCount = ++wsLevelData.ItemCounters.IwtaId;
-						}
-						else
-						{
-							incrementCount = wsLevelData.ItemCounters.IwtaId;
-						}
-					}
-					else if (elementOfCost == ElementOfCostType.Sub)
-					{
-						taskIDString = SUBCONTRACTOR_SIDN;
-
-						if (shouldTaskIncrementAndPrevID.Item1)
-						{
-							incrementCount = ++wsLevelData.ItemCounters.SubId;
-						}
-						else
-						{
-							incrementCount = wsLevelData.ItemCounters.SubId;
-						}
-					}
-					else if (elementOfCost == ElementOfCostType.Materials)
-					{
-						taskIDString = MATERIAL_MIDN;
-
-						if (shouldTaskIncrementAndPrevID.Item1)
-						{
-							incrementCount = ++wsLevelData.ItemCounters.MaterialId;
-						}
-						else
-						{
-							incrementCount = wsLevelData.ItemCounters.MaterialId;
-						}
-					}
-					else if (elementOfCost == ElementOfCostType.Travel)
-					{
-						taskIDString = TRAVEL_TIDN;
-
-						if (shouldTaskIncrementAndPrevID.Item1)
-						{
-							incrementCount = ++wsLevelData.ItemCounters.TravelId;
-						}
-						else
-						{
-							incrementCount = wsLevelData.ItemCounters.TravelId;
-						}
-					}
-					else if (elementOfCost == ElementOfCostType.ODC)
-					{
-						taskIDString = ODC_OIDN;
-
-						if (shouldTaskIncrementAndPrevID.Item1)
-						{
-							incrementCount = ++wsLevelData.ItemCounters.OdcId;
-						}
-						else
-						{
-							incrementCount = wsLevelData.ItemCounters.OdcId;
-						}
-					}
-
-					proPricerId = taskIDString + incrementCount.ToString(FORMAT);
-				}
-
-				//create mapping based on if we generated a new task for the brc or not
-				int id = (int)(shouldSeparateBRC ? resourceTypeEntry.ResourceID : resourceTypeEntry.Id);
-				laborTypeIdToProPricerIdMappings[id] = proPricerId;
-
+				// Generate the task line
 				if (generateNewTask)
 				{
 					firstResourceTypeEntry = false;
@@ -1197,9 +1088,10 @@ namespace GenBOE.ActionLogic.IO.Export
 							case ProPricerField_Task.CLINTitle:
 								newTaskRow.Append(DOUBLE_QUOTE).Append((clin == null ? "" : clin.ClinTitle.RemoveCarriageReturns())).Append(DOUBLE_QUOTE).Append(END_FIELD);
 								break;
-							case ProPricerField_Task.ProPricerTaskID:
+							// Below is removed as of PROPH-2463, leaving this commented here just in case
+							/* case ProPricerField_Task.ProPricerTaskID:
 								newTaskRow.Append(proPricerId).Append(END_FIELD);
-								break;
+								break; */
 							case ProPricerField_Task.TaskTitle:
 								newTaskRow.Append(DOUBLE_QUOTE).Append(boeTask.TaskTitle.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
 								break;
@@ -1352,17 +1244,76 @@ namespace GenBOE.ActionLogic.IO.Export
 						}
 					}
 
-					if (isResourceOffloaded)
+					// If the new task row is the same as the previous line, use the previous line's ProPricer ID and do not generate a new row
+					// Otherwise, increment the correct ProPricer ID, prepend to the line, and add the entire line to the correct list of lines
+					if ((newTaskRow.ToString()).Equals(previousGeneratedTaskRow) && previousLaborTypeId == resourceTypeEntry.OriginalID)
 					{
-						wsLevelData.PpDataToBeExported.OffloadTaskData.Add(newTaskRow.ToString());
+						laborTypeIdToProPricerIdMappings[resourceTypeEntry.Id] = previousGeneratedTaskId;
 					}
 					else
 					{
-						wsLevelData.PpDataToBeExported.TaskData.Add(newTaskRow.ToString());
+						// Increment the correct ProPricer ID
+						string taskIDString = string.Empty;
+						int incrementCount = 0;
+
+						if (elementOfCost == ElementOfCostType.LMLabor)
+						{
+							taskIDString = ISGS_LABOR_LIDN;
+							incrementCount = ++wsLevelData.ItemCounters.LaborId;
+						}
+						else if (elementOfCost == ElementOfCostType.IWTA)
+						{
+							taskIDString = IWTA_IIDN;
+							incrementCount = ++wsLevelData.ItemCounters.IwtaId;
+						}
+						else if (elementOfCost == ElementOfCostType.Sub)
+						{
+							taskIDString = SUBCONTRACTOR_SIDN;
+							incrementCount = ++wsLevelData.ItemCounters.SubId;
+						}
+						else if (elementOfCost == ElementOfCostType.Materials)
+						{
+							taskIDString = MATERIAL_MIDN;
+							incrementCount = ++wsLevelData.ItemCounters.MaterialId;
+						}
+						else if (elementOfCost == ElementOfCostType.Travel)
+						{
+							taskIDString = TRAVEL_TIDN;
+							incrementCount = ++wsLevelData.ItemCounters.TravelId;
+						}
+						else if (elementOfCost == ElementOfCostType.ODC)
+						{
+							taskIDString = ODC_OIDN;
+							incrementCount = ++wsLevelData.ItemCounters.OdcId;
+						}
+
+						proPricerId = taskIDString + incrementCount.ToString(FORMAT);
+
+						laborTypeIdToProPricerIdMappings[resourceTypeEntry.Id] = proPricerId;
+
+						// Reset the previously generated line with the current value (before we append the ProPricer ID)
+						previousGeneratedTaskRow = newTaskRow.ToString();
+
+						// Prepend to the line
+						newTaskRow.Insert(0, proPricerId + END_FIELD);
+
+						// Add the entire line to the correct list of lines
+						// This is where the row generating happens
+						if (isResourceOffloaded)
+						{
+							wsLevelData.PpDataToBeExported.OffloadTaskData.Add(newTaskRow.ToString());
+						}
+						else
+						{
+							wsLevelData.PpDataToBeExported.TaskData.Add(newTaskRow.ToString());
+						}
+
+						// Reset the previously generated task ID with this current value
+						previousGeneratedTaskId = proPricerId;
 					}
 				}
 
-				previousResourceTypeId = resourceTypeEntry.Id;
+				previousLaborTypeId = resourceTypeEntry.Id;
 			}
 
 			return laborTypeIdToProPricerIdMappings;
@@ -1409,44 +1360,6 @@ namespace GenBOE.ActionLogic.IO.Export
 		}
 
 		/// <summary>
-		/// Should the task number increment?
-		/// </summary>
-		/// <param name="resourceTypeEntry">The resource type entry</param>
-		/// <param name="previousBusinessResourceCodeID">The Business Resource Code ID in the previous row</param>
-		/// <param name="workspaceShortname">Workspace shortname</param>
-		/// <returns>A tuple, denoting if the task number should increment and the previous BRC ID</returns>
-		private static Tuple<bool, int> ShouldTaskIncrement(ResourceTypeDto resourceTypeEntry, int previousBusinessResourceCodeID, string workspaceShortname, bool shouldSeparateBRC)
-		{
-			Tuple<bool, int> shouldTaskIncrementResult = Tuple.Create(true, previousBusinessResourceCodeID);
-
-			if (Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
-			{
-				if (shouldSeparateBRC)
-				{
-					shouldTaskIncrementResult = Tuple.Create(true, previousBusinessResourceCodeID);
-				}
-				// If this is split between a BRC and current resource, we should flag it to not increment for the next 
-				else if (resourceTypeEntry.StartDate < Utilities.OneLmxStartDate && resourceTypeEntry.EndDate < Utilities.OneLmxStartDate
-					&& resourceTypeEntry.BusinessResourceCodeID.HasValue)
-				{
-					shouldTaskIncrementResult = Tuple.Create(true, resourceTypeEntry.BusinessResourceCodeID.Value);
-				}
-				// After 1LMX start date and the previous row's BRC ID matches means we have a shared resource
-				else if (resourceTypeEntry.StartDate >= Utilities.OneLmxStartDate && resourceTypeEntry.BusinessResourceCodeID.HasValue
-					&& previousBusinessResourceCodeID == resourceTypeEntry.BusinessResourceCodeID.Value)
-				{
-					shouldTaskIncrementResult = Tuple.Create(false, previousBusinessResourceCodeID);
-				}
-				else
-				{
-					shouldTaskIncrementResult = Tuple.Create(true, previousBusinessResourceCodeID);
-				}
-			}
-
-			return shouldTaskIncrementResult;
-		}
-
-		/// <summary>
 		/// Gets Task's MOQ Type for the export
 		/// </summary>
 		/// <param name="wsLevelData">WS Level Data</param>
@@ -1483,7 +1396,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		private void GenerateResourceRow(WsLevelInputsForExport wsLevelData, BoeLevelExportData inputsForExport, ClinDTO clin, WbsDTO wbs,
 			Collection<int> inResourceIDs, BoeTaskElementDTO boeTask,
-			IDictionary<int, string> laborTypeIdToProPricerIdMappings, ResourceTypeDto labor, bool isUsingEquivalentPerson, bool isResourceOffloaded, string workspaceShortname, bool shouldSeparateBRC)
+			IDictionary<int, string> laborTypeIdToProPricerIdMappings, ResourceTypeDto labor, bool isUsingEquivalentPerson, bool isResourceOffloaded, string workspaceShortname)
 		{
 			// only want to export the resource associated with correct list of Resource IDs. 
 			// For ex, if the labor contained 3 labors: 1 Labor, 1 IWTA, and 1 SubContractor. We only want to export the row that matched the current element of cost
@@ -1533,9 +1446,7 @@ namespace GenBOE.ActionLogic.IO.Export
 							newResourceRow.Append(DOUBLE_QUOTE).Append(perfOrg.PerformingOrgName.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
 							break;
 						case ProPricerField_Resources.ProPricerTaskID:
-							//look up based on if we generated a new task for the BRC or not
-							int id = (int)(shouldSeparateBRC ? labor.ResourceID : labor.Id);
-							newResourceRow.Append(laborTypeIdToProPricerIdMappings[id]).Append(END_FIELD);
+							newResourceRow.Append(laborTypeIdToProPricerIdMappings[labor.Id]).Append(END_FIELD);
 							break;
 						case ProPricerField_Resources.ResourceID:
 						case ProPricerField_Resources.ProjMapInitialResoure:

@@ -551,6 +551,8 @@ namespace GenBOE
                         new ResolvedParameter(typeof(ICommonDataMapper)),
                         new ResolvedParameter(typeof(IRteTemplateDataLoader)),
                         new ResolvedParameter(typeof(IMoqTypeDataLoader)),
+						new ResolvedParameter(typeof(ISkillMixDTOLoader)),
+						new ResolvedParameter(typeof(ICommonDisclosureSMDTODataLoader)),
                         new ResolvedParameter(typeof(IValidateBOE)),
                         new ResolvedParameter(typeof(IMoqTableExporter)),
                         new ResolvedParameter(typeof(IMoqTableImporter)),

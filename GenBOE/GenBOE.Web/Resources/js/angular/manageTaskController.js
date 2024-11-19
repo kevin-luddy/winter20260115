@@ -29,8 +29,6 @@
     $scope.IsDraftOrDraftLocked = false;
     $scope.IsBRCEnabled = ManageTaskModel.IsBRCEnabled; // For CDSM table only show if this BRC Enabaled = true 
     $scope.IsSkillMixEnabled = ManageTaskModel.IsSkillMixEnabled;
-    $scope.loadedTaskData = false;
-    $scope.initialSkillMixLoad = false;
     $scope.skillMixRationale = [];
     $scope.skillMixRationaleLaborTypeSelections = [];
     $scope.commonDisclosureLaborTypeSelections = [];
@@ -42,6 +40,10 @@
 
         $scope.refreshSkillMixTables();
 
+    });
+
+    $scope.$on('SAP_HOURS_CHANGED', function (e) {
+        $scope.refreshSkillMixTables();
     });
 
     $scope.setSkillMixIsUserInput = function (index, value) {
@@ -77,10 +79,92 @@
         $scope.refreshSkillMixTables();
     };
 
-    $scope.refreshSkillMixTables = function () {
-        if (ManageTaskModel.IsSkillMixEnabled && $scope.loadedTaskData) {
+    $scope.addSkillMixRow = function (currentIndex) {
+        var newRow = {
+            ResourceOld: $scope.skillMixRationale.data.SkillMixRows[currentIndex].ResourceOld,
+            ResourceNew: '',
+            HistoricalHours: 0,
+            LaborSkillMix: 0,
+            Included: false,
+            BOESkillMix: 0,
+            ProposedHours: 0,
+            Rationale: ''
+        };
+        $scope.skillMixRationale.data.SkillMixRows.splice(currentIndex + 1, 0, newRow);
+        $scope.refreshSkillMixTables();
+    };
+
+    $scope.deleteSkillMixRow = function (index) {
+        $scope.skillMixRationale.data.SkillMixRows.splice(index, 1);
+        $scope.refreshSkillMixTables();
+    };
+
+    $scope.addCommonDisclosureRow = function (currentIndex) {
+        var newRow = {
+            ResourceID: $scope.skillMixRationale.data.CommonDisclosureRows[currentIndex].ResourceID,
+            BusinessResourceID: '',
+            HistoricalHours: 0,
+            LaborSkillMix: 0,
+            Included: false,
+            BOESkillMix: 0,
+            ProposedHours: 0,
+            Rationale: ''
+        };
+        $scope.skillMixRationale.data.CommonDisclosureRows.splice(currentIndex + 1, 0, newRow);
+        $scope.refreshSkillMixTables();
+    };
+
+    $scope.deleteCommonDisclosureRow = function (index) {
+        $scope.skillMixRationale.data.CommonDisclosureRows.splice(index, 1);
+        $scope.refreshSkillMixTables();
+    };
+
+    $scope.showSkillMixDeleteButton = function (resourceOld) {
+        return $scope.skillMixRationale.data.SkillMixRows.filter(function (row) {
+            return row.ResourceOld === resourceOld;
+        }).length > 1;
+    };
+
+    $scope.checkEmptyString = function (value) {
+        return value === undefined || value === '';
+    };
+
+    $scope.showCommonDisclosureDeleteButton = function (resourceID) {
+        // show Delete if the resource is empty and there are multiple where ResourceID is empty
+        return $scope.checkEmptyString(resourceID) && $scope.skillMixRationale.data.CommonDisclosureRows.filter(function (row) {
+            return $scope.checkEmptyString(row.ResourceID);
+        }).length > 1;
+    };
+
+    $scope.filterResourceSelections = function () {
+        $scope.skillMixRationaleLaborTypeSelections = [...$scope.model.LaborTypesData];
+        $scope.commonDisclosureLaborTypeSelections = [...$scope.model.LaborTypesData];
+
+        // Filter out the proper Labor Type selections by Resource Names.
+        $scope.skillMixRationaleLaborTypeSelections.forEach(function (option, index) {
+            $scope.skillMixRationaleLaborTypeSelections[index] = option.ResourceName || '';
+        });
+
+        $scope.skillMixRationaleLaborTypeSelections = $scope.skillMixRationaleLaborTypeSelections.filter((option, index, self) =>
+            index === self.findIndex((t) => (t === option))
+        );
+
+        // Filter out the proper BRC Selections.
+        $scope.commonDisclosureLaborTypeSelections.forEach(function (option, index) {
+            $scope.commonDisclosureLaborTypeSelections[index] = (option.ResourceInput === undefined || option.ResourceInput === '') ? option.BusinessResourceCodeName || '' : '';
+        });
+
+        $scope.commonDisclosureLaborTypeSelections = $scope.commonDisclosureLaborTypeSelections.filter((option, index, self) =>
+            index === self.findIndex((t) => (t === option))
+        );
+    };
+
+    $scope.refreshSkillMixTables = function (setDirty = true) {
+        if (ManageTaskModel.IsSkillMixEnabled) {
             $(document).trigger("SHOW_LOADING_BOX");
-            $scope.setDirty();
+            if (setDirty) {
+                $scope.setDirty();
+            }
             var data = {
                 boeId: ManageTaskModel.boeId,
                 selectedMoqTypes: $scope.SelectedMoqTypes,
@@ -94,7 +178,6 @@
                 data: data,
                 url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshSkillMixTableAction, '')
             }).then(function (response) {
-                $scope.initialSkillMixLoad = true;
                 $scope.skillMixRationale = response.data;
                 $scope.model.SkillMixData = $scope.skillMixRationale.data.SkillMixRows;
                 $scope.model.CommonDisclosureSkillMixData = $scope.skillMixRationale.data.CommonDisclosureRows;
@@ -1153,25 +1236,7 @@
             }
 
             $scope.tableData = $scope.model.LaborTypesData;
-            $scope.skillMixRationaleLaborTypeSelections = [...$scope.model.LaborTypesData];
-            $scope.commonDisclosureLaborTypeSelections = [...$scope.model.LaborTypesData];
-
-            // Filter out the proper Labor Type selections by Resource Names.
-            $scope.skillMixRationaleLaborTypeSelections.forEach(function (option, index) {
-                $scope.skillMixRationaleLaborTypeSelections[index] = option.ResourceName || '';
-            });
-
-            $scope.skillMixRationaleLaborTypeSelections = $scope.skillMixRationaleLaborTypeSelections.filter((option, index, self) =>
-                index === self.findIndex((t) => (t === option))
-            );
-
-            $scope.commonDisclosureLaborTypeSelections.forEach(function (option, index) {
-                $scope.commonDisclosureLaborTypeSelections[index] = (option.ResourceInput === undefined || option.ResourceInput === '') ? option.BusinessResourceCodeName || '' : '';
-            });
-
-            $scope.commonDisclosureLaborTypeSelections = $scope.commonDisclosureLaborTypeSelections.filter((option, index, self) =>
-                index === self.findIndex((t) => (t === option))
-            );
+            $scope.filterResourceSelections();
 
             angular.forEach($scope.tableData, function (value) {
                 value.NumberOfDuplicates = 0;
@@ -1204,10 +1269,8 @@
                 callback();
             }
 
-            // Set the loaded task data to true, therefore the Moq event knows to refresh skill mix data with the complete data.
-            $scope.loadedTaskData = true;
-
-            $scope.refreshSkillMixTables();
+            // Refreshing the tables to calculate the totals rows for the UI, do not set dirty because there "should" be no changes from rows in DB
+            $scope.refreshSkillMixTables(false);
         }, function errorCallback(response) {
             if (response.data && response.data.MessageList) {
                 $scope.errors = response.data.MessageList;
@@ -1775,26 +1838,7 @@
         }
 
         $scope.checkIfNewRowNeeded(model);
-
-        $scope.skillMixRationaleLaborTypeSelections = [...$scope.model.LaborTypesData];
-        $scope.commonDisclosureLaborTypeSelections = [...$scope.model.LaborTypesData];
-
-        // Filter out the proper Labor Type selections by Resource Names.
-        $scope.skillMixRationaleLaborTypeSelections.forEach(function (option, index) {
-            $scope.skillMixRationaleLaborTypeSelections[index] = option.ResourceName || '';
-        });
-
-        $scope.skillMixRationaleLaborTypeSelections = $scope.skillMixRationaleLaborTypeSelections.filter((option, index, self) =>
-            index === self.findIndex((t) => (t === option))
-        );
-
-        $scope.commonDisclosureLaborTypeSelections.forEach(function (option, index) {
-            $scope.commonDisclosureLaborTypeSelections[index] = (option.ResourceInput === undefined || option.ResourceInput === '') ? option.BusinessResourceCodeName || '' : '';
-        });
-
-        $scope.commonDisclosureLaborTypeSelections = $scope.commonDisclosureLaborTypeSelections.filter((option, index, self) =>
-            index === self.findIndex((t) => (t === option))
-        );
+        $scope.filterResourceSelections();
     };
 
     $scope.businessResourceCodeSelected = function (item, model) {
