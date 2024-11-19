@@ -876,60 +876,17 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 			#endregion
 
-			return validationErrors;
-		}
-
-		/// <summary>
-		/// Add Validation Messages based on usage for Resource and/or BRC
-		/// </summary>
-		/// <param name="taskElement">Task Element DTO</param>
-		/// <param name="validationErrors">Validation Errors</param>
-		/// <param name="workspaceShortname">Workspace shortname</param>
-		private void ValidationsForResourceAndBRC(BoeTaskElementDTO taskElement, ICollection<ValidationMessage> validationErrors, FullWorkspace workspace)
-		{
-			DateTime OneLmxCutOffDate = Utilities.OneLmxStartDate;
-
-			if (taskElement.taskElementLabors != null && taskElement.taskElementLabors.Any())
+			if (taskElement.SkillMixTable != null && taskElement.SkillMixTable.Any())
 			{
-				ICollection<int> resourceIds = taskElement.taskElementLabors.Where(x => x.ResourceID.HasValue).Select(t => t.ResourceID.Value).Distinct().ToList();
-				ICollection<ResourceDTO> resourcesUsed = this._ResourceLoader.GetByIds(resourceIds);
-				ICollection<int> tmResourceIds = resourcesUsed.Where(a => a.SegRegion == WebConstants.SPACE_LEGACY_TM).Select(x => x.Id).ToList();
-
-				foreach (ResourceTypeDto dto in taskElement.taskElementLabors)
-				{
-					if (dto.Updateable != UpdateType.Deleted)
-					{
-						if (Utilities.IsBRCEnabledForWorkspace(workspace.Shortname) && (!dto.ResourceID.HasValue || !tmResourceIds.Contains(dto.ResourceID.Value)))
-						{
-							// do validation per row item
-							if (dto.EndDate.HasValue && dto.EndDate.Value < OneLmxCutOffDate && dto.ResourceID == null && dto.ResourceID == 0)
-							{
-								validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected because End Date is before 1LMX Cutoff Date"));
-							}
-
-							if (dto.StartDate.HasValue && dto.StartDate.Value < OneLmxCutOffDate
-								&& dto.EndDate.HasValue && dto.EndDate.Value > OneLmxCutOffDate
-								&& (dto.ResourceID == null || dto.ResourceID == 0 || dto.BusinessResourceCodeID == null || dto.BusinessResourceCodeID == 0))
-							{
-								validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected when Start Date is before 1LMX Cutoff Date. Element row needs to have Business Resource Code Selected when End Date is after 1LMX Cutoff Date"));
-							}
-
-							if (dto.StartDate.HasValue && dto.StartDate.Value >= OneLmxCutOffDate
-								&& dto.BusinessResourceCodeID == null && dto.BusinessResourceCodeID == 0)
-							{
-								validationErrors.Add(new ValidationMessage("Element row needs Business Resource Code Selected because start date is after 1LMX Cutoff Date"));
-							}
-						}
-						else
-						{
-							if (dto.ResourceID == null || dto.ResourceID == 0)
-							{
-								validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected"));
-							}
-						}
-					}
-				}
+				validationErrors.AddRange(ActionLogicUtility.ValidateSkillMixTable(taskElement.SkillMixTable, ws.CreationDate).Select(x => new ValidationMessage(x)));
 			}
+
+			if (taskElement.CommonDisclosureTable != null && taskElement.CommonDisclosureTable.Any())
+			{
+				validationErrors.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(taskElement.CommonDisclosureTable, taskElement.SkillMixTable, ws.CreationDate).Select(x => new ValidationMessage(x)));
+			}
+
+			return validationErrors;
 		}
 
 		/// <summary>
@@ -1489,340 +1446,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			this.ValidateTaskCustomFields(laborTaskData, ws, inValidationErrors);
 			this.ValidateMoqTypes(ws, laborTaskData, inValidationErrors, moqEquationTotal);
 			this.ValidateMoqTypeTableCustomFields(laborTaskData, ws, inValidationErrors);
-		}
-
-		/// <summary>
-		/// Validate the RTE Size Limit in the Task Element
-		/// </summary>
-		/// <param name="laborTaskData">Task Composite MV</param>
-		/// <param name="ws">Workspace</param>
-		/// <param name="inValidationErrors">Validation Errors collection</param>
-		private void ValidateTaskElementRteSizeLimit(LaborTaskDataModelView laborTaskData, WorkspaceDTO ws, ICollection<ValidationMessage> inValidationErrors)
-		{
-			if (!string.IsNullOrEmpty(laborTaskData.TaskElementData.TaskDescription) && ws.RteSizeLimit < GenBOEUtilities.ConvertHtmlToText(laborTaskData.TaskElementData.TaskDescription).Length)
-			{
-				inValidationErrors.Add(new ValidationMessage("TaskDescription",
-					string.Format("The maximum length of Task Description is {0} characters.", ws.RteSizeLimit.Value)));
-			}
-
-			if (!string.IsNullOrEmpty(laborTaskData.TaskElementData.MOQText) && ws.RteSizeLimit < GenBOEUtilities.ConvertHtmlToText(laborTaskData.TaskElementData.MOQText).Length)
-			{
-				inValidationErrors.Add(new ValidationMessage("MOQText",
-					string.Format("The maximum length of MOQ Rationale is {0} characters.", ws.RteSizeLimit.Value)));
-			}
-		}
-
-		/// <summary>
-		/// Validate Task Element dates
-		/// </summary>
-		/// <param name="laborTaskData">Task Composite MV</param>
-		/// <param name="ws">Workspace</param>
-		/// <param name="boeDTO">BOE</param>
-		/// <param name="inValidationErrors">Validation Errors collection</param>
-		/// <param name="taskElement">Task Element</param>
-		private void ValidateTaskElementDates(LaborTaskDataModelView laborTaskData, WorkspaceDTO ws, FullBoe boeDTO, ICollection<ValidationMessage> inValidationErrors, out BoeTaskElementDTO taskElement)
-		{
-			if (!laborTaskData.TaskElementData.TaskElementDetailID.HasValue || laborTaskData.TaskElementData.TaskElementDetailID.Value < 0)
-			{
-				taskElement = null;
-
-				// Verify Task Element Dates are with BOE Range.
-				if (GenBOEUtilities.AdjustDateTimePrecision(Convert.ToDateTime(laborTaskData.TaskElementData.StartDate), DateTimePrecision.Month) <
-					GenBOEUtilities.AdjustDateTimePrecision(Convert.ToDateTime(boeDTO.StartDate), DateTimePrecision.Month))
-				{
-					inValidationErrors.Add(new ValidationMessage("Task Element", "Task Element Start Date cannot be before BOE Start Date."));
-				}
-
-				if (GenBOEUtilities.AdjustDateTimePrecision(Convert.ToDateTime(laborTaskData.TaskElementData.EndDate), DateTimePrecision.Month) >
-					GenBOEUtilities.AdjustDateTimePrecision(Convert.ToDateTime(boeDTO.EndDate), DateTimePrecision.Month))
-				{
-					inValidationErrors.Add(new ValidationMessage("Task Element", "Task Element End Date cannot be after the BOE End Date."));
-				}
-
-				if (GenBOEUtilities.AdjustDateTimePrecision(Convert.ToDateTime(laborTaskData.TaskElementData.StartDate), DateTimePrecision.Month) >
-					GenBOEUtilities.AdjustDateTimePrecision(Convert.ToDateTime(laborTaskData.TaskElementData.EndDate), DateTimePrecision.Month))
-				{
-					inValidationErrors.Add(new ValidationMessage("StartDate", "Task start date must happen before the end date."));
-				}
-			}
-			else
-			{
-				taskElement = this.factory.CreateTaskElement(laborTaskData.TaskElementData.TaskElementDetailID.Value, ws.DecimalPrecision, ws.CostDecimalPrecision);
-				laborTaskData.TaskElementData.StartDate = taskElement.StartDate.Value.ToMonthString();
-				laborTaskData.TaskElementData.EndDate = taskElement.EndDate.Value.ToMonthString();
-			}
-		}
-
-		/// <summary>
-		/// Verify Labor Types are within Task Element date range
-		/// </summary>
-		/// <param name="laborTaskData">Task Composite MV</param>
-		/// <param name="inValidationErrors">Validation Errors collection</param>
-		private void ValidateLaborTypeDates(LaborTaskDataModelView laborTaskData, ICollection<ValidationMessage> inValidationErrors)
-		{
-			if (laborTaskData.LaborTypesData.Count > 0)
-			{
-				List<LaborTypeDataModelView> ltList = (from a in laborTaskData.LaborTypesData
-													   where !a.Deleted
-													   select a).ToList();
-
-				// Only do if all Labor Types have not been deleted.
-				if (ltList.Any())
-				{
-					try
-					{
-						if (GenBOEUtilities.AdjustDateTimePrecision(Convert.ToDateTime(ltList.Min(l => l.StartDate)), DateTimePrecision.Month) <
-							GenBOEUtilities.AdjustDateTimePrecision(Convert.ToDateTime(laborTaskData.TaskElementData.StartDate), DateTimePrecision.Month))
-						{
-							inValidationErrors.Add(new ValidationMessage("Resource Types", "Resource Types Start Date cannot be before Task Element Start Date.", "LaborTypesForm"));
-						}
-
-						if (GenBOEUtilities.AdjustDateTimePrecision(Convert.ToDateTime(ltList.Max(l => l.EndDate)), DateTimePrecision.Month) >
-							GenBOEUtilities.AdjustDateTimePrecision(Convert.ToDateTime(laborTaskData.TaskElementData.EndDate), DateTimePrecision.Month))
-						{
-							inValidationErrors.Add(new ValidationMessage("Resource Types", "Resource Types End Date cannot be after the Task Element End Date.", "LaborTypesForm"));
-						}
-					}
-					catch (FormatException)
-					{
-						// do nothing, this validation message is caught and added elsewhere (MVC)
-					}
-				}
-			}
-		}
-
-		/// <summary>
-		/// Validate the Labor Type Custom Fields
-		/// </summary>
-		/// <param name="laborTaskData">Task Composite MV</param>
-		/// <param name="ws">Workspace</param>
-		/// <param name="taskElement">Task Element</param>
-		/// <param name="inValidationErrors">Validation Errors collection</param>
-		private void ValidateLaborTypeCustomFields(LaborTaskDataModelView laborTaskData, FullWorkspace ws, BoeTaskElementDTO taskElement, ICollection<ValidationMessage> inValidationErrors)
-		{
-			//list of all customfields so we can check requiredness for LT. 
-			Collection<BOECustomFieldModelView> LTCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.LaborTypes);
-
-			foreach (BOECustomFieldModelView LTCF in LTCustomFields)
-			{
-				if (LTCF.CustomFieldMetaData.isOpenEnded && LTCF.CustomFieldMetaData.isRequired)
-				{
-					foreach (LaborTypeDataModelView laborType in laborTaskData.LaborTypesData)
-					{
-						// if the labor type is being deleted, do not worry about custom fields
-						if (!laborType.Deleted)
-						{
-							foreach (CustomFieldSelectionModelView customField in laborType.CustomFieldValues)
-							{
-								if (customField.CustomFieldID == LTCF.CustomFieldMetaData.CustomFieldID &&
-									string.IsNullOrEmpty(customField.OpenEndedValue))
-								{
-									ValidationMessage validationMessage = new ValidationMessage("CustomField",
-										string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, LTCF.CustomFieldMetaData.FieldName),
-										"LaborTypesForm");
-									if (!inValidationErrors.Any(v => v.ValidationIssue == validationMessage.ValidationIssue))
-									{
-										inValidationErrors.Add(validationMessage);
-									}
-								}
-							}
-						}
-					}
-				}
-				else
-				{
-					Collection<BOECustomFieldOptionModelView> RFOs =
-						LTCF.CustomFieldMetaData.isRequired ? LTCF.CustomFieldOptions : null;
-
-					if (RFOs != null && RFOs.Any())
-					{
-						//for each LT being saved confirm it has an option for this field.
-						int laborTypeIndex = -1;
-						foreach (LaborTypeDataModelView laborType in laborTaskData.LaborTypesData)
-						{
-							// if the labor type is being deleted, do not worry about custom fields
-							if (!laborType.Deleted)
-							{
-								bool found = false;
-
-								ICollection<int> RequiredOptionIDs =
-									(from AO in RFOs select AO.CustomFieldOptionID).ToList();
-								ICollection<int> SelectedValues =
-									(from SV in laborType.CustomFieldValues select SV.CustomFieldValueID).ToList();
-
-								foreach (int sv in SelectedValues)
-								{
-									if (RequiredOptionIDs.Contains(sv))
-									{
-										found = true;
-										break;
-									}
-								}
-
-								if (!found)
-								{
-									string laborTypePrefix =
-										string.Format("{0}{1}{2}", "LaborTypes[", ++laborTypeIndex, "].");
-									ValidationMessage validationMessage = new ValidationMessage(
-											laborTypePrefix + "LaborType-CFID" + LTCF.CustomFieldMetaData.CustomFieldID,
-											string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, LTCF.CustomFieldMetaData.FieldName),
-											"LaborTypesForm");
-									if (!inValidationErrors.Any(v => v.ValidationIssue == validationMessage.ValidationIssue))
-									{
-										inValidationErrors.Add(validationMessage);
-									}
-								}
-							}
-						}
-
-						// technically there were no labor types edit, but if there are labor types that exist with this task element, we still need to verify if a required custom
-						// field should be selected (since it could have been created after this labor type was created)
-						if (!laborTaskData.LaborTypesData.Any())
-						{
-							if (laborTaskData.TaskElementData.TaskElementDetailID.HasValue &&
-								laborTaskData.TaskElementData.TaskElementDetailID > 0)
-							{
-								ICollection<ResourceTypeDto> labors = taskElement.taskElementLabors;
-
-								//for each LT being saved confirm it has an option for this field.
-								foreach (ResourceTypeDto labor in labors)
-								{
-									bool found = false;
-
-									ICollection<int> RequiredOptionIDs =
-										(from AO in RFOs select AO.CustomFieldOptionID).ToList();
-									ICollection<int> SelectedValues =
-										(from SV in labor.CustomFieldValueContainers select SV.CustomFieldValueID)
-										.ToList();
-
-									foreach (int sv in SelectedValues)
-									{
-										if (RequiredOptionIDs.Contains(sv))
-										{
-											found = true;
-											break;
-										}
-									}
-
-									if (!found)
-									{
-										inValidationErrors.Add(new ValidationMessage("CustomField",
-											string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, LTCF.CustomFieldMetaData.FieldName),
-											"LaborTypesForm"));
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		/// <summary>
-		/// Validate the Task Custom Fields
-		/// </summary>
-		/// <param name="laborTaskData">Task Composite MV</param>
-		/// <param name="ws">Workspace</param>
-		/// <param name="inValidationErrors">Validation Errors collection</param>
-		private void ValidateTaskCustomFields(LaborTaskDataModelView laborTaskData, FullWorkspace ws, ICollection<ValidationMessage> inValidationErrors)
-		{
-			//list of all customfields so we can check requiredness for task details. 
-			Collection<BOECustomFieldModelView> TaskCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.Task);
-
-			ICollection<BOECustomFieldModelView> StandardTaskCustomFields = TaskCustomFields.Where(x => !x.CustomFieldMetaData.isOpenEnded && x.CustomFieldMetaData.isRequired).ToCollection();
-
-			foreach (BOECustomFieldModelView customField in StandardTaskCustomFields)
-			{
-				bool found = false;
-
-				ICollection<int> RequiredOptionIDs = (from AO in customField.CustomFieldOptions select AO.CustomFieldOptionID).ToList();
-				ICollection<int> SelectedValues = (from SV in laborTaskData.TaskElementData.CustomFieldValues select SV.CustomFieldValueID).ToList();
-
-				foreach (int sv in SelectedValues)
-				{
-					if (RequiredOptionIDs.Contains(sv))
-					{
-						found = true;
-						break;
-					}
-				}
-
-				if (!found)
-				{
-					inValidationErrors.Add(new ValidationMessage("CustomField", string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, customField.CustomFieldMetaData.FieldName)));
-				}
-			}
-
-			ICollection<CustomFieldSelectionModelView> openEndedTaskCustomFieldSelections =
-				laborTaskData.TaskElementData.CustomFieldValues.Where(x => x.IsOpenEnded).ToCollection();
-			ICollection<BOECustomFieldModelView> requiredOpenEndedTaskCustomFields =
-				TaskCustomFields.Where(x => x.CustomFieldMetaData.isOpenEnded && x.CustomFieldMetaData.isRequired)
-					.ToCollection();
-
-			foreach (CustomFieldSelectionModelView selection in openEndedTaskCustomFieldSelections)
-			{
-				BOECustomFieldModelView customField = requiredOpenEndedTaskCustomFields.FirstOrDefault(c => c.CustomFieldMetaData.CustomFieldID == selection.CustomFieldID);
-				if (customField != null &&
-					string.IsNullOrEmpty(selection.OpenEndedValue))
-				{
-					inValidationErrors.Add(new ValidationMessage("CustomField", string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, customField.CustomFieldMetaData.FieldName)));
-				}
-			}
-		}
-
-		/// <summary>
-		/// Validate the MOQ Type Table Custom Fields
-		/// </summary>
-		/// <param name="laborTaskData">Labor Task Data</param>
-		/// <param name="ws">The Workspace</param>
-		/// <param name="inValidationErrors">validation errors</param>
-		private void ValidateMoqTypeTableCustomFields(LaborTaskDataModelView laborTaskData, FullWorkspace ws, ICollection<ValidationMessage> inValidationErrors)
-		{
-			ICollection<BOECustomFieldModelView> moqTypeTableCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.MoqTypeTable);
-
-			ICollection<MoqTableData> moqTables = laborTaskData.MOQTypes.SelectMany(x => x.TableData).ToList();
-			ICollection<BOECustomFieldModelView> requiredCustomFields = moqTypeTableCustomFields.Where(x => x.CustomFieldMetaData.isRequired).ToCollection();
-			string sapWebiName = RepositoryName.SapWebi.GetDescription();
-			foreach (MoqTableData moqTable in moqTables)
-			{
-				foreach (CustomFieldValueContainer cf in moqTable.CustomFieldValueContainers)
-				{
-					BOECustomFieldModelView customField = requiredCustomFields.FirstOrDefault(c => c.CustomFieldMetaData.CustomFieldID == cf.CustomFieldID);
-					if (customField != null &&
-						string.IsNullOrEmpty(cf.OpenEndedValue) &&
-						moqTable.RepositoryName != sapWebiName)
-					{
-						inValidationErrors.Add(new ValidationMessage("CustomField", string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, customField.CustomFieldMetaData.FieldName)));
-					}
-
-					if (moqTable.RepositoryName == sapWebiName && !string.IsNullOrEmpty(cf.OpenEndedValue))
-					{
-						BOECustomFieldModelView actualCustomField = moqTypeTableCustomFields.FirstOrDefault(c => c.CustomFieldMetaData.CustomFieldID == cf.CustomFieldID);
-						if (actualCustomField != null)
-						{
-							inValidationErrors.Add(new ValidationMessage("CustomField", string.Format(Constants.MOQ_CUSTOM_FIELD_EMPTY_WHEN_SAP_WEBI, actualCustomField.CustomFieldMetaData.FieldName)));
-						}
-					}
-				}
-			}
-
-
-		}
-
-		/// <summary>
-		/// Validates MOQ Types for UI, only fully required fields
-		/// </summary>
-		/// <param name="ws">Full WS</param>
-		/// <param name="taskData">Task Data</param>
-		/// <param name="errors">Validation Errors</param>		
-		/// <param name="moqEquationTotal"> Moq equation total</param>
-		private void ValidateMoqTypes(FullWorkspace ws, LaborTaskDataModelView taskData, ICollection<ValidationMessage> errors, decimal? moqEquationTotal = null)
-		{
-			if (ws.UsingTemplateBOE)
-			{
-				ICollection<string> taskErrors = this.validateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws, false, moqEquationTotal);
-				errors.AddRange(taskErrors.Select(error => new ValidationMessage(error)));
-			}
 		}
 
 		/// <summary>
@@ -4076,6 +3699,456 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		}
 
 		/// <summary>
+		/// Validates Actuals data for SAP
+		/// </summary>
+		/// <param name="tableData">The MOQ Table Data</param>
+		/// <returns>Validation Response</returns>
+		public async Task<ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>>> CalculateAllActualsSapWithSkillMix(ICollection<MoqTableDataModelView> tableData)
+		{
+			ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>> response = new List<IESResponse<CalculateActualsWithSkillMixViewModel>>();
+
+			try
+			{
+				// Get Token
+				Token token = await this.tokenservice.GetToken();
+				Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
+
+				// Convert company configuration
+				ActionLogic.IESSAPClient.CompanyConfiguration companyConfiguration = GetCompanyConfigurationForSAP();
+
+				// Convert table data
+				ICollection<DataTableViewModel> dataTables = tableData.Select(t =>
+				new DataTableViewModel()
+				{
+					Filters = t.Filters,
+					PoPEnd = t.PoPEnd,
+					PoPStart = t.PoPStart,
+					IsWeekly = t.QueryType == MoqTableData.WEEKLY_DATETIME,
+					WbsElement = t.WbsElement,
+					TableId = t.TableId
+				}).ToList();
+
+				// Call Swagger Client
+				ICollection<CalculateActualsWithSkillMixViewModelResult> result = await iesSapClient.ApiQueryParserCalculateActualsWithSkillMixAsync(companyConfiguration, dataTables);
+
+				response = result.Select(r =>
+				new IESResponse<CalculateActualsWithSkillMixViewModel>
+				{
+					Messages = r.Messages,
+					IsSuccessful = r.IsSuccessful,
+					Data = new List<CalculateActualsWithSkillMixViewModel> { r.Data }
+				}).ToList();
+
+			}
+			catch (Exception ex)
+			{
+				// throw error and let UI handle it
+				logger.Error(ex, "Error calling SAP API to Calculate All Actuals");
+				throw new GeneralAppException("Error calling SAP API to Calculate All Actuals");
+			}
+
+			return response;
+		}
+
+		#region Private Methods
+
+		/// <summary>
+		/// Private Method to get Company Configuration
+		/// </summary>
+		/// <returns>Company Configuration</returns>
+		private ActionLogic.IESSAPClient.CompanyConfiguration GetCompanyConfigurationForSAP()
+		{
+			return (ActionLogic.IESSAPClient.CompanyConfiguration)(int)SystemConfiguration.Instance().CompanyMode;
+		}
+
+		/// <summary>
+		/// Add Validation Messages based on usage for Resource and/or BRC
+		/// </summary>
+		/// <param name="taskElement">Task Element DTO</param>
+		/// <param name="validationErrors">Validation Errors</param>
+		/// <param name="workspace">Full Workspace</param>
+		private void ValidationsForResourceAndBRC(BoeTaskElementDTO taskElement, ICollection<ValidationMessage> validationErrors, FullWorkspace workspace)
+		{
+			DateTime OneLmxCutOffDate = Utilities.OneLmxStartDate;
+
+			if (taskElement.taskElementLabors != null && taskElement.taskElementLabors.Any())
+			{
+				ICollection<int> resourceIds = taskElement.taskElementLabors.Where(x => x.ResourceID.HasValue).Select(t => t.ResourceID.Value).Distinct().ToList();
+				ICollection<ResourceDTO> resourcesUsed = this._ResourceLoader.GetByIds(resourceIds);
+				ICollection<int> tmResourceIds = resourcesUsed.Where(a => a.SegRegion == WebConstants.SPACE_LEGACY_TM).Select(x => x.Id).ToList();
+
+				foreach (ResourceTypeDto dto in taskElement.taskElementLabors)
+				{
+					if (dto.Updateable != UpdateType.Deleted)
+					{
+						if (Utilities.IsBRCEnabledForWorkspace(workspace.Shortname) && (!dto.ResourceID.HasValue || !tmResourceIds.Contains(dto.ResourceID.Value)))
+						{
+							// do validation per row item
+							if (dto.EndDate.HasValue && dto.EndDate.Value < OneLmxCutOffDate && dto.ResourceID == null && dto.ResourceID == 0)
+							{
+								validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected because End Date is before 1LMX Cutoff Date"));
+							}
+
+							if (dto.StartDate.HasValue && dto.StartDate.Value < OneLmxCutOffDate
+								&& dto.EndDate.HasValue && dto.EndDate.Value > OneLmxCutOffDate
+								&& (dto.ResourceID == null || dto.ResourceID == 0 || dto.BusinessResourceCodeID == null || dto.BusinessResourceCodeID == 0))
+							{
+								validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected when Start Date is before 1LMX Cutoff Date. Element row needs to have Business Resource Code Selected when End Date is after 1LMX Cutoff Date"));
+							}
+
+							if (dto.StartDate.HasValue && dto.StartDate.Value >= OneLmxCutOffDate
+								&& dto.BusinessResourceCodeID == null && dto.BusinessResourceCodeID == 0)
+							{
+								validationErrors.Add(new ValidationMessage("Element row needs Business Resource Code Selected because start date is after 1LMX Cutoff Date"));
+							}
+						}
+						else
+						{
+							if (dto.ResourceID == null || dto.ResourceID == 0)
+							{
+								validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected"));
+							}
+						}
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Validate the RTE Size Limit in the Task Element
+		/// </summary>
+		/// <param name="laborTaskData">Task Composite MV</param>
+		/// <param name="ws">Workspace</param>
+		/// <param name="inValidationErrors">Validation Errors collection</param>
+		private void ValidateTaskElementRteSizeLimit(LaborTaskDataModelView laborTaskData, WorkspaceDTO ws, ICollection<ValidationMessage> inValidationErrors)
+		{
+			if (!string.IsNullOrEmpty(laborTaskData.TaskElementData.TaskDescription) && ws.RteSizeLimit < GenBOEUtilities.ConvertHtmlToText(laborTaskData.TaskElementData.TaskDescription).Length)
+			{
+				inValidationErrors.Add(new ValidationMessage("TaskDescription",
+					string.Format("The maximum length of Task Description is {0} characters.", ws.RteSizeLimit.Value)));
+			}
+
+			if (!string.IsNullOrEmpty(laborTaskData.TaskElementData.MOQText) && ws.RteSizeLimit < GenBOEUtilities.ConvertHtmlToText(laborTaskData.TaskElementData.MOQText).Length)
+			{
+				inValidationErrors.Add(new ValidationMessage("MOQText",
+					string.Format("The maximum length of MOQ Rationale is {0} characters.", ws.RteSizeLimit.Value)));
+			}
+		}
+
+		/// <summary>
+		/// Validate Task Element dates
+		/// </summary>
+		/// <param name="laborTaskData">Task Composite MV</param>
+		/// <param name="ws">Workspace</param>
+		/// <param name="boeDTO">BOE</param>
+		/// <param name="inValidationErrors">Validation Errors collection</param>
+		/// <param name="taskElement">Task Element</param>
+		private void ValidateTaskElementDates(LaborTaskDataModelView laborTaskData, WorkspaceDTO ws, FullBoe boeDTO, ICollection<ValidationMessage> inValidationErrors, out BoeTaskElementDTO taskElement)
+		{
+			if (!laborTaskData.TaskElementData.TaskElementDetailID.HasValue || laborTaskData.TaskElementData.TaskElementDetailID.Value < 0)
+			{
+				taskElement = null;
+
+				// Verify Task Element Dates are with BOE Range.
+				if (GenBOEUtilities.AdjustDateTimePrecision(Convert.ToDateTime(laborTaskData.TaskElementData.StartDate), DateTimePrecision.Month) <
+					GenBOEUtilities.AdjustDateTimePrecision(Convert.ToDateTime(boeDTO.StartDate), DateTimePrecision.Month))
+				{
+					inValidationErrors.Add(new ValidationMessage("Task Element", "Task Element Start Date cannot be before BOE Start Date."));
+				}
+
+				if (GenBOEUtilities.AdjustDateTimePrecision(Convert.ToDateTime(laborTaskData.TaskElementData.EndDate), DateTimePrecision.Month) >
+					GenBOEUtilities.AdjustDateTimePrecision(Convert.ToDateTime(boeDTO.EndDate), DateTimePrecision.Month))
+				{
+					inValidationErrors.Add(new ValidationMessage("Task Element", "Task Element End Date cannot be after the BOE End Date."));
+				}
+
+				if (GenBOEUtilities.AdjustDateTimePrecision(Convert.ToDateTime(laborTaskData.TaskElementData.StartDate), DateTimePrecision.Month) >
+					GenBOEUtilities.AdjustDateTimePrecision(Convert.ToDateTime(laborTaskData.TaskElementData.EndDate), DateTimePrecision.Month))
+				{
+					inValidationErrors.Add(new ValidationMessage("StartDate", "Task start date must happen before the end date."));
+				}
+			}
+			else
+			{
+				taskElement = this.factory.CreateTaskElement(laborTaskData.TaskElementData.TaskElementDetailID.Value, ws.DecimalPrecision, ws.CostDecimalPrecision);
+				laborTaskData.TaskElementData.StartDate = taskElement.StartDate.Value.ToMonthString();
+				laborTaskData.TaskElementData.EndDate = taskElement.EndDate.Value.ToMonthString();
+			}
+		}
+
+		/// <summary>
+		/// Verify Labor Types are within Task Element date range
+		/// </summary>
+		/// <param name="laborTaskData">Task Composite MV</param>
+		/// <param name="inValidationErrors">Validation Errors collection</param>
+		private void ValidateLaborTypeDates(LaborTaskDataModelView laborTaskData, ICollection<ValidationMessage> inValidationErrors)
+		{
+			if (laborTaskData.LaborTypesData.Count > 0)
+			{
+				List<LaborTypeDataModelView> ltList = (from a in laborTaskData.LaborTypesData
+													   where !a.Deleted
+													   select a).ToList();
+
+				// Only do if all Labor Types have not been deleted.
+				if (ltList.Any())
+				{
+					try
+					{
+						if (GenBOEUtilities.AdjustDateTimePrecision(Convert.ToDateTime(ltList.Min(l => l.StartDate)), DateTimePrecision.Month) <
+							GenBOEUtilities.AdjustDateTimePrecision(Convert.ToDateTime(laborTaskData.TaskElementData.StartDate), DateTimePrecision.Month))
+						{
+							inValidationErrors.Add(new ValidationMessage("Resource Types", "Resource Types Start Date cannot be before Task Element Start Date.", "LaborTypesForm"));
+						}
+
+						if (GenBOEUtilities.AdjustDateTimePrecision(Convert.ToDateTime(ltList.Max(l => l.EndDate)), DateTimePrecision.Month) >
+							GenBOEUtilities.AdjustDateTimePrecision(Convert.ToDateTime(laborTaskData.TaskElementData.EndDate), DateTimePrecision.Month))
+						{
+							inValidationErrors.Add(new ValidationMessage("Resource Types", "Resource Types End Date cannot be after the Task Element End Date.", "LaborTypesForm"));
+						}
+					}
+					catch (FormatException)
+					{
+						// do nothing, this validation message is caught and added elsewhere (MVC)
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Validate the Labor Type Custom Fields
+		/// </summary>
+		/// <param name="laborTaskData">Task Composite MV</param>
+		/// <param name="ws">Workspace</param>
+		/// <param name="taskElement">Task Element</param>
+		/// <param name="inValidationErrors">Validation Errors collection</param>
+		private void ValidateLaborTypeCustomFields(LaborTaskDataModelView laborTaskData, FullWorkspace ws, BoeTaskElementDTO taskElement, ICollection<ValidationMessage> inValidationErrors)
+		{
+			//list of all customfields so we can check requiredness for LT. 
+			Collection<BOECustomFieldModelView> LTCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.LaborTypes);
+
+			foreach (BOECustomFieldModelView LTCF in LTCustomFields)
+			{
+				if (LTCF.CustomFieldMetaData.isOpenEnded && LTCF.CustomFieldMetaData.isRequired)
+				{
+					foreach (LaborTypeDataModelView laborType in laborTaskData.LaborTypesData)
+					{
+						// if the labor type is being deleted, do not worry about custom fields
+						if (!laborType.Deleted)
+						{
+							foreach (CustomFieldSelectionModelView customField in laborType.CustomFieldValues)
+							{
+								if (customField.CustomFieldID == LTCF.CustomFieldMetaData.CustomFieldID &&
+									string.IsNullOrEmpty(customField.OpenEndedValue))
+								{
+									ValidationMessage validationMessage = new ValidationMessage("CustomField",
+										string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, LTCF.CustomFieldMetaData.FieldName),
+										"LaborTypesForm");
+									if (!inValidationErrors.Any(v => v.ValidationIssue == validationMessage.ValidationIssue))
+									{
+										inValidationErrors.Add(validationMessage);
+									}
+								}
+							}
+						}
+					}
+				}
+				else
+				{
+					Collection<BOECustomFieldOptionModelView> RFOs =
+						LTCF.CustomFieldMetaData.isRequired ? LTCF.CustomFieldOptions : null;
+
+					if (RFOs != null && RFOs.Any())
+					{
+						//for each LT being saved confirm it has an option for this field.
+						int laborTypeIndex = -1;
+						foreach (LaborTypeDataModelView laborType in laborTaskData.LaborTypesData)
+						{
+							// if the labor type is being deleted, do not worry about custom fields
+							if (!laborType.Deleted)
+							{
+								bool found = false;
+
+								ICollection<int> RequiredOptionIDs =
+									(from AO in RFOs select AO.CustomFieldOptionID).ToList();
+								ICollection<int> SelectedValues =
+									(from SV in laborType.CustomFieldValues select SV.CustomFieldValueID).ToList();
+
+								foreach (int sv in SelectedValues)
+								{
+									if (RequiredOptionIDs.Contains(sv))
+									{
+										found = true;
+										break;
+									}
+								}
+
+								if (!found)
+								{
+									string laborTypePrefix =
+										string.Format("{0}{1}{2}", "LaborTypes[", ++laborTypeIndex, "].");
+									ValidationMessage validationMessage = new ValidationMessage(
+											laborTypePrefix + "LaborType-CFID" + LTCF.CustomFieldMetaData.CustomFieldID,
+											string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, LTCF.CustomFieldMetaData.FieldName),
+											"LaborTypesForm");
+									if (!inValidationErrors.Any(v => v.ValidationIssue == validationMessage.ValidationIssue))
+									{
+										inValidationErrors.Add(validationMessage);
+									}
+								}
+							}
+						}
+
+						// technically there were no labor types edit, but if there are labor types that exist with this task element, we still need to verify if a required custom
+						// field should be selected (since it could have been created after this labor type was created)
+						if (!laborTaskData.LaborTypesData.Any())
+						{
+							if (laborTaskData.TaskElementData.TaskElementDetailID.HasValue &&
+								laborTaskData.TaskElementData.TaskElementDetailID > 0)
+							{
+								ICollection<ResourceTypeDto> labors = taskElement.taskElementLabors;
+
+								//for each LT being saved confirm it has an option for this field.
+								foreach (ResourceTypeDto labor in labors)
+								{
+									bool found = false;
+
+									ICollection<int> RequiredOptionIDs =
+										(from AO in RFOs select AO.CustomFieldOptionID).ToList();
+									ICollection<int> SelectedValues =
+										(from SV in labor.CustomFieldValueContainers select SV.CustomFieldValueID)
+										.ToList();
+
+									foreach (int sv in SelectedValues)
+									{
+										if (RequiredOptionIDs.Contains(sv))
+										{
+											found = true;
+											break;
+										}
+									}
+
+									if (!found)
+									{
+										inValidationErrors.Add(new ValidationMessage("CustomField",
+											string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, LTCF.CustomFieldMetaData.FieldName),
+											"LaborTypesForm"));
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Validate the Task Custom Fields
+		/// </summary>
+		/// <param name="laborTaskData">Task Composite MV</param>
+		/// <param name="ws">Workspace</param>
+		/// <param name="inValidationErrors">Validation Errors collection</param>
+		private void ValidateTaskCustomFields(LaborTaskDataModelView laborTaskData, FullWorkspace ws, ICollection<ValidationMessage> inValidationErrors)
+		{
+			//list of all customfields so we can check requiredness for task details. 
+			Collection<BOECustomFieldModelView> TaskCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.Task);
+
+			ICollection<BOECustomFieldModelView> StandardTaskCustomFields = TaskCustomFields.Where(x => !x.CustomFieldMetaData.isOpenEnded && x.CustomFieldMetaData.isRequired).ToCollection();
+
+			foreach (BOECustomFieldModelView customField in StandardTaskCustomFields)
+			{
+				bool found = false;
+
+				ICollection<int> RequiredOptionIDs = (from AO in customField.CustomFieldOptions select AO.CustomFieldOptionID).ToList();
+				ICollection<int> SelectedValues = (from SV in laborTaskData.TaskElementData.CustomFieldValues select SV.CustomFieldValueID).ToList();
+
+				foreach (int sv in SelectedValues)
+				{
+					if (RequiredOptionIDs.Contains(sv))
+					{
+						found = true;
+						break;
+					}
+				}
+
+				if (!found)
+				{
+					inValidationErrors.Add(new ValidationMessage("CustomField", string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, customField.CustomFieldMetaData.FieldName)));
+				}
+			}
+
+			ICollection<CustomFieldSelectionModelView> openEndedTaskCustomFieldSelections =
+				laborTaskData.TaskElementData.CustomFieldValues.Where(x => x.IsOpenEnded).ToCollection();
+			ICollection<BOECustomFieldModelView> requiredOpenEndedTaskCustomFields =
+				TaskCustomFields.Where(x => x.CustomFieldMetaData.isOpenEnded && x.CustomFieldMetaData.isRequired)
+					.ToCollection();
+
+			foreach (CustomFieldSelectionModelView selection in openEndedTaskCustomFieldSelections)
+			{
+				BOECustomFieldModelView customField = requiredOpenEndedTaskCustomFields.FirstOrDefault(c => c.CustomFieldMetaData.CustomFieldID == selection.CustomFieldID);
+				if (customField != null &&
+					string.IsNullOrEmpty(selection.OpenEndedValue))
+				{
+					inValidationErrors.Add(new ValidationMessage("CustomField", string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, customField.CustomFieldMetaData.FieldName)));
+				}
+			}
+		}
+
+		/// <summary>
+		/// Validate the MOQ Type Table Custom Fields
+		/// </summary>
+		/// <param name="laborTaskData">Labor Task Data</param>
+		/// <param name="ws">The Workspace</param>
+		/// <param name="inValidationErrors">validation errors</param>
+		private void ValidateMoqTypeTableCustomFields(LaborTaskDataModelView laborTaskData, FullWorkspace ws, ICollection<ValidationMessage> inValidationErrors)
+		{
+			ICollection<BOECustomFieldModelView> moqTypeTableCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.MoqTypeTable);
+
+			ICollection<MoqTableData> moqTables = laborTaskData.MOQTypes.SelectMany(x => x.TableData).ToList();
+			ICollection<BOECustomFieldModelView> requiredCustomFields = moqTypeTableCustomFields.Where(x => x.CustomFieldMetaData.isRequired).ToCollection();
+			string sapWebiName = RepositoryName.SapWebi.GetDescription();
+			foreach (MoqTableData moqTable in moqTables)
+			{
+				foreach (CustomFieldValueContainer cf in moqTable.CustomFieldValueContainers)
+				{
+					BOECustomFieldModelView customField = requiredCustomFields.FirstOrDefault(c => c.CustomFieldMetaData.CustomFieldID == cf.CustomFieldID);
+					if (customField != null &&
+						string.IsNullOrEmpty(cf.OpenEndedValue) &&
+						moqTable.RepositoryName != sapWebiName)
+					{
+						inValidationErrors.Add(new ValidationMessage("CustomField", string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, customField.CustomFieldMetaData.FieldName)));
+					}
+
+					if (moqTable.RepositoryName == sapWebiName && !string.IsNullOrEmpty(cf.OpenEndedValue))
+					{
+						BOECustomFieldModelView actualCustomField = moqTypeTableCustomFields.FirstOrDefault(c => c.CustomFieldMetaData.CustomFieldID == cf.CustomFieldID);
+						if (actualCustomField != null)
+						{
+							inValidationErrors.Add(new ValidationMessage("CustomField", string.Format(Constants.MOQ_CUSTOM_FIELD_EMPTY_WHEN_SAP_WEBI, actualCustomField.CustomFieldMetaData.FieldName)));
+						}
+					}
+				}
+			}
+
+
+		}
+
+		/// <summary>
+		/// Validates MOQ Types for UI, only fully required fields
+		/// </summary>
+		/// <param name="ws">Full WS</param>
+		/// <param name="taskData">Task Data</param>
+		/// <param name="errors">Validation Errors</param>		
+		/// <param name="moqEquationTotal"> Moq equation total</param>
+		private void ValidateMoqTypes(FullWorkspace ws, LaborTaskDataModelView taskData, ICollection<ValidationMessage> errors, decimal? moqEquationTotal = null)
+		{
+			if (ws.UsingTemplateBOE)
+			{
+				ICollection<string> taskErrors = this.validateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws, false, moqEquationTotal);
+				errors.AddRange(taskErrors.Select(error => new ValidationMessage(error)));
+			}
+		}
+
+		/// <summary>
 		/// Create the Common Disclosure Rows from the data
 		/// </summary>
 		/// <param name="laborTypes">labor type data</param>
@@ -4181,7 +4254,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					if (currentRows.Any())
 					{
 						bool anyValidCurrentRows = false;
-						
+
 						foreach (SkillMixModelView currentRow in currentRows)
 						{
 							// make sure we have a Labor Types match for Resource
@@ -4328,62 +4401,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			refreshedModel.CommonDisclosureTotals.ProposedHours = refreshedModel.CommonDisclosureRows.Where(d => d.Included).Sum(s => s.ProposedHours);
 		}
 
-		/// <summary>
-		/// Validates Actuals data for SAP
-		/// </summary>
-		/// <param name="tableData">The MOQ Table Data</param>
-		/// <returns>Validation Response</returns>
-		public async Task<ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>>> CalculateAllActualsSapWithSkillMix(ICollection<MoqTableDataModelView> tableData)
-		{
-			ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>> response = new List<IESResponse<CalculateActualsWithSkillMixViewModel>>();
-
-			try
-			{
-				// Get Token
-				Token token = await this.tokenservice.GetToken();
-				Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
-
-				// Convert company configuration
-				ActionLogic.IESSAPClient.CompanyConfiguration companyConfiguration = GetCompanyConfigurationForSAP();
-
-				// Convert table data
-				ICollection<DataTableViewModel> dataTables = tableData.Select(t =>
-				new DataTableViewModel()
-				{
-					Filters = t.Filters,
-					PoPEnd = t.PoPEnd,
-					PoPStart = t.PoPStart,
-					IsWeekly = t.QueryType == MoqTableData.WEEKLY_DATETIME,
-					WbsElement = t.WbsElement,
-					TableId = t.TableId
-				}).ToList();
-
-				// Call Swagger Client
-				ICollection<CalculateActualsWithSkillMixViewModelResult> result = await iesSapClient.ApiQueryParserCalculateActualsWithSkillMixAsync(companyConfiguration, dataTables);
-
-				response = result.Select(r =>
-				new IESResponse<CalculateActualsWithSkillMixViewModel>
-				{
-					Messages = r.Messages,
-					IsSuccessful = r.IsSuccessful,
-					Data = new List<CalculateActualsWithSkillMixViewModel> { r.Data }
-				}).ToList();
-
-			}
-			catch (Exception ex)
-			{
-				// throw error and let UI handle it
-				logger.Error(ex, "Error calling SAP API to Calculate All Actuals");
-				throw new GeneralAppException("Error calling SAP API to Calculate All Actuals");
-			}
-
-			return response;
-		}
-
-		private ActionLogic.IESSAPClient.CompanyConfiguration GetCompanyConfigurationForSAP()
-		{
-			return (ActionLogic.IESSAPClient.CompanyConfiguration)((int)SystemConfiguration.Instance().CompanyMode);
-		}
+		#endregion Private Methods
 	}
 
 	public enum ControllerCustomFieldType
