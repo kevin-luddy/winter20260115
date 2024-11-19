@@ -1903,7 +1903,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			List<int> boesUpdated = new List<int>();
 			// Make one bulk call to SAP
-			if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(workspaceCreationDate, isUsingTM))
+			if (Utilities.IsSkillMixEnabledForSystem)
 			{
 				ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>> responses = await this.boeLaborControllerLogic.CalculateAllActualsSapWithSkillMix(tableData);
 				foreach (IESResponse<CalculateActualsWithSkillMixViewModel> response in responses)

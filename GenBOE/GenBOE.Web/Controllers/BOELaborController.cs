@@ -133,7 +133,7 @@ namespace GenBOE.Web.Controllers
 
 			//check if skill mix is enabled and workspace starts after skill mix date 
 			bool enableSkillMix = false;
-			if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.IsUsingTM))
+			if (Utilities.IsSkillMixEnabledForSystem)
 			{
 				enableSkillMix = true;
 			}
@@ -581,7 +581,7 @@ namespace GenBOE.Web.Controllers
 
 			//check if skill mix is enabled and workspace starts after skill mix date 
 			bool enableSkillMix = false;
-			if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.IsUsingTM))
+			if (Utilities.IsSkillMixEnabledForSystem)
 			{
 				enableSkillMix = true;
 			}
