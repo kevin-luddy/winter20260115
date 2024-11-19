@@ -1863,7 +1863,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			if (tables.Any())
 			{
 				Dictionary<int, string> tasks = ws.TaskElements.ToDictionary(t => t.Id, x => x.TaskTitle);
-				List<int> boesUpdated = await RecalculateActualsAcrossWorkspace(result, boes, tasks, tables, tableIdToMoqType, ws.CreationDate);
+				List<int> boesUpdated = await RecalculateActualsAcrossWorkspace(result, boes, tasks, tables, tableIdToMoqType, ws.CreationDate, ws.IsUsingTM);
 				SaveRecalculateActuals(ws, boes, moqTypesToSave, boesUpdated);
 			}
 
@@ -1884,8 +1884,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="tables">Dictionary of MOQ Tables</param>
 		/// <param name="tableIdToMoqType">Dictionary of MOQ Types keyed by Table Id</param>
 		/// <param name="workspaceCreationDate">Workspace Creation Date</param>
+		/// <param name="isUsingTM">Workspace setting for using T&M</param>
 		/// <returns></returns>
-		private async Task<List<int>> RecalculateActualsAcrossWorkspace(List<WorkspaceCalculateActualsModelView> result, Dictionary<int, FullBoe> boes, Dictionary<int, string> tasks, Dictionary<int, MoqTableData> tables, Dictionary<int, MoqTypeSelection> tableIdToMoqType, DateTime? workspaceCreationDate)
+		private async Task<List<int>> RecalculateActualsAcrossWorkspace(List<WorkspaceCalculateActualsModelView> result, Dictionary<int, FullBoe> boes, Dictionary<int, string> tasks, Dictionary<int, MoqTableData> tables, Dictionary<int, MoqTypeSelection> tableIdToMoqType, DateTime? workspaceCreationDate, bool isUsingTM)
 		{
 			ICollection<MoqTableDataModelView> tableData = tables.Values.Select(t =>
 				new MoqTableDataModelView()
@@ -1902,7 +1903,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			List<int> boesUpdated = new List<int>();
 			// Make one bulk call to SAP
-			if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(workspaceCreationDate))
+			if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(workspaceCreationDate, isUsingTM))
 			{
 				ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>> responses = await this.boeLaborControllerLogic.CalculateAllActualsSapWithSkillMix(tableData);
 				foreach (IESResponse<CalculateActualsWithSkillMixViewModel> response in responses)
