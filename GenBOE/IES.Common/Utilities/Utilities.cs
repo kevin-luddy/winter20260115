@@ -993,11 +993,24 @@ namespace IES.Common
 		/// <summary>
 		/// Is Skill Mix connection shown to the user for this workspace
 		/// </summary>
-		/// <param name="workspaceCreationDate"></param>
-		/// <returns></returns>
-		public static bool ShowSkillMixForWorkspace(DateTime? workspaceCreationDate)
+		/// <param name="workspaceCreationDate">Workspace creation date.</param>
+		/// <param name="isUsingTM">Workspace setting for using T&M</param>
+		/// <returns>Option to show skill mix for workspace.</returns>
+		public static bool ShowSkillMixForWorkspace(DateTime? workspaceCreationDate, bool isUsingTM)
 		{
-			return IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate;
+			bool showSkillMixRationale = false;
+
+			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+			{
+				showSkillMixRationale = IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate;
+			}
+			// For space only: Shows Skill Mix Rationale section when the workspace is NOT using T&M.
+			else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			{
+				showSkillMixRationale = IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate && !isUsingTM;
+			}
+
+			return showSkillMixRationale;
 		}
 
 		/// <summary>
