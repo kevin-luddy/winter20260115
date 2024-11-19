@@ -2220,17 +2220,20 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				toReturn.LaborTypesData.Add(laborToAdd);
 			}
 
-			List<SkillMixDTO> skillMixFromDB = new List<SkillMixDTO>(this.skillMixDTOLoader.GetByBOETaskElementID(dto.Id));
-			List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixFromDB = new List<CommonDisclosureSkillMixDTO>(this.commonDisclosureDTOLoader.GetByBOETaskElementID(dto.Id));
-
-			foreach (SkillMixDTO skillMixDTO in skillMixFromDB)
+			if (Utilities.IsSkillMixEnabledForSystem)
 			{
-				toReturn.SkillMixData.Add(new SkillMixModelView(skillMixDTO));
-			}
+				List<SkillMixDTO> skillMixFromDB = new List<SkillMixDTO>(this.skillMixDTOLoader.GetByBOETaskElementID(dto.Id));
+				List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixFromDB = new List<CommonDisclosureSkillMixDTO>(this.commonDisclosureDTOLoader.GetByBOETaskElementID(dto.Id));
 
-			foreach (CommonDisclosureSkillMixDTO commonDisclosureSkillMixDTO in commonDisclosureSkillMixFromDB)
-			{
-				toReturn.CommonDisclosureSkillMixData.Add(new CommonDisclosureModelView(commonDisclosureSkillMixDTO));
+				foreach (SkillMixDTO skillMixDTO in skillMixFromDB)
+				{
+					toReturn.SkillMixData.Add(new SkillMixModelView(skillMixDTO));
+				}
+
+				foreach (CommonDisclosureSkillMixDTO commonDisclosureSkillMixDTO in commonDisclosureSkillMixFromDB)
+				{
+					toReturn.CommonDisclosureSkillMixData.Add(new CommonDisclosureModelView(commonDisclosureSkillMixDTO));
+				}
 			}
 
 			toReturn.ContainsDiscrete = toReturn.LaborTypesData.Select(x => x.SpreadCurveID).Any(x => x.Value == SpreadCurves.DiscreteCost || x.Value == SpreadCurves.DiscreteHours);
@@ -2272,15 +2275,18 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			toReturn.Description = modelview.TaskElementData.TaskDescription;
 			toReturn.MOQType = modelview.TaskElementData.MOQType;
 			toReturn.MOQTypeName = modelview.TaskElementData.MOQType == MOQType.None ? null : moqTypes[(int)modelview.TaskElementData.MOQType].MOQTypeName;
-			toReturn.MOQTotalRelevantHours += modelview.MOQTypes?.Sum(t => t.TableData?.Sum(td => td.TotalRelevantHours) ?? 0) ?? 0;
 			toReturn.MOQText = modelview.TaskElementData.MOQText;
 			toReturn.UpdateDate = modelview.TaskElementData.UpdateDate;
 			toReturn.LaborTypeWarningFlag = modelview.TaskElementData.LaborTypeWarning;
 			toReturn.WorkspaceVariableIDs = modelview.TaskElementData.WorkspaceVariableIDs;
 			toReturn.TaskElementType = TaskElementType.Labor;
 			toReturn.BOETaskElementOrder = modelview.TaskElementData.BOETaskElementOrder;
-			toReturn.SkillMixTable = modelview.SkillMixData;
-			toReturn.CommonDisclosureTable = modelview.CommonDisclosureSkillMixData;
+			if (Utilities.IsSkillMixEnabledForSystem)
+			{
+				toReturn.MOQTotalRelevantHours += modelview.MOQTypes?.Sum(t => t.TableData?.Sum(td => td.TotalRelevantHours) ?? 0) ?? 0;
+				toReturn.SkillMixTable = modelview.SkillMixData;
+				toReturn.CommonDisclosureTable = modelview.CommonDisclosureSkillMixData;
+			}
 
 			//if the taskelement is new we will save the order id with 2000. This is so the taskelement always goes to the bottom of the page.
 			if (toReturn.Id < 0)

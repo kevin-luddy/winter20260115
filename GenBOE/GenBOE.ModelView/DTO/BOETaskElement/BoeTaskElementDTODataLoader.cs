@@ -718,7 +718,10 @@ namespace GenBOE.DataBridge.DTO
 						}
 					}
 
-					SaveSkillMixRationale(dtosToSave);
+					if (Utilities.IsSkillMixEnabledForSystem)
+					{
+						SaveSkillMixRationale(dtosToSave);
+					}
 				}
 			}
 
@@ -733,37 +736,34 @@ namespace GenBOE.DataBridge.DTO
 		{
 			foreach (BoeTaskElementDTO inTaskDetail in dtosToSave)
 			{
-				if (Utilities.IsSkillMixEnabledForSystem)
+				// Save the Skill Mix tables
+				if (inTaskDetail.SkillMixTable != null && inTaskDetail.SkillMixTable.Any())
 				{
-					// Save the Skill Mix tables
-					if (inTaskDetail.SkillMixTable != null && inTaskDetail.SkillMixTable.Any())
+					List<SkillMixDTO> dtos = new List<SkillMixDTO>();
+					foreach (SkillMixModelView skillMixModelView in inTaskDetail.SkillMixTable)
 					{
-						List<SkillMixDTO> dtos = new List<SkillMixDTO>();
-						foreach (SkillMixModelView skillMixModelView in inTaskDetail.SkillMixTable)
-						{
-							SkillMixDTO dto = skillMixModelView.ToDto();
-							dto.BOEID = inTaskDetail.BoeID;
-							dto.BOETaskElementID = inTaskDetail.Id;
-							dtos.Add(dto);
-						}
-
-						this.skillMixDTOLoader.InsertSkillMix(dtos);
+						SkillMixDTO dto = skillMixModelView.ToDto();
+						dto.BOEID = inTaskDetail.BoeID;
+						dto.BOETaskElementID = inTaskDetail.Id;
+						dtos.Add(dto);
 					}
 
-					// Save the Common Disclosure DTOs
-					if (inTaskDetail.CommonDisclosureTable != null && inTaskDetail.CommonDisclosureTable.Any())
-					{
-						List<CommonDisclosureSkillMixDTO> dtos = new List<CommonDisclosureSkillMixDTO>();
-						foreach (CommonDisclosureModelView commonDisclosure in inTaskDetail.CommonDisclosureTable)
-						{
-							CommonDisclosureSkillMixDTO dto = commonDisclosure.ToDto();
-							dto.BOEID = inTaskDetail.BoeID;
-							dto.BOETaskElementID = inTaskDetail.Id;
-							dtos.Add(dto);
-						}
+					this.skillMixDTOLoader.InsertSkillMix(dtos);
+				}
 
-						this.commonDisclosureSMDTODataLoader.InsertCommonDisclosureSM(dtos);
+				// Save the Common Disclosure DTOs
+				if (inTaskDetail.CommonDisclosureTable != null && inTaskDetail.CommonDisclosureTable.Any())
+				{
+					List<CommonDisclosureSkillMixDTO> dtos = new List<CommonDisclosureSkillMixDTO>();
+					foreach (CommonDisclosureModelView commonDisclosure in inTaskDetail.CommonDisclosureTable)
+					{
+						CommonDisclosureSkillMixDTO dto = commonDisclosure.ToDto();
+						dto.BOEID = inTaskDetail.BoeID;
+						dto.BOETaskElementID = inTaskDetail.Id;
+						dtos.Add(dto);
 					}
+
+					this.commonDisclosureSMDTODataLoader.InsertCommonDisclosureSM(dtos);
 				}
 			}
 		}
@@ -1036,7 +1036,7 @@ namespace GenBOE.DataBridge.DTO
 					}
 				}
 
-			return TaskElementID;
+				return TaskElementID;
 
 			}
 		}
