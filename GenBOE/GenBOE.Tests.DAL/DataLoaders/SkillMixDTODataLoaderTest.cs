@@ -27,10 +27,10 @@
 		public void GetDeleteSkillMixDTOByMoqTypeSelection()
 		{
 			SkillMixDTOLoader sut = new SkillMixDTOLoader();
-			ICollection<SkillMixDTO> skillMixDTOData = sut.GetByMOQTypeSelectionID(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
+			ICollection<SkillMixDTO> skillMixDTOData = sut.GetByBOETaskElementID(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
 			Assert.AreEqual(1, skillMixDTOData.Count);
 
-			int? numRowsDeleted = sut.DeleteSkillMixByMoqTypeSelection(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
+			int? numRowsDeleted = sut.DeleteSkillMixByBOETaskElementID(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
 			Assert.AreEqual(1, numRowsDeleted);
 		}
 
@@ -53,8 +53,7 @@
 			updateSkillMix.ResourceNew = "New Resource";
 			updateSkillMix.BOEID = GlobalTestCaseSetup.GlobalBOEID;
 			updateSkillMix.BOETaskElementID = GlobalTestCaseSetup.GlobalTaskElementID;
-			updateSkillMix.MOQTypeSelectionID = GlobalTestCaseSetup.GlobalMoqTypeSelectionId;
-			updateSkillMix.IsPercentLocked = true;
+			updateSkillMix.IsUserInput = false;
 
 			ICollection<SkillMixDTO> skillMixes = new List<SkillMixDTO>() { updateSkillMix };
 			int? numRowsInserted = sut.InsertSkillMix(skillMixes);

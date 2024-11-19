@@ -60,25 +60,5 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             boeSummary = new Mock<BOESummary>(_TravelTripCostCalculator.Object, _RMSZoneTravelRatesFeesDataLoader.Object);
         }
-
-        /// <summary>
-        /// This test checks GetMetricNameTaskElementMappingDTO. It will verify that when
-        /// FullWorkspace is passed through that it will throw a ArgumentNullException. 
-        /// </summary>
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void GetMetricNameTaskElementMappingDTOSpaceSystemsTestWorkspaceNull()
-        {
-            //Value Declaration
-            FullWorkspace workspace = null;
-
-            ReportsControllerLogicSpaceSystems sut = new ReportsControllerLogicSpaceSystems(boeExporter.Object,
-                boeSummary.Object, boeCustomeExporter.Object, workspaceExportFormatDTOLoader.Object,
-                boeDiscrepancyReport.Object, resourceDTODataLoader.Object, iboeFormDataLoader.Object,
-                pboeFormDataLoader.Object, iInUseDataLoader.Object, this.proposalLoader.Object,
-                this.workspaceControllerLogic.Object, null);
-            //ACt
-            sut.GetMetricNameTaskElementMappingDTO(workspace);
-        }
     }
 }

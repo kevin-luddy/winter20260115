@@ -4,12 +4,14 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using IES.Common;
-
 namespace GenBOE.Web.ModelView
 {
+
+	using System;
+	using System.Collections.Generic;
+	using GenBOE.Dtos;
+	using IES.Common;
+
 	/// <summary>
 	/// PBOE Data.
 	/// </summary>
@@ -19,6 +21,21 @@ namespace GenBOE.Web.ModelView
 		/// Gets or sets the PBoe ID.
 		/// </summary>
 		public int PBoeID { get; set; }
+
+		/// <summary>
+		/// Form Name
+		/// </summary>
+		public string FormName { get; set; }
+
+		/// <summary>
+		/// Description
+		/// </summary>
+		public string Description { get; set; }
+
+		/// <summary>
+		/// Basis and Rationale
+		/// </summary>
+		public string BasisAndRationale { get; set; }
 
 		/// <summary>
 		/// Gets or sets the name of the supplier.
@@ -31,9 +48,29 @@ namespace GenBOE.Web.ModelView
 		public string VendorId { get; set; }
 
 		/// <summary>
+		/// LM Supplier RFP Number
+		/// </summary>
+		public string RFP { get; set; }
+
+		/// <summary>
+		/// Proposal Number
+		/// </summary>
+		public string ProposalNumber { get; set; }
+
+		/// <summary>
 		/// The selected Sub Resources
 		/// </summary>
 		public IList<string> SubResources { get; set; }
+
+		/// <summary>
+		/// Revision
+		/// </summary>
+		public int Revision { get; set; }
+
+		/// <summary>
+		/// Form Version
+		/// </summary>
+		public int FormVersion { get; set; }
 
 		/// <summary>
 		/// LM Proposed Value for Procurement.
@@ -48,12 +85,17 @@ namespace GenBOE.Web.ModelView
 		/// <summary>
 		/// CCoPD Description
 		/// </summary>
-		public string ExpectedCCoPDApplicability { get; set; }
+		public ExpectedCCoPDApplicability CCoPD { get; set; }
 
 		/// <summary>
 		/// Expected Certified Cost or Pricing Data (CCoPD) Applicability
 		/// </summary>
 		public bool IsCCoPD { get; set; }
+
+		/// <summary>
+		/// CCoPD Other Text
+		/// </summary>
+		public string CCoPDOtherText { get; set; }
 
 		/// <summary>
 		/// Expected Certified Cost or Pricing Data (CCoPD) Applicability and Commercial Item Expcetion
@@ -76,6 +118,96 @@ namespace GenBOE.Web.ModelView
 		public bool? IsCCoPDThresholdException { get; set; }
 
 		/// <summary>
+		/// Should Cost/Engineering Estimate
+		/// </summary>
+		public ScheduleEvent ShouldCostEstimate { get; set; }
+
+		/// <summary>
+		/// Should Cost Estimate Date
+		/// </summary>
+		public DateTime? ShouldCostEstimateDate { get; set; }
+
+		/// <summary>
+		/// Should Cost Estimate Text
+		/// </summary>
+		public string ShouldCostEstimateText { get; set; }
+
+		/// <summary>
+		/// Sow Written
+		/// </summary>
+		public ScheduleEvent SowWritten { get; set; }
+
+		/// <summary>
+		/// Sow Written Date
+		/// </summary>
+		public DateTime? SowWrittenDate { get; set; }
+
+		/// <summary>
+		/// Sow Written Text
+		/// </summary>
+		public string SowWrittenText { get; set; }
+
+		/// <summary>
+		/// Firm Supplier Receipt
+		/// </summary>
+		public ScheduleEvent FirmSupplierReceipt { get; set; }
+
+		/// <summary>
+		/// Firm Supplier Receipt Date
+		/// </summary>
+		public DateTime? FirmSupplierReceiptDate { get; set; }
+
+		/// <summary>
+		/// Firm Supplier Receipt Text
+		/// </summary>
+		public string FirmSupplierReceiptText { get; set; }
+
+		/// <summary>
+		/// Source Selection
+		/// </summary>
+		public ScheduleEvent SourceSelection { get; set; }
+
+		/// <summary>
+		/// Source Selection Date
+		/// </summary>
+		public DateTime? SourceSelectionDate { get; set; }
+
+		/// <summary>
+		/// Source Selection Text
+		/// </summary>
+		public string SourceSelectionText { get; set; }
+
+		/// <summary>
+		/// CID
+		/// </summary>
+		public ScheduleEvent CID { get; set; }
+
+		/// <summary>
+		/// CID Date
+		/// </summary>
+		public DateTime? CIDDate { get; set; }
+
+		/// <summary>
+		/// CID Text
+		/// </summary>
+		public string CIDText { get; set; }
+
+		/// <summary>
+		/// Govt Review
+		/// </summary>
+		public ScheduleEvent GovtReview { get; set; }
+
+		/// <summary>
+		/// Govt Review Date
+		/// </summary>
+		public DateTime? GovtReviewDate { get; set; }
+
+		/// <summary>
+		/// Govt Review Text
+		/// </summary>
+		public string GovtReviewText { get; set; }
+
+		/// <summary>
 		/// Schedule of Events Price Analysis
 		/// </summary>
 		public ScheduleEvent PriceAnalysis { get; set; }
@@ -85,6 +217,26 @@ namespace GenBOE.Web.ModelView
 		/// </summary>
 		[RequiredIf("PriceAnalysis", ScheduleEvent.Actual, ErrorMessage = "Price Analysis Date is required if Schedule Event is actual.")]
 		public DateTime? PriceAnalysisDate { get; set; }
+
+		/// <summary>
+		/// Price Analysis Text
+		/// </summary>
+		public string PriceAnalysisText { get; set; }
+
+		/// <summary>
+		/// Fact Finding
+		/// </summary>
+		public ScheduleEvent FactFinding { get; set; }
+
+		/// <summary>
+		/// Fact Finding Date
+		/// </summary>
+		public DateTime? FactFindingDate { get; set; }
+
+		/// <summary>
+		/// Fact Finding Text
+		/// </summary>
+		public string FactFindingText { get; set; }
 
 		/// <summary>
 		/// Schedule of Events Cost Analysis
@@ -98,6 +250,26 @@ namespace GenBOE.Web.ModelView
 		public DateTime? CostAnalysisDate { get; set; }
 
 		/// <summary>
+		/// Cost Analysis Text
+		/// </summary>
+		public string CostAnalysisText { get; set; }
+
+		/// <summary>
+		/// Govt Pricing
+		/// </summary>
+		public ScheduleEvent GovtPricing { get; set; }
+
+		/// <summary>
+		/// Govt Pricing Date
+		/// </summary>
+		public DateTime? GovtPricingDate { get; set; }
+
+		/// <summary>
+		/// Govt Pricing Text
+		/// </summary>
+		public string GovtPricingText { get; set; }
+
+		/// <summary>
 		/// Schedule of Events Govt. Pricing Assistance for CCoPD Review - Receipt
 		/// </summary>
 		public ScheduleEvent GovtPricingReceived { get; set; }
@@ -107,6 +279,26 @@ namespace GenBOE.Web.ModelView
 		/// </summary>
 		[RequiredIf("GovtPricingReceived", ScheduleEvent.Actual, ErrorMessage = "Govt Pricing Received Date is required if Govt Pricing Received is actual.")]
 		public DateTime? GovtPricingReceivedDate { get; set; }
+
+		/// <summary>
+		/// Govt Pricing Text
+		/// </summary>
+		public string GovtPricingReceivedText { get; set; }
+
+		/// <summary>
+		/// MOU
+		/// </summary>
+		public ScheduleEvent MOU { get; set; }
+
+		/// <summary>
+		/// MOU Date
+		/// </summary>
+		public DateTime? MOUDate { get; set; }
+
+		/// <summary>
+		/// MOU Text
+		/// </summary>
+		public string MOUText { get; set; }
 
 		/// <summary>
 		/// Schedule of Events Cost Analysis Unqualified
@@ -120,6 +312,11 @@ namespace GenBOE.Web.ModelView
 		public DateTime? CostAnalysisUnqualifiedDate { get; set; }
 
 		/// <summary>
+		/// Cost Analysis Unqualified Text
+		/// </summary>
+		public string CostAnalysisUnqualifiedText { get; set; }
+
+		/// <summary>
 		/// Technical Evaluation
 		/// </summary>
 		public ScheduleEvent TechnicalEvaluation { get; set; }
@@ -131,14 +328,39 @@ namespace GenBOE.Web.ModelView
 		public DateTime? TechnicalEvaluationDate { get; set; }
 
 		/// <summary>
+		/// Technical Evaluation Text
+		/// </summary>
+		public string TechnicalEvaluationText { get; set; }
+
+		/// <summary>
+		/// RFP Release to Supplier(s)
+		/// </summary>
+		public ScheduleEvent RFPRelease { get; set; }
+
+		/// <summary>
 		/// RFP Release to Supplier Date
 		/// </summary>
 		public DateTime? RFPReleaseToSupplierDate { get; set; }
 
 		/// <summary>
+		/// RFP Release Text
+		/// </summary>
+		public string RFPReleaseText { get; set; }
+
+		/// <summary>
+		/// Supplier Negotiations
+		/// </summary>
+		public ScheduleEvent SupplierNegotiations { get; set; }
+
+		/// <summary>
 		/// Supplier Negotiations Date
 		/// </summary>
 		public DateTime? SupplierNegotiationsDate { get; set; }
+
+		/// <summary>
+		/// Supplier Negotiations
+		/// </summary>
+		public string SupplierNegotiationsText { get; set; }
 
 		/// <summary>
 		/// Supplier Proposal Date
@@ -149,6 +371,26 @@ namespace GenBOE.Web.ModelView
 		/// Supplier Proposal Validity Date
 		/// </summary>
 		public string ValidityDate { get; set; }
+
+		/// <summary>
+		/// Supplier Proposal Supporting Data Included
+		/// </summary>
+		public int? SupplierProposalSupportingDataIncluded { get; set; }
+
+		/// <summary>
+		/// Price Analysis Included
+		/// </summary>
+		public int? PriceAnalysisIncluded { get; set; }
+
+		/// <summary>
+		/// Commercial Item Doc Included
+		/// </summary>
+		public int? CommercialItemDocIncluded { get; set; }
+
+		/// <summary>
+		/// Cost Analysis Included
+		/// </summary>
+		public int? CostAnalysisIncluded { get; set; }
 
 		/// <summary>
 		/// Date of Agreement on Final Price (Handshake)
@@ -171,6 +413,11 @@ namespace GenBOE.Web.ModelView
 		public string SupplierProposalManagerEmail { get; set; }
 
 		/// <summary>
+		/// Approver Phone (Supplier Proposal Manager)
+		/// </summary>
+		public string SupplierProposalManagerPhone { get; set; }
+
+		/// <summary>
 		/// Proposal Title / Name
 		/// </summary>
 		public string ProposalTitle { get; set; }
@@ -191,6 +438,11 @@ namespace GenBOE.Web.ModelView
 		public string ContractsLeadEmail { get; set; }
 
 		/// <summary>
+		/// Contract Leads Phone
+		/// </summary>
+		public string ContractsLeadPhone { get; set; }
+
+		/// <summary>
 		/// Lead Estimator Id
 		/// </summary>
 		public int LeadEstimatorId { get; set; }
@@ -204,6 +456,61 @@ namespace GenBOE.Web.ModelView
 		/// Lead Estimator Email
 		/// </summary>
 		public string LeadEstimatorEmail { get; set; }
+
+		/// <summary>
+		/// Tracking Number
+		/// </summary>
+		public string PTMTrackingNumber { get; set; }
+
+		/// <summary>
+		/// Planned Date Written Approval
+		/// </summary>
+		public DateTime? PlannedDateWrittenApproval { get; set; }
+
+		/// <summary>
+		/// Planned Date Approved Submission
+		/// </summary>
+		public DateTime? PlannedDateApprovedSubmission { get; set; }
+
+		/// <summary>
+		/// Supplier CCoPD
+		/// </summary>
+		public TripleBooleanState? SupplierCCoPD { get; set; }
+
+		/// <summary>
+		/// Source Selection Description
+		/// </summary>
+		public string SourceSelectionDescription { get; set; }
+
+		/// <summary>
+		/// Commerciality Description
+		/// </summary>
+		public string CommercialityDescription { get; set; }
+
+		/// <summary>
+		/// Technical Evaluation Description
+		/// </summary>
+		public string TechnicalEvaluationDescription { get; set; }
+
+		/// <summary>
+		/// Price Analysis Description
+		/// </summary>
+		public string PriceAnalysisDescription { get; set; }
+
+		/// <summary>
+		/// Cost Analysis Description
+		/// </summary>
+		public string CostAnalysisDescription { get; set; }
+
+		/// <summary>
+		/// Rationale Value Summary
+		/// </summary>
+		public string RationaleValueSummary { get; set; }
+
+		/// <summary>
+		/// Collection of clin-contract xrefs
+		/// </summary>
+		public ICollection<ClinContractDto> ClinContractXrefs { get; set; }
 
 		/// <summary>
 		/// Workspace ID

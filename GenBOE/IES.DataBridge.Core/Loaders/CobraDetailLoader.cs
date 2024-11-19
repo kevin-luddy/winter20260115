@@ -17,19 +17,26 @@ namespace IES.DataBridge.Loaders
 	using IES.Common.Core.Loaders;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Constants;
+	using IES.Common.Core.Interfaces;
 
 	/// <summary>
 	/// Cobra Grid Loader
 	/// </summary>
 	public class CobraDetailLoader : BulkDataLoader<CobraDetailModelView, RateCode>, ICobraDetailLoader
     {
-        #region constructors
+		/// <summary>
+		/// security information
+		/// </summary>
+		private readonly ISecurityInformation SecurityInformation;
+		
+		#region constructors
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CobraDetailLoader"/> class.
-        /// </summary>
-        public CobraDetailLoader(ILogger<CobraDetailLoader> logger) : base(logger)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CobraDetailLoader"/> class.
+		/// </summary>
+		public CobraDetailLoader(ILogger<CobraDetailLoader> logger, ISecurityInformation SecurityInformation) : base(logger)
 		{
+			this.SecurityInformation = SecurityInformation;
 		}
 
         #endregion
@@ -157,7 +164,7 @@ namespace IES.DataBridge.Loaders
             if (dtosToSave.Any())
             {
                 this.Log.LogDebug(string.Format("CobraDetailLoader.BulkSave => Ntid: {2}, RateCodeId: {1}, Count: {0}",
-                dtosToSave.Count, dtosToSave.First().Id, System.Threading.Thread.CurrentPrincipal.Identity.Name));
+                dtosToSave.Count, dtosToSave.First().Id, SecurityInformation.ActiveUserNTID ?? string.Empty));
 
                 foreach (CobraDetailModelView dto in dtosToSave)
                 {

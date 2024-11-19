@@ -18,6 +18,7 @@ namespace GenBOE.Dtos
     [Serializable()]
     public class BOEFormPBOEDTO : BOEFormDTO
     {
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BOEFormPBOEDTO"/> class.
         /// </summary>

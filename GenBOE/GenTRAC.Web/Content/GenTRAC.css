@@ -1202,3 +1202,11 @@ p.revision {
 li.nostyle {
     list-style-type: none;
 }
+
+#InsuranceTypeDiv {
+    display: inline;
+}
+
+#InsuranceTypeDiv span {
+    font-weight:bold;
+}

@@ -127,7 +127,7 @@
     <Compile Include="Common\security\SecurityAccessSpaceSystems.cs" />
     <Compile Include="DTO\MOQTypeSelectionTableDataResourceHours\IMOQTypeSelectionTableDataResourceHoursDTOLoader.cs" />
     <Compile Include="DTO\MOQTypeSelectionTableDataResourceHours\MOQTypeSelectionTableDataResourceHoursDTOLoader.cs" />
-    <Compile Include="DTO\MOQTypes\CommonDisclosureModelView.cs" />
+    <Compile Include="DTO\BOETaskElement\CommonDisclosureModelView.cs" />
     <Compile Include="DTO\MOQTypes\IMoqTypeDataLoader.cs" />
     <Compile Include="DTO\MOQTypes\IMoqTypeTableCustomFieldValueXREFLoader.cs" />
     <Compile Include="DTO\MOQTypes\MoqTableData.cs" />
@@ -136,7 +136,7 @@
     <Compile Include="DTO\MOQTypes\MoqTypeSelection.cs" />
     <Compile Include="DTO\MOQTypes\MoqTypeTableCustomFieldValueXREFLoader.cs" />
     <Compile Include="DTO\MOQTypes\MoqTypeTableDataLabels.cs" />
-    <Compile Include="DTO\MOQTypes\SkillMixModelView.cs" />
+    <Compile Include="DTO\BOETaskElement\SkillMixModelView.cs" />
     <Compile Include="DTO\RteTemplate\IRteTemplateDataLoader.cs" />
     <Compile Include="DTO\RteTemplate\RteTemplateDataLoader.cs" />
     <Compile Include="DTO\SkillMix\ISkillMixDTOLoader.cs" />
@@ -167,7 +167,6 @@
     <Compile Include="GenBOE.Dtos\DTOs\FindReplaceDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\GenBOEMetricsDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\GenBOEUsersOnlineDTO.cs" />
-    <Compile Include="GenBOE.Dtos\DTOs\GroupDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\LocationDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MetricNameTaskElementMappingDto.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MileReimbursementRateDTO.cs" />
@@ -188,6 +187,7 @@
     <Compile Include="GenBOE.Dtos\DTOs\OrdinaryVariableDto.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\OtherDirectCostSpread.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\OtherDirectCostType.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\ClinContractDto.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\PBOEDataDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\PerDiemDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\PerformingOrgDTO.cs" />
@@ -275,8 +275,6 @@
     <Compile Include="DTO\EscalationRates\EscalationRatesDTOLoader.cs" />
     <Compile Include="DTO\EscalationRates\IEscalationRatesDTOLoader.cs" />
     <Compile Include="DTO\FindReplace\FindReplaceDTODataLoader.cs" />
-    <Compile Include="DTO\MSTMetrics\IMSTMetricLoader.cs" />
-    <Compile Include="DTO\MSTMetrics\MSTMetricLoader.cs" />
     <Compile Include="DTO\Material\MaterialDTO.cs" />
     <Compile Include="DTO\MSTTravelAdmin\IMSTTravelNonzoneFeesAndCostsDTODataLoader.cs" />
     <Compile Include="DTO\MSTTravelAdmin\IMSTZoneTravelDestinationDTODataLoader.cs" />
@@ -367,12 +365,10 @@
     <Compile Include="DTO\Trip\TripDTODataLoader.cs" />
     <Compile Include="DTO\WorkspaceExportFormat\WorkspaceExportFormatDTODataLoader.cs" />
     <Compile Include="DTO\WorkspaceHistory\WorkspaceHistoryDTODataLoader.cs" />
-    <Compile Include="DTO\ADGroup\GroupDTODataLoader.cs" />
     <Compile Include="DTO\BoeComment\IBOECommentDTODataLoader.cs" />
     <Compile Include="DTO\Boe\IBoeDTODataLoader.cs" />
     <Compile Include="DTO\BOEHistory\IBOEHistoryDTODataLoader.cs" />
     <Compile Include="DTO\Clin\IClinDTODataLoader.cs" />
-    <Compile Include="DTO\ADGroup\IGroupDTODataLoader.cs" />
     <Compile Include="DTO\Permissions\IPermissionsDTODataLoader.cs" />
     <Compile Include="DTO\User\IUserDTODataLoader.cs" />
     <Compile Include="DTO\Wbs\IWbsDTODataLoader.cs" />

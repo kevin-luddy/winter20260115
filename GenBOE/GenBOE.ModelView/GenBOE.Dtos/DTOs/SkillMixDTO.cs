@@ -15,7 +15,7 @@
 		{
 			this.SkillMixID = -1;
 			this.Rationale = string.Empty;
-			this.Included = null;
+			this.Included = false;
 			this.ProposedHours = 0;
 			this.HistoricalHours = 0;
 			this.BOESkillMix = 0;
@@ -24,8 +24,7 @@
 			this.ResourceNew = string.Empty;
 			this.BOEID = -1;
 			this.BOETaskElementID = -1;
-			this.MOQTypeSelectionID = -1;
-			this.IsPercentLocked = false;
+			this.IsUserInput = false;
 		}
 
 		/// <summary>
@@ -41,32 +40,7 @@
 		/// <summary>
 		/// Check if historical resource proposed
 		/// </summary>
-		public bool? Included { get; set; }
-
-		/// <summary>
-		/// Get "Yes" or "No" string for Included, or an empty string if null
-		/// </summary>
-		public string IncludedString
-		{
-			get
-			{
-				if (Included.HasValue)
-				{
-					if (Included.Value)
-					{
-						return "Yes";
-					}
-					else
-					{
-						return "No";
-					}
-				}
-				else
-				{
-					return string.Empty;
-				}
-			}
-		}
+		public bool Included { get; set; }
 
 		/// <summary>
 		/// User/Calculated Hours of proposed percents
@@ -109,13 +83,8 @@
 		public int BOETaskElementID { get; set; }
 
 		/// <summary>
-		/// Foreign Key to MOQTypeSelectionID
+		/// Is this data User Input
 		/// </summary>
-		public int MOQTypeSelectionID { get; set; }
-
-		/// <summary>
-		/// Is the BOE Skill Mix Percent locked
-		/// </summary>
-		public bool IsPercentLocked { get; set; }
+		public bool IsUserInput { get; set; }
 	}
 }

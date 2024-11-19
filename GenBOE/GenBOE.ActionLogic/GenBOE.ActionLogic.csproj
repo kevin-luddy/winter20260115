@@ -152,8 +152,8 @@
     <Reference Include="System.Text.Encodings.Web, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Text.Encodings.Web.6.0.0\lib\net461\System.Text.Encodings.Web.dll</HintPath>
     </Reference>
-    <Reference Include="System.Text.Json, Version=6.0.0.9, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Text.Json.6.0.9\lib\net461\System.Text.Json.dll</HintPath>
+    <Reference Include="System.Text.Json, Version=6.0.0.10, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.6.0.10\lib\net461\System.Text.Json.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
@@ -209,7 +209,11 @@
     <Compile Include="BOE\BOEResourcesPair.cs" />
     <Compile Include="BOE\BOETotalsPostModel.cs" />
     <Compile Include="BOE\IBOERow.cs" />
+    <Compile Include="Common\ActionLogicUtility.cs" />
+    <Compile Include="BOE\PBOECLINContractXREFData.cs" />
+    <Compile Include="BOE\PBOEClinData.cs" />
     <Compile Include="BOE\PBOERow.cs" />
+    <Compile Include="BOE\PBOEViewModel.cs" />
     <Compile Include="Common\AllBOEExportHelper.cs" />
     <Compile Include="Common\Calculations\BoeTaskElementRecalculation.cs" />
     <Compile Include="Common\Calculations\FullWorkspaceRecalculation.cs" />
@@ -314,10 +318,7 @@
     <Compile Include="_ControllerLogic\GenBOEControllerLogic.cs" />
     <Compile Include="_ControllerLogic\WBSControllerLogic.cs" />
     <Compile Include="CopyBOE\BOECopier.cs" />
-    <Compile Include="CopyBOE\BOECopierCompanyMST.cs" />
-    <Compile Include="CopyBOE\BOECopierCompanySpace.cs" />
     <Compile Include="CopyBOE\ConflictBOE.cs" />
-    <Compile Include="CopyBOE\IBOECopierCompany.cs" />
     <Compile Include="CopyBOE\IConflictBOE.cs" />
     <Compile Include="CustomFields\RestoreDefaultOptions.cs" />
     <Compile Include="CustomFields\RestoreOptionData.cs" />
@@ -465,6 +466,8 @@
     <Compile Include="_ModelView\Task\LaborTypeOrder.cs" />
     <Compile Include="_ModelView\Task\LaborTypeOrderCollection.cs" />
     <Compile Include="_ModelView\Task\RecalcSpreadModelView.cs" />
+    <Compile Include="_ModelView\Task\RefreshSkillMixModelView.cs" />
+    <Compile Include="_ModelView\Task\SkillMixTotalsModelView.cs" />
     <Compile Include="_ModelView\Task\TaskElementDuplicateFormCollection.cs" />
     <Compile Include="_ModelView\Task\TaskElementDuplicateFormModelView.cs" />
     <Compile Include="_ModelView\TraceTableBoeDataGroup.cs" />

@@ -11,6 +11,7 @@ namespace GenBOE.DataBridge.DTO
 	using System.Collections.ObjectModel;
 	using System.Data;
 	using System.Linq;
+	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.Dtos;
 	using GenBOE.Models;
 	using IES.Common;
@@ -26,6 +27,8 @@ namespace GenBOE.DataBridge.DTO
 		private readonly IResourceTypeLoader resourceTypeLoader = null;
 		private readonly IBoeTaskElementCustomFieldValueXREFLoader boeTaskElementCustomFieldLoader = null;
 		private readonly ILaborTypeCustomFieldValueXREFLoader boeLaborTypeCustomFieldLoader = null;
+		private readonly ISkillMixDTOLoader skillMixDTOLoader = null;
+		private readonly ICommonDisclosureSMDTODataLoader commonDisclosureSMDTODataLoader = null;
 
 		/// <summary>
 		/// Nominal constructor
@@ -40,13 +43,17 @@ namespace GenBOE.DataBridge.DTO
 			IResourceSpreadLoader resourceSpreadLoader,
 			IOrdinaryVariableLoader ordinaryVariableLoader,
 			IBoeTaskElementCustomFieldValueXREFLoader taskElementCustomFieldLoader,
-			ILaborTypeCustomFieldValueXREFLoader laborTypeCustomFieldLoader)
+			ILaborTypeCustomFieldValueXREFLoader laborTypeCustomFieldLoader,
+			ISkillMixDTOLoader skillMixDTOLoader,
+			ICommonDisclosureSMDTODataLoader commonDisclosureSMDTODataLoader)
 		{
 			this.resourceTypeLoader = resourceTypeLoader;
 			this.resourceSpreadLoader = resourceSpreadLoader;
 			this.ordinaryVariableLoader = ordinaryVariableLoader;
 			this.boeTaskElementCustomFieldLoader = taskElementCustomFieldLoader;
 			this.boeLaborTypeCustomFieldLoader = laborTypeCustomFieldLoader;
+			this.skillMixDTOLoader = skillMixDTOLoader;
+			this.commonDisclosureSMDTODataLoader = commonDisclosureSMDTODataLoader;
 		}
 
 		#region Retrieves
@@ -105,6 +112,8 @@ namespace GenBOE.DataBridge.DTO
 				List<BoeTaskElementDTO> result;
 				List<OrdinaryVariableDto> ordinaryVariables;
 				List<ResourceTypeDto> taskElementLabors;
+				List<SkillMixDTO> skillMixDTOs = new List<SkillMixDTO>();
+				List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = new List<CommonDisclosureSkillMixDTO>();
 
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
@@ -152,7 +161,7 @@ namespace GenBOE.DataBridge.DTO
 					this.LoadSikorskyFields(gbe, result);
 				}
 
-				DoPostProcessing(result, ordinaryVariables, taskElementLabors, hoursPrecision, costPrecision);
+				DoPostProcessing(result, ordinaryVariables, taskElementLabors, hoursPrecision, costPrecision, skillMixDTOs, commonDisclosureSkillMixDTOs, skillMixDTOLoader, commonDisclosureSMDTODataLoader);
 				return result;
 			}
 		}
@@ -176,6 +185,8 @@ namespace GenBOE.DataBridge.DTO
 				List<BoeTaskElementDTO> result;
 				List<OrdinaryVariableDto> ordinaryVariables;
 				List<ResourceTypeDto> taskElementLabors;
+				List<SkillMixDTO> skillMixDTOs = new List<SkillMixDTO>();
+				List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = new List<CommonDisclosureSkillMixDTO>();
 
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
@@ -225,7 +236,7 @@ namespace GenBOE.DataBridge.DTO
 					this.LoadSikorskyFields(gbe, result);
 				}
 
-				DoPostProcessing(result, ordinaryVariables, taskElementLabors, hoursPrecision, costPrecision);
+				DoPostProcessing(result, ordinaryVariables, taskElementLabors, hoursPrecision, costPrecision, skillMixDTOs, commonDisclosureSkillMixDTOs, skillMixDTOLoader, commonDisclosureSMDTODataLoader);
 
 				return result;
 			}
@@ -248,6 +259,8 @@ namespace GenBOE.DataBridge.DTO
 				List<BoeTaskElementDTO> result;
 				List<OrdinaryVariableDto> ordinaryVariables;
 				List<ResourceTypeDto> taskElementLabors;
+				List<SkillMixDTO> skillMixDTOs = new List<SkillMixDTO>();
+				List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = new List<CommonDisclosureSkillMixDTO>();
 
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
@@ -297,7 +310,7 @@ namespace GenBOE.DataBridge.DTO
 					this.LoadSikorskyFields(gbe, result);
 				}
 
-				DoPostProcessing(result, ordinaryVariables, taskElementLabors, hoursPrecision, costPrecision);
+				DoPostProcessing(result, ordinaryVariables, taskElementLabors, hoursPrecision, costPrecision, skillMixDTOs, commonDisclosureSkillMixDTOs, skillMixDTOLoader, commonDisclosureSMDTODataLoader);
 
 				return result;
 			}
@@ -704,10 +717,55 @@ namespace GenBOE.DataBridge.DTO
 							gbe.refreshCustomFieldInUseFlagByWorkspaceID(workspaceId);
 						}
 					}
+
+					if (Utilities.IsSkillMixEnabledForSystem)
+					{
+						SaveSkillMixRationale(dtosToSave);
+					}
 				}
 			}
 
 			return toReturn;
+		}
+
+		/// <summary>
+		/// Saves the skill mix rationale.
+		/// </summary>
+		/// <param name="dtosToSave">Boe Task Element Dto</param>
+		private void SaveSkillMixRationale(ICollection<BoeTaskElementDTO> dtosToSave)
+		{
+			foreach (BoeTaskElementDTO inTaskDetail in dtosToSave)
+			{
+				// Save the Skill Mix tables
+				if (inTaskDetail.SkillMixTable != null && inTaskDetail.SkillMixTable.Any())
+				{
+					List<SkillMixDTO> dtos = new List<SkillMixDTO>();
+					foreach (SkillMixModelView skillMixModelView in inTaskDetail.SkillMixTable)
+					{
+						SkillMixDTO dto = skillMixModelView.ToDto();
+						dto.BOEID = inTaskDetail.BoeID;
+						dto.BOETaskElementID = inTaskDetail.Id;
+						dtos.Add(dto);
+					}
+
+					this.skillMixDTOLoader.InsertSkillMix(dtos);
+				}
+
+				// Save the Common Disclosure DTOs
+				if (inTaskDetail.CommonDisclosureTable != null && inTaskDetail.CommonDisclosureTable.Any())
+				{
+					List<CommonDisclosureSkillMixDTO> dtos = new List<CommonDisclosureSkillMixDTO>();
+					foreach (CommonDisclosureModelView commonDisclosure in inTaskDetail.CommonDisclosureTable)
+					{
+						CommonDisclosureSkillMixDTO dto = commonDisclosure.ToDto();
+						dto.BOEID = inTaskDetail.BoeID;
+						dto.BOETaskElementID = inTaskDetail.Id;
+						dtos.Add(dto);
+					}
+
+					this.commonDisclosureSMDTODataLoader.InsertCommonDisclosureSM(dtos);
+				}
+			}
 		}
 
 		/// <summary>
@@ -945,7 +1003,41 @@ namespace GenBOE.DataBridge.DTO
 					this.SaveOrdinaryVariables(inTaskDetail.OrdinaryVariables);
 				}
 
+				if (Utilities.IsSkillMixEnabledForSystem)
+				{
+					// Save the Skill Mix tables
+					if (inTaskDetail.SkillMixTable != null && inTaskDetail.SkillMixTable.Any())
+					{
+						List<SkillMixDTO> dtos = new List<SkillMixDTO>();
+						foreach (SkillMixModelView skillMixModelView in inTaskDetail.SkillMixTable)
+						{
+							SkillMixDTO dto = skillMixModelView.ToDto();
+							dto.BOEID = inTaskDetail.BoeID;
+							dto.BOETaskElementID = inTaskDetail.Id;
+							dtos.Add(dto);
+						}
+
+						this.skillMixDTOLoader.InsertSkillMix(dtos);
+					}
+
+					// Save the Common Disclosure DTOs
+					if (inTaskDetail.CommonDisclosureTable != null && inTaskDetail.CommonDisclosureTable.Any())
+					{
+						List<CommonDisclosureSkillMixDTO> dtos = new List<CommonDisclosureSkillMixDTO>();
+						foreach (CommonDisclosureModelView commonDisclosure in inTaskDetail.CommonDisclosureTable)
+						{
+							CommonDisclosureSkillMixDTO dto = commonDisclosure.ToDto();
+							dto.BOEID = inTaskDetail.BoeID;
+							dto.BOETaskElementID = inTaskDetail.Id;
+							dtos.Add(dto);
+						}
+
+						this.commonDisclosureSMDTODataLoader.InsertCommonDisclosureSM(dtos);
+					}
+				}
+
 				return TaskElementID;
+
 			}
 		}
 
@@ -1284,7 +1376,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="taskElementLabors">Task Element Labors</param>
 		/// <param name="costPrecision">The Cost precision for the workspace.</param>
 		/// <param name="hoursPrecision">The Hours precision for the workspace.</param>
-		private static void DoPostProcessing(List<BoeTaskElementDTO> result, List<OrdinaryVariableDto> ordinaryVariables, List<ResourceTypeDto> taskElementLabors, int hoursPrecision, int costPrecision)
+		private static void DoPostProcessing(List<BoeTaskElementDTO> result, List<OrdinaryVariableDto> ordinaryVariables, List<ResourceTypeDto> taskElementLabors, int hoursPrecision, int costPrecision, ICollection<SkillMixDTO> skillMix, ICollection<CommonDisclosureSkillMixDTO> commonDisclosures, ISkillMixDTOLoader skillMixDTOLoader, ICommonDisclosureSMDTODataLoader commonDisclosureSMDTODataLoader)
 		{
 			result.AsParallel().ForAll(
 				bT =>
@@ -1370,6 +1462,24 @@ namespace GenBOE.DataBridge.DTO
 					// labor task elements should be grabbing the date from the database
 					bT.StartDate = bT.StartDate.Normalize();
 					bT.EndDate = bT.EndDate.Normalize();
+
+					if (skillMix == null)
+					{
+						bT.SkillMixTable = skillMixDTOLoader.GetByBOETaskElementID(bT.Id).Select(x => new SkillMixModelView(x)).OrderBy(x => x.ResourceOld).ThenBy(y => y.ResourceNew).ToCollection();
+					}
+					else
+					{
+						bT.SkillMixTable = skillMix.Where(r => r.BOETaskElementID == bT.Id).Select(x => new SkillMixModelView(x)).OrderBy(x => x.ResourceOld).ThenBy(y => y.ResourceNew).ToCollection();
+					}
+
+					if (commonDisclosures == null)
+					{
+						bT.CommonDisclosureTable = commonDisclosureSMDTODataLoader.GetByBOETaskElementID(bT.Id).Select(x => new CommonDisclosureModelView(x)).OrderBy(d => d.ResourceID).ThenBy(e => e.BusinessResourceID).ToCollection();
+					}
+					else
+					{
+						bT.CommonDisclosureTable = commonDisclosures.Where(r => r.BOETaskElementID == bT.Id).Select(x => new CommonDisclosureModelView(x)).OrderBy(d => d.ResourceID).ThenBy(e => e.BusinessResourceID).ToCollection();
+					}
 				});
 		}
 

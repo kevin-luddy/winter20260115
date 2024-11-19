@@ -30,11 +30,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
     public class ReportsControllerLogicMST : ReportsControllerLogic
     {
         /// <summary>
-        /// Metric loader for MST.
-        /// </summary>
-        private IMSTMetricLoader _metricLoader;
-
-        /// <summary>
         /// Common Data Mapper
         /// </summary>
         private ICommonDataMapper _CommonDataMapper { get; set; }
@@ -58,7 +53,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             BOESummary boeSummary,
             IBOECustomExporter boeCustomExporter,
             IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader,
-            IMSTMetricLoader metricLoader,
             BOEDiscrepancyReport boeDiscrepancyReport,
             ICommonDataMapper commonDataMapper,
             IProposalLoader proposalLoader,
@@ -66,7 +60,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             TravelTripCostCalculation travelTripCostCalculator)
             : base(boeExporter, boeSummary, boeCustomExporter, workspaceExportFormatDTOLoader, boeDiscrepancyReport, proposalLoader, workspaceControllerLogic, travelTripCostCalculator)
         {
-            this._metricLoader = metricLoader;
             this._CommonDataMapper = commonDataMapper;
         }
 
@@ -74,27 +67,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// Gets a boolen indicating if custom export is support per MST company configuration
         /// </summary>
         public override bool SupportCustomExport { get { return true; } }
-
-        /// <summary>
-        /// Gets a mapping task element to metric names for export.
-        /// </summary>
-        /// <param name="workspace">Full workspace</param>
-        /// <returns>Metric name to task element mappings.</returns>
-        public override MetricNameTaskElementMappingDTO GetMetricNameTaskElementMappingDTO(FullWorkspace workspace)
-        {
-            if (workspace == null)
-            {
-                throw new ArgumentNullException(nameof(workspace));
-            }
-            ICollection<MetricIdTaskElementIdXrefDTO> xrefs = this._metricLoader.GetTaskElementIdMeticIdMappings(workspace.TaskElements.Select(i => i.Id).ToCollection<int>());
-            ICollection<MSTMetricDetailsDTO> metrics = this._metricLoader.GetByTaskElementIds(workspace.TaskElements.Select(i => i.Id).ToCollection<int>());
-            Dictionary<int, string> metricTitles = new Dictionary<int, string>();
-            foreach (MSTMetricDetailsDTO metric in metrics)
-            {
-                metricTitles.Add(metric.Id, metric.MeasureName);
-            }
-            return new MetricNameTaskElementMappingDTO(xrefs, metricTitles);
-        }
 
         /// <summary>
         /// Get the Summary Reports Model Views for Project Map Workspaces

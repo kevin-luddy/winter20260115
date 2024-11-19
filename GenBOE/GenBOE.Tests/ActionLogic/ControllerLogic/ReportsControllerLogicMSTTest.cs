@@ -30,7 +30,6 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
     [TestClass]
     public class ReportsControllerLogicMSTTest
     {
-        Mock<IMSTMetricLoader> metricLoader = new Mock<IMSTMetricLoader>();
         Mock<IBOEExporter> boeExporter = new Mock<IBOEExporter>();
         Mock<BOESummary> boeSummary;
         Mock<IBOECustomExporter> boeCustomeExporter = new Mock<IBOECustomExporter>();
@@ -68,68 +67,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         public ReportsControllerLogicMST CreateSut()
         {
             return new ReportsControllerLogicMST(boeExporter.Object, boeSummary.Object, boeCustomeExporter.Object,
-                workspaceExportFormatDTOLoader.Object, metricLoader.Object, boeDiscrepancyReport.Object,
+                workspaceExportFormatDTOLoader.Object, boeDiscrepancyReport.Object,
                 _commonDataMapper.Object, this.proposalLoader.Object, this.workspaceControllerLogic.Object, null);
-        }
-
-        /// <summary>
-        /// This Test check GetMetricNameTaskElementmappingDTO. It will verify that the 
-        /// mapping of dto task element to metric names is correct and that the value
-        /// return is the proper mapping.
-        /// </summary>
-        [TestMethod]
-        public void GetMetricNameTaskElementMappingDTOMSTTest()
-        {
-            //Value Declarations
-            FullWorkspace workspace = new FullWorkspace() { Id = 1 };
-
-            ICollection<BoeTaskElementDTO> TaskElementsCollection = new Collection<BoeTaskElementDTO>(){
-                new BoeTaskElementDTO() { Id = 1 },
-                new BoeTaskElementDTO() { Id = 2 },
-                new BoeTaskElementDTO() { Id = 4 }};
-            ICollection<int> inTaskElementIds = TaskElementsCollection.Select(x => x.Id).ToCollection<int>();
-
-            ICollection<MetricIdTaskElementIdXrefDTO> xrefs = new Collection<MetricIdTaskElementIdXrefDTO>(){
-                new MetricIdTaskElementIdXrefDTO() { MetricId = 1, TaskElementId = 10 },
-                new MetricIdTaskElementIdXrefDTO() { MetricId = 2, TaskElementId = 10 },
-                new MetricIdTaskElementIdXrefDTO() { MetricId = 2, TaskElementId = 20 },
-                new MetricIdTaskElementIdXrefDTO() { MetricId = 3, TaskElementId = 30 }};
-            ICollection<MSTMetricDetailsDTO> metrics = new Collection<MSTMetricDetailsDTO>(){
-                new MSTMetricDetailsDTO() { Id = 1, MeasureName = "Measure 1" },
-                new MSTMetricDetailsDTO() { Id = 2, MeasureName = "Measure 2" },
-                new MSTMetricDetailsDTO() { Id = 3, MeasureName = "Measure 3" }};
-
-            //Setup
-            _retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(1, false, It.IsAny<int>(), It.IsAny<int>())).Returns(TaskElementsCollection);
-            metricLoader.Setup(x => x.GetTaskElementIdMeticIdMappings(inTaskElementIds)).Returns(xrefs);
-            metricLoader.Setup(x => x.GetByTaskElementIds(inTaskElementIds)).Returns(metrics);
-
-            ReportsControllerLogicMST sut = CreateSut();
-
-            //ACt
-            MetricNameTaskElementMappingDTO returnValue = sut.GetMetricNameTaskElementMappingDTO(workspace);
-
-            //Assert
-            Assert.AreEqual("ID 1: Measure 1, ID 2: Measure 2", returnValue.GetMetricNamesByTaskElementId(10));
-            Assert.AreEqual("ID 2: Measure 2", returnValue.GetMetricNamesByTaskElementId(20));
-            Assert.AreEqual("ID 3: Measure 3", returnValue.GetMetricNamesByTaskElementId(30));
-        }
-
-        /// <summary>
-        /// This test checks GetMetricNameTaskElementMappingDTO. It will verify that when
-        /// FullWorkspace is passed through that it will throw a ArgumentNullException. 
-        /// </summary>
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void GetMetricNameTaskElementMappingDTOMSTTestWorkspaceNull()
-        {
-            //Value Declaration
-            FullWorkspace workspace = null;
-
-            ReportsControllerLogicMST sut = CreateSut();
-
-            //ACt
-            sut.GetMetricNameTaskElementMappingDTO(workspace);
         }
 
         #region Project Map Reports

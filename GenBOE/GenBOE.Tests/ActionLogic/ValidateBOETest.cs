@@ -38,7 +38,6 @@ namespace GenBOE.Tests.ActionLogic
         private Mock<ICommonDataMapper> _CommonDataMapper = new Mock<ICommonDataMapper>();
 		private Mock<IPermissionsDTODataLoader> _permissions = new Mock<IPermissionsDTODataLoader>();
         private Mock<IMSTZoneTravelValidator> mstZoneTravelValidator = new Mock<IMSTZoneTravelValidator>();
-		private Mock<IMSTMetricLoader> mstMetricLoader = new Mock<IMSTMetricLoader>();
 		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
         private Mock<IOffloadRatesDTOLoader> offloadRatesLoader = new Mock<IOffloadRatesDTOLoader>();
         private Mock<IRteTemplateDataLoader> rteTemplateLoader = new Mock<IRteTemplateDataLoader>();
@@ -52,7 +51,6 @@ namespace GenBOE.Tests.ActionLogic
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
 
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IMSTZoneTravelValidator), mstZoneTravelValidator.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IMSTMetricLoader), mstMetricLoader.Object);
 
             this.offloadRatesLoader = new Mock<IOffloadRatesDTOLoader>();
 
@@ -2725,7 +2723,7 @@ namespace GenBOE.Tests.ActionLogic
                                                                         ZoneOriginName = "Test Origin",
                                                                         ZoneDestinationName = "Test Destination"}}}});
 
-            ValidateBOE sut = new ValidateBOEMst(mstMetricLoader.Object, _VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, mstZoneTravelValidator.Object, zoneTravelLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+            ValidateBOE sut = new ValidateBOEMst(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, mstZoneTravelValidator.Object, zoneTravelLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
             mstZoneTravelValidator.Setup(x => x.ValidateTravelTaskDetails(It.IsAny<TravelDTO>(), It.IsAny<int>())).Returns(new Collection<ValidationMessage>() { new ValidationMessage() { ValidationIssue = "Test Travel Details Issue" } });
             mstZoneTravelValidator.Setup(x => x.ValidateTravelTrips(It.IsAny<ICollection<MSTTravelTripType>>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<int>(), It.IsAny<ICollection<int>>(), It.IsAny<bool>(), It.IsAny<string>())).Returns(new Collection<ValidationMessage>() { new ValidationMessage() { ValidationIssue = "Test Travel Trip Issue" } });
 
@@ -4156,16 +4154,7 @@ namespace GenBOE.Tests.ActionLogic
 					},
 				Rationale = "Test Rationale",
 				SkillMixRationale = "Test Skill Mix",
-				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
-				SkillMixTable = new Collection<SkillMixModelView>()
-				{
-					new SkillMixModelView()
-					{
-						Included = true,
-						BOESkillMix = 100,
-						Rationale = "Test Skill Mix Table Rationale"
-					}
-				}
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
@@ -4212,17 +4201,7 @@ namespace GenBOE.Tests.ActionLogic
 					},
 				Rationale = "Test Rationale",
 				SkillMixRationale = "Test Skill Mix",
-				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
-				SkillMixTable = new Collection<SkillMixModelView>()
-				{
-					new SkillMixModelView()
-					{
-						Included = true,
-						BOESkillMix = 100,
-						// 256 characters, 1 over the limit of 255
-						Rationale = "One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed into a horrible vermin. He lay on his armour-like back, and if he lifted his head a little he could see his brown belly, slightly domed and divided by arches."
-					}
-				}
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
@@ -4270,16 +4249,7 @@ namespace GenBOE.Tests.ActionLogic
 					},
 				Rationale = "Test Rationale",
 				SkillMixRationale = "Test Skill Mix",
-				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
-				SkillMixTable = new Collection<SkillMixModelView>()
-				{
-					new SkillMixModelView()
-					{
-						Included = false,
-						Rationale = string.Empty,
-						BOESkillMix = 100
-					}
-				}
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
@@ -4327,16 +4297,7 @@ namespace GenBOE.Tests.ActionLogic
 					},
 				Rationale = "Test Rationale",
 				SkillMixRationale = "Test Skill Mix",
-				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
-				SkillMixTable = new Collection<SkillMixModelView>()
-				{
-					new SkillMixModelView()
-					{
-						Included = false,
-						Rationale = string.Empty,
-						BOESkillMix = 100
-					}
-				}
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
@@ -4381,16 +4342,7 @@ namespace GenBOE.Tests.ActionLogic
 					},
 				Rationale = "Test Rationale",
 				SkillMixRationale = "Test Skill Mix",
-				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
-				SkillMixTable = new Collection<SkillMixModelView>()
-				{
-					new SkillMixModelView()
-					{
-						Included = null,
-						Rationale = "test",
-						BOESkillMix = 100
-					}
-				}
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
@@ -4438,17 +4390,7 @@ namespace GenBOE.Tests.ActionLogic
 					},
 				Rationale = "Test Rationale",
 				SkillMixRationale = "Test Skill Mix",
-				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
-				SkillMixTable = new Collection<SkillMixModelView>()
-				{
-					new SkillMixModelView()
-					{
-						ResourceNew = "Mix 1",
-						Included = true,
-						Rationale = "test",
-						BOESkillMix = null,
-					}
-				}
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
@@ -4498,16 +4440,7 @@ namespace GenBOE.Tests.ActionLogic
 					},
 				Rationale = "Test Rationale",
 				SkillMixRationale = "Test Skill Mix",
-				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
-				SkillMixTable = new Collection<SkillMixModelView>()
-				{
-					new SkillMixModelView()
-					{
-						Included = true,
-						Rationale = "test",
-						BOESkillMix = 20,
-					}
-				}
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
@@ -4555,17 +4488,7 @@ namespace GenBOE.Tests.ActionLogic
 					},
 				Rationale = "Test Rationale",
 				SkillMixRationale = "Test Skill Mix",
-				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
-				SkillMixTable = new Collection<SkillMixModelView>()
-				{
-					new SkillMixModelView()
-					{
-						Included = true,
-						Rationale = "test",
-						BOESkillMix = 100,
-						ProposedHours = 40
-					}
-				}
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
@@ -4613,26 +4536,7 @@ namespace GenBOE.Tests.ActionLogic
 					},
 				Rationale = "Test Rationale",
 				SkillMixRationale = "Test Skill Mix",
-				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
-				SkillMixTable = new Collection<SkillMixModelView>()
-				{
-					new SkillMixModelView()
-					{
-						BOESkillMix = 100,
-						Rationale = "Good Rationale",
-						Included = true
-					}
-				},
-				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
-				{
-					new CommonDisclosureModelView()
-					{
-						BusinessResourceID = "testBRC",
-						BOESkillMix = 100,
-						Rationale = "Good Rationale",
-						Included = true
-					}
-				}
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
@@ -4679,25 +4583,7 @@ namespace GenBOE.Tests.ActionLogic
 					},
 				Rationale = "Test Rationale",
 				SkillMixRationale = "Test Skill Mix",
-				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
-				SkillMixTable = new Collection<SkillMixModelView>()
-				{
-					new SkillMixModelView()
-					{
-						BOESkillMix = 100,
-						Rationale = "Good Rationale",
-						Included = true
-					}
-				},
-				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
-				{
-					new CommonDisclosureModelView()
-					{
-						BOESkillMix = 100,
-						Rationale = "Good Rationale",
-						Included = true
-					}
-				}
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
@@ -4745,35 +4631,7 @@ namespace GenBOE.Tests.ActionLogic
 					},
 				Rationale = "Test Rationale",
 				SkillMixRationale = "Test Skill Mix",
-				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
-				SkillMixTable = new Collection<SkillMixModelView>()
-				{
-					new SkillMixModelView()
-					{
-						BOESkillMix = 100,
-						Rationale = "Good Rationale",
-						Included = true
-					}
-				},
-				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
-				{
-					new CommonDisclosureModelView()
-					{
-						ResourceID = "CD 1",
-						BusinessResourceID = "testBRC",
-						BOESkillMix = 50,
-						Rationale = "Good Rationale",
-						Included = true
-					},
-					new CommonDisclosureModelView()
-					{
-						ResourceID = "CD 1",
-						BusinessResourceID = "testBRC",
-						BOESkillMix = 50,
-						Rationale = "Good Rationale",
-						Included = true
-					}
-				}
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
@@ -4821,28 +4679,7 @@ namespace GenBOE.Tests.ActionLogic
 					},
 				Rationale = "Test Rationale",
 				SkillMixRationale = "Test Skill Mix",
-				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
-				SkillMixTable = new Collection<SkillMixModelView>()
-				{
-					new SkillMixModelView()
-					{
-						BOESkillMix = 100,
-						Rationale = "Good Rationale",
-						Included = true,
-						ProposedHours = 50
-					}
-				},
-				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
-				{
-					new CommonDisclosureModelView()
-					{
-						BusinessResourceID = "testBRC",
-						Included = true,
-						BOESkillMix = 100,
-						// 256 characters, 1 over the limit of 255
-						Rationale = "One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed into a horrible vermin. He lay on his armour-like back, and if he lifted his head a little he could see his brown belly, slightly domed and divided by arches."
-					}
-				}
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
@@ -4890,34 +4727,7 @@ namespace GenBOE.Tests.ActionLogic
 					},
 				Rationale = "Test Rationale",
 				SkillMixRationale = "Test Skill Mix",
-				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
-				SkillMixTable = new Collection<SkillMixModelView>()
-				{
-					new SkillMixModelView()
-					{
-						BOESkillMix = 100,
-						Rationale = "Good Rationale",
-						Included = true,
-						ProposedHours = 50
-					}
-				},
-				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
-				{
-					new CommonDisclosureModelView()
-					{
-						BusinessResourceID = "testBRC",
-						Included = false,
-						Rationale = string.Empty,
-						BOESkillMix = 50
-					},
-					new CommonDisclosureModelView()
-					{
-						BusinessResourceID = "testBRC1",
-						Included = true,
-						Rationale = "test",
-						BOESkillMix = 50
-					}
-				}
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
@@ -4965,27 +4775,7 @@ namespace GenBOE.Tests.ActionLogic
 					},
 				Rationale = "Test Rationale",
 				SkillMixRationale = "Test Skill Mix",
-				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
-				SkillMixTable = new Collection<SkillMixModelView>()
-				{
-					new SkillMixModelView()
-					{
-						BOESkillMix = 100,
-						Rationale = "Good Rationale",
-						Included = true,
-						ProposedHours = 50
-					}
-				},
-				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
-				{
-					new CommonDisclosureModelView()
-					{
-						BusinessResourceID = "testBRC",
-						Included = true,
-						Rationale = string.Empty,
-						BOESkillMix = 100
-					}
-				}
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
@@ -5030,36 +4820,7 @@ namespace GenBOE.Tests.ActionLogic
 					},
 				Rationale = "Test Rationale",
 				SkillMixRationale = "Test Skill Mix",
-				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
-				SkillMixTable = new Collection<SkillMixModelView>()
-				{
-					new SkillMixModelView()
-					{
-						BOESkillMix = 100,
-						Rationale = "Good Rationale",
-						Included = true,
-						ProposedHours = 50
-					}
-				},
-				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
-				{
-					new CommonDisclosureModelView()
-					{
-						ResourceID = "CD 1",
-						BusinessResourceID = "testBRC",
-						Included = false,
-						Rationale = "test",
-						BOESkillMix = 50
-					},
-					new CommonDisclosureModelView()
-					{
-						ResourceID = "CD 1",
-						BusinessResourceID = "testBRC1",
-						Included = false,
-						Rationale = "test",
-						BOESkillMix = 50
-					}
-				}
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
@@ -5108,28 +4869,7 @@ namespace GenBOE.Tests.ActionLogic
 					},
 				Rationale = "Test Rationale",
 				SkillMixRationale = "Test Skill Mix",
-				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
-				SkillMixTable = new Collection<SkillMixModelView>()
-				{
-					new SkillMixModelView()
-					{
-						BOESkillMix = 100,
-						Rationale = "Good Rationale",
-						Included = true,
-						ProposedHours = 50
-					}
-				},
-				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
-				{
-					new CommonDisclosureModelView()
-					{
-						ResourceID = "CD 1",
-						BusinessResourceID = "testBRC",
-						Included = null,
-						Rationale = "test",
-						BOESkillMix = 100
-					}
-				}
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
@@ -5179,27 +4919,7 @@ namespace GenBOE.Tests.ActionLogic
 					},
 				Rationale = "Test Rationale",
 				SkillMixRationale = "Test Skill Mix",
-				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
-				SkillMixTable = new Collection<SkillMixModelView>()
-				{
-					new SkillMixModelView()
-					{
-						BOESkillMix = 100,
-						Rationale = "Good Rationale",
-						Included = true
-					}
-				},
-				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
-				{
-					new CommonDisclosureModelView()
-					{
-						ResourceID = "CD 1",
-						BusinessResourceID = "testBRC",
-						Included = true,
-						Rationale = "test",
-						BOESkillMix = null,
-					}
-				}
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
@@ -5249,26 +4969,7 @@ namespace GenBOE.Tests.ActionLogic
 					},
 				Rationale = "Test Rationale",
 				SkillMixRationale = "Test Skill Mix",
-				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
-				SkillMixTable = new Collection<SkillMixModelView>()
-				{
-					new SkillMixModelView()
-					{
-						BOESkillMix = 100,
-						Rationale = "Good Rationale",
-						Included = true
-					}
-				},
-				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
-				{
-					new CommonDisclosureModelView()
-					{
-						BusinessResourceID = "testBRC",
-						Included = true,
-						Rationale = "test",
-						BOESkillMix = 20,
-					}
-				}
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
@@ -5316,28 +5017,7 @@ namespace GenBOE.Tests.ActionLogic
 					},
 				Rationale = "Test Rationale",
 				SkillMixRationale = "Test Skill Mix",
-				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
-				SkillMixTable = new Collection<SkillMixModelView>()
-				{
-					new SkillMixModelView()
-					{
-						BOESkillMix = 100,
-						Rationale = "Good Rationale",
-						Included = true,
-						ProposedHours = 50
-					}
-				},
-				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
-				{
-					new CommonDisclosureModelView()
-					{
-						BusinessResourceID = "testBRC",
-						Included = true,
-						Rationale = "test",
-						BOESkillMix = 100,
-						ProposedHours = 40
-					}
-				}
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };
@@ -5385,39 +5065,7 @@ namespace GenBOE.Tests.ActionLogic
 					},
 				Rationale = "Test Rationale",
 				SkillMixRationale = "Test Skill Mix",
-				HistoricalReferenceExplanation = "Test Historical Ref Explanation",
-				SkillMixTable = new Collection<SkillMixModelView>()
-				{
-					new SkillMixModelView()
-					{
-						ResourceNew = "CD 1",
-						BOESkillMix = 100,
-						Rationale = "Good Rationale",
-						Included = true,
-						HistoricalHours = 100
-					}
-				},
-				CommonDisclosureTable = new Collection<CommonDisclosureModelView>()
-				{
-					new CommonDisclosureModelView()
-					{
-						ResourceID = "CD 1",
-						BusinessResourceID = "testBRC",
-						BOESkillMix = 50,
-						Rationale = "Good Rationale",
-						Included = true,
-						HistoricalHours = 49
-					},
-					new CommonDisclosureModelView()
-					{
-						ResourceID = "CD 1",
-						BusinessResourceID = "testBRC1",
-						BOESkillMix = 50,
-						Rationale = "Good Rationale",
-						Included = true,
-						HistoricalHours = 17
-					}
-				}
+				HistoricalReferenceExplanation = "Test Historical Ref Explanation"
 			};
 
 			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = new DateTime(2035, 1, 1) };

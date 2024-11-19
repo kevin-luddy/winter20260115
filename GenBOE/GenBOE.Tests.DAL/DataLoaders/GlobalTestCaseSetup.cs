@@ -1422,8 +1422,10 @@ namespace GenBOE.Tests.DAL.DataLoaders
             IOrdinaryVariableLoader ordinaryVariableLoader = new OrdinaryVariableLoader();
             IBoeTaskElementCustomFieldValueXREFLoader taskElementCustomFieldLoader = new BoeTaskElementCustomFieldValueXREFLoader();
             ILaborTypeCustomFieldValueXREFLoader laborTypeCustomFieldLoader = new LaborTypeCustomFieldValueXREFLoader();
+			SkillMixDTOLoader skillMixDTOLoader = new SkillMixDTOLoader();
+			CommonDisclosureSMDTODataLoader commonDisclosureLoader = new CommonDisclosureSMDTODataLoader();
 
-            BoeTaskElementDTODataLoader boeTaskElementLoader = new BoeTaskElementDTODataLoader(resourceTypeLoader, resourceSpreadLoader, ordinaryVariableLoader, taskElementCustomFieldLoader, laborTypeCustomFieldLoader);
+			BoeTaskElementDTODataLoader boeTaskElementLoader = new BoeTaskElementDTODataLoader(resourceTypeLoader, resourceSpreadLoader, ordinaryVariableLoader, taskElementCustomFieldLoader, laborTypeCustomFieldLoader, skillMixDTOLoader, commonDisclosureLoader);
             BoeTaskElementDTO newElement = new BoeTaskElementDTO();
             newElement.Id = -1;
             newElement.BOETaskID = "B4";
@@ -1516,8 +1518,10 @@ namespace GenBOE.Tests.DAL.DataLoaders
             IOrdinaryVariableLoader ordinaryVariableLoader = new OrdinaryVariableLoader();
             IBoeTaskElementCustomFieldValueXREFLoader taskElementCustomFieldLoader = new BoeTaskElementCustomFieldValueXREFLoader();
             ILaborTypeCustomFieldValueXREFLoader laborTypeCustomFieldLoader = new LaborTypeCustomFieldValueXREFLoader();
+			SkillMixDTOLoader skillMixDTOLoader = new SkillMixDTOLoader();
+			CommonDisclosureSMDTODataLoader commonDisclosureLoader = new CommonDisclosureSMDTODataLoader();
 
-            BoeTaskElementDTODataLoader boeTaskElementLoader = new BoeTaskElementDTODataLoader(resourceTypeLoader, resourceSpreadLoader, ordinaryVariableLoader, taskElementCustomFieldLoader, laborTypeCustomFieldLoader);
+			BoeTaskElementDTODataLoader boeTaskElementLoader = new BoeTaskElementDTODataLoader(resourceTypeLoader, resourceSpreadLoader, ordinaryVariableLoader, taskElementCustomFieldLoader, laborTypeCustomFieldLoader, skillMixDTOLoader, commonDisclosureLoader);
 
             createLaborType.Id = -1;
             //createLaborType.BOETaskElementID = GlobalTestCaseSetup.GlobalTaskElementID;
@@ -1576,7 +1580,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
 			SkillMixDTOLoader skillMixDTOLoader = new SkillMixDTOLoader();
 			CommonDisclosureSMDTODataLoader commonDisclosureLoader = new CommonDisclosureSMDTODataLoader();
 
-			MoqTypeDataLoader moqTypeDataLoader = new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader, resourceHoursLoader, skillMixDTOLoader, commonDisclosureLoader);
+			MoqTypeDataLoader moqTypeDataLoader = new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader, resourceHoursLoader);
 
 			MoqTypeSelection moqTypeSelection = new MoqTypeSelection()
             {
@@ -1637,7 +1641,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
 			SkillMixDTOLoader skillMixDTOLoader = new SkillMixDTOLoader();
 			CommonDisclosureSMDTODataLoader commonDisclosureLoader = new CommonDisclosureSMDTODataLoader();
 
-			MoqTypeDataLoader moqTypeDataLoader = new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader, resourceHoursLoader, skillMixDTOLoader, commonDisclosureLoader);
+			MoqTypeDataLoader moqTypeDataLoader = new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader, resourceHoursLoader);
 
 
 			// Get MOQ Type Selection and get ID from there
@@ -2088,7 +2092,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
 				sm.ResourceNew = newr;
 				sm.BOEID = GlobalBOEID;
 				sm.BOETaskElementID = GlobalTaskElementID;
-				sm.MOQTypeSelectionID = GlobalMoqTypeSelectionId;
 				gbe.SkillMixes.Add(sm);
 				gbe.SaveChanges();
 
@@ -2126,7 +2129,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
 				cdsm.BusinessResourceID = businessResource;
 				cdsm.BOEID = GlobalBOEID;
 				cdsm.BOETaskElementID = GlobalTaskElementID;
-				cdsm.MOQTypeSelectionID = GlobalMoqTypeSelectionId;
 				gbe.CommonDisclosureSkillMixes.Add(cdsm);
 				gbe.SaveChanges();
 				commonDisclosureSkillMixId = (from s in gbe.CommonDisclosureSkillMixes

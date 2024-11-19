@@ -1863,7 +1863,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			if (tables.Any())
 			{
 				Dictionary<int, string> tasks = ws.TaskElements.ToDictionary(t => t.Id, x => x.TaskTitle);
-				List<int> boesUpdated = await RecalculateActualsAcrossWorkspace(result, boes, tasks, tables, tableIdToMoqType, ws.CreationDate, moqTypesToSave);
+				List<int> boesUpdated = await RecalculateActualsAcrossWorkspace(result, boes, tasks, tables, tableIdToMoqType, ws.CreationDate);
 				SaveRecalculateActuals(ws, boes, moqTypesToSave, boesUpdated);
 			}
 
@@ -1877,7 +1877,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 		/// <summary>
 		/// Recalculates the SAP Actuals across a Workspace, and finds any BOEs that were updated
-		/// ToDo Thomas: Look here to add CLIN
 		/// </summary>
 		/// <param name="result">The list of Models that were updated</param>
 		/// <param name="boes">Dictionary of BOEs</param>
@@ -1885,9 +1884,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="tables">Dictionary of MOQ Tables</param>
 		/// <param name="tableIdToMoqType">Dictionary of MOQ Types keyed by Table Id</param>
 		/// <param name="workspaceCreationDate">Workspace Creation Date</param>
-		/// <param name="moqTypes">The MOQ Types</param>
 		/// <returns></returns>
-		private async Task<List<int>> RecalculateActualsAcrossWorkspace(List<WorkspaceCalculateActualsModelView> result, Dictionary<int, FullBoe> boes, Dictionary<int, string> tasks, Dictionary<int, MoqTableData> tables, Dictionary<int, MoqTypeSelection> tableIdToMoqType, DateTime? workspaceCreationDate, ICollection<MoqTypeSelection> moqTypes)
+		private async Task<List<int>> RecalculateActualsAcrossWorkspace(List<WorkspaceCalculateActualsModelView> result, Dictionary<int, FullBoe> boes, Dictionary<int, string> tasks, Dictionary<int, MoqTableData> tables, Dictionary<int, MoqTypeSelection> tableIdToMoqType, DateTime? workspaceCreationDate)
 		{
 			ICollection<MoqTableDataModelView> tableData = tables.Values.Select(t =>
 				new MoqTableDataModelView()
@@ -1972,12 +1970,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					}
 				}
 
-				foreach (MoqTypeSelection moqType in moqTypes)
-				{
-					moqType.SkillMixTable = this.boeLaborControllerLogic.RefreshSkillMixTable(moqType.TableData.SelectMany(t => t.ResourceHours).ToArray(), moqType.SkillMixTable);
-					//need to refresh common disclosure with updated resource hours
-					moqType.CommonDisclosureTable = this.boeLaborControllerLogic.RefreshCommonDisclosureTable(moqType.SkillMixTable, moqType.CommonDisclosureTable, moqType.TableData.SelectMany(t => t.ResourceHours).ToArray());
-				}
+
+				// TODO Skill Mix V2: Commented out as we no longer validate with MOQ Type Selection but BOE Task Element ID and this is left in to retain the logic for a future task.
+				//foreach (MoqTypeSelection moqType in moqTypes)
+				//{
+				//	moqType.SkillMixTable = this.boeLaborControllerLogic.RefreshSkillMixTable(moqType.TableData.SelectMany(t => t.ResourceHours).ToArray(), moqType.SkillMixTable);
+				//	//need to refresh common disclosure with updated resource hours
+				//	moqType.CommonDisclosureTable = this.boeLaborControllerLogic.RefreshCommonDisclosureTable(moqType.SkillMixTable, moqType.CommonDisclosureTable, moqType.TableData.SelectMany(t => t.ResourceHours).ToArray());
+				//}
 			}
 			else
 			{

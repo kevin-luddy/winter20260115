@@ -32,10 +32,6 @@ namespace GenBOE.ActionLogic
     {
         private Logger _log = new Logger(typeof(GenBOEControllerLogic));
 
-        /// <summary>
-        /// Loader for MST Metrics.
-        /// </summary>
-        private readonly IMSTMetricLoader _mstMetricsLoader;
         private readonly IRteTemplateDataLoader rteTemplateDataLoader;
 
         /// <summary>
@@ -55,7 +51,6 @@ namespace GenBOE.ActionLogic
         /// <param name="inPermissionsLoader"></param>
         /// <param name="perfOrgLoader"></param>
         /// <param name="inTaskVariableLoader"></param>
-        /// <param name="inMSTMetricLoader"></param>
         /// <param name="iesSapClient">IES SAP Client</param>
         /// <param name="tokenservice">Token Service</param>
 		/// <param name="cache">Cache</param>
@@ -75,12 +70,13 @@ namespace GenBOE.ActionLogic
             IPermissionsDTODataLoader inPermissionsLoader,
             IPerformingOrgDTODataLoader perfOrgLoader,
             IOrdinaryVariableLoader inTaskVariableLoader,
-            IMSTMetricLoader inMSTMetricLoader,
             TaskElementValidation taskElementValidation,
             IVariableCircularReferenceChecker circularReferenceChecker,
             ICommonDataMapper commonDataMapper,
             IRteTemplateDataLoader rteTemplateDataLoader,
             IMoqTypeDataLoader moqTypeDataLoader,
+			ISkillMixDTOLoader skillMixDTOLoader,
+			ICommonDisclosureSMDTODataLoader commonDisclosureDTOLoader,
             IValidateBOE validateBOE,
             IMoqTableExporter moqTableExporter,
             IMoqTableImporter moqTableImporter,
@@ -106,6 +102,8 @@ namespace GenBOE.ActionLogic
                 commonDataMapper,
                 rteTemplateDataLoader,
                 moqTypeDataLoader,
+				skillMixDTOLoader,
+				commonDisclosureDTOLoader,
                 validateBOE,
                 moqTableExporter,
                 moqTableImporter,
@@ -113,7 +111,6 @@ namespace GenBOE.ActionLogic
                 tokenservice,
 				cache)
         {
-            this._mstMetricsLoader = inMSTMetricLoader;
             this.rteTemplateDataLoader = rteTemplateDataLoader;
         }
 
@@ -166,76 +163,7 @@ namespace GenBOE.ActionLogic
         {
             return CommonConstants.BOE_MOQ_TEXT_LABEL_SPACE_SYSTEMS;
         }
-
-        /// <summary>
-        /// Populates the passed in <see cref="MOQEquationModelView"/> with metrics
-        /// </summary>
-        /// <param name="ids">The TaskElement id's for which metrics will be retrieved</param>
-        /// <param name="model">The <see cref="MOQEquationModelView"/> that will be populated</param>
-        public override void GetMetricByTaskElementIds(Collection<int> ids, MOQEquationModelView model)
-        {
-            if (ids == null)
-            {
-                throw new ArgumentNullException(nameof(ids));
-            }
-
-            if (model == null)
-            {
-                throw new ArgumentNullException(nameof(model));
-            }
-
-            model.PMMetricsUsed = this._mstMetricsLoader.GetByTaskElementIds(ids);
-            this.SetShowMetricLink(model);
-        }
-
-        /// <summary>
-        /// Gets view and model view data for displaying MST metric details from PMM.
-        /// </summary>
-        /// <param name="metricId">Metric Id.</param>
-        /// <returns>Metric view and model view detail data.</returns>
-        public override ViewResultData GetHistoricalMetricsDetails(int metricId)
-        {
-            ViewResultData viewResultData = new ViewResultData();
-
-            MSTMetricDetailsDTO metric = this._mstMetricsLoader.GetMetricDetailsByIds(new Collection<int>() { metricId }).FirstOrDefault();
-
-            if (metric != null)
-            {
-                viewResultData.Model = metric;
-                viewResultData.ViewName = WebConstants.VIEW_ADD_HISTORICAL_METRIC_TO_BOE_MST;
-
-                return viewResultData;
-            }
-            else
-            {
-                throw new ArgumentException("There is no Metric with the ID given.");
-            }
-        }
         
-        /// <summary>
-        /// Gets view and model view data for displaying MST metric details from external PMM System.
-        /// </summary>
-        /// <param name="metricId">Metric Id.</param>
-        /// <returns>Metric view and model view detail data.</returns>
-        public override ViewResultData GetHistoricalMetricsDetailsFromSource(int metricId)
-        {
-            ViewResultData viewResultData = new ViewResultData();
-
-            MSTMetricDetailsDTO metric = this._mstMetricsLoader.GetByIds(new Collection<int>() { metricId }).FirstOrDefault();
-
-            if (metric != null)
-            {
-                viewResultData.Model = metric;
-                viewResultData.ViewName = WebConstants.VIEW_ADD_HISTORICAL_METRIC_TO_BOE_MST;
-
-                return viewResultData;
-            }
-            else
-            {
-                throw new ArgumentException("There is no Metric with the ID given.");
-            }
-        }
-
         /// <summary>
         /// Gets the MOQ model view loaded with MST specific metrics previously saved to genBOE for the task element.
         /// </summary>
@@ -256,7 +184,6 @@ namespace GenBOE.ActionLogic
 
             MOQEquationModelView toReturn = new MOQEquationModelView(taskElement, this.VariableSelectBOEtoSumCalculation, workspace);
             toReturn.MoqTemplateAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(workspace.Id, taskElement.BoeID, taskElement.Id).Where(t => t.SourceId == (int)RteTemplateSource.TaskMOQ).ToList();
-            toReturn.PMMetricsUsed = this._mstMetricsLoader.GetByTaskElementIds(new Collection<int> { taskElement.Id });
             this.SetShowMetricLink(toReturn);
             return toReturn;
         }
@@ -269,16 +196,6 @@ namespace GenBOE.ActionLogic
         {
             if (model == null) { throw new ArgumentNullException(nameof(model)); }
             model.ShowSearchMetricsLink = true;
-        }
-
-        /// <summary>
-        /// Saves metrics Ids and associate to task element.
-        /// </summary>
-        /// <param name="taskElementID">The id of the task element to save the metric to.</param>
-        /// <param name="metricIDs">The PMM measure id of the metric to save to the task element</param>
-        public override void SaveHistoricalMetricsToTaskElement(int taskElementID, ICollection<int> metricIDs)
-        {
-            this._mstMetricsLoader.Save(taskElementID, metricIDs);
         }
 
         /// <summary>
@@ -339,7 +256,7 @@ namespace GenBOE.ActionLogic
                 //Catching all errors will prevent the page from failing when opening a task if there is any issue pulling data from external source
                 try
                 {
-                    searchCriteria = this._mstMetricsLoader.GetMSTMetricSearchCriteria();
+					searchCriteria = new MSTMetricSearchCriteriaDTO();
                     model.MetricsSearchDialogParameters = new MetricsSearchDialogParametersModelView(searchCriteria);
                     model.MetricsSearchDialogParameters.DialogTitle = CommonConstants.MSTDialogTitle;
                     model.MetricsSearchDialogParameters.MSTSearchHelpLink = ConfigurationUtilities.GetAppSetting("MSTSearchCriteriaHelp", string.Empty);

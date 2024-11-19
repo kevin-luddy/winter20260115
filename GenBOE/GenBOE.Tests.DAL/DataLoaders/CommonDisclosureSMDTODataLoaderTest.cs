@@ -25,7 +25,7 @@
 		public void GetCommonDisclosureSMDTOByMoqTypeSelection()
 		{
 			CommonDisclosureSMDTODataLoader sut = new CommonDisclosureSMDTODataLoader();
-			ICollection<CommonDisclosureSkillMixDTO> commonDisclosureSMDTOData = sut.GetByMOQTypeSelectionID(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
+			ICollection<CommonDisclosureSkillMixDTO> commonDisclosureSMDTOData = sut.GetByBOETaskElementID(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
 			Assert.AreEqual(1, commonDisclosureSMDTOData.Count);
 		}
 		/// <summary>
@@ -46,8 +46,6 @@
 			updateCommonDisclosureSkillMix.BusinessResourceID = "Business Resource";
 			updateCommonDisclosureSkillMix.BOEID = GlobalTestCaseSetup.GlobalBOEID;
 			updateCommonDisclosureSkillMix.BOETaskElementID = GlobalTestCaseSetup.GlobalTaskElementID;
-			updateCommonDisclosureSkillMix.MOQTypeSelectionID = GlobalTestCaseSetup.GlobalMoqTypeSelectionId;
-			updateCommonDisclosureSkillMix.IsPercentLocked = true;
 			updateCommonDisclosureSkillMix.IsUserInput = true;
 			ICollection<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixes = new List<CommonDisclosureSkillMixDTO>() { updateCommonDisclosureSkillMix };
 			int? numRowsInserted = sut.InsertCommonDisclosureSM(commonDisclosureSkillMixes);
@@ -60,7 +58,7 @@
 		public void DeleteCommonDisclosureSkillMix()
 		{
 			CommonDisclosureSMDTODataLoader sut = new CommonDisclosureSMDTODataLoader();
-			int? numRowsDeleted = sut.DeleteCommonDisclosureSMByMoqTypeSelection(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
+			int? numRowsDeleted = sut.DeleteCommonDisclosureSkillMixByBOETaskElementID(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
 			Assert.AreEqual(1, numRowsDeleted);
 		}
 	}

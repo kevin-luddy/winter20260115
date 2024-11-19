@@ -9,7 +9,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		$scope.model.IsCostEquation = ($scope.model.MoqEquationType == 'Cost');
 		$scope.model.insertWorkspaceModalOpen = false;
 
-        $scope.newTableId = -1;
+		$scope.newTableId = -1;
 		$scope.ResourceModels = BOEDetails.WSResources;
 		$scope.BusinessResourceCodeModels = BOEDetails.WSBusinessResourceCodes;
 
@@ -17,21 +17,15 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		setTimeout(function () {
 			initializeWidget();
 
-			// Updating ForEach call to make the call to calculate totals
-			angular.forEach($scope.model.SelectedMoqTypes.map(e => {
-				$scope.setSkillMixTotals(e);
-
-				if ($scope.model.CommonDisclosureEnabled) {
-					$scope.setCommonDisclosureTotals(e);
-					$scope.refreshResourceGroupColors(e);
-				}
-				return e.SelectedMOQType.toString();
-			}), function (id) {
+			angular.forEach($scope.model.SelectedMoqTypes.map(e => e.SelectedMOQType.toString()), function (id) {
 				$scope.InitializeRteFields(id);
 			});
 
 			$scope.refreshDisableSave();
 		}, 10);
+
+		// Trigger the event to update the Selected MOQ Types in manageTaskController.js.
+		$scope.$emit('MOQ_TYPE_SELECTION_CHANGED', $scope.model.SelectedMoqTypes);
 	};
 
 	$scope.dialog = {
@@ -173,9 +167,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	// Adds MOQ Type to Selected MOQ Types (and removes it from the dropdown of available types)
 	$scope.AddMoqType = function () {
 		var selectedItem = $scope.model.selectedMOQType;
-		selectedItem.SkillMixTable = [];
-		selectedItem.CommonDisclosureTable = [];
-
 		selectedItem.Order = 2000;
 
 		$scope.model.SelectedMoqTypes.push(selectedItem);
@@ -207,10 +198,10 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				$scope.model.SelectedMoqTypes.splice(index, 1);
 				if (item.TableData && item.TableData.length > 0) {
 					item.TableData.forEach(function (tableData) {
-						$scope.actualsValidation.isDirty.delete(tableData.Id);		
+						$scope.actualsValidation.isDirty.delete(tableData.Id);
 					});
 				}
-				
+
 				$scope.$emit('MOQ_TYPE_SELECTION_CHANGED', $scope.model.SelectedMoqTypes);
 				MOQEquationFieldWidget.setDirty();
 				$scope.refreshDisableSave();
@@ -270,7 +261,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				moqType.TableData.splice(index, 1);
 				MOQEquationFieldWidget.setDirty();
 				$scope.actualsValidation.isDirty.delete(item.Id);
-				$scope.refreshSkillMixTable(moqType);
 				$scope.refreshDisableSave();
 			});
 		});
@@ -1116,7 +1106,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 								tableData.TotalRelevantHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.TotalHours, 0) + Number.EPSILON) * 100) / 100;
 								tableData.TotalWbsHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.WbsHours, 0) + Number.EPSILON) * 100) / 100;
 								tableData.ResourceHours = res.SkillMixDataTable.map(skillMix => ({ ResourceName: skillMix.ResourceID, WbsHours: skillMix.WbsHours, TotalHours: skillMix.TotalHours, BRCName: skillMix.Brc }));
-								
+
 								// this is RMS only
 								if (!ManageTaskModel.IsSpace) {
 									if (!tableData.ContractNumber && res.ContractNumber) {
@@ -1133,7 +1123,12 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 								MOQEquationFieldWidget.setDirty();
 								$scope.actualsValidation.isDirty.delete(res.TableId);
 								$scope.refreshDisableSave();
-								$scope.refreshSkillMixTable(moqType);
+
+								// Trigger the event to update the Selected MOQ Types in manageTaskController.js.
+								$scope.$emit('MOQ_TYPE_SELECTION_CHANGED', $scope.model.SelectedMoqTypes);
+
+								// Trigger the event to refresh the Skill Mix tables
+								$scope.$emit('SAP_HOURS_CHANGED');
 							}
 						});
 					}
@@ -1171,7 +1166,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 								Filters: tableData.AdditionalQueryFilters,
 								TableId: tableData.Id
 							};
-							
+
 							if ($scope.model.IsRMS) {
 								// Set the repo name to the source once we've checked that it is an SAP Enabled Source
 								tableData.RepositoryName = $scope.model.RmsSapEnabledSource;
@@ -1338,10 +1333,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 								});
 							}
 						});
-
-						moqTypes2.forEach(moq => {
-							$scope.refreshSkillMixTable(moq);
-						});
 					}
 
 					$scope.refreshDisableSave();
@@ -1357,250 +1348,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 
 		$scope.refreshDisableSave();
-	};
-
-	$scope.refreshSkillMixTable = function (moqType) {
-		// Get all the data tables
-		const data = {
-			resourceHours: [],
-			currentSkillMixData: []
-		};
-
-		
-		if (moqType.TableData) {
-			moqType.TableData.forEach(tableData => {
-				if ($scope.IsSapEnabledAndSetAsRepository(tableData.RepositoryName)) {
-
-					tableData.ResourceHours.forEach(hours => {
-						data.resourceHours.push(hours);
-					});
-				}
-			});
-		}
-
-		data.boeId = ManageTaskModel.boeId;
-		data.currentSkillMixData = moqType.SkillMixTable;
-
-		if (data.resourceHours.length > 0) {
-			// send to backend
-			// display response to user
-			$(document).trigger("SHOW_LOADING_BOX");
-
-			$http({
-				method: 'POST',
-				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshSkillMixTableAction, ''),
-				data: data
-			}).then(function (response) {
-				// place returned html into the content div
-				if (response.data.IsSuccessful === true) {
-					// the response is wrapped inside response.data.data array
-					if (response.data.data) {
-						moqType.SkillMixTable = response.data.data;
-
-						// Recalculate Totals for Skill Mix
-						$scope.setSkillMixTotals(moqType);
-
-						if ($scope.model.CommonDisclosureEnabled) {
-							$scope.refreshCommonDisclosureTable(moqType);
-
-							// Recalculate Totals for Common Disclosure Table
-							$scope.setCommonDisclosureTotals(moqType);
-						}
-					}
-				} else {
-					RaiseNotification('Error talking to backend to Refresh Skill Mix Table');
-				}
-
-				$(document).trigger("HIDE_LOADING_BOX");
-			}).catch(function () {
-				RaiseNotification('Error talking to backend to Refresh Skill Mix Table');
-				$(document).trigger("HIDE_LOADING_BOX");
-			});
-		}
-		else {
-			moqType.SkillMixTable = [];
-		}
-	};
-
-	$scope.getMOQTotal = function () {
-		// Ensure the element with id 'equals' exists
-		var moqEquationElement = $('#equals');
-		if (moqEquationElement.length === 0) {
-			return 0;
-		}
-
-		// Get the text content and remove non-numeric characters (except for the decimal point)
-		var moqEquationTotal = moqEquationElement.text().replace(/,/g, '');
-
-		// Parse the string to a float
-		var parsedMoq = parseFloat(moqEquationTotal);
-		if (isNaN(parsedMoq)) {
-			parsedMoq = 0;
-		}
-
-		return parsedMoq;
-	};
-
-	$scope.updateBOESkillMixFromIncludedChange = function (item) {
-		if (item.Included === false || item.Included === null) {
-			item.BOESkillMix = 0;
-			item.IsPercentLocked = false;
-		}
-		if (item.Included === true) {
-			item.BOESkillMix = null;
-		}
-		$scope.updateProposedHours(item);
-	};
-
-	$scope.updateProposedHours = function (item) {
-		let totalMOQ = $scope.getMOQTotal();
-		if (totalMOQ > 0) {
-			item.ProposedHours = parseFloat((totalMOQ * (item.BOESkillMix / 100)).toFixed(1));
-		}
-	};
-
-	$scope.updateBOESkillMix = function (item) {
-		let totalMOQ = $scope.getMOQTotal();
-		if (totalMOQ > 0) {
-			item.BOESkillMix = parseFloat(((item.ProposedHours / totalMOQ) * 100).toFixed(3));
-		}
-	};
-
-	$scope.updateLaborSkillMix = function (item, moqType) {
-		//get historical hours from skill mix table
-		let totalHistoricalHours = $scope.getTotalCDHistoricalHours(moqType);
-		if (totalHistoricalHours === 0) {
-			item.LaborSkillMix = 0;
-		}
-		else {
-			item.LaborSkillMix = parseFloat((item.HistoricalHours / totalHistoricalHours).toFixed(4));
-		}
-	};
-
-	$scope.getTotalCDHistoricalHours = function (moqType) {
-		let totalHistoricalHours = 0;
-		moqType.CommonDisclosureTable.forEach(item => {
-			totalHistoricalHours += item.HistoricalHours;
-		});
-		return totalHistoricalHours;
-	};
-
-	$scope.getTotalSMHistoricalHours = function (moqType) {
-		let totalHistoricalHours = 0;
-		moqType.SkillMixTable.forEach(item => {
-			if (item.Included) {
-				totalHistoricalHours += item.HistoricalHours;
-			}
-		});
-		return totalHistoricalHours;
-	};
-
-	$scope.refreshCommonDisclosureTable = function (moqType) {
-		// Get all the data tables
-		const data = {
-			currentSkillMixData: [],
-			commonDisclosureSMData: [],
-			resourceHours: []
-		};
-
-		data.boeId = ManageTaskModel.boeId;
-		data.currentSkillMixData = moqType.SkillMixTable;
-		data.commonDisclosureSMData = moqType.CommonDisclosureTable;
-
-		if (moqType.TableData) {
-			moqType.TableData.forEach(tableData => {
-				if ($scope.IsSapEnabledAndSetAsRepository(tableData.RepositoryName)) {
-
-					tableData.ResourceHours.forEach(hours => {
-						data.resourceHours.push(hours);
-					});
-				}
-			});
-		}
-
-		if (data.currentSkillMixData.length > 0 && $scope.model.CommonDisclosureEnabled) {
-			// send to backend
-			// display response to user
-			$(document).trigger("SHOW_LOADING_BOX");
-			$http({
-				method: 'POST',
-				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshCommonDisclosureTableAction, ''),
-				data: data
-			}).then(function (response) {
-				// place returned html into the content div
-				if (response.data.IsSuccessful === true) {
-					// the response is wrapped inside response.data.data array
-					if (response.data.data) {
-						moqType.CommonDisclosureTable = response.data.data;
-						$scope.setCommonDisclosureTotals(moqType);
-						$scope.refreshResourceGroupColors(moqType);
-					}
-				} else {
-					RaiseNotification('Error talking to backend to Refresh Common Disclosure Skill Mix Table');
-				}
-
-				$(document).trigger("HIDE_LOADING_BOX");
-			}).catch(function () {
-				RaiseNotification('Error talking to backend to Refresh Common Disclosure Skill Mix Table');
-				$(document).trigger("HIDE_LOADING_BOX");
-			});
-		}
-		else {
-			moqType.CommonDisclosureTable = [];
-		}
-	};
-
-	$scope.addRowForResource = function (item, moqType) {
-		var dupe = angular.copy(item);
-		dupe.BusinessResourceID = "";
-		dupe.CommonDisclosureSkillMixID = -1;
-		dupe.HistoricalHours = 0;
-		dupe.LaborSkillMix = 0;
-
-		moqType.CommonDisclosureTable.push(dupe);
-	};
-
-	$scope.deleteRowForResource = function (item, moqType) {
-		//have to find at least one other row with same resource id to be eligible to delete
-		var resourceRowCount = 0;
-		for (var i = 0; i < moqType.CommonDisclosureTable.length; i++) {
-			var row = moqType.CommonDisclosureTable[i];
-			if (row.ResourceID === item.ResourceID) {
-				resourceRowCount++;
-			}
-			if (resourceRowCount > 1) {
-				var index = moqType.CommonDisclosureTable.indexOf(item);
-				if (index > -1) { 
-					moqType.CommonDisclosureTable.splice(index, 1);
-				}
-				$scope.setCommonDisclosureTotals(moqType);
-				break;
-			}
-		}
-	};
-	$scope.canDelete = function (item, moqType) {
-		//have to find at least one other row with same resource id to be eligible to delete
-		var resourceRowCount = 0;
-		var canDelete = true;
-		for (var i = 0; i < moqType.CommonDisclosureTable.length; i++) {
-			var row = moqType.CommonDisclosureTable[i];
-			if (row.ResourceID === item.ResourceID) {
-				resourceRowCount++;
-			}
-		}
-		if (resourceRowCount == 1) {
-			canDelete = false;
-		}
-		return canDelete;
-	};
-
-	$scope.refreshResourceGroupColors = function (moqType) {
-		// coming soon
-	};
-	$scope.sortCD = function (moqType) {
-		let colName = "ResourceID";
-		moqType.CommonDisclosureTable.sort((a, b) => a[colName] > b[colName] ? 1 : a[colName] < b[colName] ? -1 : 0);
-		$scope.refreshResourceGroupColors(moqType);
 	};
 
 	$scope.setActualsErrors = function (id, errors) {
@@ -1757,8 +1504,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		// Get the difference between the two dates in months (30.42 days), rounded to 2 decimals
 
 		// if Space & Monthly -> we need to add +1 month to the calculation, for the following reason:
-			// if it's March - March, it's supposed to be 1 month
-			// if it's March - April, it's supposed to be 2 months
+		// if it's March - March, it's supposed to be 1 month
+		// if it's March - April, it's supposed to be 2 months
 		// this doesn't apply to weekly, or RMS, as both of those are using actual dates, not just months
 		var additionalMonth = monthlySpace === true ? 1 : 0;
 
@@ -1851,7 +1598,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 
 		$scope.IsSapSetAndAnyTableSapRepository();
-		$scope.refreshSkillMixTable(moqType);
 		$scope.refreshDisableSave();
 	};
 
@@ -1865,86 +1611,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		return isResourceValid;
 	};
 
-	$scope.setSkillMixTotals = function (moqType) {
-		// Reset Totals because this method can be called multiple times from multiple areas
-		moqType.HistoricalSkillMixHoursTotal = 0;
-		moqType.LaborSkillMixTotal = 0;
-		moqType.BoeSkillMixTotal = 0;
-		moqType.ProposedSkillMixHoursTotal = 0;
-
-		moqType.SkillMixTable.forEach(item => {
-			// Set Skill Mix Totals
-			moqType.HistoricalSkillMixHoursTotal += item.HistoricalHours;
-			moqType.LaborSkillMixTotal += item.LaborSkillMix;
-			moqType.BoeSkillMixTotal += parseFloat(item.BOESkillMix) || 0;
-			moqType.ProposedSkillMixHoursTotal += item.ProposedHours;
-		});
-
-		moqType.BoeSkillMixTotal = parseFloat((moqType.BoeSkillMixTotal).toFixed(3));
-		moqType.ProposedSkillMixHoursTotal = parseFloat((moqType.ProposedSkillMixHoursTotal).toFixed(1));
-	};
-
-	$scope.setCommonDisclosureTotals = function (moqType) {
-		//first set the labor skill mix column before calculating totals
-		$scope.setLaborSkillMixForCD(moqType);
-
-		// Reset Totals because this method can be called multiple times from multiple areas
-		moqType.HistoricalCommonDisclosureHoursTotal = 0;
-		moqType.LaborCommonDisclosureTotal = 0;
-		moqType.BoeCommonDisclosureTotal = 0;
-		moqType.ProposedCommonDisclosureHoursTotal = 0;
-
-		moqType.CommonDisclosureTable.forEach(item => {
-			// Set Skill Mix Totals
-			moqType.HistoricalCommonDisclosureHoursTotal += item.HistoricalHours;
-			moqType.LaborCommonDisclosureTotal += item.LaborSkillMix;
-			moqType.BoeCommonDisclosureTotal += parseFloat(item.BOESkillMix) || 0;
-			moqType.ProposedCommonDisclosureHoursTotal += item.ProposedHours;
-		});
-
-		moqType.BoeCommonDisclosureTotal = parseFloat((moqType.BoeCommonDisclosureTotal).toFixed(3));
-		moqType.ProposedCommonDisclosureHoursTotal = parseFloat((moqType.ProposedCommonDisclosureHoursTotal).toFixed(1));
-	}
-
-	$scope.setLaborSkillMixForCD = function (moqType) {
-		let totalHistoricalHours = 0;
-
-		//get total historical hours in CD table
-		moqType.CommonDisclosureTable.forEach(item => {
-			totalHistoricalHours += item.HistoricalHours;
-		});
-
-		//get labor skill mix % by taking row's historical hours / total
-		moqType.CommonDisclosureTable.forEach(item => {
-			item.LaborSkillMix = parseFloat((item.HistoricalHours / totalHistoricalHours).toFixed(4));
-		});
-	}
-
-	$scope.updateBoeSkillMixLock = function (item) {
-		$scope.setDirty();
-		if (item.IsPercentLocked && item.Included != null && item.Included) {
-			item.IsPercentLocked = !item.IsPercentLocked;
-		}
-	}
-
-	$scope.updateProposedHoursLock = function (item) {
-		$scope.setDirty();
-		if (!item.IsPercentLocked && item.Included != null && item.Included) {
-			item.IsPercentLocked = !item.IsPercentLocked;
-		}
-	}
-
 	$scope.moqUpdated = function (initialLoad) {
 		if (!initialLoad) {
 			angular.forEach($scope.model.SelectedMoqTypes.map(e => {
-				if ($scope.model.CommonDisclosureEnabled) {
-					recalculateCommonDisclosure(e);
-					$scope.setCommonDisclosureTotals(e);
-				}
-				if ($scope.model.SkillMixEnabled) {
-					recalculateSkillMix(e);
-					$scope.setSkillMixTotals(e);
-				}
 				return e.SelectedMOQType.toString();
 			}), function (id) {
 				$scope.InitializeRteFields(id, true);
@@ -1952,67 +1621,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			$scope.setDirty();
 		}
 	};
-
-	var recalculateCommonDisclosure = function (moqType) {
-		var moqTotal = $scope.getMOQTotal();
-
-		moqType.CommonDisclosureTable.forEach(item => {
-			if (item.Included) {
-				if (!item.IsPercentLocked) {
-					item.ProposedHours = parseFloat(((moqTotal * (item.BOESkillMix / 100)).toFixed(1)));
-				} else {
-					item.BOESkillMix = parseFloat((((item.ProposedHours / moqTotal) * 100).toFixed(3)));
-				}
-			}
-		});
-	}
-
-	
-
-	var recalculateSkillMix = function (moqType) {
-		var moqTotal = $scope.getMOQTotal();
-
-		moqType.SkillMixTable.forEach(item => {
-			if (item.Included) {
-				if (!item.IsPercentLocked) {
-					item.ProposedHours = parseFloat((moqTotal * (item.BOESkillMix / 100)).toFixed(1));
-				} else {
-					item.BOESkillMix = parseFloat(((item.ProposedHours / moqTotal) * 100).toFixed(3));
-				}
-			}
-		});
-	}
-
-    $scope.resourceSelected = function (item, model, moqType) {
-        $scope.setDirty();
-
-		if (item && item.ResourceName && item.ResourceName !== '') {
-            // resource was selected
-            model.ResourceNew = item.ResourceName;
-		}
-		//update the common disclosure table when resource is changed
-		if (model.Included) {
-			$scope.refreshCommonDisclosureTable(moqType);
-		}
-	};
-
-	$scope.resourceUnselected = function (item, model, moqType) {
-		$scope.setDirty();
-		//if the resource has been deleted, refresh the CD table to reflect it
-		if (model.Included && item == undefined && model.ResourceNew == "") {
-			$scope.refreshCommonDisclosureTable(moqType);
-		}
-	};
-
-	$scope.brcSelected = function (item, model) {
-		$scope.setDirty();
-
-		if (item && item.ResourceName && item.ResourceName !== '') {
-			// resource was selected
-			model.BusinessResourceID = item.ResourceName;
-		}
-	};
-
 }]);
 
 // initialize MOQ Equation Widget.. moved here so that way this much script is not in the ascx page

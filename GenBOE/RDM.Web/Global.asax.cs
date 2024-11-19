@@ -122,7 +122,10 @@ namespace RDM.Web
                 this.log.Error(ex, "FATAL - JsonValueProviderFactory setup failed.");
                 throw;
             }
-        }
+
+			// Log environment variables and config app settings
+			Utilities.LogEnvironmentSettings(this.log);
+		}
 
         /// <summary>
         /// Initializes the container.

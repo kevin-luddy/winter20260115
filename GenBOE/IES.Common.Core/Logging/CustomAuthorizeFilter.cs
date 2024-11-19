@@ -11,13 +11,19 @@ namespace IES.Common.Core.Logging
 	using Microsoft.AspNetCore.Http;
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.Logging;
+	using Serilog.Ui.Core.Interfaces;
 	using Serilog.Ui.Web.Authorization;
 
 	/// <summary>
 	/// Custom Authorize Handler 
 	/// </summary>
-	public class CustomAuthorizeFilter : IUiAuthorizationFilter
+	public class CustomAuthorizeFilter : IUiAsyncAuthorizationFilter
 	{
+		/// <summary>
+		/// Http Context Accessor
+		/// </summary>
+		private readonly IHttpContextAccessor httpContextAccessor;
+		
 		/// <summary>
 		/// Token Authentication Scheme Handler
 		/// </summary>
@@ -27,9 +33,10 @@ namespace IES.Common.Core.Logging
 		/// Default Constructor
 		/// </summary>
 		/// <param name="logger">The logger</param>
-		public CustomAuthorizeFilter(ILogger logger)
+		public CustomAuthorizeFilter(ILogger<CustomAuthorizeFilter> logger, IHttpContextAccessor httpContextAccessor)
 		{
 			this.logger = logger;
+			this.httpContextAccessor = httpContextAccessor;
 		}
 
 		/// <summary>
@@ -37,22 +44,24 @@ namespace IES.Common.Core.Logging
 		/// </summary>
 		/// <param name="httpContext">The http context</param>
 		/// <returns>True if Admin; otherwise false.</returns>
-		public bool Authorize(HttpContext httpContext)
+		public async Task<bool> AuthorizeAsync()
 		{
-			string jwt = httpContext.Request.Headers["Authorization"];
-
-			if (!string.IsNullOrWhiteSpace(jwt) && jwt != "null")
+			HttpContext httpContext = httpContextAccessor.HttpContext;
+			if (httpContext != null)
 			{
-				Task<string> ntidTask = TokenAuthenticationSchemeHandler.GetNtidIfTokenIsValid(jwt, logger);
-				ntidTask.Wait();
+				string jwt = httpContext.Request.Headers["Authorization"];
 
-				string userNtId = ntidTask.Result;
-				if (!string.IsNullOrWhiteSpace(userNtId))
+				if (!string.IsNullOrWhiteSpace(jwt) && jwt != "null")
 				{
-					ISecurityInformation securityInformation = httpContext.RequestServices.GetService<ISecurityInformation>();
-					return securityInformation.IsIESPortalAdminUser(userNtId);
+					string userNtId = await TokenAuthenticationSchemeHandler.GetNtidIfTokenIsValid(jwt, logger);
+					if (!string.IsNullOrWhiteSpace(userNtId))
+					{
+						ISecurityInformation securityInformation = httpContext.RequestServices.GetService<ISecurityInformation>();
+						return securityInformation.IsIESPortalAdminUser(userNtId);
+					}
 				}
 			}
+
 			return false;
 		}
 	}

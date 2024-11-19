@@ -49,6 +49,7 @@ AS
 **		07/11/24	twilson3			proph-2166 Missing Columns
 **		07/12/24	twilson3			proph-2019 Fix @Temp Table definitions
 **		07/30/24	e405721				PROPH-2218 Add BRC Name into MOQ Type Selection Table Data Resource Hours Table
+**		10/15/24	e405721				PROPH-2392: Update for Skill Mix V2
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -1714,12 +1715,10 @@ DECLARE @SkillMix TABLE
     [ResourceNew] varchar(20) NOT NULL,
     [BOETaskElementID] [int] NOT NULL,
     [BOEID] [int] NOT NULL,
-    [MOQTypeSelectionID] [int] NOT NULL,
-	[IsPercentLocked] bit NOT NULL,
+	[IsUserInput] bit NOT NULL,
 	Processed bit,
     NewBOETaskElementID int,
-    NewBOEID int,
-    NewMOQTypeSelectionID int
+    NewBOEID int
 )
 INSERT INTO @SkillMix
 SELECT
@@ -1734,14 +1733,11 @@ SELECT
     SM.[ResourceNew],
     SM.[BOETaskElementID],
     SM.[BOEID],
-    SM.[MOQTypeSelectionID],
-	SM.[IsPercentLocked],
+	SM.[IsUserInput],
 	0,
     T.[NewBOETaskElementID],
-    B.[NewBOEID],
-    M.[NewMOQTypeSelectionID]
+    B.[NewBOEID]
 FROM [dbo].[SkillMix] SM
-INNER JOIN @MOQTypeSelection M ON SM.MOQTypeSelectionID = M.MOQTypeSelectionID
 INNER JOIN @BOE B ON SM.BOEID = B.BOEID
 INNER JOIN @BOETaskElement T on T.[BOETaskElementID] = SM.[BOETaskElementID]
 
@@ -1760,8 +1756,7 @@ INSERT INTO [dbo].[SkillMix]
             [ResourceNew],
             [BOETaskElementID],
             [BOEID],
-            [MOQTypeSelectionID],
-			[IsPercentLocked]
+			[IsUserInput]
 			)
 SELECT
 	[Rationale],
@@ -1774,8 +1769,7 @@ SELECT
     [ResourceNew],
     [NewBOETaskElementID],
     [NewBOEID],
-    [NewMOQTypeSelectionID],
-	[IsPercentLocked]
+	[IsUserInput]
 FROM @SkillMix
 WHERE SkillMixID = @SkillMixID
 
@@ -1799,13 +1793,10 @@ DECLARE @CommonDisclosureSkillMix TABLE
     [BusinessResourceID] varchar(20) NOT NULL,
     [BOEID] [int] NOT NULL,
     [BOETaskElementID] [int] NOT NULL,
-    [MOQTypeSelectionID] [int] NOT NULL,
-	[IsPercentLocked] bit NOT NULL,
 	[IsUserInput] bit NOT NULL,
 	Processed bit,
     NewBOEID int,
-    NewBOETaskElementID int,
-    NewMOQTypeSelectionID int
+    NewBOETaskElementID int
 )
 INSERT INTO @CommonDisclosureSkillMix
 SELECT
@@ -1820,15 +1811,11 @@ SELECT
     CD.[BusinessResourceID],
     CD.[BOEID],
     CD.[BOETaskElementID],
-    CD.[MOQTypeSelectionID],
-	CD.[IsPercentLocked],
 	CD.[IsUserInput],
 	0,
     B.[NewBOEID],
-    T.[NewBOETaskElementID],
-    M.[NewMOQTypeSelectionID]
+    T.[NewBOETaskElementID]
 FROM [dbo].[CommonDisclosureSkillMix] CD
-INNER JOIN @MOQTypeSelection M ON CD.MOQTypeSelectionID = M.MOQTypeSelectionID
 INNER JOIN @BOE B ON CD.BOEID = B.BOEID
 INNER JOIN @BOETaskElement T on T.[BOETaskElementID] = CD.[BOETaskElementID]
 
@@ -1847,8 +1834,6 @@ INSERT INTO [dbo].[CommonDisclosureSkillMix]
             [BusinessResourceID],
             [BOEID],
             [BOETaskElementID],
-            [MOQTypeSelectionID],
-			[IsPercentLocked],
 			[IsUserInput]
 			)
 SELECT
@@ -1862,8 +1847,6 @@ SELECT
     [BusinessResourceID],
     [NewBOEID],
     [NewBOETaskElementID],
-    [NewMOQTypeSelectionID],
-	[IsPercentLocked],
 	[IsUserInput]
 FROM @CommonDisclosureSkillMix
 WHERE CommonDisclosureSkillMixID = @CommonDisclosureSkillMixID

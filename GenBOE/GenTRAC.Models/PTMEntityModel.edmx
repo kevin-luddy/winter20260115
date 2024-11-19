@@ -207,6 +207,13 @@
           <Property Name="IsUsPerson" Type="bit" />
           <Property Name="IsSubcontractor" Type="bit" />
         </EntityType>
+        <EntityType Name="InsuranceTypeLU">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Text" Type="varchar" MaxLength="50" />
+        </EntityType>
         <EntityType Name="ISGSRoleLU">
           <Key>
             <PropertyRef Name="ISGSRoleID" />
@@ -451,6 +458,10 @@
           <Property Name="ModCompletedDate" Type="date" />
           <Property Name="CageCode" Type="varchar" MaxLength="10" />
           <Property Name="CustomerDueDate" Type="date" />
+          <Property Name="IsInsuranceDirect" Type="int" />
+          <Property Name="InsuranceType" Type="int" />
+          <Property Name="ProposedInsurance" Type="bigint" />
+          <Property Name="NegotiatedInsurance" Type="bigint" />
         </EntityType>
         <EntityType Name="ProposalContractTypeXREF">
           <Key>
@@ -477,7 +488,7 @@
           <Property Name="IsActive" Type="bit" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'genTrac.dbo.ProposalPARChecklistXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genTrac_DEV.dbo.ProposalPARChecklistXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="ProposalPARChecklistXREF">
           <Key>
             <PropertyRef Name="ProposalID" />
@@ -494,7 +505,7 @@ warning 6002: The table/view 'genTrac.dbo.ProposalPARChecklistXREF' does not hav
           <Property Name="CannedResponseId" Type="int" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'genTrac.dbo.ProposalPPRChecklistXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genTrac_DEV.dbo.ProposalPPRChecklistXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="ProposalPPRChecklistXREF">
           <Key>
             <PropertyRef Name="ProposalID" />
@@ -623,7 +634,7 @@ warning 6002: The table/view 'genTrac.dbo.ProposalPPRChecklistXREF' does not hav
           <Property Name="TextType" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="genTracData">
           <Key>
             <PropertyRef Name="genTracProposalID" />
@@ -833,6 +844,18 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             </Principal>
             <Dependent Role="ProposalsAttachments">
               <PropertyRef Name="ProposalId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Contracts_InsuranceType">
+          <End Role="InsuranceTypeLU" Type="Self.InsuranceTypeLU" Multiplicity="0..1" />
+          <End Role="ProposalContractsData" Type="Self.ProposalContractsData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InsuranceTypeLU">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ProposalContractsData">
+              <PropertyRef Name="InsuranceType" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1856,6 +1879,10 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Parameter Name="ModCompletedDate" Type="date" Mode="In" />
           <Parameter Name="CageCode" Type="varchar" Mode="In" />
           <Parameter Name="CustomerDueDate" Type="date" Mode="In" />
+          <Parameter Name="IsInsuranceDirect" Type="int" Mode="In" />
+          <Parameter Name="InsuranceType" Type="int" Mode="In" />
+          <Parameter Name="ProposedInsurance" Type="bigint" Mode="In" />
+          <Parameter Name="NegotiatedInsurance" Type="bigint" Mode="In" />
         </Function>
         <Function Name="upsertProposalType" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Id" Type="int" Mode="In" />
@@ -1888,6 +1915,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySet Name="ELMAH_Error" EntityType="Self.ELMAH_Error" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EppDelegationAuthorityLU" EntityType="Self.EppDelegationAuthorityLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="genTRACUser" EntityType="Self.genTRACUser" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="InsuranceTypeLU" EntityType="Self.InsuranceTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ISGSRoleLU" EntityType="Self.ISGSRoleLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LineOfBusinessLU" EntityType="Self.LineOfBusinessLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LineOfBusinessRoleXREF" EntityType="Self.LineOfBusinessRoleXREF" Schema="dbo" store:Type="Tables" />
@@ -2031,6 +2059,10 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <AssociationSet Name="FK__Proposals__Propo__06C2E356" Association="Self.FK__Proposals__Propo__06C2E356">
             <End Role="Proposal" EntitySet="Proposal" />
             <End Role="ProposalsAttachments" EntitySet="ProposalsAttachments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Contracts_InsuranceType" Association="Self.FK_Contracts_InsuranceType">
+            <End Role="InsuranceTypeLU" EntitySet="InsuranceTypeLU" />
+            <End Role="ProposalContractsData" EntitySet="ProposalContractsData" />
           </AssociationSet>
           <AssociationSet Name="FK_ContractTypeGroupXREF_ContractType" Association="Self.FK_ContractTypeGroupXREF_ContractType">
             <End Role="ContractTypeLU" EntitySet="ContractTypeLU" />
@@ -3347,6 +3379,10 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <Parameter Name="ModCompletedDate" Mode="In" Type="DateTime" />
             <Parameter Name="CageCode" Mode="In" Type="String" />
             <Parameter Name="CustomerDueDate" Mode="In" Type="DateTime" />
+            <Parameter Name="IsInsuranceDirect" Mode="In" Type="Int32" />
+            <Parameter Name="InsuranceType" Mode="In" Type="Int32" />
+            <Parameter Name="ProposedInsurance" Mode="In" Type="Int64" />
+            <Parameter Name="NegotiatedInsurance" Mode="In" Type="Int64" />
           </FunctionImport>
           <FunctionImport Name="upsertProposalContractsOffer">
             <Parameter Name="ProposalContractsOfferId" Mode="In" Type="Int32" />
@@ -3562,6 +3598,11 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <AssociationSet Name="FK__Proposal__Reason__43EBED27" Association="genTRACModel.FK__Proposal__Reason__43EBED27">
             <End Role="CcopdReasonsNo" EntitySet="CcopdReasonsNoes" />
             <End Role="Proposal" EntitySet="Proposals" />
+          </AssociationSet>
+          <EntitySet Name="InsuranceTypeLUs" EntityType="genTRACModel.InsuranceTypeLU" />
+          <AssociationSet Name="FK_Contracts_InsuranceType" Association="genTRACModel.FK_Contracts_InsuranceType">
+            <End Role="InsuranceTypeLU" EntitySet="InsuranceTypeLUs" />
+            <End Role="ProposalContractsData" EntitySet="ProposalContractsDatas" />
           </AssociationSet>
           </EntityContainer>
         <ComplexType Name="CreatePARChecklistReport_Result">
@@ -4086,6 +4127,11 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="CageCode" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="CageCode1" Relationship="genTRACModel.FK__ProposalC__CageC__6E4C3B47" FromRole="ProposalContractsData" ToRole="CageCode" />
           <Property Name="CustomerDueDate" Type="DateTime" Precision="0" />
+          <Property Name="IsInsuranceDirect" Type="Int32" />
+          <Property Name="InsuranceType" Type="Int32" />
+          <Property Name="ProposedInsurance" Type="Int64" />
+          <Property Name="NegotiatedInsurance" Type="Int64" />
+          <NavigationProperty Name="InsuranceTypeLU" Relationship="genTRACModel.FK_Contracts_InsuranceType" FromRole="ProposalContractsData" ToRole="InsuranceTypeLU" />
           </EntityType>
         <Association Name="FK__ProposalC__EPPDe__02925FBF">
           <End Type="genTRACModel.EppDelegationAuthorityLU" Role="EppDelegationAuthorityLU" Multiplicity="0..1" />
@@ -4601,6 +4647,26 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             </Principal>
             <Dependent Role="Proposal">
               <PropertyRef Name="ReasonCcopdNo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="InsuranceTypeLU">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Text" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="ProposalContractsDatas" Relationship="genTRACModel.FK_Contracts_InsuranceType" FromRole="InsuranceTypeLU" ToRole="ProposalContractsData" />
+        </EntityType>
+        <Association Name="FK_Contracts_InsuranceType">
+          <End Type="genTRACModel.InsuranceTypeLU" Role="InsuranceTypeLU" Multiplicity="0..1" />
+          <End Type="genTRACModel.ProposalContractsData" Role="ProposalContractsData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InsuranceTypeLU">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ProposalContractsData">
+              <PropertyRef Name="InsuranceType" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -5342,6 +5408,10 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySetMapping Name="ProposalContractsDatas">
             <EntityTypeMapping TypeName="genTRACModel.ProposalContractsData">
               <MappingFragment StoreEntitySet="ProposalContractsData">
+                <ScalarProperty Name="NegotiatedInsurance" ColumnName="NegotiatedInsurance" />
+                <ScalarProperty Name="ProposedInsurance" ColumnName="ProposedInsurance" />
+                <ScalarProperty Name="InsuranceType" ColumnName="InsuranceType" />
+                <ScalarProperty Name="IsInsuranceDirect" ColumnName="IsInsuranceDirect" />
                 <ScalarProperty Name="CustomerDueDate" ColumnName="CustomerDueDate" />
                 <ScalarProperty Name="CageCode" ColumnName="CageCode" />
                 <ScalarProperty Name="ModCompletedDate" ColumnName="ModCompletedDate" />
@@ -5495,6 +5565,14 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySetMapping Name="CcopdReasonsNoes">
             <EntityTypeMapping TypeName="genTRACModel.CcopdReasonsNo">
               <MappingFragment StoreEntitySet="CcopdReasonsNo">
+                <ScalarProperty Name="Text" ColumnName="Text" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="InsuranceTypeLUs">
+            <EntityTypeMapping TypeName="genTRACModel.InsuranceTypeLU">
+              <MappingFragment StoreEntitySet="InsuranceTypeLU">
                 <ScalarProperty Name="Text" ColumnName="Text" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>

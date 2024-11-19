@@ -129,23 +129,24 @@ namespace GenTRAC.ActionLogic
 			}
 
 			// Get security info to ensure our read-only users can do just that
-			PtmRole highestRole;
 			SecurityPermissionsRequested perms = new SecurityPermissionsRequested
 			{
 				PageToCheck = PtmSecurityPage.Contracts,
 				ProposalId = proposalId,
 			};
-
-			SecurityAuthorization highestAccess = this.SecurityAccess.IsAuthorized(perms, out highestRole);
+			SecurityAuthorization highestAccess = this.SecurityAccess.IsAuthorized(perms, out _);
 
 			// populate calculated properties
 			model.EppOptions = this.GetEppSelectOptions(model.EppDelegationAuthority);
+			model.InsuranceProposedDirectOptions = this.GetInsuranceProposedOptions(model.IsInsuranceDirect);
+			model.InsuranceTypeOptions = this.GetInsuranceTypeOptions(model.InsuranceType);
 			model.SetLostButtonEnabled = this.IsValidForLostStatus(dto, fullProposal);
 			model.NoBidButtonEnabled = this.IsValidForNoBidStatus(fullProposal);
 			model.CompleteButtonEnabled = this.IsValidForCompleteStatus(dto, fullProposal);
 			model.IsNoBid = fullProposal.ProposalStatus == ProposalStatus.NoBid;
 			model.HasAccessToSetNoBid = this.IsContractsUser(fullProposal.CurrentUser.Id, fullProposal.Permissions) || this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null);
 			model.IsReadOnly = fullProposal.ProposalStatus == ProposalStatus.Completed || highestAccess == SecurityAuthorization.Read;
+			model.IsRomNte = fullProposal.IsRomNte;
 
 			// Load additional values
 			model.PreviouslySubmittedRoms = this.ProposalLoader.GetRomProposalOptions(model.PreviouslySubmittedROM);
@@ -233,14 +234,14 @@ namespace GenTRAC.ActionLogic
 		/// Perform validation of the Contracts ModelView that isn't covered by ModelState
 		/// </summary>
 		/// <param name="model">model to validate</param>
+		/// <param name="proposal">Full proposal</param>
 		/// <returns>collection of validation messages</returns>
-		public ICollection<string> ValidateContractModelView(ContractsModelView model)
+		public ICollection<string> ValidateContractModelView(ContractsModelView model, FullProposal proposal)
 		{
 			_ = model ?? throw new ArgumentNullException(nameof(model));
-
+			_ = proposal ?? throw new ArgumentNullException(nameof(proposal));
 			ICollection<string> validationMessages = new Collection<string>();
-			FullProposal proposal = this.GetFullProposalDto(model.ProposalId);
-
+			
 			DateTime? dateSubmittedToContracts = proposal.ProposalChecklistData?.FirstOrDefault()?.EstimatingSubmitsToContractsDate;
 
 			if (model.CustomerSubmittalDt.HasValue && dateSubmittedToContracts.HasValue
@@ -249,10 +250,13 @@ namespace GenTRAC.ActionLogic
 				validationMessages.Add(Constants.INVALID_PROPOSAL_SUBMITTAL_DATE);
 			}
 
-			if (model.NegotiationsSubmittedDt.HasValue && proposal.AgreementDate.HasValue
-				&& model.NegotiationsSubmittedDt < proposal.AgreementDate)
+			if (!proposal.IsRomNte)
 			{
-				validationMessages.Add(Constants.INVALID_NEGOTIATIONS_SUBMITTED);
+				if (model.NegotiationsSubmittedDt.HasValue && proposal.AgreementDate.HasValue
+					&& model.NegotiationsSubmittedDt < proposal.AgreementDate)
+				{
+					validationMessages.Add(Constants.INVALID_NEGOTIATIONS_SUBMITTED);
+				}
 			}
 
 			return validationMessages;
@@ -291,6 +295,60 @@ namespace GenTRAC.ActionLogic
 		public ICollection<SelectListItem> GetEppSelectOptions(EppDelegationAuthority? eppDelegationAuthority)
 		{
 			return this.contractsLoader.GetEppSelectValues(eppDelegationAuthority);
+		}
+
+		/// <summary>
+		/// Gets the Insurance Type Options
+		/// </summary>
+		/// <param name="insuranceType"></param>
+		/// <returns></returns>
+		private ICollection<SelectListItem> GetInsuranceTypeOptions(InsuranceType? insuranceType)
+		{
+			ICollection<SelectListItem> result = new List<SelectListItem>();
+
+			InsuranceType[] enums = (InsuranceType[])Enum.GetValues(typeof(InsuranceType));
+
+			// add blank option
+			result.Add(new SelectListItem { Value = null, Text = null, Selected = insuranceType == null });
+
+			foreach (InsuranceType item in enums)
+			{
+				result.Add(new SelectListItem
+				{
+					Value = item.ToString(),
+					Text = item.GetDescription<InsuranceType>(),
+					Selected = item == insuranceType
+				});
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Gets the Insurance Proposed Options
+		/// </summary>
+		/// <param name="isInsuranceDirect"></param>
+		/// <returns></returns>
+		private ICollection<SelectListItem> GetInsuranceProposedOptions(TripleBooleanState? isInsuranceDirect)
+		{
+			ICollection<SelectListItem> result = new List<SelectListItem>();
+
+			TripleBooleanState[] enums = (TripleBooleanState[])Enum.GetValues(typeof(TripleBooleanState));
+
+			// add blank option
+			result.Add(new SelectListItem { Value = null, Text = null, Selected = isInsuranceDirect == null });
+
+			foreach (TripleBooleanState item in enums)
+			{
+				result.Add(new SelectListItem
+				{
+					Value = item.ToString(),
+					Text = item.GetDescription<TripleBooleanState>(),
+					Selected = item == isInsuranceDirect
+				});
+			}
+
+			return result;
 		}
 
 		/// <summary>
@@ -357,6 +415,14 @@ namespace GenTRAC.ActionLogic
 			dto.LmWon = model.LmWon;
 			dto.ModCompletedDate = model.ModCompletedDate;
 			dto.CageCode = model.CageCode;
+			dto.NegotiatedInsurance = string.IsNullOrEmpty(model.NegotiatedInsurance) ? null : (long?)long.Parse(model.NegotiatedInsurance.Replace(",", string.Empty));
+			dto.ProposedInsurance = string.IsNullOrEmpty(model.ProposedInsurance) ? null : (long?)long.Parse(model.ProposedInsurance.Replace(",", string.Empty));
+			dto.IsInsuranceDirect = model.IsInsuranceDirect;
+			// Insurance Type value is only valid if IsInsuranceDirect is Yes
+			if (dto.IsInsuranceDirect == TripleBooleanState.Yes)
+			{
+				dto.InsuranceType = model.InsuranceType;
+			}
 
 			return dto;
 		}
@@ -396,6 +462,10 @@ namespace GenTRAC.ActionLogic
 			model.LmWon = dto.LmWon;
 			model.ModCompletedDate = dto.ModCompletedDate;
 			model.CageCode = dto.CageCode;
+			model.IsInsuranceDirect = dto.IsInsuranceDirect;
+			model.InsuranceType = dto.InsuranceType;
+			model.NegotiatedInsurance = dto.NegotiatedInsurance.ToString();
+			model.ProposedInsurance = dto.ProposedInsurance.ToString();
 
 			return model;
 		}
@@ -439,7 +509,11 @@ namespace GenTRAC.ActionLogic
 		/// <returns>true if button should be enabled.</returns>
 		private bool IsValidForCompleteStatus(ContractsDto dto, FullProposal fullProposal)
 		{
-			return this.ContractDataValidForCompleteProposalSave(dto, null) && dto.LmWon.HasValue && dto.LmWon.Value && fullProposal.ProposalStatus == ProposalStatus.PendingAward;
+			return this.ContractDataValidForCompleteProposalSave(dto, fullProposal, null) &&
+				(
+					(dto.LmWon.HasValue && dto.LmWon.Value && fullProposal.ProposalStatus == ProposalStatus.PendingAward)
+					|| (fullProposal.IsRomNte && (fullProposal.ProposalStatus == ProposalStatus.PendingAward))
+					);
 		}
 
 		/// <summary>
@@ -639,15 +713,32 @@ namespace GenTRAC.ActionLogic
 		/// Validates whether the proposal is valid for Completed Status
 		/// </summary>
 		/// <param name="dto">Contracts data</param>
+		/// <param name="fullProposal">The full proposal object</param>
 		/// <param name="messages">Validation error messages (out)</param>
 		/// <returns>True if valid</returns>
 		/// <exception cref="ArgumentNullException">Data missing</exception>
-		public bool ContractDataValidForCompleteProposalSave(ContractsDto dto, List<string> messages)
+		public bool ContractDataValidForCompleteProposalSave(ContractsDto dto, FullProposal fullProposal, List<string> messages)
 		{
 			_ = dto ?? throw new ArgumentNullException(nameof(dto));
+			_ = fullProposal ?? throw new ArgumentNullException(nameof(fullProposal));
 			messages = messages ?? new List<string>();
 
 			bool isValid = true;
+			
+			// Customer Due Date required for validation
+			if (dto.CustomerDueDate is null)
+			{
+				isValid = false;
+				messages.Add(Constants.INVALID_CUSTOMER_DUE_DATE);
+			}
+
+			// Cage Code required for validation
+			if (dto.CageCode == null)
+			{
+				isValid = false;
+				messages.Add(Constants.INVALID_CAGE_CODE);
+			}
+
 			EppDelegationDatesHelper edc = new EppDelegationDatesHelper();
 
 			switch ((EppDelegationAuthority?)dto?.EppDelegationAuthority)
@@ -670,49 +761,61 @@ namespace GenTRAC.ActionLogic
 					break;
 			}
 
-			// Customer Due Date required for validation
-			if (dto.CustomerDueDate is null)
+			if (!fullProposal.IsRomNte && dto.LmWon.HasValue && dto.LmWon.Value)
 			{
-				isValid = false;
-				messages.Add(Constants.INVALID_CUSTOMER_DUE_DATE);
-			}
+				// Final Negotiated Value is required
+				if (dto.FinalNegotiatedValue == null)
+				{
+					isValid = false;
+					messages.Add(Constants.INVALID_FINAL_NEGOTIATED_VALUE);
+				}
 
-			// Cage Code required for validation
-			if (dto.CageCode == null)
-			{
-				isValid = false;
-				messages.Add(Constants.INVALID_CAGE_CODE);
-			}
+				// Date Confirmation Of Negotiations Submitted is required
+				if (dto.NegotiationsSubmitted == null || dto.NegotiationsSubmitted == DateTime.MinValue)
+				{
+					isValid = false;
+					messages.Add(Constants.INVALID_NEGOTIATIONS_SUBMITTED_DATE);
+				}
 
-			// Final Negotiated Value is required
-			if (dto.FinalNegotiatedValue == null)
-			{
-				isValid = false;
-				messages.Add(Constants.INVALID_FINAL_NEGOTIATED_VALUE);
-			}
-
-			// Date Confirmation Of Negotiations Submitted is required
-			if (dto.NegotiationsSubmitted == null || dto.NegotiationsSubmitted == DateTime.MinValue)
-			{
-				isValid = false;
-				messages.Add(Constants.INVALID_NEGOTIATIONS_SUBMITTED_DATE);
-			}
-
-			// Mod Completion Date is required
-			if (dto.ModCompletedDate == null || dto.ModCompletedDate == DateTime.MinValue)
-			{
-				isValid = false;
-				messages.Add(Constants.INVALID_MOD_COMPLETION_DATE);
+				// Mod Completion Date is required
+				if (dto.ModCompletedDate == null || dto.ModCompletedDate == DateTime.MinValue)
+				{
+					isValid = false;
+					messages.Add(Constants.INVALID_MOD_COMPLETION_DATE);
+				}
 			}
 
 			// LM Win / Loss is required
-			if (dto.LmWon == null)
+			if (!fullProposal.IsRomNte && dto.LmWon == null)
 			{
 				isValid = false;
 				messages.Add(Constants.INVALID_LM_WIN_LOSS);
 			}
 
-			messages.AddRange(ValidateContractModelView(ConvertContractsDtoToModel(dto)));
+			if (dto.IsInsuranceDirect is null)
+			{
+				isValid = false;
+				messages.Add(Constants.INVALID_INSURANCE_DIRECT);
+			}
+			else if (dto.IsInsuranceDirect == TripleBooleanState.Yes && dto.InsuranceType is null)
+			{
+				isValid = false;
+				messages.Add(Constants.INVALID_INSURANCE_TYPE);
+			}
+
+			if (dto.ProposedInsurance is null)
+			{
+				isValid = false;
+				messages.Add(Constants.INVALID_PROPOSED_INSURANCE);
+			}
+
+			if (dto.NegotiatedInsurance is null)
+			{
+				isValid = false;
+				messages.Add(Constants.INVALID_NEGOTIATED_INSURANCE);
+			}
+
+			messages.AddRange(ValidateContractModelView(ConvertContractsDtoToModel(dto), fullProposal));
 
 			return isValid;
 		}

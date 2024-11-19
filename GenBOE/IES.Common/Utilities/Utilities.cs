@@ -7,12 +7,16 @@
 namespace IES.Common
 {
 	using System;
+	using System.Collections;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.Configuration;
+	using System.Diagnostics;
 	using System.DirectoryServices;
 	using System.IO;
 	using System.Linq;
 	using System.Net.Http;
+	using System.Text;
 	using System.Text.RegularExpressions;
 	using System.Threading;
 	using System.Web.Mvc;
@@ -1102,6 +1106,33 @@ namespace IES.Common
 			string phone = TryGetPropertyValue(propertyCollection, "telephonenumber");
 
 			return !string.IsNullOrEmpty(phone) ? phone : TryGetPropertyValue(propertyCollection, "mobile");
+		}
+
+		/// <summary>
+		/// Log environment variables and config app settings in elmah
+		/// </summary>
+		/// <param name="log">logger</param>
+		public static void LogEnvironmentSettings(Logger log)
+		{
+			_ = log ?? throw new ArgumentNullException(nameof(log));
+
+			string loggingEnabled = ConfigurationUtilities.GetAppSetting("EnableEnvionmentInfoLogging");
+			if (loggingEnabled != null && loggingEnabled == "true")
+			{
+				log.Debug("Begin Environment Variables");
+				foreach (DictionaryEntry envVariable in Environment.GetEnvironmentVariables())
+				{
+					log.Debug(envVariable.Key + " - " + envVariable.Value);
+				}
+				log.Debug("End Environment Variables");
+
+				log.Debug("Begin Configuration Manager App Settings");
+				foreach (string configSettingKey in ConfigurationUtilities.GetAppSettingsKeys())
+				{
+					log.Debug(configSettingKey + " - " + ConfigurationUtilities.GetAppSetting(configSettingKey));
+				}
+				log.Debug("End Configuration Manager App Settings");
+			}
 		}
 	}
 }
