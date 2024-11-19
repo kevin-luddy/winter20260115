@@ -60,7 +60,19 @@
                     }
                 });
             }
-        }
+        };
+
+		ContractsInfoWidget.insuranceChanged = function () {
+			var isInsuranceProposedDirect = ContractsInfoWidget.getElement('#IsInsuranceDirect').val();
+            
+			if (isInsuranceProposedDirect && isInsuranceProposedDirect === 'Yes') {
+                // Show the Insurance Type dropdown
+				$('#InsuranceTypeDiv').show();
+            } else {
+                // Hide the Insurance Type dropdown
+				$('#InsuranceTypeDiv').hide();
+            }
+        };
 
         const handleDateSelect = function () {
             ContractsInfoWidget.setDirty('contractsForm');
@@ -226,13 +238,27 @@
             GenTRAC.numericCommaSeparator(ContractsInfoWidget, dollarValue, 'input[name="FinalNegotiatedValue"]', false);
             $('#FinalNegotiatedValue').val('$' + $('#FinalNegotiatedValue').val());
         });
+
+		$('#ProposedInsurance').on('change', function () {
+			const dollarValue = $('#ProposedInsurance').val().trim().replace('$', '').replace(/\,/g, '');
+			GenTRAC.numericCommaSeparator(ContractsInfoWidget, dollarValue, 'input[name="ProposedInsurance"]', false);
+        });
+
+		$('#NegotiatedInsurance').on('change', function () {
+			const dollarValue = $('#NegotiatedInsurance').val().trim().replace('$', '').replace(/\,/g, '');
+			GenTRAC.numericCommaSeparator(ContractsInfoWidget, dollarValue, 'input[name="NegotiatedInsurance"]', false);
+		});
+
+		$('#ProposedInsurance').trigger('change');
+		$('#NegotiatedInsurance').trigger('change');
+        ContractsInfoWidget.insuranceChanged();
     });
 </script>
 
 <div id="contractsInfo" class="composite module full">
     <div class="module-header-data">Contract Information</div>
     
-    <div class="module-content-data expanded-content position-relative">
+	<div class="module-content-data expanded-content position-relative">
 		<div class="button-right-container">
 			@if (Model.HasAccessToSetNoBid)
 			{
@@ -247,147 +273,174 @@
 			}
 			@if (!Model.IsRomNte)
 			{
-			<button id="proposal-lost" type="button" class="ies" @(Model.SetLostButtonEnabled ? string.Empty : "disabled")>Proposal Not Awarded</button>
-            }
+				<button id="proposal-lost" type="button" class="ies" @(Model.SetLostButtonEnabled ? string.Empty : "disabled")>Proposal Not Awarded</button>
+			}
 			<button id="proposal-complete" type="button" class="ies" @(Model.CompleteButtonEnabled ? string.Empty : "disabled")>Complete</button>
 		</div>
-        @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM, name = GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM }))
-        {
-            @Html.HiddenFor(x => x.Id)
-            @Html.HiddenFor(x => x.ProposalId)
-            @Html.HiddenFor(x => x.LastUpdatedDateLong);
-            if (!Model.IsRomNte)
-            {
-            <div class="form-row">
-                <div class="form-label">@Html.LabelFor(x => x.PreviouslySubmittedROM)</div>
-                <div class="form-element">
-                    @Html.DropDownListFor(x => x.PreviouslySubmittedROM, Model.PreviouslySubmittedRoms, string.Empty, new { @class = "half", onchange = "ContractsInfoWidget.romChanged()" })
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">@Html.LabelFor(x => x.PreviousROMDate)</div>
-                <div class="form-element" name="PreviousROMDate">
-                    @Html.DisplayFor(x => x.PreviousROMDate)
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">@Html.LabelFor(x => x.PreviousROMValue)</div>
-                <div class="form-element" name="PreviousROMValue">
-                    @Html.DisplayFor(x => x.PreviousROMValue)
-                </div>
-            </div>
-            }
-            <div class="form-row">
-                <div class="form-label">
-                    <span helptext="If this is an Unsolicited Bid, enter the Proposal Submittal Date. Ensure most recent due date is entered.">@Html.LabelFor(x => x.CustomerDueDate)</span>
-                </div>
-                <div class="form-element">
-                    @Html.TextBoxFor(x => x.CustomerDueDate, new { @class = "date", placeholder = "mm/dd/yyyy" })
-                </div>
-            </div>
-            <div class="form-row">
-                @if (Model.IsRomNte){
-                <div class="form-label">@Html.LabelFor(x => x.CustomerSubmittalDate, "ROM/NTE Submittal Date to Customer")</div>
-                } else {
-                <div class="form-label">@Html.LabelFor(x => x.CustomerSubmittalDate)</div>
-                }
-                <div class="form-element">
-                    @Html.TextBoxFor(x => x.CustomerSubmittalDate, new { @class = "date", placeholder = "mm/dd/yyyy" })
-                </div>
-            </div>
+		@using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM, name = GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM }))
+		{
+			@Html.HiddenFor(x => x.Id)
+			@Html.HiddenFor(x => x.ProposalId)
+			@Html.HiddenFor(x => x.LastUpdatedDateLong);
+			if (!Model.IsRomNte)
+			{
+				<div class="form-row">
+					<div class="form-label">@Html.LabelFor(x => x.PreviouslySubmittedROM)</div>
+					<div class="form-element">
+						@Html.DropDownListFor(x => x.PreviouslySubmittedROM, Model.PreviouslySubmittedRoms, string.Empty, new { @class = "half", onchange = "ContractsInfoWidget.romChanged()" })
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-label">@Html.LabelFor(x => x.PreviousROMDate)</div>
+					<div class="form-element" name="PreviousROMDate">
+						@Html.DisplayFor(x => x.PreviousROMDate)
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-label">@Html.LabelFor(x => x.PreviousROMValue)</div>
+					<div class="form-element" name="PreviousROMValue">
+						@Html.DisplayFor(x => x.PreviousROMValue)
+					</div>
+				</div>
+			}
+			<div class="form-row">
+				<div class="form-label">
+					<span helptext="If this is an Unsolicited Bid, enter the Proposal Submittal Date. Ensure most recent due date is entered.">@Html.LabelFor(x => x.CustomerDueDate)</span>
+				</div>
+				<div class="form-element">
+					@Html.TextBoxFor(x => x.CustomerDueDate, new { @class = "date", placeholder = "mm/dd/yyyy" })
+				</div>
+			</div>
+			<div class="form-row">
+				@if (Model.IsRomNte)
+				{
+					<div class="form-label">@Html.LabelFor(x => x.CustomerSubmittalDate, "ROM/NTE Submittal Date to Customer")</div>
+				}
+				else
+				{
+					<div class="form-label">@Html.LabelFor(x => x.CustomerSubmittalDate)</div>
+				}
+				<div class="form-element">
+					@Html.TextBoxFor(x => x.CustomerSubmittalDate, new { @class = "date", placeholder = "mm/dd/yyyy" })
+				</div>
+			</div>
 			<div class="form-row">
 				<div class="form-label">@Html.LabelFor(x => x.CageCode)</div>
 				<div class="form-element">
 					@Html.DropDownListFor(x => x.CageCode, Model.CageCodeSelectListItems, string.Empty, new { @class = "half" })
 				</div>
 			</div>
-            <div class="form-row">
-                <div class="form-label">@Html.LabelFor(x => x.ContractsCorrespondenceLogNumber) *</div>
-                <div class="form-element">
-                    @Html.TextBoxFor(x => x.ContractsCorrespondenceLogNumber, new { @class = "half" })
-                </div>
-            </div>
+			<div class="form-row">
+				<div class="form-label">@Html.LabelFor(x => x.ContractsCorrespondenceLogNumber) *</div>
+				<div class="form-element">
+					@Html.TextBoxFor(x => x.ContractsCorrespondenceLogNumber, new { @class = "half" })
+				</div>
+			</div>
+			if (!Model.IsRomNte)
+			{
+				<div class="form-row">
+					<div class="form-label">@Html.LabelFor(x => x.FinalNegotiatedValue)</div>
+					<div class="form-element">
+						@Html.TextBoxFor(x => x.FinalNegotiatedValue, new { @class = "half" })
+					</div>
+				</div>
+				<div class="form-row">
+					<div class="form-label">@Html.LabelFor(x => x.NegotiationsSubmitted)</div>
+					<div class="form-element">
+						@Html.TextBoxFor(x => x.NegotiationsSubmitted, new { @class = "date", placeholder = "mm/dd/yyyy" })
+					</div>
+				</div>
+			}
+			<div class="form-row">
+				<div class="form-label">@Html.LabelFor(x => x.EppDelegationAuthority)</div>
+				<div class="form-element">
+					@Html.DropDownListFor(model => model.EppDelegationAuthority, Model.EppOptions, new { name = "EppDelegationAuthority" })
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label">@Html.LabelFor(x => x.ProgramEppDate)</div>
+				<div class="form-element">
+					@Html.TextBoxFor(x => x.ProgramEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label">@Html.LabelFor(x => x.LobEppDate)</div>
+				<div class="form-element">
+					@Html.TextBoxFor(x => x.LobEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label">@Html.LabelFor(x => x.PreSpaceEppDate)</div>
+				<div class="form-element">
+					@Html.TextBoxFor(x => x.PreSpaceEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label">@Html.LabelFor(x => x.SpaceEppDate)</div>
+				<div class="form-element">
+					@Html.TextBoxFor(x => x.SpaceEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label">@Html.LabelFor(x => x.PreCorporateEppDate)</div>
+				<div class="form-element">
+					@Html.TextBoxFor(x => x.PreCorporateEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label">@Html.LabelFor(x => x.CorporateEppDate)</div>
+				<div class="form-element">
+					@Html.TextBoxFor(x => x.CorporateEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+				</div>
+			</div>
+			<div class="form-row" data-proposal-type="standard">
+				<div class="form-label">@Html.LabelFor(x => x.EppRosDelegationNotes)</div>
+				<div class="form-element">
+					<textarea id="EppRosDelegationNotes" name="EppRosDelegationNotes" rows="3">@Model.EppRosDelegationNotes</textarea>
+				</div>
+			</div>
             if (!Model.IsRomNte)
             {
-            <div class="form-row">
-                <div class="form-label">@Html.LabelFor(x => x.FinalNegotiatedValue)</div>
-                <div class="form-element">
-                    @Html.TextBoxFor(x => x.FinalNegotiatedValue, new { @class = "half" })
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">@Html.LabelFor(x => x.NegotiationsSubmitted)</div>
-                <div class="form-element">
-                    @Html.TextBoxFor(x => x.NegotiationsSubmitted, new { @class = "date", placeholder = "mm/dd/yyyy" })
-                </div>
-            </div>
+			<div class="form-row">
+				<div class="form-label">@Html.LabelFor(x => x.LmWon)</div>
+				<div class="form-element">
+					<label>Yes</label> @Html.RadioButtonFor(x => x.LmWon, true)
+					<label>No</label>  @Html.RadioButtonFor(x => x.LmWon, false)
+				</div>
+			</div>
             }
-            <div class="form-row">
-                <div class="form-label">@Html.LabelFor(x => x.EppDelegationAuthority)</div>
-                <div class="form-element">
-                    @Html.DropDownListFor(model => model.EppDelegationAuthority, Model.EppOptions, new { name = "EppDelegationAuthority" })
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">@Html.LabelFor(x => x.ProgramEppDate)</div>
-                <div class="form-element">
-                    @Html.TextBoxFor(x => x.ProgramEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">@Html.LabelFor(x => x.LobEppDate)</div>
-                <div class="form-element">
-                    @Html.TextBoxFor(x => x.LobEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">@Html.LabelFor(x => x.PreSpaceEppDate)</div>
-                <div class="form-element">
-                    @Html.TextBoxFor(x => x.PreSpaceEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">@Html.LabelFor(x => x.SpaceEppDate)</div>
-                <div class="form-element">
-                    @Html.TextBoxFor(x => x.SpaceEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">@Html.LabelFor(x => x.PreCorporateEppDate)</div>
-                <div class="form-element">
-                    @Html.TextBoxFor(x => x.PreCorporateEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">@Html.LabelFor(x => x.CorporateEppDate)</div>
-                <div class="form-element">
-                    @Html.TextBoxFor(x => x.CorporateEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
-                </div>
-            </div>
-            <div class="form-row" data-proposal-type="standard">
-                <div class="form-label">@Html.LabelFor(x => x.EppRosDelegationNotes)</div>
-                <div class="form-element">
-                    <textarea id="EppRosDelegationNotes" name="EppRosDelegationNotes" rows="3">@Model.EppRosDelegationNotes</textarea>
-                </div>
-            </div>
+			<div class="form-row">
+				<div class="form-label">@Html.LabelFor(x => x.IsInsuranceDirect)</div>
+				<div class="form-element">
+					@Html.DropDownListFor(model => model.IsInsuranceDirect, Model.InsuranceProposedDirectOptions, new { name = "IsInsuranceDirect", @class = "half", onchange = "ContractsInfoWidget.insuranceChanged()" })
+
+                    <div id="InsuranceTypeDiv"><span>&nbsp;&nbsp;Select Insurance Type: </span>@Html.DropDownListFor(model => model.InsuranceType, Model.InsuranceTypeOptions, new { name = "InsuranceType", @class = "half" })
+                    </div>
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label"><span helptext="Enter in U.S. whole dollars">@Html.LabelFor(x => x.ProposedInsurance)</span></div>
+				<div class="form-element">
+					@Html.TextBoxFor(x => x.ProposedInsurance, new { @class = "half" })
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label"><span helptext="Enter in U.S. whole dollars">@Html.LabelFor(x => x.NegotiatedInsurance)</span></div>
+				<div class="form-element">
+					@Html.TextBoxFor(x => x.NegotiatedInsurance, new { @class = "half" })
+				</div>
+			</div>
             if (!Model.IsRomNte)
             {
-            <div class="form-row">
-                <div class="form-label">@Html.LabelFor(x => x.LmWon)</div>
-                <div class="form-element">
-                    <label>Yes</label> @Html.RadioButtonFor(x => x.LmWon, true)
-                    <label>No</label>  @Html.RadioButtonFor(x => x.LmWon, false)
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">@Html.LabelFor(x => x.ModCompletedDate)</div>
-                <div class="form-element">
-                    @Html.TextBoxFor(x => x.ModCompletedDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
-                </div>
-            </div>
-            }
-        }
-    </div>
+			<div class="form-row">
+				<div class="form-label">@Html.LabelFor(x => x.ModCompletedDate)</div>
+				<div class="form-element">
+					@Html.TextBoxFor(x => x.ModCompletedDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+				</div>
+			</div>
+			}
+		}
+	</div>
     <div id="confirm-loss-modal" title="Please Confirm" style="display: none;">
         <p><strong>Are you sure the proposal is actually not awarded? This action cannot be undone.</strong></p>
         <br />

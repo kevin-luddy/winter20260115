@@ -10,11 +10,11 @@ namespace GenBOE.Dtos
 	using System.Diagnostics.CodeAnalysis;
 
 	/// <summary>
-	/// DTO containing CLIN and Contract Type XREF data for a PBOE
+	/// DTO containing CLIN and Contract Type XREF data for a PBOE or IBOE
 	/// </summary>
 	[ExcludeFromCodeCoverage]
 	[Serializable]
-	public class PboeClinContractDto
+	public class ClinContractDto
 	{
 		/// <summary>
 		/// Clin Title

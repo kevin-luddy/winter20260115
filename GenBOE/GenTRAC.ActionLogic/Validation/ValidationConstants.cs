@@ -112,7 +112,7 @@ namespace GenTRAC.ActionLogic.Validation
 			/// <summary>
 			/// Is this proposal in support of definitizing an Undefinitized Contract Action validation message
 			/// </summary>
-			public const string IS_IN_SUPPORT_OF_DEFINITIZING_UNDEFINITIZED_REQUIRED = "\"Is this proposal in support of definitizing an Undefinitized Contract Action\" response is required.";
+			public const string IS_IN_SUPPORT_OF_DEFINITIZING_UNDEFINITIZED_REQUIRED = GENERAL_INFO_VALIDATION + "\"Is this proposal in support of definitizing an Undefinitized Contract Action\" response is required.";
 
 			/// <summary>
 			/// The certified cost pricing data is required on the Proposal tab.
@@ -278,7 +278,7 @@ namespace GenTRAC.ActionLogic.Validation
             public const string EST_PROP_VALUE_REQUIRED = PROPOSAL_INFO_VALDIATION + "Estimated Proposal Value is required.";
 
             /// <summary>
-            /// estimated proposal value vaidation error if value is not a long
+            /// estimated proposal value validation error if value is not a long
             /// </summary>
             public const string EST_PROP_VALUE_IN_DOLLARS = PROPOSAL_INFO_VALDIATION + "Please enter Estimated Proposal Value in U.S. whole dollars in the range +- 999,999,999,999.";
 
@@ -495,6 +495,21 @@ namespace GenTRAC.ActionLogic.Validation
 			public const string SUBCONTRACTS_LEAD_BACKUP_REQUIRES_LEAD = USER_INFO_VALDIATION + "Subcontracts Lead is required if Backup Subcontracts Lead is populated.";
 
 			#endregion  Proposal User Info Section
+
+			#region Proposal Contracts Tab
+
+			/// <summary>
+			/// Proposed insurance value validation error if value is not a long
+			/// </summary>
+			public const string PROPOSED_INSURANCE_VALUE_IN_DOLLARS = "Please enter Proposed Insurance Value in U.S. whole dollars in the range +- 999,999,999,999.";
+
+			/// <summary>
+			/// Negotiated insurance value validation error if value is not a long
+			/// </summary>
+			public const string NEGOTIATED_INSURANCE_VALUE_IN_DOLLARS = "Please enter Negotiated Insurance Value in U.S. whole dollars in the range +- 999,999,999,999.";
+			
+
+			#endregion Proposal Contract Tab
 		}
 
 		/// <summary>
@@ -537,53 +552,6 @@ namespace GenTRAC.ActionLogic.Validation
             /// This should never happen, but just in case.
             /// </summary>
             public const string COMPLETE_FAILED_PROPOSAL = "You cannot complete a proposal with a 'Certification not required' reason. Please save it instead.";
-        }
-
-        /// <summary>
-        /// Validation messages for proposal setup
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
-        public static class RevisionValidationConstants
-        {
-            /// <summary>
-            /// proposal title is required
-            /// </summary>
-            public const string PROPOSAL_TITLE_REQUIRED = "Proposal Title is required.";
-
-            /// <summary>
-            /// proposal title must be unique
-            /// </summary>
-            public const string PROPOSAL_TITLE_MUST_BE_UNIQUE = "Proposal Title must be unique.";
-
-            /// <summary>
-            /// Line of Business is required
-            /// </summary>
-            public const string LINE_OF_BUSINESS_REQUIRED = "Line of Business is required.";
-
-            /// <summary>
-            /// Program Area required
-            /// </summary>
-            public const string PROGRAM_AREA_REQUIRED = "Program Area is required.";
-
-            /// <summary>
-            /// Anticipated delivery date is required
-            /// </summary>
-            public const string DELIVERY_DATE_REQUIRED = "Anticipated Delivery Date is required.";
-
-            /// <summary>
-            /// estimated proposal value is required
-            /// </summary>
-            public const string EST_PROP_VALUE_REQUIRED = "Estimated Proposal Value is required.";
-
-            /// <summary>
-            /// estimated proposal value vaidation error if value is not a long
-            /// </summary>
-            public const string EST_PROP_VALUE_IN_DOLLARS = "Please enter Estimated Proposal Value in U.S. whole dollars in the range +- 999,999,999,999.";
-
-            /// <summary>
-            /// anticipated delivery date format 
-            /// </summary>
-            public const string ANTICIPATED_DELIVERY_DATE_FORMAT = "Anticipated Delivery Date format must be mm/dd/yyyy";
         }
 
         /// <summary>

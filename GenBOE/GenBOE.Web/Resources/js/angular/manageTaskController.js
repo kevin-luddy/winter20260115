@@ -29,8 +29,6 @@
     $scope.IsDraftOrDraftLocked = false;
     $scope.IsBRCEnabled = ManageTaskModel.IsBRCEnabled; // For CDSM table only show if this BRC Enabaled = true 
     $scope.IsSkillMixEnabled = ManageTaskModel.IsSkillMixEnabled;
-    $scope.loadedTaskData = false;
-    $scope.initialSkillMixLoad = false;
     $scope.skillMixRationale = [];
     $scope.skillMixRationaleLaborTypeSelections = [];
     $scope.commonDisclosureLaborTypeSelections = [];
@@ -161,10 +159,12 @@
         );
     };
 
-    $scope.refreshSkillMixTables = function () {
-        if (ManageTaskModel.IsSkillMixEnabled && $scope.loadedTaskData) {
+    $scope.refreshSkillMixTables = function (setDirty = true) {
+        if (ManageTaskModel.IsSkillMixEnabled) {
             $(document).trigger("SHOW_LOADING_BOX");
-            $scope.setDirty();
+            if (setDirty) {
+                $scope.setDirty();
+            }
             var data = {
                 boeId: ManageTaskModel.boeId,
                 selectedMoqTypes: $scope.SelectedMoqTypes,
@@ -178,7 +178,6 @@
                 data: data,
                 url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.RefreshSkillMixTableAction, '')
             }).then(function (response) {
-                $scope.initialSkillMixLoad = true;
                 $scope.skillMixRationale = response.data;
                 $scope.model.SkillMixData = $scope.skillMixRationale.data.SkillMixRows;
                 $scope.model.CommonDisclosureSkillMixData = $scope.skillMixRationale.data.CommonDisclosureRows;
@@ -1270,10 +1269,8 @@
                 callback();
             }
 
-            // TODO Future Story: Remove loadedTaskData bool and the call to refreshSkillMixTables() and set the skill mix data from the database.
-            // TODO Future Story: Remove this comment - Set the loaded task data to true, therefore the Moq event knows to refresh skill mix data with the complete data.
-            $scope.loadedTaskData = true;
-            $scope.refreshSkillMixTables();
+            // Refreshing the tables to calculate the totals rows for the UI, do not set dirty because there "should" be no changes from rows in DB
+            $scope.refreshSkillMixTables(false);
         }, function errorCallback(response) {
             if (response.data && response.data.MessageList) {
                 $scope.errors = response.data.MessageList;

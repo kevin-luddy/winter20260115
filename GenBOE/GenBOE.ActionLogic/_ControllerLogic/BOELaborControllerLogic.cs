@@ -55,6 +55,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		private readonly IOrdinaryVariableLoader _taskVariableLoader;
 		private readonly IRteTemplateDataLoader rteTemplateDataLoader;
 		private readonly IMoqTypeDataLoader moqTypeDataLoader;
+		private readonly ISkillMixDTOLoader skillMixDTOLoader;
+		private readonly ICommonDisclosureSMDTODataLoader commonDisclosureDTOLoader;
 		private readonly IValidateBOE validateBOE;
 		private readonly IMoqTableExporter moqTableExporter;
 		private readonly IMoqTableImporter moqTableImporter;
@@ -90,6 +92,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			ICommonDataMapper commonDataMapper,
 			IRteTemplateDataLoader rteTemplateDataLoader,
 			IMoqTypeDataLoader moqTypeDataLoader,
+			ISkillMixDTOLoader skillMixDTOLoader,
+			ICommonDisclosureSMDTODataLoader commonDisclosureDTOLoader,
 			IValidateBOE validateBOE,
 			IMoqTableExporter moqTableExporter,
 			IMoqTableImporter moqTableImporter,
@@ -116,6 +120,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			this.CommonDataMapper = commonDataMapper;
 			this.rteTemplateDataLoader = rteTemplateDataLoader;
 			this.moqTypeDataLoader = moqTypeDataLoader;
+			this.skillMixDTOLoader = skillMixDTOLoader;
+			this.commonDisclosureDTOLoader = commonDisclosureDTOLoader;
 			this.validateBOE = validateBOE;
 			this.moqTableExporter = moqTableExporter;
 			this.moqTableImporter = moqTableImporter;
@@ -875,6 +881,21 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}
 			}
 			#endregion
+
+			if (Utilities.IsSkillMixEnabledForSystem)
+			{
+				decimal historicalHoursTotals = 0;
+
+				foreach (SkillMixModelView row in taskElement.SkillMixTable)
+				{
+					historicalHoursTotals += row.HistoricalHours;
+				}
+
+				if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
+				{
+					validationErrors.Add(new ValidationMessage(string.Format("Skill Mix Total Historical Hours do not match the sum of the Total Relevant Hours.")));
+				}
+			}
 
 			return validationErrors;
 		}
@@ -1815,6 +1836,22 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				toReturn.LaborTypesData.Add(laborToAdd);
 			}
 
+			if (Utilities.IsSkillMixEnabledForSystem)
+			{
+				List<SkillMixDTO> skillMixFromDB = new List<SkillMixDTO>(this.skillMixDTOLoader.GetByBOETaskElementID(dto.Id));
+				List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixFromDB = new List<CommonDisclosureSkillMixDTO>(this.commonDisclosureDTOLoader.GetByBOETaskElementID(dto.Id));
+
+				foreach (SkillMixDTO skillMixDTO in skillMixFromDB)
+				{
+					toReturn.SkillMixData.Add(new SkillMixModelView(skillMixDTO));
+				}
+
+				foreach (CommonDisclosureSkillMixDTO commonDisclosureSkillMixDTO in commonDisclosureSkillMixFromDB)
+				{
+					toReturn.CommonDisclosureSkillMixData.Add(new CommonDisclosureModelView(commonDisclosureSkillMixDTO));
+				}
+			}
+
 			toReturn.ContainsDiscrete = toReturn.LaborTypesData.Select(x => x.SpreadCurveID).Any(x => x.Value == SpreadCurves.DiscreteCost || x.Value == SpreadCurves.DiscreteHours);
 
 			return toReturn;
@@ -1846,7 +1883,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				Updateable = UpdateType.Upsert
 			};
 
-
 			// Convert Task Element Data
 			toReturn.BoeID = modelview.TaskElementData.BOEID;
 			toReturn.Id = modelview.TaskElementData.TaskElementDetailID ?? -1;
@@ -1861,6 +1897,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			toReturn.WorkspaceVariableIDs = modelview.TaskElementData.WorkspaceVariableIDs;
 			toReturn.TaskElementType = TaskElementType.Labor;
 			toReturn.BOETaskElementOrder = modelview.TaskElementData.BOETaskElementOrder;
+			if (Utilities.IsSkillMixEnabledForSystem)
+			{
+				toReturn.MOQTotalRelevantHours += modelview.MOQTypes?.Sum(t => t.TableData?.Sum(td => td.TotalRelevantHours) ?? 0) ?? 0;
+				toReturn.SkillMixTable = modelview.SkillMixData;
+				toReturn.CommonDisclosureTable = modelview.CommonDisclosureSkillMixData;
+			}
+
 			//if the taskelement is new we will save the order id with 2000. This is so the taskelement always goes to the bottom of the page.
 			if (toReturn.Id < 0)
 			{

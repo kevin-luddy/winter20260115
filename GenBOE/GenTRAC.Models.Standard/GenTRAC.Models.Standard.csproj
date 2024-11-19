@@ -35,6 +35,7 @@
     <Compile Include="..\GenTRAC.Models\genTRACUser.cs" Link="genTRACUser.cs" />
     <Compile Include="..\GenTRAC.Models\getMyProposals_Result.cs" Link="getMyProposals_Result.cs" />
     <Compile Include="..\GenTRAC.Models\GetProposalRevisionHistory_Result.cs" Link="GetProposalRevisionHistory_Result.cs" />
+	<Compile Include="..\GenTRAC.Models\InsuranceTypeLU.cs" Link="InsuranceTypeLU.cs" />	  
     <Compile Include="..\GenTRAC.Models\ISGSRoleLU.cs" Link="ISGSRoleLU.cs" />
     <Compile Include="..\GenTRAC.Models\LineOfBusinessLU.cs" Link="LineOfBusinessLU.cs" />
     <Compile Include="..\GenTRAC.Models\PARChecklistContent.cs" Link="PARChecklistContent.cs" />

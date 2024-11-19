@@ -674,14 +674,34 @@ namespace IES.Common
             /// </summary>
             public const string USER_AND_GROUP_IDS = "UserAndGroupIDs";
         }
-        #endregion SSRS Report
+		#endregion SSRS Report
 
-        #region Contracts
+		#region Contracts
 
-        /// <summary>
-        /// Validation failed for Customer Due Date
-        /// </summary>
-        public const string INVALID_CUSTOMER_DUE_DATE = "Customer Due Date is required.";
+		/// <summary>
+		/// Validation failed for Has Insurance been Proposed direct
+		/// </summary>
+		public const string INVALID_INSURANCE_DIRECT = "Has insurance been proposed direct is required.";
+
+		/// <summary>
+		/// Validation failed for Insurance Type
+		/// </summary>
+		public const string INVALID_INSURANCE_TYPE = "Insurance Type is required.";
+
+		/// <summary>
+		/// Validation failed for Proposed Insurance value
+		/// </summary>
+		public const string INVALID_PROPOSED_INSURANCE = "Proposed Insurance is required.";
+
+		/// <summary>
+		/// Validation failed for Negotiated Insurance value
+		/// </summary>
+		public const string INVALID_NEGOTIATED_INSURANCE = "Negotiated Insurance required."; 
+
+		/// <summary>
+		/// Validation failed for Customer Due Date
+		/// </summary>
+		public const string INVALID_CUSTOMER_DUE_DATE = "Customer Due Date is required.";
 
         /// <summary>
         /// Validation failed for Cage Code

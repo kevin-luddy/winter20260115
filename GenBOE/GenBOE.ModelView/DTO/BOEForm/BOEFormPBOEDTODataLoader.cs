@@ -418,7 +418,7 @@ namespace GenBOE.DataBridge.DTO
 												  where x.ClinID == clin.CLINID
 												  from ct in gbe.ContractTypeLUs
 												  where x.ContractType == ct.ContractTypeID
-												  select new PboeClinContractDto()
+												  select new ClinContractDto()
 												  {
 													  Title = clin.DisplayedCLINNumber,
 													  ContractType = ct.ContractType
