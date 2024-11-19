@@ -897,6 +897,16 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}
 			}
 
+			if (taskElement.SkillMixTable != null && taskElement.SkillMixTable.Any())
+			{
+				validationErrors.AddRange(ActionLogicUtility.ValidateSkillMixTable(taskElement.SkillMixTable, ws.CreationDate).Select(x => new ValidationMessage(x)));
+			}
+
+			if (taskElement.CommonDisclosureTable != null && taskElement.CommonDisclosureTable.Any())
+			{
+				validationErrors.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(taskElement.CommonDisclosureTable, taskElement.SkillMixTable, ws.CreationDate).Select(x => new ValidationMessage(x)));
+			}
+
 			return validationErrors;
 		}
 
