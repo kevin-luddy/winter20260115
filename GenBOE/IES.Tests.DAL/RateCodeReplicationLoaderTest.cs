@@ -35,7 +35,7 @@ namespace IES.Tests
             IRateCodeReplicationLoader sut = this.testData.RateCodeReplicationLoader;
 
 			// First delete any old data
-			using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
+			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
 			{
 				ICollection<RateCodeModelView> rateCodes = sut.GetAll();
 				foreach (RateCodeModelView rateCode in rateCodes)
