@@ -10,13 +10,10 @@ namespace IES.Common
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
-	using System.Configuration;
-	using System.Diagnostics;
 	using System.DirectoryServices;
 	using System.IO;
 	using System.Linq;
 	using System.Net.Http;
-	using System.Text;
 	using System.Text.RegularExpressions;
 	using System.Threading;
 	using System.Web.Mvc;
@@ -49,7 +46,18 @@ namespace IES.Common
 		private static DateTime? datepickerRestrictionRMS;
 		private static DateTime? historicalReferenceExplanationStartDate;
 		private static readonly IActiveDirectoryUtilities activeDirectoryUtilities = GenBOEUnityContainer.Resolve<IActiveDirectoryUtilities>();
-		
+
+		/// <summary>
+		/// Asserts the equality of decimal values within an epsilon error range.
+		/// </summary>
+		/// <param name="expected">expected value</param>
+		/// <param name="actual">actual value</param>
+		/// <param name="epsilon">epsilon range</param>
+		public static bool EqualsEpsilon(this decimal actual, decimal expected, decimal epsilon = 0.001m)
+		{
+			return Math.Abs(expected - actual) < epsilon;
+		}
+
 		/// <summary>
 		/// 1LMX boundary time
 		/// </summary>

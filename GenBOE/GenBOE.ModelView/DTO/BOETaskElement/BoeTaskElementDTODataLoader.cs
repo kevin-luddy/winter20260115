@@ -112,8 +112,8 @@ namespace GenBOE.DataBridge.DTO
 				List<BoeTaskElementDTO> result;
 				List<OrdinaryVariableDto> ordinaryVariables;
 				List<ResourceTypeDto> taskElementLabors;
-				List<SkillMixDTO> skillMixDTOs = new List<SkillMixDTO>();
-				List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = new List<CommonDisclosureSkillMixDTO>();
+				List<SkillMixDTO> skillMixDTOs = null;
+				List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = null;
 
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
@@ -185,8 +185,8 @@ namespace GenBOE.DataBridge.DTO
 				List<BoeTaskElementDTO> result;
 				List<OrdinaryVariableDto> ordinaryVariables;
 				List<ResourceTypeDto> taskElementLabors;
-				List<SkillMixDTO> skillMixDTOs = new List<SkillMixDTO>();
-				List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = new List<CommonDisclosureSkillMixDTO>();
+				List<SkillMixDTO> skillMixDTOs = null;
+				List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = null;
 
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
@@ -259,8 +259,8 @@ namespace GenBOE.DataBridge.DTO
 				List<BoeTaskElementDTO> result;
 				List<OrdinaryVariableDto> ordinaryVariables;
 				List<ResourceTypeDto> taskElementLabors;
-				List<SkillMixDTO> skillMixDTOs = new List<SkillMixDTO>();
-				List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = new List<CommonDisclosureSkillMixDTO>();
+				List<SkillMixDTO> skillMixDTOs = null;
+				List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = null;
 
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{

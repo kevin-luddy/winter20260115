@@ -72,7 +72,7 @@ namespace GenBOE.ActionLogic.Common
 				errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix has invalid value for {0}.", skillMixResourceNew));
 			}
 
-			if (totalSKillMixRowsBOESkillMix != 100)
+			if (!totalSKillMixRowsBOESkillMix.EqualsEpsilon(100))
 			{
 				errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix total must be 100%"));
 			}
@@ -81,7 +81,6 @@ namespace GenBOE.ActionLogic.Common
 			{
 				errorMessages.Add(string.Format("Current Skill Mix Table: The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceNew, 255));
 			}
-			
 
 			return errorMessages;
 		}
@@ -127,7 +126,7 @@ namespace GenBOE.ActionLogic.Common
 				errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: At least one Resource has to be included"));
 			}
 
-			if (totalCommonDisclosureRowsBOESkillMix != 100)
+			if (!totalCommonDisclosureRowsBOESkillMix.EqualsEpsilon(100))
 			{
 				errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BOE Skill Mix total must be 100%"));
 			}
