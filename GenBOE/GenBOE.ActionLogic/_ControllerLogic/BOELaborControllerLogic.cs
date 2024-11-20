@@ -340,6 +340,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				};
 			}
 
+			// TODO Thomas: Take a look into how we can compare the T&M rates here.
 			// Convert to ModelView
 			LaborTaskDataModelView toReturn = this.ConvertDtoToModelView(ws, boe, taskElementDto);
 			toReturn.AdjacentItems = this.FindAdjacentTasks(boe, taskElementId);

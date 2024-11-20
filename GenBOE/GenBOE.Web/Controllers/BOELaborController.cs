@@ -60,6 +60,7 @@ namespace GenBOE.Web.Controllers
 		private readonly IOffloadRatesDTOLoader offloadRatesLoader;
 		private readonly IRteTemplateDataLoader rteTemplateDataLoader;
 		private readonly IMoqTableExporter moqTableExporter;
+		private readonly ITMResourceRateDTODataLoader tmResourceRateDTODataLoader;
 
 		/// <summary>
 		/// Starting date for MOQ Templates. WS created after this date will be using new MOQ Types.
@@ -95,7 +96,8 @@ namespace GenBOE.Web.Controllers
 			TaskElementValidation taskElementValidation,
 			IOffloadRatesDTOLoader offloadRatesDTOLoader,
 			IRteTemplateDataLoader rteTemplateDataLoader,
-			IMoqTableExporter moqTableExporter)
+			IMoqTableExporter moqTableExporter,
+			ITMResourceRateDTODataLoader tmResourceRateDTODataLoader)
 			: base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inUserLoader, inPermissionsLoader, inControllerLogic)
 		{
 			this._CommonDataMapper = inCommonDataMapper;
@@ -113,6 +115,7 @@ namespace GenBOE.Web.Controllers
 			this.offloadRatesLoader = offloadRatesDTOLoader;
 			this.rteTemplateDataLoader = rteTemplateDataLoader;
 			this.moqTableExporter = moqTableExporter;
+			this.tmResourceRateDTODataLoader = tmResourceRateDTODataLoader;
 		}
 
 		#region Display
@@ -884,6 +887,23 @@ namespace GenBOE.Web.Controllers
 			FullBoe boe = this.Factory.CreateFullBoe(boeId);
 
 			LaborTaskDataModelView modelView = this._BoeLaborControllerLogic.GetLaborTaskData(ws, boe, taskElementId);
+
+			ICollection<TMResourceRateDTO> tmResourceRates = tmResourceRateDTODataLoader.GetByWorkspaceId(ws.Id);
+
+			// Checks to see if the tasks have any T&M Rates. If it does then it will clear and prevent the Skill Mix Rationale from showing.
+			ws.HasTMRates = false;
+			if (tmResourceRates.Any())
+			{
+				foreach (LaborTypeDataModelView laborType in modelView.LaborTypesData)
+				{
+					TMResourceRateDTO matchingResourceRate = tmResourceRates.FirstOrDefault(r => r.ResourceName == laborType.ResourceName || r.ResourceName == laborType.BusinessResourceCodeName);
+					if (matchingResourceRate != null)
+					{
+						ws.HasTMRates = true;
+						break;
+					}
+				}
+			}
 
 			// Finalize Action
 			this.FinalizeAction(this._log, "GetTaskDataModel", sw);

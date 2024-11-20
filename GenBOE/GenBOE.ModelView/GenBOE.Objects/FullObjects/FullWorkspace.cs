@@ -668,6 +668,7 @@ namespace GenBOE.Objects
 
 		/// <summary>
 		/// Workspace resource rates for T&amp;M Resources.  
+		/// TODO Thomas: Here is where we have the T&M Resource Rates for the Workspace.
 		/// </summary>
 		public IReadOnlyCollection<TMResourceRateDTO> TMResourceRatesForWorkspace
 		{

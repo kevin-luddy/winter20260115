@@ -16,6 +16,7 @@ namespace GenBOE.DataBridge.DTO
 
     /// <summary>
     /// The T&M Resource Rate Data Loader Class.
+	/// TODO Thomas: Look into this to add it into the BOELaborControllerLogic.cs
     /// </summary>
     public class TMResourceRateDTODataLoader : DataLoader<TMResourceRateDTO>, ITMResourceRateDTODataLoader
     {
@@ -91,7 +92,8 @@ namespace GenBOE.DataBridge.DTO
                         StartDate = entity.TMResourceRateStartDate.HasValue ? GenBOEUtilities.AdjustDateTimePrecision(entity.TMResourceRateStartDate.Value, DateTimePrecision.Month) : (DateTime?)null,
                         EndDate = entity.TMResourceRateEndDate.HasValue ? GenBOEUtilities.AdjustDateTimePrecision(entity.TMResourceRateEndDate.Value, DateTimePrecision.Month) : (DateTime?)null,
                         UpdateDate = entity.UpdateDT,
-                        LockedRate = false
+                        LockedRate = false,
+						ResourceName = entity.Resource?.ResourceName
                     });
                 }
             }
