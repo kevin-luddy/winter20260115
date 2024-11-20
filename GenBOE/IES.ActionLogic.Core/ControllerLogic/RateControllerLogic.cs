@@ -844,7 +844,6 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			ICollection<RateCodeModelView> replications = replicationLoader.GetAll();
 
 			foreach (RateCodeModelView replication in replications)
-
 			{
 				RateDetailModelView importedRate = importedRates.FirstOrDefault(r => r.RateCode == replication.From);
 				if (importedRate != null)
