@@ -751,6 +751,9 @@ namespace IES.ActionLogic.Core.ControllerLogic
 				throw new GenValidationException("Imported Rates are null.");
 			}
 
+			// Changing from a fixed size array to a list
+			importedRates = importedRates.ToList();
+
 			ReplicateRateCodes(importedRates);
 
 			try
@@ -841,6 +844,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			ICollection<RateCodeModelView> replications = replicationLoader.GetAll();
 
 			foreach (RateCodeModelView replication in replications)
+
 			{
 				RateDetailModelView importedRate = importedRates.FirstOrDefault(r => r.RateCode == replication.From);
 				if (importedRate != null)
