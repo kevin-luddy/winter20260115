@@ -74,5 +74,10 @@ namespace IES.DataBridge.ModelViews
         /// Gets or sets a value indicating whether this instance is deleted.
         /// </summary>
         public bool IsDeleted { get; set; }
+
+		/// <summary>
+		/// A flag whether or not the current row has been modified in some way (added or deleted)
+		/// </summary>
+		public bool IsDirty { get; set; }
     }
 }

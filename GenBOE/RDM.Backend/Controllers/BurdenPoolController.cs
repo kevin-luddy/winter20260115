@@ -80,20 +80,24 @@ namespace RDM.Backend.Controllers
 		/// Saves the specified collection.
 		/// POST: Burden Pool/Save
 		/// </summary>
-		/// <param name="collection">The collection.</param>
+		/// <param name="collectionInit">The collection.</param>
 		/// <returns>Json Result of the save.</returns>
 		[HttpPost("[action]")]
-		public ActionResult Save(BurdenPoolDetailModelView[] collection)
+		public ActionResult Save(BurdenPoolDetailModelView[] collectionInit)
 		{
-			if (collection == null)
+			if (collectionInit == null)
 			{
-				throw new ArgumentNullException(nameof(collection));
+				throw new ArgumentNullException(nameof(collectionInit));
 			}
 
 			IESResponse<bool> response = new();
 			try
 			{
+				// The collectionInit property passed in will bring back all rows, regardless if they were added/updated/deleted or not. These need to be filtered out
+				BurdenPoolDetailModelView[] collection = collectionInit.Where(x => x.IsDeleted || x.IsDirty).ToArray();
+
 				// Client can add new rows, then delete them all - catch it here.
+				// The above happens when IDs are negative, IsDeleted, and IsDirty are all true
 				Collection<BurdenPoolDetailModelView> filteredCollection = new();
 				foreach (BurdenPoolDetailModelView bpdmv in collection)
 				{
