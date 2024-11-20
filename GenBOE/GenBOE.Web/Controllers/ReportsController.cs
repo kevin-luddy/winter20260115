@@ -1332,7 +1332,7 @@ namespace GenBOE.Web.Controllers
             // generate the complete set of all BOEs for this workspace
             ICollection<BoeCustomReportBoeData> boeData = this.GetBoeDataForWorkspace(ws, selectedSortBy, secondarySelectedSortBy);
 
-            CustomReportSelectorModelView viewModelCustomReport = new CustomReportSelectorModelView(workspace, boeData, selectedSortBy, secondarySelectedSortBy, selections, ws.UsingTemplateBOE, Utilities.ShowSkillMixForWorkspace(ws.CreationDate));
+            CustomReportSelectorModelView viewModelCustomReport = new CustomReportSelectorModelView(workspace, boeData, selectedSortBy, secondarySelectedSortBy, selections, ws.UsingTemplateBOE, Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.IsUsingTM));
             ViewData["ContainsOCI"] = ws.ContainsOCI.ToString().ToLower();
 
             return this.PartialView(WebConstants.VIEW_BOE_CUSTOM_REPORT_SELECTOR, viewModelCustomReport);

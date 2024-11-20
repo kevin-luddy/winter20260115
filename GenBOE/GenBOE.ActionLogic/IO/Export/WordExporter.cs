@@ -837,8 +837,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				bool isRms = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST;
 
 				if ((selectedComponents.Contains(BoeCustomReportComponent.SkillMixTables) || !selectedComponents.Any())
-					&& Utilities.ShowSkillMixForWorkspace(exportInputs.Workspace.CreationDate)
-					&& exportInputs.Workspace.EnableSAPConnection
+					&& Utilities.ShowSkillMixForWorkspace(exportInputs.Workspace.CreationDate, exportInputs.Workspace.IsUsingTM)
 					&& (moqType.TableData.Any(x => x.RepositoryNameSelection == RepositoryName.SapWebi.GetDescription() || isRms)))
 				{
 					// populate Current Skill Mix Table
