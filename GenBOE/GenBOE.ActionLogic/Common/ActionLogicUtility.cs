@@ -177,22 +177,36 @@ namespace GenBOE.ActionLogic.Common
 		private static void ValidateHistoricalHours(ICollection<CommonDisclosureModelView> commonDisclosures, ICollection<SkillMixModelView> skillMixModels, ICollection<String> errorMessages)
 		{
 			Dictionary<string, decimal> resourceToHistoricalHoursMap = new Dictionary<string, decimal>();
+
 			//TBD: for RMS, might have duplicate new resources and then we'll have to total historical
 			if (skillMixModels != null && skillMixModels.Any())
 			{
-				skillMixModels.Where(s => s.Included && !string.IsNullOrEmpty(s.ResourceNew)).ForEach(s => resourceToHistoricalHoursMap.Add(s.ResourceNew, s.HistoricalHours));
+				skillMixModels.Where(s => s.Included && !string.IsNullOrEmpty(s.ResourceNew)).ForEach(s => {
+					if (resourceToHistoricalHoursMap.TryGetValue(s.ResourceNew, out decimal currentTotal))
+					{
+						resourceToHistoricalHoursMap[s.ResourceNew] = currentTotal + s.HistoricalHours;
+					}
+					else
+					{
+						resourceToHistoricalHoursMap.Add(s.ResourceNew, s.HistoricalHours);
+					}
+				});
 			}
 
 			Dictionary<string, List<CommonDisclosureModelView>> resourceToCDRowMap = commonDisclosures != null && commonDisclosures.Any() ? commonDisclosures.GroupBy(s => s.ResourceID).ToDictionary(g => g.Key, g => g.ToList()) : null;
-			resourceToCDRowMap.ForEach(pair =>
-			{
-				decimal historicalHoursTotal = pair.Value.Sum(v => v.HistoricalHours);
 
-				if (resourceToHistoricalHoursMap.TryGetValue(pair.Key, out decimal historicalHours) && historicalHoursTotal != historicalHours)
+			if (resourceToCDRowMap != null)
+			{
+				resourceToCDRowMap.ForEach(pair =>
 				{
-					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: Historical Hours for all rows in group for Resource {0} must total {1}, matching the row in the Skill Mix table.", pair.Key, historicalHours));
-				}
-			});
+					decimal historicalHoursTotal = pair.Value.Sum(v => v.HistoricalHours);
+
+					if (resourceToHistoricalHoursMap.TryGetValue(pair.Key, out decimal historicalHours) && historicalHoursTotal != historicalHours)
+					{
+						errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: Historical Hours for all rows in group for Resource {0} must total {1}, matching the row in the Skill Mix table.", pair.Key, historicalHours));
+					}
+				});
+			}
 		}
 
 		#endregion Private Methods
