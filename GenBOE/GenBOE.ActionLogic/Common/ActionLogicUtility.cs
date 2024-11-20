@@ -6,18 +6,15 @@
 
 namespace GenBOE.ActionLogic.Common
 {
-	using GenBOE.DataBridge.DTO;
-	using GenBOE.Objects;
-	using IES.Common;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Objects;
+	using IES.Common;
 	using Microsoft.Practices.ObjectBuilder2;
-	using GenBOE.ActionLogic.Validation;
-	using GenBOE.Dtos;
-	using IES.Common.Exceptions;
 
 	/// <summary>
 	/// Utility Class to hold Action Logic Methods
@@ -108,32 +105,32 @@ namespace GenBOE.ActionLogic.Common
 
 			foreach (string skillMixResourceNew in commonDisclosureRowsExceedChars.Select(x => x.ResourceID))
 			{
-				errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceNew, 255));
+				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceNew, 255));
 			}
 
 			foreach (string skillMixResourceNew in commonDisclosureRowsEmptyBoeSkillMixWhenIncluded.Select(x => x.ResourceID))
 			{
-				errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BOE Skill Mix is missing for {0}.", skillMixResourceNew));
+				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: BOE Skill Mix is missing for {0}.", skillMixResourceNew));
 			}
 
 			foreach (string skillMixResourceNew in commonDisclosureRowsInvalidBoeSkillMixWhenIncluded.Select(x => x.ResourceID))
 			{
-				errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BOE skill Mix has invalid value for {0}.", skillMixResourceNew));
+				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: BOE skill Mix has invalid value for {0}.", skillMixResourceNew));
 			}
 
 			if (commonDisclosureIncludedHasTrueValue.Count <= 0)
 			{
-				errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: At least one Resource has to be included"));
+				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: At least one Resource has to be included"));
 			}
 
 			if (!totalCommonDisclosureRowsBOESkillMix.EqualsEpsilon(100))
 			{
-				errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BOE Skill Mix total must be 100%"));
+				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: BOE Skill Mix total must be 100%"));
 			}
 
 			foreach (string commonDisclosureRow in commonDisclosureHasBRC.Select(x => x.ResourceID).Distinct())
 			{
-				errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BRC must be selected for each occurance of Resource {0}.", commonDisclosureRow));
+				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: BRC must be selected for each occurance of Resource {0}.", commonDisclosureRow));
 			}
 
 			ValidateResourceAndBRCCombos(commonDisclosures, errorMessages);
@@ -163,7 +160,7 @@ namespace GenBOE.ActionLogic.Common
 				bool isUnique = brcsForResource.Select(x => x.BusinessResourceID).Distinct().ToList().Count() == brcsForResourceCount;
 				if (!isUnique)
 				{
-					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: Each BRC must be unique for Resource {0}.", pair.Key));
+					errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: Each BRC must be unique for Resource {0}.", pair.Key));
 				}
 			});
 		}
@@ -203,7 +200,7 @@ namespace GenBOE.ActionLogic.Common
 
 					if (resourceToHistoricalHoursMap.TryGetValue(pair.Key, out decimal historicalHours) && historicalHoursTotal != historicalHours)
 					{
-						errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: Historical Hours for all rows in group for Resource {0} must total {1}, matching the row in the Skill Mix table.", pair.Key, historicalHours));
+						errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: Historical Hours for all rows in group for Resource {0} must total {1}, matching the row in the Skill Mix table.", pair.Key, historicalHours));
 					}
 				});
 			}

@@ -49,6 +49,7 @@ namespace IES.Common
 
 		/// <summary>
 		/// Asserts the equality of decimal values within an epsilon error range.
+		/// Equality check to account for potential internal floating-point precision errors (e.g., 99.99997 vs 100) when comparing decimal values.
 		/// </summary>
 		/// <param name="expected">expected value</param>
 		/// <param name="actual">actual value</param>
