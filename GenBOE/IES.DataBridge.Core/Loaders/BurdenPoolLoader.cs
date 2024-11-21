@@ -300,8 +300,8 @@ namespace IES.DataBridge.Loaders
                     if (inBpdmv.IsDeleted)
                     {
                         inBpdmv.Updateable = UpdateType.Deleted;
-                        base.Save(inBpdmv);
-                    }
+						base.Save(inBpdmv);
+					}
                     else
                     {
                         // Build BurdenElementRateCodeMappings collection from arrays.
@@ -367,8 +367,8 @@ namespace IES.DataBridge.Loaders
                         }
 
                         inBpdmv.Updateable = UpdateType.Upsert;
-                        base.Save(inBpdmv);
-                    }
+						base.Save(inBpdmv);
+					}
                 }
             }
         }
