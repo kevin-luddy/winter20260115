@@ -60,7 +60,6 @@ namespace GenBOE.Web.Controllers
 		private readonly IOffloadRatesDTOLoader offloadRatesLoader;
 		private readonly IRteTemplateDataLoader rteTemplateDataLoader;
 		private readonly IMoqTableExporter moqTableExporter;
-		private readonly ITMResourceRateDTODataLoader tmResourceRateDTODataLoader;
 
 		/// <summary>
 		/// Starting date for MOQ Templates. WS created after this date will be using new MOQ Types.
@@ -96,8 +95,7 @@ namespace GenBOE.Web.Controllers
 			TaskElementValidation taskElementValidation,
 			IOffloadRatesDTOLoader offloadRatesDTOLoader,
 			IRteTemplateDataLoader rteTemplateDataLoader,
-			IMoqTableExporter moqTableExporter,
-			ITMResourceRateDTODataLoader tmResourceRateDTODataLoader)
+			IMoqTableExporter moqTableExporter)
 			: base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inUserLoader, inPermissionsLoader, inControllerLogic)
 		{
 			this._CommonDataMapper = inCommonDataMapper;
@@ -115,7 +113,6 @@ namespace GenBOE.Web.Controllers
 			this.offloadRatesLoader = offloadRatesDTOLoader;
 			this.rteTemplateDataLoader = rteTemplateDataLoader;
 			this.moqTableExporter = moqTableExporter;
-			this.tmResourceRateDTODataLoader = tmResourceRateDTODataLoader;
 		}
 
 		#region Display

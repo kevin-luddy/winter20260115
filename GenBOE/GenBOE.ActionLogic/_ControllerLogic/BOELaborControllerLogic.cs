@@ -55,6 +55,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		private readonly IOrdinaryVariableLoader _taskVariableLoader;
 		private readonly IRteTemplateDataLoader rteTemplateDataLoader;
 		private readonly IMoqTypeDataLoader moqTypeDataLoader;
+		private readonly ITMResourceRateDTODataLoader tmResourceRateDTODataLoader;
 		private readonly IValidateBOE validateBOE;
 		private readonly IMoqTableExporter moqTableExporter;
 		private readonly IMoqTableImporter moqTableImporter;
@@ -90,6 +91,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			ICommonDataMapper commonDataMapper,
 			IRteTemplateDataLoader rteTemplateDataLoader,
 			IMoqTypeDataLoader moqTypeDataLoader,
+			ITMResourceRateDTODataLoader tmResourceRateDTODataLoader,
 			IValidateBOE validateBOE,
 			IMoqTableExporter moqTableExporter,
 			IMoqTableImporter moqTableImporter,
@@ -116,6 +118,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			this.CommonDataMapper = commonDataMapper;
 			this.rteTemplateDataLoader = rteTemplateDataLoader;
 			this.moqTypeDataLoader = moqTypeDataLoader;
+			this.tmResourceRateDTODataLoader = tmResourceRateDTODataLoader;
 			this.validateBOE = validateBOE;
 			this.moqTableExporter = moqTableExporter;
 			this.moqTableImporter = moqTableImporter;
@@ -334,7 +337,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				};
 			}
 
-			// TODO Thomas: Take a look into how we can compare the T&M rates here.
 			// Convert to ModelView
 			LaborTaskDataModelView toReturn = this.ConvertDtoToModelView(ws, boe, taskElementDto);
 			toReturn.AdjacentItems = this.FindAdjacentTasks(boe, taskElementId);
@@ -343,19 +345,21 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			ICollection<TMResourceRateDTO> tmResourceRates = tmResourceRateDTODataLoader.GetByWorkspaceId(ws.Id);
 
 			// Checks to see if the tasks have any T&M Rates. If it does then it will clear and prevent the Skill Mix Rationale from showing.
-			ws.HasTMRates = false;
+			bool usingTMRatesInTask = false;
 			if (tmResourceRates.Any())
 			{
-				foreach (LaborTypeDataModelView laborType in modelView.LaborTypesData)
+				foreach (LaborTypeDataModelView laborType in toReturn.LaborTypesData)
 				{
 					TMResourceRateDTO matchingResourceRate = tmResourceRates.FirstOrDefault(r => r.ResourceName == laborType.ResourceName || r.ResourceName == laborType.BusinessResourceCodeName);
 					if (matchingResourceRate != null)
 					{
-						ws.HasTMRates = true;
+						usingTMRatesInTask = true;
 						break;
 					}
 				}
 			}
+
+			toReturn.UsingTMRatesInTask = usingTMRatesInTask;
 
 			return toReturn;
 		}
@@ -2426,12 +2430,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				ICollection<LaborSpreadDataModelView> existingLaborSpreads = (spreadData == null) ? new List<LaborSpreadDataModelView>() : spreadData.Spreads;
 
 				/*
-                 * This is analogous to doing an "outer join" of sorts:
-                 * 
-                 * We want to make sure we account for months that may have been added (before and/or after the current endpoints).
-                 * We also want to make sure we account for deletions (i.e. if the resource type's spread date range was shortened).
-                 * 
-                 */
+				 * This is analogous to doing an "outer join" of sorts:
+				 * 
+				 * We want to make sure we account for months that may have been added (before and/or after the current endpoints).
+				 * We also want to make sure we account for deletions (i.e. if the resource type's spread date range was shortened).
+				 * 
+				 */
 
 				// need to loop against the FULL date spread (i.e. of ALL resource entries)
 				ICollection<DateTime> spreadDatesFull = existingLaborSpreads.Any(s => s.LaborSpreadDate != null) ? existingLaborSpreads.GetSpreadDatesFull() : new Collection<DateTime>();
@@ -2676,10 +2680,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			this.DoResolveVariableDependencies(boeID, workspace, getReferencedVariables, dependentTaskElementIds, dependencyData, dependentTaskVariables);
 
 			/*
-             * 
-             * Assemble the final results, in breadth-first order, with duplicates removed
-             * 
-             */
+			 * 
+			 * Assemble the final results, in breadth-first order, with duplicates removed
+			 * 
+			 */
 
 			// remove duplicates - must be done explicitly (i.e. NOT using LINQ Distinct) in order to preserve original ordering
 			IList<int> uniqueDependentTaskElementIds = new List<int>();

@@ -30,7 +30,9 @@ namespace GenBOE.ActionLogic.ModelView
             this.MOQTypes = new Collection<MoqTypeSelection>();
 			this.SkillMixData = new Collection<SkillMixModelView>();
 			this.CommonDisclosureSkillMixData = new Collection<CommonDisclosureModelView>();
-        }
+			this.UsingTMRatesInTask = false;
+
+		}
 
         /// <summary>
         /// Gets or sets a value indicating whether this Task contains any discrete spreads (this determines whether to expand or collapse spreads module by default).
@@ -86,5 +88,10 @@ namespace GenBOE.ActionLogic.ModelView
 		/// The list of Common Disclosure Skill Mix data.
 		/// </summary>
 		public IList<CommonDisclosureModelView> CommonDisclosureSkillMixData { get; set; }
+
+		/// <summary>
+		/// The task has T&M rates being used.
+		/// </summary>
+		public bool UsingTMRatesInTask { get; set; }
 	}
 }
