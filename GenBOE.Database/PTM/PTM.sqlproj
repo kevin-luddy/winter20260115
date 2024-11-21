@@ -216,7 +216,7 @@
     <Build Include="_Other Scripts\FindAndFixProposalsMissingChecklists.sql" />
     <Build Include="_Other Scripts\FixClassifiedChecklistsPt3.sql" />
     <Build Include="_Other Scripts\FixClassifiedChecklistsPt2.sql" />
-    <Build Include="_Full Script Files For Specific Versions\PTM - 2024.15 Generated On 11_19_2024.sql" />
+    <Build Include="_Full Script Files For Specific Versions\PTM - 2024.15 Generated On 11_21_2024.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="_Other Scripts\FindProposalsForMigrationToLockedState.sql" />

@@ -46,6 +46,7 @@ AS
 **		7/14/24		Dusan				PROPH-1559: Added reason for CCOPD = No
 **		7/18/24		Dusan				PROPH-1560: Added Include International Costs
 **		8/19/24		Dusan				PROPH-2080: Added IsSupportDefinitizingUCA field
+**		11/21/24	twilson3			proph-2357 Add Insurance fields
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -358,6 +359,10 @@ SELECT V.[ProposalID]
 			WHEN 0 THEN 'No'
 			ELSE NULL
 			END
+	,V.IsInsuranceDirect
+	,V.InsuranceType
+	,V.ProposedInsurance
+	,V.NegotiatedInsurance
 FROM [dbo].[vwProposalLogReport] V
 	LEFT OUTER JOIN @MaxRev M ON 
 		(
