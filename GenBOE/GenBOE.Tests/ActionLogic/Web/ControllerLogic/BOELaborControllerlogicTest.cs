@@ -213,8 +213,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			this.validateBOE = new Mock<IValidateBOE>();
 			this.moqTableExporter = new Mock<IMoqTableExporter>();
 			this.moqTableImporter = new Mock<IMoqTableImporter>();
-			this.skillMixDTOLoader = new Mock<ISkillMixDTOLoader>();
-			this.commonDisclosureDTOLoader = new Mock<ICommonDisclosureSMDTODataLoader>();
 
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
