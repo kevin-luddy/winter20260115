@@ -131,6 +131,7 @@ namespace GenBOE.Web.Controllers
 			bool containsDiscrete = false;
 			bool isReadOnly = bool.Parse((string)this.ViewData["READONLY"]);
 
+			// TODO Thomas: Look into how we would set this here since this is happening above the Task Level.
 			//check if skill mix is enabled and workspace starts after skill mix date 
 			bool enableSkillMix = false;
 			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.IsUsingTM))

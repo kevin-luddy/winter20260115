@@ -1970,15 +1970,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						result.Add(resultModel);
 					}
 				}
-
-
-				// TODO Skill Mix V2: Commented out as we no longer validate with MOQ Type Selection but BOE Task Element ID and this is left in to retain the logic for a future task.
-				//foreach (MoqTypeSelection moqType in moqTypes)
-				//{
-				//	moqType.SkillMixTable = this.boeLaborControllerLogic.RefreshSkillMixTable(moqType.TableData.SelectMany(t => t.ResourceHours).ToArray(), moqType.SkillMixTable);
-				//	//need to refresh common disclosure with updated resource hours
-				//	moqType.CommonDisclosureTable = this.boeLaborControllerLogic.RefreshCommonDisclosureTable(moqType.SkillMixTable, moqType.CommonDisclosureTable, moqType.TableData.SelectMany(t => t.ResourceHours).ToArray());
-				//}
 			}
 			else
 			{

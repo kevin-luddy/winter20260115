@@ -913,7 +913,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}
 			}
 
-			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.IsUsingTM))
+			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate, taskElement.HasTMRates))
 			{
 				if (taskElement.SkillMixTable != null && taskElement.SkillMixTable.Any())
 				{

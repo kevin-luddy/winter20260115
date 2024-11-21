@@ -238,9 +238,9 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 			this.ValidateTemplateMoqTypes(ws, inBOE, ValidationBOE);
 
-			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.IsUsingTM))
+			inBOE.TaskElements.ForEach(task =>
 			{
-				inBOE.TaskElements.ForEach(task =>
+				if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate, task.HasTMRates))
 				{
 					ICollection<string> errorMessages = new List<string>();
 					errorMessages = ActionLogicUtility.ValidateSkillMixTable(task.SkillMixTable);
@@ -250,7 +250,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 						errorMessages.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(task.CommonDisclosureTable, task.SkillMixTable));
 					}
 
-					if (errorMessages.Any()) 
+					if (errorMessages.Any())
 					{
 						ValidationBOETasks taskValidation = ValidationBOE.Tasks.FirstOrDefault(x => x.TaskId == task.Id);
 						if (taskValidation == null)
@@ -261,8 +261,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
 						taskValidation.TaskElementDetails.TaskElementDetailValidationMessages.AddRange(errorMessages);
 						ValidationBOE.Tasks.Add(taskValidation);
 					}
-				});
-			}
+				}
+			});
 
 			// Setting the name for the WBS - incase we have multiple WBS's we would want to list them out.
 			ValidationBOE.BOEName = (inBOE.Wbs != null ? inBOE.Wbs.WbsString : CommonConstants.Unassigned_WBS_Display_Text) + " " + (inBOE.Clin != null ? inBOE.Clin.ClinString : CommonConstants.Unassigned_CLIN_Display_Text) + " " + inBOE.Title;

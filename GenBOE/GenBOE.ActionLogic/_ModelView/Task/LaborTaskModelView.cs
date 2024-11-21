@@ -153,7 +153,7 @@ namespace GenBOE.ActionLogic.ModelView
 		public IList<CommonDisclosureModelView> CommonDisclosureSkillMixData { get; set; }
 
 		/// <summary>
-		/// Gets or sets a value indicating whether this workspace instance has any T&M rates in its tasks.
+		/// Gets or sets a value indicating whether this task instance has any T&M rates.
 		/// </summary>
 		public bool HasTMRates { get; set; }
 	}
