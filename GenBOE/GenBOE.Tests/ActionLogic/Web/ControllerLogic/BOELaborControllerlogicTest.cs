@@ -60,8 +60,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		private Mock<ICommonDataMapper> commonDataMapper = null;
 		private Mock<IRteTemplateDataLoader> rteTemplateDataLoader = null;
 		private Mock<IMoqTypeDataLoader> moqTypeDataLoader = null;
-		private Mock<ISkillMixDTOLoader> skillMixDTOLoader = null;
-		private Mock<ICommonDisclosureSMDTODataLoader> commonDisclosureDTOLoader = null;
 		private Mock<IValidateBOE> validateBOE = null;
 		private Mock<IMoqTableExporter> moqTableExporter = null;
 		private Mock<IMoqTableImporter> moqTableImporter = null;
@@ -84,6 +82,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 		#region Private members
 
+		// Test
 		private BOELaborControllerLogic CreateSystem()
 		{
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), new ActiveDirectoryUtilities());
@@ -110,8 +109,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				   commonDataMapper.Object,
 				   this.rteTemplateDataLoader.Object,
 				   this.moqTypeDataLoader.Object,
-				   this.skillMixDTOLoader.Object,
-				   this.commonDisclosureDTOLoader.Object,
 				   this.validateBOE.Object,
 				   this.moqTableExporter.Object,
 				   this.moqTableImporter.Object,
@@ -145,8 +142,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				   commonDataMapper.Object,
 				   rteTemplateDataLoader.Object,
 				   this.moqTypeDataLoader.Object,
-				   this.skillMixDTOLoader.Object,
-				   this.commonDisclosureDTOLoader.Object,
 				   this.validateBOE.Object,
 				   this.moqTableExporter.Object,
 				   this.moqTableImporter.Object,
@@ -180,8 +175,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				   commonDataMapper.Object,
 				   rteTemplateDataLoader.Object,
 				   this.moqTypeDataLoader.Object,
-				   this.skillMixDTOLoader.Object,
-				   this.commonDisclosureDTOLoader.Object,
 				   this.validateBOE.Object,
 				   this.moqTableExporter.Object,
 				   this.moqTableImporter.Object,
@@ -220,8 +213,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			this.validateBOE = new Mock<IValidateBOE>();
 			this.moqTableExporter = new Mock<IMoqTableExporter>();
 			this.moqTableImporter = new Mock<IMoqTableImporter>();
-			this.skillMixDTOLoader = new Mock<ISkillMixDTOLoader>();
-			this.commonDisclosureDTOLoader = new Mock<ICommonDisclosureSMDTODataLoader>();
 
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
