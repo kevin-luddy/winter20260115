@@ -427,7 +427,6 @@ namespace GenBOE.ActionLogic.IO.Export
 					SdtElement smeContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_SME);
 					SdtElement moqTypeTableContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Table_MOQType);
 					SdtElement rationaleContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_MOQTypeRationale);
-					SdtElement skillMixTablesContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_SkillMixTables);
 					SdtElement skillMixContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_SkillMix);
 					SdtElement historicalRefExpContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_HistoricalRefExp);
 
@@ -457,7 +456,6 @@ namespace GenBOE.ActionLogic.IO.Export
 							}
 
 							this.PopulateMOQTableData(moqType, selectedComponents, moqTypeTableContainer, exportInputs);
-							this.PopulateSkillMixTableData(moqType, selectedComponents, skillMixTablesContainer, moqTypeContainer, exportInputs, customExport);
 							break;
 						case MOQType.CostEstimatingRelationships:
 						case MOQType.ParametricEstimates:
@@ -467,14 +465,12 @@ namespace GenBOE.ActionLogic.IO.Export
 								this.RemoveElement(sowLoeContainer);
 								this.RemoveElement(smeContainer);
 								this.RemoveElement(moqTypeTableContainer);
-								this.RemoveElement(skillMixTablesContainer);
 							}
 							else
 							{
 								this.RemoveSoeLowRows(moqTypeContainer);
 								this.RemoveSMERows(moqTypeContainer);
 								this.RemoveMoqTableRow(moqTypeContainer);
-								this.RemoveSkillMixTableRow(moqTypeContainer);
 							}
 
 							string labelPrefix;
@@ -501,14 +497,12 @@ namespace GenBOE.ActionLogic.IO.Export
 								this.RemoveElement(cerPmArContainer);
 								this.RemoveElement(smeContainer);
 								this.RemoveElement(moqTypeTableContainer);
-								this.RemoveElement(skillMixTablesContainer);
 							}
 							else
 							{
 								this.RemoveCerPrArRows(moqTypeContainer);
 								this.RemoveSMERows(moqTypeContainer);
 								this.RemoveMoqTableRow(moqTypeContainer);
-								this.RemoveSkillMixTableRow(moqTypeContainer);
 							}
 
 							string label = "Description of Hours required";
@@ -527,14 +521,12 @@ namespace GenBOE.ActionLogic.IO.Export
 								this.RemoveElement(cerPmArContainer);
 								this.RemoveElement(sowLoeContainer);
 								this.RemoveElement(moqTypeTableContainer);
-								this.RemoveElement(skillMixTablesContainer);
 							}
 							else
 							{
 								this.RemoveCerPrArRows(moqTypeContainer);
 								this.RemoveSoeLowRows(moqTypeContainer);
 								this.RemoveMoqTableRow(moqTypeContainer);
-								this.RemoveSkillMixTableRow(moqTypeContainer);
 							}
 
 							WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMEReasons),
@@ -553,7 +545,6 @@ namespace GenBOE.ActionLogic.IO.Export
 								this.RemoveElement(sowLoeContainer);
 								this.RemoveElement(smeContainer);
 								this.RemoveElement(moqTypeTableContainer);
-								this.RemoveElement(skillMixTablesContainer);
 							}
 							else
 							{
@@ -561,7 +552,6 @@ namespace GenBOE.ActionLogic.IO.Export
 								this.RemoveSoeLowRows(moqTypeContainer);
 								this.RemoveSMERows(moqTypeContainer);
 								this.RemoveMoqTableRow(moqTypeContainer);
-								this.RemoveSkillMixTableRow(moqTypeContainer);
 							}
 							break;
 						default:
@@ -827,108 +817,105 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="moqType">MOQ Type Selection</param>
 		/// <param name="selectedComponents">Selected components for a custom export</param>
 		/// <param name="skillMixTablesContainer">SDT Element Container for the Skill Mix tables</param>
-		/// <param name="moqTypeContainer">SDT Element container for the MOQ Types</param>
+		/// <param name="taskContainer">SDT Element container for the MOQ Types</param>
 		/// <param name="exportInputs">Export Inputs</param>
-		/// <param name="isCustomExport">Is this a custom export?</param>
-		private void PopulateSkillMixTableData(MoqTypeSelection moqType, ICollection<BoeCustomReportComponent> selectedComponents, SdtElement skillMixTablesContainer, SdtElement moqTypeContainer, BOEExportInputs exportInputs, bool isCustomExport)
+		protected void ProcessSkillMixTable(BOEExportTaskElement laborTaskElement, ICollection<BoeCustomReportComponent> selectedComponents, SdtElement taskContainer, BOEExportInputs exportInputs)
 		{
+			_ = laborTaskElement ?? throw new ArgumentNullException(nameof(laborTaskElement));
+			_ = selectedComponents ?? throw new ArgumentNullException(nameof(selectedComponents));
+			_ = exportInputs ?? throw new ArgumentNullException(nameof(exportInputs));
+
+			SdtElement skillMixTablesContainer = WordUtilities.GetTaggedChildElement(taskContainer, BOEExporterConstants.Container_SkillMixTables);
 			if (skillMixTablesContainer != null)
 			{
-				bool isRms = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST;
-
 				if ((selectedComponents.Contains(BoeCustomReportComponent.SkillMixTables) || !selectedComponents.Any())
-					&& Utilities.ShowSkillMixForWorkspace(exportInputs.Workspace.CreationDate, exportInputs.Workspace.IsUsingTM)
-					&& (moqType.TableData.Any(x => x.RepositoryNameSelection == RepositoryName.SapWebi.GetDescription() || isRms)))
+					&& Utilities.ShowSkillMixForWorkspace(exportInputs.Workspace.CreationDate, exportInputs.Workspace.IsUsingTM))
 				{
-					// populate Current Skill Mix Table
+					// populate Current/Legacy Skill Mix Table
 					SdtElement currentTableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_CurrentSkillMix);
 
-					// TODO Skill Mix V2: Commented out as we no longer validate with MOQ Type Selection but BOE Task Element ID and this is left in to retain the logic for a future task.
 					if (currentTableElement != null)
 					{
 						// get template row
 						TableRow templateDataRow = WordUtilities.GetTaggedChildElement(currentTableElement, BOEExporterConstants.Marker_DataRow).Ancestors<TableRow>().FirstOrDefault();
 
-						// initialize insertion row
-						// TableRow currentInsertionRow = templateDataRow;
+						if (templateDataRow != null)
+						{
+							// initialize insertion row
+							TableRow currentInsertionRow = templateDataRow;
 
-						//foreach (SkillMixModelView skillMixRow in moqType.SkillMixTable)
-						//{
-						//	// Create a new row
-						//	TableRow dataRow = CloneMarkedTemplateRow(templateDataRow);
+							foreach (SkillMixModelView skillMixRow in laborTaskElement.SkillMixTable)
+							{
+								// Create a new row
+								TableRow dataRow = CloneMarkedTemplateRow(templateDataRow);
 
-						//	// Populate the row
-						//	if (isRms)
-						//	{
-						//		WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Resource), skillMixRow.ResourceOld);
-						//	}
+								// Populate the row
+								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Resource), skillMixRow.ResourceOld);
+								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_CurrentResource), skillMixRow.ResourceNew);
+								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_HistoricalHours), skillMixRow.HistoricalHours.ToString("F"));
+								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_LaborSkillMix), skillMixRow.LaborSkillMix.ToString("P1"));
+								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Included), skillMixRow.Included ? "Yes" : "No");
+								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_BoeSkillMix), skillMixRow.BOESkillMix?.ToString("P1"));
+								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_ProposedHours), skillMixRow.ProposedHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
+								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Rationale), skillMixRow.Rationale);
 
-						//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_CurrentResource), skillMixRow.ResourceNew);
-						//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_HistoricalHours), skillMixRow.HistoricalHours.ToString("F"));
-						//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_LaborSkillMix), skillMixRow.LaborSkillMix.ToString("P1"));
-						//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Included), skillMixRow.IncludedString);
-						//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_BoeSkillMix), skillMixRow.BOESkillMix?.ToString("P1"));
-						//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_ProposedHours), skillMixRow.ProposedHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
-						//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Rationale), skillMixRow.Rationale);
+								// Add the row to the table
+								currentInsertionRow.InsertAfterSelf(dataRow);
+								currentInsertionRow = dataRow;
 
-						//	// Add the row to the table
-						//	currentInsertionRow.InsertAfterSelf(dataRow);
-						//	currentInsertionRow = dataRow;
-						//}
-
-						// remove template row
-						this.RemoveElement(templateDataRow);
+								// remove template row
+								this.RemoveElement(templateDataRow);
+							}
+						}
 					}
 
-					// If BRC is enabled and Task end date is after 1LMX start, populate the Common Disclosure Skill Mix Table, otherwise remove it
-					BoeTaskElementDTO task = exportInputs.TaskElements.FirstOrDefault(x => x.Id == moqType.TaskId);
-					if (Utilities.IsBRCEnabledForWorkspace(exportInputs.Workspace.Shortname) && task?.EndDate >= Utilities.OneLmxStartDate)
+					// If BRC is enabled and Task end date is after 1LMX start, populate the LM Enterprise Skill Mix Table, otherwise remove it
+					if (Utilities.IsBRCEnabledForWorkspace(exportInputs.Workspace.Shortname) && laborTaskElement.EndDate >= Utilities.OneLmxStartDate)
 					{
-						SdtElement commonDisclosureTableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_CommonDisclosureSkillMix);
+						SdtElement commonDisclosureTableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_LmEnterpriseSkillMix);
 						if (commonDisclosureTableElement != null)
 						{
 							// get template row
 							TableRow templateDataRow = WordUtilities.GetTaggedChildElement(commonDisclosureTableElement, BOEExporterConstants.Marker_DataRow).Ancestors<TableRow>().FirstOrDefault();
 
-							// initialize insertion row
-							// TableRow currentInsertionRow = templateDataRow;
+							if (templateDataRow != null)
+							{
+								// initialize insertion row
+								TableRow currentInsertionRow = templateDataRow;
 
-							//foreach (CommonDisclosureModelView commonDisclosureRow in moqType.CommonDisclosureTable)
-							//{
-							//	// Create a new row
-							//	TableRow dataRow = CloneMarkedTemplateRow(templateDataRow);
+								foreach (CommonDisclosureModelView commonDisclosureRow in laborTaskElement.CommonDisclosureTable)
+								{
+									// Create a new row
+									TableRow dataRow = CloneMarkedTemplateRow(templateDataRow);
 
-							//	// Populate the row
-							//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_CurrentResource), commonDisclosureRow.ResourceID);
-							//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_BusinessResourceCode), commonDisclosureRow.BusinessResourceID);
-							//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_HistoricalHours), commonDisclosureRow.HistoricalHours.ToString("F"));
-							//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_LaborSkillMix), commonDisclosureRow.LaborSkillMix.ToString("P1"));
-							//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Included), commonDisclosureRow.IncludedString);
-							//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_BoeSkillMix), commonDisclosureRow.BOESkillMix?.ToString("P1"));
-							//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_ProposedHours), commonDisclosureRow.ProposedHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
-							//	WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Rationale), commonDisclosureRow.Rationale);
+									// Populate the row
+									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Resource), commonDisclosureRow.ResourceID);
+									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_BusinessResourceCode), commonDisclosureRow.BusinessResourceID);
+									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_HistoricalHours), commonDisclosureRow.HistoricalHours.ToString("F"));
+									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_LaborSkillMix), commonDisclosureRow.LaborSkillMix.ToString("P1"));
+									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Included), commonDisclosureRow.Included ? "Yes" : "No");
+									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_BoeSkillMix), commonDisclosureRow.BOESkillMix?.ToString("P1"));
+									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_ProposedHours), commonDisclosureRow.ProposedHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
+									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Rationale), commonDisclosureRow.Rationale);
 
-							//	// Add the row to the table
-							//	currentInsertionRow.InsertAfterSelf(dataRow);
-							//	currentInsertionRow = dataRow;
-							//}
+									// Add the row to the table
+									currentInsertionRow.InsertAfterSelf(dataRow);
+									currentInsertionRow = dataRow;
 
-							// remove template row
-							this.RemoveElement(templateDataRow);
+									// remove template row
+									this.RemoveElement(templateDataRow);
+								}
+							}
 						}
 					}
 					else
 					{
-						RemoveElement(WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_CommonDisclosureSkillMix));
+						RemoveElement(WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_LmEnterpriseSkillMix));
 					}
-				}
-				else if (isCustomExport)
-				{
-					RemoveElement(skillMixTablesContainer);
 				}
 				else
 				{
-					RemoveSkillMixTableRow(moqTypeContainer);
+					RemoveElement(skillMixTablesContainer);
 				}
 			}
 		}
@@ -1056,15 +1043,6 @@ namespace GenBOE.ActionLogic.IO.Export
 			WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.FieldName_SMEHoursLogic);
 			WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.FieldName_SMEDurationLogic);
 			WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.FieldName_SMETasks);
-		}
-
-		/// <summary>
-		/// Remove the row with the Skill Mix Tables
-		/// </summary>
-		/// <param name="moqTypeContainer">MOQ Type Container</param>
-		private void RemoveSkillMixTableRow(SdtElement moqTypeContainer)
-		{
-			WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.Container_SkillMixTables);
 		}
 	}
 }
