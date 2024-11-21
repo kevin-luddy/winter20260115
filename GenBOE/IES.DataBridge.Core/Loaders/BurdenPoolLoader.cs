@@ -290,7 +290,7 @@ namespace IES.DataBridge.Loaders
             // get each new burden pool
             foreach (BurdenPoolDetailModelView inBpdmv in dtosIn)
             {
-                if (inBpdmv.IsDirty)
+                if (inBpdmv.Dirty)
                 {
                     if (inBpdmv.Id < 1)
                     {

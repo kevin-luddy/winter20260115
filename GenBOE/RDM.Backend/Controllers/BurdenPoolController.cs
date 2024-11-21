@@ -94,7 +94,7 @@ namespace RDM.Backend.Controllers
 			try
 			{
 				// The collectionInit property passed in will bring back all rows, regardless if they were added/updated/deleted or not. These need to be filtered out
-				BurdenPoolDetailModelView[] collection = collectionInit.Where(x => x.IsDeleted || x.IsDirty).ToArray();
+				BurdenPoolDetailModelView[] collection = collectionInit.Where(x => x.IsDeleted || x.Dirty).ToArray();
 
 				// Client can add new rows, then delete them all - catch it here.
 				// The above happens when IDs are negative, IsDeleted, and IsDirty are all true
