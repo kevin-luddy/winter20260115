@@ -375,7 +375,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
 		internal const string Container_SkillMixTables = "SkillMixTablesContainer";
 		internal const string Table_CurrentSkillMix = "CurrentSkillMixTable";
-		internal const string Table_CommonDisclosureSkillMix = "CommonDisclosureSkillMixTable";
+		internal const string Table_LmEnterpriseSkillMix = "LmEnterpriseSkillMixTable";
 		internal const string FieldName_CurrentResource = "CurrentResource";
 		internal const string FieldName_HistoricalHours = "HistoricalHours";
 		internal const string FieldName_LaborSkillMix = "LaborSkillMix";

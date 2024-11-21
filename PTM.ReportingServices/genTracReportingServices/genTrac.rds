@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RptDataSource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="genTrac">
+<RptDataSource xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="genTrac">
   <ConnectionProperties>
     <Extension>SQL</Extension>
-    <ConnectString>Data Source=Lyness\SSAPPVFQAS;Initial Catalog=genTRAC</ConnectString>
+    <ConnectString>Data Source=Cudan\SSAPPVFDev;Initial Catalog=genTrac_DEV</ConnectString>
     <IntegratedSecurity>true</IntegratedSecurity>
   </ConnectionProperties>
   <DataSourceID>69f989c2-0d28-4f42-b8eb-95a2ef619e49</DataSourceID>
