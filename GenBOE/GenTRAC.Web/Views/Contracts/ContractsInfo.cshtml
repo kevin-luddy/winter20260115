@@ -249,8 +249,11 @@
 			GenTRAC.numericCommaSeparator(ContractsInfoWidget, dollarValue, 'input[name="NegotiatedInsurance"]', false);
 		});
 
-		$('#ProposedInsurance').trigger('change');
-		$('#NegotiatedInsurance').trigger('change');
+        // can't trigger change event so we don't make form dirty
+		var dollarVal = $('#ProposedInsurance').val().trim().replace('$', '').replace(/\,/g, '');
+		GenTRAC.numericCommaSeparator(ContractsInfoWidget, dollarVal, 'input[name="ProposedInsurance"]', false);
+		dollarVal = $('#NegotiatedInsurance').val().trim().replace('$', '').replace(/\,/g, '');
+		GenTRAC.numericCommaSeparator(ContractsInfoWidget, dollarVal, 'input[name="NegotiatedInsurance"]', false);
         ContractsInfoWidget.insuranceChanged();
     });
 </script>

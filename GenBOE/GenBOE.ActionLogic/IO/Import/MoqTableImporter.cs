@@ -37,7 +37,7 @@ namespace GenBOE.ActionLogic.IO.Import
         internal const string START_DATE = "Period of Performance (PoP): Start Date";
         internal const string END_DATE = "Period of Performance (PoP): End Date";
         internal const string EMPLOYEE_ID_FILTERS = "Employee ID Filters";
-        internal const string TOTAL_RELEVANT_HOURS_SSC = "Total Relevant Hours After Employee ID Filters Applied";
+        internal const string TOTAL_RELEVANT_HOURS_SSC = "Total Relevant Hours exclude unpaid (zero cost) hours and service centers, after application of Employee ID Filters";
         internal const string CONTRACT_NUMBER = "Contract Number";
         internal const string TOTAL_WBS_HOURS = "Total WBS/WBS Element Hours";
         internal const string ADDITIONAL_QUERY_FILTERS = "Additional Query Filters (i.e. cost number, employee id)";
