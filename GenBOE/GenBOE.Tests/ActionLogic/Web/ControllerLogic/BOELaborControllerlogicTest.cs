@@ -83,6 +83,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 		#region Private members
 
+		// Test
 		private BOELaborControllerLogic CreateSystem()
 		{
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), new ActiveDirectoryUtilities());
