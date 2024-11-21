@@ -1863,7 +1863,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			if (tables.Any())
 			{
 				Dictionary<int, string> tasks = ws.TaskElements.ToDictionary(t => t.Id, x => x.TaskTitle);
-				List<int> boesUpdated = await RecalculateActualsAcrossWorkspace(result, boes, tasks, tables, tableIdToMoqType, ws.CreationDate, ws.IsUsingTM);
+				List<int> boesUpdated = await RecalculateActualsAcrossWorkspace(result, boes, tasks, tables, tableIdToMoqType, ws.CreationDate);
 				SaveRecalculateActuals(ws, boes, moqTypesToSave, boesUpdated);
 			}
 
@@ -1886,7 +1886,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="workspaceCreationDate">Workspace Creation Date</param>
 		/// <param name="isUsingTM"
 		/// <returns></returns>
-		private async Task<List<int>> RecalculateActualsAcrossWorkspace(List<WorkspaceCalculateActualsModelView> result, Dictionary<int, FullBoe> boes, Dictionary<int, string> tasks, Dictionary<int, MoqTableData> tables, Dictionary<int, MoqTypeSelection> tableIdToMoqType, DateTime? workspaceCreationDate, bool isUsingTM)
+		private async Task<List<int>> RecalculateActualsAcrossWorkspace(List<WorkspaceCalculateActualsModelView> result, Dictionary<int, FullBoe> boes, Dictionary<int, string> tasks, Dictionary<int, MoqTableData> tables, Dictionary<int, MoqTypeSelection> tableIdToMoqType, DateTime? workspaceCreationDate)
 		{
 			ICollection<MoqTableDataModelView> tableData = tables.Values.Select(t =>
 				new MoqTableDataModelView()
@@ -1903,7 +1903,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			List<int> boesUpdated = new List<int>();
 			// Make one bulk call to SAP
-			if (Utilities.ShowSkillMixForWorkspace(workspaceCreationDate, isUsingTM))
+			if (Utilities.ShowSkillMixForWorkspace(workspaceCreationDate))
 			{
 				ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>> responses = await this.boeLaborControllerLogic.CalculateAllActualsSapWithSkillMix(tableData);
 				foreach (IESResponse<CalculateActualsWithSkillMixViewModel> response in responses)

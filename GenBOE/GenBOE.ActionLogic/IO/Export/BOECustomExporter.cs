@@ -4540,7 +4540,6 @@ namespace GenBOE.ActionLogic.IO.Export
             IReadOnlyCollection<CustomFieldValueDTO> workspaceCustomFieldValues = exportInputs.CustomFieldValues;
             IDictionary<int, ElementOfCostTypeModelView> allElementOfCostTypes = this._ICommonDataMapper.GetElementOfCostTypesDictionary();
             IDictionary<int, SpreadCurveModelView> allSpreadCurves = this._ICommonDataMapper.getSpreadCurveDictionary();
-			bool skillMixEnabled = Utilities.ShowSkillMixForWorkspace(exportInputs.Workspace.CreationDate, exportInputs.Workspace.IsUsingTM);
 
 			foreach (BoeTaskElementDTO boeTaskElement in allBoeTaskElements)
             {
@@ -4558,8 +4557,9 @@ namespace GenBOE.ActionLogic.IO.Export
                 boeExportTaskElement.TaskTitle = boeTaskElement.TaskTitle;
                 boeExportTaskElement.IMS_ID = boeTaskElement.IMS_ID;
                 boeExportTaskElement.BOETaskElementOrder = boeTaskElement.BOETaskElementOrder;
+				bool skillMixEnabled = Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, boeTaskElement.HasTMRates);
 
-                if (exportInputs.Workspace.UsingTemplateBOE)
+				if (exportInputs.Workspace.UsingTemplateBOE)
                 {
                     boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
 					if (skillMixEnabled)

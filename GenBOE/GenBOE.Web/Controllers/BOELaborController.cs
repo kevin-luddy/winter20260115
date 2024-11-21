@@ -130,15 +130,7 @@ namespace GenBOE.Web.Controllers
 			ViewData["BOEID"] = boeID;
 			bool containsDiscrete = false;
 			bool isReadOnly = bool.Parse((string)this.ViewData["READONLY"]);
-
-			// TODO Thomas: Look into how we would set this here since this is happening above the Task Level.
-			//check if skill mix is enabled and workspace starts after skill mix date 
 			bool enableSkillMix = false;
-			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.IsUsingTM))
-			{
-				enableSkillMix = true;
-			}
-			ViewData["EnableSkillMix"] = enableSkillMix;
 
 			//create a var for list items
 			Collection<SelectListItem> orderOfResourceTypes = new Collection<SelectListItem>();
@@ -151,6 +143,14 @@ namespace GenBOE.Web.Controllers
 				DataRelationshipVerifier.VerifyDataRelation(element, boeID);
 				taskDescription = element.Description;
 				containsDiscrete = element.taskElementLabors.Any(x => x.SpreadCurveID == SpreadCurves.DiscreteHours || x.SpreadCurveID == SpreadCurves.DiscreteCost);
+
+				// Checks to see if Skill Mix is enabled for the task.
+				if (Utilities.ShowSkillMixForTask(ws.CreationDate, element.HasTMRates))
+				{
+					enableSkillMix = true;
+				}
+
+				ViewData["EnableSkillMix"] = enableSkillMix;
 
 				if (!isReadOnly)
 				{
@@ -582,7 +582,7 @@ namespace GenBOE.Web.Controllers
 
 			//check if skill mix is enabled and workspace starts after skill mix date 
 			bool enableSkillMix = false;
-			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.IsUsingTM))
+			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate))
 			{
 				enableSkillMix = true;
 			}

@@ -1003,9 +1003,19 @@ namespace IES.Common
 		/// Is Skill Mix connection shown to the user for this workspace
 		/// </summary>
 		/// <param name="workspaceCreationDate">Workspace creation date.</param>
-		/// <param name="hasTMRates">Is the task using T&M rates</param>
 		/// <returns>Option to show skill mix for workspace.</returns>
-		public static bool ShowSkillMixForWorkspace(DateTime? workspaceCreationDate, bool hasTMRates)
+		public static bool ShowSkillMixForWorkspace(DateTime? workspaceCreationDate)
+		{
+			return IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate;
+		}
+
+		/// <summary>
+		/// Is Skill Mix connection shown to the user for this task
+		/// </summary>
+		/// <param name="workspaceCreationDate">Workspace creation date.</param>
+		/// <param name="hasTMRates">Is the task using T&M rates</param>
+		/// <returns>Option to show skill mix for task.</returns>
+		public static bool ShowSkillMixForTask(DateTime? workspaceCreationDate, bool hasTMRates)
 		{
 			bool showSkillMixRationale = false;
 
