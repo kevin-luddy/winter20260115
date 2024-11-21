@@ -58,6 +58,18 @@ namespace IES.Common.Core.Utilities
 		private static DateTime? oneLmxStartDate;
 
 		/// <summary>
+		/// Asserts the equality of decimal values within an epsilon error range.
+		/// Equality check to account for potential internal floating-point precision errors (e.g., 99.99997 vs 100) when comparing decimal values.
+		/// </summary>
+		/// <param name="expected">expected value</param>
+		/// <param name="actual">actual value</param>
+		/// <param name="epsilon">epsilon range</param>
+		public static bool EqualsEpsilon(this decimal actual, decimal expected, decimal epsilon = 0.001m)
+		{
+			return Math.Abs(expected - actual) < epsilon;
+		}
+
+		/// <summary>
 		/// 1LMX boundary time
 		/// </summary>
 		public static DateTime OneLmxStartDate
