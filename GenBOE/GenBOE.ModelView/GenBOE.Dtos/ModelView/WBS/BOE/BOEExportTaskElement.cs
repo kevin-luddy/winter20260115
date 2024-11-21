@@ -6,16 +6,16 @@
 
 namespace GenBOE.Dtos
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
-    using GenBOE.ActionLogic.ModelView;
-    using GenBOE.Models;
-    using IES.Common;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Diagnostics.CodeAnalysis;
+	using System.Linq;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.DataBridge.DTO;
+	using IES.Common;
 
-    [ExcludeFromCodeCoverage]
+	[ExcludeFromCodeCoverage]
     //// This class is used within BOEExportModelView to keep track of the different
     // task elements for a BOE 
     public class BOEExportTaskElement
@@ -40,6 +40,8 @@ namespace GenBOE.Dtos
             IMS_ID = string.Empty;
             ExportFields = new Dictionary<string, string>();
             this.MOQTypes = new Collection<MoqTypeSelection>();
+			SkillMixTable = new Collection<SkillMixModelView>();
+			CommonDisclosureTable = new Collection<CommonDisclosureModelView>();
         }
 
         public void SetTaskElementType(TaskElementType taskElementType)
@@ -102,9 +104,19 @@ namespace GenBOE.Dtos
                 return toReturn;
             }
         }
-    }
 
-    public enum BOEExportTaskElementType
+		/// <summary>
+		/// Skill Mix table
+		/// </summary>
+		public ICollection<SkillMixModelView> SkillMixTable { get; set; }
+
+		/// <summary>
+		/// Common Disclosure table
+		/// </summary>
+		public ICollection<CommonDisclosureModelView> CommonDisclosureTable { get; set; }
+	}
+
+	public enum BOEExportTaskElementType
     {
         None = 0,
         Labor = 1,
