@@ -751,6 +751,9 @@ namespace IES.ActionLogic.Core.ControllerLogic
 				throw new GenValidationException("Imported Rates are null.");
 			}
 
+			// Changing from a fixed size array to a list
+			importedRates = importedRates.ToList();
+
 			ReplicateRateCodes(importedRates);
 
 			try
