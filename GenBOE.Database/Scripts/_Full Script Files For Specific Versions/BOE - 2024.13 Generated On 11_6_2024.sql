@@ -17970,7 +17970,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-ALTER PROCEDURE [dbo].[getResourceInUseFlagByResourceListID]
+CREATE PROCEDURE [dbo].[getResourceInUseFlagByResourceListID]
 (
 @ResourceListID int
 )

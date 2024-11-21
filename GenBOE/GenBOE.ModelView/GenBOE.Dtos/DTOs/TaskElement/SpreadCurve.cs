@@ -9,6 +9,7 @@ namespace GenBOE.Dtos
     using System;
     using System.Collections;
     using System.Collections.ObjectModel;
+	using System.Linq;
     using IES.Common;
     using IES.Common.Exceptions;
 
@@ -359,7 +360,13 @@ namespace GenBOE.Dtos
 
             for (int i = firstMonth; i < lastMonth; i++)
             {
-                cum += inCurveValues[i];
+				// extra check for negative values
+				if (inCurveValues[i] < 0)
+				{
+					inCurveValues[i] = 0;
+				}
+
+				cum += inCurveValues[i];
                 if (inCurveValues[i] > high)
                 {
                     largest = i;
