@@ -16,7 +16,6 @@ namespace GenBOE.DataBridge.DTO
 
     /// <summary>
     /// The T&M Resource Rate Data Loader Class.
-	/// TODO Thomas: Look into this to add it into the BOELaborControllerLogic.cs
     /// </summary>
     public class TMResourceRateDTODataLoader : DataLoader<TMResourceRateDTO>, ITMResourceRateDTODataLoader
     {
