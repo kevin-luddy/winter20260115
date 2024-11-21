@@ -346,6 +346,23 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			toReturn.AdjacentItems = this.FindAdjacentTasks(boe, taskElementId);
 			toReturn.ValidationErrors = this.taskElementValidation.ValidateTaskElementsWithErrorMessages(ws, new List<BoeTaskElementDTO>() { taskElementDto }).Select(e => e.ErrorMessage).ToList();
 
+			ICollection<TMResourceRateDTO> tmResourceRates = tmResourceRateDTODataLoader.GetByWorkspaceId(ws.Id);
+
+			// Checks to see if the tasks have any T&M Rates. If it does then it will clear and prevent the Skill Mix Rationale from showing.
+			ws.HasTMRates = false;
+			if (tmResourceRates.Any())
+			{
+				foreach (LaborTypeDataModelView laborType in modelView.LaborTypesData)
+				{
+					TMResourceRateDTO matchingResourceRate = tmResourceRates.FirstOrDefault(r => r.ResourceName == laborType.ResourceName || r.ResourceName == laborType.BusinessResourceCodeName);
+					if (matchingResourceRate != null)
+					{
+						ws.HasTMRates = true;
+						break;
+					}
+				}
+			}
+
 			return toReturn;
 		}
 

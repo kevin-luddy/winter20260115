@@ -888,23 +888,6 @@ namespace GenBOE.Web.Controllers
 
 			LaborTaskDataModelView modelView = this._BoeLaborControllerLogic.GetLaborTaskData(ws, boe, taskElementId);
 
-			ICollection<TMResourceRateDTO> tmResourceRates = tmResourceRateDTODataLoader.GetByWorkspaceId(ws.Id);
-
-			// Checks to see if the tasks have any T&M Rates. If it does then it will clear and prevent the Skill Mix Rationale from showing.
-			ws.HasTMRates = false;
-			if (tmResourceRates.Any())
-			{
-				foreach (LaborTypeDataModelView laborType in modelView.LaborTypesData)
-				{
-					TMResourceRateDTO matchingResourceRate = tmResourceRates.FirstOrDefault(r => r.ResourceName == laborType.ResourceName || r.ResourceName == laborType.BusinessResourceCodeName);
-					if (matchingResourceRate != null)
-					{
-						ws.HasTMRates = true;
-						break;
-					}
-				}
-			}
-
 			// Finalize Action
 			this.FinalizeAction(this._log, "GetTaskDataModel", sw);
 
