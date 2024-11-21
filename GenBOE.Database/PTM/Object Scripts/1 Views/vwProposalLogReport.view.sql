@@ -201,7 +201,8 @@ SELECT
 	P.IsSupportDefinitizingUCA,
 	CASE
 		WHEN pCD.IsInsuranceDirect = 1 THEN 'Yes'
-		WHEN pCD.IsInsuranceDirect = 0 THEN 'No'
+		WHEN pCD.IsInsuranceDirect = 0 THEN 'N/A'
+		WHEN pCD.IsInsuranceDirect = 2 THEN 'No'
 		ELSE NULL
 	END AS IsInsuranceDirect,
 	CASE
