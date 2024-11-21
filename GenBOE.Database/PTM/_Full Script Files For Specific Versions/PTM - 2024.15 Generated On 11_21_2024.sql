@@ -1,6 +1,6 @@
 PRINT '###### SCRIPT IS STARTING ######';
 /*
-    This file was auto-generated for Release: 2024.15, on 11/19/2024.
+    This file was auto-generated for Release: 2024.15, on 11/21/2024.
     It contains all of the Release specific scripts, modifying data/tables as well as all of the Stored Procedures and User Defined Table Types.
 */
 
@@ -611,6 +611,7 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 **		7/14/24		Dusan				PROPH-1559: Added reason for CCOPD = No
 **		7/18/24		Dusan				PROPH-1560: Added Include International Costs
 **		8/19/24		Dusan				PROPH-2080: Added IsSupportDefinitizingUCA field
+**      11/20/24	twilson3			proph-2357 Add Insurance fields
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
@@ -780,9 +781,22 @@ SELECT
 	END AS ContractActionType,
 	PC.CostThroughCom,
 	ppr.Response AS NlfResponse,
-	P.IsSupportDefinitizingUCA
+	P.IsSupportDefinitizingUCA,
+	CASE
+		WHEN pCD.IsInsuranceDirect = 1 THEN 'Yes'
+		WHEN pCD.IsInsuranceDirect = 0 THEN 'No'
+		ELSE NULL
+	END AS IsInsuranceDirect,
+	CASE
+		WHEN pCD.IsInsuranceDirect = 1 THEN IT.[Text]
+		WHEN pCD.IsInsuranceDirect = 0 THEN 'N/A'
+		WHEN pCD.IsInsuranceDirect = 2 THEN 'N/A'
+		ELSE NULL
+	END AS InsuranceType,
+	pCD.ProposedInsurance,
+	pCD.NegotiatedInsurance
   FROM [dbo].[Proposal] P
-	INNER JOIN [dbo].[ProgramAreaLU] PA ON P.ProgramAreaID = PA.ProgramAreaID
+    INNER JOIN [dbo].[ProgramAreaLU] PA ON P.ProgramAreaID = PA.ProgramAreaID
 	INNER JOIN [dbo].[LineOfBusinessLU] LOB ON P.LineOfBusinessID = LOB.LineOfBusinessID
 	INNER JOIN dbo.ProposalTypeLU PT ON P.ProposalTypeID = PT.ProposalTypeID
 	INNER JOIN dbo.PricingToolLU T ON P.PricingToolID = T.PricingToolID
@@ -901,6 +915,7 @@ SELECT
 
 	-- Proposal Contract Data
 	LEFT OUTER JOIN ProposalContractsData pCD ON pCD.ProposalID = p.ProposalID
+	LEFT OUTER JOIN dbo.InsuranceTypeLU IT ON pCD.InsuranceType = IT.ID
 	LEFT OUTER JOIN Proposal previousRomProposal ON pCD.PreviouslySubmittedROM = previousRomProposal.ProposalID
 	LEFT OUTER JOIN ProposalChecklist previousRomChecklist ON pCD.PreviouslySubmittedROM = previousRomChecklist.ProposalID
 	LEFT OUTER JOIN EppDelegationAuthorityLU eppLU ON eppLU.Id = pCD.EppDelegationAuthority
@@ -2089,6 +2104,7 @@ AS
 **		7/14/24		Dusan				PROPH-1559: Added reason for CCOPD = No
 **		7/18/24		Dusan				PROPH-1560: Added Include International Costs
 **		8/19/24		Dusan				PROPH-2080: Added IsSupportDefinitizingUCA field
+**		11/21/24	twilson3			proph-2357 Add Insurance fields
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -2401,6 +2417,10 @@ SELECT V.[ProposalID]
 			WHEN 0 THEN 'No'
 			ELSE NULL
 			END
+	,V.IsInsuranceDirect
+	,V.InsuranceType
+	,V.ProposedInsurance
+	,V.NegotiatedInsurance
 FROM [dbo].[vwProposalLogReport] V
 	LEFT OUTER JOIN @MaxRev M ON 
 		(
