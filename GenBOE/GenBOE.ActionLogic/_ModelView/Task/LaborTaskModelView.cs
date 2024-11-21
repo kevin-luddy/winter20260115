@@ -151,5 +151,10 @@ namespace GenBOE.ActionLogic.ModelView
 		/// The list of Common Disclosure Skill Mix data.
 		/// </summary>
 		public IList<CommonDisclosureModelView> CommonDisclosureSkillMixData { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether this workspace instance has any T&M rates in its tasks.
+		/// </summary>
+		public bool HasTMRates { get; set; }
 	}
 }
