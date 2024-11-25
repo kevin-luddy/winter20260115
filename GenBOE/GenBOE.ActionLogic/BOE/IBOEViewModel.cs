@@ -1,4 +1,10 @@
-﻿namespace GenBOE.ActionLogic.BOE
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2024 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
+
+namespace GenBOE.ActionLogic.BOE
 {
 	using System;
 	using System.Collections.Generic;
