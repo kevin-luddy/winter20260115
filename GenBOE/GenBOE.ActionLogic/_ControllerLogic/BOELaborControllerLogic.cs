@@ -351,32 +351,37 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// </summary>
 		/// <param name="ws">Workspace.</param>
 		/// <param name="laborTask">Labor Task.</param>
-		/// <returns></returns>
+		/// <returns>If T&M Rates are being used in the Task.</returns>
 		public bool CheckTMRates(FullWorkspace ws, ICollection<LaborTypeDataModelView> laborTypes)
 		{
-			if (ReferenceEquals(laborTypes, null))
-			{
-				throw new ArgumentNullException(nameof(laborTypes));
-			}
-
-			if (ReferenceEquals(ws, null))
-			{
-				throw new ArgumentNullException(nameof(ws));
-			}
-
-			// Checks to see if the tasks have any T&M Rates. If it does then it will clear and prevent the Skill Mix Rationale from showing.
-			ICollection<TMResourceRateDTO> tmResourceRates = tmResourceRateDTODataLoader.GetByWorkspaceId(ws.Id);
-
 			bool isUsingTMRatesInTask = false;
-			if (tmResourceRates.Any())
+
+			// Checks to see if any T&M Rates are being used in the task for Space only.
+			if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
 			{
-				foreach (LaborTypeDataModelView laborType in laborTypes)
+				if (ReferenceEquals(laborTypes, null))
 				{
-					TMResourceRateDTO matchingResourceRate = tmResourceRates.FirstOrDefault(r => r.ResourceName == laborType.ResourceName || r.ResourceName == laborType.BusinessResourceCodeName);
-					if (matchingResourceRate != null)
+					throw new ArgumentNullException(nameof(laborTypes));
+				}
+
+				if (ReferenceEquals(ws, null))
+				{
+					throw new ArgumentNullException(nameof(ws));
+				}
+
+				// Checks to see if the tasks have any T&M Rates. If it does then it will clear and prevent the Skill Mix Rationale from showing.
+				ICollection<TMResourceRateDTO> tmResourceRates = tmResourceRateDTODataLoader.GetByWorkspaceId(ws.Id);
+
+				if (tmResourceRates.Any())
+				{
+					foreach (LaborTypeDataModelView laborType in laborTypes)
 					{
-						isUsingTMRatesInTask = true;
-						break;
+						TMResourceRateDTO matchingResourceRate = tmResourceRates.FirstOrDefault(r => r.ResourceName == laborType.ResourceName || r.ResourceName == laborType.BusinessResourceCodeName);
+						if (matchingResourceRate != null)
+						{
+							isUsingTMRatesInTask = true;
+							break;
+						}
 					}
 				}
 			}
