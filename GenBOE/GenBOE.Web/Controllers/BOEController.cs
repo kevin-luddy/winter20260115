@@ -162,6 +162,8 @@ namespace GenBOE.Web.Controllers
 					x.ElementOfCostId == (int)ElementOfCostType.Sub ||
 					x.ElementOfCostId == (int)ElementOfCostType.Travel).ToList();
 			ViewData["EnableSAP"] = Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate);
+			this.ViewData["IsSkillMixEnabled"] = Utilities.ShowSkillMixForWorkspace(ws.CreationDate);
+
 
 			Collection<SelectListItem> WBSElements = new Collection<SelectListItem>((from x in ws.WbsElementsNoMultiWbs
 											 orderby x.WbsPaddedNumber

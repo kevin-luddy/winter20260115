@@ -345,7 +345,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			ICollection<TMResourceRateDTO> tmResourceRates = tmResourceRateDTODataLoader.GetByWorkspaceId(ws.Id);
 
 			// Checks to see if the tasks have any T&M Rates. If it does then it will clear and prevent the Skill Mix Rationale from showing.
-			bool usingTMRatesInTask = false;
+			bool isUsingTMRatesInTask = false;
 			if (tmResourceRates.Any())
 			{
 				foreach (LaborTypeDataModelView laborType in toReturn.LaborTypesData)
@@ -353,13 +353,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					TMResourceRateDTO matchingResourceRate = tmResourceRates.FirstOrDefault(r => r.ResourceName == laborType.ResourceName || r.ResourceName == laborType.BusinessResourceCodeName);
 					if (matchingResourceRate != null)
 					{
-						usingTMRatesInTask = true;
+						isUsingTMRatesInTask = true;
 						break;
 					}
 				}
 			}
 
-			toReturn.UsingTMRatesInTask = usingTMRatesInTask;
+			toReturn.IsUsingTMRatesInTask = isUsingTMRatesInTask;
 
 			return toReturn;
 		}

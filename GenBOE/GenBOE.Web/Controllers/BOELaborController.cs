@@ -139,7 +139,7 @@ namespace GenBOE.Web.Controllers
 				enableSkillMix = true;
 			}
 
-			ViewData["IsSkillMixEnabled"] = enableSkillMix;
+			ViewData["EnableSkillMix"] = enableSkillMix;
 
 			//create a var for list items
 			Collection<SelectListItem> orderOfResourceTypes = new Collection<SelectListItem>();
@@ -152,8 +152,6 @@ namespace GenBOE.Web.Controllers
 				DataRelationshipVerifier.VerifyDataRelation(element, boeID);
 				taskDescription = element.Description;
 				containsDiscrete = element.taskElementLabors.Any(x => x.SpreadCurveID == SpreadCurves.DiscreteHours || x.SpreadCurveID == SpreadCurves.DiscreteCost);
-
-
 
 				if (!isReadOnly)
 				{

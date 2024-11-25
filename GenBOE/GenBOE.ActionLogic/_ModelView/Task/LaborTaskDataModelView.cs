@@ -30,7 +30,7 @@ namespace GenBOE.ActionLogic.ModelView
             this.MOQTypes = new Collection<MoqTypeSelection>();
 			this.SkillMixData = new Collection<SkillMixModelView>();
 			this.CommonDisclosureSkillMixData = new Collection<CommonDisclosureModelView>();
-			this.UsingTMRatesInTask = false;
+			this.IsUsingTMRatesInTask = false;
 
 		}
 
@@ -92,6 +92,6 @@ namespace GenBOE.ActionLogic.ModelView
 		/// <summary>
 		/// The task has T&M rates being used.
 		/// </summary>
-		public bool UsingTMRatesInTask { get; set; }
+		public bool IsUsingTMRatesInTask { get; set; }
 	}
 }
