@@ -431,7 +431,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
 			foreach (BoeTaskElementDTO boeTaskElement in taskElements)
             {
-
 				BOEExportTaskElement boeExportTaskElement = new BOEExportTaskElement();
                 boeExportTaskElement.BoeID = boeTaskElement.BoeID;
                 boeExportTaskElement.BOETaskDesc = BOEExportConverter.GetRteOverride(boeTaskElement.BoeID, boeTaskElement.Id, boeTaskElement.Description, RteTemplateSource.TaskDescription, exportInputs.RTETemplatesOverrides);
