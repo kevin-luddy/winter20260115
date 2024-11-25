@@ -1841,28 +1841,7 @@
 
         $scope.checkIfNewRowNeeded(model);
         $scope.filterResourceSelections();
-
-        var data = {
-            boeId: ManageTaskModel.boeId,
-            laborTypes: $scope.model.LaborTypesData,
-        };
-
-        return $http({
-            method: 'POST',
-            data: data,
-            url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.CheckTMRatesAction, '')
-        }).then(function (response) {
-            $scope.IsUsingTMRatesInTask = response.data;
-
-            $scope.isLoading = false;
-            $(document).trigger("HIDE_LOADING_BOX");
-        }, function errorCallback(response) {
-            if (response.data && response.data.MessageList) {
-                $scope.errors = response.data.MessageList;
-            }
-            $scope.isLoading = false;
-            $(document).trigger("HIDE_LOADING_BOX");
-        });
+        $scope.checkTMRates();
     };
 
     $scope.businessResourceCodeSelected = function (item, model) {
@@ -1892,9 +1871,33 @@
         }
 
         $scope.checkIfNewRowNeeded(model);
-
-        // TODO Thomas: Add check to see if a T&M Rate has been selected.
+        $scope.checkTMRates();
     }
+
+    $scope.checkTMRates = function () {
+        var data = {
+            boeId: ManageTaskModel.boeId,
+            laborTypes: $scope.model.LaborTypesData,
+        };
+
+        $scope.isLoading = true;
+        $(document).trigger("SHOW_LOADING_BOX");
+
+        return $http({
+            method: 'POST',
+            data: data,
+            url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.CheckTMRatesAction, '')
+        }).then(function (response) {
+            $scope.IsUsingTMRatesInTask = response.data;
+        }, function errorCallback(response) {
+            if (response.data && response.data.MessageList) {
+                $scope.errors = response.data.MessageList;
+            }
+        }).finally(function () {
+            $scope.isLoading = false;
+            $(document).trigger("HIDE_LOADING_BOX");
+        });
+    };
 
     $scope.perfOrgSelected = function (item, model) {
         $scope.setDirty();
