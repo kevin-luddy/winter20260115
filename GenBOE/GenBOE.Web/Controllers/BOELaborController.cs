@@ -16,6 +16,7 @@ namespace GenBOE.Web.Controllers
 	using System.Transactions;
 	using System.Web.Mvc;
 	using System.Web.Script.Serialization;
+	using System.Xml.Linq;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.Common.Calculations;
@@ -132,6 +133,14 @@ namespace GenBOE.Web.Controllers
 			bool isReadOnly = bool.Parse((string)this.ViewData["READONLY"]);
 			bool enableSkillMix = false;
 
+			// Checks to see if Skill Mix is enabled for the task.
+			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate))
+			{
+				enableSkillMix = true;
+			}
+
+			ViewData["IsSkillMixEnabled"] = enableSkillMix;
+
 			//create a var for list items
 			Collection<SelectListItem> orderOfResourceTypes = new Collection<SelectListItem>();
 			string taskDescription = string.Empty;
@@ -144,13 +153,7 @@ namespace GenBOE.Web.Controllers
 				taskDescription = element.Description;
 				containsDiscrete = element.taskElementLabors.Any(x => x.SpreadCurveID == SpreadCurves.DiscreteHours || x.SpreadCurveID == SpreadCurves.DiscreteCost);
 
-				// Checks to see if Skill Mix is enabled for the task.
-				if (Utilities.ShowSkillMixForTask(ws.CreationDate, element.HasTMRates))
-				{
-					enableSkillMix = true;
-				}
 
-				ViewData["EnableSkillMix"] = enableSkillMix;
 
 				if (!isReadOnly)
 				{

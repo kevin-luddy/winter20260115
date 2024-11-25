@@ -47,7 +47,6 @@
         RmsSapDisabledSource: '<%=RepositoryName.User.GetDescription()%>',
         ReadOnlyMode: '<%= ViewData["ReadOnlyMode"] %>'.isTrue(),
         HistoricalReferenceExplanationIsRequired: '<%= ViewData["HistoricalReferenceExplanationIsRequired"] %>'.isTrue(),
-        SkillMixEnabled: '<%:(bool)ViewData["EnableSkillMix"]%>'.isTrue(),
         DatepickerRestrictionRMS: '<%:Utilities.DatepickerRestrictionRMS%>'
     };
 
