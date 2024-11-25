@@ -1879,10 +1879,6 @@
             boeId: ManageTaskModel.boeId,
             laborTypes: $scope.model.LaborTypesData,
         };
-
-        $scope.isLoading = true;
-        $(document).trigger("SHOW_LOADING_BOX");
-
         return $http({
             method: 'POST',
             data: data,
@@ -1893,9 +1889,6 @@
             if (response.data && response.data.MessageList) {
                 $scope.errors = response.data.MessageList;
             }
-        }).finally(function () {
-            $scope.isLoading = false;
-            $(document).trigger("HIDE_LOADING_BOX");
         });
     };
 
