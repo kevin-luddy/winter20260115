@@ -239,7 +239,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="iboe"></param>
 		/// <returns></returns>
 		/// <exception cref="ArgumentNullException"></exception>
-		public BOEFormIBOEDTO transformIBOEViewToFormDTO(IBOEViewModel iboe)
+		public BOEFormIBOEDTO TransformIBOEViewToFormDTO(IBOEViewModel iboe)
 		{
 			// Validations
 			_ = iboe ?? throw new ArgumentNullException(nameof(iboe));

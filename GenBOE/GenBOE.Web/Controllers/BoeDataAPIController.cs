@@ -1474,7 +1474,7 @@ namespace GenBOE.Web.Controllers
 						FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(workspace);
 						// transform IBOEViewModel into BOEFormIBOEDTO
 						// put it in the exporter because it is IBOE specific
-						BOEFormIBOEDTO iboeForm = exporter.transformIBOEViewToFormDTO(iboe);
+						BOEFormIBOEDTO iboeForm = exporter.TransformIBOEViewToFormDTO(iboe);
 
 						// need to convert resources into a list of ints (resource IDs)
 						List<int> resourceIds = new List<int>();
