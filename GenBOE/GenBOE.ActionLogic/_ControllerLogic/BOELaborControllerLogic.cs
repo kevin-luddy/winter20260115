@@ -341,14 +341,36 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			LaborTaskDataModelView toReturn = this.ConvertDtoToModelView(ws, boe, taskElementDto);
 			toReturn.AdjacentItems = this.FindAdjacentTasks(boe, taskElementId);
 			toReturn.ValidationErrors = this.taskElementValidation.ValidateTaskElementsWithErrorMessages(ws, new List<BoeTaskElementDTO>() { taskElementDto }).Select(e => e.ErrorMessage).ToList();
+			toReturn.IsUsingTMRatesInTask = CheckTMRates(ws, toReturn.LaborTypesData);
 
-			ICollection<TMResourceRateDTO> tmResourceRates = tmResourceRateDTODataLoader.GetByWorkspaceId(ws.Id);
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Checks the usage of active T&M rates in the task.
+		/// </summary>
+		/// <param name="ws">Workspace.</param>
+		/// <param name="laborTask">Labor Task.</param>
+		/// <returns></returns>
+		public bool CheckTMRates(FullWorkspace ws, ICollection<LaborTypeDataModelView> laborTypes)
+		{
+			if (ReferenceEquals(laborTypes, null))
+			{
+				throw new ArgumentNullException(nameof(laborTypes));
+			}
+
+			if (ReferenceEquals(ws, null))
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
 
 			// Checks to see if the tasks have any T&M Rates. If it does then it will clear and prevent the Skill Mix Rationale from showing.
+			ICollection<TMResourceRateDTO> tmResourceRates = tmResourceRateDTODataLoader.GetByWorkspaceId(ws.Id);
+
 			bool isUsingTMRatesInTask = false;
 			if (tmResourceRates.Any())
 			{
-				foreach (LaborTypeDataModelView laborType in toReturn.LaborTypesData)
+				foreach (LaborTypeDataModelView laborType in laborTypes)
 				{
 					TMResourceRateDTO matchingResourceRate = tmResourceRates.FirstOrDefault(r => r.ResourceName == laborType.ResourceName || r.ResourceName == laborType.BusinessResourceCodeName);
 					if (matchingResourceRate != null)
@@ -359,9 +381,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}
 			}
 
-			toReturn.IsUsingTMRatesInTask = isUsingTMRatesInTask;
-
-			return toReturn;
+			return isUsingTMRatesInTask;
 		}
 
 		/// <summary>

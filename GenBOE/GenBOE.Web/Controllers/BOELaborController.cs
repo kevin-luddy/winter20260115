@@ -1674,6 +1674,31 @@ namespace GenBOE.Web.Controllers
 			FinalizeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLES, sw);
 			return toReturn;
 		}
+
+		/// <summary>
+		/// Refreshes the Skill Mix Tables with updated resource hours
+		/// </summary>
+		/// <param name="workspace">Workspace name</param>
+		/// <param name="boeId">BOE Id</param>
+		/// <param name="laborTypes">The labor type/spreads data</param>
+
+		/// <returns></returns>
+		public ActionResult CheckTMRates(string workspace, int boeId, ICollection<LaborTypeDataModelView> laborTypes)
+		{
+			// Initialize Action
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_CHECK_TM_RATES, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeId);
+
+			// Call to Controller Logic
+			bool? response = this._BoeLaborControllerLogic.CheckTMRates(ws, laborTypes);
+
+			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });
+
+			// Finalize Action
+			FinalizeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLES, sw);
+			return toReturn;
+		}
 		#endregion
 
 		#region Private Methods
