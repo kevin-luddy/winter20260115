@@ -208,7 +208,10 @@
     <Compile Include="BOETransitions\IBOEStateTransition.cs" />
     <Compile Include="BOE\BOEResourcesPair.cs" />
     <Compile Include="BOE\BOETotalsPostModel.cs" />
+    <Compile Include="BOE\IBOECLINContractXREFData.cs" />
+    <Compile Include="BOE\IBOEClinData.cs" />
     <Compile Include="BOE\IBOERow.cs" />
+    <Compile Include="BOE\IBOEViewModel.cs" />
     <Compile Include="Common\ActionLogicUtility.cs" />
     <Compile Include="BOE\PBOECLINContractXREFData.cs" />
     <Compile Include="BOE\PBOEClinData.cs" />
