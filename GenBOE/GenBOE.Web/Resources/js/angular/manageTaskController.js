@@ -755,6 +755,8 @@
 
         $scope.deltaHours = $scope.getMOQTotal().minus($scope.totalSpreadHours).toString();
         $scope.validateTotals();
+
+        $scope.refreshSkillMixTables();
     };
 
     $scope.getMOQTotal = function () {
@@ -2052,6 +2054,9 @@
                 item.SpreadDataInvalid.push(false);
             });
         }
+
+        // Finally, recalculate Skill Mix tables
+        $scope.refreshSkillMixTables();
     };
 
     $scope.fixDiscreteSpread = function (item, skipRecalc) {
