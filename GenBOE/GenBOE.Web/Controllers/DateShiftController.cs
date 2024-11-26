@@ -214,6 +214,21 @@ namespace GenBOE.Web.Controllers
 
                 this.dateShiftCalculation.PerformDateShift(dateShiftable, dateShiftModel, parentStart, parentEnd, validateOnly, parentLevel, workspace);
                 this.Factory.ClearWorkspaceCache(ws.Shortname);
+
+				// Check if we have Skill Mix enabled to adjust Skill Mix table data as needed
+				if (Utilities.IsSkillMixEnabledForSystem)
+				{
+					// Iterate through each task
+					foreach (BoeTaskElementDTO task in ws.TaskElements)
+					{
+						// Iterate through each 
+						if (task > Utilities.OneLmxStartDate || task > Utilities.OneLmxStartDate)
+						{
+
+						}
+					}
+					//if ( Utilities.OneLmxStartDate || Utilities.OneLmxStartDate)
+				}
             }
             catch (GenValidationException)
             {
