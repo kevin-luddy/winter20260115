@@ -3713,7 +3713,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 
 			CalculateSkillMixTotals(refreshedModel);
-			CalculateBoeSmillMixPercentage(refreshedModel);
+			CalculateBoeSkillMixPercentage(refreshedModel);
 
 			// reorder the lists
 			refreshedModel.SkillMixRows = refreshedModel.SkillMixRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceOld)).ThenBy(r => r.ResourceOld).ToList();
@@ -4374,7 +4374,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// Calculates the BOESkillMix Percentage
 		/// </summary>
 		/// <param name="refreshedModel"></param>
-		private static void CalculateBoeSmillMixPercentage(RefreshSkillMixModelView refreshedModel)
+		private static void CalculateBoeSkillMixPercentage(RefreshSkillMixModelView refreshedModel)
 		{
 			// Set BOE Skill Mix Percent on Skill Mix table
 			foreach (SkillMixModelView row in refreshedModel.SkillMixRows)
