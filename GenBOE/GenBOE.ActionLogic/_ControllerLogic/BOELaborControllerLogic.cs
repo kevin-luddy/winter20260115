@@ -55,6 +55,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		private readonly IOrdinaryVariableLoader _taskVariableLoader;
 		private readonly IRteTemplateDataLoader rteTemplateDataLoader;
 		private readonly IMoqTypeDataLoader moqTypeDataLoader;
+		private readonly ITMResourceRateDTODataLoader tmResourceRateDTODataLoader;
 		private readonly IValidateBOE validateBOE;
 		private readonly IMoqTableExporter moqTableExporter;
 		private readonly IMoqTableImporter moqTableImporter;
@@ -90,6 +91,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			ICommonDataMapper commonDataMapper,
 			IRteTemplateDataLoader rteTemplateDataLoader,
 			IMoqTypeDataLoader moqTypeDataLoader,
+			ITMResourceRateDTODataLoader tmResourceRateDTODataLoader,
 			IValidateBOE validateBOE,
 			IMoqTableExporter moqTableExporter,
 			IMoqTableImporter moqTableImporter,
@@ -116,6 +118,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			this.CommonDataMapper = commonDataMapper;
 			this.rteTemplateDataLoader = rteTemplateDataLoader;
 			this.moqTypeDataLoader = moqTypeDataLoader;
+			this.tmResourceRateDTODataLoader = tmResourceRateDTODataLoader;
 			this.validateBOE = validateBOE;
 			this.moqTableExporter = moqTableExporter;
 			this.moqTableImporter = moqTableImporter;
@@ -338,8 +341,52 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			LaborTaskDataModelView toReturn = this.ConvertDtoToModelView(ws, boe, taskElementDto);
 			toReturn.AdjacentItems = this.FindAdjacentTasks(boe, taskElementId);
 			toReturn.ValidationErrors = this.taskElementValidation.ValidateTaskElementsWithErrorMessages(ws, new List<BoeTaskElementDTO>() { taskElementDto }).Select(e => e.ErrorMessage).ToList();
+			toReturn.IsUsingTMRatesInTask = CheckTMRates(ws, toReturn.LaborTypesData);
 
 			return toReturn;
+		}
+
+		/// <summary>
+		/// Checks the usage of active T&M rates in the task.
+		/// </summary>
+		/// <param name="ws">Workspace.</param>
+		/// <param name="laborTask">Labor Task.</param>
+		/// <returns>If T&M Rates are being used in the Task.</returns>
+		public bool CheckTMRates(FullWorkspace ws, ICollection<LaborTypeDataModelView> laborTypes)
+		{
+			bool isUsingTMRatesInTask = false;
+
+			// Checks to see if any T&M Rates are being used in the task for Space only.
+			if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
+			{
+				if (ReferenceEquals(laborTypes, null))
+				{
+					throw new ArgumentNullException(nameof(laborTypes));
+				}
+
+				if (ReferenceEquals(ws, null))
+				{
+					throw new ArgumentNullException(nameof(ws));
+				}
+
+				// Checks to see if the tasks have any T&M Rates. If it does then it will clear and prevent the Skill Mix Rationale from showing.
+				ICollection<TMResourceRateDTO> tmResourceRates = tmResourceRateDTODataLoader.GetByWorkspaceId(ws.Id);
+
+				if (tmResourceRates.Any())
+				{
+					foreach (LaborTypeDataModelView laborType in laborTypes)
+					{
+						TMResourceRateDTO matchingResourceRate = tmResourceRates.FirstOrDefault(r => r.ResourceName == laborType.ResourceName || r.ResourceName == laborType.BusinessResourceCodeName);
+						if (matchingResourceRate != null)
+						{
+							isUsingTMRatesInTask = true;
+							break;
+						}
+					}
+				}
+			}
+
+			return isUsingTMRatesInTask;
 		}
 
 		/// <summary>
@@ -891,7 +938,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}
 			}
 
-			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.IsUsingTM))
+			if (Utilities.ShowSkillMixForTask(ws.CreationDate, taskElement.HasTMRates))
 			{
 				if (taskElement.SkillMixTable != null && taskElement.SkillMixTable.Any())
 				{
@@ -2408,12 +2455,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				ICollection<LaborSpreadDataModelView> existingLaborSpreads = (spreadData == null) ? new List<LaborSpreadDataModelView>() : spreadData.Spreads;
 
 				/*
-                 * This is analogous to doing an "outer join" of sorts:
-                 * 
-                 * We want to make sure we account for months that may have been added (before and/or after the current endpoints).
-                 * We also want to make sure we account for deletions (i.e. if the resource type's spread date range was shortened).
-                 * 
-                 */
+				 * This is analogous to doing an "outer join" of sorts:
+				 * 
+				 * We want to make sure we account for months that may have been added (before and/or after the current endpoints).
+				 * We also want to make sure we account for deletions (i.e. if the resource type's spread date range was shortened).
+				 * 
+				 */
 
 				// need to loop against the FULL date spread (i.e. of ALL resource entries)
 				ICollection<DateTime> spreadDatesFull = existingLaborSpreads.Any(s => s.LaborSpreadDate != null) ? existingLaborSpreads.GetSpreadDatesFull() : new Collection<DateTime>();
@@ -2658,10 +2705,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			this.DoResolveVariableDependencies(boeID, workspace, getReferencedVariables, dependentTaskElementIds, dependencyData, dependentTaskVariables);
 
 			/*
-             * 
-             * Assemble the final results, in breadth-first order, with duplicates removed
-             * 
-             */
+			 * 
+			 * Assemble the final results, in breadth-first order, with duplicates removed
+			 * 
+			 */
 
 			// remove duplicates - must be done explicitly (i.e. NOT using LINQ Distinct) in order to preserve original ordering
 			IList<int> uniqueDependentTaskElementIds = new List<int>();

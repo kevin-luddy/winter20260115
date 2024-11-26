@@ -91,7 +91,8 @@ namespace GenBOE.DataBridge.DTO
                         StartDate = entity.TMResourceRateStartDate.HasValue ? GenBOEUtilities.AdjustDateTimePrecision(entity.TMResourceRateStartDate.Value, DateTimePrecision.Month) : (DateTime?)null,
                         EndDate = entity.TMResourceRateEndDate.HasValue ? GenBOEUtilities.AdjustDateTimePrecision(entity.TMResourceRateEndDate.Value, DateTimePrecision.Month) : (DateTime?)null,
                         UpdateDate = entity.UpdateDT,
-                        LockedRate = false
+                        LockedRate = false,
+						ResourceName = entity.Resource?.ResourceName
                     });
                 }
             }

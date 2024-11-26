@@ -1434,6 +1434,99 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
+		/// Get clin data for iboes for NLF export
+		/// </summary>
+		/// <param name="iboes">list of iboes</param>
+		/// <returns>Returns the list of iboes populated with clin data</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpPost]
+		public IESResponse<IBOEViewModel> GetIBOEClinData([FromBody] List<IBOEViewModel> iboes)
+		{
+			// Validations
+			_ = iboes ?? throw new ArgumentNullException(nameof(iboes));
+
+			IESResponse<IBOEViewModel> result = new IESResponse<IBOEViewModel>();
+
+			if (iboes == null || !iboes.Any())
+			{
+				string message = $"No IBOEs from NLF";
+				result.Messages.Add(message);
+				result.IsSuccessful = false;
+				result.Data = null;
+				return result;
+			}
+
+			try
+			{
+				tokenHandler.ValidateAuthorizationToken();
+
+				ICollection<WorkspaceDTO> workspaces = loader.GetWorkspacesByTrackingNumber(iboes.First().PTMTrackingNumber).Where(x => x.CurrentPTMWorkspace).ToList();
+
+				// Instantiate IBOE Exporter
+				IBOEFormExporter exporter = new IBOEFormExporter(userDataLoader, resourceLoader, tmCalculator);
+
+				foreach (IBOEViewModel iboe in iboes)
+				{
+					iboe.IboeClinData = new List<IBOEClinData>();
+					foreach (WorkspaceDTO workspace in workspaces)
+					{
+						// Get Prerequisite Data
+						FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(workspace);
+						// transform IBOEViewModel into BOEFormIBOEDTO
+						// put it in the exporter because it is IBOE specific
+						BOEFormIBOEDTO iboeForm = exporter.TransformIBOEViewToFormDTO(iboe);
+
+						// need to convert resources into a list of ints (resource IDs)
+						List<int> resourceIds = new List<int>();
+						ICollection<ResourceDTO> workspaceResources = this.resourceLoader.GetByListId(fullWorkspace.ResourceListID);
+						ICollection<ResourceDTO> actualResources = workspaceResources.Where(x => iboe.Resources.Contains(x.ResourceName)).ToList();
+						resourceIds = actualResources.Select(r => r.Id).ToList();
+
+						// if we don't have sub resources, still return the iboe with the pop data
+						if (resourceIds != null && resourceIds.Any())
+						{
+							ICollection<IBOETableRow> rowData = new Collection<IBOETableRow>();
+							rowData = exporter.PullRowsFromWorkspace(fullWorkspace, iboeForm, resourceIds, this.contractTypeLoader.GetPickListValues());
+							foreach (IBOETableRow row in rowData)
+							{
+								IBOEClinData data = new IBOEClinData(row);
+								iboe.IboeClinData.Add(data);
+							}
+						}
+					}
+					iboe.PeriodOfPerformance = exporter.PeriodOfPerformance;
+					result.Data.Add(iboe);
+				}
+
+				if (result.Data.Count > 0)
+				{
+					result.IsSuccessful = true;
+				}
+				else
+				{
+					string message = $"No IBOE CLIN Data for given Tracking Number: {iboes.First().PTMTrackingNumber}";
+					result.Messages.Add(message);
+					result.IsSuccessful = false;
+					result.Data = null;
+				}
+			}
+			catch (UnauthorizedAccessException ex)
+			{
+				string message = $"Invalid permission to Workspace with tracking number: {iboes.First().PTMTrackingNumber}";
+				logger.Error(message + ex);
+				result.Messages.Add(message);
+				result.IsSuccessful = false;
+				result.Data = null;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown Error occured returning IBOE CLIN Data: {ex.Message}");
+			}
+			return result;
+		}
+
+		/// <summary>
 		/// Get in-use resources for the 'current' workspaces for the given tracking number and element of cost for NLF
 		/// </summary>
 		/// <param name="trackingNumber">Tracking Number</param>

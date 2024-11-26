@@ -357,5 +357,13 @@ namespace GenBOE.ActionLogic
 		/// <returns></returns>
 		RefreshSkillMixModelView RefreshSkillMixTables(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
 			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isBRCEnabled);
+
+		/// <summary>
+		/// Checks the usage of active T&M rates in the task.
+		/// </summary>
+		/// <param name="ws">Workspace.</param>
+		/// <param name="laborTask">Labor Task.</param>
+		/// <returns></returns>
+		bool CheckTMRates(FullWorkspace ws, ICollection<LaborTypeDataModelView> laborTypes);
 	}
 }
