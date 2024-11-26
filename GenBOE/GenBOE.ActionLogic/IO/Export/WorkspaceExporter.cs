@@ -117,7 +117,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			this.SetAutofilterRange(toReturn);
 
 
-			bool usingSkillMix = Utilities.ShowSkillMixForWorkspace(exportInputs.Workspace.CreationDate, exportInputs.Workspace.IsUsingTM);
+			bool usingSkillMix = Utilities.ShowSkillMixForWorkspace(exportInputs.Workspace.CreationDate);
 			if (!exportInputs.Workspace.UsingTemplateBOE)
 			{
 				// Hide Template BOE and Skill Mix sheets
