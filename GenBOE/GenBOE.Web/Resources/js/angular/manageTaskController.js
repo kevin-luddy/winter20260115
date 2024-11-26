@@ -1841,7 +1841,10 @@
 
         $scope.checkIfNewRowNeeded(model);
         $scope.filterResourceSelections();
-        $scope.checkTMRates();
+
+        if (ManageTaskModel.IsSpace) {
+            $scope.checkTMRates();
+        }
     };
 
     $scope.businessResourceCodeSelected = function (item, model) {
@@ -1871,7 +1874,10 @@
         }
 
         $scope.checkIfNewRowNeeded(model);
-        $scope.checkTMRates();
+
+        if (ManageTaskModel.IsSpace) {
+            $scope.checkTMRates();
+        }
     }
 
     $scope.checkTMRates = function () {
