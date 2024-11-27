@@ -1894,8 +1894,14 @@
         }, function errorCallback(response) {
             if (response.data && response.data.MessageList) {
                 $scope.errors = response.data.MessageList;
+                $scope.isLoading = false;
+                $(document).trigger("HIDE_LOADING_BOX");
             }
         });
+    };
+
+    $scope.isUsingTMRatesInTask = function () {
+        return $scope.IsUsingTMRatesInTask.data === true;
     };
 
     $scope.perfOrgSelected = function (item, model) {

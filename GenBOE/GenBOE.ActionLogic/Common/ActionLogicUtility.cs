@@ -59,14 +59,14 @@ namespace GenBOE.ActionLogic.Common
 				errorMessages.Add("Current Skill Mix Table: Included cannot be set to 'Yes' for an empty/null Current Resource.");
 			}
 
-			foreach (string skillMixResourceNew in skillMixRowsEmptyBoeMixWhenIncluded.Select(x => x.ResourceNew))
+			foreach (string skillMixResourceOld in skillMixRowsEmptyBoeMixWhenIncluded.Select(x => x.ResourceOld))
 			{
-				errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix is missing for {0}.", skillMixResourceNew));
+				errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix is missing for {0}.", skillMixResourceOld));
 			}
 
-			foreach (string skillMixResourceNew in skillMixRowsInvalidBoeMixWhenIncluded.Select(x => x.ResourceNew))
+			foreach (string skillMixResourceOld in skillMixRowsInvalidBoeMixWhenIncluded.Select(x => x.ResourceOld))
 			{
-				errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix has invalid value for {0}.", skillMixResourceNew));
+				errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix has invalid value for {0}.", skillMixResourceOld));
 			}
 
 			if (!totalSKillMixRowsBOESkillMix.EqualsEpsilon(100))
@@ -74,9 +74,9 @@ namespace GenBOE.ActionLogic.Common
 				errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix total must be 100%"));
 			}
 
-			foreach (string skillMixResourceNew in skillMixRowsExceedChars.Select(x => x.ResourceNew))
+			foreach (string skillMixResourceOld in skillMixRowsExceedChars.Select(x => x.ResourceOld))
 			{
-				errorMessages.Add(string.Format("Current Skill Mix Table: The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceNew, 255));
+				errorMessages.Add(string.Format("Current Skill Mix Table: The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceOld, 255));
 			}
 
 			return errorMessages;
@@ -103,19 +103,19 @@ namespace GenBOE.ActionLogic.Common
 			IList<CommonDisclosureModelView> commonDisclosureHasBRC = commonDisclosures
 																			.Where(x => string.IsNullOrEmpty(x.BusinessResourceID)).ToList();
 
-			foreach (string skillMixResourceNew in commonDisclosureRowsExceedChars.Select(x => x.ResourceID))
+			foreach (string skillMixResourceID in commonDisclosureRowsExceedChars.Select(x => x.ResourceID))
 			{
-				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceNew, 255));
+				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceID, 255));
 			}
 
-			foreach (string skillMixResourceNew in commonDisclosureRowsEmptyBoeSkillMixWhenIncluded.Select(x => x.ResourceID))
+			foreach (string skillMixResourceID in commonDisclosureRowsEmptyBoeSkillMixWhenIncluded.Select(x => x.ResourceID))
 			{
-				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: BOE Skill Mix is missing for {0}.", skillMixResourceNew));
+				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: BOE Skill Mix is missing for {0}.", skillMixResourceID));
 			}
 
-			foreach (string skillMixResourceNew in commonDisclosureRowsInvalidBoeSkillMixWhenIncluded.Select(x => x.ResourceID))
+			foreach (string skillMixResourceID in commonDisclosureRowsInvalidBoeSkillMixWhenIncluded.Select(x => x.ResourceID))
 			{
-				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: BOE skill Mix has invalid value for {0}.", skillMixResourceNew));
+				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: BOE skill Mix has invalid value for {0}.", skillMixResourceID));
 			}
 
 			if (commonDisclosureIncludedHasTrueValue.Count <= 0)
@@ -150,7 +150,9 @@ namespace GenBOE.ActionLogic.Common
 		private static void ValidateResourceAndBRCCombos(ICollection<CommonDisclosureModelView> commonDisclosures, ICollection<String> errorMessages)
 		{
 			// Create Dictionary of list for Dropdown
-			Dictionary<string, List<CommonDisclosureModelView>> resourceToCDRowMap = commonDisclosures?.GroupBy(s => s.ResourceID).ToDictionary(g => g.Key, g => g.ToList());
+			Dictionary<string, List<CommonDisclosureModelView>> resourceToCDRowMap = commonDisclosures?.Where(cd => cd.ResourceID != null)
+				?.GroupBy(cd => cd.ResourceID)
+				?.ToDictionary(g => g.Key, g => g.ToList());
 
 			resourceToCDRowMap.ForEach(pair =>
 			{
@@ -190,7 +192,10 @@ namespace GenBOE.ActionLogic.Common
 				});
 			}
 
-			Dictionary<string, List<CommonDisclosureModelView>> resourceToCDRowMap = commonDisclosures != null && commonDisclosures.Any() ? commonDisclosures.GroupBy(s => s.ResourceID).ToDictionary(g => g.Key, g => g.ToList()) : null;
+			Dictionary<string, List<CommonDisclosureModelView>> resourceToCDRowMap = commonDisclosures?.Where(cd => cd.ResourceID != null)
+				?.GroupBy(cd => cd.ResourceID)
+				?.ToDictionary(g => g.Key, g => g.ToList());
+
 
 			if (resourceToCDRowMap != null)
 			{
