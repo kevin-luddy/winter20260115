@@ -25,6 +25,8 @@ namespace GenBOE.ActionLogic.BOE
 				this.IWTAType = row.IWTAType;
 				this.CLIN = row.CLIN;
 				this.Value = row.Value;
+				this.WBS = row.WBS;
+				this.WbsPaddedNumber = row.WbsPaddedNumber;
 			}
 		}
 
@@ -37,6 +39,16 @@ namespace GenBOE.ActionLogic.BOE
 		/// IWTA Type
 		/// </summary>
 		public string IWTAType { get; set; }
+
+		/// <summary>
+		/// The WBS Number.
+		/// </summary>
+		public string WBS { get; set; }
+
+		/// <summary>
+		/// The WBS Padded Number.
+		/// </summary>
+		public string WbsPaddedNumber { get; set; }
 
 		/// <summary>
 		/// CLIN

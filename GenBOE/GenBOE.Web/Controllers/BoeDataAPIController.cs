@@ -1467,6 +1467,7 @@ namespace GenBOE.Web.Controllers
 
 				foreach (IBOEViewModel iboe in iboes)
 				{
+					bool containsOCi = false;
 					iboe.IboeClinData = new List<IBOEClinData>();
 					foreach (WorkspaceDTO workspace in workspaces)
 					{
@@ -1493,8 +1494,14 @@ namespace GenBOE.Web.Controllers
 								iboe.IboeClinData.Add(data);
 							}
 						}
+
+						if (workspace.ContainsOCI)
+						{
+							containsOCi = true;
+						}
 					}
 					iboe.PeriodOfPerformance = exporter.PeriodOfPerformance;
+					iboe.ContainsOCI = containsOCi;
 					result.Data.Add(iboe);
 				}
 
