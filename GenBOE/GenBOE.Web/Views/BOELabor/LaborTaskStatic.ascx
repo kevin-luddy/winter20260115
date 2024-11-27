@@ -537,7 +537,7 @@
     </div>
     <% if (Model.EnableSkillMix)
         { %>
-    <div id="SkillMixPlaceholder" data-ng-show="!IsUsingTMRatesInTask">
+    <div id="SkillMixPlaceholder" data-ng-show="!isUsingTMRatesInTask()">
         <div class="skill-mix-tables module collapsed" id="SkillMixRationaleContainer">
             <div class="module-header-data">
                 Skill Mix Rationale
