@@ -727,14 +727,14 @@ namespace GenBOE.ActionLogic.IO.Import
                                 importedBoe.ImportTypes.Contains(BoeImportResult.UpdateBoe) &&
                                 (importedBoe.WBSID != boe.WBSID || importedBoe.Id != boe.Id))
                             {
-                                if (wbsNumber.StartsWith(importedWbsNumber + "."))
+                                if (wbsNumber.StartsWith(importedWbsNumber + ".", StringComparison.CurrentCultureIgnoreCase))
                                 {
                                     // we're creating a BOE on a parent wbs, this is invalid.
                                     importedBoe.ImportTypes = new Collection<BoeImportResult>();
                                     importedBoe.ImportTypes.Add(BoeImportResult.BoeAlreadyExists);
                                 }
 
-                                if (importedWbsNumber.StartsWith(wbsNumber + "."))
+                                if (importedWbsNumber.StartsWith(wbsNumber + ".", StringComparison.CurrentCultureIgnoreCase))
                                 {
                                     // we're creating a BOE on a child wbs, this is also invalid.
                                     importedBoe.ImportTypes = new Collection<BoeImportResult>();
@@ -770,7 +770,7 @@ namespace GenBOE.ActionLogic.IO.Import
                             // don't check self
                             if (importedBoe.Id != boe.Id)
                             {
-                                if (wbsNumber.StartsWith(importedWbsNumber + "."))
+                                if (wbsNumber.StartsWith(importedWbsNumber + ".", StringComparison.CurrentCultureIgnoreCase))
                                 {
                                     // we're creating a BOE on a parent wbs, this is invalid.
                                     importedBoe.ImportTypes = new Collection<BoeImportResult>();
@@ -780,7 +780,7 @@ namespace GenBOE.ActionLogic.IO.Import
                                     boe.ImportTypes.Add(BoeImportResult.BoeAlreadyExists);
                                 }
 
-                                if (importedWbsNumber.StartsWith(wbsNumber + "."))
+                                if (importedWbsNumber.StartsWith(wbsNumber + ".", StringComparison.CurrentCultureIgnoreCase))
                                 {
                                     // we're creating a BOE on a child wbs, this is also invalid.
                                     importedBoe.ImportTypes = new Collection<BoeImportResult>();
