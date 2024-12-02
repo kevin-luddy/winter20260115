@@ -15,6 +15,7 @@ namespace GenBOE.ActionLogic.Common
 	using GenBOE.Objects;
 	using IES.Common;
 	using Microsoft.Practices.ObjectBuilder2;
+	using IES.Common.classes;
 
 	/// <summary>
 	/// Utility Class to hold Action Logic Methods
@@ -52,31 +53,42 @@ namespace GenBOE.ActionLogic.Common
 			IList<SkillMixModelView> skillMixRowsExceedChars = skillMixModels.Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
 			bool doesEmptyNullCurrentResourceExist = skillMixModels.Any(x => string.IsNullOrEmpty(x.ResourceNew) && x.Included);
 			decimal totalSKillMixRowsBOESkillMix = skillMixModels.Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
+			string skillMixTableName = string.Empty;
+
+			// Applies the proper name for the Skill Mix table based on the company configuration mode.
+			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			{
+				skillMixTableName = Constants.SPACE_SKILL_MIX_TABLE_HEADER;
+			}
+			else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+			{
+				skillMixTableName = Constants.RMS_SKILL_MIX_TABLE_HEADER;
+			}
 
 			// This check applies to both Space and RMS
 			if (doesEmptyNullCurrentResourceExist)
 			{
-				errorMessages.Add("Current Skill Mix Table: Included cannot be set to 'Yes' for an empty/null Current Resource.");
+				errorMessages.Add($"{skillMixTableName}: Included cannot be set to 'Yes' for an empty/null Current Resource.");
 			}
 
 			foreach (string skillMixResourceOld in skillMixRowsEmptyBoeMixWhenIncluded.Select(x => x.ResourceOld))
 			{
-				errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix is missing for {0}.", skillMixResourceOld));
+				errorMessages.Add(string.Format($"{skillMixTableName}: BOE Skill Mix is missing for {0}.", skillMixResourceOld));
 			}
 
 			foreach (string skillMixResourceOld in skillMixRowsInvalidBoeMixWhenIncluded.Select(x => x.ResourceOld))
 			{
-				errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix has invalid value for {0}.", skillMixResourceOld));
+				errorMessages.Add(string.Format($"{skillMixTableName}: BOE Skill Mix has invalid value for {0}.", skillMixResourceOld));
 			}
 
 			if (!totalSKillMixRowsBOESkillMix.EqualsEpsilon(100))
 			{
-				errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix total must be 100%"));
+				errorMessages.Add(string.Format($"{skillMixTableName}: BOE Skill Mix total must be 100%"));
 			}
 
 			foreach (string skillMixResourceOld in skillMixRowsExceedChars.Select(x => x.ResourceOld))
 			{
-				errorMessages.Add(string.Format("Current Skill Mix Table: The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceOld, 255));
+				errorMessages.Add(string.Format($"{skillMixTableName}: The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceOld, 255));
 			}
 
 			return errorMessages;
@@ -180,7 +192,8 @@ namespace GenBOE.ActionLogic.Common
 			//TBD: for RMS, might have duplicate new resources and then we'll have to total historical
 			if (skillMixModels != null && skillMixModels.Any())
 			{
-				skillMixModels.Where(s => s.Included && !string.IsNullOrEmpty(s.ResourceNew)).ForEach(s => {
+				skillMixModels.Where(s => s.Included && !string.IsNullOrEmpty(s.ResourceNew)).ForEach(s =>
+				{
 					if (resourceToHistoricalHoursMap.TryGetValue(s.ResourceNew, out decimal currentTotal))
 					{
 						resourceToHistoricalHoursMap[s.ResourceNew] = currentTotal + s.HistoricalHours;
