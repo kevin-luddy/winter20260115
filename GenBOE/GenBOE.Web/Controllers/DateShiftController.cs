@@ -11,14 +11,17 @@ namespace GenBOE.Web.Controllers
     using System.Diagnostics;
     using System.Linq;
     using System.Web.Mvc;
-    using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.ControllerLogic;
     using GenBOE.ActionLogic.DateShift;
     using GenBOE.ActionLogic.Metrics;
-    using GenBOE.DataBridge.Common;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.Common.Interfaces;
     using GenBOE.DataBridge.DTO;
-    using GenBOE.Objects;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
     using GenBOE.Web.Common;
     using GenBOE.Web.ModelView;
     using IES.Common;
@@ -45,18 +48,23 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         private Logger logger = new Logger(typeof(DateShiftController));
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DateShiftController" /> class.
-        /// </summary>
-        /// <param name="securityAccess">The security access.</param>
-        /// <param name="commonDataMapper">The common data mapper.</param>
-        /// <param name="siteMasterUtilities">The site master utilities.</param>
-        /// <param name="systemMetrics">The system metrics.</param>
-        /// <param name="factory">The factory.</param>
-        /// <param name="userLoader">The user loader.</param>
-        /// <param name="permissionsLoader">The permissions loader.</param>
-        /// <param name="controllerLogic">The controller logic.</param>
-        public DateShiftController(ISecurityAccess securityAccess,
+		/// <summary>
+		/// The BOE Labor Controller Logic
+		/// </summary>
+		private readonly IBOELaborControllerLogic _BoeLaborControllerLogic;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DateShiftController" /> class.
+		/// </summary>
+		/// <param name="securityAccess">The security access.</param>
+		/// <param name="commonDataMapper">The common data mapper.</param>
+		/// <param name="siteMasterUtilities">The site master utilities.</param>
+		/// <param name="systemMetrics">The system metrics.</param>
+		/// <param name="factory">The factory.</param>
+		/// <param name="userLoader">The user loader.</param>
+		/// <param name="permissionsLoader">The permissions loader.</param>
+		/// <param name="controllerLogic">The controller logic.</param>
+		public DateShiftController(ISecurityAccess securityAccess,
             ICommonDataMapper commonDataMapper,
             SiteMasterUtilities siteMasterUtilities,
             SystemMetrics systemMetrics,
@@ -65,13 +73,15 @@ namespace GenBOE.Web.Controllers
             IPermissionsDTODataLoader permissionsLoader,
             IGenBOEControllerLogic controllerLogic,
             DateShiftCalculation dateShiftCalculation,
-            IBoeTaskElementDTODataLoader taskLoader)
+            IBoeTaskElementDTODataLoader taskLoader,
+			IBOELaborControllerLogic inBoeLaborControllerLogic)
             : base(securityAccess, commonDataMapper, siteMasterUtilities, systemMetrics, factory, userLoader,
                  permissionsLoader, controllerLogic)
         {
             this.dateShiftCalculation = dateShiftCalculation;
             this.taskLoader = taskLoader;
-        }
+			this._BoeLaborControllerLogic = inBoeLaborControllerLogic;
+		}
 
         /// <summary>
         /// Applies a date shift to a specific object (and optionally children).
@@ -215,19 +225,42 @@ namespace GenBOE.Web.Controllers
                 this.dateShiftCalculation.PerformDateShift(dateShiftable, dateShiftModel, parentStart, parentEnd, validateOnly, parentLevel, workspace);
                 this.Factory.ClearWorkspaceCache(ws.Shortname);
 
+				bool isBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspace);
+
 				// Check if we have Skill Mix enabled to adjust Skill Mix table data as needed
 				if (Utilities.IsSkillMixEnabledForSystem)
 				{
-					// Iterate through each task
+					// Iterate through each task and check for Skill Mix
 					foreach (BoeTaskElementDTO task in ws.TaskElements)
 					{
-						// Iterate through each 
-						if (task > Utilities.OneLmxStartDate || task > Utilities.OneLmxStartDate)
+						if (Utilities.ShowSkillMixForTask(ws.CreationDate, task.HasTMRates))
 						{
+							ICollection<ICollection<MoqTableData>> moqTableData = ws.MoqTypeSelections.Where(x => x.BoeId == task.BoeID).Select(x => x.TableData).ToList();
+							if (moqTableData.Any())
+							{
+								// Go through each MoqTableData
+								foreach (ICollection<MoqTableData> tempMoqTableData in moqTableData)
+								{
+									foreach (MoqTableData innerMoqTableData in tempMoqTableData)
+									{
+										if (innerMoqTableData.PoPStart > Utilities.OneLmxStartDate || innerMoqTableData.PoPEnd > Utilities.OneLmxStartDate)
+										{
+											// Run Skill Mix update
+											ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours = ws.MoqTypeSelections
+												.SelectMany(moqType => moqType.TableData)
+												.SelectMany(tableData => tableData.ResourceHours)
+												.ToList();
 
+											ICollection<LaborTypeDataModelView> laborTypes = ws.TaskElements.Select(x => x.labortype);
+
+											RefreshSkillMixModelView response = this._BoeLaborControllerLogic.RefreshSkillMixTables(resourceHours,
+												laborTypes, task.SkillMixTable, task.CommonDisclosureTable, isBRCEnabled);
+										}
+									}
+								}
+							}
 						}
 					}
-					//if ( Utilities.OneLmxStartDate || Utilities.OneLmxStartDate)
 				}
             }
             catch (GenValidationException)
