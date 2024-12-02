@@ -6542,7 +6542,7 @@ div.popup-div-button {
 }
 
 .labor-spread-labels-brc {
-    width: 346px !important; 
+    width: 396px !important; 
 }
 
 .header-rows {
@@ -7203,9 +7203,14 @@ table.moduled-table {
     overflow: auto;
 }
 
-.boe-details .labor-spread-scroll-brc
-{
-    width: 990px !important;
+.resource-spread {
+    text-wrap-mode: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.boe-details .labor-spread-scroll-brc {
+    width: 938px !important;
 }
 
 .task-element-grid #TaskElementGrid
