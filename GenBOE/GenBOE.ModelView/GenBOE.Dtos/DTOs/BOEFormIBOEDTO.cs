@@ -66,31 +66,6 @@ namespace GenBOE.Dtos
 		/// </summary>
 		public string PTMTrackingNumber { get; set; }
 
-		/// <summary>
-		/// Form Name
-		/// </summary>
-		public string FormName { get; set; }
-
-		/// <summary>
-		/// Proposal Date
-		/// </summary>
-		public string ProposalDate { get; set; }
-
-		/// <summary>
-		/// Proposal Title
-		/// </summary>
-		public string ProposalTitle { get; set; }
-
-		/// <summary>
-		/// Description
-		/// </summary>
-		public string Description { get; set; }
-
-		/// <summary>
-		/// Basis and Rationale
-		/// </summary>
-		public string BasisAndRationale { get; set; }
-
 		#endregion NLF-only fields
 	}
 }
