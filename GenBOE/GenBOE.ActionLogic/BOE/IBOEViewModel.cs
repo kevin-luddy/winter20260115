@@ -123,5 +123,10 @@ namespace GenBOE.ActionLogic.BOE
 		/// Period of Performance
 		/// </summary>
 		public string PeriodOfPerformance { get; set; }
+
+		/// <summary>
+		/// Whether or not this IBOE's associated workspace(s) contain OCI
+		/// </summary>
+		public bool ContainsOCI { get; set; }
 	}
 }
