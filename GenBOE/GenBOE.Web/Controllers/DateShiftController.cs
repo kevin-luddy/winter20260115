@@ -222,46 +222,48 @@ namespace GenBOE.Web.Controllers
                         throw new NotSupportedException("This Date Shift Level is not supported: " + dateShiftLevel.GetDescription());
                 }
 
-                this.dateShiftCalculation.PerformDateShift(dateShiftable, dateShiftModel, parentStart, parentEnd, validateOnly, parentLevel, workspace);
+                this.dateShiftCalculation.PerformDateShift(dateShiftable, dateShiftModel, parentStart, parentEnd, validateOnly, parentLevel, workspace, ws);
                 this.Factory.ClearWorkspaceCache(ws.Shortname);
 
-				bool isBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspace);
+				//bool isBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspace);
 
-				// Check if we have Skill Mix enabled to adjust Skill Mix table data as needed
-				if (Utilities.IsSkillMixEnabledForSystem)
-				{
-					// Iterate through each task and check for Skill Mix
-					foreach (BoeTaskElementDTO task in ws.TaskElements)
-					{
-						if (Utilities.ShowSkillMixForTask(ws.CreationDate, task.HasTMRates))
-						{
-							ICollection<ICollection<MoqTableData>> moqTableData = ws.MoqTypeSelections.Where(x => x.BoeId == task.BoeID).Select(x => x.TableData).ToList();
-							if (moqTableData.Any())
-							{
-								// Go through each MoqTableData
-								foreach (ICollection<MoqTableData> tempMoqTableData in moqTableData)
-								{
-									foreach (MoqTableData innerMoqTableData in tempMoqTableData)
-									{
-										if (innerMoqTableData.PoPStart > Utilities.OneLmxStartDate || innerMoqTableData.PoPEnd > Utilities.OneLmxStartDate)
-										{
-											// Run Skill Mix update
-											ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours = ws.MoqTypeSelections
-												.SelectMany(moqType => moqType.TableData)
-												.SelectMany(tableData => tableData.ResourceHours)
-												.ToList();
+				//// Check if we have Skill Mix enabled to adjust Skill Mix table data as needed
+				//if (Utilities.IsSkillMixEnabledForSystem)
+				//{
+				//	// Iterate through each task and check for Skill Mix
+				//	foreach (BoeTaskElementDTO task in ws.TaskElements)
+				//	{
+				//		if (Utilities.ShowSkillMixForTask(ws.CreationDate, task.HasTMRates))
+				//		{
+				//			ICollection<ICollection<MoqTableData>> moqTableData = ws.MoqTypeSelections.Where(x => x.BoeId == task.BoeID).Select(x => x.TableData).ToList();
+				//			if (moqTableData.Any())
+				//			{
+				//				// Go through each MoqTableData
+				//				foreach (ICollection<MoqTableData> tempMoqTableData in moqTableData)
+				//				{
+				//					foreach (MoqTableData innerMoqTableData in tempMoqTableData)
+				//					{
+				//						if (innerMoqTableData.PoPStart > Utilities.OneLmxStartDate || innerMoqTableData.PoPEnd > Utilities.OneLmxStartDate)
+				//						{
+				//							// Run Skill Mix update
+				//							ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours = ws.MoqTypeSelections
+				//								.SelectMany(moqType => moqType.TableData)
+				//								.SelectMany(tableData => tableData.ResourceHours)
+				//								.ToList();
 
-											ICollection<LaborTypeDataModelView> laborTypes = ws.TaskElements.Select(x => x.labortype);
+				//							FullBoe fullBoe = this.Factory.CreateFullBoe(task.BoeID);
 
-											RefreshSkillMixModelView response = this._BoeLaborControllerLogic.RefreshSkillMixTables(resourceHours,
-												laborTypes, task.SkillMixTable, task.CommonDisclosureTable, isBRCEnabled);
-										}
-									}
-								}
-							}
-						}
-					}
-				}
+				//							LaborTaskDataModelView laborTasks = this._BoeLaborControllerLogic.GetLaborTaskData(ws, fullBoe, task.Id);
+
+				//							RefreshSkillMixModelView response = this._BoeLaborControllerLogic.RefreshSkillMixTables(resourceHours,
+				//								laborTasks.LaborTypesData, task.SkillMixTable, task.CommonDisclosureTable, isBRCEnabled);
+				//						}
+				//					}
+				//				}
+				//			}
+				//		}
+				//	}
+				//}
             }
             catch (GenValidationException)
             {

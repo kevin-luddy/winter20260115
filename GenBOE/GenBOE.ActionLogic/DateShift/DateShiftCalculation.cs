@@ -13,8 +13,9 @@ namespace GenBOE.ActionLogic.DateShift
     using System.Transactions;
     using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.Common.Email;
-    using GenBOE.ActionLogic.Workspace;
-    using GenBOE.DataBridge.DTO;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.ActionLogic.Workspace;
+	using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
     using IES.Common;
@@ -92,15 +93,20 @@ namespace GenBOE.ActionLogic.DateShift
         /// </summary>
         private readonly IFullObjectFactory factory = null;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DateShiftCalculation"/> class.
-        /// </summary>
-        /// <param name="workspaceLoader">The workspace loader.</param>
-        /// <param name="clinLoader">The clin loader.</param>
-        /// <param name="boeLoader">The boe loader.</param>
-        /// <param name="taskLoader">The task loader.</param>
-        /// <param name="travelLoader">The travel loader.</param>
-        public DateShiftCalculation()
+		/// <summary>
+		/// The BOE Labor Controller Logic
+		/// </summary>
+		private readonly IBOELaborControllerLogic _BoeLaborControllerLogic;
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DateShiftCalculation"/> class.
+		/// </summary>
+		/// <param name="workspaceLoader">The workspace loader.</param>
+		/// <param name="clinLoader">The clin loader.</param>
+		/// <param name="boeLoader">The boe loader.</param>
+		/// <param name="taskLoader">The task loader.</param>
+		/// <param name="travelLoader">The travel loader.</param>
+		public DateShiftCalculation()
         {
             this.workspaceLoader = GenBOEUnityContainer.Container.Resolve(typeof(IWorkspaceDTODataLoader)) as IWorkspaceDTODataLoader;
             this.clinLoader = GenBOEUnityContainer.Container.Resolve(typeof(IClinDTODataLoader)) as IClinDTODataLoader;
@@ -113,6 +119,7 @@ namespace GenBOE.ActionLogic.DateShift
             this.workspaceVersionMetaDataDTODataLoader = GenBOEUnityContainer.Container.Resolve(typeof(IWorkspaceVersionMetaDataDTODataLoader)) as IWorkspaceVersionMetaDataDTODataLoader;
             this.boeStateMachine = GenBOEUnityContainer.Container.Resolve(typeof(IBOEStateMachine)) as IBOEStateMachine;
             this.factory = GenBOEUnityContainer.Container.Resolve(typeof(IFullObjectFactory)) as IFullObjectFactory;
+			this._BoeLaborControllerLogic = GenBOEUnityContainer.Container.Resolve(typeof(IBOELaborControllerLogic)) as IBOELaborControllerLogic;
         }
 
         /// <summary>
@@ -125,9 +132,10 @@ namespace GenBOE.ActionLogic.DateShift
         /// <param name="validateOnly">If this should only validate the dateshift.</param>
         /// <param name="parentLevel">The parent level.</param>
 		/// <param name="workspaceShortname">Workspace ShortName</param>
+		/// <param name="fullWorkspace">The full workspace</param>
         /// <exception cref="ArgumentNullException">dateShiftable or details</exception>
         public void PerformDateShift(IDateShiftable dateShiftable, DateShiftModelView dateShiftModel, DateTime? parentStart, DateTime? parentEnd, 
-            bool validateOnly, Level parentLevel, string workspaceShortname)
+            bool validateOnly, Level parentLevel, string workspaceShortname, FullWorkspace fullWorkspace)
         {
             if (dateShiftable == null)
             {
@@ -163,8 +171,51 @@ namespace GenBOE.ActionLogic.DateShift
                 // Pre-load emails (to get original start/end dates)
                 this.GenerateEmails(dateShiftable, dateShiftModel);
 
-                // Save
-                this.Save(dateShiftable, dateShiftModel);
+				// TO-DO: Move code here
+				bool isBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspaceShortname);
+
+				// Check if we have Skill Mix enabled to adjust Skill Mix table data as needed
+				if (Utilities.IsSkillMixEnabledForSystem)
+				{
+					// Iterate through each task and check for Skill Mix
+					foreach (BoeTaskElementDTO task in fullWorkspace.TaskElements)
+					{
+						if (Utilities.ShowSkillMixForTask(fullWorkspace.CreationDate, task.HasTMRates))
+						{
+							ICollection<ICollection<MoqTableData>> moqTableData = fullWorkspace.MoqTypeSelections.Where(x => x.BoeId == task.BoeID).Select(x => x.TableData).ToList();
+							if (moqTableData.Any())
+							{
+								// Go through each MoqTableData
+								foreach (ICollection<MoqTableData> tempMoqTableData in moqTableData)
+								{
+									foreach (MoqTableData innerMoqTableData in tempMoqTableData)
+									{
+										if (innerMoqTableData.PoPStart > Utilities.OneLmxStartDate || innerMoqTableData.PoPEnd > Utilities.OneLmxStartDate)
+										{
+											// Run Skill Mix update
+											ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours = fullWorkspace.MoqTypeSelections
+												.SelectMany(moqType => moqType.TableData)
+												.SelectMany(tableData => tableData.ResourceHours)
+												.ToList();
+
+											FullBoe fullBoe = this.factory.CreateFullBoe(task.BoeID);
+
+											LaborTaskDataModelView laborTasks = this._BoeLaborControllerLogic.GetLaborTaskData(fullWorkspace, fullBoe, task.Id);
+
+											RefreshSkillMixModelView response = this._BoeLaborControllerLogic.RefreshSkillMixTables(resourceHours,
+												laborTasks.LaborTypesData, task.SkillMixTable, task.CommonDisclosureTable, isBRCEnabled);
+
+
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+
+				// Save
+				this.Save(dateShiftable, dateShiftModel);
 
                 // Send emails
                 this.SendEmails(dateShiftModel);
