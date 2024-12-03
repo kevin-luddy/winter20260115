@@ -245,7 +245,7 @@ namespace GenBOE.Web.Controllers
                 IWTAInUseResourceIds = this.boeFormControllerLogic.GetInUseResources(BOEFormType.IBOE, ws.Id, 0),
                 SubInUseResourceIds = this.boeFormControllerLogic.GetInUseResources(BOEFormType.PBOE, ws.Id, 0),
                 Clins = ws.ClinsNoMultiClin.OrderBy(c => c.ClinPaddedNumber).ToList(),
-                ProposalTitleAndRfpNumber = this.boeFormControllerLogic.GetProposalTitleAndRfpNumber(ws),
+                ProposalTitleAndRfpNumber = ActionLogicUtility.GetProposalTitleAndRfpNumber(ws),
                 IBOEModel = new BOEFormIBOEModelView { Version = this.boeFormControllerLogic.GetCurrentFormVersion(BOEFormType.IBOE) },
                 PBOEModel = new BOEFormPBOEModelView { Version = this.boeFormControllerLogic.GetCurrentFormVersion(BOEFormType.PBOE) }
             };
@@ -286,7 +286,7 @@ namespace GenBOE.Web.Controllers
                 IWTAInUseResourceIds = this.boeFormControllerLogic.GetInUseResources(BOEFormType.IBOE, ws.Id, 0),
                 SubInUseResourceIds = this.boeFormControllerLogic.GetInUseResources(BOEFormType.PBOE, ws.Id, 0),
                 Clins = ws.ClinsNoMultiClin.OrderBy(c => c.ClinPaddedNumber).ToList(),
-                ProposalTitleAndRfpNumber = this.boeFormControllerLogic.GetProposalTitleAndRfpNumber(ws),
+                ProposalTitleAndRfpNumber = ActionLogicUtility.GetProposalTitleAndRfpNumber(ws),
                 IBOEModel = new BOEFormIBOEModelView { Version = this.boeFormControllerLogic.GetCurrentFormVersion(BOEFormType.IBOE) },
                 PBOEModel = new BOEFormPBOEModelView { Version = this.boeFormControllerLogic.GetCurrentFormVersion(BOEFormType.PBOE) }
             };
@@ -335,7 +335,7 @@ namespace GenBOE.Web.Controllers
                 IWTAInUseResourceIds = this.boeFormControllerLogic.GetInUseResources(BOEFormType.IBOE, ws.Id, boeFormId),
                 SubInUseResourceIds = this.boeFormControllerLogic.GetInUseResources(BOEFormType.PBOE, ws.Id, boeFormId),
                 Clins = ws.ClinsNoMultiClin.OrderBy(c => c.ClinPaddedNumber).ToList(),
-                ProposalTitleAndRfpNumber = this.boeFormControllerLogic.GetProposalTitleAndRfpNumber(ws),
+                ProposalTitleAndRfpNumber = ActionLogicUtility.GetProposalTitleAndRfpNumber(ws),
                 BOEFormType = boeFormType
             };
             ViewData["ContractTypes"] = this.contractTypeLoader.GetPickListValues();
@@ -546,7 +546,7 @@ namespace GenBOE.Web.Controllers
             {
                 Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>(this.ScrubViewModelRichTextForSave(boeFormsVM).ToList());
                 BOEFormIBOEDTO iboe = this.boeFormControllerLogic.ConvertModelViewToDto(boeFormsVM, ws.Id);
-                this.boeFormControllerLogic.ValidateIBOE(iboe, validationErrors, this.boeFormControllerLogic.GetProposalTitleAndRfpNumber(ws));
+                this.boeFormControllerLogic.ValidateIBOE(iboe, validationErrors, ActionLogicUtility.GetProposalTitleAndRfpNumber(ws));
 
                 if (validationErrors.Any())
                 {
@@ -584,7 +584,7 @@ namespace GenBOE.Web.Controllers
             {
                 Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>(this.ScrubViewModelRichTextForSave(boeFormsVM).ToList());
                 BOEFormPBOEDTO pboe = this.boeFormControllerLogic.ConvertModelViewToDto(boeFormsVM, ws.Id);
-                this.boeFormControllerLogic.ValidatePBOE(pboe, validationErrors, this.boeFormControllerLogic.GetProposalTitleAndRfpNumber(ws));
+                this.boeFormControllerLogic.ValidatePBOE(pboe, validationErrors, ActionLogicUtility.GetProposalTitleAndRfpNumber(ws));
 
                 if (validationErrors.Any())
                 {

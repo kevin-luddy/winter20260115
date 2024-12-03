@@ -7,7 +7,8 @@
 namespace GenBOE.ActionLogic.ModelView
 {
     using System.Collections.Generic;
-    using GenBOE.Dtos;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
     using IES.Common;
 
     public class LaborTaskModelView
@@ -135,5 +136,20 @@ namespace GenBOE.ActionLogic.ModelView
         /// Get or set whether using Enable SAP Connection is selected.
         /// </summary>
         public bool EnableSAPConnection { get; set; }
-    }
+
+		/// <summary>
+		/// Get or set whether to enable Skill Mix Rationale section
+		/// </summary>
+		public bool EnableSkillMix { get; set; }
+
+		/// <summary>
+		/// The list of Skill Mix data.
+		/// </summary>
+		public IList<SkillMixModelView> SkillMixData { get; set; }
+
+		/// <summary>
+		/// The list of Common Disclosure Skill Mix data.
+		/// </summary>
+		public IList<CommonDisclosureModelView> CommonDisclosureSkillMixData { get; set; }
+	}
 }

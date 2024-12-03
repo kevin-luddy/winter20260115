@@ -285,6 +285,7 @@
     <Compile Include="ModelView\DateShiftIndexModelView.cs" />
     <Compile Include="ModelView\BOEBulkSubmitModelView.cs" />
     <Compile Include="ModelView\ErrorModelView.cs" />
+    <Compile Include="ModelView\IBOEData.cs" />
     <Compile Include="ModelView\ImportLaborSpreadModelView.cs" />
     <Compile Include="ModelView\ManageOffloadRatesGridModelView.cs" />
     <Compile Include="ModelView\MPBoeData.cs" />

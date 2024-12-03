@@ -7,20 +7,32 @@
 namespace IES.Common.Core.Utilities
 {
 	using System;
+	using System.Collections;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.DirectoryServices;
 	using System.IO;
 	using System.Linq;
 	using System.Net.Http;
+	using System.Text;
 	using System.Text.RegularExpressions;
+	using DocumentFormat.OpenXml.InkML;
 	using IES.Common.Core;
 	using IES.Common.Core.Configuration;
 	using IES.Common.Core.Constants;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Exceptions;
 	using IES.Common.Enums;
+	using Microsoft.AspNetCore.Authentication;
+	using Microsoft.AspNetCore.Builder;
+	using Microsoft.AspNetCore.Hosting;
+	using Microsoft.AspNetCore.Http;
+	using Microsoft.AspNetCore.Http.Features;
 	using Microsoft.AspNetCore.Mvc.ModelBinding;
+	using Microsoft.Extensions.Configuration;
+	using Microsoft.Extensions.DependencyInjection;
+	using Microsoft.Extensions.Hosting;
+	using Microsoft.Extensions.Primitives;
 	using Microsoft.Net.Http.Headers;
 	using PickList;
 
@@ -976,6 +988,79 @@ namespace IES.Common.Core.Utilities
 			string phone = TryGetPropertyValue(propertyCollection, "telephonenumber");
 
 			return !string.IsNullOrEmpty(phone) ? phone : TryGetPropertyValue(propertyCollection, "mobile");
+		}
+
+		/// <summary>
+		/// Log environment variables and config app settings in elmah
+		/// </summary>
+		/// <param name="log">logger</param>
+		public static void LogEnvironmentSettings(IApplicationBuilder app, IConfiguration config, IWebHostEnvironment env, HttpContext context = null)
+		{
+			if (env.IsDevelopment() && config["EnableEnvironmentInfoLogging"] != null && config["EnableEnvironmentInfoLogging"] == "True")
+			{
+				StringBuilder sb = new StringBuilder();
+				string nl = System.Environment.NewLine;
+				string rule = string.Concat(nl, new string('-', 40), nl);
+				IAuthenticationSchemeProvider authSchemeProvider = app.ApplicationServices.GetRequiredService<IAuthenticationSchemeProvider>();
+
+				sb.Append($"Request{rule}");
+				sb.Append($"{DateTimeOffset.Now}{nl}");
+				if (context != null)
+				{
+					sb.Append($"{context.Request.Method} {context.Request.Path}{nl}");
+					sb.Append($"Scheme: {context.Request.Scheme}{nl}");
+					sb.Append($"Host: {context.Request.Headers["Host"]}{nl}");
+					sb.Append($"PathBase: {context.Request.PathBase.Value}{nl}");
+					sb.Append($"Path: {context.Request.Path.Value}{nl}");
+					sb.Append($"Query: {context.Request.QueryString.Value}{nl}{nl}");
+
+					sb.Append($"Connection{rule}");
+					sb.Append($"RemoteIp: {context.Connection.RemoteIpAddress}{nl}");
+					sb.Append($"RemotePort: {context.Connection.RemotePort}{nl}");
+					sb.Append($"LocalIp: {context.Connection.LocalIpAddress}{nl}");
+					sb.Append($"LocalPort: {context.Connection.LocalPort}{nl}");
+					sb.Append($"ClientCert: {context.Connection.ClientCertificate}{nl}{nl}");
+
+					sb.Append($"Identity{rule}");
+					sb.Append($"User: {context.User.Identity.Name}{nl}");
+
+					sb.Append($"Headers{rule}");
+					foreach (KeyValuePair<string, StringValues> header in context.Request.Headers)
+					{
+						sb.Append($"{header.Key}: {header.Value}{nl}");
+					}
+					sb.Append(nl);
+
+					sb.Append($"WebSockets{rule}");
+					if (context.Features.Get<IHttpUpgradeFeature>() != null)
+					{
+						sb.Append($"Status: Enabled{nl}{nl}");
+					}
+					else
+					{
+						sb.Append($"Status: Disabled{nl}{nl}");
+					}
+				}
+
+				sb.Append($"Configuration{rule}");
+				foreach (KeyValuePair<string, string?> pair in config.AsEnumerable())
+				{
+					sb.Append($"{pair.Key}: {pair.Value}{nl}");
+				}
+				sb.Append(nl);
+				sb.Append($"Environment Variables{rule}");
+				IDictionary vars = System.Environment.GetEnvironmentVariables();
+				foreach (var key in vars.Keys.Cast<string>().OrderBy(key => key,
+					StringComparer.OrdinalIgnoreCase))
+				{
+					var value = vars[key];
+					sb.Append($"{key}: {value}{nl}");
+				}
+
+				Serilog.Log.Debug("Begin LogEnvironmentInfo");
+				Serilog.Log.Debug(sb.ToString());
+				Serilog.Log.Debug("End LogEnvironmentInfo");
+			}
 		}
 	}
 }

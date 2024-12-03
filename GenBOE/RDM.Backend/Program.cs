@@ -64,4 +64,5 @@ builder.Services.AddScoped<IVersionControllerLogic, VersionControllerLogic>();
 builder.Services.AddScoped<IFileAttachmentControllerLogic, FileAttachmentControllerLogic>();
 
 WebApplication app = config.ConfigureAppBuilder(builder);
+IES.Common.Core.Utilities.CommonUtilities.LogEnvironmentSettings(app, app.Configuration, app.Environment);
 app.Run();

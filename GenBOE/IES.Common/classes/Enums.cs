@@ -218,8 +218,6 @@ namespace IES.Common
 		CostByClinActYr = 23,
 		[Description("BOE Summary Report")]
 		BOESummaryReport = 24,
-		[Description("Standard Reports")]
-		StandardReports = 25,
 		[Description("By Pricing Code (17 yrs)")]
 		ByPricingCode = 26,
 		[Description("By Cat/Pricing Code (17 yrs)")]
@@ -1162,6 +1160,48 @@ namespace IES.Common
 		Planned = 1,
 		[Description("Actual")]
 		Actual = 2
+	}
+
+	/// <summary>
+	/// For PBOE, Enum options for Expected CCoPD Applicability
+	/// </summary>
+	public enum ExpectedCCoPDApplicability
+	{
+		/// <summary>
+		/// Selection is blank
+		/// </summary>
+		[Description("")]
+		Blank = 0,
+
+		/// <summary>
+		/// CCoPD Applies checkbox option.
+		/// </summary>
+		[Description("CCoPD Applies")]
+		CCoPDApplies = 1,
+
+		/// <summary>
+		/// Commercial Item Exception Applies checkbox option
+		/// </summary>
+		[Description("Commercial Item Exception Applies")]
+		CommercialItemExceptionApplies = 2,
+
+		/// <summary>
+		/// Competition Exception Applies checkbox option.
+		/// </summary>
+		[Description("Competition Exception Applies")]
+		CompetitionExceptionApplies = 3,
+
+		/// <summary>
+		/// Threshold Applies checkbox option.
+		/// </summary>
+		[Description("Threshold Exception Applies")]
+		ThresholdExceptionApplies = 4,
+
+		/// <summary>
+		/// Other Exception Applies checkbox option.
+		/// </summary>
+		[Description("Other Exception Applies")]
+		OtherExceptionApplies = 5,
 	}
 
 	/// <summary>

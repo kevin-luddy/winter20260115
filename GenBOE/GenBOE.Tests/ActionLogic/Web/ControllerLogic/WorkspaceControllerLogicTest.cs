@@ -2131,11 +2131,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 									new MOQTypeSelectionTableDataResourceHoursDTO { ResourceName = "bb", BRCName = "ab", MOQTypeSelectionTableDataId = 1, TotalHours = 5 }
 								}
 						}
-					},
-					SkillMixTable = new List<SkillMixModelView>
-					{
-						new SkillMixModelView { ResourceNew = "aa", HistoricalHours = 20m },
-						new SkillMixModelView { ResourceNew = "bb", HistoricalHours = 15m }
 					}
 				},
 				new MoqTypeSelection()
@@ -2158,10 +2153,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 									new MOQTypeSelectionTableDataResourceHoursDTO { ResourceName = "aa", BRCName = "ab", MOQTypeSelectionTableDataId = 1, TotalHours = 20 }
 								}
 						}
-					},
-					SkillMixTable = new List<SkillMixModelView>
-					{
-						new SkillMixModelView { ResourceNew = "aa", HistoricalHours = 20m }
 					}
 				},
 				new MoqTypeSelection()
@@ -2184,10 +2175,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 									new MOQTypeSelectionTableDataResourceHoursDTO { ResourceName = "cc", BRCName = "cd", MOQTypeSelectionTableDataId = 1, TotalHours = 25 }
 								}
 						}
-					},
-					SkillMixTable = new List<SkillMixModelView>
-					{
-						new SkillMixModelView { ResourceNew = "cc", HistoricalHours = 25m }
 					}
 				}
 			};
@@ -2290,18 +2277,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual(BOEState.Draft, boe2.State);
 
 			// This is needed since there is no feasible way to override a member of the class with MOQ and use the original code :(
-			BOELaborControllerLogic boeLaborControllerLogic = new BOELaborControllerLogic(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-
-			// Check skill mix tables
-			foreach (MoqTypeSelection moq in moqs)
-			{
-				// This is needed since there is no feasible way to override a member of the class with MOQ and use the original code :(
-				//   Refresh the skill mix table
-				moq.SkillMixTable = boeLaborControllerLogic.RefreshSkillMixTable(moq.TableData.SelectMany(t => t.ResourceHours).ToList(), moq.SkillMixTable);
-
-				Assert.AreEqual(moq.SkillMixTable?.Sum(s => s.HistoricalHours), moq.TableData?.Sum(t => t.TotalRelevantHours));
-				Assert.AreEqual(moq.SkillMixTable?.Sum(s => s.HistoricalHours), moq.TableData?.SelectMany(t => t.ResourceHours)?.Sum(x => x.TotalHours));
-			}
+			BOELaborControllerLogic boeLaborControllerLogic = new BOELaborControllerLogic(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 		}
 
 		/// <summary>

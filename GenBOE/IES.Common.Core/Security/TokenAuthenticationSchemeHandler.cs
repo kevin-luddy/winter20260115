@@ -149,7 +149,7 @@ namespace IES.Common.Core.Security
 
 				// Validates the token first (throws if invalid). If valid, it searches all claims for the right one. Finally, the string is in the format of ntid@fully.qualitified.domain, so we strip out what we don't need.
 				// ProPricer needs the id in the form of DOMAIN\ntid
-				ClaimsPrincipal claimsPrincipal = new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out _);
+				ClaimsPrincipal claimsPrincipal = new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out SecurityToken validatedToken);
 				string upn = claimsPrincipal.Claims.FirstOrDefault(x => x.Type == "lmco_upn")?.Value;
 				if (!string.IsNullOrEmpty(upn))
 				{

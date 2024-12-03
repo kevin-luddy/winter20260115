@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2024 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -55,7 +55,6 @@ namespace GenBOE.Web.Controllers
 		private readonly IBoeTaskElementDTODataLoader taskElementDataLoader = null;
 		private readonly IPerformingOrgDTODataLoader perfOrgLoader;
 		private readonly IFullWorkspaceRecalculation fullWsRecalc;
-		private readonly IMSTMetricLoader _MSTMetricsLoader;
 		private const string TEMPLATE_FOLDER = "~/Templates/Export/";
 		private const string SYSTEM_OFFLOAD_RATES_EXPORT_TEMPLATE = "OffloadRatesRMS.xlsx";
 		private readonly IOffloadRatesDTOLoader offloadRatesLoader;
@@ -94,7 +93,6 @@ namespace GenBOE.Web.Controllers
 			IGenBOEControllerLogic inControllerLogic,
 			IFullWorkspaceRecalculation fullWsRecalc,
 			TaskElementValidation taskElementValidation,
-			IMSTMetricLoader inMSTMetricsLoader,
 			IOffloadRatesDTOLoader offloadRatesDTOLoader,
 			IRteTemplateDataLoader rteTemplateDataLoader,
 			IMoqTableExporter moqTableExporter)
@@ -112,7 +110,6 @@ namespace GenBOE.Web.Controllers
 			this.perfOrgLoader = perfOrgLoader;
 			this.fullWsRecalc = fullWsRecalc;
 			this.taskElementValidation = taskElementValidation;
-			this._MSTMetricsLoader = inMSTMetricsLoader;
 			this.offloadRatesLoader = offloadRatesDTOLoader;
 			this.rteTemplateDataLoader = rteTemplateDataLoader;
 			this.moqTableExporter = moqTableExporter;
@@ -136,11 +133,12 @@ namespace GenBOE.Web.Controllers
 
 			//check if skill mix is enabled and workspace starts after skill mix date 
 			bool enableSkillMix = false;
-			if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(ws.CreationDate))
+			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.IsUsingTM))
 			{
 				enableSkillMix = true;
 			}
 			ViewData["EnableSkillMix"] = enableSkillMix;
+
 			//create a var for list items
 			Collection<SelectListItem> orderOfResourceTypes = new Collection<SelectListItem>();
 			string taskDescription = string.Empty;
@@ -199,11 +197,14 @@ namespace GenBOE.Web.Controllers
 				DescriptionTemplateAnswers = rteAnswers.Where(t => t.SourceId == (int)RteTemplateSource.TaskDescription).ToList(),
 				TaskDescription = taskDescription,
 				UsingTemplateBOE = ws.UsingTemplateBOE,
-				EnableSAPConnection = ws.EnableSAPConnection
+				EnableSAPConnection = ws.EnableSAPConnection,
+				EnableSkillMix = enableSkillMix,
+				SkillMixData = new List<SkillMixModelView>(),
+				CommonDisclosureSkillMixData = new List<CommonDisclosureModelView>()
 			};
 
 			this._BoeLaborControllerLogic.GetMetricSearchDialogParameters(modelView);
-			
+
 			bool missingBRCs = false;
 			if (Utilities.IsBRCEnabledForWorkspace(workspace) && boe.EndDate >= Utilities.OneLmxStartDate)
 			{
@@ -430,16 +431,7 @@ namespace GenBOE.Web.Controllers
 			Stopwatch sw = InitializeAction(_log, "DisplayHistoricalMetricsResultsForMST", SecurityPage.HistoricalMetricSearch, SecurityAuthorization.Read, null, null);
 
 			ICollection<MSTMetricDetailsDTO> results = new Collection<MSTMetricDetailsDTO>();
-			MSTMetricSearchDTO searchDto = new MSTMetricSearchDTO()
-			{
-				DataSourceId = modelView.SelectedDataSourceId,
-				MeasureFunctionId = modelView.SelectedMeasureFunctionId,
-				MeasureId = modelView.SelectedMeasureNameId,
-				ProgramId = modelView.SelectedProgramId,
-				SearchFor = modelView.SearchFor,
-				MeasureQualifierId = modelView.SelectedMeasureQualifierId
-			};
-			results = _MSTMetricsLoader.SearchMSTMetrics(searchDto);
+
 			HistoricalMetricsFromMSTModelView resultsModelView = new HistoricalMetricsFromMSTModelView(results);
 
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_HISTORICAL_METRICS_SEARCH_RESULTS_MST, resultsModelView);
@@ -447,30 +439,6 @@ namespace GenBOE.Web.Controllers
 			// Finalize Action
 			FinalizeAction(_log, "DisplayHistoricalMetricsResultsForMST", sw);
 
-			return toReturn;
-		}
-
-		/// <summary>
-		/// Displays the metric details of the selected metric for IS&GS
-		/// </summary>
-		/// <param name="workspace">Current workspace</param>
-		/// <returns>The view</returns>
-		public ViewResult DisplayHistoricalMetricsDetails(int metricId, bool getFromSource)
-		{
-			Stopwatch sw = InitializeAction(_log, "DisplayHistoricalMetricsDetails", SecurityPage.HistoricalMetricSearch, SecurityAuthorization.Read, null, null);
-			ViewResultData viewResultData;
-			if (getFromSource)
-			{
-				viewResultData = _BoeLaborControllerLogic.GetHistoricalMetricsDetailsFromSource(metricId);
-			}
-			else
-			{
-				viewResultData = _BoeLaborControllerLogic.GetHistoricalMetricsDetails(metricId);
-			}
-			ViewResult toReturn = View(viewResultData.ViewName, viewResultData.Model);
-
-			// Finalize Action
-			FinalizeAction(_log, "DisplayHistoricalMetricsDetails", sw);
 			return toReturn;
 		}
 
@@ -613,7 +581,7 @@ namespace GenBOE.Web.Controllers
 
 			//check if skill mix is enabled and workspace starts after skill mix date 
 			bool enableSkillMix = false;
-			if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(ws.CreationDate))
+			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.IsUsingTM))
 			{
 				enableSkillMix = true;
 			}
@@ -627,7 +595,7 @@ namespace GenBOE.Web.Controllers
 					ViewData["EnableCommonDisclosure"] = true;
 				}
 				//check if ws contains BRCs, if not, mark moq equation as read only
-				ICollection <ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true, workspace);
+				ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true, workspace);
 				if (resources.Count == 0)
 				{
 					ViewData["READONLY"] = true;
@@ -945,7 +913,6 @@ namespace GenBOE.Web.Controllers
 			{
 				ids.Add(historicalMetricsSearchResults.PagedIndexes[i]);
 			}
-			historicalMetricsSearchResults.MetricsSearchResults = _MSTMetricsLoader.GetByIds(ids).OrderBy(m => m.MeasureName).ToCollection<MSTMetricDetailsDTO>();
 
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_HISTORICAL_METRICS_SEARCH_RESULTS_MST, historicalMetricsSearchResults);
 
@@ -1673,54 +1640,36 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
-		/// Refreshes the Skill Mix Table with updated resource hours
+		/// Refreshes the Skill Mix Tables with updated resource hours
 		/// </summary>
 		/// <param name="workspace">Workspace name</param>
 		/// <param name="boeId">BOE Id</param>
-		/// <param name="resourceHours">MOQ Table Resource Hours</param>
+		/// <param name="laborTypes">The labor type/spreads data</param>
+		/// <param name="currentCommonDisclosureData">Current Common Disclosure data</param>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
 		/// <returns></returns>
-		public ActionResult RefreshSkillMixTable(string workspace, int boeId, ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<SkillMixModelView> currentSkillMixData)
+		public ActionResult RefreshSkillMixTables(string workspace, int boeId, ICollection<MoqTypeSelection> selectedMoqTypes,
+			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData)
 		{
 			// Initialize Action
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLE, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
+			bool isBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspace);
+
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLES, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeId);
+
+			ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours = selectedMoqTypes
+				.SelectMany(moqType => moqType.TableData)
+				.SelectMany(tableData => tableData.ResourceHours)
+				.ToList();
 
 			// Call to Controller Logic
-			ICollection<SkillMixModelView> response = this._BoeLaborControllerLogic.RefreshSkillMixTable(resourceHours, currentSkillMixData);
+			RefreshSkillMixModelView response = this._BoeLaborControllerLogic.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData, isBRCEnabled);
 
 			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });
 
 			// Finalize Action
-			FinalizeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLE, sw);
-			return toReturn;
-		}
-
-		/// <summary>
-		/// Refreshes the Skill Mix Table with updated resource hours
-		/// </summary>
-		/// <param name="workspace">Workspace name</param>
-		/// <param name="boeId">BOE Id</param>
-		/// <param name="currentSkillMixData">The current skill mix data</param>
-		/// <param name="commonDisclosureSMData">The common disclosure skill mix data</param>
-		/// <param name="resourceHours">The MOQ Table Resource Hours</param>
-		/// <returns></returns>
-		public ActionResult RefreshCommonDisclosureTable(string workspace, int boeId, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> commonDisclosureSMData,
-			ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours)
-		{
-			// Initialize Action
-			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-
-			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_REFRESH_COMMON_DISCLOSURE_TABLE, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
-
-			// Call to Controller Logic
-			ICollection<CommonDisclosureModelView> response = this._BoeLaborControllerLogic.RefreshCommonDisclosureTable(currentSkillMixData, commonDisclosureSMData, resourceHours);
-
-			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });
-
-			// Finalize Action
-			FinalizeAction(_log, WebConstants.ACTION_REFRESH_COMMON_DISCLOSURE_TABLE, sw);
+			FinalizeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLES, sw);
 			return toReturn;
 		}
 		#endregion
@@ -1867,7 +1816,7 @@ namespace GenBOE.Web.Controllers
 				ICollection<ImportLaborTypeModelView> laborTypesToUpdate = (from i in importResults
 																			where i.ImportTypes.Contains((int)LaborTypeImportResult.UpdateLaborType)
 																			select i).ToList();
-				
+
 				ICollection<ResourceDTO> originalResourceList = workspace.ResourcesForWsResourceListId.ToList();
 
 				foreach (ImportLaborTypeModelView laborTypeToUpdate in laborTypesToUpdate)
@@ -2413,7 +2362,6 @@ namespace GenBOE.Web.Controllers
 																  where workspaceVariable.Id == wID
 																  select workspaceVariable).ToList();
 
-			int originalSourceTaskElementId = copyTaskElement.Id;
 			// Reset the IDs in the task element to jive with the destination task element.
 			copyTaskElement.BoeID = boeId;
 			copyTaskElement.Id = destinationTaskElementId;
@@ -2450,8 +2398,6 @@ namespace GenBOE.Web.Controllers
 
 			MOQEquationModelView modelView = new MOQEquationModelView(copyTaskElement, _VariableSelectBOEtoSumCalculation, workspace);
 			modelView.MOQTextLabel = _BoeLaborControllerLogic.GetMOQTextLabel();
-
-			_BoeLaborControllerLogic.GetMetricByTaskElementIds(new Collection<int> { originalSourceTaskElementId }, modelView);
 
 			return modelView;
 		}

@@ -85,9 +85,11 @@ namespace GenBOE.ActionLogic.Common.Calculations
 			decimal tmTotalCost = 0m;
 			bool hasValidTMRates = true;
 
+			IDictionary<int, string> resourceIdToSegmentRegion = workspace.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
+
 			foreach (BoeTaskElementDTO taskElement in workspace.TaskElements)
 			{
-				CalculateTotalsForBOEFormModelView(dto, workspace, resourceLoader, resourceIdsWithValidTMRates, ref totalCost, ref tmTotalCost, ref hasValidTMRates, taskElement);
+				CalculateTotalsForBOEFormModelView(dto, workspace, resourceLoader, resourceIdsWithValidTMRates, ref totalCost, ref tmTotalCost, ref hasValidTMRates, taskElement, resourceIdToSegmentRegion);
 			}
 			return new BOEFormModelView
 			{
@@ -383,10 +385,11 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		/// <param name="tmTotalCost">Reference to T&M Total Cost</param>
 		/// <param name="hasValidTMRates">Bool to show Valid TM Rates</param>
 		/// <param name="taskElement">Workspace Task Element</param>
-		private void CalculateTotalsForBOEFormModelView(BOEFormDTO dto, FullWorkspace fullWorkspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates, ref decimal totalCost, ref decimal tmTotalCost, ref bool hasValidTMRates, BoeTaskElementDTO taskElement)
+		private void CalculateTotalsForBOEFormModelView(BOEFormDTO dto, FullWorkspace fullWorkspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates, 
+			ref decimal totalCost, ref decimal tmTotalCost, ref bool hasValidTMRates, BoeTaskElementDTO taskElement, IDictionary<int, string> resourceIdToSegmentRegion)
 		{
 			//get brc labors based on 1lmx start date
-			List<ResourceTypeDto> taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, fullWorkspace.Shortname).ToList();
+			List<ResourceTypeDto> taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, resourceIdToSegmentRegion, fullWorkspace.Shortname).ToList();
 
 			foreach (ResourceTypeDto laborTask in taskElementLabors)
 			{
@@ -426,10 +429,11 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		/// <param name="tmTotalCost">Reference to T&M Total Cost</param>
 		/// <param name="hasValidTMRates">Bool to show Valid TM Rates</param>
 		/// <param name="taskElement">Workspace Task Element</param>
-		private void CalculateTotalsForBOE(BOEFormPBOEDTO dto, FullWorkspace fullWorkspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates, ref decimal totalCost, ref decimal tmTotalCost, ref bool hasValidTMRates, BoeTaskElementDTO taskElement)
+		private void CalculateTotalsForBOE(BOEFormDTO dto, FullWorkspace fullWorkspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates, 
+			ref decimal totalCost, ref decimal tmTotalCost, ref bool hasValidTMRates, BoeTaskElementDTO taskElement, IDictionary<int, string> resourceIdToSegmentRegion)
 		{
 			//get brc labors based on 1lmx start date
-			List<ResourceTypeDto> taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, fullWorkspace.Shortname).ToList();
+			List<ResourceTypeDto> taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, resourceIdToSegmentRegion, fullWorkspace.Shortname).ToList();
 
 			foreach (ResourceTypeDto laborTask in taskElementLabors)
 			{
@@ -549,11 +553,13 @@ namespace GenBOE.ActionLogic.Common.Calculations
 			decimal tmTotalCost = 0m;
 			bool hasValidTMRates = true;
 
+			IDictionary<int, string> resourceIdToSegmentRegion = fullWorkspace.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
+
 			foreach (BOEFormPBOEDTO pboe in pboeDtos)
 			{
 				foreach (BoeTaskElementDTO taskElement in fullWorkspace.TaskElements)
 				{
-					CalculateTotalsForBOE(pboe, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates, ref totalCost, ref tmTotalCost, ref hasValidTMRates, taskElement);
+					CalculateTotalsForBOE(pboe, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates, ref totalCost, ref tmTotalCost, ref hasValidTMRates, taskElement, resourceIdToSegmentRegion);
 				}
 
 				rowList.Add(new PBOERow
@@ -570,7 +576,17 @@ namespace GenBOE.ActionLogic.Common.Calculations
 				tmTotalCost = 0m;
 			}
 
-			return rowList;
+			ICollection<PBOERow> consolidatedList = rowList.GroupBy(row => row.PBOEId)
+				.Select(group => new PBOERow
+				{
+					PBOEId = group.Key,
+					FormName = string.Empty,
+					Cost = group.Sum(row => row.Cost),
+					TMCost = group.Sum(row => row.TMCost),
+					TotalCost = group.Sum(row => row.TotalCost),
+				})
+				.ToList();
+			return consolidatedList;
 		}
 
 		/// <summary>
@@ -583,17 +599,46 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		/// <returns>Collection of IBOE Row Data</returns>
 		private ICollection<IBOERow> CalculateIBOETotals(ICollection<BOEFormIBOEDTO> iboeDtos, FullWorkspace fullWorkspace, IResourceDTODataLoader resourceLoader, ICollection<int> resourceIdsWithValidTMRates)
 		{
-			ICollection<IBOERow> iboeRows = new HashSet<IBOERow>();
+			ICollection<IBOERow> rowList = new List<IBOERow>();
 
-			// TODO: In future task
-			// Do calculations for IBOE Totals as required
-			// Will require that IBOERow Model be completed!
-			iboeDtos.Clear();
-			fullWorkspace.IsUsingEquivalentPerson = false;
-			_ = resourceLoader.GlobalListID;
-			resourceIdsWithValidTMRates.Clear();
+			decimal totalCost = 0m;
+			decimal tmTotalCost = 0m;
+			bool hasValidTMRates = true;
 
-			return iboeRows;
+			IDictionary<int, string> resourceIdToSegmentRegion = fullWorkspace.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
+
+			foreach (BOEFormIBOEDTO iboe in iboeDtos)
+			{
+				foreach (BoeTaskElementDTO taskElement in fullWorkspace.TaskElements)
+				{
+					CalculateTotalsForBOE(iboe, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates, ref totalCost, ref tmTotalCost, ref hasValidTMRates, taskElement, resourceIdToSegmentRegion);
+				}
+
+				rowList.Add(new IBOERow
+				{
+					IBOEId = iboe.Id,
+					FormName = string.Empty,
+					Cost = totalCost,
+					TMCost = tmTotalCost,
+					TotalCost = totalCost + tmTotalCost,
+				});
+
+				// Reset the Totals for the next row
+				totalCost = 0m;
+				tmTotalCost = 0m;
+			}
+
+			ICollection<IBOERow> consolidatedList = rowList.GroupBy(row => row.IBOEId)
+				.Select(group => new IBOERow
+				{
+					IBOEId = group.Key,
+					FormName = string.Empty,
+					Cost = group.Sum(row => row.Cost),
+					TMCost = group.Sum(row => row.TMCost),
+					TotalCost = group.Sum(row => row.TotalCost),
+				})
+				.ToList();
+			return consolidatedList;
 		}
 
 		#endregion Private / Internal Methods

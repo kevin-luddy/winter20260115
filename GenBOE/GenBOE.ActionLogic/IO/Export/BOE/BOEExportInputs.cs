@@ -83,13 +83,23 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             this.SetRteTemplateOverrides(rteTemplatesOverrides);
             this.SetMoqTypes(moqTypes);
             this.Boes = boesToExport.ToList<BoeDTO>().AsReadOnly();
+			// since the resources used may not contain offloaded resources, need to manually get this
+			ICollection<int> resourceIds = taskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value)
+						.Union(workspace.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value))
+						.Union(workspace.Odcs.SelectMany(x => x.ODCTypes).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value))
+						.Union(taskElements.SelectMany(x => x.taskElementLabors).Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value))
+						.Union(workspace.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value))
+						.Distinct().ToList();
+
+			this.ResourcesUsedInWsBoes = retriever.GetResourcesByIds(resourceIds).ToList().AsReadOnly();
 
 			int startingIndex = -1;
 			if (Utilities.IsBRCEnabledForWorkspace(workspace.Shortname) && processLaborTypesForBrc)
 			{
+				IDictionary<int, string> resourceIdToSegmentRegion = this.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
 				foreach (BoeTaskElementDTO taskElement in taskElements)
 				{
-					taskElement.taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, workspace.Shortname, startingIndex).ToCollection();
+					taskElement.taskElementLabors = BRCValidationUtility.ProcessLaborTypesForBrc(taskElement.taskElementLabors, resourceIdToSegmentRegion, workspace.Shortname, startingIndex).ToCollection();
 					if (taskElement.taskElementLabors.Any())
 					{
 						startingIndex = Math.Min(startingIndex, taskElement.taskElementLabors.Select(x => x.Id).Min() - 1);
@@ -102,15 +112,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
 			this.Workspace = workspace;
 
-            // since the resources used may not contain offloaded resources, need to manually get this
-            ICollection<int> resourceIds = taskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value)
-                        .Union(workspace.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value))
-                        .Union(workspace.Odcs.SelectMany(x => x.ODCTypes).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value))
-                        .Union(taskElements.SelectMany(x => x.taskElementLabors).Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value))
-                        .Union(workspace.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value))
-                        .Distinct().ToList();
-
-            this.ResourcesUsedInWsBoes = retriever.GetResourcesByIds(resourceIds).ToList().AsReadOnly();
+            
             this.FullWorkspace = workspace;
             this.AllWorkspaceBoes = allWorkspaceBoes.ToList<BoeDTO>().AsReadOnly();
             this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - end");

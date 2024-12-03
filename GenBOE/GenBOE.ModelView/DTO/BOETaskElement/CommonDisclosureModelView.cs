@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace GenBOE.ActionLogic.ModelView
+namespace GenBOE.DataBridge.DTO
 {
 	using System;
 	using GenBOE.Dtos;
@@ -29,10 +29,8 @@ namespace GenBOE.ActionLogic.ModelView
 				this.CommonDisclosureSkillMixID = disclosureDTO.CommonDisclosureSkillMixID;
 				this.BOEID = disclosureDTO.BOEID;
 				this.BOETaskElementID = disclosureDTO.BOETaskElementID;
-				this.MOQTypeSelectionID = disclosureDTO.MOQTypeSelectionID;
 				this.BusinessResourceID = disclosureDTO.BusinessResourceID;
 				this.ResourceID = disclosureDTO.ResourceID;
-				this.IsPercentLocked = disclosureDTO.IsPercentLocked;
 				this.IsUserInput = disclosureDTO.IsUserInput;
 			}
 		}
@@ -56,8 +54,6 @@ namespace GenBOE.ActionLogic.ModelView
 				CommonDisclosureSkillMixID = this.CommonDisclosureSkillMixID,
 				BOEID = this.BOEID,
 				BOETaskElementID = this.BOETaskElementID,
-				MOQTypeSelectionID = this.MOQTypeSelectionID,
-				IsPercentLocked = this.IsPercentLocked,
 				IsUserInput = this.IsUserInput
 			};
 		}

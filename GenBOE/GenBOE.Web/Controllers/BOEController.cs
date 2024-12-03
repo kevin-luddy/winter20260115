@@ -208,7 +208,7 @@ namespace GenBOE.Web.Controllers
 			this.ViewData["SapFields"] = await _ControllerLogic.GetAllFields();
 			this.ViewData["SapOperators"] = await _ControllerLogic.GetAllOperators();
 			this.ViewData["EnableSAPConnection"] = ws.EnableSAPConnection;
-			this.ViewData["IsSkillMixEnabled"] = Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(ws.CreationDate);
+			this.ViewData["IsSkillMixEnabled"] = Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.IsUsingTM);
 
 			ViewResult toReturn = this.GetMasterView(WebConstants.VIEW_EDIT_BOE_INDEX, workspace);
 
@@ -666,7 +666,9 @@ namespace GenBOE.Web.Controllers
 			// Perform Action
 			ViewData["BOEID"] = boeID;
 			ViewData["isMaterial"] = boe.isMaterial;
-			ViewData["WSRESOURCES"] = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, false, workspace);
+			ICollection<ResourceDTO> wsResources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, false, workspace); ;
+			ViewData["WSRESOURCES"] = wsResources;
+			ViewData["WSRESOURCESTM"] = wsResources.Where(r => r.SegRegion == WebConstants.SPACE_LEGACY_TM).Select(a => a.Id).ToArray();
 			ViewData["WSBUSINESSRESOURCECODES"] = BRCValidationUtility.GetResourcesBasedOnCompanyMode(originalResourceList, true, workspace);
 			ViewData["WSPERFORGS"] = _BoeLaborControllerLogic.GetPerformingOrgs(ws);
 			ViewBag.WsClins = ws.Clins.Where(x => !x.ClinNumber.Equals("MULTI")).Select(x => new { ClinId = x.Id, ClinName = x.ClinString }).ToList();

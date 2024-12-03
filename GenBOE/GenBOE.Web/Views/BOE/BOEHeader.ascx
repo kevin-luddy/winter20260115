@@ -152,17 +152,6 @@
                 </div>
             <% } %>
         </div>
-        <div class="form-row<% if (!Model.ShowHistoricMetricCheck)
-                               { %> display-none<% } %>">
-            <div class="form-label"></div>
-            <div class="form-element">
-                <div style="width: 525px; display: inline-block" id="DisclosureCheck">
-                    <input type="checkbox" id="MetricUsed" style="display: inline-block" <%: Model.HistoricMetricDisclosureChecked ? "checked " : string.Empty %> name="HistoricMetricDisclosureChecked" value="true"/>
-                    If a program name is used, the appropriate Lockheed Martin Contract Department confirmed that the heritage
-                         program name associated with the historical data cited in this BOE may be disclosed in this BOE.
-                </div>
-            </div>
-        </div>
         <%if (customfields != null)
           {
               foreach (BOECustomFieldModelView customField in customfields)

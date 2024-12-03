@@ -12,11 +12,11 @@ namespace GenBOE.DataBridge.DTO
 	public interface ICommonDisclosureSMDTODataLoader
 	{
 		/// <summary>
-		/// Get all Common disclosure Skill Mix values by MOQTypeSelection FK ID
+		/// Get all Common disclosure Skill Mix values by BOE Task Element FK ID
 		/// </summary>
-		/// <param name="moqTypeSelectionID"></param>
+		/// <param name="boeTaskElementID">BOE Task Element ID</param>
 		/// <returns>List of Common Disclosure Skill Mixes</returns>
-		ICollection<CommonDisclosureSkillMixDTO> GetByMOQTypeSelectionID(int moqTypeSelectionID);
+		ICollection<CommonDisclosureSkillMixDTO> GetByBOETaskElementID(int boeTaskElementID);
 
 		/// <summary>
 		/// Get all Common disclosure Skill Mix values by Workspace Id
@@ -33,13 +33,6 @@ namespace GenBOE.DataBridge.DTO
 		ICollection<CommonDisclosureSkillMixDTO> GetByBOEID(int boeID);
 
 		/// <summary>
-		/// Get all Common disclosure Skill Mix values by BOETaskElement FK ID
-		/// </summary>
-		/// <param name="boeTaskElementID"></param>
-		/// <returns>List of Common Disclosure Skill Mixes</returns>
-		ICollection<CommonDisclosureSkillMixDTO> GetByBOETaskElementID(int boeTaskElementID);
-
-		/// <summary>
 		/// Get Common disclosure Skill Mix by certain values
 		/// </summary>
 		/// <param name="commonDisclosureSkillMixIDs"></param>
@@ -54,11 +47,11 @@ namespace GenBOE.DataBridge.DTO
 		CommonDisclosureSkillMixDTO GetById(int commonDisclosureSkillMixID);
 
 		/// <summary>
-		/// Delete Common disclosure Skill Mix by MOQ Type Selection ID
+		/// Delete Common disclosure Skill Mix by BOE Task Element ID
 		/// </summary>
-		/// <param name="moqTypeSelectionID"></param>
+		/// <param name="boeTaskElementID">BOE Task Element ID</param>
 		/// <returns>Number of Common Disclosure Skill Mixes deleted</returns>
-		int? DeleteCommonDisclosureSMByMoqTypeSelection(int moqTypeSelectionID);
+		int? DeleteCommonDisclosureSkillMixByBOETaskElementID(int boeTaskElementID);
 
 		/// <summary>
 		/// Insert Common disclosure Skill Mix with Kill/Fill procedure

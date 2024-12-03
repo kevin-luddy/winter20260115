@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace GenBOE.ActionLogic.ModelView
+namespace GenBOE.DataBridge.DTO
 {
 	using System;
 	using GenBOE.Dtos;
@@ -23,7 +23,7 @@ namespace GenBOE.ActionLogic.ModelView
         {
 			if (skillMixDTO != null)
 			{
-				this.Included = skillMixDTO.Included;
+				this.Included = skillMixDTO.Included; 
 				this.SkillMixID = skillMixDTO.SkillMixID;
 				this.Rationale = skillMixDTO.Rationale;
 				this.ProposedHours = skillMixDTO.ProposedHours;
@@ -34,8 +34,7 @@ namespace GenBOE.ActionLogic.ModelView
 				this.ResourceNew = skillMixDTO.ResourceNew;
 				this.BOEID = skillMixDTO.BOEID;
 				this.BOETaskElementID = skillMixDTO.BOETaskElementID;
-				this.MOQTypeSelectionID = skillMixDTO.MOQTypeSelectionID;
-				this.IsPercentLocked = skillMixDTO.IsPercentLocked;
+				this.IsUserInput = skillMixDTO.IsUserInput;
 			}
         }
 
@@ -58,8 +57,7 @@ namespace GenBOE.ActionLogic.ModelView
 				ResourceOld = this.ResourceOld ?? string.Empty,
 				BOEID = this.BOEID,
 				BOETaskElementID = this.BOETaskElementID,
-				MOQTypeSelectionID = this.MOQTypeSelectionID,
-				IsPercentLocked = this.IsPercentLocked
+				IsUserInput = this.IsUserInput
 			};
 		}
     }

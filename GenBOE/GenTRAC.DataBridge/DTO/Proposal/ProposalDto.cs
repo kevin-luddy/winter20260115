@@ -41,7 +41,8 @@ using IES.Common;
             this.UpdateDateAssigned = false;
             this.ForecastedTrackingNumber = string.Empty;
             this.IsForecastProposal = false;
-            this.HasWriteAccessToLinkedDocument = false;
+			this.IsRomNte = false;
+			this.HasWriteAccessToLinkedDocument = false;
         }
 
         /// <summary>
@@ -326,10 +327,15 @@ using IES.Common;
         /// </summary>
         public bool IsForecastProposal { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether the forecast alert email has been sent.
-        /// </summary>
-        public bool ForecastEmailSent { get; set; }
+		/// <summary>
+		/// Gets or sets a value indicating whether the Proposal Class is ROM or NTE.
+		/// </summary>
+		public bool IsRomNte { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the forecast alert email has been sent.
+		/// </summary>
+		public bool ForecastEmailSent { get; set; }
 
         /// <summary>
         /// Does the user have write access to the linked (RDSB) document, for this proposal?

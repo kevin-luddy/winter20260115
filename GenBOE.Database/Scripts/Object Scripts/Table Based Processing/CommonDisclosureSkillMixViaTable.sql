@@ -18,8 +18,6 @@ CREATE TYPE [dbo].[TT_CommonDisclosureSkillMix] AS TABLE(
 		,[BusinessResourceID] [varchar](20) NOT NULL
 		,[BOEID] int NOT NULL
 		,[BOETaskElementID] int NOT NULL
-		,[MOQTypeSelectionID] int NOT NULL
-		,[IsPercentLocked] bit NOT NULL
 		,[IsUserInput] bit NOT NULL
 		/* OrderID is automatically added in the code, so it HAS to be last */
 		,[OrderID] int NOT NULL
@@ -53,17 +51,18 @@ AS
 **      06/16/24	e302876				PROPH-2018 Common Disclosure Skill Mix DB Table
 **	    07/10/24    e302876             PROPH-2157: Drop [SkillMixID] Column from Common Disclosure Skill Mix Table
 **		07/11/24	twilson3			proph-2166 Missing Column
+**		10/01/24	e405721				PROPH-2394 SkillMix V2 Removing Columns
 *******************************************************************************/
 BEGIN
-	DECLARE @DistinctMOQTypeSelectionID int
-	SELECT @DistinctMOQTypeSelectionID = MOQTypeSelectionID
+	DECLARE @DistinctBOETaskElementID int
+	SELECT @DistinctBOETaskElementID = BOETaskElementID
 	FROM (
-		SELECT DISTINCT MOQTypeSelectionID
+		SELECT DISTINCT BOETaskElementID
 		FROM @CommonDisclosureSkillMixTableParameter
 	) AS temp_CommonDisclosureSkillMix
 
 	DELETE FROM [dbo].[CommonDisclosureSkillMix]
-	WHERE [MOQTypeSelectionID] = @DistinctMOQTypeSelectionID
+	WHERE [BOETaskElementID] = @DistinctBOETaskElementID
 
 	INSERT INTO [dbo].[CommonDisclosureSkillMix]
 		([Rationale]
@@ -76,8 +75,6 @@ BEGIN
 		 ,[BusinessResourceID]
 		 ,[BOEID]
 		 ,[BOETaskElementID]
-		 ,[MOQTypeSelectionID]
-		 ,[IsPercentLocked]
 		 ,[IsUserInput]
 		)
 	SELECT T.[Rationale]
@@ -90,8 +87,6 @@ BEGIN
 		 ,T.[BusinessResourceID]
 		 ,T.[BOEID]
 		 ,T.[BOETaskElementID]
-		 ,T.[MOQTypeSelectionID]
-		 ,T.[IsPercentLocked]
 		 ,T.[IsUserInput]
 	FROM @CommonDisclosureSkillMixTableParameter T
 END

@@ -11,7 +11,7 @@ namespace GenBOE.ActionLogic
     using System.Threading.Tasks;
     using System.Web;
     using System.Web.Mvc;
-    using GenBOE.ActionLogic.ControllerLogic;
+	using GenBOE.ActionLogic.ControllerLogic;
     using GenBOE.ActionLogic.IESSAPClient;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
@@ -120,33 +120,12 @@ namespace GenBOE.ActionLogic
         string GetMOQTextLabel();
 
         /// <summary>
-        /// Populates the passed in <see cref="MOQEquationModelView"/> with metrics
-        /// </summary>
-        /// <param name="ids">The TaskElement id's for which metrics will be retrieved</param>
-        /// <param name="model">The <see cref="MOQEquationModelView"/> that will be populated</param>
-        void GetMetricByTaskElementIds(Collection<int> ids, MOQEquationModelView model);
-
-        /// <summary>
         /// Gets a <see cref="ViewResultData"/> with historic metrics.
         /// </summary>
         /// <param name="validatedOption">?</param>
         /// <param name="searchTerm">The criteria used to find metrics</param>
         /// <returns>The <see cref="ViewResultData"/> with historic metrics.</returns>
         ViewResultData GetHistoricalMetricsResults(int validatedOption, string searchTerm);
-
-        /// <summary>
-        /// Gets a <see cref="ViewResultData"/> with historic metrics from genBOE
-        /// </summary>
-        /// <param name="metricId">The id of the metric to retrieve</param>
-        /// <returns>The <see cref="ViewResultData"/> with historic metrics</returns>
-        ViewResultData GetHistoricalMetricsDetails(int metricId);
-
-        /// <summary>
-        /// Gets a <see cref="ViewResultData"/> with historic metrics from the source system
-        /// </summary>
-        /// <param name="metricId">The id of the metric to retrieve</param>
-        /// <returns>The <see cref="ViewResultData"/> with historic metrics</returns>
-        ViewResultData GetHistoricalMetricsDetailsFromSource(int metricId);
 
         /// <summary>
         /// Gets an <see cref="MOQEquationModelView"/> populated with historical or internal metrics
@@ -160,13 +139,6 @@ namespace GenBOE.ActionLogic
         /// </summary>
         /// <returns>The <see cref="MOQEquationModelView"/> populated with the correct company specific value for ShowSearchMetricsLink.</returns>
         void SetShowMetricLink(MOQEquationModelView model);
-        
-        /// <summary>
-        /// Saves metrics to GenBoe
-        /// </summary>
-        /// <param name="taskElementID">The id of the task element to save the metric to</param>
-        /// <param name="metricIDs">the id of the metric to save to the task element</param>
-        void SaveHistoricalMetricsToTaskElement(int taskElementID, ICollection<int> metricIDs);
 
         /// <summary>
         /// Gets historical metric type ahead terms matching the <paramref name="searchTerm"/>
@@ -375,18 +347,15 @@ namespace GenBOE.ActionLogic
         Task<IESResponse<SkillMixConvertedResourceViewModel>> GetSkillMixConvertedResources();
 
 		/// <summary>
-		/// Refreshes the Skill Mix Table with updated resource hours
+		/// Refreshes the Skill Mix Tables with updated resource hours
 		/// </summary>
+		/// <param name="laborTypes">The labor type/spreads data</param>
+		/// <param name="currentCommonDisclosureData">Current Common Disclosure data</param>
 		/// <param name="resourceHours">MOQ Table Resource Hours</param>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
-		ICollection<SkillMixModelView> RefreshSkillMixTable(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<SkillMixModelView> currentSkillMixData);
-
-		/// <summary>
-		/// Refreshes the Skill Mix Table with updated resource hours
-		/// </summary>
-		/// <param name="currentSkillMixData">The current skill mix data</param>
-		/// <param name="commonDisclosureSMData">The current skill mix data</param>
-		/// <param name="resourceHours">The MOQ Table Resource Hours</param>
-		ICollection<CommonDisclosureModelView> RefreshCommonDisclosureTable(ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> commonDisclosureSMData, ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours);
+		/// <param name="isBRCEnabled">Is BRC Enabled for CD row check.</param>
+		/// <returns></returns>
+		RefreshSkillMixModelView RefreshSkillMixTables(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
+			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isBRCEnabled);
 	}
 }

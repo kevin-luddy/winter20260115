@@ -30,7 +30,6 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             this.HeaderRteTemplateAnswers = new List<RTECustomTemplateQuestionAnswerModelView>();
             this.DataSource = string.Empty;
             this.HistoricMetricDisclosureChecked = false;
-            this.ShowHistoricMetricCheck = false;
         }
 
         public BOEHeaderModelView(BoeDTO inBoe, ICollection<RTECustomTemplateQuestionAnswerModelView> answers) : this()
@@ -68,8 +67,6 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         public string WBS { get; set; }
 
         public bool HistoricMetricDisclosureChecked { get; set; }
-
-        public bool ShowHistoricMetricCheck { get; set; }
 
         public Collection<CustomFieldSelectionModelView> CustomFieldValues { get; set; }
 

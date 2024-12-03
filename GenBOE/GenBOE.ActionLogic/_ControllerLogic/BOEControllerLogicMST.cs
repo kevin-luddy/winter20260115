@@ -33,7 +33,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
     public class BOEControllerLogicMST : BOEControllerLogic
     {
-        private IMSTMetricLoader mstMetricsLoader;
         private IOffloadRatesDTOLoader offloadRatesDTOLoader;
 
         #region Protected Properties and Constructor
@@ -42,7 +41,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// Constructor
         /// </summary>
         public BOEControllerLogicMST(
-            IMSTMetricLoader mstMetricsLoader,
             IBOESummary inBOESummary,
             IUserDTODataLoader inUserLoader,
             IActiveDirectoryUtilities inActiveDirectoryUtil,
@@ -85,7 +83,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             inBoeTaskElementRecalculation, inBOEImporter, inVariableCircularReferenceChecker, inConflictBOE, inNestedWBSUtilities, projectMapLoader, zoneTravelRatesFeesLoader,
             rteTemplateDataLoader, moqTypeDataLoader, boeApproverResponseLoader, iesSapClient, tokenService)
         {
-            this.mstMetricsLoader = mstMetricsLoader;
             this.offloadRatesDTOLoader = offloadRatesDTOLoader;
         }
 
@@ -102,18 +99,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
         {
             // The header requirements are identical to SSC implementation so we can re-use it
             return new BOEHeaderSpaceModelView(boe, answers);
-        }
-
-        /// <summary>
-        /// Returns a bool indicating if historic metrics should be shown
-        /// </summary>
-        /// <param name="ids">The id's of the boe's to check</param>
-        /// <returns>true if the metrics should be shown, false otherwise</returns>
-        public override bool ShowHistoricMetricCheck(ICollection<int> ids)
-        {
-            // Same as Space Systems but is repeated here since it is only two lines of code.
-            Collection<MSTMetricDetailsDTO> metrics = this.mstMetricsLoader.GetByBoeIds(ids).ToCollection();
-            return metrics.Any();
         }
 
         /// <summary>
