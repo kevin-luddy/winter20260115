@@ -3694,8 +3694,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			if (resourceHours.Any())
 			{
+				
 				bool addBlankRow = true;
 				laborTypes = laborTypes == null ? new List<LaborTypeDataModelView>() : laborTypes.Where(l => l.RateType == RateType.Hours).ToList();
+
+				// filter out bad data in currentSkillMixData
+				FilterBadData(laborTypes, currentSkillMixData, currentCommonDisclosureData);
+
 				decimal totalHours = resourceHours.Sum(n => n.TotalHours);
 				ICollection<IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO>> groupedResourceHours = resourceHours.GroupBy(r => r.ResourceName).OrderBy(t => t.Key).ToList();
 				foreach (IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO> grouping in groupedResourceHours)
@@ -3767,6 +3772,65 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			refreshedModel.CommonDisclosureRows = refreshedModel.CommonDisclosureRows.OrderBy(r => r.ResourceID).ThenBy(s => s.BusinessResourceID).ToList();
 
 			return refreshedModel;
+		}
+
+		/// <summary>
+		/// Filter out bad data inside the current lists
+		/// </summary>
+		/// <param name="currentSkillMixData"></param>
+		/// <param name="currentCommonDisclosureData"></param>
+		/// <exception cref="NotImplementedException"></exception>
+		private void FilterBadData(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData)
+		{
+			if (laborTypes.Any())
+			{
+
+				HashSet<string> resources = laborTypes.Select(l => l.ResourceName).Distinct().ToHashSet();
+				HashSet<string> brcs = laborTypes.Select(l => l.BusinessResourceCodeName).Distinct().ToHashSet();
+
+				foreach (SkillMixModelView skillMixModel in currentSkillMixData)
+				{
+					if (!string.IsNullOrWhiteSpace(skillMixModel.ResourceNew) && !resources.Contains(skillMixModel.ResourceNew))
+					{
+						// this skill mix model is pointing towards a missing Resource, remove the resource name
+						skillMixModel.ResourceNew = string.Empty;
+						skillMixModel.ProposedHours = 0m;
+						skillMixModel.BOESkillMix = 0m;
+						skillMixModel.Included = false;
+					}
+				}
+
+				foreach (CommonDisclosureModelView commonDisclosureModel in currentCommonDisclosureData.ToList())
+				{
+					// Remove bad resources
+					if (!string.IsNullOrWhiteSpace(commonDisclosureModel.ResourceID) && !resources.Contains(commonDisclosureModel.ResourceID))
+					{
+						commonDisclosureModel.ResourceID = string.Empty;
+						commonDisclosureModel.HistoricalHours = 0m;
+						commonDisclosureModel.LaborSkillMix = 0m;
+					}
+
+					if (!string.IsNullOrWhiteSpace(commonDisclosureModel.BusinessResourceID) && !brcs.Contains(commonDisclosureModel.BusinessResourceID))
+					{
+						// this skill mix model is pointing towards a missing Resource, remove the resource name
+						commonDisclosureModel.BusinessResourceID = string.Empty;
+						commonDisclosureModel.ProposedHours = 0m;
+						commonDisclosureModel.BOESkillMix = 0m;
+						commonDisclosureModel.Included = false;
+					}
+
+					// if the row does not have resource or BRC set, then remove it.
+					if (string.IsNullOrEmpty(commonDisclosureModel.ResourceID) && string.IsNullOrEmpty(commonDisclosureModel.BusinessResourceID))
+					{
+						currentCommonDisclosureData.Remove(commonDisclosureModel);
+					}
+				}
+			}
+			else
+			{
+				currentSkillMixData.Clear();
+				currentCommonDisclosureData.Clear();
+			}
 		}
 
 		/// <summary>
