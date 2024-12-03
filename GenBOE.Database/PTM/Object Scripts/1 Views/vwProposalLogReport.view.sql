@@ -6,7 +6,7 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 /******************************************************************************
 **		 
 **		Name: [vwProposalLogReport]
-**		Desc: View that drives the Proposal Log Report
+**		Desc: View that drives the Proposal Log Report.  This report is also used in Tableau
 **			
 *******************************************************************************
 **		Change History
@@ -29,12 +29,14 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 **		7/18/24		Dusan				PROPH-1560: Added Include International Costs
 **		8/19/24		Dusan				PROPH-2080: Added IsSupportDefinitizingUCA field
 **      11/20/24	twilson3			proph-2357 Add Insurance fields
+**		12/3/24		twilson3			proph-2544 Add SetupComments, Backup Estimator Name
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
 	p.AdditionalClassification,
 	cNo.Text AS ReasonCcopdNo,
 	P.ReasonCcopdNoOther,
+	P.SetupComments,
 	CAST (P.DateCreated AS DATE) AS DateCreated,
 	YEAR(P.DateCreated) AS [Year],	
 	PA.ProgramAreaID as ProgramAreaID,
@@ -163,6 +165,7 @@ SELECT
 	END AS RevisionType,
 	MaterialPOC.DisplayName AS MaterialPOC,
 	SubcontractsPOC.DisplayName AS SubcontractsPOC,
+	BackupEstimatorPOC.DisplayName AS BackupEstimatorPOC,
 	CASE
 		WHEN p.ProposalStatusID = 8 THEN 'No'
 		ELSE 'Yes'
@@ -330,6 +333,12 @@ SELECT
 			FROM ProposalUserRole PUR JOIN genTRACUser U ON PUR.UserID = U.UserID
 			WHERE PUR.RoleID = 7 
 	) SubcontractsPOC ON P.ProposalID = SubcontractsPOC.ProposalID
+	LEFT OUTER JOIN
+	(
+		SELECT PUR.ProposalID, U.DisplayName
+			FROM ProposalUserRole PUR JOIN genTRACUser U ON PUR.UserID = U.UserID
+			WHERE PUR.RoleID = 12 
+	) BackupEstimatorPOC ON P.ProposalID = BackupEstimatorPOC.ProposalID
 
 	-- Proposal Contract Data
 	LEFT OUTER JOIN ProposalContractsData pCD ON pCD.ProposalID = p.ProposalID
