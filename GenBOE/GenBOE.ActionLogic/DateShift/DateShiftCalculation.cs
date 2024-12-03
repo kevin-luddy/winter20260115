@@ -178,11 +178,11 @@ namespace GenBOE.ActionLogic.DateShift
 				if (Utilities.IsSkillMixEnabledForSystem)
 				{
 					// Iterate through each task and check for Skill Mix
-					foreach (BoeTaskElementDTO task in fullWorkspace.TaskElements)
+					foreach (BoeTaskElementDTO task in fullWorkspace?.TaskElements)
 					{
-						if (Utilities.ShowSkillMixForTask(fullWorkspace.CreationDate, task.HasTMRates))
+						if (Utilities.ShowSkillMixForTask(fullWorkspace?.CreationDate, task.HasTMRates))
 						{
-							ICollection<ICollection<MoqTableData>> moqTableData = fullWorkspace.MoqTypeSelections.Where(x => x.BoeId == task.BoeID).Select(x => x.TableData).ToList();
+							ICollection<ICollection<MoqTableData>> moqTableData = fullWorkspace?.MoqTypeSelections.Where(x => x.BoeId == task.BoeID).Select(x => x.TableData).ToList();
 							if (moqTableData.Any())
 							{
 								// Go through each MoqTableData
@@ -190,10 +190,13 @@ namespace GenBOE.ActionLogic.DateShift
 								{
 									foreach (MoqTableData innerMoqTableData in tempMoqTableData)
 									{
+										// TO-DO: Use Task dates and not PoP dates
+										// Refresh all regardless of dates
+										// Ignore MOQ data
 										if (innerMoqTableData.PoPStart > Utilities.OneLmxStartDate || innerMoqTableData.PoPEnd > Utilities.OneLmxStartDate)
 										{
 											// Run Skill Mix update
-											ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours = fullWorkspace.MoqTypeSelections
+											ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours = fullWorkspace?.MoqTypeSelections
 												.SelectMany(moqType => moqType.TableData)
 												.SelectMany(tableData => tableData.ResourceHours)
 												.ToList();
@@ -202,10 +205,17 @@ namespace GenBOE.ActionLogic.DateShift
 
 											LaborTaskDataModelView laborTasks = this._BoeLaborControllerLogic.GetLaborTaskData(fullWorkspace, fullBoe, task.Id);
 
+											// Replace lines above with the 2 below
+											//LaborTaskDataModelView toReturn = this.ConvertDtoToModelView(ws, boe, taskElementDto);
+											//toReturn.IsUsingTMRatesInTask = CheckTMRates(ws, toReturn.LaborTypesData);
+
 											RefreshSkillMixModelView response = this._BoeLaborControllerLogic.RefreshSkillMixTables(resourceHours,
 												laborTasks.LaborTypesData, task.SkillMixTable, task.CommonDisclosureTable, isBRCEnabled);
 
+											if (response != null)
+											{
 
+											}
 										}
 									}
 								}
