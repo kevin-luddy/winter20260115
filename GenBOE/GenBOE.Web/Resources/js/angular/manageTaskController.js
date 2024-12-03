@@ -295,10 +295,6 @@
             item.Label = item.PerformingOrgName + '-' + item.PerformingOrgDesc;
         });
 
-        $scope.$on('MOQ_TYPE_SELECTION_CHANGED', function (e, moqData) {
-            $scope.SelectedMoqTypes = moqData;
-        });
-
         // load the main data
         loadData(function () {
             // this is needed because ui-tinymce does things on its own schedule
