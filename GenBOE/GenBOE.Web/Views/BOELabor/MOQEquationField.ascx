@@ -47,7 +47,8 @@
         RmsSapDisabledSource: '<%=RepositoryName.User.GetDescription()%>',
         ReadOnlyMode: '<%= ViewData["ReadOnlyMode"] %>'.isTrue(),
         HistoricalReferenceExplanationIsRequired: '<%= ViewData["HistoricalReferenceExplanationIsRequired"] %>'.isTrue(),
-        DatepickerRestrictionRMS: '<%:Utilities.DatepickerRestrictionRMS%>'
+        DatepickerRestrictionRMS: '<%:Utilities.DatepickerRestrictionRMS%>',
+		SkillMixEnabled: '<%= (bool)ViewData["EnableSkillMix"] %>'.isTrue()
     };
 
     var ordinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;

@@ -923,7 +923,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 			#endregion
 
-			if (Utilities.IsSkillMixEnabledForSystem)
+			if (Utilities.ShowSkillMixForTask(ws.CreationDate, taskElement.HasTMRates))
 			{
 				decimal historicalHoursTotals = 0;
 
@@ -936,10 +936,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				{
 					validationErrors.Add(new ValidationMessage(string.Format("Skill Mix Total Historical Hours do not match the sum of the Total Relevant Hours.")));
 				}
-			}
-
-			if (Utilities.ShowSkillMixForTask(ws.CreationDate, taskElement.HasTMRates))
-			{
+			
 				if (taskElement.SkillMixTable != null && taskElement.SkillMixTable.Any())
 				{
 					validationErrors.AddRange(ActionLogicUtility.ValidateSkillMixTable(taskElement.SkillMixTable).Select(x => new ValidationMessage(x)));
@@ -1935,7 +1932,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			toReturn.WorkspaceVariableIDs = modelview.TaskElementData.WorkspaceVariableIDs;
 			toReturn.TaskElementType = TaskElementType.Labor;
 			toReturn.BOETaskElementOrder = modelview.TaskElementData.BOETaskElementOrder;
-			if (Utilities.IsSkillMixEnabledForSystem)
+			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate))
 			{
 				toReturn.MOQTotalRelevantHours += modelview.MOQTypes?.Sum(t => t.TableData?.Sum(td => td.TotalRelevantHours) ?? 0) ?? 0;
 				toReturn.SkillMixTable = modelview.SkillMixData;
