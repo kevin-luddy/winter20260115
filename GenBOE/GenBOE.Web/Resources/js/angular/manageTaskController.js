@@ -571,6 +571,7 @@
 
         // update deltas and totals
         recalculateAllSpreadsAndTotals();
+        $scope.refreshSkillMixTables();
 
         // close dialog
         $scope.clearDuplicates();
