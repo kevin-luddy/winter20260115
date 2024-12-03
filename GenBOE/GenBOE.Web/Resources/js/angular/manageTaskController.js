@@ -167,7 +167,9 @@
                 $scope.setDirty();
             }
 
-            $scope.model.LaborTypesData = $scope.model.LaborTypesData.filter((item) => !item.Deleted);
+            if ($scope.model.LaborTypesData) {
+                $scope.model.LaborTypesData = $scope.model.LaborTypesData.filter((item) => !item.Deleted);
+            }
 
             var data = {
                 boeId: ManageTaskModel.boeId,
@@ -569,7 +571,6 @@
 
         // update deltas and totals
         recalculateAllSpreadsAndTotals();
-        $scope.refreshSkillMixTables();
 
         // close dialog
         $scope.clearDuplicates();
