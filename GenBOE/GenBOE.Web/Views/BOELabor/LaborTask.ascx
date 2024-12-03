@@ -834,37 +834,37 @@
 											 * the "Total" labels).  Then this table container-div (above) as well as the scrolling div (below) must be sized accordingly (i.e.
 											 * to fit within the outer div width).  Really just a matter of playing with the widths until everything lays out correctly.
 											 */
-                                        %>
-                                        <tr data-ng-repeat="item in tableData | filter: { Deleted: false, NewLaborType: false } track by item.BOELaborTypeID">
-                                            <td title="{{item.ResourceName}}"><span>{{ item.ResourceName ? item.ResourceName : '_'}}</span></td>
-                                            <td title="{{item.BusinessResourceCodeName}}" data-ng-if="IsBRCEnabled"><span>{{ item.BusinessResourceCodeName ? item.BusinessResourceCodeName : '_'}}</span></td>
-                                            <td class="PerformingOrgName" title="{{item.PerformingOrgName}}"><span>{{item.PerformingOrgName ? item.PerformingOrgName : "_"}}</span></td>
-                                        </tr>
-                                        <tr id="LaborSpreadHeaderDividerRow" class="subheader">
-                                            <td colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; line-height: 2px; padding: 0px;">&nbsp;</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="subheader" colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %> by Months</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="subheader" colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total Discrete Cost by Months</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="subheader" colspan="{{IsBRCEnabled ? 2 : 1}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %></td>
-                                            <td class="hours-total">{{totalSpreadHours}}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="subheader" colspan="{{IsBRCEnabled ? 2 : 1}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total Discrete Cost</td>
-                                            <td class="cost-total"><span class="labor-spread-currency">$</span>{{totalSpreadCost}}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div data-ng-if="(tableData | filter: { Deleted: false, NewLaborType: false }).length > 0" data-ng-class="{'labor-spread-scroll-brc': IsBRCEnabled}" class="labor-spread-scroll">
-                                <table class="data" name="LaborSpreadData">
-                                    <thead>
-                                        <tr>
-                                            <% // display the header (all dates across the spread)
+										%>
+										<tr data-ng-repeat="item in tableData | filter: { Deleted: false, NewLaborType: false } track by item.BOELaborTypeID">
+											<td class="resource-spread" title="{{item.ResourceName}}"><span>{{ item.ResourceName ? item.ResourceName : '_'}}</span></td>
+											<td title="{{item.BusinessResourceCodeName}}" data-ng-if="IsBRCEnabled"><span>{{ item.BusinessResourceCodeName ? item.BusinessResourceCodeName : '_'}}</span></td>
+											<td class="PerformingOrgName" title="{{item.PerformingOrgName}}"><span>{{item.PerformingOrgName ? item.PerformingOrgName : "_"}}</span></td>
+										</tr>
+										<tr id="LaborSpreadHeaderDividerRow" class="subheader">
+											<td colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; line-height: 2px; padding: 0px;">&nbsp;</td>
+										</tr>
+										<tr>
+											<td class="subheader" colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %> by Months</td>
+										</tr>
+										<tr>
+											<td class="subheader" colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total Discrete Cost by Months</td>
+										</tr>
+										<tr>
+											<td class="subheader" colspan="{{IsBRCEnabled ? 2 : 1}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %></td>
+											<td class="hours-total">{{totalSpreadHours}}</td>
+										</tr>
+										<tr>
+											<td class="subheader" colspan="{{IsBRCEnabled ? 2 : 1}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total Discrete Cost</td>
+											<td class="cost-total"><span class="labor-spread-currency">$</span>{{totalSpreadCost}}</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+							<div data-ng-if="(tableData | filter: { Deleted: false, NewLaborType: false }).length > 0" data-ng-class="{'labor-spread-scroll-brc': IsBRCEnabled}" class="labor-spread-scroll">
+								<table class="data" name="LaborSpreadData">
+									<thead>
+										<tr>
+											<% // display the header (all dates across the spread)
 // Note:  putting divs in the th cells and setting the width on them was the only method I tried
 // that actually worked to set the columns to a specific width.  Setting the width on a col element,
 // or the th itself, or a span in the th resulted in either it being ignored or being treated as a
