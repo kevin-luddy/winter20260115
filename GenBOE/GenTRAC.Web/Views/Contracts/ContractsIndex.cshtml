@@ -204,10 +204,11 @@
 <div id="contractsIndex" class="composite module full" style="min-height:800px;">
     @Html.Partial("ContractsInfo", Model)
 
-    <div class="module-content-data contracts">
-        @using (Html.BeginForm("", "", FormMethod.Post, new { id = "contractsForm", name = "contractsForm" }))
-        {
-            <div class="required-note"> * required for saving.</div>
-        }
-    </div>
+	<div class="module-content-data contracts">
+		@using (Html.BeginForm("", "", FormMethod.Post, new { id = "contractsForm", name = "contractsForm" }))
+		{
+			<div class="required-note"> * required for saving.</div>
+			<div class="required-note"> ** required to Status as Complete.</div>
+		}
+	</div>
 </div>
