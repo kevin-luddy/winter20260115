@@ -34,10 +34,15 @@ namespace GenTRAC.Models
         public Nullable<System.DateTime> ModCompletedDate { get; set; }
         public string CageCode { get; set; }
         public Nullable<System.DateTime> CustomerDueDate { get; set; }
+        public Nullable<int> IsInsuranceDirect { get; set; }
+        public Nullable<int> InsuranceType { get; set; }
+        public Nullable<long> ProposedInsurance { get; set; }
+        public Nullable<long> NegotiatedInsurance { get; set; }
     
         public virtual EppDelegationAuthorityLU EppDelegationAuthorityLU { get; set; }
         public virtual Proposal Proposal { get; set; }
         public virtual Proposal Proposal1 { get; set; }
         public virtual CageCode CageCode1 { get; set; }
+        public virtual InsuranceTypeLU InsuranceTypeLU { get; set; }
     }
 }

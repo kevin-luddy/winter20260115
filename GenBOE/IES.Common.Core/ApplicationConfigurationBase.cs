@@ -27,8 +27,11 @@
 	using Serilog;
 	using Serilog.Settings.Configuration;
 	using Serilog.Sinks.MSSqlServer;
+	using Serilog.Ui.Core.Extensions;
 	using Serilog.Ui.MsSqlServerProvider;
+	using Serilog.Ui.MsSqlServerProvider.Extensions;
 	using Serilog.Ui.Web;
+	using Serilog.Ui.Web.Extensions;
 
 	/// <summary>
 	/// Application Configuration Base class
@@ -241,7 +244,11 @@
 					columnOptions: columnOptions);
 
 				services.AddSerilogUi(options =>
-				  options.UseSqlServer(connectionString, "_Logs"));
+				  options.UseSqlServer(opts => opts
+					  .WithConnectionString(connectionString)
+					  .WithTable("_Logs"))
+					.AddScopedAsyncAuthFilter<CustomAuthorizeFilter>()
+				  ); 
 			}
 
 			if (logToSplunk)
@@ -334,12 +341,8 @@
 			{
 				app.UseSerilogUi(options =>
 				{
-					options.Authorization = new Serilog.Ui.Web.AuthorizationOptions
-					{
-						AuthenticationType = AuthenticationType.Jwt,
-						Filters = new[] { new CustomAuthorizeFilter(logger) },
-						RunAuthorizationFilterOnAppRoutes = false
-					};
+					options.WithAuthenticationType(Serilog.Ui.Web.Models.AuthenticationType.Jwt);
+					options.HideSerilogUiBrand();					
 				});
 			}
 

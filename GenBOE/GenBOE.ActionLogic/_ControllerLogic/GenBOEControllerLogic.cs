@@ -6,23 +6,24 @@
 
 namespace GenBOE.ActionLogic.ControllerLogic
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.Linq;
-    using System.Net;
-    using System.Reflection;
-    using System.Text;
 	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
-    using IES.Common;
-    using IES.Common.Exceptions;
+	using IES.Common;
+	using IES.Common.Exceptions;
+	using System;
+	using System.Collections;
+	using System.Collections.Generic;
+	using System.ComponentModel.DataAnnotations;
+	using System.Linq;
+	using System.Net;
+	using System.Reflection;
+	using System.Text;
 
-    /// <summary>
-    /// Controller logic class for the base controller
-    /// </summary>
-    public class GenBOEControllerLogic : IGenBOEControllerLogic
+	/// <summary>
+	/// Controller logic class for the base controller
+	/// </summary>
+	public class GenBOEControllerLogic : IGenBOEControllerLogic
     {
         private Logger _log = new Logger(typeof(GenBOEControllerLogic));
 
@@ -63,14 +64,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
             return allValidationMessages;
         }
 
-        /// <summary>
-        /// For any properties marked as rich-text, remove styling and/or markup that are known to cause problems
-        /// for the third-party HTML conversion utility.
-        /// </summary>
-        /// <param name="obj">Object to be saved</param>
-        /// <returns>List of validation messages, if any</returns>
-        /// <seealso cref="IES.Common.RichTextAttribute"/>
-        public ICollection<ValidationMessage> ScrubRichTextPropertiesForSave(object obj)
+		/// <summary>
+		/// For any properties marked as rich-text, remove styling and/or markup that are known to cause problems
+		/// for the third-party HTML conversion utility.
+		/// </summary>
+		/// <param name="obj">Object to be saved</param>
+		/// <returns>List of validation messages, if any</returns>
+		/// <seealso cref="IES.Common.RichTextAttribute"/>
+		public ICollection<ValidationMessage> ScrubRichTextPropertiesForSave(object obj)
         {
             if (obj == null)
             {
@@ -125,15 +126,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
             return allValidationMessages;
         }
 
-        /// <summary>
-        /// Scrub rich-text markup to remove unwanted items and convert image tag src-attribute route values to base-64.
-        /// Note that pasted images (that are not already stored) must be added to the editor in Base-64 format so they
-        /// can be converted to binary and stored when the rich-text is saved.
-        /// </summary>
-        /// <param name="html">Rich-text markup</param>
-        /// <param name="validationMessages">Repository for validation messages</param>
-        /// <returns>Scrubbed rich-text</returns>
-        public string ScrubRichTextForPaste(string html, ICollection<ValidationMessage> validationMessages)
+		/// <summary>
+		/// Scrub rich-text markup to remove unwanted items and convert image tag src-attribute route values to base-64.
+		/// Note that pasted images (that are not already stored) must be added to the editor in Base-64 format so they
+		/// can be converted to binary and stored when the rich-text is saved.
+		/// </summary>
+		/// <param name="html">Rich-text markup</param>
+		/// <param name="validationMessages">Repository for validation messages</param>
+		/// <returns>Scrubbed rich-text</returns>
+		public string ScrubRichTextForPaste(string html, ICollection<ValidationMessage> validationMessages)
         {
             string cleanedText = this.DoAnExtraScrubbingForRTEInput(html);
 

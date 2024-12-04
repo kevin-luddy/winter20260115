@@ -23,10 +23,10 @@ namespace GenBOE.DataBridge.DTO
 		/// <summary>
 		/// Get all SkillMix values by MOQTypeSelection FK ID
 		/// </summary>
-		/// <param name="moqTypeSelectionID"></param>
+		/// <param name="boeTaskElementID"></param>
 		/// <returns>List of SkillMix</returns>
 		[DbQuery]
-		virtual public ICollection<SkillMixDTO> GetByMOQTypeSelectionID(int moqTypeSelectionID)
+		virtual public ICollection<SkillMixDTO> GetByBOETaskElementID(int boeTaskElementID)
 		{
 			List<SkillMixDTO> result = new List<SkillMixDTO>();
 
@@ -35,7 +35,7 @@ namespace GenBOE.DataBridge.DTO
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
 					result = (from sm in gbe.SkillMixes
-							  where sm.MOQTypeSelectionID == moqTypeSelectionID
+							  where sm.BOETaskElementID == boeTaskElementID
 							  select new SkillMixDTO
 							  {
 								  SkillMixID = sm.SkillMixID,
@@ -49,8 +49,7 @@ namespace GenBOE.DataBridge.DTO
 								  BOEID = sm.BOEID,
 								  Included = sm.Included ?? false,
 								  BOETaskElementID = sm.BOETaskElementID,
-								  MOQTypeSelectionID = sm.MOQTypeSelectionID,
-								  IsPercentLocked = sm.IsPercentLocked
+								  IsUserInput = sm.IsUserInput
 							  }).ToList();
 				}
 				DoPostProcessiong(result);
@@ -86,49 +85,9 @@ namespace GenBOE.DataBridge.DTO
 								  ResourceOld = sm.ResourceOld,
 								  ResourceNew = sm.ResourceNew,
 								  BOEID = sm.BOEID,
-								  Included = sm.Included,
+								  Included = sm.Included ?? false,
 								  BOETaskElementID = sm.BOETaskElementID,
-								  MOQTypeSelectionID = sm.MOQTypeSelectionID,
-								  IsPercentLocked = sm.IsPercentLocked
-							  }).ToList();
-				}
-				DoPostProcessiong(result);
-
-				return result;
-			}
-		}
-
-		/// <summary>
-		/// Get all SkillMix values by BOETaskElement FK ID
-		/// </summary>
-		/// <param name="boeTaskElementID">int</param>
-		/// <returns>List of SkillMix</returns>
-		[DbQuery]
-		virtual public ICollection<SkillMixDTO> GetByBOETaskElementID(int boeTaskElementID)
-		{
-			List<SkillMixDTO> result = new List<SkillMixDTO>();
-
-			using (StopwatchTimer sw = new StopwatchTimer(this._log)) 
-			{
-				using (GenBoeEntities gbe = new GenBoeEntities())
-				{
-					result = (from sm in gbe.SkillMixes
-							  where sm.BOETaskElementID == boeTaskElementID
-							  select new SkillMixDTO
-							  {
-								  SkillMixID = sm.SkillMixID,
-								  Rationale = sm.Rationale,
-								  ProposedHours = sm.ProposedHours,
-								  HistoricalHours = sm.HistoricalHours,
-								  BOESkillMix = sm.BOESkillMix,
-								  LaborSkillMix = sm.LaborSkillMix,
-								  ResourceOld = sm.ResourceOld,
-								  ResourceNew = sm.ResourceNew,
-								  BOEID = sm.BOEID,
-								  Included = sm.Included,
-								  BOETaskElementID = sm.BOETaskElementID,
-								  MOQTypeSelectionID = sm.MOQTypeSelectionID,
-								  IsPercentLocked = sm.IsPercentLocked
+								  IsUserInput = sm.IsUserInput
 							  }).ToList();
 				}
 				DoPostProcessiong(result);
@@ -164,10 +123,9 @@ namespace GenBOE.DataBridge.DTO
 								  ResourceOld = sm.ResourceOld,
 								  ResourceNew = sm.ResourceNew,
 								  BOEID = sm.BOEID,
-								  Included = sm.Included,
+								  Included = sm.Included ?? false,
 								  BOETaskElementID = sm.BOETaskElementID,
-								  MOQTypeSelectionID = sm.MOQTypeSelectionID,
-								  IsPercentLocked = sm.IsPercentLocked
+								  IsUserInput = sm.IsUserInput
 							  }).ToList();
 				}
 				DoPostProcessiong(result);
@@ -189,19 +147,19 @@ namespace GenBOE.DataBridge.DTO
 		/// <summary>
 		/// Delete Skill Mix by MOQ Type Selection ID
 		/// </summary>
-		/// <param name="moqTypeSelectionID">int</param>
+		/// <param name="boeTaskElementID">int</param>
 		/// <returns>Number of SkillMixes deleted</returns>
-		virtual public int? DeleteSkillMixByMoqTypeSelection(int moqTypeSelectionID)
+		virtual public int? DeleteSkillMixByBOETaskElementID(int boeTaskElementID)
 		{
 			int? toReturn = null;
 
 			using (StopwatchTimer sw = new StopwatchTimer(this._log))
 			{
-				if (moqTypeSelectionID > 0)
+				if (boeTaskElementID > 0)
 				{
 					using (GenBoeEntities gbe = new GenBoeEntities())
 					{
-						toReturn = gbe.deleteSkillMix(moqTypeSelectionID).FirstOrDefault();
+						toReturn = gbe.deleteSkillMix(boeTaskElementID).FirstOrDefault();
 					}
 				}
 				return toReturn;
@@ -236,10 +194,9 @@ namespace GenBOE.DataBridge.DTO
 								  ResourceOld = sm.ResourceOld,
 								  ResourceNew = sm.ResourceNew,
 								  BOEID = sm.BOEID,
-								  Included = sm.Included,
+								  Included = sm.Included ?? false,
 								  BOETaskElementID = sm.BOETaskElementID,
-								  MOQTypeSelectionID = sm.MOQTypeSelectionID,
-								  IsPercentLocked = sm.IsPercentLocked
+								  IsUserInput = sm.IsUserInput
 							  }).ToList();
 				}
 				DoPostProcessiong(result);
@@ -262,7 +219,7 @@ namespace GenBOE.DataBridge.DTO
 			{
 				Collection<string> skillMixVariablesPropertiesToIncludeInTable = new Collection<string>()
 				{
-					"Rationale", "Included", "ProposedHours", "HistoricalHours", "BOESkillMix", "LaborSkillMix", "ResourceOld", "ResourceNew", "BOEID", "BOETaskElementID", "MOQTypeSelectionID", "IsPercentLocked"
+					"Rationale", "Included", "ProposedHours", "HistoricalHours", "BOESkillMix", "LaborSkillMix", "ResourceOld", "ResourceNew", "BOEID", "BOETaskElementID", "IsUserInput"
 				};
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
@@ -288,7 +245,7 @@ namespace GenBOE.DataBridge.DTO
 		private void DoPostProcessiong(ICollection<SkillMixDTO> skillMixes)
 		{
 			IEnumerable<IGrouping<int, SkillMixDTO>> groupedResourceHours =
-				skillMixes.GroupBy(r => r.MOQTypeSelectionID);
+				skillMixes.GroupBy(r => r.BOETaskElementID);
 
 			foreach (IGrouping<int, SkillMixDTO> grouping in groupedResourceHours)
 			{

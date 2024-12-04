@@ -351,6 +351,16 @@ namespace IES.Common.Core.Constants
 		public const string PROPOSAL_CLASS_FORECASTED = "Forecasted";
 
 		/// <summary>
+		/// Proposal Class - ROM
+		/// </summary>
+		public const string PROPOSAL_CLASS_ROM = "ROM";
+
+		/// <summary>
+		/// Proposal Class - NTE
+		/// </summary>
+		public const string PROPOSAL_CLASS_NTE = "NTE";
+
+		/// <summary>
 		/// The length of the YYYY-NNNNN legacy tracking number
 		/// </summary>
 		public const int LEGACY_TRACKING_NUMBER_LENGTH = 10;
@@ -828,7 +838,7 @@ namespace IES.Common.Core.Constants
 		/// <summary>
 		/// Validation failed for Negotiations Submitted Date
 		/// </summary>
-		public const string INVALID_NEGOTIATIONS_SUBMITTED_DATE = "Negotiations Submitted Date is required.";
+		public const string INVALID_NEGOTIATIONS_SUBMITTED_DATE = "Date Confirmation of Negotiations Submitted is required.";
 
 		/// <summary>
 		/// Validation failed for MOD Completion Date

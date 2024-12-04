@@ -30,13 +30,6 @@ namespace GenBOE.ActionLogic
         IBOEHeaderModelView GetCreateBOEHeaderMV(BoeDTO boe, ICollection<RTECustomTemplateQuestionAnswerModelView> answers);
 
         /// <summary>
-        /// Returns a bool indicating if historic metrics should be shown
-        /// </summary>
-        /// <param name="ids">The id's of the boe's to check</param>
-        /// <returns>true if the metrics should be shown, false otherwise</returns>
-        bool ShowHistoricMetricCheck(ICollection<int> ids);
-
-        /// <summary>
         /// Populates properties with company specific data
         /// </summary>
         /// <param name="theModel">the <see cref="BOEAdvancedSearchModelView"/> to populate</param>

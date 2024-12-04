@@ -21,7 +21,7 @@ namespace GenBOE.Dtos
 		{
 			this.CommonDisclosureSkillMixID = -1;
 			this.Rationale = String.Empty;
-			this.Included = null;
+			this.Included = false;
 			this.ProposedHours = 0;
 			this.HistoricalHours = 0;
 			this.BOESkillMix = 0;
@@ -30,8 +30,6 @@ namespace GenBOE.Dtos
 			this.BusinessResourceID = String.Empty;
 			this.BOEID = -1;
 			this.BOETaskElementID = -1;
-			this.MOQTypeSelectionID = -1;
-			this.IsPercentLocked = false;
 			this.IsUserInput = false;
 		}
 
@@ -48,32 +46,7 @@ namespace GenBOE.Dtos
 		/// <summary>
 		/// User input to determine if BOE Skill Mix is included
 		/// </summary>
-		public bool? Included { get; set; }
-
-		/// <summary>
-		/// Get "Yes" or "No" string for Included, or an empty string if null
-		/// </summary>
-		public string IncludedString
-		{
-			get
-			{
-				if (Included.HasValue)
-				{
-					if (Included.Value)
-					{
-						return "Yes";
-					}
-					else
-					{
-						return "No";
-					}
-				}
-				else
-				{
-					return string.Empty;
-				}
-			}
-		}
+		public bool Included { get; set; }
 
 		/// <summary>
 		/// Proposed hours to match related Skill Mix equation
@@ -114,16 +87,6 @@ namespace GenBOE.Dtos
 		/// Foreign Key to BOETaskElement table
 		/// </summary>
 		public int BOETaskElementID { get; set; }
-
-		/// <summary>
-		/// foreign key to moq type (historical or comparative)
-		/// </summary>
-		public int MOQTypeSelectionID { get; set; }
-
-		/// <summary>
-		/// Is the BOE Skill Mix Percent locked
-		/// </summary>
-		public bool IsPercentLocked { get; set; }
 
 		/// <summary>
 		/// Is this data User Input

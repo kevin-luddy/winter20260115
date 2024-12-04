@@ -10,8 +10,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
-    using GenBOE.ActionLogic.BOETransitions;
-    using GenBOE.ActionLogic.Common.Calculations;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.ControllerLogic;
     using GenBOE.ActionLogic.IO.Export;
     using GenBOE.ActionLogic.ModelView.BOE;
@@ -973,7 +973,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 RFPNumber = "1234"
             };
 
-            string result = sut.GetProposalTitleAndRfpNumber(workspace1);
+            string result = ActionLogicUtility.GetProposalTitleAndRfpNumber(workspace1);
             Assert.AreEqual("My Proposal Title / 1234", result);
 
             // Proposal Title exists but RFP number is null or empty
@@ -986,7 +986,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 ProposalTitle = "My Proposal Title"
             };
 
-            result = sut.GetProposalTitleAndRfpNumber(workspace1);
+            result = ActionLogicUtility.GetProposalTitleAndRfpNumber(workspace1);
             Assert.AreEqual("My Proposal Title", result);
 
             // Proposal Title and RFP Number are both null or empty
@@ -998,7 +998,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 IsUsingTM = true
             };
 
-            result = sut.GetProposalTitleAndRfpNumber(workspace1);
+            result = ActionLogicUtility.GetProposalTitleAndRfpNumber(workspace1);
             Assert.AreEqual(string.Empty, result);
         }
 

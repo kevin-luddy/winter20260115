@@ -90,11 +90,16 @@
         ContractsIndexWidget.GetData = function () {
             let dataToSave = {};
             dataToSave.model = ContractsInfoWidget.getForm("@GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM").getData();
-            let fnv = dataToSave.model.FinalNegotiatedValue.replace(/\$|,/g, '');
-            if (fnv.startsWith('(')) {
-				fnv = '-' + fnv.substring(1, fnv.length - 1);
+            if (dataToSave.model.FinalNegotiatedValue) {
+                let fnv = dataToSave.model.FinalNegotiatedValue.replace(/\$|,/g, '');
+                if (fnv.startsWith('(')) {
+                    fnv = '-' + fnv.substring(1, fnv.length - 1);
+                }
+                dataToSave.model.FinalNegotiatedValueLong = parseFloat(fnv);
+            } else {
+                dataToSave.model.FinalNegotiatedValue = "0";
+				dataToSave.model.FinalNegotiatedValueLong = 0;
             }
-			dataToSave.model.FinalNegotiatedValueLong = parseFloat(fnv);
 
             return dataToSave;
         };
@@ -160,6 +165,7 @@
             })
             window.location = url + '#Contracts';
 
+			window.onbeforeunload = null;
             window.location.reload();
         };
 
@@ -198,10 +204,11 @@
 <div id="contractsIndex" class="composite module full" style="min-height:800px;">
     @Html.Partial("ContractsInfo", Model)
 
-    <div class="module-content-data contracts">
-        @using (Html.BeginForm("", "", FormMethod.Post, new { id = "contractsForm", name = "contractsForm" }))
-        {
-            <div class="required-note"> * required for saving.</div>
-        }
-    </div>
+	<div class="module-content-data contracts">
+		@using (Html.BeginForm("", "", FormMethod.Post, new { id = "contractsForm", name = "contractsForm" }))
+		{
+			<div class="required-note"> * required for saving.</div>
+			<div class="required-note"> ** required to Status as Complete.</div>
+		}
+	</div>
 </div>

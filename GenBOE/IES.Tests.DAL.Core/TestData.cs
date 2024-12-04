@@ -17,6 +17,7 @@ namespace IES.Tests.Core
 	using DataBridge.Loaders;
 	using IES.Common.Core;
 	using IES.Common.Core.Enums;
+	using IES.Common.Core.Interfaces;
 	using IES.Common.Core.Loaders;
 	using IES.Common.Core.Models;
 	using IES.DataBridge.ModelViews;
@@ -75,7 +76,7 @@ namespace IES.Tests.Core
 		/// <summary>
 		/// Cobra Detail loader
 		/// </summary>
-		private static CobraDetailLoader cobraDetailLoader = new(Mock.Of<ILogger<CobraDetailLoader>>());
+		private static CobraDetailLoader cobraDetailLoader = new(Mock.Of<ILogger<CobraDetailLoader>>(), Mock.Of<ISecurityInformation>());
 
         /// <summary>
         /// Cobra Years loader
@@ -95,7 +96,7 @@ namespace IES.Tests.Core
         /// <summary>
         /// Rate Detail loader
         /// </summary>
-        private static RateDetailLoader rateDetailLoader = new(Mock.Of<ILogger<RateDetailLoader>>(), rateCodeYearLoader, proPricerXrefLoader);
+        private static RateDetailLoader rateDetailLoader = new(Mock.Of<ILogger<RateDetailLoader>>(), rateCodeYearLoader, proPricerXrefLoader, Mock.Of<ISecurityInformation>());
 
         /// <summary>
         /// The file attachment loader

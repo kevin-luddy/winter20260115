@@ -20,6 +20,7 @@ namespace IES.DataBridge.Loaders
 	using IES.Common.Core.Utilities;
 	using IES.Common.Core.Loaders;
 	using IES.Common.Core.Constants;
+	using IES.Common.Core.Interfaces;
 
 	/// <summary>
 	/// Rate Grid Loader
@@ -41,6 +42,11 @@ namespace IES.DataBridge.Loaders
 		/// </summary>
 		private readonly IProPricerRateCodeXrefLoader proPricerXrefLoader;
 
+		/// <summary>
+		/// security information
+		/// </summary>
+		private readonly ISecurityInformation SecurityInformation;
+
 		#region constructors
 
 		/// <summary>
@@ -49,10 +55,11 @@ namespace IES.DataBridge.Loaders
 		/// <param name="rateYearLoader">The rate year loader.</param>
 		/// <param name="proPricerXrefLoader">The proPricerXrefLoader loader.</param>
 		public RateDetailLoader(ILogger<RateDetailLoader> logger, IRateCodeYearLoader rateYearLoader, 
-			IProPricerRateCodeXrefLoader proPricerXrefLoader) : base(logger)
+			IProPricerRateCodeXrefLoader proPricerXrefLoader, ISecurityInformation SecurityInformation) : base(logger)
 		{
 			this.rateYearLoader = rateYearLoader;
 			this.proPricerXrefLoader = proPricerXrefLoader;
+			this.SecurityInformation = SecurityInformation;
 		}
 
 		#endregion
@@ -966,7 +973,7 @@ namespace IES.DataBridge.Loaders
 			if (dtosToSave.Any())
 			{
 				this.Log.LogDebug(string.Format("RateDetailLoader.BulkSave => Ntid: {2}, RateCodeId: {1}, Count: {0}",
-				dtosToSave.Count, dtosToSave.First().Id, System.Threading.Thread.CurrentPrincipal.Identity.Name));
+				dtosToSave.Count, dtosToSave.First().Id, SecurityInformation.ActiveUserNTID ?? string.Empty));
 
 				foreach (RateDetailModelView dto in dtosToSave)
 				{

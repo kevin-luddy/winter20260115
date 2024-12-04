@@ -518,11 +518,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
                 ICollection<int> boeTaskIds = new Collection<int>();
                 boeTaskIds.Add(boeTask.Id);
 
-                if (this.IsHistoricMetricDisclosureRequired(boeTaskIds, inBOE))
-                {
-                    ValidationBOE.BOEHeaderMsgs.Add(BoeDTO.HISTORIC_METRIC_DISCLOSURE_REQUIRED);
-                }
-
                 // Need to determine if there are any required Task custom fields
                 switch (boeTask.TaskElementType)
                 {
@@ -786,19 +781,20 @@ namespace GenBOE.ActionLogic.WBS.BOE
 								ValidateRequiredField(moqType.SelectedMOQType, moqType.HistoricalReferenceExplanation, "Provide an explanation of Why the Historical Reference was Selected", ws.RteSizeLimit, errorMessages);
 							}
 
-							if (moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative)
-							{
-								if (moqType.SkillMixTable != null && moqType.SkillMixTable.Any())
-								{
-									errorMessages.AddRange(ValidateSkillMixTable(new Collection<MoqTypeSelection>() { moqType }, ws.CreationDate, onButtonPress, moqEquationTotal));
-								}
-								if (moqType.CommonDisclosureTable != null && moqType.CommonDisclosureTable.Any())
-								{
-									errorMessages.AddRange(ValidateCommonDisclosureSkillMixTable(new Collection<MoqTypeSelection> { moqType }, ws.CreationDate, onButtonPress, moqEquationTotal));
-								}
-							}
+							// TODO Skill Mix V2: Commented out as we no longer validate with MOQ Type Selection but BOE Task Element ID and this is left in to retain the logic for a future task.
+							//if (moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative)
+							//{
+							//	if (moqType.SkillMixTable != null && moqType.SkillMixTable.Any())
+							//	{
+							//		errorMessages.AddRange(ValidateSkillMixTable(new Collection<MoqTypeSelection>() { moqType }, ws.CreationDate, onButtonPress, moqEquationTotal));
+							//	}
+							//	if (moqType.CommonDisclosureTable != null && moqType.CommonDisclosureTable.Any())
+							//	{
+							//		errorMessages.AddRange(ValidateCommonDisclosureSkillMixTable(new Collection<MoqTypeSelection> { moqType }, ws.CreationDate, onButtonPress, moqEquationTotal));
+							//	}
+							//}
 
-                            break;
+							break;
                         case (MOQType.CostEstimatingRelationships):
                             ValidateRequiredField(moqType.SelectedMOQType, moqType.CerName, "CER tool name", Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
                             ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
@@ -839,213 +835,217 @@ namespace GenBOE.ActionLogic.WBS.BOE
             return errorMessages;
         }
 
-		/// <summary>
-		/// Validate the Skill Mix Table for any errors
-		/// </summary>
-		/// <param name="moqTypes">The MOQ Types</param>
-		/// <param name="workspaceCreationDate">The workspace creation date</param>
-		/// <param name="onButtonPress">Is this being validated for Validate BOE or Submit For Approval?</param>
-		/// <param name="moqEquationTotal">The Moq equation total</param>
-		/// <returns>A collection of any validation errors/messages</returns>
-		private ICollection<string> ValidateSkillMixTable(ICollection<MoqTypeSelection> moqTypes, DateTime? workspaceCreationDate, bool onButtonPress, decimal? moqEquationTotal = null)
-		{
-			ICollection<string> errorMessages = new Collection<string>();
+		///// <summary>
+		///// TODO Skill Mix V2: Commented out as we no longer validate with MOQ Type Selection but BOE Task Element ID and this is left in to retain the logic for a future task.
+		///// Validate the Skill Mix Table for any errors
+		///// </summary>
+		///// <param name="moqTypes">The MOQ Types</param>
+		///// <param name="workspaceCreationDate">The workspace creation date</param>
+		///// <param name="onButtonPress">Is this being validated for Validate BOE or Submit For Approval?</param>
+		///// <param name="moqEquationTotal">The Moq equation total</param>
+		///// <returns>A collection of any validation errors/messages</returns>
+		//private ICollection<string> ValidateSkillMixTable(ICollection<MoqTypeSelection> moqTypes, DateTime? workspaceCreationDate, bool onButtonPress, decimal? moqEquationTotal = null)
+		//{
+		//	ICollection<string> errorMessages = new Collection<string>();
 
-			if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(workspaceCreationDate) && moqTypes != null)
-			{
-				IList<SkillMixModelView> skillMixRowsEmptyRationales = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => string.IsNullOrEmpty(x.Rationale)).ToList();
-				IList<SkillMixModelView> skillMixRowsEmptyIncludeds = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => !x.Included.HasValue).ToList();
-				IList<SkillMixModelView> skillMixRowsEmptyBoeMixWhenIncluded = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => x.Included.HasValue && x.Included.Value && !x.BOESkillMix.HasValue).ToList();
-				IList<SkillMixModelView> skillMixRowsInvalidBoeMixWhenIncluded = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => x.Included.HasValue && x.Included.Value && x.BOESkillMix.HasValue && x.BOESkillMix.Value <= 0).ToList();
-				IList<SkillMixModelView> skillMixRowsExceedChars = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
-				IList<CommonDisclosureModelView> commonDisclosureRowsEmptyIncludeds = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable).Where(x => !x.Included.HasValue).ToList();
-				bool doesEmptyNullCurrentResourceExist = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Any(x => string.IsNullOrEmpty(x.ResourceNew) && x.Included.HasValue && x.Included.Value);
-				decimal totalSKillMixRowsBOESkillMix = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
-				decimal totalSKillMixRowsProposedHours = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Sum(p => p.ProposedHours);
+		//	if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(workspaceCreationDate) && moqTypes != null)
+		//	{
+		//		IList<SkillMixModelView> skillMixRowsEmptyRationales = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => string.IsNullOrEmpty(x.Rationale)).ToList();
+		//		IList<SkillMixModelView> skillMixRowsEmptyIncludeds = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => !x.Included.HasValue).ToList();
+		//		IList<SkillMixModelView> skillMixRowsEmptyBoeMixWhenIncluded = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => x.Included.HasValue && x.Included.Value && !x.BOESkillMix.HasValue).ToList();
+		//		IList<SkillMixModelView> skillMixRowsInvalidBoeMixWhenIncluded = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => x.Included.HasValue && x.Included.Value && x.BOESkillMix.HasValue && x.BOESkillMix.Value <= 0).ToList();
+		//		IList<SkillMixModelView> skillMixRowsExceedChars = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
+		//		IList<CommonDisclosureModelView> commonDisclosureRowsEmptyIncludeds = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable).Where(x => !x.Included.HasValue).ToList();
+		//		bool doesEmptyNullCurrentResourceExist = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Any(x => string.IsNullOrEmpty(x.ResourceNew) && x.Included.HasValue && x.Included.Value);
+		//		decimal totalSKillMixRowsBOESkillMix = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
+		//		decimal totalSKillMixRowsProposedHours = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Sum(p => p.ProposedHours);
 
-				if (onButtonPress)
-				{
-					foreach (string skillMixResourceNew in skillMixRowsEmptyRationales.Select(x => x.ResourceNew))
-					{
-						errorMessages.Add(string.Format("Current Skill Mix Table: Rationale is missing for {0}.", skillMixResourceNew));
-					}
-				}
+		//		if (onButtonPress)
+		//		{
+		//			foreach (string skillMixResourceNew in skillMixRowsEmptyRationales.Select(x => x.ResourceNew))
+		//			{
+		//				errorMessages.Add(string.Format("Current Skill Mix Table: Rationale is missing for {0}.", skillMixResourceNew));
+		//			}
+		//		}
 
-				// This check applies to both Space and RMS
-				if (doesEmptyNullCurrentResourceExist)
-				{
-					errorMessages.Add("Current Skill Mix Table: Included cannot be set to 'Yes' for an empty/null Current Resource.");
-				}
+		//		// This check applies to both Space and RMS
+		//		if (doesEmptyNullCurrentResourceExist)
+		//		{
+		//			errorMessages.Add("Current Skill Mix Table: Included cannot be set to 'Yes' for an empty/null Current Resource.");
+		//		}
 
-				foreach (string skillMixResourceNew in skillMixRowsEmptyIncludeds.Select(x => x.ResourceNew))
-				{
-					errorMessages.Add(string.Format("Current Skill Mix Table: Included is missing for {0}.", skillMixResourceNew));
-				}
+		//		foreach (string skillMixResourceNew in skillMixRowsEmptyIncludeds.Select(x => x.ResourceNew))
+		//		{
+		//			errorMessages.Add(string.Format("Current Skill Mix Table: Included is missing for {0}.", skillMixResourceNew));
+		//		}
 
-				foreach (string skillMixResourceNew in skillMixRowsEmptyBoeMixWhenIncluded.Select(x => x.ResourceNew))
-				{
-					errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix is missing for {0}.", skillMixResourceNew));
-				}
+		//		foreach (string skillMixResourceNew in skillMixRowsEmptyBoeMixWhenIncluded.Select(x => x.ResourceNew))
+		//		{
+		//			errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix is missing for {0}.", skillMixResourceNew));
+		//		}
 
-				foreach (string skillMixResourceNew in skillMixRowsInvalidBoeMixWhenIncluded.Select(x => x.ResourceNew))
-				{
-					errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix has invalid value for {0}.", skillMixResourceNew));
-				}
+		//		foreach (string skillMixResourceNew in skillMixRowsInvalidBoeMixWhenIncluded.Select(x => x.ResourceNew))
+		//		{
+		//			errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix has invalid value for {0}.", skillMixResourceNew));
+		//		}
 
-				if (totalSKillMixRowsBOESkillMix != 100)
-				{
-					errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix total must be 100%"));
-				}
+		//		if (totalSKillMixRowsBOESkillMix != 100)
+		//		{
+		//			errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix total must be 100%"));
+		//		}
 
-				if (moqEquationTotal.HasValue && totalSKillMixRowsProposedHours != moqEquationTotal.Value)
-				{
-					errorMessages.Add(string.Format("Current Skill Mix Table: Proposed Hours total must be equal to Moq Equation Total"));
-				}
+		//		if (moqEquationTotal.HasValue && totalSKillMixRowsProposedHours != moqEquationTotal.Value)
+		//		{
+		//			errorMessages.Add(string.Format("Current Skill Mix Table: Proposed Hours total must be equal to Moq Equation Total"));
+		//		}
 
-				foreach (string skillMixResourceNew in skillMixRowsExceedChars.Select(x => x.ResourceNew))
-				{
-					errorMessages.Add(string.Format("Current Skill Mix Table: The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceNew, 255));
-				}
+		//		foreach (string skillMixResourceNew in skillMixRowsExceedChars.Select(x => x.ResourceNew))
+		//		{
+		//			errorMessages.Add(string.Format("Current Skill Mix Table: The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceNew, 255));
+		//		}
 
-				foreach (string skillMixResourceNew in commonDisclosureRowsEmptyIncludeds.Select(x => x.ResourceID))
-				{
-					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: Included is missing for {0}.", skillMixResourceNew));
-				}
-			}
+		//		foreach (string skillMixResourceNew in commonDisclosureRowsEmptyIncludeds.Select(x => x.ResourceID))
+		//		{
+		//			errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: Included is missing for {0}.", skillMixResourceNew));
+		//		}
+		//	}
 
-			return errorMessages;
-		}
+		//	return errorMessages;
+		//}
 
-		/// <summary>
-		/// Validate the Common Disclosure Skill Mix Table for any errors
-		/// </summary>
-		/// <param name="moqTypes">The MOQ Types</param>
-		/// <param name="workspaceCreationDate">The workspace creation date</param>
-		/// <param name="onButtonPress">Is this being validated for Validate BOE or Submit For Approval?</param>
-		/// <returns>A collection of validation errors/messages</returns>
-		private ICollection<string> ValidateCommonDisclosureSkillMixTable(ICollection<MoqTypeSelection> moqTypes, DateTime? workspaceCreationDate, bool onButtonPress, decimal? moqEquationTotal = null)
-		{
-			ICollection<string> errorMessages = new Collection<string>();
+		///// <summary>
+		///// TODO Skill Mix V2: Commented out as we no longer validate with MOQ Type Selection but BOE Task Element ID and this is left in to retain the logic for a future task.
+		///// Validate the Common Disclosure Skill Mix Table for any errors
+		///// </summary>
+		///// <param name="moqTypes">The MOQ Types</param>
+		///// <param name="workspaceCreationDate">The workspace creation date</param>
+		///// <param name="onButtonPress">Is this being validated for Validate BOE or Submit For Approval?</param>
+		///// <returns>A collection of validation errors/messages</returns>
+		//private ICollection<string> ValidateCommonDisclosureSkillMixTable(ICollection<MoqTypeSelection> moqTypes, DateTime? workspaceCreationDate, bool onButtonPress, decimal? moqEquationTotal = null)
+		//{
+		//	ICollection<string> errorMessages = new Collection<string>();
 
-			if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(workspaceCreationDate) && moqTypes != null)
-			{
-				IList<CommonDisclosureModelView> commonDisclosureRowsEmptyRationales = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable)
-																				.Where(x => string.IsNullOrEmpty(x.Rationale)).ToList();
-				IList<CommonDisclosureModelView> commonDisclosureRowsExceedChars = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable)
-																				.Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
-				IList<CommonDisclosureModelView> commonDisclosureRowsEmptyBoeSkillMixWhenIncluded = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable)
-																				.Where(x => x.Included.HasValue && x.Included.Value && !x.BOESkillMix.HasValue).ToList();
-				IList<CommonDisclosureModelView> commonDisclosureRowsInvalidBoeSkillMixWhenIncluded = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable)
-																				.Where(x => x.Included.HasValue && x.Included.Value && x.BOESkillMix.HasValue && x.BOESkillMix.Value <= 0).ToList();
-				IList<CommonDisclosureModelView> commonDisclosureIncludedHasTrueValue = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable).Where(x => x.Included.HasValue && x.Included.Value).ToList();
-				decimal totalCommonDisclosureRowsBOESkillMix = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable).Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
-				decimal totalCommonDisclosureRowsProposedHours = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable).Sum(p => p.ProposedHours);
-				IList<CommonDisclosureModelView> commonDisclosureHasBRC = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable)
-																				.Where(x => string.IsNullOrEmpty(x.BusinessResourceID)).ToList();
+		//	if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(workspaceCreationDate) && moqTypes != null)
+		//	{
+		//		IList<CommonDisclosureModelView> commonDisclosureRowsEmptyRationales = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable)
+		//																		.Where(x => string.IsNullOrEmpty(x.Rationale)).ToList();
+		//		IList<CommonDisclosureModelView> commonDisclosureRowsExceedChars = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable)
+		//																		.Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
+		//		IList<CommonDisclosureModelView> commonDisclosureRowsEmptyBoeSkillMixWhenIncluded = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable)
+		//																		.Where(x => x.Included.HasValue && x.Included.Value && !x.BOESkillMix.HasValue).ToList();
+		//		IList<CommonDisclosureModelView> commonDisclosureRowsInvalidBoeSkillMixWhenIncluded = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable)
+		//																		.Where(x => x.Included.HasValue && x.Included.Value && x.BOESkillMix.HasValue && x.BOESkillMix.Value <= 0).ToList();
+		//		IList<CommonDisclosureModelView> commonDisclosureIncludedHasTrueValue = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable).Where(x => x.Included.HasValue && x.Included.Value).ToList();
+		//		decimal totalCommonDisclosureRowsBOESkillMix = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable).Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
+		//		decimal totalCommonDisclosureRowsProposedHours = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable).Sum(p => p.ProposedHours);
+		//		IList<CommonDisclosureModelView> commonDisclosureHasBRC = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable)
+		//																		.Where(x => string.IsNullOrEmpty(x.BusinessResourceID)).ToList();
 
-				if (onButtonPress)
-				{ 
-					foreach (string skillMixResourceNew in commonDisclosureRowsEmptyRationales.Select(x => x.ResourceID))
-					{
-						errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: Rationale is missing for {0}.", skillMixResourceNew));
-					}
-				}
-				foreach (string skillMixResourceNew in commonDisclosureRowsExceedChars.Select(x => x.ResourceID))
-				{
-					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceNew, 255));
-				}
+		//		if (onButtonPress)
+		//		{ 
+		//			foreach (string skillMixResourceNew in commonDisclosureRowsEmptyRationales.Select(x => x.ResourceID))
+		//			{
+		//				errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: Rationale is missing for {0}.", skillMixResourceNew));
+		//			}
+		//		}
+		//		foreach (string skillMixResourceNew in commonDisclosureRowsExceedChars.Select(x => x.ResourceID))
+		//		{
+		//			errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceNew, 255));
+		//		}
 
-				foreach (string skillMixResourceNew in commonDisclosureRowsEmptyBoeSkillMixWhenIncluded.Select(x => x.ResourceID))
-				{
-					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BOE Skill Mix is missing for {0}.", skillMixResourceNew));
-				}
+		//		foreach (string skillMixResourceNew in commonDisclosureRowsEmptyBoeSkillMixWhenIncluded.Select(x => x.ResourceID))
+		//		{
+		//			errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BOE Skill Mix is missing for {0}.", skillMixResourceNew));
+		//		}
 
-				foreach (string skillMixResourceNew in commonDisclosureRowsInvalidBoeSkillMixWhenIncluded.Select(x => x.ResourceID))
-				{
-					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BOE skill Mix has invalid value for {0}.", skillMixResourceNew));
-				}
+		//		foreach (string skillMixResourceNew in commonDisclosureRowsInvalidBoeSkillMixWhenIncluded.Select(x => x.ResourceID))
+		//		{
+		//			errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BOE skill Mix has invalid value for {0}.", skillMixResourceNew));
+		//		}
 
-				if (commonDisclosureIncludedHasTrueValue.Count <= 0)
-				{
-					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: At least one Resource has to be included"));
-				}
+		//		if (commonDisclosureIncludedHasTrueValue.Count <= 0)
+		//		{
+		//			errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: At least one Resource has to be included"));
+		//		}
 
-				if (totalCommonDisclosureRowsBOESkillMix != 100)
-				{
-					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BOE Skill Mix total must be 100%"));
-				}
+		//		if (totalCommonDisclosureRowsBOESkillMix != 100)
+		//		{
+		//			errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BOE Skill Mix total must be 100%"));
+		//		}
 
-				if (moqEquationTotal.HasValue && totalCommonDisclosureRowsProposedHours != moqEquationTotal.Value)
-				{
-					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: Proposed Hours total must be equal to MoqTotal"));
-				}
+		//		if (moqEquationTotal.HasValue && totalCommonDisclosureRowsProposedHours != moqEquationTotal.Value)
+		//		{
+		//			errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: Proposed Hours total must be equal to MoqTotal"));
+		//		}
 
-				foreach (string commonDisclosureRow in commonDisclosureHasBRC.Select(x => x.ResourceID).Distinct())
-				{
-					errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BRC must be selected for each occurance of Resource {0}.", commonDisclosureRow));
-				}
+		//		foreach (string commonDisclosureRow in commonDisclosureHasBRC.Select(x => x.ResourceID).Distinct())
+		//		{
+		//			errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BRC must be selected for each occurance of Resource {0}.", commonDisclosureRow));
+		//		}
 
-				ValidateResourceAndBRCCombos(moqTypes, errorMessages);
+		//		ValidateResourceAndBRCCombos(moqTypes, errorMessages);
 
-				ValidateHistoricalHours(moqTypes, errorMessages);
+		//		// ValidateHistoricalHours(moqTypes, errorMessages);
 
-			}
+		//	}
 
-			return errorMessages;
-		}
+		//	return errorMessages;
+		//}
 
-		/// <summary>
-		/// Validate  each Resource and BRC combo is unique in the Common Disclosure Table
-		/// </summary>
-		/// <param name="moqTypes">The MOQ Types</param>
-		/// <param name="errorMessages">Error Messages</param>
-		private static void ValidateResourceAndBRCCombos(ICollection<MoqTypeSelection> moqTypes, ICollection<String> errorMessages)
-		{
-			foreach (MoqTypeSelection moqType in moqTypes)
-			{
-				Dictionary<string, List<CommonDisclosureModelView>> resourceToCDRowMap = moqType.CommonDisclosureTable != null && moqType.CommonDisclosureTable.Any() ? moqType.CommonDisclosureTable.GroupBy(s => s.ResourceID).ToDictionary(g => g.Key, g => g.ToList()) : null;
-				resourceToCDRowMap.ForEach(pair =>
-				{
-					//don't need to count the null ones - that validation is checked above
-					List<CommonDisclosureModelView> brcsForResource = pair.Value.Where(x => !string.IsNullOrEmpty(x.BusinessResourceID)).ToList();
-					int brcsForResourceCount = brcsForResource.Count();
-					bool isUnique = brcsForResource.Select(x => x.BusinessResourceID).Distinct().ToList().Count() == brcsForResourceCount;
-					if (!isUnique)
-					{
-						errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: Each BRC must be unique for Resource {0}.", pair.Key));
-					}
-				});
-			}
-		}
+		///// <summary>
+		///// TODO Skill Mix V2: Commented out as we no longer validate with MOQ Type Selection but BOE Task Element ID and this is left in to retain the logic for a future task.
+		///// Validate  each Resource and BRC combo is unique in the Common Disclosure Table
+		///// </summary>
+		///// <param name="moqTypes">The MOQ Types</param>
+		///// <param name="errorMessages">Error Messages</param>
+		//private static void ValidateResourceAndBRCCombos(ICollection<MoqTypeSelection> moqTypes, ICollection<String> errorMessages)
+		//{
+		//	foreach (MoqTypeSelection moqType in moqTypes)
+		//	{
+		//		Dictionary<string, List<CommonDisclosureModelView>> resourceToCDRowMap = moqType.CommonDisclosureTable != null && moqType.CommonDisclosureTable.Any() ? moqType.CommonDisclosureTable.GroupBy(s => s.ResourceID).ToDictionary(g => g.Key, g => g.ToList()) : null;
+		//		resourceToCDRowMap.ForEach(pair =>
+		//		{
+		//			//don't need to count the null ones - that validation is checked above
+		//			List<CommonDisclosureModelView> brcsForResource = pair.Value.Where(x => !string.IsNullOrEmpty(x.BusinessResourceID)).ToList();
+		//			int brcsForResourceCount = brcsForResource.Count();
+		//			bool isUnique = brcsForResource.Select(x => x.BusinessResourceID).Distinct().ToList().Count() == brcsForResourceCount;
+		//			if (!isUnique)
+		//			{
+		//				errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: Each BRC must be unique for Resource {0}.", pair.Key));
+		//			}
+		//		});
+		//	}
+		//}
 
-		/// <summary>
-		/// Validate  each Resource and BRC combo is unique in the Common Disclosure Table
-		/// </summary>
-		/// <param name="moqTypes">The MOQ Types</param>
-		/// <param name="errorMessages">Error Messages</param>
-		private static void ValidateHistoricalHours(ICollection<MoqTypeSelection> moqTypes, ICollection<String> errorMessages)
-		{
-			foreach (MoqTypeSelection moqType in moqTypes)
-			{
-				Dictionary<string, decimal> resourceToHistoricalHoursMap = new Dictionary<string, decimal>();
-				//TBD: for RMS, might have duplicate new resources and then we'll have to total historical
-				if (moqType.SkillMixTable != null && moqType.SkillMixTable.Any())
-				{
-					moqType.SkillMixTable.Where(s => s.Included.HasValue && s.Included.Value && !string.IsNullOrEmpty(s.ResourceNew)).ForEach(s => resourceToHistoricalHoursMap.Add(s.ResourceNew, s.HistoricalHours));
-				}
+		///// <summary>
+		///// TODO Skill Mix V2: Commented out as we no longer validate with MOQ Type Selection but BOE Task Element ID and this is left in to retain the logic for a future task.
+		///// Validate  each Resource and BRC combo is unique in the Common Disclosure Table
+		///// </summary>
+		///// <param name="moqTypes">The MOQ Types</param>
+		///// <param name="errorMessages">Error Messages</param>
+		//private static void ValidateHistoricalHours(ICollection<MoqTypeSelection> moqTypes, ICollection<String> errorMessages)
+		//{
+		//	foreach (MoqTypeSelection moqType in moqTypes)
+		//	{
+		//		Dictionary<string, decimal> resourceToHistoricalHoursMap = new Dictionary<string, decimal>();
+		//		//TBD: for RMS, might have duplicate new resources and then we'll have to total historical
+		//		if (moqType.SkillMixTable != null && moqType.SkillMixTable.Any())
+		//		{
+		//			moqType.SkillMixTable.Where(s => s.Included.HasValue && s.Included.Value && !string.IsNullOrEmpty(s.ResourceNew)).ForEach(s => resourceToHistoricalHoursMap.Add(s.ResourceNew, s.HistoricalHours));
+		//		}
 
-				Dictionary<string, List<CommonDisclosureModelView>> resourceToCDRowMap = moqType.CommonDisclosureTable != null && moqType.CommonDisclosureTable.Any() ? moqType.CommonDisclosureTable.GroupBy(s => s.ResourceID).ToDictionary(g => g.Key, g => g.ToList()) : null;
-				resourceToCDRowMap.ForEach(pair =>
-				{
-					decimal historicalHoursTotal = pair.Value.Sum(v => v.HistoricalHours);
+		//		Dictionary<string, List<CommonDisclosureModelView>> resourceToCDRowMap = moqType.CommonDisclosureTable != null && moqType.CommonDisclosureTable.Any() ? moqType.CommonDisclosureTable.GroupBy(s => s.ResourceID).ToDictionary(g => g.Key, g => g.ToList()) : null;
+		//		resourceToCDRowMap.ForEach(pair =>
+		//		{
+		//			decimal historicalHoursTotal = pair.Value.Sum(v => v.HistoricalHours);
 
-					if (resourceToHistoricalHoursMap.TryGetValue(pair.Key, out decimal historicalHours) && historicalHoursTotal != historicalHours)
-					{
-						errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: Historical Hours for all rows in group for Resource {0} must total {1}, matching the row in the Skill Mix table.", pair.Key, historicalHours));
-					}
-				});
-			}
-		}
+		//			if (resourceToHistoricalHoursMap.TryGetValue(pair.Key, out decimal historicalHours) && historicalHoursTotal != historicalHours)
+		//			{
+		//				errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: Historical Hours for all rows in group for Resource {0} must total {1}, matching the row in the Skill Mix table.", pair.Key, historicalHours));
+		//			}
+		//		});
+		//	}
+		//}
 
 		/// <summary>
 		/// Validates a required field
@@ -1085,7 +1085,9 @@ namespace GenBOE.ActionLogic.WBS.BOE
         {
             decimal TotalLaborSpreadValue = 0;
 
-            foreach (ResourceTypeDto labor in boeTask.taskElementLabors)
+			IDictionary<int, string> resourceIdToSegmentRegion = workspace.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
+
+			foreach (ResourceTypeDto labor in boeTask.taskElementLabors)
             {
                 bool invalidCostSpreadPrecision = false;
                 bool invalidHoursSpreadPrecision = false;
@@ -1099,7 +1101,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
                 }
 
 				// need to verfy a Resource or Business Resource Code exists
-				string requiredMessage = BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(labor, workspace.Shortname);
+				string requiredMessage = BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(labor, resourceIdToSegmentRegion, workspace.Shortname);
                 if (!string.IsNullOrEmpty(requiredMessage))
                 {
 					LaborTypeMessages.Add(requiredMessage);
@@ -1186,7 +1188,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
                 if (LaborTypeMessages.Any())
                 {
-					BRCValidationUtility.PopulateResourceAndBusinessResourceCodeHeaders(boeLabor, labor, resourcesFromTask, businessResourceCodesFromTask, workspace.Shortname);	
+					BRCValidationUtility.PopulateResourceAndBusinessResourceCodeHeaders(boeLabor, labor, resourcesFromTask, businessResourceCodesFromTask, resourceIdToSegmentRegion, workspace.Shortname);	
 
                     boeLabor.LaborTypeValidationMsgs = LaborTypeMessages;
                     boeTasks.LaborTypes.Add(boeLabor);
@@ -1686,18 +1688,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
         protected virtual string FormatMOQTextErrorMessage(string MOQTextErrorMessage)
         {
             return string.Format(MOQTextErrorMessage, CommonConstants.BOE_MOQ_TEXT_LABEL);
-        }
-
-        /// <summary>
-        /// Return a <see cref="bool"/> indicating if the historic metric disclosure is required
-        /// </summary>
-        /// <param name="boeTaskIds">The id's of the task elements to retrieve metrics</param>
-        /// <param name="boe">the boe containing the flag indicating if the historic metric disclosure is required</param>
-        /// <returns>required if true, not required otherwise</returns>
-        protected virtual bool IsHistoricMetricDisclosureRequired(ICollection<int> boeTaskIds, FullBoe boe)
-        {
-           // Metrics deprecated for SSC.
-           return false;
         }
 
         /// <summary>

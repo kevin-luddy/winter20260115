@@ -213,9 +213,11 @@ namespace GenTRAC.Tests.ActionLogic
 
             // setup mock data
             this.userMapper.Setup(x => x.GetActiveUser()).Returns(userPricer);
+			this.userMapper.Setup(x => x.GetAllGroups()).Returns(new List<UserDTO>());
             this.proposalLoader.Setup(x => x.GetProposalsByUser(1, null, null, null, userPricer.Ntid, false, string.Empty, null)).Returns(proposals);
             this.orgStructureDataMapper.Setup(x => x.GetProgramAreaDynamicHelpText()).Returns(programAreaHelpText);
             this.workspaceLoader.Setup(x => x.GetAllWsNamesAndTrackingNumberInfo()).Returns(new Collection<GenBOE.Dtos.WorkspaceDTO>());
+			this.adUtils.Setup(x => x.GetGroupsForUser(It.IsAny<string>())).Returns(new List<GroupData>());
 
             HomeProposalModelView homeProposalView = sut.GetRolesForNewProposal();
 

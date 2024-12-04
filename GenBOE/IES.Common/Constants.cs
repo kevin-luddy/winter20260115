@@ -209,10 +209,20 @@ namespace IES.Common
         /// </summary>
         public const string PROPOSAL_CLASS_FORECASTED = "Forecasted";
 
-        /// <summary>
-        /// The length of the YYYY-NNNNN legacy tracking number
-        /// </summary>
-        public const int LEGACY_TRACKING_NUMBER_LENGTH = 10;
+		/// <summary>
+		/// Proposal Class - ROM
+		/// </summary>
+		public const string PROPOSAL_CLASS_ROM = "ROM";
+
+		/// <summary>
+		/// Proposal Class - NTE
+		/// </summary>
+		public const string PROPOSAL_CLASS_NTE = "NTE";
+
+		/// <summary>
+		/// The length of the YYYY-NNNNN legacy tracking number
+		/// </summary>
+		public const int LEGACY_TRACKING_NUMBER_LENGTH = 10;
 
         /// <summary>
         /// The first checklist row comment version that has the PricerPageNumber and PricerRowComment features
@@ -664,14 +674,34 @@ namespace IES.Common
             /// </summary>
             public const string USER_AND_GROUP_IDS = "UserAndGroupIDs";
         }
-        #endregion SSRS Report
+		#endregion SSRS Report
 
-        #region Contracts
+		#region Contracts
 
-        /// <summary>
-        /// Validation failed for Customer Due Date
-        /// </summary>
-        public const string INVALID_CUSTOMER_DUE_DATE = "Customer Due Date is required.";
+		/// <summary>
+		/// Validation failed for Has Insurance been Proposed direct
+		/// </summary>
+		public const string INVALID_INSURANCE_DIRECT = "Has insurance been proposed direct is required.";
+
+		/// <summary>
+		/// Validation failed for Insurance Type
+		/// </summary>
+		public const string INVALID_INSURANCE_TYPE = "Insurance Type is required.";
+
+		/// <summary>
+		/// Validation failed for Proposed Insurance value
+		/// </summary>
+		public const string INVALID_PROPOSED_INSURANCE = "Proposed Insurance is required.";
+
+		/// <summary>
+		/// Validation failed for Negotiated Insurance value
+		/// </summary>
+		public const string INVALID_NEGOTIATED_INSURANCE = "Negotiated Insurance required."; 
+
+		/// <summary>
+		/// Validation failed for Customer Due Date
+		/// </summary>
+		public const string INVALID_CUSTOMER_DUE_DATE = "Customer Due Date is required.";
 
         /// <summary>
         /// Validation failed for Cage Code
@@ -686,7 +716,7 @@ namespace IES.Common
         /// <summary>
         /// Validation failed for Negotiations Submitted Date
         /// </summary>
-        public const string INVALID_NEGOTIATIONS_SUBMITTED_DATE = "Negotiations Submitted Date is required.";
+        public const string INVALID_NEGOTIATIONS_SUBMITTED_DATE = "Date Confirmation of Negotiations Submitted is required.";
 
         /// <summary>
         /// Validation failed for MOD Completion Date

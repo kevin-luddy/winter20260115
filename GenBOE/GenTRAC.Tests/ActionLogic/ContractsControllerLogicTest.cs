@@ -28,7 +28,8 @@ namespace GenTRAC.Tests.ActionLogic
     using GenTRAC.Objects.FullObject;
     using GenTRAC.Tests.Helper;
     using IES.Common;
-    using IES.Common.PickList;
+	using IES.Common.classes;
+	using IES.Common.PickList;
     using Microsoft.Practices.Unity;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
@@ -111,13 +112,18 @@ namespace GenTRAC.Tests.ActionLogic
         /// </summary>
         private Mock<ApprovalsControllerLogic> approvalsLogic;
 
-        #endregion
+		/// <summary>
+		/// AD utilities
+		/// </summary>
+		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities;
 
-        /// <summary>
-        /// Create the system
-        /// </summary>
-        /// <returns>A ContractsControllerLogic object</returns>
-        private ContractsControllerLogic CreateSystem()
+		#endregion
+
+		/// <summary>
+		/// Create the system
+		/// </summary>
+		/// <returns>A ContractsControllerLogic object</returns>
+		private ContractsControllerLogic CreateSystem()
         {
             this.securityAccess = new Mock<ISecurityAccess>();
             this.proposalLoader = new Mock<IProposalLoader>();
@@ -133,7 +139,9 @@ namespace GenTRAC.Tests.ActionLogic
             IES.Common.classes.GenBOEUnityContainer.Container.RegisterInstance(this.emailer.Object);
             this.retriever = new Mock<IRetriever>();
             IES.Common.classes.GenBOEUnityContainer.Container.RegisterInstance(this.retriever.Object);
-            this.proposalLogic = new Mock<ProposalControllerLogic>(this.securityAccess.Object, this.proposalLoader.Object, It.IsAny<IValidationMethods>(), this.proposalMediator.Object, this.userMapper.Object,
+			this.activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
+			this.proposalLogic = new Mock<ProposalControllerLogic>(this.securityAccess.Object, this.proposalLoader.Object, It.IsAny<IValidationMethods>(), this.proposalMediator.Object, this.userMapper.Object,
                 this.objectFactory.Object, It.IsAny<IOrgStructureDataMapper>(), It.IsAny<IProposalPermissionMediator>(), It.IsAny<ISecurityInformation>(), It.IsAny<ICacheDataLoader>(),
                 It.IsAny<IPickListMapper>(), It.IsAny<IUserLoader>(), this.approvalsLoader.Object, this.proposalChecklistLoader.Object, this.checklistMediator.Object, It.IsAny<IWorkspaceDTODataLoader>(),
                 It.IsAny<IPermissionsDTODataLoader>(), this.emailer.Object);
@@ -330,6 +338,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id, It.IsAny<bool>())).Returns(new ProposalUserInformationModelView());
             this.contractsLoader.Setup(x => x.GetContractForProposal(It.IsAny<int>())).Returns(contractDto);
             this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(fp.CurrentUser);
+			this.userMapper.Setup(x => x.GetById(It.IsAny<int>())).Returns(fp.CurrentUser);
             this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(fp);
 
             await sut.SetProposalLost(fp.Id, errors);
@@ -714,22 +723,29 @@ namespace GenTRAC.Tests.ActionLogic
                 EppDelegationAuthority = (int)EppDelegationAuthority.Space,
                 SpaceEppDate = DateTime.Now,
                 PreSpaceEppDate = DateTime.Now,
-                ProgramEppDate = DateTime.Now,
+                ProgramEppDate = DateTime.Now.AddHours(-2),
                 CageCode = "ABC123",
-                LobEppDate = DateTime.Now,
+                LobEppDate = DateTime.Now.AddHours(-1),
                 CustomerDueDate = DateTime.Now
             };
 
-            ProposalDto proposal = new ProposalDto() { AgreementDate = DateTime.Now };
+            ProposalDto proposal = new ProposalDto() { AgreementDate = DateTime.Now, IsRomNte = false };
             this.proposalLoader.Setup(x => x.GetById(dto.ProposalId)).Returns(proposal);
             this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(new FullProposal(proposal));
 
-            bool isValid = sut.ContractDataValidForCompleteProposalSave(dto, messages);
+            bool isValid = sut.ContractDataValidForCompleteProposalSave(dto, new FullProposal(proposal), messages);
 
             Assert.IsFalse(isValid);
-            Assert.AreEqual(4, messages.Count);
-            Assert.IsTrue(messages.Contains(Constants.INVALID_MOD_COMPLETION_DATE));
-            Assert.IsTrue(messages.Contains(Constants.INVALID_LM_WIN_LOSS));
+            Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.Contains(Constants.INVALID_LM_WIN_LOSS));
+
+			dto.LmWon = true;
+			messages = new List<string>();
+			isValid = sut.ContractDataValidForCompleteProposalSave(dto, new FullProposal(proposal), messages);
+
+			Assert.IsFalse(isValid);
+			Assert.AreEqual(3, messages.Count);
+			Assert.IsTrue(messages.Contains(Constants.INVALID_MOD_COMPLETION_DATE));
             Assert.IsTrue(messages.Contains(Constants.INVALID_NEGOTIATIONS_SUBMITTED_DATE));
             Assert.IsTrue(messages.Contains(Constants.INVALID_FINAL_NEGOTIATED_VALUE));
         }
@@ -765,7 +781,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.proposalLoader.Setup(x => x.GetById(dto.ProposalId)).Returns(proposal);
             this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(new FullProposal(proposal));
 
-            bool isValid = sut.ContractDataValidForCompleteProposalSave(dto, messages);
+            bool isValid = sut.ContractDataValidForCompleteProposalSave(dto, new FullProposal(proposal), messages);
 
             Assert.IsTrue(isValid);
             Assert.AreEqual(0, messages.Count);
@@ -875,7 +891,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.proposalLoader.Setup(x => x.GetById(mv.ProposalId)).Returns(proposal);
             this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(new FullProposal(proposal));
 
-            ICollection<string> result = sut.ValidateContractModelView(mv);
+            ICollection<string> result = sut.ValidateContractModelView(mv, new FullProposal(proposal));
 
             Assert.IsFalse(result.Any());
         }
@@ -899,7 +915,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(new FullProposal(proposal));
             this.retriever.Setup(x => x.GetProposalChecklists(proposal.Id)).Returns(new List<ProposalChecklistDto>() { new ProposalChecklistDto() { EstimatingSubmitsToContractsDate = DateTime.Now } });
 
-            ICollection<string> result = sut.ValidateContractModelView(mv);
+            ICollection<string> result = sut.ValidateContractModelView(mv, new FullProposal(proposal));
 
             Assert.IsTrue(result.Any());
             Assert.AreEqual(1, result.Count);
@@ -925,7 +941,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(new FullProposal(proposal));
             this.retriever.Setup(x => x.GetProposalChecklists(proposal.Id)).Returns(new List<ProposalChecklistDto>() { new ProposalChecklistDto() { EstimatingSubmitsToContractsDate = DateTime.Now } });
 
-            ICollection<string> result = sut.ValidateContractModelView(mv);
+            ICollection<string> result = sut.ValidateContractModelView(mv, new FullProposal(proposal));
 
             Assert.IsFalse(result.Any());
         }
@@ -949,7 +965,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.proposalLoader.Setup(x => x.GetById(mv.ProposalId)).Returns(proposal);
             this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(new FullProposal(proposal));
 
-            ICollection<string> result = sut.ValidateContractModelView(mv);
+            ICollection<string> result = sut.ValidateContractModelView(mv, new FullProposal(proposal));
 
             Assert.IsTrue(result.Any());
             Assert.AreEqual(1, result.Count);

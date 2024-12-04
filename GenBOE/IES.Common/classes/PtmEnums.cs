@@ -1415,13 +1415,6 @@ namespace IES.Common
 		NewContract = 1,
 
 		/// <summary>
-		/// Letter Contract
-		/// </summary>
-		[Display(Name = "Letter Contract")]
-		[Description("Letter Contract")]
-		LetterContract = 2,
-
-		/// <summary>
 		/// Change Order
 		/// </summary>
 		[Display(Name = "Change Order")]
@@ -1490,5 +1483,22 @@ namespace IES.Common
 		/// </summary>
 		[Description("Other Exception applies (explain)")]
 		Other = 5
+	}
+
+	/// <summary>
+	/// Contract Insurance Type
+	/// </summary>
+	public enum InsuranceType
+	{
+		[Description("Political Risk Insurance")]
+		PoliticalRisk = 1,
+		[Description("Space Insurance")]
+		Space = 2,
+		[Description("Launch In-Orbit Insurance")]
+		LaunchInOrbit = 3,
+		[Description("Delivery In-Orbit Insurance")]
+		DeliveryInOrbit = 4,
+		[Description("Post Launch Milestone")]
+		PostLaunchMilestone = 5
 	}
 }

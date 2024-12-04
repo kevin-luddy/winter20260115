@@ -12,11 +12,11 @@ namespace GenBOE.DataBridge.DTO
 	public interface ISkillMixDTOLoader
 	{
 		/// <summary>
-		/// Get all SkillMix values by MOQTypeSelection FK ID
+		/// Get all SkillMix values by BOE Task Element FK ID
 		/// </summary>
-		/// <param name="moqTypeSelectionID"></param>
+		/// <param name="boeTaskElementID">BOE Task Element ID</param>
 		/// <returns>List of SkillMix</returns>
-		ICollection<SkillMixDTO> GetByMOQTypeSelectionID(int moqTypeSelectionID);
+		ICollection<SkillMixDTO> GetByBOETaskElementID(int boeTaskElementID);
 
 		/// <summary>
 		/// Get all SkillMix values by BOE FK ID
@@ -24,13 +24,6 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="boeID"></param>
 		/// <returns>List of SkillMix</returns>
 		ICollection<SkillMixDTO> GetByBOEID(int boeID);
-
-		/// <summary>
-		/// Get all SkillMix values by BOETaskElement FK ID
-		/// </summary>
-		/// <param name="boeTaskElementID"></param>
-		/// <returns>List of SkillMix</returns>
-		ICollection<SkillMixDTO> GetByBOETaskElementID(int boeTaskElementID);
 
 		/// <summary>
 		/// Get SkillMix by certain values
@@ -47,11 +40,11 @@ namespace GenBOE.DataBridge.DTO
 		SkillMixDTO GetById(int skillMixID);
 
 		/// <summary>
-		/// Delete Skill Mix by MOQ Type Selection ID
+		/// Delete Skill Mix by BOE Task Element ID
 		/// </summary>
-		/// <param name="moqTypeSelectionID"></param>
+		/// <param name="boeTaskElementID">BOE Task Element ID.</param>
 		/// <returns>Number of SkillMixes deleted</returns>
-		int? DeleteSkillMixByMoqTypeSelection(int moqTypeSelectionID);
+		int? DeleteSkillMixByBOETaskElementID(int boeTaskElementID);
 
 		/// <summary>
 		/// Insert Skill Mix with Kill/Fill procedure

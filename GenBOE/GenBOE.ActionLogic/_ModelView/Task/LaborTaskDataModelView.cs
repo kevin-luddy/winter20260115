@@ -8,7 +8,8 @@ namespace GenBOE.ActionLogic.ModelView
 {
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using GenBOE.Dtos;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
     using IES.Common.Exceptions;
 
     /// <summary>
@@ -27,6 +28,8 @@ namespace GenBOE.ActionLogic.ModelView
             this.MOQTypeTableCustomFields = new List<BOECustomFieldModelView>();
             this.LaborCustomFields = new List<BOECustomFieldModelView>();
             this.MOQTypes = new Collection<MoqTypeSelection>();
+			this.SkillMixData = new Collection<SkillMixModelView>();
+			this.CommonDisclosureSkillMixData = new Collection<CommonDisclosureModelView>();
         }
 
         /// <summary>
@@ -73,5 +76,15 @@ namespace GenBOE.ActionLogic.ModelView
         /// Selected MOQ Types
         /// </summary>
         public ICollection<MoqTypeSelection> MOQTypes { get; set; }
-    }
+
+		/// <summary>
+		/// The list of Skill Mix data.
+		/// </summary>
+		public IList<SkillMixModelView> SkillMixData { get; set; }
+
+		/// <summary>
+		/// The list of Common Disclosure Skill Mix data.
+		/// </summary>
+		public IList<CommonDisclosureModelView> CommonDisclosureSkillMixData { get; set; }
+	}
 }

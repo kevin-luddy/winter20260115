@@ -17,7 +17,8 @@ namespace GenTRAC.Web.Controllers
     using GenTRAC.ActionLogic.ModelView;
     using GenTRAC.ActionLogic.ModelView.Contracts;
     using GenTRAC.DataBridge.DTO;
-    using GenTRAC.Web.Common;
+	using GenTRAC.Objects.FullObject;
+	using GenTRAC.Web.Common;
     using IES.Common;
 
     /// <summary>
@@ -169,9 +170,10 @@ namespace GenTRAC.Web.Controllers
             }
 
             _ = model ?? throw new ArgumentNullException(nameof(model));
-
-            IESResponse<ContractsModelView> response = new IESResponse<ContractsModelView>();
-            ICollection<string> validationMessages = this.contractsLogic.ValidateContractModelView(model);
+			
+			IESResponse<ContractsModelView> response = new IESResponse<ContractsModelView>();
+			FullProposal fullProposal = this.contractsLogic.GetFullProposalDto(proposalId);
+			ICollection<string> validationMessages = this.contractsLogic.ValidateContractModelView(model, fullProposal);
 
 			if (!ModelState.IsValid || validationMessages.Any())
             {
@@ -206,8 +208,10 @@ namespace GenTRAC.Web.Controllers
             else
             {
                 ContractsDto dto = this.contractsLogic.ConvertContractsModelToDto(model);
-                response.IsSuccessful = this.contractsLogic.ContractDataValidForCompleteProposalSave(dto, errMessages);
-                if (dto.LmWon.HasValue && !dto.LmWon.Value)
+				FullProposal fullProposal = this.contractsLogic.GetFullProposalDto(proposalId);
+				response.IsSuccessful = this.contractsLogic.ContractDataValidForCompleteProposalSave(dto, fullProposal, errMessages);
+
+				if (dto.LmWon.HasValue && !dto.LmWon.Value)
                 {
                     errMessages.Add(Constants.INVALID_LM_WIN_LOSS_FALSE);
                 }

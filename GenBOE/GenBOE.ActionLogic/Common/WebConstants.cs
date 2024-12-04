@@ -108,6 +108,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string UPDATE_WORKSPACE_TRAVEL_ZONE_RATE = "UpdateWorkspaceTravelZoneRate";
 		public static readonly string UPDATE_WORKSPACE_OFFLOAD_RATES = "UpdateWorkspaceOffloadRates";
 
+		public static readonly string SPACE_LEGACY_TM = "T&M";
 		public static readonly string SPACE_1LMX_CORE = "1LMX - Core";
 		public static readonly string SPACE_1LMX_SERVICES = "1LMX - Services";
 		public static readonly string RMS_1LMX_CORE = "LM-Core";
@@ -415,8 +416,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_CONVERT_SAP_FILTER = "ConvertSapFilter";
 		public static readonly string ACTION_CALCULATE_ALL_ACTUALS_SAP = "CalculateAllActualsSap";
 		public static readonly string ACTION_CALCULATE_ALL_ACTUALS_SAP_WITH_SKILL_MIX = "CalculateAllActualsSapWithSkillMix";
-		public static readonly string ACTION_REFRESH_SKILL_MIX_TABLE = "RefreshSkillMixTable";
-		public static readonly string ACTION_REFRESH_COMMON_DISCLOSURE_TABLE = "RefreshCommonDisclosureTable";
+		public static readonly string ACTION_REFRESH_SKILL_MIX_TABLES = "RefreshSkillMixTables";
 		public static readonly string ACTION_EXPORT_ACTUALS_SAP = "ExportActualsSap";
 		public static readonly string ACTION_GET_SKILLMIX_CONVERTED_RESOURCES = "GetSkillMixConvertedResources";
 

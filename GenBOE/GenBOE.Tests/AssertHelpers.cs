@@ -36,6 +36,17 @@ namespace GenBOE.Tests
             Assert.AreEqual(expected, decimal.Round(actual, decimals));
         }
 
+		/// <summary>
+		/// Asserts the equality of decimal values within an epsilon error range.
+		/// </summary>
+		/// <param name="expected">expected value</param>
+		/// <param name="actual">actual value</param>
+		/// <param name="epsilon">epsilon range</param>
+		public static void AssertAreEqualEpsilon(decimal expected, decimal actual, decimal epsilon = 0.001m)
+		{
+			Assert.IsTrue(Math.Abs(expected - actual) < epsilon, $"Expected: {expected}, Actual: {actual}, epsilon: {epsilon}");
+		}
+
         /// <summary>
         /// Assert that the items in each list have the same values in the same order
         /// </summary>

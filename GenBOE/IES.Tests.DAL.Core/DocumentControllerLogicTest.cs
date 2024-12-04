@@ -74,7 +74,7 @@ namespace IES.Tests.Core
             this.securityMapper = new SecurityMapper(new SecurityUserAuthorizationsDataLoader(AD, Mock.Of<ILogger<SecurityUserAuthorizationsDataLoader>>()), this.securityInformation, um, c, Mock.Of<ILogger<SecurityMapper>>());
             this.revisionLoader = new RevisionLoader(Mock.Of<ILogger<RevisionLoader>>());
 			this.sectionLoader = new Mock<ISectionLoader>();
-            this.rateDetailLoader = new RateDetailLoader(Mock.Of<ILogger<RateDetailLoader>>(), new RateCodeYearLoader(Mock.Of<ILogger<RateCodeYearLoader>>()), new ProPricerRateCodeXrefLoader(Mock.Of<ILogger<ProPricerRateCodeXrefLoader>>()));
+            this.rateDetailLoader = new RateDetailLoader(Mock.Of<ILogger<RateDetailLoader>>(), new RateCodeYearLoader(Mock.Of<ILogger<RateCodeYearLoader>>()), new ProPricerRateCodeXrefLoader(Mock.Of<ILogger<ProPricerRateCodeXrefLoader>>()), Mock.Of<ISecurityInformation>());
             this.rdsbRateCodeXrefLoader = new RdsbRateCodeXrefLoader(Mock.Of<ILogger<RdsbRateCodeXrefLoader>>());
             this.rdsbSectionXrefLoader = new RdsbSectionXrefLoader(Mock.Of<ILogger<RdsbSectionXrefLoader>>());
             this.documentDetailLoader = new DocumentDetailLoader(this.rdsbRateCodeXrefLoader, this.rdsbSectionXrefLoader, Mock.Of<ILogger<DocumentDetailLoader>>());

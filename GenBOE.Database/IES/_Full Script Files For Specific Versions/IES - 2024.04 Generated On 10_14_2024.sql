@@ -1,28 +1,18 @@
-EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2024.13';
-
 PRINT '###### SCRIPT IS STARTING ######';
 /*
-    This file was auto-generated for Release: 2024.13, on 9/3/2024.
+    This file was auto-generated for Release: 2024.04, on 10/14/2024.
     It contains all of the Release specific scripts, modifying data/tables as well as all of the Stored Procedures and User Defined Table Types.
 */
 
 /*
-    File: \Release 2024.13\1 - Release 2024.13 Script.sql
+    File: \Release 2024.04\1 - Release 2024.04 Script.sql
 */
-PRINT '### Starting file: \Release 2024.13\1 - Release 2024.13 Script.sql';
-/*
-	## START ##
-	09/03/2024 [e374897] - PROPH-1825 PROPH-2280 Added columns to populate Address tables
-*/
+PRINT '### Starting file: \Release 2024.04\1 - Release 2024.04 Script.sql';
+EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2024.04';
 
--- 09/03/2024 [e374897] - PROPH-1825 PROPH-2280 Added columns to populate Address tables
+-- 10/09/2024 [twilson] - PROPH-2456 Added columns to populate missing Section columns
 -- Stored procs updated:
 -- copyRevision.sql
-
-/*
-   09/03/2024 [e374897] - PROPH-1825 PROPH-2280 Added columns to populate Address tables
-   ## END ##
-*/
 
 
 /*
@@ -88,6 +78,7 @@ AS
 	**										for burden pools
 	**		07/07/2022	Dusan				Added SectionContainsCasbDisclosure and SectionContainsNonCompliance
 	**      09/03/2024  e347897             PROPH-2280 Added columns to populate Address tables
+	**		10/09/2024	twilson3			  Added columns for missing Section columns
 	*******************************************************************************/
 	SET NOCOUNT ON 
 	DECLARE @ErrorMessage varchar (500), @ErrorSeverity INT, @ErrorState INT, @ErrorProcedure VARCHAR(1000), @ErrorLine INT;
@@ -120,13 +111,14 @@ AS
 				-- Copy associated PPR&D document (all sections and associated content)
 				INSERT INTO [dbo].Section
 				(UpdateDate, RevisionID, ParentID, DisplayOrder, Title, TextContent, SectionContentTypeID, IsInternalSection, DisplayRateCode, RevisionUniqueSectionId, IsRdsbRequired, SectionContainsCasbDisclosure, SectionContainsNonCompliance,
-				Office, Agency, LMBA, Name, Street, CityST, Phone, Email, Other)
+				Office, Agency, LMBA, Name, Street, CityST, Phone, Email, Other, [IncludeInCoversheet], [IsDisclosureStatementAdequate], [NonComplianceNotification])
 				OUTPUT Inserted.ParentID, Inserted.Id INTO @SectionMap
 				SELECT GETDATE() AS UpdateDate,
 								@RevisionID as RevisionID,
 								Id AS ParentID, -- Note that we save the old Id in the new ParentID.
 								DisplayOrder, Title, TextContent, SectionContentTypeID, IsInternalSection, DisplayRateCode, RevisionUniqueSectionId, IsRdsbRequired, SectionContainsCasbDisclosure, SectionContainsNonCompliance,
-								Office, Agency, LMBA, Name, Street, CityST, Phone, Email, Other -- Address Table 
+								Office, Agency, LMBA, Name, Street, CityST, Phone, Email, Other, -- Address Table 
+								[IncludeInCoversheet], [IsDisclosureStatementAdequate], [NonComplianceNotification]
 				FROM dbo.Section 
 				WHERE RevisionID = @ID;
 

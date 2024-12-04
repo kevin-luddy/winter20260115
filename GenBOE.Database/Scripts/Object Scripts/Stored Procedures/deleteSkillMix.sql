@@ -9,7 +9,7 @@ GO
 
 CREATE PROCEDURE [dbo].[deleteSkillMix]
 (
-	@MOQTypeSelectionID int
+	@BOETaskElementID int
 )
 AS
 	/******************************************************************************
@@ -27,10 +27,11 @@ AS
 	**		Date:		Author:				Description:
 	**		--------	--------			-------------------------------------------
 	**      6/10/24		e374897 			PROPH-2017 Initial creation of delete
+	**		10/02/24	e405721				PROPH-2394 Updates for Skill Mix V2
 	*****************************************************************************/
 	BEGIN
 		DELETE FROM dbo.[SkillMix]
-		WHERE [MOQTypeSelectionID] = @MOQTypeSelectionID
+		WHERE [BOETaskElementID] = @BOETaskElementID
 
 		SELECT @@ROWCOUNT AS RowsAffected;
 	END

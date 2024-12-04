@@ -117,7 +117,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			this.SetAutofilterRange(toReturn);
 
 
-			bool usingSkillMix = Utilities.ShowSkillMixForWorkspace(exportInputs.Workspace.CreationDate);
+			bool usingSkillMix = Utilities.ShowSkillMixForWorkspace(exportInputs.Workspace.CreationDate, exportInputs.Workspace.IsUsingTM);
 			if (!exportInputs.Workspace.UsingTemplateBOE)
 			{
 				// Hide Template BOE and Skill Mix sheets
@@ -359,11 +359,12 @@ namespace GenBOE.ActionLogic.IO.Export
 					toReturn.Add(this.GetMOQbyBOEbyTaskData(exportInputs));
 					toReturn.Add(this.GetMOQTableData(exportInputs));
 
-					if (Utilities.ShowSkillMixForWorkspace(exportInputs.Workspace.CreationDate))
-					{
-						toReturn.Add(GetCurrentSkillMixTableData(exportInputs));
-						toReturn.Add(GetCommonDisclosureSkillMixTableData(exportInputs));
-					}
+					// 
+					//if (Utilities.ShowSkillMixForWorkspace(exportInputs.Workspace.CreationDate))
+					//{
+					//	toReturn.Add(GetCurrentSkillMixTableData(exportInputs));
+					//	toReturn.Add(GetCommonDisclosureSkillMixTableData(exportInputs));
+					//}
 				}
 
 				toReturn.Add(this.GetWBSSheetExportData(exportInputs));
@@ -1298,96 +1299,98 @@ namespace GenBOE.ActionLogic.IO.Export
 			return toReturn;
 		}
 
-		/// <summary>
-		/// Get the row data for the Current Skill Mix sheet
-		/// </summary>
-		/// <param name="exportInputs">Export Inputs</param>
-		/// <returns>Current Skill Mix sheet</returns>
-		protected virtual ExcelExportWorksheet GetCurrentSkillMixTableData(BOEExportInputs exportInputs)
-		{
-			_ = exportInputs ?? throw new ArgumentNullException(nameof(exportInputs));
+		///// <summary>
+		///// TODO Skill Mix V2: Commented out as we no longer validate with MOQ Type Selection but BOE Task Element ID and this is left in to retain the logic for a future task.
+		///// Get the row data for the Current Skill Mix sheet
+		///// </summary>
+		///// <param name="exportInputs">Export Inputs</param>
+		///// <returns>Current Skill Mix sheet</returns>
+		//protected virtual ExcelExportWorksheet GetCurrentSkillMixTableData(BOEExportInputs exportInputs)
+		//{
+		//	_ = exportInputs ?? throw new ArgumentNullException(nameof(exportInputs));
 
-			ExcelExportWorksheet toReturn = new ExcelExportWorksheet("Current Skill Mix");
+		//	ExcelExportWorksheet toReturn = new ExcelExportWorksheet("Current Skill Mix");
 
-			foreach (BoeDTO boe in exportInputs.Boes)
-			{
-				foreach (BoeTaskElementDTO task in exportInputs.TaskElements.Where(x => x.BoeID == boe.Id))
-				{
-					foreach (MoqTypeSelection moqType in exportInputs.MOQTypes.Where(x => x.TaskId == task.Id
-						&& (x.SelectedMOQType == MOQType.Historical || x.SelectedMOQType == MOQType.Comparative)))
-					{
-						foreach (SkillMixModelView skillMix in moqType.SkillMixTable)
-						{
-							IList<string> row = new List<string>()
-							{
-								boe.Id.ToString(),
-								boe.Title ?? this.sEmpty,
-								string.Format(TaskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
-								task.BOETaskID,
-								task.TaskTitle,
-								moqType.SelectedMOQTypeText,
-								skillMix.ResourceNew,
-								CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.HistoricalHours,
-								CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.LaborSkillMix,
-								skillMix.IncludedString,
-								CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.BOESkillMix,
-								CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.ProposedHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)),
-								skillMix.Rationale
-							};
+		//	foreach (BoeDTO boe in exportInputs.Boes)
+		//	{
+		//		foreach (BoeTaskElementDTO task in exportInputs.TaskElements.Where(x => x.BoeID == boe.Id))
+		//		{
+		//			foreach (MoqTypeSelection moqType in exportInputs.MOQTypes.Where(x => x.TaskId == task.Id
+		//				&& (x.SelectedMOQType == MOQType.Historical || x.SelectedMOQType == MOQType.Comparative)))
+		//			{
+		//				foreach (SkillMixModelView skillMix in moqType.SkillMixTable)
+		//					{
+		//						IList<string> row = new List<string>()
+		//					{
+		//						boe.Id.ToString(),
+		//						boe.Title ?? this.sEmpty,
+		//						string.Format(TaskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
+		//						task.BOETaskID,
+		//						task.TaskTitle,
+		//						moqType.SelectedMOQTypeText,
+		//						skillMix.ResourceNew,
+		//						CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.HistoricalHours,
+		//						CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.LaborSkillMix,
+		//						skillMix.IncludedString,
+		//						CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.BOESkillMix,
+		//						CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.ProposedHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)),
+		//						skillMix.Rationale
+		//					};
 
-							toReturn.Add(row);
-						}
-					}
-				}
-			}
+		//						toReturn.Add(row);
+		//					}
+		//			}
+		//		}
+		//	}
 
-			return toReturn;
-		}
+		//	return toReturn;
+		//}
 
-		/// <summary>
-		/// Get the row data for the Common Disclosure Skill Mix sheet
-		/// </summary>
-		/// <param name="exportInputs">Export Inputs</param>
-		/// <returns>Common Disclosure Skill Mix sheet</returns>
-		private ExcelExportWorksheet GetCommonDisclosureSkillMixTableData(BOEExportInputs exportInputs)
-		{
-			ExcelExportWorksheet toReturn = new ExcelExportWorksheet("Common Disclosure Skill Mix");
+		///// <summary>
+		///// TODO Skill Mix V2: Commented out as we no longer validate with MOQ Type Selection but BOE Task Element ID and this is left in to retain the logic for a future task.
+		///// Get the row data for the Common Disclosure Skill Mix sheet
+		///// </summary>
+		///// <param name="exportInputs">Export Inputs</param>
+		///// <returns>Common Disclosure Skill Mix sheet</returns>
+		//private ExcelExportWorksheet GetCommonDisclosureSkillMixTableData(BOEExportInputs exportInputs)
+		//{
+		//	ExcelExportWorksheet toReturn = new ExcelExportWorksheet("Common Disclosure Skill Mix");
 
-			foreach (BoeDTO boe in exportInputs.Boes)
-			{
-				foreach (BoeTaskElementDTO task in exportInputs.TaskElements.Where(x => x.BoeID == boe.Id))
-				{
-					foreach (MoqTypeSelection moqType in exportInputs.MOQTypes.Where(x => x.TaskId == task.Id
-						&& (x.SelectedMOQType == MOQType.Historical || x.SelectedMOQType == MOQType.Comparative)))
-					{
-						foreach (CommonDisclosureModelView commonDisclosure in moqType.CommonDisclosureTable)
-						{
-							IList<string> row = new List<string>()
-							{
-								boe.Id.ToString(),
-								boe.Title ?? this.sEmpty,
-								string.Format(TaskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
-								task.BOETaskID,
-								task.TaskTitle,
-								moqType.SelectedMOQTypeText,
-								commonDisclosure.ResourceID,
-								commonDisclosure.BusinessResourceID,
-								CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + commonDisclosure.HistoricalHours,
-								CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + commonDisclosure.LaborSkillMix,
-								commonDisclosure.IncludedString,
-								CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + commonDisclosure.BOESkillMix,
-								CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + commonDisclosure.ProposedHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)),
-								commonDisclosure.Rationale
-							};
+		//	foreach (BoeDTO boe in exportInputs.Boes)
+		//	{
+		//		foreach (BoeTaskElementDTO task in exportInputs.TaskElements.Where(x => x.BoeID == boe.Id))
+		//		{
+		//			foreach (MoqTypeSelection moqType in exportInputs.MOQTypes.Where(x => x.TaskId == task.Id
+		//				&& (x.SelectedMOQType == MOQType.Historical || x.SelectedMOQType == MOQType.Comparative)))
+		//			{
+		//				foreach (CommonDisclosureModelView commonDisclosure in moqType.CommonDisclosureTable)
+		//					{
+		//						IList<string> row = new List<string>()
+		//					{
+		//						boe.Id.ToString(),
+		//						boe.Title ?? this.sEmpty,
+		//						string.Format(TaskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
+		//						task.BOETaskID,
+		//						task.TaskTitle,
+		//						moqType.SelectedMOQTypeText,
+		//						commonDisclosure.ResourceID,
+		//						commonDisclosure.BusinessResourceID,
+		//						CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + commonDisclosure.HistoricalHours,
+		//						CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + commonDisclosure.LaborSkillMix,
+		//						commonDisclosure.IncludedString,
+		//						CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + commonDisclosure.BOESkillMix,
+		//						CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + commonDisclosure.ProposedHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)),
+		//						commonDisclosure.Rationale
+		//					};
 
-							toReturn.Add(row);
-						}
-					}
-				}
-			}
+		//						toReturn.Add(row);
+		//					}
+		//			}
+		//		}
+		//	}
 
-			return toReturn;
-		}
+		//	return toReturn;
+		//}
 
 		/// <summary>
 		/// Get the MOQ Table Data row data

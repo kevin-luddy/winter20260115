@@ -540,7 +540,32 @@ namespace GenBOE.Tests.DAL.DataLoaders
             }
         }
 
-        [TestMethod]
+		/// <summary>
+		/// Test GetByTrackingNumbers 
+		/// </summary>
+		[TestMethod]
+		public void GetByTrackingNumberTest()
+		{
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				// retrieve some ids to test against, get 10 most recently updated to help ensure one will have tracking numbers and is 'current'
+				ICollection<int> ids = gbe.BOEFormIBOEs.OrderByDescending(x => x.UpdateDT).Select(x => x.WorkspaceID).Take(10).ToCollection();
+				Assert.IsTrue(ids.Count > 0, "no test data?");
+
+				// retrieve a workspace for one of these ids in order to obtain a tracking number to test with
+				Workspace workspace = gbe.Workspaces.Where(x => ids.Contains(x.WorkspaceID) && x.CurrentPTMWorkspace && !string.IsNullOrEmpty(x.TrackingNumber)).FirstOrDefault();
+				Assert.IsNotNull(workspace, "no test data?");
+
+				foreach (int workspaceId in ids)
+				{
+					ICollection<BOEFormIBOEDTO> iboes = sut.GetByTrackingNumber(workspace.TrackingNumber);
+					Assert.IsNotNull(iboes);
+					Assert.IsTrue(iboes.Any());
+				}
+			}
+		}
+
+		[TestMethod]
         public void GetCurrentFormVersionTest()
         {
             var version = sut.GetCurrentFormVersion();

@@ -7,7 +7,8 @@
 namespace IES.Common
 {
     using System;
-    using System.Configuration;
+	using System.Collections.Generic;
+	using System.Configuration;
     using System.Diagnostics.CodeAnalysis;
     using System.Web;
     using IES.Common.classes;
@@ -48,14 +49,24 @@ namespace IES.Common
             return value;
         }
 
-        /// <summary>
-        /// Retrieve a typed value from the application settings.  Check the company-specific configuration first.  If no override value is found, then check the application-level settings.
-        /// </summary>
-        /// <typeparam name="T">The type to return</typeparam>
-        /// <param name="key">Settings key</param>
-        /// <param name="defaultValue">Value to use if the setting does not exist</param>
-        /// <returns>The application setting, as a typed value</returns>
-        public static T GetAppSetting<T>(string key, T defaultValue) where T : IConvertible
+		/// <summary>
+		/// Retrieve all keys from application settings.
+		/// <returns>The application settings</returns>
+		public static string[] GetAppSettingsKeys()
+		{
+			string[] keys = SystemConfiguration.Instance().CompanyConfigurationSettings.AppSettings.AllKeys;
+
+			return keys;
+		}
+
+		/// <summary>
+		/// Retrieve a typed value from the application settings.  Check the company-specific configuration first.  If no override value is found, then check the application-level settings.
+		/// </summary>
+		/// <typeparam name="T">The type to return</typeparam>
+		/// <param name="key">Settings key</param>
+		/// <param name="defaultValue">Value to use if the setting does not exist</param>
+		/// <returns>The application setting, as a typed value</returns>
+		public static T GetAppSetting<T>(string key, T defaultValue) where T : IConvertible
         {
             T value = defaultValue;
 

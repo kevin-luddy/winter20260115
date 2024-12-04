@@ -98,6 +98,7 @@
                 dataType: 'html',
                 success: function () {
                     GenSession.ShowLoadingBox();
+					window.onbeforeunload = null;
                     location.reload(true);
                 }
             });
@@ -127,7 +128,10 @@
 
 		// Reload the page after saving.
 		ApprovalsIndexWidget.SaveSuccess = function () {
-			GenSession.ShowLoadingBox();
+            GenSession.ShowLoadingBox();
+
+            // Clear the dirty indicators
+			window.onbeforeunload = null;
 			location.reload(true);
 		};
 
@@ -152,7 +156,8 @@
 				GenSession.confirmDialog("Confirm Approval", "@Html.Raw(@WebConstants.ApprovalDescription.LOB_ESTIMATING_LEAD)",
 					function () {
 						ApproverSectionWidget.SubmitApproval("@PtmRole.LOBEstLead");
-					}, function () {
+                    }, function () {
+						window.onbeforeunload = null;
 						location.reload(true);
 					});
 			}
@@ -160,7 +165,8 @@
 
 		$('#NonPreferredToolCancelButton').click(function () {
 			GenSession.ShowLoadingBox();
-			ApproverSectionWidget.HideNonPreferredDialog();
+            ApproverSectionWidget.HideNonPreferredDialog();
+			window.onbeforeunload = null;
 			location.reload(true);
 		});
 

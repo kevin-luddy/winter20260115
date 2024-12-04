@@ -8,6 +8,7 @@
 namespace RDM.Backend.Common
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Globalization;
 	using IES.ActionLogic.Core.ControllerLogic;
@@ -128,10 +129,11 @@ namespace RDM.Backend.Common
 		/// Gets data for Who's Online
 		/// </summary>
 		/// <returns>Who's Online data</returns>
-		[HttpPost("[action]")]
-		public ActionResult GetWhosOnline()
+		[HttpGet("[action]")]
+		public ICollection<WhosOnlineModelView> GetWhosOnline()
 		{
-			return this.Json(this.WhosOnlineLoader.GetWhosOnlineData(ApplicationName.RDM.GetDescription()));
+			ICollection<WhosOnlineModelView> whosOnline = this.WhosOnlineLoader.GetWhosOnlineData(ApplicationName.RDM.GetDescription());
+			return whosOnline;
 		}
 
 		#region Menu
