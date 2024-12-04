@@ -96,7 +96,7 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <summary>
 		/// The BOE Labor Controller Logic
 		/// </summary>
-		private readonly IBOELaborControllerLogic _BoeLaborControllerLogic;
+		private readonly IBOELaborControllerLogic boeLaborControllerLogic;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DateShiftCalculation"/> class.
@@ -119,7 +119,7 @@ namespace GenBOE.ActionLogic.DateShift
             this.workspaceVersionMetaDataDTODataLoader = GenBOEUnityContainer.Container.Resolve(typeof(IWorkspaceVersionMetaDataDTODataLoader)) as IWorkspaceVersionMetaDataDTODataLoader;
             this.boeStateMachine = GenBOEUnityContainer.Container.Resolve(typeof(IBOEStateMachine)) as IBOEStateMachine;
             this.factory = GenBOEUnityContainer.Container.Resolve(typeof(IFullObjectFactory)) as IFullObjectFactory;
-			this._BoeLaborControllerLogic = GenBOEUnityContainer.Container.Resolve(typeof(IBOELaborControllerLogic)) as IBOELaborControllerLogic;
+			this.boeLaborControllerLogic = GenBOEUnityContainer.Container.Resolve(typeof(IBOELaborControllerLogic)) as IBOELaborControllerLogic;
         }
 
         /// <summary>
@@ -174,7 +174,7 @@ namespace GenBOE.ActionLogic.DateShift
 				bool isBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspaceShortname);
 
 				// Check if we have Skill Mix enabled to adjust Skill Mix table data as needed
-				if (Utilities.IsSkillMixEnabledForSystem)
+				if (Utilities.ShowSkillMixForWorkspace(fullWorkspace?.CreationDate))
 				{
 					// Iterate through each task and check for Skill Mix
 					foreach (BoeTaskElementDTO task in fullWorkspace?.TaskElements)
@@ -189,10 +189,10 @@ namespace GenBOE.ActionLogic.DateShift
 
 							FullBoe fullBoe = this.factory.CreateFullBoe(task.BoeID);
 
-							LaborTaskDataModelView laborTasks = this._BoeLaborControllerLogic.ConvertDtoToModelView(fullWorkspace, fullBoe, task);
-							laborTasks.IsUsingTMRatesInTask = this._BoeLaborControllerLogic.CheckTMRates(fullWorkspace, laborTasks.LaborTypesData);
+							LaborTaskDataModelView laborTasks = this.boeLaborControllerLogic.ConvertDtoToModelView(fullWorkspace, fullBoe, task);
+							laborTasks.IsUsingTMRatesInTask = this.boeLaborControllerLogic.CheckTMRates(fullWorkspace, laborTasks.LaborTypesData);
 
-							RefreshSkillMixModelView response = this._BoeLaborControllerLogic.RefreshSkillMixTables(resourceHours,
+							RefreshSkillMixModelView response = this.boeLaborControllerLogic.RefreshSkillMixTables(resourceHours,
 								laborTasks.LaborTypesData, task.SkillMixTable, task.CommonDisclosureTable, isBRCEnabled);
 
 							if (response != null)
