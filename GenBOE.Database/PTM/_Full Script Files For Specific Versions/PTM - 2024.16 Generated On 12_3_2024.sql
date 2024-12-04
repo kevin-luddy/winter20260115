@@ -755,13 +755,13 @@ SELECT
 		WHEN pCD.IsInsuranceDirect = 1 THEN 'Yes'
 		WHEN pCD.IsInsuranceDirect = 0 THEN 'N/A'
 		WHEN pCD.IsInsuranceDirect = 2 THEN 'No'
-		ELSE NULL
+		ELSE 'N/A'
 	END AS IsInsuranceDirect,
 	CASE
 		WHEN pCD.IsInsuranceDirect = 1 THEN IT.[Text]
 		WHEN pCD.IsInsuranceDirect = 0 THEN 'N/A'
 		WHEN pCD.IsInsuranceDirect = 2 THEN 'N/A'
-		ELSE NULL
+		ELSE 'N/A'
 	END AS InsuranceType,
 	pCD.ProposedInsurance,
 	pCD.NegotiatedInsurance
