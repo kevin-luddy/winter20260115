@@ -429,9 +429,9 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             IReadOnlyCollection<ResourceDTO> resourcesForLabors = exportInputs.ResourcesUsedInWsBoes;
             IReadOnlyCollection<PerformingOrgDTO> performingOrgsFromDb = exportInputs.PerformingOrgsUsedInBoes;
 
-            foreach (BoeTaskElementDTO boeTaskElement in taskElements)
+			foreach (BoeTaskElementDTO boeTaskElement in taskElements)
             {
-                BOEExportTaskElement boeExportTaskElement = new BOEExportTaskElement();
+				BOEExportTaskElement boeExportTaskElement = new BOEExportTaskElement();
                 boeExportTaskElement.BoeID = boeTaskElement.BoeID;
                 boeExportTaskElement.BOETaskDesc = BOEExportConverter.GetRteOverride(boeTaskElement.BoeID, boeTaskElement.Id, boeTaskElement.Description, RteTemplateSource.TaskDescription, exportInputs.RTETemplatesOverrides);
                 boeExportTaskElement.BOETaskElementID = boeTaskElement.Id;
@@ -447,7 +447,14 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                 boeExportTaskElement.BOETaskElementOrder = boeTaskElement.BOETaskElementOrder;
                 boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
 
-                boeExportTaskElement.SetTaskElementType(boeTaskElement.TaskElementType);
+				if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, boeTaskElement.HasTMRates))
+				{
+					boeExportTaskElement.SkillMixTable = boeTaskElement.SkillMixTable;
+					boeExportTaskElement.CommonDisclosureTable = boeTaskElement.CommonDisclosureTable;
+					boeExportTaskElement.HasTMRates = boeTaskElement.HasTMRates;
+				}
+
+				boeExportTaskElement.SetTaskElementType(boeTaskElement.TaskElementType);
 
                 if (revCodeCustomField != null)
                 {

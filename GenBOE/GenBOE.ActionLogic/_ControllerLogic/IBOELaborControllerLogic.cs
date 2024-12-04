@@ -230,13 +230,13 @@ namespace GenBOE.ActionLogic
         /// <returns>Converted BOE Task Element DTO</returns>
         BoeTaskElementDTO ConvertModelViewToDto(LaborTaskDataModelView modelview, FullWorkspace ws);
 
-        /// <summary>
-        /// Validate Task Element DTO before saving
-        /// </summary>
-        /// <param name="ws">workspace</param>
-        /// <param name="taskElement">task element</param>
-        /// <returns>Any Validation errors</returns>
-        ICollection<ValidationMessage> ValidateTaskElementDto(FullWorkspace ws, BoeTaskElementDTO taskElement);
+		/// <summary>
+		/// Validate Task Element DTO before saving
+		/// </summary>
+		/// <param name="ws">workspace</param>
+		/// <param name="taskElement">task element</param>
+		/// <returns>Any Validation errors</returns>
+		ICollection<ValidationMessage> ValidateTaskElementDto(FullWorkspace ws, BoeTaskElementDTO taskElement);
 
 		/// <summary>
 		/// Recalculates the labor types that have percent spread locked.
@@ -357,5 +357,13 @@ namespace GenBOE.ActionLogic
 		/// <returns></returns>
 		RefreshSkillMixModelView RefreshSkillMixTables(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
 			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isBRCEnabled);
+
+		/// <summary>
+		/// Checks the usage of active T&M rates in the task.
+		/// </summary>
+		/// <param name="ws">Workspace.</param>
+		/// <param name="laborTask">Labor Task.</param>
+		/// <returns></returns>
+		bool CheckTMRates(FullWorkspace ws, ICollection<LaborTypeDataModelView> laborTypes);
 	}
 }

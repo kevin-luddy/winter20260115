@@ -16,6 +16,7 @@ namespace GenBOE.Web.Controllers
 	using System.Transactions;
 	using System.Web.Mvc;
 	using System.Web.Script.Serialization;
+	using System.Xml.Linq;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.Common.Calculations;
@@ -130,13 +131,14 @@ namespace GenBOE.Web.Controllers
 			ViewData["BOEID"] = boeID;
 			bool containsDiscrete = false;
 			bool isReadOnly = bool.Parse((string)this.ViewData["READONLY"]);
-
-			//check if skill mix is enabled and workspace starts after skill mix date 
 			bool enableSkillMix = false;
-			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.IsUsingTM))
+
+			// Checks to see if Skill Mix is enabled for the task.
+			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate))
 			{
 				enableSkillMix = true;
 			}
+
 			ViewData["EnableSkillMix"] = enableSkillMix;
 
 			//create a var for list items
@@ -581,7 +583,7 @@ namespace GenBOE.Web.Controllers
 
 			//check if skill mix is enabled and workspace starts after skill mix date 
 			bool enableSkillMix = false;
-			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.IsUsingTM))
+			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate))
 			{
 				enableSkillMix = true;
 			}
@@ -1665,6 +1667,31 @@ namespace GenBOE.Web.Controllers
 
 			// Call to Controller Logic
 			RefreshSkillMixModelView response = this._BoeLaborControllerLogic.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData, isBRCEnabled);
+
+			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });
+
+			// Finalize Action
+			FinalizeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLES, sw);
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Refreshes the Skill Mix Tables with updated resource hours
+		/// </summary>
+		/// <param name="workspace">Workspace name</param>
+		/// <param name="boeId">BOE Id</param>
+		/// <param name="laborTypes">The labor type/spreads data</param>
+
+		/// <returns></returns>
+		public ActionResult CheckTMRates(string workspace, int boeId, ICollection<LaborTypeDataModelView> laborTypes)
+		{
+			// Initialize Action
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_CHECK_TM_RATES, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeId);
+
+			// Call to Controller Logic
+			bool? response = this._BoeLaborControllerLogic.CheckTMRates(ws, laborTypes);
 
 			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });
 

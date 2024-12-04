@@ -23,6 +23,7 @@ namespace GenBOE.Dtos
         }
         public int ResourceRateID { get; set; }
         public decimal? ResourceRate { get; set; }
+		public string ResourceName { get; set; }
         public int ResourceID { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }

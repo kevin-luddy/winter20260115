@@ -303,11 +303,11 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
         /// </summary>
         public IReadOnlyCollection<MoqTypeSelection> MOQTypes { get; private set; }
 
-        /// <summary>
-        /// Sets the RTE Template Overrides, providing a null check.
-        /// </summary>
-        /// <param name="rteTemplatesOverrides">The rte template overrides.</param>
-        private void SetRteTemplateOverrides(ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesOverrides)
+		/// <summary>
+		/// Sets the RTE Template Overrides, providing a null check.
+		/// </summary>
+		/// <param name="rteTemplatesOverrides">The rte template overrides.</param>
+		private void SetRteTemplateOverrides(ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesOverrides)
         {
             if (rteTemplatesOverrides == null)
             {

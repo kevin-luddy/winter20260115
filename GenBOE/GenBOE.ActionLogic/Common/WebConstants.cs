@@ -417,6 +417,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_CALCULATE_ALL_ACTUALS_SAP = "CalculateAllActualsSap";
 		public static readonly string ACTION_CALCULATE_ALL_ACTUALS_SAP_WITH_SKILL_MIX = "CalculateAllActualsSapWithSkillMix";
 		public static readonly string ACTION_REFRESH_SKILL_MIX_TABLES = "RefreshSkillMixTables";
+		public static readonly string ACTION_CHECK_TM_RATES = "CheckTMRates";
 		public static readonly string ACTION_EXPORT_ACTUALS_SAP = "ExportActualsSap";
 		public static readonly string ACTION_GET_SKILLMIX_CONVERTED_RESOURCES = "GetSkillMixConvertedResources";
 

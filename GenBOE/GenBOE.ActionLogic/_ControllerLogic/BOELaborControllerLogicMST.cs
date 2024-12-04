@@ -54,7 +54,6 @@ namespace GenBOE.ActionLogic
         /// <param name="iesSapClient">IES SAP Client</param>
         /// <param name="tokenservice">Token Service</param>
 		/// <param name="cache">Cache</param>
-		/// <param name="skillMixDTOLoader"></param>
         public BOELaborControllerLogicMST(
             BoeTaskElementRecalculation inBoeTaskElementRecalc,
             IBOEStateMachine inBoeStateMachine,
@@ -75,8 +74,7 @@ namespace GenBOE.ActionLogic
             ICommonDataMapper commonDataMapper,
             IRteTemplateDataLoader rteTemplateDataLoader,
             IMoqTypeDataLoader moqTypeDataLoader,
-			ISkillMixDTOLoader skillMixDTOLoader,
-			ICommonDisclosureSMDTODataLoader commonDisclosureDTOLoader,
+			ITMResourceRateDTODataLoader tmResourceRateDTODataLoader,
             IValidateBOE validateBOE,
             IMoqTableExporter moqTableExporter,
             IMoqTableImporter moqTableImporter,
@@ -102,8 +100,7 @@ namespace GenBOE.ActionLogic
                 commonDataMapper,
                 rteTemplateDataLoader,
                 moqTypeDataLoader,
-				skillMixDTOLoader,
-				commonDisclosureDTOLoader,
+				tmResourceRateDTODataLoader,
                 validateBOE,
                 moqTableExporter,
                 moqTableImporter,
