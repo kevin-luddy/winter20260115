@@ -171,7 +171,6 @@ namespace GenBOE.ActionLogic.DateShift
                 // Pre-load emails (to get original start/end dates)
                 this.GenerateEmails(dateShiftable, dateShiftModel);
 
-				// TO-DO: Move code here
 				bool isBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspaceShortname);
 
 				// Check if we have Skill Mix enabled to adjust Skill Mix table data as needed

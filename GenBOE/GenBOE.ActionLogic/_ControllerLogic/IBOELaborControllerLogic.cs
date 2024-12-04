@@ -196,6 +196,13 @@ namespace GenBOE.ActionLogic
         /// <returns>Labor Task Data</returns>
         LaborTaskDataModelView GetLaborTaskData(FullWorkspace ws, FullBoe boe, int taskElementId);
 
+		/// <summary>
+		/// Converts Boe Task Element Dto to Labor Task Data Model View
+		/// </summary>
+		/// <param name="ws">The Workspace.</param>
+		/// <param name="boe">The Boe</param>
+		/// <param name="dto">Task Element DTO</param>
+		/// <returns>Converted MV</returns>
 		LaborTaskDataModelView ConvertDtoToModelView(FullWorkspace ws, FullBoe boe, BoeTaskElementDTO dto);
 
 		/// <summary>

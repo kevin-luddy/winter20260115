@@ -49,11 +49,6 @@ namespace GenBOE.Web.Controllers
         private Logger logger = new Logger(typeof(DateShiftController));
 
 		/// <summary>
-		/// The BOE Labor Controller Logic
-		/// </summary>
-		//private readonly IBOELaborControllerLogic _BoeLaborControllerLogic;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="DateShiftController" /> class.
 		/// </summary>
 		/// <param name="securityAccess">The security access.</param>
@@ -73,14 +68,12 @@ namespace GenBOE.Web.Controllers
             IPermissionsDTODataLoader permissionsLoader,
             IGenBOEControllerLogic controllerLogic,
             DateShiftCalculation dateShiftCalculation,
-            IBoeTaskElementDTODataLoader taskLoader/*,
-			IBOELaborControllerLogic inBoeLaborControllerLogic*/)
+            IBoeTaskElementDTODataLoader taskLoader)
             : base(securityAccess, commonDataMapper, siteMasterUtilities, systemMetrics, factory, userLoader,
                  permissionsLoader, controllerLogic)
         {
             this.dateShiftCalculation = dateShiftCalculation;
             this.taskLoader = taskLoader;
-			//this._BoeLaborControllerLogic = inBoeLaborControllerLogic;
 		}
 
         /// <summary>
