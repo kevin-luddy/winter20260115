@@ -6,38 +6,38 @@
 
 namespace GenBOE.Dtos
 {
-    using System;
+	using System;
 	using System.Collections.Generic;
 	using System.Diagnostics.CodeAnalysis;
 	using IES.Common;
 
-    [ExcludeFromCodeCoverage]
-    [Serializable()]
-    public class BOEFormIBOEDTO : BOEFormDTO
-    {
-        /// <summary>
-        /// ctor
-        /// </summary>
-        public BOEFormIBOEDTO() :
-            base()
-        {
-        }
+	[ExcludeFromCodeCoverage]
+	[Serializable()]
+	public class BOEFormIBOEDTO : BOEFormDTO
+	{
+		/// <summary>
+		/// ctor
+		/// </summary>
+		public BOEFormIBOEDTO() :
+			base()
+		{
+		}
 
-        /// <summary>
-        /// The business area.
-        /// </summary>
-        public string BusinessArea { get; set; }
+		/// <summary>
+		/// The business area.
+		/// </summary>
+		public string BusinessArea { get; set; }
 
-        /// <summary>
-        /// The BOE Form type.
-        /// </summary>
-        public override BOEFormType BOEFormType
-        {
-            get
-            {
-                return BOEFormType.IBOE;
-            }
-        }
+		/// <summary>
+		/// The BOE Form type.
+		/// </summary>
+		public override BOEFormType BOEFormType
+		{
+			get
+			{
+				return BOEFormType.IBOE;
+			}
+		}
 
 		#region NLF-only fields
 
@@ -60,6 +60,11 @@ namespace GenBOE.Dtos
 		/// Collection of clin-contract xrefs
 		/// </summary>
 		public ICollection<ClinContractDto> ClinContractXrefs { get; set; }
+
+		/// <summary>
+		/// PTM Tracking Number
+		/// </summary>
+		public string PTMTrackingNumber { get; set; }
 
 		#endregion NLF-only fields
 	}

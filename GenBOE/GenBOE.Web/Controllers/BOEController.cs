@@ -162,6 +162,8 @@ namespace GenBOE.Web.Controllers
 					x.ElementOfCostId == (int)ElementOfCostType.Sub ||
 					x.ElementOfCostId == (int)ElementOfCostType.Travel).ToList();
 			ViewData["EnableSAP"] = Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate);
+			this.ViewData["IsSkillMixEnabled"] = Utilities.ShowSkillMixForWorkspace(ws.CreationDate);
+
 
 			Collection<SelectListItem> WBSElements = new Collection<SelectListItem>((from x in ws.WbsElementsNoMultiWbs
 											 orderby x.WbsPaddedNumber
@@ -208,7 +210,6 @@ namespace GenBOE.Web.Controllers
 			this.ViewData["SapFields"] = await _ControllerLogic.GetAllFields();
 			this.ViewData["SapOperators"] = await _ControllerLogic.GetAllOperators();
 			this.ViewData["EnableSAPConnection"] = ws.EnableSAPConnection;
-			this.ViewData["IsSkillMixEnabled"] = Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.IsUsingTM);
 
 			ViewResult toReturn = this.GetMasterView(WebConstants.VIEW_EDIT_BOE_INDEX, workspace);
 

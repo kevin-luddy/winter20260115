@@ -28,10 +28,11 @@
     $scope.SelectedMoqTypes = [];
     $scope.IsDraftOrDraftLocked = false;
     $scope.IsBRCEnabled = ManageTaskModel.IsBRCEnabled; // For CDSM table only show if this BRC Enabaled = true 
-    $scope.IsSkillMixEnabled = ManageTaskModel.IsSkillMixEnabled;
+    $scope.IsSkillMixEnabled = ManageTaskModel.EnableSkillMix;
     $scope.skillMixRationale = [];
     $scope.skillMixRationaleLaborTypeSelections = [];
     $scope.commonDisclosureLaborTypeSelections = [];
+    $scope.IsUsingTMRatesInTask = false;
 
     // Sets the Selected MOQ Types from the Selected MOQ Types from MoqEuationController.js.
     $scope.$on('MOQ_TYPE_SELECTION_CHANGED', function (event, selectedMoqTypes) {
@@ -292,10 +293,6 @@
 
         angular.forEach($scope.PerfOrgModels, function (item, key) {
             item.Label = item.PerformingOrgName + '-' + item.PerformingOrgDesc;
-        });
-
-        $scope.$on('MOQ_TYPE_SELECTION_CHANGED', function (e, moqData) {
-            $scope.SelectedMoqTypes = moqData;
         });
 
         // load the main data
@@ -754,6 +751,8 @@
 
         $scope.deltaHours = $scope.getMOQTotal().minus($scope.totalSpreadHours).toString();
         $scope.validateTotals();
+
+        $scope.refreshSkillMixTables();
     };
 
     $scope.getMOQTotal = function () {
@@ -1179,6 +1178,7 @@
             $scope.TaskCustomFields = $scope.model.TaskCustomFields;
             $scope.MoqTableCustomFields = $scope.model.MOQTypeTableCustomFields;
             $scope.LaborCustomFields = $scope.model.LaborCustomFields;
+            $scope.IsUsingTMRatesInTask = $scope.model.IsUsingTMRatesInTask;
 
             delete $scope.model.TaskCustomFields;
             delete $scope.model.LaborCustomFields;
@@ -1839,6 +1839,10 @@
 
         $scope.checkIfNewRowNeeded(model);
         $scope.filterResourceSelections();
+
+        if (ManageTaskModel.IsSpace) {
+            $scope.checkTMRates();
+        }
     };
 
     $scope.businessResourceCodeSelected = function (item, model) {
@@ -1868,7 +1872,35 @@
         }
 
         $scope.checkIfNewRowNeeded(model);
+
+        if (ManageTaskModel.IsSpace) {
+            $scope.checkTMRates();
+        }
     }
+
+    $scope.checkTMRates = function () {
+        var data = {
+            boeId: ManageTaskModel.boeId,
+            laborTypes: $scope.model.LaborTypesData,
+        };
+        return $http({
+            method: 'POST',
+            data: data,
+            url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.CheckTMRatesAction, '')
+        }).then(function (response) {
+            $scope.IsUsingTMRatesInTask = response.data;
+        }, function errorCallback(response) {
+            if (response.data && response.data.MessageList) {
+                $scope.errors = response.data.MessageList;
+                $scope.isLoading = false;
+                $(document).trigger("HIDE_LOADING_BOX");
+            }
+        });
+    };
+
+    $scope.isUsingTMRatesInTask = function () {
+        return $scope.IsUsingTMRatesInTask.data === true;
+    };
 
     $scope.perfOrgSelected = function (item, model) {
         $scope.setDirty();
@@ -2024,6 +2056,9 @@
                 item.SpreadDataInvalid.push(false);
             });
         }
+
+        // Finally, recalculate Skill Mix tables
+        $scope.refreshSkillMixTables();
     };
 
     $scope.fixDiscreteSpread = function (item, skipRecalc) {

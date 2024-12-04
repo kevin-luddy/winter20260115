@@ -208,6 +208,11 @@ namespace GenBOE.DataBridge.DTO
 		public ICollection<CommonDisclosureModelView> CommonDisclosureTable { get; set; } = new List<CommonDisclosureModelView>();
 
 		/// <summary>
+		/// Gets or sets a value indicating whether this task instance has any T&M rates.
+		/// </summary>
+		public bool HasTMRates { get; set; }
+
+		/// <summary>
 		/// Gets the children that can be shifted.
 		/// </summary>
 		public ICollection<IDateShiftable> Children
