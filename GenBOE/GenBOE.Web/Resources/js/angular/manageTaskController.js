@@ -166,6 +166,11 @@
             if (setDirty) {
                 $scope.setDirty();
             }
+
+            if ($scope.model.LaborTypesData) {
+                $scope.model.LaborTypesData = $scope.model.LaborTypesData.filter((item) => !item.Deleted);
+            }
+
             var data = {
                 boeId: ManageTaskModel.boeId,
                 selectedMoqTypes: $scope.SelectedMoqTypes,
@@ -562,6 +567,7 @@
 
         // update deltas and totals
         recalculateAllSpreadsAndTotals();
+        $scope.refreshSkillMixTables();
 
         // close dialog
         $scope.clearDuplicates();
@@ -1714,6 +1720,7 @@
             item.ResourceID = undefined;
         }
         $scope.checkIfNewRowNeeded(item);
+        $scope.refreshSkillMixTables();
     };
 
     $scope.businessResourceCodeUpdated = function (item) {
@@ -1726,6 +1733,7 @@
             item.BusinessResourceCodeID = undefined;
         }
         $scope.checkIfNewRowNeeded(item);
+        $scope.refreshSkillMixTables();
     };
 
     $scope.getAndSetIsResourceValid = function (item, models, callBusinessResourceCode) {
