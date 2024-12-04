@@ -413,7 +413,7 @@
 			</div>
             }
 			<div class="form-row">
-				<div class="form-label">@Html.LabelFor(x => x.IsInsuranceDirect)</div>
+				<div class="form-label">@Html.LabelFor(x => x.IsInsuranceDirect)**</div>
 				<div class="form-element">
 					@Html.DropDownListFor(model => model.IsInsuranceDirect, Model.InsuranceProposedDirectOptions, new { name = "IsInsuranceDirect", @class = "half", onchange = "ContractsInfoWidget.insuranceChanged()" })
 
@@ -422,13 +422,13 @@
 				</div>
 			</div>
 			<div class="form-row">
-				<div class="form-label"><span helptext="Enter in U.S. whole dollars">@Html.LabelFor(x => x.ProposedInsurance)</span></div>
+				<div class="form-label"><span helptext="Enter in U.S. whole dollars">@Html.LabelFor(x => x.ProposedInsurance)**</span></div>
 				<div class="form-element">
 					@Html.TextBoxFor(x => x.ProposedInsurance, new { @class = "half" })
 				</div>
 			</div>
 			<div class="form-row">
-				<div class="form-label"><span helptext="Enter in U.S. whole dollars">@Html.LabelFor(x => x.NegotiatedInsurance)</span></div>
+				<div class="form-label"><span helptext="Enter in U.S. whole dollars">@Html.LabelFor(x => x.NegotiatedInsurance)**</span></div>
 				<div class="form-element">
 					@Html.TextBoxFor(x => x.NegotiatedInsurance, new { @class = "half" })
 				</div>
