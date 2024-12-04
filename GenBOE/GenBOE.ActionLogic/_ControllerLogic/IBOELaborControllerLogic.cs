@@ -196,13 +196,15 @@ namespace GenBOE.ActionLogic
         /// <returns>Labor Task Data</returns>
         LaborTaskDataModelView GetLaborTaskData(FullWorkspace ws, FullBoe boe, int taskElementId);
 
-        /// <summary>
-        /// Validate the Labor Task data prior to saving
-        /// </summary>
-        /// <param name="ws">Workspace</param>
-        /// <param name="modelView">Labor Task modelview</param>
-        /// <returns>Any Validation errors</returns>
-        ICollection<ValidationMessage> ValidateLaborTaskDataWithDataModification(FullWorkspace ws, LaborTaskDataModelView modelView);
+		LaborTaskDataModelView ConvertDtoToModelView(FullWorkspace ws, FullBoe boe, BoeTaskElementDTO dto);
+
+		/// <summary>
+		/// Validate the Labor Task data prior to saving
+		/// </summary>
+		/// <param name="ws">Workspace</param>
+		/// <param name="modelView">Labor Task modelview</param>
+		/// <returns>Any Validation errors</returns>
+		ICollection<ValidationMessage> ValidateLaborTaskDataWithDataModification(FullWorkspace ws, LaborTaskDataModelView modelView);
 
         /// <summary>
         /// Validate a labor task for saving in a locked Workspace
