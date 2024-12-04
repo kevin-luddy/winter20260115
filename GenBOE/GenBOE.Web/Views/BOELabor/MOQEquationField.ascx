@@ -420,7 +420,7 @@
         <hr data-ng-show="!moqType.collapsed" />
     </div>
     <div data-ng-if="model.UsingTemplateBOE" class="form-row moqContainerClass">
-        <div <%--data-ng-if="model.IsRMS || model.SelectedMoqTypes.length === 0"--%> class="form-label">
+        <div data-ng-if="!model.SkillMixEnabled || model.SelectedMoqTypes.length === 0" class="form-label">
             <span>Add New MOQ Type</span>
         </div>
         <div class="form-element">
