@@ -411,7 +411,6 @@
 					<label>No</label>  @Html.RadioButtonFor(x => x.LmWon, false)
 				</div>
 			</div>
-            }
 			<div class="form-row">
 				<div class="form-label">@Html.LabelFor(x => x.IsInsuranceDirect)**</div>
 				<div class="form-element">
@@ -433,8 +432,6 @@
 					@Html.TextBoxFor(x => x.NegotiatedInsurance, new { @class = "half" })
 				</div>
 			</div>
-            if (!Model.IsRomNte)
-            {
 			<div class="form-row">
 				<div class="form-label">@Html.LabelFor(x => x.ModCompletedDate)</div>
 				<div class="form-element">
