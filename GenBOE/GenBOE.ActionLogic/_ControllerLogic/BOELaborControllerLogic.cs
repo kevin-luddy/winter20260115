@@ -1810,7 +1810,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="boe">The Boe</param>
 		/// <param name="dto">Task Element DTO</param>
 		/// <returns>Converted MV</returns>
-		private LaborTaskDataModelView ConvertDtoToModelView(FullWorkspace ws, FullBoe boe, BoeTaskElementDTO dto)
+		public LaborTaskDataModelView ConvertDtoToModelView(FullWorkspace ws, FullBoe boe, BoeTaskElementDTO dto)
 		{
 			LaborTaskDataModelView toReturn = new LaborTaskDataModelView()
 			{
@@ -1818,7 +1818,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				TaskCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.Task),
 				MOQTypeTableCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.MoqTypeTable),
 				LaborCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.LaborTypes),
-				MOQTypes = boe.MoqTypeSelections.Where(x => x.TaskId == dto.Id).ToList(),
+				MOQTypes = boe?.MoqTypeSelections.Where(x => x.TaskId == dto.Id).ToList(),
 				SkillMixData = dto.SkillMixTable.ToList(),
 				CommonDisclosureSkillMixData = dto.CommonDisclosureTable.ToList()
 			};
