@@ -1660,7 +1660,7 @@ namespace GenBOE.Web.Controllers
 
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLES, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeId);
 
-			ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours = selectedMoqTypes
+			ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours = selectedMoqTypes?
 				.SelectMany(moqType => moqType.TableData)
 				.SelectMany(tableData => tableData.ResourceHours)
 				.ToList();
