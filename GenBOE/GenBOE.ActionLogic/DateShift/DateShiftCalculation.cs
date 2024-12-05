@@ -190,7 +190,6 @@ namespace GenBOE.ActionLogic.DateShift
 							FullBoe fullBoe = this.factory.CreateFullBoe(task.BoeID);
 
 							LaborTaskDataModelView laborTasks = this.boeLaborControllerLogic.ConvertDtoToModelView(fullWorkspace, fullBoe, task);
-							laborTasks.IsUsingTMRatesInTask = this.boeLaborControllerLogic.CheckTMRates(fullWorkspace, laborTasks.LaborTypesData);
 
 							RefreshSkillMixModelView response = this.boeLaborControllerLogic.RefreshSkillMixTables(resourceHours,
 								laborTasks.LaborTypesData, task.SkillMixTable, task.CommonDisclosureTable, isBRCEnabled);
