@@ -175,8 +175,9 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// </summary>
 		/// <param name="existingRates">Collection of Rates from DB.</param>
 		/// <param name="importRateDetails">Collection of imported rate details to validate.</param>
+		/// <param name="isSave">Checks whether or not a Rate is being saved</param>
 		/// <returns>A list of validation errors (if any).</returns>
-		public ICollection<ValidationMessage> ValidateImportedRates(ICollection<RateDetailModelView> existingRates, ICollection<RateDetailModelView> importRateDetails)
+		public ICollection<ValidationMessage> ValidateImportedRates(ICollection<RateDetailModelView> existingRates, ICollection<RateDetailModelView> importRateDetails, bool isSave = false)
 		{
 			if (existingRates == null)
 			{
@@ -204,9 +205,12 @@ namespace IES.ActionLogic.Core.ControllerLogic
 					}
 					else
 					{
-						// populate Rate Category to enable subsequent code (in ValidateRateDetailModelViews) to determine rate value precision.
-						rdmv.RateCategory = rate.RateCategory;
-						rdmv.RateCategoryDescription = rate.RateCategoryDescription;
+						if (!isSave)
+						{
+							// populate Rate Category to enable subsequent code (in ValidateRateDetailModelViews) to determine rate value precision.
+							rdmv.RateCategory = rate.RateCategory;
+							rdmv.RateCategoryDescription = rate.RateCategoryDescription;
+						}
 					}
 				}
 				catch (InvalidOperationException)

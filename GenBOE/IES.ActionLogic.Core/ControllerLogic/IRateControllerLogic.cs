@@ -22,9 +22,10 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// </summary>
 		/// <param name="existingRates">Collection of Rates from DB.</param>
 		/// <param name="importRateDetails">Collection of imported rate details to validate.</param>
+		/// <param name="isSave">Checks whether or not a Rate is being saved</param>
 		/// <returns>A list of validation errors (if any).</returns>
 		ICollection<ValidationMessage> ValidateImportedRates(ICollection<RateDetailModelView> existingRates,
-			ICollection<RateDetailModelView> importRateDetails);
+			ICollection<RateDetailModelView> importRateDetails, bool isSave = false);
 
 		/// <summary>
 		/// Gets the rates.
