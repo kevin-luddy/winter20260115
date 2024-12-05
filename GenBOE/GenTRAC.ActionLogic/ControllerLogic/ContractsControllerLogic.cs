@@ -792,27 +792,30 @@ namespace GenTRAC.ActionLogic
 				messages.Add(Constants.INVALID_LM_WIN_LOSS);
 			}
 
-			if (dto.IsInsuranceDirect is null)
+			if (!fullProposal.IsRomNte)
 			{
-				isValid = false;
-				messages.Add(Constants.INVALID_INSURANCE_DIRECT);
-			}
-			else if (dto.IsInsuranceDirect == TripleBooleanState.Yes && dto.InsuranceType is null)
-			{
-				isValid = false;
-				messages.Add(Constants.INVALID_INSURANCE_TYPE);
-			}
+				if (dto.IsInsuranceDirect is null)
+				{
+					isValid = false;
+					messages.Add(Constants.INVALID_INSURANCE_DIRECT);
+				}
+				else if (dto.IsInsuranceDirect == TripleBooleanState.Yes && dto.InsuranceType is null)
+				{
+					isValid = false;
+					messages.Add(Constants.INVALID_INSURANCE_TYPE);
+				}
 
-			if (dto.ProposedInsurance is null)
-			{
-				isValid = false;
-				messages.Add(Constants.INVALID_PROPOSED_INSURANCE);
-			}
+				if (dto.ProposedInsurance is null)
+				{
+					isValid = false;
+					messages.Add(Constants.INVALID_PROPOSED_INSURANCE);
+				}
 
-			if (dto.NegotiatedInsurance is null)
-			{
-				isValid = false;
-				messages.Add(Constants.INVALID_NEGOTIATED_INSURANCE);
+				if (dto.NegotiatedInsurance is null)
+				{
+					isValid = false;
+					messages.Add(Constants.INVALID_NEGOTIATED_INSURANCE);
+				}
 			}
 
 			messages.AddRange(ValidateContractModelView(ConvertContractsDtoToModel(dto), fullProposal));
