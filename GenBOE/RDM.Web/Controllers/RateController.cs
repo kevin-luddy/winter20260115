@@ -366,7 +366,7 @@ namespace RDM.Web.Controllers
 			// Load the existing RateDetails for all the imported Rates.
 			ICollection<RateDetailModelView> existingRates = this.rateDetailLoader.GetRatesForImport(revision, importedRateCodes.ToArray());
 
-			ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateImportedRates(existingRates, collection, true);
+			ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateImportedRates(existingRates, collection);
 			if (validationErrors.Any())
 			{
 				throw new GenValidationException(validationErrors);

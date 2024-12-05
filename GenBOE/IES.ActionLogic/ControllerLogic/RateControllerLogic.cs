@@ -163,7 +163,7 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="existingRates">Collection of Rates from DB.</param>
 		/// <param name="importRateDetails">Collection of imported rate details to validate.</param>
 		/// <returns>A list of validation errors (if any).</returns>
-		public ICollection<ValidationMessage> ValidateImportedRates(ICollection<RateDetailModelView> existingRates, ICollection<RateDetailModelView> importRateDetails, bool isSave = false)
+		public ICollection<ValidationMessage> ValidateImportedRates(ICollection<RateDetailModelView> existingRates, ICollection<RateDetailModelView> importRateDetails)
 		{
 			if (existingRates == null)
 			{
@@ -191,12 +191,9 @@ namespace IES.ActionLogic.ControllerLogic
 					}
 					else
 					{
-						if (!isSave)
-						{
-							// populate Rate Category to enable subsequent code (in ValidateRateDetailModelViews) to determine rate value precision.
-							rdmv.RateCategory = rate.RateCategory;
-							rdmv.RateCategoryDescription = rate.RateCategoryDescription;
-						}
+						// populate Rate Category to enable subsequent code (in ValidateRateDetailModelViews) to determine rate value precision.
+						rdmv.RateCategory = rate.RateCategory;
+						rdmv.RateCategoryDescription = rate.RateCategoryDescription;
 					}
 				}
 				catch (InvalidOperationException)
@@ -751,6 +748,8 @@ namespace IES.ActionLogic.ControllerLogic
 					RateDetailModelView existingRateDetailMV = existingRates.FirstOrDefault(x => x.RateCode == importedRateDetailMV.RateCode);
 					if (existingRateDetailMV != null)
 					{
+						// this will always be an UpdateType.Upsert because we check whether or not there are importedRates are there
+						// importedRates means that there were changes that needs to be made
 						existingRateDetailMV.Updateable = UpdateType.Upsert;
 						existingRateDetailMV.RateCategory = importedRateDetailMV.RateCategory;
 						existingRateDetailMV.RateCategoryDescription = importedRateDetailMV.RateCategoryDescription;
