@@ -141,6 +141,10 @@
         $scope.skillMixRationaleLaborTypeSelections = [...$scope.model.LaborTypesData];
         $scope.commonDisclosureLaborTypeSelections = [...$scope.model.LaborTypesData];
 
+        // Filter out the labor types where their '.RateType' is not equal to 'Hours' (Hours equal to 1 as defined from the Enum.cs RateType)
+        $scope.skillMixRationaleLaborTypeSelections = $scope.skillMixRationaleLaborTypeSelections.filter(option => option.RateType === 1);
+        $scope.commonDisclosureLaborTypeSelections = $scope.commonDisclosureLaborTypeSelections.filter(option => option.RateType === 1);
+
         // Filter out the proper Labor Type selections by Resource Names.
         $scope.skillMixRationaleLaborTypeSelections.forEach(function (option, index) {
             $scope.skillMixRationaleLaborTypeSelections[index] = option.ResourceName || '';
