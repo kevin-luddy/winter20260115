@@ -1718,9 +1718,9 @@
             item.ResourceName = undefined;
             item.ResourceType = undefined;
             item.ResourceID = undefined;
+            $scope.refreshSkillMixTables();
         }
         $scope.checkIfNewRowNeeded(item);
-        $scope.refreshSkillMixTables();
     };
 
     $scope.businessResourceCodeUpdated = function (item) {
@@ -1731,9 +1731,9 @@
             item.BusinessResourceCodeName = undefined;
             item.BusinessResourceCodeType = undefined;
             item.BusinessResourceCodeID = undefined;
+            $scope.refreshSkillMixTables();
         }
         $scope.checkIfNewRowNeeded(item);
-        $scope.refreshSkillMixTables();
     };
 
     $scope.getAndSetIsResourceValid = function (item, models, callBusinessResourceCode) {
