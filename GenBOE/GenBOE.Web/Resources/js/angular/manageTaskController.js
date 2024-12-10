@@ -171,14 +171,15 @@
                 $scope.setDirty();
             }
 
-            if ($scope.model.LaborTypesData) {
-                $scope.model.LaborTypesData = $scope.model.LaborTypesData.filter((item) => !item.Deleted);
+            let laborTypesData = $scope.model.LaborTypesData;
+            if (laborTypesData) {
+                laborTypesData = laborTypesData.filter((item) => !item.Deleted);
             }
 
             var data = {
                 boeId: ManageTaskModel.boeId,
                 selectedMoqTypes: $scope.SelectedMoqTypes,
-                laborTypes: $scope.model.LaborTypesData,
+                laborTypes: laborTypesData,
                 currentSkillMixData: $scope.model.SkillMixData,
                 currentCommonDisclosureData: $scope.model.CommonDisclosureSkillMixData
             };
