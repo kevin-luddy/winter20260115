@@ -98,7 +98,8 @@
                 dataType: 'html',
                 success: function () {
                     GenSession.ShowLoadingBox();
-					window.onbeforeunload = null;
+					ProposalDetailsWidget.cleanDirty("ApprovalForm");
+                    window.onbeforeunload = null;
                     location.reload(true);
                 }
             });
@@ -131,7 +132,8 @@
             GenSession.ShowLoadingBox();
 
             // Clear the dirty indicators
-			window.onbeforeunload = null;
+			ProposalDetailsWidget.cleanDirty("ApprovalForm");
+            window.onbeforeunload = null;
 			location.reload(true);
 		};
 
@@ -157,7 +159,8 @@
 					function () {
 						ApproverSectionWidget.SubmitApproval("@PtmRole.LOBEstLead");
                     }, function () {
-						window.onbeforeunload = null;
+						ProposalDetailsWidget.cleanDirty("ApprovalForm");
+                        window.onbeforeunload = null;
 						location.reload(true);
 					});
 			}
@@ -166,7 +169,8 @@
 		$('#NonPreferredToolCancelButton').click(function () {
 			GenSession.ShowLoadingBox();
             ApproverSectionWidget.HideNonPreferredDialog();
-			window.onbeforeunload = null;
+			ProposalDetailsWidget.cleanDirty("ApprovalForm");
+            window.onbeforeunload = null;
 			location.reload(true);
 		});
 
