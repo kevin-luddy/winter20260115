@@ -823,7 +823,7 @@ namespace GenBOE.Web.Controllers
 			// Validate DTO 
 			if (!isLocked)
 			{
-				validationErrors.AddRange(this._BoeLaborControllerLogic.ValidateTaskElementDto(ws, dto));
+				validationErrors.AddRange(this._BoeLaborControllerLogic.ValidateTaskElementDto(ws, dto, modelView.MOQTypes));
 			}
 
 			if (validationErrors.Any())

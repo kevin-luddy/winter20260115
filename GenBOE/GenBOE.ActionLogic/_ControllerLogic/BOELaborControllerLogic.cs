@@ -9,6 +9,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Threading.Tasks;
 	using System.Transactions;
@@ -816,10 +817,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// </summary>
 		/// <param name="ws">workspace</param>
 		/// <param name="taskElement">task element</param>
-		public ICollection<ValidationMessage> ValidateTaskElementDto(FullWorkspace ws, BoeTaskElementDTO taskElement)
+		/// <param name="moqTypes">MOQ Types</param>
+		/// <returns>Any Validation errors</returns>
+		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
+		public ICollection<ValidationMessage> ValidateTaskElementDto(FullWorkspace ws, BoeTaskElementDTO taskElement, ICollection<MoqTypeSelection> moqTypes)
 		{
 			_ = ws ?? throw new ArgumentNullException(nameof(ws));
 			_ = taskElement ?? throw new ArgumentNullException(nameof(taskElement));
+			_ = moqTypes ?? throw new ArgumentNullException(nameof(moqTypes));
 
 			ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
 			FullBoe boe = factory.CreateFullBoe(taskElement.BoeID);
@@ -922,8 +927,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}
 			}
 			#endregion
-
-			if (Utilities.ShowSkillMixForTask(ws.CreationDate, taskElement.HasTMRates))
+			
+			if (Utilities.ShowSkillMixForTask(ws.CreationDate, taskElement.HasTMRates, moqTypes.Select(x => x.SelectedMOQType).ToList()))
 			{
 				decimal historicalHoursTotals = 0;
 
@@ -1932,7 +1937,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			toReturn.WorkspaceVariableIDs = modelview.TaskElementData.WorkspaceVariableIDs;
 			toReturn.TaskElementType = TaskElementType.Labor;
 			toReturn.BOETaskElementOrder = modelview.TaskElementData.BOETaskElementOrder;
-			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate))
+			if (Utilities.ShowSkillMixForTask(ws.CreationDate, modelview.IsUsingTMRatesInTask, modelview.MOQTypes.Select(x => x.SelectedMOQType).ToList()))
 			{
 				toReturn.MOQTotalRelevantHours += modelview.MOQTypes?.Sum(t => t.TableData?.Sum(td => td.TotalRelevantHours) ?? 0) ?? 0;
 				toReturn.SkillMixTable = modelview.SkillMixData;
