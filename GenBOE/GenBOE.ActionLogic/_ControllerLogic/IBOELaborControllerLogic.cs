@@ -244,8 +244,9 @@ namespace GenBOE.ActionLogic
 		/// </summary>
 		/// <param name="ws">workspace</param>
 		/// <param name="taskElement">task element</param>
+		/// <param name="moqTypes">MOQ Types</param>
 		/// <returns>Any Validation errors</returns>
-		ICollection<ValidationMessage> ValidateTaskElementDto(FullWorkspace ws, BoeTaskElementDTO taskElement);
+		ICollection<ValidationMessage> ValidateTaskElementDto(FullWorkspace ws, BoeTaskElementDTO taskElement, ICollection<MoqTypeSelection> moqTypes);
 
 		/// <summary>
 		/// Recalculates the labor types that have percent spread locked.

@@ -1900,8 +1900,8 @@
             method: 'POST',
             data: data,
             url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.CheckTMRatesAction, '')
-        }).then(function (response) {
-            $scope.IsUsingTMRatesInTask = response.data;
+		}).then(function (response) {
+            $scope.IsUsingTMRatesInTask = response.data.data;
         }, function errorCallback(response) {
             if (response.data && response.data.MessageList) {
                 $scope.errors = response.data.MessageList;
@@ -1911,8 +1911,9 @@
         });
     };
 
-    $scope.isUsingTMRatesInTask = function () {
-        return $scope.IsUsingTMRatesInTask.data === true;
+	$scope.showSkillMix = function () {
+		// Show Skill Mix if there is a Historical (5001) or Comparative (5002) MOQ Type and no T&M rates are in the task
+		return $scope.SelectedMoqTypes.some(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002') && $scope.IsUsingTMRatesInTask === false;
     };
 
     $scope.perfOrgSelected = function (item, model) {
