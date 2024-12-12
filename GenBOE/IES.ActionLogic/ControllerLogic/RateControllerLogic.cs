@@ -853,9 +853,9 @@ namespace IES.ActionLogic.ControllerLogic
 					scope.Complete();
 				}
 			}
-			catch (FileFormatException)
+			catch (Exception)
 			{
-				throw new GenValidationException("Imported file was an incorrect format.");
+				throw new GenValidationException("Cannot Save Rates.");
 			}
 
 			return importResults;
