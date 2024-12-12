@@ -45,6 +45,7 @@ namespace IES.Common
 		private static DateTime? oneLmxStartDate;
 		private static DateTime? datepickerRestrictionRMS;
 		private static DateTime? historicalReferenceExplanationStartDate;
+		private static DateTime? showINLCutoffDate;
 		private static readonly IActiveDirectoryUtilities activeDirectoryUtilities = GenBOEUnityContainer.Resolve<IActiveDirectoryUtilities>();
 
 		/// <summary>
@@ -206,6 +207,29 @@ namespace IES.Common
 				}
 
 				return historicalReferenceExplanationStartDate.Value;
+			}
+		}
+
+		/// <summary>
+		/// Cutoff date to show PBOE/IBOE forms for workspace
+		/// </summary>
+		public static DateTime ShowINLCutoffDate
+		{
+			get
+			{
+				if (!showINLCutoffDate.HasValue)
+				{
+					if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("ShowINLCutoffDate"), out DateTime cutoffDate))
+					{
+						showINLCutoffDate = DateTime.MaxValue;
+					}
+					else
+					{
+						showINLCutoffDate = cutoffDate;
+					}
+				}
+
+				return showINLCutoffDate.Value;
 			}
 		}
 
@@ -1069,8 +1093,8 @@ namespace IES.Common
 		/// <returns>Property Value if it exists, empty string otherwise</returns>
 		public static string TryGetPropertyValue(PropertyCollection propertyCollection, string propertyName, StringManipulation stringManipulation = StringManipulation.None)
 		{
-			string toReturn = string.Empty; 
-			
+			string toReturn = string.Empty;
+
 			if (propertyCollection != null)
 			{
 				toReturn = propertyCollection.Contains(propertyName) ? propertyCollection[propertyName][0].ToString() : string.Empty;

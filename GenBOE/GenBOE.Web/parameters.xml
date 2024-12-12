@@ -100,6 +100,10 @@
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IsBOEFormVisible']/@value">
 		</parameterentry>
 	</parameter>
+	<parameter name="ShowINLCutoffDate" description="doesn't matter" defaultvalue="__ShowINLCutoffDate__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ShowINLCutoffDate']/@value">
+		</parameterentry>
+	</parameter>
 	<parameter name="IsPortionMarkingEnabled" description="doesn't matter" defaultvalue="__IsPortionMarkingEnabled__" tags="">
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IsPortionMarkingEnabled']/@value">
 		</parameterentry>

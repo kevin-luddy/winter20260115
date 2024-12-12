@@ -28,6 +28,7 @@ namespace GenBOE.Web.Common
     using GenBOE.Dtos;
     using GenBOE.Objects;
     using GenBOE.Web.ModelView;
+	using GenBOE.Models;
 
     [IES.Common.Exceptions.HandleError]
     [SessionState(SessionStateBehavior.Disabled)]
@@ -165,15 +166,17 @@ namespace GenBOE.Web.Common
         public virtual ViewResult DisplaySiteMasterMenu(string workspace)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+			bool hideINLMenuItem = ws.CreationDate > Utilities.ShowINLCutoffDate;
 
-            // Action Initialize
-            Stopwatch sw = InitializeAction(_log, "DisplayMasterMenu", SecurityPage.Home, SecurityAuthorization.Read, ws, null);
+			// Action Initialize
+			Stopwatch sw = InitializeAction(_log, "DisplayMasterMenu", SecurityPage.Home, SecurityAuthorization.Read, ws, null);
 
 			Collection<GenBOEMasterMenuItemModelView> theModelViews = new Collection<GenBOEMasterMenuItemModelView>();
 
             // Iterate over the static collection of Menu Items defined in GenBOEMasterMenuItemModelView
             ICollection<GenBOEMasterMenuItemModelView> MenuItems = GenBOEMasterMenuItemModelView.BuildSiteMasterMenuItems(ws);
-            foreach (GenBOEMasterMenuItemModelView menuItem in MenuItems)
+
+			foreach (GenBOEMasterMenuItemModelView menuItem in MenuItems)
             {
                 // For menu items with no sub items, check access
                 if (!menuItem.subMenuItems.Any())
@@ -207,8 +210,13 @@ namespace GenBOE.Web.Common
                         menuLocation = menuItem.menuLocation
                     };
 
-                    // Iterate the sub items
-                    foreach (GenBOEMasterMenuItemModelView subMenuItem in menuItem.subMenuItems)
+					if (menuItem.linkText == "Workspace Administration" && hideINLMenuItem)
+					{
+						menuItem.subMenuItems = FilterOutINLForms(menuItem.subMenuItems);
+					}
+
+					// Iterate the sub items
+					foreach (GenBOEMasterMenuItemModelView subMenuItem in menuItem.subMenuItems)
                     {
                         bool submenuItemAuthorization = CheckPermissions(subMenuItem.securityPage, ws, null) != SecurityAuthorization.None;
 
@@ -334,12 +342,22 @@ namespace GenBOE.Web.Common
 
             this.ViewBag.DisplayOffloadUpdateRates = displayUpdateRates;
         }
-        
-        /// <summary>
-        /// Display the Error page for general exceptions
-        /// </summary>
-        /// <returns>Error Page</returns>
-        public ActionResult Error()
+
+		/// <summary>
+		/// Filters out the Manage INL Forms menu item if after the cutoff date
+		/// </summary>
+		/// <param name="currentMenuItems">The collection of MenuItems</param>
+		/// <returns>Collection of MenuItems</returns>
+		private Collection<GenBOEMasterMenuItemModelView> FilterOutINLForms(Collection<GenBOEMasterMenuItemModelView> currentMenuItems)
+		{
+			return currentMenuItems.Where(x => x.securityPage != SecurityPage.ManageBOEForms).ToCollection();
+		}
+
+		/// <summary>
+		/// Display the Error page for general exceptions
+		/// </summary>
+		/// <returns>Error Page</returns>
+		public ActionResult Error()
         {
             return this.View(WebConstants.VIEW_ERROR);
         }
