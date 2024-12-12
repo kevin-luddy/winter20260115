@@ -25,7 +25,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <param name="isSave">Checks whether or not a Rate is being saved</param>
 		/// <returns>A list of validation errors (if any).</returns>
 		ICollection<ValidationMessage> ValidateImportedRates(ICollection<RateDetailModelView> existingRates,
-			ICollection<RateDetailModelView> importRateDetails, bool isSave = false);
+			ICollection<RateDetailModelView> importRateDetails);
 
 		/// <summary>
 		/// Gets the rates.
@@ -69,6 +69,16 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <returns>Collection of imported rates for the current version.</returns>
 		ICollection<RateDetailModelView> LoadImportedRates(ICollection<RateDetailModelView> existingRates,
 			ICollection<RateDetailModelView> importedRates);
+
+		/// <summary>
+		/// Save Rates
+		/// </summary>
+		/// <param name="existingRates"></param>
+		/// <param name="importedRates"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <exception cref="GenValidationException"></exception>
+		ICollection<RateDetailModelView> SaveRates(ICollection<RateDetailModelView> existingRates, ICollection<RateDetailModelView> importedRates);
 
 		/// <summary>
 		/// Load imported rate codes into database.

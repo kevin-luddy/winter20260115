@@ -737,7 +737,10 @@ namespace IES.ActionLogic.ControllerLogic
 				throw new GenValidationException("Imported Rates are null.");
 			}
 
-			this.ReplicateRateCodes(importedRates);
+			// Changing from a fixed size array to a list
+			importedRates = importedRates.ToList();
+
+			ReplicateRateCodes(importedRates);
 
 			try
 			{
@@ -747,16 +750,10 @@ namespace IES.ActionLogic.ControllerLogic
 					RateDetailModelView existingRateDetailMV = existingRates.FirstOrDefault(x => x.RateCode == importedRateDetailMV.RateCode);
 					if (existingRateDetailMV != null)
 					{
-						// this will always be an UpdateType.Upsert because we check whether or not there are importedRates are there
-						// importedRates means that there were changes that needs to be made
-						existingRateDetailMV.Updateable = UpdateType.Upsert;
-						existingRateDetailMV.RateCategory = importedRateDetailMV.RateCategory;
-						existingRateDetailMV.RateCategoryDescription = importedRateDetailMV.RateCategoryDescription;
-						existingRateDetailMV.RateDescription = importedRateDetailMV.RateDescription;
-						existingRateDetailMV.Description = importedRateDetailMV.Description;
-
 						if (importedRateDetailMV.Values != null)
 						{
+							bool modified = false;
+
 							// Overwrite/Add RateCodeYears
 							foreach (RateYearModelView importedRateYearMV in importedRateDetailMV.Values.Where(x => x.Dirty))
 							{
@@ -767,23 +764,32 @@ namespace IES.ActionLogic.ControllerLogic
 									// RateYear already exists - update.
 									if (existingRateYearMV.Value != importedRateYearMV.Value)
 									{
+										modified = true;
 										existingRateYearMV.Value = importedRateYearMV.Value;
 										existingRateYearMV.Dirty = true;
 										existingRateYearMV.Updateable = UpdateType.Upsert;
+										existingRateDetailMV.Updateable = UpdateType.Upsert;
 									}
 								}
 								else
 								{
+									modified = true;
 									importedRateYearMV.Dirty = true;
 									importedRateYearMV.Updateable = UpdateType.Upsert;
 									importedRateYearMV.RateCodeId = existingRateDetailMV.Id;
+									existingRateDetailMV.Updateable = UpdateType.Upsert;
 
 									// New RateYear in import - insert
 									existingRateDetailMV.Values.Add(importedRateYearMV);
 								}
 							}
 
-							importResults.Add(existingRateDetailMV);
+							// Only save Rates that have changes.
+							if (modified)
+							{
+								// Add to collection for bulk save.
+								importResults.Add(existingRateDetailMV);
+							}
 						}
 					}
 					else
@@ -798,7 +804,7 @@ namespace IES.ActionLogic.ControllerLogic
 				// Set to 5x Normal timeout (nominally 5 minutes total).
 				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, 5 * ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
 				{
-					this.rateDetailLoader.BulkSave(importResults);
+					rateDetailLoader.BulkSave(importResults);
 					scope.Complete();
 				}
 			}
@@ -852,7 +858,7 @@ namespace IES.ActionLogic.ControllerLogic
 			}
 			catch (FileFormatException)
 			{
-				throw new GenValidationException("Imported file was an incorrect format.");
+				throw new GenValidationException("Cannot Save Rates.");
 			}
 
 			return importResults;

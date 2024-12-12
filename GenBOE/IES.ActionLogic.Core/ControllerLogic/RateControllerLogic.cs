@@ -177,7 +177,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <param name="importRateDetails">Collection of imported rate details to validate.</param>
 		/// <param name="isSave">Checks whether or not a Rate is being saved</param>
 		/// <returns>A list of validation errors (if any).</returns>
-		public ICollection<ValidationMessage> ValidateImportedRates(ICollection<RateDetailModelView> existingRates, ICollection<RateDetailModelView> importRateDetails, bool isSave = false)
+		public ICollection<ValidationMessage> ValidateImportedRates(ICollection<RateDetailModelView> existingRates, ICollection<RateDetailModelView> importRateDetails)
 		{
 			if (existingRates == null)
 			{
@@ -205,12 +205,9 @@ namespace IES.ActionLogic.Core.ControllerLogic
 					}
 					else
 					{
-						if (!isSave)
-						{
-							// populate Rate Category to enable subsequent code (in ValidateRateDetailModelViews) to determine rate value precision.
-							rdmv.RateCategory = rate.RateCategory;
-							rdmv.RateCategoryDescription = rate.RateCategoryDescription;
-						}
+						// populate Rate Category to enable subsequent code (in ValidateRateDetailModelViews) to determine rate value precision.
+						rdmv.RateCategory = rate.RateCategory;
+						rdmv.RateCategoryDescription = rate.RateCategoryDescription;
 					}
 				}
 				catch (InvalidOperationException)
@@ -768,16 +765,10 @@ namespace IES.ActionLogic.Core.ControllerLogic
 					RateDetailModelView existingRateDetailMV = existingRates.FirstOrDefault(x => x.RateCode == importedRateDetailMV.RateCode);
 					if (existingRateDetailMV != null)
 					{
-						// this will always be an UpdateType.Upsert because we check whether or not there are importedRates are there
-						// importedRates means that there were changes that needs to be made
-						existingRateDetailMV.Updateable = UpdateType.Upsert;
-						existingRateDetailMV.RateCategory = importedRateDetailMV.RateCategory;
-						existingRateDetailMV.RateCategoryDescription = importedRateDetailMV.RateCategoryDescription;
-						existingRateDetailMV.RateDescription = importedRateDetailMV.RateDescription;
-						existingRateDetailMV.Description = importedRateDetailMV.Description;
-
 						if (importedRateDetailMV.Values != null)
 						{
+							bool modified = false;
+
 							// Overwrite/Add RateCodeYears
 							foreach (RateYearModelView importedRateYearMV in importedRateDetailMV.Values.Where(x => x.Dirty))
 							{
@@ -788,23 +779,32 @@ namespace IES.ActionLogic.Core.ControllerLogic
 									// RateYear already exists - update.
 									if (existingRateYearMV.Value != importedRateYearMV.Value)
 									{
+										modified = true;
 										existingRateYearMV.Value = importedRateYearMV.Value;
 										existingRateYearMV.Dirty = true;
 										existingRateYearMV.Updateable = UpdateType.Upsert;
+										existingRateDetailMV.Updateable = UpdateType.Upsert;
 									}
 								}
 								else
 								{
+									modified = true;
 									importedRateYearMV.Dirty = true;
 									importedRateYearMV.Updateable = UpdateType.Upsert;
 									importedRateYearMV.RateCodeId = existingRateDetailMV.Id;
+									existingRateDetailMV.Updateable = UpdateType.Upsert;
 
 									// New RateYear in import - insert
 									existingRateDetailMV.Values.Add(importedRateYearMV);
 								}
 							}
 
-							importResults.Add(existingRateDetailMV);
+							// Only save Rates that have changes.
+							if (modified)
+							{
+								// Add to collection for bulk save.
+								importResults.Add(existingRateDetailMV);
+							}
 						}
 					}
 					else
@@ -826,6 +826,54 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			catch (FileFormatException)
 			{
 				throw new GenValidationException("Imported file was an incorrect format.");
+			}
+
+			return importResults;
+		}
+
+		/// <summary>
+		/// Save Rates
+		/// </summary>
+		/// <param name="existingRates"></param>
+		/// <param name="importedRates"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <exception cref="GenValidationException"></exception>
+		public ICollection<RateDetailModelView> SaveRates(ICollection<RateDetailModelView> existingRates, ICollection<RateDetailModelView> importedRates)
+		{
+			if (existingRates == null)
+			{
+				throw new ArgumentNullException(nameof(existingRates));
+			}
+
+			Collection<RateDetailModelView> importResults = new Collection<RateDetailModelView>();
+
+			if (importedRates == null)
+			{
+				throw new GenValidationException("Imported Rates are null.");
+			}
+
+			this.ReplicateRateCodes(importedRates);
+
+			try
+			{
+				foreach (RateDetailModelView importedRateDetailMV in importedRates)
+				{
+					// Save is different for import because it is possbile to Save a new Rate Code
+					importedRateDetailMV.Updateable = UpdateType.Upsert;
+					importResults.Add(importedRateDetailMV);
+				}
+
+				// Set to 5x Normal timeout (nominally 5 minutes total).
+				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, 5 * ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+				{
+					this.rateDetailLoader.BulkSave(importResults);
+					scope.Complete();
+				}
+			}
+			catch (FileFormatException)
+			{
+				throw new GenValidationException("Cannot Save Rates.");
 			}
 
 			return importResults;
