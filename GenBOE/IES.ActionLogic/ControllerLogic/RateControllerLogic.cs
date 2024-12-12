@@ -162,9 +162,8 @@ namespace IES.ActionLogic.ControllerLogic
 		/// </summary>
 		/// <param name="existingRates">Collection of Rates from DB.</param>
 		/// <param name="importRateDetails">Collection of imported rate details to validate.</param>
-		/// <param name="isSave">Checks whether or not a Rate is being saved</param>
 		/// <returns>A list of validation errors (if any).</returns>
-		public ICollection<ValidationMessage> ValidateImportedRates(ICollection<RateDetailModelView> existingRates, ICollection<RateDetailModelView> importRateDetails, bool isSave = false)
+		public ICollection<ValidationMessage> ValidateImportedRates(ICollection<RateDetailModelView> existingRates, ICollection<RateDetailModelView> importRateDetails)
 		{
 			if (existingRates == null)
 			{
@@ -192,12 +191,8 @@ namespace IES.ActionLogic.ControllerLogic
 					}
 					else
 					{
-						if (!isSave)
-						{
-							// populate Rate Category to enable subsequent code (in ValidateRateDetailModelViews) to determine rate value precision.
-							rdmv.RateCategory = rate.RateCategory;
-							rdmv.RateCategoryDescription = rate.RateCategoryDescription;
-						}
+						rdmv.RateCategory = rate.RateCategory;
+						rdmv.RateCategoryDescription = rate.RateCategoryDescription;
 					}
 				}
 				catch (InvalidOperationException)
@@ -798,6 +793,54 @@ namespace IES.ActionLogic.ControllerLogic
 								importedRateDetailMV.RateCode);
 						throw new GenValidationException(validationString);
 					}
+				}
+
+				// Set to 5x Normal timeout (nominally 5 minutes total).
+				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, 5 * ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+				{
+					this.rateDetailLoader.BulkSave(importResults);
+					scope.Complete();
+				}
+			}
+			catch (FileFormatException)
+			{
+				throw new GenValidationException("Imported file was an incorrect format.");
+			}
+
+			return importResults;
+		}
+
+		/// <summary>
+		/// Save Rates
+		/// </summary>
+		/// <param name="existingRates"></param>
+		/// <param name="importedRates"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <exception cref="GenValidationException"></exception>
+		public ICollection<RateDetailModelView> SaveRates(ICollection<RateDetailModelView> existingRates, ICollection<RateDetailModelView> importedRates)
+		{
+			if (existingRates == null)
+			{
+				throw new ArgumentNullException(nameof(existingRates));
+			}
+
+			Collection<RateDetailModelView> importResults = new Collection<RateDetailModelView>();
+
+			if (importedRates == null)
+			{
+				throw new GenValidationException("Imported Rates are null.");
+			}
+
+			this.ReplicateRateCodes(importedRates);
+
+			try
+			{
+				foreach (RateDetailModelView importedRateDetailMV in importedRates)
+				{
+					// Save is different for import because it is possbile to Save a new Rate Code
+					importedRateDetailMV.Updateable = UpdateType.Upsert;
+					importResults.Add(importedRateDetailMV);
 				}
 
 				// Set to 5x Normal timeout (nominally 5 minutes total).
