@@ -179,7 +179,7 @@ namespace GenBOE.ActionLogic.DateShift
 					// Iterate through each task and check for Skill Mix
 					foreach (BoeTaskElementDTO task in fullWorkspace?.TaskElements)
 					{
-						if (Utilities.ShowSkillMixForTask(fullWorkspace?.CreationDate, task.HasTMRates))
+						if (Utilities.ShowSkillMixForTask(fullWorkspace?.CreationDate, task.HasTMRates, fullWorkspace?.MoqTypeSelections.Where(x => x.TaskId == task.Id).Select(x => x.SelectedMOQType).ToList()))
 						{
 							// Run Skill Mix update
 							ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours = fullWorkspace?.MoqTypeSelections

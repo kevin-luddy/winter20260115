@@ -6,15 +6,14 @@
 
 namespace GenBOE.DataBridge.DTO
 {
-	using IES.Common;
-	using GenBOE.Dtos;
+	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
-	using System.Linq;
-	using GenBOE.Models;
 	using System.Data;
-	using System;
-	using IES.Common.classes;
+	using System.Linq;
+	using GenBOE.Dtos;
+	using GenBOE.Models;
+	using IES.Common;
 
 	public class SkillMixDTOLoader : ISkillMixDTOLoader
 	{
@@ -34,7 +33,7 @@ namespace GenBOE.DataBridge.DTO
 			{ 
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
-					result = (from sm in gbe.SkillMixes
+				result = (from sm in gbe.SkillMixes
 							  where sm.BOETaskElementID == boeTaskElementID
 							  select new SkillMixDTO
 							  {

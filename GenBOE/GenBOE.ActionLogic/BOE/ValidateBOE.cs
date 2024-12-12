@@ -240,7 +240,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 			inBOE.TaskElements.ForEach(task =>
 			{
-				if (Utilities.ShowSkillMixForTask(ws.CreationDate, task.HasTMRates))
+				if (Utilities.ShowSkillMixForTask(ws.CreationDate, task.HasTMRates, inBOE.MoqTypeSelections.Where(x => x.TaskId == task.Id).Select(x => x.SelectedMOQType).ToList()))
 				{
 					ICollection<string> errorMessages = new List<string>();
 					errorMessages = ActionLogicUtility.ValidateSkillMixTable(task.SkillMixTable);
