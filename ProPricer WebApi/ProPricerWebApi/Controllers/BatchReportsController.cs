@@ -35,12 +35,12 @@ namespace APTSPropricerApi.Controllers
 		/// <summary>
 		/// The Pool Manager List
 		/// </summary>
-		private readonly PoolManagerList poolManagerList;
+		internal readonly PoolManagerList poolManagerList;
 
 		/// <summary>
 		/// The Logger
 		/// </summary>
-		private readonly ILogger<BatchReportsController> Logger;
+		internal readonly ILogger<BatchReportsController> Logger;
 
 		/// <summary>
 		/// #ctor
@@ -348,8 +348,7 @@ namespace APTSPropricerApi.Controllers
 				BatchReport batchReport = null;
 				try
 				{
-					Guid proposalGuid = new(proposalId);
-					proposal = ppc.Workspace.Proposals.Find(proposalGuid).Value();
+					proposal = Utility.FindProposal(ppc, proposalId);
 
 					if (proposal != null)
 					{
