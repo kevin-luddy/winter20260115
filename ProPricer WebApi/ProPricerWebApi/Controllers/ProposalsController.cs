@@ -60,8 +60,11 @@ namespace APTSPropricerApi.Controllers
 				}
 				else
 				{
-					// SSC uses NTID to control access
-					result = this.GetSpecificUsersProposals(ppc, Request?.HttpContext?.User?.Identity?.Name);
+					// temporarily allows access to all proposals because Users.Find(ntid) no longer works.  It is now Users.Find(last, first) :(
+					result = Utility.GetAllProposals(ppc, Logger);
+
+					//// SSC uses NTID to control access
+					//result = this.GetSpecificUsersProposals(ppc, Request?.HttpContext?.User?.Identity?.Name);
 				}
 
 				return result;
