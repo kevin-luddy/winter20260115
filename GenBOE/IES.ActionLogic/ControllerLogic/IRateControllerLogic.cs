@@ -69,11 +69,21 @@ namespace IES.ActionLogic.ControllerLogic
         ICollection<RateDetailModelView> LoadImportedRates(ICollection<RateDetailModelView> existingRates,
             ICollection<RateDetailModelView> importedRates);
 
-        /// <summary>
-        /// Load imported rate codes into database.
-        /// </summary>
-        /// <param name="importedRateCodes">Validated collection of rate codes to import.</param>
-        void LoadImportedRateCodes(ICollection<RateDetailModelView> importedRateCodes);
+		/// <summary>
+		/// Save Rates
+		/// </summary>
+		/// <param name="existingRates"></param>
+		/// <param name="importedRates"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <exception cref="GenValidationException"></exception>
+		ICollection<RateDetailModelView> SaveRates(ICollection<RateDetailModelView> existingRates, ICollection<RateDetailModelView> importedRates);
+
+		/// <summary>
+		/// Load imported rate codes into database.
+		/// </summary>
+		/// <param name="importedRateCodes">Validated collection of rate codes to import.</param>
+		void LoadImportedRateCodes(ICollection<RateDetailModelView> importedRateCodes);
 
         /// <summary>
         /// Get the set of updated rate codes.
