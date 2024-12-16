@@ -237,7 +237,7 @@ namespace GenTRAC.ActionLogic.ModelView
         /// <summary>
         /// EPP ROS Delegation Notes
         /// </summary>
-        [Display(Name = "EPP ROS Delegation Notes")]
+        [Display(Name = "Comments - Please Note EPP ROS Delegation Notes Here as Well")]
         [MaxLength(1000)]
         public string EppRosDelegationNotes { get; set; }
 
