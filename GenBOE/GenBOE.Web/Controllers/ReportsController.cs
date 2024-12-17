@@ -193,7 +193,7 @@ namespace GenBOE.Web.Controllers
 			if (hideINLMenuItem)
 			{
 				// Hardcoded reportId 17 for PBOE/IBOE reports as that was really the only way to single it out here
-				reportsAvailable = reportsAvailable.Where(x => x.ReportID != 17).ToCollection();
+				reportsAvailable = reportsAvailable.Where(x => x.ReportName != "PBOE / IBOE Forms").ToCollection();
 			}
 			if (reportsAvailable != null)
             {
