@@ -11,14 +11,17 @@ namespace GenBOE.Web.Controllers
     using System.Diagnostics;
     using System.Linq;
     using System.Web.Mvc;
-    using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.ControllerLogic;
     using GenBOE.ActionLogic.DateShift;
     using GenBOE.ActionLogic.Metrics;
-    using GenBOE.DataBridge.Common;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.Common.Interfaces;
     using GenBOE.DataBridge.DTO;
-    using GenBOE.Objects;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
     using GenBOE.Web.Common;
     using GenBOE.Web.ModelView;
     using IES.Common;
@@ -45,18 +48,18 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         private Logger logger = new Logger(typeof(DateShiftController));
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DateShiftController" /> class.
-        /// </summary>
-        /// <param name="securityAccess">The security access.</param>
-        /// <param name="commonDataMapper">The common data mapper.</param>
-        /// <param name="siteMasterUtilities">The site master utilities.</param>
-        /// <param name="systemMetrics">The system metrics.</param>
-        /// <param name="factory">The factory.</param>
-        /// <param name="userLoader">The user loader.</param>
-        /// <param name="permissionsLoader">The permissions loader.</param>
-        /// <param name="controllerLogic">The controller logic.</param>
-        public DateShiftController(ISecurityAccess securityAccess,
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DateShiftController" /> class.
+		/// </summary>
+		/// <param name="securityAccess">The security access.</param>
+		/// <param name="commonDataMapper">The common data mapper.</param>
+		/// <param name="siteMasterUtilities">The site master utilities.</param>
+		/// <param name="systemMetrics">The system metrics.</param>
+		/// <param name="factory">The factory.</param>
+		/// <param name="userLoader">The user loader.</param>
+		/// <param name="permissionsLoader">The permissions loader.</param>
+		/// <param name="controllerLogic">The controller logic.</param>
+		public DateShiftController(ISecurityAccess securityAccess,
             ICommonDataMapper commonDataMapper,
             SiteMasterUtilities siteMasterUtilities,
             SystemMetrics systemMetrics,
@@ -71,7 +74,7 @@ namespace GenBOE.Web.Controllers
         {
             this.dateShiftCalculation = dateShiftCalculation;
             this.taskLoader = taskLoader;
-        }
+		}
 
         /// <summary>
         /// Applies a date shift to a specific object (and optionally children).
@@ -212,7 +215,7 @@ namespace GenBOE.Web.Controllers
                         throw new NotSupportedException("This Date Shift Level is not supported: " + dateShiftLevel.GetDescription());
                 }
 
-                this.dateShiftCalculation.PerformDateShift(dateShiftable, dateShiftModel, parentStart, parentEnd, validateOnly, parentLevel, workspace);
+                this.dateShiftCalculation.PerformDateShift(dateShiftable, dateShiftModel, parentStart, parentEnd, validateOnly, parentLevel, workspace, ws);
                 this.Factory.ClearWorkspaceCache(ws.Shortname);
             }
             catch (GenValidationException)
