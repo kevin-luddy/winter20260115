@@ -521,5 +521,10 @@ namespace GenBOE.Web.ModelView
 		/// Gets or sets the Workspace Name
 		/// </summary>
 		public string WorkspaceName { get; set; }
+
+		/// <summary>
+		/// Line of Business Name
+		/// </summary>
+		public string LineOfBusinessName { get; set; }
 	}
 }

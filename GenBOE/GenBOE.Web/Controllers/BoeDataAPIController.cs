@@ -1073,7 +1073,8 @@ namespace GenBOE.Web.Controllers
 						RationaleValueSummary = x.RationaleValueSummary,
 						ClinContractXrefs = x.ClinContractXrefs,
 						PTMTrackingNumber = x.TrackingNumber,
-						WorkspaceId = x.WorkspaceId
+						WorkspaceId = x.WorkspaceId,
+						LineOfBusinessName = x.LineOfBusinessName
 					};
 				}).ToList();
 

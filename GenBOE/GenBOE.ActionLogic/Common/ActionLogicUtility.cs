@@ -81,9 +81,9 @@ namespace GenBOE.ActionLogic.Common
 				errorMessages.Add(string.Format($"{skillMixTableName}: BOE Skill Mix has invalid value for {0}.", skillMixResourceOld));
 			}
 
-			if (!totalSKillMixRowsBOESkillMix.EqualsEpsilon(100))
+			if (!totalSKillMixRowsBOESkillMix.EqualsEpsilon(100) && !totalSKillMixRowsBOESkillMix.EqualsEpsilon(0))
 			{
-				errorMessages.Add(string.Format($"{skillMixTableName}: BOE Skill Mix total must be 100%"));
+				errorMessages.Add(string.Format($"{skillMixTableName}: BOE Skill Mix total must be either 0% or 100%"));
 			}
 
 			foreach (string skillMixResourceOld in skillMixRowsExceedChars.Select(x => x.ResourceOld))
@@ -135,9 +135,9 @@ namespace GenBOE.ActionLogic.Common
 				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: At least one Resource has to be included"));
 			}
 
-			if (!totalCommonDisclosureRowsBOESkillMix.EqualsEpsilon(100))
+			if (!totalCommonDisclosureRowsBOESkillMix.EqualsEpsilon(100) && !totalCommonDisclosureRowsBOESkillMix.EqualsEpsilon(0))
 			{
-				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: BOE Skill Mix total must be 100%"));
+				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: BOE Skill Mix total must be either 0% or 100%"));
 			}
 
 			foreach (string commonDisclosureRow in commonDisclosureHasBRC.Select(x => x.ResourceID).Distinct())

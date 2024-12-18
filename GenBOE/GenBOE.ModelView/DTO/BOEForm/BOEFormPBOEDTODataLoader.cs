@@ -387,7 +387,8 @@ namespace GenBOE.DataBridge.DTO
 									PriceAnalysisDescription = b.PriceAnalysisDescription,
 									CostAnalysisDescription = b.CostAnalysisDescription,
 									RationaleValueSummary = b.RationaleValueSummary,
-									TrackingNumber = w.TrackingNumber
+									TrackingNumber = w.TrackingNumber,
+									LineOfBusinessName = w.LineOfBusiness.LineOfBusinessName
 								}).ToList();
 
 					// Post processing for proposal title, sub resources, total cost, and clin-contract xrefs
