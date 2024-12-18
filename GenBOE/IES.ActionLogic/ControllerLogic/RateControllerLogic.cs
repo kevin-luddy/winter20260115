@@ -865,54 +865,6 @@ namespace IES.ActionLogic.ControllerLogic
 		}
 
 		/// <summary>
-		/// Save Rates
-		/// </summary>
-		/// <param name="existingRates"></param>
-		/// <param name="importedRates"></param>
-		/// <returns></returns>
-		/// <exception cref="ArgumentNullException"></exception>
-		/// <exception cref="GenValidationException"></exception>
-		public ICollection<RateDetailModelView> SaveRates(ICollection<RateDetailModelView> existingRates, ICollection<RateDetailModelView> importedRates)
-		{
-			if (existingRates == null)
-			{
-				throw new ArgumentNullException(nameof(existingRates));
-			}
-
-			Collection<RateDetailModelView> importResults = new Collection<RateDetailModelView>();
-
-			if (importedRates == null)
-			{
-				throw new GenValidationException("Imported Rates are null.");
-			}
-
-			this.ReplicateRateCodes(importedRates);
-
-			try
-			{
-				foreach (RateDetailModelView importedRateDetailMV in importedRates)
-				{
-					// Save is different for import because it is possbile to Save a new Rate Code
-					importedRateDetailMV.Updateable = UpdateType.Upsert;
-					importResults.Add(importedRateDetailMV);
-				}
-
-				// Set to 5x Normal timeout (nominally 5 minutes total).
-				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, 5 * ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
-				{
-					this.rateDetailLoader.BulkSave(importResults);
-					scope.Complete();
-				}
-			}
-			catch (Exception)
-			{
-				throw new GenValidationException("Cannot Save Rates.");
-			}
-
-			return importResults;
-		}
-
-		/// <summary>
 		/// Replicates the rate codes.
 		/// </summary>
 		/// <param name="importedRates">The imported rates.</param>
