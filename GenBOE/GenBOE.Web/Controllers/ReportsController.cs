@@ -177,8 +177,9 @@ namespace GenBOE.Web.Controllers
             ViewData["SummarizeByCustomFieldOptions"] = null;
             
             bool hasTravel = false;
+			bool hideINLMenuItem = ws.CreationDate > Utilities.ShowINLCutoffDate;
 
-            if (ws.Travels.Any())
+			if (ws.Travels.Any())
             {
                 hasTravel = true;
             }
@@ -186,10 +187,15 @@ namespace GenBOE.Web.Controllers
             // Perform Action
             // Get all available reports
             Collection<ReportDTO> reportsAvailable = _CommonDataMapper.getReports();
-            Collection<ExportsModelView> theModelViews = new Collection<ExportsModelView>();
+			Collection<ExportsModelView> theModelViews = new Collection<ExportsModelView>();
             bool isSubcontractorUser = IsSubcontractorUser(ws);
-            // Filter exports
-            if (reportsAvailable != null)
+			// Filter exports
+			if (hideINLMenuItem)
+			{
+				// Hardcoded reportId 17 for PBOE/IBOE reports as that was really the only way to single it out here
+				reportsAvailable = reportsAvailable.Where(x => x.ReportName != "PBOE / IBOE Forms").ToCollection();
+			}
+			if (reportsAvailable != null)
             {
                 foreach (ReportDTO report in reportsAvailable)
                 {
@@ -1332,7 +1338,7 @@ namespace GenBOE.Web.Controllers
             // generate the complete set of all BOEs for this workspace
             ICollection<BoeCustomReportBoeData> boeData = this.GetBoeDataForWorkspace(ws, selectedSortBy, secondarySelectedSortBy);
 
-            CustomReportSelectorModelView viewModelCustomReport = new CustomReportSelectorModelView(workspace, boeData, selectedSortBy, secondarySelectedSortBy, selections, ws.UsingTemplateBOE, Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.IsUsingTM));
+            CustomReportSelectorModelView viewModelCustomReport = new CustomReportSelectorModelView(workspace, boeData, selectedSortBy, secondarySelectedSortBy, selections, ws.UsingTemplateBOE, Utilities.ShowSkillMixForWorkspace(ws.CreationDate));
             ViewData["ContainsOCI"] = ws.ContainsOCI.ToString().ToLower();
 
             return this.PartialView(WebConstants.VIEW_BOE_CUSTOM_REPORT_SELECTOR, viewModelCustomReport);

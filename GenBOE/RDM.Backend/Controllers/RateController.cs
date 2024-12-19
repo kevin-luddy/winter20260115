@@ -463,21 +463,14 @@ namespace RDM.Backend.Controllers
 				// Load the existing RateDetails for all the imported Rates.
 				ICollection<RateDetailModelView> existingRates = this.rateDetailLoader.GetRatesForImport(revision, importedRateCodes.ToArray());
 
-				ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateImportedRates(existingRates, collection);
-				if (validationErrors.Any())
-				{
-					throw new GenValidationException(validationErrors);
-				}
-
-				validationErrors = this.controllerLogic.ValidateRateDetailModelViews(collection, revision.StartYear, revision.EndYear);
+				ICollection<ValidationMessage> validationErrors = this.controllerLogic.ValidateRateDetailModelViews(collection, revision.StartYear, revision.EndYear);
 				if (validationErrors.Any())
 				{
 					throw new GenValidationException(validationErrors);
 				}
 
 				// Send the updated rates to the Database for the work in progress version.
-				this.controllerLogic.LoadImportedRates(existingRates, collection);
-
+				this.controllerLogic.SaveRates(existingRates, collection);
 				response.Data = this.rateDetailLoader.GetRatesByRevision(revision);
 				response.IsSuccessful = true;
 			}

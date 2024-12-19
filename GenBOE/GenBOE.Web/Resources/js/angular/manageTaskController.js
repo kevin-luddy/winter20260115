@@ -28,10 +28,11 @@
     $scope.SelectedMoqTypes = [];
     $scope.IsDraftOrDraftLocked = false;
     $scope.IsBRCEnabled = ManageTaskModel.IsBRCEnabled; // For CDSM table only show if this BRC Enabaled = true 
-    $scope.IsSkillMixEnabled = ManageTaskModel.IsSkillMixEnabled;
+    $scope.IsSkillMixEnabled = ManageTaskModel.EnableSkillMix;
     $scope.skillMixRationale = [];
     $scope.skillMixRationaleLaborTypeSelections = [];
     $scope.commonDisclosureLaborTypeSelections = [];
+    $scope.IsUsingTMRatesInTask = false;
 
     // Sets the Selected MOQ Types from the Selected MOQ Types from MoqEuationController.js.
     $scope.$on('MOQ_TYPE_SELECTION_CHANGED', function (event, selectedMoqTypes) {
@@ -140,6 +141,10 @@
         $scope.skillMixRationaleLaborTypeSelections = [...$scope.model.LaborTypesData];
         $scope.commonDisclosureLaborTypeSelections = [...$scope.model.LaborTypesData];
 
+        // Filter out the labor types where their '.RateType' is not equal to 'Hours' (Hours equal to 1 as defined from the Enum.cs RateType)
+        $scope.skillMixRationaleLaborTypeSelections = $scope.skillMixRationaleLaborTypeSelections.filter(option => option.RateType === 1);
+        $scope.commonDisclosureLaborTypeSelections = $scope.commonDisclosureLaborTypeSelections.filter(option => option.RateType === 1);
+
         // Filter out the proper Labor Type selections by Resource Names.
         $scope.skillMixRationaleLaborTypeSelections.forEach(function (option, index) {
             $scope.skillMixRationaleLaborTypeSelections[index] = option.ResourceName || '';
@@ -165,10 +170,16 @@
             if (setDirty) {
                 $scope.setDirty();
             }
+
+            let laborTypesData = $scope.model.LaborTypesData;
+            if (laborTypesData) {
+                laborTypesData = laborTypesData.filter((item) => !item.Deleted);
+            }
+
             var data = {
                 boeId: ManageTaskModel.boeId,
                 selectedMoqTypes: $scope.SelectedMoqTypes,
-                laborTypes: $scope.model.LaborTypesData,
+                laborTypes: laborTypesData,
                 currentSkillMixData: $scope.model.SkillMixData,
                 currentCommonDisclosureData: $scope.model.CommonDisclosureSkillMixData
             };
@@ -292,10 +303,6 @@
 
         angular.forEach($scope.PerfOrgModels, function (item, key) {
             item.Label = item.PerformingOrgName + '-' + item.PerformingOrgDesc;
-        });
-
-        $scope.$on('MOQ_TYPE_SELECTION_CHANGED', function (e, moqData) {
-            $scope.SelectedMoqTypes = moqData;
         });
 
         // load the main data
@@ -565,6 +572,7 @@
 
         // update deltas and totals
         recalculateAllSpreadsAndTotals();
+        $scope.refreshSkillMixTables();
 
         // close dialog
         $scope.clearDuplicates();
@@ -754,6 +762,8 @@
 
         $scope.deltaHours = $scope.getMOQTotal().minus($scope.totalSpreadHours).toString();
         $scope.validateTotals();
+
+        $scope.refreshSkillMixTables();
     };
 
     $scope.getMOQTotal = function () {
@@ -1179,6 +1189,7 @@
             $scope.TaskCustomFields = $scope.model.TaskCustomFields;
             $scope.MoqTableCustomFields = $scope.model.MOQTypeTableCustomFields;
             $scope.LaborCustomFields = $scope.model.LaborCustomFields;
+            $scope.IsUsingTMRatesInTask = $scope.model.IsUsingTMRatesInTask;
 
             delete $scope.model.TaskCustomFields;
             delete $scope.model.LaborCustomFields;
@@ -1712,6 +1723,7 @@
             item.ResourceName = undefined;
             item.ResourceType = undefined;
             item.ResourceID = undefined;
+            $scope.refreshSkillMixTables();
         }
         $scope.checkIfNewRowNeeded(item);
     };
@@ -1724,6 +1736,7 @@
             item.BusinessResourceCodeName = undefined;
             item.BusinessResourceCodeType = undefined;
             item.BusinessResourceCodeID = undefined;
+            $scope.refreshSkillMixTables();
         }
         $scope.checkIfNewRowNeeded(item);
     };
@@ -1839,6 +1852,10 @@
 
         $scope.checkIfNewRowNeeded(model);
         $scope.filterResourceSelections();
+
+        if (ManageTaskModel.IsSpace) {
+            $scope.checkTMRates();
+        }
     };
 
     $scope.businessResourceCodeSelected = function (item, model) {
@@ -1868,7 +1885,36 @@
         }
 
         $scope.checkIfNewRowNeeded(model);
+
+        if (ManageTaskModel.IsSpace) {
+            $scope.checkTMRates();
+        }
     }
+
+    $scope.checkTMRates = function () {
+        var data = {
+            boeId: ManageTaskModel.boeId,
+            laborTypes: $scope.model.LaborTypesData,
+        };
+        return $http({
+            method: 'POST',
+            data: data,
+            url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.CheckTMRatesAction, '')
+		}).then(function (response) {
+            $scope.IsUsingTMRatesInTask = response.data.data;
+        }, function errorCallback(response) {
+            if (response.data && response.data.MessageList) {
+                $scope.errors = response.data.MessageList;
+                $scope.isLoading = false;
+                $(document).trigger("HIDE_LOADING_BOX");
+            }
+        });
+    };
+
+	$scope.showSkillMix = function () {
+		// Show Skill Mix if there is a Historical (5001) or Comparative (5002) MOQ Type and no T&M rates are in the task
+		return $scope.SelectedMoqTypes.some(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002') && $scope.IsUsingTMRatesInTask === false;
+    };
 
     $scope.perfOrgSelected = function (item, model) {
         $scope.setDirty();
@@ -2024,6 +2070,9 @@
                 item.SpreadDataInvalid.push(false);
             });
         }
+
+        // Finally, recalculate Skill Mix tables
+        $scope.refreshSkillMixTables();
     };
 
     $scope.fixDiscreteSpread = function (item, skipRecalc) {

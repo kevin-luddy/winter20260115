@@ -112,8 +112,8 @@ namespace GenBOE.DataBridge.DTO
 				List<BoeTaskElementDTO> result;
 				List<OrdinaryVariableDto> ordinaryVariables;
 				List<ResourceTypeDto> taskElementLabors;
-				List<SkillMixDTO> skillMixDTOs = new List<SkillMixDTO>();
-				List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = new List<CommonDisclosureSkillMixDTO>();
+				List<SkillMixDTO> skillMixDTOs = null;
+				List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = null;
 
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
@@ -185,8 +185,8 @@ namespace GenBOE.DataBridge.DTO
 				List<BoeTaskElementDTO> result;
 				List<OrdinaryVariableDto> ordinaryVariables;
 				List<ResourceTypeDto> taskElementLabors;
-				List<SkillMixDTO> skillMixDTOs = new List<SkillMixDTO>();
-				List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = new List<CommonDisclosureSkillMixDTO>();
+				List<SkillMixDTO> skillMixDTOs = null;
+				List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = null;
 
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
@@ -259,8 +259,8 @@ namespace GenBOE.DataBridge.DTO
 				List<BoeTaskElementDTO> result;
 				List<OrdinaryVariableDto> ordinaryVariables;
 				List<ResourceTypeDto> taskElementLabors;
-				List<SkillMixDTO> skillMixDTOs = new List<SkillMixDTO>();
-				List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = new List<CommonDisclosureSkillMixDTO>();
+				List<SkillMixDTO> skillMixDTOs = null;
+				List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = null;
 
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
@@ -750,6 +750,14 @@ namespace GenBOE.DataBridge.DTO
 
 					this.skillMixDTOLoader.InsertSkillMix(dtos);
 				}
+				else
+				{
+					// If the dto has no skill mix tables, it's possible they were cleared out, so make sure old data is deleted
+					foreach (BoeTaskElementDTO dto in dtosToSave)
+					{
+						this.skillMixDTOLoader.DeleteSkillMixByBOETaskElementID(dto.Id);
+					}
+				}
 
 				// Save the Common Disclosure DTOs
 				if (inTaskDetail.CommonDisclosureTable != null && inTaskDetail.CommonDisclosureTable.Any())
@@ -764,6 +772,14 @@ namespace GenBOE.DataBridge.DTO
 					}
 
 					this.commonDisclosureSMDTODataLoader.InsertCommonDisclosureSM(dtos);
+				}
+				else
+				{
+					// If the dto has no common disclosure tables, it's possible they were cleared out, so make sure old data is deleted
+					foreach (BoeTaskElementDTO dto in dtosToSave)
+					{
+						this.commonDisclosureSMDTODataLoader.DeleteCommonDisclosureSkillMixByBOETaskElementID(dto.Id);
+					}
 				}
 			}
 		}

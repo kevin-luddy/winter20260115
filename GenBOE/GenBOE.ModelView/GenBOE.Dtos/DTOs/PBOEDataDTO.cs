@@ -63,6 +63,7 @@ namespace GenBOE.Dtos
 			this.LeadEstimatorDisplayName = null;
 			this.LeadEstimatorEmail = null;
 			this.TrackingNumber = null;
+			this.LineOfBusinessName = null;
 			ClinContractXrefs = new Collection<ClinContractDto>();
 		}
 
@@ -597,6 +598,11 @@ namespace GenBOE.Dtos
 		/// Rationale Value Summary
 		/// </summary>
 		public string RationaleValueSummary { get; set; }
+
+		/// <summary>
+		/// Line of Business Name
+		/// </summary>
+		public string LineOfBusinessName { get; set; }
 
 		/// <summary>
 		/// Collection of clin-contract xrefs

@@ -244,53 +244,5 @@ namespace GenBOE.ActionLogic.IO.Export
 
             return toReturn;
         }
-
-		///// <summary>
-		///// TODO Skill Mix V2: Commented out as we no longer validate with MOQ Type Selection but BOE Task Element ID and this is left in to retain the logic for a future task.
-		///// Get the row data for the Current Skill Mix sheet
-		///// </summary>
-		///// <param name="exportInputs">Export Inputs</param>
-		///// <returns>Current Skill Mix sheet</returns>
-		//protected override ExcelExportWorksheet GetCurrentSkillMixTableData(BOEExportInputs exportInputs)
-		//{
-		//	_ = exportInputs ?? throw new ArgumentNullException(nameof(exportInputs));
-
-		//	ExcelExportWorksheet toReturn = new ExcelExportWorksheet("Current Skill Mix");
-
-		//	foreach (BoeDTO boe in exportInputs.Boes)
-		//	{
-		//		foreach (BoeTaskElementDTO task in exportInputs.TaskElements.Where(x => x.BoeID == boe.Id))
-		//		{
-		//			foreach (MoqTypeSelection moqType in exportInputs.MOQTypes.Where(x => x.TaskId == task.Id
-		//				&& (x.SelectedMOQType == MOQType.Historical || x.SelectedMOQType == MOQType.Comparative)))
-		//			{
-		//				foreach (SkillMixModelView skillMix in moqType.SkillMixTable)
-		//				{
-		//					IList<string> row = new List<string>()
-		//					{
-		//						boe.Id.ToString(),
-		//						boe.Title ?? this.sEmpty,
-		//						string.Format(TaskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
-		//						task.BOETaskID,
-		//						task.TaskTitle,
-		//						moqType.SelectedMOQTypeText,
-		//						skillMix.ResourceOld,
-		//						skillMix.ResourceNew,
-		//						CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.HistoricalHours,
-		//						CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.LaborSkillMix,
-		//						!skillMix.Included.HasValue ? string.Empty : (skillMix.Included.Value ? "Yes" : "No"),
-		//						CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.BOESkillMix,
-		//						CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.ProposedHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)),
-		//						skillMix.Rationale
-		//					};
-
-		//					toReturn.Add(row);
-		//				}
-		//			}
-		//		}
-		//	}
-
-		//	return toReturn;
-		//}
 	}
 }

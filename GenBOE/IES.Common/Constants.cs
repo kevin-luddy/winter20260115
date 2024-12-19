@@ -1025,5 +1025,15 @@ namespace IES.Common
 		/// Description for Standard with Offload Project Map Type (Workspace Type)
 		/// </summary>
 		public const string PROJECT_TYPE_MAP_STANDARD_WITH_OFFLOAD = "Standard with Offload";
+
+		/// <summary>
+		/// Skill Mix table name for Space.
+		/// </summary>
+		public readonly static string SPACE_SKILL_MIX_TABLE_HEADER = "Legacy Skill Mix Table";
+
+		/// <summary>
+		/// Skill Mix table name for RMS.
+		/// </summary>
+		public readonly static string RMS_SKILL_MIX_TABLE_HEADER = "Current Skill Mix Table";
 	}
 }

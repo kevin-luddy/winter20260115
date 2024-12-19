@@ -6,642 +6,668 @@
 
 namespace GenBOE.ActionLogic.WBS.BOE
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Diagnostics.CodeAnalysis;
+	using System.Linq;
 	using Common;
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.IO.Import;
-    using GenBOE.ActionLogic.ModelView;
-    using GenBOE.ActionLogic.Validation;
-    using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
-    using GenBOE.Objects;
-    using IES.Common;
-    using IES.Common.classes;
-    using MoreLinq;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.ActionLogic.Validation;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
+	using IES.Common;
+	using IES.Common.classes;
+	using MoreLinq;
 
-    public class ValidateBOE : IValidateBOE
-    {
-        public const string START_DATE_INVALID = "Start Date must be on or after the {0} Start Date.";
-        public const string END_DATE_INVALID = "End Date must be on or before the {0} End Date.";
-        public const string DATE_RANGE_INVALID = "End Date must be on or after the Start Date.";
-        public const string CLIN_TEXT = "CLIN";
-        public const string CONTRACT_TEXT = "Contract";
-        private IVariableSelectBOEtoSumCalculation _VariableSelectBOEtoSumCalculation;
-        private BOECommentsResponsesValidator _BOECommentsResponsesValidator;
-        private ITripDTODataLoader _TripDTODataLoader;
-        private IMiscTravelRateDTOLoader miscTravelRateDTOLoader;
-        private ILocationDTODataLoader _LocationDTODataLoader;
-        private IOffloadRatesDTOLoader offloadRatesDTOLoader;
-        private IRteTemplateDataLoader rteTemplateDataLoader;
+	public class ValidateBOE : IValidateBOE
+	{
+		public const string START_DATE_INVALID = "Start Date must be on or after the {0} Start Date.";
+		public const string END_DATE_INVALID = "End Date must be on or before the {0} End Date.";
+		public const string DATE_RANGE_INVALID = "End Date must be on or after the Start Date.";
+		public const string CLIN_TEXT = "CLIN";
+		public const string CONTRACT_TEXT = "Contract";
+		private IVariableSelectBOEtoSumCalculation _VariableSelectBOEtoSumCalculation;
+		private BOECommentsResponsesValidator _BOECommentsResponsesValidator;
+		private ITripDTODataLoader _TripDTODataLoader;
+		private IMiscTravelRateDTOLoader miscTravelRateDTOLoader;
+		private ILocationDTODataLoader _LocationDTODataLoader;
+		private IOffloadRatesDTOLoader offloadRatesDTOLoader;
+		private IRteTemplateDataLoader rteTemplateDataLoader;
 
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        public ValidateBOE(
-            IVariableSelectBOEtoSumCalculation inVariableSelectBOEtoSumCalculation,
-            BOECommentsResponsesValidator inBOECommentsResponsesValidator,
-            ITripDTODataLoader inTripDTODataLoader,
-            IMiscTravelRateDTOLoader inMiscTravelRateDTOLoader,
-            ILocationDTODataLoader inLocationDTODataLoader,
-            IOffloadRatesDTOLoader offloadRatesDTOLoader,
-            IRteTemplateDataLoader rteTemplateDataLoader
-            )
-        {
-            this.miscTravelRateDTOLoader = inMiscTravelRateDTOLoader;
-            this._LocationDTODataLoader = inLocationDTODataLoader;
-            this._TripDTODataLoader = inTripDTODataLoader;
-            this._VariableSelectBOEtoSumCalculation = inVariableSelectBOEtoSumCalculation;
-            this._BOECommentsResponsesValidator = inBOECommentsResponsesValidator;
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		public ValidateBOE(
+			IVariableSelectBOEtoSumCalculation inVariableSelectBOEtoSumCalculation,
+			BOECommentsResponsesValidator inBOECommentsResponsesValidator,
+			ITripDTODataLoader inTripDTODataLoader,
+			IMiscTravelRateDTOLoader inMiscTravelRateDTOLoader,
+			ILocationDTODataLoader inLocationDTODataLoader,
+			IOffloadRatesDTOLoader offloadRatesDTOLoader,
+			IRteTemplateDataLoader rteTemplateDataLoader
+			)
+		{
+			this.miscTravelRateDTOLoader = inMiscTravelRateDTOLoader;
+			this._LocationDTODataLoader = inLocationDTODataLoader;
+			this._TripDTODataLoader = inTripDTODataLoader;
+			this._VariableSelectBOEtoSumCalculation = inVariableSelectBOEtoSumCalculation;
+			this._BOECommentsResponsesValidator = inBOECommentsResponsesValidator;
 
-            this.offloadRatesDTOLoader = offloadRatesDTOLoader;
-            this.rteTemplateDataLoader = rteTemplateDataLoader;
-        }
+			this.offloadRatesDTOLoader = offloadRatesDTOLoader;
+			this.rteTemplateDataLoader = rteTemplateDataLoader;
+		}
 
-        /// <summary>
-        /// Validate all BOE data (BOE Header, task element details, labor type, and labor spreads)
-        /// when the user selects the Validate button
-        /// </summary>
-        /// <param name="inBOE">the BOE DTO to validate</param>
-        /// <param name="ws">Full WS</param>
-        /// <returns>all possible validation messages</returns>
-        /// Suppressed the following messages because 1) I do use BoeLabor just not in the way the code analysis wants me too and 2) if you can make this less complex, go for it!
-        public virtual ValidationBOEModelView ValidateBOE_OnValidateBtnClick(FullBoe inBOE, FullWorkspace ws)
-        {
-            // See wireframes for what should be checked on "Validate" button click.
-            // Basically, we're checking for MIA required fields that are not verified upon a Save
-            // and that the total of all labor spreads in a task element equals the moq equation total
+		/// <summary>
+		/// Validate all BOE data (BOE Header, task element details, labor type, and labor spreads)
+		/// when the user selects the Validate button
+		/// </summary>
+		/// <param name="inBOE">the BOE DTO to validate</param>
+		/// <param name="ws">Full WS</param>
+		/// <returns>all possible validation messages</returns>
+		/// Suppressed the following messages because 1) I do use BoeLabor just not in the way the code analysis wants me too and 2) if you can make this less complex, go for it!
+		public virtual ValidationBOEModelView ValidateBOE_OnValidateBtnClick(FullBoe inBOE, FullWorkspace ws)
+		{
+			// See wireframes for what should be checked on "Validate" button click.
+			// Basically, we're checking for MIA required fields that are not verified upon a Save
+			// and that the total of all labor spreads in a task element equals the moq equation total
 
-            // Currently the Validate function is only checking if required entries are not filled in
+			// Currently the Validate function is only checking if required entries are not filled in
 
-            if (inBOE == null)
-            {
-                throw new ArgumentNullException(nameof(inBOE));
-            }
+			if (inBOE == null)
+			{
+				throw new ArgumentNullException(nameof(inBOE));
+			}
 
-            if (ws == null)
-            {
-                throw new ArgumentNullException(nameof(ws));
-            }
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
 
-            #region Register Variables
-            // the validation BOE to populate while traversing through the entire BOE
-            ValidationBOEModelView ValidationBOE = new ValidationBOEModelView();
+			#region Register Variables
+			// the validation BOE to populate while traversing through the entire BOE
+			ValidationBOEModelView ValidationBOE = new ValidationBOEModelView();
 
-            // the BOE validation to return
-            ValidationBOEModelView toReturn = null;
+			// the BOE validation to return
+			ValidationBOEModelView toReturn = null;
 
-            // the boe task validation class
-            ValidationBOETasks boeTasks = new ValidationBOETasks();
+			// the boe task validation class
+			ValidationBOETasks boeTasks = new ValidationBOETasks();
 
-            // All the validation messages that occur when checking the task element
-            Collection<string> TaskElementMessages = new Collection<string>();
+			// All the validation messages that occur when checking the task element
+			Collection<string> TaskElementMessages = new Collection<string>();
 
-            // the boe labor type validation class
-            ValidationBOELaborType boeLabor = new ValidationBOELaborType();
+			// the boe labor type validation class
+			ValidationBOELaborType boeLabor = new ValidationBOELaborType();
 
-            // All the validation messages that occur when checking the labor types
-            Collection<string> LaborTypeMessages = new Collection<string>();
+			// All the validation messages that occur when checking the labor types
+			Collection<string> LaborTypeMessages = new Collection<string>();
 
-            // the material task validation class
-            ValidationBOETasks materialTasks = new ValidationBOETasks();
+			// the material task validation class
+			ValidationBOETasks materialTasks = new ValidationBOETasks();
 
-            // All the validation messages that occur when checking the task element
-            Collection<string> materialTaskElementMessages = new Collection<string>();
+			// All the validation messages that occur when checking the task element
+			Collection<string> materialTaskElementMessages = new Collection<string>();
 
-            // the travel task validation class
-            ValidationBOETasks travelTasks = new ValidationBOETasks();
+			// the travel task validation class
+			ValidationBOETasks travelTasks = new ValidationBOETasks();
 
-            // All the validation messages that occur when checking the task element
-            Collection<string> travelTaskElementMessages = new Collection<string>();
+			// All the validation messages that occur when checking the task element
+			Collection<string> travelTaskElementMessages = new Collection<string>();
 
-            // All the validation messages that occur when checking the material types
-            Collection<string> TravelTypeMessages = new Collection<string>();
+			// All the validation messages that occur when checking the material types
+			Collection<string> TravelTypeMessages = new Collection<string>();
 
-            // the boe travel type validation class
-            ValidationBOELaborType travelType = new ValidationBOELaborType();
+			// the boe travel type validation class
+			ValidationBOELaborType travelType = new ValidationBOELaborType();
 
-            // the ODC task validation class
-            ValidationBOETasks odcTasks = new ValidationBOETasks();
+			// the ODC task validation class
+			ValidationBOETasks odcTasks = new ValidationBOETasks();
 
-            // All the validation messages that occur when checking the ODC task element
-            Collection<string> OdcTaskElementMessages = new Collection<string>();
+			// All the validation messages that occur when checking the ODC task element
+			Collection<string> OdcTaskElementMessages = new Collection<string>();
 
-            // the ODCtype validation class
-            ValidationBOELaborType odcType = new ValidationBOELaborType();
+			// the ODCtype validation class
+			ValidationBOELaborType odcType = new ValidationBOELaborType();
 
-            // All the validation messages that occur when checking the  types
-            Collection<string> OdcTypeMessages = new Collection<string>();
+			// All the validation messages that occur when checking the  types
+			Collection<string> OdcTypeMessages = new Collection<string>();
 
-            // the result of the MOQ Equation
-            string MOQEquationCalc = string.Empty;
+			// the result of the MOQ Equation
+			string MOQEquationCalc = string.Empty;
 
-            // total labor spread value
-            decimal TotalLaborSpreadValue = 0;
-            #endregion Register Variables
+			// total labor spread value
+			decimal TotalLaborSpreadValue = 0;
+			#endregion Register Variables
 
-            ws.LoadODCsRTEData();
-            ws.LoadMaterialsRTEData();
-            ws.LoadTaskElementRTEData();
+			ws.LoadODCsRTEData();
+			ws.LoadMaterialsRTEData();
+			ws.LoadTaskElementRTEData();
 
-            // Let's begin the validation....
+			// Let's begin the validation....
 
-            // validate BOE Date is either within the CLIN Date 
-            if (inBOE.Clin != null)
-            {
-                ClinDTO clin = inBOE.Clin;
+			// validate BOE Date is either within the CLIN Date 
+			if (inBOE.Clin != null)
+			{
+				ClinDTO clin = inBOE.Clin;
 
-                if (clin.StartDate.HasValue && clin.EndDate.HasValue)
-                {
-                    if (inBOE.StartDate < clin.StartDate)
-                    {
-                        ValidationBOE.BOEHeaderMsgs.Add(string.Format(BoeDTO.BOE_START_DATE_INVALID, CLIN_TEXT, clin.StartDate.Value.ToString("MM/yyyy")));
-                    }
+				if (clin.StartDate.HasValue && clin.EndDate.HasValue)
+				{
+					if (inBOE.StartDate < clin.StartDate)
+					{
+						ValidationBOE.BOEHeaderMsgs.Add(string.Format(BoeDTO.BOE_START_DATE_INVALID, CLIN_TEXT, clin.StartDate.Value.ToString("MM/yyyy")));
+					}
 
-                    if (inBOE.EndDate > clin.EndDate)
-                    {
-                        ValidationBOE.BOEHeaderMsgs.Add(string.Format(BoeDTO.BOE_END_DATE_INVALID, CLIN_TEXT, clin.EndDate.Value.ToString("MM/yyyy")));
-                    }
-                }
-            }
+					if (inBOE.EndDate > clin.EndDate)
+					{
+						ValidationBOE.BOEHeaderMsgs.Add(string.Format(BoeDTO.BOE_END_DATE_INVALID, CLIN_TEXT, clin.EndDate.Value.ToString("MM/yyyy")));
+					}
+				}
+			}
 
-            // check the contract date          
-            this._CheckIfBOEDateIsValidAgainstContractDate(inBOE, ValidationBOE, ws);
-            
-            // validate BOE description
-            if (!this.IsDescriptionValid(inBOE, ws.Id))
-            {
-                ValidationBOE.BOEHeaderMsgs.Add(BoeDTO.BOE_DESC_REQUIRED);
-            }
+			// check the contract date          
+			this._CheckIfBOEDateIsValidAgainstContractDate(inBOE, ValidationBOE, ws);
 
-            // validate sources of data
-            if (!this.IsSourcesOfDataValid(inBOE, ws.Id))
-            {
-                ValidationBOE.BOEHeaderMsgs.Add(BoeDTO.DATA_SOURCE_REQUIRED);
-            }
+			// validate BOE description
+			if (!this.IsDescriptionValid(inBOE, ws.Id))
+			{
+				ValidationBOE.BOEHeaderMsgs.Add(BoeDTO.BOE_DESC_REQUIRED);
+			}
 
-            ValidateFieldLength(ws.RteSizeLimit, inBOE.Description, "BOE Description", ValidationBOE.BOEHeaderMsgs);
-            ValidateFieldLength(ws.RteSizeLimit, inBOE.DataSource, "BOE Data Source", ValidationBOE.BOEHeaderMsgs);
+			// validate sources of data
+			if (!this.IsSourcesOfDataValid(inBOE, ws.Id))
+			{
+				ValidationBOE.BOEHeaderMsgs.Add(BoeDTO.DATA_SOURCE_REQUIRED);
+			}
 
-            // validate any BOE Custom Fields
-            Collection<string> boeCustomFieldMsgs = this.ValidateBOECustomFields(ws, inBOE);
-            foreach (string msg in boeCustomFieldMsgs)
-            {
-                ValidationBOE.BOECustomFieldValidationMessages.Add(msg);
-            }
+			ValidateFieldLength(ws.RteSizeLimit, inBOE.Description, "BOE Description", ValidationBOE.BOEHeaderMsgs);
+			ValidateFieldLength(ws.RteSizeLimit, inBOE.DataSource, "BOE Data Source", ValidationBOE.BOEHeaderMsgs);
 
-            // validate if there is at least one task element associated with the BOE. it can be cost or labor, just needs at least one of either
-            // need to place so it's a "task" for purposes of validation
-            if (!ws.TaskElements.Any(x => (x.BoeID == inBOE.Id)) &&
-                !ws.Odcs.Any(x => x.BoeID == inBOE.Id) &&
-                !ws.Materials.Any(x => x.BoeID == inBOE.Id) &&
-                !ws.Travels.Any(x => x.BoeID == inBOE.Id))
-            {
-                boeTasks = new ValidationBOETasks();
-                TaskElementMessages = new Collection<string>();
-                TaskElementMessages.Add(BoeDTO.ONE_TASK_ELEMENT_REQUIRED);
-                boeTasks.TaskMessage = "Task: ";
-                boeTasks.TaskElementDetails.TaskElementDetailValidationMessages = TaskElementMessages;
-                ValidationBOE.Tasks.Add(boeTasks);
-            }
+			// validate any BOE Custom Fields
+			Collection<string> boeCustomFieldMsgs = this.ValidateBOECustomFields(ws, inBOE);
+			foreach (string msg in boeCustomFieldMsgs)
+			{
+				ValidationBOE.BOECustomFieldValidationMessages.Add(msg);
+			}
 
-            if (ws.Travels.Any(x => x.BoeID == inBOE.Id))
-            {
-                this._ValidateTravel(inBOE, ws, ValidationBOE, ref travelTasks, ref travelTaskElementMessages, ref TravelTypeMessages, travelType);
-            }
+			// validate if there is at least one task element associated with the BOE. it can be cost or labor, just needs at least one of either
+			// need to place so it's a "task" for purposes of validation
+			if (!ws.TaskElements.Any(x => (x.BoeID == inBOE.Id)) &&
+				!ws.Odcs.Any(x => x.BoeID == inBOE.Id) &&
+				!ws.Materials.Any(x => x.BoeID == inBOE.Id) &&
+				!ws.Travels.Any(x => x.BoeID == inBOE.Id))
+			{
+				boeTasks = new ValidationBOETasks();
+				TaskElementMessages = new Collection<string>();
+				TaskElementMessages.Add(BoeDTO.ONE_TASK_ELEMENT_REQUIRED);
+				boeTasks.TaskMessage = "Task: ";
+				boeTasks.TaskElementDetails.TaskElementDetailValidationMessages = TaskElementMessages;
+				ValidationBOE.Tasks.Add(boeTasks);
+			}
 
-            if (ws.Materials.Any(x => x.BoeID == inBOE.Id))
-            {
-                this._ValidateMaterials(inBOE, ValidationBOE, ref materialTasks, ref materialTaskElementMessages);
-            }
+			if (ws.Travels.Any(x => x.BoeID == inBOE.Id))
+			{
+				this._ValidateTravel(inBOE, ws, ValidationBOE, ref travelTasks, ref travelTaskElementMessages, ref TravelTypeMessages, travelType);
+			}
 
-            if (ws.TaskElements.Any(x => x.BoeID == inBOE.Id))
-            {
-                this._ValidateLaborTaskElement(ws, inBOE, ValidationBOE, ref boeTasks, ref TaskElementMessages, boeLabor, ref LaborTypeMessages, ref MOQEquationCalc, ref TotalLaborSpreadValue);
-            }
+			if (ws.Materials.Any(x => x.BoeID == inBOE.Id))
+			{
+				this._ValidateMaterials(inBOE, ValidationBOE, ref materialTasks, ref materialTaskElementMessages);
+			}
 
-            if (ws.Odcs.Any(x => x.BoeID == inBOE.Id))
-            {
-                this._ValidateODC(inBOE, ws, ValidationBOE, ref odcTasks, ref OdcTaskElementMessages, odcType, ref OdcTypeMessages, ref TotalLaborSpreadValue);
-            }
+			if (ws.TaskElements.Any(x => x.BoeID == inBOE.Id))
+			{
+				this._ValidateLaborTaskElement(ws, inBOE, ValidationBOE, ref boeTasks, ref TaskElementMessages, boeLabor, ref LaborTypeMessages, ref MOQEquationCalc, ref TotalLaborSpreadValue);
+			}
 
-            // Valid Comments and Approvals
-            // validate that all boe comments have a response
-            bool boeCommentResponseValidator = this._BOECommentsResponsesValidator.AllBOEAuthorCommentsResponses(inBOE.Id);
-            if (boeCommentResponseValidator == false)
-            {
-                ValidationBOE.BOECommentandApprovals.Add("All BOE Comments do not have a response from the Author.");
-            }
+			if (ws.Odcs.Any(x => x.BoeID == inBOE.Id))
+			{
+				this._ValidateODC(inBOE, ws, ValidationBOE, ref odcTasks, ref OdcTaskElementMessages, odcType, ref OdcTypeMessages, ref TotalLaborSpreadValue);
+			}
 
-            this.ValidateTemplateMoqTypes(ws, inBOE, ValidationBOE);
+			// Valid Comments and Approvals
+			// validate that all boe comments have a response
+			bool boeCommentResponseValidator = this._BOECommentsResponsesValidator.AllBOEAuthorCommentsResponses(inBOE.Id);
+			if (boeCommentResponseValidator == false)
+			{
+				ValidationBOE.BOECommentandApprovals.Add("All BOE Comments do not have a response from the Author.");
+			}
 
-            // Setting the name for the WBS - incase we have multiple WBS's we would want to list them out.
-            ValidationBOE.BOEName = (inBOE.Wbs != null ? inBOE.Wbs.WbsString : CommonConstants.Unassigned_WBS_Display_Text) + " " + (inBOE.Clin != null ? inBOE.Clin.ClinString : CommonConstants.Unassigned_CLIN_Display_Text) + " " + inBOE.Title;
-            // sets the boe ID - this is used on the validate all so we can link the boe's back to the users.
-            ValidationBOE.BOEID = inBOE.Id;
+			this.ValidateTemplateMoqTypes(ws, inBOE, ValidationBOE);
 
-            toReturn = ValidationBOE;
-            return toReturn;
-        }
+			inBOE.TaskElements.ForEach(task =>
+			{
+				if (Utilities.ShowSkillMixForTask(ws.CreationDate, task.HasTMRates, inBOE.MoqTypeSelections.Where(x => x.TaskId == task.Id).Select(x => x.SelectedMOQType).ToList()))
+				{
+					ICollection<string> errorMessages = new List<string>();
+					errorMessages = ActionLogicUtility.ValidateSkillMixTable(task.SkillMixTable);
 
-        /// <summary>
-        /// Validate all BOE data (BOE Header, task element details, labor type, and labor spreads) in the workspace
-        /// </summary>
-        /// <param name="ws">Full Ws</param>
-        /// <returns>Validation Data</returns>
-        public virtual ValidationAllBOEModelView ValidateAllBOEs(FullWorkspace ws)
-        {
-            // Make sure the workspace is not null
-            if (ws == null)
-            {
-                throw new ArgumentNullException(nameof(ws));
-            }
+					if (Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
+					{
+						errorMessages.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(task.CommonDisclosureTable, task.SkillMixTable));
+					}
 
-            // Define a new collection
-            ValidationAllBOEModelView CollectionOfErrors = new ValidationAllBOEModelView();
+					if (errorMessages.Any())
+					{
+						ValidationBOETasks taskValidation = ValidationBOE.Tasks.FirstOrDefault(x => x.TaskId == task.Id);
+						if (taskValidation == null)
+						{
+							taskValidation = new ValidationBOETasks() { TaskId = task.Id, TaskMessage = $"Task: {task.Id} {task.TaskTitle}", TaskElementDetails = new ValidationBOETaskElementDetails() { TaskElementDetailsHeader = "Task Element Details" } };
+						}
 
-            // preload RTE data.. for validation
-            ws.LoadBoesAndTaskElementsRTEData();
+						taskValidation.TaskElementDetails.TaskElementDetailValidationMessages.AddRange(errorMessages);
+						ValidationBOE.Tasks.Add(taskValidation);
+					}
+				}
+			});
 
-            // For every BOE
-            foreach (FullBoe boe in ws.Boes)
-            {
-                CollectionOfErrors.AllBOEs.Add(this.ValidateBOE_OnValidateBtnClick(boe, ws));
-            }
+			// Setting the name for the WBS - incase we have multiple WBS's we would want to list them out.
+			ValidationBOE.BOEName = (inBOE.Wbs != null ? inBOE.Wbs.WbsString : CommonConstants.Unassigned_WBS_Display_Text) + " " + (inBOE.Clin != null ? inBOE.Clin.ClinString : CommonConstants.Unassigned_CLIN_Display_Text) + " " + inBOE.Title;
+			// sets the boe ID - this is used on the validate all so we can link the boe's back to the users.
+			ValidationBOE.BOEID = inBOE.Id;
 
-            // return the collection of error messages.
-            return CollectionOfErrors;
-        }
+			toReturn = ValidationBOE;
+			return toReturn;
+		}
 
-        /// <summary>
-        /// Given a BOE check if it's valid against the workspace contract date
-        /// </summary>
-        /// <param name="inBOE">BOE</param>
-        /// <param name="ValidationBOE">validation model view</param>
-        /// <param name="workspace">workspace</param>
-        private void _CheckIfBOEDateIsValidAgainstContractDate(FullBoe inBOE, ValidationBOEModelView ValidationBOE, WorkspaceDTO workspace)
-        {
-            if (GenBOEUtilities.AdjustDateTimePrecision(inBOE.StartDate, DateTimePrecision.Month) < GenBOEUtilities.AdjustDateTimePrecision(workspace.ContractStartDate, DateTimePrecision.Month))
-            {
-                ValidationBOE.BOEHeaderMsgs.Add(string.Format(BoeDTO.BOE_START_DATE_INVALID, CONTRACT_TEXT, workspace.ContractStartDate.ToString("MM/yyyy")));
-            }
+		/// <summary>
+		/// Validate all BOE data (BOE Header, task element details, labor type, and labor spreads) in the workspace
+		/// </summary>
+		/// <param name="ws">Full Ws</param>
+		/// <returns>Validation Data</returns>
+		public virtual ValidationAllBOEModelView ValidateAllBOEs(FullWorkspace ws)
+		{
+			// Make sure the workspace is not null
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
 
-            if (GenBOEUtilities.AdjustDateTimePrecision(inBOE.EndDate, DateTimePrecision.Month) > GenBOEUtilities.AdjustDateTimePrecision(workspace.ContractEndDate, DateTimePrecision.Month))
-            {
-                ValidationBOE.BOEHeaderMsgs.Add(string.Format(BoeDTO.BOE_END_DATE_INVALID, CONTRACT_TEXT, workspace.ContractEndDate.ToString("MM/yyyy")));
-            }
-        }
+			// Define a new collection
+			ValidationAllBOEModelView CollectionOfErrors = new ValidationAllBOEModelView();
 
-        /// <summary>
-        /// Validate (non-MST) Travel Task
-        /// </summary>
-        /// <param name="inBOE">BOE containing Travel</param>
-        /// <param name="ws">Workspace containing BOE/Travel</param>
-        /// <param name="ValidationBOE">Validation BOE Model View</param>
-        /// <param name="travelTasks">Validation BOE Tasks for the Travel Task</param>
-        /// <param name="travelTaskElementMessages">Collection of Travel Task Element Messages</param>
-        /// <param name="TravelTypeMessages">Collection of Travel Type Messages</param>
-        /// <param name="travelType">Validation BOE Labor Type for the Travel Type</param>
-        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "3"), SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "3#")]
-        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "4"), SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "4#")]
-        [SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "5"), SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "5#")]
-        protected virtual void _ValidateTravel(FullBoe inBOE, FullWorkspace ws, ValidationBOEModelView ValidationBOE, ref ValidationBOETasks travelTasks, ref Collection<string> travelTaskElementMessages, ref Collection<string> TravelTypeMessages, ValidationBOELaborType travelType)
-        {
-            _ = inBOE ?? throw new ArgumentNullException(nameof(inBOE));
-            _ = ws ?? throw new ArgumentNullException(nameof(ws));
-            _ = ValidationBOE ?? throw new ArgumentNullException(nameof(ValidationBOE));
+			// preload RTE data.. for validation
+			ws.LoadBoesAndTaskElementsRTEData();
+
+			// For every BOE
+			foreach (FullBoe boe in ws.Boes)
+			{
+				CollectionOfErrors.AllBOEs.Add(this.ValidateBOE_OnValidateBtnClick(boe, ws));
+			}
+
+			// return the collection of error messages.
+			return CollectionOfErrors;
+		}
+
+		/// <summary>
+		/// Given a BOE check if it's valid against the workspace contract date
+		/// </summary>
+		/// <param name="inBOE">BOE</param>
+		/// <param name="ValidationBOE">validation model view</param>
+		/// <param name="workspace">workspace</param>
+		private void _CheckIfBOEDateIsValidAgainstContractDate(FullBoe inBOE, ValidationBOEModelView ValidationBOE, WorkspaceDTO workspace)
+		{
+			if (GenBOEUtilities.AdjustDateTimePrecision(inBOE.StartDate, DateTimePrecision.Month) < GenBOEUtilities.AdjustDateTimePrecision(workspace.ContractStartDate, DateTimePrecision.Month))
+			{
+				ValidationBOE.BOEHeaderMsgs.Add(string.Format(BoeDTO.BOE_START_DATE_INVALID, CONTRACT_TEXT, workspace.ContractStartDate.ToString("MM/yyyy")));
+			}
+
+			if (GenBOEUtilities.AdjustDateTimePrecision(inBOE.EndDate, DateTimePrecision.Month) > GenBOEUtilities.AdjustDateTimePrecision(workspace.ContractEndDate, DateTimePrecision.Month))
+			{
+				ValidationBOE.BOEHeaderMsgs.Add(string.Format(BoeDTO.BOE_END_DATE_INVALID, CONTRACT_TEXT, workspace.ContractEndDate.ToString("MM/yyyy")));
+			}
+		}
+
+		/// <summary>
+		/// Validate (non-MST) Travel Task
+		/// </summary>
+		/// <param name="inBOE">BOE containing Travel</param>
+		/// <param name="ws">Workspace containing BOE/Travel</param>
+		/// <param name="ValidationBOE">Validation BOE Model View</param>
+		/// <param name="travelTasks">Validation BOE Tasks for the Travel Task</param>
+		/// <param name="travelTaskElementMessages">Collection of Travel Task Element Messages</param>
+		/// <param name="TravelTypeMessages">Collection of Travel Type Messages</param>
+		/// <param name="travelType">Validation BOE Labor Type for the Travel Type</param>
+		[SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "3"), SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "3#")]
+		[SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "4"), SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "4#")]
+		[SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "5"), SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "5#")]
+		protected virtual void _ValidateTravel(FullBoe inBOE, FullWorkspace ws, ValidationBOEModelView ValidationBOE, ref ValidationBOETasks travelTasks, ref Collection<string> travelTaskElementMessages, ref Collection<string> TravelTypeMessages, ValidationBOELaborType travelType)
+		{
+			_ = inBOE ?? throw new ArgumentNullException(nameof(inBOE));
+			_ = ws ?? throw new ArgumentNullException(nameof(ws));
+			_ = ValidationBOE ?? throw new ArgumentNullException(nameof(ValidationBOE));
 
 			// validate the travel Tasks
 			List<TravelDTO> travelTaskElements = ws.Travels.Where(x => x.BoeID == inBOE.Id).ToList();
-            HashSet<TripDTO> trips = new HashSet<TripDTO>(this._TripDTODataLoader.GetByIds(travelTaskElements.SelectMany(t => t.TravelTrips).Select(i => i.SystemTripID).ToCollection()));
-            HashSet<LocationDTO> departures = new HashSet<LocationDTO>(this._LocationDTODataLoader.GetByIds(trips.Select(i => i.DepartureLocationID).ToCollection()));
-            HashSet<LocationDTO> destinations = new HashSet<LocationDTO>(this._LocationDTODataLoader.GetByIds(trips.Select(i => i.DestinationLocationID).ToCollection()));
-            HashSet<MiscTravelRateDTO> travelRates = new HashSet<MiscTravelRateDTO>(this.miscTravelRateDTOLoader.GetByIds(trips.Select(i => i.MiscTravelRateID).ToCollection()));
+			HashSet<TripDTO> trips = new HashSet<TripDTO>(this._TripDTODataLoader.GetByIds(travelTaskElements.SelectMany(t => t.TravelTrips).Select(i => i.SystemTripID).ToCollection()));
+			HashSet<LocationDTO> departures = new HashSet<LocationDTO>(this._LocationDTODataLoader.GetByIds(trips.Select(i => i.DepartureLocationID).ToCollection()));
+			HashSet<LocationDTO> destinations = new HashSet<LocationDTO>(this._LocationDTODataLoader.GetByIds(trips.Select(i => i.DestinationLocationID).ToCollection()));
+			HashSet<MiscTravelRateDTO> travelRates = new HashSet<MiscTravelRateDTO>(this.miscTravelRateDTOLoader.GetByIds(trips.Select(i => i.MiscTravelRateID).ToCollection()));
 
-            foreach (TravelDTO travelTask in travelTaskElements)
-            {
-                travelTasks = new ValidationBOETasks();
-                travelTaskElementMessages = new Collection<string>();
+			foreach (TravelDTO travelTask in travelTaskElements)
+			{
+				travelTasks = new ValidationBOETasks();
+				travelTaskElementMessages = new Collection<string>();
 
-                // validate one trip present
-                if (!travelTask.TravelTrips.Any()) 
-                {
-                    travelTaskElementMessages.Add(TravelDTO.ONE_TRIP_REQUIRED);
-                }
+				// validate one trip present
+				if (!travelTask.TravelTrips.Any())
+				{
+					travelTaskElementMessages.Add(TravelDTO.ONE_TRIP_REQUIRED);
+				}
 
-                // validate travel task is within the BOE date range
-                bool isValid = this._ValidateTaskElementStartDateComparedToBOEStartDate(inBOE.StartDate, travelTask.StartDate.Value);
-                if (!isValid)
-                {
-                    travelTaskElementMessages.Add(string.Format(TravelDTO.TRAVEL_TASK_START_DATE_INVALID, inBOE.StartDate.ToString("MM/yyyy")));
-                }
+				// validate travel task is within the BOE date range
+				bool isValid = this._ValidateTaskElementStartDateComparedToBOEStartDate(inBOE.StartDate, travelTask.StartDate.Value);
+				if (!isValid)
+				{
+					travelTaskElementMessages.Add(string.Format(TravelDTO.TRAVEL_TASK_START_DATE_INVALID, inBOE.StartDate.ToString("MM/yyyy")));
+				}
 
-                isValid = this._ValidateTaskElementEndDateComparedToBOEStartDate(inBOE.EndDate, travelTask.EndDate.Value);
-                if (!isValid)
-                {
-                    travelTaskElementMessages.Add(string.Format(TravelDTO.TRAVEL_TASK_END_DATE_INVALID, inBOE.EndDate.ToString("MM/yyyy")));
-                }
+				isValid = this._ValidateTaskElementEndDateComparedToBOEStartDate(inBOE.EndDate, travelTask.EndDate.Value);
+				if (!isValid)
+				{
+					travelTaskElementMessages.Add(string.Format(TravelDTO.TRAVEL_TASK_END_DATE_INVALID, inBOE.EndDate.ToString("MM/yyyy")));
+				}
 
-                Collection<string> travelTaskCustomFieldMessages = this.ValidateCustomFields(ws, CustomFieldType.TaskDisplay, ws.TravelElementsMappingWithCustomFieldsValuesAndContainerIds, travelTask.Id);
-                if (travelTaskCustomFieldMessages.Any())
-                {
-                    foreach (string message in travelTaskCustomFieldMessages)
-                    {
-                        travelTaskElementMessages.Add(message);
-                    }
-                }
+				Collection<string> travelTaskCustomFieldMessages = this.ValidateCustomFields(ws, CustomFieldType.TaskDisplay, ws.TravelElementsMappingWithCustomFieldsValuesAndContainerIds, travelTask.Id);
+				if (travelTaskCustomFieldMessages.Any())
+				{
+					foreach (string message in travelTaskCustomFieldMessages)
+					{
+						travelTaskElementMessages.Add(message);
+					}
+				}
 
-                foreach (TravelTripType travel in travelTask.TravelTrips)
-                {
-                    TravelTypeMessages = new Collection<string>();
-                    bool isTripValid = true;
-                    travelType = new ValidationBOELaborType();
+				foreach (TravelTripType travel in travelTask.TravelTrips)
+				{
+					TravelTypeMessages = new Collection<string>();
+					bool isTripValid = true;
+					travelType = new ValidationBOELaborType();
 
 					// validate LT Start/End Date
 					Collection<string> returnedMessages = this._ValidateTravelTripDate(travelTask, travel, ws, inBOE);
-                    foreach (string message in returnedMessages)
-                    {
-                        TravelTypeMessages.Add(message);
-                    }
+					foreach (string message in returnedMessages)
+					{
+						TravelTypeMessages.Add(message);
+					}
 
-                    isTripValid = this._ValidateTravelTripSegment(travel, ws);
-                    if (!isTripValid)
-                    {
-                        TravelTypeMessages.Add(string.Format(TravelDTO.TRAVEL_TASK_SEGMENT_INVALID));
-                    }
+					isTripValid = this._ValidateTravelTripSegment(travel, ws);
+					if (!isTripValid)
+					{
+						TravelTypeMessages.Add(string.Format(TravelDTO.TRAVEL_TASK_SEGMENT_INVALID));
+					}
 
-                    isTripValid = this._ValidateTravelTripPerformingOrg(travel);
-                    if (!isTripValid)
-                    {
-                        TravelTypeMessages.Add(string.Format(TravelDTO.TRAVEL_TASK_PERFORG_INVALID));
-                    }
+					isTripValid = this._ValidateTravelTripPerformingOrg(travel);
+					if (!isTripValid)
+					{
+						TravelTypeMessages.Add(string.Format(TravelDTO.TRAVEL_TASK_PERFORG_INVALID));
+					}
 
-                    Collection<string> CustomFieldMessages = this.ValidateCustomFields(ws, CustomFieldType.LaborTypeDisplay, ws.TravelTripsMappingWithCustomFieldsValuesAndContainerIds, travel.Id); 
-                    if (CustomFieldMessages.Any())
-                    {
-                        foreach (string message in CustomFieldMessages)
-                        {
-                            TravelTypeMessages.Add(message);
-                        }
-                    }
+					Collection<string> CustomFieldMessages = this.ValidateCustomFields(ws, CustomFieldType.LaborTypeDisplay, ws.TravelTripsMappingWithCustomFieldsValuesAndContainerIds, travel.Id);
+					if (CustomFieldMessages.Any())
+					{
+						foreach (string message in CustomFieldMessages)
+						{
+							TravelTypeMessages.Add(message);
+						}
+					}
 
-                    if (TravelTypeMessages.Any())
-                    {
-                        TripDTO thisTrip = trips.First(i => i.TripID == travel.SystemTripID);
-                        string mode = travelRates.First(i => i.Id == thisTrip.MiscTravelRateID).MiscTravelRateMode;
-                        string departureName = departures.First(i => i.Id == thisTrip.DepartureLocationID).LocationName;
-                        string destinationName = destinations.First(i => i.Id == thisTrip.DestinationLocationID).LocationName;
+					if (TravelTypeMessages.Any())
+					{
+						TripDTO thisTrip = trips.First(i => i.TripID == travel.SystemTripID);
+						string mode = travelRates.First(i => i.Id == thisTrip.MiscTravelRateID).MiscTravelRateMode;
+						string departureName = departures.First(i => i.Id == thisTrip.DepartureLocationID).LocationName;
+						string destinationName = destinations.First(i => i.Id == thisTrip.DestinationLocationID).LocationName;
 
-                        travelType.LaborTypeHeader = string.Format("Trip: {0} {1} {2} to {3}", thisTrip.TripID, mode, departureName, destinationName);
-                        travelType.LaborTypeValidationMsgs = TravelTypeMessages;
-                        travelTasks.LaborTypes.Add(travelType);
-                    }
-                }
+						travelType.LaborTypeHeader = string.Format("Trip: {0} {1} {2} to {3}", thisTrip.TripID, mode, departureName, destinationName);
+						travelType.LaborTypeValidationMsgs = TravelTypeMessages;
+						travelTasks.LaborTypes.Add(travelType);
+					}
+				}
 
-                if (travelTaskElementMessages.Any() || travelTasks.LaborTypes.Any())
-                {
-                    if (travelTaskElementMessages.Any())
-                    {
-                        travelTasks.TaskMessage = "Task: " + travelTask.TaskID + " " + travelTask.TaskTitle;
-                        travelTasks.TaskElementDetails.TaskElementDetailValidationMessages = travelTaskElementMessages;
-                        travelTasks.TaskElementDetails.TaskElementDetailsHeader = "Task Element Details";
-                    }
-                    // sets the id for the task that has errors.
-                    travelTasks.TaskId = travelTask.Id;
-                    ValidationBOE.Travels.Add(travelTasks);
-                }
-            }
-        }
-        
-        private void _ValidateMaterials(FullBoe inBOE, ValidationBOEModelView ValidationBOE, ref ValidationBOETasks materialTasks, ref Collection<string> materialTaskElementMessages)
-        {
-            // validate the Material Tasks
-            IReadOnlyCollection<MaterialDTO> materialTaskElements = inBOE.Materials;
-            foreach (MaterialDTO materialTask in materialTaskElements)
-            {
-                materialTasks = new ValidationBOETasks();
-                materialTaskElementMessages = new Collection<string>();
+				if (travelTaskElementMessages.Any() || travelTasks.LaborTypes.Any())
+				{
+					if (travelTaskElementMessages.Any())
+					{
+						travelTasks.TaskMessage = "Task: " + travelTask.TaskID + " " + travelTask.TaskTitle;
+						travelTasks.TaskElementDetails.TaskElementDetailValidationMessages = travelTaskElementMessages;
+						travelTasks.TaskElementDetails.TaskElementDetailsHeader = "Task Element Details";
+					}
+					// sets the id for the task that has errors.
+					travelTasks.TaskId = travelTask.Id;
+					ValidationBOE.Travels.Add(travelTasks);
+				}
+			}
+		}
 
-                // validate MOQ Type
-                if (string.IsNullOrEmpty(materialTask.MoqText))
-                {
-                    materialTaskElementMessages.Add(this.FormatMOQTextErrorMessage(MaterialDTO.MOQ_TEXT_REQUIRED));
-                }
+		private void _ValidateMaterials(FullBoe inBOE, ValidationBOEModelView ValidationBOE, ref ValidationBOETasks materialTasks, ref Collection<string> materialTaskElementMessages)
+		{
+			// validate the Material Tasks
+			IReadOnlyCollection<MaterialDTO> materialTaskElements = inBOE.Materials;
+			foreach (MaterialDTO materialTask in materialTaskElements)
+			{
+				materialTasks = new ValidationBOETasks();
+				materialTaskElementMessages = new Collection<string>();
 
-                if (materialTaskElementMessages.Any() || materialTasks.LaborTypes.Any())
-                {
-                    materialTasks.TaskMessage = "Task: " + materialTask.TaskID + " " + materialTask.TaskTitle;
-                    materialTasks.TaskElementDetails.TaskElementDetailValidationMessages = materialTaskElementMessages;
-                    materialTasks.TaskElementDetails.TaskElementDetailsHeader = "Task Element Details";
-                    // added so the validate all boe can link to the task id
-                    materialTasks.TaskId = materialTask.Id;
-                    ValidationBOE.Materials.Add(materialTasks);
-                }
-            }
-        }
+				// validate MOQ Type
+				if (string.IsNullOrEmpty(materialTask.MoqText))
+				{
+					materialTaskElementMessages.Add(this.FormatMOQTextErrorMessage(MaterialDTO.MOQ_TEXT_REQUIRED));
+				}
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        private void _ValidateLaborTaskElement(FullWorkspace workspace, FullBoe inBOE, ValidationBOEModelView ValidationBOE, ref ValidationBOETasks boeTasks, ref Collection<string> TaskElementMessages, ValidationBOELaborType boeLabor, ref Collection<string> LaborTypeMessages, ref string MOQEquationCalc, ref decimal TotalLaborSpreadValue)
-        {
-            Collection<string> ReturnMsgs;
-            ICollection<OffloadRatesDTO> offloadRatesDtos = null;
-            if (workspace.ProjectMapType == ProjectMapType.StandardWithOffload)
-            {
-                // Validate Labor Resources for Offload
-                offloadRatesDtos = this.offloadRatesDTOLoader.GetByWorkspaceId(workspace.Id);
-            }
+				if (materialTaskElementMessages.Any() || materialTasks.LaborTypes.Any())
+				{
+					materialTasks.TaskMessage = "Task: " + materialTask.TaskID + " " + materialTask.TaskTitle;
+					materialTasks.TaskElementDetails.TaskElementDetailValidationMessages = materialTaskElementMessages;
+					materialTasks.TaskElementDetails.TaskElementDetailsHeader = "Task Element Details";
+					// added so the validate all boe can link to the task id
+					materialTasks.TaskId = materialTask.Id;
+					ValidationBOE.Materials.Add(materialTasks);
+				}
+			}
+		}
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		private void _ValidateLaborTaskElement(FullWorkspace workspace, FullBoe inBOE, ValidationBOEModelView ValidationBOE, ref ValidationBOETasks boeTasks, ref Collection<string> TaskElementMessages, ValidationBOELaborType boeLabor, ref Collection<string> LaborTypeMessages, ref string MOQEquationCalc, ref decimal TotalLaborSpreadValue)
+		{
+			Collection<string> ReturnMsgs;
+			ICollection<OffloadRatesDTO> offloadRatesDtos = null;
+			if (workspace.ProjectMapType == ProjectMapType.StandardWithOffload)
+			{
+				// Validate Labor Resources for Offload
+				offloadRatesDtos = this.offloadRatesDTOLoader.GetByWorkspaceId(workspace.Id);
+			}
 
 			// validate the Task Detail Elements
 			IEnumerable<BoeTaskElementDTO> boeTaskElements = workspace.TaskElements.Where(x => x.BoeID == inBOE.Id);
-            foreach (BoeTaskElementDTO boeTask in boeTaskElements)
-            {
-                boeLabor = new ValidationBOELaborType();
-                boeTasks = new ValidationBOETasks();
-                boeTasks.LaborTypes.Clear();
-                MOQEquationCalc = string.Empty;
-                TaskElementMessages = new Collection<string>();
-                LaborTypeMessages = new Collection<string>();
+			foreach (BoeTaskElementDTO boeTask in boeTaskElements)
+			{
+				boeLabor = new ValidationBOELaborType();
+				boeTasks = new ValidationBOETasks();
+				boeTasks.LaborTypes.Clear();
+				MOQEquationCalc = string.Empty;
+				TaskElementMessages = new Collection<string>();
+				LaborTypeMessages = new Collection<string>();
 
-                // (rule only valid for Labor TE)
-                // validate MOQ Type
-                if (!workspace.UsingTemplateBOE && boeTask.TaskElementType == TaskElementType.Labor && boeTask.MOQType == MOQType.None)
-                {
-                    TaskElementMessages.Add(BoeDTO.MOQ_TYPE_REQUIRED);
-                }
+				// (rule only valid for Labor TE)
+				// validate MOQ Type
+				if (!workspace.UsingTemplateBOE && boeTask.TaskElementType == TaskElementType.Labor && boeTask.MOQType == MOQType.None)
+				{
+					TaskElementMessages.Add(BoeDTO.MOQ_TYPE_REQUIRED);
+				}
 
-                // (rule only valid for non summary Labor TE)
-                //  validate MOQ Equation
-                if (boeTask.TaskElementType == TaskElementType.Labor && string.IsNullOrEmpty(boeTask.MOQHoursEquation))
-                {
-                    TaskElementMessages.Add(BoeDTO.MOQ_EQ_REQUIRED);
-                    TaskElementMessages.Add(BoeDTO.TOTAL_LABOR_SPREAD_INVALID);
-                }
-                else
-                {
-                    Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO>();
+				// (rule only valid for non summary Labor TE)
+				//  validate MOQ Equation
+				if (boeTask.TaskElementType == TaskElementType.Labor && string.IsNullOrEmpty(boeTask.MOQHoursEquation))
+				{
+					TaskElementMessages.Add(BoeDTO.MOQ_EQ_REQUIRED);
+					TaskElementMessages.Add(BoeDTO.TOTAL_LABOR_SPREAD_INVALID);
+				}
+				else
+				{
+					Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO>();
 
-                    for (int x = 0; x < boeTask.WorkspaceVariableIDs.Count; x++)
-                    {
-                        // for each workspace variable id in the BOE Task, get it's info from the Workspace variables
-                        foreach (WorkspaceVariableDTO wv in inBOE.WorkspaceVariables)
-                        {
-                            if (wv.Id == boeTask.WorkspaceVariableIDs[x])
-                            {
-                                WorkspaceVariableDTO workspaceVar = new WorkspaceVariableDTO();
-                                workspaceVar = wv;
-                                workspaceVars.Add(workspaceVar);
-                                break;
-                            }
-                        }
-                    }
+					for (int x = 0; x < boeTask.WorkspaceVariableIDs.Count; x++)
+					{
+						// for each workspace variable id in the BOE Task, get it's info from the Workspace variables
+						foreach (WorkspaceVariableDTO wv in inBOE.WorkspaceVariables)
+						{
+							if (wv.Id == boeTask.WorkspaceVariableIDs[x])
+							{
+								WorkspaceVariableDTO workspaceVar = new WorkspaceVariableDTO();
+								workspaceVar = wv;
+								workspaceVars.Add(workspaceVar);
+								break;
+							}
+						}
+					}
 
-                    // this will get all workspace variables for the given workspace
-                    DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
-                    data.FillData(boeTask.OrdinaryVariables, workspaceVars, workspace);
+					// this will get all workspace variables for the given workspace
+					DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
+					data.FillData(boeTask.OrdinaryVariables, workspaceVars, workspace);
 
-                    try
-                    {
-                        MOQEquationCalc = Common.MOQ.Parser.Calculate(boeTask.MOQHoursEquation, boeTask.OrdinaryVariables, workspaceVars, this._VariableSelectBOEtoSumCalculation, data, workspace);
-                    }
-                    catch // if the equation parsing crashes (maybe a variable is missing)
-                    {
-                        TaskElementMessages.Add("MOQ Equation is invalid.");
-                        MOQEquationCalc = "0";
-                    }
-                }
+					try
+					{
+						MOQEquationCalc = Common.MOQ.Parser.Calculate(boeTask.MOQHoursEquation, boeTask.OrdinaryVariables, workspaceVars, this._VariableSelectBOEtoSumCalculation, data, workspace);
+					}
+					catch // if the equation parsing crashes (maybe a variable is missing)
+					{
+						TaskElementMessages.Add("MOQ Equation is invalid.");
+						MOQEquationCalc = "0";
+					}
+				}
 
-                // validate if historic metric disclosure checkbox was checked or not
-                // based on if a historic meric is being used
-                ICollection<int> boeTaskIds = new Collection<int>();
-                boeTaskIds.Add(boeTask.Id);
+				// validate if historic metric disclosure checkbox was checked or not
+				// based on if a historic meric is being used
+				ICollection<int> boeTaskIds = new Collection<int>();
+				boeTaskIds.Add(boeTask.Id);
 
-                // Need to determine if there are any required Task custom fields
-                switch (boeTask.TaskElementType)
-                {
-                    case TaskElementType.Labor:
-                        ReturnMsgs = this.ValidateCustomFields(workspace, CustomFieldType.TaskDisplay, workspace.TaskElementsMappingWithCustomFieldsValuesAndContainerIds, boeTask.Id);
-                        foreach (string msg in ReturnMsgs)
-                        {
-                            TaskElementMessages.Add(msg);
-                        }
+				// Need to determine if there are any required Task custom fields
+				switch (boeTask.TaskElementType)
+				{
+					case TaskElementType.Labor:
+						ReturnMsgs = this.ValidateCustomFields(workspace, CustomFieldType.TaskDisplay, workspace.TaskElementsMappingWithCustomFieldsValuesAndContainerIds, boeTask.Id);
+						foreach (string msg in ReturnMsgs)
+						{
+							TaskElementMessages.Add(msg);
+						}
 
-                        break;
-                    case TaskElementType.None:
-                    default:
-                        break;
-                }
+						break;
+					case TaskElementType.None:
+					default:
+						break;
+				}
 
-                ValidateTaskMoqText(workspace, inBOE, TaskElementMessages, boeTask);
-                ValidateTaskDescription(workspace, inBOE, TaskElementMessages, boeTask);
+				ValidateTaskMoqText(workspace, inBOE, TaskElementMessages, boeTask);
+				ValidateTaskDescription(workspace, inBOE, TaskElementMessages, boeTask);
 
-                if (boeTask.TaskElementType == TaskElementType.Labor)
-                {
-                    // validate TE Start/End Date
-                    ReturnMsgs = this._ValidateStartAndEndDates(inBOE.StartDate, inBOE.EndDate, inBOE, boeTask.StartDate, boeTask.EndDate, workspace);
-                    foreach (string msg in ReturnMsgs)
-                    {
-                        TaskElementMessages.Add(msg);
-                    }
-                }
+				if (boeTask.TaskElementType == TaskElementType.Labor)
+				{
+					// validate TE Start/End Date
+					ReturnMsgs = this._ValidateStartAndEndDates(inBOE.StartDate, inBOE.EndDate, inBOE, boeTask.StartDate, boeTask.EndDate, workspace);
+					foreach (string msg in ReturnMsgs)
+					{
+						TaskElementMessages.Add(msg);
+					}
+				}
 
-                // Validate Resource Types
-                if (!boeTask.taskElementLabors.Any())
-                {
-                    if (boeTask.TaskElementType == TaskElementType.Labor)
-                    {
-                        LaborTypeMessages.Add(BoeDTO.RESOURCE_TYPE_FOR_TASK_ELEMENT_REQUIRED);
+				// Validate Resource Types
+				if (!boeTask.taskElementLabors.Any())
+				{
+					if (boeTask.TaskElementType == TaskElementType.Labor)
+					{
+						LaborTypeMessages.Add(BoeDTO.RESOURCE_TYPE_FOR_TASK_ELEMENT_REQUIRED);
 
-                        boeLabor.LaborTypeHeader = "Resource Type:";
-                        boeLabor.LaborTypeValidationMsgs = LaborTypeMessages;
-                        boeTasks.LaborTypes.Add(boeLabor);
-                    }
-                }
+						boeLabor.LaborTypeHeader = "Resource Type:";
+						boeLabor.LaborTypeValidationMsgs = LaborTypeMessages;
+						boeTasks.LaborTypes.Add(boeLabor);
+					}
+				}
 
-                // validate RTE field length
-                ValidateFieldLength(workspace.RteSizeLimit, boeTask.Description, "Task Description", TaskElementMessages);
-                ValidateFieldLength(workspace.RteSizeLimit, boeTask.MOQText, "MOQ Rationale", TaskElementMessages);
+				// validate RTE field length
+				ValidateFieldLength(workspace.RteSizeLimit, boeTask.Description, "Task Description", TaskElementMessages);
+				ValidateFieldLength(workspace.RteSizeLimit, boeTask.MOQText, "MOQ Rationale", TaskElementMessages);
 
-                List<ResourceDTO> resourcesFromTask = BRCValidationUtility.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId.Where(x => (boeTask.taskElementLabors.Where(y => y.ResourceID.HasValue).Select(z => z.ResourceID.Value)).Contains(x.Id)).ToList(), false, workspace.Shortname).ToList();
+				List<ResourceDTO> resourcesFromTask = BRCValidationUtility.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId.Where(x => (boeTask.taskElementLabors.Where(y => y.ResourceID.HasValue).Select(z => z.ResourceID.Value)).Contains(x.Id)).ToList(), false, workspace.Shortname).ToList();
 				List<ResourceDTO> businessResourceCodeFromTask = BRCValidationUtility.GetResourcesBasedOnCompanyMode(workspace.ResourcesForWsResourceListId.Where(x => (boeTask.taskElementLabors.Where(y => y.BusinessResourceCodeID.HasValue).Select(z => z.BusinessResourceCodeID.Value)).Contains(x.Id)).ToList(), true, workspace.Shortname).ToList();
-                TotalLaborSpreadValue = ValidateResourceLabors(workspace, inBOE, boeTasks, LaborTypeMessages, offloadRatesDtos, boeTask, resourcesFromTask, businessResourceCodeFromTask);
+				TotalLaborSpreadValue = ValidateResourceLabors(workspace, inBOE, boeTasks, LaborTypeMessages, offloadRatesDtos, boeTask, resourcesFromTask, businessResourceCodeFromTask);
 
-                // only check moq equation total if this is a labor task element
-                if (boeTask.TaskElementType == TaskElementType.Labor)
-                {
-                    if (!string.IsNullOrEmpty(MOQEquationCalc))
-                    {
-                        if (TotalLaborSpreadValue != decimal.Parse(MOQEquationCalc))
-                        {
-                            TaskElementMessages.Add(BoeDTO.TOTAL_LABOR_SPREAD_INVALID);
-                        }
-                    }
-                }
+				// only check moq equation total if this is a labor task element
+				if (boeTask.TaskElementType == TaskElementType.Labor)
+				{
+					if (!string.IsNullOrEmpty(MOQEquationCalc))
+					{
+						if (TotalLaborSpreadValue != decimal.Parse(MOQEquationCalc))
+						{
+							TaskElementMessages.Add(BoeDTO.TOTAL_LABOR_SPREAD_INVALID);
+						}
+					}
+				}
 
-                if (TaskElementMessages.Any() || boeTasks.LaborTypes.Any())
-                {
-                    boeTasks.TaskMessage = "Task: " + boeTask.BOETaskID + " " + boeTask.TaskTitle;
-                    boeTasks.TaskElementDetails.TaskElementDetailValidationMessages = TaskElementMessages;
-                    boeTasks.TaskElementDetails.TaskElementDetailsHeader = "Task Element Details";
-                    // setting for the validation all boe to link the user to the task.
-                    boeTasks.TaskId = boeTask.Id;
-                    ValidationBOE.Tasks.Add(boeTasks);
-                }
-            }
-        }
+				if (TaskElementMessages.Any() || boeTasks.LaborTypes.Any())
+				{
+					boeTasks.TaskMessage = "Task: " + boeTask.BOETaskID + " " + boeTask.TaskTitle;
+					boeTasks.TaskElementDetails.TaskElementDetailValidationMessages = TaskElementMessages;
+					boeTasks.TaskElementDetails.TaskElementDetailsHeader = "Task Element Details";
+					// setting for the validation all boe to link the user to the task.
+					boeTasks.TaskId = boeTask.Id;
+					ValidationBOE.Tasks.Add(boeTasks);
+				}
+			}
+		}
 
-        /// <summary>
-        /// Validates Tasks MOQ Text, including RTE Templates in the process
-        /// </summary>        
-        private void ValidateTaskMoqText(FullWorkspace workspace, FullBoe inBOE, Collection<string> TaskElementMessages, BoeTaskElementDTO boeTask)
-        {
-            if (!workspace.UsingTemplateBOE)
-            {
-                // Legacy MOQ Types
-                if (string.IsNullOrEmpty(boeTask.MOQText)) // if no data in the field itself
-                {
+		/// <summary>
+		/// Validates Tasks MOQ Text, including RTE Templates in the process
+		/// </summary>        
+		private void ValidateTaskMoqText(FullWorkspace workspace, FullBoe inBOE, Collection<string> TaskElementMessages, BoeTaskElementDTO boeTask)
+		{
+			if (!workspace.UsingTemplateBOE)
+			{
+				// Legacy MOQ Types
+				if (string.IsNullOrEmpty(boeTask.MOQText)) // if no data in the field itself
+				{
 					// the field is valid if templates are being used, AND all required prompts are answered
-					IEnumerable<RTECustomTemplateQuestionAnswerModelView> taskTemplateWithPrompts = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(workspace.Id, inBOE.Id, boeTask.Id).Where(t => t.SourceId == (int)RteTemplateSource.TaskMOQ);
-                    if (!taskTemplateWithPrompts.Any() || taskTemplateWithPrompts.Any(t => t.Required && string.IsNullOrEmpty(t.AnswerText)))
-                    {
-                        TaskElementMessages.Add(this.FormatMOQTextErrorMessage(BoeDTO.MOQ_TEXT_REQUIRED));
-                    }
-                }
-            }
-        }
+					IEnumerable<RTECustomTemplateQuestionAnswerModelView> taskTemplateWithPrompts = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(workspace.Id, inBOE.Id, boeTask.Id).Where(t => t.SourceId == (int)IES.Common.RteTemplateSource.TaskMOQ);
+					if (!taskTemplateWithPrompts.Any() || taskTemplateWithPrompts.Any(t => t.Required && string.IsNullOrEmpty(t.AnswerText)))
+					{
+						TaskElementMessages.Add(this.FormatMOQTextErrorMessage(BoeDTO.MOQ_TEXT_REQUIRED));
+					}
+				}
+			}
+		}
 
-        /// <summary>
-        /// Validate Template MOQ Types
-        /// </summary>
-        /// <param name="ws">Workspace</param>
-        /// <param name="boe">BOE to validate</param>
-        /// <param name="boeValidation">Boe Validation</param>
-        private void ValidateTemplateMoqTypes(FullWorkspace ws, FullBoe boe, ValidationBOEModelView boeValidation)
-        {
-            if (ws.UsingTemplateBOE)
-            {
-                ICollection<string> errorMessages;
+		/// <summary>
+		/// Validate Template MOQ Types
+		/// </summary>
+		/// <param name="ws">Workspace</param>
+		/// <param name="boe">BOE to validate</param>
+		/// <param name="boeValidation">Boe Validation</param>
+		private void ValidateTemplateMoqTypes(FullWorkspace ws, FullBoe boe, ValidationBOEModelView boeValidation)
+		{
+			if (ws.UsingTemplateBOE)
+			{
+				ICollection<string> errorMessages;
 
-                foreach (BoeTaskElementDTO task in boe.TaskElements)
-                {
-                    errorMessages = ValidateTemplateMoqForTask(boe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList(), ws, true);
+				foreach (BoeTaskElementDTO task in boe.TaskElements)
+				{
+					errorMessages = ValidateTemplateMoqForTask(boe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList(), ws, true);
 
-                    if (errorMessages.Any())
-                    {
-                        ValidationBOETasks taskValidation = boeValidation.Tasks.FirstOrDefault(x => x.TaskId == task.Id);
-                        if (taskValidation == null)
-                        {
-                            taskValidation = new ValidationBOETasks() { TaskId = task.Id, TaskMessage = $"Task: {task.Id} {task.TaskTitle}", TaskElementDetails = new ValidationBOETaskElementDetails() { TaskElementDetailsHeader = "Task Element Details" } };
-                            boeValidation.Tasks.Add(taskValidation);
-                        }
+					if (errorMessages.Any())
+					{
+						ValidationBOETasks taskValidation = boeValidation.Tasks.FirstOrDefault(x => x.TaskId == task.Id);
+						if (taskValidation == null)
+						{
+							taskValidation = new ValidationBOETasks() { TaskId = task.Id, TaskMessage = $"Task: {task.Id} {task.TaskTitle}", TaskElementDetails = new ValidationBOETaskElementDetails() { TaskElementDetailsHeader = "Task Element Details" } };
+							boeValidation.Tasks.Add(taskValidation);
+						}
 
-                        taskValidation.TaskElementDetails.TaskElementDetailValidationMessages.AddRange(errorMessages);
-                    }
-                }
-            }
-        }
+						taskValidation.TaskElementDetails.TaskElementDetailValidationMessages.AddRange(errorMessages);
+					}
+				}
+			}
+		}
 
 		/// <summary>
 		/// Validate MOQ Template data on a Task Level. Does NOT validate Labor Type level selection
@@ -652,77 +678,77 @@ namespace GenBOE.ActionLogic.WBS.BOE
 		/// <param name="moqEquationTotal"> Moq equation total</param>
 		/// <returns>Errors, if any</returns>
 		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-        public ICollection<string> ValidateTemplateMoqForTask(ICollection<MoqTypeSelection> moqTypesForTask, FullWorkspace ws, bool onButtonPress, decimal? moqEquationTotal = null)
-        {
-            _ = moqTypesForTask ?? throw new ArgumentNullException(nameof(moqTypesForTask));
+		public ICollection<string> ValidateTemplateMoqForTask(ICollection<MoqTypeSelection> moqTypesForTask, FullWorkspace ws, bool onButtonPress, decimal? moqEquationTotal = null)
+		{
+			_ = moqTypesForTask ?? throw new ArgumentNullException(nameof(moqTypesForTask));
 
-            Collection<string> errorMessages = new Collection<string>();
+			Collection<string> errorMessages = new Collection<string>();
 
-            if (!moqTypesForTask.Any())
-            {
-                errorMessages.Add(Constants.MOQ_TYPE_REQUIRED_FOR_TASK);
-            }
-            else
-            {
-                MoqTypeTableDataLabels labels = new MoqTypeTableDataLabels();
+			if (!moqTypesForTask.Any())
+			{
+				errorMessages.Add(Constants.MOQ_TYPE_REQUIRED_FOR_TASK);
+			}
+			else
+			{
+				MoqTypeTableDataLabels labels = new MoqTypeTableDataLabels();
 
-                moqTypesForTask.ForEach(moqType =>
-                {
-                    switch (moqType.SelectedMOQType)
-                    {
-                        case (MOQType.AnalogousRelationships):
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.CerName, "Analogous relationship name", Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
-                            break;
-                        case (MOQType.Comparative):
-                        case (MOQType.Historical):
-                            if (moqType.TableData.None()) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: Table data is required."); }
-                            moqType.TableData.ForEach(row =>
-                            {
-                                ValidateRequiredField(moqType.SelectedMOQType, row.TableName, labels.TableName, Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
+				moqTypesForTask.ForEach(moqType =>
+				{
+					switch (moqType.SelectedMOQType)
+					{
+						case (MOQType.AnalogousRelationships):
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.CerName, "Analogous relationship name", Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
+							break;
+						case (MOQType.Comparative):
+						case (MOQType.Historical):
+							if (moqType.TableData.None()) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: Table data is required."); }
+							moqType.TableData.ForEach(row =>
+							{
+								ValidateRequiredField(moqType.SelectedMOQType, row.TableName, labels.TableName, Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
 
-                                if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-                                {
-                                    ValidateRequiredField(moqType.SelectedMOQType, row.RepositoryName, labels.RepositoryName, Constants.MOQ_REPOSITORY_NAME_FIELD_LENGTH, errorMessages);
-                                    ValidateRequiredField(moqType.SelectedMOQType, row.QueryType, labels.QueryType, Constants.MOQ_QUERY_TYPE_FIELD_LENGTH, errorMessages);
-                                }
-                                else
-                                {
-                                    ValidateRequiredField(moqType.SelectedMOQType, row.ContractNumber, labels.ContractNumber, Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
-                                    if (!Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate))
-                                    {
-                                        if (row.TotalWbsHours <= 0 || Math.Round(row.TotalWbsHours, 2) >= 1000000000) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalWbsHours} must be a number greater than 0 and less than 1,000,000,000."); }
-                                    }
+								if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+								{
+									ValidateRequiredField(moqType.SelectedMOQType, row.RepositoryName, labels.RepositoryName, Constants.MOQ_REPOSITORY_NAME_FIELD_LENGTH, errorMessages);
+									ValidateRequiredField(moqType.SelectedMOQType, row.QueryType, labels.QueryType, Constants.MOQ_QUERY_TYPE_FIELD_LENGTH, errorMessages);
+								}
+								else
+								{
+									ValidateRequiredField(moqType.SelectedMOQType, row.ContractNumber, labels.ContractNumber, Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
+									if (!Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate))
+									{
+										if (row.TotalWbsHours <= 0 || Math.Round(row.TotalWbsHours, 2) >= 1000000000) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalWbsHours} must be a number greater than 0 and less than 1,000,000,000."); }
+									}
 								}
 
-                                if (row.DateOfReport.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} is required."); }
-                                if (row.DateOfReport.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} must be on or before today's date."); }
+								if (row.DateOfReport.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} is required."); }
+								if (row.DateOfReport.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} must be on or before today's date."); }
 
-                                ValidateRequiredField(moqType.SelectedMOQType, row.HistoricalProgramName, labels.HistoricalProgramName, Constants.MOQ_HISTORICAL_PROG_NAME_FIELD_LENGTH, errorMessages);
+								ValidateRequiredField(moqType.SelectedMOQType, row.HistoricalProgramName, labels.HistoricalProgramName, Constants.MOQ_HISTORICAL_PROG_NAME_FIELD_LENGTH, errorMessages);
 
-                                if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && (!Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate)))
-                                {
+								if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && (!Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate)))
+								{
 									ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, Constants.MOQ_WBS_ELEMENT_RMS_SAP_DISABLED_FIELD_LENGTH, errorMessages);
 								}
-                                else
+								else
 								{
 									ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, Constants.MOQ_WBS_ELEMENT_FIELD_LENGTH, errorMessages);
 								}
 
-                                if (!row.PoPStart.HasValue || row.PoPStart?.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} is required."); }
-                                if (row.PoPStart?.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before today's date."); }
-                                if (!row.PoPEnd.HasValue || row.PoPEnd?.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} is required."); }
-                                if (row.PoPEnd?.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} must be on or before today's date."); }
+								if (!row.PoPStart.HasValue || row.PoPStart?.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} is required."); }
+								if (row.PoPStart?.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before today's date."); }
+								if (!row.PoPEnd.HasValue || row.PoPEnd?.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} is required."); }
+								if (row.PoPEnd?.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} must be on or before today's date."); }
 
-                                if (row.PoPEnd?.Date < row.PoPStart?.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before {labels.PoPEnd}."); }
-                                
-                                if (Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate) && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-                                {
-                                    if (row.PoPStart?.Year > 1 && row.PoPStart?.DayOfWeek != DayOfWeek.Monday)
-                                    {
-                                        errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on a Monday.");
-                                    }
+								if (row.PoPEnd?.Date < row.PoPStart?.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before {labels.PoPEnd}."); }
+
+								if (Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate) && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+								{
+									if (row.PoPStart?.Year > 1 && row.PoPStart?.DayOfWeek != DayOfWeek.Monday)
+									{
+										errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on a Monday.");
+									}
 
 									if (row.PoPEnd?.Year > 1 && row.PoPEnd?.DayOfWeek != DayOfWeek.Sunday)
 									{
@@ -736,11 +762,11 @@ namespace GenBOE.ActionLogic.WBS.BOE
 								}
 
 								// check PopStart/End for Space Fiscal Weekly DateTime
-								if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && 
-                                    !Utilities.IsWorkspaceBeforeSAPCutoff(ws.CreationDate) && 
-                                    Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate) && 
-                                    row.RepositoryName == RepositoryName.SapWebi.GetDescription() &&
-                                    row.QueryType == MoqTableData.WEEKLY)
+								if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems &&
+									!Utilities.IsWorkspaceBeforeSAPCutoff(ws.CreationDate) &&
+									Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate) &&
+									row.RepositoryName == RepositoryName.SapWebi.GetDescription() &&
+									row.QueryType == MoqTableData.WEEKLY)
 								{
 									// SAP is enabled, only allow sundays to be selected
 									if (row.PoPStart?.Year > 1 && row.PoPStart?.DayOfWeek != DayOfWeek.Sunday)
@@ -756,296 +782,70 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 								// "Additional Query Fields" is required ONLY when SAP is disabled OR (Company mode == space && repository name != SAP / Webi) OR (Company mode == RMS && SAP Connection is disabled for the ws)
 								if ((!Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate) ||
-                                        (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && row.RepositoryName != RepositoryName.SapWebi.GetDescription()) ||
+										(SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && row.RepositoryName != RepositoryName.SapWebi.GetDescription()) ||
 										SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && !ws.EnableSAPConnection)
-                                    && string.IsNullOrEmpty(row.AdditionalQueryFilters))
-                                {
-                                    errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.AdditionalQueryFilters} is required, otherwise indicate N/A.");
-                                }
+									&& string.IsNullOrEmpty(row.AdditionalQueryFilters))
+								{
+									errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.AdditionalQueryFilters} is required, otherwise indicate N/A.");
+								}
 
-                                if (row.TotalRelevantHours <= 0 || Math.Round(row.TotalRelevantHours, 2) >= 1000000000) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalRelevantHours} must be a number greater than 0 and less than 1,000,000,000."); }
-                                
+								if (row.TotalRelevantHours <= 0 || Math.Round(row.TotalRelevantHours, 2) >= 1000000000) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalRelevantHours} must be a number greater than 0 and less than 1,000,000,000."); }
+
 								if (onButtonPress)
-                                {
-                                    // only run this as part of the Validate BOE button validation as it relies on using already saved data - save validation of custom fields is handled elsewhere
-                                    errorMessages.AddRange(this.ValidateCustomFields(ws, CustomFieldType.MoqTypeTableDataDisplay, ws.MoqTypeTableMappingWithCustomFieldsValuesAndContainerIds, row.Id));
-                                }
-                            });
+								{
+									// only run this as part of the Validate BOE button validation as it relies on using already saved data - save validation of custom fields is handled elsewhere
+									errorMessages.AddRange(this.ValidateCustomFields(ws, CustomFieldType.MoqTypeTableDataDisplay, ws.MoqTypeTableMappingWithCustomFieldsValuesAndContainerIds, row.Id));
+								}
+							});
 
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
 
-							if((moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative)
+							if ((moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative)
 								&& Utilities.IsHistoricalReferenceExplanationRequired(ws.CreationDate))
 							{
 								ValidateRequiredField(moqType.SelectedMOQType, moqType.HistoricalReferenceExplanation, "Provide an explanation of Why the Historical Reference was Selected", ws.RteSizeLimit, errorMessages);
 							}
-
-							// TODO Skill Mix V2: Commented out as we no longer validate with MOQ Type Selection but BOE Task Element ID and this is left in to retain the logic for a future task.
-							//if (moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative)
-							//{
-							//	if (moqType.SkillMixTable != null && moqType.SkillMixTable.Any())
-							//	{
-							//		errorMessages.AddRange(ValidateSkillMixTable(new Collection<MoqTypeSelection>() { moqType }, ws.CreationDate, onButtonPress, moqEquationTotal));
-							//	}
-							//	if (moqType.CommonDisclosureTable != null && moqType.CommonDisclosureTable.Any())
-							//	{
-							//		errorMessages.AddRange(ValidateCommonDisclosureSkillMixTable(new Collection<MoqTypeSelection> { moqType }, ws.CreationDate, onButtonPress, moqEquationTotal));
-							//	}
-							//}
-
 							break;
-                        case (MOQType.CostEstimatingRelationships):
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.CerName, "CER tool name", Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
-                            break;
-                        case (MOQType.LOE):
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.DescriptionHoursRequired, "Description of Hours required", ws.RteSizeLimit, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
-                            break;
-                        case (MOQType.NonLabor):
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
-                            break;
-                        case (MOQType.ParametricEstimates):
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.CerName, "Parametric model name", Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
-                            break;
-                        case (MOQType.SME):
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeReason, "The SME selected Expert judgment reasons", ws.RteSizeLimit, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeHoursLogic, "The logic and assumptions used to estimate hours", ws.RteSizeLimit, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeDurationLogic, "The logic and assumptions used to estimate duration", ws.RteSizeLimit, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeTaskEstimates, "The SME tasks estimated in this BOE", ws.RteSizeLimit, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
-                            break;
-                        case (MOQType.SOW):
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.DescriptionHoursRequired, "Description of Hours required & location in SOW", ws.RteSizeLimit, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
-                            break;
-                        default:
-                            errorMessages.Add("Invalid MOQ Type selected");
-                            break;
-                    };
-                });
-            }
+						case (MOQType.CostEstimatingRelationships):
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.CerName, "CER tool name", Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
+							break;
+						case (MOQType.LOE):
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.DescriptionHoursRequired, "Description of Hours required", ws.RteSizeLimit, errorMessages);
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
+							break;
+						case (MOQType.NonLabor):
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
+							break;
+						case (MOQType.ParametricEstimates):
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.CerName, "Parametric model name", Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
+							break;
+						case (MOQType.SME):
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeReason, "The SME selected Expert judgment reasons", ws.RteSizeLimit, errorMessages);
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeHoursLogic, "The logic and assumptions used to estimate hours", ws.RteSizeLimit, errorMessages);
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeDurationLogic, "The logic and assumptions used to estimate duration", ws.RteSizeLimit, errorMessages);
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeTaskEstimates, "The SME tasks estimated in this BOE", ws.RteSizeLimit, errorMessages);
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
+							break;
+						case (MOQType.SOW):
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.DescriptionHoursRequired, "Description of Hours required & location in SOW", ws.RteSizeLimit, errorMessages);
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
+							break;
+						default:
+							errorMessages.Add("Invalid MOQ Type selected");
+							break;
+					};
+				});
+			}
 
-            return errorMessages;
-        }
-
-		///// <summary>
-		///// TODO Skill Mix V2: Commented out as we no longer validate with MOQ Type Selection but BOE Task Element ID and this is left in to retain the logic for a future task.
-		///// Validate the Skill Mix Table for any errors
-		///// </summary>
-		///// <param name="moqTypes">The MOQ Types</param>
-		///// <param name="workspaceCreationDate">The workspace creation date</param>
-		///// <param name="onButtonPress">Is this being validated for Validate BOE or Submit For Approval?</param>
-		///// <param name="moqEquationTotal">The Moq equation total</param>
-		///// <returns>A collection of any validation errors/messages</returns>
-		//private ICollection<string> ValidateSkillMixTable(ICollection<MoqTypeSelection> moqTypes, DateTime? workspaceCreationDate, bool onButtonPress, decimal? moqEquationTotal = null)
-		//{
-		//	ICollection<string> errorMessages = new Collection<string>();
-
-		//	if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(workspaceCreationDate) && moqTypes != null)
-		//	{
-		//		IList<SkillMixModelView> skillMixRowsEmptyRationales = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => string.IsNullOrEmpty(x.Rationale)).ToList();
-		//		IList<SkillMixModelView> skillMixRowsEmptyIncludeds = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => !x.Included.HasValue).ToList();
-		//		IList<SkillMixModelView> skillMixRowsEmptyBoeMixWhenIncluded = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => x.Included.HasValue && x.Included.Value && !x.BOESkillMix.HasValue).ToList();
-		//		IList<SkillMixModelView> skillMixRowsInvalidBoeMixWhenIncluded = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => x.Included.HasValue && x.Included.Value && x.BOESkillMix.HasValue && x.BOESkillMix.Value <= 0).ToList();
-		//		IList<SkillMixModelView> skillMixRowsExceedChars = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
-		//		IList<CommonDisclosureModelView> commonDisclosureRowsEmptyIncludeds = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable).Where(x => !x.Included.HasValue).ToList();
-		//		bool doesEmptyNullCurrentResourceExist = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Any(x => string.IsNullOrEmpty(x.ResourceNew) && x.Included.HasValue && x.Included.Value);
-		//		decimal totalSKillMixRowsBOESkillMix = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
-		//		decimal totalSKillMixRowsProposedHours = moqTypes.Where(x => x.SkillMixTable != null).SelectMany(x => x.SkillMixTable).Sum(p => p.ProposedHours);
-
-		//		if (onButtonPress)
-		//		{
-		//			foreach (string skillMixResourceNew in skillMixRowsEmptyRationales.Select(x => x.ResourceNew))
-		//			{
-		//				errorMessages.Add(string.Format("Current Skill Mix Table: Rationale is missing for {0}.", skillMixResourceNew));
-		//			}
-		//		}
-
-		//		// This check applies to both Space and RMS
-		//		if (doesEmptyNullCurrentResourceExist)
-		//		{
-		//			errorMessages.Add("Current Skill Mix Table: Included cannot be set to 'Yes' for an empty/null Current Resource.");
-		//		}
-
-		//		foreach (string skillMixResourceNew in skillMixRowsEmptyIncludeds.Select(x => x.ResourceNew))
-		//		{
-		//			errorMessages.Add(string.Format("Current Skill Mix Table: Included is missing for {0}.", skillMixResourceNew));
-		//		}
-
-		//		foreach (string skillMixResourceNew in skillMixRowsEmptyBoeMixWhenIncluded.Select(x => x.ResourceNew))
-		//		{
-		//			errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix is missing for {0}.", skillMixResourceNew));
-		//		}
-
-		//		foreach (string skillMixResourceNew in skillMixRowsInvalidBoeMixWhenIncluded.Select(x => x.ResourceNew))
-		//		{
-		//			errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix has invalid value for {0}.", skillMixResourceNew));
-		//		}
-
-		//		if (totalSKillMixRowsBOESkillMix != 100)
-		//		{
-		//			errorMessages.Add(string.Format("Current Skill Mix Table: BOE Skill Mix total must be 100%"));
-		//		}
-
-		//		if (moqEquationTotal.HasValue && totalSKillMixRowsProposedHours != moqEquationTotal.Value)
-		//		{
-		//			errorMessages.Add(string.Format("Current Skill Mix Table: Proposed Hours total must be equal to Moq Equation Total"));
-		//		}
-
-		//		foreach (string skillMixResourceNew in skillMixRowsExceedChars.Select(x => x.ResourceNew))
-		//		{
-		//			errorMessages.Add(string.Format("Current Skill Mix Table: The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceNew, 255));
-		//		}
-
-		//		foreach (string skillMixResourceNew in commonDisclosureRowsEmptyIncludeds.Select(x => x.ResourceID))
-		//		{
-		//			errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: Included is missing for {0}.", skillMixResourceNew));
-		//		}
-		//	}
-
-		//	return errorMessages;
-		//}
-
-		///// <summary>
-		///// TODO Skill Mix V2: Commented out as we no longer validate with MOQ Type Selection but BOE Task Element ID and this is left in to retain the logic for a future task.
-		///// Validate the Common Disclosure Skill Mix Table for any errors
-		///// </summary>
-		///// <param name="moqTypes">The MOQ Types</param>
-		///// <param name="workspaceCreationDate">The workspace creation date</param>
-		///// <param name="onButtonPress">Is this being validated for Validate BOE or Submit For Approval?</param>
-		///// <returns>A collection of validation errors/messages</returns>
-		//private ICollection<string> ValidateCommonDisclosureSkillMixTable(ICollection<MoqTypeSelection> moqTypes, DateTime? workspaceCreationDate, bool onButtonPress, decimal? moqEquationTotal = null)
-		//{
-		//	ICollection<string> errorMessages = new Collection<string>();
-
-		//	if (Utilities.IsSkillMixEnabledForSystem && Utilities.ShowSkillMixForWorkspace(workspaceCreationDate) && moqTypes != null)
-		//	{
-		//		IList<CommonDisclosureModelView> commonDisclosureRowsEmptyRationales = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable)
-		//																		.Where(x => string.IsNullOrEmpty(x.Rationale)).ToList();
-		//		IList<CommonDisclosureModelView> commonDisclosureRowsExceedChars = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable)
-		//																		.Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
-		//		IList<CommonDisclosureModelView> commonDisclosureRowsEmptyBoeSkillMixWhenIncluded = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable)
-		//																		.Where(x => x.Included.HasValue && x.Included.Value && !x.BOESkillMix.HasValue).ToList();
-		//		IList<CommonDisclosureModelView> commonDisclosureRowsInvalidBoeSkillMixWhenIncluded = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable)
-		//																		.Where(x => x.Included.HasValue && x.Included.Value && x.BOESkillMix.HasValue && x.BOESkillMix.Value <= 0).ToList();
-		//		IList<CommonDisclosureModelView> commonDisclosureIncludedHasTrueValue = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable).Where(x => x.Included.HasValue && x.Included.Value).ToList();
-		//		decimal totalCommonDisclosureRowsBOESkillMix = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable).Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
-		//		decimal totalCommonDisclosureRowsProposedHours = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable).Sum(p => p.ProposedHours);
-		//		IList<CommonDisclosureModelView> commonDisclosureHasBRC = moqTypes.Where(x => x.CommonDisclosureTable != null).SelectMany(x => x.CommonDisclosureTable)
-		//																		.Where(x => string.IsNullOrEmpty(x.BusinessResourceID)).ToList();
-
-		//		if (onButtonPress)
-		//		{ 
-		//			foreach (string skillMixResourceNew in commonDisclosureRowsEmptyRationales.Select(x => x.ResourceID))
-		//			{
-		//				errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: Rationale is missing for {0}.", skillMixResourceNew));
-		//			}
-		//		}
-		//		foreach (string skillMixResourceNew in commonDisclosureRowsExceedChars.Select(x => x.ResourceID))
-		//		{
-		//			errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceNew, 255));
-		//		}
-
-		//		foreach (string skillMixResourceNew in commonDisclosureRowsEmptyBoeSkillMixWhenIncluded.Select(x => x.ResourceID))
-		//		{
-		//			errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BOE Skill Mix is missing for {0}.", skillMixResourceNew));
-		//		}
-
-		//		foreach (string skillMixResourceNew in commonDisclosureRowsInvalidBoeSkillMixWhenIncluded.Select(x => x.ResourceID))
-		//		{
-		//			errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BOE skill Mix has invalid value for {0}.", skillMixResourceNew));
-		//		}
-
-		//		if (commonDisclosureIncludedHasTrueValue.Count <= 0)
-		//		{
-		//			errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: At least one Resource has to be included"));
-		//		}
-
-		//		if (totalCommonDisclosureRowsBOESkillMix != 100)
-		//		{
-		//			errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BOE Skill Mix total must be 100%"));
-		//		}
-
-		//		if (moqEquationTotal.HasValue && totalCommonDisclosureRowsProposedHours != moqEquationTotal.Value)
-		//		{
-		//			errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: Proposed Hours total must be equal to MoqTotal"));
-		//		}
-
-		//		foreach (string commonDisclosureRow in commonDisclosureHasBRC.Select(x => x.ResourceID).Distinct())
-		//		{
-		//			errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: BRC must be selected for each occurance of Resource {0}.", commonDisclosureRow));
-		//		}
-
-		//		ValidateResourceAndBRCCombos(moqTypes, errorMessages);
-
-		//		// ValidateHistoricalHours(moqTypes, errorMessages);
-
-		//	}
-
-		//	return errorMessages;
-		//}
-
-		///// <summary>
-		///// TODO Skill Mix V2: Commented out as we no longer validate with MOQ Type Selection but BOE Task Element ID and this is left in to retain the logic for a future task.
-		///// Validate  each Resource and BRC combo is unique in the Common Disclosure Table
-		///// </summary>
-		///// <param name="moqTypes">The MOQ Types</param>
-		///// <param name="errorMessages">Error Messages</param>
-		//private static void ValidateResourceAndBRCCombos(ICollection<MoqTypeSelection> moqTypes, ICollection<String> errorMessages)
-		//{
-		//	foreach (MoqTypeSelection moqType in moqTypes)
-		//	{
-		//		Dictionary<string, List<CommonDisclosureModelView>> resourceToCDRowMap = moqType.CommonDisclosureTable != null && moqType.CommonDisclosureTable.Any() ? moqType.CommonDisclosureTable.GroupBy(s => s.ResourceID).ToDictionary(g => g.Key, g => g.ToList()) : null;
-		//		resourceToCDRowMap.ForEach(pair =>
-		//		{
-		//			//don't need to count the null ones - that validation is checked above
-		//			List<CommonDisclosureModelView> brcsForResource = pair.Value.Where(x => !string.IsNullOrEmpty(x.BusinessResourceID)).ToList();
-		//			int brcsForResourceCount = brcsForResource.Count();
-		//			bool isUnique = brcsForResource.Select(x => x.BusinessResourceID).Distinct().ToList().Count() == brcsForResourceCount;
-		//			if (!isUnique)
-		//			{
-		//				errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: Each BRC must be unique for Resource {0}.", pair.Key));
-		//			}
-		//		});
-		//	}
-		//}
-
-		///// <summary>
-		///// TODO Skill Mix V2: Commented out as we no longer validate with MOQ Type Selection but BOE Task Element ID and this is left in to retain the logic for a future task.
-		///// Validate  each Resource and BRC combo is unique in the Common Disclosure Table
-		///// </summary>
-		///// <param name="moqTypes">The MOQ Types</param>
-		///// <param name="errorMessages">Error Messages</param>
-		//private static void ValidateHistoricalHours(ICollection<MoqTypeSelection> moqTypes, ICollection<String> errorMessages)
-		//{
-		//	foreach (MoqTypeSelection moqType in moqTypes)
-		//	{
-		//		Dictionary<string, decimal> resourceToHistoricalHoursMap = new Dictionary<string, decimal>();
-		//		//TBD: for RMS, might have duplicate new resources and then we'll have to total historical
-		//		if (moqType.SkillMixTable != null && moqType.SkillMixTable.Any())
-		//		{
-		//			moqType.SkillMixTable.Where(s => s.Included.HasValue && s.Included.Value && !string.IsNullOrEmpty(s.ResourceNew)).ForEach(s => resourceToHistoricalHoursMap.Add(s.ResourceNew, s.HistoricalHours));
-		//		}
-
-		//		Dictionary<string, List<CommonDisclosureModelView>> resourceToCDRowMap = moqType.CommonDisclosureTable != null && moqType.CommonDisclosureTable.Any() ? moqType.CommonDisclosureTable.GroupBy(s => s.ResourceID).ToDictionary(g => g.Key, g => g.ToList()) : null;
-		//		resourceToCDRowMap.ForEach(pair =>
-		//		{
-		//			decimal historicalHoursTotal = pair.Value.Sum(v => v.HistoricalHours);
-
-		//			if (resourceToHistoricalHoursMap.TryGetValue(pair.Key, out decimal historicalHours) && historicalHoursTotal != historicalHours)
-		//			{
-		//				errorMessages.Add(string.Format("Common Disclosure Skill Mix Table: Historical Hours for all rows in group for Resource {0} must total {1}, matching the row in the Skill Mix table.", pair.Key, historicalHours));
-		//			}
-		//		});
-		//	}
-		//}
+			return errorMessages;
+		}
 
 		/// <summary>
 		/// Validates a required field
@@ -1056,655 +856,655 @@ namespace GenBOE.ActionLogic.WBS.BOE
 		/// <param name="maxFieldLength">RTE Size Limit</param>
 		/// <param name="errorMessages">Error Messages</param>
 		private static void ValidateRequiredField(MOQType moqType, string field, string label, int? maxFieldLength, Collection<string> errorMessages)
-        {
-            if (string.IsNullOrEmpty(field)) 
-            { 
-                errorMessages.Add($"{moqType.GetDescription()}: {label} is required."); 
-            }
+		{
+			if (string.IsNullOrEmpty(field))
+			{
+				errorMessages.Add($"{moqType.GetDescription()}: {label} is required.");
+			}
 
-            ValidateFieldLength(maxFieldLength, field, label, errorMessages);
-        }
+			ValidateFieldLength(maxFieldLength, field, label, errorMessages);
+		}
 
-        /// <summary>
-        /// Validates Tasks Description, including RTE Templates in the process
-        /// </summary>        
-        private void ValidateTaskDescription(FullWorkspace workspace, FullBoe inBOE, Collection<string> TaskElementMessages, BoeTaskElementDTO boeTask)
-        {
-            if (string.IsNullOrEmpty(boeTask.Description)) // if no data in the field itself
-            {
+		/// <summary>
+		/// Validates Tasks Description, including RTE Templates in the process
+		/// </summary>        
+		private void ValidateTaskDescription(FullWorkspace workspace, FullBoe inBOE, Collection<string> TaskElementMessages, BoeTaskElementDTO boeTask)
+		{
+			if (string.IsNullOrEmpty(boeTask.Description)) // if no data in the field itself
+			{
 				// the field is valid if templates are being used, AND all required prompts are answered
-				IEnumerable<RTECustomTemplateQuestionAnswerModelView> taskTemplateWithPrompts = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(workspace.Id, inBOE.Id, boeTask.Id).Where(t => t.SourceId == (int)RteTemplateSource.TaskDescription);
-                if (!taskTemplateWithPrompts.Any() || taskTemplateWithPrompts.Any(t => t.Required && string.IsNullOrEmpty(t.AnswerText)))
-                {
-                    TaskElementMessages.Add(this.FormatMOQTextErrorMessage(BoeDTO.TASK_DESCRIPTION_REQUIRED));
-                }
-            }
-        }
+				IEnumerable<RTECustomTemplateQuestionAnswerModelView> taskTemplateWithPrompts = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(workspace.Id, inBOE.Id, boeTask.Id).Where(t => t.SourceId == (int)IES.Common.RteTemplateSource.TaskDescription);
+				if (!taskTemplateWithPrompts.Any() || taskTemplateWithPrompts.Any(t => t.Required && string.IsNullOrEmpty(t.AnswerText)))
+				{
+					TaskElementMessages.Add(this.FormatMOQTextErrorMessage(BoeDTO.TASK_DESCRIPTION_REQUIRED));
+				}
+			}
+		}
 
-        private decimal ValidateResourceLabors(FullWorkspace workspace, FullBoe inBOE, ValidationBOETasks boeTasks, Collection<string> LaborTypeMessages, ICollection<OffloadRatesDTO> offloadRatesDtos, BoeTaskElementDTO boeTask, ICollection<ResourceDTO> resourcesFromTask, ICollection<ResourceDTO> businessResourceCodesFromTask)
-        {
-            decimal TotalLaborSpreadValue = 0;
+		private decimal ValidateResourceLabors(FullWorkspace workspace, FullBoe inBOE, ValidationBOETasks boeTasks, Collection<string> LaborTypeMessages, ICollection<OffloadRatesDTO> offloadRatesDtos, BoeTaskElementDTO boeTask, ICollection<ResourceDTO> resourcesFromTask, ICollection<ResourceDTO> businessResourceCodesFromTask)
+		{
+			decimal TotalLaborSpreadValue = 0;
 
 			IDictionary<int, string> resourceIdToSegmentRegion = workspace.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
 
 			foreach (ResourceTypeDto labor in boeTask.taskElementLabors)
-            {
-                bool invalidCostSpreadPrecision = false;
-                bool invalidHoursSpreadPrecision = false;
-                ValidationBOELaborType boeLabor = new ValidationBOELaborType();
-                LaborTypeMessages = new Collection<string>();
+			{
+				bool invalidCostSpreadPrecision = false;
+				bool invalidHoursSpreadPrecision = false;
+				ValidationBOELaborType boeLabor = new ValidationBOELaborType();
+				LaborTypeMessages = new Collection<string>();
 
-                // need to verify a Performing Org exists
-                if (!labor.PerformingOrgID.HasValue)
-                {
-                    LaborTypeMessages.Add(BoeDTO.PERFORM_ORG_REQUIRED);
-                }
+				// need to verify a Performing Org exists
+				if (!labor.PerformingOrgID.HasValue)
+				{
+					LaborTypeMessages.Add(BoeDTO.PERFORM_ORG_REQUIRED);
+				}
 
 				// need to verfy a Resource or Business Resource Code exists
 				string requiredMessage = BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(labor, resourceIdToSegmentRegion, workspace.Shortname);
-                if (!string.IsNullOrEmpty(requiredMessage))
-                {
+				if (!string.IsNullOrEmpty(requiredMessage))
+				{
 					LaborTypeMessages.Add(requiredMessage);
-                }
+				}
 
-                // BOEs marked as Multi must have a WBS and or CLIN assigned
-                if (inBOE.IsMultiClinWbs && !labor.CLINID.HasValue && !labor.WBSID.HasValue)
-                {
-                    LaborTypeMessages.Add(BoeDTO.CLIN_WBS_REQUIRED);
-                }
+				// BOEs marked as Multi must have a WBS and or CLIN assigned
+				if (inBOE.IsMultiClinWbs && !labor.CLINID.HasValue && !labor.WBSID.HasValue)
+				{
+					LaborTypeMessages.Add(BoeDTO.CLIN_WBS_REQUIRED);
+				}
 
-                // validate LT Start/End Date
-                Collection<string> ReturnMsgs = this._ValidateStartAndEndDates(boeTask.StartDate, boeTask.EndDate, inBOE, labor.StartDate, labor.EndDate, workspace);
-                foreach (string msg in ReturnMsgs)
-                {
-                    LaborTypeMessages.Add(msg);
-                }
+				// validate LT Start/End Date
+				Collection<string> ReturnMsgs = this._ValidateStartAndEndDates(boeTask.StartDate, boeTask.EndDate, inBOE, labor.StartDate, labor.EndDate, workspace);
+				foreach (string msg in ReturnMsgs)
+				{
+					LaborTypeMessages.Add(msg);
+				}
 
-                // validate LT custom fields
-                switch (boeTask.TaskElementType)
-                {
-                    case TaskElementType.Labor:
-                        ReturnMsgs = this.ValidateCustomFields(workspace, CustomFieldType.LaborTypeDisplay, workspace.LaborTypesMappingWithCustomFieldsValuesAndContainerIds, labor.Id); 
-                        foreach (string msg in ReturnMsgs)
-                        {
-                            LaborTypeMessages.Add(msg);
-                        }
+				// validate LT custom fields
+				switch (boeTask.TaskElementType)
+				{
+					case TaskElementType.Labor:
+						ReturnMsgs = this.ValidateCustomFields(workspace, CustomFieldType.LaborTypeDisplay, workspace.LaborTypesMappingWithCustomFieldsValuesAndContainerIds, labor.Id);
+						foreach (string msg in ReturnMsgs)
+						{
+							LaborTypeMessages.Add(msg);
+						}
 
-                        break;
-                    case TaskElementType.None:
-                    default:
-                        break;
-                }
+						break;
+					case TaskElementType.None:
+					default:
+						break;
+				}
 
-                // Validate that all resource spreads in a task element must equal
-                // the MOQ equation total
-                if (labor.SpreadType == SpreadType.Hours)
-                {
-                    foreach (ResourceSpreadDto bls in labor.LaborSpreads)
-                    {
-                        TotalLaborSpreadValue += bls.LaborSpreadValue;
+				// Validate that all resource spreads in a task element must equal
+				// the MOQ equation total
+				if (labor.SpreadType == SpreadType.Hours)
+				{
+					foreach (ResourceSpreadDto bls in labor.LaborSpreads)
+					{
+						TotalLaborSpreadValue += bls.LaborSpreadValue;
 
-                        if (!ImportUtils.IsMaxDecimalPlaces(bls.LaborSpreadValue.ToString(), workspace.DecimalPrecision, out _))
-                        {
-                            invalidHoursSpreadPrecision = true;
-                        }
-                    }
-                }
-                else
-                {
-                    // cost
-                    foreach (ResourceSpreadDto bls in labor.LaborSpreads)
-                    {
-                        if (!ImportUtils.IsMaxDecimalPlaces(bls.LaborSpreadValue.ToString(), workspace.CostDecimalPrecision, out _))
-                        {
-                            invalidCostSpreadPrecision = true;
-                        }
-                    }
-                }
+						if (!ImportUtils.IsMaxDecimalPlaces(bls.LaborSpreadValue.ToString(), workspace.DecimalPrecision, out _))
+						{
+							invalidHoursSpreadPrecision = true;
+						}
+					}
+				}
+				else
+				{
+					// cost
+					foreach (ResourceSpreadDto bls in labor.LaborSpreads)
+					{
+						if (!ImportUtils.IsMaxDecimalPlaces(bls.LaborSpreadValue.ToString(), workspace.CostDecimalPrecision, out _))
+						{
+							invalidCostSpreadPrecision = true;
+						}
+					}
+				}
 
-                if (workspace.ProjectMapType == ProjectMapType.StandardWithOffload)
-                {
-                    // if a Resource Type is set to try to Offload, Validate it and return findings
-                    if (labor.CanOffload)
-                    {
-                        OffloadLaborRatesValidationResults validationResults = OffloadLaborRates.ValidateLaborResourceCanOffload(labor, offloadRatesDtos, workspace);
-                        if (!validationResults.IsValid)
-                        {
-                            // add at resource level
-                            LaborTypeMessages.Add(validationResults.InvalidWarningText);
-                        }
-                    }
-                }
+				if (workspace.ProjectMapType == ProjectMapType.StandardWithOffload)
+				{
+					// if a Resource Type is set to try to Offload, Validate it and return findings
+					if (labor.CanOffload)
+					{
+						OffloadLaborRatesValidationResults validationResults = OffloadLaborRates.ValidateLaborResourceCanOffload(labor, offloadRatesDtos, workspace);
+						if (!validationResults.IsValid)
+						{
+							// add at resource level
+							LaborTypeMessages.Add(validationResults.InvalidWarningText);
+						}
+					}
+				}
 
-                if (invalidCostSpreadPrecision)
-                {
-                    LaborTypeMessages.Add("Cost Spreads have invalid precision which may cause rounding issues. If no error in UI, change the Workspace Cost Decimal Precision to another number then back to current number in Workspace Settings.");
-                }
+				if (invalidCostSpreadPrecision)
+				{
+					LaborTypeMessages.Add("Cost Spreads have invalid precision which may cause rounding issues. If no error in UI, change the Workspace Cost Decimal Precision to another number then back to current number in Workspace Settings.");
+				}
 
-                if (invalidHoursSpreadPrecision)
-                {
-                    LaborTypeMessages.Add("Hour Spreads have invalid precision which may cause rounding issues. If no error in UI, change the Workspace Resource Hours Decimal Precision to another number (default is zero) then back to current number in Workspace Settings.");
-                }
+				if (invalidHoursSpreadPrecision)
+				{
+					LaborTypeMessages.Add("Hour Spreads have invalid precision which may cause rounding issues. If no error in UI, change the Workspace Resource Hours Decimal Precision to another number (default is zero) then back to current number in Workspace Settings.");
+				}
 
-                if (LaborTypeMessages.Any())
-                {
-					BRCValidationUtility.PopulateResourceAndBusinessResourceCodeHeaders(boeLabor, labor, resourcesFromTask, businessResourceCodesFromTask, resourceIdToSegmentRegion, workspace.Shortname);	
+				if (LaborTypeMessages.Any())
+				{
+					BRCValidationUtility.PopulateResourceAndBusinessResourceCodeHeaders(boeLabor, labor, resourcesFromTask, businessResourceCodesFromTask, resourceIdToSegmentRegion, workspace.Shortname);
 
-                    boeLabor.LaborTypeValidationMsgs = LaborTypeMessages;
-                    boeTasks.LaborTypes.Add(boeLabor);
-                }
-            }
+					boeLabor.LaborTypeValidationMsgs = LaborTypeMessages;
+					boeTasks.LaborTypes.Add(boeLabor);
+				}
+			}
 
-            return TotalLaborSpreadValue;
-        }
+			return TotalLaborSpreadValue;
+		}
 
-        private void _ValidateODC(FullBoe inBOE, FullWorkspace ws, ValidationBOEModelView ValidationBOE, ref ValidationBOETasks odcTasks, ref Collection<string> OdcTaskElementMessages, ValidationBOELaborType odcType, ref Collection<string> OdcTypeMessages, ref decimal TotalLaborSpreadValue)
-        {
+		private void _ValidateODC(FullBoe inBOE, FullWorkspace ws, ValidationBOEModelView ValidationBOE, ref ValidationBOETasks odcTasks, ref Collection<string> OdcTaskElementMessages, ValidationBOELaborType odcType, ref Collection<string> OdcTypeMessages, ref decimal TotalLaborSpreadValue)
+		{
 			// Validate Cost
 			IEnumerable<OtherDirectCostDTO> odcs = ws.Odcs.Where(x => x.BoeID == inBOE.Id);
-            foreach (OtherDirectCostDTO odc in odcs)
-            {
-                odcTasks = new ValidationBOETasks();
-                OdcTaskElementMessages = new Collection<string>();
+			foreach (OtherDirectCostDTO odc in odcs)
+			{
+				odcTasks = new ValidationBOETasks();
+				OdcTaskElementMessages = new Collection<string>();
 
-                // Validate MOQ Text
-                if (string.IsNullOrEmpty(odc.MoqText))
-                {
-                    OdcTaskElementMessages.Add(this.FormatMOQTextErrorMessage(OtherDirectCostDTO.MOQ_TEXT_REQUIRED));
-                }
+				// Validate MOQ Text
+				if (string.IsNullOrEmpty(odc.MoqText))
+				{
+					OdcTaskElementMessages.Add(this.FormatMOQTextErrorMessage(OtherDirectCostDTO.MOQ_TEXT_REQUIRED));
+				}
 
-                // Validate ODC Types
-                if (!odc.ODCTypes.Any())
-                {
-                    OdcTypeMessages.Add(OtherDirectCostDTO.AT_LEAST_ONE_ODC_TYPE_REQUIRED);
+				// Validate ODC Types
+				if (!odc.ODCTypes.Any())
+				{
+					OdcTypeMessages.Add(OtherDirectCostDTO.AT_LEAST_ONE_ODC_TYPE_REQUIRED);
 
-                    odcType.LaborTypeHeader = "ODC Type:";
-                    odcType.LaborTypeValidationMsgs = OdcTypeMessages;
-                    odcTasks.LaborTypes.Add(odcType);
-                }
+					odcType.LaborTypeHeader = "ODC Type:";
+					odcType.LaborTypeValidationMsgs = OdcTypeMessages;
+					odcTasks.LaborTypes.Add(odcType);
+				}
 
-                // validate ODC Start/End Date
-                Collection<string> returnMessages = new Collection<string>();
-                returnMessages = this._ValidateStartAndEndDates(inBOE.StartDate, inBOE.EndDate, inBOE, odc.StartDate, odc.EndDate, ws);
-                foreach (string msg in returnMessages)
-                {
-                    OdcTaskElementMessages.Add(msg);
-                }
+				// validate ODC Start/End Date
+				Collection<string> returnMessages = new Collection<string>();
+				returnMessages = this._ValidateStartAndEndDates(inBOE.StartDate, inBOE.EndDate, inBOE, odc.StartDate, odc.EndDate, ws);
+				foreach (string msg in returnMessages)
+				{
+					OdcTaskElementMessages.Add(msg);
+				}
 
-                TotalLaborSpreadValue = 0;
+				TotalLaborSpreadValue = 0;
 				IEnumerable<ResourceDTO> resourcesFromTask = ws.ResourcesForWsResourceListId.Where(x => (odc.ODCTypes.Where(y => y.ResourceID.HasValue).Select(z => z.ResourceID.Value)).Contains(x.Id));
 
-                foreach (OtherDirectCostType type in odc.ODCTypes)
-                {
-                    OdcTypeMessages = new Collection<string>();
-                    odcType = new ValidationBOELaborType();
+				foreach (OtherDirectCostType type in odc.ODCTypes)
+				{
+					OdcTypeMessages = new Collection<string>();
+					odcType = new ValidationBOELaborType();
 
-                    // need to verify a Performing Org exists
-                    if (!type.PerformingOrgID.HasValue)
-                    {
-                        OdcTypeMessages.Add(OtherDirectCostDTO.PERFORM_ORG_REQUIRED);
-                    }
-                    // need to verfy a Resource exists
-                    if (!type.ResourceID.HasValue)
-                    {
-                        OdcTypeMessages.Add(OtherDirectCostDTO.RESOURCE_CODE_REQUIRED);
-                    }
+					// need to verify a Performing Org exists
+					if (!type.PerformingOrgID.HasValue)
+					{
+						OdcTypeMessages.Add(OtherDirectCostDTO.PERFORM_ORG_REQUIRED);
+					}
+					// need to verfy a Resource exists
+					if (!type.ResourceID.HasValue)
+					{
+						OdcTypeMessages.Add(OtherDirectCostDTO.RESOURCE_CODE_REQUIRED);
+					}
 
-                    // validate LT Start/End Date
-                    Collection<string> ReturnMsgs = this._ValidateStartAndEndDates(odc.StartDate, odc.EndDate, inBOE, type.StartDate, type.EndDate, ws);
-                    foreach (string msg in ReturnMsgs)
-                    {
-                        OdcTypeMessages.Add(msg);
-                    }
+					// validate LT Start/End Date
+					Collection<string> ReturnMsgs = this._ValidateStartAndEndDates(odc.StartDate, odc.EndDate, inBOE, type.StartDate, type.EndDate, ws);
+					foreach (string msg in ReturnMsgs)
+					{
+						OdcTypeMessages.Add(msg);
+					}
 
-                    // Validate there is at least one odc spread
-                    if (!type.ODCSpreads.Any())
-                    {
-                        OdcTypeMessages.Add(OtherDirectCostDTO.SPREAD_REQUIRED);
-                    }
+					// Validate there is at least one odc spread
+					if (!type.ODCSpreads.Any())
+					{
+						OdcTypeMessages.Add(OtherDirectCostDTO.SPREAD_REQUIRED);
+					}
 
-                    if (OdcTypeMessages.Any())
-                    {
-                        ResourceDTO resource = null;
-                        if (type.ResourceID.HasValue)
-                        {
-                            resource = resourcesFromTask.FirstOrDefault(x => x.Id == type.ResourceID.Value);
-                        }
+					if (OdcTypeMessages.Any())
+					{
+						ResourceDTO resource = null;
+						if (type.ResourceID.HasValue)
+						{
+							resource = resourcesFromTask.FirstOrDefault(x => x.Id == type.ResourceID.Value);
+						}
 
-                        if (resource == null)
-                        {
-                            odcType.LaborTypeHeader = "ODC Type: ";
-                        }
-                        else
-                        {
-                            odcType.LaborTypeHeader = "ODC Type: " + (resource.ResourceDesc ?? string.Empty);
-                        }
+						if (resource == null)
+						{
+							odcType.LaborTypeHeader = "ODC Type: ";
+						}
+						else
+						{
+							odcType.LaborTypeHeader = "ODC Type: " + (resource.ResourceDesc ?? string.Empty);
+						}
 
-                        odcType.LaborTypeValidationMsgs = OdcTypeMessages;
-                        odcTasks.LaborTypes.Add(odcType);
-                    }
-                }
+						odcType.LaborTypeValidationMsgs = OdcTypeMessages;
+						odcTasks.LaborTypes.Add(odcType);
+					}
+				}
 
-                if (OdcTaskElementMessages.Any() || odcTasks.LaborTypes.Any())
-                {
-                    odcTasks.TaskMessage = "Task: " + odc.TaskTitle;
-                    odcTasks.TaskElementDetails.TaskElementDetailValidationMessages = OdcTaskElementMessages;
-                    odcTasks.TaskElementDetails.TaskElementDetailsHeader = "Task Element Details";
-                    // adds id to odc task with error this is for validateallboes method
-                    odcTasks.TaskId = odc.Id;
-                    ValidationBOE.Costs.Add(odcTasks);
-                }
-            }
-        }
+				if (OdcTaskElementMessages.Any() || odcTasks.LaborTypes.Any())
+				{
+					odcTasks.TaskMessage = "Task: " + odc.TaskTitle;
+					odcTasks.TaskElementDetails.TaskElementDetailValidationMessages = OdcTaskElementMessages;
+					odcTasks.TaskElementDetails.TaskElementDetailsHeader = "Task Element Details";
+					// adds id to odc task with error this is for validateallboes method
+					odcTasks.TaskId = odc.Id;
+					ValidationBOE.Costs.Add(odcTasks);
+				}
+			}
+		}
 
-        /// <summary>
-        /// This function will validate the Labor Type start and end date against the Parent start/end date,
-        /// the CLIN start/date, and the contract start/end date
-        /// </summary>
-        /// <param name="boe">BOE</param>
-        /// <param name="inStartDate">Start date to check is greater or equal to labor_or_odc/clin/contract start date</param>
-        /// <param name="inEndDate">End date to check is less than or equal to labor_or_odc/clin/contract end date</param>
-        /// <returns>error messages, if any found - empty collection otherwise</returns>
-        private Collection<string> _ValidateStartAndEndDates(DateTime? inParentStartDate, DateTime? inParentEndDate, FullBoe boe, DateTime? inStartDate, DateTime? inEndDate, FullWorkspace ws)
-        {
-            Collection<string> LTValidationMsgs = new Collection<string>();
-            string startDateAsString = string.Empty;
-            string endDateAsString = string.Empty;
-            bool startDateValid = true;
-            bool endDateValid = true;
+		/// <summary>
+		/// This function will validate the Labor Type start and end date against the Parent start/end date,
+		/// the CLIN start/date, and the contract start/end date
+		/// </summary>
+		/// <param name="boe">BOE</param>
+		/// <param name="inStartDate">Start date to check is greater or equal to labor_or_odc/clin/contract start date</param>
+		/// <param name="inEndDate">End date to check is less than or equal to labor_or_odc/clin/contract end date</param>
+		/// <returns>error messages, if any found - empty collection otherwise</returns>
+		private Collection<string> _ValidateStartAndEndDates(DateTime? inParentStartDate, DateTime? inParentEndDate, FullBoe boe, DateTime? inStartDate, DateTime? inEndDate, FullWorkspace ws)
+		{
+			Collection<string> LTValidationMsgs = new Collection<string>();
+			string startDateAsString = string.Empty;
+			string endDateAsString = string.Empty;
+			bool startDateValid = true;
+			bool endDateValid = true;
 
-            if (!inStartDate.HasValue && !inEndDate.HasValue)
-            {
-                LTValidationMsgs.Add("Start Date for Resource Type required");
-                LTValidationMsgs.Add("End Date for Resource Type required");
-            }
-            else if (!inStartDate.HasValue)
-            {
-                LTValidationMsgs.Add("Start Date for Resource Type required");
-            }
-            else if (!inEndDate.HasValue)
-            {
-                LTValidationMsgs.Add("End Date for Resource Type required");
-            }
+			if (!inStartDate.HasValue && !inEndDate.HasValue)
+			{
+				LTValidationMsgs.Add("Start Date for Resource Type required");
+				LTValidationMsgs.Add("End Date for Resource Type required");
+			}
+			else if (!inStartDate.HasValue)
+			{
+				LTValidationMsgs.Add("Start Date for Resource Type required");
+			}
+			else if (!inEndDate.HasValue)
+			{
+				LTValidationMsgs.Add("End Date for Resource Type required");
+			}
 
-            if (LTValidationMsgs.Any())
-            {
-                return LTValidationMsgs;
-            }
-            // the Labor Type start date must be on or after the Parent Start Date. If the Parent Start Date
-            // does not exist, then need to check the CLIN start date. If there is no CLIN start date,
-            // need to check the contract start date
-            if (!inParentStartDate.Equals(DateTime.MinValue))
-            {
-                startDateAsString = inParentStartDate.Value.ToString("MM/yyyy");
+			if (LTValidationMsgs.Any())
+			{
+				return LTValidationMsgs;
+			}
+			// the Labor Type start date must be on or after the Parent Start Date. If the Parent Start Date
+			// does not exist, then need to check the CLIN start date. If there is no CLIN start date,
+			// need to check the contract start date
+			if (!inParentStartDate.Equals(DateTime.MinValue))
+			{
+				startDateAsString = inParentStartDate.Value.ToString("MM/yyyy");
 
-                if (!(GenBOEUtilities.AdjustDateTimePrecision(inStartDate.Value) >= GenBOEUtilities.AdjustDateTimePrecision(inParentStartDate.Value)))
-                {
-                    startDateValid = false;
-                }
-            }
+				if (!(GenBOEUtilities.AdjustDateTimePrecision(inStartDate.Value) >= GenBOEUtilities.AdjustDateTimePrecision(inParentStartDate.Value)))
+				{
+					startDateValid = false;
+				}
+			}
 
-            if (startDateValid)// need to check clin if the start date is still valid
-            {
-                ClinDTO clin = boe.Clin;
+			if (startDateValid)// need to check clin if the start date is still valid
+			{
+				ClinDTO clin = boe.Clin;
 
-                if (clin != null && 
-                         clin.StartDate.HasValue && !clin.StartDate.Equals(DateTime.MinValue))
-                {
-                    startDateAsString = clin.StartDate.Value.ToString("MM/yyyy");
-                    if (!(GenBOEUtilities.AdjustDateTimePrecision(inStartDate.Value) >= GenBOEUtilities.AdjustDateTimePrecision(clin.StartDate.Value)))
-                    {
-                        startDateValid = false;
-                    }
-                }
+				if (clin != null &&
+						 clin.StartDate.HasValue && !clin.StartDate.Equals(DateTime.MinValue))
+				{
+					startDateAsString = clin.StartDate.Value.ToString("MM/yyyy");
+					if (!(GenBOEUtilities.AdjustDateTimePrecision(inStartDate.Value) >= GenBOEUtilities.AdjustDateTimePrecision(clin.StartDate.Value)))
+					{
+						startDateValid = false;
+					}
+				}
 
-                if (startDateValid) // if startDate is still valid, check contract
-                {
-                    if (!(GenBOEUtilities.AdjustDateTimePrecision(inStartDate.Value) >= GenBOEUtilities.AdjustDateTimePrecision(ws.ContractStartDate)))
-                    {
-                        startDateAsString = ws.ContractStartDate.ToString("MM/yyyy");
-                        startDateValid = false;
-                    }
-                }
-            }
+				if (startDateValid) // if startDate is still valid, check contract
+				{
+					if (!(GenBOEUtilities.AdjustDateTimePrecision(inStartDate.Value) >= GenBOEUtilities.AdjustDateTimePrecision(ws.ContractStartDate)))
+					{
+						startDateAsString = ws.ContractStartDate.ToString("MM/yyyy");
+						startDateValid = false;
+					}
+				}
+			}
 
-            // the Labor Type end date must be on or before  the Parent end date. If the Parent end date
-            // does not exist, then need to check the CLIN end date. If there is no CLIN end date,
-            // need to check the contract end date
-            if (!inParentEndDate.Equals(DateTime.MinValue))
-            {
-                endDateAsString = inParentEndDate.Value.ToString("MM/yyyy");
+			// the Labor Type end date must be on or before  the Parent end date. If the Parent end date
+			// does not exist, then need to check the CLIN end date. If there is no CLIN end date,
+			// need to check the contract end date
+			if (!inParentEndDate.Equals(DateTime.MinValue))
+			{
+				endDateAsString = inParentEndDate.Value.ToString("MM/yyyy");
 
-                if (!(GenBOEUtilities.AdjustDateTimePrecision(inEndDate.Value) <= GenBOEUtilities.AdjustDateTimePrecision(inParentEndDate.Value)))
-                {
-                    endDateValid = false;
-                }
-            }
+				if (!(GenBOEUtilities.AdjustDateTimePrecision(inEndDate.Value) <= GenBOEUtilities.AdjustDateTimePrecision(inParentEndDate.Value)))
+				{
+					endDateValid = false;
+				}
+			}
 
-            if (endDateValid) // need to check clin if the end date is still valid
-            {
-                ClinDTO clin = ws.Boes.First(x => x.Id == boe.Id).Clin;
-                if (clin != null && 
-                         clin.EndDate.HasValue && !clin.EndDate.Equals(DateTime.MinValue))
-                {
-                    endDateAsString = clin.EndDate.Value.ToString("MM/yyyy");
-                    if (!(GenBOEUtilities.AdjustDateTimePrecision(inEndDate.Value) <= GenBOEUtilities.AdjustDateTimePrecision(clin.EndDate.Value)))
-                    {
-                        endDateValid = false;
-                    }
-                }
+			if (endDateValid) // need to check clin if the end date is still valid
+			{
+				ClinDTO clin = ws.Boes.First(x => x.Id == boe.Id).Clin;
+				if (clin != null &&
+						 clin.EndDate.HasValue && !clin.EndDate.Equals(DateTime.MinValue))
+				{
+					endDateAsString = clin.EndDate.Value.ToString("MM/yyyy");
+					if (!(GenBOEUtilities.AdjustDateTimePrecision(inEndDate.Value) <= GenBOEUtilities.AdjustDateTimePrecision(clin.EndDate.Value)))
+					{
+						endDateValid = false;
+					}
+				}
 
-                if (endDateValid)// if endDate is still valid, check contract
-                {
-                    endDateAsString = ws.ContractEndDate.ToString("MM/yyyy");
+				if (endDateValid)// if endDate is still valid, check contract
+				{
+					endDateAsString = ws.ContractEndDate.ToString("MM/yyyy");
 
-                    if (!(GenBOEUtilities.AdjustDateTimePrecision(inEndDate.Value) <= GenBOEUtilities.AdjustDateTimePrecision(ws.ContractEndDate)))
-                    {
-                        endDateValid = false;
-                    }
-                }
-            }
+					if (!(GenBOEUtilities.AdjustDateTimePrecision(inEndDate.Value) <= GenBOEUtilities.AdjustDateTimePrecision(ws.ContractEndDate)))
+					{
+						endDateValid = false;
+					}
+				}
+			}
 
-            if (!startDateValid)
-            {
-                LTValidationMsgs.Add(string.Format(START_DATE_INVALID, startDateAsString));
-            }
+			if (!startDateValid)
+			{
+				LTValidationMsgs.Add(string.Format(START_DATE_INVALID, startDateAsString));
+			}
 
-            if (!endDateValid)
-            {
-                LTValidationMsgs.Add(string.Format(END_DATE_INVALID, endDateAsString));
-            }
+			if (!endDateValid)
+			{
+				LTValidationMsgs.Add(string.Format(END_DATE_INVALID, endDateAsString));
+			}
 
-            if (startDateValid && endDateValid && inStartDate > inEndDate)
-            {
-                LTValidationMsgs.Add(DATE_RANGE_INVALID);
-            }
+			if (startDateValid && endDateValid && inStartDate > inEndDate)
+			{
+				LTValidationMsgs.Add(DATE_RANGE_INVALID);
+			}
 
-            return LTValidationMsgs;
-        }
+			return LTValidationMsgs;
+		}
 
-        /// <summary>
-        /// Compare any element of cost task start date against the boe start date
-        /// </summary>
-        /// <param name="inBOEStartDate">BOE start date</param>
-        /// <param name="inTaskStartDate">element of cost start date</param>
-        /// <returns>true if valid range, false if not</returns>
-        private bool _ValidateTaskElementStartDateComparedToBOEStartDate(DateTime inBOEStartDate, DateTime inTaskStartDate)
-        {
-            bool isTaskDateInRange = true;
+		/// <summary>
+		/// Compare any element of cost task start date against the boe start date
+		/// </summary>
+		/// <param name="inBOEStartDate">BOE start date</param>
+		/// <param name="inTaskStartDate">element of cost start date</param>
+		/// <returns>true if valid range, false if not</returns>
+		private bool _ValidateTaskElementStartDateComparedToBOEStartDate(DateTime inBOEStartDate, DateTime inTaskStartDate)
+		{
+			bool isTaskDateInRange = true;
 
-            if (GenBOEUtilities.AdjustDateTimePrecision(inBOEStartDate, DateTimePrecision.Month) > GenBOEUtilities.AdjustDateTimePrecision(inTaskStartDate, DateTimePrecision.Month))
-            {
-                isTaskDateInRange = false;
-            }
+			if (GenBOEUtilities.AdjustDateTimePrecision(inBOEStartDate, DateTimePrecision.Month) > GenBOEUtilities.AdjustDateTimePrecision(inTaskStartDate, DateTimePrecision.Month))
+			{
+				isTaskDateInRange = false;
+			}
 
-            return isTaskDateInRange;
-        }
+			return isTaskDateInRange;
+		}
 
-        /// <summary>
-        /// Compare any element of cost task start date against the boe start date
-        /// </summary>
-        /// <param name="inBOEEndDate">BOE start date</param>
-        /// <param name="inTaskEndDate">element of cost start date</param>
-        /// <returns>true if valid range, false if not</returns>
-        private bool _ValidateTaskElementEndDateComparedToBOEStartDate(DateTime inBOEEndDate, DateTime inTaskEndDate)
-        {
-            bool isTaskDateInRange = true;
+		/// <summary>
+		/// Compare any element of cost task start date against the boe start date
+		/// </summary>
+		/// <param name="inBOEEndDate">BOE start date</param>
+		/// <param name="inTaskEndDate">element of cost start date</param>
+		/// <returns>true if valid range, false if not</returns>
+		private bool _ValidateTaskElementEndDateComparedToBOEStartDate(DateTime inBOEEndDate, DateTime inTaskEndDate)
+		{
+			bool isTaskDateInRange = true;
 
-            if (GenBOEUtilities.AdjustDateTimePrecision(inBOEEndDate, DateTimePrecision.Month) < GenBOEUtilities.AdjustDateTimePrecision(inTaskEndDate, DateTimePrecision.Month))
-            {
-                isTaskDateInRange = false;
-            }
+			if (GenBOEUtilities.AdjustDateTimePrecision(inBOEEndDate, DateTimePrecision.Month) < GenBOEUtilities.AdjustDateTimePrecision(inTaskEndDate, DateTimePrecision.Month))
+			{
+				isTaskDateInRange = false;
+			}
 
-            return isTaskDateInRange;
-        }
+			return isTaskDateInRange;
+		}
 
-        /// <summary>
-        /// Validate the travel trip date compared to the travel task date
-        /// </summary>
-        /// <param name="inTravelTask">travel task element</param>
-        /// <param name="inTravelTrip">travel trip</param>
-        /// <returns></returns>
-        private Collection<string> _ValidateTravelTripDate(TravelDTO inTravelTask, TravelTripType inTravelTrip, FullWorkspace ws, FullBoe boe)
-        {
-            Collection<string> toReturn = new Collection<string>();
-            // the date for the travel trip must be contained within the task start/end date
-            if (!(GenBOEUtilities.AdjustDateTimePrecision(inTravelTrip.TripDate, DateTimePrecision.Month) < GenBOEUtilities.AdjustDateTimePrecision(inTravelTask.StartDate.Value, DateTimePrecision.Month)))
-            {
-                // the date for the travel trip must be contained within the boe start/end date
-                if (!(GenBOEUtilities.AdjustDateTimePrecision(inTravelTrip.TripDate, DateTimePrecision.Month) < GenBOEUtilities.AdjustDateTimePrecision(boe.StartDate, DateTimePrecision.Month)))
-                {
-                    // the date for the travel trip must be contained within the workspace start/end date
-                    if (GenBOEUtilities.AdjustDateTimePrecision(inTravelTrip.TripDate, DateTimePrecision.Month) < GenBOEUtilities.AdjustDateTimePrecision(ws.ContractStartDate, DateTimePrecision.Month))
-                    {
-                        toReturn.Add(string.Format(TravelDTO.TRIP_START_DATE_INVALID, "Workpace", ws.ContractStartDate.ToString("MM/yyyy")));
-                    }
-                }
-                else
-                {
-                    toReturn.Add(string.Format(TravelDTO.TRIP_START_DATE_INVALID, "BOE", boe.StartDate.ToString("MM/yyyy")));
-                }
-            }
-            else
-            {
-                toReturn.Add(string.Format(TravelDTO.TRIP_START_DATE_INVALID, "Task", inTravelTask.StartDate.Value.ToString("MM/yyyy")));
+		/// <summary>
+		/// Validate the travel trip date compared to the travel task date
+		/// </summary>
+		/// <param name="inTravelTask">travel task element</param>
+		/// <param name="inTravelTrip">travel trip</param>
+		/// <returns></returns>
+		private Collection<string> _ValidateTravelTripDate(TravelDTO inTravelTask, TravelTripType inTravelTrip, FullWorkspace ws, FullBoe boe)
+		{
+			Collection<string> toReturn = new Collection<string>();
+			// the date for the travel trip must be contained within the task start/end date
+			if (!(GenBOEUtilities.AdjustDateTimePrecision(inTravelTrip.TripDate, DateTimePrecision.Month) < GenBOEUtilities.AdjustDateTimePrecision(inTravelTask.StartDate.Value, DateTimePrecision.Month)))
+			{
+				// the date for the travel trip must be contained within the boe start/end date
+				if (!(GenBOEUtilities.AdjustDateTimePrecision(inTravelTrip.TripDate, DateTimePrecision.Month) < GenBOEUtilities.AdjustDateTimePrecision(boe.StartDate, DateTimePrecision.Month)))
+				{
+					// the date for the travel trip must be contained within the workspace start/end date
+					if (GenBOEUtilities.AdjustDateTimePrecision(inTravelTrip.TripDate, DateTimePrecision.Month) < GenBOEUtilities.AdjustDateTimePrecision(ws.ContractStartDate, DateTimePrecision.Month))
+					{
+						toReturn.Add(string.Format(TravelDTO.TRIP_START_DATE_INVALID, "Workpace", ws.ContractStartDate.ToString("MM/yyyy")));
+					}
+				}
+				else
+				{
+					toReturn.Add(string.Format(TravelDTO.TRIP_START_DATE_INVALID, "BOE", boe.StartDate.ToString("MM/yyyy")));
+				}
+			}
+			else
+			{
+				toReturn.Add(string.Format(TravelDTO.TRIP_START_DATE_INVALID, "Task", inTravelTask.StartDate.Value.ToString("MM/yyyy")));
 
-            }
+			}
 
-            // adjust the date by adding the trip duration to the end date.
-            DateTime endDateWithTripDurationAdded = inTravelTrip.TripDate.AddDays(inTravelTrip.NumOfDays);
-            endDateWithTripDurationAdded = new DateTime(endDateWithTripDurationAdded.Year, endDateWithTripDurationAdded.Month, 1);
-            if (!(GenBOEUtilities.AdjustDateTimePrecision(endDateWithTripDurationAdded, DateTimePrecision.Month) > GenBOEUtilities.AdjustDateTimePrecision(inTravelTask.EndDate.Value, DateTimePrecision.Month)))
-            {
-                // check end date on boe.
-                if (!(GenBOEUtilities.AdjustDateTimePrecision(endDateWithTripDurationAdded, DateTimePrecision.Month) > GenBOEUtilities.AdjustDateTimePrecision(boe.EndDate, DateTimePrecision.Month)))
-                {
-                    // check end date on workspace.
-                    if (GenBOEUtilities.AdjustDateTimePrecision(endDateWithTripDurationAdded, DateTimePrecision.Month) > GenBOEUtilities.AdjustDateTimePrecision(ws.ContractEndDate, DateTimePrecision.Month))
-                    {
-                        toReturn.Add(string.Format(TravelDTO.TRIP_END_DATE_INVALID, "Workspace", ws.ContractEndDate.ToString("MM/yyyy")));
-                    }
-                }
-                else
-                {
-                    toReturn.Add(string.Format(TravelDTO.TRIP_END_DATE_INVALID, "BOE", boe.EndDate.ToString("MM/yyyy")));
-                }
-            }
-            else
-            {
-                toReturn.Add(string.Format(TravelDTO.TRIP_END_DATE_INVALID, "Task", inTravelTask.EndDate.Value.ToString("MM/yyyy")));
-            }
+			// adjust the date by adding the trip duration to the end date.
+			DateTime endDateWithTripDurationAdded = inTravelTrip.TripDate.AddDays(inTravelTrip.NumOfDays);
+			endDateWithTripDurationAdded = new DateTime(endDateWithTripDurationAdded.Year, endDateWithTripDurationAdded.Month, 1);
+			if (!(GenBOEUtilities.AdjustDateTimePrecision(endDateWithTripDurationAdded, DateTimePrecision.Month) > GenBOEUtilities.AdjustDateTimePrecision(inTravelTask.EndDate.Value, DateTimePrecision.Month)))
+			{
+				// check end date on boe.
+				if (!(GenBOEUtilities.AdjustDateTimePrecision(endDateWithTripDurationAdded, DateTimePrecision.Month) > GenBOEUtilities.AdjustDateTimePrecision(boe.EndDate, DateTimePrecision.Month)))
+				{
+					// check end date on workspace.
+					if (GenBOEUtilities.AdjustDateTimePrecision(endDateWithTripDurationAdded, DateTimePrecision.Month) > GenBOEUtilities.AdjustDateTimePrecision(ws.ContractEndDate, DateTimePrecision.Month))
+					{
+						toReturn.Add(string.Format(TravelDTO.TRIP_END_DATE_INVALID, "Workspace", ws.ContractEndDate.ToString("MM/yyyy")));
+					}
+				}
+				else
+				{
+					toReturn.Add(string.Format(TravelDTO.TRIP_END_DATE_INVALID, "BOE", boe.EndDate.ToString("MM/yyyy")));
+				}
+			}
+			else
+			{
+				toReturn.Add(string.Format(TravelDTO.TRIP_END_DATE_INVALID, "Task", inTravelTask.EndDate.Value.ToString("MM/yyyy")));
+			}
 
-            return toReturn;
-        }
+			return toReturn;
+		}
 
-        /// <summary>
-        /// Validate the travel trip segment compared to the workspace segment
-        /// </summary>
-        /// <param name="inTravelTrip">travel trip</param>
-        /// <returns></returns>
-        private bool _ValidateTravelTripSegment(TravelTripType inTravelTrip, FullWorkspace ws)
-        {
-            bool isTravelTripSegmentValid = true;
+		/// <summary>
+		/// Validate the travel trip segment compared to the workspace segment
+		/// </summary>
+		/// <param name="inTravelTrip">travel trip</param>
+		/// <returns></returns>
+		private bool _ValidateTravelTripSegment(TravelTripType inTravelTrip, FullWorkspace ws)
+		{
+			bool isTravelTripSegmentValid = true;
 
 			IEnumerable<ResourceDTO> travelResources = ws.ResourcesForWsResourceListId.Where(x => x.ElementOfCost == ElementOfCostType.Travel);
-            Collection<int> wsTravelSegmentIDs = new Collection<int>();
+			Collection<int> wsTravelSegmentIDs = new Collection<int>();
 
-            foreach (ResourceDTO travelResource in travelResources)
-            {
-                int tempID = (int)travelResource.Segment;
-                wsTravelSegmentIDs.Add(tempID);
-            }
+			foreach (ResourceDTO travelResource in travelResources)
+			{
+				int tempID = (int)travelResource.Segment;
+				wsTravelSegmentIDs.Add(tempID);
+			}
 
-            if (!wsTravelSegmentIDs.Contains((int)inTravelTrip.Segment))
-            {
-                isTravelTripSegmentValid = false;
-            }
+			if (!wsTravelSegmentIDs.Contains((int)inTravelTrip.Segment))
+			{
+				isTravelTripSegmentValid = false;
+			}
 
-            return isTravelTripSegmentValid;
-        }
+			return isTravelTripSegmentValid;
+		}
 
-        /// <summary>
-        /// Validate the travel trip performing org
-        /// </summary>
-        /// <param name="inTravelTrip">travel trip</param>
-        /// <returns></returns>
-        private bool _ValidateTravelTripPerformingOrg(TravelTripType inTravelTrip)
-        {
-            bool isTravelTripPerfOrgValid = true;
+		/// <summary>
+		/// Validate the travel trip performing org
+		/// </summary>
+		/// <param name="inTravelTrip">travel trip</param>
+		/// <returns></returns>
+		private bool _ValidateTravelTripPerformingOrg(TravelTripType inTravelTrip)
+		{
+			bool isTravelTripPerfOrgValid = true;
 
-            if (inTravelTrip.PerfOrgID <= 0)
-            {
-                isTravelTripPerfOrgValid = false;
-            }
+			if (inTravelTrip.PerfOrgID <= 0)
+			{
+				isTravelTripPerfOrgValid = false;
+			}
 
-            return isTravelTripPerfOrgValid;
-        }
+			return isTravelTripPerfOrgValid;
+		}
 
-        /// <summary>
-        /// Validate Custom Fields for the given type
-        /// </summary>
-        /// <param name="workspace">Workspace</param>
-        /// <param name="customFieldType">Custom Field Type</param>
-        /// <param name="mappingWithCustomFieldsValuesAndContainerIds">Mapping of custom field values and container IDs for the custom field type</param>
-        /// <param name="elementId">ID of the element containing the custom fields</param>
-        /// <returns></returns>
-        private Collection<string> ValidateCustomFields(FullWorkspace workspace, CustomFieldType customFieldType, Dictionary<int, ICollection<KeyValuePair<int, int>>> mappingWithCustomFieldsValuesAndContainerIds, int elementId)
-        {
-            Collection<string> customFieldMsgs = new Collection<string>();
+		/// <summary>
+		/// Validate Custom Fields for the given type
+		/// </summary>
+		/// <param name="workspace">Workspace</param>
+		/// <param name="customFieldType">Custom Field Type</param>
+		/// <param name="mappingWithCustomFieldsValuesAndContainerIds">Mapping of custom field values and container IDs for the custom field type</param>
+		/// <param name="elementId">ID of the element containing the custom fields</param>
+		/// <returns></returns>
+		private Collection<string> ValidateCustomFields(FullWorkspace workspace, CustomFieldType customFieldType, Dictionary<int, ICollection<KeyValuePair<int, int>>> mappingWithCustomFieldsValuesAndContainerIds, int elementId)
+		{
+			Collection<string> customFieldMsgs = new Collection<string>();
 
-            foreach (CustomFieldDTO customField in workspace.CustomFields)
-            {
-                if (customField.CustomFieldRequired && customField.CustomFieldDisplayID == customFieldType)
-                {
-                    List<int> customFieldOptions = workspace.CustomFieldValues.Where(x => x.CustomFieldID == customField.Id).Select(x => x.CustomFieldValueID).ToList();
+			foreach (CustomFieldDTO customField in workspace.CustomFields)
+			{
+				if (customField.CustomFieldRequired && customField.CustomFieldDisplayID == customFieldType)
+				{
+					List<int> customFieldOptions = workspace.CustomFieldValues.Where(x => x.CustomFieldID == customField.Id).Select(x => x.CustomFieldValueID).ToList();
 
-                    List<int> selectedCustomFieldOptions =
-                    (from mappedValues in mappingWithCustomFieldsValuesAndContainerIds
-                     where mappedValues.Key == elementId
-                     select mappedValues.Value).SelectMany(y => y).Select(c => c.Value).ToList();
+					List<int> selectedCustomFieldOptions =
+					(from mappedValues in mappingWithCustomFieldsValuesAndContainerIds
+					 where mappedValues.Key == elementId
+					 select mappedValues.Value).SelectMany(y => y).Select(c => c.Value).ToList();
 
-                    if (!customFieldOptions.Intersect(selectedCustomFieldOptions).Any())
-                    {
-                        customFieldMsgs.Add(string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, customField.CustomFieldName));
-                    }
-                }
-            }
+					if (!customFieldOptions.Intersect(selectedCustomFieldOptions).Any())
+					{
+						customFieldMsgs.Add(string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, customField.CustomFieldName));
+					}
+				}
+			}
 
-            return customFieldMsgs;
-        }
+			return customFieldMsgs;
+		}
 
-        /// <summary>
-        /// Determines whether Description is valid.
-        /// </summary>
-        /// <returns>
-        ///   <c>true</c> if description is valid; otherwise, <c>false</c>.
-        /// </returns>
-        protected virtual bool IsDescriptionValid(BoeDTO boe, int wsId)
-        {
-            if (boe == null)
-            {
-                throw new ArgumentNullException(nameof(boe));
-            }
+		/// <summary>
+		/// Determines whether Description is valid.
+		/// </summary>
+		/// <returns>
+		///   <c>true</c> if description is valid; otherwise, <c>false</c>.
+		/// </returns>
+		protected virtual bool IsDescriptionValid(BoeDTO boe, int wsId)
+		{
+			if (boe == null)
+			{
+				throw new ArgumentNullException(nameof(boe));
+			}
 
-            bool valid = !string.IsNullOrEmpty(boe.Description);
-            if(!valid) // no data in the field itself
-            {
+			bool valid = !string.IsNullOrEmpty(boe.Description);
+			if (!valid) // no data in the field itself
+			{
 				// the field is valid if templates are being used, AND all required prompts are answered
-				IEnumerable<RTECustomTemplateQuestionAnswerModelView> boeTemplateWithPrompts = this.rteTemplateDataLoader.GetByBoeId(wsId, boe.Id).Where(t => t.SourceId == (int)RteTemplateSource.BoeDescription);
-                valid = boeTemplateWithPrompts.Any() && !boeTemplateWithPrompts.Any(t => t.Required && string.IsNullOrEmpty(t.AnswerText));
-            }
+				IEnumerable<RTECustomTemplateQuestionAnswerModelView> boeTemplateWithPrompts = this.rteTemplateDataLoader.GetByBoeId(wsId, boe.Id).Where(t => t.SourceId == (int)IES.Common.RteTemplateSource.BoeDescription);
+				valid = boeTemplateWithPrompts.Any() && !boeTemplateWithPrompts.Any(t => t.Required && string.IsNullOrEmpty(t.AnswerText));
+			}
 
-            return valid;
-        }
+			return valid;
+		}
 
-        /// <summary>
-        /// Tests if the Source of Data field is valid
-        /// </summary>
-        /// <returns>True if valid false otherwise</returns>
-        protected virtual bool IsSourcesOfDataValid(BoeDTO boe, int wsId)
-        {
-            if (boe == null)
-            {
-                throw new ArgumentNullException(nameof(boe));
-            }
-            
-            bool valid = !string.IsNullOrEmpty(boe.DataSource);
-            if (!valid) // no data in the field itself
-            {
+		/// <summary>
+		/// Tests if the Source of Data field is valid
+		/// </summary>
+		/// <returns>True if valid false otherwise</returns>
+		protected virtual bool IsSourcesOfDataValid(BoeDTO boe, int wsId)
+		{
+			if (boe == null)
+			{
+				throw new ArgumentNullException(nameof(boe));
+			}
+
+			bool valid = !string.IsNullOrEmpty(boe.DataSource);
+			if (!valid) // no data in the field itself
+			{
 				// the field is valid if templates are being used, AND all required prompts are answered
-				IEnumerable<RTECustomTemplateQuestionAnswerModelView> boeTemplateWithPrompts = this.rteTemplateDataLoader.GetByBoeId(wsId, boe.Id).Where(t => t.SourceId == (int)RteTemplateSource.BoeSources);
-                valid = boeTemplateWithPrompts.Any() && !boeTemplateWithPrompts.Any(t => t.Required && string.IsNullOrEmpty(t.AnswerText));
-            }
+				IEnumerable<RTECustomTemplateQuestionAnswerModelView> boeTemplateWithPrompts = this.rteTemplateDataLoader.GetByBoeId(wsId, boe.Id).Where(t => t.SourceId == (int)IES.Common.RteTemplateSource.BoeSources);
+				valid = boeTemplateWithPrompts.Any() && !boeTemplateWithPrompts.Any(t => t.Required && string.IsNullOrEmpty(t.AnswerText));
+			}
 
 
-            return valid;
-        }
+			return valid;
+		}
 
-        /// <summary>
-        /// This function will validate the BOE Custom Fields.
-        /// </summary>
-        /// <param name="workspace">The Workspace used during validation.</param>
-        /// <param name="boe">The BOE used to validate against.</param>
-        /// <returns>A collection of validation messages.</returns>
-        protected virtual Collection<string> ValidateBOECustomFields(FullWorkspace workspace, FullBoe boe)
-        {
-            if (boe == null)
-            {
-                throw new ArgumentNullException(nameof(boe));
-            }
+		/// <summary>
+		/// This function will validate the BOE Custom Fields.
+		/// </summary>
+		/// <param name="workspace">The Workspace used during validation.</param>
+		/// <param name="boe">The BOE used to validate against.</param>
+		/// <returns>A collection of validation messages.</returns>
+		protected virtual Collection<string> ValidateBOECustomFields(FullWorkspace workspace, FullBoe boe)
+		{
+			if (boe == null)
+			{
+				throw new ArgumentNullException(nameof(boe));
+			}
 
-            if (workspace == null)
-            {
-                throw new ArgumentNullException(nameof(workspace));
-            }
+			if (workspace == null)
+			{
+				throw new ArgumentNullException(nameof(workspace));
+			}
 
-            Collection<string> BOECustomFieldMsgs = new Collection<string>();
-            
-            // need to find out if the boe  has any custom fields
-            // if it does, then need to determine if the custom field is required
-            // and if it is required, then need to make sure the custom field has a value
-            foreach (CustomFieldDTO customField in workspace.CustomFields)
-            {
-                // if it's a labor type custom field and required, check to see if the labor type has a value
-                if (customField.CustomFieldRequired && customField.CustomFieldDisplayID == CustomFieldType.BoeDisplay)
-                {
-                    bool exists = boe.DoesBoeExistGivenCustomFieldId(customField.Id);
-                    if (!exists)
-                    {
-                        BOECustomFieldMsgs.Add(string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, customField.CustomFieldName));
-                    }
-                }
-            }
+			Collection<string> BOECustomFieldMsgs = new Collection<string>();
 
-            return BOECustomFieldMsgs;
-        }
+			// need to find out if the boe  has any custom fields
+			// if it does, then need to determine if the custom field is required
+			// and if it is required, then need to make sure the custom field has a value
+			foreach (CustomFieldDTO customField in workspace.CustomFields)
+			{
+				// if it's a labor type custom field and required, check to see if the labor type has a value
+				if (customField.CustomFieldRequired && customField.CustomFieldDisplayID == CustomFieldType.BoeDisplay)
+				{
+					bool exists = boe.DoesBoeExistGivenCustomFieldId(customField.Id);
+					if (!exists)
+					{
+						BOECustomFieldMsgs.Add(string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, customField.CustomFieldName));
+					}
+				}
+			}
 
-        /// <summary>
-        /// Adds the company specific MOQ Text label to the Error string
-        /// </summary>
-        /// <param name="MOQTextErrorMessage">The error text to add the MOQ label to</param>
-        /// <returns>The formatted <see cref="string"/></returns>
-        protected virtual string FormatMOQTextErrorMessage(string MOQTextErrorMessage)
-        {
-            return string.Format(MOQTextErrorMessage, CommonConstants.BOE_MOQ_TEXT_LABEL);
-        }
+			return BOECustomFieldMsgs;
+		}
 
-        /// <summary>
-        /// Validates RTE Field length
-        /// </summary>
-        /// <param name="maxFieldLength">Workspace RTE Size Limit</param>
-        /// <param name="fieldValue">Field value to check</param>
-        /// <param name="fieldName">Field name for error message</param>
-        /// <param name="errors">Errors to which we'll add errors</param>
-        private static void ValidateFieldLength(int? maxFieldLength, string fieldValue, string fieldName, ICollection<string> errors)
-        {
-            maxFieldLength = maxFieldLength ?? Constants.MAX_RTE_LENGTH;
+		/// <summary>
+		/// Adds the company specific MOQ Text label to the Error string
+		/// </summary>
+		/// <param name="MOQTextErrorMessage">The error text to add the MOQ label to</param>
+		/// <returns>The formatted <see cref="string"/></returns>
+		protected virtual string FormatMOQTextErrorMessage(string MOQTextErrorMessage)
+		{
+			return string.Format(MOQTextErrorMessage, CommonConstants.BOE_MOQ_TEXT_LABEL);
+		}
 
-            if (maxFieldLength < GenBOEUtilities.ConvertHtmlToText(fieldValue ?? string.Empty).Length)
-            {
-                errors.Add($"The maximum length of {fieldName} is {maxFieldLength.Value} characters.");
-            }
-        }
-    }
+		/// <summary>
+		/// Validates RTE Field length
+		/// </summary>
+		/// <param name="maxFieldLength">Workspace RTE Size Limit</param>
+		/// <param name="fieldValue">Field value to check</param>
+		/// <param name="fieldName">Field name for error message</param>
+		/// <param name="errors">Errors to which we'll add errors</param>
+		private static void ValidateFieldLength(int? maxFieldLength, string fieldValue, string fieldName, ICollection<string> errors)
+		{
+			maxFieldLength = maxFieldLength ?? Constants.MAX_RTE_LENGTH;
+
+			if (maxFieldLength < GenBOEUtilities.ConvertHtmlToText(fieldValue ?? string.Empty).Length)
+			{
+				errors.Add($"The maximum length of {fieldName} is {maxFieldLength.Value} characters.");
+			}
+		}
+	}
 }

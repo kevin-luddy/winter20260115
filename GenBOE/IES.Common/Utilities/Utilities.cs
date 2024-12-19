@@ -10,13 +10,10 @@ namespace IES.Common
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
-	using System.Configuration;
-	using System.Diagnostics;
 	using System.DirectoryServices;
 	using System.IO;
 	using System.Linq;
 	using System.Net.Http;
-	using System.Text;
 	using System.Text.RegularExpressions;
 	using System.Threading;
 	using System.Web.Mvc;
@@ -48,8 +45,21 @@ namespace IES.Common
 		private static DateTime? oneLmxStartDate;
 		private static DateTime? datepickerRestrictionRMS;
 		private static DateTime? historicalReferenceExplanationStartDate;
+		private static DateTime? showINLCutoffDate;
 		private static readonly IActiveDirectoryUtilities activeDirectoryUtilities = GenBOEUnityContainer.Resolve<IActiveDirectoryUtilities>();
-		
+
+		/// <summary>
+		/// Asserts the equality of decimal values within an epsilon error range.
+		/// Equality check to account for potential internal floating-point precision errors (e.g., 99.99997 vs 100) when comparing decimal values.
+		/// </summary>
+		/// <param name="expected">expected value</param>
+		/// <param name="actual">actual value</param>
+		/// <param name="epsilon">epsilon range</param>
+		public static bool EqualsEpsilon(this decimal actual, decimal expected, decimal epsilon = 0.001m)
+		{
+			return Math.Abs(expected - actual) < epsilon;
+		}
+
 		/// <summary>
 		/// 1LMX boundary time
 		/// </summary>
@@ -197,6 +207,29 @@ namespace IES.Common
 				}
 
 				return historicalReferenceExplanationStartDate.Value;
+			}
+		}
+
+		/// <summary>
+		/// Cutoff date to show PBOE/IBOE forms for workspace
+		/// </summary>
+		public static DateTime ShowINLCutoffDate
+		{
+			get
+			{
+				if (!showINLCutoffDate.HasValue)
+				{
+					if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("ShowINLCutoffDate"), out DateTime cutoffDate))
+					{
+						showINLCutoffDate = DateTime.MaxValue;
+					}
+					else
+					{
+						showINLCutoffDate = cutoffDate;
+					}
+				}
+
+				return showINLCutoffDate.Value;
 			}
 		}
 
@@ -994,9 +1027,19 @@ namespace IES.Common
 		/// Is Skill Mix connection shown to the user for this workspace
 		/// </summary>
 		/// <param name="workspaceCreationDate">Workspace creation date.</param>
-		/// <param name="isUsingTM">Workspace setting for using T&M</param>
 		/// <returns>Option to show skill mix for workspace.</returns>
-		public static bool ShowSkillMixForWorkspace(DateTime? workspaceCreationDate, bool isUsingTM)
+		public static bool ShowSkillMixForWorkspace(DateTime? workspaceCreationDate)
+		{
+			return IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate;
+		}
+
+		/// <summary>
+		/// Is Skill Mix connection shown to the user for this task
+		/// </summary>
+		/// <param name="workspaceCreationDate">Workspace creation date.</param>
+		/// <param name="hasTMRates">Is the task using T&M rates</param>
+		/// <returns>Option to show skill mix for task.</returns>
+		public static bool ShowSkillMixForTask(DateTime? workspaceCreationDate, bool hasTMRates, ICollection<MOQType> moqTypes)
 		{
 			bool showSkillMixRationale = false;
 
@@ -1007,7 +1050,13 @@ namespace IES.Common
 			// For space only: Shows Skill Mix Rationale section when the workspace is NOT using T&M.
 			else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 			{
-				showSkillMixRationale = IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate && !isUsingTM;
+				showSkillMixRationale = IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate && !hasTMRates;
+			}
+
+			// Only show for Historical or Comparative (no need to check if already hidden)
+			if (showSkillMixRationale)
+			{
+				showSkillMixRationale = moqTypes.Any(x => x == MOQType.Historical || x == MOQType.Comparative);
 			}
 
 			return showSkillMixRationale;
@@ -1050,8 +1099,8 @@ namespace IES.Common
 		/// <returns>Property Value if it exists, empty string otherwise</returns>
 		public static string TryGetPropertyValue(PropertyCollection propertyCollection, string propertyName, StringManipulation stringManipulation = StringManipulation.None)
 		{
-			string toReturn = string.Empty; 
-			
+			string toReturn = string.Empty;
+
 			if (propertyCollection != null)
 			{
 				toReturn = propertyCollection.Contains(propertyName) ? propertyCollection[propertyName][0].ToString() : string.Empty;

@@ -60,8 +60,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		private Mock<ICommonDataMapper> commonDataMapper = null;
 		private Mock<IRteTemplateDataLoader> rteTemplateDataLoader = null;
 		private Mock<IMoqTypeDataLoader> moqTypeDataLoader = null;
-		private Mock<ISkillMixDTOLoader> skillMixDTOLoader = null;
-		private Mock<ICommonDisclosureSMDTODataLoader> commonDisclosureDTOLoader = null;
+		private Mock<ITMResourceRateDTODataLoader> tmResourceRateDTODataLoader = null;
 		private Mock<IValidateBOE> validateBOE = null;
 		private Mock<IMoqTableExporter> moqTableExporter = null;
 		private Mock<IMoqTableImporter> moqTableImporter = null;
@@ -84,6 +83,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 		#region Private members
 
+		// Test
 		private BOELaborControllerLogic CreateSystem()
 		{
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), new ActiveDirectoryUtilities());
@@ -110,8 +110,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				   commonDataMapper.Object,
 				   this.rteTemplateDataLoader.Object,
 				   this.moqTypeDataLoader.Object,
-				   this.skillMixDTOLoader.Object,
-				   this.commonDisclosureDTOLoader.Object,
+				   this.tmResourceRateDTODataLoader.Object,
 				   this.validateBOE.Object,
 				   this.moqTableExporter.Object,
 				   this.moqTableImporter.Object,
@@ -145,8 +144,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				   commonDataMapper.Object,
 				   rteTemplateDataLoader.Object,
 				   this.moqTypeDataLoader.Object,
-				   this.skillMixDTOLoader.Object,
-				   this.commonDisclosureDTOLoader.Object,
+				   this.tmResourceRateDTODataLoader.Object,
 				   this.validateBOE.Object,
 				   this.moqTableExporter.Object,
 				   this.moqTableImporter.Object,
@@ -180,8 +178,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				   commonDataMapper.Object,
 				   rteTemplateDataLoader.Object,
 				   this.moqTypeDataLoader.Object,
-				   this.skillMixDTOLoader.Object,
-				   this.commonDisclosureDTOLoader.Object,
+				   this.tmResourceRateDTODataLoader.Object,
 				   this.validateBOE.Object,
 				   this.moqTableExporter.Object,
 				   this.moqTableImporter.Object,
@@ -220,8 +217,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			this.validateBOE = new Mock<IValidateBOE>();
 			this.moqTableExporter = new Mock<IMoqTableExporter>();
 			this.moqTableImporter = new Mock<IMoqTableImporter>();
-			this.skillMixDTOLoader = new Mock<ISkillMixDTOLoader>();
-			this.commonDisclosureDTOLoader = new Mock<ICommonDisclosureSMDTODataLoader>();
+			this.tmResourceRateDTODataLoader = new Mock<ITMResourceRateDTODataLoader>();
 
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
@@ -1919,8 +1915,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 			circularReferenceChecker.Setup(x => x.OrdinaryVariablesCreateCircularReference(It.IsAny<VariableCircularReferenceCheckerCache>(), It.IsAny<int>(), It.IsAny<ICollection<OrdinaryVariableDto>>(), It.IsAny<FullWorkspace>())).Returns(new Collection<OrdinaryVariableDto>());
 			circularReferenceChecker.Setup(x => x.WorkspaceVariablesCreateCircularReference(It.IsAny<VariableCircularReferenceCheckerCache>(), It.IsAny<int>(), It.IsAny<ICollection<WorkspaceVariableDTO>>(), It.IsAny<FullWorkspace>())).Returns(new Collection<WorkspaceVariableDTO>());
+			_ResourceLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<ResourceDTO>());
 
-			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task);
+			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new Collection<MoqTypeSelection>());
 
 			Assert.IsFalse(result.Any());
 		}
@@ -1938,8 +1935,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 			circularReferenceChecker.Setup(x => x.OrdinaryVariablesCreateCircularReference(It.IsAny<VariableCircularReferenceCheckerCache>(), It.IsAny<int>(), It.IsAny<ICollection<OrdinaryVariableDto>>(), It.IsAny<FullWorkspace>())).Returns(new Collection<OrdinaryVariableDto>() { new OrdinaryVariableDto() { OrdinaryVariableName = "Test" } });
 			circularReferenceChecker.Setup(x => x.WorkspaceVariablesCreateCircularReference(It.IsAny<VariableCircularReferenceCheckerCache>(), It.IsAny<int>(), It.IsAny<ICollection<WorkspaceVariableDTO>>(), It.IsAny<FullWorkspace>())).Returns(new Collection<WorkspaceVariableDTO>());
+			_ResourceLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<ResourceDTO>());
 
-			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task);
+			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new Collection<MoqTypeSelection>());
 
 			Assert.AreEqual(1, result.Count());
 		}
@@ -1957,8 +1955,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 			circularReferenceChecker.Setup(x => x.OrdinaryVariablesCreateCircularReference(It.IsAny<VariableCircularReferenceCheckerCache>(), It.IsAny<int>(), It.IsAny<ICollection<OrdinaryVariableDto>>(), It.IsAny<FullWorkspace>())).Returns(new Collection<OrdinaryVariableDto>());
 			circularReferenceChecker.Setup(x => x.WorkspaceVariablesCreateCircularReference(It.IsAny<VariableCircularReferenceCheckerCache>(), It.IsAny<int>(), It.IsAny<ICollection<WorkspaceVariableDTO>>(), It.IsAny<FullWorkspace>())).Returns(new Collection<WorkspaceVariableDTO>() { new WorkspaceVariableDTO() { WorkspaceVariableName = "Test" } });
+			_ResourceLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<ResourceDTO>());
 
-			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task);
+			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new Collection<MoqTypeSelection>());
 
 			Assert.AreEqual(1, result.Count());
 		}
@@ -1976,10 +1975,11 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 			circularReferenceChecker.Setup(x => x.OrdinaryVariablesCreateCircularReference(It.IsAny<VariableCircularReferenceCheckerCache>(), It.IsAny<int>(), It.IsAny<ICollection<OrdinaryVariableDto>>(), It.IsAny<FullWorkspace>())).Returns(new Collection<OrdinaryVariableDto>());
 			circularReferenceChecker.Setup(x => x.WorkspaceVariablesCreateCircularReference(It.IsAny<VariableCircularReferenceCheckerCache>(), It.IsAny<int>(), It.IsAny<ICollection<WorkspaceVariableDTO>>(), It.IsAny<FullWorkspace>())).Returns(new Collection<WorkspaceVariableDTO>());
+			_ResourceLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<ResourceDTO>());
 
 			task.taskElementLabors.First().LaborSpreads.First().LaborSpreadDate = DateTime.MinValue;
 
-			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task);
+			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new Collection<MoqTypeSelection>());
 
 			Assert.AreEqual(1, result.Count());
 		}
@@ -1997,10 +1997,11 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 			circularReferenceChecker.Setup(x => x.OrdinaryVariablesCreateCircularReference(It.IsAny<VariableCircularReferenceCheckerCache>(), It.IsAny<int>(), It.IsAny<ICollection<OrdinaryVariableDto>>(), It.IsAny<FullWorkspace>())).Returns(new Collection<OrdinaryVariableDto>());
 			circularReferenceChecker.Setup(x => x.WorkspaceVariablesCreateCircularReference(It.IsAny<VariableCircularReferenceCheckerCache>(), It.IsAny<int>(), It.IsAny<ICollection<WorkspaceVariableDTO>>(), It.IsAny<FullWorkspace>())).Returns(new Collection<WorkspaceVariableDTO>());
+			_ResourceLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<ResourceDTO>());
 
 			task.taskElementLabors.First().LaborSpreads.First().LaborSpreadDate = DateTime.MaxValue;
 
-			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task);
+			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new Collection<MoqTypeSelection>());
 
 			Assert.AreEqual(1, result.Count());
 		}
@@ -2018,10 +2019,11 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 			circularReferenceChecker.Setup(x => x.OrdinaryVariablesCreateCircularReference(It.IsAny<VariableCircularReferenceCheckerCache>(), It.IsAny<int>(), It.IsAny<ICollection<OrdinaryVariableDto>>(), It.IsAny<FullWorkspace>())).Returns(new Collection<OrdinaryVariableDto>());
 			circularReferenceChecker.Setup(x => x.WorkspaceVariablesCreateCircularReference(It.IsAny<VariableCircularReferenceCheckerCache>(), It.IsAny<int>(), It.IsAny<ICollection<WorkspaceVariableDTO>>(), It.IsAny<FullWorkspace>())).Returns(new Collection<WorkspaceVariableDTO>());
+			_ResourceLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<ResourceDTO>());
 
 			task.StartDate = DateTime.MinValue;
 
-			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task);
+			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new Collection<MoqTypeSelection>());
 
 			Assert.AreEqual(1, result.Count());
 		}
@@ -2039,26 +2041,43 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 			circularReferenceChecker.Setup(x => x.OrdinaryVariablesCreateCircularReference(It.IsAny<VariableCircularReferenceCheckerCache>(), It.IsAny<int>(), It.IsAny<ICollection<OrdinaryVariableDto>>(), It.IsAny<FullWorkspace>())).Returns(new Collection<OrdinaryVariableDto>());
 			circularReferenceChecker.Setup(x => x.WorkspaceVariablesCreateCircularReference(It.IsAny<VariableCircularReferenceCheckerCache>(), It.IsAny<int>(), It.IsAny<ICollection<WorkspaceVariableDTO>>(), It.IsAny<FullWorkspace>())).Returns(new Collection<WorkspaceVariableDTO>());
+			_ResourceLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<ResourceDTO>());
 
 			task.EndDate = DateTime.MaxValue;
 
-			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task);
+			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new Collection<MoqTypeSelection>());
 
 			Assert.AreEqual(1, result.Count());
 		}
 
+		/// <summary>
+		/// Test that ValidateTaskElementDto throws an exception when ws is null 
+		/// </summary>
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void Test_ValidateTaskElementDto_ExWs()
 		{
 			BOELaborControllerLogic sut = CreateSystem();
-			sut.ValidateTaskElementDto(null, new BoeTaskElementDTO());
+			sut.ValidateTaskElementDto(null, new BoeTaskElementDTO(), new Collection<MoqTypeSelection>());
 		}
 
+		/// <summary>
+		/// Test that ValidateTaskElementDto throws an exception when taskElement is null 
+		/// </summary>
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
 		public void Test_ValidateTaskElementDto_ExTaskElement()
 		{
 			BOELaborControllerLogic sut = CreateSystem();
-			sut.ValidateTaskElementDto(new FullWorkspace(), null);
+			sut.ValidateTaskElementDto(new FullWorkspace(), null, new Collection<MoqTypeSelection>());
+		}
+
+		/// <summary>
+		/// Test that ValidateTaskElementDto throws an exception when moqTypes is null 
+		/// </summary>
+		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
+		public void Test_ValidateTaskElementDto_ExMoqTypes()
+		{
+			BOELaborControllerLogic sut = CreateSystem();
+			sut.ValidateTaskElementDto(new FullWorkspace(), new BoeTaskElementDTO(), null);
 		}
 
 		/// <summary>
