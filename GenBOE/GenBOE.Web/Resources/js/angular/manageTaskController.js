@@ -28,7 +28,7 @@
     $scope.SelectedMoqTypes = [];
     $scope.IsDraftOrDraftLocked = false;
     $scope.IsBRCEnabled = ManageTaskModel.IsBRCEnabled; // For CDSM table only show if this BRC Enabaled = true 
-    $scope.IsSkillMixEnabled = ManageTaskModel.EnableSkillMix;
+    $scope.IsSkillMixEnabled = ManageTaskModel.IsSkillMixEnabled;
     $scope.skillMixRationale = [];
     $scope.skillMixRationaleLaborTypeSelections = [];
     $scope.commonDisclosureLaborTypeSelections = [];
@@ -165,8 +165,10 @@
     };
 
     $scope.refreshSkillMixTables = function (setDirty = true) {
-        if (ManageTaskModel.IsSkillMixEnabled) {
+        // Check if we are showing Skill Mix (checks for Skill Mix Enabled and if there are no T&M rates)
+        if ($scope.showSkillMix()) {
             $(document).trigger("SHOW_LOADING_BOX");
+
             if (setDirty) {
                 $scope.setDirty();
             }
@@ -181,7 +183,8 @@
                 selectedMoqTypes: $scope.SelectedMoqTypes,
                 laborTypes: laborTypesData,
                 currentSkillMixData: $scope.model.SkillMixData,
-                currentCommonDisclosureData: $scope.model.CommonDisclosureSkillMixData
+                currentCommonDisclosureData: $scope.model.CommonDisclosureSkillMixData,
+                isManual: $scope.isSkillMixManual()
             };
 
             return $http({
@@ -1912,8 +1915,13 @@
     };
 
 	$scope.showSkillMix = function () {
-		// Show Skill Mix if there is a Historical (5001) or Comparative (5002) MOQ Type and no T&M rates are in the task
-		return $scope.SelectedMoqTypes.some(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002') && $scope.IsUsingTMRatesInTask === false;
+		// Show Skill Mix if Feature Flag enabled and no T&M rates are in the task
+		return $scope.IsSkillMixEnabled && $scope.IsUsingTMRatesInTask === false;
+    };
+
+    $scope.isSkillMixManual = function () {
+        // Set Skill Mix to be manual if SAP Connection is diabled or if there is any MOQ Type that is not Historical (5001) or Comparative (5002) MOQ Type
+        return !ManageTaskModel.SapConnectionEnabled || !$scope.SelectedMoqTypes.every(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002') && $scope.IsUsingTMRatesInTask === false;
     };
 
     $scope.perfOrgSelected = function (item, model) {
