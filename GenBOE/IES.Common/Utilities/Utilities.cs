@@ -899,6 +899,31 @@ namespace IES.Common
 		}
 
 		/// <summary>
+		/// Private for Is UCOT Enabled
+		/// </summary>
+		private static bool? isUCOTEnabled;
+
+		/// <summary>
+		/// Is UCOT/Uncompensated Overtime enabled?
+		/// </summary>
+		/// TO-DO in PROPH-2594: Remove the suppression line
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "TODO: Remove this attribute in PROPH-2594")]
+		private static bool IsUCOTEnabled
+		{
+			get
+			{
+				if (isUCOTEnabled == null)
+				{
+					bool.TryParse(ConfigurationUtilities.GetAppSetting("EnableUCOT"), out bool ucotEnabled);
+					isUCOTEnabled = ucotEnabled;
+				}
+
+				return isUCOTEnabled.Value;
+			}
+		}
+
+		/// <summary>
 		/// Private for Is BRC Enabled, used for unit testing
 		/// </summary>
 		private static bool? isBRCEnabled;
