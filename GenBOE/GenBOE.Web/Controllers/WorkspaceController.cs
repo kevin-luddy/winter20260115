@@ -802,6 +802,21 @@ namespace GenBOE.Web.Controllers
 		#region Partial Views
 
 		/// <summary>
+		/// Displays the Manage UCOT page
+		/// </summary>
+		/// <param name="workspace">The workspace</param>
+		/// <returns>The view for Manage UCOT</returns>
+		public virtual ActionResult DisplayManageUCOT(string workspace)
+		{
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_MANAGE_UCOT, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, Factory.CreateFullWorkspace(workspace), null);
+
+			ViewResult toReturn = View(WebConstants.VIEW_MANAGE_UCOT);
+			// Finalize Action
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_MANAGE_UCOT, sw);
+			return toReturn;
+		}
+
+		/// <summary>
 		/// Displays the email preferences.
 		/// </summary>
 		/// <param name="workspace">The workspace.</param>
@@ -946,6 +961,8 @@ namespace GenBOE.Web.Controllers
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_SETTINGS_JUMP, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			ViewBag.IsProjectMapWs = ws.IsProjectMapWorkspace;
+			ViewBag.IsSpace = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems;
+			ViewBag.EnableUCOT = Utilities.IsUCOTEnabled;
 
 			ViewData["DisplayLaborCostTM"] = ws.IsUsingTM;
 			this.DecideIfNonProjectMapLinksShouldBeVisible(ws);
