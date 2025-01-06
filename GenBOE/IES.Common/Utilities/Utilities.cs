@@ -907,7 +907,8 @@ namespace IES.Common
 		/// Is UCOT/Uncompensated Overtime enabled?
 		/// </summary>
 		/// TO-DO in PROPH-2594: Remove the suppression line
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "TODO: Remove in PROPH-2594")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "TODO: Remove this attribute in PROPH-2594")]
 		private static bool IsUCOTEnabled
 		{
 			get
