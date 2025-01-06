@@ -65,10 +65,12 @@ namespace UnitTestProject
 				Directory.CreateDirectory(Constants.TEMP_DIRECTORY);
 			}
 
-			string proposalId = "3ac7f35f-5e08-ed11-9f7b-64c901b7a0ad";
-
 			BatchReportsController controller = CreateSUT();
+			//""DXBWAKES", "0")
+			ProposalDto proposal = Utility.GetProposal(controller.poolManagerList, controller.Logger, 1, "ACV Testing|1");
+			string proposalId = proposal.Id; // "3ac7f35f-5e08-ed11-9f7b-64c901b7a0ad";
 
+			
 			ProPricerResponse<ICollection<BatchReportDto>> results = controller.GetBatchReports(TestConstants.SpaceInstanceId);
 			// pick id for Batch Report
 			string batchId = results.Data.First(b => b.Name.StartsWith("15-2 iii a")).Id;

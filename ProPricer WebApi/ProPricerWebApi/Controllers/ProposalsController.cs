@@ -60,8 +60,11 @@ namespace APTSPropricerApi.Controllers
 				}
 				else
 				{
-					// SSC uses NTID to control access
-					result = this.GetSpecificUsersProposals(ppc, Request?.HttpContext?.User?.Identity?.Name);
+					// temporarily allows access to all proposals because Users.Find(ntid) no longer works.  It is now Users.Find(last, first) :(
+					result = Utility.GetAllProposals(ppc, Logger);
+
+					//// SSC uses NTID to control access
+					//result = this.GetSpecificUsersProposals(ppc, Request?.HttpContext?.User?.Identity?.Name);
 				}
 
 				return result;
@@ -607,7 +610,7 @@ namespace APTSPropricerApi.Controllers
 						if (proposals != null)
 						{
 							// This piece is necessary because the above misses a small subset of proposals that are owned by the user... (facepalm)
-							foreach (Proposal proposal in proposals.Cast<Proposal>().Where(x => x.ActualOwner?.LoginName?.ToLower() == ntid.ToLower()))
+							foreach (Proposal proposal in proposals.Cast<Proposal>().Where(x => x.ActualOwner?.Name?.ToLower() == ntid.ToLower()))
 							{
 								this.BuildTreeBottomUp(tree, allItemsFlat, new ProposalFolderInfo(proposal), proposal.ParentFolder);
 							}
