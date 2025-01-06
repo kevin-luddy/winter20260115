@@ -51,6 +51,7 @@ namespace GenBOE.ActionLogic.Common
 			IList<SkillMixModelView> skillMixRowsEmptyBoeMixWhenIncluded = skillMixModels.Where(x => x.Included && !x.BOESkillMix.HasValue).ToList();
 			IList<SkillMixModelView> skillMixRowsInvalidBoeMixWhenIncluded = skillMixModels.Where(x => x.Included && x.BOESkillMix.HasValue && x.BOESkillMix.Value <= 0).ToList();
 			IList<SkillMixModelView> skillMixRowsExceedChars = skillMixModels.Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
+			IList<SkillMixModelView> skillMixRowsResourceOldExceedChars = skillMixModels.Where(x => !string.IsNullOrEmpty(x.ResourceOld) && x.ResourceOld.Length > 20).ToList();
 			bool doesEmptyNullCurrentResourceExist = skillMixModels.Any(x => string.IsNullOrEmpty(x.ResourceNew) && x.Included);
 			decimal totalSKillMixRowsBOESkillMix = skillMixModels.Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
 			string skillMixTableName = string.Empty;
@@ -90,6 +91,12 @@ namespace GenBOE.ActionLogic.Common
 			{
 				errorMessages.Add(string.Format($"{skillMixTableName}: The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceOld, 255));
 			}
+
+			foreach (string skillMixResourceOld in skillMixRowsResourceOldExceedChars.Select(x => x.ResourceOld))
+			{
+				errorMessages.Add(string.Format($"{skillMixTableName}: The maximum length of the Historical Resource field for {0} is {1} characters.", skillMixResourceOld, 20));
+			}
+			
 
 			return errorMessages;
 		}
