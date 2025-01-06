@@ -135,7 +135,7 @@ namespace GenTRAC.ActionLogic
 				ProposalId = proposalId,
 			};
 			SecurityAuthorization highestAccess = this.SecurityAccess.IsAuthorized(perms, out _);
-
+			
 			// populate calculated properties
 			model.EppOptions = this.GetEppSelectOptions(model.EppDelegationAuthority);
 			model.InsuranceProposedDirectOptions = this.GetInsuranceProposedOptions(model.IsInsuranceDirect);
@@ -161,7 +161,10 @@ namespace GenTRAC.ActionLogic
 				model.previousROMDt = previousRomDateAndValue?.Item1;
 				model.PreviousROMValueDecimal = previousRomDateAndValue?.Item2;
 			}
-
+			if(this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null))
+			{
+				model.IsReadOnly = false;
+			}
 			return model;
 		}
 
