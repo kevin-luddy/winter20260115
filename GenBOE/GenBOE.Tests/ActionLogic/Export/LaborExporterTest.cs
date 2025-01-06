@@ -38,8 +38,9 @@ namespace GenBOE.Tests.ActionLogic.Import
         private Mock<ICommonDataMapper> commonDataMapper = null;
         private FullBoe BOEMultiFalse = null;
         private Mock<IFullObjectFactory> factory = null;
+		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
 
-        private string templatePath;
+		private string templatePath;
         
         #endregion private Fields
         /// <summary>
@@ -59,7 +60,8 @@ namespace GenBOE.Tests.ActionLogic.Import
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), this.commonDataMapper.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), this.retriever.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), this.permissionsLoader.Object);
-            BOEMultiFalse = new FullBoe()
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
+			BOEMultiFalse = new FullBoe()
             {
                 Id = 1,
 

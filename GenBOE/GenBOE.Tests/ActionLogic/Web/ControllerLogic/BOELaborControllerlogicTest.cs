@@ -86,8 +86,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		// Test
 		private BOELaborControllerLogic CreateSystem()
 		{
-			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), new ActiveDirectoryUtilities());
-
 			this.CreateCommonSystem();
 
 			return new BOELaborControllerLogic(
@@ -223,6 +221,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _PermissionDataLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), new ActiveDirectoryUtilities());
 
 			_BoeTaskElementRecalculation = new Mock<BoeTaskElementRecalculation>(_VariableSelectBoeToSum.Object, factory.Object);
 			this.rteTemplateDataLoader.Setup(x => x.GetByBoeIdAndTaskId(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int?>())).Returns(new List<RTECustomTemplateQuestionAnswerModelView>());

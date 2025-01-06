@@ -10,7 +10,8 @@ namespace GenBOE.Tests.ActionLogic
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
-    using GenBOE.ActionLogic.Common.Calculations;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.NewValidation;
     using GenBOE.ActionLogic.Validation;
@@ -275,7 +276,10 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
             resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>());
 
-            ICollection<int> ids = new Collection<int>();
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> {  });
+
+
+			ICollection<int> ids = new Collection<int>();
             ids.Add(boeTE.Id);
 
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int> { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
@@ -416,8 +420,9 @@ namespace GenBOE.Tests.ActionLogic
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
             this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -572,9 +577,9 @@ namespace GenBOE.Tests.ActionLogic
             ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
             resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
             resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
-
-            //setup clin
-            ClinDTO clin = new ClinDTO { Id = 8, WorkspaceID = 1, StartDate = null, EndDate = null };
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
+			//setup clin
+			ClinDTO clin = new ClinDTO { Id = 8, WorkspaceID = 1, StartDate = null, EndDate = null };
 
             //setup custom fields to be false, we'll check them in another test
             CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
@@ -790,8 +795,9 @@ namespace GenBOE.Tests.ActionLogic
 
             this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -827,9 +833,9 @@ namespace GenBOE.Tests.ActionLogic
             ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
             resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
             resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
-
-            //setup custom fields to be false, we'll check them in another test
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
+			//setup custom fields to be false, we'll check them in another test
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
             ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
             retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
@@ -941,9 +947,9 @@ namespace GenBOE.Tests.ActionLogic
             ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
             resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
             resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
-
-            //setup clin
-            ClinDTO clin = new ClinDTO { Id = 8, WorkspaceID = 1, StartDate = Convert.ToDateTime("04/01/2011"), EndDate = Convert.ToDateTime("02/01/2011") };
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
+			//setup clin
+			ClinDTO clin = new ClinDTO { Id = 8, WorkspaceID = 1, StartDate = Convert.ToDateTime("04/01/2011"), EndDate = Convert.ToDateTime("02/01/2011") };
 
             //setup custom fields to be false, we'll check them in another test
             CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
@@ -1079,9 +1085,9 @@ namespace GenBOE.Tests.ActionLogic
             ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
             resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
             resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
-
-            //setup custom fields to be false, we'll check them in another test
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
+			//setup custom fields to be false, we'll check them in another test
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
             ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
             retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
@@ -1188,9 +1194,9 @@ namespace GenBOE.Tests.ActionLogic
             ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
             resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
             resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
-
-            //setup custom fields to be false, we'll check them in another test
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
+			//setup custom fields to be false, we'll check them in another test
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
             ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
             retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
@@ -1309,9 +1315,9 @@ namespace GenBOE.Tests.ActionLogic
             ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
             resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
             resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
-
-            //setup a BOE
-            ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
+			//setup a BOE
+			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
             ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
             BoeTaskElementDTO boeTE = new BoeTaskElementDTO
             {
@@ -1453,9 +1459,9 @@ namespace GenBOE.Tests.ActionLogic
             ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
             resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
             resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
-
-            //setup a BOE
-            ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
+			//setup a BOE
+			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
             ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
             BoeTaskElementDTO boeTE = new BoeTaskElementDTO
             {
@@ -1597,9 +1603,9 @@ namespace GenBOE.Tests.ActionLogic
             ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
             resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
             resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
-
-            //setup a BOE
-            ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
+			//setup a BOE
+			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
             ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
             BoeTaskElementDTO boeTE = new BoeTaskElementDTO
             {
@@ -1781,9 +1787,9 @@ namespace GenBOE.Tests.ActionLogic
             ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
             resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
             resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
-
-            //setup a BOE
-            ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
+			//setup a BOE
+			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
             ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours, CustomFieldValueContainers = new Collection<CustomFieldValueContainer>() { new CustomFieldValueContainer { CustomFieldID = 2, IsOpenEnded = true, OpenEndedValue = "Test Value" } } };
             BoeTaskElementDTO boeTE = new BoeTaskElementDTO
             {
@@ -1906,9 +1912,9 @@ namespace GenBOE.Tests.ActionLogic
             ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
             resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
             resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
-
-            //setup a BOE
-            ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
+			//setup a BOE
+			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
             ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours, CustomFieldValueContainers = new Collection<CustomFieldValueContainer>() { new CustomFieldValueContainer { CustomFieldID = 2, IsOpenEnded = true, OpenEndedValue = string.Empty } } };
             BoeTaskElementDTO boeTE = new BoeTaskElementDTO
             {
@@ -2043,9 +2049,9 @@ namespace GenBOE.Tests.ActionLogic
             ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
             resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
             resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
-
-            //setup a BOE
-            ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
+			//setup a BOE
+			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
             ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
             BoeTaskElementDTO boeTE = new BoeTaskElementDTO
             {
@@ -2144,9 +2150,9 @@ namespace GenBOE.Tests.ActionLogic
             ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
             resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
             resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
-
-            //setup a BOE
-            ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
+			//setup a BOE
+			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
             ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
             BoeTaskElementDTO boeTE = new BoeTaskElementDTO
             {
@@ -2307,8 +2313,8 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
-
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
 
             ICollection<int> ids = new Collection<int>();
             ids.Add(boeTE.Id);
@@ -2363,9 +2369,9 @@ namespace GenBOE.Tests.ActionLogic
             ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
             resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
             resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
-
-            //setup custom fields to be false, we'll check them in another test
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
+			//setup custom fields to be false, we'll check them in another test
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
             ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
             retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
@@ -3231,10 +3237,13 @@ namespace GenBOE.Tests.ActionLogic
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
 
-            #endregion
+			#endregion
 
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
+
+
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             // Assert
             Assert.IsTrue(validationBOE.BOEHeaderMsgs.Count == 2, "The BOE Header was empty");
@@ -5078,6 +5087,77 @@ namespace GenBOE.Tests.ActionLogic
 
 			Assert.IsTrue(result.Any());
 			Assert.AreEqual(1, result.Count());
+		}
+
+		/// <summary>
+		/// Test Rationale Length
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMix_RationaleLength()
+		{
+			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
+			{
+				new SkillMixModelView {
+					ResourceOld = "HISTORICAL_R",
+					HistoricalHours = 100,
+					ResourceNew = null,
+					Included = true,
+					IsUserInput = true,
+					Rationale = "Rationale1"
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix);
+			Assert.IsNotNull(messages);
+			Assert.IsTrue(messages.None());
+		}
+
+		/// <summary>
+		/// Test Rationale Length
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMix_RationaleLength_Bad()
+		{
+			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
+			{
+				new SkillMixModelView {
+					ResourceOld = "HISTORICAL_Res",
+					HistoricalHours = 100,
+					ResourceNew = null,
+					Included = true,
+					IsUserInput = true,
+					Rationale = "Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1"
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains("The maximum length of the Rationale field"));
+		}
+
+		/// <summary>
+		/// Test Historical Old Length
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMix_HistoricalOldLength_Bad()
+		{
+			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
+			{
+				new SkillMixModelView {
+					ResourceOld = "HISTORICAL_RESOURCE_NAME1",
+					HistoricalHours = 100,
+					ResourceNew = null,
+					Included = true,
+					IsUserInput = true,
+					Rationale = "Rationale1"
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains("The maximum length of the Rationale field"));
 		}
 	}
 }

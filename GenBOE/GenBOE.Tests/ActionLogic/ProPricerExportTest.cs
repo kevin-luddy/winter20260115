@@ -11,8 +11,8 @@ namespace GenBOE.Tests.ActionLogic
     using System.Collections.ObjectModel;
     using System.Linq;
     using GenBOE.ActionLogic.Common.Calculations;
-    using GenBOE.ActionLogic.IO.Export;
-    using GenBOE.ActionLogic.ModelView;
+	using GenBOE.ActionLogic.IO.Export;
+	using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -32,8 +32,18 @@ namespace GenBOE.Tests.ActionLogic
         Mock<IPermissionsDTODataLoader> permissionsDataLoader = new Mock<IPermissionsDTODataLoader>();
         Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
         Mock<ISystemSettingDTODataLoader> systemSettingLoader = new Mock<ISystemSettingDTODataLoader>();
+		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
 
-        public static ProPricerDTO SetUpProPricerDTO(int workspaceId, bool allCustomFields = false, bool useEP = false, bool includeCustomFields = true)
+		/// <summary>
+		/// Test Initialize
+		/// </summary>
+		[TestInitialize]
+		public void CreateSystem()
+		{
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
+		}
+
+		public static ProPricerDTO SetUpProPricerDTO(int workspaceId, bool allCustomFields = false, bool useEP = false, bool includeCustomFields = true)
         {
             //set up a ProPricer Export
             ProPricerDTO proPricerExport = new ProPricerDTO();
@@ -291,7 +301,6 @@ namespace GenBOE.Tests.ActionLogic
 
             return proPricerExport;
         }
-
 
         [TestMethod, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
         public void BL_ExportProPricer_EP()

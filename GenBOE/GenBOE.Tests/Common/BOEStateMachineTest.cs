@@ -23,8 +23,9 @@ namespace GenBOE.Tests.Common
         private Mock<ICommonDataMapper> _CommonDataMapper = null;
         private Mock<IRetriever> _Retriever = null;
         private Mock<IFullObjectFactory> _Factory = null;
+		private Mock<IPermissionsDTODataLoader> permissionsDTODataLoader = new Mock<IPermissionsDTODataLoader>();
 
-        [TestInitialize]
+		[TestInitialize]
         new public void Setup()
         {
             _CommonDataMapper = new Mock<ICommonDataMapper>();
@@ -35,7 +36,8 @@ namespace GenBOE.Tests.Common
 
             _Factory = new Mock<IFullObjectFactory>();
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), _Factory.Object);
-        }
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionsDTODataLoader.Object);
+		}
 
         private Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
 

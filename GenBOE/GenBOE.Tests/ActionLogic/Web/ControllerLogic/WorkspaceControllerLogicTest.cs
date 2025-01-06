@@ -66,7 +66,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         private Mock<ContractTypeLoader> contractTypeLoader;
 		private Mock<IMoqTypeDataLoader> moqTypeDataLoader;
 
-        private WorkspaceControllerLogicSpaceSystems CreateSystemSpaceSystems()
+		private WorkspaceControllerLogicSpaceSystems CreateSystemSpaceSystems()
         {
             this.CreateCommonSystem();
 
@@ -139,7 +139,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             this._ResourceLoader = new Mock<IResourceDTODataLoader>();
             this._tmResourceRateLoader = new Mock<ITMResourceRateDTODataLoader>();
 
-            this._customFieldValueLoader = new Mock<ICustomFieldValueDTODataLoader>();
+			this._customFieldValueLoader = new Mock<ICustomFieldValueDTODataLoader>();
             this._customFieldValueLoader.Setup(s => s.GetBOECustomFieldContainerFieldValueMappings(It.IsAny<int>())).Returns(new List<CustomFieldContainerFieldValueMapping>());
             this._customFieldValueLoader.Setup(s => s.GetTaskElementCustomFieldContainerFieldValueMappings(It.IsAny<int>())).Returns(new List<CustomFieldContainerFieldValueMapping>());
             this._customFieldValueLoader.Setup(s => s.GetResourceCustomFieldContainerFieldValueMappings(It.IsAny<int>())).Returns(new List<CustomFieldContainerFieldValueMapping>());
@@ -155,7 +155,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             this._commonDatamapper = new Mock<ICommonDataMapper>();
             this._permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
-            
             this._BOELaborControllerLogic = new Mock<IBOELaborControllerLogic>();
 
             this.fullWsRecalc = new Mock<IFullWorkspaceRecalculation>();
@@ -172,6 +171,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), this._commonDatamapper.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), this._permissionLoader.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ValidationFactory), CreateValidationFactoryMock().Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), new ActiveDirectoryUtilities());
 
 			this.moqTypeDataLoader = new Mock<IMoqTypeDataLoader>();
         }
@@ -1773,7 +1773,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             WorkspaceControllerLogicMST sut = this.CreateSystemMST();
 
             FullWorkspace ws = new FullWorkspace() { Id = 100 };
-            IWorkspaceIdentificationModelView wsDetails = new WorkspaceIdentificationMSTModelView() { WorkspaceID = 100, WorkspaceName = DateTime.Now.Ticks.ToString(), ShortName = DateTime.Now.ToShortTimeString(), CostVolumeLeadPricerNTID = "paliderd" };
+			this._userLoader.Setup(x => x.GetOrCreateUserByNtid("paliderd")).Returns(new UserDTO { NTID = "test", UserID = 1 });
+
+			IWorkspaceIdentificationModelView wsDetails = new WorkspaceIdentificationMSTModelView() { WorkspaceID = 100, WorkspaceName = DateTime.Now.Ticks.ToString(), ShortName = DateTime.Now.ToShortTimeString(), CostVolumeLeadPricerNTID = "paliderd" };
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(ws.Id)).Returns(new List<FullClin>());
             
             // No -> No -- Valid

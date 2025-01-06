@@ -29,9 +29,9 @@ namespace GenBOE.Tests.ActionLogic
         private Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
         private Mock<IRetriever> retriever = new Mock<IRetriever>();
         private Mock<IPermissionsDTODataLoader> _permissions = new Mock<IPermissionsDTODataLoader>();
-      
+		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
 
-        [TestInitialize]
+		[TestInitialize]
         public override void Setup()
         {
             base.Setup();
@@ -49,8 +49,8 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissions.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), commonDataMapper.Object);
-
-            FullWorkspace workspace = new FullWorkspace(workspaceDto);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
+			FullWorkspace workspace = new FullWorkspace(workspaceDto);
             FullBoe boe = new FullBoe(Boe1);
 
 			Mock<IResourceDTODataLoader> ResourceLoader = new Mock<IResourceDTODataLoader>();

@@ -13,6 +13,8 @@ namespace GenBOE.Tests.ActionLogic.BOECopier
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.DataBridge.DTO;
 	using IES.Common;
+	using IES.Common.classes;
+	using Microsoft.Practices.Unity;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 	using Moq;
 
@@ -26,6 +28,20 @@ namespace GenBOE.Tests.ActionLogic.BOECopier
 		/// Mocked out MOQ Type Data Loader
 		/// </summary>
 		private readonly Mock<IMoqTypeDataLoader> moqTypeDataLoader = new Mock<IMoqTypeDataLoader>();
+
+		/// <summary>
+		/// Mock loader for AD
+		/// </summary>
+		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
+
+		/// <summary>
+		/// Test Setup
+		/// </summary>
+		[TestInitialize]
+		public void CreateSystem()
+		{
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
+		}
 
 		/// <summary>
 		/// Create the System under test

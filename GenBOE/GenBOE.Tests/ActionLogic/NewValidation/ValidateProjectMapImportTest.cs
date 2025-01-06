@@ -32,18 +32,19 @@ namespace GenBOE.Tests.ActionLogic.NewValidation
         private Mock<IOffloadRatesDTOLoader> offloadRatesLoader;
         private Mock<IRetriever> retriever;
         private Mock<IUserDTODataLoader> userLoader;
+		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
 
-        /// <summary>
-        ///     Initializes data before each test run for this class.
-        /// </summary>
-        [TestInitialize]
+		/// <summary>
+		///     Initializes data before each test run for this class.
+		/// </summary>
+		[TestInitialize]
         public void Initialize()
         {
             this.fullObjectFactory = new FullObjectFactory(null, null, null, null, null, null, null, null, null,
                 null, null, null);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), this.fullObjectFactory);
-
-            this.retriever = new Mock<IRetriever>();
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
+			this.retriever = new Mock<IRetriever>();
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), this.retriever.Object);
             this.userLoader = new Mock<IUserDTODataLoader>();
 

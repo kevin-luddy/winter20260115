@@ -16,7 +16,8 @@ namespace GenBOE.Tests.ActionLogic.Common
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
-    using IES.Common.classes;
+	using IES.Common;
+	using IES.Common.classes;
     using Microsoft.Practices.Unity;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
@@ -35,12 +36,13 @@ namespace GenBOE.Tests.ActionLogic.Common
         private Mock<IFullObjectFactory> Factory;
         private Mock<IPermissionsDTODataLoader> PermissionLoader;
         private Mock<ICommonDataMapper> CommonMapper;
+		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
 
-        /// <summary>
-        /// Creates System to test..
-        /// </summary>
-        /// <returns>SUT</returns>
-        private BOEDiscrepancyReport CreateSystem()
+		/// <summary>
+		/// Creates System to test..
+		/// </summary>
+		/// <returns>SUT</returns>
+		private BOEDiscrepancyReport CreateSystem()
         {
             this.WsRecalculation = new Mock<IFullWorkspaceRecalculation>();
             this.UserLoader = new Mock<IUserDTODataLoader>();
@@ -54,8 +56,9 @@ namespace GenBOE.Tests.ActionLogic.Common
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), this.Factory.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), this.PermissionLoader.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), this.CommonMapper.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
 
-            BOEDiscrepancyReport report = new BOEDiscrepancyReport(this.WsRecalculation.Object, this.UserLoader.Object);
+			BOEDiscrepancyReport report = new BOEDiscrepancyReport(this.WsRecalculation.Object, this.UserLoader.Object);
 
             return report;
         }

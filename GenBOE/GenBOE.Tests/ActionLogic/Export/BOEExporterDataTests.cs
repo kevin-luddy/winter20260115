@@ -15,18 +15,23 @@ namespace GenBOE.Tests.ActionLogic.Export
     using GenBOE.ActionLogic.IO.Export;
     using GenBOE.Dtos;
     using IES.Common;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using IES.Common.classes;
+	using Microsoft.Practices.Unity;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
 
     [TestClass]
     public class BOEExporterDataTests
     {
         ValuesByMonth<decimal> valuesByMonth;
+		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
 
-        [TestInitialize]
+		[TestInitialize]
         public void Init()
         {
-            valuesByMonth = new ValuesByMonth<decimal>()
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object); 
+			
+			valuesByMonth = new ValuesByMonth<decimal>()
             {
                 January = 1m,
                 February = 2m,
