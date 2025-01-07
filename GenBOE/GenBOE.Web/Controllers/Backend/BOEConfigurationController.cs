@@ -14,7 +14,6 @@ namespace GenBOE.Web.Controllers
 	using IES.Common;
 	using IES.Common.classes;
 	using System;
-	using System.Linq;
 	using System.Web.Http;
 
 	/// <summary>
@@ -25,11 +24,6 @@ namespace GenBOE.Web.Controllers
 	public class BOEConfigurationController : BoeDataBaseAPIController
 	{
 		#region Properties & Ctor
-
-		/// <summary>
-		/// Token Handling
-		/// </summary>
-		private readonly TokenHandling tokenHandler;
 
 		/// <summary>
 		/// Logger
@@ -45,10 +39,10 @@ namespace GenBOE.Web.Controllers
 		/// <param name="userLoader">User loader</param>
 		/// <param name="permissionsLoader">Permission loader</param>
 
-		public BOEConfigurationController(TokenHandling tokenHandler, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader)
+		public BOEConfigurationController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
-			this.tokenHandler = tokenHandler;
+
 		}
 		#endregion
 
@@ -58,45 +52,45 @@ namespace GenBOE.Web.Controllers
 		/// <returns>GenBOE Configuration Data</returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESResponse<BOEConfigurationModelView> GetGenBOEConfigurationData()
+		public IESResponse<BOEConfigurationModelView> GetSystemConfigurationData()
 		{
 			IESResponse<BOEConfigurationModelView> result = new IESResponse<BOEConfigurationModelView>();
+			BOEConfigurationModelView configurationData = new BOEConfigurationModelView();
 
 			try
 			{
-				tokenHandler.AuthenticateUserFromAuthorizationToken();
-
-				result.Data.FirstOrDefault().CompanyConfiguration = SystemConfiguration.Instance().CompanyMode;
-				result.Data.FirstOrDefault().IsBRCEnabled = ConfigurationUtilities.GetAppSetting<bool>("EnableBRC");
-				result.Data.FirstOrDefault().IsReadOnly = ConfigurationUtilities.GetAppSetting<bool>("IsReadOnly");
-				result.Data.FirstOrDefault().DisableExternalLinksForClassifiedInstall = Utilities.DisableExternalHelpLinksForClassifiedInstallations();
-				result.Data.FirstOrDefault().EnableSendToProPricerDirectly = ConfigurationUtilities.GetAppSetting<bool>("EnableSendToProPricerDirectly", false);
-				result.Data.FirstOrDefault().UnclassifiedBannerText = ConfigurationUtilities.GetAppSetting("UnclassifiedBannerText");
-				result.Data.FirstOrDefault().EnableSAP = ConfigurationUtilities.GetAppSetting<bool>("EnableSAP");
-				result.Data.FirstOrDefault().ShowEquivalentPersonsOption = ConfigurationUtilities.GetAppSetting<bool>("ShowEquivalentPersonsOption");
-				result.Data.FirstOrDefault().IsBOEFormVisible = ConfigurationUtilities.GetAppSetting<bool>("IsBOEFormVisible");
+				configurationData.CompanyConfiguration = SystemConfiguration.Instance().CompanyMode;
+				configurationData.IsBRCEnabled = ConfigurationUtilities.GetAppSetting<bool>("EnableBRC");
+				configurationData.IsReadOnly = ConfigurationUtilities.GetAppSetting<bool>("IsReadOnly");
+				configurationData.DisableExternalLinksForClassifiedInstall = Utilities.DisableExternalHelpLinksForClassifiedInstallations();
+				configurationData.EnableSendToProPricerDirectly = ConfigurationUtilities.GetAppSetting<bool>("EnableSendToProPricerDirectly", false);
+				configurationData.UnclassifiedBannerText = ConfigurationUtilities.GetAppSetting("UnclassifiedBannerText");
+				configurationData.EnableSAP = ConfigurationUtilities.GetAppSetting<bool>("EnableSAP");
+				configurationData.ShowEquivalentPersonsOption = ConfigurationUtilities.GetAppSetting<bool>("ShowEquivalentPersonsOption");
+				configurationData.IsBOEFormVisible = ConfigurationUtilities.GetAppSetting<bool>("IsBOEFormVisible");
 
 				// Get 'Show IES Header' config value for business areas that aren't RMS (not needed for RMS).
-				result.Data.FirstOrDefault().ShowIESHeader = SystemConfiguration.Instance().CompanyMode != CompanyConfiguration.MST && SiteMasterUtilities.ShowIesHeader;
+				configurationData.ShowIESHeader = SystemConfiguration.Instance().CompanyMode != CompanyConfiguration.MST && SiteMasterUtilities.ShowIesHeader;
 
-				result.Data.FirstOrDefault().CanCreateWorkspaceWithoutPtmTrackingNumber = ConfigurationUtilities.GetAppSetting<bool>("CanCreateWorkspaceWithoutPtmTrackingNumber");
-				result.Data.FirstOrDefault().ArchiveUrlBOE = ConfigurationUtilities.GetAppSetting("ArchiveUrlBoe");
-				result.Data.FirstOrDefault().ProductionUrl = ConfigurationUtilities.GetAppSetting("ProdUrlBoe");
-				result.Data.FirstOrDefault().ServerUrl = ConfigurationUtilities.GetAppSetting("ServerURL");
-				result.Data.FirstOrDefault().IsRMSArchive = SiteMasterUtilities.IsRMSArchive();
-				result.Data.FirstOrDefault().IsRMSProduction = SiteMasterUtilities.IsRMSProduction();
-				result.Data.FirstOrDefault().IsProjectMapEnabled = ConfigurationUtilities.GetAppSetting<bool>("IsProjectMapEnabled");
-				result.Data.FirstOrDefault().MaximumRowsInProjectMap = ConfigurationUtilities.GetAppSetting<int>("MaximumRowsInProjectMap");
-				result.Data.FirstOrDefault().ProjectMapPageSize = ConfigurationUtilities.GetAppSetting<int>("ProjectMapPageSize");
-				result.Data.FirstOrDefault().ReportServerLocation = ConfigurationUtilities.GetAppSetting("ReportServerLocation");
-				result.Data.FirstOrDefault().ReportServerFolderName = ConfigurationUtilities.GetAppSetting("ReportServerFolderName");
-				result.Data.FirstOrDefault().ApplicationVersion = ConfigurationUtilities.GetAppSetting("APPLICATION_VERSION");
-				result.Data.FirstOrDefault().DisableAllEmails = ConfigurationUtilities.GetAppSetting<bool>("DisableAllEmails");
-				result.Data.FirstOrDefault().EmailsToCurrentlyLoggedInUser = ConfigurationUtilities.GetAppSetting<bool>("EmailsToCurrentlyLoggedInUser");
-				result.Data.FirstOrDefault().ShowUserName = ConfigurationUtilities.GetAppSetting<bool>("ShowUserName");
-				result.Data.FirstOrDefault().IsIdentitySwappingAllowed = ConfigurationUtilities.GetAppSetting<bool>("IsIdentitySwappingAllowed");
-				result.Data.FirstOrDefault().ShowCompanyConfiguration = ConfigurationUtilities.GetAppSetting<bool>("ShowCompanyConfiguration");
+				configurationData.CanCreateWorkspaceWithoutPtmTrackingNumber = ConfigurationUtilities.GetAppSetting<bool>("CanCreateWorkspaceWithoutPtmTrackingNumber");
+				configurationData.ArchiveUrlBOE = ConfigurationUtilities.GetAppSetting("ArchiveUrlBoe");
+				configurationData.ProductionUrl = ConfigurationUtilities.GetAppSetting("ProdUrlBoe");
+				configurationData.ServerUrl = ConfigurationUtilities.GetAppSetting("ServerURL");
+				configurationData.IsRMSArchive = SiteMasterUtilities.IsRMSArchive();
+				configurationData.IsRMSProduction = SiteMasterUtilities.IsRMSProduction();
+				configurationData.IsProjectMapEnabled = ConfigurationUtilities.GetAppSetting<bool>("IsProjectMapEnabled");
+				configurationData.MaximumRowsInProjectMap = ConfigurationUtilities.GetAppSetting<int>("MaximumRowsInProjectMap");
+				configurationData.ProjectMapPageSize = ConfigurationUtilities.GetAppSetting<int>("ProjectMapPageSize");
+				configurationData.ReportServerLocation = ConfigurationUtilities.GetAppSetting("ReportServerLocation");
+				configurationData.ReportServerFolderName = ConfigurationUtilities.GetAppSetting("ReportServerFolderName");
+				configurationData.ApplicationVersion = ConfigurationUtilities.GetAppSetting("APPLICATION_VERSION");
+				configurationData.DisableAllEmails = ConfigurationUtilities.GetAppSetting<bool>("DisableAllEmails");
+				configurationData.EmailsToCurrentlyLoggedInUser = ConfigurationUtilities.GetAppSetting<bool>("EmailsToCurrentlyLoggedInUser");
+				configurationData.ShowUserName = ConfigurationUtilities.GetAppSetting<bool>("ShowUserName");
+				configurationData.IsIdentitySwappingAllowed = ConfigurationUtilities.GetAppSetting<bool>("IsIdentitySwappingAllowed");
+				configurationData.ShowCompanyConfiguration = ConfigurationUtilities.GetAppSetting<bool>("ShowCompanyConfiguration");
 
+				result.Data.Add(configurationData);
 				result.IsSuccessful = true;
 			}
 			catch (Exception ex)
@@ -112,27 +106,26 @@ namespace GenBOE.Web.Controllers
 		/// Get workspace data by workspace shortname.
 		/// </summary>
 		/// <param name="workspaceShortname">Shortspace Name</param>
-		/// <returns>GenBOE Workspace shortspace name.</returns>
+		/// <returns>GenBOE Workspace level data.</returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESResponse<WorkspaceSettingsModelView> GetWorkspaceConfiguration(string workspaceShortname)
 		{
 			IESResponse<WorkspaceSettingsModelView> result = new IESResponse<WorkspaceSettingsModelView>();
+			WorkspaceSettingsModelView workspaceSettings = new WorkspaceSettingsModelView();
 
 			try
 			{
-				tokenHandler.AuthenticateUserFromAuthorizationToken();
-
 				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortname);
 
-				result.Data.FirstOrDefault().IsBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspaceShortname);
-				result.Data.FirstOrDefault().IsSAPEnabled = Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate);
-				result.Data.FirstOrDefault().IsWorkspaceBeforeSAPCutoff = Utilities.IsWorkspaceBeforeSAPCutoff(ws.CreationDate);
-				result.Data.FirstOrDefault().ShowSAPForWorkspace = Utilities.ShowSAPForWorkspace(ws.CreationDate);
-				result.Data.FirstOrDefault().IsConfidenceReportEnabled = Utilities.IsConfidenceReportEnabled;
-				result.Data.FirstOrDefault().ShowSkillMixForWorkspace = Utilities.ShowSkillMixForWorkspace(ws.CreationDate);
-				result.Data.FirstOrDefault().IsHistoricalReferenceExplanationRequired = Utilities.IsHistoricalReferenceExplanationRequired(ws.CreationDate);
+				workspaceSettings.IsBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspaceShortname);
+				workspaceSettings.IsSAPEnabled = Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate);
+				workspaceSettings.IsWorkspaceBeforeSAPCutoff = Utilities.IsWorkspaceBeforeSAPCutoff(ws.CreationDate);
+				workspaceSettings.ShowSAPForWorkspace = Utilities.ShowSAPForWorkspace(ws.CreationDate);
+				workspaceSettings.ShowSkillMixForWorkspace = Utilities.ShowSkillMixForWorkspace(ws.CreationDate);
+				workspaceSettings.IsHistoricalReferenceExplanationRequired = Utilities.IsHistoricalReferenceExplanationRequired(ws.CreationDate);
 
+				result.Data.Add(workspaceSettings);
 				result.IsSuccessful = true;
 			}
 			catch (Exception ex)

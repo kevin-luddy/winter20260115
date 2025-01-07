@@ -36,11 +36,6 @@ namespace GenBOE.Web.ModelView
 		public bool ShowSAPForWorkspace { get; set; }
 
 		/// <summary>
-		/// Is the confidence report enabled?
-		/// </summary>
-		public bool IsConfidenceReportEnabled { get; set; }
-
-		/// <summary>
 		/// Should Skill Mix be shown for the Workspace?
 		/// </summary>
 		public bool ShowSkillMixForWorkspace { get; set; }
