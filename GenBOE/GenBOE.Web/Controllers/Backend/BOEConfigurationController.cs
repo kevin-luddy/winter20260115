@@ -96,7 +96,7 @@ namespace GenBOE.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown error occurred returning Gen BOE Configuration data: {ex.Message}");
+				result.Messages.Add($"Unknown error occurred returning genBOE Configuration data: {ex.Message}");
 			}
 
 			return result;
@@ -106,7 +106,7 @@ namespace GenBOE.Web.Controllers
 		/// Get workspace data by workspace shortname.
 		/// </summary>
 		/// <param name="workspaceShortname">Shortspace Name</param>
-		/// <returns>GenBOE Workspace level data.</returns>
+		/// <returns>genBOE Workspace level data.</returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESResponse<WorkspaceSettingsModelView> GetWorkspaceConfiguration(string workspaceShortname)
