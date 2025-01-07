@@ -47,12 +47,12 @@ namespace GenBOE.Web.Controllers
 		#endregion
 
 		/// <summary>
-		/// Get GenBOE web configuration.
+		/// Get GenBOE system config data.
 		/// </summary>
-		/// <returns>GenBOE Configuration Data</returns>
+		/// <returns>GenBOE System Configuration Data</returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESResponse<BOEConfigurationModelView> GetSystemConfigurationData()
+		public IESResponse<BOEConfigurationModelView> GetSystemConfiguration()
 		{
 			IESResponse<BOEConfigurationModelView> result = new IESResponse<BOEConfigurationModelView>();
 			BOEConfigurationModelView configurationData = new BOEConfigurationModelView();
