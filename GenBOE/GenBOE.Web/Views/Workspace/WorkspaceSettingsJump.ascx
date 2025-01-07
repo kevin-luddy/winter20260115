@@ -95,6 +95,12 @@
                 <div>View System Default and Forced Email Preferences for Workspaces. Manage your Workspace Email Overrides (where applicable).</div>
             </div>
             <% } %>
+            <% if (ViewBag.IsSpace && ViewBag.EnableUCOT) { %>
+            <div>
+                <a id="ManageUCOT" href="#ManageUCOT">Manage Uncompensated Overtime</a>
+                <div>Manage and edit the UCOT (Uncompensated Overtime) Factor.</div>
+            </div>
+            <% } %>
         </div>
     </div>
 </div>
