@@ -13,7 +13,7 @@ namespace GenBOE.Web.ModelView
 	/// 
 	/// THIS MUST MATCH THE BOE SERVICE, DO NOT CHANGE UNLESS CHANGES ARE MADE TO BOTH CLASSES.
 	/// </summary>
-	public class BOEConfigurationData
+	public class BOEConfigurationModelView
 	{
 		/// <summary>
 		/// Company Configuration / Company Mode for the instance.

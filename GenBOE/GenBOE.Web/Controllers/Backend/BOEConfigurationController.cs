@@ -39,19 +39,12 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Ctor
 		/// </summary>
-		/// <param name="loader">Workspace loader</param>
 		/// <param name="tokenHandler">Token handler</param>
-		/// <param name="reportsControllerLogic">Reports controller logic</param>
 		/// <param name="securityAccess">Security Access</param>
 		/// <param name="factory">Full object factory</param>
 		/// <param name="userLoader">User loader</param>
 		/// <param name="permissionsLoader">Permission loader</param>
-		/// <param name="boeExporter">BOE exporter</param>
-		/// <param name="boeCustomExporter">BOE custom exporter</param>
-		/// <param name="workspaceExportFormatDTOLoader">Workspace export format loader</param>
-		/// <param name="traceTableExporter">Trace Table data exporter</param>
-		/// <param name="boeFormControllerLogic">BOE Form Controller logic</param>
-		/// <param name="contractTypeLoader">Pick List loader for Contract Types</param>
+
 		public BOEConfigurationController(TokenHandling tokenHandler, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
@@ -60,14 +53,14 @@ namespace GenBOE.Web.Controllers
 		#endregion
 
 		/// <summary>
-		/// Get GenBOE configuration.
+		/// Get GenBOE web configuration.
 		/// </summary>
 		/// <returns>GenBOE Configuration Data</returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESResponse<BOEConfigurationData> GetGenBOEConfigurationData()
+		public IESResponse<BOEConfigurationModelView> GetGenBOEConfigurationData()
 		{
-			IESResponse<BOEConfigurationData> result = new IESResponse<BOEConfigurationData>();
+			IESResponse<BOEConfigurationModelView> result = new IESResponse<BOEConfigurationModelView>();
 
 			try
 			{
@@ -99,7 +92,6 @@ namespace GenBOE.Web.Controllers
 				result.Data.FirstOrDefault().ReportServerFolderName = ConfigurationUtilities.GetAppSetting("ReportServerFolderName");
 				result.Data.FirstOrDefault().ApplicationVersion = ConfigurationUtilities.GetAppSetting("APPLICATION_VERSION");
 				result.Data.FirstOrDefault().DisableAllEmails = ConfigurationUtilities.GetAppSetting<bool>("DisableAllEmails");
-				// TODO Thomas: Warning Banner shown on System/Workspace Email Preferences page?
 				result.Data.FirstOrDefault().EmailsToCurrentlyLoggedInUser = ConfigurationUtilities.GetAppSetting<bool>("EmailsToCurrentlyLoggedInUser");
 				result.Data.FirstOrDefault().ShowUserName = ConfigurationUtilities.GetAppSetting<bool>("ShowUserName");
 				result.Data.FirstOrDefault().IsIdentitySwappingAllowed = ConfigurationUtilities.GetAppSetting<bool>("IsIdentitySwappingAllowed");
@@ -116,5 +108,40 @@ namespace GenBOE.Web.Controllers
 			return result;
 		}
 
+		/// <summary>
+		/// Get workspace data by workspace shortname.
+		/// </summary>
+		/// <param name="workspaceShortname">Shortspace Name</param>
+		/// <returns>GenBOE Workspace shortspace name.</returns>
+		[HttpGet]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESResponse<WorkspaceSettingsModelView> GetWorkspaceConfiguration(string workspaceShortname)
+		{
+			IESResponse<WorkspaceSettingsModelView> result = new IESResponse<WorkspaceSettingsModelView>();
+
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortname);
+
+				result.Data.FirstOrDefault().IsBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspaceShortname);
+				result.Data.FirstOrDefault().IsSAPEnabled = Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate);
+				result.Data.FirstOrDefault().IsWorkspaceBeforeSAPCutoff = Utilities.IsWorkspaceBeforeSAPCutoff(ws.CreationDate);
+				result.Data.FirstOrDefault().ShowSAPForWorkspace = Utilities.ShowSAPForWorkspace(ws.CreationDate);
+				result.Data.FirstOrDefault().IsConfidenceReportEnabled = Utilities.IsConfidenceReportEnabled;
+				result.Data.FirstOrDefault().ShowSkillMixForWorkspace = Utilities.ShowSkillMixForWorkspace(ws.CreationDate);
+				result.Data.FirstOrDefault().IsHistoricalReferenceExplanationRequired = Utilities.IsHistoricalReferenceExplanationRequired(ws.CreationDate);
+
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occurred returning Workspace data: {ex.Message}");
+			}
+
+			return result;
+		}
 	}
 }
