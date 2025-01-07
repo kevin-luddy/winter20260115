@@ -117,16 +117,26 @@ namespace GenBOE.Web.Controllers
 			try
 			{
 				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortname);
+				SecurityAuthorization permission = this.CheckPermission(SecurityPage.WorkspaceHome, ws);
 
-				workspaceSettings.IsBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspaceShortname);
-				workspaceSettings.IsSAPEnabled = Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate);
-				workspaceSettings.IsWorkspaceBeforeSAPCutoff = Utilities.IsWorkspaceBeforeSAPCutoff(ws.CreationDate);
-				workspaceSettings.ShowSAPForWorkspace = Utilities.ShowSAPForWorkspace(ws.CreationDate);
-				workspaceSettings.ShowSkillMixForWorkspace = Utilities.ShowSkillMixForWorkspace(ws.CreationDate);
-				workspaceSettings.IsHistoricalReferenceExplanationRequired = Utilities.IsHistoricalReferenceExplanationRequired(ws.CreationDate);
+				// Only return data if the permissions is at a read level or above.
+				if (permission >= SecurityAuthorization.Read)
+				{
+					workspaceSettings.IsBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspaceShortname);
+					workspaceSettings.IsSAPEnabled = Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate);
+					workspaceSettings.IsWorkspaceBeforeSAPCutoff = Utilities.IsWorkspaceBeforeSAPCutoff(ws.CreationDate);
+					workspaceSettings.ShowSAPForWorkspace = Utilities.ShowSAPForWorkspace(ws.CreationDate);
+					workspaceSettings.ShowSkillMixForWorkspace = Utilities.ShowSkillMixForWorkspace(ws.CreationDate);
+					workspaceSettings.IsHistoricalReferenceExplanationRequired = Utilities.IsHistoricalReferenceExplanationRequired(ws.CreationDate);
 
-				result.Data.Add(workspaceSettings);
-				result.IsSuccessful = true;
+					result.Data.Add(workspaceSettings);
+					result.IsSuccessful = true;
+				}
+				else
+				{
+					result.IsSuccessful = false;
+					result.Messages.Add($"Insufficient permissions for returning the Workspace data.");
+				}
 			}
 			catch (Exception ex)
 			{
