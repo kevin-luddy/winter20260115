@@ -1611,6 +1611,6 @@ namespace GenBOE.Web.Controllers
 					TotalCost = workspace.IsUsingTM ? p.TotalCost + p.TMCost : p.TotalCost,
 					IsIncomplete = p.IsIncomplete
 				}).ToList();
-		}
+		}		
 	}
 }
