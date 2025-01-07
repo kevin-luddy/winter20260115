@@ -109,12 +109,6 @@
                     '<%: WebConstants.ACTION_DISPLAY_WORKSPACE_EMAIL_PREFERENCES %>', ''), "WORKSPACE_EMAIL_PREFERENCES_LOADED");
         };
 
-        WorkspaceSettings.LoadManageUCOT = function () {
-            WorkspaceSettings.RetrievePage(CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
-                    '<%: WebConstants.CONTROLLER_WORKSPACE %>',
-                    '<%: WebConstants.ACTION_DISPLAY_MANAGE_UCOT %>', ''), "MANAGE_UCOT_LOADED");
-        };
-
         WorkspaceSettings.LoadManageRTETemplates = function () {
             ShowLoadingBox();
             window.location = CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
@@ -219,9 +213,6 @@
                     case "WorkspaceEmailPreferences":
                         WorkspaceSettings.LoadWorkspaceEmailPreferences();
                         break;
-                    case "ManageUCOT":
-                        WorkspaceSettings.LoadManageUCOT();
-                        break;
                     case "ManageRTETemplates":
                         WorkspaceSettings.LoadManageRTETemplates();
                         break;
@@ -242,7 +233,6 @@
             WorkspaceSettings.registerForEvent("WS_LOAD_STATUS", WorkspaceSettings.LoadWorkspaceStatus);
             WorkspaceSettings.registerForEvent("WS_LOAD_STATUS_HISTORY", WorkspaceSettings.LoadWorkspaceStatusHistory);
             WorkspaceSettings.registerForEvent("WS_LOAD_SUM_OF_BOE_VARIABLES", WorkspaceSettings.LoadSumofBOEWorkspaceVariables);
-            WorkspaceSettings.registerForEvent("WS_LOAD_MANAGE_UCOT", WorkspaceSettings.LoadManageUCOT);
             WorkspaceSettings.registerForEvent("WS_LOAD_DISCRETE_VARIABLES", WorkspaceSettings.LoadDiscreteWorkspaceVariables);
             WorkspaceSettings.registerForEvent("WS_LOAD_CUSTOM_FIELDS", WorkspaceSettings.LoadCustomFields);
             WorkspaceSettings.registerForEvent("WS_LOAD_CUSTOM_FIELD_RESOURCE", WorkspaceSettings.LoadCustomFieldResource);

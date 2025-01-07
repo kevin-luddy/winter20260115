@@ -302,6 +302,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_EXPORT_DEFAULT_RESOURCES_TEMPLATE = "ExportDefaultResourcesTemplate";
 		public static readonly string ACTION_DISPLAY_WHOS_ONELINE = "WhosOnline";
 		public static readonly string ACTION_CONVERT_HTML_TO_TEXT = "ConvertHtmlToText";
+		public static readonly string ACTION_DISPLAY_MANAGE_UCOT = "DisplayManageUCOT";
 
 		#endregion ADMIN
 
@@ -625,7 +626,6 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_DISPLAY_IMPORT_PREVIEW_WORKSPACE_RESOURCE_RATES_TM = "WorkspaceResourceRatesImportPreviewTM";
 		public static readonly string ACTION_DISPLAY_WORKSPACE_UPDATE_RATES_DIALOG = "DisplayUpdateWorkspaceRatesDialog";
 		public static readonly string ACTION_DISPLAY_WORKSPACE_EMAIL_PREFERENCES = "DisplayEmailPreferences";
-		public static readonly string ACTION_DISPLAY_MANAGE_UCOT = "DisplayManageUCOT";
 
 		#endregion Display
 
@@ -787,6 +787,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string VIEW_MANAGE_OVERDUE_TRAINING = "ManageOverdueTraining";
 		public static readonly string VIEW_MANAGE_SYSTEM_PROPRICER_EXPORTS = "ManageSystemProPricerExports";
 		public static readonly string VIEW_SYSTEM_EXPORT_TO_PROPRICER_GRID = "ManageSystemProPricerGrid";
+		public static readonly string VIEW_MANAGE_UCOT = "ManageUCOT";
 
 		#endregion ADMIN
 
@@ -1002,7 +1003,6 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string VIEW_WORKSPACE_UPDATE_RESOURCE_RATES = "UpdateWorkspaceResourceRateDialog";
 		public static readonly string VIEW_DUPLICATE_TASK_DIALOG = "DuplicateTaskDialog";
 		public static readonly string VIEW_WORKSPACE_EMAIL_PREFERENCES = "WorkspaceEmailPreferences";
-		public static readonly string VIEW_MANAGE_UCOT = "ManageUCOT";
 
 		#endregion Workspace
 

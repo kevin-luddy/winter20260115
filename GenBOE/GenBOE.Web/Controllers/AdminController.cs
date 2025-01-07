@@ -1541,11 +1541,25 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
-        /// <summary>
-        /// Displays the partial view for the performing orgs page
-        /// </summary>
-        /// <returns></returns>
-        public ViewResult DisplayDefaultPerfOrgs()
+		/// <summary>
+		/// Displays the Manage UCOT page
+		/// </summary>
+		/// <param name="workspace">The workspace</param>
+		/// <returns>The view for Manage UCOT</returns>
+		public virtual ActionResult DisplayManageUCOT(string workspace)
+		{
+			Stopwatch sw = InitializeAction(this._log, WebConstants.ACTION_DISPLAY_MANAGE_UCOT, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+			ViewResult toReturn = View(WebConstants.VIEW_MANAGE_UCOT);
+			// Finalize Action
+			FinalizeAction(this._log, WebConstants.ACTION_DISPLAY_MANAGE_UCOT, sw);
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Displays the partial view for the performing orgs page
+		/// </summary>
+		/// <returns></returns>
+		public ViewResult DisplayDefaultPerfOrgs()
         {
             Stopwatch sw = InitializeAction(_log, "DisplayDefaultPerfOrgs", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
