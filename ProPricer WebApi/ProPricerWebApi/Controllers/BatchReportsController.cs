@@ -98,11 +98,11 @@ namespace APTSPropricerApi.Controllers
 			{
 				response.Messages.Add("The [POST] container passed in cannot be null.");
 			}
-			else if (string.IsNullOrEmpty(container.proposalId))
+			else if (string.IsNullOrEmpty(container.proposalIdOrNameVersion))
 			{
 				response.Messages.Add("The Proposal Id cannot be null.");
 			}
-			else if (string.IsNullOrEmpty(container.batchReportId))
+			else if (string.IsNullOrEmpty(container.batchReportIdOrNameVersion))
 			{
 				response.Messages.Add("The Batch Report Id cannot be null.");
 			}
@@ -116,7 +116,7 @@ namespace APTSPropricerApi.Controllers
 				}
 				catch (Exception ex)
 				{
-					string message = $"Error exporting Batch Report from Pro Pricer for Connection Id: {instanceId}, Proposal Id: {container.proposalId}, and Batch Report Id: {container.batchReportId}";
+					string message = $"Error exporting Batch Report from Pro Pricer for Connection Id: {instanceId}, Proposal Id: {container.proposalIdOrNameVersion}, and Batch Report Id: {container.batchReportIdOrNameVersion}";
 					Logger.LogError(ex, message);
 					response.Messages.Add(message);
 				}
@@ -158,11 +158,11 @@ namespace APTSPropricerApi.Controllers
 			{
 				response.Messages.Add("The [POST] container passed in cannot be null.");
 			}
-			else if (string.IsNullOrEmpty(container.proposalId))
+			else if (string.IsNullOrEmpty(container.proposalIdOrNameVersion))
 			{
 				response.Messages.Add("The Proposal Id cannot be null.");
 			}
-			else if (string.IsNullOrEmpty(container.batchReportId))
+			else if (string.IsNullOrEmpty(container.batchReportIdOrNameVersion))
 			{
 				response.Messages.Add("The Batch Report Id cannot be null.");
 			}
@@ -176,7 +176,7 @@ namespace APTSPropricerApi.Controllers
 				}
 				catch (Exception ex)
 				{
-					string message = $"Error exporting Batch Report as PDF from Pro Pricer for Connection Id: {instanceId}, Proposal Id: {container.proposalId}, and Batch Report Id: {container.batchReportId}";
+					string message = $"Error exporting Batch Report as PDF from Pro Pricer for Connection Id: {instanceId}, Proposal Id: {container.proposalIdOrNameVersion}, and Batch Report Id: {container.batchReportIdOrNameVersion}";
 					Logger.LogError(ex, message);
 					response.Messages.Add(message);
 				}
@@ -240,7 +240,7 @@ namespace APTSPropricerApi.Controllers
 			{
 				Data = new List<Table>()
 			};
-			tempFile = GenerateBatchReportFile(instanceId, container.proposalId, container.batchReportId, response.Messages, ExportType.Excel);
+			tempFile = GenerateBatchReportFile(instanceId, container.proposalIdOrNameVersion, container.batchReportIdOrNameVersion, response.Messages, ExportType.Excel);
 			ReadBatchFile(tempFile, response);
 			response.IsSuccessful = true;
 			return response;
@@ -256,7 +256,7 @@ namespace APTSPropricerApi.Controllers
 		internal ProPricerResponse<byte[]> ExportBatchReportAsPdf(int instanceId, ProPricerExportContainer container, out string tempFile)
 		{
 			ProPricerResponse<byte[]> response = new();
-			tempFile = GenerateBatchReportFile(instanceId, container.proposalId, container.batchReportId, response.Messages, ExportType.Excel);
+			tempFile = GenerateBatchReportFile(instanceId, container.proposalIdOrNameVersion, container.batchReportIdOrNameVersion, response.Messages, ExportType.Excel);
 			if (!response.Messages.Any())
 			{
 				try
@@ -334,12 +334,12 @@ namespace APTSPropricerApi.Controllers
 		/// Generates a Batch Report File
 		/// </summary>
 		/// <param name="instanceId">The connection instance identifier.</param>
-		/// <param name="proposalId">The proposal Id to use for the Batch Report</param>
-		/// <param name="batchReportId">The batch report Id</param>
+		/// <param name="proposalIdOrNameVersion">The proposal Id to use for the Batch Report</param>
+		/// <param name="batchReportIdOrNameVersion">The batch report Id</param>
 		/// <param name="messages">The object used to add error messages into.</param>
 		/// <param name="exportType">The export type</param>
 		/// <returns>The temporary File location that was generated.</returns>
-		private string GenerateBatchReportFile(int instanceId, string proposalId, string batchReportId, ICollection<string> messages, ExportType exportType)
+		private string GenerateBatchReportFile(int instanceId, string proposalIdOrNameVersion, string batchReportIdOrNameVersion, ICollection<string> messages, ExportType exportType)
 		{
 			string tempFile = null;
 			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
@@ -348,14 +348,14 @@ namespace APTSPropricerApi.Controllers
 				BatchReport batchReport = null;
 				try
 				{
-					Guid proposalGuid = new(proposalId);
-					proposal = ppc.Workspace.Proposals.Find(proposalGuid).Value();
+					proposal = Utility.GetProposal(ppc, proposalIdOrNameVersion);
 
 					if (proposal != null)
 					{
 						proposal.Open();
 						ppc.Workspace.Reports.BatchReports.Open();
-						batchReport = ppc.Workspace.Reports.BatchReports.Items().FirstOrDefault(b => b.Id.ToString() == batchReportId);
+						batchReport = Utility.GetBatchReport(ppc, batchReportIdOrNameVersion);
+
 						if (batchReport != null)
 						{
 							tempFile = Utility.GenerateTempFile(batchReport, proposal, exportType);

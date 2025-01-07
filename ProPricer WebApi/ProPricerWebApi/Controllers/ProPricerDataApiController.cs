@@ -104,7 +104,7 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="instanceId">Connection instance Id</param>
 		/// <param name="proposalId">Proposal Id</param>
 		/// <returns>Pricing data for a Proposal</returns>
-		[Route("PricingData/{instanceId}/{proposalId}")]
+		[Route("PricingData/{instanceId}/{proposalIdOrNameVersion}")]
 		[Authorize]
 		[HttpGet]
 		public ProPricerResponse<PricingData> GetPricingData(int instanceId, string proposalId)
@@ -112,7 +112,7 @@ namespace APTSPropricerApi.Controllers
 			ProPricerResponse<PricingData> response = new();
 			try
 			{
-				ProposalDto pDto = Utility.GetProposal(poolManagerList, logger, instanceId, proposalId);
+				ProposalDto pDto = Utility.GetProposalDTO(poolManagerList, logger, instanceId, proposalId);
 				pDto.Tasks = Utility.GetTasksForProposal(poolManagerList, logger, instanceId, proposalId);
 
 				response.Data = new PricingData
@@ -138,7 +138,7 @@ namespace APTSPropricerApi.Controllers
 		/// <param name="instanceId">Connection instance Id</param>
 		/// <param name="proposalId">Proposal Id</param>
 		/// <returns>Pricing data for a Proposal</returns>
-		[Route("PricingDataTotals/{instanceId}/{proposalId}")]
+		[Route("PricingDataTotals/{instanceId}/{proposalIdOrNameVersion}")]
 		[Authorize]
 		[HttpGet]
 		public ProPricerResponse<PricingTotals> GetPricingDataTotals(int instanceId, string proposalId)
@@ -146,7 +146,7 @@ namespace APTSPropricerApi.Controllers
 			ProPricerResponse<PricingTotals> response = new();
 			try
 			{
-				ProposalDto pDto = Utility.GetProposal(poolManagerList, logger, instanceId, proposalId);
+				ProposalDto pDto = Utility.GetProposalDTO(poolManagerList, logger, instanceId, proposalId);
 				pDto.Tasks = Utility.GetTasksForProposal(poolManagerList, logger, instanceId, proposalId);
 
 				response.Data = GetTotals(pDto);

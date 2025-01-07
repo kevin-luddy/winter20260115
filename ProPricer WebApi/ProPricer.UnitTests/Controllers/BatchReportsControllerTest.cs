@@ -74,8 +74,8 @@ namespace UnitTestProject
 			string batchId = results.Data.First(b => b.Name.StartsWith("15-2 iii a")).Id;
 			ProPricerResponse<ICollection<Table>> response = controller.ExportBatchReport(TestConstants.SpaceInstanceId, new ProPricerExportContainer
 			{
-				batchReportId = batchId,
-				proposalId = proposalId
+				batchReportIdOrNameVersion = batchId,
+				proposalIdOrNameVersion = proposalId
 			},
 			out string _);
 
@@ -102,8 +102,8 @@ namespace UnitTestProject
 			string batchId = results.Data.First(b => b.Name.StartsWith("DD1861 - Batch Excel Format")).Id;
 			ProPricerResponse<byte[]> response = controller.ExportBatchReportAsPdf(TestConstants.SpaceInstanceId, new ProPricerExportContainer
 			{
-				batchReportId = batchId,
-				proposalId = proposalId
+				batchReportIdOrNameVersion = batchId,
+				proposalIdOrNameVersion = proposalId
 			},
 			out string _);
 

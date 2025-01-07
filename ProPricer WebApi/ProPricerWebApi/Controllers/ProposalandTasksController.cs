@@ -47,7 +47,7 @@ namespace APTSPropricerApi.Controllers
 		[Route("{instanceId}/{id}")]
 		public ProposalDto Get(int instanceId, string id)
 		{
-			ProposalDto pDto = Utility.GetProposal(poolManagerList, Logger, instanceId, id);
+			ProposalDto pDto = Utility.GetProposalDTO(poolManagerList, Logger, instanceId, id);
 			pDto.Tasks = Utility.GetTasksForProposal(poolManagerList, Logger, instanceId, id);
 
 			return pDto;
