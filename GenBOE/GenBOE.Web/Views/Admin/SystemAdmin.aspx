@@ -259,7 +259,7 @@
                         SystemAdmin.LoadManageSystemProPricerExports();
                         break;
 					case "ManageUCOT":
-						WorkspaceSettings.LoadManageUCOT();
+						SystemAdmin.LoadManageUCOT();
 						break;
                     default:
                         SystemAdmin.LoadSystemAdminJump();
