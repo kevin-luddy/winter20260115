@@ -957,7 +957,7 @@
     <Content Include="Views\Workspace\AddWorkspaceResourceRateTM.ascx" />
     <Content Include="Views\Workspace\CreateWorkspaceDiv.ascx" />
     <Content Include="Views\Workspace\DiscreteWorkspaceVariables.ascx" />
-    <Content Include="Views\Workspace\ManageUCOT.ascx" />
+    <Content Include="Views\Admin\ManageUCOT.ascx" />
     <Content Include="Views\Workspace\WorkspaceIdentificationMST.ascx" />
     <Content Include="Views\CLIN\Index.aspx" />
     <Content Include="Views\BOETravel\BOETravelComposite.ascx" />
