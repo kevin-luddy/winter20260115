@@ -1893,6 +1893,7 @@
         }
 
         $scope.checkIfNewRowNeeded(model);
+        $scope.filterResourceSelections();
 
         if (ManageTaskModel.IsSpace) {
             $scope.checkTMRates();
