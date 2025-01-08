@@ -56,7 +56,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             public BoeTaskElementDTO TaskElement2 = new BoeTaskElementDTO();
 
             public Collection<BoeTaskElementDTO> TaskElementCollection;
-			public Collection<BoeDTO> BoeCollection;
+			public Collection<FullBoe> BoeCollection;
 
 			public BOEFormIBOEDTO Iboe;
             public BOEFormPBOEDTO Pboe;
@@ -367,6 +367,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                     new BOEFormPBOEDTO {Id = 23, FormName = "af af", Revision = 6},
                     new BOEFormPBOEDTO {Id = 999, FormName = "axe", Revision = 8}
                 };
+
+				BoeCollection = new Collection<FullBoe>();
             }
 
 
@@ -904,7 +906,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             FullWorkspace workspace = new FullWorkspace();
 
             retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(StubbedData.TaskElementCollection);
-			retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny < IEnumerable<BoeTaskElementDTO>())).Returns(StubbedData.BoeCollection);
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny <IEnumerable<BoeTaskElementDTO>>())).Returns(StubbedData.BoeCollection);
 
 
 			Collection <BOEFormModelView> BOEFormModelViewCollection = sut.GetSummaryForms(workspace) as Collection<BOEFormModelView>;
