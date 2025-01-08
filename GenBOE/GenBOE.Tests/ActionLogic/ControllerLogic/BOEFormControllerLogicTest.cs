@@ -56,7 +56,9 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             public BoeTaskElementDTO TaskElement2 = new BoeTaskElementDTO();
 
             public Collection<BoeTaskElementDTO> TaskElementCollection;
-            public BOEFormIBOEDTO Iboe;
+			public Collection<BoeDTO> BoeCollection;
+
+			public BOEFormIBOEDTO Iboe;
             public BOEFormPBOEDTO Pboe;
             public Collection<BOEFormIBOEDTO> IboeCollection;
             public Collection<BOEFormPBOEDTO> PboeCollection;
@@ -902,9 +904,10 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             FullWorkspace workspace = new FullWorkspace();
 
             retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(StubbedData.TaskElementCollection);
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny < IEnumerable<BoeTaskElementDTO>())).Returns(StubbedData.BoeCollection);
 
 
-            Collection<BOEFormModelView> BOEFormModelViewCollection = sut.GetSummaryForms(workspace) as Collection<BOEFormModelView>;
+			Collection <BOEFormModelView> BOEFormModelViewCollection = sut.GetSummaryForms(workspace) as Collection<BOEFormModelView>;
             Assert.AreEqual( BOEFormModelViewCollection.Count , BOEFormIboeDTOCollection.Count + BOEFormPboeDTOCollection.Count );
 
             BOEFormModelView vm;

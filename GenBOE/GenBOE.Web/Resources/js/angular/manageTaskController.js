@@ -33,6 +33,8 @@
     $scope.skillMixRationaleLaborTypeSelections = [];
     $scope.commonDisclosureLaborTypeSelections = [];
     $scope.IsUsingTMRatesInTask = false;
+    $scope.loadedMoqData = false;
+    $scope.dataLoaded = false;
 
     // Sets the Selected MOQ Types from the Selected MOQ Types from MoqEuationController.js.
     $scope.$on('MOQ_TYPE_SELECTION_CHANGED', function (event, selectedMoqTypes) {
@@ -166,7 +168,7 @@
 
     $scope.refreshSkillMixTables = function (setDirty = true) {
         // Check if we are showing Skill Mix (checks for Skill Mix Enabled and if there are no T&M rates)
-        if ($scope.showSkillMix()) {
+        if ($scope.showSkillMix() && $scope.dataLoaded && $scope.loadedMoqData) {
             $(document).trigger("SHOW_LOADING_BOX");
 
             if (setDirty) {
@@ -1163,6 +1165,7 @@
     var loadData = function (callback) {
         $(document).trigger("SHOW_LOADING_BOX");
         $scope.isLoading = true;
+        $scope.dataLoaded = false;
         $scope.TaskCustomFields = [];
         $scope.MoqTableCustomFields = [];
         $scope.LaborCustomFields = [];
@@ -1276,15 +1279,17 @@
             if ($scope.taskElementId === "-1") {
                 $scope.setDirty();
             }
+
+            $scope.dataLoaded = true;
+            // Refreshing the tables to calculate the totals rows for the UI, do not set dirty because there "should" be no changes from rows in DB
+            $scope.refreshSkillMixTables(false);
+
             $scope.isLoading = false;
             $(document).trigger("HIDE_LOADING_BOX");
 
             if (callback && typeof callback === 'function') {
                 callback();
             }
-
-            // Refreshing the tables to calculate the totals rows for the UI, do not set dirty because there "should" be no changes from rows in DB
-            $scope.refreshSkillMixTables(false);
         }, function errorCallback(response) {
             if (response.data && response.data.MessageList) {
                 $scope.errors = response.data.MessageList;
@@ -1920,8 +1925,8 @@
     };
 
     $scope.isSkillMixManual = function () {
-        // Set Skill Mix to be manual if SAP Connection is diabled or if there is any MOQ Type that is not Historical (5001) or Comparative (5002) MOQ Type
-        return !ManageTaskModel.SapConnectionEnabled || !$scope.SelectedMoqTypes.every(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002') && $scope.IsUsingTMRatesInTask === false;
+        // Set Skill Mix to be manual if SAP Connection is diabled or if there is any MOQ Type that is not Historical (5001) or Comparative (5002) MOQ Type or if there are no selected moqtypes or if using TM Rates in Task
+        return $scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0 || !ManageTaskModel.SapConnectionEnabled || !$scope.SelectedMoqTypes.every(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002') || $scope.IsUsingTMRatesInTask;
     };
 
     $scope.perfOrgSelected = function (item, model) {
