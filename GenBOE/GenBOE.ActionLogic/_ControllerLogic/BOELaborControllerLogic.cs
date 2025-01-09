@@ -928,18 +928,24 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 			#endregion
 			
-			if (Utilities.ShowSkillMixForTask(ws.CreationDate, taskElement.HasTMRates, moqTypes.Select(x => x.SelectedMOQType).ToList()))
+			if (Utilities.ShowSkillMixForTask(ws.CreationDate, taskElement.HasTMRates))
 			{
 				decimal historicalHoursTotals = 0;
+				// determine if SkillMix is manual or automatic
+				bool isManual = moqTypes == null || moqTypes.None() || !ws.EnableSAPConnection || !moqTypes.All(x => x.SelectedMOQType == MOQType.Historical || x.SelectedMOQType == MOQType.Comparative);
+
 
 				foreach (SkillMixModelView row in taskElement.SkillMixTable)
 				{
 					historicalHoursTotals += row.HistoricalHours;
 				}
 
-				if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
+				if (!isManual)
 				{
-					validationErrors.Add(new ValidationMessage(string.Format("Skill Mix Total Historical Hours do not match the sum of the Total Relevant Hours.")));
+					if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
+					{
+						validationErrors.Add(new ValidationMessage(string.Format("Skill Mix Total Historical Hours do not match the sum of the Total Relevant Hours.")));
+					}
 				}
 			
 				if (taskElement.SkillMixTable != null && taskElement.SkillMixTable.Any())
@@ -1937,7 +1943,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			toReturn.WorkspaceVariableIDs = modelview.TaskElementData.WorkspaceVariableIDs;
 			toReturn.TaskElementType = TaskElementType.Labor;
 			toReturn.BOETaskElementOrder = modelview.TaskElementData.BOETaskElementOrder;
-			if (Utilities.ShowSkillMixForTask(ws.CreationDate, modelview.IsUsingTMRatesInTask, modelview.MOQTypes.Select(x => x.SelectedMOQType).ToList()))
+			if (Utilities.ShowSkillMixForTask(ws.CreationDate, modelview.IsUsingTMRatesInTask))
 			{
 				toReturn.MOQTotalRelevantHours += modelview.MOQTypes?.Sum(t => t.TableData?.Sum(td => td.TotalRelevantHours) ?? 0) ?? 0;
 				toReturn.SkillMixTable = modelview.SkillMixData;
@@ -3672,12 +3678,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="resourceHours">MOQ Table Resource Hours</param>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
 		/// <param name="isBRCEnabled">Is BRC Enabled for CD row check.</param>
+		/// <param name="isManual">If the Historical Resource/Hours are Manually input or not</param>
 		/// <returns></returns>
 		public RefreshSkillMixModelView RefreshSkillMixTables(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
-			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isBRCEnabled)
+			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData,
+			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isBRCEnabled, bool isManual)
 		{
-			RefreshSkillMixModelView refreshedModel = new RefreshSkillMixModelView();
-
 			// null checks 
 			if (resourceHours == null)
 			{
@@ -3694,14 +3700,21 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				currentCommonDisclosureData = new List<CommonDisclosureModelView>();
 			}
 
+			RefreshSkillMixModelView refreshedModel = new RefreshSkillMixModelView();
+			laborTypes = laborTypes == null ? new List<LaborTypeDataModelView>() : laborTypes.Where(l => l.RateType == RateType.Hours).ToList();
+
+			if (isManual)
+			{
+				// Mock out the Resource Hours from input data
+				resourceHours = MockResourceHours(currentSkillMixData);
+			}	
+			
 			if (resourceHours.Any())
 			{
-				
 				bool addBlankRow = true;
-				laborTypes = laborTypes == null ? new List<LaborTypeDataModelView>() : laborTypes.Where(l => l.RateType == RateType.Hours).ToList();
-
+				
 				// filter out bad data in currentSkillMixData
-				FilterBadData(laborTypes, currentSkillMixData, currentCommonDisclosureData);
+				FilterBadData(laborTypes, currentSkillMixData, currentCommonDisclosureData, isManual);
 
 				decimal totalHours = resourceHours.Sum(n => n.TotalHours);
 				ICollection<IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO>> groupedResourceHours = resourceHours.GroupBy(r => r.ResourceName).OrderBy(t => t.Key).ToList();
@@ -3742,7 +3755,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					addBlankRow = false;
 				}
 
-				CopyMatchingSkillMixRowData(laborTypes, currentSkillMixData, refreshedModel, isBRCEnabled);
+				CopyMatchingSkillMixRowData(laborTypes, currentSkillMixData, refreshedModel, isBRCEnabled, false);
 
 				if (isBRCEnabled)
 				{
@@ -3777,16 +3790,42 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		}
 
 		/// <summary>
+		/// Mock out the Resource Hours from the Current Skill Mix Data
+		/// </summary>
+		/// <param name="currentSkillMixData">Current Skill Mix Data</param>
+		/// <returns>Mocked out resource hours</returns>
+		private ICollection<MOQTypeSelectionTableDataResourceHoursDTO> MockResourceHours(ICollection<SkillMixModelView> currentSkillMixData)
+		{
+			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>(currentSkillMixData.Count);
+			foreach (SkillMixModelView skillMix in currentSkillMixData)
+			{
+				if (!string.IsNullOrWhiteSpace(skillMix.ResourceOld))
+				{
+					hours.Add(new MOQTypeSelectionTableDataResourceHoursDTO
+					{
+						BOEID = skillMix.BOEID,
+						BOETaskElementID = skillMix.BOETaskElementID,
+						ResourceName = skillMix.ResourceOld,
+						TotalHours = skillMix.HistoricalHours,
+						WbsHours = skillMix.HistoricalHours
+					});
+				}
+			}
+
+			return hours;
+		}
+
+		/// <summary>
 		/// Filter out bad data inside the current lists
 		/// </summary>
-		/// <param name="currentSkillMixData"></param>
-		/// <param name="currentCommonDisclosureData"></param>
-		/// <exception cref="NotImplementedException"></exception>
-		private void FilterBadData(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData)
+		/// <param name="currentSkillMixData">The current skill mix data</param>
+		/// <param name="currentCommonDisclosureData">Current Common Disclosure data</param>
+		/// <param name="isManual">If the Historical Resource/Hours are Manually input or not</param>
+		private void FilterBadData(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, 
+			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isManual)
 		{
 			if (laborTypes.Any())
 			{
-
 				HashSet<string> resources = laborTypes.Select(l => l.ResourceName).Distinct().ToHashSet();
 				HashSet<string> brcs = laborTypes.Select(l => l.BusinessResourceCodeName).Distinct().ToHashSet();
 
@@ -3827,6 +3866,20 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						currentCommonDisclosureData.Remove(commonDisclosureModel);
 					}
 				}
+			}
+			else if (isManual)
+			{
+				// these skill mix model are pointing towards missing Resources, remove the resource name
+				foreach (SkillMixModelView skillMixModel in currentSkillMixData)
+				{
+					skillMixModel.ResourceNew = string.Empty;
+					skillMixModel.ProposedHours = 0m;
+					skillMixModel.BOESkillMix = 0m;
+					skillMixModel.Included = false;
+				}
+
+				// Clear out the common disclosure data
+				currentCommonDisclosureData.Clear();
 			}
 			else
 			{
@@ -4378,7 +4431,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="currentSkillMixData">Current Skill Mix Data</param>
 		/// <param name="refreshedModel">The Refreshed SKill Mix Model</param>
 		/// <param name="isBRCEnabled">Is BRC Enabled for this workspace</param>
-		private static void CopyMatchingSkillMixRowData(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, RefreshSkillMixModelView refreshedModel, bool isBRCEnabled)
+		private static void CopyMatchingSkillMixRowData(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, RefreshSkillMixModelView refreshedModel, bool isBRCEnabled, bool isManual)
 		{
 			if (currentSkillMixData != null && currentSkillMixData.Any())
 			{
@@ -4419,7 +4472,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							currentRow.ResourceNew = currentRow.ResourceNew ?? string.Empty;
 
 							anyValidCurrentRows = true;
-							refreshedModel.SkillMixRows.Add(currentRow);
+							if (!isManual)
+							{
+								refreshedModel.SkillMixRows.Add(currentRow);
+							}
 
 							if (!string.IsNullOrWhiteSpace(currentRow.ResourceNew))
 							{
@@ -4473,7 +4529,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							}
 						}
 
-						if (anyValidCurrentRows)
+						if (anyValidCurrentRows && !isManual)
 						{
 							// remove the refreshed row to make way for the currentRows
 							refreshedModel.SkillMixRows.Remove(refreshedRow);
@@ -4492,6 +4548,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			// Set BOE Skill Mix Percent on Skill Mix table
 			foreach (SkillMixModelView row in refreshedModel.SkillMixRows)
 			{
+				row.LaborSkillMix = refreshedModel.SkillMixTotals.HistoricalHours == 0m ? 0m : row.HistoricalHours * 100.0m / refreshedModel.SkillMixTotals.HistoricalHours;
 				if (row.Included && refreshedModel.SkillMixTotals.ProposedHours != 0.0m)
 				{
 					row.BOESkillMix = row.ProposedHours * 100.0m / refreshedModel.SkillMixTotals.ProposedHours;

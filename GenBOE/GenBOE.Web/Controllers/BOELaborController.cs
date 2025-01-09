@@ -133,16 +133,17 @@ namespace GenBOE.Web.Controllers
 			bool isReadOnly = bool.Parse((string)this.ViewData["READONLY"]);
 			bool enableSkillMix = false;
 
-			// Checks to see if Skill Mix is enabled for the task.
+			// Checks to see if Skill Mix is enabled for the workspace.
 			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate))
 			{
 				enableSkillMix = true;
 			}
 
 			ViewData["EnableSkillMix"] = enableSkillMix;
+			ViewData["IsSkillMixManual"] = true;
 
 			//create a var for list items
-			Collection<SelectListItem> orderOfResourceTypes = new Collection<SelectListItem>();
+			Collection < SelectListItem> orderOfResourceTypes = new Collection<SelectListItem>();
 			string taskDescription = string.Empty;
 			if (taskElementID.HasValue)
 			{
@@ -587,7 +588,7 @@ namespace GenBOE.Web.Controllers
 			{
 				enableSkillMix = true;
 			}
-			ViewData["EnableSkillMix"] = enableSkillMix;
+			ViewData["IsSkillMixEnabled"] = enableSkillMix;
 			ViewData["EnableCommonDisclosure"] = false;
 			if (Utilities.IsBRCEnabledForWorkspace(workspace) && boe.EndDate >= Utilities.OneLmxStartDate)
 			{
@@ -1649,9 +1650,11 @@ namespace GenBOE.Web.Controllers
 		/// <param name="laborTypes">The labor type/spreads data</param>
 		/// <param name="currentCommonDisclosureData">Current Common Disclosure data</param>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
+		/// <param name="isManual">If the Historical Resource/Hours are Manually input or not</param>
 		/// <returns></returns>
 		public ActionResult RefreshSkillMixTables(string workspace, int boeId, ICollection<MoqTypeSelection> selectedMoqTypes,
-			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData)
+			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData,
+			bool isManual)
 		{
 			// Initialize Action
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1660,13 +1663,13 @@ namespace GenBOE.Web.Controllers
 
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLES, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeId);
 
-			ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours = selectedMoqTypes?
+			ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours = isManual ? null : selectedMoqTypes?
 				.SelectMany(moqType => moqType.TableData)
 				.SelectMany(tableData => tableData.ResourceHours)
 				.ToList();
 
 			// Call to Controller Logic
-			RefreshSkillMixModelView response = this._BoeLaborControllerLogic.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData, isBRCEnabled);
+			RefreshSkillMixModelView response = this._BoeLaborControllerLogic.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData, isBRCEnabled, isManual);
 
 			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });
 

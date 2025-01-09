@@ -56,7 +56,9 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             public BoeTaskElementDTO TaskElement2 = new BoeTaskElementDTO();
 
             public Collection<BoeTaskElementDTO> TaskElementCollection;
-            public BOEFormIBOEDTO Iboe;
+			public Collection<FullBoe> BoeCollection;
+
+			public BOEFormIBOEDTO Iboe;
             public BOEFormPBOEDTO Pboe;
             public Collection<BOEFormIBOEDTO> IboeCollection;
             public Collection<BOEFormPBOEDTO> PboeCollection;
@@ -365,6 +367,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                     new BOEFormPBOEDTO {Id = 23, FormName = "af af", Revision = 6},
                     new BOEFormPBOEDTO {Id = 999, FormName = "axe", Revision = 8}
                 };
+
+				BoeCollection = new Collection<FullBoe>();
             }
 
 
@@ -573,13 +577,17 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             this.iboeFormDataLoader.Setup(x => x.GetById(StubbedData.Iboe.Id)).Returns(StubbedData.Iboe);
             this.pboeFormDataLoader.Setup(x => x.GetById(StubbedData.Pboe.Id)).Returns(StubbedData.Pboe);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { new FullBoe() { Id = 1000 } });
+			this.retriever.Setup(x => x.GetOdcCollectionByBoeIds(It.IsAny<ICollection<int>>(), It.IsAny<bool>())).Returns(new List<OtherDirectCostDTO>());
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { StubbedData.Res1, StubbedData.Res2, StubbedData.Res3, StubbedData.Res4, StubbedData.Res5, StubbedData.Res6 });
+			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { new FullBoe() { Id = 1000 } });
             this.retriever.Setup(x => x.GetLaborTypesTypesForBoeId(1000)).Returns(new List<ResourceTypeDto>()
             {
                 new ResourceTypeDto() { ResourceID = StubbedData.Res1.Id, StartDateValue = new DateTime(2012, 9, 15), EndDateValue = new DateTime(2012, 9, 15) },
                 new ResourceTypeDto() { ResourceID = StubbedData.Res2.Id, StartDateValue = new DateTime(2012, 9, 15), EndDateValue = new DateTime(2012, 9, 15) },
                 new ResourceTypeDto() { ResourceID = StubbedData.Res3.Id, StartDateValue = new DateTime(2012, 9, 15), EndDateValue = new DateTime(2012, 9, 15) }
             });
+
+
 
             Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
             Collection<int> resourceIdsWithValidTMRates = new Collection<int>();
@@ -898,9 +906,10 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             FullWorkspace workspace = new FullWorkspace();
 
             retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(StubbedData.TaskElementCollection);
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny <IEnumerable<BoeTaskElementDTO>>())).Returns(StubbedData.BoeCollection);
 
 
-            Collection<BOEFormModelView> BOEFormModelViewCollection = sut.GetSummaryForms(workspace) as Collection<BOEFormModelView>;
+			Collection <BOEFormModelView> BOEFormModelViewCollection = sut.GetSummaryForms(workspace) as Collection<BOEFormModelView>;
             Assert.AreEqual( BOEFormModelViewCollection.Count , BOEFormIboeDTOCollection.Count + BOEFormPboeDTOCollection.Count );
 
             BOEFormModelView vm;

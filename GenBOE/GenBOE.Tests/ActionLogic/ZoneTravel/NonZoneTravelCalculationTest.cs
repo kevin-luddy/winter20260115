@@ -9,12 +9,18 @@ namespace GenBOE.Tests.ActionLogic.ZoneTravel
     using System;
     using System.Collections.Generic;
     using GenBOE.ActionLogic.ZoneTravel;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using IES.Common;
+	using IES.Common.classes;
+	using Microsoft.Practices.Unity;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using Moq;
 
-    [TestClass]
-    public class NonZoneTravelCalculationTest
+	[TestClass]
+	public class NonZoneTravelCalculationTest
     {
-        private Dictionary<int, decimal> EscalationRates
+		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
+
+		private Dictionary<int, decimal> EscalationRates
         {
             get
             {
@@ -27,7 +33,16 @@ namespace GenBOE.Tests.ActionLogic.ZoneTravel
             }
         }
 
-        [TestMethod]
+		/// <summary>
+		/// Test Initialize
+		/// </summary>
+		[TestInitialize]
+		public void CreateSystem()
+		{
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
+		}
+
+		[TestMethod]
         [ExpectedException(typeof(DivideByZeroException))]
         public void NoData_Exception()
         {

@@ -27,7 +27,8 @@ namespace GenBOE.Tests.ActionLogic
         private IDictionary<int, BOEStateModelView> boeStatesDictionary;
         private IDictionary<int, WorkspaceStateModelView> workspaceStatesDictionary;
         private Mock<ICommonDataMapper> commonDataMapper;
-        private CommonDataMapper realMapper;
+		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
+		private CommonDataMapper realMapper;
         [TestInitialize]
         new public void Setup()
         {
@@ -55,8 +56,9 @@ namespace GenBOE.Tests.ActionLogic
             commonDataMapper.Setup(x => x.getWorkspaceStatesDictionary()).Returns(workspaceStatesDictionary);
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), commonDataMapper.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
 
-            this.realMapper = new CommonDataMapper(new CommonDataLoader(), new NonCacheDataLoader());
+			this.realMapper = new CommonDataMapper(new CommonDataLoader(), new NonCacheDataLoader());
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), TestMethod]

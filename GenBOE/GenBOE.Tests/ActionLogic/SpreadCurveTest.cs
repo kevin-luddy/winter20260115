@@ -11,15 +11,25 @@ namespace GenBOE.Tests.ActionLogic
     using System.Linq;
     using GenBOE.Dtos;
     using IES.Common;
-    using IES.Common.Exceptions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using IES.Common.classes;
+	using IES.Common.Exceptions;
+	using Microsoft.Practices.Unity;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using Moq;
 
     [TestClass]
     public class SpreadCurveTest
     {
-        // This function will call the Business Layer for the Labor Spread Calculations and
-        // will be used by all 50 spread curve tests
-        public Collection<ResourceSpreadDto> LaborSpreadCalcs(DateTime inStart, DateTime inEnd, long inHoursSpread, SpreadCurves inCurveID, WorkspaceDTO ws)
+		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
+		[TestInitialize]
+		public void CreateSystem()
+		{
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
+		}
+
+		// This function will call the Business Layer for the Labor Spread Calculations and
+		// will be used by all 50 spread curve tests
+		public Collection<ResourceSpreadDto> LaborSpreadCalcs(DateTime inStart, DateTime inEnd, long inHoursSpread, SpreadCurves inCurveID, WorkspaceDTO ws)
         {
             if (ws == null)
             {

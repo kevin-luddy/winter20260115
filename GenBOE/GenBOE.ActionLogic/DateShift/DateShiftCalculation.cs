@@ -147,7 +147,12 @@ namespace GenBOE.ActionLogic.DateShift
                 throw new ArgumentNullException(nameof(dateShiftModel));
             }
 
-            if (dateShiftModel.Details == null || dateShiftModel.Details.None())
+			if (fullWorkspace == null)
+			{
+				throw new ArgumentNullException(nameof(fullWorkspace));
+			}
+
+			if (dateShiftModel.Details == null || dateShiftModel.Details.None())
             {
                 throw new ArgumentException("Details for a dateshift cannot be null or empty", nameof(dateShiftModel));
             }
@@ -179,7 +184,7 @@ namespace GenBOE.ActionLogic.DateShift
 					// Iterate through each task and check for Skill Mix
 					foreach (BoeTaskElementDTO task in fullWorkspace?.TaskElements)
 					{
-						if (Utilities.ShowSkillMixForTask(fullWorkspace?.CreationDate, task.HasTMRates, fullWorkspace?.MoqTypeSelections.Where(x => x.TaskId == task.Id).Select(x => x.SelectedMOQType).ToList()))
+						if (Utilities.ShowSkillMixForTask(fullWorkspace?.CreationDate, task.HasTMRates))
 						{
 							// Run Skill Mix update
 							ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours = fullWorkspace?.MoqTypeSelections
@@ -191,8 +196,12 @@ namespace GenBOE.ActionLogic.DateShift
 
 							LaborTaskDataModelView laborTasks = this.boeLaborControllerLogic.ConvertDtoToModelView(fullWorkspace, fullBoe, task);
 
+							bool allAutomaticMOQTypes = fullWorkspace.MoqTypeSelections?.All(m => m.SelectedMOQType == MOQType.Comparative || m.SelectedMOQType == MOQType.Historical) ?? true;
+
+							bool isManual = !fullWorkspace.EnableSAPConnection || !allAutomaticMOQTypes;
+
 							RefreshSkillMixModelView response = this.boeLaborControllerLogic.RefreshSkillMixTables(resourceHours,
-								laborTasks.LaborTypesData, task.SkillMixTable, task.CommonDisclosureTable, isBRCEnabled);
+								laborTasks.LaborTypesData, task.SkillMixTable, task.CommonDisclosureTable, isBRCEnabled, isManual);
 
 							if (response != null)
 							{
