@@ -781,22 +781,15 @@ namespace APTSPropricerApi.Common
 
 			using (ppc)
 			{
-				// GUID or Name|Version?
-				if (nameOrId.Contains('|'))
+				// Try to parse out the Id as GUID else get report based on Name
+				if (Guid.TryParse(nameOrId, out Guid parsedValue))
 				{
-					// Name
-					string[] parts = nameOrId.Split('|');
-
-					// Parse out Version as int
-					int version = int.Parse(parts[1]);
-
-					batchReport = ppc.Workspace.Reports.BatchReports.Items().FirstOrDefault(b => b.Name == parts[0] && b.ContentVersion == version);
+					EntityId pEntityId = new(parsedValue);
+					batchReport = ppc.Workspace.Reports.BatchReports.Items().FirstOrDefault(b => b.Id == pEntityId);
 				}
 				else
 				{
-					// GUID
-					EntityId pEntityId = new(new Guid(nameOrId));
-					batchReport = ppc.Workspace.Reports.BatchReports.Items().FirstOrDefault(b => b.Id == pEntityId);
+					batchReport = ppc.Workspace.Reports.BatchReports.Items().FirstOrDefault(b => b.Name == nameOrId);
 				}
 			}
 
