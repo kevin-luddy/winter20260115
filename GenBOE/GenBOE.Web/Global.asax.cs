@@ -323,7 +323,14 @@ namespace GenBOE
 
 			if (!string.IsNullOrEmpty(accessControlAllowOrigin))
 			{
-				Response.AppendHeader("Access-Control-Allow-Origin", accessControlAllowOrigin);
+				string[] allowedOrigins = accessControlAllowOrigin.Split(',');
+
+				string origin = Request.Headers["Origin"];
+
+				if (allowedOrigins.Contains(origin, StringComparer.OrdinalIgnoreCase))
+				{
+					Response.AppendHeader("Access-Control-Allow-Origin", origin);
+				}
 			}
 
 			Response.AppendHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
