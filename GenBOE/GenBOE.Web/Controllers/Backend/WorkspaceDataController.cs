@@ -20,7 +20,7 @@ namespace GenBOE.Web.Controllers
 	/// This controller is used to facilitate configuraiton data.
 	/// </summary>
 	[AllowAnonymous]
-	public class WorkspaceController : BoeDataBaseAPIController
+	public class WorkspaceDataController : BoeDataBaseAPIController
 	{
 		#region Properties & Ctor
 
@@ -37,7 +37,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="factory">Full object factory</param>
 		/// <param name="userLoader">User loader</param>
 		/// <param name="permissionsLoader">Permission loader</param>
-		public WorkspaceController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader)
+		public WorkspaceDataController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 

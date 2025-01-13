@@ -56,9 +56,9 @@ namespace GenBOE.Web.Controllers
 	using IES.Common.PickList;
 	using UserDTO = Dtos.UserDTO;
 
-	public class WorkspaceDataController : GenBOEController
+	public class WorkspaceController : GenBOEController
 	{
-		private Logger _log = new Logger(typeof(WorkspaceDataController));
+		private Logger _log = new Logger(typeof(WorkspaceController));
 		private WorkspaceStateMachine _WorkspaceStateMachine = null;
 		private ActiveDirectoryUtilities _ADUtils = null;
 		private ResourceDTODataLoader _ResourceLoader = null;
@@ -142,7 +142,7 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public WorkspaceDataController(ISecurityAccess inSecurityAccess,
+		public WorkspaceController(ISecurityAccess inSecurityAccess,
 			ICommonDataMapper inCommonDataMapper,
 			SiteMasterUtilities inSiteMasterUtilities,
 			UserDTODataLoader inUserDTODataLoader,

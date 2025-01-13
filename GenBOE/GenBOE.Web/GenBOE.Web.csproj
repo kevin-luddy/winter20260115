@@ -270,7 +270,7 @@
     <Compile Include="Common\StringNonPrintableCharRemovalModelBinder.cs" />
     <Compile Include="Common\WorkspaceIdentificationModelBinder.cs" />
     <Compile Include="Controllers\Backend\BOEConfigurationController.cs" />
-    <Compile Include="Controllers\Backend\WorkspaceController.cs" />
+    <Compile Include="Controllers\Backend\WorkspaceDataController.cs" />
     <Compile Include="Controllers\BoeDataBaseAPIController.cs" />
     <Compile Include="Controllers\WorkspaceRecalculateActualsController.cs" />
     <Compile Include="ModelView\AcvWorkspaceData.cs" />
