@@ -317,10 +317,10 @@ namespace GenBOE
 			Utilities.LogEnvironmentSettings(_log);
 		}
 
-        /// <summary>
-        /// Configures Web Api 2 "things" to work in an MVC application
-        /// </summary>
-        private static void ConfigureWebApi()
+		/// <summary>
+		/// Configures Web Api 2 "things" to work in an MVC application
+		/// </summary>
+		private static void ConfigureWebApi()
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
             GlobalConfiguration.Configuration.DependencyResolver = new UnityResolver(GenBOEUnityContainer.Container);
