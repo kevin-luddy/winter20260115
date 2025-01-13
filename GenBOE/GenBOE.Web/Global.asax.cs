@@ -319,7 +319,7 @@ namespace GenBOE
 
 		protected void Application_BeginRequest(object sender, EventArgs e)
 		{
-			string accessControlAllowOrigin = ConfigurationUtilities.GetAppSetting("AllowedOrigin");
+			string accessControlAllowOrigin = ConfigurationUtilities.GetAppSetting("AllowedOrigins");
 
 			if (!string.IsNullOrEmpty(accessControlAllowOrigin))
 			{
