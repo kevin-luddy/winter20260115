@@ -317,10 +317,24 @@ namespace GenBOE
 			Utilities.LogEnvironmentSettings(_log);
 		}
 
-        /// <summary>
-        /// Configures Web Api 2 "things" to work in an MVC application
-        /// </summary>
-        private static void ConfigureWebApi()
+		//protected void Application_BeginRequest(object sender, EventArgs e)
+		//{
+		//	string accessControlAllowOrigin = ConfigurationUtilities.GetAppSetting("AllowedOrigin");
+
+		//	if (!string.IsNullOrEmpty(accessControlAllowOrigin))
+		//	{
+		//		Response.AppendHeader("Access-Control-Allow-Origin", accessControlAllowOrigin);
+		//	}
+
+		//	Response.AppendHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+		//	Response.AppendHeader("Access-Control-Allow-Headers", "Content-Type");
+		//	Response.AppendHeader("Access-Control-Allow-Credentials", "true");
+		//}
+
+		/// <summary>
+		/// Configures Web Api 2 "things" to work in an MVC application
+		/// </summary>
+		private static void ConfigureWebApi()
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
             GlobalConfiguration.Configuration.DependencyResolver = new UnityResolver(GenBOEUnityContainer.Container);
