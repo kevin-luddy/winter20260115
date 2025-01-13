@@ -329,13 +329,13 @@ namespace GenBOE
 
 				if (allowedOrigins.Contains(origin, StringComparer.OrdinalIgnoreCase))
 				{
-					Response.AppendHeader("Access-Control-Allow-Origin", origin);
+					Response.Headers.Set("Access-Control-Allow-Origin", origin);
 				}
 			}
 
-			Response.AppendHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-			Response.AppendHeader("Access-Control-Allow-Headers", "Content-Type");
-			Response.AppendHeader("Access-Control-Allow-Credentials", "true");
+			Response.Headers.Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+			Response.Headers.Set("Access-Control-Allow-Headers", "Content-Type");
+			Response.Headers.Set("Access-Control-Allow-Credentials", "true");
 		}
 
 		/// <summary>
