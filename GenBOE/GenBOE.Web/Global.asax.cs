@@ -719,7 +719,8 @@ namespace GenBOE
                     GenBOEUnityContainer.Container.RegisterType(typeof(IAdminControllerLogic), typeof(AdminControllerLogicSpaceSystems), GetLifetimeManager(), new InjectionConstructor(
                                                                                                                               new ResolvedParameter(typeof(ICommonDataMapper)),
                                                                                                                               new ResolvedParameter(typeof(IResourceListDTODataLoader)),
-                                                                                                                              new ResolvedParameter(typeof(IPermissionsDTODataLoader))));
+                                                                                                                              new ResolvedParameter(typeof(IPermissionsDTODataLoader)),
+																															  new ResolvedParameter(typeof(ISystemSettingDTODataLoader))));
 
                     GenBOEUnityContainer.Container.RegisterType(typeof(IWorkspaceControllerLogic), typeof(WorkspaceControllerLogicSpaceSystems), GetLifetimeManager(), new InjectionConstructor(
                                                                                                                               new ResolvedParameter(typeof(IWorkspaceDTODataLoader)),

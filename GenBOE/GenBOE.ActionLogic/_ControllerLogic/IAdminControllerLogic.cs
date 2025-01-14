@@ -90,20 +90,32 @@ namespace GenBOE.ActionLogic
         /// <param name="validationErrors">A list of validation errors.</param>
         void ValidateOffloadRate(OffloadRateModelView rate, ICollection<OffloadRatesDTO> allRates, Collection<ValidationMessage> validationErrors);
 
-        /// <summary>
-        /// Kicks off DataAnnotation validation for the system settings
-        /// </summary>
-        /// <param name="systemSettings">System settings to validate</param>
-        /// <param name="validationErrors">A list of validation errors.</param>
-        void ValidateSystemSettings(ICollection<SystemSettingDTO> systemSettings, Collection<ValidationMessage> validationErrors);
+		/// <summary>
+		/// Kicks off DataAnnotation validation for the system settings
+		/// </summary>
+		/// <param name="systemSettings">System settings to validate</param>
+		/// <param name="validationErrors">A list of validation errors.</param>
+		void ValidateSystemSettings(ICollection<SystemSettingDTO> systemSettings, Collection<ValidationMessage> validationErrors);
 
-        /// <summary>
-        /// Peform validation that is shared between saving or editing an Output Format Template
-        /// </summary>
-        /// <param name="templateName">Template Name</param>
-        /// <param name="templateDescription">Template Description</param>
-        /// <returns>Collection of any validation messages</returns>
-        Collection<ValidationMessage> ValidateTemplateOnSaveOrEdit(string templateName, string templateDescription);
+		/// <summary>
+		/// Save ucot system settings
+		/// </summary>
+		/// <param name="systemSettings">System settings to save</param>
+		bool SaveUcotSystemSettings(decimal ucot);
+
+		/// <summary>
+		/// Get ucot system settings
+		/// </summary>
+		/// <param name="systemSettings">System settings to save</param>
+		decimal GetUcotSystemSettingsValue();
+
+		/// <summary>
+		/// Peform validation that is shared between saving or editing an Output Format Template
+		/// </summary>
+		/// <param name="templateName">Template Name</param>
+		/// <param name="templateDescription">Template Description</param>
+		/// <returns>Collection of any validation messages</returns>
+		Collection<ValidationMessage> ValidateTemplateOnSaveOrEdit(string templateName, string templateDescription);
 
         /// <summary>
         /// Gets the overdue training for users in the system.
