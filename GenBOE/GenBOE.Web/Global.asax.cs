@@ -317,26 +317,6 @@ namespace GenBOE
 			Utilities.LogEnvironmentSettings(_log);
 		}
 
-		protected void Application_BeginRequest(object sender, EventArgs e)
-		{
-			string accessControlAllowOrigin = ConfigurationUtilities.GetAppSetting("AllowedOrigins");
-
-			if (!string.IsNullOrEmpty(accessControlAllowOrigin))
-			{
-				string[] allowedOrigins = accessControlAllowOrigin.Split(',');
-
-				string origin = Request.Headers["Origin"];
-
-				if (allowedOrigins.Contains(origin, StringComparer.OrdinalIgnoreCase))
-				{
-					Response.Headers.Set("Access-Control-Allow-Origin", origin);
-				}
-			}
-
-			Response.Headers.Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-			Response.Headers.Set("Access-Control-Allow-Headers", "Content-Type");
-			Response.Headers.Set("Access-Control-Allow-Credentials", "true");
-		}
 
 		/// <summary>
 		/// Configures Web Api 2 "things" to work in an MVC application

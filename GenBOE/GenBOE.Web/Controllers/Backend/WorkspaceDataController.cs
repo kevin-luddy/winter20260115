@@ -14,12 +14,14 @@ namespace GenBOE.Web.Controllers
 	using System;
 	using System.Collections.Generic;
 	using System.Web.Http;
+	using System.Web.Http.Cors;
 
 	/// <summary>
 	/// Workspace Controller for getting workspace data.
 	/// This controller is used to facilitate configuraiton data.
 	/// </summary>
 	[AllowAnonymous]
+	[EnableCors(origins: "http://localhost:4200", headers: "*", methods: "*", SupportsCredentials = true)]
 	public class WorkspaceDataController : BoeDataBaseAPIController
 	{
 		#region Properties & Ctor
