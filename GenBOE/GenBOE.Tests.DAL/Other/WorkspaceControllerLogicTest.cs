@@ -40,6 +40,7 @@ namespace GenBOE.Tests.DAL.Other
 		private BoeTaskElementDTODataLoader boeTaskElementDTODataLoader;
 		private Mock<IOffloadRatesDTOLoader> offloadRatesLoader;
 		private Mock<IRteTemplateDataLoader> rteTemplateDataLoader;
+		private readonly Mock<IActiveDirectoryUtilities> _ADUtils = new Mock<IActiveDirectoryUtilities>();
 
 		/// <summary>
 		/// Initializes the test data.
@@ -55,6 +56,7 @@ namespace GenBOE.Tests.DAL.Other
 			offloadRatesLoader = new Mock<IOffloadRatesDTOLoader>();
 			fullObjectFactory = new FullObjectFactory(new WorkspaceDTODataLoader(), new BoeDTODataLoader(), null, null, null, null, null, null, null, null, null, null);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), fullObjectFactory);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), _ADUtils.Object);
 
 			userLoader = new Mock<IUserDTODataLoader>();
 
