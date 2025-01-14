@@ -712,7 +712,8 @@ namespace GenBOE
                                                                                                                               new ResolvedParameter(typeof(IMSTZoneTravelOriginDTODataLoader)),
                                                                                                                               new ResolvedParameter(typeof(IMSTZoneTravelDestinationDTODataLoader)),
                                                                                                                               new ResolvedParameter(typeof(IMSTTravelNonzoneFeesAndCostsDTODataLoader)),
-                                                                                                                              new ResolvedParameter(typeof(IPermissionsDTODataLoader))));
+                                                                                                                              new ResolvedParameter(typeof(IPermissionsDTODataLoader)), 
+																															  new ResolvedParameter(typeof(ISystemSettingDTODataLoader))));
                     break;
 
                 case CompanyConfiguration.SpaceSystems:

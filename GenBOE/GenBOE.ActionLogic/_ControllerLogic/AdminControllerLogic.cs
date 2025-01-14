@@ -483,7 +483,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		public bool SaveUcotSystemSettings(decimal ucot)
 		{
 			string ucotKey = ConfigurationUtilities.GetAppSetting("UcotKey");
-			string key = this.systemSettingDTODataLoader.SaveSystemSetting(new SystemSettingDTO { Key = ConfigurationUtilities.GetAppSetting("UcotKey"), Value = ucot.ToString() });
+			string key = this.systemSettingDTODataLoader.SaveSystemSetting(new SystemSettingDTO { Key = ucotKey, Value = ucot.ToString() });
 			return ucotKey == key;
 		}
 
