@@ -1930,6 +1930,14 @@
         return $scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0 || !ManageTaskModel.SapConnectionEnabled || !$scope.SelectedMoqTypes.every(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002') || $scope.IsUsingTMRatesInTask;
     };
 
+    $scope.isSkillMixDisabled = function () {
+        // Set if Skill Mix is Automatic, but one of the following occurs:
+        // 1) No MOQ Tables
+        // 2) Any MOQ Table is missing SAP Resource Hours
+
+        return !$scope.isSkillMixManual() && (($scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0) || !$scope.SelectedMoqTypes.every(x => x.TableData !== undefined && x.TableData.length > 0 && x.TableData.every(y => y.ResourceHours !== undefined && y.ResourceHours.length > 0)));
+    }
+
     $scope.perfOrgSelected = function (item, model) {
         $scope.setDirty();
 

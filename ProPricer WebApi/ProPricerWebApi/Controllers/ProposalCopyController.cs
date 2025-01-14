@@ -9,8 +9,10 @@
 
 namespace APTSPropricerApi.Controllers
 {
+	using APTSPropricerApi.Common;
 	using APTSPropricerApi.Connection;
 	using APTSPropricerApi.DTOs;
+	using DocumentFormat.OpenXml.Office2010.Excel;
 	using EBS.Core;
 	using EBS.ProPricer.Data;
 	using EBS.ProPricer.Model;
@@ -76,20 +78,7 @@ namespace APTSPropricerApi.Controllers
 			{
 				try
 				{
-					Proposal pr;
-
-					if (newProp.Id.Contains('|'))
-					{
-						// Name
-						string[] parts = newProp.Id.Split('|');
-						pr = ppc.Workspace.Proposals.Find(parts[0], parts[1]).Value();
-					}
-					else
-					{
-						// GUID
-						EntityId pEntityId = new(new Guid(newProp.Id));
-						pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
-					}
+					Proposal pr = Utility.FindProposal(ppc, newProp.Id).Value();
 
 					pr.Open();
 

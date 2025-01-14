@@ -353,7 +353,7 @@ namespace APTSPropricerApi.Controllers
 									{
 										CostInfo c = r.GetCost();
 
-										foreach (IBurdenCostElement el in c.BurdenElements)
+										foreach (IBurdenCostElement el in c.Elements)
 										{
 											burdens.Name = el.Name;
 											burdens.Value = c.BurdenCost(el.Position).ToString();

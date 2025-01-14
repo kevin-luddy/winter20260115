@@ -919,7 +919,10 @@
                 Skill Mix Rationale
             </div>
             <div class="module-content-data expanded-content">
-                <div class="form-element">
+                <div class="form-element" data-ng-if="isSkillMixDisabled()">
+                    <div class="form-label"><p>The SAP MOQ Actuals have not been calculated.  Please ensure all MOQ Tables are updated to enable Skill Mix.</p><br />&nbsp;</div>
+                </div>
+                <div class="form-element" data-ng-if="!isSkillMixDisabled()">
                     <!-- Skill Mix Table -->
                     <div class="form-label">
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
