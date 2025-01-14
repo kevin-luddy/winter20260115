@@ -1,13 +1,13 @@
 PRINT '###### SCRIPT IS STARTING ######';
 /*
-    This file was auto-generated for Release: 2024.14, on 1/14/2025.
+    This file was auto-generated for Release: 2025.02, on 1/14/2025.
     It contains all of the Release specific scripts, modifying data/tables as well as all of the Stored Procedures and User Defined Table Types.
 */
 
 /*
-    File: \Release 2024.14\1 - Release 2024.14 Script.sql
+    File: \Release 2025.02\1 - Release 2025.02 Script.sql
 */
-PRINT '### Starting file: \Release 2024.14\1 - Release 2024.14 Script.sql';
+PRINT '### Starting file: \Release 2025.02\1 - Release 2025.02 Script.sql';
 EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2024.14'; 
 GO
 
@@ -362,6 +362,7 @@ AS
 **		07/12/24	twilson3			proph-2019 Fix @Temp Table definitions
 **		07/30/24	e405721				PROPH-2218 Add BRC Name into MOQ Type Selection Table Data Resource Hours Table
 **		10/15/24	e405721				PROPH-2392: Update for Skill Mix V2
+**		1/14/25		twilson3			PROPH-2596 - Add UCOT Factor
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -3144,6 +3145,7 @@ AS
 **		07/12/24	twilson3			proph-2019 Fix @Temp Table definitions
 **		07/30/24	e405721				PROPH-2218 Add BRC Name into MOQ Type Selection Table Data Resource Hours Table
 **		10/15/24	e405721				PROPH-2392: Update for Skill Mix V2
+**		1/14/25		twilson3			PROPH-2596 - Add UCOT Factor
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -6763,6 +6765,7 @@ AS
 **		7/16/24		e405721				PROPH-2160: Update Create Workspace Version for Skill Mix, Common Disclosure Skill Mix and MOQ Type Selection Table Data Resource Hours
 **		7/30/24		e405721				PROPH-2218 Add BRC Name into MOQ Type Selection Table Data Resource Hours Table
 **		10/15/24	e405721				PROPH-2392: Update for Skill Mix V2
+**		1/14/25		twilson3			PROPH-2596 - Add UCOT Factor
 *******************************************************************************/
 SET NOCOUNT ON 
 --BEGIN TRANSACTION 
@@ -21287,6 +21290,7 @@ AS
 **		7/16/24		e405721				PROPH-2161: Update Restore Workspace Version for Skill Mix, Common Disclosure, and MOQ Type Resource Hours Table Data
 **		7/30/24		e405721				PROPH-2218 Add BRC Name into MOQ Type Selection Table Data Resource Hours Table
 **		10/15/24	e405721				PROPH-2392: Update for Skill Mix V2
+**		1/14/25		twilson3			PROPH-2596 - Add UCOT Factor
 *******************************************************************************/
 SET NOCOUNT ON 
 
