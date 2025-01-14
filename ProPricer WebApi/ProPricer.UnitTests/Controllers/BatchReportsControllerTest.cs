@@ -14,6 +14,7 @@ namespace UnitTestProject
 	using APTSPropricerApi.Connection;
 	using APTSPropricerApi.Controllers;
 	using APTSPropricerApi.DTOs;
+	using EBS.ProPricer.Model;
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.Logging;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -67,10 +68,10 @@ namespace UnitTestProject
 
 			BatchReportsController controller = CreateSUT();
 			//""DXBWAKES", "0")
-			ProposalDto proposal = Utility.GetProposal(controller.poolManagerList, controller.Logger, 1, "ACV Testing|1");
-			string proposalId = proposal.Id; // "3ac7f35f-5e08-ed11-9f7b-64c901b7a0ad";
+			IProPricerConnection ppc = (IProPricerConnection)controller.poolManagerList.GetInstance(TestConstants.SpaceInstanceId).GetObjectsFromPool();
+			Proposal proposal = Utility.GetProposal(ppc, "ACV Testing|1");
+			string proposalId = proposal.Id.ToString(); // "3ac7f35f-5e08-ed11-9f7b-64c901b7a0ad";
 
-			
 			ProPricerResponse<ICollection<BatchReportDto>> results = controller.GetBatchReports(TestConstants.SpaceInstanceId);
 			// pick id for Batch Report
 			string batchId = results.Data.First(b => b.Name.StartsWith("15-2 iii a")).Id;
