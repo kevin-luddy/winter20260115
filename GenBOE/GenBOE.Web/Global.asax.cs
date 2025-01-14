@@ -317,7 +317,6 @@ namespace GenBOE
 			Utilities.LogEnvironmentSettings(_log);
 		}
 
-
 		/// <summary>
 		/// Configures Web Api 2 "things" to work in an MVC application
 		/// </summary>
