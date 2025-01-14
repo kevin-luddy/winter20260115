@@ -17,11 +17,10 @@ namespace GenBOE.Web.Controllers
 	using System.Web.Http.Cors;
 
 	/// <summary>
-	/// Workspace Controller for getting workspace data.
-	/// This controller is used to facilitate configuraiton data.
+	/// Workspace Home Controller for getting workspace home data.
 	/// </summary>
 	[EnableCors("*", "*", "*", SupportsCredentials = true)]
-	public class WorkspaceDataController : BoeDataBaseAPIController
+	public class WorkspaceHomeController : BoeDataBaseAPIController
 	{
 		#region Properties & Ctor
 
@@ -38,7 +37,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="factory">Full object factory</param>
 		/// <param name="userLoader">User loader</param>
 		/// <param name="permissionsLoader">Permission loader</param>
-		public WorkspaceDataController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader)
+		public WorkspaceHomeController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 

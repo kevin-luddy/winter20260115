@@ -276,7 +276,7 @@
     <Compile Include="Common\StringNonPrintableCharRemovalModelBinder.cs" />
     <Compile Include="Common\WorkspaceIdentificationModelBinder.cs" />
     <Compile Include="Controllers\Backend\BOEConfigurationController.cs" />
-    <Compile Include="Controllers\Backend\WorkspaceDataController.cs" />
+    <Compile Include="Controllers\Backend\WorkspaceHomeController.cs" />
     <Compile Include="Controllers\BoeDataBaseAPIController.cs" />
     <Compile Include="Controllers\WorkspaceRecalculateActualsController.cs" />
     <Compile Include="ModelView\AcvWorkspaceData.cs" />
@@ -286,7 +286,6 @@
     <Compile Include="Controllers\BoeDataAPIController.cs" />
     <Compile Include="Controllers\RTETemplatesController.cs" />
     <Compile Include="Controllers\DateShiftController.cs" />
-    <Compile Include="ModelView\BOEConfigurationModelView.cs" />
     <Compile Include="ModelView\BOEFormMasterModelView.cs" />
     <Compile Include="ModelView\ConfidenceReportItem.cs" />
     <Compile Include="ModelView\ConfidenceReportModelView.cs" />
@@ -355,7 +354,6 @@
     <Compile Include="ModelView\ODCSpreadModelView.cs" />
     <Compile Include="ModelView\ODCTypesGridModelView.cs" />
     <Compile Include="ModelView\TripForTravelModelView.cs" />
-    <Compile Include="ModelView\WorkspaceSettingsModelView.cs" />
     <Compile Include="ModelView\WorkspaceVersionModelView.cs" />
     <Compile Include="ModelView\ExportToProPricerModelView.cs" />
     <Compile Include="ModelView\GettingStartedHelpModelView.cs" />
