@@ -104,6 +104,7 @@ namespace GenBOE.Web.Controllers
 		private BoePickListMapper boePickListMapper;
 		private CommentsAndResponsesExporter _commentsAndResponsesExporter = null;
 		private BOECommentsControllerLogic _boeCommentsControllerLogic = null;
+		private ISystemSettingDTODataLoader systemSettingDTODataLoader;
 
 		/// <summary>
 		/// Workspace Exporter
@@ -199,7 +200,8 @@ namespace GenBOE.Web.Controllers
 			IBOEExporter boeExporter,
 			IBOECustomExporter boeCustomExporter,
 			CommentsAndResponsesExporter commentsAndResponsesExporter,
-			BOECommentsControllerLogic boeCommentsControllerLogic)
+			BOECommentsControllerLogic boeCommentsControllerLogic,
+			ISystemSettingDTODataLoader systemSettingDTODataLoader)
 			: base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inUserDTODataLoader, inPermissionsDTOLoader, inControllerLogic)
 		{
 			_WorkspaceStateMachine = inWorkspaceStateMachine;
@@ -252,6 +254,7 @@ namespace GenBOE.Web.Controllers
 			this.boeCustomExporter = boeCustomExporter;
 			_commentsAndResponsesExporter = commentsAndResponsesExporter;
 			_boeCommentsControllerLogic = boeCommentsControllerLogic;
+			this.systemSettingDTODataLoader = systemSettingDTODataLoader;
 		}
 
 		#region Public Methods
@@ -814,6 +817,12 @@ namespace GenBOE.Web.Controllers
 			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_EMAIL_PREFERENCES, sw);
 
 			return toReturn;
+		}
+
+		public ViewResult DisplayUpdateUCOTFactorDialog(bool useCookie, string workspace)
+		{
+			string ucotKey = ConfigurationUtilities.GetAppSetting("UcotKey");
+			this.systemSettingDTODataLoader.GetSystemSetting(
 		}
 
 		public ViewResult DisplayUpdateWorkspaceRatesDialog(bool useCookie, string workspace)

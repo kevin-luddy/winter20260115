@@ -626,6 +626,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_DISPLAY_IMPORT_PREVIEW_WORKSPACE_RESOURCE_RATES_TM = "WorkspaceResourceRatesImportPreviewTM";
 		public static readonly string ACTION_DISPLAY_WORKSPACE_UPDATE_RATES_DIALOG = "DisplayUpdateWorkspaceRatesDialog";
 		public static readonly string ACTION_DISPLAY_WORKSPACE_EMAIL_PREFERENCES = "DisplayEmailPreferences";
+		public static readonly string ACTION_DISPLAY_WORKSPACE_UPDATE_UCOT_DIALOG = "DisplayUpdateUCOTFactorDialog";
 
 		#endregion Display
 

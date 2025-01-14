@@ -355,6 +355,8 @@
         {
             Html.RenderAction(WebConstants.ACTION_DISPLAY_WORKSPACE_UPDATE_RATES_DIALOG, WebConstants.CONTROLLER_WORKSPACE, new { useCookie = true });
         }
+
+        Html.RenderAction(WebConstants.ACTION_DISPLAY_WORKSPACE_UPDATE_UCOT_DIALOG, WebConstants.CONTROLLER_WORKSPACE, new { useCookie = true });
     %>
 </body>
 </html>
