@@ -161,6 +161,7 @@ namespace GenBOE.ActionLogic.Common
 
 		public static readonly string ACTION_SYSTEM_EMAIL_PREFERENCES = "GetSystemEmailPreferences";
 		public static readonly string ACTION_SAVE_SYSTEM_EMAIL_PREFERENCES = "SaveSystemEmailPreferences";
+		public static readonly string ACTION_SAVE_UCOT = "SaveUCOT";
 		public static readonly string ACTION_INDEX = "Index";
 		public static readonly string ACTION_EDIT_BOE_INDEX = "EditBOEIndex";
 		public static readonly string ACTION_INVALID_REQUEST = "InvalidRequest";

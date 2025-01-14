@@ -280,8 +280,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
                                        IMSTZoneTravelOriginDTODataLoader inIMSTZoneTravelOriginDTODataLoader,
                                        IMSTZoneTravelDestinationDTODataLoader inIMSTZoneTravelDestinationDTODataLoader,
                                        IMSTTravelNonzoneFeesAndCostsDTODataLoader inIMSTTravelNonzoneFeesAndCostsDTODataLoader,
-                                       IPermissionsDTODataLoader permissionsDTODataLoader)
-            : base(inCommonDataMapper, inIResourceListDTODataLoader, permissionsDTODataLoader)
+                                       IPermissionsDTODataLoader permissionsDTODataLoader,
+									   ISystemSettingDTODataLoader systemSettingDTODataLoader)
+            : base(inCommonDataMapper, inIResourceListDTODataLoader, permissionsDTODataLoader, systemSettingDTODataLoader)
         {
             this.mstZoneTravelOriginDTODataLoader = inIMSTZoneTravelOriginDTODataLoader;
             this.mstZoneTravelDestinationDTODataLoader = inIMSTZoneTravelDestinationDTODataLoader;
