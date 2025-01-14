@@ -20,8 +20,7 @@ namespace GenBOE.Web.Controllers
 	/// Workspace Controller for getting workspace data.
 	/// This controller is used to facilitate configuraiton data.
 	/// </summary>
-	[AllowAnonymous]
-	[EnableCors(origins: "http://localhost:4200", headers: "*", methods: "*", SupportsCredentials = true)]
+	[EnableCors("*", "*", "*", SupportsCredentials = true)]
 	public class WorkspaceDataController : BoeDataBaseAPIController
 	{
 		#region Properties & Ctor
