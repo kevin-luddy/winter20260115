@@ -132,6 +132,7 @@ INSERT INTO [dbo].[Workspace]
 		   ,[RevisedSubmittalDate]
 		   ,[TemplateBoe]
 		   ,[EnableSAPConnection]
+		   ,[UCOTFactor]
            )
 SELECT [UpdateDT]
       ,@WorkspaceName
@@ -178,6 +179,7 @@ SELECT [UpdateDT]
 	  ,[RevisedSubmittalDate]
 	  ,[TemplateBoe]
 	  ,[EnableSAPConnection]
+	  ,[UCOTFactor]
   FROM [dbo].[Workspace]
 WHERE WorkspaceID = @WorkspaceID
 

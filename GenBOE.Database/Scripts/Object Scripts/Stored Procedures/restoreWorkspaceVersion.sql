@@ -558,6 +558,7 @@ BEGIN
 			,[RevisedSubmittalDate] = vW.[RevisedSubmittalDate]
 			,[TemplateBoe] = vW.[TemplateBoe]
 			,[EnableSAPConnection] = vW.[EnableSAPConnection]
+			,[UCOTFactor] = vW.[UCOTFactor]
 		FROM [dbo].[Workspace] W
 			INNER JOIN [version].[Workspace] vW ON W.WorkspaceID = vW.WorkspaceID
 			LEFT OUTER JOIN [dbo].[ResourceList] RL ON vW.ResourceListID = RL.ResourceListID

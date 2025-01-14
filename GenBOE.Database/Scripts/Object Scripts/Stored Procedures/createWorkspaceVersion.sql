@@ -156,7 +156,8 @@ INSERT INTO [version].[Workspace]
 ,[RteSizeLimit]
 ,[RevisedSubmittalDate]
 ,[TemplateBoe]
-,[EnableSAPConnection])
+,[EnableSAPConnection]
+,[UCOTFactor])
 SELECT [WorkspaceID]
 ,[WorkspaceName]
 ,[WorkspaceShortName]
@@ -205,6 +206,7 @@ SELECT [WorkspaceID]
 ,[RevisedSubmittalDate]
 ,[TemplateBoe]
 ,[EnableSAPConnection]
+,[UCOTFactor]
 FROM [dbo].[Workspace]
 WHERE WorkspaceID = @WorkspaceID
 

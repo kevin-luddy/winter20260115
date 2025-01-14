@@ -131,6 +131,7 @@ BEGIN TRY
 			   ,[RevisedSubmittalDate]
 			   ,[TemplateBoe]
 			   ,[EnableSAPConnection]
+			   ,[UCOTFactor]
 			   )
 		SELECT [UpdateDT]
 		  ,@WorkspaceName
@@ -177,6 +178,7 @@ BEGIN TRY
 		  ,[RevisedSubmittalDate]
 		  ,[TemplateBoe]
 		  ,[EnableSAPConnection]
+		  ,[UCOTFactor]
 	  FROM [version].[Workspace]
 	WHERE WorkspaceID = @WorkspaceID AND VersionID = @VersionID
 
