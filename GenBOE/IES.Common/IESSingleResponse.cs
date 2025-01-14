@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2022 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2025 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -9,7 +9,7 @@ namespace IES.Common
     using System.Collections.Generic;
     
     /// <summary>
-    /// Data structure to return for AJAX calls.
+    /// Data structure to return API calls.
     /// </summary>
     /// <typeparam name="T">The type of data being returned</typeparam>
     public class IESSingleResponse<T>
@@ -25,7 +25,7 @@ namespace IES.Common
         public ICollection<string> Messages { get; set; } = new List<string>();
 
 		/// <summary>
-		/// Collection of data meeting the request criteria
+		/// Data meeting the request criteria
 		/// </summary>
 		public T Data { get; set; }
     }
