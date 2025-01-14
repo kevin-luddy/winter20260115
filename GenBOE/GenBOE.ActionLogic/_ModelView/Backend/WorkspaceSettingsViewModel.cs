@@ -4,16 +4,14 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace GenBOE.Web.ModelView
+namespace GenBOE.ActionLogic.ModelView.Backend
 {
-	using IES.Common;
-
 	/// <summary>
 	/// Workspace Configuration Class
 	/// 
 	/// THIS MUST MATCH THE BOE SERVICE, DO NOT CHANGE UNLESS CHANGES ARE MADE TO BOTH CLASSES.
 	/// </summary>
-	public class WorkspaceSettingsModelView
+	public class WorkspaceSettingsViewModel
 	{
 		/// <summary>
 		/// Is BRC Enabled for the workspace?

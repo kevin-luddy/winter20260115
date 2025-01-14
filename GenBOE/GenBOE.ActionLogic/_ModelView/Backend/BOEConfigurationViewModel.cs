@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace GenBOE.Web.ModelView
+namespace GenBOE.ActionLogic.ModelView.Backend
 {
 	using IES.Common;
 
@@ -13,7 +13,7 @@ namespace GenBOE.Web.ModelView
 	/// 
 	/// THIS MUST MATCH THE BOE SERVICE, DO NOT CHANGE UNLESS CHANGES ARE MADE TO BOTH CLASSES.
 	/// </summary>
-	public class BOEConfigurationModelView
+	public class BOEConfigurationViewModel
 	{
 		/// <summary>
 		/// Company Configuration / Company Mode for the instance.
