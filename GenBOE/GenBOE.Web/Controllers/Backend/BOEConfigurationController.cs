@@ -38,7 +38,6 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Ctor
 		/// </summary>
-		/// <param name="tokenHandler">Token handler</param>
 		/// <param name="securityAccess">Security Access</param>
 		/// <param name="factory">Full object factory</param>
 		/// <param name="userLoader">User loader</param>
