@@ -19,7 +19,7 @@
             DisplayOffloadRatesDialog();
         }
 
-		if (showDialogUCOTFactor == "True" && showDialogUCOTFactor != "True") {
+		if (showDialogUCOTFactor == "True") {
 			DisplayUCOTFactorDialog();
 		}
 

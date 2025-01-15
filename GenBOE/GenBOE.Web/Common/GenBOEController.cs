@@ -365,7 +365,7 @@ namespace GenBOE.Web.Common
 				displayUpdateRates = this.PermissionsLoader.GetWorkspacePermissions(ws.Id).Any(x => x.Role == Role.WorkspaceAdmin && x.ETIUserId == currentUser.UserID);
 			}
 
-			this.ViewBag.DisplayOffloadUpdateRates = displayUpdateRates;
+			this.ViewBag.DisplayUpdateUCOTFactor = displayUpdateRates;
 		}
 
 		/// <summary>

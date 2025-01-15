@@ -288,7 +288,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 
 			decimal systemUCOTFactor = this.GetUcotSystemSettingsValue();
-			return systemUCOTFactor == workspace.UCOTFactor;
+			return systemUCOTFactor != workspace.UCOTFactor;
 		}
 
 		/// <summary>

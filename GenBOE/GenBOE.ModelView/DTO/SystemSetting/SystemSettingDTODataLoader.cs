@@ -17,7 +17,8 @@ namespace GenBOE.DataBridge.DTO
     public class SystemSettingDTODataLoader : GenBOE.DataBridge.DTO.ISystemSettingDTODataLoader
     {
         private Logger _log = new Logger(typeof(SystemSettingDTODataLoader));
-        /// <summary>
+        
+		/// <summary>
         /// Cache Object
         /// </summary>
         private MemoryCache cache;
@@ -32,7 +33,13 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         private string cacheKeySystem = "SystemSettingDataLoader_";
 
-        public SystemSettingDTODataLoader() { }
+		/// <summary>
+		/// Default ctor for SystemSettingDTODataLoader
+		/// </summary>
+        public SystemSettingDTODataLoader() 
+		{
+			this.cache = new MemoryCache();
+		}
 
         /// <summary>
         /// Get all system setting DTOs

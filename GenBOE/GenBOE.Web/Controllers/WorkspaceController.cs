@@ -104,7 +104,6 @@ namespace GenBOE.Web.Controllers
 		private BoePickListMapper boePickListMapper;
 		private CommentsAndResponsesExporter _commentsAndResponsesExporter = null;
 		private BOECommentsControllerLogic _boeCommentsControllerLogic = null;
-		private ISystemSettingDTODataLoader systemSettingDTODataLoader;
 
 		/// <summary>
 		/// Workspace Exporter
@@ -1064,14 +1063,8 @@ namespace GenBOE.Web.Controllers
 				if (!userHasCookie && userPermissions.Any())
 				{
 					// Get the System level value
-					string ucotString = this.systemSettingDTODataLoader.GetSystemSetting(ConfigurationUtilities.GetAppSetting("UcotKey"))?.Value;
-					decimal ucot = 1;
+					decimal ucot = this._ControllerLogic.GetUcotSystemSettingsValue();
 
-					if (!string.IsNullOrWhiteSpace(ucotString))
-					{
-						decimal.TryParse(ucotString, out ucot);
-					}
-					
 					if (ucot != ws.UCOTFactor)
 					{
 						// we will show the dialog to the user asking them if they want to update rates
