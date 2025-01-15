@@ -60,7 +60,9 @@ namespace GenBOE.DataBridge.DTO
 									Shortname = w.WorkspaceShortName,
 									Id = w.WorkspaceID,
 									TrackingNumber = w.TrackingNumber,
-									WorkspaceState = (WorkspaceState)w.WorkspaceStateID
+									WorkspaceState = (WorkspaceState)w.WorkspaceStateID,
+									CurrentPTMWorkspace = w.CurrentPTMWorkspace,
+									UCOTFactor = w.UCOTFactor
 								}).ToCollection();
 				}
 			}
@@ -91,7 +93,8 @@ namespace GenBOE.DataBridge.DTO
 									Id = w.WorkspaceID,
 									TrackingNumber = w.TrackingNumber,
 									WorkspaceState = (WorkspaceState)w.WorkspaceStateID,
-									CurrentPTMWorkspace = w.CurrentPTMWorkspace
+									CurrentPTMWorkspace = w.CurrentPTMWorkspace,
+									UCOTFactor = w.UCOTFactor
 								}).ToCollection();
 				}
 			}
@@ -294,7 +297,8 @@ namespace GenBOE.DataBridge.DTO
 									UsingTemplateBOE = w.TemplateBoe,
 									EnableSAPConnection = w.EnableSAPConnection,
 									CurrentPTMWorkspace = w.CurrentPTMWorkspace,
-									CreationDate = w.WorkspaceCreationDate
+									CreationDate = w.WorkspaceCreationDate,
+									UCOTFactor = w.UCOTFactor
 								}).ToCollection();
 
 					toReturn.ToList().ForEach(w =>
@@ -389,7 +393,8 @@ namespace GenBOE.DataBridge.DTO
 										UsingTemplateBOE = w.TemplateBoe,
 										EnableSAPConnection = w.EnableSAPConnection,
 										CurrentPTMWorkspace = w.CurrentPTMWorkspace,
-										CreationDate = w.WorkspaceCreationDate
+										CreationDate = w.WorkspaceCreationDate,
+										UCOTFactor = w.UCOTFactor
 									}).FirstOrDefault();
 
 						if (toReturn != null)
@@ -1318,7 +1323,8 @@ namespace GenBOE.DataBridge.DTO
 						wsToSave.RevisedSubmittalDate,
 						wsToSave.UsingTemplateBOE,
 						wsToSave.EnableSAPConnection,
-						wsToSave.CurrentPTMWorkspace).FirstOrDefault());
+						wsToSave.CurrentPTMWorkspace,
+						wsToSave.UCOTFactor).FirstOrDefault());
 
 					// if the result ID is not a positive number, something bad went wrong so Log it
 					if (resultID <= 0)
