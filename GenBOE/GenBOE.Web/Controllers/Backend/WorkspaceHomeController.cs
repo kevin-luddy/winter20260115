@@ -32,7 +32,6 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Ctor
 		/// </summary>
-		/// <param name="tokenHandler">Token handler</param>
 		/// <param name="securityAccess">Security Access</param>
 		/// <param name="factory">Full object factory</param>
 		/// <param name="userLoader">User loader</param>
@@ -71,7 +70,6 @@ namespace GenBOE.Web.Controllers
 				}
 				else
 				{
-					result.IsSuccessful = false;
 					result.Messages.Add($"Insufficient permissions for returning the Workspace menu data.");
 				}
 			}
