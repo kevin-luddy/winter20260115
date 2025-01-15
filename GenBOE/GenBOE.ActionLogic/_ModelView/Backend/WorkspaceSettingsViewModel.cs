@@ -42,5 +42,20 @@ namespace GenBOE.ActionLogic.ModelView.Backend
 		/// Is historical reference explanation required for the workspace?
 		/// </summary>
 		public bool IsHistoricalReferenceExplanationRequired { get; set; }
+
+		/// <summary>
+		/// Proposal name.
+		/// </summary>
+		public string ProposalName { get; set; }
+
+		/// <summary>
+		/// Workspace status.
+		/// </summary>
+		public string WorkspaceState { get; set; }
+
+		/// <summary>
+		/// Dynamic header for LMPI (and/or OCI).
+		/// </summary>
+		public string Header { get; set; }
 	}
 }

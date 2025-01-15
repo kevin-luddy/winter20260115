@@ -8,6 +8,7 @@ namespace GenBOE.Web.Controllers
 {
 	using GenBOE.ActionLogic.ControllerLogic.Backend;
 	using GenBOE.ActionLogic.ModelView.Backend;
+	using GenBOE.DataBridge.Common;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Objects;

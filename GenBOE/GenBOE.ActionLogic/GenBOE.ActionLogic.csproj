@@ -276,9 +276,7 @@
     <Compile Include="Reporting\ConfidenceReportConstants.cs" />
     <Compile Include="Reporting\IBOEConfidenceReport.cs" />
     <Compile Include="_ControllerLogic\Backend\BOEConfigurationControllerLogic.cs" />
-    <Compile Include="_ControllerLogic\Backend\WorkspaceHomeControllerLogic.cs" />
     <Compile Include="_ModelView\Backend\BOEConfigurationViewModel.cs" />
-    <Compile Include="_ModelView\Backend\WorkspaceMasterViewModel.cs" />
     <Compile Include="_ModelView\Backend\WorkspaceSettingsViewModel.cs" />
     <Compile Include="_ModelView\ConfidenceReportItem.cs" />
     <Compile Include="_ModelView\ConfidenceReportModelView.cs" />
