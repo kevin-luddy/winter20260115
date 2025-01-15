@@ -17,7 +17,6 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 	/// </summary>
 	public class BOEConfigurationControllerLogic
 	{
-
 		/// <summary>
 		/// Get GenBOE system config data.
 		/// </summary>

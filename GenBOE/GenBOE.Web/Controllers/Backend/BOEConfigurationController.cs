@@ -98,7 +98,6 @@ namespace GenBOE.Web.Controllers
 				}
 				else
 				{
-					result.IsSuccessful = false;
 					result.Messages.Add($"Insufficient permissions for returning the Workspace data.");
 				}
 			}

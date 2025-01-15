@@ -1,13 +1,13 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2025 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
 namespace GenBOE.ActionLogic.ModelView.Backend
 {
 	/// <summary>
-	/// Workspace Configuration Class
+	/// Workspace Settings Class
 	/// 
 	/// THIS MUST MATCH THE BOE SERVICE, DO NOT CHANGE UNLESS CHANGES ARE MADE TO BOTH CLASSES.
 	/// </summary>
