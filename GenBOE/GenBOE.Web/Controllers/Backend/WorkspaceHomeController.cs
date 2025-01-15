@@ -36,7 +36,6 @@ namespace GenBOE.Web.Controllers
 		/// <param name="factory">Full object factory</param>
 		/// <param name="userLoader">User loader</param>
 		/// <param name="permissionsLoader">Permission loader</param>
-		/// <param name="workspaceHomeControllerLogic">Service for workspace home controller</param>
 		public WorkspaceHomeController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
