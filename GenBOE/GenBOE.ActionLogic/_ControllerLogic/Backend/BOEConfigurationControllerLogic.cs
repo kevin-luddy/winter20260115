@@ -6,6 +6,7 @@
 
 namespace GenBOE.ActionLogic.ControllerLogic.Backend
 {
+	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ModelView.Backend;
 	using GenBOE.DataBridge.Common;
 	using GenBOE.Dtos;
@@ -103,7 +104,7 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 
 				workspaceSettings.WorkspaceState = commonDataMapper.getWorkspaceStateName(WorkspaceState.None);
 
-				workspaceSettings.Header = "Lockheed Martin Proprietary Information";
+				workspaceSettings.Header = WebConstants.LMPI_LABEL_TEXT;
 			}
 			else
 			{
@@ -112,8 +113,8 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 				workspaceSettings.WorkspaceState = commonDataMapper.getWorkspaceStateName(ws.WorkspaceState);
 
 				workspaceSettings.Header = ws.ContainsOCI ?
-					"Organizational Conflict of Interest - Lockheed Martin Proprietary Information" :
-					"Lockheed Martin Proprietary Information";
+					WebConstants.LMPI_OCI_LABEL_TEXT :
+					WebConstants.LMPI_LABEL_TEXT;
 			}
 
 			return workspaceSettings;
