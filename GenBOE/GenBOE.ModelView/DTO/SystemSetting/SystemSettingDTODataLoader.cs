@@ -17,6 +17,21 @@ namespace GenBOE.DataBridge.DTO
     public class SystemSettingDTODataLoader : GenBOE.DataBridge.DTO.ISystemSettingDTODataLoader
     {
         private Logger _log = new Logger(typeof(SystemSettingDTODataLoader));
+        /// <summary>
+        /// Cache Object
+        /// </summary>
+        private MemoryCache cache;
+
+        /// <summary>
+        /// The number of seconds to store in cache
+        /// </summary>
+        private int secondsToCache = 300;
+
+        /// <summary>
+        /// Cache key for System data
+        /// </summary>
+        private string cacheKeySystem = "SystemSettingDataLoader_";
+
         public SystemSettingDTODataLoader() { }
 
         /// <summary>
@@ -58,25 +73,38 @@ namespace GenBOE.DataBridge.DTO
             }
 
             SystemSettingDTO toReturn = null;
+            string cacheKey = this.cacheKeySystem + key;
 
-            using (StopwatchTimer sw = new StopwatchTimer(this._log))
+            // load the setting from cache. if the key does not exist then null is returned
+            toReturn = (SystemSettingDTO)this.cache.GetData(cacheKey);
+
+            // if the setting is not found in the cache, try to get it from the database
+            if (toReturn == null)
             {
-                using (GenBoeEntities gbe = new GenBoeEntities())
+                using (StopwatchTimer sw = new StopwatchTimer(this._log))
                 {
-					SystemSettingDTO SystemSetting =
-                       (from r in gbe.SystemSettings
-                        where r.Key == key
-                        select new SystemSettingDTO
-                        {
-                            Key = r.Key,
-                            Value = r.Value
-                        }).FirstOrDefault();
+                    using (GenBoeEntities gbe = new GenBoeEntities())
+                    {
+                        SystemSettingDTO SystemSetting =
+                           (from r in gbe.SystemSettings
+                            where r.Key == key
+                            select new SystemSettingDTO
+                            {
+                                Key = r.Key,
+                                Value = r.Value
+                            }).FirstOrDefault();
 
-                    toReturn = SystemSetting;
+                        toReturn = SystemSetting;
+                    }
+                }
+
+                if (toReturn != null)
+                {
+                    this.cache.Add(cacheKey, toReturn, secondsToCache);
                 }
             }
 
-            return toReturn;
+           return toReturn;
         }
 
         #region Commit
@@ -103,6 +131,13 @@ namespace GenBOE.DataBridge.DTO
                 }
             }
 
+            if (key == systemSetting.Key)
+            {
+                // Update the Cache
+                string cacheKey = this.cacheKeySystem + key;
+                this.cache.Add(cacheKey, systemSetting, secondsToCache);
+            }
+
             return key;
         }
 
@@ -124,6 +159,10 @@ namespace GenBOE.DataBridge.DTO
                     gbe.deleteSystemSetting(key);
                 }
             }
+
+            // Update the Cache
+            string cacheKey = this.cacheKeySystem + key;
+            this.cache.Remove(cacheKey);
         }
         #endregion Commit
     }

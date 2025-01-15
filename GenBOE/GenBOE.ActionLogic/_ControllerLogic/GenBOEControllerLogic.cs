@@ -26,15 +26,25 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	public class GenBOEControllerLogic : IGenBOEControllerLogic
     {
         private Logger _log = new Logger(typeof(GenBOEControllerLogic));
+		private readonly ISystemSettingDTODataLoader systemSettingDTODataLoader;
 
-        /// <summary>
-        /// Validates the RTE Answers
-        /// </summary>
-        /// <param name="answers">The answers to validate.</param>
-        /// <param name="sources">The sources for RTE Templates.</param>
-        /// <param name="rteSizeLimit">The RTE Size limit for the workspace if overridden.</param>
-        /// <returns>Validation warnings.</returns>
-        public ICollection<ValidationMessage> ValidateRteAnswers(ICollection<RTECustomTemplateQuestionAnswerModelView> answers, ICollection<RteCustomTemplateSourceModelView> sources, int? rteSizeLimit)
+		/// <summary>
+		/// Default constructor for genboe controller logic
+		/// </summary>
+		/// <param name="systemSettingDTODataLoader">System Settings dto loader</param>
+		public GenBOEControllerLogic(ISystemSettingDTODataLoader systemSettingDTODataLoader)
+		{
+			this.systemSettingDTODataLoader = systemSettingDTODataLoader;
+		}
+
+		/// <summary>
+		/// Validates the RTE Answers
+		/// </summary>
+		/// <param name="answers">The answers to validate.</param>
+		/// <param name="sources">The sources for RTE Templates.</param>
+		/// <param name="rteSizeLimit">The RTE Size limit for the workspace if overridden.</param>
+		/// <returns>Validation warnings.</returns>
+		public ICollection<ValidationMessage> ValidateRteAnswers(ICollection<RTECustomTemplateQuestionAnswerModelView> answers, ICollection<RteCustomTemplateSourceModelView> sources, int? rteSizeLimit)
         {
             List<ValidationMessage> allValidationMessages = new List<ValidationMessage>();
 
@@ -264,5 +274,38 @@ namespace GenBOE.ActionLogic.ControllerLogic
         {
             return false;
         }
-    }
+
+		/// <summary>
+		/// Determines if the UCOT Factor is out of date.
+		/// </summary>
+		/// <param name="workspace">The workspace</param>
+		/// <returns>True if out of date</returns>
+		public virtual bool IsUCOTFactorOutOfDate(WorkspaceDTO workspace)
+		{
+			if (workspace == null)
+			{
+				throw new ArgumentNullException(nameof(workspace));
+			}
+
+			decimal systemUCOTFactor = this.GetUcotSystemSettingsValue();
+			return systemUCOTFactor == workspace.UCOTFactor;
+		}
+
+		/// <summary>
+		/// get ucot system settings
+		/// </summary>
+		public decimal GetUcotSystemSettingsValue()
+		{
+			string ucotString = this.systemSettingDTODataLoader.GetSystemSetting(ConfigurationUtilities.GetAppSetting("UcotKey"))?.Value;
+			decimal ucot = 1;
+
+			if (!string.IsNullOrWhiteSpace(ucotString))
+			{
+				decimal.TryParse(ucotString, out ucot);
+			}
+			return ucot;
+		}
+
+
+	}
 }

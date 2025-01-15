@@ -246,9 +246,11 @@ namespace GenBOE.Web.Common
 
             this.DecideIfOffloadUpdateDataLinkShouldBeVisible(ws, currentUser);
 
-            #region Decide if Manage INL Forms should be visible
+			this.DecideIfUCOTFactorDataLinkShouldBeVisible(ws, currentUser);
 
-            bool displayINLForms = false;
+			#region Decide if Manage INL Forms should be visible
+
+			bool displayINLForms = false;
 
             if (SiteMasterUtilities.IsBOEFormVisible)
             {
@@ -342,6 +344,29 @@ namespace GenBOE.Web.Common
 
             this.ViewBag.DisplayOffloadUpdateRates = displayUpdateRates;
         }
+
+		/// <summary>
+		/// Decides whether the Offload Update Link should be displayed
+		/// </summary>
+		/// <param name="ws">Workspace</param>
+		/// <param name="currentUser">Current User</param>
+		private void DecideIfUCOTFactorDataLinkShouldBeVisible(FullWorkspace ws, UserDTO currentUser)
+		{
+			bool displayUpdateRates = false;
+
+			// is the data out-of-date
+			bool isDataOutOfDate = false;
+
+			isDataOutOfDate = Utilities.IsUCOTEnabled && this._ControllerLogic.IsUCOTFactorOutOfDate(ws);
+
+			if (isDataOutOfDate)
+			{
+				// only show the link if the user is a WS admin
+				displayUpdateRates = this.PermissionsLoader.GetWorkspacePermissions(ws.Id).Any(x => x.Role == Role.WorkspaceAdmin && x.ETIUserId == currentUser.UserID);
+			}
+
+			this.ViewBag.DisplayOffloadUpdateRates = displayUpdateRates;
+		}
 
 		/// <summary>
 		/// Filters out the Manage INL Forms menu item if after the cutoff date

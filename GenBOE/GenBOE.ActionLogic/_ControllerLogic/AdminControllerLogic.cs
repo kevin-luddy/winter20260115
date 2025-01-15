@@ -492,7 +492,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// </summary>
 		public decimal GetUcotSystemSettingsValue(){
 			string ucotString = this.systemSettingDTODataLoader.GetSystemSetting(ConfigurationUtilities.GetAppSetting("UcotKey"))?.Value;
-			decimal ucot = 0;
+			decimal ucot = 1;
 
 			if (!string.IsNullOrWhiteSpace(ucotString))
 			{
