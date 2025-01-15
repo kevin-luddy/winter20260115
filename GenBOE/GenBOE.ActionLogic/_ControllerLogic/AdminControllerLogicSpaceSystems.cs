@@ -46,8 +46,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// </summary>
         public AdminControllerLogicSpaceSystems(ICommonDataMapper inCommonDataMapper,
                                                 IResourceListDTODataLoader inIResourceListDTODataLoader,
-                                                IPermissionsDTODataLoader permissionsDTODataLoader)
-            : base(inCommonDataMapper, inIResourceListDTODataLoader, permissionsDTODataLoader)
+                                                IPermissionsDTODataLoader permissionsDTODataLoader,
+												ISystemSettingDTODataLoader systemSettingDTODataLoader)
+            : base(inCommonDataMapper, inIResourceListDTODataLoader, permissionsDTODataLoader, systemSettingDTODataLoader)
         {
             // Nothing to do here
         }

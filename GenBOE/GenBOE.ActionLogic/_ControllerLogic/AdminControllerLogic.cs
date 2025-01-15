@@ -48,19 +48,22 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
         private readonly ICommonDataMapper commonDataMapper;
         private readonly IResourceListDTODataLoader resourceListDTODataLoader;
-        private readonly IPermissionsDTODataLoader permissionsDTODataLoader;
+		private readonly IPermissionsDTODataLoader permissionsDTODataLoader;
+		private readonly ISystemSettingDTODataLoader systemSettingDTODataLoader;
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public AdminControllerLogic(ICommonDataMapper inCommonDataMapper,
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		public AdminControllerLogic(ICommonDataMapper inCommonDataMapper,
                                     IResourceListDTODataLoader inIResourceListDTODataLoader,
-                                    IPermissionsDTODataLoader permissionsDTODataLoader)
+									IPermissionsDTODataLoader permissionsDTODataLoader,
+									ISystemSettingDTODataLoader systemSettingDTODataLoader)
         {
             this.commonDataMapper = inCommonDataMapper;
             this.resourceListDTODataLoader = inIResourceListDTODataLoader;
             this.permissionsDTODataLoader = permissionsDTODataLoader;
-        }
+			this.systemSettingDTODataLoader = systemSettingDTODataLoader;
+		}
 
 
         #endregion
@@ -473,11 +476,36 @@ namespace GenBOE.ActionLogic.ControllerLogic
             return overdueList.OrderBy(o => o.UserDisplayName).ToList();
         }
 
-        /// <summary>
-        /// Gets the training course groups.
-        /// </summary>
-        /// <returns>Training course groups</returns>
-        public virtual ICollection<TrainingCourseGroupModelView> GetTrainingCourseGroups()
+		/// <summary>
+		/// Save ucot system settings
+		/// </summary>
+		/// <param name="systemSettings">System settings to save</param>
+		public bool SaveUcotSystemSettings(decimal ucot)
+		{
+			string ucotKey = ConfigurationUtilities.GetAppSetting("UcotKey");
+			string key = this.systemSettingDTODataLoader.SaveSystemSetting(new SystemSettingDTO { Key = ucotKey, Value = ucot.ToString() });
+			return ucotKey == key;
+		}
+
+		/// <summary>
+		/// get ucot system settings
+		/// </summary>
+		public decimal GetUcotSystemSettingsValue(){
+			string ucotString = this.systemSettingDTODataLoader.GetSystemSetting(ConfigurationUtilities.GetAppSetting("UcotKey"))?.Value;
+			decimal ucot = 0;
+
+			if (!string.IsNullOrWhiteSpace(ucotString))
+			{
+				decimal.TryParse(ucotString, out ucot);
+			}
+			return ucot;
+		}
+
+		/// <summary>
+		/// Gets the training course groups.
+		/// </summary>
+		/// <returns>Training course groups</returns>
+		public virtual ICollection<TrainingCourseGroupModelView> GetTrainingCourseGroups()
         {
             List<TrainingCourseGroupModelView> groups = new List<TrainingCourseGroupModelView>();
             DateTime twoYearsAgo = DateTime.Now.AddYears(-2);
