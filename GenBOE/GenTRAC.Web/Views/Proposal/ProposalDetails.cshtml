@@ -512,7 +512,7 @@
             <div class="tabs">
                 <div class="tabs-left"></div>
                 <div class="tabs-center" style="width: 976px">
-                    <div class="proposal-text proposal-text-with-status" style="text-align:left;padding:5px;">
+                    <div class="proposal-text" style="text-align:left;padding:5px;">
                         @if (Model.ProposalID < 0 && !Model.IsNewRevision)
                         {
                             <text>
@@ -536,7 +536,7 @@
                                         @Model.CertificationCompletedLineText
                                     </p>
                                 </div>
-                                <div class="proposalStatus">Proposal Status: @Model.ProposalStatus.GetDescription()</div>
+                                <div class="proposalStatus">Proposal Status: @Model.ProposalStatus</div>
                             </text>
                         }
                     </div>
