@@ -185,8 +185,8 @@ namespace GenBOE.DataBridge.DTO
 				List<BoeTaskElementDTO> result;
 				List<OrdinaryVariableDto> ordinaryVariables;
 				List<ResourceTypeDto> taskElementLabors;
-				List<SkillMixDTO> skillMixDTOs = null;
-				List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = null;
+				ICollection<SkillMixDTO> skillMixDTOs = this.skillMixDTOLoader.GetByBOEIDs(boeIds);
+				ICollection<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = this.commonDisclosureSMDTODataLoader.GetByBOEIDs(boeIds);
 
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
@@ -259,8 +259,8 @@ namespace GenBOE.DataBridge.DTO
 				List<BoeTaskElementDTO> result;
 				List<OrdinaryVariableDto> ordinaryVariables;
 				List<ResourceTypeDto> taskElementLabors;
-				List<SkillMixDTO> skillMixDTOs = null;
-				List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = null;
+				ICollection<SkillMixDTO> skillMixDTOs = this.skillMixDTOLoader.GetByWorkspaceId(wsId);
+				ICollection<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = this.commonDisclosureSMDTODataLoader.GetByWorkspaceId(wsId); ;
 
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
