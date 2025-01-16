@@ -525,8 +525,8 @@ namespace GenBOE
                         new ResolvedParameter(typeof(ITokenService))));
 					GenBOEUnityContainer.Container.RegisterType(typeof(IBOEOtherDirectCostControllerLogic), typeof(BOEOtherDirectCostControllerLogicMST), GetLifetimeManager(), new InjectionConstructor());
                     GenBOEUnityContainer.Container.RegisterType(typeof(IBOEMaterialControllerLogic), typeof(BOEMaterialControllerLogicMST), GetLifetimeManager(), new InjectionConstructor());
-                    GenBOEUnityContainer.Container.RegisterType(typeof(IGenBOEControllerLogic), typeof(GenBOEControllerLogicMST), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(ISystemSettingDTODataLoader))));
-                    GenBOEUnityContainer.Container.RegisterType(typeof(ITravelControllerLogic), typeof(TravelControllerLogicMST), GetLifetimeManager(), new InjectionConstructor(
+                    GenBOEUnityContainer.Container.RegisterType(typeof(IGenBOEControllerLogic), typeof(GenBOEControllerLogicMST), GetLifetimeManager(), new InjectionMember[] { });
+					GenBOEUnityContainer.Container.RegisterType(typeof(ITravelControllerLogic), typeof(TravelControllerLogicMST), GetLifetimeManager(), new InjectionConstructor(
                          new ResolvedParameter(typeof(ITravelDTODataLoader)), new ResolvedParameter(typeof(ICustomFieldValueDTODataLoader))));
 
                     break;
@@ -713,7 +713,8 @@ namespace GenBOE
                                                                                                                               new ResolvedParameter(typeof(IMSTZoneTravelOriginDTODataLoader)),
                                                                                                                               new ResolvedParameter(typeof(IMSTZoneTravelDestinationDTODataLoader)),
                                                                                                                               new ResolvedParameter(typeof(IMSTTravelNonzoneFeesAndCostsDTODataLoader)),
-                                                                                                                              new ResolvedParameter(typeof(IPermissionsDTODataLoader))));
+                                                                                                                              new ResolvedParameter(typeof(IPermissionsDTODataLoader)),
+																															  new ResolvedParameter(typeof(ISystemSettingDTODataLoader))));
                     break;
 
                 case CompanyConfiguration.SpaceSystems:
