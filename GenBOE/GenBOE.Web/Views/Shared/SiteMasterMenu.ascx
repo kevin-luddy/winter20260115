@@ -58,26 +58,30 @@
             $('a[name=UpdateOffloadRatesLink]').parent().addClass('display-none');
         }
 
-        $('a[name=UpdateOffloadRatesLink]').removeAttr('href').click(function () {
-            Session.confirmDialog('Update Offload Rates', 'Are you sure you want to update the Offload Rates with the current rates?  If Yes, you will not be able to revert to the old rates.', function () {
+		$('a[name=UpdateUCOTFactorLink]').removeAttr('href').click(function () {
+				Session.confirmDialog('Update UCOT Factor', 'Are you sure you want to update the Workspace UCOT Factor with the current System value?  If Yes, you will not be able to revert to the UCOT Factor.', function () {
                 $.ajax({
                     type: 'POST',
                     url: CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
                         '<%: WebConstants.CONTROLLER_WORKSPACE %>',
-                        '<%: WebConstants.ACTION_UPDATE_OFFLOAD_RATES %>', ''),
+                        '<%: WebConstants.ACTION_UPDATE_UCOT_FACTOR %>', ''),
                     contentType: 'application/json; charset=utf-8',
                     dataType: 'json',
                     data: null,
                     success: function (response) {
-                        RaiseNotification('The Offload Rates were successfully updated');
-                        $('a[name=UpdateOffloadRatesLink]').parent().addClass('display-none');
+						RaiseNotification('The UCOT Factor was successfully updated');
+						$('a[name=UpdateUCOTFactorLink]').parent().addClass('display-none');
                     },
                     error: function (response) {
-                        RaiseNotification('The update to the Offload Rates failed');
+						RaiseNotification('The update to the UCOT Factor failed');
                     }
                 });
             });
         });
+
+		if ('<%: ViewBag.DisplayUpdateUCOTFactor %>' == 'False') {
+			$('a[name=UpdateUCOTFactorLink]').parent().addClass('display-none');
+		} 
     });
 </script>
 

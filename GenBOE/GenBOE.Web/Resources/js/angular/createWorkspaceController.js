@@ -1032,6 +1032,9 @@
 		if ($scope.data.UsingTemplateBoe === false) {
 			$scope.data.EnableSAPConnection = false;
 		}
+		else if ($scope.data.UsingTemplateBoe === true) {
+			$scope.data.EnableSAPConnection = true;
+		}
 	};
 
 	$scope.initialize();

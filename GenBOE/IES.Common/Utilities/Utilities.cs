@@ -899,6 +899,28 @@ namespace IES.Common
 		}
 
 		/// <summary>
+		/// Private for Is UCOT Enabled
+		/// </summary>
+		private static bool? isUCOTEnabled;
+
+		/// <summary>
+		/// Is UCOT/Uncompensated Overtime enabled?
+		/// </summary>
+		public static bool IsUCOTEnabled
+		{
+			get
+			{
+				if (isUCOTEnabled == null)
+				{
+					bool.TryParse(ConfigurationUtilities.GetAppSetting("EnableUCOT"), out bool ucotEnabled);
+					isUCOTEnabled = ucotEnabled;
+				}
+
+				return isUCOTEnabled.Value;
+			}
+		}
+
+		/// <summary>
 		/// Private for Is BRC Enabled, used for unit testing
 		/// </summary>
 		private static bool? isBRCEnabled;
@@ -1039,7 +1061,7 @@ namespace IES.Common
 		/// <param name="workspaceCreationDate">Workspace creation date.</param>
 		/// <param name="hasTMRates">Is the task using T&M rates</param>
 		/// <returns>Option to show skill mix for task.</returns>
-		public static bool ShowSkillMixForTask(DateTime? workspaceCreationDate, bool hasTMRates, ICollection<MOQType> moqTypes)
+		public static bool ShowSkillMixForTask(DateTime? workspaceCreationDate, bool hasTMRates)
 		{
 			bool showSkillMixRationale = false;
 
@@ -1051,12 +1073,6 @@ namespace IES.Common
 			else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 			{
 				showSkillMixRationale = IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate && !hasTMRates;
-			}
-
-			// Only show for Historical or Comparative (no need to check if already hidden)
-			if (showSkillMixRationale)
-			{
-				showSkillMixRationale = moqTypes.Any(x => x == MOQType.Historical || x == MOQType.Comparative);
 			}
 
 			return showSkillMixRationale;

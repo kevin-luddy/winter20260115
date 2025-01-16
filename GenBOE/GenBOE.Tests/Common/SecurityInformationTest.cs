@@ -98,7 +98,7 @@ namespace GenBOE.Tests.Common
             Mock<ICache> memCache = new Mock<ICache>();
             SecurityInformation sut = new SecurityInformation(adUtils.Object, memCache.Object);
 
-            UserDTO user = new UserDTO() { NTID = "test", IsSubcontractor = false };
+            UserDTO user = new UserDTO() { NTID = "test1", IsSubcontractor = false };
 
             bool returned = sut.IsSubcontractorUser(user.NTID, user.IsSubcontractor);
             Assert.IsFalse(returned);
@@ -113,9 +113,9 @@ namespace GenBOE.Tests.Common
         {
             Mock<IActiveDirectoryUtilities> adUtils = new Mock<IActiveDirectoryUtilities>();
             Mock<ICache> memCache = new Mock<ICache>();
-            SecurityInformation sut = new SecurityInformation(adUtils.Object, memCache.Object);
-
-            UserDTO user = new UserDTO() { NTID = "test", IsSubcontractor = true };
+			ConfigurationManager.AppSettings["OverrideSubNonUs"] = "false";
+			SecurityInformation sut = new SecurityInformation(adUtils.Object, memCache.Object);
+			UserDTO user = new UserDTO() { NTID = "test2", IsSubcontractor = true };
             adUtils.Setup(x => x.IsMemberOfADGroup(user.NTID, It.IsAny<string>())).Returns(false);
 
             bool returned = sut.IsSubcontractorUser(user.NTID, user.IsSubcontractor);
@@ -132,8 +132,9 @@ namespace GenBOE.Tests.Common
             Mock<IActiveDirectoryUtilities> adUtils = new Mock<IActiveDirectoryUtilities>();
             Mock<ICache> memCache = new Mock<ICache>();
             SecurityInformation sut = new SecurityInformation(adUtils.Object, memCache.Object);
+			ConfigurationManager.AppSettings["OverrideSubNonUs"] = "false";
 
-            UserDTO user = new UserDTO() { NTID = "test", IsSubcontractor = true };
+			UserDTO user = new UserDTO() { NTID = "test3", IsSubcontractor = true };
             adUtils.Setup(x => x.IsMemberOfADGroup(user.NTID, It.IsAny<string>())).Returns(true);
 
             bool returned = sut.IsSubcontractorUser(user.NTID, user.IsSubcontractor);
@@ -151,7 +152,7 @@ namespace GenBOE.Tests.Common
             Mock<ICache> memCache = new Mock<ICache>();
             SecurityInformation sut = new SecurityInformation(adUtils.Object, memCache.Object);
 
-            UserDTO user = new UserDTO() { NTID = "test", IsSubcontractor = true };
+            UserDTO user = new UserDTO() { NTID = "test4", IsSubcontractor = true };
             memCache.Setup(x => x.Contains(It.IsAny<string>())).Returns(true);
             memCache.Setup(x => x.GetData(It.IsAny<string>())).Returns(true);
 
@@ -195,7 +196,7 @@ namespace GenBOE.Tests.Common
             Mock<ICache> memCache = new Mock<ICache>();
             SecurityInformation sut = new SecurityInformation(adUtils.Object, memCache.Object);
 
-            UserDTO user = new UserDTO() { NTID = "test", IsSubcontractor = true };
+            UserDTO user = new UserDTO() { NTID = "test5", IsSubcontractor = true };
             ConfigurationManager.AppSettings["OverrideSubNonUs"] = "true";
 
             bool returned = sut.IsSubcontractorUser(user.NTID, user.IsSubcontractor);
@@ -213,7 +214,7 @@ namespace GenBOE.Tests.Common
             Mock<ICache> memCache = new Mock<ICache>();
             SecurityInformation sut = new SecurityInformation(adUtils.Object, memCache.Object);
 
-            UserDTO user = new UserDTO() { NTID = "test", IsSubcontractor = false };
+            UserDTO user = new UserDTO() { NTID = "test6", IsSubcontractor = false };
             ConfigurationManager.AppSettings["OverrideSubNonUs"] = "true";
 
             bool returned = sut.IsSubcontractorUser(user.NTID, user.IsSubcontractor);
@@ -231,7 +232,7 @@ namespace GenBOE.Tests.Common
             Mock<ICache> memCache = new Mock<ICache>();
             SecurityInformation sut = new SecurityInformation(adUtils.Object, memCache.Object);
 
-            UserDTO user = new UserDTO() { NTID = "test", IsSubcontractor = null };
+            UserDTO user = new UserDTO() { NTID = "test7", IsSubcontractor = null };
             ConfigurationManager.AppSettings["OverrideSubNonUs"] = "true";
 
             bool returned = sut.IsSubcontractorUser(user.NTID, user.IsSubcontractor);

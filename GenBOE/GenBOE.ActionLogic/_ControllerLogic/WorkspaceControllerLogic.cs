@@ -56,6 +56,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		private readonly IPickListMapper ptmPickListMapper;
 		private readonly IMoqTypeDataLoader moqTypeLoader;
 		private readonly IBoeMediator boeMediator;
+		private readonly ISystemSettingDTODataLoader systemSettingDTODataLoader;
 
 		/// <summary>
 		/// Boe State Machine
@@ -138,6 +139,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="moqTypeLoader">Moq Type Loader</param>
 		/// <param name="boeStateMachine">Boe State Machine</param>
 		/// <param name="boeMediator">The BOE Mediator</param>
+		/// <param name="systemSettingDTODataLoader">System Settings data loader</param>
 		protected WorkspaceControllerLogic(
 			IWorkspaceDTODataLoader workspaceLoader,
 			IUserDTODataLoader inuserLoader,
@@ -157,7 +159,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			WorkspaceExporter workspaceExporter,
 			IMoqTypeDataLoader moqTypeLoader,
 			IBOEStateMachine boeStateMachine,
-			IBoeMediator boeMediator)
+			IBoeMediator boeMediator,
+			ISystemSettingDTODataLoader systemSettingDTODataLoader)
 		{
 			this.WorkspaceLoader = workspaceLoader;
 			this.UserLoader = inuserLoader;
@@ -181,6 +184,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			this.moqTypeLoader = moqTypeLoader;
 			this.boeStateMachine = boeStateMachine;
 			this.boeMediator = boeMediator;
+			this.systemSettingDTODataLoader = systemSettingDTODataLoader;
 		}
 
 		#endregion
@@ -1873,6 +1877,38 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			result.ForEach(r => r.Order = order++);
 
 			return result;
+		}
+
+		/// <summary>
+		/// get ucot system settings
+		/// </summary>
+		public decimal GetUcotSystemSettingsValue()
+		{
+			string ucotString = this.systemSettingDTODataLoader.GetSystemSetting(ConfigurationUtilities.GetAppSetting("UcotKey"))?.Value;
+			decimal ucot = 1;
+
+			if (!string.IsNullOrWhiteSpace(ucotString))
+			{
+				decimal.TryParse(ucotString, out ucot);
+			}
+			return ucot;
+		}
+
+		/// <summary>
+		/// Copy the system setting for UCOT Factor into the workspace
+		/// </summary>
+		/// <param name="workspace">The workspace</param>
+		public void CopySystemUCOTFactor(FullWorkspace workspace)
+		{
+			if (workspace == null)
+			{
+				throw new ArgumentNullException(nameof(workspace));
+			}
+
+			decimal systemUCOTFactor = this.GetUcotSystemSettingsValue();
+			workspace.UCOTFactor = systemUCOTFactor;
+
+			this.WorkspaceLoader.SaveIdentificationAndExportFormat(workspace.CurrentActiveUser.UserID, workspace);
 		}
 
 		/// <summary>

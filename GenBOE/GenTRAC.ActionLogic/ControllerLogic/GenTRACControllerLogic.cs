@@ -1032,6 +1032,10 @@ namespace GenTRAC.ActionLogic
 		{
 			bool readOnly = true;
 
+			if(this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null))
+			{
+				return "false";
+			}
 			// if this proposal is not in progress, or it is in progress and the Lead Estimator has approved the proposal,
 			// the entire checklist is read only so just return that value now
 			if (fullProposalDto.ProposalStatus != ProposalStatus.InProgress || fullProposalDto.LeadEstimatorSignedDate != null)

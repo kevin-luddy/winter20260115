@@ -28,13 +28,14 @@ namespace GenBOE.Tests.ActionLogic
     public class BoeTaskElementRecalculationTest : MOQObject
     {
         Mock<IRetriever> retriever = new Mock<IRetriever>();
-        
-        private Mock<ICommonDataMapper> _CommonDataMapper = new Mock<ICommonDataMapper>();
+		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
+		private Mock<ICommonDataMapper> _CommonDataMapper = new Mock<ICommonDataMapper>();
 
         [TestInitialize]
         new public void Setup()
         {
-        }
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
+		}
                 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), TestMethod]
         public void BL_RecalculateLaborWithTaskVariable()

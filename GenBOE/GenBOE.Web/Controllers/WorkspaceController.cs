@@ -800,7 +800,6 @@ namespace GenBOE.Web.Controllers
 		#endregion Views
 
 		#region Partial Views
-
 		/// <summary>
 		/// Displays the email preferences.
 		/// </summary>
@@ -813,6 +812,122 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_WORKSPACE_EMAIL_PREFERENCES);
 			// Finalize Action
 			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_EMAIL_PREFERENCES, sw);
+
+			return toReturn;
+		}
+
+		public ViewResult DisplayUpdateUCOTFactorDialog(bool useCookie, string workspace)
+		{
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			// Initialize Action
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_UPDATE_RATES_DIALOG, SecurityPage.UpdateLockedResourceRates, SecurityAuthorization.Read, ws, null);
+
+			int currentUserID = ws.CurrentActiveUser.UserID;
+
+			Collection<PermissionsDTO> userPermissions = (from p in this.PermissionsLoader.GetWorkspacePermissions(ws.Id)
+														  where p.Role == Role.WorkspaceAdmin && p.ETIUserId == currentUserID
+														  select p).ToCollection();
+			UpdateWorkspaceResourceRateModelView theModelView = new UpdateWorkspaceResourceRateModelView();
+			theModelView.ShowZoneTravelRatesDialog = false;
+
+			#region Decide if Zone Travel Rates Dialog should be displayed
+			{
+				if (!ws.IsProjectMapWorkspace)
+				{
+					bool userHasCookie = false;
+					HttpCookie cookie = null;
+
+					if (useCookie)
+					{
+						// check users cookie to see if we should even bother checking for rates update dialog
+						cookie = System.Web.HttpContext.Current.Request.Cookies[WebConstants.UPDATE_WORKSPACE_TRAVEL_ZONE_RATE] ?? new HttpCookie(WebConstants.UPDATE_WORKSPACE_TRAVEL_ZONE_RATE);
+
+						if (!string.IsNullOrEmpty(cookie.Values[workspace]))
+						{
+							userHasCookie = true;
+						}
+					}
+
+					// if the user has the cookie it means they said 'no' that they didn't want to apply updates
+					if (userHasCookie == false && userPermissions.Count > 0)
+					{
+						//Get the actual date!!! => if it's null, it means it's fine. If it's not null, it means that there are newer dates available
+						theModelView.LastUpdatedTimeZoneTravel = this._ControllerLogic.GetLastupdatedTimeZoneTravel(ws.Id);
+
+						if (theModelView.LastUpdatedTimeZoneTravel != null)
+						{
+							// we will show the dialog to the user asking them if they want to update rates
+							theModelView.ShowZoneTravelRatesDialog = true;
+
+							if (useCookie)
+							{
+								// add the cookie to the users browser that will keep them from being prompted over and over again if they choose 'no' to the prompt to update rates
+								cookie.Values[workspace] = WebConstants.UPDATE_WORKSPACE_TRAVEL_ZONE_RATE;
+								cookie.Expires = DateTime.Now.AddMinutes(5);
+								System.Web.HttpContext.Current.Response.Cookies.Add(cookie);
+							}
+						}
+						else
+						{
+							theModelView.ShowZoneTravelRatesDialog = false;
+						}
+					}
+				}
+			}
+
+			#endregion
+
+			#region Decide if Offload Rates Dialog should be displayed
+
+			if (ws.ProjectMapType != ProjectMapType.StandardWithoutOffload)
+			{
+				bool userHasCookie = false;
+				HttpCookie cookie = null;
+
+				if (useCookie)
+				{
+					// check users cookie to see if we should even bother checking for rates update dialog
+					cookie = System.Web.HttpContext.Current.Request.Cookies[WebConstants.UPDATE_WORKSPACE_OFFLOAD_RATES] ?? new HttpCookie(WebConstants.UPDATE_WORKSPACE_OFFLOAD_RATES);
+
+					if (!string.IsNullOrEmpty(cookie.Values[workspace]))
+					{
+						userHasCookie = true;
+					}
+				}
+
+				// if the user has the cookie it means they said 'no' that they didn't want to apply updates
+				if (!userHasCookie && userPermissions.Any())
+				{
+					//Get the actual date!!! => if it's null, it means it's fine. If it's not null, it means that there are newer dates available
+					theModelView.LastUpdatedTimeOffloadRates = this._ControllerLogic.GetLastupdatedTimeOffload(ws.Id);
+
+					if (theModelView.LastUpdatedTimeOffloadRates != null)
+					{
+						// we will show the dialog to the user asking them if they want to update rates
+						theModelView.ShowOffloadRatesDialog = true;
+
+						if (useCookie)
+						{
+							// add the cookie to the users browser that will keep them from being prompted over and over again if they choose 'no' to the prompt to update rates
+							cookie.Values[workspace] = WebConstants.UPDATE_WORKSPACE_OFFLOAD_RATES;
+							cookie.Expires = DateTime.Now.AddMinutes(5);
+							System.Web.HttpContext.Current.Response.Cookies.Add(cookie);
+						}
+					}
+					else
+					{
+						theModelView.ShowOffloadRatesDialog = false;
+					}
+				}
+			}
+
+			#endregion
+
+			ViewResult toReturn = View(WebConstants.VIEW_WORKSPACE_UPDATE_RESOURCE_RATES, theModelView);
+
+			// Finalize Action
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_UPDATE_RATES_DIALOG, sw);
 
 			return toReturn;
 		}
@@ -919,6 +1034,53 @@ namespace GenBOE.Web.Controllers
 					else
 					{
 						theModelView.ShowOffloadRatesDialog = false;
+					}
+				}
+			}
+
+			#endregion
+
+			#region Decide if UCOT Factor Dialog should be displayed
+
+			// Space ONLY
+			if (Utilities.IsUCOTEnabled && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			{
+				bool userHasCookie = false;
+				HttpCookie cookie = null;
+
+				if (useCookie)
+				{
+					// check users cookie to see if we should even bother checking for rates update dialog
+					cookie = System.Web.HttpContext.Current.Request.Cookies[WebConstants.UPDATE_WORKSPACE_UCOT_FACTOR] ?? new HttpCookie(WebConstants.UPDATE_WORKSPACE_UCOT_FACTOR);
+
+					if (!string.IsNullOrEmpty(cookie.Values[workspace]))
+					{
+						userHasCookie = true;
+					}
+				}
+
+				// if the user has the cookie it means they said 'no' that they didn't want to apply updates
+				if (!userHasCookie && userPermissions.Any())
+				{
+					// Get the System level value
+					decimal ucot = this._ControllerLogic.GetUcotSystemSettingsValue();
+
+					if (ucot != ws.UCOTFactor)
+					{
+						// we will show the dialog to the user asking them if they want to update rates
+						theModelView.ShowUCOTFactorDialog = true;
+
+						if (useCookie)
+						{
+							// add the cookie to the users browser that will keep them from being prompted over and over again if they choose 'no' to the prompt to update UCOT Factor
+							cookie.Values[workspace] = WebConstants.UPDATE_WORKSPACE_UCOT_FACTOR;
+							cookie.Expires = DateTime.Now.AddMinutes(5);
+							System.Web.HttpContext.Current.Response.Cookies.Add(cookie);
+						}
+					}
+					else
+					{
+						theModelView.ShowUCOTFactorDialog = false;
 					}
 				}
 			}
@@ -1848,6 +2010,31 @@ namespace GenBOE.Web.Controllers
 
 			// Finalize Action
 			FinalizeAction(_log, "UpdateOffloadRates", sw);
+
+			return Json(new { Status = true });
+		}
+
+		/// <summary>
+		/// Update the UCOT Factor for the workspace
+		/// </summary>
+		/// <param name="workspace">workspace</param>
+		/// <returns>action result</returns>
+		public ActionResult UpdateUCOTFactor(string workspace)
+		{
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			// Initialize Action
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_UPDATE_UCOT_FACTOR, SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+
+			this._ControllerLogic.CopySystemUCOTFactor(ws);
+
+			// user synced their rates, so we can remove the cookie now for this workspace
+			HttpCookie cookie = System.Web.HttpContext.Current.Request.Cookies[WebConstants.UPDATE_WORKSPACE_UCOT_FACTOR] ?? new HttpCookie(WebConstants.UPDATE_WORKSPACE_UCOT_FACTOR);
+			cookie.Expires = DateTime.Now.AddDays(-1D);
+			System.Web.HttpContext.Current.Response.Cookies.Add(cookie);
+
+			// Finalize Action
+			FinalizeAction(_log, WebConstants.ACTION_UPDATE_UCOT_FACTOR, sw);
 
 			return Json(new { Status = true });
 		}

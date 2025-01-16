@@ -60,10 +60,15 @@ namespace GenBOE.Tests.ActionLogic
         /// </summary>
         private Mock<ICustomFieldValueDTODataLoader> customFieldValueLoader = new Mock<ICustomFieldValueDTODataLoader>();
 
-        /// <summary>
-        /// Initializes data before each test run for this class.
-        /// </summary>
-        [TestInitialize]
+		/// <summary>
+		/// AD utilities mock
+		/// </summary>
+		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
+
+		/// <summary>
+		/// Initializes data before each test run for this class.
+		/// </summary>
+		[TestInitialize]
         public void Initialize()
         {
             _retriever = new Mock<IRetriever>();
@@ -76,8 +81,8 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), _factory.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _perissionsDtoDataLoader.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _commonDataMapper.Object);
-
-            this._travelControllerLogic = new TravelControllerLogic(_TravelDTOLoader.Object, customFieldValueLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
+			this._travelControllerLogic = new TravelControllerLogic(_TravelDTOLoader.Object, customFieldValueLoader.Object);
         }
 
         [TestMethod]

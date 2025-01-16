@@ -6,26 +6,22 @@
 
 namespace GenBOE.Web.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using System.Net.Http;
-    using System.Net;
-    using System.Web;
-    using System.Web.Http;
-    using GenBOE.DataBridge.Common;
-    using GenBOE.DataBridge.Common.Interfaces;
-    using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
-    using GenBOE.Objects;
-    using IES.Common;
-    using IES.Common.Exceptions;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Web.Http;
+	using IES.Common;
+	using IES.Common.Exceptions;
+	using GenBOE.DataBridge.Common;
+	using GenBOE.DataBridge.Common.Interfaces;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
 
-    /// <summary>
-    /// Base BOE Api data controller
-    /// </summary>
-    public abstract class BoeDataBaseAPIController : ApiController
+	/// <summary>
+	/// Base BOE Api data controller
+	/// </summary>
+	public abstract class BoeDataBaseAPIController : ApiController
     {
         /// <summary>
         /// Security Access

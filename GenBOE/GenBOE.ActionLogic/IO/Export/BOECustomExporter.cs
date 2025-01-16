@@ -4562,7 +4562,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				if (exportInputs.Workspace.UsingTemplateBOE)
                 {
                     boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
-					skillMixEnabled = Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, boeTaskElement.HasTMRates, boeExportTaskElement.MOQTypes.Select(x => x.SelectedMOQType).ToList());
+					skillMixEnabled = Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, boeTaskElement.HasTMRates);
 					if (skillMixEnabled)
 					{
 						boeExportTaskElement.SkillMixTable = boeTaskElement.SkillMixTable;

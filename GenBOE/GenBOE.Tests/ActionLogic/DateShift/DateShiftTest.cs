@@ -34,8 +34,8 @@ namespace GenBOE.Tests.ActionLogic
         private static DateTime StartDate = new DateTime(2019, 1, 15).Normalize();
         private static DateTime EndDate = new DateTime(2019, 6, 15).Normalize();
         private const decimal DISCRETE_HOURS = 250;
-
-        private static Dictionary<Operation, Dictionary<int, ICollection<Tuple<DateTime, DateTime>>>> FlowdownExpectedResults = new Dictionary<Operation, Dictionary<int, ICollection<Tuple<DateTime, DateTime>>>>();
+		private static Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
+		private static Dictionary<Operation, Dictionary<int, ICollection<Tuple<DateTime, DateTime>>>> FlowdownExpectedResults = new Dictionary<Operation, Dictionary<int, ICollection<Tuple<DateTime, DateTime>>>>();
 
         /// <summary>
         /// Initializes the specified context.
@@ -48,8 +48,9 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissions.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), commonDataMapper.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
 
-            FlowdownExpectedResults.Add(Operation.Shift, new Dictionary<int, ICollection<Tuple<DateTime, DateTime>>>());
+			FlowdownExpectedResults.Add(Operation.Shift, new Dictionary<int, ICollection<Tuple<DateTime, DateTime>>>());
             FlowdownExpectedResults.Add(Operation.DurationChange, new Dictionary<int, ICollection<Tuple<DateTime, DateTime>>>());
 
             IDateShiftable parent = CreateParentShiftable();

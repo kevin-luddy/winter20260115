@@ -107,6 +107,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ECI_FORBIDDEN_BANNER = "EciForbiddenBanner";
 		public static readonly string UPDATE_WORKSPACE_TRAVEL_ZONE_RATE = "UpdateWorkspaceTravelZoneRate";
 		public static readonly string UPDATE_WORKSPACE_OFFLOAD_RATES = "UpdateWorkspaceOffloadRates";
+		public static readonly string UPDATE_WORKSPACE_UCOT_FACTOR = "UpdateWorkspaceUCOTFactor";
 
 		public static readonly string SPACE_LEGACY_TM = "T&M";
 		public static readonly string SPACE_1LMX_CORE = "1LMX - Core";
@@ -161,6 +162,7 @@ namespace GenBOE.ActionLogic.Common
 
 		public static readonly string ACTION_SYSTEM_EMAIL_PREFERENCES = "GetSystemEmailPreferences";
 		public static readonly string ACTION_SAVE_SYSTEM_EMAIL_PREFERENCES = "SaveSystemEmailPreferences";
+		public static readonly string ACTION_SAVE_UCOT = "SaveUCOT";
 		public static readonly string ACTION_INDEX = "Index";
 		public static readonly string ACTION_EDIT_BOE_INDEX = "EditBOEIndex";
 		public static readonly string ACTION_INVALID_REQUEST = "InvalidRequest";
@@ -302,6 +304,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_EXPORT_DEFAULT_RESOURCES_TEMPLATE = "ExportDefaultResourcesTemplate";
 		public static readonly string ACTION_DISPLAY_WHOS_ONELINE = "WhosOnline";
 		public static readonly string ACTION_CONVERT_HTML_TO_TEXT = "ConvertHtmlToText";
+		public static readonly string ACTION_DISPLAY_MANAGE_UCOT = "DisplayManageUCOT";
 
 		#endregion ADMIN
 
@@ -682,6 +685,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_GET_NEXT_TRACKING_NUMBER_REVISION = "GetNextTrackingNumberRevision";
 		public static readonly string ACTION_UPDATE_ZONE_TRAVEL_RATES = "UpdateZoneTravelRates";
 		public static readonly string ACTION_UPDATE_OFFLOAD_RATES = "UpdateOffloadRates";
+		public static readonly string ACTION_UPDATE_UCOT_FACTOR = "UpdateUCOTFactor";
 		public static readonly string ACTION_IMPORT_WORKSPACE_RESOURCE_RATES = "ImportWorkspaceResourceRates";
 		public static readonly string ACTION_IMPORT_PREVIEW_WORKSPACE_RESOURCE_RATES = "ImportPreviewResultsForWorkspaceResourceRates";
 		public static readonly string ACTION_IMPORT_WORKSPACE_RESOURCE_RATES_TM = "ImportWorkspaceResourceRatesTM";
@@ -786,6 +790,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string VIEW_MANAGE_OVERDUE_TRAINING = "ManageOverdueTraining";
 		public static readonly string VIEW_MANAGE_SYSTEM_PROPRICER_EXPORTS = "ManageSystemProPricerExports";
 		public static readonly string VIEW_SYSTEM_EXPORT_TO_PROPRICER_GRID = "ManageSystemProPricerGrid";
+		public static readonly string VIEW_MANAGE_UCOT = "ManageUCOT";
 
 		#endregion ADMIN
 

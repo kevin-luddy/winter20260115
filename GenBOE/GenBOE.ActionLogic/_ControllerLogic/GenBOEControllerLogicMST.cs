@@ -7,11 +7,12 @@
 namespace GenBOE.ActionLogic.ControllerLogic
 {
     using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
 
-    /// <summary>
-    /// Controller logic class for the base controller
-    /// </summary>
-    public class GenBOEControllerLogicMST : GenBOEControllerLogic
+	/// <summary>
+	/// Controller logic class for the base controller
+	/// </summary>
+	public class GenBOEControllerLogicMST : GenBOEControllerLogic
     {
         private RMSZoneTravelRatesFeesDataLoader zoneTravelRatesFeesLoader;
         private IOffloadRatesDTOLoader offloadRatesLoader;
@@ -19,7 +20,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <summary>
         /// Constructor
         /// </summary>
-        public GenBOEControllerLogicMST(RMSZoneTravelRatesFeesDataLoader zoneTravelRatesFeesLoader, IOffloadRatesDTOLoader offloadRatesLoader)
+        public GenBOEControllerLogicMST(RMSZoneTravelRatesFeesDataLoader zoneTravelRatesFeesLoader, IOffloadRatesDTOLoader offloadRatesLoader,
+			ISystemSettingDTODataLoader systemSettingDTODataLoader): base(systemSettingDTODataLoader)
         {
             this.zoneTravelRatesFeesLoader = zoneTravelRatesFeesLoader;
             this.offloadRatesLoader = offloadRatesLoader;
@@ -44,5 +46,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
         {
             return this.offloadRatesLoader.AreCurrentOffloadRatesOutOfDate(workspaceId);
         }
-    }
+
+		/// <summary>
+		/// Determines if the UCOT Factor is out of date.
+		/// </summary>
+		/// <param name="workspace">The workspace</param>
+		/// <returns>True if out of date</returns>
+		public override bool IsUCOTFactorOutOfDate(WorkspaceDTO workspace)
+		{
+			return false;
+		}
+	}
 }

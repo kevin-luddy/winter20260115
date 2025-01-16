@@ -364,9 +364,11 @@ namespace GenBOE.ActionLogic
 		/// <param name="resourceHours">MOQ Table Resource Hours</param>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
 		/// <param name="isBRCEnabled">Is BRC Enabled for CD row check.</param>
+		/// <param name="isManual">If the Historical Resource/Hours are Manually input or not</param>
 		/// <returns></returns>
 		RefreshSkillMixModelView RefreshSkillMixTables(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
-			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isBRCEnabled);
+			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, 
+			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isBRCEnabled, bool isManual);
 
 		/// <summary>
 		/// Checks the usage of active T&M rates in the task.

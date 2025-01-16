@@ -919,7 +919,10 @@
                 Skill Mix Rationale
             </div>
             <div class="module-content-data expanded-content">
-                <div class="form-element">
+                <div class="form-element" data-ng-if="isSkillMixDisabled()">
+                    <div class="form-label"><p>The SAP MOQ Actuals have not been calculated.  Please ensure all MOQ Tables are updated to enable Skill Mix.</p><br />&nbsp;</div>
+                </div>
+                <div class="form-element" data-ng-if="!isSkillMixDisabled()">
                     <!-- Skill Mix Table -->
                     <div class="form-label">
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
@@ -949,7 +952,8 @@
                             <tbody>
                                 <!-- Display the data for each of the Skill Mix Table rows. -->
                                 <tr ng-repeat="row in skillMixRationale.data.SkillMixRows">
-                                    <td>{{row.ResourceOld}}</td>
+                                    <td data-ng-if="!isSkillMixManual()">{{row.ResourceOld}}</td>
+                                    <td data-ng-if="isSkillMixManual()" class="bootstrap"><input type="text" data-ng-blur="refreshSkillMixTables()" class="form-control" data-ng-model="row.ResourceOld" style="width: 100%; height: 14px;" maxlength="20" /></td>
                                     <td>
                                         <!-- Select for Current Resource ID will change the Included column and IsUserInput backend value. -->
                                         <select
@@ -958,7 +962,8 @@
                                             ng-change="refreshSkillMixTables()">
                                         </select>
                                     </td>
-                                    <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>
+                                    <td data-ng-if="!isSkillMixManual()" style="text-align: right">{{row.HistoricalHours | number:2}}</td>
+                                    <td data-ng-if="isSkillMixManual()" style="text-align: right"><input type="number" data-ng-blur="refreshSkillMixTables()" data-ng-model="row.HistoricalHours" step="any" style="width: 100%; height: 14px;" /></td>
                                     <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
                                     <td>
                                         <!-- Read only for Included when loaded in as True -->

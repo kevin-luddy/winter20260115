@@ -37,11 +37,12 @@ namespace GenBOE.Tests.ActionLogic.Import
         private Mock<IResourceDTODataLoader> resourceDTODataLoader = null;
         private Mock<ICommonDataMapper> commonDataMapper = null;
         private LaborTypeAndSpreadImporter laborImporter;
+		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
 
-        /// <summary>
-        /// Initializes the test data.
-        /// </summary>
-        [TestInitialize]
+		/// <summary>
+		/// Initializes the test data.
+		/// </summary>
+		[TestInitialize]
         public void Init()
         {
             this.permissionsLoader = new Mock<IPermissionsDTODataLoader>();
@@ -55,7 +56,8 @@ namespace GenBOE.Tests.ActionLogic.Import
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), this.commonDataMapper.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), this.retriever.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), this.permissionsLoader.Object);
-            BOEMultiFalse = new FullBoe()
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object); 
+			BOEMultiFalse = new FullBoe()
             {
                 Id = 1,
 

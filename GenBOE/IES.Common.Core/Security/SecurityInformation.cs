@@ -137,7 +137,8 @@ namespace IES.Common.Core.Security
 		GettingStartedMenuOption = 72,
 		WorkspaceSettingsShareAndAllowSearch = 73,
 		RTETemplates = 74,
-		WorkspaceRecalculateActuals = 75
+		WorkspaceRecalculateActuals = 75,
+		UpdateUCOTFactorMenuOption = 76
 	}
 
 	/// <summary>

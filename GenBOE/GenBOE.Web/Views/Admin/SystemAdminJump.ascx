@@ -136,6 +136,16 @@
                     Manage the System-level ProPricer Export Templates.
                 </div>
             </div>
+            <% // Manage UCOT is Space-only
+                if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && Utilities.IsUCOTEnabled)
+                { %>
+            <div>
+                <a id="ManageUCOT" href="#ManageUCOT">Manage Uncompensated Overtime</a>
+                <div>
+                    Manage and edit the UCOT (Uncompensated Overtime) Factor.
+                </div>
+            </div>
+            <% } %>
         </div>
         <div class="clear"></div>
     </div>

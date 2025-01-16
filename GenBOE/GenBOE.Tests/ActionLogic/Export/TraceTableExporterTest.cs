@@ -32,6 +32,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 		private Mock<IPermissionsDTODataLoader> permissionsLoader;
 		private Mock<ICommonDataMapper> dataMapper;
 		private Mock<IFullObjectFactory> factory;
+		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
 
 		/// <summary>
 		/// init
@@ -48,6 +49,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionsLoader.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), dataMapper.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
 		}
 
 		/// <summary>

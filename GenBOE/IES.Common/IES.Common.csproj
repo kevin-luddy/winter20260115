@@ -342,6 +342,7 @@
     <Compile Include="Exceptions\ValidationException.cs" />
     <Compile Include="classes\PtmEnums.cs" />
     <Compile Include="classes\PickListEnum.cs" />
+    <Compile Include="IESSingleResponse.cs" />
     <Compile Include="IESResponse.cs" />
     <Compile Include="interfaces\IDateShiftable.cs" />
     <Compile Include="Loaders\BulkDataLoader.cs" />
