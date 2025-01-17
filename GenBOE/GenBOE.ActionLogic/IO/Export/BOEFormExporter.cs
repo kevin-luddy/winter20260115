@@ -278,7 +278,8 @@ namespace GenBOE.ActionLogic.IO.Export
                             ResourceDTO resource = this.resourceLoader.GetById(laborTask.ResourceID.Value);
                             bool isTMResource = (resource.ElementOfCost == ElementOfCostType.IWTA || resource.ElementOfCost == ElementOfCostType.Sub) && resource.RateType == RateType.Hours;
 
-                            row.Value += workspace.IsUsingTM && isTMResource ? this.tmCalculator.TotalCostForTaskSpread(workspace, laborTask) : laborTask.ValueSpread.Value;
+                            row.Value += workspace.IsUsingTM && isTMResource ? this.tmCalculator.TotalCostForTaskSpread(workspace, laborTask) : 
+								laborTask.SpreadType == SpreadType.Cost ? laborTask.ValueSpread.Value : 0;
                             foreach(ResourceSpreadDto spread in laborTask.LaborSpreads)
                             {
                                 if (spread.LaborSpreadValue != 0)
