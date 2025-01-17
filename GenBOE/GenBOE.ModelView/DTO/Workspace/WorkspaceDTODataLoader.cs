@@ -874,7 +874,9 @@ namespace GenBOE.DataBridge.DTO
 								  WorkspaceName = w.WorkspaceName,
 								  Id = w.WorkspaceID,
 								  CurrentPTMWorkspace = w.CurrentPTMWorkspace,
-								  ResourceListID = w.ResourceListID.Value
+								  ResourceListID = w.ResourceListID.Value,
+								  IsUsingTM = w.IsUsingTM,
+								  IsUsingEquivalentPerson = w.IsUsingEquivalentPerson
 							  }).ToList();
 				}
 			}
