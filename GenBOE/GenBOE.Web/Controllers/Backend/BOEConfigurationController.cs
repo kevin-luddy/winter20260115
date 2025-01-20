@@ -10,13 +10,15 @@ namespace GenBOE.Web.Controllers
 	using System.Collections.ObjectModel;
 	using System.Linq;
 	using System.Web.Http;
+	using System.Web.Http.Cors;
 	using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic.ControllerLogic.Backend;
 	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.ActionLogic.ModelView.Backend;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Objects;
 	using IES.Common;
-	using IES.Common.classes;
 
 	/// <summary>
 	/// BOE Configuration Controller used to communicate with the new front-end of GenBOE.
