@@ -93,6 +93,7 @@ namespace GenBOE.Models
         public bool EnableSAPConnection { get; set; }
         public bool CurrentPTMWorkspace { get; set; }
         public decimal UCOTFactor { get; set; }
+        public Nullable<bool> EnableAssignTaskAuthor { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BOEPotentialRole> BOEPotentialRoles { get; set; }
