@@ -32,9 +32,9 @@ CREATE TYPE [dbo].[TT_BOETaskElement] AS TABLE(
 	[IMS_ID] [varchar](20) NULL,
 	[TaskElementTypeID] [int] NOT NULL,
 	[SortOrderID] [int] NOT NULL,
+	[AuthorUserId] [int] NULL,
 	/* OrderID is automatically added in the code, so it HAS to be last */
-	[OrderID] [int] NOT NULL,
-	[AuthorUserId] [int] NULL
+	[OrderID] [int] NOT NULL
 );
 GO
 
@@ -344,9 +344,9 @@ AS
 		[IMS_ID] [varchar](20) NULL,
 		[TaskElementTypeID] [int] NOT NULL,
 		[SortOrderID] [int] NOT NULL,
+		[AuthorUserId] [int] NULL,
 		/* OrderID is automatically added in the code, so it HAS to be last */
-		[OrderID] [int] NOT NULL,
-		[AuthorUserId] [int] NULL
+		[OrderID] [int] NOT NULL
 	)
 	DECLARE @BOETaskElementID [int],
 		@TaskID [varchar](3),
