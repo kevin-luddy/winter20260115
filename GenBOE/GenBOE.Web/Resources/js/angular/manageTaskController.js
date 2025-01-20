@@ -153,7 +153,7 @@
         });
 
         $scope.skillMixRationaleLaborTypeSelections = $scope.skillMixRationaleLaborTypeSelections.filter((option, index, self) =>
-            index === self.findIndex((t) => (t === option))
+            index === self.findIndex((t) => (t === option)) && index === self.findLastIndex((t) => (t === option))
         );
 
         // Filter out the proper BRC Selections.
@@ -162,7 +162,7 @@
         });
 
         $scope.commonDisclosureLaborTypeSelections = $scope.commonDisclosureLaborTypeSelections.filter((option, index, self) =>
-            index === self.findIndex((t) => (t === option))
+            index === self.findIndex((t) => (t === option)) && index === self.findLastIndex((t) => (t === option))
         );
     };
 
@@ -1731,6 +1731,7 @@
             item.ResourceName = undefined;
             item.ResourceType = undefined;
             item.ResourceID = undefined;
+            $scope.filterResourceSelections();
             $scope.refreshSkillMixTables();
         }
         $scope.checkIfNewRowNeeded(item);
@@ -1744,6 +1745,7 @@
             item.BusinessResourceCodeName = undefined;
             item.BusinessResourceCodeType = undefined;
             item.BusinessResourceCodeID = undefined;
+            $scope.filterResourceSelections();
             $scope.refreshSkillMixTables();
         }
         $scope.checkIfNewRowNeeded(item);
