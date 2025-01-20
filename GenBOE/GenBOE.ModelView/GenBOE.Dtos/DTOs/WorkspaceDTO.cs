@@ -226,5 +226,10 @@ namespace GenBOE.Dtos
 		/// WS Creation Date
 		/// </summary>
 		public DateTime? CreationDate { get; set; }
+
+		/// <summary>
+		/// Gets or sets the UCOT Factor
+		/// </summary>
+		public decimal UCOTFactor { get; set; }
 	}
 }

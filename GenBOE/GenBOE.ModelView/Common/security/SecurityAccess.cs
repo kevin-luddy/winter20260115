@@ -493,6 +493,10 @@ namespace GenBOE.DataBridge.Common
 					new Role[] { Role.WorkspaceAdmin },
 					SecurityAuthorization.CreateReadUpdateDelete);
 
+				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.UpdateUCOTFactorMenuOption },
+					new Role[] { Role.WorkspaceAdmin },
+					SecurityAuthorization.CreateReadUpdateDelete);
+
 				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.UpdateLockedResourceRates },
 					new Role[] { Role.SystemAdmin, Role.WorkspaceAdmin, Role.WorkspaceUser, Role.WorkspaceReviewer, Role.SubcontractorAuthor, Role.SubcontractAdmin },
 					SecurityAuthorization.Read);
@@ -1111,6 +1115,7 @@ namespace GenBOE.DataBridge.Common
                 case SecurityPage.ManageBOEForms:
                 case SecurityPage.UpdateZoneTravelRatesMenuOption:
                 case SecurityPage.UpdateOffloadRatesMenuOption:
+				case SecurityPage.UpdateUCOTFactorMenuOption:
                 case SecurityPage.BulkSubmit:
                 case SecurityPage.WorkspaceDelete:
                 case SecurityPage.WorkspaceRestore:

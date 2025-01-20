@@ -54,6 +54,7 @@ AS
 **		7/16/24		e405721				PROPH-2161: Update Restore Workspace Version for Skill Mix, Common Disclosure, and MOQ Type Resource Hours Table Data
 **		7/30/24		e405721				PROPH-2218 Add BRC Name into MOQ Type Selection Table Data Resource Hours Table
 **		10/15/24	e405721				PROPH-2392: Update for Skill Mix V2
+**		1/14/25		twilson3			PROPH-2596 - Add UCOT Factor
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -558,6 +559,7 @@ BEGIN
 			,[RevisedSubmittalDate] = vW.[RevisedSubmittalDate]
 			,[TemplateBoe] = vW.[TemplateBoe]
 			,[EnableSAPConnection] = vW.[EnableSAPConnection]
+			,[UCOTFactor] = vW.[UCOTFactor]
 		FROM [dbo].[Workspace] W
 			INNER JOIN [version].[Workspace] vW ON W.WorkspaceID = vW.WorkspaceID
 			LEFT OUTER JOIN [dbo].[ResourceList] RL ON vW.ResourceListID = RL.ResourceListID

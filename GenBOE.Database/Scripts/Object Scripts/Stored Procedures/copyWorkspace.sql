@@ -50,6 +50,7 @@ AS
 **		07/12/24	twilson3			proph-2019 Fix @Temp Table definitions
 **		07/30/24	e405721				PROPH-2218 Add BRC Name into MOQ Type Selection Table Data Resource Hours Table
 **		10/15/24	e405721				PROPH-2392: Update for Skill Mix V2
+**		1/14/25		twilson3			PROPH-2596 - Add UCOT Factor
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -132,6 +133,7 @@ INSERT INTO [dbo].[Workspace]
 		   ,[RevisedSubmittalDate]
 		   ,[TemplateBoe]
 		   ,[EnableSAPConnection]
+		   ,[UCOTFactor]
            )
 SELECT [UpdateDT]
       ,@WorkspaceName
@@ -178,6 +180,7 @@ SELECT [UpdateDT]
 	  ,[RevisedSubmittalDate]
 	  ,[TemplateBoe]
 	  ,[EnableSAPConnection]
+	  ,[UCOTFactor]
   FROM [dbo].[Workspace]
 WHERE WorkspaceID = @WorkspaceID
 

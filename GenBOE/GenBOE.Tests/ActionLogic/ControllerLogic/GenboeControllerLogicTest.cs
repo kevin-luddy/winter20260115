@@ -13,6 +13,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 	using IES.Common;
 	using IES.Common.Exceptions;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using Moq;
 	using System.Collections.Generic;
 	using System.Linq;
 
@@ -25,7 +26,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         /// <returns>The system under test.</returns>
         private GenBOEControllerLogic CreateSystem()
         {
-            return new GenBOEControllerLogic();
+            return new GenBOEControllerLogic(new Moq.Mock<ISystemSettingDTODataLoader>().Object);
         }
 
         /// <summary>

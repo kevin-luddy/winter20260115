@@ -65,6 +65,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         private Mock<IPickListMapper> boePickListMapper;
         private Mock<ContractTypeLoader> contractTypeLoader;
 		private Mock<IMoqTypeDataLoader> moqTypeDataLoader;
+		private Moq.Mock<ISystemSettingDTODataLoader> systemSettingsLoader;
 
 		private WorkspaceControllerLogicSpaceSystems CreateSystemSpaceSystems()
         {
@@ -91,7 +92,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 null,
 				this.moqTypeDataLoader.Object,
 				this._boeStateMachine.Object,
-				this._BoeMediator.Object);
+				this._BoeMediator.Object,
+				this.systemSettingsLoader.Object);
         }
 
         private WorkspaceControllerLogicMST CreateSystemMST()
@@ -122,7 +124,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 null,
                 this.moqTypeDataLoader.Object,
 				this._boeStateMachine.Object,
-				this._BoeMediator.Object);
+				this._BoeMediator.Object,
+				this.systemSettingsLoader.Object);
 		}
 
         /// <summary>
@@ -138,7 +141,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             this._userLoader = new Mock<IUserDTODataLoader>();
             this._ResourceLoader = new Mock<IResourceDTODataLoader>();
             this._tmResourceRateLoader = new Mock<ITMResourceRateDTODataLoader>();
-
+			this.systemSettingsLoader = new Mock<ISystemSettingDTODataLoader>();
 			this._customFieldValueLoader = new Mock<ICustomFieldValueDTODataLoader>();
             this._customFieldValueLoader.Setup(s => s.GetBOECustomFieldContainerFieldValueMappings(It.IsAny<int>())).Returns(new List<CustomFieldContainerFieldValueMapping>());
             this._customFieldValueLoader.Setup(s => s.GetTaskElementCustomFieldContainerFieldValueMappings(It.IsAny<int>())).Returns(new List<CustomFieldContainerFieldValueMapping>());

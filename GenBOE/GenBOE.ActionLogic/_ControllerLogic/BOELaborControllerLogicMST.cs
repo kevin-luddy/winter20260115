@@ -30,7 +30,7 @@ namespace GenBOE.ActionLogic
 
     public class BOELaborControllerLogicMST : BOELaborControllerLogic
     {
-        private Logger _log = new Logger(typeof(GenBOEControllerLogic));
+        private Logger _log = new Logger(typeof(BOELaborControllerLogicMST));
 
         private readonly IRteTemplateDataLoader rteTemplateDataLoader;
 

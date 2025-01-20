@@ -671,7 +671,7 @@ namespace APTSPropricerApi.Controllers
 										}
 
 										maasc.Amount = ascitem.Amount;
-										maasc.LinkQty = ascitem.LinkQty;
+										// maasc.LinkQty = ascitem.LinkQty;
 										maasc.LinkSpread = ascitem.LinkSpread;
 
 										maasc.EndEdit();

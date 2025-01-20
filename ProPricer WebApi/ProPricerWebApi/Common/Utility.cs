@@ -12,6 +12,7 @@ namespace APTSPropricerApi.Common
 	using ACV.Shared;
 	using APTSPropricerApi.Connection;
 	using APTSPropricerApi.DTOs;
+	using DocumentFormat.OpenXml.Office2010.Excel;
 	using EBS.Core;
 	using EBS.ProPricer.Data;
 	using EBS.ProPricer.Model;
@@ -189,12 +190,38 @@ namespace APTSPropricerApi.Common
 		}
 
 		/// <summary>
+		/// Finds ProPricer Proposal by Name|Version or by GUID
+		/// </summary>
+		/// <param name="proPricerConnection">ProPricer connection</param>
+		/// <param name="proposalId">Proposal Id</param>
+		/// <returns>Proposal or null if not found</returns>
+		public static Proposal FindProposal(IProPricerConnection proPricerConnection, string proposalId)
+		{
+			Proposal pr;
+			// GUID or Name|Version?
+			if (proposalId.Contains('|'))
+			{
+				// Name
+				string[] parts = proposalId.Split('|');
+				pr = proPricerConnection.Workspace.Proposals.Find(parts[0], parts[1]);
+			}
+			else
+			{
+				// GUID
+				EntityId pEntityId = new(new Guid(proposalId));
+				pr = proPricerConnection.Workspace.Proposals.Find(pEntityId);
+			}
+
+			return pr;
+		}
+
+		/// <summary>
 		/// Returns the general proposal data for a given proposal
 		/// </summary>
 		/// <param name="poolManagerList">The pool manager list</param>
 		/// <param name="logger">The logger</param>
 		/// <param name="instanceId">The instance identifier.</param>
-		/// <param name="id">The EntityId of the proposal in the form of a GUID. Ex: 58b0d1c8-b06d-11e3-83f5-b499bae158c0</param>
+		/// <param name="id">The EntityId of the proposal in the form of a GUID or Name|Version. Ex: 58b0d1c8-b06d-11e3-83f5-b499bae158c0</param>
 		/// <returns>
 		/// Returns the general proposal data for a given proposal
 		/// </returns>
@@ -390,7 +417,7 @@ namespace APTSPropricerApi.Common
 										rdto.DirectCost = c.DirectCost.ToString();
 										// Look in BurdenElements to find the Price element (Linq)
 										IEnumerable<IBurdenCostElement> price =
-											from ele in c.BurdenElements
+											from ele in c.Elements
 											where ele.Name.Equals("Price")
 											select ele;
 
@@ -400,7 +427,7 @@ namespace APTSPropricerApi.Common
 										}
 
 										List<BurdenCostDto> burdensDto = new();
-										foreach (IBurdenCostElement el in c.BurdenElements)
+										foreach (IBurdenCostElement el in c.Elements)
 										{
 											BurdenCostDto burdens = new()
 											{
@@ -536,7 +563,7 @@ namespace APTSPropricerApi.Common
 										EndDate = asc.Spread.EndDate != null ? asc.Spread.EndDate.ToString() : string.Empty,
 										TotalAmount = asc.Spread.Amount ?? 0,
 										Amount = asc.Amount,
-										LinkQty = asc.LinkQty,
+										//LinkQty = asc.LinkQty,
 										LinkSpread = asc.LinkSpread
 									};
 
@@ -754,22 +781,15 @@ namespace APTSPropricerApi.Common
 
 			using (ppc)
 			{
-				// GUID or Name|Version?
-				if (nameOrId.Contains('|'))
+				// Try to parse out the Id as GUID else get report based on Name
+				if (Guid.TryParse(nameOrId, out Guid parsedValue))
 				{
-					// Name
-					string[] parts = nameOrId.Split('|');
-
-					// Parse out Version as int
-					int version = int.Parse(parts[1]);
-
-					batchReport = ppc.Workspace.Reports.BatchReports.Items().FirstOrDefault(b => b.Name == parts[0] && b.ContentVersion == version);
+					EntityId pEntityId = new(parsedValue);
+					batchReport = ppc.Workspace.Reports.BatchReports.Items().FirstOrDefault(b => b.Id == pEntityId);
 				}
 				else
 				{
-					// GUID
-					EntityId pEntityId = new(new Guid(nameOrId));
-					batchReport = ppc.Workspace.Reports.BatchReports.Items().FirstOrDefault(b => b.Id == pEntityId);
+					batchReport = ppc.Workspace.Reports.BatchReports.Items().FirstOrDefault(b => b.Name == nameOrId);
 				}
 			}
 
