@@ -68,7 +68,7 @@ AS
 **		12/7/17		twilson3			BOEJ-1994 - Remove Summary BOE
 **		1/16/18		twilson3			BOEJ-2887 Remove Historical Metrics
 **		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
-**		1/15/25		e309214				PROPH-1854
+**		1/15/25		e309214				PROPH-1854 Database Changes for Assign Author
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -322,7 +322,7 @@ AS
 **		1/26/17		pattoncr			Updating MOQHoursEquation to varchar(500)
 **		12/7/17		twilson3			BOEJ-1994 - Remove Summary BOE
 **		1/16/18		twilson3			BOEJ-2887 Remove Historical Metrics
-**		1/15/25		e309214				PROPH-1854
+**		1/15/25		e309214				PROPH-1854 Database Changes for Assign Author
 *******************************************************************************/
 	SET NOCOUNT ON 
 	DECLARE @UpdateDT datetime2 = GETDATE()
