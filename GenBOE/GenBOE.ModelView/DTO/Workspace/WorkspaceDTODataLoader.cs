@@ -62,7 +62,8 @@ namespace GenBOE.DataBridge.DTO
 									TrackingNumber = w.TrackingNumber,
 									WorkspaceState = (WorkspaceState)w.WorkspaceStateID,
 									CurrentPTMWorkspace = w.CurrentPTMWorkspace,
-									UCOTFactor = w.UCOTFactor
+									UCOTFactor = w.UCOTFactor,
+									EnableAssignTaskAuthor = w.EnableAssignTaskAuthor
 								}).ToCollection();
 				}
 			}
@@ -94,7 +95,8 @@ namespace GenBOE.DataBridge.DTO
 									TrackingNumber = w.TrackingNumber,
 									WorkspaceState = (WorkspaceState)w.WorkspaceStateID,
 									CurrentPTMWorkspace = w.CurrentPTMWorkspace,
-									UCOTFactor = w.UCOTFactor
+									UCOTFactor = w.UCOTFactor,
+									EnableAssignTaskAuthor = w.EnableAssignTaskAuthor
 								}).ToCollection();
 				}
 			}
@@ -298,7 +300,8 @@ namespace GenBOE.DataBridge.DTO
 									EnableSAPConnection = w.EnableSAPConnection,
 									CurrentPTMWorkspace = w.CurrentPTMWorkspace,
 									CreationDate = w.WorkspaceCreationDate,
-									UCOTFactor = w.UCOTFactor
+									UCOTFactor = w.UCOTFactor,
+									EnableAssignTaskAuthor = w.EnableAssignTaskAuthor
 								}).ToCollection();
 
 					toReturn.ToList().ForEach(w =>
@@ -394,7 +397,8 @@ namespace GenBOE.DataBridge.DTO
 										EnableSAPConnection = w.EnableSAPConnection,
 										CurrentPTMWorkspace = w.CurrentPTMWorkspace,
 										CreationDate = w.WorkspaceCreationDate,
-										UCOTFactor = w.UCOTFactor
+										UCOTFactor = w.UCOTFactor,
+										EnableAssignTaskAuthor = w.EnableAssignTaskAuthor
 									}).FirstOrDefault();
 
 						if (toReturn != null)
@@ -1324,7 +1328,8 @@ namespace GenBOE.DataBridge.DTO
 						wsToSave.UsingTemplateBOE,
 						wsToSave.EnableSAPConnection,
 						wsToSave.CurrentPTMWorkspace,
-						wsToSave.UCOTFactor).FirstOrDefault());
+						wsToSave.UCOTFactor,
+						wsToSave.EnableAssignTaskAuthor).FirstOrDefault());
 
 					// if the result ID is not a positive number, something bad went wrong so Log it
 					if (resultID <= 0)
