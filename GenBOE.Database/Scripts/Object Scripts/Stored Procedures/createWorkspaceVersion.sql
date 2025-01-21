@@ -55,6 +55,7 @@ AS
 **		7/30/24		e405721				PROPH-2218 Add BRC Name into MOQ Type Selection Table Data Resource Hours Table
 **		10/15/24	e405721				PROPH-2392: Update for Skill Mix V2
 **		1/14/25		twilson3			PROPH-2596 - Add UCOT Factor
+**		1/15/25		e309214				PROPH-1854 Database Changes for Assign Author
 *******************************************************************************/
 SET NOCOUNT ON 
 --BEGIN TRANSACTION 
@@ -158,7 +159,8 @@ INSERT INTO [version].[Workspace]
 ,[RevisedSubmittalDate]
 ,[TemplateBoe]
 ,[EnableSAPConnection]
-,[UCOTFactor])
+,[UCOTFactor]
+,[EnableAssignTaskAuthor])
 SELECT [WorkspaceID]
 ,[WorkspaceName]
 ,[WorkspaceShortName]
@@ -208,6 +210,7 @@ SELECT [WorkspaceID]
 ,[TemplateBoe]
 ,[EnableSAPConnection]
 ,[UCOTFactor]
+,[EnableAssignTaskAuthor]
 FROM [dbo].[Workspace]
 WHERE WorkspaceID = @WorkspaceID
 
@@ -1049,6 +1052,7 @@ INSERT INTO [version].[BOETaskElement]
 ,[UpdateDT]
 ,[VersionID]
 ,[SortOrderID]
+,[AuthorUserId]
 )
 SELECT BTE.[BOETaskElementID]
 ,BTE.[TaskID]
@@ -1067,6 +1071,7 @@ SELECT BTE.[BOETaskElementID]
 ,BTE.[UpdateDT]
 ,@VersionID
 ,BTE.[SortOrderID]
+,BTE.[AuthorUserId]
 FROM [dbo].[BOETaskElement] BTE
 INNER JOIN dbo.BOE B ON BTE.BOEID  = B.BOEID
 INNER JOIN dbo.Workspace WS ON B.WorkspaceID = WS.WorkspaceID
