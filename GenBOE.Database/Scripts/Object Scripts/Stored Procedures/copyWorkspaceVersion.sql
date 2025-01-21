@@ -1589,7 +1589,7 @@ BEGIN TRY
 		NewBOETaskElementID int,
 		NewBOEID int,
 		[SortOrderID] INT,
-		[AuthorUserId] int
+		[AuthorUserId] int NULL
 	)	
 	INSERT INTO @BOETaskElement
 	SELECT TE.[BOETaskElementID]

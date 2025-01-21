@@ -5,7 +5,7 @@ GO
 IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Workspace]') AND type in (N'U'))
 BEGIN
 	ALTER TABLE [dbo].[Workspace]
-	ADD EnableAssignTaskAuthor [bit]
+	ADD EnableAssignTaskAuthor [bit] NOT NULL
 	DEFAULT (0)
 END
 GO
@@ -17,7 +17,7 @@ GO
 IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[version].[Workspace]') AND type in (N'U'))
 BEGIN
 	ALTER TABLE [version].[Workspace]
-	ADD EnableAssignTaskAuthor [bit]
+	ADD EnableAssignTaskAuthor [bit] NOT NULL
 	DEFAULT (0)
 END
 GO
@@ -47,6 +47,35 @@ BEGIN
 	ALTER TABLE [dbo].[BOETaskElement] CHECK CONSTRAINT [FK_AuthorUserId]
 END
 GO
+
+/*** Drop and recreate indices ***/
+/*** IX_BOETaskElement_BOEID ***/
+IF EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[BOETaskElement]') AND name = N'IX_BOETaskElement_BOEID') 
+	DROP INDEX [IX_BOETaskElement_BOEID] ON [dbo].[BOETaskElement] WITH ( ONLINE = OFF )
+GO
+
+CREATE NONCLUSTERED INDEX [IX_BOETaskElement_BOEID] ON [dbo].[BOETaskElement]
+(
+	[BOEID] ASC
+)
+INCLUDE([BOETaskElementID],[UpdateDT],[TaskID],[TaskTitle],[TaskDescription],[TaskStartDate],[TaskEndDate],[MOQHoursEquation],[MOQCostEquation],[MOQText],
+	[MOQTypeID],[LaborTypeWarningFlag],[IMS_ID],[TaskElementTypeID],[SortOrderID],[AuthorUserId])
+GO
+
+/*** IX_BOETaskElement_ID ***/
+IF EXISTS (SELECT * FROM sys.indexes WHERE object_id = OBJECT_ID(N'[dbo].[BOETaskElement]') AND name = N'IX_BOETaskElement_ID') 
+	DROP INDEX [IX_BOETaskElement_ID] ON [dbo].[BOETaskElement] WITH ( ONLINE = OFF )
+GO
+
+CREATE NONCLUSTERED INDEX [IX_BOETaskElement_ID] ON [dbo].[BOETaskElement]
+(
+	[BOETaskElementID] ASC,
+	[BOEID] ASC
+)
+INCLUDE([UpdateDT],[TaskID],[TaskTitle],[TaskStartDate],[TaskEndDate],[MOQHoursEquation],[MOQCostEquation],[MOQTypeID],[LaborTypeWarningFlag],[IMS_ID],
+	[TaskElementTypeID],[SortOrderID],[AuthorUserId])
+GO
+
 
 
 

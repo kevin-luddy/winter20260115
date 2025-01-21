@@ -26,7 +26,7 @@ CREATE PROCEDURE [dbo].[upsertBOETaskElement]
 @TaskElementTypeID int,
 @UpdateDT datetime2,
 @SortOrderID int,
-@AuthorUserId int
+@AuthorUserId int NULL
 )
 AS
 /******************************************************************************
