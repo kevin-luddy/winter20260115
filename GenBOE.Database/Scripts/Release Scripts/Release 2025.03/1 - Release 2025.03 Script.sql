@@ -72,7 +72,3 @@ BEGIN
 	ALTER TABLE [version].BOETaskElement CHECK CONSTRAINT [FK_AuthorUserId]
 END
 GO
-
-
-
-/*** TODO: Add copy of stored procedure updates into release file??? ***/
