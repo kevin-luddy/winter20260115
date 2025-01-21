@@ -1462,7 +1462,7 @@ warning 6002: The table/view 'genBOEMST_DEV.dbo.UserLog' does not have a primary
           <Property Name="EnableSAPConnection" Type="bit" Nullable="false" />
           <Property Name="CurrentPTMWorkspace" Type="bit" Nullable="false" />
           <Property Name="UCOTFactor" Type="decimal" Precision="7" Scale="2" Nullable="false" />
-          <Property Name="EnableAssignTaskAuthor" Type="bit" />
+          <Property Name="EnableAssignTaskAuthor" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="WorkspaceContractTypeXREF">
           <Key>
@@ -12208,7 +12208,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
 		  <Property Name="CurrentPTMWorkspace" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="BOEs" Relationship="GenBOE.Models.FK_BOE_Workspace" FromRole="Workspace" ToRole="BOE" />
           <Property Name="UCOTFactor" Type="Decimal" Nullable="false" Precision="7" Scale="2" />
-          <Property Name="EnableAssignTaskAuthor" Type="Boolean" />
+          <Property Name="EnableAssignTaskAuthor" Type="Boolean" Nullable="false" />
 		</EntityType>
 		<Association Name="FK_BOEPotentialRole_Workspace">
 		  <End Type="GenBOE.Models.Workspace" Role="Workspace" Multiplicity="1" />
