@@ -13,6 +13,7 @@ GO
 
 
 
+
 /*** ALTER TABLE - Workspace (version) ***/
 IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[version].[Workspace]') AND type in (N'U'))
 BEGIN
@@ -21,6 +22,7 @@ BEGIN
 	DEFAULT (0)
 END
 GO
+
 
 
 
@@ -75,6 +77,7 @@ CREATE NONCLUSTERED INDEX [IX_BOETaskElement_ID] ON [dbo].[BOETaskElement]
 INCLUDE([UpdateDT],[TaskID],[TaskTitle],[TaskStartDate],[TaskEndDate],[MOQHoursEquation],[MOQCostEquation],[MOQTypeID],[LaborTypeWarningFlag],[IMS_ID],
 	[TaskElementTypeID],[SortOrderID],[AuthorUserId])
 GO
+
 
 
 
