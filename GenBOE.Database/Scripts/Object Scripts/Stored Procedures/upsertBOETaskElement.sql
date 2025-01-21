@@ -25,7 +25,8 @@ CREATE PROCEDURE [dbo].[upsertBOETaskElement]
 @IMS_ID varchar(20),
 @TaskElementTypeID int,
 @UpdateDT datetime2,
-@SortOrderID int
+@SortOrderID int,
+@AuthorUserId int NULL
 )
 AS
 /******************************************************************************
@@ -62,6 +63,7 @@ AS
 **      2/15/16		twilson3			Summary Boe changes
 **		1/26/17		pattoncr			Updating MOQHoursEquation to varchar(500).
 **		12/7/17		twilson3			BOEJ-1994 - Remove Summary BOE
+**		1/15/25		e309214				PROPH-1854 Database Changes for Assign Author
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -87,6 +89,7 @@ IF @BOETaskElementID  < 0  /*Insert Record*/
            ,[TaskElementTypeID]
            ,[UpdateDT]
 		   ,[SortOrderID]
+		   ,[AuthorUserId]
 		   )
      OUTPUT inserted.BOETaskElementID INTO @InsertedBOETaskElement
      VALUES
@@ -106,6 +109,7 @@ IF @BOETaskElementID  < 0  /*Insert Record*/
            ,@TaskElementTypeID
            ,@UpdateDT
 		   ,@SortOrderID
+		   ,@AuthorUserId
             ) 
             
 	SELECT @BOETaskElementID = BOETaskElementID FROM @InsertedBOETaskElement
@@ -137,7 +141,8 @@ ELSE
 					[IMS_ID] = @IMS_ID,
 					[TaskElementTypeID] = @TaskElementTypeID,
 					[UpdateDT] = @UpdateDT,
-					[SortOrderID] = @SortOrderID
+					[SortOrderID] = @SortOrderID,
+					[AuthorUserId] = @AuthorUserId
 			WHERE
 				BOETaskElementID = @BOETaskElementID
 				

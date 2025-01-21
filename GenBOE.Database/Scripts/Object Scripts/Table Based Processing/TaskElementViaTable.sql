@@ -32,6 +32,7 @@ CREATE TYPE [dbo].[TT_BOETaskElement] AS TABLE(
 	[IMS_ID] [varchar](20) NULL,
 	[TaskElementTypeID] [int] NOT NULL,
 	[SortOrderID] [int] NOT NULL,
+	[AuthorUserId] [int] NULL,
 	/* OrderID is automatically added in the code, so it HAS to be last */
 	[OrderID] [int] NOT NULL
 );
@@ -67,6 +68,7 @@ AS
 **		12/7/17		twilson3			BOEJ-1994 - Remove Summary BOE
 **		1/16/18		twilson3			BOEJ-2887 Remove Historical Metrics
 **		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
+**		1/15/25		e309214				PROPH-1854 Database Changes for Assign Author
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -91,7 +93,8 @@ UPDATE [dbo].[BOETaskElement]
 		[IMS_ID] = TT.IMS_ID,
 		[TaskElementTypeID] = TT.TaskElementTypeID,
 		[UpdateDT] = @UpdateDT,
-		[SortOrderID] = TT.SortOrderID
+		[SortOrderID] = TT.SortOrderID,
+		[AuthorUserId] = TT.AuthorUserId
 FROM [dbo].[BOETaskElement] TE
 	INNER JOIN @BOETaskElement TT ON 
 		TE.BOETaskElementID = TT.BOETaskElementID AND
@@ -319,6 +322,7 @@ AS
 **		1/26/17		pattoncr			Updating MOQHoursEquation to varchar(500)
 **		12/7/17		twilson3			BOEJ-1994 - Remove Summary BOE
 **		1/16/18		twilson3			BOEJ-2887 Remove Historical Metrics
+**		1/15/25		e309214				PROPH-1854 Database Changes for Assign Author
 *******************************************************************************/
 	SET NOCOUNT ON 
 	DECLARE @UpdateDT datetime2 = GETDATE()
@@ -340,6 +344,7 @@ AS
 		[IMS_ID] [varchar](20) NULL,
 		[TaskElementTypeID] [int] NOT NULL,
 		[SortOrderID] [int] NOT NULL,
+		[AuthorUserId] [int] NULL,
 		/* OrderID is automatically added in the code, so it HAS to be last */
 		[OrderID] [int] NOT NULL
 	)
@@ -358,7 +363,8 @@ AS
 		@IMS_ID [varchar](20),
 		@TaskElementTypeID [int],
 		@OrderID [int],
-		@SortOrderID [int]
+		@SortOrderID [int],
+		@AuthorUserId [int]
 	DECLARE @InsertedBOETaskElement AS Table (BOETaskElementID int)
 	INSERT INTO @TT_BOETaskElement SELECT * FROM @BOETaskElement
 
@@ -380,7 +386,8 @@ AS
 				@IMS_ID = IMS_ID,
 				@TaskElementTypeID = TaskElementTypeID,
 				@OrderID =  OrderID,
-				@SortOrderID = SortOrderID
+				@SortOrderID = SortOrderID,
+				@AuthorUserId = AuthorUserId
 			FROM @TT_BOETaskElement
 			WHERE BOETaskElementID < 0
 			INSERT INTO [dbo].[BOETaskElement]
@@ -399,6 +406,7 @@ AS
 				   ,[TaskElementTypeID]
 				   ,[UpdateDT]
 				   ,[SortOrderID]
+				   ,[AuthorUserId]
 				   )
 			 OUTPUT inserted.BOETaskElementID INTO @InsertedBOETaskElement
 			 VALUES
@@ -418,6 +426,7 @@ AS
 				   ,@TaskElementTypeID
 				   ,@UpdateDT
 				   ,@SortOrderID
+				   ,@AuthorUserId
 					) 
 			SELECT @BOETaskElementID = BOETaskElementID FROM @InsertedBOETaskElement
 	
