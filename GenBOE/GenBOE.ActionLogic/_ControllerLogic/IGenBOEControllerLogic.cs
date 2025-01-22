@@ -47,13 +47,20 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <returns></returns>
         bool AreOffloadRatesOutOfDate(int workspaceId);
 
-        /// <summary>
-        /// Validates the RTE Answers
-        /// </summary>
-        /// <param name="answers">The answers to validate.</param>
-        /// <param name="sources">The sources for RTE Templates.</param>
-        /// <param name="rteSizeLimit">The RTE Size limit for the workspace if overridden.</param>
-        /// <returns>Validation warnings.</returns>
-        ICollection<ValidationMessage> ValidateRteAnswers(ICollection<RTECustomTemplateQuestionAnswerModelView> answers, ICollection<RteCustomTemplateSourceModelView> sources, int? rteSizeLimit);
+		/// <summary>
+		/// Determines if the UCOT Factor is out of date.
+		/// </summary>
+		/// <param name="workspace">The workspace</param>
+		/// <returns>True if out of date</returns>
+		bool IsUCOTFactorOutOfDate(WorkspaceDTO workspace);
+
+		/// <summary>
+		/// Validates the RTE Answers
+		/// </summary>
+		/// <param name="answers">The answers to validate.</param>
+		/// <param name="sources">The sources for RTE Templates.</param>
+		/// <param name="rteSizeLimit">The RTE Size limit for the workspace if overridden.</param>
+		/// <returns>Validation warnings.</returns>
+		ICollection<ValidationMessage> ValidateRteAnswers(ICollection<RTECustomTemplateQuestionAnswerModelView> answers, ICollection<RteCustomTemplateSourceModelView> sources, int? rteSizeLimit);
 	}
 }

@@ -211,8 +211,17 @@ namespace GenBOE.ActionLogic.ModelView
                             htmlAttributes = new { name = "UpdateOffloadRatesLink" },
                             securityPage = SecurityPage.UpdateOffloadRatesMenuOption,
                             routeName = WebConstants.ROUTE_WORKSPACE
-                        }
-                    }
+                        },
+						new GenBOEMasterMenuItemModelView {
+							linkText = "Update UCOT Factor",
+							actionName = "placeholderAction",
+							controllerName = "placeholderController",
+							routeValues = null,
+							htmlAttributes = new { name = "UpdateUCOTFactorLink" },
+							securityPage = SecurityPage.UpdateUCOTFactorMenuOption,
+							routeName = WebConstants.ROUTE_WORKSPACE
+						}
+					}
                 },
                 new GenBOEMasterMenuItemModelView {
                     linkText="Workspace",

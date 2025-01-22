@@ -36,12 +36,12 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         /// <returns>the <see cref="GenBOEControllerLogic"/> to test</returns>
         private GenBOEControllerLogic CreateSystemISGS()
         {
-            return new GenBOEControllerLogic();
+            return new GenBOEControllerLogic(new Moq.Mock<ISystemSettingDTODataLoader>().Object);
         }
 
         private GenBOEControllerLogicMST CreateSystemRMS()
         {
-            return new GenBOEControllerLogicMST(this.zoneTravelRatesFeesLoader.Object, this.offloadRatesLoader.Object);
+            return new GenBOEControllerLogicMST(this.zoneTravelRatesFeesLoader.Object, this.offloadRatesLoader.Object, new Moq.Mock<ISystemSettingDTODataLoader>().Object);
         }
 
         #endregion

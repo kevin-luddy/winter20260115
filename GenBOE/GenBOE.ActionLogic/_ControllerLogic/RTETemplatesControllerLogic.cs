@@ -89,7 +89,8 @@ namespace GenBOE.ActionLogic
         /// <param name="emailer">BOE Emailer</param>
         public RTETemplatesControllerLogic(IRteTemplateDataLoader rteTemplateDataLoader, IWorkspaceVersionMetaDataDTODataLoader versionLoader, 
             IBoeDTODataLoader boeDtoDataLoader, IBoeMediator boeMediator, IBoeTaskElementDTODataLoader taskElementDtoDataLoader, IBoeTaskElementMediator taskElementMediator,
-            IBoeEmailer emailer, IBOEStateMachine boeStateMachine, IMoqTypeDataLoader moqTypeLoader)
+            IBoeEmailer emailer, IBOEStateMachine boeStateMachine, IMoqTypeDataLoader moqTypeLoader, ISystemSettingDTODataLoader systemSettingDTODataLoader)
+			: base(systemSettingDTODataLoader)
         {
             this.rteTemplateDataLoader = rteTemplateDataLoader;
             this.versionLoader = versionLoader;

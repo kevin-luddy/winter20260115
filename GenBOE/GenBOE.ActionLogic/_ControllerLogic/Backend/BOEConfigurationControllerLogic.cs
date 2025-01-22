@@ -6,7 +6,9 @@
 
 namespace GenBOE.ActionLogic.ControllerLogic.Backend
 {
+	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ModelView.Backend;
+	using GenBOE.DataBridge.Common;
 	using GenBOE.Dtos;
 	using IES.Common;
 	using IES.Common.classes;
@@ -17,6 +19,18 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 	/// </summary>
 	public class BOEConfigurationControllerLogic
 	{
+		/// <summary>
+		/// Common data mapper.
+		/// </summary>
+		private ICommonDataMapper commonDataMapper { get; set; }
+
+		/// <summary>
+		/// ctor.
+		/// </summary>
+		public BOEConfigurationControllerLogic(ICommonDataMapper commonDataMapper)
+		{
+			this.commonDataMapper = commonDataMapper;
+		}
 
 		/// <summary>
 		/// Get GenBOE system config data.
@@ -82,6 +96,26 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 			workspaceSettings.ShowSAPForWorkspace = Utilities.ShowSAPForWorkspace(ws.CreationDate);
 			workspaceSettings.ShowSkillMixForWorkspace = Utilities.ShowSkillMixForWorkspace(ws.CreationDate);
 			workspaceSettings.IsHistoricalReferenceExplanationRequired = Utilities.IsHistoricalReferenceExplanationRequired(ws.CreationDate);
+
+			if (ws.Id == 0)
+			{
+				// if the workspace doesn't exist .. for example if we are running a system job
+				workspaceSettings.ProposalName = "No Workspace";
+
+				workspaceSettings.WorkspaceState = commonDataMapper.getWorkspaceStateName(WorkspaceState.None);
+
+				workspaceSettings.Header = WebConstants.LMPI_LABEL_TEXT;
+			}
+			else
+			{
+				workspaceSettings.ProposalName = ws.WorkspaceName;
+
+				workspaceSettings.WorkspaceState = commonDataMapper.getWorkspaceStateName(ws.WorkspaceState);
+
+				workspaceSettings.Header = ws.ContainsOCI ?
+					WebConstants.LMPI_OCI_LABEL_TEXT :
+					WebConstants.LMPI_LABEL_TEXT;
+			}
 
 			return workspaceSettings;
 		}

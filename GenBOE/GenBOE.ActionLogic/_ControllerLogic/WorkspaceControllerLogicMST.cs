@@ -63,6 +63,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="contractTypeLoader">Contract Type Loader</param>
 		/// <param name="workspaceExporter">WS Exporter</param>
 		/// <param name="moqTypeLoader">Moq Type Loader</param>
+		/// <param name="systemSettingDTODataLoader">System Settings data loader</param>
 		public WorkspaceControllerLogicMST(
 			IWorkspaceDTODataLoader workspaceLoader,
 			IUserDTODataLoader userLoader,
@@ -89,7 +90,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			WorkspaceExporter workspaceExporter,
 			IMoqTypeDataLoader moqTypeLoader,
 			IBOEStateMachine boeStateMachine,
-			IBoeMediator boeMediator
+			IBoeMediator boeMediator,
+			ISystemSettingDTODataLoader systemSettingDTODataLoader
 			)
 			: base(
 				workspaceLoader,
@@ -113,7 +115,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				workspaceExporter,
 				moqTypeLoader,
 				boeStateMachine,
-				boeMediator
+				boeMediator,
+				systemSettingDTODataLoader
 		)
 		{
 			this.zoneTravelRatesFeesLoader = zoneTravelRatesFeesLoader;

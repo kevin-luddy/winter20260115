@@ -132,8 +132,9 @@ namespace IES.Common
         GettingStartedMenuOption = 72,
         WorkspaceSettingsShareAndAllowSearch = 73,
         RTETemplates = 74,
-		WorkspaceRecalculateActuals = 75
-    }
+		WorkspaceRecalculateActuals = 75,
+		UpdateUCOTFactorMenuOption = 76
+	}
 
     /// <summary>
     /// This class encapsulates high level security information about the 

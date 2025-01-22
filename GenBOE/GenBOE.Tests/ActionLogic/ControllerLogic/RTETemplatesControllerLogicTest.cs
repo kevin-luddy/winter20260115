@@ -63,7 +63,8 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionDataLoader.Object);
 
             return new RTETemplatesControllerLogic(this.rteTemplateDataLoader.Object, this.versionLoader.Object, this.boeDtoDataLoader.Object, this.boeMediator.Object, 
-                this.taskElementDtoDataLoader.Object, this.taskElementMediator.Object, this.emailer.Object, this.stateMachine.Object, this.moqTypeLoader.Object);
+                this.taskElementDtoDataLoader.Object, this.taskElementMediator.Object, this.emailer.Object, this.stateMachine.Object, this.moqTypeLoader.Object,
+				new Moq.Mock<ISystemSettingDTODataLoader>().Object);
         }
 
         #region SaveTemplates
