@@ -6,15 +6,19 @@
 
 namespace GenBOE.Web.Controllers
 {
+	using GenBOE.ActionLogic.ControllerLogic;
+	using GenBOE.ActionLogic.Metrics;
 	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.DataBridge.Common;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Objects;
+	using GenBOE.Web.Common;
 	using IES.Common;
 	using System;
 	using System.Collections.Generic;
-	using System.Web.Http;
 	using System.Web.Http.Cors;
+	using System.Web.Mvc;
 
 	/// <summary>
 	/// Workspace Home Controller for getting workspace home data.
@@ -23,23 +27,41 @@ namespace GenBOE.Web.Controllers
 	public class WorkspaceHomeController : BoeDataBaseAPIController
 	{
 		#region Properties & Ctor
+		/// <summary>
+		/// Common data mapper.
+		/// </summary>
+		private ICommonDataMapper commonDataMapper { get; set; }
+
+		/// <summary>
+		/// Site master utils.
+		/// </summary>
+		private SiteMasterUtilities siteMasterUtilities { get; set; }
+
+		/// <summary>
+		/// System metrics.
+		/// </summary>
+		private SystemMetrics systemMetrics { get; set; }
+
+		/// <summary>
+		/// Service for GenBOE Controller.
+		/// </summary>
+		private IGenBOEControllerLogic genBOEControllerLogic { get; set; }
 
 		/// <summary>
 		/// Logger
 		/// </summary>
-		private Logger logger = new Logger("BOEConfigurationController");
+		private Logger logger = new Logger("WorkspaceHomeController");
 
 		/// <summary>
-		/// Ctor
+		/// ctor
 		/// </summary>
-		/// <param name="securityAccess">Security Access</param>
-		/// <param name="factory">Full object factory</param>
-		/// <param name="userLoader">User loader</param>
-		/// <param name="permissionsLoader">Permission loader</param>
-		public WorkspaceHomeController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader)
+		public WorkspaceHomeController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, ICommonDataMapper commonDataMapper, SiteMasterUtilities siteMasterUtilities, SystemMetrics systemMetrics, IGenBOEControllerLogic genBOEControllerLogic)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
-
+			this.commonDataMapper = commonDataMapper;
+			this.siteMasterUtilities = siteMasterUtilities;
+			this.systemMetrics = systemMetrics;
+			this.genBOEControllerLogic = genBOEControllerLogic;
 		}
 		#endregion
 
@@ -62,11 +84,13 @@ namespace GenBOE.Web.Controllers
 				// Only return data if the permissions is at a read level or above.
 				if (permission >= SecurityAuthorization.Read)
 				{
-					// Iterate over the static collection of Menu Items defined in GenBOEMasterMenuItemModelView
-					ICollection<GenBOEMasterMenuItemModelView> MenuItems = GenBOEMasterMenuItemModelView.BuildSiteMasterMenuItems(ws);
+					using (GenBOEController controller = new GenBOEController(SecurityAccess, commonDataMapper, siteMasterUtilities, systemMetrics, Factory, UserLoader, PermissionsLoader, genBOEControllerLogic))
+					{
+						ViewResult viewResult = controller.DisplaySiteMasterMenu(workspaceShortname);
+						ICollection<GenBOEMasterMenuItemModelView> menuItems = (ICollection<GenBOEMasterMenuItemModelView>)viewResult.Model;
 
-					result.Data = MenuItems;
-					result.IsSuccessful = true;
+						result.Data = menuItems;
+					}
 				}
 				else
 				{
