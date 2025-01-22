@@ -15,8 +15,10 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.Objects;
 	using GenBOE.Web.Common;
 	using IES.Common;
+	using IES.Common.Exceptions;
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Web.Http.Cors;
 	using System.Web.Mvc;
 
@@ -87,10 +89,21 @@ namespace GenBOE.Web.Controllers
 					// Uses the existing GenBOE Controller because there is post processing logic happening after the site menu is constructed. This eliminates the need to replicate the logic here and confines it to one spot.
 					using (GenBOEController controller = new GenBOEController(SecurityAccess, commonDataMapper, siteMasterUtilities, systemMetrics, Factory, UserLoader, PermissionsLoader, genBOEControllerLogic))
 					{
+						ICollection<GenBOEMasterMenuItemModelView> menuItems = new Collection<GenBOEMasterMenuItemModelView>();
+
 						ViewResult viewResult = controller.DisplaySiteMasterMenu(workspaceShortname);
-						ICollection<GenBOEMasterMenuItemModelView> menuItems = (ICollection<GenBOEMasterMenuItemModelView>)viewResult.Model;
+
+						if (viewResult != null)
+						{
+							menuItems = (ICollection<GenBOEMasterMenuItemModelView>)viewResult.Model;
+						}
+						else
+						{
+							throw new GenValidationException("Workspace menu could not be constructed.");
+						}
 
 						result.Data = menuItems;
+						result.IsSuccessful = true;
 					}
 				}
 				else
