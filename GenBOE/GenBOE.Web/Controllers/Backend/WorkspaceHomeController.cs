@@ -84,7 +84,7 @@ namespace GenBOE.Web.Controllers
 				// Only return data if the permissions is at a read level or above.
 				if (permission >= SecurityAuthorization.Read)
 				{
-					// Uses the existing GenBOE Controller because there is post processing logic happening after the site menu is constructed. This reduces the need to replicate the logic here and confines it to one spot.
+					// Uses the existing GenBOE Controller because there is post processing logic happening after the site menu is constructed. This eliminates the need to replicate the logic here and confines it to one spot.
 					using (GenBOEController controller = new GenBOEController(SecurityAccess, commonDataMapper, siteMasterUtilities, systemMetrics, Factory, UserLoader, PermissionsLoader, genBOEControllerLogic))
 					{
 						ViewResult viewResult = controller.DisplaySiteMasterMenu(workspaceShortname);
