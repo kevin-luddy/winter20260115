@@ -45,10 +45,10 @@ namespace GenBOE.Web.Controllers
 		#endregion
 
 		/// <summary>
-		/// Gets the user look up data by Ntid.
+		/// Gets a user based on a provided ntid.
 		/// </summary>
-		/// <param name="ntid">Ntid</param>
-		/// <returns>User data matching ntid.</returns>
+		/// <param name="ntid">Ntid.</param>
+		/// <returns>User data found.</returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<UserDataViewModel> GetUserLookupData(string ntid)

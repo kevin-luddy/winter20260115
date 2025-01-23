@@ -6,13 +6,8 @@
 
 namespace GenBOE.ActionLogic.ControllerLogic.Backend
 {
-	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ModelView.Backend;
-	using GenBOE.DataBridge.Common;
-	using GenBOE.Dtos;
 	using IES.Common;
-	using IES.Common.classes;
-	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 
@@ -35,11 +30,10 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 		}
 
 		/// <summary>
-		/// Get workspace data by workspace shortname.
+		/// Gets a user based on a provided ntid.
 		/// </summary>
-		/// <param name="ws">Full Workspace.</param>
-		/// <param name="workspaceShortname">Shortspace Name.</param>
-		/// <returns>genBOE Workspace level data.</returns>
+		/// <param name="ntid">Ntid.</param>
+		/// <returns>User data found.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
 		public UserDataViewModel GetUserLookupData(string ntid)
 		{
