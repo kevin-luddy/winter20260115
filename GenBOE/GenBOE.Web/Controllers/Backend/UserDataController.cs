@@ -6,15 +6,13 @@
 
 namespace GenBOE.Web.Controllers
 {
-	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.ActionLogic.ControllerLogic.Backend;
 	using GenBOE.ActionLogic.ModelView.Backend;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Objects;
 	using IES.Common;
 	using System;
-	using System.Collections.Generic;
-	using System.Linq;
 	using System.Web.Http;
 	using System.Web.Http.Cors;
 
@@ -27,21 +25,22 @@ namespace GenBOE.Web.Controllers
 		#region Properties & Ctor
 
 		/// <summary>
-		/// Logger
+		/// Service data controller logic.
 		/// </summary>
-		private Logger logger = new Logger("BOEConfigurationController");
+		private UserDataControllerLogic userDataControllerLogic { get; set; }
+
+		/// <summary>
+		/// Loggers
+		/// </summary>
+		private Logger logger = new Logger("UserDataController");
 
 		/// <summary>
 		/// Ctor
 		/// </summary>
-		/// <param name="securityAccess">Security Access</param>
-		/// <param name="factory">Full object factory</param>
-		/// <param name="userLoader">User loader</param>
-		/// <param name="permissionsLoader">Permission loader</param>
-		public UserDataController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader)
+		public UserDataController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, UserDataControllerLogic userDataControllerLogic)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
-
+			this.userDataControllerLogic = userDataControllerLogic;
 		}
 		#endregion
 
@@ -52,57 +51,22 @@ namespace GenBOE.Web.Controllers
 		/// <returns>User data matching ntid.</returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESResponse<UserDataViewModel> GetUserLookupData(string ntid)
+		public IESSingleResponse<UserDataViewModel> GetUserLookupData(string ntid)
 		{
-			IESResponse<UserDataViewModel> result = new IESResponse<UserDataViewModel>();
+			IESSingleResponse<UserDataViewModel> result = new IESSingleResponse<UserDataViewModel>();
 
 			try
 			{
-				Console.WriteLine(ntid);
+				result.Data = userDataControllerLogic.GetUserLookupData(ntid);
+				result.IsSuccessful = true;
 			}
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown error occurred returning Workspace menu data: {ex.Message}");
+				result.Messages.Add($"Unknown error occurred returning user lookup data: {ex.Message}");
 			}
 
 			return result;
 		}
-
-		///// <summary>
-		///// Search Active Directory by user account name and return exact match
-		///// </summary>
-		///// <param name="userAccount">The user's NT account name</param>
-		///// <returns>Exact match (only)</returns>
-		//public JsonResult SearchUserName(string userAccount)
-		//{
-		//	ICollection<UserData> matchingUsers = string.IsNullOrEmpty(userAccount) ? new List<UserData>() : this.homeLogic.SearchUsers(userAccount, ActiveDirectorySearchBy.Account, ActiveDirectoryMatchType.Exact);
-
-		//	JsonResult result;
-
-		//	if (matchingUsers.Count == 1)
-		//	{
-		//		UserData match = matchingUsers.First();
-
-		//		result = this.Json(new
-		//		{
-		//			success = true,
-		//			userAccount = userAccount,
-		//			userFullName = match.DisplayName,
-		//			isGroup = match.IsGroup,
-		//			workPhone = match.Phone
-		//		});
-		//	}
-		//	else
-		//	{
-		//		result = this.Json(new
-		//		{
-		//			success = false,
-		//			error = "No exact match was found"
-		//		});
-		//	}
-
-		//	return result;
-		//}
 	}
 }

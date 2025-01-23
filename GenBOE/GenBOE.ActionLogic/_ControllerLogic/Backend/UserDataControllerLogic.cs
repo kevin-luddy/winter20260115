@@ -13,65 +13,25 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 	using IES.Common;
 	using IES.Common.classes;
 	using System;
+	using System.Collections.Generic;
+	using System.Linq;
 
 	/// <summary>
-	/// BOE Configuration controller logic class (service).
+	/// User data controller logic class (service).
 	/// </summary>
 	public class UserDataControllerLogic
 	{
 		/// <summary>
-		/// Common data mapper.
+		/// Home controller logic.
 		/// </summary>
-		private ICommonDataMapper commonDataMapper { get; set; }
+		private IHomeControllerLogic homeControllerLogic { get; set; }
 
 		/// <summary>
 		/// ctor.
 		/// </summary>
-		public UserDataControllerLogic(ICommonDataMapper commonDataMapper)
+		public UserDataControllerLogic(IHomeControllerLogic homeControllerLogic)
 		{
-			this.commonDataMapper = commonDataMapper;
-		}
-
-		/// <summary>
-		/// Get GenBOE system config data.
-		/// </summary>
-		/// <returns>GenBOE System Configuration Data</returns>
-		public BOEConfigurationViewModel GetSystemConfiguration()
-		{
-			BOEConfigurationViewModel configurationData = new BOEConfigurationViewModel();
-
-			configurationData.CompanyConfiguration = SystemConfiguration.Instance().CompanyMode;
-			configurationData.IsBRCEnabled = ConfigurationUtilities.GetAppSetting<bool>("EnableBRC");
-			configurationData.IsReadOnly = ConfigurationUtilities.GetAppSetting<bool>("IsReadOnly");
-			configurationData.DisableExternalLinksForClassifiedInstall = Utilities.DisableExternalHelpLinksForClassifiedInstallations();
-			configurationData.EnableSendToProPricerDirectly = ConfigurationUtilities.GetAppSetting<bool>("EnableSendToProPricerDirectly", false);
-			configurationData.UnclassifiedBannerText = ConfigurationUtilities.GetAppSetting("UnclassifiedBannerText");
-			configurationData.EnableSAP = ConfigurationUtilities.GetAppSetting<bool>("EnableSAP");
-			configurationData.ShowEquivalentPersonsOption = ConfigurationUtilities.GetAppSetting<bool>("ShowEquivalentPersonsOption");
-			configurationData.IsBOEFormVisible = ConfigurationUtilities.GetAppSetting<bool>("IsBOEFormVisible");
-
-			// Get 'Show IES Header' config value for business areas that aren't RMS (not needed for RMS).
-			configurationData.ShowIESHeader = SystemConfiguration.Instance().CompanyMode != CompanyConfiguration.MST && ConfigurationUtilities.GetAppSetting<bool>("ShowIesHeader");
-
-			configurationData.CanCreateWorkspaceWithoutPtmTrackingNumber = ConfigurationUtilities.GetAppSetting<bool>("CanCreateWorkspaceWithoutPtmTrackingNumber");
-			configurationData.ArchiveUrlBOE = ConfigurationUtilities.GetAppSetting("ArchiveUrlBoe");
-			configurationData.ProductionUrl = ConfigurationUtilities.GetAppSetting("ProdUrlBoe");
-			configurationData.ServerUrl = ConfigurationUtilities.GetAppSetting("ServerURL");
-			configurationData.IsRMSArchive = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && ConfigurationUtilities.GetAppSetting("ArchiveUrlBoe") == ConfigurationUtilities.GetAppSetting("ServerURL");
-			configurationData.IsRMSProduction = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && ConfigurationUtilities.GetAppSetting("ProdUrlBoe") == ConfigurationUtilities.GetAppSetting("ServerURL");
-			configurationData.IsProjectMapEnabled = ConfigurationUtilities.GetAppSetting<bool>("IsProjectMapEnabled");
-			configurationData.MaximumRowsInProjectMap = ConfigurationUtilities.GetAppSetting<int>("MaximumRowsInProjectMap");
-			configurationData.ProjectMapPageSize = ConfigurationUtilities.GetAppSetting<int>("ProjectMapPageSize");
-			configurationData.ReportServerLocation = ConfigurationUtilities.GetAppSetting("ReportServerLocation");
-			configurationData.ReportServerFolderName = ConfigurationUtilities.GetAppSetting("ReportServerFolderName");
-			configurationData.ApplicationVersion = ConfigurationUtilities.GetAppSetting("APPLICATION_VERSION");
-			configurationData.DisableAllEmails = ConfigurationUtilities.GetAppSetting<bool>("DisableAllEmails");
-			configurationData.EmailsToCurrentlyLoggedInUser = ConfigurationUtilities.GetAppSetting<bool>("EmailsToCurrentlyLoggedInUser");
-			configurationData.ShowUserName = ConfigurationUtilities.GetAppSetting<bool>("ShowUserName");
-			configurationData.IsIdentitySwappingAllowed = ConfigurationUtilities.GetAppSetting<bool>("IsIdentitySwappingAllowed");
-			configurationData.ShowCompanyConfiguration = ConfigurationUtilities.GetAppSetting<bool>("ShowCompanyConfiguration");
-
-			return configurationData;
+			this.homeControllerLogic = homeControllerLogic;
 		}
 
 		/// <summary>
@@ -81,43 +41,19 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 		/// <param name="workspaceShortname">Shortspace Name.</param>
 		/// <returns>genBOE Workspace level data.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
-		public WorkspaceSettingsViewModel GetWorkspaceConfiguration(WorkspaceDTO ws, string workspaceShortname)
+		public UserDataViewModel GetUserLookupData(string ntid)
 		{
-			if (ws == null)
+			ICollection<UserData> matchingUsers = string.IsNullOrEmpty(ntid) ? new List<UserData>() : this.homeControllerLogic.SearchUsers(ntid, ActiveDirectorySearchBy.Account, ActiveDirectoryMatchType.Exact);
+
+			UserDataViewModel userData = new UserDataViewModel()
 			{
-				throw new ArgumentNullException(nameof(ws));
-			}
+				UserAccount = ntid,
+				UserFullName = matchingUsers.FirstOrDefault().DisplayName,
+				IsGroup = matchingUsers.FirstOrDefault().IsGroup,
+				WorkPhone = matchingUsers.FirstOrDefault().Phone
+			};
 
-			WorkspaceSettingsViewModel workspaceSettings = new WorkspaceSettingsViewModel();
-
-			workspaceSettings.IsBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspaceShortname);
-			workspaceSettings.IsSAPEnabled = Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate);
-			workspaceSettings.IsWorkspaceBeforeSAPCutoff = Utilities.IsWorkspaceBeforeSAPCutoff(ws.CreationDate);
-			workspaceSettings.ShowSAPForWorkspace = Utilities.ShowSAPForWorkspace(ws.CreationDate);
-			workspaceSettings.ShowSkillMixForWorkspace = Utilities.ShowSkillMixForWorkspace(ws.CreationDate);
-			workspaceSettings.IsHistoricalReferenceExplanationRequired = Utilities.IsHistoricalReferenceExplanationRequired(ws.CreationDate);
-
-			if (ws.Id == 0)
-			{
-				// if the workspace doesn't exist .. for example if we are running a system job
-				workspaceSettings.ProposalName = "No Workspace";
-
-				workspaceSettings.WorkspaceState = commonDataMapper.getWorkspaceStateName(WorkspaceState.None);
-
-				workspaceSettings.Header = WebConstants.LMPI_LABEL_TEXT;
-			}
-			else
-			{
-				workspaceSettings.ProposalName = ws.WorkspaceName;
-
-				workspaceSettings.WorkspaceState = commonDataMapper.getWorkspaceStateName(ws.WorkspaceState);
-
-				workspaceSettings.Header = ws.ContainsOCI ?
-					WebConstants.LMPI_OCI_LABEL_TEXT :
-					WebConstants.LMPI_LABEL_TEXT;
-			}
-
-			return workspaceSettings;
+			return userData;
 		}
 	}
 }

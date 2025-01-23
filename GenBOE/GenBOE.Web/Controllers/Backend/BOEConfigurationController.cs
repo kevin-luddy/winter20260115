@@ -52,7 +52,6 @@ namespace GenBOE.Web.Controllers
 		/// <param name="userLoader">User loader</param>
 		/// <param name="permissionsLoader">Permission loader</param>
 		/// <param name="homeControllerLogic">Home Controller Logic</param>
-
 		public BOEConfigurationController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, BOEConfigurationControllerLogic BOEConfigurationControllerLogic, IHomeControllerLogic homeControllerLogic)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
@@ -131,70 +130,80 @@ namespace GenBOE.Web.Controllers
 		{
 			IESResponse<GenBOEMasterMenuItemModelView> result = new IESResponse<GenBOEMasterMenuItemModelView>();
 
-			Collection<GenBOEMasterMenuItemModelView> MenuItems = GenBOEMasterMenuItemModelView.BuildHomeMasterMenuItems();
-
-			GenBOEMasterMenuItemModelView AdminMenuItem = MenuItems.Where(x => x.linkText == "Admin").Single().subMenuItems.Where(y => y.linkText == "Metrics Administration").SingleOrDefault();
-
-			if (AdminMenuItem != null)
+			try
 			{
-				homeControllerLogic.PopulateMetricsAdminCompanySpecificProperties(AdminMenuItem);
-			}
+				Collection<GenBOEMasterMenuItemModelView> MenuItems = GenBOEMasterMenuItemModelView.BuildHomeMasterMenuItems();
 
-			if (Utilities.DisableExternalHelpLinksForClassifiedInstallations())
-			{
-				foreach (GenBOEMasterMenuItemModelView item in MenuItems.ToList())
+				GenBOEMasterMenuItemModelView AdminMenuItem = MenuItems.Where(x => x.linkText == "Admin").Single().subMenuItems.Where(y => y.linkText == "Metrics Administration").SingleOrDefault();
+
+				if (AdminMenuItem != null)
 				{
-					if (item.securityPage == SecurityPage.AboutToolsMenu
-						|| item.securityPage == SecurityPage.HelpMenu
-						|| item.securityPage == SecurityPage.ContactMenu)
-					{
-						MenuItems.Remove(item);
-					}
+					homeControllerLogic.PopulateMetricsAdminCompanySpecificProperties(AdminMenuItem);
 				}
-			}
 
-			foreach (GenBOEMasterMenuItemModelView menuItem in MenuItems) 
-			{
-				// For menu items with no sub items, check access
-				if (menuItem.subMenuItems.Count == 0)
+				if (Utilities.DisableExternalHelpLinksForClassifiedInstallations())
 				{
-					// If the user has access to this Security Page (which has a given server action), add the menu item to the Model Views
-					// OR if the user has access to a URL link, add the menu item
-					if ((menuItem.actionName.Length > 0 && CheckPermission(menuItem.securityPage, null) != SecurityAuthorization.None) ||
-					   (menuItem.linkUrl != null && CheckPermission(menuItem.securityPage, null) != SecurityAuthorization.None))
+					foreach (GenBOEMasterMenuItemModelView item in MenuItems.ToList())
 					{
-						result.Data.Add(menuItem);
-					}
-				}
-				// If the menu items has sub items, we'll check access on each
-				else
-				{
-					// Create a new model View for the inactive top-level menu item
-					GenBOEMasterMenuItemModelView inactiveMenuItem = new GenBOEMasterMenuItemModelView
-					{
-						linkText = menuItem.linkText
-					};
-
-					// Iterate the sub items
-					foreach (GenBOEMasterMenuItemModelView subMenuItem in menuItem.subMenuItems)
-					{
-						// If the user has access to this Security Page (which has a given server action), add the sub menu item to the
-						// inactive top-level menu item Model View
-						// OR if the user has access to a URL link, add the menu item
-						if ((subMenuItem.actionName.Length > 0 && CheckPermission(subMenuItem.securityPage, null) != SecurityAuthorization.None) ||
-							(subMenuItem.linkUrl != null && CheckPermission(subMenuItem.securityPage, null) != SecurityAuthorization.None))
+						if (item.securityPage == SecurityPage.AboutToolsMenu
+							|| item.securityPage == SecurityPage.HelpMenu
+							|| item.securityPage == SecurityPage.ContactMenu)
 						{
-							inactiveMenuItem.subMenuItems.Add(subMenuItem);
+							MenuItems.Remove(item);
 						}
 					}
+				}
 
-					// If the inactive top-level menu item has sub items that the user has access to,
-					// we'll add the top-level menu item to the Model Views
-					if (inactiveMenuItem.subMenuItems.Count > 0)
+				foreach (GenBOEMasterMenuItemModelView menuItem in MenuItems)
+				{
+					// For menu items with no sub items, check access
+					if (menuItem.subMenuItems.Count == 0)
 					{
-						result.Data.Add(inactiveMenuItem);
+						// If the user has access to this Security Page (which has a given server action), add the menu item to the Model Views
+						// OR if the user has access to a URL link, add the menu item
+						if ((menuItem.actionName.Length > 0 && CheckPermission(menuItem.securityPage, null) != SecurityAuthorization.None) ||
+						   (menuItem.linkUrl != null && CheckPermission(menuItem.securityPage, null) != SecurityAuthorization.None))
+						{
+							result.Data.Add(menuItem);
+						}
+					}
+					// If the menu items has sub items, we'll check access on each
+					else
+					{
+						// Create a new model View for the inactive top-level menu item
+						GenBOEMasterMenuItemModelView inactiveMenuItem = new GenBOEMasterMenuItemModelView
+						{
+							linkText = menuItem.linkText
+						};
+
+						// Iterate the sub items
+						foreach (GenBOEMasterMenuItemModelView subMenuItem in menuItem.subMenuItems)
+						{
+							// If the user has access to this Security Page (which has a given server action), add the sub menu item to the
+							// inactive top-level menu item Model View
+							// OR if the user has access to a URL link, add the menu item
+							if ((subMenuItem.actionName.Length > 0 && CheckPermission(subMenuItem.securityPage, null) != SecurityAuthorization.None) ||
+								(subMenuItem.linkUrl != null && CheckPermission(subMenuItem.securityPage, null) != SecurityAuthorization.None))
+							{
+								inactiveMenuItem.subMenuItems.Add(subMenuItem);
+							}
+						}
+
+						// If the inactive top-level menu item has sub items that the user has access to,
+						// we'll add the top-level menu item to the Model Views
+						if (inactiveMenuItem.subMenuItems.Count > 0)
+						{
+							result.Data.Add(inactiveMenuItem);
+						}
 					}
 				}
+
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occurred returning Workspace data: {ex.Message}");
 			}
 
 			return result;
