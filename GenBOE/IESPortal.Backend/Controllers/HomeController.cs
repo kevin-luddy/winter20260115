@@ -6,9 +6,9 @@
 
 namespace IESPortal.Backend.Controllers
 {
-	using System.Collections.Generic;
 	using IES.ActionLogic.Core.Common;
 	using IES.Common.Core;
+	using IES.Common.Core.Enums;
 	using IES.Common.Core.Exceptions;
 	using IES.Common.Core.Interfaces;
 	using IES.Common.Core.Models;
@@ -17,6 +17,9 @@ namespace IESPortal.Backend.Controllers
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.Logging;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
 
 	[Route("api/Home")]
 	public class HomeController : IESController
@@ -37,11 +40,8 @@ namespace IESPortal.Backend.Controllers
 		private readonly IConfiguration configuration;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="HomeController"/> class.
+		/// ctor
 		/// </summary>
-		/// <param name="securityInformation">The security information.</param>
-		/// <param name="bannerMediator">The banner mediator.</param>
-		/// <param name="activeDirectory">Active directory</param>
 		public HomeController(ILogger<HomeController> logger, IConfiguration configuration, ISecurityInformation securityInformation, BannerMediator bannerMediator,
 			IActiveDirectoryService activeDirectory)
 			: base(logger, securityInformation, configuration)
@@ -66,6 +66,39 @@ namespace IESPortal.Backend.Controllers
 			}
 
 			return user;
+		}
+
+		/// <summary>
+		/// Gets a user based on a provided ntid.
+		/// </summary>
+		/// <param name="ntid">Ntid.</param>
+		/// <returns>User data found.</returns>
+		[HttpGet("[action]")]
+		public IESResponse<UserDataViewModel> GetUserLookupData(string ntid)
+		{
+			IESResponse<UserDataViewModel> result = new ();
+
+			try
+			{
+				ICollection<UserData> matchingUsers = string.IsNullOrEmpty(ntid) ? new List<UserData>() : this.activeDirectoryService.SearchUsers(ntid, ActiveDirectorySearchBy.Account, ActiveDirectoryMatchType.Exact);
+
+				UserDataViewModel userData = new()
+				{
+					UserAccount = ntid,
+					UserFullName = matchingUsers.FirstOrDefault().DisplayName,
+					IsGroup = matchingUsers.FirstOrDefault().IsGroup,
+					WorkPhone = matchingUsers.FirstOrDefault().Phone
+				};
+
+				result.Data = userData;
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				result.Messages.Add($"Unknown error occurred returning user lookup data: {ex.Message}");
+			}
+
+			return result;
 		}
 
 		/// <summary>
@@ -160,19 +193,5 @@ namespace IESPortal.Backend.Controllers
 
 			return headerLinks;
 		}
-
-		//      private void SetUrls()
-		//      {
-		//          ViewBag.BOEUrl = ConfigurationManager.AppSettings["BOEUrl"];
-		//          ViewBag.RPMUrl = ConfigurationManager.AppSettings["RPMUrl"];
-		//          ViewBag.PTMUrl = ConfigurationManager.AppSettings["PTMUrl"];
-		//          ViewBag.RDMUrl = ConfigurationManager.AppSettings["RDMUrl"];
-		//          ViewBag.RDSBUrl = ConfigurationManager.AppSettings["RDSBUrl"];
-		//          ViewBag.PPUrl = ConfigurationManager.AppSettings["PPUrl"];
-		//          ViewBag.ACVUrl = ConfigurationManager.AppSettings["ACVUrl"];
-		//	ViewBag.NLFUrl = ConfigurationManager.AppSettings["NLFUrl"];
-		//	ViewBag.eEPPUrl = ConfigurationManager.AppSettings["EEPPUrl"];
-		//          ViewBag.AdminUrl = ConfigurationManager.AppSettings["AdminUrl"];
-		//}
 	}
 }

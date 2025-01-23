@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace GenBOE.ActionLogic.ModelView.Backend
+namespace IESPortal.Backend.Models
 {
 	/// <summary>
 	/// User data look up result view model.
