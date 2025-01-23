@@ -58,12 +58,12 @@ namespace GenBOE.DataBridge.DTO
 		}
 
 		/// <summary>
-		/// Get all SkillMix values by BOE FK ID
+		/// Get all SkillMix values by BOE FK IDs
 		/// </summary>
-		/// <param name="boeID">int</param>
+		/// <param name="boeIDs">collection of BOE Ids</param>
 		/// <returns>List of SkillMix</returns>
 		[DbQuery]
-		virtual public ICollection<SkillMixDTO> GetByBOEID(int boeID) 
+		virtual public ICollection<SkillMixDTO> GetByBOEIDs(ICollection<int> boeIDs)
 		{
 			List<SkillMixDTO> result = new List<SkillMixDTO>();
 
@@ -72,7 +72,7 @@ namespace GenBOE.DataBridge.DTO
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
 					result = (from sm in gbe.SkillMixes
-							  where sm.BOEID == boeID
+							  where boeIDs.Contains(sm.BOEID)
 							  select new SkillMixDTO
 							  {
 								  SkillMixID = sm.SkillMixID,

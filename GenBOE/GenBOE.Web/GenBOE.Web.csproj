@@ -185,6 +185,9 @@
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web.Cors, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Cors.5.3.0\lib\net45\System.Web.Cors.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.DynamicData">
       <Private>True</Private>
     </Reference>
@@ -209,6 +212,9 @@
     </Reference>
     <Reference Include="System.Web.Http, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.3.0\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.Cors, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Cors.5.3.0\lib\net45\System.Web.Http.Cors.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Http.WebHost, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.3.0\lib\net45\System.Web.Http.WebHost.dll</HintPath>
@@ -270,6 +276,7 @@
     <Compile Include="Common\StringNonPrintableCharRemovalModelBinder.cs" />
     <Compile Include="Common\WorkspaceIdentificationModelBinder.cs" />
     <Compile Include="Controllers\Backend\BOEConfigurationController.cs" />
+    <Compile Include="Controllers\Backend\WorkspaceHomeController.cs" />
     <Compile Include="Controllers\BoeDataBaseAPIController.cs" />
     <Compile Include="Controllers\WorkspaceRecalculateActualsController.cs" />
     <Compile Include="ModelView\AcvWorkspaceData.cs" />
@@ -279,7 +286,6 @@
     <Compile Include="Controllers\BoeDataAPIController.cs" />
     <Compile Include="Controllers\RTETemplatesController.cs" />
     <Compile Include="Controllers\DateShiftController.cs" />
-    <Compile Include="ModelView\BOEConfigurationModelView.cs" />
     <Compile Include="ModelView\BOEFormMasterModelView.cs" />
     <Compile Include="ModelView\ConfidenceReportItem.cs" />
     <Compile Include="ModelView\ConfidenceReportModelView.cs" />
@@ -348,7 +354,6 @@
     <Compile Include="ModelView\ODCSpreadModelView.cs" />
     <Compile Include="ModelView\ODCTypesGridModelView.cs" />
     <Compile Include="ModelView\TripForTravelModelView.cs" />
-    <Compile Include="ModelView\WorkspaceSettingsModelView.cs" />
     <Compile Include="ModelView\WorkspaceVersionModelView.cs" />
     <Compile Include="ModelView\ExportToProPricerModelView.cs" />
     <Compile Include="ModelView\GettingStartedHelpModelView.cs" />

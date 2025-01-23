@@ -54,6 +54,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="contractTypeLoader">Contract Type Loader</param>
 		/// <param name="workspaceExporter">WS Exporter</param>
 		/// <param name="moqTypeLoader">Moq Type Loader</param>
+		/// <param name="systemSettingDTODataLoader">System Settings data loader</param>
 
 		public WorkspaceControllerLogicSpaceSystems(IWorkspaceDTODataLoader workspaceLoader,
 			IUserDTODataLoader inuserLoader,
@@ -76,7 +77,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			WorkspaceExporter workspaceExporter,
 			IMoqTypeDataLoader moqTypeLoader,
 			IBOEStateMachine boeStateMachine,
-			IBoeMediator boeMediator)
+			IBoeMediator boeMediator,
+			ISystemSettingDTODataLoader systemSettingDTODataLoader)
 			: base(
 				workspaceLoader,
 				inuserLoader,
@@ -99,7 +101,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				workspaceExporter,
 				moqTypeLoader,
 				boeStateMachine,
-				boeMediator
+				boeMediator,
+				systemSettingDTODataLoader
 		)
 		{
 			// nothing to do here

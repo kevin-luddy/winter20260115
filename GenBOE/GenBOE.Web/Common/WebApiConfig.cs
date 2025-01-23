@@ -11,9 +11,9 @@ namespace GenBOE
     using System.Net.Http.Headers;
     using System.Web.Http;
 
-    /// <summary>
-    /// Class to add Web API to an MVC application
-    /// </summary>
+	/// <summary>
+	/// Class to add Web API to an MVC application
+	/// </summary>
     public static class WebApiConfig
     {
         /// <summary>
@@ -21,21 +21,24 @@ namespace GenBOE
         /// </summary>
         public static void Register(HttpConfiguration config)
         {
-            _ = config ?? throw new ArgumentNullException(nameof(config));
+			_ = config ?? throw new ArgumentNullException(nameof(config));
 
-            // Web API routes
-            config.MapHttpAttributeRoutes();
+			// Enable cors
+			config.EnableCors();
 
-            config.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "api/{controller}/{action}/{id}",
-                defaults: new { id = RouteParameter.Optional }
-            );
+			// Web API routes
+			config.MapHttpAttributeRoutes();
 
-            JsonMediaTypeFormatter formatter = GlobalConfiguration.Configuration.Formatters.JsonFormatter;
-            formatter.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
+			config.Routes.MapHttpRoute(
+				name: "DefaultApi",
+				routeTemplate: "api/{controller}/{action}/{id}",
+				defaults: new { id = RouteParameter.Optional }
+			);
 
-            config.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
-        }
+			JsonMediaTypeFormatter formatter = GlobalConfiguration.Configuration.Formatters.JsonFormatter;
+			formatter.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
+
+			config.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
+		}
     }
 }

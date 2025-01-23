@@ -26,11 +26,11 @@ namespace GenBOE.DataBridge.DTO
 		ICollection<CommonDisclosureSkillMixDTO> GetByWorkspaceId(int workspaceId);
 
 		/// <summary>
-		/// Get all Common disclosure Skill Mix values by BOE FK ID
+		/// Get all Common disclosure Skill Mix values by BOE FK IDs
 		/// </summary>
-		/// <param name="boeID"></param>
+		/// <param name="boeIDs">BOE Ids</param>
 		/// <returns>List of Common Disclosure Skill Mixes</returns>
-		ICollection<CommonDisclosureSkillMixDTO> GetByBOEID(int boeID);
+		ICollection<CommonDisclosureSkillMixDTO> GetByBOEIDs(ICollection<int> boeIDs);
 
 		/// <summary>
 		/// Get Common disclosure Skill Mix by certain values

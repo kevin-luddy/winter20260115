@@ -33,7 +33,7 @@ namespace GenBOE.Tests.ActionLogic.IO
             //Current directory the word template is saved and the name of the word template
             Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("GenBOE.Tests.Resources.TINATraining.xlsx");
 
-            AdminControllerLogicSpaceSystems sut = new AdminControllerLogicSpaceSystems(null, null, null);
+            AdminControllerLogicSpaceSystems sut = new AdminControllerLogicSpaceSystems(null, null, null, null);
 
             ICollection<string> courseIds = sut.GetTrainingCourseGroups().SelectMany(g => g.Courses).Select(c => c.CourseID).ToList();
 
@@ -59,7 +59,7 @@ namespace GenBOE.Tests.ActionLogic.IO
         [TestMethod]
         public void Test_SSCTraining()
         {
-            AdminControllerLogicSpaceSystems sut = new AdminControllerLogicSpaceSystems(null, null, null);
+            AdminControllerLogicSpaceSystems sut = new AdminControllerLogicSpaceSystems(null, null, null, null);
             ICollection<TrainingCourseGroupModelView> groups =  sut.GetTrainingCourseGroups();
 
             Assert.AreEqual(3, groups.Count);
@@ -85,7 +85,7 @@ namespace GenBOE.Tests.ActionLogic.IO
         [TestMethod]
         public void Test_RMSTraining()
         {
-            AdminControllerLogicMST sut = new AdminControllerLogicMST(null, null, null, null, null, null);
+            AdminControllerLogicMST sut = new AdminControllerLogicMST(null, null, null, null, null, null, null);
             ICollection<TrainingCourseGroupModelView> groups = sut.GetTrainingCourseGroups();
 
             Assert.AreEqual(2, groups.Count);
@@ -268,7 +268,7 @@ namespace GenBOE.Tests.ActionLogic.IO
         public const string TRAINING_COURSE_1 = "Training 1";
         public const string TRAINING_COURSE_2 = "Training 2";
 
-        public AdminControllerLogicTest() : base(null, null, new PermissionsTest())
+        public AdminControllerLogicTest() : base(null, null, new PermissionsTest(), null)
         { }
 
     }

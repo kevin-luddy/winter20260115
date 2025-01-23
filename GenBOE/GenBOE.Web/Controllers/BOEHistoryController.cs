@@ -62,14 +62,37 @@ namespace GenBOE.Web.Controllers
             Collection<PermissionsDTO> boePermissions = this.PermissionsLoader.GetBOEPermissions(new List<int>() { boeID });
             IDictionary<int, FieldTypeModelView> allFieldTypes = _CommonDataMapper.getFieldTypesDictionary();
 
-            foreach (BOEHistoryDTO boeHistoryDTO in _boeHistoryDataLoader.GetBOEHistory(boeID))
+			ICollection<BOEHistoryDTO> boeHistories = _boeHistoryDataLoader.GetBOEHistory(boeID);
+			ICollection<int> userIds = boeHistories.Select(x => x.PerformedByETIUserId).ToList();
+
+			// pull out the old and new values for user ids
+			ICollection<BOEHistoryDTO> oldNewValueHistories = boeHistories.Where(b => b.Field == FieldType.Author || b.Field == FieldType.Approver || b.Field == FieldType.SubcontractorAuthor).ToList();
+			foreach (BOEHistoryDTO history in oldNewValueHistories)
+			{
+				if (history.OldValue != null && int.TryParse(history.OldValue, out int oldUserId))
+				{
+					userIds.Add(oldUserId);
+				}
+
+				if (history.NewValue != null && int.TryParse(history.NewValue, out int newUserId))
+				{
+					userIds.Add(newUserId);
+				}
+			}
+			
+			userIds = userIds.Distinct().ToList();
+			ICollection<UserDTO> users = this.UserLoader.GetByIds(userIds);
+			// Create Dictionary for easier string comparison
+			Dictionary<string, UserDTO> userDictionary = users.ToDictionary(u => u.UserID.ToString());
+
+			foreach (BOEHistoryDTO boeHistoryDTO in boeHistories)
             {
                 BOEHistoryModelView mv = new BOEHistoryModelView
                 {
                     Field = allFieldTypes[(int)boeHistoryDTO.Field].FieldTypeName,
                     NewValue = boeHistoryDTO.NewValue,
                     OldValue = boeHistoryDTO.OldValue,
-                    PerformedBy = this.UserLoader.GetUserByID(boeHistoryDTO.PerformedByETIUserId).DisplayName,
+                    PerformedBy = users.FirstOrDefault(u => u.UserID == boeHistoryDTO.PerformedByETIUserId)?.DisplayName ?? string.Empty,
                     Timestamp = boeHistoryDTO.Date
                 };
 
@@ -82,8 +105,8 @@ namespace GenBOE.Web.Controllers
 
                 if (boeHistoryDTO.Field == FieldType.Author || boeHistoryDTO.Field == FieldType.Approver || boeHistoryDTO.Field == FieldType.SubcontractorAuthor)
                 {
-                    mv.OldValue = boeHistoryDTO.OldValue != null ? this.UserLoader.GetUserByID(Convert.ToInt32(boeHistoryDTO.OldValue)).DisplayName : string.Empty;
-                    mv.NewValue = boeHistoryDTO.NewValue != null ? this.UserLoader.GetUserByID(Convert.ToInt32(boeHistoryDTO.NewValue)).DisplayName : string.Empty;
+                    mv.OldValue = boeHistoryDTO.OldValue != null ? userDictionary[boeHistoryDTO.OldValue].DisplayName : string.Empty;
+                    mv.NewValue = boeHistoryDTO.NewValue != null ? userDictionary[boeHistoryDTO.NewValue].DisplayName : string.Empty;
 
                     if (!String.IsNullOrEmpty(mv.NewValue))     // for display purposes, append (Sub) to all Subcontractor Names
                     {

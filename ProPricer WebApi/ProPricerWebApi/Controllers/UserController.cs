@@ -52,16 +52,26 @@ namespace APTSPropricerApi.Controllers
 					ppc.Workspace.Users.Open();
 					foreach (User user in ppc.Workspace.Users.Items())
 					{
+						string loginType = "Unknown";
+						if (user.Logins.Count > 0)
+						{
+							IEnumerable<UserLogin> logins = user.Logins.Items(EBS.ProPricer.Model.General.IteratorOptions.Current);
+							if (logins.Any())
+							{
+								loginType = logins.Last().Type.ToString();
+							}
+						}
+
 						UserDto uldto = new()
 						{
 							Id = user.Id.ToString(),
-							LoginType = user.LoginType.ToString(),
-							LoginName = user.LoginName,
+							LoginType = loginType,
+							LoginName = user.Name,
 							Name = user.Name,
 							Description = user.Description,
 							Role = user.Role.Name,
-							Logins = user.Logins,
-							LastLogin = user.LastLogin.ToString()
+							Logins = user.LoginInfo.Logins,
+							LastLogin = user.LoginInfo.LastLogin.ToString()
 						};
 
 						ul.Add(uldto);

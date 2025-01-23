@@ -100,12 +100,12 @@ namespace GenBOE.DataBridge.DTO
 		}
 
 		/// <summary>
-		/// Get all Common Disclosure Skill Mix values by BOE FK ID
+		/// Get all Common Disclosure Skill Mix values by BOE FK IDs
 		/// </summary>
-		/// <param name="boeID">int</param>
+		/// <param name="boeIDs">collection of BOE IDs</param>
 		/// <returns>List of Common Disclosure Skill Mixes</returns>
 		[DbQuery]
-		public virtual ICollection<CommonDisclosureSkillMixDTO> GetByBOEID(int boeID)
+		public virtual ICollection<CommonDisclosureSkillMixDTO> GetByBOEIDs(ICollection<int> boeIDs)
 		{
 			List<CommonDisclosureSkillMixDTO> result = new List<CommonDisclosureSkillMixDTO>();
 
@@ -114,7 +114,7 @@ namespace GenBOE.DataBridge.DTO
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
 					result = (from cdsm in gbe.CommonDisclosureSkillMixes
-							  where cdsm.BOEID == boeID
+							  where boeIDs.Contains(cdsm.BOEID)
 							  select new CommonDisclosureSkillMixDTO
 							  {
 								  CommonDisclosureSkillMixID = cdsm.CommonDisclosureSkillMixID,
