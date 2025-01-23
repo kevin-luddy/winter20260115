@@ -1135,6 +1135,7 @@ button.ies-danger.disabled {
 .proposalStatusDates {
     text-align: left;
     font-size: 13px !important;
+    width: 200px;
 }
 
 .proposalStatusDates p {
