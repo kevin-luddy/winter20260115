@@ -144,12 +144,12 @@ namespace IES.ActionLogic.ControllerLogic
                     validationErrors.Add(new ValidationMessage($"Section {section.ReferenceNumber} - Is missing required Title."));
                 }
 
-                if(section.SectionContainsCasbDisclosure)
+                if(section.SectionContainsCasbDisclosureCore)
                 {
                     casbSections.Add(section.ReferenceNumber);
                 }
 
-                if (section.SectionContainsNonCompliance)
+                if (section.SectionContainsNonComplianceCore)
 				{
                     nonComplianceSections.Add(section.ReferenceNumber);
 				}

@@ -49,6 +49,14 @@ namespace IES.Models
         public Nullable<bool> IncludeInCoversheet { get; set; }
         public Nullable<bool> IsDisclosureStatementAdequate { get; set; }
         public Nullable<bool> NonComplianceNotification { get; set; }
+        public bool SectionContainsCasbDisclosureCore { get; set; }
+        public bool SectionContainsNonComplianceCore { get; set; }
+        public Nullable<bool> IsDisclosureStatementAdequateCore { get; set; }
+        public Nullable<bool> NonComplianceNotificationCore { get; set; }
+        public bool SectionContainsCasbDisclosureService { get; set; }
+        public bool SectionContainsNonComplianceService { get; set; }
+        public Nullable<bool> IsDisclosureStatementAdequateService { get; set; }
+        public Nullable<bool> NonComplianceNotificationService { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RateCode> RateCodes { get; set; }

@@ -279,8 +279,8 @@
           <Property Name="DisplayRateCode" Type="bit" Nullable="false" />
           <Property Name="RevisionUniqueSectionId" Type="int" Nullable="false" />
           <Property Name="IsRdsbRequired" Type="bit" Nullable="false" />
-          <Property Name="SectionContainsCasbDisclosure" Type="bit" Nullable="false" />
-          <Property Name="SectionContainsNonCompliance" Type="bit" Nullable="false" />
+          <Property Name="SectionContainsCasbDisclosureCore" Type="bit" Nullable="false" />
+          <Property Name="SectionContainsNonComplianceCore" Type="bit" Nullable="false" />
           <Property Name="Office" Type="varchar" MaxLength="100" />
           <Property Name="Agency" Type="varchar" MaxLength="100" />
           <Property Name="LMBA" Type="varchar" MaxLength="100" />
@@ -291,8 +291,12 @@
           <Property Name="Email" Type="varchar" MaxLength="100" />
           <Property Name="Other" Type="varchar" MaxLength="100" />
           <Property Name="IncludeInCoversheet" Type="bit" />
-          <Property Name="IsDisclosureStatementAdequate" Type="bit" />
-          <Property Name="NonComplianceNotification" Type="bit" />
+          <Property Name="IsDisclosureStatementAdequateCore" Type="bit" />
+          <Property Name="NonComplianceNotificationCore" Type="bit" />
+          <Property Name="SectionContainsCasbDisclosureService" Type="bit" Nullable="false" />
+          <Property Name="SectionContainsNonComplianceService" Type="bit" Nullable="false" />
+          <Property Name="IsDisclosureStatementAdequateService" Type="bit" />
+          <Property Name="NonComplianceNotificationService" Type="bit" />
         </EntityType>
         <EntityType Name="SectionContentTypeLU">
           <Key>
@@ -302,7 +306,7 @@
           <Property Name="Description" Type="varchar" MaxLength="4000" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'IES_DEV.dbo.UserLog' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="UserLog">
           <Key>
             <PropertyRef Name="LogInUpdateDT" />
@@ -857,10 +861,14 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <Parameter Name="DisplayRateCode" Type="bit" Mode="In" />
           <Parameter Name="RevisionUniqueSectionId" Type="int" Mode="In" />
           <Parameter Name="IsRdsbRequired" Type="bit" Mode="In" />
-          <Parameter Name="SectionContainsCasbDisclosure" Type="bit" Mode="In" />
-          <Parameter Name="IsDisclosureStatementAdequate" Type="bit" Mode="In" />
-          <Parameter Name="SectionContainsNonCompliance" Type="bit" Mode="In" />
-          <Parameter Name="NonComplianceNotification" Type="bit" Mode="In" />
+          <Parameter Name="SectionContainsCasbDisclosureCore" Type="bit" Mode="In" />
+          <Parameter Name="SectionContainsCasbDisclosureService" Type="bit" Mode="In" />
+          <Parameter Name="IsDisclosureStatementAdequateCore" Type="bit" Mode="In" />
+          <Parameter Name="IsDisclosureStatementAdequateService" Type="bit" Mode="In" />
+          <Parameter Name="SectionContainsNonComplianceCore" Type="bit" Mode="In" />
+          <Parameter Name="SectionContainsNonComplianceService" Type="bit" Mode="In" />
+          <Parameter Name="NonComplianceNotificationCore" Type="bit" Mode="In" />
+          <Parameter Name="NonComplianceNotificationService" Type="bit" Mode="In" />
           <Parameter Name="Office" Type="varchar" Mode="In" />
           <Parameter Name="Agency" Type="varchar" Mode="In" />
           <Parameter Name="LMBA" Type="varchar" Mode="In" />
@@ -1116,10 +1124,14 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
             <Parameter Name="DisplayRateCode" Mode="In" Type="Boolean" />
             <Parameter Name="RevisionUniqueSectionId" Mode="In" Type="Int32" />
             <Parameter Name="IsRdsbRequired" Mode="In" Type="Boolean" />
-            <Parameter Name="SectionContainsCasbDisclosure" Mode="In" Type="Boolean" />
-            <Parameter Name="IsDisclosureStatementAdequate" Mode="In" Type="Boolean" />
-            <Parameter Name="SectionContainsNonCompliance" Mode="In" Type="Boolean" />
-            <Parameter Name="NonComplianceNotification" Mode="In" Type="Boolean" />
+            <Parameter Name="SectionContainsCasbDisclosureCore" Mode="In" Type="Boolean" />
+            <Parameter Name="SectionContainsCasbDisclosureService" Mode="In" Type="Boolean" />
+            <Parameter Name="IsDisclosureStatementAdequateCore" Mode="In" Type="Boolean" />
+            <Parameter Name="IsDisclosureStatementAdequateService" Mode="In" Type="Boolean" />
+            <Parameter Name="SectionContainsNonComplianceCore" Mode="In" Type="Boolean" />
+            <Parameter Name="SectionContainsNonComplianceService" Mode="In" Type="Boolean" />
+            <Parameter Name="NonComplianceNotificationCore" Mode="In" Type="Boolean" />
+            <Parameter Name="NonComplianceNotificationService" Mode="In" Type="Boolean" />
             <Parameter Name="Office" Mode="In" Type="String" />
             <Parameter Name="Agency" Mode="In" Type="String" />
             <Parameter Name="LMBA" Mode="In" Type="String" />
@@ -1742,6 +1754,14 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <Property Name="IncludeInCoversheet" Type="Boolean" />
           <Property Name="IsDisclosureStatementAdequate" Type="Boolean" />
           <Property Name="NonComplianceNotification" Type="Boolean" />
+          <Property Name="SectionContainsCasbDisclosureCore" Type="Boolean" Nullable="false" />
+          <Property Name="SectionContainsNonComplianceCore" Type="Boolean" Nullable="false" />
+          <Property Name="IsDisclosureStatementAdequateCore" Type="Boolean" />
+          <Property Name="NonComplianceNotificationCore" Type="Boolean" />
+          <Property Name="SectionContainsCasbDisclosureService" Type="Boolean" Nullable="false" />
+          <Property Name="SectionContainsNonComplianceService" Type="Boolean" Nullable="false" />
+          <Property Name="IsDisclosureStatementAdequateService" Type="Boolean" />
+          <Property Name="NonComplianceNotificationService" Type="Boolean" />
         </EntityType>
         <EntityType Name="SectionContentTypeLU">
           <Key>
@@ -2547,8 +2567,14 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <EntitySetMapping Name="Sections">
             <EntityTypeMapping TypeName="IESModel.Section">
               <MappingFragment StoreEntitySet="Section">
-                <ScalarProperty Name="NonComplianceNotification" ColumnName="NonComplianceNotification" />
-                <ScalarProperty Name="IsDisclosureStatementAdequate" ColumnName="IsDisclosureStatementAdequate" />
+                <ScalarProperty Name="NonComplianceNotificationService" ColumnName="NonComplianceNotificationService" />
+                <ScalarProperty Name="IsDisclosureStatementAdequateService" ColumnName="IsDisclosureStatementAdequateService" />
+                <ScalarProperty Name="SectionContainsNonComplianceService" ColumnName="SectionContainsNonComplianceService" />
+                <ScalarProperty Name="SectionContainsCasbDisclosureService" ColumnName="SectionContainsCasbDisclosureService" />
+                <ScalarProperty Name="NonComplianceNotificationCore" ColumnName="NonComplianceNotificationCore" />
+                <ScalarProperty Name="IsDisclosureStatementAdequateCore" ColumnName="IsDisclosureStatementAdequateCore" />
+                <ScalarProperty Name="SectionContainsNonComplianceCore" ColumnName="SectionContainsNonComplianceCore" />
+                <ScalarProperty Name="SectionContainsCasbDisclosureCore" ColumnName="SectionContainsCasbDisclosureCore" />
                 <ScalarProperty Name="IncludeInCoversheet" ColumnName="IncludeInCoversheet" />
                 <ScalarProperty Name="Other" ColumnName="Other" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
@@ -2559,8 +2585,6 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
                 <ScalarProperty Name="LMBA" ColumnName="LMBA" />
                 <ScalarProperty Name="Agency" ColumnName="Agency" />
                 <ScalarProperty Name="Office" ColumnName="Office" />
-                <ScalarProperty Name="SectionContainsNonCompliance" ColumnName="SectionContainsNonCompliance" />
-                <ScalarProperty Name="SectionContainsCasbDisclosure" ColumnName="SectionContainsCasbDisclosure" />
                 <ScalarProperty Name="IsRdsbRequired" ColumnName="IsRdsbRequired" />
                 <ScalarProperty Name="RevisionUniqueSectionId" ColumnName="RevisionUniqueSectionId" />
                 <ScalarProperty Name="DisplayRateCode" ColumnName="DisplayRateCode" />

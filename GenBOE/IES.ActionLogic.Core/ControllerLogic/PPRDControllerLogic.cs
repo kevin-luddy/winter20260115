@@ -146,6 +146,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <param name="nonComplianceSections">A list of strings in which we'll keep track of sections that contain non-compliance setting; this is necessary to validate that it's only set once</param>
 		private void ValidateSection(SectionModelView section, ICollection<ValidationMessage> validationErrors, ICollection<string> casbSections, ICollection<string> nonComplianceSections)
 		{
+			// TODO: PROPH-2453 How to implement Validation
 			if (section.ContentType == SectionContentType.Section)
 			{
 				if (string.IsNullOrEmpty(section.Title))
@@ -153,12 +154,12 @@ namespace IES.ActionLogic.Core.ControllerLogic
 					validationErrors.Add(new ValidationMessage($"Section {section.ReferenceNumber} - Is missing required Title."));
 				}
 
-				if (section.SectionContainsCasbDisclosure)
+				if (section.SectionContainsCasbDisclosureCore)
 				{
 					casbSections.Add(section.ReferenceNumber);
 				}
 
-				if (section.SectionContainsNonCompliance)
+				if (section.SectionContainsNonComplianceCore)
 				{
 					nonComplianceSections.Add(section.ReferenceNumber);
 				}

@@ -2095,8 +2095,8 @@ namespace IES.Tests
             Assert.AreEqual(expected.TextContent, actual.TextContent);
             Assert.AreEqual(expected.Title, actual.Title);
             Assert.AreEqual(expected.IsRdsbRequired, actual.IsRdsbRequired);
-            Assert.AreEqual(expected.SectionContainsCasbDisclosure, actual.SectionContainsCasbDisclosure);
-            Assert.AreEqual(expected.SectionContainsNonCompliance, actual.SectionContainsNonCompliance);
+            Assert.AreEqual(expected.SectionContainsCasbDisclosureCore, actual.SectionContainsCasbDisclosureCore);
+            Assert.AreEqual(expected.SectionContainsNonComplianceCore, actual.SectionContainsNonComplianceCore);
 
             Assert.AreNotEqual(expected.UpdateDate, actual.UpdateDate); // ToDo: This could be removed if a dirty flag were checked before doing updates
             if (compareIds)
