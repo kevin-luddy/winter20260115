@@ -3728,7 +3728,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							HistoricalHours = totalGroupHours,
 							ResourceOld = grouping.Key,
 							ResourceNew = string.Empty,
-							LaborSkillMix = totalGroupHours * 100.0m / totalHours,
+							LaborSkillMix = totalHours == 0m ? 0m : totalGroupHours * 100.0m / totalHours,
 							Included = false
 						}
 					);
@@ -3860,10 +3860,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						commonDisclosureModel.Included = false;
 					}
 
-					// if the row does not have resource or BRC set, then remove it.
+					// if the row does not have resource or BRC set, then blank it out.
 					if (string.IsNullOrEmpty(commonDisclosureModel.ResourceID) && string.IsNullOrEmpty(commonDisclosureModel.BusinessResourceID))
 					{
-						currentCommonDisclosureData.Remove(commonDisclosureModel);
+						commonDisclosureModel.HistoricalHours = 0m;
+						commonDisclosureModel.LaborSkillMix = 0m;
+						commonDisclosureModel.ProposedHours = 0m;
+						commonDisclosureModel.BOESkillMix = 0m;
+						commonDisclosureModel.Included = false;
 					}
 				}
 			}

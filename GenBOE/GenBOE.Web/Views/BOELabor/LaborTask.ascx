@@ -938,8 +938,8 @@
                         <table name="currentSkillMix" class="grid editable" style="width: 100%;">
                             <thead>
                                 <tr>
-                                    <th style="width: 95px;">Resource ID</th>
-                                    <th style="width: 130px;">Current Resource ID</th>
+                                    <th style="width: 95px;">Resource</th>
+                                    <th style="width: 130px;">Current Resource</th>
                                     <th style="width: 100px;">Historical Hours</th>
                                     <th style="width: 90px;">Labor Skill Mix</th>
                                     <th style="width: 55px">Included</th>
@@ -1017,7 +1017,7 @@
                         <table name="currentSkillMix" class="grid editable" style="width: 100%;">
                             <thead>
                                 <tr>
-                                    <th style="width: 95px;">Resource ID</th>
+                                    <th style="width: 95px;">Current Resource</th>
                                     <th style="width: 130px;">Business Resource Code</th>
                                     <th style="width: 100px;">Historical Hours</th>
                                     <th style="width: 90px;">Labor Skill Mix</th>
