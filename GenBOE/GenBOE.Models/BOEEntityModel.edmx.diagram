@@ -358,6 +358,7 @@
         <AssociationConnector Association="GenBOE.Models.FK_SkillMix_BOETaskElement" />
         <AssociationConnector Association="GenBOE.Models.FK__MOQTypeSe__MOQTy__2B0636C1" />
         <AssociationConnector Association="GenBOE.Models.FK__MOQTypeSe__MOQTy__2FCAEBDE" />
+        <AssociationConnector Association="GenBOE.Models.FK_AuthorUserId" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

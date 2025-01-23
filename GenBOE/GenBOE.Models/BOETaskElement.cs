@@ -44,6 +44,7 @@ namespace GenBOE.Models
         public string IMS_ID { get; set; }
         public int TaskElementTypeID { get; set; }
         public int SortOrderID { get; set; }
+        public Nullable<int> AuthorUserId { get; set; }
     
         public virtual BOE BOE { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -66,5 +67,6 @@ namespace GenBOE.Models
         public virtual ICollection<RteTemplateAnswer> RteTemplateAnswers { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SkillMix> SkillMixes { get; set; }
+        public virtual ETIuser ETIuser { get; set; }
     }
 }

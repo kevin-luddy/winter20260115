@@ -55,6 +55,7 @@ namespace GenBOE.Dtos
 			this.PerfOrgSorting = CustomFieldSorting.Description;
 			this.EnableSAPConnection = true;
 			this.CurrentPTMWorkspace = false;
+			this.EnableAssignTaskAuthor = false;
 		}
 
 		/// <summary>
@@ -231,5 +232,10 @@ namespace GenBOE.Dtos
 		/// Gets or sets the UCOT Factor
 		/// </summary>
 		public decimal UCOTFactor { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Enable Assign Task Author setting
+		/// </summary>
+		public bool EnableAssignTaskAuthor { get; set; }
 	}
 }
