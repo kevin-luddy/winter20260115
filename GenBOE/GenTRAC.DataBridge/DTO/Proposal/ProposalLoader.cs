@@ -1957,7 +1957,7 @@ namespace GenTRAC.DataBridge.DTO
 							IsCurrentlySelected = x.ProposalID == proposalId,
 							TrackingNumber = x.ProposalTrackingID,
 							ProposalTitle = x.ProposalTitle,
-							WorkflowCompletedLine = GetWorkflowCompletedLineText(x.ProposalStatus, x.AnticipatedDeliveryDate, x.MaxCompleteDate, x.RevisedSubmittalDate),
+							WorkflowCompletedLine = GetWorkflowCompletedLineText(x.ProposalStatus, x.AnticipatedDeliveryDate, x.MaxCompleteDate, x.RevisedSubmittalDate, true),
 							CertificationCompletedLine = GetCertificationCompletedLineText(x.ProposalStatus, x.CCPDRequired, x.CertificationTimelineCompleted),
 
 							DisplayProposalSetupTab = true,
