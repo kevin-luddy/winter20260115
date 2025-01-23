@@ -1979,8 +1979,9 @@ namespace GenTRAC.DataBridge.DTO
 		/// <param name="proposalStatus">Proposal Status</param>
 		/// <param name="anticipatedDeliveryDate">Anticipated Delivery Date</param>
 		/// <param name="maxCompleteDate">Max Completed Date</param>
+		/// <param name="showStatus">Whether to display the proposal status or not</param>
 		/// <returns>Text for the WS completed line</returns>
-		public static string GetWorkflowCompletedLineText(ProposalStatus proposalStatus, DateTime anticipatedDeliveryDate, DateTime? maxCompleteDate, DateTime? revisedDeliveryDate)
+		public static string GetWorkflowCompletedLineText(ProposalStatus proposalStatus, DateTime anticipatedDeliveryDate, DateTime? maxCompleteDate, DateTime? revisedDeliveryDate, bool showStatus=false)
 		{
 			string result = string.Empty;
 
@@ -2000,7 +2001,10 @@ namespace GenTRAC.DataBridge.DTO
 				case ProposalStatus.Archived:
 				case ProposalStatus.Deleted:
 				case ProposalStatus.NoBid:
-					result = proposalStatus.GetDescription();
+					if (showStatus)
+					{
+						result = proposalStatus.GetDescription();
+					}
 					break;
 			}
 
