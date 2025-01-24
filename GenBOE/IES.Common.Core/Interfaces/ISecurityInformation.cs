@@ -17,6 +17,11 @@ namespace IES.Common.Core.Interfaces
 	{
 		UserData ActiveUserData { get; }
 		string ActiveUserNTID { get; }
+
+		/// <summary>
+		/// Pulls the domain + NTID
+		/// </summary>
+		string ActiveUserNTIDWithDomain { get; }
 		string GetRoleAsString(System.Collections.ObjectModel.Collection<Role> inRoles);
 		string ResourceAccount { get; }
 		bool IsDomesticUser(IPrincipal inPrincipal);

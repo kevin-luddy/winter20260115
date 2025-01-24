@@ -64,6 +64,16 @@ namespace IES.Common.Core
 		{
 			return this.securityInformation.ActiveUserNTID;
 		}
+		
+		/// <summary>
+		/// Get User Info with Domain
+		/// </summary>
+		/// <returns></returns>
+		[HttpGet("[action]")]
+		public string GetUserInfoWithDomain()
+		{
+			return this.securityInformation.ActiveUserNTIDWithDomain;
+		}
 
 		/// <summary>
 		/// Gets the feature flag key-value pair from the appsettings.
