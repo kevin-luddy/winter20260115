@@ -203,7 +203,7 @@ namespace GenBOE.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown error occurred returning Workspace data: {ex.Message}");
+				result.Messages.Add($"Unknown error occurred returning configuration data: {ex.Message}");
 			}
 
 			return result;
