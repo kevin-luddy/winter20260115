@@ -82,15 +82,24 @@ namespace IESPortal.Backend.Controllers
 			{
 				ICollection<UserData> matchingUsers = string.IsNullOrEmpty(ntid) ? new List<UserData>() : this.activeDirectoryService.SearchUsers(ntid, ActiveDirectorySearchBy.Account, ActiveDirectoryMatchType.Exact);
 
-				UserDataViewModel userData = new()
+				if (matchingUsers.Any())
 				{
-					UserAccount = ntid,
-					UserFullName = matchingUsers.FirstOrDefault().DisplayName,
-					IsGroup = matchingUsers.FirstOrDefault().IsGroup,
-					WorkPhone = matchingUsers.FirstOrDefault().Phone
-				};
+					UserDataViewModel userData = new()
+					{
+						UserAccount = ntid,
+						UserFullName = matchingUsers.FirstOrDefault().DisplayName,
+						IsGroup = matchingUsers.FirstOrDefault().IsGroup,
+						WorkPhone = matchingUsers.FirstOrDefault().Phone
+					};
 
-				result.Data = userData;
+					result.Data = userData;
+				}
+				else
+				{
+					result.Data = null;
+					result.Messages.Add($"Could not find a user with the NTID: {ntid}.");
+				}
+
 				result.IsSuccessful = true;
 			}
 			catch (Exception ex)
