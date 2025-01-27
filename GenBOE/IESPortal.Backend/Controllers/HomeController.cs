@@ -87,9 +87,9 @@ namespace IESPortal.Backend.Controllers
 					UserDataViewModel userData = new()
 					{
 						UserAccount = ntid,
-						UserFullName = matchingUsers.FirstOrDefault().DisplayName,
-						IsGroup = matchingUsers.FirstOrDefault().IsGroup,
-						WorkPhone = matchingUsers.FirstOrDefault().Phone
+						UserFullName = matchingUsers.First().DisplayName,
+						IsGroup = matchingUsers.First().IsGroup,
+						WorkPhone = matchingUsers.First().Phone
 					};
 
 					result.Data = userData;
