@@ -7,11 +7,13 @@
 namespace GenBOE.Web.Controllers
 {
 	using GenBOE.ActionLogic.ControllerLogic;
+	using GenBOE.ActionLogic.ControllerLogic.Backend;
 	using GenBOE.ActionLogic.Metrics;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.DataBridge.Common;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using GenBOE.Web.Common;
 	using IES.Common;
@@ -45,9 +47,19 @@ namespace GenBOE.Web.Controllers
 		private SystemMetrics systemMetrics { get; set; }
 
 		/// <summary>
-		/// Service for GenBOE Controller.
+		/// Service for genBOE Controller.
 		/// </summary>
 		private IGenBOEControllerLogic genBOEControllerLogic { get; set; }
+
+		/// <summary>
+		/// Security Information for genBOE
+		/// </summary>
+		private ISecurityInformation securityInformation { get; set; }
+
+		/// <summary>
+		/// Service for WorkspaceHomeController
+		/// </summary>
+		private WorkspaceHomeControllerLogic workspaceHomeControllerLogic { get; set; }
 
 		/// <summary>
 		/// Logger
@@ -57,13 +69,15 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// ctor
 		/// </summary>
-		public WorkspaceHomeController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, ICommonDataMapper commonDataMapper, SiteMasterUtilities siteMasterUtilities, SystemMetrics systemMetrics, IGenBOEControllerLogic genBOEControllerLogic)
+		public WorkspaceHomeController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, ICommonDataMapper commonDataMapper, SiteMasterUtilities siteMasterUtilities, SystemMetrics systemMetrics, IGenBOEControllerLogic genBOEControllerLogic, ISecurityInformation securityInformation, WorkspaceHomeControllerLogic workspaceHomeControllerLogic)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.commonDataMapper = commonDataMapper;
 			this.siteMasterUtilities = siteMasterUtilities;
 			this.systemMetrics = systemMetrics;
 			this.genBOEControllerLogic = genBOEControllerLogic;
+			this.securityInformation = securityInformation;
+			this.workspaceHomeControllerLogic = workspaceHomeControllerLogic;
 		}
 		#endregion
 
@@ -115,6 +129,46 @@ namespace GenBOE.Web.Controllers
 			{
 				logger.Error(ex);
 				result.Messages.Add($"Unknown error occurred returning Workspace menu data: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Gets the Homepage menu with UserMetrics and list of workspaces associated to user
+		/// </summary>
+		/// <returns></returns>
+		[HttpGet]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<GenBOEHomepageModelView> GetHomePageWorkspace()
+		{
+			IESSingleResponse<GenBOEHomepageModelView> result = new IESSingleResponse<GenBOEHomepageModelView>();
+			GenBOEHomepageModelView model = new GenBOEHomepageModelView();
+
+			try
+			{
+				UserDTO currentUser = UserLoader.GetUserForActiveUser();
+				bool userIsSubcontractor = securityInformation.IsSubcontractorUser(currentUser.NTID, currentUser.IsSubcontractor);
+				model.isReadOnly = SiteMasterUtilities.IsReadOnly();
+
+				if (!userIsSubcontractor)
+				{
+					model.isSysAdmin = CheckPermission(SecurityPage.Admin, null) != SecurityAuthorization.None;
+					if (model.isSysAdmin) 
+					{
+						model.isReadOnly = false;
+					}
+					model.canCreateWS = CheckPermission(SecurityPage.CreateWorkspacePermissions, null) == SecurityAuthorization.CreateReadUpdateDelete;
+
+					model.workspaceGridRows = workspaceHomeControllerLogic.GetHomepageGrid(model.isSysAdmin, currentUser, UserLoader, PermissionsLoader);
+
+					result.Data = model;
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occured returning Workspace Grid Data: {ex.Message}");
 			}
 
 			return result;
