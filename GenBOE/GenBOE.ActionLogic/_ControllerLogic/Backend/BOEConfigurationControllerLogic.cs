@@ -6,13 +6,13 @@
 
 namespace GenBOE.ActionLogic.ControllerLogic.Backend
 {
+	using System;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ModelView.Backend;
 	using GenBOE.DataBridge.Common;
 	using GenBOE.Dtos;
 	using IES.Common;
 	using IES.Common.classes;
-	using System;
 
 	/// <summary>
 	/// BOE Configuration controller logic class (service).
