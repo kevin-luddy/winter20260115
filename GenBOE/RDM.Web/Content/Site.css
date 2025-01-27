@@ -1037,10 +1037,12 @@ button.generation.loader
 }
 
 .element-core {
+	display: inline-grid;
 	width: 100%;
 }
 
 .element-services {
+	display: inline-grid;
 	width: 100%;
 }
 

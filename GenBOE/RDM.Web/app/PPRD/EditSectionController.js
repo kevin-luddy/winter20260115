@@ -5,8 +5,8 @@ angular.module('RDM').controller('EditSectionController', ['$scope', '$uibModalI
 	$scope.showWarnings = false;
 
 	if (model.Id == -1) {
-		model.SectionContainsCasbDisclosure = false;
-		model.SectionContainsNonCompliance = false;
+		model.SectionContainsCasbDisclosureCore = false;
+		model.SectionContainsNonComplianceCore = false;
 	}
 
     $scope.uncheckRequiredIfInternal = function () {
@@ -15,17 +15,31 @@ angular.module('RDM').controller('EditSectionController', ['$scope', '$uibModalI
         }
 	};
 
-	$scope.uncheckIsDisclosureStatementAdequate = function () {
-		if (document.getElementById("SectionContainsCasbDisclosureCheckbox").checked == false) {
+	$scope.uncheckIsDisclosureStatementAdequateCore = function () {
+		if (document.getElementById("SectionContainsCasbDisclosureCoreCheckbox").checked == false) {
 			model.IsDisclosureStatementAdequate = false;
-			document.getElementById("IsDisclosureStatementAdequateCheckbox").checked = false;
+			document.getElementById("IsDisclosureStatementAdequateCoreCheckbox").checked = false;
 		}
 	};
 
-	$scope.uncheckNonComplianceNotification = function () {
-		if (document.getElementById("SectionContainsNonComplianceCheckbox").checked == false) {
+	$scope.uncheckNonComplianceNotificationCore = function () {
+		if (document.getElementById("SectionContainsNonComplianceCoreCheckbox").checked == false) {
 			model.NonComplianceNotification = false;
-			document.getElementById("NonComplianceNotificationCheckbox").checked = false;
+			document.getElementById("NonComplianceNotificationCoreCheckbox").checked = false;
+		}
+	};
+
+	$scope.uncheckIsDisclosureStatementAdequateService = function () {
+		if (document.getElementById("SectionContainsCasbDisclosureServiceCheckbox").checked == false) {
+			model.IsDisclosureStatementAdequate = false;
+			document.getElementById("IsDisclosureStatementAdequateServiceCheckbox").checked = false;
+		}
+	};
+
+	$scope.uncheckNonComplianceNotificationService = function () {
+		if (document.getElementById("SectionContainsNonComplianceServiceCheckbox").checked == false) {
+			model.NonComplianceNotification = false;
+			document.getElementById("NonComplianceNotificationServiceCheckbox").checked = false;
 		}
 	};
 

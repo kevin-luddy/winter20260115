@@ -15,7 +15,7 @@
         <EntityTypeShape EntityType="IESModel.RateCodeYear" Width="1.5" PointX="11.875" PointY="12.125" />
         <EntityTypeShape EntityType="IESModel.RateTypeLU" Width="1.5" PointX="3" PointY="11.625" />
         <EntityTypeShape EntityType="IESModel.ResourceTypeLU" Width="1.5" PointX="1" PointY="9.375" />
-        <EntityTypeShape EntityType="IESModel.Section" Width="1.5" PointX="9" PointY="3" />
+        <EntityTypeShape EntityType="IESModel.Section" Width="3.375" PointX="16.75" PointY="2.125" />
         <EntityTypeShape EntityType="IESModel.SectionContentTypeLU" Width="1.5" PointX="8.5" PointY="0.625" />
         <AssociationConnector Association="IESModel.FK_ProPricerBurdenRateMap_BurdenElementLU" />
         <AssociationConnector Association="IESModel.FK_RateCode_CategoryLU" />

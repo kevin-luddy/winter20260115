@@ -343,8 +343,8 @@ namespace IES.DataBridge.Loaders
                         dtoToUpsert.ParentId, dtoToUpsert.DisplayOrder, dtoToUpsert.Title,
                         dtoToUpsert.TextContent, (int)dtoToUpsert.ContentType, dtoToUpsert.IsInternalSection,
                         dtoToUpsert.DisplayRateCode, dtoToUpsert.RevisionUniqueSectionId, dtoToUpsert.IsRdsbRequired,
-                        dtoToUpsert.SectionContainsCasbDisclosureCore, dtoToUpsert.IsDisclosureStatementAdequateCore, dtoToUpsert.SectionContainsNonComplianceCore, dtoToUpsert.NonComplianceNotificationCore,
-                        dtoToUpsert.Office, dtoToUpsert.Agency, dtoToUpsert.LMBA, dtoToUpsert.Name, dtoToUpsert.Street, dtoToUpsert.CityST, dtoToUpsert.Phone, dtoToUpsert.Email, dtoToUpsert.Other, dtoToUpsert.IncludeInCoversheet
+                        dtoToUpsert.SectionContainsCasbDisclosureCore, dtoToUpsert.SectionContainsCasbDisclosureService, dtoToUpsert.IsDisclosureStatementAdequateCore, dtoToUpsert.IsDisclosureStatementAdequateService, dtoToUpsert.SectionContainsNonComplianceCore, dtoToUpsert.SectionContainsNonComplianceService, dtoToUpsert.NonComplianceNotificationCore, dtoToUpsert.NonComplianceNotificationService,
+						dtoToUpsert.Office, dtoToUpsert.Agency, dtoToUpsert.LMBA, dtoToUpsert.Name, dtoToUpsert.Street, dtoToUpsert.CityST, dtoToUpsert.Phone, dtoToUpsert.Email, dtoToUpsert.Other, dtoToUpsert.IncludeInCoversheet
                         ).First();
                 }
             }
