@@ -840,19 +840,36 @@
 											<td title="{{item.BusinessResourceCodeName}}" data-ng-if="IsBRCEnabled"><span>{{ item.BusinessResourceCodeName ? item.BusinessResourceCodeName : '_'}}</span></td>
 											<td class="PerformingOrgName" title="{{item.PerformingOrgName}}"><span>{{item.PerformingOrgName ? item.PerformingOrgName : "_"}}</span></td>
 										</tr>
+                                        <tr data-ng-if="showUCOT" class="subheader">
+				                            <td colspan="3" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">UCOT Business Resource Code</td>
+                                        </tr>
+                                        <tr data-ng-if="showUCOT" data-ng-repeat="item in tableData | filter: { Deleted: false, NewLaborType: false } track by item.BOELaborTypeID">
+				                            <td data-ng-if="item.RateType === ManageTaskModel.RateTypeHours && item.UcotHours > 0" colspan="3" title="{{item.BusinessResourceCodeName}}"><span>{{ item.BusinessResourceCodeName}}</span></td>
+                                        </tr>
 										<tr id="LaborSpreadHeaderDividerRow" class="subheader">
 											<td colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; line-height: 2px; padding: 0px;">&nbsp;</td>
 										</tr>
 										<tr>
-											<td class="subheader" colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %> by Months</td>
+											<td class="subheader" colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %> by Months{{showUCOT ? ' excluding UCOT' : ''}}</td>
 										</tr>
+                                        <tr>
+				                            <td class="subheader" colspan="3" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total UCOT <%: Model.HoursLabel %> by Months</td>
+                                        </tr>
 										<tr>
 											<td class="subheader" colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total Discrete Cost by Months</td>
 										</tr>
 										<tr>
-											<td class="subheader" colspan="{{IsBRCEnabled ? 2 : 1}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %></td>
+											<td class="subheader" colspan="{{IsBRCEnabled ? 2 : 1}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %>{{showUCOT ? ' excluding UCOT' : ''}}</td>
 											<td class="hours-total">{{totalSpreadHours}}</td>
 										</tr>
+                                        <tr data-ng-if="showUCOT">
+				                            <td class="subheader" colspan="2" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total UCOT <%: Model.HoursLabel %></td>
+				                            <td class="hours-total">{{totalUcotSpreadHours}}</td>
+                                        </tr>
+                                        <tr data-ng-if="showUCOT">
+				                            <td class="subheader" colspan="2" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Grand Total <%: Model.HoursLabel %></td>
+				                            <td class="hours-total">{{grandTotalHours}}</td>
+                                        </tr>
 										<tr>
 											<td class="subheader" colspan="{{IsBRCEnabled ? 2 : 1}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total Discrete Cost</td>
 											<td class="cost-total"><span class="labor-spread-currency">$</span>{{totalSpreadCost}}</td>
@@ -885,11 +902,25 @@
                                                 <input class="LSDateinput" data-ng-hide="isInRange" type="text" disabled="disabled" />
                                             </td>
                                         </tr>
+                                        <tr data-ng-if="showUCOT" class="subheader" colspan="2" style="background-color: #EBEBEB;">
+                                            <td colspan="{{model.SpreadDatesFull.length}}" style="border: 0;padding: 2px">&nbsp;</td>
+                                        </tr>
+                                        <tr data-ng-if="showUCOT && item.UcotHours > 0" data-ng-repeat="item in tableData | filter: { Deleted: false, NewLaborType: false, RateType: ManageTaskModel.RateTypeHours } track by item.BOELaborTypeID">
+                                            <!--<td data-ng-repeat="dt in model.SpreadDatesFull" date="{{dt}}" data-ng-class="{inputError: item.SpreadDataInvalid[$index]}">{{ isInRange = isMonthInRange(dt.toDate(), item.StartDate.toDate(), item.EndDate.toDate()); "" }}
+                                                <input class="LSDateinput" data-ng-show="isInRange" type="text" data-ng-model="item.UcotSpreadData[$index]" disabled="disabled"
+                                                     />
+                                                <input class="LSDateinput" data-ng-hide="isInRange" type="text" disabled="disabled" />
+                                            </td>-->
+                                            <td data-ng-repeat="dt in model.SpreadDatesFull" date="{{dt}}">{{getUcotSpreadMonthText(item, dt)}}</td>
+                                        </tr>
                                         <tr id="LaborSpreadDataDividerRow">
                                             <td colspan="{{model.SpreadDatesFull.length}}" class="subheader" style="background-color: #EBEBEB; line-height: 2px; padding: 0px;">&nbsp;</td>
                                         </tr>
                                         <tr class="hours-total">
                                             <td data-ng-repeat="dt in model.SpreadDatesFull" date="{{dt}}">{{getHoursTotals(dt)}}</td>
+                                        </tr>
+                                        <tr data-ng-if="showUCOT" class="hours-total">
+                                            <td data-ng-repeat="dt in model.SpreadDatesFull" date="{{dt}}">{{getUcotHoursTotals(dt)}}</td>
                                         </tr>
                                         <tr class="cost-total">
                                             <td data-ng-repeat="dt in model.SpreadDatesFull" date="{{dt}}"><span class="labor-spread-currency">$</span>{{getCostTotals(dt)}}</td>

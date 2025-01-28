@@ -40,6 +40,7 @@ namespace GenBOE.ActionLogic.ModelView
 			this.RateType = RateType.Hours;
 			this.PercentSpread = 0;
 			this.HourSpread = 0;
+			this.UcotHours = 0;
 			this.CostSpread = 0;
 			this.StartDate = "01/1970";
 			this.EndDate = "01/1970";
@@ -52,6 +53,7 @@ namespace GenBOE.ActionLogic.ModelView
 			this.WBSID = -1;
 			this.CLINID = -1;
 			this.Spreads = new List<LaborSpreadDataModelView>();
+			this.UcotSpreads = new List<LaborSpreadDataModelView>();
 			this.NewLaborType = false;
 			this.LaborTypeOrder = 2000; // New resource types should be put at bottom of order
 		}
@@ -63,7 +65,9 @@ namespace GenBOE.ActionLogic.ModelView
 		/// <param name="inResource">The <see cref="ResourceDTO"/> object used to populate properties</param>
 		/// <param name="inBusinessResourceCode"> The <see cref="ResourceDTO"/> object used to populate properties</param>
 		/// <param name="perfOrg">The <see cref="PerformingOrgDTO" /> object used to populate properties.</param>
-		public LaborTypeDataModelView(ResourceTypeDto inBoeLaborType, ResourceDTO inResource, ResourceDTO inBusinessResourceCode, PerformingOrgDTO perfOrg)
+		/// <param name="calculateUCOT">Whether to calculate UCOT</param>
+		/// <param name="ucotFactor">The UCOT Factor</param>
+		public LaborTypeDataModelView(ResourceTypeDto inBoeLaborType, ResourceDTO inResource, ResourceDTO inBusinessResourceCode, PerformingOrgDTO perfOrg, decimal ucotFactor, bool calculateUCOT)
 			: this()
 		{
 			if (inBoeLaborType == null) { throw new ArgumentNullException(nameof(inBoeLaborType)); }
@@ -131,10 +135,29 @@ namespace GenBOE.ActionLogic.ModelView
 					UpdateDate = ls.UpdateDate,
 					UpdateDateLong = ls.UpdateDateLong
 				}).ToList();
+
+				if (calculateUCOT)
+				{
+					this.UcotSpreads = inBoeLaborType.LaborSpreads.Select(ls => new LaborSpreadDataModelView
+					{
+						LaborSpreadDate = ls.LaborSpreadDate.ToMonthString(),
+						LaborSpreadValue = ls.LaborSpreadDate >= Utilities.OneLmxStartDate ? ls.LaborSpreadValue * ucotFactor / 100.0m : 0.0m,
+						UpdateDate = ls.UpdateDate,
+						UpdateDateLong = ls.UpdateDateLong
+					}).ToList();
+					this.UcotHours = this.UcotSpreads.Sum(s => s.LaborSpreadValue);
+				}
+				else
+				{
+					this.UcotSpreads = new List<LaborSpreadDataModelView>();
+					this.UcotHours = 0m;
+				}
 			}
 			else
 			{
 				this.Spreads = new List<LaborSpreadDataModelView>();
+				this.UcotSpreads = new List<LaborSpreadDataModelView>();
+				this.UcotHours = 0m;
 			}
 		}
 
@@ -143,6 +166,11 @@ namespace GenBOE.ActionLogic.ModelView
 		/// </summary>
 		public ICollection<LaborSpreadDataModelView> Spreads { get; set; }
 
+		/// <summary>
+		/// Gets or sets the UCOT spreads.
+		/// </summary>
+		public ICollection<LaborSpreadDataModelView> UcotSpreads { get; set; }
+		
 		/// <summary>
 		/// Gets/Sets BOELaborTypeID
 		/// </summary>
@@ -256,6 +284,12 @@ namespace GenBOE.ActionLogic.ModelView
 		/// </summary>
 		[Display(Name = "Hours Spread")]
 		public decimal? HourSpread { get; set; }
+
+		/// <summary>
+		/// Gets/Sets Ucot Hours
+		/// </summary>
+		[Display(Name = "UCOT Hours")]
+		public decimal? UcotHours { get; set; }
 
 		/// <summary>
 		/// Gets/Sets CostSpread
