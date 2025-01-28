@@ -130,12 +130,22 @@ namespace IES.ActionLogic.Core.ControllerLogic
 
 			if (casbCoreSections.Count != 1)
 			{
-				validationErrors.Add(new ValidationMessage($"Exactly one section should be marked as 'Contains CASB Disclosure Statement'. The following sections were marked this way: {(casbCoreSections.Any() ? string.Join(", ", casbCoreSections) : "none")}"));
+				validationErrors.Add(new ValidationMessage($"Exactly one section should be marked as 'Contains CASB Disclosure Statement Core'. The following sections were marked this way: {(casbCoreSections.Any() ? string.Join(", ", casbCoreSections) : "none")}"));
+			}
+
+			if (casbServiceSections.Count != 1)
+			{
+				validationErrors.Add(new ValidationMessage($"Exactly one section should be marked as 'Contains CASB Disclosure Statement Service'. The following sections were marked this way: {(casbServiceSections.Any() ? string.Join(", ", casbServiceSections) : "none")}"));
 			}
 
 			if (nonComplianceCoreSections.Count != 1)
 			{
-				validationErrors.Add(new ValidationMessage($"Exactly one section should be marked as 'Contains CAS Non-Compliance Issues'. The following sections are marked this way: {(nonComplianceCoreSections.Any() ? string.Join(", ", nonComplianceCoreSections) : "none")}"));
+				validationErrors.Add(new ValidationMessage($"Exactly one section should be marked as 'Contains CAS Non-Compliance Core Issues'. The following sections are marked this way: {(nonComplianceCoreSections.Any() ? string.Join(", ", nonComplianceCoreSections) : "none")}"));
+			}
+
+			if (nonComplianceServiceSections.Count != 1)
+			{
+				validationErrors.Add(new ValidationMessage($"Exactly one section should be marked as 'Contains CAS Non-Compliance Service Issues'. The following sections are marked this way: {(nonComplianceServiceSections.Any() ? string.Join(", ", nonComplianceServiceSections) : "none")}"));
 			}
 		}
 
