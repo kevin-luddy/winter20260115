@@ -118,22 +118,24 @@ namespace IES.ActionLogic.Core.ControllerLogic
 				throw new ArgumentNullException(nameof(validationErrors));
 			}
 
-			List<string> casbSections = new();
-			List<string> nonComplianceSections = new();
+			List<string> casbCoreSections = new();
+			List<string> casbServiceSections = new();
+			List<string> nonComplianceCoreSections = new();
+			List<string> nonComplianceServiceSections = new();
 
 			foreach (SectionModelView section in sections)
 			{
-				ValidateSection(section, validationErrors, casbSections, nonComplianceSections);
+				ValidateSection(section, validationErrors, casbCoreSections, casbServiceSections, nonComplianceCoreSections, nonComplianceServiceSections);
 			}
 
-			if (casbSections.Count != 1)
+			if (casbCoreSections.Count != 1)
 			{
-				validationErrors.Add(new ValidationMessage($"Exactly one section should be marked as 'Contains CASB Disclosure Statement'. The following sections were marked this way: {(casbSections.Any() ? string.Join(", ", casbSections) : "none")}"));
+				validationErrors.Add(new ValidationMessage($"Exactly one section should be marked as 'Contains CASB Disclosure Statement'. The following sections were marked this way: {(casbCoreSections.Any() ? string.Join(", ", casbCoreSections) : "none")}"));
 			}
 
-			if (nonComplianceSections.Count != 1)
+			if (nonComplianceCoreSections.Count != 1)
 			{
-				validationErrors.Add(new ValidationMessage($"Exactly one section should be marked as 'Contains CAS Non-Compliance Issues'. The following sections are marked this way: {(nonComplianceSections.Any() ? string.Join(", ", nonComplianceSections) : "none")}"));
+				validationErrors.Add(new ValidationMessage($"Exactly one section should be marked as 'Contains CAS Non-Compliance Issues'. The following sections are marked this way: {(nonComplianceCoreSections.Any() ? string.Join(", ", nonComplianceCoreSections) : "none")}"));
 			}
 		}
 
@@ -142,11 +144,12 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// </summary>
 		/// <param name="section">The section node to check.</param>
 		/// <param name="validationErrors">List of errors found.</param>
-		/// <param name="casbSections">A list of strings in which we'll keep track of sections that contain CASB setting; this is necessary to validate that it's only set once</param>
-		/// <param name="nonComplianceSections">A list of strings in which we'll keep track of sections that contain non-compliance setting; this is necessary to validate that it's only set once</param>
-		private void ValidateSection(SectionModelView section, ICollection<ValidationMessage> validationErrors, ICollection<string> casbSections, ICollection<string> nonComplianceSections)
+		/// <param name="casbCoreSections">A list of strings in which we'll keep track of sections that contain CASB Core setting; this is necessary to validate that it's only set once</param>
+		/// <param name="casbServiceSections">A list of strings in which we'll keep track of sections that contain CASB Service setting; this is necessary to validate that it's only set once</param>
+		/// <param name="nonComplianceCoreSections">A list of strings in which we'll keep track of sections that contain non-compliance Core setting; this is necessary to validate that it's only set once</param>
+		/// <param name="nonComplianceServiceSections">A list of strings in which we'll keep track of sections that contain non-compliance Service setting; this is necessary to validate that it's only set once</param>
+		private void ValidateSection(SectionModelView section, ICollection<ValidationMessage> validationErrors, ICollection<string> casbCoreSections, ICollection<string> casbServiceSections, ICollection<string> nonComplianceCoreSections, ICollection<string> nonComplianceServiceSections)
 		{
-			// TODO: PROPH-2453 How to implement Validation
 			if (section.ContentType == SectionContentType.Section)
 			{
 				if (string.IsNullOrEmpty(section.Title))
@@ -156,12 +159,22 @@ namespace IES.ActionLogic.Core.ControllerLogic
 
 				if (section.SectionContainsCasbDisclosureCore)
 				{
-					casbSections.Add(section.ReferenceNumber);
+					casbCoreSections.Add(section.ReferenceNumber);
+				}
+
+				if (section.SectionContainsCasbDisclosureService)
+				{
+					casbServiceSections.Add(section.ReferenceNumber);
 				}
 
 				if (section.SectionContainsNonComplianceCore)
 				{
-					nonComplianceSections.Add(section.ReferenceNumber);
+					nonComplianceCoreSections.Add(section.ReferenceNumber);
+				}
+
+				if (section.SectionContainsNonComplianceService)
+				{
+					nonComplianceServiceSections.Add(section.ReferenceNumber);
 				}
 
 				int numTablesInSection = 0;
@@ -178,7 +191,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 						numAddressInSection++;
 					}
 
-					ValidateSection(child, validationErrors, casbSections, nonComplianceSections);  // recursively validate children
+					ValidateSection(child, validationErrors, casbCoreSections, casbServiceSections, nonComplianceCoreSections, nonComplianceServiceSections);  // recursively validate children
 				}
 
 				if (numTablesInSection > 1)

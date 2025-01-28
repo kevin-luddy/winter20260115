@@ -109,33 +109,37 @@ namespace IES.ActionLogic.ControllerLogic
                 throw new ArgumentNullException(nameof(validationErrors));
             }
 
-            List<string> casbSections = new List<string>();
-            List<string> nonComplianceSections = new List<string>();
+            List<string> casbCoreSections = new List<string>();
+            List<string> casbServiceSections = new List<string>();
+			List<string> nonComplianceCoreSections = new List<string>();
+			List<string> nonComplianceServiceSections = new List<string>();
 
-            foreach (SectionModelView section in sections)
+			foreach (SectionModelView section in sections)
             {
-                this.ValidateSection(section, validationErrors, casbSections, nonComplianceSections);
+                this.ValidateSection(section, validationErrors, casbCoreSections, casbServiceSections, nonComplianceCoreSections, nonComplianceServiceSections);
             }
 
-            if(casbSections.Count != 1)
+            if(casbCoreSections.Count != 1)
 			{
-                validationErrors.Add(new ValidationMessage($"Exactly one section should be marked as 'Contains CASB Disclosure Statement'. The following sections were marked this way: {(casbSections.Any() ? string.Join(", ", casbSections) : "none")}"));
+                validationErrors.Add(new ValidationMessage($"Exactly one section should be marked as 'Contains CASB Disclosure Statement'. The following sections were marked this way: {(casbCoreSections.Any() ? string.Join(", ", casbCoreSections) : "none")}"));
 			}
 
-            if (nonComplianceSections.Count != 1)
+            if (nonComplianceCoreSections.Count != 1)
             {
-                validationErrors.Add(new ValidationMessage($"Exactly one section should be marked as 'Contains CAS Non-Compliance Issues'. The following sections are marked this way: {(nonComplianceSections.Any() ? string.Join(", ", nonComplianceSections) : "none")}"));
+                validationErrors.Add(new ValidationMessage($"Exactly one section should be marked as 'Contains CAS Non-Compliance Issues'. The following sections are marked this way: {(nonComplianceCoreSections.Any() ? string.Join(", ", nonComplianceCoreSections) : "none")}"));
             }
         }
 
-        /// <summary>
-        /// Recursively validate the section and its children.
-        /// </summary>
-        /// <param name="section">The section node to check.</param>
-        /// <param name="validationErrors">List of errors found.</param>
-        /// <param name="casbSections">A list of strings in which we'll keep track of sections that contain CASB setting; this is necessary to validate that it's only set once</param>
-        /// <param name="nonComplianceSections">A list of strings in which we'll keep track of sections that contain non-compliance setting; this is necessary to validate that it's only set once</param>
-        private void ValidateSection(SectionModelView section, ICollection<ValidationMessage> validationErrors, ICollection<string> casbSections, ICollection<string> nonComplianceSections)
+		/// <summary>
+		/// Recursively validate the section and its children.
+		/// </summary>
+		/// <param name="section">The section node to check.</param>
+		/// <param name="validationErrors">List of errors found.</param>
+		/// <param name="casbCoreSections">A list of strings in which we'll keep track of sections that contain CASB Core setting; this is necessary to validate that it's only set once</param>
+		/// <param name="casbServiceSections">A list of strings in which we'll keep track of sections that contain CASB Service setting; this is necessary to validate that it's only set once</param>
+		/// <param name="nonComplianceCoreSections">A list of strings in which we'll keep track of sections that contain non-compliance setting; this is necessary to validate that it's only set once</param>
+		/// <param name="nonComplianceServiceSections">A list of strings in which we'll keep track of sections that contain non-compliance setting; this is necessary to validate that it's only set once</param>
+		private void ValidateSection(SectionModelView section, ICollection<ValidationMessage> validationErrors, ICollection<string> casbCoreSections, ICollection<string> casbServiceSections, ICollection<string> nonComplianceCoreSections, ICollection<string> nonComplianceServiceSections)
         {
             if (section.ContentType == SectionContentType.Section)
             {
@@ -146,15 +150,25 @@ namespace IES.ActionLogic.ControllerLogic
 
                 if(section.SectionContainsCasbDisclosureCore)
                 {
-                    casbSections.Add(section.ReferenceNumber);
+                    casbCoreSections.Add(section.ReferenceNumber);
                 }
 
-                if (section.SectionContainsNonComplianceCore)
+				if (section.SectionContainsCasbDisclosureService)
 				{
-                    nonComplianceSections.Add(section.ReferenceNumber);
+					casbServiceSections.Add(section.ReferenceNumber);
 				}
 
-                int numTablesInSection = 0;
+				if (section.SectionContainsNonComplianceCore)
+				{
+                    nonComplianceCoreSections.Add(section.ReferenceNumber);
+				}
+
+				if (section.SectionContainsNonComplianceService)
+				{
+					nonComplianceServiceSections.Add(section.ReferenceNumber);
+				}
+
+				int numTablesInSection = 0;
                 int numAddressInSection = 0;
                 foreach (SectionModelView child in section.ChildNodes)
                 {
@@ -168,7 +182,7 @@ namespace IES.ActionLogic.ControllerLogic
                         numAddressInSection++;
                     }
 
-                    this.ValidateSection(child, validationErrors, casbSections, nonComplianceSections);  // recursively validate children
+                    this.ValidateSection(child, validationErrors, casbCoreSections, casbServiceSections, nonComplianceCoreSections, nonComplianceServiceSections);  // recursively validate children
                 }
 
                 if (numTablesInSection > 1)
