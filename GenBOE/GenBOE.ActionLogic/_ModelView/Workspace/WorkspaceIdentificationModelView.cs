@@ -247,5 +247,10 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// Get or set whether the workspace should be marked as Current for the PTM Tracking Number
 		/// </summary>
 		public bool CurrentPTMWorkspace { get; set; }
+
+		/// <summary>
+		/// Get or set the Assign Authors at Task level property
+		/// </summary>
+		public bool AuthorsAssignableAtTaskLevel { get; set; }
 	}
 }
