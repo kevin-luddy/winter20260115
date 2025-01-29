@@ -3033,6 +3033,69 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		}
 
 		/// <summary>
+		/// Test CalculateLaborSpreads
+		/// </summary>
+		[TestMethod]
+		public void CalculateLaborSpreadsUCOTTest()
+		{
+			BOELaborControllerLogic sut = CreateSystem();
+
+			decimal testValue = 10000;
+			DateTime startDate = DateTime.Now.AddYears(-1);
+			DateTime endDate = DateTime.Now;
+			SpreadCurves testSpread = SpreadCurves.SpreadCurve3;
+			int testPrecision = 3;
+
+			// Get number of months to determine expected number of spread values
+			int numberOfValues = ((endDate.Year - startDate.Year) * 12) + endDate.Month - startDate.Month + 1;
+
+			decimal ucotFactor = 1.2m;
+
+			ICollection<LaborSpreadDataModelView> results = sut.CalculateLaborSpreads(testValue, startDate, endDate, testSpread, testPrecision, true, ucotFactor, out ICollection<LaborSpreadDataModelView> ucotSpreads);
+
+			Assert.IsTrue(results.Any());
+			Assert.AreEqual(numberOfValues, results.Count);
+
+			// Calculate expectedSpreads based on Spread Curve 3
+			// A recreation of SpreadCurve.SpreadFlat, which is private
+			decimal[] expectedSpreadValues = new decimal[numberOfValues];
+			decimal[] expectedUCOTSpreadValues;
+			decimal valuePerMonth = testValue / numberOfValues;
+			decimal resid = 0;
+			for (int i = 0; i < numberOfValues; i++)
+			{
+				decimal temp = (valuePerMonth + resid) + 0.5001m;
+				resid += valuePerMonth - temp;
+				expectedSpreadValues[i] = temp;
+			}
+			expectedSpreadValues = SpreadCurve.Smooth(testValue, expectedSpreadValues, 0, numberOfValues, testPrecision);
+
+			expectedUCOTSpreadValues = expectedSpreadValues.Select(s => s * ucotFactor / 100.0m).ToArray();
+			DateTime expectedDate = startDate;
+			int index = 0;
+
+			foreach (LaborSpreadDataModelView result in results)
+			{
+				Assert.AreEqual(expectedSpreadValues[index], result.LaborSpreadValue);
+				Assert.AreEqual(expectedDate.ToMonthString(), result.LaborSpreadDate);
+
+				expectedDate = expectedDate.AddMonths(1);
+				index++;
+			}
+
+			index = 0;
+
+			foreach(LaborSpreadDataModelView ucotResult in ucotSpreads)
+			{
+				Assert.AreEqual(expectedUCOTSpreadValues[index], ucotResult.LaborSpreadValue);
+				Assert.AreEqual(expectedDate.ToMonthString(), ucotResult.LaborSpreadDate);
+
+				expectedDate = expectedDate.AddMonths(1);
+				index++;
+			}
+		}
+
+		/// <summary>
 		/// Test CalculateLaborSpreads for validation exception for start date being after end date
 		/// </summary>
 		[TestMethod]
