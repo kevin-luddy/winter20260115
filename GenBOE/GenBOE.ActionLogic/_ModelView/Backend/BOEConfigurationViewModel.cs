@@ -149,5 +149,10 @@ namespace GenBOE.ActionLogic.ModelView.Backend
 		/// Option to show company configuration (company mode).
 		/// </summary>
 		public bool ShowCompanyConfiguration { get; set; }
+
+		/// <summary>
+		/// Active App name in Web.Config
+		/// </summary>
+		public string ActiveApp { get; set; }
 	}
 }
