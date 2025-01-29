@@ -3001,7 +3001,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			// Get number of months to determine expected number of spread values
 			int numberOfValues = ((endDate.Year - startDate.Year) * 12) + endDate.Month - startDate.Month + 1;
 
-			ICollection<LaborSpreadDataModelView> results = sut.CalculateLaborSpreads(testValue, startDate, endDate, testSpread, testPrecision);
+			ICollection<LaborSpreadDataModelView> results = sut.CalculateLaborSpreads(testValue, startDate, endDate, testSpread, testPrecision, false, 0.0m, out ICollection<LaborSpreadDataModelView> ucotSpreads);
 
 			Assert.IsTrue(results.Any());
 			Assert.AreEqual(numberOfValues, results.Count);
@@ -3047,7 +3047,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			SpreadCurves testSpread = SpreadCurves.SpreadCurve3;
 			int testPrecision = 3;
 
-			ICollection<LaborSpreadDataModelView> results = sut.CalculateLaborSpreads(testValue, startDate, endDate, testSpread, testPrecision);
+			ICollection<LaborSpreadDataModelView> results = sut.CalculateLaborSpreads(testValue, startDate, endDate, testSpread, testPrecision, false, 0.0m, out ICollection<LaborSpreadDataModelView> ucotSpreads);
 		}
 
 		/// <summary>
