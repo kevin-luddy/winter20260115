@@ -58,7 +58,8 @@
 			OneLMXCutOffDate: '<%: Utilities.OneLmxStartDate %>',
 			IsBRCEnabled: '<%= Utilities.IsBRCEnabledForWorkspace(SiteMasterUtilities.GetCurrentWorkspace()) %>'.isTrue(),
 			IsSkillMixEnabled: '<%= (bool)ViewData["IsSkillMixEnabled"] %>'.isTrue(),
-			IsUcotEnabled: '<%= Utilities.IsUCOTEnabled %>'.isTrue()
+			IsUcotEnabled: '<%= Utilities.IsUCOTEnabled %>'.isTrue(),
+			UcotFactor: <%=ViewData["UcotFactor"]%>
 		});
 
 		$(function () {

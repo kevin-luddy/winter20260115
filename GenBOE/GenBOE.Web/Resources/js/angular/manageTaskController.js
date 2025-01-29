@@ -1024,6 +1024,31 @@
                 $scope.calculatePercentSpread(item, $scope.getMOQTotal());
             }
 
+            if ($scope.IsUcot(item)) {
+                var ucotSpread = item.UcotSpreads.find(function (spreadItem) {
+                    return spreadItem.LaborSpreadDate === dt;
+                });
+
+                var ucotSpreadValue = spreadValue.multipliedBy($scope.ManageTaskModel.UcotFactor);
+
+                // set the Ucot spread value in original array from the copy array
+                if (ucotSpread !== undefined && ucotSpread.LaborSpreadValue !== undefined) {
+                    delta = ucotSpreadValue.minus(ucotSpread.LaborSpreadValue);
+                    ucotSpread.LaborSpreadValue = ucotSpreadValue;
+                } else {
+                    // this is a new value for the Ucot Spreads table
+                    // Assuming that we do not need these in order
+                    ucotSpread = { LaborSpreadDate: dt, LaborSpreadValue: ucotSpreadValue };
+                    item.UcotSpreads.push(ucotSpread);
+                    delta = ucotSpreadValue;
+                }
+
+                // add delta to labor type object Ucot Hours
+                var ucotHourSpread = delta.plus(item.UcotHours);
+                item.UcotHours = ucotHourSpread.toString();
+            }
+
+
             // re-calculate totals
             $scope.recalculateTotals();
         }
@@ -2216,12 +2241,31 @@
         }
 
         item.Spreads = newSpreads;
-        // TODO TIW item.UcotSpreads = Calculate API
+
+        if ($scope.IsUcot(item)) {
+            var newUcotSpreads = [];
+            var ucotTotal = new BigNumber(0);
+            angular.forEach(item.UcotSpreads, function (spread) {
+                var month = spread.LaborSpreadDate.toDate();
+                if (month >= start && month <= end) {
+                    newUcotSpreads.push(spread);
+                    ucotTotal = ucotTotal.plus(spread.LaborSpreadValue);
+                }
+            });
+
+            item.UcotHours = ucotTotal;
+            item.UcotSpreads = newUcotSpreads;
+        }
 
         if (!skipRecalc) {
             $scope.generateSpreadTable();
             $scope.recalculateTotals();
         }
+    };
+
+    $scope.IsUcot = function (item) {
+        // ElementOfCost Enum value 1 is LM Labor
+        return $scope.showUCOT && item.ElementOfCost === 1 && item.BusinessResourceCodeName && item.RateType === ManageTaskModel.RateTypeHours;
     };
 
     $scope.startDateUpdated = function (item) {
