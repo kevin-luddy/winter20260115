@@ -1134,6 +1134,9 @@ namespace GenBOE.Web.Controllers
 			// Perform Action
 			IWorkspaceIdentificationModelView workspaceModelView = this._ControllerLogic.GetWorkspaceIdentificationModelView(ws);
 
+			// TODO: REMOVE ME
+			workspaceModelView.EnableAssignTaskAuthor = ws.EnableAssignTaskAuthor;
+
 			// We load the server url here so that we have access to the Request object
 			workspaceModelView.ApplicationURL = new System.Uri(ConfigurationUtilities.GetAppSetting("ServerURL", Request.Url.Host) + "/" + workspaceModelView.ShortName);
 
@@ -2996,6 +2999,10 @@ namespace GenBOE.Web.Controllers
 				ws.CurrentPTMWorkspace = workspaceDetails.CurrentPTMWorkspace;
 				ws.EnableAssignTaskAuthor = workspaceDetails.EnableAssignTaskAuthor;
 
+				// Keep track of the previous value of Enable Assign Task Author
+				bool previousValueEnableAssignTaskAuthor = ws.EnableAssignTaskAuthor;
+				ws.EnableAssignTaskAuthor = workspaceDetails.EnableAssignTaskAuthor;
+			
 				// Populate the company specific properties
 				_ControllerLogic.PopulateCompanySpecificWorkspaceProperties(workspaceDetails, ws);
 
@@ -3097,6 +3104,31 @@ namespace GenBOE.Web.Controllers
 									_BoeMediator.MediatedSave(ws, boe);
 									_BOEStateMachine.PerformStateTransitionAction(boe, ws, boe.State, BOEState.Draft);
 								}
+							}
+						}
+
+						// If Authors Assignable at Task Level is set to false and it was previously set to true,
+						// change all of the BOEs to Draft and clear all authors from tasks
+						if (!ws.EnableAssignTaskAuthor && previousValueEnableAssignTaskAuthor)
+						{
+							ws.RefreshBoes();
+
+							foreach (FullBoe boe in ws.Boes)
+							{
+								boe.State = BOEState.Draft;
+								boe.Updateable = UpdateType.Upsert;
+
+								// Get the task
+								ICollection<BoeTaskElementDTO> editableTasks = (ICollection<BoeTaskElementDTO>)boe.TaskElements;
+								foreach (BoeTaskElementDTO task in editableTasks)
+								{
+									task.AuthorUserId = null;
+									task.Updateable = UpdateType.Upsert;
+								}
+
+								_BoeTaskElementMediator.MediatedBulkSaveTaskElements(editableTasks, ws);
+								_BoeMediator.MediatedSave(ws, boe);
+								_BOEStateMachine.PerformStateTransitionAction(boe, ws, boe.State, BOEState.Draft);
 							}
 						}
 
