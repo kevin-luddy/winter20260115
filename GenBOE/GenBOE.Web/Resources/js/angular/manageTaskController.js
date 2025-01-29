@@ -28,11 +28,13 @@
     $scope.SelectedMoqTypes = [];
     $scope.IsDraftOrDraftLocked = false;
     $scope.IsBRCEnabled = ManageTaskModel.IsBRCEnabled; // For CDSM table only show if this BRC Enabaled = true 
-    $scope.IsSkillMixEnabled = ManageTaskModel.EnableSkillMix;
+    $scope.IsSkillMixEnabled = ManageTaskModel.IsSkillMixEnabled;
     $scope.skillMixRationale = [];
     $scope.skillMixRationaleLaborTypeSelections = [];
     $scope.commonDisclosureLaborTypeSelections = [];
     $scope.IsUsingTMRatesInTask = false;
+    $scope.loadedMoqData = false;
+    $scope.dataLoaded = false;
 
     // Sets the Selected MOQ Types from the Selected MOQ Types from MoqEuationController.js.
     $scope.$on('MOQ_TYPE_SELECTION_CHANGED', function (event, selectedMoqTypes) {
@@ -151,7 +153,7 @@
         });
 
         $scope.skillMixRationaleLaborTypeSelections = $scope.skillMixRationaleLaborTypeSelections.filter((option, index, self) =>
-            index === self.findIndex((t) => (t === option))
+            index === self.findIndex((t) => (t === option)) && index === self.findLastIndex((t) => (t === option))
         );
 
         // Filter out the proper BRC Selections.
@@ -160,13 +162,15 @@
         });
 
         $scope.commonDisclosureLaborTypeSelections = $scope.commonDisclosureLaborTypeSelections.filter((option, index, self) =>
-            index === self.findIndex((t) => (t === option))
+            index === self.findIndex((t) => (t === option)) && index === self.findLastIndex((t) => (t === option))
         );
     };
 
     $scope.refreshSkillMixTables = function (setDirty = true) {
-        if (ManageTaskModel.IsSkillMixEnabled) {
+        // Check if we are showing Skill Mix (checks for Skill Mix Enabled and if there are no T&M rates)
+        if ($scope.showSkillMix() && $scope.dataLoaded && $scope.loadedMoqData) {
             $(document).trigger("SHOW_LOADING_BOX");
+
             if (setDirty) {
                 $scope.setDirty();
             }
@@ -181,7 +185,8 @@
                 selectedMoqTypes: $scope.SelectedMoqTypes,
                 laborTypes: laborTypesData,
                 currentSkillMixData: $scope.model.SkillMixData,
-                currentCommonDisclosureData: $scope.model.CommonDisclosureSkillMixData
+                currentCommonDisclosureData: $scope.model.CommonDisclosureSkillMixData,
+                isManual: $scope.isSkillMixManual()
             };
 
             return $http({
@@ -1160,6 +1165,7 @@
     var loadData = function (callback) {
         $(document).trigger("SHOW_LOADING_BOX");
         $scope.isLoading = true;
+        $scope.dataLoaded = false;
         $scope.TaskCustomFields = [];
         $scope.MoqTableCustomFields = [];
         $scope.LaborCustomFields = [];
@@ -1273,15 +1279,17 @@
             if ($scope.taskElementId === "-1") {
                 $scope.setDirty();
             }
+
+            $scope.dataLoaded = true;
+            // Refreshing the tables to calculate the totals rows for the UI, do not set dirty because there "should" be no changes from rows in DB
+            $scope.refreshSkillMixTables(false);
+
             $scope.isLoading = false;
             $(document).trigger("HIDE_LOADING_BOX");
 
             if (callback && typeof callback === 'function') {
                 callback();
             }
-
-            // Refreshing the tables to calculate the totals rows for the UI, do not set dirty because there "should" be no changes from rows in DB
-            $scope.refreshSkillMixTables(false);
         }, function errorCallback(response) {
             if (response.data && response.data.MessageList) {
                 $scope.errors = response.data.MessageList;
@@ -1723,6 +1731,7 @@
             item.ResourceName = undefined;
             item.ResourceType = undefined;
             item.ResourceID = undefined;
+            $scope.filterResourceSelections();
             $scope.refreshSkillMixTables();
         }
         $scope.checkIfNewRowNeeded(item);
@@ -1736,6 +1745,7 @@
             item.BusinessResourceCodeName = undefined;
             item.BusinessResourceCodeType = undefined;
             item.BusinessResourceCodeID = undefined;
+            $scope.filterResourceSelections();
             $scope.refreshSkillMixTables();
         }
         $scope.checkIfNewRowNeeded(item);
@@ -1885,6 +1895,7 @@
         }
 
         $scope.checkIfNewRowNeeded(model);
+        $scope.filterResourceSelections();
 
         if (ManageTaskModel.IsSpace) {
             $scope.checkTMRates();
@@ -1912,9 +1923,22 @@
     };
 
 	$scope.showSkillMix = function () {
-		// Show Skill Mix if there is a Historical (5001) or Comparative (5002) MOQ Type and no T&M rates are in the task
-		return $scope.SelectedMoqTypes.some(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002') && $scope.IsUsingTMRatesInTask === false;
+		// Show Skill Mix if Feature Flag enabled and no T&M rates are in the task
+		return $scope.IsSkillMixEnabled && $scope.IsUsingTMRatesInTask === false;
     };
+
+    $scope.isSkillMixManual = function () {
+        // Set Skill Mix to be manual if SAP Connection is diabled or if there is any MOQ Type that is not Historical (5001) or Comparative (5002) MOQ Type or if there are no selected moqtypes or if using TM Rates in Task
+        return $scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0 || !ManageTaskModel.SapConnectionEnabled || !$scope.SelectedMoqTypes.every(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002') || $scope.IsUsingTMRatesInTask;
+    };
+
+    $scope.isSkillMixDisabled = function () {
+        // Set if Skill Mix is Automatic, but one of the following occurs:
+        // 1) No MOQ Tables
+        // 2) Any MOQ Table is missing SAP Resource Hours
+
+        return !$scope.isSkillMixManual() && (($scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0) || !$scope.SelectedMoqTypes.every(x => x.TableData !== undefined && x.TableData.length > 0 && x.TableData.every(y => y.ResourceHours !== undefined && y.ResourceHours.length > 0)));
+    }
 
     $scope.perfOrgSelected = function (item, model) {
         $scope.setDirty();

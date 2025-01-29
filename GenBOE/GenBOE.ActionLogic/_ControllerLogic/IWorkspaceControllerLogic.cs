@@ -200,6 +200,17 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		void CopySystemZoneTravelRates(int workspaceId);
 
 		/// <summary>
+		/// get ucot system settings
+		/// </summary>
+		decimal GetUcotSystemSettingsValue();
+
+		/// <summary>
+		/// Copy the system setting for UCOT Factor into the workspace
+		/// </summary>
+		/// <param name="workspace">The workspace</param>
+		void CopySystemUCOTFactor(FullWorkspace workspace);
+
+		/// <summary>
 		/// Gets the last updated time the Zone Travel was updated; Null if it is latest.
 		/// </summary>
 		/// <param name="workspaceId">The id for workspace to update.</param>

@@ -251,7 +251,7 @@
             angular.bootstrap(document, ['genboe']);
         });
 
-    </script>
+	</script>
 
     <div id="WorkspaceSettingsContent"></div>
         <script type="text/javascript">

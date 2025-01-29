@@ -32,13 +32,14 @@ namespace GenBOE.Tests.ActionLogic
         private Mock<ICommonDataMapper> commonDataMapper;
         private Mock<IPermissionsDTODataLoader> permissionsLoader;
         private Mock<IUserDTODataLoader> userLoader;
+		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
 
-        #endregion private Fields
+		#endregion private Fields
 
-        /// <summary>
-        /// Initializes the test data.
-        /// </summary>
-        [TestInitialize]
+		/// <summary>
+		/// Initializes the test data.
+		/// </summary>
+		[TestInitialize]
         public void Init()
         {
             fullObjectFactory = new FullObjectFactory(null, null, null, null, null, null, null, null, null, null, null, null);
@@ -46,7 +47,8 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever = new Mock<IRetriever>();
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            userLoader = new Mock<IUserDTODataLoader>();
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
+			userLoader = new Mock<IUserDTODataLoader>();
 
             
             commonDataMapper = new Mock<ICommonDataMapper>();

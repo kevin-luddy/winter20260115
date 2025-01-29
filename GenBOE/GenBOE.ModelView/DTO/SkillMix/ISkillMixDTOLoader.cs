@@ -19,11 +19,11 @@ namespace GenBOE.DataBridge.DTO
 		ICollection<SkillMixDTO> GetByBOETaskElementID(int boeTaskElementID);
 
 		/// <summary>
-		/// Get all SkillMix values by BOE FK ID
+		/// Get all SkillMix values by BOE FK IDs
 		/// </summary>
-		/// <param name="boeID"></param>
+		/// <param name="boeIDs"></param>
 		/// <returns>List of SkillMix</returns>
-		ICollection<SkillMixDTO> GetByBOEID(int boeID);
+		ICollection<SkillMixDTO> GetByBOEIDs(ICollection<int> boeIDs);
 
 		/// <summary>
 		/// Get SkillMix by certain values

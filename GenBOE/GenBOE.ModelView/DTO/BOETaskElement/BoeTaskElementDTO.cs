@@ -51,6 +51,7 @@ namespace GenBOE.DataBridge.DTO
             this.WasMoqTextSet = false;
             this.WasDescriptionSet = false;
             this.preventRteDbLoad = false;
+			this.AuthorUserId = null;
         }
 
         #region RTE Fields
@@ -211,6 +212,11 @@ namespace GenBOE.DataBridge.DTO
 		/// Gets or sets a value indicating whether this task instance has any T&M rates.
 		/// </summary>
 		public bool HasTMRates { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Author User Id, referenced from the ETIUser table
+		/// </summary>
+		public int? AuthorUserId { get; set; }
 
 		/// <summary>
 		/// Gets the children that can be shifted.

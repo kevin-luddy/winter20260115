@@ -17,11 +17,11 @@ namespace APTSPropricerApi.DTOs
 		/// <summary>
 		/// Gets or sets the proposal id.
 		/// </summary>
-		public string proposalId { get; set; }
+		public string proposalIdOrNameVersion { get; set; }
 
 		/// <summary>
 		/// Gets or sets the batch report id.
 		/// </summary>
-		public string batchReportId { get; set; }
+		public string batchReportIdOrNameVersion { get; set; }
 	}
 }

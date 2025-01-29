@@ -43,12 +43,12 @@ namespace GenBOE.Web.Controllers
     using IES.Common.Exceptions;
     using IES.Common.OfficeUtilities;
 
-    /// <summary>
-    /// Implementation note: 
-    /// 
-    /// Since our code is not calling these methods directly, all logging should be on the Info level instead of the Debug level.
-    /// This is true ONLY for this controller.
-    /// </summary>
+	/// <summary>
+	/// Implementation note: 
+	/// 
+	/// Since our code is not calling these methods directly, all logging should be on the Info level instead of the Debug level.
+	/// This is true ONLY for this controller.
+	/// </summary>
     public class AdminController : GenBOEController
     {
         private readonly Logger _log = new Logger(typeof(AdminController));
@@ -1541,11 +1541,26 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
-        /// <summary>
-        /// Displays the partial view for the performing orgs page
-        /// </summary>
-        /// <returns></returns>
-        public ViewResult DisplayDefaultPerfOrgs()
+		/// <summary>
+		/// Displays the Manage UCOT page
+		/// </summary>
+		/// <param name="workspace">The workspace</param>
+		/// <returns>The view for Manage UCOT</returns>
+		public virtual ActionResult DisplayManageUCOT(string workspace)
+		{
+			Stopwatch sw = InitializeAction(this._log, WebConstants.ACTION_DISPLAY_MANAGE_UCOT, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+			decimal ucot = this._ControllerLogic.GetUcotSystemSettingsValue();
+			ViewResult toReturn = View(WebConstants.VIEW_MANAGE_UCOT, ucot);
+			// Finalize Action
+			FinalizeAction(this._log, WebConstants.ACTION_DISPLAY_MANAGE_UCOT, sw);
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Displays the partial view for the performing orgs page
+		/// </summary>
+		/// <returns></returns>
+		public ViewResult DisplayDefaultPerfOrgs()
         {
             Stopwatch sw = InitializeAction(_log, "DisplayDefaultPerfOrgs", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
@@ -2119,14 +2134,34 @@ namespace GenBOE.Web.Controllers
             this.FinalizeAction(this._log, WebConstants.ACTION_SAVE_SYSTEM_EMAIL_PREFERENCES, sw);
 
             return this.Json(new { Status = true });
-        }
+		}
 
-        /// <summary>
-        /// A method to save a new system permissions set.
-        /// </summary>
-        /// <param name="inPermission">SavePermission MV</param>
-        /// <returns>A Json value</returns>
-        public JsonResult SaveNewSystemPermissions(SavePermissionsModelView inPermission)
+		/// <summary>
+		/// Saves the system email preferences.
+		/// </summary>
+		/// <param name="emails">The emails.</param>
+		/// <returns>A Json value</returns>
+		public JsonResult SaveUCOT(decimal? ucot)
+		{
+			if (ucot == null)
+			{
+				throw new ArgumentNullException(nameof(ucot));
+			}
+
+			Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_SAVE_UCOT, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+			bool isSuccess = this._ControllerLogic.SaveUcotSystemSettings(ucot.Value);
+
+			this.FinalizeAction(this._log, WebConstants.ACTION_SAVE_UCOT, sw);
+
+			return this.Json(new { Status = isSuccess });
+		}
+
+		/// <summary>
+		/// A method to save a new system permissions set.
+		/// </summary>
+		/// <param name="inPermission">SavePermission MV</param>
+		/// <returns>A Json value</returns>
+		public JsonResult SaveNewSystemPermissions(SavePermissionsModelView inPermission)
         {
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, "SaveNewSystemPermissions", SecurityPage.SystemAdmin,

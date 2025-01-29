@@ -25,18 +25,20 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
     [TestClass]
     public class AdminControllerLogicTests
     {
-        Mock<ICommonDataMapper> commonDataMapper;
+		Mock<ICommonDataMapper> commonDataMapper;
         Mock<IResourceListDTODataLoader> resourceListDTODataLoader;
-        Mock<IMSTZoneTravelOriginDTODataLoader> mstZoneTravelOriginDTODataLoader;
-        Mock<IMSTZoneTravelDestinationDTODataLoader> mstZoneTravelDestinationDTODataLoader;
+		Mock<IMSTZoneTravelOriginDTODataLoader> mstZoneTravelOriginDTODataLoader;
+		Mock<ISystemSettingDTODataLoader> systemSettingDTODataLoader;
+		Mock<IMSTZoneTravelDestinationDTODataLoader> mstZoneTravelDestinationDTODataLoader;
         Mock<IMSTTravelNonzoneFeesAndCostsDTODataLoader> mstTravelNonzoneFeesAndCostsDTODataLoader;
         
         public AdminControllerLogic CreateSut()
         {
             this.commonDataMapper = new Mock<ICommonDataMapper>();
             this.resourceListDTODataLoader = new Mock<IResourceListDTODataLoader>();
-            
-            return new AdminControllerLogic(this.commonDataMapper.Object, this.resourceListDTODataLoader.Object, null);
+			this.systemSettingDTODataLoader = new Mock <ISystemSettingDTODataLoader>();
+
+			return new AdminControllerLogic(this.commonDataMapper.Object, this.resourceListDTODataLoader.Object, null, systemSettingDTODataLoader.Object);
         }
 
         public AdminControllerLogic CreateSSCSut()
@@ -46,8 +48,9 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             this.mstZoneTravelOriginDTODataLoader = new Mock<IMSTZoneTravelOriginDTODataLoader>();
             this.mstZoneTravelDestinationDTODataLoader = new Mock<IMSTZoneTravelDestinationDTODataLoader>();
             this.mstTravelNonzoneFeesAndCostsDTODataLoader = new Mock<IMSTTravelNonzoneFeesAndCostsDTODataLoader>();
-            
-            return new AdminControllerLogicSpaceSystems(this.commonDataMapper.Object, this.resourceListDTODataLoader.Object, null);
+			this.systemSettingDTODataLoader = new Mock<ISystemSettingDTODataLoader>();
+
+			return new AdminControllerLogicSpaceSystems(this.commonDataMapper.Object, this.resourceListDTODataLoader.Object, null, systemSettingDTODataLoader.Object);
         }
 
         public AdminControllerLogic CreateMSTSut()
@@ -57,9 +60,10 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             this.mstZoneTravelOriginDTODataLoader = new Mock<IMSTZoneTravelOriginDTODataLoader>();
             this.mstZoneTravelDestinationDTODataLoader = new Mock<IMSTZoneTravelDestinationDTODataLoader>();
             this.mstTravelNonzoneFeesAndCostsDTODataLoader = new Mock<IMSTTravelNonzoneFeesAndCostsDTODataLoader>();
+			this.systemSettingDTODataLoader = new Mock<ISystemSettingDTODataLoader>();
 
-            return new AdminControllerLogicMST(this.commonDataMapper.Object, this.resourceListDTODataLoader.Object, 
-                this.mstZoneTravelOriginDTODataLoader.Object, this.mstZoneTravelDestinationDTODataLoader.Object, this.mstTravelNonzoneFeesAndCostsDTODataLoader.Object, null);
+			return new AdminControllerLogicMST(this.commonDataMapper.Object, this.resourceListDTODataLoader.Object, 
+                this.mstZoneTravelOriginDTODataLoader.Object, this.mstZoneTravelDestinationDTODataLoader.Object, this.mstTravelNonzoneFeesAndCostsDTODataLoader.Object, null, systemSettingDTODataLoader.Object);
         }
 
         [TestMethod]
@@ -1191,6 +1195,30 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             Assert.AreEqual(result.First().ValidationIssue, "Template Name cannot contain any of the following reserved characters: < > : \" ' \\ / | ? *");
         }
 
-        #endregion
-    }
+		#endregion
+
+		#region Manage UCOT
+		[TestMethod]
+		public void TestGetUcotSettings()
+		{
+			AdminControllerLogic sut = CreateMSTSut();
+			decimal testUcot = 102.5M;
+			this.systemSettingDTODataLoader.Setup(x => x.GetSystemSetting(It.IsAny<string>())).Returns(new SystemSettingDTO() { Key = "key", Value = testUcot.ToString()});
+			decimal returnValue = sut.GetUcotSystemSettingsValue();
+			Assert.AreEqual(testUcot, returnValue);
+			this.systemSettingDTODataLoader.Verify(x => x.GetSystemSetting(It.IsAny<string>()), Times.Once());
+		}
+
+		[TestMethod]
+		public void TestSaveUcotSettings()
+		{
+			AdminControllerLogic sut = CreateMSTSut();
+			this.systemSettingDTODataLoader.Setup(x => x.SaveSystemSetting(It.IsAny<SystemSettingDTO>())).Verifiable();
+			decimal ucot = 1;
+			bool returnValue = sut.SaveUcotSystemSettings(ucot);
+			Assert.AreEqual(true, returnValue);
+			this.systemSettingDTODataLoader.Verify(x => x.SaveSystemSetting(It.IsAny<SystemSettingDTO>()), Times.Once());
+		}
+		#endregion
+	}
 }

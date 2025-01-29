@@ -137,7 +137,8 @@ namespace IES.Common.Core.Security
 		GettingStartedMenuOption = 72,
 		WorkspaceSettingsShareAndAllowSearch = 73,
 		RTETemplates = 74,
-		WorkspaceRecalculateActuals = 75
+		WorkspaceRecalculateActuals = 75,
+		UpdateUCOTFactorMenuOption = 76
 	}
 
 	/// <summary>
@@ -211,7 +212,7 @@ namespace IES.Common.Core.Security
 		/// <summary>
 		/// Returns the name of the currently logged on user (ex. acct04\jsmith)
 		/// </summary>
-		protected virtual string ActiveUserNTIDWithDomain
+		virtual public string ActiveUserNTIDWithDomain
 		{
 			get
 			{

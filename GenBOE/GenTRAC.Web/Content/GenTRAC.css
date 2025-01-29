@@ -1117,14 +1117,25 @@ button.ies-danger.disabled {
     width: 425px;
 }
 
+.proposal-text {
+    max-height: 32px
+}
+
 .proposalTitle {
-    width: 680px; 
+    width: 680px;
     text-align: left;
+}
+
+.proposalStatus {
+    text-align: left;
+    font-size: 12px !important;
+    margin-top: -14px;
 }
 
 .proposalStatusDates {
     text-align: left;
     font-size: 13px !important;
+    width: 262px;
 }
 
 .proposalStatusDates p {

@@ -132,6 +132,7 @@ namespace GenBOE.DataBridge.DTO
 									  BOETaskID = bT.TaskID,
 									  TaskTitle = bT.TaskTitle,
 									  MOQHoursEquation = bT.MOQHoursEquation,
+									  AuthorUserId = bT.AuthorUserId,
 									  MOQType = bT.MOQTypeID.HasValue ? (MOQType)bT.MOQTypeID : MOQType.None,
 									  IMS_ID = bT.IMS_ID,
 									  StartDate = bT.TaskStartDate,
@@ -185,8 +186,8 @@ namespace GenBOE.DataBridge.DTO
 				List<BoeTaskElementDTO> result;
 				List<OrdinaryVariableDto> ordinaryVariables;
 				List<ResourceTypeDto> taskElementLabors;
-				List<SkillMixDTO> skillMixDTOs = null;
-				List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = null;
+				ICollection<SkillMixDTO> skillMixDTOs = this.skillMixDTOLoader.GetByBOEIDs(boeIds);
+				ICollection<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = this.commonDisclosureSMDTODataLoader.GetByBOEIDs(boeIds);
 
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
@@ -205,6 +206,7 @@ namespace GenBOE.DataBridge.DTO
 									  BOETaskID = bT.TaskID,
 									  TaskTitle = bT.TaskTitle,
 									  MOQHoursEquation = bT.MOQHoursEquation,
+									  AuthorUserId = bT.AuthorUserId,
 									  MOQType = bT.MOQTypeID.HasValue ? (MOQType)bT.MOQTypeID : MOQType.None,
 									  IMS_ID = bT.IMS_ID,
 									  StartDate = bT.TaskStartDate,
@@ -259,8 +261,8 @@ namespace GenBOE.DataBridge.DTO
 				List<BoeTaskElementDTO> result;
 				List<OrdinaryVariableDto> ordinaryVariables;
 				List<ResourceTypeDto> taskElementLabors;
-				List<SkillMixDTO> skillMixDTOs = null;
-				List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = null;
+				ICollection<SkillMixDTO> skillMixDTOs = this.skillMixDTOLoader.GetByWorkspaceId(wsId);
+				ICollection<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = this.commonDisclosureSMDTODataLoader.GetByWorkspaceId(wsId); ;
 
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
@@ -279,6 +281,7 @@ namespace GenBOE.DataBridge.DTO
 									  BOETaskID = bT.TaskID,
 									  TaskTitle = bT.TaskTitle,
 									  MOQHoursEquation = bT.MOQHoursEquation,
+									  AuthorUserId = bT.AuthorUserId,
 									  MOQType = bT.MOQTypeID.HasValue ? (MOQType)bT.MOQTypeID : MOQType.None,
 									  IMS_ID = bT.IMS_ID,
 									  StartDate = bT.TaskStartDate,
@@ -442,7 +445,7 @@ namespace GenBOE.DataBridge.DTO
 			metaData.EntityPropertiesToMapToDataTable = new Collection<string>()
 			{
 				"BOETaskElementID", "UpdateDT", "TaskID", "TaskTitle", "TaskDescription", "TaskStartDate", "TaskEndDate", "MOQHoursEquation", "MOQCostEquation",
-				"MOQText", "MOQTypeID", "BOEID", "LaborTypeWarningFlag", "IMS_ID", "TaskElementTypeID", "SortOrderID"
+				"MOQText", "MOQTypeID", "BOEID", "LaborTypeWarningFlag", "IMS_ID", "TaskElementTypeID", "SortOrderID", "AuthorUserId"
 			};
 
 			return metaData;
@@ -984,7 +987,8 @@ namespace GenBOE.DataBridge.DTO
 							inTaskDetail.IMS_ID,
 							(int)inTaskDetail.TaskElementType,
 							inTaskDetail.UpdateDate,
-							inTaskDetail.BOETaskElementOrder
+							inTaskDetail.BOETaskElementOrder,
+							inTaskDetail.AuthorUserId
 							)
 													select s;
 
@@ -1520,6 +1524,7 @@ namespace GenBOE.DataBridge.DTO
 				TaskStartDate = dtoToConvert.StartDate,
 				TaskEndDate = dtoToConvert.EndDate,
 				MOQHoursEquation = dtoToConvert.MOQHoursEquation,
+				AuthorUserId = dtoToConvert.AuthorUserId,
 				MOQCostEquation = string.Empty,
 				MOQText = dtoToConvert.MOQText,
 				MOQTypeID = dtoToConvert.MOQType == MOQType.None ? (int?)null : (int)dtoToConvert.MOQType,

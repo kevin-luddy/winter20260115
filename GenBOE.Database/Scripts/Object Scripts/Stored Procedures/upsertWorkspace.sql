@@ -52,7 +52,9 @@ CREATE  PROCEDURE [dbo].[upsertWorkspace]
 @RevisedSubmittalDate DateTime2(7),
 @TemplateBoe bit,
 @EnableSAPConnection bit,
-@CurrentPTMWorkspace bit
+@CurrentPTMWorkspace bit,
+@UCOTFactor decimal(7,2),
+@EnableAssignTaskAuthor bit
 )
 AS
 /******************************************************************************
@@ -86,6 +88,8 @@ AS
 **			1/31/23		e405721					ACV-221 - Enable SAP Connection
 **          2/14/24     e374897                 PROPH-1445 - Add CurrentPTMWorkspace Column to Workspace
 **          2/28/24     e374897                 PROPH-1674 - Remove CurrentPTMWorkspace logic
+**			1/14/25		twilson3				PROPH-2596 - Add UCOT Factor
+**			1/15/25		e309214					PROPH-1854 Database Changes for Assign Author
 *******************************************************************************/
 
 /*
@@ -196,6 +200,8 @@ IF @WorkspaceID  < 0  /*Insert Record*/
 		   ,[TemplateBoe]
 		   ,[EnableSAPConnection]
 		   ,[CurrentPTMWorkspace]
+		   ,[UCOTFactor]
+		   ,[EnableAssignTaskAuthor]
 		   )
 	 OUTPUT inserted.WorkspaceID INTO @InsertedWorkspace           
 	 VALUES
@@ -239,6 +245,8 @@ IF @WorkspaceID  < 0  /*Insert Record*/
 		   ,@TemplateBoe
 		   ,@EnableSAPConnection
 		   ,@CurrentPTMWorkspace
+		   ,@UCOTFactor
+		   ,@EnableAssignTaskAuthor
 		   )
 
 	  SELECT @WorkspaceID = WorkspaceID FROM @InsertedWorkspace
@@ -384,6 +392,8 @@ ELSE
 									,[TemplateBoe] = @TemplateBoe
 									,[EnableSAPConnection] = @EnableSAPConnection
 									,[CurrentPTMWorkspace] = @CurrentPTMWorkspace
+									,[UCOTFactor] = @UCOTFactor
+									,[EnableAssignTaskAuthor] = @EnableAssignTaskAuthor
 						WHERE 
 							  WorkspaceID = @WorkspaceID
 							  

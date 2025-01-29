@@ -30,11 +30,12 @@ namespace GenBOE.Tests.ActionLogic.Import
         private Mock<IFullObjectFactory> factory = null;
         private Mock<ICommonDataMapper> commonDataMapper = null;
         private Mock<IPermissionsDTODataLoader> _PermissionDataLoader = null;
+		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
 
-        /// <summary>
-        /// initialize
-        /// </summary>
-        [TestInitialize]
+		/// <summary>
+		/// initialize
+		/// </summary>
+		[TestInitialize]
         public void init()
         {
             this.retriever = new Mock<IRetriever>();
@@ -45,7 +46,8 @@ namespace GenBOE.Tests.ActionLogic.Import
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), this.commonDataMapper.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _PermissionDataLoader.Object);
-        }
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
+		}
 
         /// <summary>
         /// Create SUT

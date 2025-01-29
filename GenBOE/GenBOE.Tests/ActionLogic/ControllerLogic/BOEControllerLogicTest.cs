@@ -82,6 +82,15 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		private readonly Mock<GenBOE.ActionLogic.IESSAPClient.IESSAPClient> iesSapClient = new Mock<GenBOE.ActionLogic.IESSAPClient.IESSAPClient>(null, null);
 		private readonly ITokenService tokenService = new TokenService(new MemoryCache());
 
+		/// <summary>
+		/// Test Initialize
+		/// </summary>
+		[TestInitialize]
+		public void InitializeSystem()
+		{
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), _ADUtils.Object);
+		}
+
 		private BOEControllerLogic CreateSystem()
 		{
 			this.moqTypeLoader.Setup(x => x.GetByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>());

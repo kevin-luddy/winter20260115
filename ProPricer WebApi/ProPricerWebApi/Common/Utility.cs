@@ -20,6 +20,7 @@ namespace APTSPropricerApi.Common
 	using EBS.ProPricer.Reports;
 	using EBS.ProPricer.Reports.Engine.Processing;
 	using EBS.ProPricer.Reports.Export;
+	using System.Linq;
 
 	/// <summary>
 	/// Utility Class for Common Methods used in multiple Controllers.
@@ -224,12 +225,12 @@ namespace APTSPropricerApi.Common
 		/// <returns>
 		/// Returns the general proposal data for a given proposal
 		/// </returns>
-		public static ProposalDto GetProposal(PoolManagerList poolManagerList, ILogger logger, int instanceId, string id)
+		public static ProposalDto GetProposalDTO(PoolManagerList poolManagerList, ILogger logger, int instanceId, string id)
 		{
 			ProposalDto pDto = new();
 			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
 			{
-				Proposal pr = Utility.FindProposal(ppc, id).Value();
+				Proposal pr = GetProposal(ppc, id);
 
 				try
 				{
@@ -329,13 +330,15 @@ namespace APTSPropricerApi.Common
 			}
 
 			Proposal pr = null;
-			string whichvar = "proposal id";
+			string whichvar = "batchReport nameOrId";
 			List<TaskDto> tasks = new();
 			using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
 			{
 				try
 				{
-					pr = Utility.FindProposal(ppc, id).Value();
+					// Get the Proposal
+					pr = GetProposal(ppc, id);
+
 					pr.Open();
 					///////////////////////////////////
 					foreach (EBS.ProPricer.Model.Task t in pr.Tasks.Items())
@@ -734,6 +737,63 @@ namespace APTSPropricerApi.Common
 			}
 
 			return tasks;
+		}
+
+		/// <summary>
+		/// Get the Proposal from Pro Pricer with Name/Version or ID
+		/// </summary>
+		/// <param name="ppc">Pro Pricer Connection</param>
+		/// <param name="nameOrId">Name/Version Or ID of Proposal</param>
+		/// <returns>Proposal</returns>
+		public static Proposal GetProposal(IProPricerConnection ppc, string nameOrId)
+		{
+			Proposal proposal = null;
+
+			using (ppc)
+			{
+				// GUID or Name|Version?
+				if (nameOrId.Contains('|'))
+				{
+					// Name
+					string[] parts = nameOrId.Split('|');
+					proposal = ppc.Workspace.Proposals.Find(parts[0], parts[1]).Value();
+				}
+				else
+				{
+					// GUID
+					EntityId pEntityId = new(new Guid(nameOrId));
+					proposal = ppc.Workspace.Proposals.Find(pEntityId).Value();
+				}
+			}
+
+			return proposal;
+		}
+
+		/// <summary>
+		/// Get the Batch Report from Pro Pricer with Name/Version or ID
+		/// </summary>
+		/// <param name="ppc">Pro Pricer Connection</param>
+		/// <param name="nameOrId">Name/Version Or ID of Batch Report</param>
+		/// <returns>Batch Report</returns>
+		public static BatchReport GetBatchReport(IProPricerConnection ppc, string nameOrId)
+		{
+			BatchReport batchReport = null;
+
+			using (ppc)
+			{
+				// Try to parse out the Id as GUID else get report based on Name
+				if (Guid.TryParse(nameOrId, out Guid parsedValue))
+				{
+					EntityId pEntityId = new(parsedValue);
+					batchReport = ppc.Workspace.Reports.BatchReports.Items().FirstOrDefault(b => b.Id == pEntityId);
+				}
+				else
+				{
+					batchReport = ppc.Workspace.Reports.BatchReports.Items().FirstOrDefault(b => b.Name == nameOrId);
+				}
+			}
+
+			return batchReport;
 		}
 	}
 }

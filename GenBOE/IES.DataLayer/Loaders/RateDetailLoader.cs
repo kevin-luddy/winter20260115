@@ -995,6 +995,16 @@ namespace IES.DataBridge.Loaders
 													  where te.Updateable == UpdateType.None
 													  select te).ToCollection();
 
+					foreach (RateDetailModelView modelView in upsertableRateDetailCollection)
+					{
+						// make sure the ProPricerMappings exist
+						if (modelView.ProPricerMappings == null)
+						{
+							// Move RateDescriptions into the ProPricerMappings collection.
+							this.RateDescriptionsToMappings(modelView.Id, modelView);
+						}
+					}
+
 					ICollection<ProPricerRateCodeXrefModelView> saveableProPricerXrefs = (from rateDetail in upsertableRateDetailCollection
 																						  where rateDetail.ProPricerMappings != null
 																						  from proPricerMapping in rateDetail.ProPricerMappings

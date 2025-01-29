@@ -145,6 +145,12 @@
                 '<%: WebConstants.ACTION_DISPLAY_SYSTEM_PROPRICER_EXPORTS %>'), "MANAGE_SYSTEM_PROPRICER_EXPORTS_LOADED");
         }
 
+		SystemAdmin.LoadManageUCOT = function () {
+			SystemAdmin.RetrievePage(CreateSystemAdminPostURL(
+                    '<%: WebConstants.CONTROLLER_ADMIN %>',
+				'<%: WebConstants.ACTION_DISPLAY_MANAGE_UCOT %>'), "MANAGE_UCOT_LOADED");
+		};
+
         SystemAdmin.RetrievePage = function (actionURL, trigger) {
             ShowLoadingBox();
             $.ajax({
@@ -252,6 +258,9 @@
                     case "ManageSystemProPricerExports":
                         SystemAdmin.LoadManageSystemProPricerExports();
                         break;
+					case "ManageUCOT":
+						SystemAdmin.LoadManageUCOT();
+						break;
                     default:
                         SystemAdmin.LoadSystemAdminJump();
                 }
@@ -275,13 +284,14 @@
             SystemAdmin.registerForEvent("SA_LOAD_REIMBURSEMENT_RATE", SystemAdmin.LoadManageReimbursementRate);
             SystemAdmin.registerForEvent("SA_LOAD_EMAIL_PREFERENCES", SystemAdmin.LoadManageEmailPreferences);
             SystemAdmin.registerForEvent("SA_LOAD_MANAGE_SYSTEM_SETTINGS", SystemAdmin.LoadManageSystemSettings);
+            SystemAdmin.registerForEvent("SA_LOAD_MANAGE_UCOT", SystemAdmin.LoadManageUCOT);
             window.onhashchange = SystemAdmin.LoadPage;
 
             SystemAdmin.LoadPage();
 
             angular.bootstrap(document, ['genboe']);
         });
-    </script>
+	</script>
     <div class="module systemAdminContent">
         <div class="module-content-data" id="SystemAdminContent"></div>
     </div>

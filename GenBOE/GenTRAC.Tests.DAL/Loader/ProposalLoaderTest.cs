@@ -1269,15 +1269,15 @@ namespace GenTRAC.Tests.DAL.Loader
 			DateTime anticipatedDeliveryDate = DateTime.Now;
 
 			// Test Archived
-			string result = ProposalLoader.GetWorkflowCompletedLineText(ProposalStatus.Archived, anticipatedDeliveryDate, null, null);
+			string result = ProposalLoader.GetWorkflowCompletedLineText(ProposalStatus.Archived, anticipatedDeliveryDate, null, null, true);
 			Assert.AreEqual(ProposalStatus.Archived.GetDescription(), result);
 
 			// Test Deleted
-			result = ProposalLoader.GetWorkflowCompletedLineText(ProposalStatus.Deleted, anticipatedDeliveryDate, null, null);
+			result = ProposalLoader.GetWorkflowCompletedLineText(ProposalStatus.Deleted, anticipatedDeliveryDate, null, null, true);
 			Assert.AreEqual(ProposalStatus.Deleted.GetDescription(), result);
 
 			// Test No Bid
-			result = ProposalLoader.GetWorkflowCompletedLineText(ProposalStatus.NoBid, anticipatedDeliveryDate, null, null);
+			result = ProposalLoader.GetWorkflowCompletedLineText(ProposalStatus.NoBid, anticipatedDeliveryDate, null, null, true);
 			Assert.AreEqual(ProposalStatus.NoBid.GetDescription(), result);
 		}
 

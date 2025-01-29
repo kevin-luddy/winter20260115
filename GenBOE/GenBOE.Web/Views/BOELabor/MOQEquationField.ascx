@@ -48,7 +48,7 @@
         ReadOnlyMode: '<%= ViewData["ReadOnlyMode"] %>'.isTrue(),
         HistoricalReferenceExplanationIsRequired: '<%= ViewData["HistoricalReferenceExplanationIsRequired"] %>'.isTrue(),
         DatepickerRestrictionRMS: '<%:Utilities.DatepickerRestrictionRMS%>',
-		SkillMixEnabled: '<%= (bool)ViewData["EnableSkillMix"] %>'.isTrue()
+		IsSkillMixEnabled: '<%= (bool)ViewData["IsSkillMixEnabled"] %>'.isTrue()
     };
 
     var ordinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;
@@ -305,7 +305,7 @@
                     <button data-ng-if="!ActualReadOnly() && $index == 0" data-ng-disabled="moqType.TableData.length <= 1" data-ng-click="displayReOrderMoqTablesDialog(moqType)" class="moqTypesButton ies-blue" type="button">Sort MOQ Tables</button>
                     <button data-ng-if="!ActualReadOnly() && moqType.TableData.length > 1" style="display:block;" data-ng-click="RemoveTable(tableData, moqType)" type="button" class="ies-danger moqTypesButton" data-ng-class="{'moqTypesDelete': $index == 0}">Delete Table Data</button>
                     <button data-ng-if="!ActualReadOnly() && IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="exportActuals(tableData)">Export Actuals</button>
-                    <button data-ng-if="!ActualReadOnly() && IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="model.SkillMixEnabled ? calculateActualsWithSkillMix(tableData, moqType) : calculateActuals(tableData)">Calculate Actuals</button>
+                    <button data-ng-if="!ActualReadOnly() && IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="model.IsSkillMixEnabled ? calculateActualsWithSkillMix(tableData, moqType) : calculateActuals(tableData)">Calculate Actuals</button>
                 </div>
                 <hr />
             </div>
@@ -421,14 +421,14 @@
         <hr data-ng-show="!moqType.collapsed" />
     </div>
     <div data-ng-if="model.UsingTemplateBOE" class="form-row moqContainerClass">
-        <div data-ng-if="!model.SkillMixEnabled || model.SelectedMoqTypes.length === 0" class="form-label">
+        <div data-ng-if="(!model.IsSkillMixEnabled && model.IsRMS) || model.SelectedMoqTypes.length === 0" class="form-label">
             <span>Add New MOQ Type</span>
         </div>
         <div class="form-element">
-            <select data-ng-model="model.selectedMOQType" data-ng-if="!ActualReadOnly() && (!model.SkillMixEnabled || model.SelectedMoqTypes.length === 0)" data-ng-options="moqType.SelectedMOQTypeText for moqType in model.MOQTypes | moqTypesFilter:model.SelectedMoqTypes" class="moqTypes"></select>
-            <button data-ng-if="!ActualReadOnly() && (!model.SkillMixEnabled || model.SelectedMoqTypes.length === 0)" data-ng-click="AddMoqType()" data-ng-disabled="!model.selectedMOQType" class="moqTypesButton ies-action" type="button">Add MOQ Type</button>
-            <button data-ng-if="!ActualReadOnly() && (!model.SkillMixEnabled || model.SelectedMoqTypes.length > 1)" data-ng-disabled="model.SelectedMoqTypes.length <= 1" data-ng-click="displayReOrderMoqTypesDialog()" class="moqTypesButton ies-blue" type="button">Sort MOQ Types</button>
-            <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" ng-disabled="calculateAllDisabled" data-ng-click="model.SkillMixEnabled ? calculateAllMoqActualsWithSkillMix() : calculateAllMoqActuals()" class="moqTypesButton ies-action" type="button">Calculate All Actuals</button>
+            <select data-ng-model="model.selectedMOQType" data-ng-if="!ActualReadOnly() && ((!model.IsSkillMixEnabled && model.IsRMS) || model.SelectedMoqTypes.length === 0)" data-ng-options="moqType.SelectedMOQTypeText for moqType in model.MOQTypes | moqTypesFilter:model.SelectedMoqTypes" class="moqTypes"></select>
+            <button data-ng-if="!ActualReadOnly() && ((!model.IsSkillMixEnabled && model.IsRMS) || model.SelectedMoqTypes.length === 0)" data-ng-click="AddMoqType()" data-ng-disabled="!model.selectedMOQType" class="moqTypesButton ies-action" type="button">Add MOQ Type</button>
+            <button data-ng-if="!ActualReadOnly() && ((!model.IsSkillMixEnabled && model.IsRMS) || model.SelectedMoqTypes.length > 1)" data-ng-disabled="model.SelectedMoqTypes.length <= 1" data-ng-click="displayReOrderMoqTypesDialog()" class="moqTypesButton ies-blue" type="button">Sort MOQ Types</button>
+            <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" ng-disabled="calculateAllDisabled" data-ng-click="model.IsSkillMixEnabled ? calculateAllMoqActualsWithSkillMix() : calculateAllMoqActuals()" class="moqTypesButton ies-action" type="button">Calculate All Actuals</button>
         </div>
     </div>
 

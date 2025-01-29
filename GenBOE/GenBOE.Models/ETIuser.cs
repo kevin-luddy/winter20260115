@@ -40,6 +40,7 @@ namespace GenBOE.Models
             this.Workspaces1 = new HashSet<Workspace>();
             this.RteTemplates = new HashSet<RteTemplate>();
             this.MessageConfirmations = new HashSet<MessageConfirmation>();
+            this.BOETaskElements = new HashSet<BOETaskElement>();
         }
     
         public int ETIUserID { get; set; }
@@ -99,5 +100,7 @@ namespace GenBOE.Models
         public virtual ICollection<RteTemplate> RteTemplates { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MessageConfirmation> MessageConfirmations { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<BOETaskElement> BOETaskElements { get; set; }
     }
 }

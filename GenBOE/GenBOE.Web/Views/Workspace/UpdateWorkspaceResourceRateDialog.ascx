@@ -8,6 +8,7 @@
         a cookie ensures single prompt per session */
         var showDialogZone = "<%:Model.ShowZoneTravelRatesDialog %>";
         var showDialogOffload = "<%:Model.ShowOffloadRatesDialog%>";
+        var showDialogUCOTFactor = "<%:Model.ShowUCOTFactorDialog%>";
 
         if (showDialogZone == "True") {
             DisplayZoneTravelDialog(showDialogOffload);
@@ -17,6 +18,11 @@
         if (showDialogOffload == "True" && showDialogZone != "True") {
             DisplayOffloadRatesDialog();
         }
+
+		if (showDialogUCOTFactor == "True") {
+			DisplayUCOTFactorDialog();
+		}
+
     }, 300);
 
     function DisplayZoneTravelDialog(showDialogOffload) {
@@ -69,6 +75,27 @@
                 }
             });
         });
+    };
+
+    function DisplayUCOTFactorDialog() {
+		Session.confirmDialog('Update UCOT Factor', 'UCOT Factor has changed.  Would you like to update the Workspace UCOT Factor with the current System value?  If Yes, you will not be able to revert to the old UCOT Factor.  To update the UCOT Factor at a later time go to Workspace Administration > Update UCOT Factor.', function () {
+			$.ajax({
+				type: 'POST',
+				url: CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
+             '<%: WebConstants.CONTROLLER_WORKSPACE %>',
+			 '<%: WebConstants.ACTION_UPDATE_UCOT_FACTOR %>', ''),
+		 contentType: 'application/json; charset=utf-8',
+		 dataType: 'json',
+		 data: null,
+		 success: function (response) {
+			 RaiseNotification('The UCOT Factor was successfully updated');
+			 $('a[name=UpdateUCOTFactorLink]').parent().addClass('display-none');
+		 },
+		 error: function (response) {
+			 RaiseNotification('The update to the UCOT Factor failed');
+		 }
+	 });
+		 });
     };
 
     //Get the string to append to the date string for either eastern
