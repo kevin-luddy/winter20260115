@@ -167,6 +167,6 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// <summary>
 		/// Get or set the Assign Authors at Task level property
 		/// </summary>
-		bool AuthorsAssignableAtTaskLevel { get; set; }
+		bool EnableAssignTaskAuthor { get; set; }
 	}
 }
