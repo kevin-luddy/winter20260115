@@ -43,7 +43,8 @@
             IsAdmin: <%= Model.IsAdmin.ToString().ToLower()%>,
             PtmTrackingNumberNotRequired: <%= Model.PtmTrackingNumberNotRequired.ToString().ToLower() %>,
             GetNextTrackingNumberRevisionAction: '<%= WebConstants.ACTION_GET_NEXT_TRACKING_NUMBER_REVISION%>',
-			IsSAPConnectionEnabled: <%: Model.IsSAPConnectionEnabled.ToString().ToLower() %>
+            IsSAPConnectionEnabled: <%: Model.IsSAPConnectionEnabled.ToString().ToLower() %>,
+            EnableAssignTaskAuthor: <%: Model.IsAuthorAssignableAtTaskLevelEnabled.ToString().ToLower() %>
         });
 
         var CreateWorkspace = new Widget("CreateWorkspaceForm");
@@ -67,7 +68,7 @@
 
             
         });
-	</script>
+    </script>
 
     <div data-ng-app="genboe" data-ng-controller="createWorkspaceController" id="CreateWorkspaceContent">
         <div class="module create-workspace-form">

@@ -155,6 +155,11 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		bool EnableSAPConnection { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether or not authors are assignable at task level
+		/// </summary>
+		bool EnableAssignTaskAuthor { get; set; }
+
+		/// <summary>
 		/// Was WS created prior to Boe Templates being enabled
 		/// </summary>
 		bool CreatedPriorToBoeTemplates { get; set; }

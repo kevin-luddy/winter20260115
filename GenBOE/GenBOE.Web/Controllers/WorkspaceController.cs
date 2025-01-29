@@ -2994,6 +2994,7 @@ namespace GenBOE.Web.Controllers
 				ws.UsingTemplateBOE = workspaceDetails.UsingTemplateBoe;
 				ws.EnableSAPConnection = workspaceDetails.EnableSAPConnection;
 				ws.CurrentPTMWorkspace = workspaceDetails.CurrentPTMWorkspace;
+				ws.EnableAssignTaskAuthor = workspaceDetails.EnableAssignTaskAuthor;
 
 				// Populate the company specific properties
 				_ControllerLogic.PopulateCompanySpecificWorkspaceProperties(workspaceDetails, ws);
@@ -5053,6 +5054,7 @@ namespace GenBOE.Web.Controllers
 					newWorkspaceDTO.UsingTemplateBOE = newWorkspace.UsingTemplateBoe;
 					newWorkspaceDTO.EnableSAPConnection = newWorkspace.EnableSAPConnection;
 					newWorkspaceDTO.CurrentPTMWorkspace = newWorkspace.CurrentPTMWorkspace;
+					newWorkspaceDTO.EnableAssignTaskAuthor = newWorkspace.EnableAssignTaskAuthor;
 
 					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 					{
@@ -5530,7 +5532,8 @@ namespace GenBOE.Web.Controllers
 					RteSizeLimit = workspace.RteSizeLimit,
 					UsingTemplateBoe = workspace.UsingTemplateBOE,
 					EnableSAPConnection = workspace.EnableSAPConnection,
-					CurrentPTMWorkspace = workspace.CurrentPTMWorkspace
+					CurrentPTMWorkspace = workspace.CurrentPTMWorkspace,
+					EnableAssignTaskAuthor = workspace.EnableAssignTaskAuthor,
 				};
 
 				toReturn = Json(modelView);

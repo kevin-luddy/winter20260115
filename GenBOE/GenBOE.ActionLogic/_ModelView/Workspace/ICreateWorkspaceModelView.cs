@@ -198,5 +198,10 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// Get/set whether the new workspace is Current for PTM
 		/// </summary>
 		bool CurrentPTMWorkspace { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether or not authors are assignable at task level
+		/// </summary>
+		bool EnableAssignTaskAuthor { get; set; }
 	}
 }

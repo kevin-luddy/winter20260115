@@ -39,6 +39,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 			this.CostPrecisionSelect.Add(new SelectListItem { Text = "2", Value = "2", Selected = true });
 			this.CustomFieldSortingSelect = ExtensionMethods.GetSelectItems<CustomFieldSorting>();
 			this.CurrentPTMWorkspace = false;
+			this.EnableAssignTaskAuthor = false;
 		}
 
 		/// <summary>
@@ -78,6 +79,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 				this.UsingTemplateBoe = workspaceDTO.UsingTemplateBOE;
 				this.CreatedPriorToBoeTemplates = !workspaceDTO.CreationDate.HasValue || workspaceDTO.CreationDate < DateTime.Parse(ConfigurationUtilities.GetAppSetting("MoqTemplateStartDate"));
 				this.EnableSAPConnection = workspaceDTO.EnableSAPConnection;
+				this.EnableAssignTaskAuthor = workspaceDTO.EnableAssignTaskAuthor;
 				this.CurrentPTMWorkspace = workspaceDTO.CurrentPTMWorkspace;
 			}
 			if (costVolumeLeadDTO != null)
@@ -232,6 +234,12 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// </summary>
 		[Required(ErrorMessage = "Enable SAP connection selection is required.")]
 		public bool EnableSAPConnection { get; set; }
+
+		/// <summary>
+		/// Get/set 
+		/// </summary>
+		[Required(ErrorMessage = "Enable SAP connection selection is required.")]
+		public bool EnableAssignTaskAuthor { get; set; }
 
 		/// <summary>
 		/// Was WS created prior to Boe Templates being enabled
