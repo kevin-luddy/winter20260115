@@ -20,8 +20,10 @@ namespace IES.DataBridge.ModelViews
 		{
 			this.IsRdsbRequired = false;
 			this.ChildNodes = new List<SectionDetailModelView>();
-			this.SectionContainsCasbDisclosure = false;
-			this.SectionContainsNonCompliance = false;
+			this.SectionContainsCasbDisclosureCore = false;
+			this.SectionContainsCasbDisclosureService = false;
+			this.SectionContainsNonComplianceCore = false;
+			this.SectionContainsNonComplianceService = false;
 		}
 
 		/// <summary>
@@ -50,24 +52,44 @@ namespace IES.DataBridge.ModelViews
 		public bool IsRdsbRequired { get; set; }
 
 		/// <summary>
-		/// Does section contain CASB Disclosure Statements
+		/// Does section contain CASB Disclosure Statements Core
 		/// </summary>
-		public bool SectionContainsCasbDisclosure { get; set; }
+		public bool SectionContainsCasbDisclosureCore { get; set; }
 
 		/// <summary>
-		/// Is Disclosure Statement determined to be adequate
+		/// Does section contain CASB Disclosure Statements Service
 		/// </summary>
-		public bool IsDisclosureStatementAdequate { get; set; }
+		public bool SectionContainsCasbDisclosureService { get; set; }
 
 		/// <summary>
-		/// Does Section contain Non Compliance Issues?
+		/// Is Disclosure Statement determined to be adequate Core
 		/// </summary>
-		public bool SectionContainsNonCompliance { get; set; }
+		public bool IsDisclosureStatementAdequateCore { get; set; }
 
 		/// <summary>
-		/// Asks if the user was notified of possible non-compliance with the Disclosure Statement or Cost Account Standards 
+		/// Is Disclosure Statement determined to be adequate Service
 		/// </summary>
-		public bool NonComplianceNotification { get; set; }
+		public bool IsDisclosureStatementAdequateService { get; set; }
+
+		/// <summary>
+		/// Does Section contain Non Compliance Issues? Core
+		/// </summary>
+		public bool SectionContainsNonComplianceCore { get; set; }
+
+		/// <summary>
+		/// Does Section contain Non Compliance Issues? Service
+		/// </summary>
+		public bool SectionContainsNonComplianceService { get; set; }
+
+		/// <summary>
+		/// Asks if the user was notified of possible non-compliance with the Disclosure Statement or Cost Account Standards Core
+		/// </summary>
+		public bool NonComplianceNotificationCore { get; set; }
+
+		/// <summary>
+		/// Asks if the user was notified of possible non-compliance with the Disclosure Statement or Cost Account Standards Service
+		/// </summary>
+		public bool NonComplianceNotificationService { get; set; }
 
 		/// <summary>
 		/// Gets or sets the Address Office
