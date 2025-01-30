@@ -13,7 +13,8 @@
 
 <script type="text/javascript">
 	var formConfigs = [];
-	var originalSapConnectionEnabled = false;
+    var originalSapConnectionEnabled = false;
+    var onLoadAssignAuthorsValue = '<%:Model.EnableAssignTaskAuthor%>';
      
     formConfigs.push({
         ElementID: 'WorkspaceIdentificationForm',
@@ -226,7 +227,27 @@
             enableSAPDropdown.val('True');
 			disabledEnableSAPConnectionDropdown = false;
 		}
-	});
+    });
+
+    // Show the popup if the load value is set to true, but user changes it to false
+    $('#EnableAssignTaskAuthor').change(function () {
+		var isAuthorsAssignedSetToTrue = $('#EnableAssignTaskAuthor').val() === 'True';
+		if (onLoadAssignAuthorsValue && !isAuthorsAssignedSetToTrue) {
+            Session.confirmDialog(
+                'Delete Assigned Task Authors',
+                'At least one task Author has supplied a value for this field. All values supplied by Authors for the field will be deleted. <br/><br/>Are you sure you want to delete the Assigned Task Authors?',
+                function () {
+                    // This is a confirmation, do nothing
+                    null
+                },
+                // Revert back to Yes if canceled
+                function () {
+					$('#EnableAssignTaskAuthor').val('True')
+                }
+            );
+		}
+    })
+
 </script>
 
 <div id="WorkspaceIdentification" class="workspace-identification module ">
@@ -462,16 +483,17 @@
             </div>
         <% } %>
         <div class="form-row">
-	        <div class="form-label">
-		        <span helptext="Should Authors be required to Assign themselves to a Task?">Authors Assignable at Task Level</span>
-	        </div>
-	        <div class="form-element">
-		        <%: Html.DropDownListFor(c => c.EnableAssignTaskAuthor, new List<SelectListItem>()
-		        {
-			        new SelectListItem() { Text = "Yes", Value = "True" },
-			        new SelectListItem() { Text = "No", Value = "False" }
-		        }) %>
-	        </div>
+            <div class="form-label">
+                <span helptext="When &quot;Yes&quot; is selected, Authors are prompted to choose their name from the BOE Author list and assign themselves to the task as the Task Author. 
+                    When &quot;No&quot; is selected, Author Assignment is BOE Level only. No additional Author steps.">Authors Assignable at Task <br />Level *</span>
+            </div>
+            <div class="form-element">
+                <%: Html.DropDownListFor(c => c.EnableAssignTaskAuthor, new List<SelectListItem>()
+                {
+                    new SelectListItem() { Text = "Yes", Value = "True" },
+                    new SelectListItem() { Text = "No", Value = "False" }
+                }) %>
+            </div>
         </div>
         <button id="Back-WorkspaceIdentification" class="ies back-to-workspace-settings-button display-none" type="button">Back to Workspace Settings</button>
         <% } %>

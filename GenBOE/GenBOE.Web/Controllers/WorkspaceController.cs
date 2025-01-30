@@ -2994,8 +2994,11 @@ namespace GenBOE.Web.Controllers
 				ws.UsingTemplateBOE = workspaceDetails.UsingTemplateBoe;
 				ws.EnableSAPConnection = workspaceDetails.EnableSAPConnection;
 				ws.CurrentPTMWorkspace = workspaceDetails.CurrentPTMWorkspace;
-				ws.EnableAssignTaskAuthor = workspaceDetails.EnableAssignTaskAuthor;
 
+				// Keep track of the previous value of Enable Assign Task Author
+				bool previousValueEnableAssignTaskAuthor = ws.EnableAssignTaskAuthor;
+				ws.EnableAssignTaskAuthor = workspaceDetails.EnableAssignTaskAuthor;
+			
 				// Populate the company specific properties
 				_ControllerLogic.PopulateCompanySpecificWorkspaceProperties(workspaceDetails, ws);
 
@@ -3097,6 +3100,31 @@ namespace GenBOE.Web.Controllers
 									_BoeMediator.MediatedSave(ws, boe);
 									_BOEStateMachine.PerformStateTransitionAction(boe, ws, boe.State, BOEState.Draft);
 								}
+							}
+						}
+
+						// If Authors Assignable at Task Level is set to false and it was previously set to true,
+						// change all of the BOEs to Draft and clear all authors from tasks
+						if (!ws.EnableAssignTaskAuthor && previousValueEnableAssignTaskAuthor)
+						{
+							ws.RefreshBoes();
+
+							foreach (FullBoe boe in ws.Boes)
+							{
+								boe.State = BOEState.Draft;
+								boe.Updateable = UpdateType.Upsert;
+
+								// Get the task and remove the author
+								ICollection<BoeTaskElementDTO> editableTasks = (ICollection<BoeTaskElementDTO>)boe.TaskElements;
+								foreach (BoeTaskElementDTO task in editableTasks)
+								{
+									task.AuthorUserId = null;
+									task.Updateable = UpdateType.Upsert;
+								}
+
+								_BoeTaskElementMediator.MediatedBulkSaveTaskElements(editableTasks, ws);
+								_BoeMediator.MediatedSave(ws, boe);
+								_BOEStateMachine.PerformStateTransitionAction(boe, ws, boe.State, BOEState.Draft);
 							}
 						}
 
