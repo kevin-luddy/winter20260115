@@ -89,7 +89,8 @@
 			SelectedContractTypes: [],              // SSC only, array of strings
 			UsingTemplateBoe: '',
 			EnableSAPConnection: false,
-			CurrentPTMWorkspace : false
+			CurrentPTMWorkspace: false,
+			EnableAssignTaskAuthor: false
 		};
 	};
 
@@ -938,6 +939,7 @@
 			$scope.data.UsingTemplateBoe = result.UsingTemplateBoe;
 			$scope.data.InitialUsingTemplateBoe = result.UsingTemplateBoe;
 			$scope.data.EnableSAPConnection = result.EnableSAPConnection;
+			$scope.data.EnableAssignTaskAuthor = result.EnableAssignTaskAuthor;
 			$scope.data.CurrentPTMWorkspace = result.CurrentPTMWorkspace;
 			$scope.model.openCurrentDialog = result.CurrentPTMWorkspace;
 				
