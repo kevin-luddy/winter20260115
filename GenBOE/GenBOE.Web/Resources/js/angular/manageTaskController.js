@@ -12,8 +12,11 @@
     $scope.deltaHours = '0';
     $scope.totalHours = '0';
     $scope.totalCost = '0';
+    $scope.totalUcotHours = '0';
+    $scope.grandTotalHours = '0';
     $scope.totalSpreadCost = '0';
     $scope.totalSpreadHours = '0';
+    $scope.totalUcotSpreadHours = '0';
     $scope.isSaving = false;
     $scope.invalidSpreads = false;
     $scope.showDropdowns = false;
@@ -35,19 +38,28 @@
     $scope.IsUsingTMRatesInTask = false;
     $scope.loadedMoqData = false;
     $scope.dataLoaded = false;
+    $scope.showUCOT = false;
 
     // Sets the Selected MOQ Types from the Selected MOQ Types from MoqEuationController.js.
     $scope.$on('MOQ_TYPE_SELECTION_CHANGED', function (event, selectedMoqTypes) {
         $scope.SelectedMoqTypes = selectedMoqTypes;
         $scope.loadedMoqData = true;
+        $scope.updateShowUcot();
 
         $scope.refreshSkillMixTables();
-
     });
 
     $scope.$on('SAP_HOURS_CHANGED', function (e) {
         $scope.refreshSkillMixTables();
     });
+
+    $scope.updateShowUcot = function () {
+        $scope.showUCOT = $scope.ManageTaskModel.IsUcotEnabled &&
+            $scope.IsBRCEnabled && 
+            $scope.SelectedMoqTypes &&
+            $scope.SelectedMoqTypes.length === 1 && 
+            $scope.SelectedMoqTypes.every(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002' || x.SelectedMOQType == '5005')
+    };
 
     $scope.setSkillMixIsUserInput = function (index, value) {
         if (value === true) {
@@ -457,6 +469,26 @@
         return text;
     };
 
+    $scope.getUcotSpreadMonthText = function (item, month) {
+        var text = '';
+
+        if (item.UcotSpreads) {
+            var spread = item.UcotSpreads.find(function (spreadItem) {
+                return spreadItem.LaborSpreadDate === month;
+            });
+
+            var spreadValue = 0;
+
+            if (spread !== undefined && spread.LaborSpreadValue !== undefined) {
+                spreadValue = spread.LaborSpreadValue;
+            }
+
+            text = spreadValue.toString();
+        }
+
+        return text;
+    };
+
     $scope.getSpreadMonthText = function (item, month) {
         var text = '';
 
@@ -731,6 +763,8 @@
     $scope.recalculateTotals = function () {
         var cost = new BigNumber(0.0);
         var hours = new BigNumber(0.0);
+        var ucotHours = new BigNumber(0.0);
+        var grandTotalHours = new BigNumber(0.0);
 
         angular.forEach($scope.tableData, function (item, key) {
             if (!item.Deleted) {
@@ -738,15 +772,18 @@
                     cost = cost.plus(item.CostSpread);
                 } else {
                     hours = hours.plus(item.HourSpread);
+                    ucotHours = ucotHours.plus(item.UcotHours);
                 }
             }
         });
 
         $scope.totalCost = cost.toString();
         $scope.totalHours = hours.toString();
-
+        $scope.totalUcotHours = ucotHours.toString();
+        
         cost = new BigNumber(0.0);
         hours = new BigNumber(0.0);
+        ucotHours = new BigNumber(0.0);
 
         angular.forEach($scope.tableData, function (item, key) {
             if (!item.Deleted) {
@@ -759,11 +796,21 @@
                         }
                     });
                 }
+                if (item.UcotSpreads) {
+                    angular.forEach(item.UcotSpreads, function (spread, spreadKey) {
+                        if (item.RateType !== ManageTaskModel.RateTypeCost) {
+                            ucotHours = ucotHours.plus(spread.LaborSpreadValue);
+                        }
+                    });
+                }
             }
         });
 
         $scope.totalSpreadCost = cost.toString();
         $scope.totalSpreadHours = hours.toString();
+        $scope.totalUcotSpreadHours = ucotHours.toString();
+        grandTotalHours = ucotHours.plus(hours);
+        $scope.grandTotalHours = grandTotalHours.toString();
 
         $scope.deltaHours = $scope.getMOQTotal().minus($scope.totalSpreadHours).toString();
         $scope.validateTotals();
@@ -835,6 +882,31 @@
             var hrError = "Resource Types hours total does not equal the Resource Spreads hours total.";
             $scope.laborTypeErrors.push({ ValidationIssue: hrError });
         }
+
+        if ($scope.showUCOT && $scope.totalUcotHours !== $scope.totalUcotSpreadHours) {
+            var hrError = "Resource Types UCOT hours total does not equal the Resource Spreads UCOT hours total.";
+            $scope.laborTypeErrors.push({ ValidationIssue: hrError });
+        }
+    };    
+
+    $scope.getUcotHoursTotals = function (month) {
+        var hours = new BigNumber(0.0);
+
+        angular.forEach($scope.tableData, function (item) {
+            if (!item.Deleted && item.UcotSpreads) {
+                if (item.RateType !== ManageTaskModel.RateTypeCost) {
+                    var spread = item.UcotSpreads.find(function (spreadItem) {
+                        return spreadItem.LaborSpreadDate === month;
+                    });
+
+                    if (spread) {
+                        hours = hours.plus(spread.LaborSpreadValue);
+                    }
+                }
+            }
+        });
+
+        return hours.toString();
     };
 
     $scope.getHoursTotals = function (month) {
@@ -952,6 +1024,31 @@
                 $scope.calculatePercentSpread(item, $scope.getMOQTotal());
             }
 
+            if ($scope.IsUcot(item)) {
+                var ucotSpread = item.UcotSpreads.find(function (spreadItem) {
+                    return spreadItem.LaborSpreadDate === dt;
+                });
+
+                var ucotSpreadValue = spreadValue.multipliedBy($scope.ManageTaskModel.UcotFactor);
+
+                // set the Ucot spread value in original array from the copy array
+                if (ucotSpread !== undefined && ucotSpread.LaborSpreadValue !== undefined) {
+                    delta = ucotSpreadValue.minus(ucotSpread.LaborSpreadValue);
+                    ucotSpread.LaborSpreadValue = ucotSpreadValue;
+                } else {
+                    // this is a new value for the Ucot Spreads table
+                    // Assuming that we do not need these in order
+                    ucotSpread = { LaborSpreadDate: dt, LaborSpreadValue: ucotSpreadValue };
+                    item.UcotSpreads.push(ucotSpread);
+                    delta = ucotSpreadValue;
+                }
+
+                // add delta to labor type object Ucot Hours
+                var ucotHourSpread = delta.plus(item.UcotHours);
+                item.UcotHours = ucotHourSpread.toString();
+            }
+
+
             // re-calculate totals
             $scope.recalculateTotals();
         }
@@ -1001,6 +1098,7 @@
             if (!item.Deleted) {
                 item.SpreadData = [];
                 item.SpreadDataInvalid = [];
+                item.UcotSpreadData = [];
             }
         });
 
@@ -1013,14 +1111,22 @@
                     if (!item.Deleted) {
                         // find the value (if any) for this and push it into the table for the item
                         var spreadValue;
+                        var ucotSpreadValue;
                         var spreadText = $scope.getSpreadMonthText(item, dt);
+                        var ucotSpreadText = $scope.getUcotSpreadMonthText(item, dt);
                         if (spreadText !== '') {
                             spreadValue = spreadText;
                         }
+                        if (ucotSpreadText !== '') {
+                            ucotSpreadValue = ucotSpreadText;
+                        }
 
                         item.SpreadData.push(spreadValue);
-                        var invalid = false;
+                        item.UcotSpreadData.push(ucotSpreadValue);
 
+                            
+
+                        var invalid = false;
 
                         // check precision
                         var precision = $scope.getPrecision(item);
@@ -1063,7 +1169,7 @@
                     if ($scope.getSpreadDisabled(item)) {
                         // non-discrete, hours only
                         if (item.RateType === ManageTaskModel.RateTypeHours) {
-                            var data = { value: spreadValue, rateType: item.RateType, percentSpread: item.PercentSpread, percentLocked: item.PercentSpreadLocked, start: item.StartDate, end: item.EndDate, curve: item.SpreadCurveID };
+                            var data = { value: spreadValue, rateType: item.RateType, elementOfCost: item.ElementOfCost, percentSpread: item.PercentSpread, percentLocked: item.PercentSpreadLocked, start: item.StartDate, end: item.EndDate, curve: item.SpreadCurveID };
                             items.push(item);
                             dataArray.push(data);
                         }
@@ -1086,6 +1192,7 @@
             var postedData = {
                 items: dataArray,
                 moqTotalHours: $scope.getMOQTotal().toString(),
+                calculateUCOT: $scope.showUCOT.toString()
             };
 
             $http({
@@ -1097,6 +1204,8 @@
                 angular.forEach(items, function (item, key) {
                     var output = response.data[key];
                     item.Spreads = output.spreads;
+                    item.UcotSpreads = output.ucotSpreads;
+                    item.UcotHours = output.ucotHours;
                     if (item.RateType !== ManageTaskModel.RateTypeCost) {
                         // reset hours at top level in case delta smoothing occurred
                         item.HourSpread = output.value;
@@ -1129,12 +1238,13 @@
         if (item.RateType === ManageTaskModel.RateTypeCost) {
             precision = ManageTaskModel.CostDecimalPrecision;
         }
-        var data = { value: value, start: item.StartDate, end: item.EndDate, curve: item.SpreadCurveID, rateType: item.RateType, percentLocked: item.PercentSpreadLocked, percentSpread: item.PercentSpread };
+        var data = { value: value, start: item.StartDate, end: item.EndDate, curve: item.SpreadCurveID, rateType: item.RateType, elementOfCost: item.ElementOfCost, percentLocked: item.PercentSpreadLocked, percentSpread: item.PercentSpread };
         var dataArray = [];
         dataArray.push(data);
         var postedData = {
             items: dataArray,
             moqTotalHours: $scope.getMOQTotal().toString(),
+            calculateUCOT: $scope.showUCOT.toString()
         };
 
         $http({
@@ -1144,6 +1254,8 @@
         }).then(function (response) {
             var output = response.data[0];
             item.Spreads = output.spreads;
+            item.UcotSpreads = output.ucotSpreads;
+            item.UcotHours = output.ucotHours;
             if (item.RateType !== ManageTaskModel.RateTypeCost) {
                 // reset hours at top level in case delta smoothing occurred
                 item.HourSpread = output.value;
@@ -1192,6 +1304,7 @@
                 $scope.model.LaborTypesData = [];
             }
 
+            $scope.updateShowUcot();
             $scope.TaskCustomFields = $scope.model.TaskCustomFields;
             $scope.MoqTableCustomFields = $scope.model.MOQTypeTableCustomFields;
             $scope.LaborCustomFields = $scope.model.LaborCustomFields;
@@ -1556,6 +1669,9 @@
                     // remove the UpdateDate 
                     delete resourceTypeEntry.UpdateDate;
 
+                    // remove the UCOT Spreads
+                    delete resourceTypeEntry.UcotSpreads;
+
                     if (customFieldDictionary[resourceTypeEntry.BOELaborTypeID] !== undefined) {
                         resourceTypeEntry.CustomFieldValues = customFieldDictionary[resourceTypeEntry.BOELaborTypeID].CustomFieldValues;
                     } else {
@@ -1849,6 +1965,7 @@
                 model.HourSpread = '0';
                 model.CostSpread = '0';
                 model.PercentSpread = '0';
+                model.UcotHours = '0';
 
                 // If the spread curve was discrete, the ID needs to be fixed
                 if (item.SpreadCurveID === undefined && model.SpreadCurveID < 2) {
@@ -1882,6 +1999,7 @@
                 model.HourSpread = '0';
                 model.CostSpread = '0';
                 model.PercentSpread = '0';
+                model.UcotHours = '0';
 
                 // If the spread curve was discrete, the ID needs to be fixed
                 if (item.SpreadCurveID === undefined && model.SpreadCurveID < 2) {
@@ -2084,7 +2202,9 @@
         } else if (item.SpreadCurveID === "-1") {
             // clear spreads
             item.Spreads = [];
+            item.UcotSpreads = [];
             item.SpreadData = [];
+            item.UcotSpreadData = [];
             item.SpreadDataInvalid = [];
 
             // loop through all of the spread dates and set spreads to 0
@@ -2122,10 +2242,30 @@
 
         item.Spreads = newSpreads;
 
+        if ($scope.IsUcot(item)) {
+            var newUcotSpreads = [];
+            var ucotTotal = new BigNumber(0);
+            angular.forEach(item.UcotSpreads, function (spread) {
+                var month = spread.LaborSpreadDate.toDate();
+                if (month >= start && month <= end) {
+                    newUcotSpreads.push(spread);
+                    ucotTotal = ucotTotal.plus(spread.LaborSpreadValue);
+                }
+            });
+
+            item.UcotHours = ucotTotal;
+            item.UcotSpreads = newUcotSpreads;
+        }
+
         if (!skipRecalc) {
             $scope.generateSpreadTable();
             $scope.recalculateTotals();
         }
+    };
+
+    $scope.IsUcot = function (item) {
+        // ElementOfCost Enum value 1 is LM Labor
+        return $scope.showUCOT && item.ElementOfCost === 1 && item.BusinessResourceCodeName && item.RateType === ManageTaskModel.RateTypeHours;
     };
 
     $scope.startDateUpdated = function (item) {
@@ -2228,6 +2368,7 @@
             ElementOfCost: 1, // default is LM Labor
             EndDate: $scope.model.TaskElementData.EndDate,
             HourSpread: '0',
+            UcotHours: '0',
             HourSpreadLocked: false,
             IsCostDisabled: true,
             IsHoursDisabled: false,
@@ -2250,8 +2391,10 @@
             SelectedMOQType: undefined,
             SpreadCurveID: '-1',
             SpreadData: [],
+            UcotSpreadData: [],
             SpreadDataInvalid: [],
             Spreads: [],
+            UcotSpreads: [],
             StartDate: $scope.model.TaskElementData.StartDate,
             TieredPercentage: undefined,
             UpdateDateLong: '0',
@@ -2265,6 +2408,8 @@
             angular.forEach($scope.model.SpreadDatesFull, function (dt) {
                 row.Spreads.push({ LaborSpreadDate: dt, LaborSpreadValue: 0 });
                 row.SpreadData.push('');
+                row.UcotSpreads.push({ LaborSpreadDate: dt, LaborSpreadValue: 0 });
+                row.UcotSpreadData.push('');
                 row.SpreadDataInvalid.push(false);
             });
         }
@@ -2288,6 +2433,7 @@
             ElementOfCost: laborType.ElementOfCost,
             EndDate: laborType.EndDate,
             HourSpread: laborType.HourSpread,
+            UcotHours: laborType.UcotHours,
             HourSpreadLocked: laborType.HoursSpreadLocked,
             IsCostDisabled: laborType.IsCostDisabled,
             IsHoursDisabled: laborType.IsHoursDisabled,
@@ -2309,8 +2455,10 @@
             BusinessResourceCodeType: laborType.BusinessResourceCodeType,
             SpreadCurveID: laborType.SpreadCurveID,
             SpreadData: angular.copy(laborType.SpreadData),
+            UcotSpreadData: angular.copy(laborType.UcotSpreadData),
             SpreadDataInvalid: angular.copy(laborType.SpreadDataInvalid),
             Spreads: angular.copy(laborType.Spreads),
+            UcotSpreads: angular.copy(laborType.UcotSpreads),
             StartDate: laborType.StartDate,
             TieredPercentage: laborType.TieredPercentage,
             UpdateDateLong: '0',

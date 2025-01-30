@@ -154,6 +154,7 @@ namespace GenBOE.Web.Controllers
 			// Perform Action
 			this.ViewBag.RteFieldSize = ws.RteSizeLimit ?? Constants.MAX_RTE_LENGTH;
 			this.ViewData["BOEID"] = boeID;
+			ViewData["UcotFactor"] = ws.UCOTFactor / 100.0m;
 			this.ViewData["ElementsOfCost"] = this._CommonDataMapper.GetElementOfCostTypes().Where(
 				x => x.ElementOfCostId == (int)ElementOfCostType.LMLabor ||
 					x.ElementOfCostId == (int)ElementOfCostType.IWTA ||

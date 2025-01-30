@@ -175,7 +175,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="workspaceData">The workspace data.</param>
 		/// <param name="laborTabData">The labor tab data.</param>
 		/// <param name="moqTotalHours">The moq total hours.</param>
-		public void RecalculateLaborSpreads(FullWorkspace workspaceData, RecalcSpreadModelView[] laborTabData, decimal moqTotalHours)
+		/// <param name="calculateUCOT">Whether to calculate UCOT</param>
+		public void RecalculateLaborSpreads(FullWorkspace workspaceData, RecalcSpreadModelView[] laborTabData, decimal moqTotalHours, bool calculateUCOT)
 		{
 			if (workspaceData == null)
 			{
@@ -249,11 +250,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					int precision = (resourceTypeData.rateType == RateType.Cost) ? workspaceData.CostDecimalPrecision : workspaceData.DecimalPrecision;
 
 					decimal hourSpreadValue = resourceTypeData.value.HasValue ? Utilities.AdjustPrecision(resourceTypeData.value.Value, precision) : 0;
-					resourceTypeData.spreads = this.CalculateLaborSpreads(hourSpreadValue, resourceTypeData.start.Value, resourceTypeData.end.Value, resourceTypeData.curve.Value, precision);
+					bool calculateUCOTForRow = calculateUCOT && resourceTypeData.ElementOfCost == ElementOfCostType.LMLabor && resourceTypeData.rateType == RateType.Hours;
+					resourceTypeData.spreads = this.CalculateLaborSpreads(hourSpreadValue, resourceTypeData.start.Value, resourceTypeData.end.Value, resourceTypeData.curve.Value, precision, calculateUCOTForRow, workspaceData.UCOTFactor, out ICollection<LaborSpreadDataModelView> ucotSpreads);
+					resourceTypeData.ucotSpreads = ucotSpreads;
+					resourceTypeData.ucotHours = resourceTypeData.ucotSpreads.Sum(x => x.LaborSpreadValue);
 				}
 				else
 				{
 					resourceTypeData.spreads = new List<LaborSpreadDataModelView>();
+					resourceTypeData.ucotSpreads = new List<LaborSpreadDataModelView>();
 				}
 			}
 
@@ -527,7 +532,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					foreach (ResourceTypeDto missing in missingLabors)
 					{
 						this.logger.Error("During Save of Task Element, there was a missing task element labor found in the DB that will be deleted with id " + missing.Id);
-						LaborTypeDataModelView toDelete = new LaborTypeDataModelView(missing, new ResourceDTO(), new ResourceDTO(), new PerformingOrgDTO());
+						LaborTypeDataModelView toDelete = new LaborTypeDataModelView(missing, new ResourceDTO(), new ResourceDTO(), new PerformingOrgDTO(), 0m, false);
 						toDelete.Deleted = true;
 						modelView.LaborTypesData.Add(toDelete);
 					}
@@ -1623,11 +1628,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="endDate">End Date</param>
 		/// <param name="curve">Spread curve ID</param>
 		/// <param name="precision">decimal precision</param>
+		/// <param name="calculateUCOT">whether to calculate UCOT</param>
+		/// <param name="ucotFactor">The UCOT factor</param>
+		/// <param name="ucotSpreads">The UCOT Spreads output</param>
 		/// <returns>Recalculated labor spreads</returns>
-		public ICollection<LaborSpreadDataModelView> CalculateLaborSpreads(decimal value, DateTime startDate, DateTime endDate, SpreadCurves curve, int precision)
+		public ICollection<LaborSpreadDataModelView> CalculateLaborSpreads(decimal value, DateTime startDate, DateTime endDate, SpreadCurves curve, int precision, bool calculateUCOT, decimal ucotFactor, out ICollection<LaborSpreadDataModelView> ucotSpreads)
 		{
 			ICollection<LaborSpreadDataModelView> toReturn = new Collection<LaborSpreadDataModelView>();
-
+			List<LaborSpreadDataModelView> ucotSpreadsToReturn = new List<LaborSpreadDataModelView>();
 			LaborSpreadRequest request = new LaborSpreadRequest()
 			{
 				CurveID = curve,
@@ -1646,7 +1654,18 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					LaborSpreadDate = dto.LaborSpreadDate.ToMonthString(),
 					LaborSpreadValue = dto.LaborSpreadValue
 				});
+
+				if (calculateUCOT && dto.LaborSpreadDate >= Utilities.OneLmxStartDate)
+				{
+					ucotSpreadsToReturn.Add(new LaborSpreadDataModelView()
+					{
+						LaborSpreadDate = dto.LaborSpreadDate.ToMonthString(),
+						LaborSpreadValue = dto.LaborSpreadValue * ucotFactor / 100.0m
+					});
+				}
 			}
+
+			ucotSpreads = ucotSpreadsToReturn;
 
 			return toReturn;
 		}
@@ -1852,7 +1871,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			HashSet<ResourceDTO> resourcesFromDb = new HashSet<ResourceDTO>(this._ResourceLoader.GetByIds(dto.taskElementLabors.Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value).Union(dto.taskElementLabors.Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value)).Distinct().ToList()));
 			HashSet<PerformingOrgDTO> performingOrgsFromDb = new HashSet<PerformingOrgDTO>(this.PerfOrgLoader.GetByIds(dto.taskElementLabors.Where(x => x.PerformingOrgID.HasValue).Select(x => x.PerformingOrgID.Value).Distinct().ToList()));
-
+			bool calculateUCOT = Utilities.IsUCOTEnabled && toReturn.MOQTypes != null && toReturn.MOQTypes.Count == 1 && toReturn.MOQTypes.All(m => m.SelectedMOQType == MOQType.Comparative || m.SelectedMOQType == MOQType.Historical || m.SelectedMOQType == MOQType.AnalogousRelationships);
 			foreach (ResourceTypeDto labor in dto.taskElementLabors)
 			{
 				ResourceDTO resource = new ResourceDTO();
@@ -1873,7 +1892,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					perfOrg = performingOrgsFromDb.First(x => x.Id == labor.PerformingOrgID.Value);
 				}
 
-				LaborTypeDataModelView laborToAdd = new LaborTypeDataModelView(labor, resource, businessResourceCode, perfOrg);
+				LaborTypeDataModelView laborToAdd = new LaborTypeDataModelView(labor, resource, businessResourceCode, perfOrg, ws.UCOTFactor, calculateUCOT && businessResourceCode.ElementOfCost == ElementOfCostType.LMLabor && businessResourceCode.RateType == RateType.Hours);
 
 				ICollection<CustomFieldSelectionModelView> laborCustomFieldSelection = new Collection<CustomFieldSelectionModelView>();
 				ICollection<CustomFieldValueContainer> laborCustomFieldValues = labor.CustomFieldValueContainers;

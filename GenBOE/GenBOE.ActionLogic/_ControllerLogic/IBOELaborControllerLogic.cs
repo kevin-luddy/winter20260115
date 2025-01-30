@@ -90,22 +90,25 @@ namespace GenBOE.ActionLogic
 		/// <param name="moqEquationTotal"> Moq equation total</param>
 		void ValidateTaskDetails(FullBoe boeDTO, LaborTaskDataModelView laborTaskData, ICollection<ValidationMessage> inValidationErrors, FullWorkspace ws, decimal? moqEquationTotal = null);
 
-        /// <summary>
-        /// Calculate Labor Spreads
-        /// </summary>
-        /// <param name="value">Spread Value</param>
-        /// <param name="start">Start Date</param>
-        /// <param name="end">End Date</param>
-        /// <param name="curve">Spread curve ID</param>
-        /// <param name="precision">decimal precision</param>
-        /// <returns>Recalculated labor spreads</returns>
-        ICollection<LaborSpreadDataModelView> CalculateLaborSpreads(decimal value, DateTime startDate, DateTime endDate, SpreadCurves curve, int precision);
+		/// <summary>
+		/// Calculate Labor Spreads
+		/// </summary>
+		/// <param name="value">Spread Value</param>
+		/// <param name="startDate">Start Date</param>
+		/// <param name="endDate">End Date</param>
+		/// <param name="curve">Spread curve ID</param>
+		/// <param name="precision">decimal precision</param>
+		/// <param name="ucotSpreads">The Ucot Spreads</param>
+		/// <param name="ucotFactor">UCOT factor</param>
+		/// <param name="calculateUCOT">Whether to calculate UCOT</param>
+		/// <returns>Recalculated labor spreads</returns>
+		ICollection<LaborSpreadDataModelView> CalculateLaborSpreads(decimal value, DateTime startDate, DateTime endDate, SpreadCurves curve, int precision, bool calculateUCOT, decimal ucotFactor, out ICollection<LaborSpreadDataModelView> ucotSpreads);
 
-        /// <summary>
-        /// Returns the correct MOQ help text per company configuration
-        /// </summary>
-        /// <returns>per company configuration MOQ help text</returns>
-        string GetMOQTypesHelpText();
+		/// <summary>
+		/// Returns the correct MOQ help text per company configuration
+		/// </summary>
+		/// <returns>per company configuration MOQ help text</returns>
+		string GetMOQTypesHelpText();
 
         /// <summary>
         /// Returns the correct MOQ Equation label text per company configuration
@@ -254,7 +257,8 @@ namespace GenBOE.ActionLogic
 		/// <param name="workspaceData">The workspace data.</param>
 		/// <param name="laborTabData">The labor tab data.</param>
 		/// <param name="moqTotalHours">The moq total hours.</param>
-		void RecalculateLaborSpreads(FullWorkspace workspaceData, RecalcSpreadModelView[] laborTabData, decimal moqTotalHours);
+		/// <param name="calculateUCOT">Whether to calculate UCOT</param>
+		void RecalculateLaborSpreads(FullWorkspace workspaceData, RecalcSpreadModelView[] laborTabData, decimal moqTotalHours, bool calculateUCOT);
 
         /// <summary>
         /// Updates the OrderList for the Labor Types in a Task Element
