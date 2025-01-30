@@ -69,57 +69,57 @@ namespace GenTRAC.LoadGeeps
         private static ICollection<DataMartEmployeeDTO> LoadEmployees()
         {
             List<DataMartEmployeeDTO> employees = new List<DataMartEmployeeDTO>();
-			using (OracleConnection conn = new OracleConnection("Data Source=ssedwdbprd.us.lmco.com:1536/PDEDW;User Id=HRIS_PTM;Password=wfL94_BhHxzzw;"))
+			using (OracleConnection conn = new OracleConnection(ConfigurationUtilities.GetConnectionString("OracleHRIS").ConnectionString))
 			{
-                conn.Open();
+				conn.Open();
 
-					OracleCommand cmd = new OracleCommand("SELECT EMPLID, FIRST_NAME, LAST_NAME, LOWER(ROLEUSER), MGR_SUPV_ID_LM FROM HRIS_DM.VW_GEEPS_NONSENSITIVE WHERE EMPL_STATUS='A'", conn); 
-                
-                using(OracleDataReader reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        if (reader.IsDBNull(0) || reader.IsDBNull(1) || reader.IsDBNull(2) || reader.IsDBNull(3) || reader.IsDBNull(4))
-                        {
-                            // somehow the row is null, kick it out
-                            Logger.Error("Geeps: Return value is null from geeps.");
-                        }
-                        else
-                        {
-                            string serNo = reader.GetString(0);
-                            string first_nm = reader.GetString(1);
-                            string last_nm = reader.GetString(2);
-                            string domainNtId = reader.IsDBNull(3) ? string.Empty : reader.GetString(3);
-                            string reportSerNo = reader.GetString(4);
-                            string[] creds = domainNtId.Split('\\');
-                            if (string.IsNullOrWhiteSpace(domainNtId))
-                            {
-                                // recreate ntid from employee id, this works for 17/18 people that are missing roleuser in geeps
-                                creds = new string[] { string.Empty, "e" + serNo };
-                            }
+				OracleCommand cmd = new OracleCommand("SELECT EMPLID, FIRST_NAME, LAST_NAME, LOWER(ROLEUSER), MGR_SUPV_ID_LM FROM HRIS_DM.VW_GEEPS_NONSENSITIVE WHERE EMPL_STATUS='A'", conn);
+
+				using (OracleDataReader reader = cmd.ExecuteReader())
+				{
+					while (reader.Read())
+					{
+						if (reader.IsDBNull(0) || reader.IsDBNull(1) || reader.IsDBNull(2) || reader.IsDBNull(3) || reader.IsDBNull(4))
+						{
+							// somehow the row is null, kick it out
+							Logger.Error("Geeps: Return value is null from geeps.");
+						}
+						else
+						{
+							string serNo = reader.GetString(0);
+							string first_nm = reader.GetString(1);
+							string last_nm = reader.GetString(2);
+							string domainNtId = reader.IsDBNull(3) ? string.Empty : reader.GetString(3);
+							string reportSerNo = reader.GetString(4);
+							string[] creds = domainNtId.Split('\\');
+							if (string.IsNullOrWhiteSpace(domainNtId))
+							{
+								// recreate ntid from employee id, this works for 17/18 people that are missing roleuser in geeps
+								creds = new string[] { string.Empty, "e" + serNo };
+							}
 
 
-                            if (creds.Length != 2)
-                            {
-                                // bad nt id credentials
-                                Logger.Error("Geeps: Bad user Role credentials in Oracle.");
-                            }
-                            else
-                            {
-                                employees.Add(new DataMartEmployeeDTO
-                                {
-                                    empl_ser_no = serNo,
-                                    empl_first_nm = first_nm,
-                                    empl_last_nm = last_nm,
-                                    nt_domain_nm = creds[0],
-                                    nt_account_nm = creds[1],
-                                    rpt_to_ser_no = reportSerNo
-                                });
-                            }
-                        }
-                    }
-                }
-            }
+							if (creds.Length != 2)
+							{
+								// bad nt id credentials
+								Logger.Error("Geeps: Bad user Role credentials in Oracle.");
+							}
+							else
+							{
+								employees.Add(new DataMartEmployeeDTO
+								{
+									empl_ser_no = serNo,
+									empl_first_nm = first_nm,
+									empl_last_nm = last_nm,
+									nt_domain_nm = creds[0],
+									nt_account_nm = creds[1],
+									rpt_to_ser_no = reportSerNo
+								});
+							}
+						}
+					}
+				}
+			}
 
             Logger.Info("Geeps: Loaded " + employees.Count.ToString() + " employees from Geeps.");
             return employees;
