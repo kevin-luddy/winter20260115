@@ -5,7 +5,6 @@
 <%
     bool disabledBoeTemplateDropdown = Model.UsingTemplateBoe || Model.CreatedPriorToBoeTemplates;
     bool disabledEnableSAPConnectionDropdown = false;
-    //bool onLoadAssignAuthorsValue = Model.AuthorsAssignableAtTaskLevel;  // The on-load value for the Assign Authors dropdown
     object dropdownParamsForBoeTemplates = new { onchange = @"WorkspaceIdentificationWidget.BoeTemplateChange()" };
     if (disabledBoeTemplateDropdown) {
         dropdownParamsForBoeTemplates = new { onchange = @"WorkspaceIdentificationWidget.BoeTemplateChange()", @class = "disabled", @disabled = "disabled" }; 
@@ -16,7 +15,6 @@
 	var formConfigs = [];
     var originalSapConnectionEnabled = false;
     var onLoadAssignAuthorsValue = '<%:Model.EnableAssignTaskAuthor%>';
-    console.log(onLoadAssignAuthorsValue);
      
     formConfigs.push({
         ElementID: 'WorkspaceIdentificationForm',
@@ -231,7 +229,6 @@
 		}
     });
 
-    /* ***** TODO: Create the popup ***** */
     // Show the popup if the load value is set to true, but user changes it to false
     $('#EnableAssignTaskAuthor').change(function () {
 		var isAuthorsAssignedSetToTrue = $('#EnableAssignTaskAuthor').val() === 'True';
@@ -240,11 +237,10 @@
                 'Delete Assigned Task Authors',
                 'At least one task Author has supplied a value for this field. All values supplied by Authors for the field will be deleted. <br/><br/>Are you sure you want to delete the Assigned Task Authors?',
                 function () {
-                    // This is a yes
-                    // BOECustomFieldsGridWidget.DeleteCustomField(id, updateDateLong);
-                    console.log('this is a test');
+                    // This is a confirmation, do nothing
+                    null
                 },
-                // Reset back to Yes if canceled
+                // Revert back to Yes if canceled
                 function () {
 					$('#EnableAssignTaskAuthor').val('True')
                 }
@@ -489,7 +485,7 @@
         <div class="form-row">
             <div class="form-label">
                 <span helptext="When &quot;Yes&quot; is selected, Authors are prompted to choose their name from the BOE Author list and assign themselves to the task as the Task Author. 
-                    When &quot;No&quot; is selected, Author Assignment is BOE Level only. No additional Author steps.">Authors Assignable at Task Level *</span>
+                    When &quot;No&quot; is selected, Author Assignment is BOE Level only. No additional Author steps.">Authors Assignable at Task <br />Level *</span>
             </div>
             <div class="form-element">
                 <%: Html.DropDownListFor(c => c.EnableAssignTaskAuthor, new List<SelectListItem>()
