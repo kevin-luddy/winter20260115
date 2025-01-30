@@ -236,12 +236,6 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		public bool EnableSAPConnection { get; set; }
 
 		/// <summary>
-		/// Get/set 
-		/// </summary>
-		[Required(ErrorMessage = "Enable SAP connection selection is required.")]
-		public bool EnableAssignTaskAuthor { get; set; }
-
-		/// <summary>
 		/// Was WS created prior to Boe Templates being enabled
 		/// </summary>
 		public bool CreatedPriorToBoeTemplates { get; set; }
@@ -259,6 +253,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// <summary>
 		/// Get or set the Assign Authors at Task level property
 		/// </summary>
+		[Required(ErrorMessage = "Authors Assignable at Task Level selection is required.")]
 		public bool EnableAssignTaskAuthor { get; set; }
 	}
 }

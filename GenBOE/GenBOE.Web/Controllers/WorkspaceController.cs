@@ -1134,9 +1134,6 @@ namespace GenBOE.Web.Controllers
 			// Perform Action
 			IWorkspaceIdentificationModelView workspaceModelView = this._ControllerLogic.GetWorkspaceIdentificationModelView(ws);
 
-			// TODO: REMOVE ME
-			//workspaceModelView.EnableAssignTaskAuthor = ws.EnableAssignTaskAuthor;
-
 			// We load the server url here so that we have access to the Request object
 			workspaceModelView.ApplicationURL = new System.Uri(ConfigurationUtilities.GetAppSetting("ServerURL", Request.Url.Host) + "/" + workspaceModelView.ShortName);
 
@@ -2997,7 +2994,6 @@ namespace GenBOE.Web.Controllers
 				ws.UsingTemplateBOE = workspaceDetails.UsingTemplateBoe;
 				ws.EnableSAPConnection = workspaceDetails.EnableSAPConnection;
 				ws.CurrentPTMWorkspace = workspaceDetails.CurrentPTMWorkspace;
-				ws.EnableAssignTaskAuthor = workspaceDetails.EnableAssignTaskAuthor;
 
 				// Keep track of the previous value of Enable Assign Task Author
 				bool previousValueEnableAssignTaskAuthor = ws.EnableAssignTaskAuthor;
