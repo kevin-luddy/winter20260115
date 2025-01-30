@@ -1135,7 +1135,7 @@ namespace GenBOE.Web.Controllers
 			IWorkspaceIdentificationModelView workspaceModelView = this._ControllerLogic.GetWorkspaceIdentificationModelView(ws);
 
 			// TODO: REMOVE ME
-			workspaceModelView.EnableAssignTaskAuthor = ws.EnableAssignTaskAuthor;
+			//workspaceModelView.EnableAssignTaskAuthor = ws.EnableAssignTaskAuthor;
 
 			// We load the server url here so that we have access to the Request object
 			workspaceModelView.ApplicationURL = new System.Uri(ConfigurationUtilities.GetAppSetting("ServerURL", Request.Url.Host) + "/" + workspaceModelView.ShortName);
@@ -3118,7 +3118,7 @@ namespace GenBOE.Web.Controllers
 								boe.State = BOEState.Draft;
 								boe.Updateable = UpdateType.Upsert;
 
-								// Get the task
+								// Get the task and remove the author
 								ICollection<BoeTaskElementDTO> editableTasks = (ICollection<BoeTaskElementDTO>)boe.TaskElements;
 								foreach (BoeTaskElementDTO task in editableTasks)
 								{
