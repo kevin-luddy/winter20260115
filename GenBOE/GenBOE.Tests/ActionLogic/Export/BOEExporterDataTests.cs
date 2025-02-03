@@ -469,7 +469,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 		{
 			WordExporter wordExporter = new BOEExporter(null, null, null, null, null, null);
 			string filters = $"{BOEExporterConstants.EMPLOYEE_ID_FILTERS_LABEL} = 123456";
-			ICollection<Tuple<string, IList<string>>> employeeIdFilters = wordExporter.GetEmployeeIds(filters);
+			ICollection<Tuple<string, IList<string>>> employeeIdFilters = WordExporter.GetEmployeeIds(filters);
 			string output = wordExporter.MaskSpaceEmployeeIds(employeeIdFilters, filters);
 
 			Assert.IsTrue(output.Contains(BOEExporterConstants.EMPLOYEE_ID_FILTERS_EXCLUSION_TEXT));
@@ -477,7 +477,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 			Assert.IsFalse(output.Contains("123456"));
 
 			filters = $"{BOEExporterConstants.EMPLOYEE_ID_FILTERS_LABEL} = 123456, 345678, 234567";
-			employeeIdFilters = wordExporter.GetEmployeeIds(filters);
+			employeeIdFilters = WordExporter.GetEmployeeIds(filters);
 			output = wordExporter.MaskSpaceEmployeeIds(employeeIdFilters, filters);
 
 			Assert.IsTrue(output.Contains(BOEExporterConstants.EMPLOYEE_ID_FILTERS_EXCLUSION_TEXT));
@@ -497,16 +497,16 @@ namespace GenBOE.Tests.ActionLogic.Export
             // Test for single ID
 			WordExporter wordExporter = new BOEExporter(null, null, null, null, null, null);
 			string filters = $"{BOEExporterConstants.EMPLOYEE_ID_FILTERS_LABEL} = 123456";
-			ICollection<Tuple<string, IList<string>>> employeeIdFilters = wordExporter.GetEmployeeIds(filters);
-			string output = wordExporter.MaskRmsEmployeeIds(employeeIdFilters, filters);
+			ICollection<Tuple<string, IList<string>>> employeeIdFilters = WordExporter.GetEmployeeIds(filters);
+			string output = WordExporter.MaskRmsEmployeeIds(employeeIdFilters, filters);
 
 			Assert.IsFalse(output.Contains("123456"));
 			Assert.IsTrue(output.Contains("***456"));
 
             // Test for multiple IDs
 			filters = $"{BOEExporterConstants.EMPLOYEE_ID_FILTERS_LABEL} = 123456, 12345678, 123";
-			employeeIdFilters = wordExporter.GetEmployeeIds(filters);
-			output = wordExporter.MaskRmsEmployeeIds(employeeIdFilters, filters);
+			employeeIdFilters = WordExporter.GetEmployeeIds(filters);
+			output = WordExporter.MaskRmsEmployeeIds(employeeIdFilters, filters);
 
 			Assert.IsFalse(output.Contains("123456"));
 			Assert.IsFalse(output.Contains("123456789"));
