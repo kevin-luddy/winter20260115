@@ -252,61 +252,73 @@ namespace GenBOE.ActionLogic.IO.Export
 		{
 			IReadOnlyCollection<CustomFieldDTO> customFields = exportInputs.CustomFields;
 
-			string[] boeCustomFieldNames = customFields.Where(c => c.CustomFieldDisplayID == CustomFieldType.BoeDisplay).Select(c => c.CustomFieldName).ToArray();
+			List<string> boeCustomFieldNames = new List<string>();
+			List<string> taskCustomFieldNames = new List<string>();
+			List<string> resourceCustomFieldNames = new List<string>();
+			List<string> moqTableCustomFieldNames = new List<string>();
+
+			foreach (CustomFieldDTO customField in customFields)
+			{
+				if (customField.CustomFieldDisplayID == CustomFieldType.BoeDisplay)
+				{
+					boeCustomFieldNames.Add(customField.CustomFieldName + " ID");
+					boeCustomFieldNames.Add(customField.CustomFieldName);
+				}
+				else if (customField.CustomFieldDisplayID == CustomFieldType.TaskDisplay)
+				{
+					taskCustomFieldNames.Add(customField.CustomFieldName + " ID");
+					taskCustomFieldNames.Add(customField.CustomFieldName);
+				}
+				else if (customField.CustomFieldDisplayID == CustomFieldType.LaborTypeDisplay)
+				{
+					resourceCustomFieldNames.Add(customField.CustomFieldName + " ID");
+					resourceCustomFieldNames.Add(customField.CustomFieldName);
+				}
+				else if (customField.CustomFieldDisplayID == CustomFieldType.MoqTypeTableDataDisplay)
+				{
+					moqTableCustomFieldNames.Add(customField.CustomFieldName + " ID");
+					moqTableCustomFieldNames.Add(customField.CustomFieldName);
+				}
+			}
 
 			using (SpreadsheetDocument document = SpreadsheetDocument.Open(templateFileLocation, true))
 			{
 				if (boeCustomFieldNames.Any())
 				{
-					ExcelUtilities.DuplicateColumn(document, "BOE & Resource Combo", "BOE Custom Field", boeCustomFieldNames);
-					ExcelUtilities.DuplicateColumn(document, "BOEs", "BOE Custom Field", boeCustomFieldNames);
+					ExcelUtilities.DuplicateColumn(document, "BOE & Resource Combo", "BOE Custom Field", boeCustomFieldNames.ToArray());
+					ExcelUtilities.DuplicateColumn(document, "BOEs", "BOE Custom Field", boeCustomFieldNames.ToArray());
 				}
 				else
 				{
 					ExcelUtilities.RemoveColumn(document, "BOE & Resource Combo", "BOE Custom Field");
 					ExcelUtilities.RemoveColumn(document, "BOEs", "BOE Custom Field");
 				}
-			}
-
-			string[] taskCustomFieldNames = customFields.Where(c => c.CustomFieldDisplayID == CustomFieldType.TaskDisplay).Select(c => c.CustomFieldName).ToArray();
-
-			using (SpreadsheetDocument document = SpreadsheetDocument.Open(templateFileLocation, true))
-			{
+			
 				if (taskCustomFieldNames.Any())
 				{
-					ExcelUtilities.DuplicateColumn(document, "BOE & Resource Combo", "Task Custom Field", taskCustomFieldNames);
-					ExcelUtilities.DuplicateColumn(document, "BOEs", "Task Custom Field", taskCustomFieldNames);
+					ExcelUtilities.DuplicateColumn(document, "BOE & Resource Combo", "Task Custom Field", taskCustomFieldNames.ToArray());
+					ExcelUtilities.DuplicateColumn(document, "BOEs", "Task Custom Field", taskCustomFieldNames.ToArray());
 				}
 				else
 				{
 					ExcelUtilities.RemoveColumn(document, "BOE & Resource Combo", "Task Custom Field");
 					ExcelUtilities.RemoveColumn(document, "BOEs", "Task Custom Field");
 				}
-			}
-
-			string[] resourceCustomFieldNames = customFields.Where(c => c.CustomFieldDisplayID == CustomFieldType.LaborTypeDisplay).Select(c => c.CustomFieldName).ToArray();
-
-			using (SpreadsheetDocument document = SpreadsheetDocument.Open(templateFileLocation, true))
-			{
+			
 				if (resourceCustomFieldNames.Any())
 				{
-					ExcelUtilities.DuplicateColumn(document, "BOE & Resource Combo", "Resource Custom Field", resourceCustomFieldNames);
-					ExcelUtilities.DuplicateColumn(document, "BOEs", "Resource Custom Field", resourceCustomFieldNames);
+					ExcelUtilities.DuplicateColumn(document, "BOE & Resource Combo", "Resource Custom Field", resourceCustomFieldNames.ToArray());
+					ExcelUtilities.DuplicateColumn(document, "BOEs", "Resource Custom Field", resourceCustomFieldNames.ToArray());
 				}
 				else
 				{
 					ExcelUtilities.RemoveColumn(document, "BOE & Resource Combo", "Resource Custom Field");
 					ExcelUtilities.RemoveColumn(document, "BOEs", "Resource Custom Field");
 				}
-			}
-
-			string[] moqTableCustomFieldNames = customFields.Where(c => c.CustomFieldDisplayID == CustomFieldType.MoqTypeTableDataDisplay).Select(c => c.CustomFieldName).ToArray();
-
-			using (SpreadsheetDocument document = SpreadsheetDocument.Open(templateFileLocation, true))
-			{
+			
 				if (moqTableCustomFieldNames.Any())
 				{
-					ExcelUtilities.DuplicateColumn(document, "MOQ Table Data", "MOQ Table Custom Field", moqTableCustomFieldNames);
+					ExcelUtilities.DuplicateColumn(document, "MOQ Table Data", "MOQ Table Custom Field", moqTableCustomFieldNames.ToArray());
 				}
 				else
 				{
@@ -478,6 +490,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				{
 					ICollection<CustomFieldValueDTO> customFieldValues = workspaceCustomFieldValues.Where(i => i.CustomFieldID == boeCustomField.Id).ToCollection<CustomFieldValueDTO>();
 					CustomFieldValueDTO customFieldValueForBOE = customFieldValues.FirstOrDefault(c => boe.CustomFieldValueContainers.Select(b => b.CustomFieldValueID).Contains(c.CustomFieldValueID));
+					row.Add(customFieldValueForBOE != null ? customFieldValueForBOE.CustomFieldValueName.RemoveIllegalExcelCharacters() : this.sEmpty);
 					row.Add(customFieldValueForBOE != null ? customFieldValueForBOE.CustomFieldValueDescription.RemoveIllegalExcelCharacters() : this.sEmpty);
 				}
 
@@ -551,6 +564,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					{
 						ICollection<CustomFieldValueDTO> customFieldValues = workspaceCustomFieldValues.Where(i => i.CustomFieldID == taskCustomField.Id).ToCollection<CustomFieldValueDTO>();
 						CustomFieldValueDTO customFieldValueForTask = customFieldValues.FirstOrDefault(c => task.CustomFieldValueContainers.Select(t => t.CustomFieldValueID).Contains(c.CustomFieldValueID));
+						row.Add(customFieldValueForTask != null ? customFieldValueForTask.CustomFieldValueName.RemoveIllegalExcelCharacters() : this.sEmpty);
 						row.Add(customFieldValueForTask != null ?
 								customFieldValueForTask.CustomFieldValueDescription.RemoveIllegalExcelCharacters() : this.sEmpty);
 					}
@@ -662,6 +676,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						{
 							ICollection<CustomFieldValueDTO> customFieldValues = workspaceCustomFieldValues.Where(i => i.CustomFieldID == resourceCustomField.Id).ToCollection<CustomFieldValueDTO>();
 							CustomFieldValueDTO customFieldValueForResource = customFieldValues.FirstOrDefault(c => resourceType.CustomFieldValueContainers.Select(r => r.CustomFieldValueID).Contains(c.CustomFieldValueID));
+							row.Add(customFieldValueForResource != null ? customFieldValueForResource.CustomFieldValueName.RemoveIllegalExcelCharacters() : this.sEmpty); 
 							row.Add(customFieldValueForResource != null ? customFieldValueForResource.CustomFieldValueDescription.RemoveIllegalExcelCharacters() : this.sEmpty);
 						}
 
@@ -900,6 +915,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					{
 						ICollection<CustomFieldValueDTO> customFieldValues = workspaceCustomFieldValues.Where(i => i.CustomFieldID == taskCustomField.Id).ToCollection<CustomFieldValueDTO>();
 						CustomFieldValueDTO customFieldValueForTask = customFieldValues.FirstOrDefault(c => travel.CustomFieldValueContainers.Select(t => t.CustomFieldValueID).Contains(c.CustomFieldValueID));
+						row.Add(customFieldValueForTask != null ? customFieldValueForTask.CustomFieldValueName.RemoveIllegalExcelCharacters() : this.sEmpty);
 						row.Add(customFieldValueForTask != null ? customFieldValueForTask.CustomFieldValueDescription.RemoveIllegalExcelCharacters() : this.sEmpty);
 					}
 
@@ -981,6 +997,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						{
 							ICollection<CustomFieldValueDTO> customFieldValues = workspaceCustomFieldValues.Where(i => i.CustomFieldID == taskCustomField.Id).ToCollection();
 							CustomFieldValueDTO customFieldValueForTask = customFieldValues.FirstOrDefault(c => travelTrip.CustomFieldValueContainers.Select(t => t.CustomFieldValueID).Contains(c.CustomFieldValueID));
+							row.Add(customFieldValueForTask != null ? customFieldValueForTask.CustomFieldValueName.RemoveIllegalExcelCharacters() : this.sEmpty);
 							row.Add(customFieldValueForTask != null ? customFieldValueForTask.CustomFieldValueDescription.RemoveIllegalExcelCharacters() : this.sEmpty);
 						}
 						toReturn.Add(row);
@@ -1969,6 +1986,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			{
 				ICollection<CustomFieldValueDTO> customFieldValues = workspaceCustomFieldValues.Where(i => i.CustomFieldID == boeCustomField.Id).ToCollection();
 				CustomFieldValueDTO customFieldValueForBOE = customFieldValues.FirstOrDefault(c => boe.CustomFieldValueContainers.Select(b => b.CustomFieldValueID).Contains(c.CustomFieldValueID));
+				row.Add(customFieldValueForBOE != null ? customFieldValueForBOE.CustomFieldValueName.RemoveIllegalExcelCharacters() : this.sEmpty);
 				row.Add(customFieldValueForBOE != null ? customFieldValueForBOE.CustomFieldValueDescription.RemoveIllegalExcelCharacters() : this.sEmpty);
 			}
 		}
@@ -2085,6 +2103,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			for (int i = 0; i < emptyCellsToAdd; i++)
 			{
 				row.Add(this.sEmpty);
+				row.Add(this.sEmpty);
 			}
 		}
 
@@ -2126,6 +2145,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			{
 				ICollection<CustomFieldValueDTO> customFieldValues = workspaceCustomFieldValues.Where(i => i.CustomFieldID == taskCustomField.Id).ToCollection();
 				CustomFieldValueDTO customFieldValueForTask = customFieldValues.FirstOrDefault(c => task.CustomFieldValueContainers.Select(t => t.CustomFieldValueID).Contains(c.CustomFieldValueID));
+				row.Add(customFieldValueForTask != null ? customFieldValueForTask.CustomFieldValueName.RemoveIllegalExcelCharacters() : this.sEmpty);
 				row.Add(customFieldValueForTask != null ? customFieldValueForTask.CustomFieldValueDescription.RemoveIllegalExcelCharacters() : this.sEmpty);
 			}
 		}
@@ -2282,6 +2302,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			{
 				ICollection<CustomFieldValueDTO> customFieldValues = workspaceCustomFieldValues.Where(i => i.CustomFieldID == resourceCustomField.Id).ToCollection();
 				CustomFieldValueDTO customFieldValueForResource = customFieldValues.FirstOrDefault(c => resourceType.CustomFieldValueContainers.Select(r => r.CustomFieldValueID).Contains(c.CustomFieldValueID));
+				row.Add(customFieldValueForResource != null ? customFieldValueForResource.CustomFieldValueName.RemoveIllegalExcelCharacters() : this.sEmpty);
 				row.Add(customFieldValueForResource != null ? customFieldValueForResource.CustomFieldValueDescription.RemoveIllegalExcelCharacters() : this.sEmpty);
 			}
 		}
