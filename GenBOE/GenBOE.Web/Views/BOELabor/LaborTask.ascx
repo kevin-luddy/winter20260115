@@ -852,7 +852,7 @@
 										<tr>
 											<td class="subheader" colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %> by Months{{showUCOT ? ' excluding UCOT' : ''}}</td>
 										</tr>
-                                        <tr>
+                                        <tr data-ng-if="showUCOT">
 				                            <td class="subheader" colspan="3" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total UCOT <%: Model.HoursLabel %> by Months</td>
                                         </tr>
 										<tr>
