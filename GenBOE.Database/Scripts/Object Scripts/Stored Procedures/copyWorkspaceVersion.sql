@@ -55,6 +55,7 @@ AS
 **		10/15/24	e405721				PROPH-2392: Update for Skill Mix V2
 **		1/14/25		twilson3			PROPH-2596 - Add UCOT Factor
 **		1/15/25		e309214				PROPH-1854 Database Changes for Assign Author
+**		2/4/2025	twilson3			PROPH-2786 Link BRCs to new workspace, not old workspace
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -2223,6 +2224,7 @@ BEGIN TRY
 		Processed bit,
 		[NewBOELaborTypeID] [int],
 		[NewResourceID] [int],
+		[NewBRCResourceID] [int],
 		[NewPerformingOrganizationID] [int],
 		[NewBOETaskElementID] [int],
 		[NewWBSID] [int] NULL,
@@ -2254,6 +2256,10 @@ BEGIN TRY
 			ELSE LT.[ResourceID]
 			END AS ResourceID
 		  ,CASE
+			WHEN BRC.NewResourceID IS NOT NULL THEN BRC.NewResourceID
+			ELSE LT.[BRCResourceID]
+			END AS BRCResourceID
+		  ,CASE
 			WHEN PO.NewPerformingOrganizationID IS NOT NULL THEN PO.NewPerformingOrganizationID
 			ELSE LT.[PerformingOrganizationID]
 			END AS PerformingOrganizationID
@@ -2269,6 +2275,7 @@ BEGIN TRY
 	  FROM [version].[BOELaborType] LT
 	INNER JOIN @BOETaskElement TE ON LT.BOETaskElementID = TE.BOETaskElementID
 	LEFT OUTER JOIN @Resource R ON LT.ResourceID = R.ResourceID
+	LEFT OUTER JOIN @Resource BRC on LT.BRCResourceID = R.ResourceID
 	LEFT OUTER JOIN @PerformingOrganization PO ON LT.PerformingOrganizationID = PO.PerformingOrganizationID
 	LEFT OUTER JOIN @WorkBreakdownStructure W on LT.WBSID = W.WBSID
 	LEFT OUTER JOIN @CLIN C on LT.CLINID = C.CLINID
@@ -2325,7 +2332,10 @@ BEGIN TRY
 			END AS CLINID
 			,[CanOffload]
 			,[LaborSortId]
-			,[BRCResourceID]
+			,CASE 
+			  WHEN [NewBRCResourceID] IS NOT NULL THEN [NewBRCResourceID]
+			  ELSE [BRCResourceID]
+			  END AS [BRCResourceID]     
 	  FROM @BOELaborType
 	WHERE  [BOELaborTypeID] = @BOELaborTypeID
       
