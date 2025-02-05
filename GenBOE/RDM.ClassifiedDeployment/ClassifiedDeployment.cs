@@ -20,9 +20,11 @@ namespace ClassifiedDeployment
     using IES.ActionLogic.Common;
     using IES.ActionLogic.Mediator;
     using IES.Common;
-    using IES.DataBridge.Loaders;
+	using IES.Common.classes;
+	using IES.DataBridge.Loaders;
     using IES.DataBridge.ModelViews;
-    using Newtonsoft.Json;
+	using Microsoft.Practices.Unity;
+	using Newtonsoft.Json;
 
     /// <summary>
     /// This is a simple console application that will run periodically on the classified server to perform the following:
@@ -76,7 +78,8 @@ namespace ClassifiedDeployment
         public static void Main(string[] args)
         {
             Thread.CurrentPrincipal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
-            UserData currentUser = securityInformation.ActiveUserData;
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), new ActiveDirectoryUtilities());
+			UserData currentUser = securityInformation.ActiveUserData;
             string rdmClearRevisionCacheUrl = ConfigurationUtilities.GetAppSetting<string>("RdmClearRevisionCacheUrl", string.Empty);
             Console.WriteLine("RDM Clear Revision Cache URL=" + rdmClearRevisionCacheUrl);
 
