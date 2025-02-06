@@ -1039,10 +1039,36 @@ namespace IES.Common
 
 				return isSkillMixEnabled.Value;
 			}
-			internal set // be able to override for unit test purposes
+
+			// be able to override for unit test purposes
+			internal set => isSkillMixEnabled = value;
+		}
+
+		/// <summary>
+		/// Private for Is Task Assign Author Enabled, used for unit testing. Following above design principle
+		/// </summary>
+		private static bool? isAssignTaskAuthorEnabled;
+
+		/// <summary>
+		/// Indicates whether Task Assign Author features are enabled
+		/// </summary>
+		public static bool IsAssignTaskAuthorEnabledForSystem
+		{
+			get
 			{
-				isSkillMixEnabled = value;
+				if (isAssignTaskAuthorEnabled == null)
+				{
+					if (bool.TryParse(ConfigurationUtilities.GetAppSetting("EnableAssignTaskAuthor"), out bool value))
+					{
+						isAssignTaskAuthorEnabled = value;
+					}
+				}
+
+				return isAssignTaskAuthorEnabled ?? false;
 			}
+
+			// be able to override for unit test purposes
+			internal set => isAssignTaskAuthorEnabled = value;
 		}
 
 		/// <summary>
