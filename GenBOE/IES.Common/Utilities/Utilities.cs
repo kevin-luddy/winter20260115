@@ -1045,12 +1045,12 @@ namespace IES.Common
 		}
 
 		/// <summary>
-		/// Private for Is Task Assign Author Enabled, used for unit testing. Following above design principle
+		/// Private for Is Assign Task Author Enabled, used for unit testing. Following above design principle
 		/// </summary>
 		private static bool? isAssignTaskAuthorEnabled;
 
 		/// <summary>
-		/// Indicates whether Task Assign Author features are enabled
+		/// Indicates whether Assign Task Author features are enabled
 		/// </summary>
 		public static bool IsAssignTaskAuthorEnabledForSystem
 		{

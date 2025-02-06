@@ -791,7 +791,6 @@ namespace GenBOE.Web.Controllers
 
 			model.IsSAPConnectionEnabled = Utilities.IsSAPEnabledForSystem;
 			model.IsAssignTaskAuthorEnabled = Utilities.IsAssignTaskAuthorEnabledForSystem;
-			//model.IsAuthorAssignableAtTaskLevelEnabled = Utilities.IsAssignTaskAuthorEnabledForSystem;
 
 			ViewResult toReturn = View(WebConstants.VIEW_HOME_CREATE_WORKSPACE, model);
 
