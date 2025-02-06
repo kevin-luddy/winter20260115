@@ -790,6 +790,7 @@ namespace GenBOE.Web.Controllers
 				_securityInformation.IsMemberOfADGroupInAppSettingsList(this._securityInformation.ActiveUserNTID, "CanCreateWorkspaceWithoutPtmTrackingNumber");
 
 			model.IsSAPConnectionEnabled = Utilities.IsSAPEnabledForSystem;
+			model.IsAssignTaskAuthorEnabled = Utilities.IsAssignTaskAuthorEnabledForSystem;
 
 			ViewResult toReturn = View(WebConstants.VIEW_HOME_CREATE_WORKSPACE, model);
 
@@ -2998,7 +2999,7 @@ namespace GenBOE.Web.Controllers
 				// Keep track of the previous value of Enable Assign Task Author
 				bool previousValueEnableAssignTaskAuthor = ws.EnableAssignTaskAuthor;
 				ws.EnableAssignTaskAuthor = workspaceDetails.EnableAssignTaskAuthor;
-			
+
 				// Populate the company specific properties
 				_ControllerLogic.PopulateCompanySpecificWorkspaceProperties(workspaceDetails, ws);
 
@@ -3105,7 +3106,7 @@ namespace GenBOE.Web.Controllers
 
 						// If Authors Assignable at Task Level is set to false and it was previously set to true,
 						// change all of the BOEs to Draft and clear all authors from tasks
-						if (!ws.EnableAssignTaskAuthor && previousValueEnableAssignTaskAuthor)
+						if (Utilities.IsAssignTaskAuthorEnabledForSystem && !ws.EnableAssignTaskAuthor && previousValueEnableAssignTaskAuthor)
 						{
 							ws.RefreshBoes();
 

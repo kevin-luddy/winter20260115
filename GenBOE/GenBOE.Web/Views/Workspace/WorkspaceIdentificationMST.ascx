@@ -482,19 +482,21 @@
 					<%} %>
             </div>
         <% } %>
-        <div class="form-row">
-            <div class="form-label">
-                <span helptext="When &quot;Yes&quot; is selected, Authors are prompted to choose their name from the BOE Author list and assign themselves to the task as the Task Author. 
-                    When &quot;No&quot; is selected, Author Assignment is BOE Level only. No additional Author steps.">Authors Assignable at Task <br />Level *</span>
-            </div>
-            <div class="form-element">
-                <%: Html.DropDownListFor(c => c.EnableAssignTaskAuthor, new List<SelectListItem>()
-                {
-                    new SelectListItem() { Text = "Yes", Value = "True" },
-                    new SelectListItem() { Text = "No", Value = "False" }
-                }) %>
-            </div>
-        </div>
+		<% if ((bool)Utilities.IsAssignTaskAuthorEnabledForSystem) { %>
+			<div class="form-row">
+				<div class="form-label">
+					<span helptext="When &quot;Yes&quot; is selected, Authors are prompted to choose their name from the BOE Author list and assign themselves to the task as the Task Author. 
+						When &quot;No&quot; is selected, Author Assignment is BOE Level only. No additional Author steps.">Authors Assignable at Task <br />Level *</span>
+				</div>
+				<div class="form-element">
+					<%: Html.DropDownListFor(c => c.EnableAssignTaskAuthor, new List<SelectListItem>()
+					{
+						new SelectListItem() { Text = "Yes", Value = "True" },
+						new SelectListItem() { Text = "No", Value = "False" }
+					}) %>
+				</div>
+			</div>
+		<% } %>
         <button id="Back-WorkspaceIdentification" class="ies back-to-workspace-settings-button display-none" type="button">Back to Workspace Settings</button>
         <% } %>
     </div>

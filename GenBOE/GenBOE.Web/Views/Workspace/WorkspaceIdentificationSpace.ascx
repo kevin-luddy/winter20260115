@@ -777,7 +777,8 @@
 				}, new { onchange="WorkspaceIdentificationWidget.OnCurrentWorkspaceChange(this)" }) %>
 			</div>
 		</div>
-		<div class="form-row">
+		<% if ((bool)Utilities.IsAssignTaskAuthorEnabledForSystem) { %>
+			<div class="form-row">
 			<div class="form-label">
 				<span helptext="Should Authors be required to Assign themselves to a Task?">Authors Assignable at Task Level</span>
 			</div>
@@ -789,6 +790,7 @@
 				}) %>
 			</div>
 		</div>
+		<% } %>
 		<button id="Back-WorkspaceIdentification" class="ies back-to-workspace-settings-button display-none" type="button">Back to Workspace Settings</button>
 		<% } %>
 	</div>
