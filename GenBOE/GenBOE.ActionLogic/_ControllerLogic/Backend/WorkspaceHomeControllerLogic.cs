@@ -87,5 +87,21 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 			}
 			return toReturn;
 		}
+
+		/// <summary>
+		/// Update the favorite in the Home Grid
+		/// </summary>
+		/// <param name="currentUser"></param>
+		/// <param name="workspaceId"></param>
+		/// <param name="isFavorite"></param>
+		public void UpdateFavorite(UserDTO currentUser, int workspaceId, bool isFavorite)
+		{
+			if (currentUser == null)
+			{
+				throw new ArgumentNullException(nameof(currentUser));
+			}
+
+			workspaceDTODataLoader.UpdateFavorite(workspaceId, currentUser.UserID, isFavorite);
+		}
 	}
 }
