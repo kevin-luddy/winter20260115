@@ -26,7 +26,7 @@ namespace RDM.Backend.Controllers
 	/// Controller for the Versions.
 	/// </summary>
 	[Authorize]
-	[Route("api/ersion")]
+	[Route("api/Version")]
 	public class VersionController : RDMController
 	{
 		/// <summary>

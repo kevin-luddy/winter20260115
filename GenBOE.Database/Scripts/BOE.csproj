@@ -343,6 +343,7 @@
     <Content Include="Release Scripts\Release 2024.13\1 - Release 2024.13 Script.sql" />
     <Content Include="Release Scripts\Release 2025.01\1 - Release 2025.01 Script.sql" />
     <Content Include="Release Scripts\Release 2025.03\1 - Release 2025.03 Script.sql" />
+    <Content Include="Release Scripts\Release 2025.04\1 - Release 2025.04 Script.sql" />
     <Content Include="_Full Script Files For Specific Versions\BOE - 2025.01 Generated On 1_9_2025.sql" />
     <Content Include="Release Scripts\Release 2025.02\1 - Release 2025.02 Script.sql" />
     <Content Include="_Full Script Files For Specific Versions\BOE - 2025.03 Generated On 1_22_2025.sql" />
@@ -392,6 +393,7 @@
     <Content Include="_Full Script Files For Specific Versions\Older\ClassifiedRelease2024.12\BOE - 2024.05 Generated On 2_28_2024.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\ClassifiedRelease2024.12\BOE - 2024.06 Generated On 3_25_2024.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\ClassifiedRelease2024.12\BOE - 2024.09 Generated On 5_7_2024.sql" />
+    <Content Include="_Full Script Files For Specific Versions\BOE - 2025.04 Generated On 2_4_2025.sql" />
     <Content Include="_Other Scripts\Classified Helpers\genBOE - Insert Application Administrator.sql" />
     <Content Include="_Other Scripts\Classified Helpers\genBOE - Scrub database data.sql" />
     <Content Include="_Other Scripts\Classified Helpers\genTrac - Insert Application Administrator.sql" />
@@ -432,9 +434,7 @@
   <ItemGroup>
     <Content Include="_Full Script Files For Specific Versions\Older\OldClassifiedReleases\BOE - 2020.3.11 8_26_2020.sql" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Release Scripts\Release 2023.04\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="_Other Scripts\AddLobWorkspaceAdmins.sql" />
   </ItemGroup>
