@@ -229,6 +229,11 @@ namespace GenBOE
 				);
 		}
 
+		/// <summary>
+		/// This is "middleware" setup for all reqests coming from genBOE Angular
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		protected void Application_BeginRequest(object sender, EventArgs e)
 		{
 			HttpContext context = HttpContext.Current;
@@ -242,6 +247,8 @@ namespace GenBOE
 				context.Response.AddHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 			}
 
+			// This is for the preflight OPTION requests that come with POST requests
+			// All of the OPTIONS responses need the Headers to even allow POST requests to happen
 			if (context.Request.HttpMethod == "OPTIONS")
 			{
 				context.Response.StatusCode = 200;
