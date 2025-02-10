@@ -1550,6 +1550,14 @@ namespace GenTRAC.ActionLogic
 				case PtmRole.BackupContractsPOC:
 					groupName = IES.Common.ConfigurationUtilities.GetAppSetting("ContractsLead");
 					break;
+				case PtmRole.SupplyChainPOCMatl:
+				case PtmRole.BackupMaterialLead:
+					groupName = IES.Common.ConfigurationUtilities.GetAppSetting("MaterialsLead");
+					break;
+				case PtmRole.SupplyChainPOCSubs:
+				case PtmRole.BackupSubcontractsLead:
+					groupName = IES.Common.ConfigurationUtilities.GetAppSetting("SubcontractsLead");
+					break;
 			}
 
 			return this.userLoader.GetUserDTOsByADGroup(groupName.GetObjectName());
@@ -1754,7 +1762,13 @@ namespace GenTRAC.ActionLogic
 					}
 				}
 			}
+			model = PopulateUserInformationLists(model);
 
+			return model;
+		}
+
+		public ProposalUserInformationModelView PopulateUserInformationLists(ProposalUserInformationModelView model)
+		{
 			// Primary and Backup Contracts PoC share the same AD List, get the data once for both
 			ICollection<UserDTO> contractsUsers = this.GetUsersForSelectList(PtmRole.ContractsPOC);
 
@@ -1788,6 +1802,36 @@ namespace GenTRAC.ActionLogic
 					Value = x.Key // NTID
 				}).ToCollection());
 			}
+
+			// Populate Material Leads and backup leads lists
+			ICollection<UserDTO> materialsUsers = this.GetUsersForSelectList(PtmRole.SupplyChainPOCMatl);
+
+			model.SupplyChainPOCMaterialsLeadsList = materialsUsers?
+				.Select(x => new SelectListItem() { Value = x.Ntid, Text = x.DisplayName })
+				.OrderBy(x => x.Text)
+				.ToList();
+			model.SupplyChainPOCMaterialsLeadsList.Insert(0, new SelectListItem() { Value = string.Empty, Text = "Select Materials Lead" });
+
+			model.SupplyChainPOCMaterialsBackupLeadsList = materialsUsers?
+				.Select(x => new SelectListItem() { Value = x.Ntid, Text = x.DisplayName })
+				.OrderBy(x => x.Text)
+				.ToList();
+			model.SupplyChainPOCMaterialsBackupLeadsList.Insert(0, new SelectListItem() { Value = string.Empty, Text = "Select Materials Backup Lead" });
+
+			// Populate Subcontract Leads and Backup Leads lists
+			ICollection<UserDTO> subcontractUsers = this.GetUsersForSelectList(PtmRole.SupplyChainPOCSubs);
+
+			model.SupplyChainPOCSubsLeadsList = subcontractUsers?
+				.Select(x => new SelectListItem() { Value = x.Ntid, Text = x.DisplayName })
+				.OrderBy(x => x.Text)
+				.ToList();
+			model.SupplyChainPOCSubsLeadsList.Insert(0, new SelectListItem() { Value = string.Empty, Text = "Select Subcontract Lead" });
+
+			model.SupplyChainPOCSubsBackupLeadsList = subcontractUsers?
+				.Select(x => new SelectListItem() { Value = x.Ntid, Text = x.DisplayName })
+				.OrderBy(x => x.Text)
+				.ToList();
+			model.SupplyChainPOCSubsBackupLeadsList.Insert(0, new SelectListItem() { Value = string.Empty, Text = "Select Subcontract Backup Lead" });
 
 			return model;
 		}

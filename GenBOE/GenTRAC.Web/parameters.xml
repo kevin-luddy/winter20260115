@@ -102,6 +102,15 @@
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ContractsLead']/@value">
     </parameterentry>
   </parameter>
+  <parameter name="MaterialsLead" description="doesn't matter" defaultvalue="__MaterialsLead__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='MaterialsLead']/@value">
+    </parameterentry>
+  </parameter>
+  <parameter name="SubcontractsLead" description="doesn't matter" defaultvalue="__SubcontractsLead__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='SubcontractsLead']/@value">
+    </parameterentry>
+  </parameter>
+
   <parameter name="LogType" description="doesn't matter" defaultvalue="__LogType__" tags="">
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='LogType']/@value">
     </parameterentry>
