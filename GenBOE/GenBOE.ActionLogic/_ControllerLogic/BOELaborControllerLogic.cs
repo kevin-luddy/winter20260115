@@ -3699,7 +3699,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="isBRCEnabled">Is BRC Enabled for CD row check.</param>
 		/// <param name="isManual">If the Historical Resource/Hours are Manually input or not</param>
 		/// <returns></returns>
-		public RefreshSkillMixModelView RefreshSkillMixTables(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
+		public virtual RefreshSkillMixModelView RefreshSkillMixTables(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
 			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData,
 			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isBRCEnabled, bool isManual)
 		{
@@ -3768,6 +3768,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					{
 						HistoricalHours = 0m,
 						ResourceOld = string.Empty,
+						ResourceNew = string.Empty,
 						LaborSkillMix = 0m,
 						Included = false
 					});
@@ -3778,7 +3779,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				if (isBRCEnabled)
 				{
-					CreateCommonDisclosureRows(laborTypes, currentCommonDisclosureData, refreshedModel);
+					CreateCommonDisclosureRows(resourceHours, laborTypes, currentCommonDisclosureData, refreshedModel);
 				}
 				else
 				{
@@ -4364,10 +4365,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <summary>
 		/// Create the Common Disclosure Rows from the data
 		/// </summary>
+		/// <param name="resourceHours">The resource hours</param>
 		/// <param name="laborTypes">labor type data</param>
 		/// <param name="currentCommonDisclosureData">Current Common Disclosure Data</param>
 		/// <param name="refreshedModel">The Refreshed Skill Mix Model</param>
-		private static void CreateCommonDisclosureRows(ICollection<LaborTypeDataModelView> laborTypes, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, RefreshSkillMixModelView refreshedModel)
+		protected virtual void CreateCommonDisclosureRows(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<LaborTypeDataModelView> laborTypes, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, RefreshSkillMixModelView refreshedModel)
 		{
 			// Create Common Disclosure Rows by taking the list of Resources assigned in Skill Mix table, then finding the BRCs assigned to those Resources in LaborTypes data
 			ICollection<string> resourceNames = refreshedModel.SkillMixRows.Where(s => !string.IsNullOrWhiteSpace(s.ResourceNew) && s.Included).Select(r => r.ResourceNew).Distinct().ToList();
@@ -4454,7 +4456,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="currentSkillMixData">Current Skill Mix Data</param>
 		/// <param name="refreshedModel">The Refreshed SKill Mix Model</param>
 		/// <param name="isBRCEnabled">Is BRC Enabled for this workspace</param>
-		private static void CopyMatchingSkillMixRowData(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, RefreshSkillMixModelView refreshedModel, bool isBRCEnabled, bool isManual)
+		protected virtual void CopyMatchingSkillMixRowData(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, RefreshSkillMixModelView refreshedModel, bool isBRCEnabled, bool isManual)
 		{
 			if (currentSkillMixData != null && currentSkillMixData.Any())
 			{
