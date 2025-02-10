@@ -980,7 +980,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// </summary>
 		/// <param name="filter">The full filter from the MOQ Table</param>
 		/// <returns>A collection of tuples of employee id filters and the employee ids in them</returns>
-		internal ICollection<Tuple<string, IList<string>>> GetEmployeeIds(string filter)
+		internal static ICollection<Tuple<string, IList<string>>> GetEmployeeIds(string filter)
 		{
 			ICollection<Tuple<string, IList<string>>> toReturn = new Collection<Tuple<string, IList<string>>>();
 			filter = filter ?? String.Empty;
@@ -1034,7 +1034,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="employeeIdFilters">dictionary of of employee id filters and the employee ids in them</param>
 		/// <param name="additionalQueryFilters">Full Additional Query Filters string</param>
 		/// <returns>filters with employee ids masked</returns>
-		internal string MaskRmsEmployeeIds(ICollection<Tuple<string, IList<string>>> employeeIdFilters, string additionalQueryFilters)
+		internal static string MaskRmsEmployeeIds(ICollection<Tuple<string, IList<string>>> employeeIdFilters, string additionalQueryFilters)
 		{
 			foreach (Tuple<string, IList<string>> employeeIdFilter in employeeIdFilters)
 			{

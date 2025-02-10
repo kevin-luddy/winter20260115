@@ -13,7 +13,8 @@ namespace GenBOE.ActionLogic.Workspace
     using System.Text;
     using DataBridge.DTO;
     using GenBOE.ActionLogic.Common;
-    using GenBOE.ActionLogic.IO.Export.BOE;
+	using GenBOE.ActionLogic.IO.Export;
+	using GenBOE.ActionLogic.IO.Export.BOE;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.Dtos;
     using GenBOE.Objects;
@@ -165,7 +166,9 @@ namespace GenBOE.ActionLogic.Workspace
 
                     moqType.TableData.ForEach(table => 
                     {
-                        sb.AppendLine($"{labels.TableName}: {table.TableName}");
+						ICollection<Tuple<string, IList<string>>> EmployeeIdFilters = BOEExportUtilities.GetEmployeeIds(table.AdditionalQueryFilters);
+						string maskededFilters = BOEExportUtilities.MaskRmsEmployeeIds(EmployeeIdFilters, table.AdditionalQueryFilters);
+						sb.AppendLine($"{labels.TableName}: {table.TableName}");
                         sb.AppendLine($"{labels.DateOfReport}: {table.DateOfReport.ToShortDateString()}");
                         sb.AppendLine($"{labels.HistoricalProgramName}: {table.HistoricalProgramName}");
                         sb.AppendLine($"{labels.ContractNumber}: {table.ContractNumber}");
@@ -173,7 +176,7 @@ namespace GenBOE.ActionLogic.Workspace
                         sb.AppendLine($"{labels.PoPStart}: {table.PoPStartString}");
                         sb.AppendLine($"{labels.PoPEnd}: {table.PoPEndString}");
                         sb.AppendLine($"{labels.TotalWbsHours}: {table.TotalWbsHours.ToString(Constants.DECIMAL_FORMATTING)}");
-                        sb.AppendLine($"{labels.AdditionalQueryFilters}: {table.AdditionalQueryFilters}");
+                        sb.AppendLine($"{labels.AdditionalQueryFilters}: {maskededFilters}");
                         sb.AppendLine($"{labels.TotalRelevantHours}: {table.TotalRelevantHours.ToString(Constants.DECIMAL_FORMATTING)}");
                         sb.AppendLine();
                     });
