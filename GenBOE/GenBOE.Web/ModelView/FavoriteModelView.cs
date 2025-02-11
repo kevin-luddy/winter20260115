@@ -7,6 +7,9 @@ namespace GenBOE.Web.ModelView
 {
 	using System;
 
+	/// <summary>
+	/// The payload model for Favorite POST request
+	/// </summary>
 	[Serializable]
 	public class FavoriteModelView
 	{

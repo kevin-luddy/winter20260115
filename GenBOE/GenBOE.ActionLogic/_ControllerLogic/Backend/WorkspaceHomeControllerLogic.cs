@@ -91,9 +91,9 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 		/// <summary>
 		/// Update the favorite in the Home Grid
 		/// </summary>
-		/// <param name="currentUser"></param>
-		/// <param name="workspaceId"></param>
-		/// <param name="isFavorite"></param>
+		/// <param name="currentUser">current user that's doing the favorite</param>
+		/// <param name="workspaceId">the workspace being favorited</param>
+		/// <param name="isFavorite">the favorite boolean value</param>
 		public void UpdateFavorite(UserDTO currentUser, int workspaceId, bool isFavorite)
 		{
 			if (currentUser == null)
