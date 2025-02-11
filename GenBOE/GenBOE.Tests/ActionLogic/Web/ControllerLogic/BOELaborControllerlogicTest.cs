@@ -82,10 +82,20 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		private const string Rationale3 = "Rationale3";
 
 		#region Private members
+		
+		/// <summary>
+		/// Reset companymode to space
+		/// </summary>
+		[ClassCleanup]
+		virtual public void Reset()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+		}
 
 		// Test
 		private BOELaborControllerLogic CreateSystem()
 		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
 			this.CreateCommonSystem();
 
 			return new BOELaborControllerLogic(
@@ -120,6 +130,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 		private BOELaborControllerLogic CreateSystemSSC()
 		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
 			this.CreateCommonSystem();
 
 			return new BOELaborControllerLogicSpace(
@@ -154,6 +165,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 		private BOELaborControllerLogic CreateSystemMST()
 		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
 			this.CreateCommonSystem();
 
 			return new BOELaborControllerLogicMST(
@@ -3404,7 +3416,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void RefreshSkillMix_Empty_Test()
 		{
-			BOELaborControllerLogic sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystemMST();
 			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(null, null, null, null, true, false);
 			Assert.IsNotNull(result);
 		}
@@ -3415,7 +3427,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void RefreshSkillMix_HoursOnly_Test()
 		{
-			BOELaborControllerLogic sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystemMST();
 			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 			{
 				new MOQTypeSelectionTableDataResourceHoursDTO
@@ -3475,7 +3487,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void RefreshSkillMix_HoursLaborOnly_Test()
 		{
-			BOELaborControllerLogic sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystemMST();
 			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 			{
 				new MOQTypeSelectionTableDataResourceHoursDTO
@@ -3561,7 +3573,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void RefreshSkillMix_HoursLaborSkillMixOnly_Test()
 		{
-			BOELaborControllerLogic sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystemMST();
 			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 			{
 				new MOQTypeSelectionTableDataResourceHoursDTO
@@ -3657,7 +3669,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void RefreshSkillMix_HoursLaborSkillMixOnly_Test2()
 		{
-			BOELaborControllerLogic sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystemMST();
 			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 			{
 				new MOQTypeSelectionTableDataResourceHoursDTO
@@ -3755,9 +3767,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		/// Test Refresh SkillMix Calculation with Historical Hours, Labor Types, Skill Mix Rows, and Common Disclosure Rows
 		/// </summary>
 		[TestMethod]
-		public void RefreshSkillMix_All_Test()
+		public void RefreshSkillMix_All_RMS_Test()
 		{
-			BOELaborControllerLogic sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystemMST();
 
 			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 			{
@@ -3877,7 +3889,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void RefreshSkillMix_All_Test2()
 		{
-			BOELaborControllerLogic sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystemMST();
 
 			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 			{
@@ -4060,7 +4072,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void RefreshSkillMix_SplitHistorical()
 		{
-			BOELaborControllerLogic sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystemMST();
 
 			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 			{
@@ -4265,7 +4277,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void RefreshSkillMix_RemoveFromCDInvalidResource()
 		{
-			BOELaborControllerLogic sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystemMST();
 
 			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 			{
@@ -4475,7 +4487,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void RefreshSkillMix_RemoveFromCDInvalidBRC()
 		{
-			BOELaborControllerLogic sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystemMST();
 
 			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 			{
@@ -4685,7 +4697,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void RefreshSkillMix_BRC_NoResource_Test1()
 		{
-			BOELaborControllerLogic sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystemMST();
 
 			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 			{

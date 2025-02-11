@@ -74,6 +74,7 @@ namespace GenBOE.Tests.ActionLogic
             ppTask5.Task = ProPricerField_Task.BOEEndDate;
 
             ProPricerTasks ppTask6 = new ProPricerTasks();
+			// Even though this is listed 5th, it will always be first due to BRC
             ppTask6.ListOrder = 5;
             ppTask6.Task = ProPricerField_Task.ProPricerTaskID;
 
@@ -427,9 +428,9 @@ namespace GenBOE.Tests.ActionLogic
             Assert.IsTrue(ResourceCost != null, "Resource Cost data is not null");
 
             //  there is no other way to verify the results other than hard coding string values
-            Assert.AreEqual("112005,,TOTAL,1.1,012006,LIDN000001,\"PE\",\"MOCK TASK1\",\"mock clin1 title\",\"mock wbs title\",2.2,\"an exercise class\",,,\"BBBBBBB\",\"KristinePO\",\"Comparison\",20,1,1,\"test boe\",\"123\",", TaskData[0], "The first task did not match this value");
-            Assert.AreEqual("112005,,TOTAL,,012006,LIDN000002,,\"MOCK TASK2\",\"\",\"mock wbs title\",2.2,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Factor\",21,2,2,\"test boe\",\"1234\",", TaskData[1], "The second task (first resource) did not match this value");
-            Assert.AreEqual("112005,,TOTAL,,012006,LIDN000003,,\"MOCK TASK2\",\"\",\"mock wbs title\",2.2,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Factor\",21,2,3,\"test boe\",\"1234\",", TaskData[2], "The second task (second resource) did not match this value");
+            Assert.AreEqual("LIDN000001,112005,,TOTAL,1.1,012006,\"PE\",\"MOCK TASK1\",\"mock clin1 title\",\"mock wbs title\",2.2,\"an exercise class\",,,\"BBBBBBB\",\"KristinePO\",\"Comparison\",20,1,1,\"test boe\",\"123\",", TaskData[0], "The first task did not match this value");
+            Assert.AreEqual("LIDN000002,112005,,TOTAL,,012006,,\"MOCK TASK2\",\"\",\"mock wbs title\",2.2,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Factor\",21,2,2,\"test boe\",\"1234\",", TaskData[1], "The second task (first resource) did not match this value");
+            Assert.AreEqual("LIDN000003,112005,,TOTAL,,012006,,\"MOCK TASK2\",\"\",\"mock wbs title\",2.2,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Factor\",21,2,3,\"test boe\",\"1234\",", TaskData[2], "The second task (second resource) did not match this value");
 
             Assert.AreEqual("500,\"BBBBBBB\",LIDN000001,2.2,,,,D,1.1,\"mock clin1 title\",112010,\"mock wbs title\",20,1,1,\"test boe\",\"KristinePO\",\"MOCK TASK1\",\"123\",,200.00,0,200.00,", ResourceCost[0], "The first resource did not match this value");
             Assert.AreEqual(",\"BBBBBBB\",LIDN000002,2.2,\"where you learn past events\",\"History\",,D,,\"\",112010,\"mock wbs title\",21,2,2,\"test boe\",\"KristinePO\",\"MOCK TASK2\",\"1234\",\"E\",150,150,150,", ResourceCost[1], "The second resource did not match this value");
@@ -558,9 +559,9 @@ namespace GenBOE.Tests.ActionLogic
             Assert.IsTrue(ResourceCost != null, "Resource Cost data is not null");
 
             //  there is no other way to verify the results other than hard coding string values
-            Assert.AreEqual("112005,,TOTAL,1.1,012006,LIDN000001,\"PE\",\"MOCK TASK1\",\"mock clin1 title\",\"mock wbs title\",2.2,\"an exercise class\",,,\"BBBBBBB\",\"KristinePO\",\"Comparison\",20,1,1,\"test boe\",\"123\",", TaskData[0], "The first task did not match this value");
-            Assert.AreEqual("112005,,TOTAL,,012006,LIDN000002,,\"MOCK TASK2\",\"\",\"mock wbs title\",2.2,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Factor\",21,2,2,\"test boe\",\"1234\",", TaskData[1], "The second task (first resource) did not match this value");
-            Assert.AreEqual("112005,,TOTAL,,012006,LIDN000003,,\"MOCK TASK2\",\"\",\"mock wbs title\",2.2,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Factor\",21,2,3,\"test boe\",\"1234\",", TaskData[2], "The second task (second resource) did not match this value");
+            Assert.AreEqual("LIDN000001,112005,,TOTAL,1.1,012006,\"PE\",\"MOCK TASK1\",\"mock clin1 title\",\"mock wbs title\",2.2,\"an exercise class\",,,\"BBBBBBB\",\"KristinePO\",\"Comparison\",20,1,1,\"test boe\",\"123\",", TaskData[0], "The first task did not match this value");
+            Assert.AreEqual("LIDN000002,112005,,TOTAL,,012006,,\"MOCK TASK2\",\"\",\"mock wbs title\",2.2,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Factor\",21,2,2,\"test boe\",\"1234\",", TaskData[1], "The second task (first resource) did not match this value");
+            Assert.AreEqual("LIDN000003,112005,,TOTAL,,012006,,\"MOCK TASK2\",\"\",\"mock wbs title\",2.2,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Factor\",21,2,3,\"test boe\",\"1234\",", TaskData[2], "The second task (second resource) did not match this value");
 
             Assert.AreEqual("500,\"BBBBBBB\",LIDN000001,2.2,,,,D,1.1,\"mock clin1 title\",112010,\"mock wbs title\",20,1,1,\"test boe\",\"KristinePO\",\"MOCK TASK1\",\"123\",200,0,200,", ResourceCost[0], "The first resource did not match this value");
             Assert.AreEqual(",\"BBBBBBB\",LIDN000002,2.2,\"where you learn past events\",\"History\",,D,,\"\",112010,\"mock wbs title\",21,2,2,\"test boe\",\"KristinePO\",\"MOCK TASK2\",\"1234\",150,150,150,", ResourceCost[1], "The second resource did not match this value");
@@ -1476,14 +1477,14 @@ namespace GenBOE.Tests.ActionLogic
             Assert.IsTrue(ResourceCost != null, "Resouce Cost data is not null");
 
             //  there is no other way to verify the results other than hard coding string values
-            Assert.AreEqual("112005,,TOTAL,1.1,122010,LIDN000001,\"PE\",\"MOCK TASK2\",\"mock clin1 title\",\"mock wbs title\",2.2,\"an exercise class\",\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Level of Effort\",20,6,7,\"Labor/Material BOE\",\"1234\",", TaskData[0], "The first BOE labor task (first resource) did not match this value");
-            Assert.AreEqual("112005,,TOTAL,1.1,122010,LIDN000002,\"PE\",\"MOCK TASK2\",\"mock clin1 title\",\"mock wbs title\",2.2,\"an exercise class\",\"where you learn past events\",\"History\",\"EEEEEEE\",\"KristinePO\",\"Level of Effort\",20,6,8,\"Labor/Material BOE\",\"1234\",", TaskData[1], "The first BOE labor task (second resource) did not match this value");
-            Assert.AreEqual("112005,,TOTAL,1.1,122010,IIDN000001,\"PE\",\"MOCK TASK3\",\"mock clin1 title\",\"mock wbs title\",2.2,\"an exercise class\",\"where you learn past events\",\"History\",\"CCCC\",\"KristinePO\",\"Judgment\",20,11,12,\"Labor/Material BOE\",\"2345\",", TaskData[2], "The BOE iwta task did not match this value");
-            Assert.AreEqual("112005,,TOTAL,1.1,122010,SIDN000001,\"PE\",\"MOCK TASK4\",\"mock clin1 title\",\"mock wbs title\",2.2,\"an exercise class\",\"where you learn past events\",\"History\",\"DDDD\",\"KristinePO\",\"Estimating Relationships\",20,15,16,\"Labor/Material BOE\",\"3456\",", TaskData[3], "The BOE sub task did not match this value");
-            Assert.AreEqual("112005,,TOTAL,1.1,122010,MIDN000001,\"PE\",\"MOCK TASK5\",\"mock clin1 title\",\"mock wbs title\",2.2,\"an exercise class\",,,\"FFFFFFF\",\"KristinePO\",\"Level of Effort\",20,20,21,\"Labor/Material BOE\",\"111\",", TaskData[4], "The BOE material labor task did not match this value");
-            Assert.AreEqual("112005,,TOTAL,1.1,122010,TIDN000001,\"PE\",\"MOCK TASK7\",\"mock clin1 title\",\"mock wbs title\",2.2,\"an exercise class\",\"where you learn past events\",\"History\",\"HHHHHHH\",\"KristinePO\",\"Factor\",20,30,31,\"Labor/Material BOE\",\"333\",", TaskData[5], "The BOE travel labor task did not match this value");
-            Assert.AreEqual("112005,,TOTAL,1.1,122010,OIDN000001,,\"MOCK TASK6\",\"mock clin1 title\",\"mock wbs title\",2.2,,\"where you learn past events\",\"History\",\"GGGGGGG\",\"KristinePO\",\"Judgment\",20,25,26,\"Labor/Material BOE\",\"222\",", TaskData[6], "The BOE odc labor task did not match this value");
-            Assert.AreEqual("112006,,TOTAL,,012007,LIDN000003,,\"MOCK TASK8\",\"\",\"mock wbs title\",2.2,,,,\"IIIIIII\",\"KristinePO\",\"\",22,35,36,\"\",\"333\",", TaskData[11], "The second BOE labor task did not match this value");
+            Assert.AreEqual("LIDN000001,112005,,TOTAL,1.1,122010,\"PE\",\"MOCK TASK2\",\"mock clin1 title\",\"mock wbs title\",2.2,\"an exercise class\",\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Level of Effort\",20,6,7,\"Labor/Material BOE\",\"1234\",", TaskData[0], "The first BOE labor task (first resource) did not match this value");
+            Assert.AreEqual("LIDN000002,112005,,TOTAL,1.1,122010,\"PE\",\"MOCK TASK2\",\"mock clin1 title\",\"mock wbs title\",2.2,\"an exercise class\",\"where you learn past events\",\"History\",\"EEEEEEE\",\"KristinePO\",\"Level of Effort\",20,6,8,\"Labor/Material BOE\",\"1234\",", TaskData[1], "The first BOE labor task (second resource) did not match this value");
+            Assert.AreEqual("IIDN000001,112005,,TOTAL,1.1,122010,\"PE\",\"MOCK TASK3\",\"mock clin1 title\",\"mock wbs title\",2.2,\"an exercise class\",\"where you learn past events\",\"History\",\"CCCC\",\"KristinePO\",\"Judgment\",20,11,12,\"Labor/Material BOE\",\"2345\",", TaskData[2], "The BOE iwta task did not match this value");
+            Assert.AreEqual("SIDN000001,112005,,TOTAL,1.1,122010,\"PE\",\"MOCK TASK4\",\"mock clin1 title\",\"mock wbs title\",2.2,\"an exercise class\",\"where you learn past events\",\"History\",\"DDDD\",\"KristinePO\",\"Estimating Relationships\",20,15,16,\"Labor/Material BOE\",\"3456\",", TaskData[3], "The BOE sub task did not match this value");
+            Assert.AreEqual("MIDN000001,112005,,TOTAL,1.1,122010,\"PE\",\"MOCK TASK5\",\"mock clin1 title\",\"mock wbs title\",2.2,\"an exercise class\",,,\"FFFFFFF\",\"KristinePO\",\"Level of Effort\",20,20,21,\"Labor/Material BOE\",\"111\",", TaskData[4], "The BOE material labor task did not match this value");
+            Assert.AreEqual("TIDN000001,112005,,TOTAL,1.1,122010,\"PE\",\"MOCK TASK7\",\"mock clin1 title\",\"mock wbs title\",2.2,\"an exercise class\",\"where you learn past events\",\"History\",\"HHHHHHH\",\"KristinePO\",\"Factor\",20,30,31,\"Labor/Material BOE\",\"333\",", TaskData[5], "The BOE travel labor task did not match this value");
+            Assert.AreEqual("OIDN000001,112005,,TOTAL,1.1,122010,,\"MOCK TASK6\",\"mock clin1 title\",\"mock wbs title\",2.2,,\"where you learn past events\",\"History\",\"GGGGGGG\",\"KristinePO\",\"Judgment\",20,25,26,\"Labor/Material BOE\",\"222\",", TaskData[6], "The BOE odc labor task did not match this value");
+            Assert.AreEqual("LIDN000003,112006,,TOTAL,,012007,,\"MOCK TASK8\",\"\",\"mock wbs title\",2.2,,,,\"IIIIIII\",\"KristinePO\",\"\",22,35,36,\"\",\"333\",", TaskData[11], "The second BOE labor task did not match this value");
 
             //resource data
             Assert.AreEqual(",\"BBBBBBB\",LIDN000001,2.2,\"where you learn past events\",\"History\",,D,1.1,\"mock clin1 title\",112010,\"mock wbs title\",20,6,7,\"Labor/Material BOE\",\"KristinePO\",\"MOCK TASK2\",\"1234\",150,150,150,", ResourceCost[0], "The first BOE labor resource did not match this value");
@@ -1801,9 +1802,9 @@ namespace GenBOE.Tests.ActionLogic
             Assert.IsTrue(ResourceCost != null, "Resource Cost data is not null");
 
             //  there is no other way to verify the results other than hard coding string values
-            Assert.AreEqual("112005,,TOTAL,,012006,LIDN000001,\"PE\",\"MOCK TASK1\",\"\",\"\",,\"an exercise class\",,,\"BBBBBBB\",\"KristinePO\",\"Comparison\",20,1,1,\"test boe\",\"123\",", TaskData[0], "The first task did not match this value");
-            Assert.AreEqual("112005,,TOTAL,,012006,LIDN000002,,\"MOCK TASK2\",\"\",\"\",,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Factor\",21,2,2,\"test boe\",\"1234\",", TaskData[1], "The second task (first resource) did not match this value");
-            Assert.AreEqual("112005,,TOTAL,,012006,LIDN000003,,\"MOCK TASK2\",\"\",\"\",,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Factor\",21,2,3,\"test boe\",\"1234\",", TaskData[2], "The second task (second resource) did not match this value");
+            Assert.AreEqual("LIDN000001,112005,,TOTAL,,012006,\"PE\",\"MOCK TASK1\",\"\",\"\",,\"an exercise class\",,,\"BBBBBBB\",\"KristinePO\",\"Comparison\",20,1,1,\"test boe\",\"123\",", TaskData[0], "The first task did not match this value");
+            Assert.AreEqual("LIDN000002,112005,,TOTAL,,012006,,\"MOCK TASK2\",\"\",\"\",,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Factor\",21,2,2,\"test boe\",\"1234\",", TaskData[1], "The second task (first resource) did not match this value");
+            Assert.AreEqual("LIDN000003,112005,,TOTAL,,012006,,\"MOCK TASK2\",\"\",\"\",,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Factor\",21,2,3,\"test boe\",\"1234\",", TaskData[2], "The second task (second resource) did not match this value");
 
             Assert.AreEqual("500,\"BBBBBBB\",LIDN000001,,,,,D,,\"\",112010,\"\",20,1,1,\"test boe\",\"KristinePO\",\"MOCK TASK1\",\"123\",200,0,200,", ResourceCost[0], "The first resource did not match this value");
             Assert.AreEqual(",\"BBBBBBB\",LIDN000002,,\"where you learn past events\",\"History\",,D,,\"\",112010,\"\",21,2,2,\"test boe\",\"KristinePO\",\"MOCK TASK2\",\"1234\",150,150,150,", ResourceCost[1], "The second resource did not match this value");
@@ -1930,9 +1931,9 @@ namespace GenBOE.Tests.ActionLogic
             Assert.IsTrue(ResourceCost != null, "Resource Cost data is not null");
 
             //  there is no other way to verify the results other than hard coding string values
-            Assert.AreEqual("112005,,TOTAL,,012006,LIDN000001,\"PE\",\"MOCK TASK1\",\"\",\"mock wbs title\",2.2,\"an exercise class\",,,\"BBBBBBB\",\"KristinePO\",\"Comparison\",20,1,1,\"test boe\",\"123\",", TaskData[0], "The first task did not match this value");
-            Assert.AreEqual("112005,,TOTAL,,012006,LIDN000002,,\"MOCK TASK2\",\"\",\"\",,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Factor\",21,2,2,\"test boe\",\"1234\",", TaskData[1], "The second task (first resource) did not match this value");
-            Assert.AreEqual("112005,,TOTAL,,012006,LIDN000003,,\"MOCK TASK2\",\"\",\"\",,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Factor\",21,2,3,\"test boe\",\"1234\",", TaskData[2], "The second task (second resource) did not match this value");
+            Assert.AreEqual("LIDN000001,112005,,TOTAL,,012006,\"PE\",\"MOCK TASK1\",\"\",\"mock wbs title\",2.2,\"an exercise class\",,,\"BBBBBBB\",\"KristinePO\",\"Comparison\",20,1,1,\"test boe\",\"123\",", TaskData[0], "The first task did not match this value");
+            Assert.AreEqual("LIDN000002,112005,,TOTAL,,012006,,\"MOCK TASK2\",\"\",\"\",,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Factor\",21,2,2,\"test boe\",\"1234\",", TaskData[1], "The second task (first resource) did not match this value");
+            Assert.AreEqual("LIDN000003,112005,,TOTAL,,012006,,\"MOCK TASK2\",\"\",\"\",,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Factor\",21,2,3,\"test boe\",\"1234\",", TaskData[2], "The second task (second resource) did not match this value");
 
             Assert.AreEqual("500,\"BBBBBBB\",LIDN000001,2.2,,,,D,,\"\",112010,\"mock wbs title\",20,1,1,\"test boe\",\"KristinePO\",\"MOCK TASK1\",\"123\",200,0,200,", ResourceCost[0], "The first resource did not match this value");
             Assert.AreEqual(",\"BBBBBBB\",LIDN000002,,\"where you learn past events\",\"History\",,D,,\"\",112010,\"\",21,2,2,\"test boe\",\"KristinePO\",\"MOCK TASK2\",\"1234\",150,150,150,", ResourceCost[1], "The second resource did not match this value");
@@ -2307,9 +2308,9 @@ namespace GenBOE.Tests.ActionLogic
             Assert.IsTrue(ResourceCost != null, "Resource Cost data is not null");
 
             //  there is no other way to verify the results other than hard coding string values
-            Assert.AreEqual("112005,,TOTAL,1.1,012006,LIDN000001,\"PE\",\"MOCK TASK1\",\"mock clin1 title\",\"mock wbs title\",2.2,\"an exercise class\",,,\"BBBBBBB\",\"KristinePO\",\"Statement of Work (SOW)\",20,1,1,\"test boe\",\"123\",", TaskData[0], "The first task did not match this value");
-            Assert.AreEqual("112005,,TOTAL,,012006,LIDN000002,,\"MOCK TASK2\",\"\",\"mock wbs title\",2.2,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Multiple\",21,2,2,\"test boe\",\"1234\",", TaskData[1], "The second task (first resource) did not match this value");
-            Assert.AreEqual("112005,,TOTAL,,012006,LIDN000003,,\"MOCK TASK2\",\"\",\"mock wbs title\",2.2,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Multiple\",21,2,3,\"test boe\",\"1234\",", TaskData[2], "The second task (second resource) did not match this value");
+            Assert.AreEqual("LIDN000001,112005,,TOTAL,1.1,012006,\"PE\",\"MOCK TASK1\",\"mock clin1 title\",\"mock wbs title\",2.2,\"an exercise class\",,,\"BBBBBBB\",\"KristinePO\",\"Statement of Work (SOW)\",20,1,1,\"test boe\",\"123\",", TaskData[0], "The first task did not match this value");
+            Assert.AreEqual("LIDN000002,112005,,TOTAL,,012006,,\"MOCK TASK2\",\"\",\"mock wbs title\",2.2,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Multiple\",21,2,2,\"test boe\",\"1234\",", TaskData[1], "The second task (first resource) did not match this value");
+            Assert.AreEqual("LIDN000003,112005,,TOTAL,,012006,,\"MOCK TASK2\",\"\",\"mock wbs title\",2.2,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Multiple\",21,2,3,\"test boe\",\"1234\",", TaskData[2], "The second task (second resource) did not match this value");
 
             Assert.AreEqual("500,\"BBBBBBB\",LIDN000001,2.2,,,,D,1.1,\"mock clin1 title\",112010,\"mock wbs title\",20,1,1,\"test boe\",\"KristinePO\",\"MOCK TASK1\",\"123\",200,0,200,", ResourceCost[0], "The first resource did not match this value");
             Assert.AreEqual(",\"BBBBBBB\",LIDN000002,2.2,\"where you learn past events\",\"History\",,D,,\"\",112010,\"mock wbs title\",21,2,2,\"test boe\",\"KristinePO\",\"MOCK TASK2\",\"1234\",150,150,150,", ResourceCost[1], "The second resource did not match this value");

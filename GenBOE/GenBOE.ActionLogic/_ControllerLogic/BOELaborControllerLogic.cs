@@ -3730,7 +3730,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			
 			if (resourceHours.Any())
 			{
-				bool addBlankRow = true;
+				bool addBlankRow = SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST;
 				
 				// filter out bad data in currentSkillMixData
 				FilterBadData(laborTypes, currentSkillMixData, currentCommonDisclosureData, isManual);
@@ -4371,6 +4371,16 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="refreshedModel">The Refreshed Skill Mix Model</param>
 		protected virtual void CreateCommonDisclosureRows(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<LaborTypeDataModelView> laborTypes, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, RefreshSkillMixModelView refreshedModel)
 		{
+			if (laborTypes == null)
+			{
+				throw new ArgumentNullException(nameof(laborTypes));
+			}
+
+			if (refreshedModel == null)
+			{
+				throw new ArgumentNullException(nameof(refreshedModel));
+			}
+			
 			// Create Common Disclosure Rows by taking the list of Resources assigned in Skill Mix table, then finding the BRCs assigned to those Resources in LaborTypes data
 			ICollection<string> resourceNames = refreshedModel.SkillMixRows.Where(s => !string.IsNullOrWhiteSpace(s.ResourceNew) && s.Included).Select(r => r.ResourceNew).Distinct().ToList();
 			foreach (string resourceName in resourceNames)
@@ -4458,6 +4468,16 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="isBRCEnabled">Is BRC Enabled for this workspace</param>
 		protected virtual void CopyMatchingSkillMixRowData(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, RefreshSkillMixModelView refreshedModel, bool isBRCEnabled, bool isManual)
 		{
+			if (laborTypes == null)
+			{
+				throw new ArgumentNullException(nameof(laborTypes));
+			}
+
+			if (refreshedModel == null)
+			{
+				throw new ArgumentNullException(nameof(refreshedModel));
+			}
+
 			if (currentSkillMixData != null && currentSkillMixData.Any())
 			{
 				bool emptyRowInCDTable = false;
