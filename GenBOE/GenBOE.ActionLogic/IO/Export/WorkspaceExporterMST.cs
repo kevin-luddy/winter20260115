@@ -26,7 +26,12 @@ namespace GenBOE.ActionLogic.IO.Export
     /// </summary>
     public class WorkspaceExporterMST : WorkspaceExporter
     {
-        public override string WORKSPACE_DATA_EXCEL_MAP_PATH
+		/// <summary>
+		/// First Skill Mix Table's Sheet Name
+		/// </summary>
+		protected override string SkillMixTableSheetName { get { return "Current Skill Mix"; } }
+
+		public override string WORKSPACE_DATA_EXCEL_MAP_PATH
         {
             get {return "~/Templates/Export/WorkspaceDataMST.xlsx";}
         }
@@ -244,5 +249,55 @@ namespace GenBOE.ActionLogic.IO.Export
 
             return toReturn;
         }
+
+		/// <summary>
+		/// Create a Skill Mix Table row
+		/// </summary>
+		/// <param name="exportInputs">BOE Export inputs</param>
+		/// <param name="boe">The associated boe</param>
+		/// <param name="task">The associated task</param>
+		/// <param name="selectedMOQTypeText">The selected MOQ</param>
+		/// <param name="skillMix">The skill Mix row</param>
+		/// <returns></returns>
+		protected override IList<string> CreateSkillMixTableRow(BOEExportInputs exportInputs, BoeDTO boe, BoeTaskElementDTO task, string selectedMOQTypeText, SkillMixModelView skillMix)
+		{
+			if (boe == null)
+			{
+				throw new ArgumentNullException(nameof(boe));
+			}
+
+			if (exportInputs == null)
+			{
+				throw new ArgumentNullException(nameof(exportInputs));
+			}
+
+			if (task == null)
+			{
+				throw new ArgumentNullException(nameof(task));
+			}
+
+			if (skillMix == null)
+			{
+				throw new ArgumentNullException(nameof(skillMix));
+			}
+
+			return new List<string>()
+				{
+					boe.Id.ToString(),
+					boe.Title ?? this.sEmpty,
+					string.Format(TaskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
+					task.BOETaskID,
+					task.TaskTitle,
+					selectedMOQTypeText,
+					skillMix.ResourceOld,
+					skillMix.ResourceNew,
+					CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.HistoricalHours,
+					CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.LaborSkillMix,
+					skillMix.Included ? "Yes" : "No",
+					CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.BOESkillMix,
+					CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.ProposedHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)),
+					skillMix.Rationale
+				};
+		}
 	}
 }

@@ -2046,8 +2046,8 @@
     };
 
     $scope.isSkillMixManual = function () {
-        // Set Skill Mix to be manual if SAP Connection is diabled or if there is any MOQ Type that is not Historical (5001) or Comparative (5002) MOQ Type or if there are no selected moqtypes or if using TM Rates in Task
-        return $scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0 || !ManageTaskModel.SapConnectionEnabled || !$scope.SelectedMoqTypes.every(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002') || $scope.IsUsingTMRatesInTask;
+        // Set Skill Mix to be manual if SAP Connection is disabled or if there is any MOQ Type that is not Historical (5001) or Comparative (5002) MOQ Type or if there are no selected moqtypes
+        return $scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0 || !ManageTaskModel.SapConnectionEnabled || !$scope.SelectedMoqTypes.every(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002');
     };
 
     $scope.isSkillMixDisabled = function () {
