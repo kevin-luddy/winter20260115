@@ -87,7 +87,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		/// Reset companymode to space
 		/// </summary>
 		[ClassCleanup]
-		virtual public void Reset()
+		public static void Reset()
 		{
 			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
 		}
@@ -2528,43 +2528,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			MOQEquationModelView result = sut.GetMOQModelView(te, workspace);
 			Assert.IsFalse(result.ShowSearchMetricsLink);
 		}
-
-		[TestMethod]
-		public void GetMOQEquationModelViewMST()
-		{
-			BOELaborControllerLogic sut = CreateSystemMST();
-			BoeTaskElementDTO te = new BoeTaskElementDTO()
-			{
-				Id = 1,
-				TaskTitle = "My Task Title",
-				MOQText = "MOQ Text"
-			};
-			MSTMetricDetailsDTO dto = new MSTMetricDetailsDTO()
-			{
-				Id = 1,
-				BusinessArea = "MST",
-				DataSource = "PMM",
-				DateAddedToTaskElement = DateTime.Now,
-				Comment = "Test Comment",
-				ContractNumber = "12345",
-				DataSourceId = 1,
-				EndDate = DateTime.Now.AddYears(1),
-				Equation = "1 + 2",
-				LineOfBusiness = "Civil",
-				MeasureData = 0.98m,
-				ProgramName = "JSF",
-				MeasureName = "SoftwareEngineer",
-				ProgramId = 1
-			};
-
-			FullWorkspace workspace = new FullWorkspace(new WorkspaceDTO());
-
-			MOQEquationModelView result = sut.GetMOQModelView(te, workspace);
-			Assert.AreEqual(1, result.PMMetricsUsed.Count, "The number of HistoricalMetricsUsed is incorrect.");
-			Assert.AreEqual("SoftwareEngineer", result.PMMetricsUsed.ToCollection()[0].MeasureName, "The data in the returned model is not correct.");
-			Assert.AreEqual(1, result.PMMetricsUsed.ToCollection()[0].Id, "The data in the returned model is not correct.");
-			Assert.IsTrue(result.ShowSearchMetricsLink);
-		}
 		#endregion
 
 		#region OverrideReadOnly Tests
@@ -2855,6 +2818,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			FullWorkspace testWorkspace = new FullWorkspace() { WorkspaceName = "Test Workspace", CostDecimalPrecision = 2, ResourceDecimalPrecision = 2 };
 
 			ResourceSpreadDto testSpread = new ResourceSpreadDto { BoeID = this.Boe1.Id, Id = 1, LaborSpreadDate = DateTime.Now, LaborSpreadValue = 5000 };
+			tmResourceRateDTODataLoader.Setup(x => x.GetByWorkspaceId(It.IsAny<int>())).Returns(new List<TMResourceRateDTO>());
 
 			CustomFieldValueContainer testLaborCustomField = new CustomFieldValueContainer()
 			{

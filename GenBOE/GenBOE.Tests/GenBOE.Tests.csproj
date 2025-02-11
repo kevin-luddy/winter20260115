@@ -382,10 +382,10 @@
     <None Include="Resources\LaborImportHoursCustomFieldsNoSelection.xlsx" />
     <None Include="Resources\laborimportmulticustomfields.xlsx" />
     <None Include="Resources\LaborTypesAndSpread.xlsx" />
-    <None Include="Resources\moqtablerms.xlsx" />
-    <None Include="Resources\moqtablessc.xlsx" />
-    <None Include="Resources\ProjectMap.xlsx" />
+    <None Include="Resources\MOQTableRMS.xlsx" />
+    <None Include="Resources\MOQTableSSC.xlsx" />
     <EmbeddedResource Include="Resources\TINATraining.xlsx" />
+    <None Include="Resources\ProjectMap.xlsx" />
     <None Include="Resources\WbsBoeReport.xlsx" />
   </ItemGroup>
   <ItemGroup>

@@ -55,6 +55,11 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 		private Mock<IFullObjectFactory> factory;
 
 		/// <summary>
+		/// AD mock
+		/// </summary>
+		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
+
+		/// <summary>
 		/// Get the System Under Test
 		/// </summary>
 		/// <returns>an instance of BOEConfidenceReports</returns>
@@ -67,13 +72,23 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			factory = new Mock<IFullObjectFactory>();
 			Mock<IPermissionsDTODataLoader> permissionsLoader = new Mock<IPermissionsDTODataLoader>();
 			Mock<ICommonDataMapper> commonDataMapper = new Mock<ICommonDataMapper>();
-
+			
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), commonDataMapper.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionsLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
 
 			retriever.Setup(x => x.GetWsRteOverrides(It.IsAny<int>())).Returns(new Collection<RteTemplateSource>());
+			WbsDTO wbs = new WbsDTO
+			{
+				Id = 1,
+				Level = 1,
+				WbsTitle = "1",
+				WbsNumber = "1"
+			};
+
+			factory.Setup(x => x.CreateFullWbs(It.IsAny<WbsDTO>())).Returns(new FullWbs(wbs));
 
 			return new BOEConfidenceReport(boeLoader.Object, moqTypeLoader.Object, rteTemplateLoader.Object);
 		}
@@ -99,14 +114,16 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			{
 				Id = 1,
 				Title = "BOE 1",
-				WorkspaceID = workspace.Id
+				WorkspaceID = workspace.Id,
+				WBSID = 1
 			};
-
+			
 			BoeDTO boe2 = new BoeDTO()
 			{
 				Id = 2,
 				Title = "BOE 2",
-				WorkspaceID = workspace.Id
+				WorkspaceID = workspace.Id,
+				WBSID = 1
 			};
 
 			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()
@@ -230,7 +247,8 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			{
 				Id = 1,
 				Title = "BOE 1",
-				WorkspaceID = workspace.Id
+				WorkspaceID = workspace.Id,
+				WBSID = 1
 			};
 
 			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()
@@ -325,7 +343,8 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			{
 				Id = 1,
 				Title = "BOE 1",
-				WorkspaceID = workspace.Id
+				WorkspaceID = workspace.Id,
+				WBSID = 1
 			};
 
 			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()
@@ -397,7 +416,8 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			{
 				Id = 1,
 				Title = "BOE 1",
-				WorkspaceID = workspace.Id
+				WorkspaceID = workspace.Id,
+				WBSID = 1
 			};
 
 			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()
@@ -469,7 +489,8 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			{
 				Id = 1,
 				Title = "BOE 1",
-				WorkspaceID = workspace.Id
+				WorkspaceID = workspace.Id,
+				WBSID = 1
 			};
 
 			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()
@@ -541,7 +562,8 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			{
 				Id = 1,
 				Title = "BOE 1",
-				WorkspaceID = workspace.Id
+				WorkspaceID = workspace.Id,
+				WBSID = 1
 			};
 
 			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()
@@ -634,7 +656,8 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			{
 				Id = 1,
 				Title = "BOE 1",
-				WorkspaceID = workspace.Id
+				WorkspaceID = workspace.Id,
+				WBSID = 1
 			};
 
 			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()
@@ -730,7 +753,8 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			{
 				Id = 1,
 				Title = "BOE 1",
-				WorkspaceID = workspace.Id
+				WorkspaceID = workspace.Id,
+				WBSID = 1
 			};
 
 			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()
@@ -820,7 +844,8 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			{
 				Id = 1,
 				Title = "BOE 1",
-				WorkspaceID = workspace.Id
+				WorkspaceID = workspace.Id,
+				WBSID = 1
 			};
 
 			BoeTaskElementDTO task1 = new BoeTaskElementDTO()
@@ -934,7 +959,8 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			{
 				Id = 1,
 				Title = "BOE 1",
-				WorkspaceID = workspace.Id
+				WorkspaceID = workspace.Id,
+				WBSID = 1
 			};
 
 			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()
@@ -1000,7 +1026,8 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			{
 				Id = 1,
 				Title = "BOE 1",
-				WorkspaceID = workspace.Id
+				WorkspaceID = workspace.Id,
+				WBSID = 1
 			};
 
 			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()
@@ -1065,7 +1092,8 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			{
 				Id = 1,
 				Title = "BOE 1",
-				WorkspaceID = workspace.Id
+				WorkspaceID = workspace.Id,
+				WBSID = 1
 			};
 
 			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()
@@ -1136,7 +1164,8 @@ namespace GenBOE.Tests.ActionLogic.Reporting
 			{
 				Id = 1,
 				Title = "BOE 1",
-				WorkspaceID = workspace.Id
+				WorkspaceID = workspace.Id,
+				WBSID = 1
 			};
 
 			OrdinaryVariableDto task1Variable = new OrdinaryVariableDto()

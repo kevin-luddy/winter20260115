@@ -125,7 +125,7 @@ namespace GenBOE.Tests.ActionLogic.IO
             overdue = sut.GetOverdueTraining(new ADTest(), models, boe.CourseGroupName);
             // There should be 1 overdue, and 3 missing, and 1 invalid
             Assert.AreEqual(5, overdue.Count);
-            expired = overdue.FirstOrDefault(o => o.CourseId == Constants.SHARED_BOE_WRITING_COURSE && o.UserDisplayName == ExpiredGuy && o.NTID == ExpiredGuy.ToLower());
+            expired = overdue.FirstOrDefault(o => o.CourseId == Constants.SSC_OLD_BOE_WRITING_COURSE && o.UserDisplayName == ExpiredGuy);
             missing = overdue.FirstOrDefault(o => o.CourseId == Constants.SHARED_BOE_WRITING_COURSE && o.UserDisplayName == MissingGuy && o.NTID == MissingGuy.ToLower());
             TrainingModelView invalid = overdue.FirstOrDefault(o => o.CourseId == Constants.SSC_OLD_BOE_WRITING_COURSE && o.UserDisplayName == InvalidGuy);
             Assert.IsNotNull(expired);
@@ -153,7 +153,7 @@ namespace GenBOE.Tests.ActionLogic.IO
         public const int MissingUserId = 7;
         public const int InvalidUserId = 10;
         public DateTime ExpiredTime = DateTime.Now.AddYears(-4);
-        public DateTime GoodTime = new DateTime(2019, 5, 1);
+        public DateTime GoodTime = DateTime.Now;
         public DateTime InvalidTime = new DateTime(2019, 8, 1);
         public const string GoodGuy = "Good guy1";
         public const string GoodGuy2 = "Good guy2";

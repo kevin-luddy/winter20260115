@@ -17,7 +17,7 @@ namespace GenBOE.Tests.ActionLogic
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
-    using IES.Common;
+	using IES.Common;
     using IES.Common.classes;
     using IES.Common.Exceptions;
     using Microsoft.Practices.Unity;
@@ -1526,6 +1526,7 @@ namespace GenBOE.Tests.ActionLogic
                             StartDateValue = Convert.ToDateTime("11/01/2010"),
                             EndDateValue = Convert.ToDateTime("01/01/2011"),
                             ResourceID = null,
+							BusinessResourceCodeID = null,
                             PerformingOrgID = this.Perforg.Id,
                             SpreadCurveID = SpreadCurves.DiscreteHours,
                             LaborSpreads = new Collection<ResourceSpreadDto>
@@ -1548,8 +1549,16 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetOdcCollectionByBoeIds(It.IsAny<List<int>>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
             this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { });
             this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
-
-			Mock<TravelTripCostCalculation> TripCalculate = new Mock<TravelTripCostCalculation>();
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>());
+			this.retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(It.IsAny<int>())).Returns(new List<CustomFieldDTO>());
+			this.retriever.Setup(x => x.GetResourcesByResourceListId(It.IsAny<int>())).Returns(new List<ResourceDTO>());
+			this.retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new List<CustomFieldValueDTO>());
+			this.retriever.Setup(x => x.GetClinsByWorkspaceId(It.IsAny<int>())).Returns(new List<FullClin>());
+			this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(It.IsAny<int>())).Returns(new List<FullWbs>());
+			this.retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>());
+			this.retriever.Setup(x => x.GetMaterialsByBoeIds(It.IsAny<Collection<int>>(), It.IsAny<bool>())).Returns(new List<MaterialDTO>());
+			
+			Mock <TravelTripCostCalculation> TripCalculate = new Mock<TravelTripCostCalculation>();
 			Mock<RMSZoneTravelRatesFeesDataLoader> rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
             rmsTripCalculate.Setup(x => x.getAllFeesAndCostsByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSTravelNonzoneFeesAndCostsDTO>());
             rmsTripCalculate.Setup(x => x.getAllEscalationRatesByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSEscalationRatesDTO>());
@@ -1967,15 +1976,15 @@ namespace GenBOE.Tests.ActionLogic
             //  there is no other way to verify the results other than hard coding string values
             //  Removed MOQ and Custom Fields from the hard-coded strings since ProjectMap doesn't save/use them
             Assert.AreEqual(2, result.TaskData.Count);
-            Assert.AreEqual("112005,,TOTAL,mock clin1 title,012006,LIDN000001,,\"\",\"mock clin1 title\",\"mock wbs title\",2.2,,,,\"BBBBBBB\",\"KristinePO\",\"\",-100000,-100000,-100000,\"Boe1Title\",\"\",\"DNR\",", result.TaskData[0], "The first task did not match this value");
-            Assert.AreEqual("112006,,TOTAL,mock clin1 title,012007,LIDN000002,,\"\",\"mock clin1 title\",\"mock wbs title\",2.2,,,,\"BBBBBBB\",\"KristinePO\",\"\",-100001,-100001,-100001,\"Boe2Title\",\"\",\"NRE\",", result.TaskData[1], "The second task (first resource) did not match this value");
+            Assert.AreEqual("LIDN000001,112005,,TOTAL,mock clin1 title,012006,,\"\",\"mock clin1 title\",\"mock wbs title\",2.2,,,,\"BBBBBBB\",\"KristinePO\",\"\",-100000,-100000,-100000,\"Boe1Title\",\"\",\"DNR\",", result.TaskData[0], "The first task did not match this value");
+            Assert.AreEqual("LIDN000002,112006,,TOTAL,mock clin1 title,012007,,\"\",\"mock clin1 title\",\"mock wbs title\",2.2,,,,\"BBBBBBB\",\"KristinePO\",\"\",-100001,-100001,-100001,\"Boe2Title\",\"\",\"NRE\",", result.TaskData[1], "The second task (first resource) did not match this value");
 
             Assert.AreEqual(",\"BBBBBBB\",LIDN000001,2.2,,,,D,mock clin1 title,\"mock clin1 title\",112005,\"mock wbs title\",-100000,-100000,-100000,\"Boe1Title\",\"KristinePO\",\"\",\"\",133,133,134,", result.ResourceData[0], "The first resource did not match this value");
             Assert.AreEqual(",\"BBBBBBB\",LIDN000002,2.2,,,,D,mock clin1 title,\"mock clin1 title\",112006,\"mock wbs title\",-100001,-100001,-100001,\"Boe2Title\",\"KristinePO\",\"\",\"\",37,38,37,", result.ResourceData[1], "The second resource did not match this value");
             Assert.AreEqual(",\"BBBBBBB\",LIDN000002,2.2,,,,D,mock clin1 title,\"mock clin1 title\",112006,\"mock wbs title\",-100001,-100001,-100002,\"Boe2Title\",\"KristinePO\",\"\",\"\",75,75,75,", result.ResourceData[2], "The third resource did not match this value");
 
             Assert.AreEqual(1, result.OffloadTaskData.Count);
-            Assert.AreEqual("112006,,TOTAL,mock clin1 title,012007,SIDN000001,,\"\",\"mock clin1 title\",\"mock wbs title\",2.2,,,,\"OFFLOADED_RESOURCE\",\"KristinePO\",\"\",-1,-1,-1,\"Boe2TitleOLKristinePOBBBBBBB\",\"\",\"NRE\",", result.OffloadTaskData[0], "The second task (first resource) did not match this value");
+            Assert.AreEqual("SIDN000001,112006,,TOTAL,mock clin1 title,012007,,\"\",\"mock clin1 title\",\"mock wbs title\",2.2,,,,\"OFFLOADED_RESOURCE\",\"KristinePO\",\"\",-1,-1,-1,\"Boe2TitleOLKristinePOBBBBBBB\",\"\",\"NRE\",", result.OffloadTaskData[0], "The second task (first resource) did not match this value");
             Assert.AreEqual(",\"OFFLOADED_RESOURCE\",SIDN000001,2.2,,,,D,mock clin1 title,\"mock clin1 title\",112006,\"mock wbs title\",-1,-1,-1,\"Boe2TitleOLKristinePOBBBBBBB\",\"KristinePO\",\"\",\"\",760.00,740.00,760.00,", result.OffloadResourceData[0], "The second resource did not match this value");
             Assert.AreEqual(",\"OFFLOADED_RESOURCE\",SIDN000001,2.2,,,,D,mock clin1 title,\"mock clin1 title\",112006,\"mock wbs title\",-1,-1,-2,\"Boe2TitleOLKristinePOBBBBBBB\",\"KristinePO\",\"\",\"\",1500.00,1500.00,1500.00,", result.OffloadResourceData[1], "The third resource did not match this value");
 
