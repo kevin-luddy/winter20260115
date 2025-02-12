@@ -112,6 +112,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
 			string toReturn = ExcelUtilities.CopyExcelTemplateFile(inTemplateFileLocation);
 
+			// TODO Katie: Are the extra columns handled here?
 			this.DuplicateCustomFieldColumns(toReturn, exportInputs);
 			this.HandleRationaleColumns(toReturn, exportInputs);
 
@@ -1656,6 +1657,8 @@ namespace GenBOE.ActionLogic.IO.Export
 				if (resourceUsesCostValues)
 				{
 					row.Add(string.Empty);  // Hours column is empty
+					row.Add(string.Empty);	// UCOT Hours column is empty
+
 					if (spread == null)
 					{
 						row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + "$0");
@@ -1675,16 +1678,16 @@ namespace GenBOE.ActionLogic.IO.Export
 					{
 						if (Utilities.OneLmxStartDate < spread?.LaborSpreadDate)
 						{
-							row.Add(("Test " + (exportInputs.Workspace.UCOTFactor * ((spread == null) ? 0 : spread.LaborSpreadValue)).ToString()));
+							row.Add((exportInputs.Workspace.UCOTFactor * ((spread == null) ? 0 : spread.LaborSpreadValue)).ToString());
 						}
 						else // Before 1LMX cutoff
 						{
-							row.Add("0 (before)");
+							row.Add("0");
 						}
 					}
 					else
 					{
-						row.Add("0");
+						row.Add(string.Empty);	// Empty UCOT Factor if UCOT Factor is not enabled
 					}
 
 					row.Add(string.Empty);  // Cost column is empty
