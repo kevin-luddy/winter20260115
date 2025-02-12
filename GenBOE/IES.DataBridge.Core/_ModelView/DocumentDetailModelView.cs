@@ -6,7 +6,8 @@
 
 namespace IES.DataBridge.ModelViews
 {
-    using System.Collections.Generic;
+	using IES.Common.Core.Enums;
+	using System.Collections.Generic;
 
     /// <summary>
     /// The model for RDSB document detail
@@ -62,6 +63,12 @@ namespace IES.DataBridge.ModelViews
         /// Gets or sets the End Year.
         /// </summary>
         public int EndYear { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Revision Segment.
+		/// TODO Thomas: IES_DEV > dbo.RDSBDOcumentInformation > New Column?
+		/// </summary>
+		public RevisionSegment SegmentType { get; set; }
 
         /// <summary>
         /// Gets or sets a collection of associated Rate Code IDs

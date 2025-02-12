@@ -85,6 +85,7 @@ namespace IES.DataBridge.Loaders
                                       SelectedRevisionId = d.RDMRevisionID,
                                       StartYear = d.StartYear ?? 0,
                                       EndYear = d.EndYear ?? 0,
+									  // TODO Thomas: RevisionSegment = d.RevisionSegment,
                                       SelectedRateCodeIds = d.RDSBRateCodeXrefs.Select(x => x.RateCodeID),
                                       SelectedSectionIds = d.RDSBSectionXrefs.Select(x => x.SectionID),
                                       ParentSection = d.ParentSection
