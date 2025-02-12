@@ -11,6 +11,7 @@ namespace GenBOE.ActionLogic.IO.Export
 	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
+	using System.Threading.Tasks;
 	using DocumentFormat.OpenXml.Packaging;
 	using DocumentFormat.OpenXml.Spreadsheet;
 	using GenBOE.ActionLogic.Common.Calculations;
@@ -1668,6 +1669,24 @@ namespace GenBOE.ActionLogic.IO.Export
 				else  // hours
 				{
 					row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + ((spread == null) ? "0" : spread.LaborSpreadValue.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision))));
+
+					// Add the UCOT Factor, if enabled, and is past 1LMX start date
+					if (Utilities.IsUCOTEnabled)
+					{
+						if (Utilities.OneLmxStartDate < spread?.LaborSpreadDate)
+						{
+							row.Add(("Test " + (exportInputs.Workspace.UCOTFactor * ((spread == null) ? 0 : spread.LaborSpreadValue)).ToString()));
+						}
+						else // Before 1LMX cutoff
+						{
+							row.Add("0 (before)");
+						}
+					}
+					else
+					{
+						row.Add("0");
+					}
+
 					row.Add(string.Empty);  // Cost column is empty
 				}
 
@@ -2155,6 +2174,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// </summary>
 		/// <param name="row">Row to add hours and cost to</param>
 		/// <param name="task">Task</param>
+		/// <param name="ucotFactor">The UCOT (Uncompensated Overtime) Factor</param>
 		private void GetTaskHoursAndCost(List<string> row, BoeTaskElementDTO task)
 		{
 			row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + task.taskElementLabors.Where(l => l.SpreadType == SpreadType.Hours).Sum(l => l.ValueSpread).ToString());
