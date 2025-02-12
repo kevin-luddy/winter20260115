@@ -140,7 +140,6 @@ namespace GenBOE.Web.Controllers
 			}
 
 			ViewData["EnableSkillMix"] = enableSkillMix;
-			ViewData["IsSkillMixManual"] = true;
 
 			//create a var for list items
 			Collection < SelectListItem> orderOfResourceTypes = new Collection<SelectListItem>();

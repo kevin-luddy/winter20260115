@@ -996,22 +996,7 @@
                                     <td data-ng-if="!isSkillMixManual()" style="text-align: right">{{row.HistoricalHours | number:2}}</td>
                                     <td data-ng-if="isSkillMixManual()" style="text-align: right"><input type="number" data-ng-blur="refreshSkillMixTables()" data-ng-model="row.HistoricalHours" step="any" style="width: 100%; height: 14px;" /></td>
                                     <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
-                                    <td>
-                                        <!-- Read only for Included when loaded in as True -->
-                                        <span ng-if="!row.metadata.ManuallySetIncluded && row.Included">
-                                            <span ng-switch="row.Included">
-                                                <span ng-switch-when="true">Yes</span>
-                                                <span ng-switch-when="false">No</span>
-                                            </span>
-                                        </span>
-                                        <!-- Dropdown Selection for Included when loaded in as False. -->
-                                        <span ng-if="row.metadata.ManuallySetIncluded || !row.Included">
-                                            <select ng-model="row.Included"
-                                                ng-change="setSkillMixIsUserInput($index, row.Included)"
-                                                ng-options="option === true ? 'Yes' : 'No' for option in [true, false]">
-                                            </select>
-                                        </span>
-                                    </td>
+                                    <td>{{row.Included | yesNo}}</td>
                                     <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{row.ProposedHours}}</td>
                                     <td>
@@ -1021,7 +1006,7 @@
                                     </td>
                                     <!-- Action Buttons for adding (+) and deleting (-) rows. -->
                                     <td>
-                                        <button ng-click="addSkillMixRow($index)" ng-show="!checkEmptyString(row.ResourceNew)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
+                                        <button ng-click="addSkillMixRow($index)" ng-show="showSkillMixAddButton(row.ResourceNew)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
                                         <button ng-click="deleteSkillMixRow($index)" ng-show="showSkillMixDeleteButton(row.ResourceOld)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">-</button>
                                     </td>
                                 </tr>
@@ -1085,7 +1070,7 @@
                                     </td>
                                     <!-- Action Buttons for adding (+) and deleting (-) rows. -->
                                     <td>
-                                        <button ng-click="addCommonDisclosureRow($index)" ng-show="checkEmptyString(row.ResourceID)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
+                                        <button ng-click="addCommonDisclosureRow($index)" ng-show="showCommonDisclosureAddButton(row.ResourceID)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
                                         <button ng-click="deleteCommonDisclosureRow($index)" ng-show="showCommonDisclosureDeleteButton(row.ResourceID)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">-</button>
                                     </td>
                                 </tr>
