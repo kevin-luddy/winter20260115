@@ -112,7 +112,6 @@ namespace GenBOE.ActionLogic.IO.Export
 
 			string toReturn = ExcelUtilities.CopyExcelTemplateFile(inTemplateFileLocation);
 
-			// TODO Katie: Are the extra columns handled here?
 			this.DuplicateCustomFieldColumns(toReturn, exportInputs);
 			this.HandleRationaleColumns(toReturn, exportInputs);
 
@@ -2177,7 +2176,6 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// </summary>
 		/// <param name="row">Row to add hours and cost to</param>
 		/// <param name="task">Task</param>
-		/// <param name="ucotFactor">The UCOT (Uncompensated Overtime) Factor</param>
 		private void GetTaskHoursAndCost(List<string> row, BoeTaskElementDTO task)
 		{
 			row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + task.taskElementLabors.Where(l => l.SpreadType == SpreadType.Hours).Sum(l => l.ValueSpread).ToString());
