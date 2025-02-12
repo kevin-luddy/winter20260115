@@ -1675,9 +1675,9 @@ namespace GenBOE.ActionLogic.IO.Export
 					// Add the UCOT Factor, if enabled, and is past 1LMX start date
 					if (Utilities.IsUCOTEnabled)
 					{
-						if (Utilities.OneLmxStartDate < spread?.LaborSpreadDate)
+						if (Utilities.OneLmxStartDate <= spread?.LaborSpreadDate)
 						{
-							row.Add((exportInputs.Workspace.UCOTFactor * ((spread == null) ? 0 : spread.LaborSpreadValue)).ToString());
+							row.Add((exportInputs.Workspace.UCOTFactor / 100 * ((spread == null) ? 0 : spread.LaborSpreadValue)).ToString());
 						}
 						else // Before 1LMX cutoff
 						{
