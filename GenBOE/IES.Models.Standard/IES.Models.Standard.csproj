@@ -59,6 +59,7 @@
 		<Compile Include="..\IES.Models\UserLog.cs" Link="UserLog.cs" />
 		<Compile Include="..\IES.Models\verifyRateCodeReplication_Result.cs" Link="verifyRateCodeReplication_Result.cs" />
 		<Compile Include="Properties\AssemblyInfo.cs" />
+		<Compile Include="RevisionSegmentLU.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

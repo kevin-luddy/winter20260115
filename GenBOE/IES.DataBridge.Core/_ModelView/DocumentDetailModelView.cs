@@ -66,9 +66,8 @@ namespace IES.DataBridge.ModelViews
 
 		/// <summary>
 		/// Gets or sets the Revision Segment.
-		/// TODO Thomas: IES_DEV > dbo.RDSBDOcumentInformation > New Column?
 		/// </summary>
-		public RevisionSegment SegmentType { get; set; }
+		public RevisionSegment ReivisonSegment { get; set; }
 
         /// <summary>
         /// Gets or sets a collection of associated Rate Code IDs

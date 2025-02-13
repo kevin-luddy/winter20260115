@@ -57,68 +57,69 @@ namespace IES.DataBridge.Loaders
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// Gets Document Detail MV by the proposal id
-        /// </summary>
-        /// <param name="proposalId">proposal id</param>
-        /// <returns>Document Detail MV</returns>
-        public DocumentDetailModelView GetByProposalId(int proposalId)
-        {
-            DocumentDetailModelView toReturn = null;
+		/// <summary>
+		/// Gets Document Detail MV by the proposal id
+		/// </summary>
+		/// <param name="proposalId">proposal id</param>
+		/// <returns>Document Detail MV</returns>
+		public DocumentDetailModelView GetByProposalId(int proposalId)
+		{
+			DocumentDetailModelView toReturn = null;
 
-            using (IESEntities context = new())
-            {
-                {
-                    // ToCollection doesn't work in the linq statement, so the result needs to be stored in an anonymous type and then converted to the MV 
-                    var result = (from d in context.RDSBDocumentInformations
-                                  join s in context.RDSBSectionXrefs on d.ID equals s.RDSBDocumentInformationID into sectionGroup
-                                  from ds in sectionGroup.DefaultIfEmpty()
-                                  join r in context.RDSBRateCodeXrefs on d.ID equals r.RDSBDocumentInformationID into rateCodeGroup
-                                  from dsr in rateCodeGroup.DefaultIfEmpty()
-                                  where d.PTMProposalID == proposalId
-                                  select new 
-                                  {
-                                      Id = d.ID,
-                                      UpdateDate = d.LastUpdateDT,
-                                      ProposalId = d.PTMProposalID,
-                                      DocumentCreatedBy = d.CreatedBy,
-                                      SelectedRevisionId = d.RDMRevisionID,
-                                      StartYear = d.StartYear ?? 0,
-                                      EndYear = d.EndYear ?? 0,
-									  // TODO Thomas: RevisionSegment = d.RevisionSegment,
-                                      SelectedRateCodeIds = d.RDSBRateCodeXrefs.Select(x => x.RateCodeID),
-                                      SelectedSectionIds = d.RDSBSectionXrefs.Select(x => x.SectionID),
-                                      ParentSection = d.ParentSection
-                                  }).FirstOrDefault();
+			using (IESEntities context = new())
+			{
+				{
+					// ToCollection doesn't work in the linq statement, so the result needs to be stored in an anonymous type and then converted to the MV 
+					var result = (from d in context.RDSBDocumentInformations
+								  join s in context.RDSBSectionXrefs on d.ID equals s.RDSBDocumentInformationID into sectionGroup
+								  from ds in sectionGroup.DefaultIfEmpty()
+								  join r in context.RDSBRateCodeXrefs on d.ID equals r.RDSBDocumentInformationID into rateCodeGroup
+								  from dsr in rateCodeGroup.DefaultIfEmpty()
+								  where d.PTMProposalID == proposalId
+								  select new
+								  {
+									  Id = d.ID,
+									  UpdateDate = d.LastUpdateDT,
+									  ProposalId = d.PTMProposalID,
+									  DocumentCreatedBy = d.CreatedBy,
+									  SelectedRevisionId = d.RDMRevisionID,
+									  StartYear = d.StartYear ?? 0,
+									  EndYear = d.EndYear ?? 0,
+									  RevisionSegmentId = d.RevisionSegmentId,
+									  SelectedRateCodeIds = d.RDSBRateCodeXrefs.Select(x => x.RateCodeID),
+									  SelectedSectionIds = d.RDSBSectionXrefs.Select(x => x.SectionID),
+									  ParentSection = d.ParentSection
+								  }).FirstOrDefault();
 
-                    if (result != null)
-                    {
-                        toReturn = new DocumentDetailModelView()
-                        {
-                            Id = result.Id,
-                            UpdateDate = result.UpdateDate,
-                            ProposalId = result.ProposalId,
-                            DocumentCreatedBy = result.DocumentCreatedBy,
-                            SelectedRevisionId = result.SelectedRevisionId,
-                            StartYear = result.StartYear,
-                            EndYear = result.EndYear,
-                            SelectedRateCodeIds = result.SelectedRateCodeIds.ToCollection(),
-                            SelectedSectionIds = result.SelectedSectionIds.ToCollection(),
-                            ParentSection = result.ParentSection
-                        };
-                    }
-                }                
-            }
+					if (result != null)
+					{
+						toReturn = new DocumentDetailModelView()
+						{
+							Id = result.Id,
+							UpdateDate = result.UpdateDate,
+							ProposalId = result.ProposalId,
+							DocumentCreatedBy = result.DocumentCreatedBy,
+							SelectedRevisionId = result.SelectedRevisionId,
+							StartYear = result.StartYear,
+							EndYear = result.EndYear,
+							ReivisonSegment = (RevisionSegment)result.RevisionSegmentId,
+							SelectedRateCodeIds = result.SelectedRateCodeIds.ToCollection(),
+							SelectedSectionIds = result.SelectedSectionIds.ToCollection(),
+							ParentSection = result.ParentSection
+						};
+					}
+				}
+			}
 
-            return toReturn;
-        }
+			return toReturn;
+		}
 
-        /// <summary>
-        /// Upsert Document Details and Xrefs
-        /// </summary>
-        /// <param name="dtoToUpsert">DTO to upsert</param>
-        /// <returns>ID of upserted DTO</returns>
-        protected override int? Upsert(DocumentDetailModelView dtoToUpsert)
+		/// <summary>
+		/// Upsert Document Details and Xrefs
+		/// </summary>
+		/// <param name="dtoToUpsert">DTO to upsert</param>
+		/// <returns>ID of upserted DTO</returns>
+		protected override int? Upsert(DocumentDetailModelView dtoToUpsert)
         {
             if (dtoToUpsert == null)
             {
