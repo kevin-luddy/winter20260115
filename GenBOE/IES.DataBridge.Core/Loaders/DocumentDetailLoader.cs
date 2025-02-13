@@ -102,7 +102,7 @@ namespace IES.DataBridge.Loaders
 							SelectedRevisionId = result.SelectedRevisionId,
 							StartYear = result.StartYear,
 							EndYear = result.EndYear,
-							ReivisonSegment = (RevisionSegment)result.RevisionSegmentId,
+							RevisonSegment = (RevisionSegment)result.RevisionSegmentId,
 							SelectedRateCodeIds = result.SelectedRateCodeIds.ToCollection(),
 							SelectedSectionIds = result.SelectedSectionIds.ToCollection(),
 							ParentSection = result.ParentSection
