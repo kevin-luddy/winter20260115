@@ -1597,6 +1597,18 @@ namespace GenBOE.ActionLogic.IO.Export
 					{
 						if (labor.SpreadType.Equals(SpreadType.Hours))
 						{
+							decimal updatedLaborSpreadValue = laborSpread.LaborSpreadValue;
+
+							// TODO Katie: Company Config check may not be needed
+							if (Utilities.IsUCOTEnabled/* && CompanyConfiguration.SpaceSystems*/)
+							{
+								updatedLaborSpreadValue = laborSpread.LaborSpreadValue * (1 + wsLevelData.UCOTFactor) / 100
+							}
+							//else
+							//{
+
+							//}
+
 							newResourceRow.Append(Utilities.FormatStringWithPrecisionNoComma(laborSpread.LaborSpreadValue, wsLevelData.ResourceDecimalPrecision)).Append(END_FIELD);
 						}
 						else if (labor.SpreadType.Equals(SpreadType.Cost))
