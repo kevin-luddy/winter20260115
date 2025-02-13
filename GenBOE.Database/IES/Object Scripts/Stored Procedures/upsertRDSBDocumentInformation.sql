@@ -17,6 +17,7 @@ CREATE PROCEDURE [dbo].[upsertRDSBDocumentInformation]
 	,@StartYear INT
 	,@EndYear INT
 	,@ParentSection VARCHAR(10) = NULL
+	,@RevisionSegmentId INT = 0
 )
 AS
 	/******************************************************************************
@@ -33,8 +34,7 @@ AS
 	*******************************************************************************
 	**		Date:		Author:				Description:
 	**		--------	--------			---------------------------------------
-	**		02/01/2018	brunworg			Added StartYear and EndYear fields.
-	**		4/27/18		twilson3			BOEJ-3384 Added Parent Section
+	**      02/12/2025	e405721				Update for new revision segment columns
 	*******************************************************************************/
 	SET NOCOUNT ON 
 	DECLARE @ErrorMessage varchar (500)
@@ -55,7 +55,8 @@ AS
 							   ,RDMRevisionID
 							   ,StartYear
 							   ,EndYear
-							   ,ParentSection)
+							   ,ParentSection
+							   ,RevisionSegmentId)
 						 OUTPUT inserted.ID INTO @Inserted
 						 VALUES
 							   (@PTMProposalID
@@ -65,7 +66,8 @@ AS
 							   ,@RDMRevisionID
 							   ,@StartYear
 							   ,@EndYear
-							   ,@ParentSection)
+							   ,@ParentSection
+							   ,@RevisionSegmentId)
 
 					SELECT @Id = Id FROM @Inserted
 				END
@@ -81,6 +83,7 @@ AS
 								  ,StartYear = @StartYear
 								  ,EndYear = @EndYear
 								  ,ParentSection = @ParentSection
+								  ,RevisionSegmentId = @RevisionSegmentId
 								WHERE 
 									ID = @Id
 						END

@@ -6,7 +6,8 @@
 
 namespace IES.DataBridge.ModelViews
 {
-    using System;
+	using IES.Common.Core.Enums;
+	using System;
 
     /// <summary>
     /// The model for a row in the Document Grid
@@ -67,6 +68,11 @@ namespace IES.DataBridge.ModelViews
         /// Gets or sets the End Year.
         /// </summary>
         public int EndYear { get; set; }
+
+		/// <summary>
+		/// Revision segment.
+		/// </summary>
+		public RevisionSegment RevisionSegment { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is read only.
