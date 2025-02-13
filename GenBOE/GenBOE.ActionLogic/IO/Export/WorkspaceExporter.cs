@@ -11,6 +11,7 @@ namespace GenBOE.ActionLogic.IO.Export
 	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
+	using System.Threading.Tasks;
 	using DocumentFormat.OpenXml.Packaging;
 	using DocumentFormat.OpenXml.Spreadsheet;
 	using GenBOE.ActionLogic.Common.Calculations;
@@ -1655,6 +1656,8 @@ namespace GenBOE.ActionLogic.IO.Export
 				if (resourceUsesCostValues)
 				{
 					row.Add(string.Empty);  // Hours column is empty
+					row.Add(string.Empty);	// UCOT Hours column is empty
+
 					if (spread == null)
 					{
 						row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + "$0");
@@ -1668,6 +1671,24 @@ namespace GenBOE.ActionLogic.IO.Export
 				else  // hours
 				{
 					row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + ((spread == null) ? "0" : spread.LaborSpreadValue.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision))));
+
+					// Add the UCOT Factor, if enabled, and is past 1LMX start date
+					if (Utilities.IsUCOTEnabled)
+					{
+						if (Utilities.OneLmxStartDate <= spread?.LaborSpreadDate)
+						{
+							row.Add((exportInputs.Workspace.UCOTFactor / 100 * ((spread == null) ? 0 : spread.LaborSpreadValue)).ToString());
+						}
+						else // Before 1LMX cutoff
+						{
+							row.Add("0");
+						}
+					}
+					else
+					{
+						row.Add(string.Empty);	// Empty UCOT Factor if UCOT Factor is not enabled
+					}
+
 					row.Add(string.Empty);  // Cost column is empty
 				}
 
