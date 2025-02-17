@@ -67,7 +67,7 @@ namespace IES.DataBridge.ModelViews
 		/// <summary>
 		/// Gets or sets the Revision Segment.
 		/// </summary>
-		public RevisionSegment RevisonSegment { get; set; }
+		public RevisionSegment RevisionSegment { get; set; }
 
         /// <summary>
         /// Gets or sets a collection of associated Rate Code IDs
