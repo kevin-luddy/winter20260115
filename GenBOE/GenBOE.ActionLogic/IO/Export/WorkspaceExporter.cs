@@ -480,6 +480,13 @@ namespace GenBOE.ActionLogic.IO.Export
 				throw new ArgumentNullException(nameof(skillMix));
 			}
 
+			decimal laborSkillMix = skillMix.LaborSkillMix != 0m ? skillMix.LaborSkillMix / 100m : 0m;
+			decimal boeSkillMix = 0m;
+			if (skillMix.BOESkillMix.HasValue && skillMix.BOESkillMix != 0m)
+			{
+				boeSkillMix = skillMix.BOESkillMix.Value / 100m;
+			}
+
 			return new List<string>()
 								{
 									boe.Id.ToString(),
@@ -490,9 +497,9 @@ namespace GenBOE.ActionLogic.IO.Export
 									selectedMOQTypeText,
 									skillMix.ResourceNew,
 									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.HistoricalHours,
-									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.LaborSkillMix,
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + laborSkillMix,
 									skillMix.Included ? "Yes" : "No",
-									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.BOESkillMix,
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + boeSkillMix,
 									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.ProposedHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)),
 									skillMix.Rationale
 								};
@@ -521,6 +528,13 @@ namespace GenBOE.ActionLogic.IO.Export
 
 							foreach (CommonDisclosureModelView commonDisclosure in task.CommonDisclosureTable)
 							{
+								decimal laborSkillMix = commonDisclosure.LaborSkillMix != 0m ? commonDisclosure.LaborSkillMix / 100m : 0m;
+								decimal boeSkillMix = 0m;
+								if (commonDisclosure.BOESkillMix.HasValue && commonDisclosure.BOESkillMix != 0m)
+								{
+									boeSkillMix = commonDisclosure.BOESkillMix.Value / 100m;
+								}
+
 								IList<string> row = new List<string>()
 								{
 									boe.Id.ToString(),
@@ -532,9 +546,9 @@ namespace GenBOE.ActionLogic.IO.Export
 									commonDisclosure.ResourceID,
 									commonDisclosure.BusinessResourceID,
 									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + commonDisclosure.HistoricalHours,
-									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + commonDisclosure.LaborSkillMix,
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + laborSkillMix,
 									commonDisclosure.Included ? "Yes" : "No",
-									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + commonDisclosure.BOESkillMix,
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + boeSkillMix,
 									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + commonDisclosure.ProposedHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)),
 									commonDisclosure.Rationale
 								};
