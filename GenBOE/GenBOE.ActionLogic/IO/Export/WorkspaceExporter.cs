@@ -39,6 +39,16 @@ namespace GenBOE.ActionLogic.IO.Export
 		protected string sNo { get { return "No"; } }
 		protected string sEmpty { get { return string.Empty; } }
 		protected string sMultiple { get { return "Multiple"; } }
+		
+		/// <summary>
+		/// Skill Mix Table's Sheet Name
+		/// </summary>
+		protected virtual string SkillMixTableSheetName { get { return "Legacy Skill Mix"; } }
+
+		/// <summary>
+		/// Common Disclosure Table's Sheet Name
+		/// </summary>
+		private string CommonDisclosureSheetName { get { return "LM Enterprise Skill Mix"; } }
 
 		/// <summary>
 		/// A string for building a Task URL. Requires 3 parameters:
@@ -132,7 +142,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				// Hide Skill Mix sheets if it's not enabled for the workspace
 				using (SpreadsheetDocument document = SpreadsheetDocument.Open(toReturn, true))
 				{
-					ExcelUtilities.HideWorksheets(document, new List<string>() { "Current Skill Mix", "Common Disclosure Skill Mix" });
+					ExcelUtilities.HideWorksheets(document, new List<string>() { SkillMixTableSheetName, CommonDisclosureSheetName });
 				}
 			}
 
@@ -372,12 +382,12 @@ namespace GenBOE.ActionLogic.IO.Export
 					toReturn.Add(this.GetMOQbyBOEbyTaskData(exportInputs));
 					toReturn.Add(this.GetMOQTableData(exportInputs));
 
-					// 
-					//if (Utilities.ShowSkillMixForWorkspace(exportInputs.Workspace.CreationDate))
-					//{
-					//	toReturn.Add(GetCurrentSkillMixTableData(exportInputs));
-					//	toReturn.Add(GetCommonDisclosureSkillMixTableData(exportInputs));
-					//}
+
+					if (Utilities.ShowSkillMixForWorkspace(exportInputs.Workspace.CreationDate))
+					{
+						toReturn.Add(GetCurrentSkillMixTableData(exportInputs));
+						toReturn.Add(GetCommonDisclosureSkillMixTableData(exportInputs));
+					}
 				}
 
 				toReturn.Add(this.GetWBSSheetExportData(exportInputs));
@@ -397,6 +407,156 @@ namespace GenBOE.ActionLogic.IO.Export
 				{
 					travelExtendedCostSheetData.WorksheetName = "Travel Extended Cost";
 					toReturn.Add(travelExtendedCostSheetData);
+				}
+			}
+
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Get the row data for the Current Skill Mix sheet
+		/// </summary>
+		/// <param name="exportInputs">Export Inputs</param>
+		/// <returns>Current Skill Mix sheet</returns>
+		protected virtual ExcelExportWorksheet GetCurrentSkillMixTableData(BOEExportInputs exportInputs)
+		{
+			_ = exportInputs ?? throw new ArgumentNullException(nameof(exportInputs));
+
+			ExcelExportWorksheet toReturn = new ExcelExportWorksheet(SkillMixTableSheetName);
+
+			foreach (BoeDTO boe in exportInputs.Boes)
+			{
+				foreach (BoeTaskElementDTO task in exportInputs.TaskElements.Where(x => x.BoeID == boe.Id))
+				{
+					if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, task.HasTMRates))
+					{
+						ICollection<MoqTypeSelection> moqTypesForTask = exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).ToList();
+						
+						if (moqTypesForTask.Count == 1)
+						{
+							string selectedMOQTypeText = moqTypesForTask.First().SelectedMOQTypeText;
+							foreach (SkillMixModelView skillMix in task.SkillMixTable)
+							{
+								IList<string> row = CreateSkillMixTableRow(exportInputs, boe, task, selectedMOQTypeText, skillMix);
+
+								toReturn.Add(row);
+							}
+						}
+					}
+				}
+			}
+
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Create a Skill Mix Table row
+		/// </summary>
+		/// <param name="exportInputs">BOE Export inputs</param>
+		/// <param name="boe">The associated boe</param>
+		/// <param name="task">The associated task</param>
+		/// <param name="selectedMOQTypeText">The selected MOQ</param>
+		/// <param name="skillMix">The skill Mix row</param>
+		/// <returns></returns>
+		protected virtual IList<string> CreateSkillMixTableRow(BOEExportInputs exportInputs, BoeDTO boe, BoeTaskElementDTO task, string selectedMOQTypeText, SkillMixModelView skillMix)
+		{
+			if (boe == null)
+			{
+				throw new ArgumentNullException(nameof(boe));
+			}
+
+			if (exportInputs == null)
+			{
+				throw new ArgumentNullException(nameof(exportInputs));
+			}
+
+			if (task == null)
+			{
+				throw new ArgumentNullException(nameof(task));
+			}
+
+			if (skillMix == null)
+			{
+				throw new ArgumentNullException(nameof(skillMix));
+			}
+
+			decimal laborSkillMix = skillMix.LaborSkillMix != 0m ? skillMix.LaborSkillMix / 100m : 0m;
+			decimal boeSkillMix = 0m;
+			if (skillMix.BOESkillMix.HasValue && skillMix.BOESkillMix != 0m)
+			{
+				boeSkillMix = skillMix.BOESkillMix.Value / 100m;
+			}
+
+			return new List<string>()
+								{
+									boe.Id.ToString(),
+									boe.Title ?? this.sEmpty,
+									string.Format(TaskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
+									task.BOETaskID,
+									task.TaskTitle,
+									selectedMOQTypeText,
+									skillMix.ResourceNew,
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.HistoricalHours,
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + laborSkillMix,
+									skillMix.Included ? "Yes" : "No",
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + boeSkillMix,
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + skillMix.ProposedHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)),
+									skillMix.Rationale
+								};
+		}
+
+		/// <summary>
+		/// Get the row data for the Common Disclosure Skill Mix sheet
+		/// </summary>
+		/// <param name="exportInputs">Export Inputs</param>
+		/// <returns>Common Disclosure Skill Mix sheet</returns>
+		private ExcelExportWorksheet GetCommonDisclosureSkillMixTableData(BOEExportInputs exportInputs)
+		{
+			ExcelExportWorksheet toReturn = new ExcelExportWorksheet(CommonDisclosureSheetName);
+
+			foreach (BoeDTO boe in exportInputs.Boes)
+			{
+				foreach (BoeTaskElementDTO task in exportInputs.TaskElements.Where(x => x.BoeID == boe.Id))
+				{
+					if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, task.HasTMRates))
+					{
+						ICollection<MoqTypeSelection> moqTypesForTask = exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).ToList();
+
+						if (moqTypesForTask.Count == 1)
+						{
+							string selectedMOQTypeText = moqTypesForTask.First().SelectedMOQTypeText;
+
+							foreach (CommonDisclosureModelView commonDisclosure in task.CommonDisclosureTable)
+							{
+								decimal laborSkillMix = commonDisclosure.LaborSkillMix != 0m ? commonDisclosure.LaborSkillMix / 100m : 0m;
+								decimal boeSkillMix = 0m;
+								if (commonDisclosure.BOESkillMix.HasValue && commonDisclosure.BOESkillMix != 0m)
+								{
+									boeSkillMix = commonDisclosure.BOESkillMix.Value / 100m;
+								}
+
+								IList<string> row = new List<string>()
+								{
+									boe.Id.ToString(),
+									boe.Title ?? this.sEmpty,
+									string.Format(TaskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
+									task.BOETaskID,
+									task.TaskTitle,
+									selectedMOQTypeText,
+									commonDisclosure.ResourceID,
+									commonDisclosure.BusinessResourceID,
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + commonDisclosure.HistoricalHours,
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + laborSkillMix,
+									commonDisclosure.Included ? "Yes" : "No",
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + boeSkillMix,
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + commonDisclosure.ProposedHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)),
+									commonDisclosure.Rationale
+								};
+
+								toReturn.Add(row);
+							}
+						}
+					}
 				}
 			}
 

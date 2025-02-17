@@ -1093,12 +1093,12 @@ namespace IES.Common
 
 			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
 			{
-				showSkillMixRationale = IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate;
+				showSkillMixRationale = ShowSkillMixForWorkspace(workspaceCreationDate);
 			}
 			// For space only: Shows Skill Mix Rationale section when the workspace is NOT using T&M.
 			else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 			{
-				showSkillMixRationale = IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate && !hasTMRates;
+				showSkillMixRationale = ShowSkillMixForWorkspace(workspaceCreationDate) && !hasTMRates;
 			}
 
 			return showSkillMixRationale;
