@@ -41,3 +41,5 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("GenBOE.UITest")]
 // This assembly is used by Moq to create Proxy objects.
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
+// This assembly is used by LinqPad
+[assembly: InternalsVisibleTo("LINQPadQuery")]
