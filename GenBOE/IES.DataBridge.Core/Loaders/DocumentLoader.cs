@@ -9,6 +9,7 @@ namespace IES.DataBridge.Loaders
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using IES.Common.Core.Enums;
 	using IES.Common.Core.Loaders;
 	using IES.Common.Core.Utilities;
 	using IES.DataBridge.ModelViews;
@@ -75,6 +76,7 @@ namespace IES.DataBridge.Loaders
                             ProposalId = r.PTMProposalID,
                             StartYear = r.StartYear ?? 0,
                             EndYear = r.EndYear ?? 0,
+							RevisionSegment = (RevisionSegment)r.RevisionSegmentLU.ID,
                             IsUsingLatest = latestRevisionId == r.RDMRevisionID
 
                             // proposal status/title/tracking number are added later when merged with ProposalDto
@@ -112,7 +114,7 @@ namespace IES.DataBridge.Loaders
             {
                 using (IESEntities iesEntities = new())
                 {
-                    result = iesEntities.upsertRDSBDocumentInformation(dtoToUpsert.Id, dtoToUpsert.UpdateDate, dtoToUpsert.ProposalId, dtoToUpsert.DocumentCreatedBy, dtoToUpsert.RDMRevisionId, dtoToUpsert.StartYear, dtoToUpsert.EndYear, string.Empty).First();
+                    result = iesEntities.upsertRDSBDocumentInformation(dtoToUpsert.Id, dtoToUpsert.UpdateDate, dtoToUpsert.ProposalId, dtoToUpsert.DocumentCreatedBy, dtoToUpsert.RDMRevisionId, dtoToUpsert.StartYear, dtoToUpsert.EndYear, string.Empty, (int?)dtoToUpsert.RevisionSegment).First();
                 }
             }
 

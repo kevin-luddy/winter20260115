@@ -102,7 +102,7 @@ namespace IES.DataBridge.Loaders
 							SelectedRevisionId = result.SelectedRevisionId,
 							StartYear = result.StartYear,
 							EndYear = result.EndYear,
-							RevisonSegment = (RevisionSegment)result.RevisionSegmentId,
+							RevisionSegment = (RevisionSegment)result.RevisionSegmentId,
 							SelectedRateCodeIds = result.SelectedRateCodeIds.ToCollection(),
 							SelectedSectionIds = result.SelectedSectionIds.ToCollection(),
 							ParentSection = result.ParentSection
@@ -133,7 +133,7 @@ namespace IES.DataBridge.Loaders
             {
                 using (IESEntities context = new())
                 {
-                    result = context.upsertRDSBDocumentInformation(dtoToUpsert.Id, dtoToUpsert.UpdateDate, dtoToUpsert.ProposalId, dtoToUpsert.DocumentCreatedBy, dtoToUpsert.SelectedRevisionId, dtoToUpsert.StartYear, dtoToUpsert.EndYear, dtoToUpsert.ParentSection).First();
+                    result = context.upsertRDSBDocumentInformation(dtoToUpsert.Id, dtoToUpsert.UpdateDate, dtoToUpsert.ProposalId, dtoToUpsert.DocumentCreatedBy, dtoToUpsert.SelectedRevisionId, dtoToUpsert.StartYear, dtoToUpsert.EndYear, dtoToUpsert.ParentSection, (int?)dtoToUpsert.RevisionSegment).First();
                 }
             }
 

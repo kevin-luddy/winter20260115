@@ -314,7 +314,7 @@
           <Property Name="Description" Type="varchar" MaxLength="4000" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'IES_ProdClone.dbo.UserLog' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'IES_DEV.dbo.UserLog' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="UserLog">
           <Key>
             <PropertyRef Name="LogInUpdateDT" />
@@ -851,6 +851,7 @@ warning 6002: The table/view 'IES_ProdClone.dbo.UserLog' does not have a primary
           <Parameter Name="StartYear" Type="int" Mode="In" />
           <Parameter Name="EndYear" Type="int" Mode="In" />
           <Parameter Name="ParentSection" Type="varchar" Mode="In" />
+          <Parameter Name="RevisionSegmentId" Type="int" Mode="In" />
         </Function>
         <Function Name="upsertReplication" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Id" Type="int" Mode="In" />
@@ -881,10 +882,14 @@ warning 6002: The table/view 'IES_ProdClone.dbo.UserLog' does not have a primary
           <Parameter Name="DisplayRateCode" Type="bit" Mode="In" />
           <Parameter Name="RevisionUniqueSectionId" Type="int" Mode="In" />
           <Parameter Name="IsRdsbRequired" Type="bit" Mode="In" />
-          <Parameter Name="SectionContainsCasbDisclosure" Type="bit" Mode="In" />
-          <Parameter Name="IsDisclosureStatementAdequate" Type="bit" Mode="In" />
-          <Parameter Name="SectionContainsNonCompliance" Type="bit" Mode="In" />
-          <Parameter Name="NonComplianceNotification" Type="bit" Mode="In" />
+          <Parameter Name="SectionContainsCasbDisclosureCore" Type="bit" Mode="In" />
+          <Parameter Name="SectionContainsCasbDisclosureService" Type="bit" Mode="In" />
+          <Parameter Name="IsDisclosureStatementAdequateCore" Type="bit" Mode="In" />
+          <Parameter Name="IsDisclosureStatementAdequateService" Type="bit" Mode="In" />
+          <Parameter Name="SectionContainsNonComplianceCore" Type="bit" Mode="In" />
+          <Parameter Name="SectionContainsNonComplianceService" Type="bit" Mode="In" />
+          <Parameter Name="NonComplianceNotificationCore" Type="bit" Mode="In" />
+          <Parameter Name="NonComplianceNotificationService" Type="bit" Mode="In" />
           <Parameter Name="Office" Type="varchar" Mode="In" />
           <Parameter Name="Agency" Type="varchar" Mode="In" />
           <Parameter Name="LMBA" Type="varchar" Mode="In" />
@@ -1145,10 +1150,14 @@ warning 6002: The table/view 'IES_ProdClone.dbo.UserLog' does not have a primary
             <Parameter Name="DisplayRateCode" Mode="In" Type="Boolean" />
             <Parameter Name="RevisionUniqueSectionId" Mode="In" Type="Int32" />
             <Parameter Name="IsRdsbRequired" Mode="In" Type="Boolean" />
-            <Parameter Name="SectionContainsCasbDisclosure" Mode="In" Type="Boolean" />
-            <Parameter Name="IsDisclosureStatementAdequate" Mode="In" Type="Boolean" />
-            <Parameter Name="SectionContainsNonCompliance" Mode="In" Type="Boolean" />
-            <Parameter Name="NonComplianceNotification" Mode="In" Type="Boolean" />
+            <Parameter Name="SectionContainsCasbDisclosureCore" Mode="In" Type="Boolean" />
+            <Parameter Name="SectionContainsCasbDisclosureService" Mode="In" Type="Boolean" />
+            <Parameter Name="IsDisclosureStatementAdequateCore" Mode="In" Type="Boolean" />
+            <Parameter Name="IsDisclosureStatementAdequateService" Mode="In" Type="Boolean" />
+            <Parameter Name="SectionContainsNonComplianceCore" Mode="In" Type="Boolean" />
+            <Parameter Name="SectionContainsNonComplianceService" Mode="In" Type="Boolean" />
+            <Parameter Name="NonComplianceNotificationCore" Mode="In" Type="Boolean" />
+            <Parameter Name="NonComplianceNotificationService" Mode="In" Type="Boolean" />
             <Parameter Name="Office" Mode="In" Type="String" />
             <Parameter Name="Agency" Mode="In" Type="String" />
             <Parameter Name="LMBA" Mode="In" Type="String" />
@@ -1356,6 +1365,7 @@ warning 6002: The table/view 'IES_ProdClone.dbo.UserLog' does not have a primary
             <Parameter Name="StartYear" Mode="In" Type="Int32" />
             <Parameter Name="EndYear" Mode="In" Type="Int32" />
             <Parameter Name="ParentSection" Mode="In" Type="String" />
+            <Parameter Name="RevisionSegmentId" Mode="In" Type="Int32" />
           </FunctionImport>
           <EntitySet Name="RDSBRateCodeXrefs" EntityType="IESModel.RDSBRateCodeXref" />
           <EntitySet Name="RDSBSectionXrefs" EntityType="IESModel.RDSBSectionXref" />
