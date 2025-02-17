@@ -589,7 +589,8 @@ namespace IES.Tests.Core
                 Updateable = UpdateType.Upsert,
                 StartYear = 2018,
                 EndYear = 2023,
-                Id = -1
+				RevisionSegment = RevisionSegment.Core,
+				Id = -1
             };
 
             int? docId;
@@ -609,6 +610,7 @@ namespace IES.Tests.Core
             Assert.AreEqual(expected.ProposalId, actual.ProposalId);
             Assert.AreEqual(expected.StartYear, actual.StartYear);
             Assert.AreEqual(expected.EndYear, actual.EndYear);
+			Assert.AreEqual(expected.RevisionSegment, actual.RevisionSegment);
             Assert.IsNull(actual.ProposalStatus);
             Assert.IsNull(actual.ProposalTitle);
             Assert.IsNull(actual.ProposalTrackingNumber);
