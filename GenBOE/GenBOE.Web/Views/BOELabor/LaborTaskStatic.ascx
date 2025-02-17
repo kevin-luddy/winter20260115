@@ -588,8 +588,8 @@
                         <table name="currentSkillMix" class="grid editable">
                             <thead>
                                 <tr>
-                                    <th style="width: 95px;">Resource ID</th>
-                                    <th style="width: 130px;">Current Resource ID</th>
+                                    <th style="width: 95px;">Resource</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" style="width: 130px;">Current Resource</th>
                                     <th style="width: 100px;">Historical Hours</th>
                                     <th style="width: 90px;">Labor Skill Mix</th>
                                     <th style="width: 55px">Included</th>
@@ -602,7 +602,7 @@
                                 <!-- Display the data for each of the Skill Mix Table rows. -->
                                 <tr ng-repeat="row in skillMixRationale.data.SkillMixRows">
                                     <td>{{row.ResourceOld}}</td>
-                                    <td>{{row.ResourceNew}}</td>
+                                    <td data-ng-if="!ManageTaskModel.IsSpace">{{row.ResourceNew}}</td>
                                     <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
                                     <td>{{row.Included | yesNo}}</td>
@@ -613,7 +613,7 @@
                                 <!-- Display the Skill Mix Totals row. -->
                                 <tr>
                                     <td>Totals</td>
-                                    <td></td>
+                                    <td data-ng-if="!ManageTaskModel.IsSpace"></td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.LaborSkillMix | number:1}}%</td>
                                     <td></td>
@@ -632,7 +632,7 @@
                         <table name="currentSkillMix" class="grid editable">
                             <thead>
                                 <tr>
-                                    <th style="width: 95px;">Resource ID</th>
+                                    <th style="width: 95px;">Resource</th>
                                     <th style="width: 130px;">Business Resource Code</th>
                                     <th style="width: 100px;">Historical Hours</th>
                                     <th style="width: 90px;">Labor Skill Mix</th>

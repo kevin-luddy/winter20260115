@@ -3726,11 +3726,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			{
 				// Mock out the Resource Hours from input data
 				resourceHours = MockResourceHours(currentSkillMixData);
-			}	
-			
-			if (resourceHours.Any())
+			}
+
+			bool isSpace = SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems;
+
+			if (isSpace || resourceHours.Any())
 			{
-				bool addBlankRow = SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST;
+				bool addBlankRow = !isSpace;
 				
 				// filter out bad data in currentSkillMixData
 				FilterBadData(laborTypes, currentSkillMixData, currentCommonDisclosureData, isManual);
@@ -3804,7 +3806,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			// reorder the lists
 			refreshedModel.SkillMixRows = refreshedModel.SkillMixRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceOld)).ThenBy(r => r.ResourceOld).ToList();
-			refreshedModel.CommonDisclosureRows = refreshedModel.CommonDisclosureRows.OrderBy(r => r.ResourceID).ThenBy(s => s.BusinessResourceID).ToList();
+			refreshedModel.CommonDisclosureRows = refreshedModel.CommonDisclosureRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceID)).ThenBy(r => r.ResourceID).ThenBy(s => s.BusinessResourceID).ToList();
 
 			return refreshedModel;
 		}

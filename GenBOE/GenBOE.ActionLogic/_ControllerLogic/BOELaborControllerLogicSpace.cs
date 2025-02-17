@@ -226,7 +226,7 @@ namespace GenBOE.ActionLogic
 
 			foreach (LaborTypeDataModelView labor in laborTypes)
 			{
-				if (string.IsNullOrWhiteSpace(labor.ResourceName))
+				if (!string.IsNullOrWhiteSpace(labor.ResourceName))
 				{
 					// Find the Proposed Hours for this Resource
 					decimal proposedHours = labor.Spreads.Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) < Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
@@ -313,7 +313,7 @@ namespace GenBOE.ActionLogic
 			// Merge in the Labor Types
 			foreach (LaborTypeDataModelView labor in laborTypes)
 			{
-				if (string.IsNullOrWhiteSpace(labor.BusinessResourceCodeName))
+				if (!string.IsNullOrWhiteSpace(labor.BusinessResourceCodeName))
 				{
 					// Find the Proposed Hours for this Resource
 					decimal proposedHours = labor.Spreads.Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) >= Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
