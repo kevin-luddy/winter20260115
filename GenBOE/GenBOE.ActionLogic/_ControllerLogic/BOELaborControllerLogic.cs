@@ -3735,7 +3735,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				bool addBlankRow = !isSpace;
 				
 				// filter out bad data in currentSkillMixData
-				FilterBadData(laborTypes, currentSkillMixData, currentCommonDisclosureData, isManual);
+				FilterBadData(laborTypes, currentSkillMixData, currentCommonDisclosureData, isManual, isSpace);
 
 				decimal totalHours = resourceHours.Sum(n => n.TotalHours);
 				ICollection<IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO>> groupedResourceHours = resourceHours.GroupBy(r => r.ResourceName).OrderBy(t => t.Key).ToList();
@@ -3843,8 +3843,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="currentSkillMixData">The current skill mix data</param>
 		/// <param name="currentCommonDisclosureData">Current Common Disclosure data</param>
 		/// <param name="isManual">If the Historical Resource/Hours are Manually input or not</param>
+		/// <param name="isSpace">Whether this is SPace or not</param>
 		private void FilterBadData(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, 
-			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isManual)
+			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isManual, bool isSpace)
 		{
 			if (laborTypes.Any())
 			{
@@ -3873,9 +3874,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						commonDisclosureModel.LaborSkillMix = 0m;
 					}
 
-					if (!string.IsNullOrWhiteSpace(commonDisclosureModel.BusinessResourceID) && !brcs.Contains(commonDisclosureModel.BusinessResourceID))
+					if (!isSpace && !string.IsNullOrWhiteSpace(commonDisclosureModel.BusinessResourceID) && !brcs.Contains(commonDisclosureModel.BusinessResourceID))
 					{
-						// this skill mix model is pointing towards a missing Resource, remove the resource name
+						// this RMS skill mix model is pointing towards a missing Resource, remove the resource name
 						commonDisclosureModel.BusinessResourceID = string.Empty;
 						commonDisclosureModel.ProposedHours = 0m;
 						commonDisclosureModel.BOESkillMix = 0m;

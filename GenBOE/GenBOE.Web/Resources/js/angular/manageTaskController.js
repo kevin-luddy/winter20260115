@@ -2053,13 +2053,18 @@
 
 	$scope.showSkillMix = function () {
 		// Show Skill Mix if Feature Flag enabled and no T&M rates are in the task
-		return $scope.IsSkillMixEnabled && $scope.IsUsingTMRatesInTask === false;
+        return $scope.IsSkillMixEnabled && $scope.IsUsingTMRatesInTask === false &&
+            (!$scope.ManageTaskModel.IsSpace || !$scope.isSkillMixManualPerMOQ());
     };
 
     $scope.isSkillMixManual = function () {
         // Set Skill Mix to be manual if SAP Connection is diabled or if there is any MOQ Type that is not Historical (5001) or Comparative (5002) MOQ Type or if there are no selected moqtypes or if using TM Rates in Task
         // Space is never Manual
-        return !$scope.ManageTaskModel.IsSpace && ($scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0 || !ManageTaskModel.SapConnectionEnabled || !$scope.SelectedMoqTypes.every(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002') || $scope.IsUsingTMRatesInTask);
+        return !$scope.ManageTaskModel.IsSpace && $scope.isSkillMixManualPerMOQ;
+    };
+
+    $scope.isSkillMixManualPerMOQ = function () {
+        return ($scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0 || !ManageTaskModel.SapConnectionEnabled || !$scope.SelectedMoqTypes.every(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002'));
     };
 
     $scope.isSkillMixDisabled = function () {
