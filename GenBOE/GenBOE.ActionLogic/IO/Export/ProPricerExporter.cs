@@ -1603,7 +1603,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
 							if (Utilities.IsUCOTEnabled && laborSpread.LaborSpreadDate >= Utilities.OneLmxStartDate && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 							{
-								updatedLaborSpreadValue = laborSpread.LaborSpreadValue * (1 + wsLevelData.UCOTFactor) / 100;
+								updatedLaborSpreadValue = laborSpread.LaborSpreadValue * (1 + (wsLevelData.UCOTFactor / 100m));
 							}
 
 							newResourceRow.Append(Utilities.FormatStringWithPrecisionNoComma(updatedLaborSpreadValue, wsLevelData.ResourceDecimalPrecision)).Append(END_FIELD);
