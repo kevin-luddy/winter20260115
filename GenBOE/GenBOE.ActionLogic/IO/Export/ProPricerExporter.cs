@@ -22,6 +22,7 @@ namespace GenBOE.ActionLogic.IO.Export
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using IES.Common;
+	using IES.Common.classes;
 	using IES.Common.Compression;
 	using IES.Common.Exceptions;
 
@@ -271,7 +272,8 @@ namespace GenBOE.ActionLogic.IO.Export
 				IsProjectMapWorkspace = workspace.IsProjectMapWorkspace,
 				IsUsingTemplateBOE = workspace.UsingTemplateBOE,
 				MoqTypes = workspace.MoqTypeSelections.ToCollection(),
-				OneLmxCustomField = oneLmxCF
+				OneLmxCustomField = oneLmxCF,
+				UCOTFactor = workspace.UCOTFactor
 			};
 
 			if (offloading)
@@ -1597,7 +1599,14 @@ namespace GenBOE.ActionLogic.IO.Export
 					{
 						if (labor.SpreadType.Equals(SpreadType.Hours))
 						{
-							newResourceRow.Append(Utilities.FormatStringWithPrecisionNoComma(laborSpread.LaborSpreadValue, wsLevelData.ResourceDecimalPrecision)).Append(END_FIELD);
+							decimal updatedLaborSpreadValue = laborSpread.LaborSpreadValue;
+
+							if (Utilities.IsUCOTEnabled && laborSpread.LaborSpreadDate >= Utilities.OneLmxStartDate && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+							{
+								updatedLaborSpreadValue = laborSpread.LaborSpreadValue * (1 + (wsLevelData.UCOTFactor / 100m));
+							}
+
+							newResourceRow.Append(Utilities.FormatStringWithPrecisionNoComma(updatedLaborSpreadValue, wsLevelData.ResourceDecimalPrecision)).Append(END_FIELD);
 						}
 						else if (labor.SpreadType.Equals(SpreadType.Cost))
 						{
@@ -2658,6 +2667,11 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// 1LMX Custom Field
 		/// </summary>
 		public CustomFieldDTO OneLmxCustomField { get; set; }
+
+		/// <summary>
+		/// The UCOT Factor for the Workspace
+		/// </summary>
+		public decimal UCOTFactor { get; set; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WsLevelInputsForExport"/> class.
