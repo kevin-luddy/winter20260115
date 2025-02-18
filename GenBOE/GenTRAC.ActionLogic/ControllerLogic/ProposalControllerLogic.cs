@@ -1526,41 +1526,57 @@ namespace GenTRAC.ActionLogic
 		/// <returns>SelectList</returns>
 		private ICollection<UserDTO> GetUsersForSelectList(PtmRole role)
 		{
-			string groupName = string.Empty;
+			string groupNames = string.Empty;
+			string[] groupNamesArray = null;
+			ICollection<UserDTO> users = new Collection<UserDTO>();
 
 			// get ad user group from config based on role, return select list
 			switch (role)
 			{
 				case PtmRole.Pricer:
-					groupName = IES.Common.ConfigurationUtilities.GetAppSetting("LeadEstimators");
+					groupNames = IES.Common.ConfigurationUtilities.GetAppSetting("LeadEstimators");
 					break;
 				case PtmRole.LOBEstMgr:
-					groupName = IES.Common.ConfigurationUtilities.GetAppSetting("LOBManagers");
+					groupNames = IES.Common.ConfigurationUtilities.GetAppSetting("LOBManagers");
 					break;
 				case PtmRole.PeerReviewer:
-					groupName = IES.Common.ConfigurationUtilities.GetAppSetting("IndependentReviewers");
+					groupNames = IES.Common.ConfigurationUtilities.GetAppSetting("IndependentReviewers");
 					break;
 				case PtmRole.PricingVerification:
-					groupName = IES.Common.ConfigurationUtilities.GetAppSetting("PricingVerifications");
+					groupNames = IES.Common.ConfigurationUtilities.GetAppSetting("PricingVerifications");
 					break;
 				case PtmRole.CoverSheetApprover:
-					groupName = IES.Common.ConfigurationUtilities.GetAppSetting("CoverSheetApprovers");
+					groupNames = IES.Common.ConfigurationUtilities.GetAppSetting("CoverSheetApprovers");
 					break;
 				case PtmRole.ContractsPOC:
 				case PtmRole.BackupContractsPOC:
-					groupName = IES.Common.ConfigurationUtilities.GetAppSetting("ContractsLead");
+					groupNames = IES.Common.ConfigurationUtilities.GetAppSetting("ContractsLead");
 					break;
 				case PtmRole.SupplyChainPOCMatl:
 				case PtmRole.BackupMaterialLead:
-					groupName = IES.Common.ConfigurationUtilities.GetAppSetting("MaterialsLead");
+					groupNames = IES.Common.ConfigurationUtilities.GetAppSetting("MaterialsLead");
 					break;
 				case PtmRole.SupplyChainPOCSubs:
 				case PtmRole.BackupSubcontractsLead:
-					groupName = IES.Common.ConfigurationUtilities.GetAppSetting("SubcontractsLead");
+					groupNames = IES.Common.ConfigurationUtilities.GetAppSetting("SubcontractsLead");
 					break;
 			}
 
-			return this.userLoader.GetUserDTOsByADGroup(groupName.GetObjectName());
+			if (groupNames.Contains(","))
+			{
+				groupNamesArray = groupNames.Split(',');
+			}
+			else
+			{
+				groupNamesArray = new string[] { groupNames };
+			}
+
+			foreach (string groupName in groupNamesArray)
+			{
+				users.AddRange(userLoader.GetUserDTOsByADGroup(groupName.GetObjectName()));
+			}
+
+			return users.Distinct().ToCollection();
 		}
 
 		/// <summary>
