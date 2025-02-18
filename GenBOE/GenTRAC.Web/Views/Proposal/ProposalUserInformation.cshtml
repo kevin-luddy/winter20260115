@@ -259,32 +259,32 @@
 				</div>
 			</div>
 			<div class="form-row">
-				<div class="form-label">Material Lead</div>
+				<div class="form-label">PBOE/MPBOE Preparer</div>
 				<div class="form-element"></div>
-				<div class="form-element">
-					<input id="supplyChainPOCMaterialsDisplayName" name="supplyChainPOCMaterialsDisplayName" type="text" class="half" size="50" placeholder="NTID" />
-				</div>
+                <div class="form-element">
+                    @Html.DropDownListFor(model => model.SupplyChainPOCMaterialsNtId, Model.SupplyChainPOCMaterialsLeadsList, new { name = "SupplyChainPOCMatl", @class = "UserInformationDropDown" })
+                </div>
 			</div>
 			<div class="form-row">
-				<div class="form-label">Backup Material Lead</div>
+                <div class="form-label">Backup PBOE/MPBOE Preparer</div>
 				<div class="form-element"></div>
-				<div class="form-element">
-					<input id="supplyChainPOCMaterialsBackupDisplayName" name="supplyChainPOCMaterialsBackupDisplayName" type="text" class="half" size="50" placeholder="NTID" />
-				</div>
+                <div class="form-element">
+                    @Html.DropDownListFor(model => model.SupplyChainPOCMaterialsBackupNtId, Model.SupplyChainPOCMaterialsBackupLeadsList, new { name = "BackupMaterialLead", @class = "UserInformationDropDown" })
+                </div>
 			</div>
 			<div class="form-row">
-				<div class="form-label">Subcontracts Lead</div>
+                <div class="form-label">IBOE Preparer</div>
 				<div class="form-element"></div>
-				<div class="form-element">
-					<input id="supplyChainPOCSubsDisplayName" name="supplyChainPOCSubsDisplayName" type="text" class="half" size="50" placeholder="NTID" />
-				</div>
+                <div class="form-element">
+                    @Html.DropDownListFor(model => model.SupplyChainPOCSubsNtId, Model.SupplyChainPOCSubsLeadsList, new { name = "SupplyChainPOCSubs", @class = "UserInformationDropDown" })
+                </div>
 			</div>
 			<div class="form-row">
-				<div class="form-label">Backup Subcontracts Lead</div>
+                <div class="form-label">Backup IBOE Preparer</div>
 				<div class="form-element"></div>
-				<div class="form-element">
-					<input id="supplyChainPOCSubsBackupDisplayName" name="supplyChainPOCSubsBackupDisplayName" type="text" class="half" size="50" placeholder="NTID" />
-				</div>
+                <div class="form-element">
+                    @Html.DropDownListFor(model => model.SupplyChainPOCSubsBackupNtId, Model.SupplyChainPOCSubsBackupLeadsList, new { name = "BackupSubcontractsLead", @class = "UserInformationDropDown" })
+                </div>
 			</div>
 			<div class="form-row">
 				<div class="form-label">Contracts Lead *</div>
