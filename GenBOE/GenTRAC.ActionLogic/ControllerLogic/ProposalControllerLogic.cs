@@ -1826,13 +1826,13 @@ namespace GenTRAC.ActionLogic
 				.Select(x => new SelectListItem() { Value = x.Ntid, Text = x.DisplayName })
 				.OrderBy(x => x.Text)
 				.ToList();
-			model.SupplyChainPOCMaterialsLeadsList.Insert(0, new SelectListItem() { Value = string.Empty, Text = "Select Materials Lead" });
+			model.SupplyChainPOCMaterialsLeadsList.Insert(0, new SelectListItem() { Value = string.Empty, Text = "Select PBOE/MPBOE Preparer" });
 
 			model.SupplyChainPOCMaterialsBackupLeadsList = materialsUsers?
 				.Select(x => new SelectListItem() { Value = x.Ntid, Text = x.DisplayName })
 				.OrderBy(x => x.Text)
 				.ToList();
-			model.SupplyChainPOCMaterialsBackupLeadsList.Insert(0, new SelectListItem() { Value = string.Empty, Text = "Select Materials Backup Lead" });
+			model.SupplyChainPOCMaterialsBackupLeadsList.Insert(0, new SelectListItem() { Value = string.Empty, Text = "Select Backup PBOE/MPBOE Preparer" });
 
 			// Populate Subcontract Leads and Backup Leads lists
 			ICollection<UserDTO> subcontractUsers = this.GetUsersForSelectList(PtmRole.SupplyChainPOCSubs);
@@ -1841,13 +1841,13 @@ namespace GenTRAC.ActionLogic
 				.Select(x => new SelectListItem() { Value = x.Ntid, Text = x.DisplayName })
 				.OrderBy(x => x.Text)
 				.ToList();
-			model.SupplyChainPOCSubsLeadsList.Insert(0, new SelectListItem() { Value = string.Empty, Text = "Select Subcontract Lead" });
+			model.SupplyChainPOCSubsLeadsList.Insert(0, new SelectListItem() { Value = string.Empty, Text = "Select IBOE Preparer" });
 
 			model.SupplyChainPOCSubsBackupLeadsList = subcontractUsers?
 				.Select(x => new SelectListItem() { Value = x.Ntid, Text = x.DisplayName })
 				.OrderBy(x => x.Text)
 				.ToList();
-			model.SupplyChainPOCSubsBackupLeadsList.Insert(0, new SelectListItem() { Value = string.Empty, Text = "Select Subcontract Backup Lead" });
+			model.SupplyChainPOCSubsBackupLeadsList.Insert(0, new SelectListItem() { Value = string.Empty, Text = "Select Backup IBOE Preparer" });
 
 			return model;
 		}
