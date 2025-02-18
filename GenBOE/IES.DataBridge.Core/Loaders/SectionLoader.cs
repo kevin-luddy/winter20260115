@@ -99,11 +99,14 @@ namespace IES.DataBridge.Loaders
 						DisplayRateCode = r.DisplayRateCode,
 						RevisionUniqueSectionId = r.RevisionUniqueSectionId,
 						IsRdsbRequired = r.IsRdsbRequired,
-						// TODO: PROPH-2453 Add Service calls here, maybe?
 						SectionContainsCasbDisclosureCore = r.SectionContainsCasbDisclosureCore,
+						SectionContainsCasbDisclosureService = r.SectionContainsCasbDisclosureService,
 						IsDisclosureStatementAdequateCore = !r.IsDisclosureStatementAdequateCore.HasValue ? false : r.IsDisclosureStatementAdequateCore.Value,
+						IsDisclosureStatementAdequateService = !r.IsDisclosureStatementAdequateService.HasValue ? false : r.IsDisclosureStatementAdequateService.Value,
 						SectionContainsNonComplianceCore = r.SectionContainsNonComplianceCore,
+						SectionContainsNonComplianceService = r.SectionContainsNonComplianceService,
 						NonComplianceNotificationCore = !r.NonComplianceNotificationCore.HasValue ? false : r.NonComplianceNotificationCore.Value,
+						NonComplianceNotificationService = !r.NonComplianceNotificationService.HasValue ? false : r.NonComplianceNotificationService.Value,
 						Office = r.Office,
 						Agency = r.Agency,
 						LMBA = r.LMBA,
@@ -701,15 +704,38 @@ namespace IES.DataBridge.Loaders
 			using (IESEntities context = new())
 			{
 				int? rdmRevision = context.RDSBDocumentInformations.FirstOrDefault(x => x.PTMProposalID == proposalId)?.RDMRevisionID;
+				RevisionSegment revisionSegment = (RevisionSegment?)context.RDSBDocumentInformations.FirstOrDefault(x => x.PTMProposalID == proposalId)?.RevisionSegmentId ?? RevisionSegment.None;
 
 				if (rdmRevision.HasValue)
 				{
 					ICollection<SectionModelView> flatSections = FlattenSections(RetrieveAllSections(new RevisionModelView() { Id = rdmRevision.Value }, true, false));
-					// TODO: PROPH-2454 Update this to accommodate changes for Core and Service
-					result.CasbSection = flatSections.FirstOrDefault(x => x.SectionContainsCasbDisclosureCore)?.ReferenceNumber;
-					result.NonComplianceSection = flatSections.FirstOrDefault(x => x.SectionContainsNonComplianceCore)?.ReferenceNumber;
-					result.AdequateDisclosure = flatSections.Any(x => x.IsDisclosureStatementAdequateCore.HasValue && x.IsDisclosureStatementAdequateCore.Value) ? true : false;
-					result.NoncomplianceNotification = flatSections.Any(x => x.NonComplianceNotificationCore.HasValue && x.NonComplianceNotificationCore.Value) ? true : false;
+
+					// Searches the corresponding Core or Services based on the Revision Segment. This will populate the properties to return to ACV.
+					// If the Revision Segment is Core, and it returns the values back for Core then it will be be "Yes" for 8.c and 8.d, otherwise it will be "No", vice versa for Services.
+					// This reduces the need to send the Revision Segment to ACV.
+					if (revisionSegment == RevisionSegment.Core)
+					{
+						result.CasbSection = flatSections.FirstOrDefault(x => x.SectionContainsCasbDisclosureCore)?.ReferenceNumber;
+						result.NonComplianceSection = flatSections.FirstOrDefault(x => x.SectionContainsNonComplianceCore)?.ReferenceNumber;
+						result.AdequateDisclosure = flatSections.Any(x => x.IsDisclosureStatementAdequateCore.HasValue && x.IsDisclosureStatementAdequateCore.Value) ? true : false;
+						result.NoncomplianceNotification = flatSections.Any(x => x.NonComplianceNotificationCore.HasValue && x.NonComplianceNotificationCore.Value) ? true : false;
+					}
+					else if (revisionSegment == RevisionSegment.Services)
+					{
+						result.CasbSection = flatSections.FirstOrDefault(x => x.SectionContainsCasbDisclosureService)?.ReferenceNumber;
+						result.NonComplianceSection = flatSections.FirstOrDefault(x => x.SectionContainsNonComplianceService)?.ReferenceNumber;
+						result.AdequateDisclosure = flatSections.Any(x => x.IsDisclosureStatementAdequateService.HasValue && x.IsDisclosureStatementAdequateService.Value) ? true : false;
+						result.NoncomplianceNotification = flatSections.Any(x => x.NonComplianceNotificationService.HasValue && x.NonComplianceNotificationService.Value) ? true : false;
+					}
+					else
+					{
+						// TODO PROPH-2454: Handle the default when none?
+						// Leaving this commented out for now until Frank responds.
+						//result.CasbSection = string.Empty;
+						//result.NonComplianceSection = string.Empty;
+						//result.AdequateDisclosure = null;
+						//result.NoncomplianceNotification = null;
+					}
 				}
 			}
 
