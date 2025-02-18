@@ -55,6 +55,7 @@ namespace IES.Models
         public virtual DbSet<BoeDatabaseVersion> BoeDatabaseVersions { get; set; }
         public virtual DbSet<DisclosureTypeLU> DisclosureTypeLUs { get; set; }
         public virtual DbSet<ELMAH_Error> ELMAH_Error { get; set; }
+        public virtual DbSet<RevisionSegmentLU> RevisionSegmentLUs { get; set; }
     
         public virtual int deleteCobraFiscalYear(Nullable<int> id, Nullable<System.DateTime> updateDate)
         {
@@ -716,7 +717,7 @@ namespace IES.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteRDSBDocumentInformation", idParameter, lastUpdateDTParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> upsertRDSBDocumentInformation(Nullable<int> id, Nullable<System.DateTime> lastUpdateDT, Nullable<int> pTMProposalID, string createdBy, Nullable<int> rDMRevisionID, Nullable<int> startYear, Nullable<int> endYear, string parentSection)
+        public virtual ObjectResult<Nullable<int>> upsertRDSBDocumentInformation(Nullable<int> id, Nullable<System.DateTime> lastUpdateDT, Nullable<int> pTMProposalID, string createdBy, Nullable<int> rDMRevisionID, Nullable<int> startYear, Nullable<int> endYear, string parentSection, Nullable<int> revisionSegmentId)
         {
             var idParameter = id.HasValue ?
                 new ObjectParameter("Id", id) :
@@ -750,7 +751,11 @@ namespace IES.Models
                 new ObjectParameter("ParentSection", parentSection) :
                 new ObjectParameter("ParentSection", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertRDSBDocumentInformation", idParameter, lastUpdateDTParameter, pTMProposalIDParameter, createdByParameter, rDMRevisionIDParameter, startYearParameter, endYearParameter, parentSectionParameter);
+            var revisionSegmentIdParameter = revisionSegmentId.HasValue ?
+                new ObjectParameter("RevisionSegmentId", revisionSegmentId) :
+                new ObjectParameter("RevisionSegmentId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertRDSBDocumentInformation", idParameter, lastUpdateDTParameter, pTMProposalIDParameter, createdByParameter, rDMRevisionIDParameter, startYearParameter, endYearParameter, parentSectionParameter, revisionSegmentIdParameter);
         }
     
         public virtual int deleteBanner(Nullable<int> id, Nullable<System.DateTime> updateDate)

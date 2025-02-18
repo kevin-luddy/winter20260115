@@ -14,7 +14,7 @@
 	<ItemGroup>
 		<EntityDeploy Include="..\IES.Models\IESEntityModel.edmx" Link="IESEntityModel.edmx">
 			<Generator>EntityModelCodeGenerator</Generator>
-			<LastGenOutput>..\IES.Models\IESEntityModel.Designer.cs</LastGenOutput>
+			<LastGenOutput>IESEntityModel.Designer.cs</LastGenOutput>
 		</EntityDeploy>
 		<Compile Include="..\IES.Models\Banner.cs" Link="Banner.cs" />
 		<Compile Include="..\IES.Models\BoeDatabaseVersion.cs" Link="BoeDatabaseVersion.cs" />
@@ -36,7 +36,7 @@
 		<Compile Include="..\IES.Models\IESEntityModel.Designer.cs" Link="IESEntityModel.Designer.cs">
 		  <DesignTime>True</DesignTime>
 		  <AutoGen>True</AutoGen>
-		  <DependentUpon>..\IES.Models\IESEntityModel.edmx</DependentUpon>
+		  <DependentUpon>IESEntityModel.edmx</DependentUpon>
 		</Compile>
 		<Compile Include="..\IES.Models\OfflineApplication.cs" Link="OfflineApplication.cs" />
 		<Compile Include="..\IES.Models\ProPricerBurdenRateMap.cs" Link="ProPricerBurdenRateMap.cs" />
@@ -59,6 +59,7 @@
 		<Compile Include="..\IES.Models\UserLog.cs" Link="UserLog.cs" />
 		<Compile Include="..\IES.Models\verifyRateCodeReplication_Result.cs" Link="verifyRateCodeReplication_Result.cs" />
 		<Compile Include="Properties\AssemblyInfo.cs" />
+		<Compile Include="RevisionSegmentLU.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

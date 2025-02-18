@@ -30,11 +30,13 @@ namespace IES.Models
         public Nullable<int> StartYear { get; set; }
         public Nullable<int> EndYear { get; set; }
         public string ParentSection { get; set; }
+        public int RevisionSegmentId { get; set; }
     
         public virtual Revision Revision { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RDSBRateCodeXref> RDSBRateCodeXrefs { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RDSBSectionXref> RDSBSectionXrefs { get; set; }
+        public virtual RevisionSegmentLU RevisionSegmentLU { get; set; }
     }
 }

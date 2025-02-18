@@ -6,7 +6,8 @@
 
 namespace IES.DataBridge.ModelViews
 {
-    using System;
+	using IES.Common;
+	using System;
 
     /// <summary>
     /// The model for a row in the Document Grid
@@ -77,5 +78,10 @@ namespace IES.DataBridge.ModelViews
         /// Gets or sets a value indicating whether this instance is using latest PPRD Revision.
         /// </summary>
         public bool IsUsingLatest { get; set; }
-    }
+
+		/// <summary>
+		/// Gets or sets the revision segment.
+		/// </summary>
+		public RevisionSegment RevisionSegment { get; set; }
+	}
 }

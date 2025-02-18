@@ -214,6 +214,7 @@
           <Property Name="StartYear" Type="int" />
           <Property Name="EndYear" Type="int" />
           <Property Name="ParentSection" Type="varchar" MaxLength="10" />
+          <Property Name="RevisionSegmentId" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="RDSBRateCodeXref">
           <Key>
@@ -262,6 +263,13 @@
           <Property Name="StartYear" Type="int" Nullable="false" />
           <Property Name="EndYear" Type="int" Nullable="false" />
           <Property Name="ReleaseNotes" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="RevisionSegmentLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="Section">
           <Key>
@@ -570,6 +578,18 @@ warning 6002: The table/view 'IES_DEV.dbo.UserLog' does not have a primary key d
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_RDSBDocumentInformation_RevisionSegmentLU">
+          <End Role="RevisionSegmentLU" Type="Self.RevisionSegmentLU" Multiplicity="1" />
+          <End Role="RDSBDocumentInformation" Type="Self.RDSBDocumentInformation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RevisionSegmentLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RDSBDocumentInformation">
+              <PropertyRef Name="RevisionSegmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_RDSBRateCodeXref_RateCode">
           <End Role="RateCode" Type="Self.RateCode" Multiplicity="1" />
           <End Role="RDSBRateCodeXref" Type="Self.RDSBRateCodeXref" Multiplicity="*" />
@@ -831,6 +851,7 @@ warning 6002: The table/view 'IES_DEV.dbo.UserLog' does not have a primary key d
           <Parameter Name="StartYear" Type="int" Mode="In" />
           <Parameter Name="EndYear" Type="int" Mode="In" />
           <Parameter Name="ParentSection" Type="varchar" Mode="In" />
+          <Parameter Name="RevisionSegmentId" Type="int" Mode="In" />
         </Function>
         <Function Name="upsertReplication" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Id" Type="int" Mode="In" />
@@ -914,6 +935,7 @@ warning 6002: The table/view 'IES_DEV.dbo.UserLog' does not have a primary key d
           <EntitySet Name="ResourceClassLU" EntityType="Self.ResourceClassLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ResourceTypeLU" EntityType="Self.ResourceTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Revision" EntityType="Self.Revision" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RevisionSegmentLU" EntityType="Self.RevisionSegmentLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Section" EntityType="Self.Section" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SectionContentTypeLU" EntityType="Self.SectionContentTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserLog" EntityType="Self.UserLog" store:Type="Tables" store:Schema="dbo">
@@ -1007,6 +1029,10 @@ warning 6002: The table/view 'IES_DEV.dbo.UserLog' does not have a primary key d
           <AssociationSet Name="FK_RateConfig_CategoryLU" Association="Self.FK_RateConfig_CategoryLU">
             <End Role="CategoryLU" EntitySet="CategoryLU" />
             <End Role="RateConfig" EntitySet="RateConfig" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RDSBDocumentInformation_RevisionSegmentLU" Association="Self.FK_RDSBDocumentInformation_RevisionSegmentLU">
+            <End Role="RevisionSegmentLU" EntitySet="RevisionSegmentLU" />
+            <End Role="RDSBDocumentInformation" EntitySet="RDSBDocumentInformation" />
           </AssociationSet>
           <AssociationSet Name="FK_RDSBRateCodeXref_RateCode" Association="Self.FK_RDSBRateCodeXref_RateCode">
             <End Role="RateCode" EntitySet="RateCode" />
@@ -1339,6 +1365,7 @@ warning 6002: The table/view 'IES_DEV.dbo.UserLog' does not have a primary key d
             <Parameter Name="StartYear" Mode="In" Type="Int32" />
             <Parameter Name="EndYear" Mode="In" Type="Int32" />
             <Parameter Name="ParentSection" Mode="In" Type="String" />
+            <Parameter Name="RevisionSegmentId" Mode="In" Type="Int32" />
           </FunctionImport>
           <EntitySet Name="RDSBRateCodeXrefs" EntityType="IESModel.RDSBRateCodeXref" />
           <EntitySet Name="RDSBSectionXrefs" EntityType="IESModel.RDSBSectionXref" />
@@ -1446,6 +1473,11 @@ warning 6002: The table/view 'IES_DEV.dbo.UserLog' does not have a primary key d
           <FunctionImport Name="updateProPricerRateCodeXrefviaTableParameter" />
           <FunctionImport Name="updateRateCodeviaTableParameter" />
           <FunctionImport Name="updateRateCodeYearviaTableParameter" />
+          <EntitySet Name="RevisionSegmentLUs" EntityType="IESModel.RevisionSegmentLU" />
+          <AssociationSet Name="FK_RDSBDocumentInformation_RevisionSegmentLU" Association="IESModel.FK_RDSBDocumentInformation_RevisionSegmentLU">
+            <End Role="RevisionSegmentLU" EntitySet="RevisionSegmentLUs" />
+            <End Role="RDSBDocumentInformation" EntitySet="RDSBDocumentInformations" />
+          </AssociationSet>
         </EntityContainer>
         <ComplexType Name="ExportCobraRates_Result">
           <Property Type="String" Name="CobraRateSet" Nullable="true" MaxLength="50" />
@@ -2145,6 +2177,8 @@ warning 6002: The table/view 'IES_DEV.dbo.UserLog' does not have a primary key d
           <NavigationProperty Name="RDSBRateCodeXrefs" Relationship="IESModel.FK_RDSBRateCodeXref_RDSBDocumentInformation" FromRole="RDSBDocumentInformation" ToRole="RDSBRateCodeXref" />
           <NavigationProperty Name="RDSBSectionXrefs" Relationship="IESModel.FK_RDSBSectionXref_RDSBDocumentInformation" FromRole="RDSBDocumentInformation" ToRole="RDSBSectionXref" />
           <Property Name="ParentSection" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="RevisionSegmentId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="RevisionSegmentLU" Relationship="IESModel.FK_RDSBDocumentInformation_RevisionSegmentLU" FromRole="RDSBDocumentInformation" ToRole="RevisionSegmentLU" />
         </EntityType>
         <Association Name="FK__RDSBDocum__RDMRe__308E3499">
           <End Type="IESModel.Revision" Role="Revision" Multiplicity="1" />
@@ -2282,6 +2316,26 @@ warning 6002: The table/view 'IES_DEV.dbo.UserLog' does not have a primary key d
             </Principal>
             <Dependent Role="RateCode">
               <PropertyRef Name="DisclosureTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="RevisionSegmentLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="RDSBDocumentInformations" Relationship="IESModel.FK_RDSBDocumentInformation_RevisionSegmentLU" FromRole="RevisionSegmentLU" ToRole="RDSBDocumentInformation" />
+        </EntityType>
+        <Association Name="FK_RDSBDocumentInformation_RevisionSegmentLU">
+          <End Type="IESModel.RevisionSegmentLU" Role="RevisionSegmentLU" Multiplicity="1" />
+          <End Type="IESModel.RDSBDocumentInformation" Role="RDSBDocumentInformation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RevisionSegmentLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RDSBDocumentInformation">
+              <PropertyRef Name="RevisionSegmentId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2699,6 +2753,7 @@ warning 6002: The table/view 'IES_DEV.dbo.UserLog' does not have a primary key d
           <EntitySetMapping Name="RDSBDocumentInformations">
             <EntityTypeMapping TypeName="IESModel.RDSBDocumentInformation">
               <MappingFragment StoreEntitySet="RDSBDocumentInformation">
+                <ScalarProperty Name="RevisionSegmentId" ColumnName="RevisionSegmentId" />
                 <ScalarProperty Name="ParentSection" ColumnName="ParentSection" />
                 <ScalarProperty Name="EndYear" ColumnName="EndYear" />
                 <ScalarProperty Name="StartYear" ColumnName="StartYear" />
@@ -2819,6 +2874,14 @@ warning 6002: The table/view 'IES_DEV.dbo.UserLog' does not have a primary key d
           <FunctionImportMapping FunctionImportName="updateProPricerRateCodeXrefviaTableParameter" FunctionName="IESModel.Store.updateProPricerRateCodeXrefviaTableParameter" />
           <FunctionImportMapping FunctionImportName="updateRateCodeviaTableParameter" FunctionName="IESModel.Store.updateRateCodeviaTableParameter" />
           <FunctionImportMapping FunctionImportName="updateRateCodeYearviaTableParameter" FunctionName="IESModel.Store.updateRateCodeYearviaTableParameter" />
+          <EntitySetMapping Name="RevisionSegmentLUs">
+            <EntityTypeMapping TypeName="IESModel.RevisionSegmentLU">
+              <MappingFragment StoreEntitySet="RevisionSegmentLU">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
