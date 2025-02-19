@@ -710,9 +710,6 @@ namespace IES.DataBridge.Loaders
 				{
 					ICollection<SectionModelView> flatSections = FlattenSections(RetrieveAllSections(new RevisionModelView() { Id = rdmRevision.Value }, true, false));
 
-					// Searches the corresponding Core or Services based on the Revision Segment. This will populate the properties to return to ACV.
-					// If the Revision Segment is Core, and it returns the values back for Core then it will be be "Yes" for 8.c and 8.d, otherwise it will be "No", vice versa for Services.
-					// This reduces the need to send the Revision Segment to ACV.
 					if (revisionSegment == RevisionSegment.Core)
 					{
 						result.CasbSection = flatSections.FirstOrDefault(x => x.SectionContainsCasbDisclosureCore)?.ReferenceNumber;
