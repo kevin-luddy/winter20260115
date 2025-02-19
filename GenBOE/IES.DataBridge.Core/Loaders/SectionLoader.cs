@@ -727,15 +727,6 @@ namespace IES.DataBridge.Loaders
 						result.AdequateDisclosure = flatSections.Any(x => x.IsDisclosureStatementAdequateService.HasValue && x.IsDisclosureStatementAdequateService.Value) ? true : false;
 						result.NoncomplianceNotification = flatSections.Any(x => x.NonComplianceNotificationService.HasValue && x.NonComplianceNotificationService.Value) ? true : false;
 					}
-					else
-					{
-						// TODO PROPH-2454: Handle the default when none?
-						// Leaving this commented out for now until Frank responds.
-						//result.CasbSection = string.Empty;
-						//result.NonComplianceSection = string.Empty;
-						//result.AdequateDisclosure = null;
-						//result.NoncomplianceNotification = null;
-					}
 				}
 			}
 
