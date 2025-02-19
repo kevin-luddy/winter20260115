@@ -438,7 +438,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             _customFieldValueLoader.Setup(x => x.GetCustomFieldValueDTOsByCustomFieldIds(new Collection<int>() { customFieldDTO.Id })).Returns(new Collection<CustomFieldValueDTO>() { customFieldValueDTO });
 
-            ICollection<BOECustomFieldsGridModelView> result = sut.GetCustomFieldsGridModelViews(new Collection<CustomFieldDTO>() { customFieldDTO }, 0);
+            ICollection<BOECustomFieldsInUseGridModelView> result = sut.GetCustomFieldsGridModelViews(new Collection<CustomFieldDTO>() { customFieldDTO }, 0);
 
             Assert.IsTrue(result.Count == 1);
             Assert.AreEqual(customFieldMV.CustomFieldID, result.First().CustomFieldID);

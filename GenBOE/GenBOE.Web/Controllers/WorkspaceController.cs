@@ -1524,7 +1524,7 @@ namespace GenBOE.Web.Controllers
 			/** Valid Model Check */
 			if (ModelState.IsValid)
 			{
-				ICollection<BOECustomFieldsGridModelView> theModelViews = _ControllerLogic.GetCustomFieldsGridModelViews(customFields, ws.Id);
+				ICollection<BOECustomFieldsInUseGridModelView> theModelViews = _ControllerLogic.GetCustomFieldsGridModelViews(customFields, ws.Id);
 
 				ViewData["IsProjectMapWorkspace"] = ws.IsProjectMapWorkspace;
 				ViewData["UsingTemplateBoe"] = ws.UsingTemplateBOE;
@@ -1556,7 +1556,7 @@ namespace GenBOE.Web.Controllers
 			// Initialize Action
 			Stopwatch sw = InitializeAction(_log, "DisplayBOECustomField", SecurityPage.BoeCustomFields, SecurityAuthorization.Read, ws, null);
 
-			BOECustomFieldsGridModelView metaData;
+			BOECustomFieldsInUseGridModelView metaData;
 			Collection<BOECustomFieldOptionModelView> options = new Collection<BOECustomFieldOptionModelView>();
 
 			if (boeCustomFieldID != null)
@@ -1565,7 +1565,7 @@ namespace GenBOE.Web.Controllers
 				_CustomFieldValueLoader.RefreshCustomFieldInUseByWorkspaceID(ws.Id);
 
 				CustomFieldDTO metaFromDB = this.Factory.CreateCustomField(boeCustomFieldID.Value);
-				metaData = new BOECustomFieldsGridModelView(metaFromDB);
+				metaData = new BOECustomFieldsInUseGridModelView(metaFromDB);
 				ICollection<CustomFieldValueDTO> customFieldValues = _CustomFieldValueLoader.GetCustomFieldValueDTOsByCustomFieldID(boeCustomFieldID.Value);
 				metaData.inUse = customFieldValues.Any(x => x.CustomFieldValueInUseFlag);
 
@@ -1583,7 +1583,7 @@ namespace GenBOE.Web.Controllers
 			}
 			else
 			{
-				metaData = new BOECustomFieldsGridModelView();
+				metaData = new BOECustomFieldsInUseGridModelView();
 			}
 
 			//BOECustomField

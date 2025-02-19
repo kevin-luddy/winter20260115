@@ -98,7 +98,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="customFields">Custom Fields</param>
 		/// <param name="workspaceId">The workspace Id.</param>
 		/// <returns>Model Views for the Custom Fields grid</returns>
-		ICollection<BOECustomFieldsGridModelView> GetCustomFieldsGridModelViews(ICollection<CustomFieldDTO> customFields, int workspaceId);
+		ICollection<BOECustomFieldsInUseGridModelView> GetCustomFieldsGridModelViews(ICollection<CustomFieldDTO> customFields, int workspaceId);
 
 		/// <summary>
 		/// Gets the default ExcelReportTemplateType for a new workspace

@@ -243,9 +243,6 @@ namespace GenBOE.Objects
 		/// <returns></returns>
 		public ICollection<CustomFieldValueDTO> GetCustomFieldValuesByFieldIds(ICollection<int> customFieldIds, int workspaceId)
 		{
-			// refresh in use flag
-			this.customFieldValueLoader.RefreshCustomFieldInUseByWorkspaceID(workspaceId);
-
 			return this.customFieldValueLoader.GetCustomFieldValueDTOsByCustomFieldIds(customFieldIds);
 		}
 

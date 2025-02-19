@@ -14,7 +14,7 @@ namespace GenBOE.ActionLogic.ModelView
             this.CustomFieldOptions = new Collection<BOECustomFieldOptionModelView>();
         }
 
-        public BOECustomFieldsGridModelView CustomFieldMetaData { get; set; }
+        public BOECustomFieldsInUseGridModelView CustomFieldMetaData { get; set; }
         public Collection<BOECustomFieldOptionModelView> CustomFieldOptions { get; set; }
 
         /// <summary>

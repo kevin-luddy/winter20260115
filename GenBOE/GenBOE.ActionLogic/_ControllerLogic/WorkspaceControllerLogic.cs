@@ -446,14 +446,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="customFields">Custom Fields</param>
 		/// <param name="workspaceId">The workspace Id.</param>
 		/// <returns>Model Views for the Custom Fields grid</returns>
-		public virtual ICollection<BOECustomFieldsGridModelView> GetCustomFieldsGridModelViews(ICollection<CustomFieldDTO> customFields, int workspaceId)
+		public virtual ICollection<BOECustomFieldsInUseGridModelView> GetCustomFieldsGridModelViews(ICollection<CustomFieldDTO> customFields, int workspaceId)
 		{
 			if (customFields == null)
 			{
 				throw new ArgumentNullException(nameof(customFields));
 			}
 
-			Collection<BOECustomFieldsGridModelView> toReturn = new Collection<BOECustomFieldsGridModelView>();
+			Collection<BOECustomFieldsInUseGridModelView> toReturn = new Collection<BOECustomFieldsInUseGridModelView>();
 
 			if (customFields.Any())
 			{
@@ -463,7 +463,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				ICollection<CustomFieldValueDTO> allCustomFieldValues = this.customFieldValueLoader.GetCustomFieldValueDTOsByCustomFieldIds(customFields.Select(i => i.Id).ToCollection<int>());
 				foreach (CustomFieldDTO customField in customFields)
 				{
-					BOECustomFieldsGridModelView newModelView = new BOECustomFieldsGridModelView(customField)
+					BOECustomFieldsInUseGridModelView newModelView = new BOECustomFieldsInUseGridModelView(customField)
 					{
 						inUse = allCustomFieldValues.Any(c => c.CustomFieldID == customField.Id && c.CustomFieldValueInUseFlag)
 					};
