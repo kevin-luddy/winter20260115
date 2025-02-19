@@ -6,6 +6,8 @@
 
 namespace IES.DataBridge.ModelViews
 {
+	using IES.Common.Core.Enums;
+
 	/// <summary>
 	/// RDSB Cover Sheet Data.
 	/// </summary>
@@ -30,5 +32,10 @@ namespace IES.DataBridge.ModelViews
 		/// Non compliance notification.
 		/// </summary>
 		public bool? NoncomplianceNotification {  get; set; }
+
+		/// <summary>
+		/// Revision segment selection.
+		/// </summary>
+		public RevisionSegment RevisionSegment { get; set; }
 	}
 }

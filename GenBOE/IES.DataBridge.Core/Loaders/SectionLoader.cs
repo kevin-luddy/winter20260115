@@ -727,6 +727,8 @@ namespace IES.DataBridge.Loaders
 						result.AdequateDisclosure = flatSections.Any(x => x.IsDisclosureStatementAdequateService.HasValue && x.IsDisclosureStatementAdequateService.Value) ? true : false;
 						result.NoncomplianceNotification = flatSections.Any(x => x.NonComplianceNotificationService.HasValue && x.NonComplianceNotificationService.Value) ? true : false;
 					}
+
+					result.RevisionSegment = revisionSegment;
 				}
 			}
 
