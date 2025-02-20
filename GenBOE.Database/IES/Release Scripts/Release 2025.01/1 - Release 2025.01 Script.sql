@@ -13,8 +13,6 @@ Story: SLMX_POLM_PROPH-2453 */
 -- RDSBDocumentInformation
 -- Added new LU table RevisionSegmentLU
 
-USE IES_DEV
-
 /**** PROPH-2453 Edit Sections Modifications ****/
 /********** ALTER TABLE: dbo.Section ************/
 /* Altering existing Columns to be of Type CORE */
