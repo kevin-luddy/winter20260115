@@ -559,6 +559,10 @@ namespace IES.DataBridge.Loaders
 				s.IsDisclosureStatementAdequateCore = section.IsDisclosureStatementAdequateCore;
 				s.SectionContainsNonComplianceCore = section.SectionContainsNonComplianceCore;
 				s.NonComplianceNotificationCore = section.NonComplianceNotificationCore;
+				s.SectionContainsCasbDisclosureService = section.SectionContainsCasbDisclosureService;
+				s.IsDisclosureStatementAdequateService = section.IsDisclosureStatementAdequateService;
+				s.SectionContainsNonComplianceService = section.SectionContainsNonComplianceService;
+				s.NonComplianceNotificationService = section.NonComplianceNotificationService;
 
 				s.Office = section.Office;
 				s.Agency = section.Agency;
@@ -712,17 +716,21 @@ namespace IES.DataBridge.Loaders
 
 					if (revisionSegment == RevisionSegment.Core)
 					{
-						result.CasbSection = flatSections.FirstOrDefault(x => x.SectionContainsCasbDisclosureCore)?.ReferenceNumber;
-						result.NonComplianceSection = flatSections.FirstOrDefault(x => x.SectionContainsNonComplianceCore)?.ReferenceNumber;
-						result.AdequateDisclosure = flatSections.Any(x => x.IsDisclosureStatementAdequateCore.HasValue && x.IsDisclosureStatementAdequateCore.Value) ? true : false;
-						result.NoncomplianceNotification = flatSections.Any(x => x.NonComplianceNotificationCore.HasValue && x.NonComplianceNotificationCore.Value) ? true : false;
+						SectionModelView casbSection = flatSections.FirstOrDefault(x => x.SectionContainsCasbDisclosureCore);
+						SectionModelView nonComplianceSection = flatSections.FirstOrDefault(x => x.SectionContainsNonComplianceCore);
+						result.CasbSection = casbSection?.ReferenceNumber;
+						result.NonComplianceSection = nonComplianceSection?.ReferenceNumber;
+						result.AdequateDisclosure = casbSection?.IsDisclosureStatementAdequateCore ?? false;
+						result.NoncomplianceNotification = nonComplianceSection?.NonComplianceNotificationCore ?? false;
 					}
 					else if (revisionSegment == RevisionSegment.Services)
 					{
-						result.CasbSection = flatSections.FirstOrDefault(x => x.SectionContainsCasbDisclosureService)?.ReferenceNumber;
-						result.NonComplianceSection = flatSections.FirstOrDefault(x => x.SectionContainsNonComplianceService)?.ReferenceNumber;
-						result.AdequateDisclosure = flatSections.Any(x => x.IsDisclosureStatementAdequateService.HasValue && x.IsDisclosureStatementAdequateService.Value) ? true : false;
-						result.NoncomplianceNotification = flatSections.Any(x => x.NonComplianceNotificationService.HasValue && x.NonComplianceNotificationService.Value) ? true : false;
+						SectionModelView casbSection = flatSections.FirstOrDefault(x => x.SectionContainsCasbDisclosureService);
+						SectionModelView nonComplianceSection = flatSections.FirstOrDefault(x => x.SectionContainsNonComplianceService);
+						result.CasbSection = casbSection?.ReferenceNumber;
+						result.NonComplianceSection = nonComplianceSection?.ReferenceNumber;
+						result.AdequateDisclosure = casbSection?.IsDisclosureStatementAdequateService ?? false;
+						result.NoncomplianceNotification = nonComplianceSection?.NonComplianceNotificationService ?? false;
 					}
 
 					result.RevisionSegment = revisionSegment;
