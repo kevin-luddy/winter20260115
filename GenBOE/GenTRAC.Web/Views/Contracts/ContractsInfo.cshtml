@@ -412,7 +412,7 @@
 				</div>
 			</div>
 			<div class="form-row">
-				<div class="form-label">@Html.LabelFor(x => x.IsInsuranceDirect)**</div>
+				<div class="form-label"><span helptext="Note: Certain insurance cost, such as Defense Base Act (DBA) Insurance, should not be proposed direct as it is an indirect cost.">@Html.LabelFor(x => x.IsInsuranceDirect)**</span></div>
 				<div class="form-element">
 					@Html.DropDownListFor(model => model.IsInsuranceDirect, Model.InsuranceProposedDirectOptions, new { name = "IsInsuranceDirect", @class = "half", onchange = "ContractsInfoWidget.insuranceChanged()" })
 

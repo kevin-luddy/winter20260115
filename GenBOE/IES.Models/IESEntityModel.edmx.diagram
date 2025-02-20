@@ -59,6 +59,8 @@
         <EntityTypeShape EntityType="IESModel.DisclosureTypeLU" Width="1.5" PointX="3.375" PointY="14.875" />
         <EntityTypeShape EntityType="IESModel.ELMAH_Error" Width="1.5" PointX="14.375" PointY="10.75" />
         <AssociationConnector Association="IESModel.FK_RateCode_DisclosureTypeLU" />
+        <EntityTypeShape EntityType="IESModel.RevisionSegmentLU" Width="1.5" PointX="14.375" PointY="14.875" />
+        <AssociationConnector Association="IESModel.FK_RDSBDocumentInformation_RevisionSegmentLU" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

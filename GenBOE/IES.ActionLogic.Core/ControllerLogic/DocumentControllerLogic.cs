@@ -508,6 +508,11 @@ namespace IES.ActionLogic.Core.ControllerLogic
 				messages.Add(new ValidationMessage("StartYear", "Start Year must be less than or equal to End Year."));
 			}
 
+			if (document.RevisionSegment == RevisionSegment.None)
+			{
+				messages.Add(new ValidationMessage("RevisionSegment", "A segment selection is required."));
+			}
+
 			// if we made it here with no messages, then check for start/end years inside revision
 			if (messages.None())
 			{

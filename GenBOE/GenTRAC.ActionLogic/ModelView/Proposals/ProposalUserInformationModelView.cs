@@ -81,6 +81,11 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
 		public string SupplyChainPOCMaterialsNtId { get; set; }
 
 		/// <summary>
+		/// Gets or sets the list of Supply Chain POC Materials Leads
+		/// </summary>
+		public List<SelectListItem> SupplyChainPOCMaterialsLeadsList { get; set; }
+
+		/// <summary>
 		/// Gets or sets Supply Chain POC Materials Backup Display Name
 		/// </summary>
 		public string SupplyChainPOCMaterialsBackupDisplayName { get; set; }
@@ -89,6 +94,11 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
 		/// Gets or sets Supply Chain POC Materials Backup NT id
 		/// </summary>
 		public string SupplyChainPOCMaterialsBackupNtId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the list of Supply Chain POC Materials Backup Leads
+		/// </summary>
+		public List<SelectListItem> SupplyChainPOCMaterialsBackupLeadsList { get; set; }
 
 		/// <summary>
 		/// Gets or sets Supply Chain POC Subs Display Name
@@ -101,6 +111,11 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
 		public string SupplyChainPOCSubsNtId { get; set; }
 
 		/// <summary>
+		/// Gets or sets the list of Supply Chain POC Subs Leads
+		/// </summary>
+		public List<SelectListItem> SupplyChainPOCSubsLeadsList { get; set; }
+
+		/// <summary>
 		/// Gets or sets Supply Chain POC Subs Backup Display Name
 		/// </summary>
 		public string SupplyChainPOCSubsBackupDisplayName { get; set; }
@@ -109,6 +124,11 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
 		/// Gets or sets Supply Chain POC Subs Backup NT id
 		/// </summary>
 		public string SupplyChainPOCSubsBackupNtId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the list of Supply Chain POC Subs Backup Leads
+		/// </summary>
+		public List<SelectListItem> SupplyChainPOCSubsBackupLeadsList { get; set; }
 
 		/// <summary>
 		/// Gets or sets Contracts POC Display name

@@ -153,6 +153,9 @@
     <Compile Include="ResourceClassLU.cs">
       <DependentUpon>IESEntityModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="RevisionSegmentLU.cs">
+      <DependentUpon>IESEntityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="UserLog.cs">
       <DependentUpon>IESEntityModel.tt</DependentUpon>
     </Compile>

@@ -213,7 +213,8 @@ namespace IES.DataBridge.Loaders
 
             using (IESEntities iesEntities = new())
             {
-                // Preserve the revision, description, and createdBy values
+				// Preserve the revision, description, and createdBy values
+				iesEntities.Database.CommandTimeout = 180;
                 string revision = wipRevision.Revision;
                 string history = wipRevision.History;
                 string createdBy = wipRevision.CreatedBy;
