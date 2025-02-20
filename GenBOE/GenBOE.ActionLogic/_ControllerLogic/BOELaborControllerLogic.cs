@@ -3843,7 +3843,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="currentSkillMixData">The current skill mix data</param>
 		/// <param name="currentCommonDisclosureData">Current Common Disclosure data</param>
 		/// <param name="isManual">If the Historical Resource/Hours are Manually input or not</param>
-		/// <param name="isSpace">Whether this is SPace or not</param>
+		/// <param name="isSpace">Whether this is Space or not</param>
 		private void FilterBadData(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, 
 			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isManual, bool isSpace)
 		{
