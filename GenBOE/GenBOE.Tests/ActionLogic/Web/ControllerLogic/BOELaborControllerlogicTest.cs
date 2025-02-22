@@ -82,10 +82,20 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		private const string Rationale3 = "Rationale3";
 
 		#region Private members
+		
+		/// <summary>
+		/// Reset companymode to space
+		/// </summary>
+		[ClassCleanup]
+		public static void Reset()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+		}
 
 		// Test
 		private BOELaborControllerLogic CreateSystem()
 		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
 			this.CreateCommonSystem();
 
 			return new BOELaborControllerLogic(
@@ -120,6 +130,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 		private BOELaborControllerLogic CreateSystemSSC()
 		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
 			this.CreateCommonSystem();
 
 			return new BOELaborControllerLogicSpace(
@@ -154,6 +165,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 		private BOELaborControllerLogic CreateSystemMST()
 		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
 			this.CreateCommonSystem();
 
 			return new BOELaborControllerLogicMST(
@@ -2516,43 +2528,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			MOQEquationModelView result = sut.GetMOQModelView(te, workspace);
 			Assert.IsFalse(result.ShowSearchMetricsLink);
 		}
-
-		[TestMethod]
-		public void GetMOQEquationModelViewMST()
-		{
-			BOELaborControllerLogic sut = CreateSystemMST();
-			BoeTaskElementDTO te = new BoeTaskElementDTO()
-			{
-				Id = 1,
-				TaskTitle = "My Task Title",
-				MOQText = "MOQ Text"
-			};
-			MSTMetricDetailsDTO dto = new MSTMetricDetailsDTO()
-			{
-				Id = 1,
-				BusinessArea = "MST",
-				DataSource = "PMM",
-				DateAddedToTaskElement = DateTime.Now,
-				Comment = "Test Comment",
-				ContractNumber = "12345",
-				DataSourceId = 1,
-				EndDate = DateTime.Now.AddYears(1),
-				Equation = "1 + 2",
-				LineOfBusiness = "Civil",
-				MeasureData = 0.98m,
-				ProgramName = "JSF",
-				MeasureName = "SoftwareEngineer",
-				ProgramId = 1
-			};
-
-			FullWorkspace workspace = new FullWorkspace(new WorkspaceDTO());
-
-			MOQEquationModelView result = sut.GetMOQModelView(te, workspace);
-			Assert.AreEqual(1, result.PMMetricsUsed.Count, "The number of HistoricalMetricsUsed is incorrect.");
-			Assert.AreEqual("SoftwareEngineer", result.PMMetricsUsed.ToCollection()[0].MeasureName, "The data in the returned model is not correct.");
-			Assert.AreEqual(1, result.PMMetricsUsed.ToCollection()[0].Id, "The data in the returned model is not correct.");
-			Assert.IsTrue(result.ShowSearchMetricsLink);
-		}
 		#endregion
 
 		#region OverrideReadOnly Tests
@@ -2843,6 +2818,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			FullWorkspace testWorkspace = new FullWorkspace() { WorkspaceName = "Test Workspace", CostDecimalPrecision = 2, ResourceDecimalPrecision = 2 };
 
 			ResourceSpreadDto testSpread = new ResourceSpreadDto { BoeID = this.Boe1.Id, Id = 1, LaborSpreadDate = DateTime.Now, LaborSpreadValue = 5000 };
+			tmResourceRateDTODataLoader.Setup(x => x.GetByWorkspaceId(It.IsAny<int>())).Returns(new List<TMResourceRateDTO>());
 
 			CustomFieldValueContainer testLaborCustomField = new CustomFieldValueContainer()
 			{
@@ -3402,9 +3378,20 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		/// Test Refresh SkillMix Calculation with Empty hours
 		/// </summary>
 		[TestMethod]
-		public void RefreshSkillMix_Empty_Test()
+		public void RefreshSkillMix_Empty_Test_RMS()
 		{
-			BOELaborControllerLogic sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystemMST();
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(null, null, null, null, true, false);
+			Assert.IsNotNull(result);
+		}
+
+		/// <summary>
+		/// Test Refresh SkillMix Calculation with Empty hours
+		/// </summary>
+		[TestMethod]
+		public void RefreshSkillMix_Empty_Test_SSC()
+		{
+			BOELaborControllerLogic sut = CreateSystemSSC();
 			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(null, null, null, null, true, false);
 			Assert.IsNotNull(result);
 		}
@@ -3413,9 +3400,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		/// Test Refresh SkillMix Calculation with only Historical Hours
 		/// </summary>
 		[TestMethod]
-		public void RefreshSkillMix_HoursOnly_Test()
+		public void RefreshSkillMix_HoursOnly_Test_RMS()
 		{
-			BOELaborControllerLogic sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystemMST();
 			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 			{
 				new MOQTypeSelectionTableDataResourceHoursDTO
@@ -3470,12 +3457,79 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		}
 
 		/// <summary>
+		/// Test Refresh SkillMix Calculation with only Historical Hours
+		/// </summary>
+		[TestMethod]
+		public void RefreshSkillMix_HoursOnly_Test_SSC()
+		{
+			BOELaborControllerLogic sut = CreateSystemSSC();
+			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
+			{
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 2,
+					ResourceName = HISTORICAL_RESOURCE_NAME2,
+					BRCName = BRC_RESOURCE_NAME2,
+					TotalHours = 40.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 1,
+					ResourceName = HISTORICAL_RESOURCE_NAME1,
+					BRCName = BRC_RESOURCE_NAME1,
+					TotalHours = 100.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 3,
+					ResourceName = HISTORICAL_RESOURCE_NAME3,
+					BRCName = BRC_RESOURCE_NAME3,
+					TotalHours = 110.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 2,
+					MOQTypeSelectionTableDataResourceHoursId = 4,
+					ResourceName = HISTORICAL_RESOURCE_NAME1,
+					BRCName = BRC_RESOURCE_NAME1,
+					TotalHours = 50.0m
+				}
+			};
+
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, null, null, null, true, false);
+
+			Assert.IsNotNull(result);
+			Assert.IsNotNull(result.SkillMixRows);
+			Assert.IsTrue(result.SkillMixRows.Any());
+			Assert.AreEqual(3, result.SkillMixRows.Count);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME1, result.SkillMixRows.First().ResourceOld);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME2, result.SkillMixRows.ElementAt(1).ResourceOld);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME3, result.SkillMixRows.ElementAt(2).ResourceOld);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME1, result.SkillMixRows.First().ResourceNew);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME2, result.SkillMixRows.ElementAt(1).ResourceNew);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME3, result.SkillMixRows.ElementAt(2).ResourceNew);
+			Assert.AreEqual(150.0m, result.SkillMixRows.ElementAt(0).HistoricalHours);
+			Assert.AreEqual(40.0m, result.SkillMixRows.ElementAt(1).HistoricalHours);
+			Assert.AreEqual(110.0m, result.SkillMixRows.ElementAt(2).HistoricalHours);
+			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(0).ProposedHours);
+			Assert.AreEqual(50.0m, result.SkillMixRows.ElementAt(0).LaborSkillMix);
+			Assert.AreEqual(4000.0m / 300m, result.SkillMixRows.ElementAt(1).LaborSkillMix);
+			Assert.AreEqual(11000.0m / 300m, result.SkillMixRows.ElementAt(2).LaborSkillMix);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(0).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included);
+		}
+
+		/// <summary>
 		/// Test Refresh SkillMix Calculation with Historical Hours and Labor Type info only
 		/// </summary>
 		[TestMethod]
-		public void RefreshSkillMix_HoursLaborOnly_Test()
+		public void RefreshSkillMix_HoursLaborOnly_Test_RMS()
 		{
-			BOELaborControllerLogic sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystemMST();
 			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 			{
 				new MOQTypeSelectionTableDataResourceHoursDTO
@@ -3556,12 +3610,102 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		}
 
 		/// <summary>
+		/// Test Refresh SkillMix Calculation with Historical Hours and Labor Type info only
+		/// </summary>
+		[TestMethod]
+		public void RefreshSkillMix_HoursLaborOnly_Test_SSC()
+		{
+			BOELaborControllerLogic sut = CreateSystemSSC();
+			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
+			{
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 2,
+					ResourceName = HISTORICAL_RESOURCE_NAME2,
+					BRCName = BRC_RESOURCE_NAME2,
+					TotalHours = 40.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 1,
+					ResourceName = HISTORICAL_RESOURCE_NAME1,
+					BRCName = BRC_RESOURCE_NAME1,
+					TotalHours = 100.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 3,
+					ResourceName = HISTORICAL_RESOURCE_NAME3,
+					BRCName = BRC_RESOURCE_NAME3,
+					TotalHours = 110.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 2,
+					MOQTypeSelectionTableDataResourceHoursId = 4,
+					ResourceName = HISTORICAL_RESOURCE_NAME1,
+					BRCName = BRC_RESOURCE_NAME1,
+					TotalHours = 50.0m
+				}
+			};
+
+			List<LaborTypeDataModelView> laborTypes = new List<LaborTypeDataModelView>
+			{
+				new LaborTypeDataModelView
+				{
+					ResourceName = RESOURCE_NAME1,
+					Spreads = new List<LaborSpreadDataModelView> {
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "01/2024",
+							LaborSpreadValue = 60.0m
+						},
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "02/2024",
+							LaborSpreadValue = 15.0m
+						}
+					},
+					Deleted = false,
+					HourSpread = 75.0m,
+					RateType = RateType.Hours
+				}
+			};
+
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, null, null, true, false);
+
+			Assert.IsNotNull(result);
+			Assert.IsNotNull(result.SkillMixRows);
+			Assert.IsTrue(result.SkillMixRows.Any());
+			Assert.AreEqual(4, result.SkillMixRows.Count);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME1, result.SkillMixRows.First().ResourceOld);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME2, result.SkillMixRows.ElementAt(1).ResourceOld);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME3, result.SkillMixRows.ElementAt(2).ResourceOld);
+			Assert.AreEqual(150.0m, result.SkillMixRows.ElementAt(0).HistoricalHours);
+			Assert.AreEqual(40.0m, result.SkillMixRows.ElementAt(1).HistoricalHours);
+			Assert.AreEqual(110.0m, result.SkillMixRows.ElementAt(2).HistoricalHours);
+			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(0).ProposedHours);
+			Assert.AreEqual(50.0m, result.SkillMixRows.ElementAt(0).LaborSkillMix);
+			Assert.AreEqual(4000.0m / 300m, result.SkillMixRows.ElementAt(1).LaborSkillMix);
+			Assert.AreEqual(11000.0m / 300m, result.SkillMixRows.ElementAt(2).LaborSkillMix);
+			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(0).BOESkillMix);
+			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(1).BOESkillMix);
+			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(2).BOESkillMix);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(0).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included);
+		}
+
+		/// <summary>
 		/// Test Refresh SkillMix Calculation with Historical Hours, Labor Types, and Skill Mix Rows
 		/// </summary>
 		[TestMethod]
-		public void RefreshSkillMix_HoursLaborSkillMixOnly_Test()
+		public void RefreshSkillMix_HoursLaborSkillMixOnly_Test_RMS()
 		{
-			BOELaborControllerLogic sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystemMST();
 			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 			{
 				new MOQTypeSelectionTableDataResourceHoursDTO
@@ -3652,12 +3796,105 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		}
 
 		/// <summary>
+		/// Test Refresh SkillMix Calculation with Historical Hours, Labor Types, and Skill Mix Rows
+		/// </summary>
+		[TestMethod]
+		public void RefreshSkillMix_HoursLaborSkillMixOnly_Test_SSC()
+		{
+			BOELaborControllerLogic sut = CreateSystemSSC();
+			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
+			{
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 2,
+					ResourceName = HISTORICAL_RESOURCE_NAME2,
+					TotalHours = 40.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 1,
+					ResourceName = HISTORICAL_RESOURCE_NAME1,
+					TotalHours = 100.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 3,
+					ResourceName = HISTORICAL_RESOURCE_NAME3,
+					TotalHours = 110.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 2,
+					MOQTypeSelectionTableDataResourceHoursId = 4,
+					ResourceName = HISTORICAL_RESOURCE_NAME1,
+					TotalHours = 50.0m
+				}
+			};
+
+			List<LaborTypeDataModelView> laborTypes = new List<LaborTypeDataModelView>
+			{
+				new LaborTypeDataModelView
+				{
+					ResourceName = HISTORICAL_RESOURCE_NAME1,
+					Spreads = new List<LaborSpreadDataModelView> {
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "01/2024",
+							LaborSpreadValue = 60.0m
+						},
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "02/2024",
+							LaborSpreadValue = 15.0m
+						}
+					},
+					Deleted = false,
+					HourSpread = 75.0m,
+					RateType = RateType.Hours
+				}
+			};
+
+			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
+			{
+			};
+
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, null, true, false);
+
+			Assert.IsNotNull(result);
+			Assert.IsNotNull(result.SkillMixRows);
+			Assert.IsTrue(result.SkillMixRows.Any());
+			Assert.AreEqual(3, result.SkillMixRows.Count);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME1, result.SkillMixRows.First().ResourceOld);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME2, result.SkillMixRows.ElementAt(1).ResourceOld);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME3, result.SkillMixRows.ElementAt(2).ResourceOld);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME1, result.SkillMixRows.First().ResourceNew);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME2, result.SkillMixRows.ElementAt(1).ResourceNew);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME3, result.SkillMixRows.ElementAt(2).ResourceNew);
+			Assert.AreEqual(150.0m, result.SkillMixRows.ElementAt(0).HistoricalHours);
+			Assert.AreEqual(40.0m, result.SkillMixRows.ElementAt(1).HistoricalHours);
+			Assert.AreEqual(110.0m, result.SkillMixRows.ElementAt(2).HistoricalHours);
+			Assert.AreEqual(75.0m, result.SkillMixRows.ElementAt(0).ProposedHours);
+			Assert.AreEqual(50.0m, result.SkillMixRows.ElementAt(0).LaborSkillMix);
+			Assert.AreEqual(4000.0m / 300m, result.SkillMixRows.ElementAt(1).LaborSkillMix);
+			Assert.AreEqual(11000.0m / 300m, result.SkillMixRows.ElementAt(2).LaborSkillMix);
+			Assert.AreEqual(100.0m, result.SkillMixRows.ElementAt(0).BOESkillMix);
+			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(1).BOESkillMix);
+			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(2).BOESkillMix);
+			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included);
+		}
+
+		/// <summary>
 		/// Test Refresh SkillMix Calculation with Historical Hours, Labor Types, and INVALID Skill Mix Row
 		/// </summary>
 		[TestMethod]
-		public void RefreshSkillMix_HoursLaborSkillMixOnly_Test2()
+		public void RefreshSkillMix_HoursLaborSkillMixOnly_Test2_RMS()
 		{
-			BOELaborControllerLogic sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystemMST();
 			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 			{
 				new MOQTypeSelectionTableDataResourceHoursDTO
@@ -3752,12 +3989,111 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		}
 
 		/// <summary>
+		/// Test Refresh SkillMix Calculation with Historical Hours, Labor Types, and INVALID Skill Mix Row
+		/// </summary>
+		[TestMethod]
+		public void RefreshSkillMix_HoursLaborSkillMixOnly_Test2_SSC()
+		{
+			BOELaborControllerLogic sut = CreateSystemSSC();
+			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
+			{
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 2,
+					ResourceName = HISTORICAL_RESOURCE_NAME2,
+					TotalHours = 40.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 1,
+					ResourceName = HISTORICAL_RESOURCE_NAME1,
+					TotalHours = 100.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 3,
+					ResourceName = HISTORICAL_RESOURCE_NAME3,
+					TotalHours = 110.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 2,
+					MOQTypeSelectionTableDataResourceHoursId = 4,
+					ResourceName = HISTORICAL_RESOURCE_NAME1,
+					TotalHours = 50.0m
+				}
+			};
+
+			List<LaborTypeDataModelView> laborTypes = new List<LaborTypeDataModelView>
+			{
+				new LaborTypeDataModelView
+				{
+					ResourceName = RESOURCE_NAME3,
+					Spreads = new List<LaborSpreadDataModelView> {
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "01/2024",
+							LaborSpreadValue = 60.0m
+						},
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "02/2024",
+							LaborSpreadValue = 15.0m
+						}
+					},
+					Deleted = false,
+					HourSpread = 75.0m,
+					RateType = RateType.Hours
+				}
+			};
+
+			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
+			{
+			};
+
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, null, true, false);
+
+			Assert.IsNotNull(result);
+			Assert.IsNotNull(result.SkillMixRows);
+			Assert.IsTrue(result.SkillMixRows.Any());
+			Assert.AreEqual(4, result.SkillMixRows.Count);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME1, result.SkillMixRows.First().ResourceOld);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME2, result.SkillMixRows.ElementAt(1).ResourceOld);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME3, result.SkillMixRows.ElementAt(2).ResourceOld);
+			Assert.AreEqual(RESOURCE_NAME3, result.SkillMixRows.ElementAt(3).ResourceOld);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME1, result.SkillMixRows.First().ResourceNew);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME2, result.SkillMixRows.ElementAt(1).ResourceNew);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME3, result.SkillMixRows.ElementAt(2).ResourceNew);
+			Assert.AreEqual(RESOURCE_NAME3, result.SkillMixRows.ElementAt(3).ResourceNew);
+			Assert.AreEqual(150.0m, result.SkillMixRows.ElementAt(0).HistoricalHours);
+			Assert.AreEqual(40.0m, result.SkillMixRows.ElementAt(1).HistoricalHours);
+			Assert.AreEqual(110.0m, result.SkillMixRows.ElementAt(2).HistoricalHours);
+			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(3).HistoricalHours);
+			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(0).ProposedHours);
+			Assert.AreEqual(75.0m, result.SkillMixRows.ElementAt(3).ProposedHours);
+			Assert.AreEqual(50.0m, result.SkillMixRows.ElementAt(0).LaborSkillMix);
+			Assert.AreEqual(4000.0m / 300m, result.SkillMixRows.ElementAt(1).LaborSkillMix);
+			Assert.AreEqual(11000.0m / 300m, result.SkillMixRows.ElementAt(2).LaborSkillMix);
+			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(0).BOESkillMix);
+			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(1).BOESkillMix);
+			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(2).BOESkillMix);
+			Assert.AreEqual(100.0m, result.SkillMixRows.ElementAt(3).BOESkillMix);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(0).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included);
+			Assert.IsTrue(result.SkillMixRows.ElementAt(3).Included);
+		}
+
+		/// <summary>
 		/// Test Refresh SkillMix Calculation with Historical Hours, Labor Types, Skill Mix Rows, and Common Disclosure Rows
 		/// </summary>
 		[TestMethod]
-		public void RefreshSkillMix_All_Test()
+		public void RefreshSkillMix_All_RMS_Test()
 		{
-			BOELaborControllerLogic sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystemMST();
 
 			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 			{
@@ -3872,12 +4208,156 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		}
 
 		/// <summary>
+		/// Test Refresh SkillMix Calculation with Historical Hours, Labor Types, Skill Mix Rows, and Common Disclosure Rows
+		/// </summary>
+		[TestMethod]
+		public void RefreshSkillMix_All_SSC_Test()
+		{
+			BOELaborControllerLogic sut = CreateSystemSSC();
+
+			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
+			{
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 2,
+					ResourceName = HISTORICAL_RESOURCE_NAME2,
+					BRCName = BRC_RESOURCE_NAME2,
+					TotalHours = 40.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 1,
+					ResourceName = HISTORICAL_RESOURCE_NAME1,
+					BRCName = BRC_RESOURCE_NAME1,
+					TotalHours = 100.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 3,
+					ResourceName = HISTORICAL_RESOURCE_NAME3,
+					BRCName = BRC_RESOURCE_NAME3,
+					TotalHours = 110.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 2,
+					MOQTypeSelectionTableDataResourceHoursId = 4,
+					ResourceName = HISTORICAL_RESOURCE_NAME1,
+					BRCName = BRC_RESOURCE_NAME1,
+					TotalHours = 50.0m
+				}
+			};
+
+			List<LaborTypeDataModelView> laborTypes = new List<LaborTypeDataModelView>
+			{
+				new LaborTypeDataModelView
+				{
+					ResourceName = RESOURCE_NAME1,
+					BusinessResourceCodeName = BRC_RESOURCE_NAME1,
+					Spreads = new List<LaborSpreadDataModelView> {
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "01/2024",
+							LaborSpreadValue = 60.0m
+						},
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "12/2032",
+							LaborSpreadValue = 15.0m
+						}
+					},
+					Deleted = false,
+					HourSpread = 75.0m,
+					RateType = RateType.Hours
+				}
+			};
+
+			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
+			{new SkillMixModelView {
+					ResourceOld = RESOURCE_NAME1,
+					ResourceNew = RESOURCE_NAME1,
+					Included = true,
+					Rationale = Rationale1
+				}
+			};
+
+			List<CommonDisclosureModelView> commonDisclosures = new List<CommonDisclosureModelView>
+			{
+				new CommonDisclosureModelView {
+					ResourceID = RESOURCE_NAME1,
+					BusinessResourceID = BRC_RESOURCE_NAME1,
+					Included = true,
+					Rationale = Rationale2
+				}
+			};
+
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false);
+
+			Assert.IsNotNull(result);
+			Assert.IsNotNull(result.SkillMixRows);
+			Assert.IsTrue(result.SkillMixRows.Any());
+			Assert.AreEqual(4, result.SkillMixRows.Count);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME1, result.SkillMixRows.ElementAt(0).ResourceOld);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME2, result.SkillMixRows.ElementAt(1).ResourceOld);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME3, result.SkillMixRows.ElementAt(2).ResourceOld);
+			Assert.AreEqual(RESOURCE_NAME1, result.SkillMixRows.ElementAt(3).ResourceOld);
+			Assert.AreEqual(150.0m, result.SkillMixRows.ElementAt(0).HistoricalHours);
+			Assert.AreEqual(40.0m, result.SkillMixRows.ElementAt(1).HistoricalHours);
+			Assert.AreEqual(110.0m, result.SkillMixRows.ElementAt(2).HistoricalHours);
+			Assert.AreEqual(60.0m, result.SkillMixRows.ElementAt(3).ProposedHours);
+			Assert.AreEqual(50.0m, result.SkillMixRows.ElementAt(0).LaborSkillMix);
+			Assert.AreEqual(4000.0m / 300m, result.SkillMixRows.ElementAt(1).LaborSkillMix);
+			Assert.AreEqual(11000.0m / 300m, result.SkillMixRows.ElementAt(2).LaborSkillMix);
+			Assert.AreEqual(100.0m, result.SkillMixRows.ElementAt(3).BOESkillMix);
+			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(1).BOESkillMix);
+			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(2).BOESkillMix);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(0).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included);
+			Assert.IsTrue(result.SkillMixRows.ElementAt(3).Included);
+			Assert.AreEqual(Rationale1, result.SkillMixRows.ElementAt(3).Rationale);
+
+			Assert.AreEqual(4, result.CommonDisclosureRows.Count);
+			Assert.AreEqual(RESOURCE_NAME1, result.CommonDisclosureRows.Last().ResourceID);
+			Assert.AreEqual(BRC_RESOURCE_NAME1, result.CommonDisclosureRows.Last().BusinessResourceID);
+			Assert.AreEqual(true, result.CommonDisclosureRows.Last().Included);
+			Assert.AreEqual(15.0m, result.CommonDisclosureRows.Last().ProposedHours);
+			Assert.AreEqual(100.0m, result.CommonDisclosureRows.Last().BOESkillMix);
+			Assert.AreEqual(0.0m, result.CommonDisclosureRows.Last().LaborSkillMix);
+			Assert.AreEqual(Rationale2, result.CommonDisclosureRows.Last().Rationale);
+
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME1, result.CommonDisclosureRows.ElementAt(0).ResourceID);
+			Assert.AreEqual(BRC_RESOURCE_NAME1, result.CommonDisclosureRows.ElementAt(0).BusinessResourceID);
+			Assert.AreEqual(false, result.CommonDisclosureRows.ElementAt(0).Included);
+			Assert.AreEqual(0.0m, result.CommonDisclosureRows.ElementAt(0).ProposedHours);
+			Assert.AreEqual(0.0m, result.CommonDisclosureRows.ElementAt(0).BOESkillMix);
+			Assert.IsTrue(string.IsNullOrWhiteSpace(result.CommonDisclosureRows.ElementAt(0).Rationale));
+
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME2, result.CommonDisclosureRows.ElementAt(1).ResourceID);
+			Assert.AreEqual(BRC_RESOURCE_NAME2, result.CommonDisclosureRows.ElementAt(1).BusinessResourceID);
+			Assert.AreEqual(false, result.CommonDisclosureRows.ElementAt(1).Included);
+			Assert.AreEqual(0.0m, result.CommonDisclosureRows.ElementAt(1).ProposedHours);
+			Assert.AreEqual(0.0m, result.CommonDisclosureRows.ElementAt(1).BOESkillMix);
+			Assert.IsTrue(string.IsNullOrWhiteSpace(result.CommonDisclosureRows.ElementAt(1).Rationale));
+
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME3, result.CommonDisclosureRows.ElementAt(2).ResourceID);
+			Assert.AreEqual(BRC_RESOURCE_NAME3, result.CommonDisclosureRows.ElementAt(2).BusinessResourceID);
+			Assert.AreEqual(false, result.CommonDisclosureRows.ElementAt(2).Included);
+			Assert.AreEqual(0.0m, result.CommonDisclosureRows.ElementAt(2).ProposedHours);
+			Assert.AreEqual(0.0m, result.CommonDisclosureRows.ElementAt(2).BOESkillMix);
+			Assert.IsTrue(string.IsNullOrWhiteSpace(result.CommonDisclosureRows.ElementAt(2).Rationale));
+		}
+
+		/// <summary>
 		/// Test Refresh SkillMix Calculation with Historical Hours, Labor Types, Skill Mix Rows, and split BRC Common Disclosure Rows
 		/// </summary>
 		[TestMethod]
 		public void RefreshSkillMix_All_Test2()
 		{
-			BOELaborControllerLogic sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystemMST();
 
 			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 			{
@@ -4055,12 +4535,201 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		}
 
 		/// <summary>
+		/// Test Refresh SkillMix Calculation with Historical Hours, Labor Types, Skill Mix Rows, and split BRC Common Disclosure Rows
+		/// </summary>
+		[TestMethod]
+		public void RefreshSkillMix_All_SSC_Test2()
+		{
+			BOELaborControllerLogic sut = CreateSystemSSC();
+
+			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
+			{
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 2,
+					ResourceName = HISTORICAL_RESOURCE_NAME2,
+					BRCName = BRC_RESOURCE_NAME2,
+					TotalHours = 40.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 1,
+					ResourceName = HISTORICAL_RESOURCE_NAME1,
+					BRCName = BRC_RESOURCE_NAME1,
+					TotalHours = 100.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 3,
+					ResourceName = HISTORICAL_RESOURCE_NAME3,
+					BRCName = BRC_RESOURCE_NAME3,
+					TotalHours = 110.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 2,
+					MOQTypeSelectionTableDataResourceHoursId = 4,
+					ResourceName = HISTORICAL_RESOURCE_NAME1,
+					BRCName = BRC_RESOURCE_NAME1,
+					TotalHours = 50.0m
+				}
+			};
+
+			List<LaborTypeDataModelView> laborTypes = new List<LaborTypeDataModelView>
+			{
+				new LaborTypeDataModelView
+				{
+					ResourceName = HISTORICAL_RESOURCE_NAME1,
+					BusinessResourceCodeName = BRC_RESOURCE_NAME1,
+					Spreads = new List<LaborSpreadDataModelView> {
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "01/2024",
+							LaborSpreadValue = 60.0m
+						},
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "12/2032",
+							LaborSpreadValue = 15.0m
+						}
+					},
+					Deleted = false,
+					HourSpread = 75.0m,
+					RateType = RateType.Hours
+				},
+				new LaborTypeDataModelView
+				{
+					ResourceName = HISTORICAL_RESOURCE_NAME1,
+					BusinessResourceCodeName = BRC_RESOURCE_NAME2,
+					Spreads = new List<LaborSpreadDataModelView> {
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "01/2024",
+							LaborSpreadValue = 30.0m
+						},
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "12/2032",
+							LaborSpreadValue = 30.0m
+						}
+					},
+					Deleted = false,
+					HourSpread = 60.0m,
+					RateType = RateType.Hours
+				},
+				new LaborTypeDataModelView
+				{
+					ResourceName = RESOURCE_NAME3,
+					BusinessResourceCodeName = BRC_RESOURCE_NAME3,
+					Spreads = new List<LaborSpreadDataModelView> {
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "01/2024",
+							LaborSpreadValue = 10.0m
+						},
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "12/2032",
+							LaborSpreadValue = 20.0m
+						}
+					},
+					Deleted = false,
+					HourSpread = 30.0m,
+					RateType = RateType.Hours
+				}
+			};
+
+			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
+			{
+				new SkillMixModelView {
+					ResourceOld = HISTORICAL_RESOURCE_NAME1,
+					ResourceNew = HISTORICAL_RESOURCE_NAME1,
+					Included = true,
+					Rationale = Rationale1
+				}
+			};
+
+			List<CommonDisclosureModelView> commonDisclosures = new List<CommonDisclosureModelView>
+			{
+				new CommonDisclosureModelView {
+					ResourceID = HISTORICAL_RESOURCE_NAME1,
+					BusinessResourceID = BRC_RESOURCE_NAME1,
+					Included = true,
+					Rationale = Rationale2
+				},
+				new CommonDisclosureModelView {
+					ResourceID = HISTORICAL_RESOURCE_NAME1,
+					BusinessResourceID = BRC_RESOURCE_NAME2,
+					Included = true,
+					Rationale = Rationale3
+				}
+			};
+
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false);
+
+			Assert.IsNotNull(result);
+			Assert.IsNotNull(result.SkillMixRows);
+			Assert.IsTrue(result.SkillMixRows.Any());
+			Assert.AreEqual(4, result.SkillMixRows.Count);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME1, result.SkillMixRows.First().ResourceOld);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME2, result.SkillMixRows.ElementAt(1).ResourceOld);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME3, result.SkillMixRows.ElementAt(2).ResourceOld);
+			Assert.AreEqual(RESOURCE_NAME3, result.SkillMixRows.ElementAt(3).ResourceOld);
+			Assert.AreEqual(150.0m, result.SkillMixRows.ElementAt(0).HistoricalHours);
+			Assert.AreEqual(40.0m, result.SkillMixRows.ElementAt(1).HistoricalHours);
+			Assert.AreEqual(110.0m, result.SkillMixRows.ElementAt(2).HistoricalHours);
+			Assert.AreEqual(90.0m, result.SkillMixRows.ElementAt(0).ProposedHours);
+			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(1).ProposedHours);
+			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(2).ProposedHours);
+			Assert.AreEqual(50.0m, result.SkillMixRows.ElementAt(0).LaborSkillMix);
+			Assert.AreEqual(4000.0m / 300m, result.SkillMixRows.ElementAt(1).LaborSkillMix);
+			Assert.AreEqual(11000.0m / 300m, result.SkillMixRows.ElementAt(2).LaborSkillMix);
+			Assert.AreEqual(90.0m, result.SkillMixRows.ElementAt(0).BOESkillMix);
+			Assert.AreEqual(0m, result.SkillMixRows.ElementAt(1).BOESkillMix);
+			Assert.AreEqual(0m, result.SkillMixRows.ElementAt(2).BOESkillMix);
+			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included);
+			Assert.AreEqual(Rationale1, result.SkillMixRows.ElementAt(0).Rationale);
+
+			Assert.AreEqual(5, result.CommonDisclosureRows.Count);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME1, result.CommonDisclosureRows.ElementAt(0).ResourceID);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME1, result.CommonDisclosureRows.ElementAt(1).ResourceID);
+			Assert.AreEqual(BRC_RESOURCE_NAME1, result.CommonDisclosureRows.ElementAt(0).BusinessResourceID);
+			Assert.AreEqual(BRC_RESOURCE_NAME2, result.CommonDisclosureRows.ElementAt(1).BusinessResourceID);
+			Assert.AreEqual(true, result.CommonDisclosureRows.ElementAt(0).Included);
+			Assert.AreEqual(true, result.CommonDisclosureRows.ElementAt(1).Included);
+			Assert.AreEqual(false, result.CommonDisclosureRows.ElementAt(2).Included);
+			Assert.AreEqual(false, result.CommonDisclosureRows.ElementAt(3).Included);
+			Assert.AreEqual(true, result.CommonDisclosureRows.ElementAt(4).Included);
+			Assert.AreEqual(15.0m, result.CommonDisclosureRows.ElementAt(0).ProposedHours);
+			Assert.AreEqual(30.0m, result.CommonDisclosureRows.ElementAt(1).ProposedHours);
+			Assert.AreEqual(20.0m, result.CommonDisclosureRows.ElementAt(4).ProposedHours);
+			AssertHelpers.AssertAreEqualEpsilon(15.0m / 65.0m * 100m, result.CommonDisclosureRows.ElementAt(0).BOESkillMix.Value);
+			AssertHelpers.AssertAreEqualEpsilon(30.0m / 65.0m * 100m, result.CommonDisclosureRows.ElementAt(1).BOESkillMix.Value);
+			AssertHelpers.AssertAreEqualEpsilon(20.0m / 65.0m * 100m, result.CommonDisclosureRows.ElementAt(4).BOESkillMix.Value);
+			Assert.AreEqual(Rationale2, result.CommonDisclosureRows.ElementAt(0).Rationale);
+			Assert.AreEqual(Rationale3, result.CommonDisclosureRows.ElementAt(1).Rationale);
+
+			// Check CommonDisclosureTotals
+			CheckSkillMixTotals(result);
+
+			AssertHelpers.AssertAreEqualEpsilon(150.0m  * 100m / result.CommonDisclosureTotals.HistoricalHours, result.CommonDisclosureRows.ElementAt(0).LaborSkillMix);
+			AssertHelpers.AssertAreEqualEpsilon(0.0m  * 100m / result.CommonDisclosureTotals.HistoricalHours, result.CommonDisclosureRows.ElementAt(1).LaborSkillMix);
+			AssertHelpers.AssertAreEqualEpsilon(40.0m * 100m / result.CommonDisclosureTotals.HistoricalHours, result.CommonDisclosureRows.ElementAt(2).LaborSkillMix);
+
+		}
+
+		/// <summary>
 		/// Test Refresh SkillMix Calculation with Hisorical Hours, labor types, and split Skill Mix Rows
 		/// </summary>
 		[TestMethod]
-		public void RefreshSkillMix_SplitHistorical()
+		public void RefreshSkillMix_SplitHistorical_RMS()
 		{
-			BOELaborControllerLogic sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystemMST();
 
 			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 			{
@@ -4260,12 +4929,213 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		}
 
 		/// <summary>
+		/// Test Refresh SkillMix Calculation with Hisorical Hours, labor types, and split Skill Mix Rows
+		/// </summary>
+		[TestMethod]
+		public void RefreshSkillMix_SplitHistorical_SSC()
+		{
+			BOELaborControllerLogic sut = CreateSystemSSC();
+
+			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
+			{
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 2,
+					ResourceName = HISTORICAL_RESOURCE_NAME2,
+					BRCName = BRC_RESOURCE_NAME2,
+					TotalHours = 40.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 1,
+					ResourceName = HISTORICAL_RESOURCE_NAME1,
+					BRCName = BRC_RESOURCE_NAME1,
+					TotalHours = 100.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 3,
+					ResourceName = HISTORICAL_RESOURCE_NAME3,
+					BRCName = BRC_RESOURCE_NAME3,
+					TotalHours = 110.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 2,
+					MOQTypeSelectionTableDataResourceHoursId = 4,
+					ResourceName = HISTORICAL_RESOURCE_NAME1,
+					BRCName = BRC_RESOURCE_NAME1,
+					TotalHours = 50.0m
+				}
+			};
+
+			List<LaborTypeDataModelView> laborTypes = new List<LaborTypeDataModelView>
+			{
+				new LaborTypeDataModelView
+				{
+					ResourceName = HISTORICAL_RESOURCE_NAME1,
+					BusinessResourceCodeName = BRC_RESOURCE_NAME1,
+					Spreads = new List<LaborSpreadDataModelView> {
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "01/2024",
+							LaborSpreadValue = 60.0m
+						},
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "12/2032",
+							LaborSpreadValue = 15.0m
+						}
+					},
+					Deleted = false,
+					HourSpread = 75.0m,
+					RateType = RateType.Hours
+				},
+				new LaborTypeDataModelView
+				{
+					ResourceName = HISTORICAL_RESOURCE_NAME1,
+					BusinessResourceCodeName = BRC_RESOURCE_NAME2,
+					Spreads = new List<LaborSpreadDataModelView> {
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "01/2024",
+							LaborSpreadValue = 30.0m
+						},
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "12/2032",
+							LaborSpreadValue = 30.0m
+						}
+					},
+					Deleted = false,
+					HourSpread = 60.0m,
+					RateType = RateType.Hours
+				},
+				new LaborTypeDataModelView
+				{
+					ResourceName = HISTORICAL_RESOURCE_NAME3,
+					BusinessResourceCodeName = BRC_RESOURCE_NAME3,
+					Spreads = new List<LaborSpreadDataModelView> {
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "01/2024",
+							LaborSpreadValue = 10.0m
+						},
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "12/2032",
+							LaborSpreadValue = 20.0m
+						}
+					},
+					Deleted = false,
+					HourSpread = 30.0m,
+					RateType = RateType.Hours
+				}
+			};
+
+			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
+			{
+				new SkillMixModelView {
+					ResourceOld = HISTORICAL_RESOURCE_NAME1,
+					ResourceNew = HISTORICAL_RESOURCE_NAME1,
+					Included = true,
+					Rationale = Rationale1
+				},
+				new SkillMixModelView {
+					ResourceOld = HISTORICAL_RESOURCE_NAME3,
+					ResourceNew = HISTORICAL_RESOURCE_NAME3,
+					Included = true,
+					Rationale = Rationale2
+				}
+			};
+
+			List<CommonDisclosureModelView> commonDisclosures = new List<CommonDisclosureModelView>
+			{
+				new CommonDisclosureModelView {
+					ResourceID = HISTORICAL_RESOURCE_NAME1,
+					BusinessResourceID = BRC_RESOURCE_NAME1,
+					Included = true,
+					Rationale = Rationale2
+				},
+				new CommonDisclosureModelView {
+					ResourceID = HISTORICAL_RESOURCE_NAME1,
+					BusinessResourceID = BRC_RESOURCE_NAME2,
+					Included = true,
+					Rationale = Rationale3
+				}
+			};
+
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false);
+
+			Assert.IsNotNull(result);
+			Assert.IsNotNull(result.SkillMixRows);
+			Assert.IsTrue(result.SkillMixRows.Any());
+			Assert.AreEqual(3, result.SkillMixRows.Count);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME1, result.SkillMixRows.First().ResourceOld);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME2, result.SkillMixRows.ElementAt(1).ResourceOld);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME3, result.SkillMixRows.ElementAt(2).ResourceOld);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME1, result.SkillMixRows.ElementAt(0).ResourceNew);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME3, result.SkillMixRows.ElementAt(2).ResourceNew);
+			
+			Assert.AreEqual(150.0m, result.SkillMixRows.ElementAt(0).HistoricalHours);
+			Assert.AreEqual(40.0m, result.SkillMixRows.ElementAt(1).HistoricalHours);
+			Assert.AreEqual(110.0m, result.SkillMixRows.ElementAt(2).HistoricalHours);
+			Assert.AreEqual(90.0m, result.SkillMixRows.ElementAt(0).ProposedHours);
+			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(1).ProposedHours);
+			Assert.AreEqual(10.0m, result.SkillMixRows.ElementAt(2).ProposedHours);
+			Assert.AreEqual(50.0m, result.SkillMixRows.ElementAt(0).LaborSkillMix);
+			Assert.AreEqual(40.0m / 3m, result.SkillMixRows.ElementAt(1).LaborSkillMix);
+			Assert.AreEqual(110.0m / 3m, result.SkillMixRows.ElementAt(2).LaborSkillMix);
+			Assert.AreEqual(90.0m, result.SkillMixRows.ElementAt(0).BOESkillMix);
+			Assert.AreEqual(0m, result.SkillMixRows.ElementAt(1).BOESkillMix);
+			Assert.AreEqual(10m, result.SkillMixRows.ElementAt(2).BOESkillMix);
+			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included);
+			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included);
+			Assert.IsTrue(result.SkillMixRows.ElementAt(2).Included);
+			
+			Assert.AreEqual(Rationale1, result.SkillMixRows.ElementAt(0).Rationale);
+			Assert.AreEqual(Rationale2, result.SkillMixRows.ElementAt(2).Rationale);
+
+			Assert.AreEqual(4, result.CommonDisclosureRows.Count);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME1, result.CommonDisclosureRows.ElementAt(0).ResourceID);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME1, result.CommonDisclosureRows.ElementAt(1).ResourceID);
+			Assert.AreEqual(HISTORICAL_RESOURCE_NAME3, result.CommonDisclosureRows.ElementAt(3).ResourceID);
+			Assert.AreEqual(BRC_RESOURCE_NAME1, result.CommonDisclosureRows.ElementAt(0).BusinessResourceID);
+			Assert.AreEqual(BRC_RESOURCE_NAME2, result.CommonDisclosureRows.ElementAt(1).BusinessResourceID);
+			Assert.AreEqual(BRC_RESOURCE_NAME3, result.CommonDisclosureRows.ElementAt(3).BusinessResourceID);
+			Assert.AreEqual(true, result.CommonDisclosureRows.ElementAt(0).Included);
+			Assert.AreEqual(true, result.CommonDisclosureRows.ElementAt(1).Included);
+			Assert.AreEqual(true, result.CommonDisclosureRows.ElementAt(3).Included);
+			Assert.AreEqual(15.0m, result.CommonDisclosureRows.ElementAt(0).ProposedHours);
+			Assert.AreEqual(30.0m, result.CommonDisclosureRows.ElementAt(1).ProposedHours);
+			Assert.AreEqual(20.0m, result.CommonDisclosureRows.ElementAt(3).ProposedHours);
+
+			AssertHelpers.AssertAreEqualEpsilon(15.0m / 65.0m * 100m, result.CommonDisclosureRows.ElementAt(0).BOESkillMix.Value);
+			AssertHelpers.AssertAreEqualEpsilon(30.0m / 65.0m * 100m, result.CommonDisclosureRows.ElementAt(1).BOESkillMix.Value);
+			AssertHelpers.AssertAreEqualEpsilon(20.0m / 65.0m * 100m, result.CommonDisclosureRows.ElementAt(3).BOESkillMix.Value);
+			Assert.AreEqual(Rationale2, result.CommonDisclosureRows.ElementAt(0).Rationale);
+			Assert.AreEqual(Rationale3, result.CommonDisclosureRows.ElementAt(1).Rationale);
+			Assert.AreEqual(string.Empty, result.CommonDisclosureRows.ElementAt(2).Rationale);
+			Assert.AreEqual(string.Empty, result.CommonDisclosureRows.ElementAt(3).Rationale);
+
+			// Check CommonDisclosureTotals
+			CheckSkillMixTotals(result);
+
+			AssertHelpers.AssertAreEqualEpsilon(150.0m * 100m / result.CommonDisclosureTotals.HistoricalHours, result.CommonDisclosureRows.ElementAt(0).LaborSkillMix);
+			AssertHelpers.AssertAreEqualEpsilon(0.0m * 100m / result.CommonDisclosureTotals.HistoricalHours, result.CommonDisclosureRows.ElementAt(1).LaborSkillMix);
+			AssertHelpers.AssertAreEqualEpsilon(110m * 100m / result.CommonDisclosureTotals.HistoricalHours, result.CommonDisclosureRows.ElementAt(3).LaborSkillMix);
+		}
+
+		/// <summary>
 		/// Test Refresh SkillMix Calculation with removing Invalid data from Common Disclosure row (resource)
 		/// </summary>
 		[TestMethod]
 		public void RefreshSkillMix_RemoveFromCDInvalidResource()
 		{
-			BOELaborControllerLogic sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystemMST();
 
 			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 			{
@@ -4475,7 +5345,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void RefreshSkillMix_RemoveFromCDInvalidBRC()
 		{
-			BOELaborControllerLogic sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystemMST();
 
 			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 			{
@@ -4685,7 +5555,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		[TestMethod]
 		public void RefreshSkillMix_BRC_NoResource_Test1()
 		{
-			BOELaborControllerLogic sut = CreateSystem();
+			BOELaborControllerLogic sut = CreateSystemMST();
 
 			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
 			{

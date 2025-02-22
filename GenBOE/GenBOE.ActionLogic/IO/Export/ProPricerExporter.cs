@@ -1314,6 +1314,11 @@ namespace GenBOE.ActionLogic.IO.Export
 						previousGeneratedTaskId = proPricerId;
 					}
 				}
+				else
+				{
+					// make sure we map the labor type Id to the task ID
+					laborTypeIdToProPricerIdMappings[resourceTypeEntry.Id] = previousGeneratedTaskId;
+				}
 
 				previousLaborTypeId = resourceTypeEntry.Id;
 			}

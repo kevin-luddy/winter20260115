@@ -970,14 +970,14 @@
                             <thead>
                                 <tr>
                                     <th style="width: 95px;">Resource</th>
-                                    <th style="width: 130px;">Current Resource</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" style="width: 130px;">Current Resource</th>
                                     <th style="width: 100px;">Historical Hours</th>
                                     <th style="width: 90px;">Labor Skill Mix</th>
                                     <th style="width: 55px">Included</th>
                                     <th style="width: 90px;">BOE Skill Mix</th>
                                     <th style="width: 95px;">Proposed Hours</th>
                                     <th>Rationale**</th>
-                                    <th style="width: 38px;"></th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" style="width: 38px;"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -985,7 +985,7 @@
                                 <tr ng-repeat="row in skillMixRationale.data.SkillMixRows">
                                     <td data-ng-if="!isSkillMixManual()">{{row.ResourceOld}}</td>
                                     <td data-ng-if="isSkillMixManual()" class="bootstrap"><input type="text" data-ng-blur="refreshSkillMixTables()" class="form-control" data-ng-model="row.ResourceOld" style="width: 100%; height: 14px;" maxlength="20" /></td>
-                                    <td>
+                                    <td data-ng-if="!ManageTaskModel.IsSpace">
                                         <!-- Select for Current Resource ID will change the Included column and IsUserInput backend value. -->
                                         <select
                                             data-ng-options="option for option in skillMixRationaleLaborTypeSelections track by option"
@@ -996,22 +996,7 @@
                                     <td data-ng-if="!isSkillMixManual()" style="text-align: right">{{row.HistoricalHours | number:2}}</td>
                                     <td data-ng-if="isSkillMixManual()" style="text-align: right"><input type="number" data-ng-blur="refreshSkillMixTables()" data-ng-model="row.HistoricalHours" step="any" style="width: 100%; height: 14px;" /></td>
                                     <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
-                                    <td>
-                                        <!-- Read only for Included when loaded in as True -->
-                                        <span ng-if="!row.metadata.ManuallySetIncluded && row.Included">
-                                            <span ng-switch="row.Included">
-                                                <span ng-switch-when="true">Yes</span>
-                                                <span ng-switch-when="false">No</span>
-                                            </span>
-                                        </span>
-                                        <!-- Dropdown Selection for Included when loaded in as False. -->
-                                        <span ng-if="row.metadata.ManuallySetIncluded || !row.Included">
-                                            <select ng-model="row.Included"
-                                                ng-change="setSkillMixIsUserInput($index, row.Included)"
-                                                ng-options="option === true ? 'Yes' : 'No' for option in [true, false]">
-                                            </select>
-                                        </span>
-                                    </td>
+                                    <td>{{row.Included | yesNo}}</td>
                                     <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{row.ProposedHours}}</td>
                                     <td>
@@ -1020,22 +1005,22 @@
                                         </div>
                                     </td>
                                     <!-- Action Buttons for adding (+) and deleting (-) rows. -->
-                                    <td>
-                                        <button ng-click="addSkillMixRow($index)" ng-show="!checkEmptyString(row.ResourceNew)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
+                                    <td data-ng-if="!ManageTaskModel.IsSpace">
+                                        <button ng-click="addSkillMixRow($index)" ng-show="showSkillMixAddButton(row.ResourceNew)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
                                         <button ng-click="deleteSkillMixRow($index)" ng-show="showSkillMixDeleteButton(row.ResourceOld)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">-</button>
                                     </td>
                                 </tr>
                                 <!-- Display the Skill Mix Totals row. -->
                                 <tr>
                                     <td>Totals</td>
-                                    <td></td>
+                                    <td data-ng-if="!ManageTaskModel.IsSpace"></td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.LaborSkillMix | number:1}}%</td>
                                     <td></td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.BoeSkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.ProposedHours}}</td>
                                     <td></td>
-                                    <td></td>
+                                    <td data-ng-if="!ManageTaskModel.IsSpace"></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1048,7 +1033,7 @@
                         <table name="currentSkillMix" class="grid editable" style="width: 100%;">
                             <thead>
                                 <tr>
-                                    <th style="width: 95px;">Current Resource</th>
+                                    <th style="width: 95px;">Resource</th>
                                     <th style="width: 130px;">Business Resource Code</th>
                                     <th style="width: 100px;">Historical Hours</th>
                                     <th style="width: 90px;">Labor Skill Mix</th>
@@ -1056,14 +1041,15 @@
                                     <th style="width: 90px;">BOE Skill Mix</th>
                                     <th style="width: 95px;">Proposed Hours</th>
                                     <th>Rationale**</th>
-                                    <th style="width: 38px;"></th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" style="width: 38px;"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <!-- Display the data for each of the Common Disclosure Skill Mix Table rows. -->
                                 <tr ng-repeat="row in skillMixRationale.data.CommonDisclosureRows">
                                     <td>{{row.ResourceID}}</td>
-                                    <td>
+                                    <td data-ng-if="ManageTaskModel.IsSpace">{{row.BusinessResourceID}}</td>
+                                    <td data-ng-if="!ManageTaskModel.IsSpace">
                                         <!-- Select for Business Resouce ID if the Resource ID has a value. -->
                                         <select
                                             ng-if="!row.ResourceID.length"
@@ -1084,8 +1070,8 @@
                                         </div>
                                     </td>
                                     <!-- Action Buttons for adding (+) and deleting (-) rows. -->
-                                    <td>
-                                        <button ng-click="addCommonDisclosureRow($index)" ng-show="checkEmptyString(row.ResourceID)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
+                                    <td data-ng-if="!ManageTaskModel.IsSpace">
+                                        <button ng-click="addCommonDisclosureRow($index)" ng-show="showCommonDisclosureAddButton(row.ResourceID)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
                                         <button ng-click="deleteCommonDisclosureRow($index)" ng-show="showCommonDisclosureDeleteButton(row.ResourceID)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">-</button>
                                     </td>
                                 </tr>
@@ -1099,7 +1085,7 @@
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.BoeSkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.ProposedHours}}</td>
                                     <td></td>
-                                    <td></td>
+                                    <td data-ng-if="!ManageTaskModel.IsSpace"></td>
                                 </tr>
                             </tbody>
                         </table>
