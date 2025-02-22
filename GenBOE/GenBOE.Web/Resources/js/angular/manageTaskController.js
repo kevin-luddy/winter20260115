@@ -2060,7 +2060,7 @@
     $scope.isSkillMixManual = function () {
         // Set Skill Mix to be manual if SAP Connection is disabled or if there is any MOQ Type that is not Historical (5001) or Comparative (5002) MOQ Type or if there are no selected moqtypes or if using TM Rates in Task
         // Space is never Manual
-        return !$scope.ManageTaskModel.IsSpace && $scope.isSkillMixManualPerMOQ;
+        return !$scope.ManageTaskModel.IsSpace && $scope.isSkillMixManualPerMOQ();
     };
 
     $scope.isSkillMixManualPerMOQ = function () {
