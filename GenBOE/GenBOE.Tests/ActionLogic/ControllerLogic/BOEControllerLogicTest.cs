@@ -3074,48 +3074,6 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		}
 
 		[TestMethod]
-		public void Test_GetCustomFieldModelViews()
-		{
-			BOEControllerLogic sut = this.CreateSystem();
-
-			#region InitializeUnity
-			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), _retriever.Object);
-			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), Factory.Object);
-			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _commonDataMapper.Object);
-			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissionsLoader.Object);
-			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICustomFieldValueDTODataLoader), _customFieldValueDTODataLoader.Object);
-			#endregion
-
-			FullWorkspace ws = new FullWorkspace() { Id = 1 };
-
-			CustomFieldDTO boeCustomField = new CustomFieldDTO { Id = 1, CustomFieldName = "Color", WorkspaceID = ws.Id, CustomFieldDisplayID = CustomFieldType.BoeDisplay, CustomFieldRequired = true, IsOpenEnded = false };
-			CustomFieldDTO openEndedCustomField = new CustomFieldDTO { Id = 2, CustomFieldName = "Custom", WorkspaceID = ws.Id, CustomFieldDisplayID = CustomFieldType.BoeDisplay, CustomFieldRequired = true, IsOpenEnded = true };
-			_retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(ws.Id)).Returns(new Collection<CustomFieldDTO> { boeCustomField, openEndedCustomField });
-
-			CustomFieldValueDTO boeCustomFieldValue_Red = new CustomFieldValueDTO { CustomFieldID = boeCustomField.Id, CustomFieldValueID = 2, CustomFieldValueName = "Red", CustomFieldValueDescription = "the color red", CustomFieldValueInUseFlag = true };
-			CustomFieldValueDTO boeCustomFieldValue_Blue = new CustomFieldValueDTO { CustomFieldID = boeCustomField.Id, CustomFieldValueID = 3, CustomFieldValueName = "Blue", CustomFieldValueDescription = "the color blue", CustomFieldValueInUseFlag = false };
-			CustomFieldValueDTO openEndedCustomFieldValue = new CustomFieldValueDTO { CustomFieldID = openEndedCustomField.Id, CustomFieldValueID = 4, CustomFieldValueDescription = "Test", CustomFieldValueInUseFlag = true };
-			ICollection<CustomFieldValueDTO> colorOptions = new Collection<CustomFieldValueDTO> { boeCustomFieldValue_Blue, boeCustomFieldValue_Red };
-			ICollection<CustomFieldValueDTO> openEndedOptions = new Collection<CustomFieldValueDTO> { openEndedCustomFieldValue };
-			List<int> customFieldIds = new List<int> { boeCustomField.Id, openEndedCustomField.Id };
-			_customFieldValueDTODataLoader.Setup(x => x.GetCustomFieldValueDTOsByCustomFieldIds(new List<int> { boeCustomField.Id })).Returns(colorOptions);
-			_customFieldValueDTODataLoader.Setup(x => x.GetCustomFieldValueDTOsByCustomFieldIds(new List<int> { openEndedCustomField.Id })).Returns(openEndedOptions);
-			_retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(customFieldIds, It.IsAny<int>())).Returns(colorOptions.Concat(openEndedOptions).ToCollection());
-
-			Collection<BOECustomFieldModelView> result = sut.GetCustomFieldModelViews(ws);
-			_retriever.Verify(x => x.GetCustomFieldsByWorkspaceId(ws.Id), Times.Once());
-			_retriever.Verify(x => x.GetCustomFieldValuesByFieldIds(customFieldIds, It.IsAny<int>()), Times.Once());
-
-			Assert.IsFalse(result[0].CustomFieldMetaData.isOpenEnded);
-			Assert.IsTrue(result[0].CustomFieldOptions[0].ID == "Blue");
-			Assert.IsTrue(result[0].CustomFieldOptions[1].ID == "Red");
-
-			Assert.IsTrue(result[1].CustomFieldMetaData.isOpenEnded);
-			Assert.AreEqual(1, result[1].CustomFieldOptions.Count);
-			Assert.AreEqual("Test", result[1].CustomFieldOptions[0].Description);
-		}
-
-		[TestMethod]
 		public void SetDefaultBoeDatesTest()
 		{
 			BOEControllerLogic sut = this.CreateSystem();

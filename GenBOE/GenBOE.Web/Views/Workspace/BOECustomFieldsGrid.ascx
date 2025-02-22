@@ -1,4 +1,4 @@
-﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<IEnumerable<GenBOE.ActionLogic.ModelView.BOECustomFieldsGridModelView>>" %>
+﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<IEnumerable<GenBOE.ActionLogic.ModelView.BOECustomFieldsInUseGridModelView>>" %>
 <%@ Import Namespace="GenBOE.ActionLogic.ModelView" %>
 
 <% var readOnly = bool.Parse(ViewData["READONLY"] as string); %>
@@ -219,7 +219,7 @@
                     <td></td>
                     <td></td>
                 </tr>
-                <% foreach (BOECustomFieldsGridModelView item in Model) {
+                <% foreach (BOECustomFieldsInUseGridModelView item in Model) {
                         Response.Write("<tr pkid=\"" + item.CustomFieldID + "\" inUse=\"" + item.inUse + "\" fieldName=\"" + item.FieldName + "\" updateDateLong=\"" + item.UpdateDateLong + "\">");
                         Response.Write("<td><a>" + item.FieldName + "</a></td>");
                         if (item.CustomFieldDisplayID == CustomFieldType.BoeDisplay)

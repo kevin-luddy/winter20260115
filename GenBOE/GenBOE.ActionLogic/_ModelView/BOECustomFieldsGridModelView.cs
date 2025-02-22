@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2025 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -23,7 +23,6 @@ namespace GenBOE.ActionLogic.ModelView
             this.CustomFieldID = -1;
             this.FieldName = string.Empty;
             this.isRequired = false;
-            this.inUse = false;
             this.isOpenEnded = false;
         }
 
@@ -41,7 +40,6 @@ namespace GenBOE.ActionLogic.ModelView
                 this.CustomFieldDisplayID = customFieldDTO.CustomFieldDisplayID;
                 this.isRequired = customFieldDTO.CustomFieldRequired;
                 this.UpdateDate = customFieldDTO.UpdateDate;
-                this.inUse = false;
                 this.isOpenEnded = customFieldDTO.IsOpenEnded;
             }
         }
@@ -62,11 +60,6 @@ namespace GenBOE.ActionLogic.ModelView
         /// Gets/Sets bool noting if Custom Field is required
         /// </summary>
         public bool isRequired { get; set; }
-
-        /// <summary>
-        /// Gets/Sets bool noting if Custom Field is in use
-        /// </summary>
-        public bool inUse { get; set; }
 
         /// <summary>
         /// Get/Sets bool noting if Custom Field is open ended

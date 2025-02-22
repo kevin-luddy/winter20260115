@@ -1548,11 +1548,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				IReadOnlyCollection<CustomFieldValueDTO> allCustomFieldValues = ws.CustomFieldValues;
 				foreach (CustomFieldDTO customField in customFields)
 				{
-					BOECustomFieldsGridModelView metadata = new BOECustomFieldsGridModelView(customField);
+					BOECustomFieldsInUseGridModelView metadata = new BOECustomFieldsInUseGridModelView(customField);
 
 					ICollection<CustomFieldValueDTO> options = allCustomFieldValues.Where(i => i.CustomFieldID == customField.Id).ToCollection<CustomFieldValueDTO>();
-
-					metadata.inUse = options.Any(x => x.CustomFieldValueInUseFlag);
 
 					if ((inTypeToGet == ControllerCustomFieldType.Task && metadata.CustomFieldDisplayID == CustomFieldType.TaskDisplay) ||
 						(inTypeToGet == ControllerCustomFieldType.LaborTypes && metadata.CustomFieldDisplayID == CustomFieldType.LaborTypeDisplay) ||

@@ -369,9 +369,6 @@ namespace GenBOE.ActionLogic.IO.Export
 
 			if (exportInputs.Workspace.Id > 0)
 			{
-				// refresh in use flag
-				this.customFieldValueDTODataLoader.RefreshCustomFieldInUseByWorkspaceID(exportInputs.FullWorkspace.Id);
-
 				toReturn.Add(this.GetBOEResourceComboSheetExportData(exportInputs, metricNameTaskElementMappingDTO));
 				toReturn.Add(this.GetBOESheetExportData(exportInputs, metricNameTaskElementMappingDTO));
 				toReturn.Add(this.GetBOEStatusSheetExportData(exportInputs));
