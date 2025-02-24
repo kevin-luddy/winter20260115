@@ -2051,6 +2051,11 @@
         });
     };
 
+    $scope.rationaleUpdated = function () {
+        // Rationale updated, so dirty the form
+        $scope.setDirty();
+    };
+
 	$scope.showSkillMix = function () {
 		// Show Skill Mix if Feature Flag enabled and no T&M rates are in the task
         return $scope.IsSkillMixEnabled && $scope.IsUsingTMRatesInTask === false &&

@@ -1001,7 +1001,7 @@
                                     <td style="text-align: right">{{row.ProposedHours}}</td>
                                     <td>
                                         <div id="skill-mix-table-rationale">
-                                            <textarea id="skill-mix-rationale" data-ng-model="row.Rationale" style="width: 100%; height: 14px; max-height: 42px; overflow-y: auto; resize: vertical;" maxlength="255"></textarea>
+                                            <textarea id="skill-mix-rationale" data-ng-model="row.Rationale" data-ng-blur="rationaleUpdated()" style="width: 100%; height: 14px; max-height: 42px; overflow-y: auto; resize: vertical;" maxlength="255"></textarea>
                                         </div>
                                     </td>
                                     <!-- Action Buttons for adding (+) and deleting (-) rows. -->
@@ -1066,7 +1066,7 @@
                                     <td style="text-align: right">{{row.ProposedHours}}</td>
                                     <td>
                                         <div id="cd-table-rationale">
-                                            <textarea id="cd-rationale" data-ng-model="row.Rationale" style="width: 100%; height: 14px; max-height: 45px; overflow-y: auto; resize: vertical;" maxlength="255"></textarea>
+                                            <textarea id="cd-rationale" data-ng-model="row.Rationale" data-ng-blur="rationaleUpdated()" style="width: 100%; height: 14px; max-height: 45px; overflow-y: auto; resize: vertical;" maxlength="255"></textarea>
                                         </div>
                                     </td>
                                     <!-- Action Buttons for adding (+) and deleting (-) rows. -->
