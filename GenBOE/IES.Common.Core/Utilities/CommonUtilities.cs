@@ -870,6 +870,33 @@ namespace IES.Common.Core.Utilities
 		}
 
 		/// <summary>
+		/// Private for Is Task Assign Author Enabled, used for unit testing. Following above design principle
+		/// </summary>
+		private static bool? isAssignTaskAuthorEnabled;
+
+		/// <summary>
+		/// Indicates whether Task Assign Author features are enabled
+		/// </summary>
+		public static bool IsAssignTaskAuthorEnabledForSystem
+		{
+			get
+			{
+				if (isAssignTaskAuthorEnabled == null)
+				{
+					if (bool.TryParse(ConfigurationUtilities.GetAppSetting("EnableTaskAssignAuthor"), out bool value))
+					{
+						isAssignTaskAuthorEnabled = value;
+					}
+				}
+
+				return isAssignTaskAuthorEnabled ?? false;
+			}
+
+			// be able to override for unit test purposes
+			internal set => isAssignTaskAuthorEnabled = value;
+		}
+
+		/// <summary>
 		/// Is Skill Mix connection shown to the user for this workspace
 		/// </summary>
 		/// <param name="workspaceCreationDate"></param>
@@ -877,6 +904,29 @@ namespace IES.Common.Core.Utilities
 		public static bool ShowSkillMixForWorkspace(DateTime? workspaceCreationDate)
 		{
 			return IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate;
+		}
+
+		/// <summary>
+		/// Is Skill Mix connection shown to the user for this task
+		/// </summary>
+		/// <param name="workspaceCreationDate">Workspace creation date.</param>
+		/// <param name="hasTMRates">Is the task using T&M rates</param>
+		/// <returns>Option to show skill mix for task.</returns>
+		public static bool ShowSkillMixForTask(DateTime? workspaceCreationDate, bool hasTMRates)
+		{
+			bool showSkillMixRationale = false;
+
+			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+			{
+				showSkillMixRationale = ShowSkillMixForWorkspace(workspaceCreationDate);
+			}
+			// For space only: Shows Skill Mix Rationale section when the workspace is NOT using T&M.
+			else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			{
+				showSkillMixRationale = ShowSkillMixForWorkspace(workspaceCreationDate) && !hasTMRates;
+			}
+
+			return showSkillMixRationale;
 		}
 
 		/// <summary>

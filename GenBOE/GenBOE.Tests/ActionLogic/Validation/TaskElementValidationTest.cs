@@ -17,7 +17,8 @@ namespace GenBOE.Tests.ActionLogic.Validation
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
-    using IES.Common.classes;
+	using IES.Common;
+	using IES.Common.classes;
     using Microsoft.Practices.Unity;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
@@ -35,8 +36,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
         private Mock<ICommonDataMapper> _CommonDataMapper;
         private Mock<IPermissionsDTODataLoader> _PermissionsDTODataLoader;
+		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
 
-        private TaskElementValidation CreateSystem()
+		private TaskElementValidation CreateSystem()
         {
             _VariableSelectBOEtoSumCalculation = new Mock<IVariableSelectBOEtoSumCalculation>();
             this.factory = new Mock<IFullObjectFactory>();
@@ -46,14 +48,19 @@ namespace GenBOE.Tests.ActionLogic.Validation
             _CommonDataMapper = new Mock<ICommonDataMapper>();
             _PermissionsDTODataLoader = new Mock<IPermissionsDTODataLoader>();
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _PermissionsDTODataLoader.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(BoeTaskElementRecalculation), _BoeTaskElementRecalculation.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IVariableSelectBOEtoSumCalculation), _VariableSelectBOEtoSumCalculation.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
 
-            return new TaskElementValidation(this._VariableSelectBOEtoSumCalculation.Object);
+			this.retriever.Setup(x => x.GetOdcCollectionByBoeIds(It.IsAny<ICollection<int>>(), It.IsAny<bool>())).Returns(new List<OtherDirectCostDTO>());
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> {  });
+
+
+			return new TaskElementValidation(this._VariableSelectBOEtoSumCalculation.Object);
         }
 
         #endregion
@@ -97,8 +104,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                 MOQHoursEquation = "0",
                 BoeID = boe.Id
             });
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
 
-            bool isValid = !sut.ValidateTaskElementsWithErrorMessages(ws, taskElementData).Any();
+			bool isValid = !sut.ValidateTaskElementsWithErrorMessages(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }
@@ -120,8 +128,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                 MOQHoursEquation = "0",
                 BoeID = boe.Id
             });
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
 
-            bool isValid = !sut.ValidateTaskElementsWithErrorMessages(ws, taskElementData).Any();
+			bool isValid = !sut.ValidateTaskElementsWithErrorMessages(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }
@@ -144,8 +153,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                 MOQHoursEquation = "0",
                 BoeID = boe.Id
             });
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
 
-            bool isValid = !sut.ValidateTaskElementsWithErrorMessages(ws, taskElementData).Any();
+			bool isValid = !sut.ValidateTaskElementsWithErrorMessages(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }
@@ -168,8 +178,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                 MOQHoursEquation = "0",
                 BoeID = boe.Id
             });
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
 
-            bool isValid = !sut.ValidateTaskElementsWithErrorMessages(ws, taskElementData).Any();
+			bool isValid = !sut.ValidateTaskElementsWithErrorMessages(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }
@@ -208,8 +219,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                 },
                 BoeID = boe.Id
             });
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
 
-            bool isValid = !sut.ValidateTaskElementsWithErrorMessages(ws, taskElementData).Any();
+			bool isValid = !sut.ValidateTaskElementsWithErrorMessages(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }
@@ -249,7 +261,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                 BoeID = boe.Id
             });
 
-            bool isValid = !sut.ValidateTaskElementsWithErrorMessages(ws, taskElementData).Any();
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
+
+			bool isValid = !sut.ValidateTaskElementsWithErrorMessages(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }
@@ -289,8 +303,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                 },
                 BoeID = boe.Id
             });
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
 
-            bool isValid = !sut.ValidateTaskElementsWithErrorMessages(ws, taskElementData).Any();
+			bool isValid = !sut.ValidateTaskElementsWithErrorMessages(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }
@@ -330,8 +345,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                 },
                 BoeID = boe.Id
             });
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
 
-            bool isValid = !sut.ValidateTaskElementsWithErrorMessages(ws, taskElementData).Any();
+			bool isValid = !sut.ValidateTaskElementsWithErrorMessages(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }
@@ -398,7 +414,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
                 },
                 BoeID = boe.Id
             });
-            this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData);
+            this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(ws.Id)).Returns(new Collection<FullClin>());
             this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(ws.Id)).Returns(new Collection<FullWbs>());
             this.retriever.Setup(x => x.GetResourcesByResourceListId(It.IsAny<int>())).Returns(new Collection<ResourceDTO>());
@@ -444,8 +460,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                 },
                 BoeID = boe.Id
             });
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
 
-            bool isValid = !sut.ValidateTaskElementsWithErrorMessages(ws, taskElementData).Any();
+			bool isValid = !sut.ValidateTaskElementsWithErrorMessages(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }
@@ -486,8 +503,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                 },
                 BoeID = boe.Id
             });
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
 
-            bool isValid = !sut.ValidateTaskElementsWithErrorMessages(ws, taskElementData).Any();
+			bool isValid = !sut.ValidateTaskElementsWithErrorMessages(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }
@@ -528,8 +546,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                 },
                 BoeID = boe.Id
             });
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
 
-            bool isValid = !sut.ValidateTaskElementsWithErrorMessages(ws, taskElementData).Any();
+			bool isValid = !sut.ValidateTaskElementsWithErrorMessages(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }
@@ -570,8 +589,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                 },
                 BoeID = boe.Id
             });
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
 
-            bool isValid = !sut.ValidateTaskElementsWithErrorMessages(ws, taskElementData).Any();
+			bool isValid = !sut.ValidateTaskElementsWithErrorMessages(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }
@@ -642,7 +662,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
                 },
                 BoeID = boe.Id
             });
-            this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData);
+            this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(ws.Id)).Returns(new Collection<FullClin>());
             this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(ws.Id)).Returns(new Collection<FullWbs>());
             this.retriever.Setup(x => x.GetResourcesByResourceListId(It.IsAny<int>())).Returns(new Collection<ResourceDTO>());
@@ -711,8 +731,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                     BoeID = boe.Id
                 }
             };
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
 
-            bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
+			bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }
@@ -736,8 +757,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                     BoeID = boe.Id
                 }
             };
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
 
-            bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
+			bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }
@@ -762,8 +784,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                     BoeID = boe.Id
                 }
             };
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
 
-            bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
+			bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }
@@ -788,8 +811,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                     BoeID = boe.Id
                 }
             };
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
 
-            bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
+			bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }
@@ -814,8 +838,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                     BoeID = boe.Id
                 }
             };
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
 
-            bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
+			bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }
@@ -855,8 +880,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                     BoeID = boe.Id
                 }
             };
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
 
-            bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
+			bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }
@@ -897,8 +923,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                     BoeID = boe.Id
                 }
             };
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
 
-            bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
+			bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }
@@ -940,8 +967,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                     BoeID = boe.Id
                 }
             };
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
 
-            bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
+			bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }
@@ -982,8 +1010,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                     BoeID = boe.Id
                 }
             };
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
 
-            bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
+			bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }
@@ -1100,8 +1129,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                     BoeID = boe.Id
                 }
             };
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
 
-            bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
+			bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }
@@ -1144,8 +1174,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                     BoeID = boe.Id
                 }
             };
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
 
-            bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
+			bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }
@@ -1188,8 +1219,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                     BoeID = boe.Id
                 }
             };
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
 
-            bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
+			bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }
@@ -1232,8 +1264,9 @@ namespace GenBOE.Tests.ActionLogic.Validation
                     BoeID = boe.Id
                 }
             };
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(taskElementData.ToList());
 
-            bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
+			bool isValid = !sut.GetInvalidTaskElementIds(ws, taskElementData).Any();
 
             Assert.IsFalse(isValid);
         }

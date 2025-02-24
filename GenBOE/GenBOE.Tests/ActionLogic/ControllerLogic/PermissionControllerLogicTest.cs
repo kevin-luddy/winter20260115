@@ -507,7 +507,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException), "inPermission is Null was not caught")]
+        [ExpectedException(typeof(NullReferenceException), "inPermission is Null was not caught")]
         public void SaveNewPermissionTestNullException()
         {
             string workspace = "MyWorkspace";

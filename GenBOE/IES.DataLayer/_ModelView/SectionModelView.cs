@@ -32,10 +32,14 @@ namespace IES.DataBridge.ModelViews
 			this.OldUpdateDate = null;
 			this.RevisionUniqueSectionId = -1;
 			this.IsRdsbRequired = false;
-			this.SectionContainsCasbDisclosure = false;
-			this.IsDisclosureStatementAdequate = false;
-			this.SectionContainsNonCompliance = false;
-			this.NonComplianceNotification = false;
+			this.SectionContainsCasbDisclosureCore = false;
+			this.SectionContainsCasbDisclosureService = false;
+			this.IsDisclosureStatementAdequateCore = false;
+			this.IsDisclosureStatementAdequateService = false;
+			this.SectionContainsNonComplianceCore = false;
+			this.SectionContainsNonComplianceService = false;
+			this.NonComplianceNotificationCore = false;
+			this.NonComplianceNotificationService = false;
 			this.Office = string.Empty;
 			this.Agency = string.Empty;
 			this.LMBA = string.Empty;
@@ -60,8 +64,8 @@ namespace IES.DataBridge.ModelViews
 		/// <param name="contentType">Content Type</param>
 		/// <param name="referenceNumber">Reference Number</param>
 		/// <param name="revisionUniqueSectionId">Section Identifier unique to the version</param>
-		/// <param name="sectionContainsCasbDisclosure">Section contains CASB Disclosure Statements</param>
-		/// <param name="sectionContainsNonCompliance">Section contains Non Compliance issues</param>
+		/// <param name="sectionContainsCasbDisclosureCore">Section contains CASB Disclosure Statements</param>
+		/// <param name="sectionContainsNonComplianceCore">Section contains Non Compliance issues</param>
 		/// <param name="office">Office address</param>
 		/// <param name="agency">agency address</param>
 		/// <param name="LMBA">LMBA address content type</param>
@@ -73,8 +77,8 @@ namespace IES.DataBridge.ModelViews
 		/// <param name="other">other address content type</param>
 		/// <param name="includeInCoversheet">includeInCoversheet address content type</param>
 		public SectionModelView(int revisionId, int displayOrder, bool? isInternalSection, string title,
-			string textContent, bool? displayRateCode, SectionContentType contentType, string referenceNumber, int revisionUniqueSectionId, bool sectionContainsCasbDisclosure, Nullable<bool> isDisclosureStatementAdequate, bool sectionContainsNonCompliance,
-			Nullable<bool> nonComplianceNotification, string office, string agency, string LMBA, string name, string street, string cityST, string phone, string email, string other, bool? includeInCoversheet)
+			string textContent, bool? displayRateCode, SectionContentType contentType, string referenceNumber, int revisionUniqueSectionId, bool sectionContainsCasbDisclosureCore, bool sectionContainsCasbDisclosureService, Nullable<bool> isDisclosureStatementAdequateCore, Nullable<bool> isDisclosureStatementAdequateService, bool sectionContainsNonComplianceCore, bool sectionContainsNonComplianceService,
+			Nullable<bool> nonComplianceNotificationCore, Nullable<bool> nonComplianceNotificationService, string office, string agency, string LMBA, string name, string street, string cityST, string phone, string email, string other, bool? includeInCoversheet)
 		{
 			this.RevisionId = revisionId;
 			this.DisplayOrder = displayOrder;
@@ -88,10 +92,14 @@ namespace IES.DataBridge.ModelViews
 			this.ChildNodes = new List<SectionModelView>();
 			this.OldId = null;
 			this.OldUpdateDate = null;
-			this.SectionContainsCasbDisclosure = sectionContainsCasbDisclosure;
-			this.IsDisclosureStatementAdequate = isDisclosureStatementAdequate.HasValue ? isDisclosureStatementAdequate.Value : false;
-			this.SectionContainsNonCompliance = sectionContainsNonCompliance;
-			this.NonComplianceNotification = nonComplianceNotification.HasValue ? nonComplianceNotification.Value : false;
+			this.SectionContainsCasbDisclosureCore = sectionContainsCasbDisclosureCore;
+			this.SectionContainsNonComplianceService = sectionContainsCasbDisclosureService;
+			this.IsDisclosureStatementAdequateCore = isDisclosureStatementAdequateCore.HasValue ? isDisclosureStatementAdequateCore.Value : false;
+			this.IsDisclosureStatementAdequateService = isDisclosureStatementAdequateService.HasValue ? isDisclosureStatementAdequateService.Value : false;
+			this.SectionContainsNonComplianceCore = sectionContainsNonComplianceCore;
+			this.SectionContainsNonComplianceService = sectionContainsNonComplianceService;
+			this.NonComplianceNotificationCore = nonComplianceNotificationCore.HasValue ? nonComplianceNotificationCore.Value : false;
+			this.NonComplianceNotificationService = nonComplianceNotificationService.HasValue ? nonComplianceNotificationService.Value : false;
 			this.Office = office;
 			this.Agency = agency;
 			this.LMBA = LMBA;
@@ -193,24 +201,44 @@ namespace IES.DataBridge.ModelViews
 		public bool IsRdsbRequired { get; set; }
 
 		/// <summary>
-		/// Does section contain CASB Disclosure Statements
+		/// Does section contain CASB Disclosure Statements Core
 		/// </summary>
-		public bool SectionContainsCasbDisclosure { get; set; }
+		public bool SectionContainsCasbDisclosureCore { get; set; }
 
 		/// <summary>
-		/// Is Disclosure Statement determined to be adequate
+		/// Does section contain CASB Disclosure Statements Service
 		/// </summary>
-		public Nullable<bool> IsDisclosureStatementAdequate { get; set; }
+		public bool SectionContainsCasbDisclosureService { get; set; }
 
 		/// <summary>
-		/// Does Section contain Non Compliance Issues?
+		/// Is Disclosure Statement determined to be adequate Core
 		/// </summary>
-		public bool SectionContainsNonCompliance { get; set; }
+		public Nullable<bool> IsDisclosureStatementAdequateCore { get; set; }
 
 		/// <summary>
-		/// Asks if the user was notified of possible non-compliance with the Disclosure Statement or Cost Account Standards 
+		/// Is Disclosure Statement determined to be adequate Service
 		/// </summary>
-		public Nullable<bool> NonComplianceNotification { get; set; }
+		public Nullable<bool> IsDisclosureStatementAdequateService { get; set; }
+
+		/// <summary>
+		/// Does Section contain Non Compliance Issues? Core
+		/// </summary>
+		public bool SectionContainsNonComplianceCore { get; set; }
+
+		/// <summary>
+		/// Does Section contain Non Compliance Issues? Service
+		/// </summary>
+		public bool SectionContainsNonComplianceService { get; set; }
+
+		/// <summary>
+		/// Asks if the user was notified of possible non-compliance with the Disclosure Statement or Cost Account Standards Core
+		/// </summary>
+		public Nullable<bool> NonComplianceNotificationCore { get; set; }
+
+		/// <summary>
+		/// Asks if the user was notified of possible non-compliance with the Disclosure Statement or Cost Account Standards Service
+		/// </summary>
+		public Nullable<bool> NonComplianceNotificationService { get; set; }
 
 		/// <summary>
 		/// Address Office

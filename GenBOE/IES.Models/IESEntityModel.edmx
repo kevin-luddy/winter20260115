@@ -214,6 +214,7 @@
           <Property Name="StartYear" Type="int" />
           <Property Name="EndYear" Type="int" />
           <Property Name="ParentSection" Type="varchar" MaxLength="10" />
+          <Property Name="RevisionSegmentId" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="RDSBRateCodeXref">
           <Key>
@@ -263,6 +264,13 @@
           <Property Name="EndYear" Type="int" Nullable="false" />
           <Property Name="ReleaseNotes" Type="nvarchar(max)" />
         </EntityType>
+        <EntityType Name="RevisionSegmentLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
         <EntityType Name="Section">
           <Key>
             <PropertyRef Name="ID" />
@@ -279,8 +287,8 @@
           <Property Name="DisplayRateCode" Type="bit" Nullable="false" />
           <Property Name="RevisionUniqueSectionId" Type="int" Nullable="false" />
           <Property Name="IsRdsbRequired" Type="bit" Nullable="false" />
-          <Property Name="SectionContainsCasbDisclosure" Type="bit" Nullable="false" />
-          <Property Name="SectionContainsNonCompliance" Type="bit" Nullable="false" />
+          <Property Name="SectionContainsCasbDisclosureCore" Type="bit" Nullable="false" />
+          <Property Name="SectionContainsNonComplianceCore" Type="bit" Nullable="false" />
           <Property Name="Office" Type="varchar" MaxLength="100" />
           <Property Name="Agency" Type="varchar" MaxLength="100" />
           <Property Name="LMBA" Type="varchar" MaxLength="100" />
@@ -291,8 +299,12 @@
           <Property Name="Email" Type="varchar" MaxLength="100" />
           <Property Name="Other" Type="varchar" MaxLength="100" />
           <Property Name="IncludeInCoversheet" Type="bit" />
-          <Property Name="IsDisclosureStatementAdequate" Type="bit" />
-          <Property Name="NonComplianceNotification" Type="bit" />
+          <Property Name="IsDisclosureStatementAdequateCore" Type="bit" />
+          <Property Name="NonComplianceNotificationCore" Type="bit" />
+          <Property Name="SectionContainsCasbDisclosureService" Type="bit" Nullable="false" />
+          <Property Name="SectionContainsNonComplianceService" Type="bit" Nullable="false" />
+          <Property Name="IsDisclosureStatementAdequateService" Type="bit" />
+          <Property Name="NonComplianceNotificationService" Type="bit" />
         </EntityType>
         <EntityType Name="SectionContentTypeLU">
           <Key>
@@ -302,7 +314,7 @@
           <Property Name="Description" Type="varchar" MaxLength="4000" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'IES_DEV.dbo.UserLog' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="UserLog">
           <Key>
             <PropertyRef Name="LogInUpdateDT" />
@@ -563,6 +575,18 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
             </Principal>
             <Dependent Role="RateConfig">
               <PropertyRef Name="CategoryID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RDSBDocumentInformation_RevisionSegmentLU">
+          <End Role="RevisionSegmentLU" Type="Self.RevisionSegmentLU" Multiplicity="1" />
+          <End Role="RDSBDocumentInformation" Type="Self.RDSBDocumentInformation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RevisionSegmentLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RDSBDocumentInformation">
+              <PropertyRef Name="RevisionSegmentId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -827,6 +851,7 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <Parameter Name="StartYear" Type="int" Mode="In" />
           <Parameter Name="EndYear" Type="int" Mode="In" />
           <Parameter Name="ParentSection" Type="varchar" Mode="In" />
+          <Parameter Name="RevisionSegmentId" Type="int" Mode="In" />
         </Function>
         <Function Name="upsertReplication" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Id" Type="int" Mode="In" />
@@ -857,10 +882,14 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <Parameter Name="DisplayRateCode" Type="bit" Mode="In" />
           <Parameter Name="RevisionUniqueSectionId" Type="int" Mode="In" />
           <Parameter Name="IsRdsbRequired" Type="bit" Mode="In" />
-          <Parameter Name="SectionContainsCasbDisclosure" Type="bit" Mode="In" />
-          <Parameter Name="IsDisclosureStatementAdequate" Type="bit" Mode="In" />
-          <Parameter Name="SectionContainsNonCompliance" Type="bit" Mode="In" />
-          <Parameter Name="NonComplianceNotification" Type="bit" Mode="In" />
+          <Parameter Name="SectionContainsCasbDisclosureCore" Type="bit" Mode="In" />
+          <Parameter Name="SectionContainsCasbDisclosureService" Type="bit" Mode="In" />
+          <Parameter Name="IsDisclosureStatementAdequateCore" Type="bit" Mode="In" />
+          <Parameter Name="IsDisclosureStatementAdequateService" Type="bit" Mode="In" />
+          <Parameter Name="SectionContainsNonComplianceCore" Type="bit" Mode="In" />
+          <Parameter Name="SectionContainsNonComplianceService" Type="bit" Mode="In" />
+          <Parameter Name="NonComplianceNotificationCore" Type="bit" Mode="In" />
+          <Parameter Name="NonComplianceNotificationService" Type="bit" Mode="In" />
           <Parameter Name="Office" Type="varchar" Mode="In" />
           <Parameter Name="Agency" Type="varchar" Mode="In" />
           <Parameter Name="LMBA" Type="varchar" Mode="In" />
@@ -906,6 +935,7 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <EntitySet Name="ResourceClassLU" EntityType="Self.ResourceClassLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ResourceTypeLU" EntityType="Self.ResourceTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Revision" EntityType="Self.Revision" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RevisionSegmentLU" EntityType="Self.RevisionSegmentLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Section" EntityType="Self.Section" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SectionContentTypeLU" EntityType="Self.SectionContentTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UserLog" EntityType="Self.UserLog" store:Type="Tables" store:Schema="dbo">
@@ -999,6 +1029,10 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <AssociationSet Name="FK_RateConfig_CategoryLU" Association="Self.FK_RateConfig_CategoryLU">
             <End Role="CategoryLU" EntitySet="CategoryLU" />
             <End Role="RateConfig" EntitySet="RateConfig" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RDSBDocumentInformation_RevisionSegmentLU" Association="Self.FK_RDSBDocumentInformation_RevisionSegmentLU">
+            <End Role="RevisionSegmentLU" EntitySet="RevisionSegmentLU" />
+            <End Role="RDSBDocumentInformation" EntitySet="RDSBDocumentInformation" />
           </AssociationSet>
           <AssociationSet Name="FK_RDSBRateCodeXref_RateCode" Association="Self.FK_RDSBRateCodeXref_RateCode">
             <End Role="RateCode" EntitySet="RateCode" />
@@ -1116,10 +1150,14 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
             <Parameter Name="DisplayRateCode" Mode="In" Type="Boolean" />
             <Parameter Name="RevisionUniqueSectionId" Mode="In" Type="Int32" />
             <Parameter Name="IsRdsbRequired" Mode="In" Type="Boolean" />
-            <Parameter Name="SectionContainsCasbDisclosure" Mode="In" Type="Boolean" />
-            <Parameter Name="IsDisclosureStatementAdequate" Mode="In" Type="Boolean" />
-            <Parameter Name="SectionContainsNonCompliance" Mode="In" Type="Boolean" />
-            <Parameter Name="NonComplianceNotification" Mode="In" Type="Boolean" />
+            <Parameter Name="SectionContainsCasbDisclosureCore" Mode="In" Type="Boolean" />
+            <Parameter Name="SectionContainsCasbDisclosureService" Mode="In" Type="Boolean" />
+            <Parameter Name="IsDisclosureStatementAdequateCore" Mode="In" Type="Boolean" />
+            <Parameter Name="IsDisclosureStatementAdequateService" Mode="In" Type="Boolean" />
+            <Parameter Name="SectionContainsNonComplianceCore" Mode="In" Type="Boolean" />
+            <Parameter Name="SectionContainsNonComplianceService" Mode="In" Type="Boolean" />
+            <Parameter Name="NonComplianceNotificationCore" Mode="In" Type="Boolean" />
+            <Parameter Name="NonComplianceNotificationService" Mode="In" Type="Boolean" />
             <Parameter Name="Office" Mode="In" Type="String" />
             <Parameter Name="Agency" Mode="In" Type="String" />
             <Parameter Name="LMBA" Mode="In" Type="String" />
@@ -1327,6 +1365,7 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
             <Parameter Name="StartYear" Mode="In" Type="Int32" />
             <Parameter Name="EndYear" Mode="In" Type="Int32" />
             <Parameter Name="ParentSection" Mode="In" Type="String" />
+            <Parameter Name="RevisionSegmentId" Mode="In" Type="Int32" />
           </FunctionImport>
           <EntitySet Name="RDSBRateCodeXrefs" EntityType="IESModel.RDSBRateCodeXref" />
           <EntitySet Name="RDSBSectionXrefs" EntityType="IESModel.RDSBSectionXref" />
@@ -1434,6 +1473,11 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <FunctionImport Name="updateProPricerRateCodeXrefviaTableParameter" />
           <FunctionImport Name="updateRateCodeviaTableParameter" />
           <FunctionImport Name="updateRateCodeYearviaTableParameter" />
+          <EntitySet Name="RevisionSegmentLUs" EntityType="IESModel.RevisionSegmentLU" />
+          <AssociationSet Name="FK_RDSBDocumentInformation_RevisionSegmentLU" Association="IESModel.FK_RDSBDocumentInformation_RevisionSegmentLU">
+            <End Role="RevisionSegmentLU" EntitySet="RevisionSegmentLUs" />
+            <End Role="RDSBDocumentInformation" EntitySet="RDSBDocumentInformations" />
+          </AssociationSet>
         </EntityContainer>
         <ComplexType Name="ExportCobraRates_Result">
           <Property Type="String" Name="CobraRateSet" Nullable="true" MaxLength="50" />
@@ -1728,8 +1772,6 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <NavigationProperty Name="FileAttachments" Relationship="IESModel.FK_FileAttachment_SectionId" FromRole="Section" ToRole="FileAttachment" />
           <NavigationProperty Name="RDSBSectionXrefs" Relationship="IESModel.FK_RDSBSectionXref_RateCode" FromRole="Section" ToRole="RDSBSectionXref" />
           <Property Name="IsRdsbRequired" Type="Boolean" Nullable="false" />
-          <Property Name="SectionContainsCasbDisclosure" Type="Boolean" Nullable="false" />
-          <Property Name="SectionContainsNonCompliance" Type="Boolean" Nullable="false" />
           <Property Name="Office" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="Agency" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="LMBA" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
@@ -1740,8 +1782,14 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="Other" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="IncludeInCoversheet" Type="Boolean" />
-          <Property Name="IsDisclosureStatementAdequate" Type="Boolean" />
-          <Property Name="NonComplianceNotification" Type="Boolean" />
+          <Property Name="SectionContainsCasbDisclosureCore" Type="Boolean" Nullable="false" />
+          <Property Name="SectionContainsNonComplianceCore" Type="Boolean" Nullable="false" />
+          <Property Name="IsDisclosureStatementAdequateCore" Type="Boolean" />
+          <Property Name="NonComplianceNotificationCore" Type="Boolean" />
+          <Property Name="SectionContainsCasbDisclosureService" Type="Boolean" Nullable="false" />
+          <Property Name="SectionContainsNonComplianceService" Type="Boolean" Nullable="false" />
+          <Property Name="IsDisclosureStatementAdequateService" Type="Boolean" />
+          <Property Name="NonComplianceNotificationService" Type="Boolean" />
         </EntityType>
         <EntityType Name="SectionContentTypeLU">
           <Key>
@@ -2129,6 +2177,8 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <NavigationProperty Name="RDSBRateCodeXrefs" Relationship="IESModel.FK_RDSBRateCodeXref_RDSBDocumentInformation" FromRole="RDSBDocumentInformation" ToRole="RDSBRateCodeXref" />
           <NavigationProperty Name="RDSBSectionXrefs" Relationship="IESModel.FK_RDSBSectionXref_RDSBDocumentInformation" FromRole="RDSBDocumentInformation" ToRole="RDSBSectionXref" />
           <Property Name="ParentSection" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="RevisionSegmentId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="RevisionSegmentLU" Relationship="IESModel.FK_RDSBDocumentInformation_RevisionSegmentLU" FromRole="RDSBDocumentInformation" ToRole="RevisionSegmentLU" />
         </EntityType>
         <Association Name="FK__RDSBDocum__RDMRe__308E3499">
           <End Type="IESModel.Revision" Role="Revision" Multiplicity="1" />
@@ -2266,6 +2316,26 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
             </Principal>
             <Dependent Role="RateCode">
               <PropertyRef Name="DisclosureTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="RevisionSegmentLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="RDSBDocumentInformations" Relationship="IESModel.FK_RDSBDocumentInformation_RevisionSegmentLU" FromRole="RevisionSegmentLU" ToRole="RDSBDocumentInformation" />
+        </EntityType>
+        <Association Name="FK_RDSBDocumentInformation_RevisionSegmentLU">
+          <End Type="IESModel.RevisionSegmentLU" Role="RevisionSegmentLU" Multiplicity="1" />
+          <End Type="IESModel.RDSBDocumentInformation" Role="RDSBDocumentInformation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RevisionSegmentLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="RDSBDocumentInformation">
+              <PropertyRef Name="RevisionSegmentId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2547,8 +2617,14 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <EntitySetMapping Name="Sections">
             <EntityTypeMapping TypeName="IESModel.Section">
               <MappingFragment StoreEntitySet="Section">
-                <ScalarProperty Name="NonComplianceNotification" ColumnName="NonComplianceNotification" />
-                <ScalarProperty Name="IsDisclosureStatementAdequate" ColumnName="IsDisclosureStatementAdequate" />
+                <ScalarProperty Name="NonComplianceNotificationService" ColumnName="NonComplianceNotificationService" />
+                <ScalarProperty Name="IsDisclosureStatementAdequateService" ColumnName="IsDisclosureStatementAdequateService" />
+                <ScalarProperty Name="SectionContainsNonComplianceService" ColumnName="SectionContainsNonComplianceService" />
+                <ScalarProperty Name="SectionContainsCasbDisclosureService" ColumnName="SectionContainsCasbDisclosureService" />
+                <ScalarProperty Name="NonComplianceNotificationCore" ColumnName="NonComplianceNotificationCore" />
+                <ScalarProperty Name="IsDisclosureStatementAdequateCore" ColumnName="IsDisclosureStatementAdequateCore" />
+                <ScalarProperty Name="SectionContainsNonComplianceCore" ColumnName="SectionContainsNonComplianceCore" />
+                <ScalarProperty Name="SectionContainsCasbDisclosureCore" ColumnName="SectionContainsCasbDisclosureCore" />
                 <ScalarProperty Name="IncludeInCoversheet" ColumnName="IncludeInCoversheet" />
                 <ScalarProperty Name="Other" ColumnName="Other" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
@@ -2559,8 +2635,6 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
                 <ScalarProperty Name="LMBA" ColumnName="LMBA" />
                 <ScalarProperty Name="Agency" ColumnName="Agency" />
                 <ScalarProperty Name="Office" ColumnName="Office" />
-                <ScalarProperty Name="SectionContainsNonCompliance" ColumnName="SectionContainsNonCompliance" />
-                <ScalarProperty Name="SectionContainsCasbDisclosure" ColumnName="SectionContainsCasbDisclosure" />
                 <ScalarProperty Name="IsRdsbRequired" ColumnName="IsRdsbRequired" />
                 <ScalarProperty Name="RevisionUniqueSectionId" ColumnName="RevisionUniqueSectionId" />
                 <ScalarProperty Name="DisplayRateCode" ColumnName="DisplayRateCode" />
@@ -2679,6 +2753,7 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <EntitySetMapping Name="RDSBDocumentInformations">
             <EntityTypeMapping TypeName="IESModel.RDSBDocumentInformation">
               <MappingFragment StoreEntitySet="RDSBDocumentInformation">
+                <ScalarProperty Name="RevisionSegmentId" ColumnName="RevisionSegmentId" />
                 <ScalarProperty Name="ParentSection" ColumnName="ParentSection" />
                 <ScalarProperty Name="EndYear" ColumnName="EndYear" />
                 <ScalarProperty Name="StartYear" ColumnName="StartYear" />
@@ -2799,6 +2874,14 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <FunctionImportMapping FunctionImportName="updateProPricerRateCodeXrefviaTableParameter" FunctionName="IESModel.Store.updateProPricerRateCodeXrefviaTableParameter" />
           <FunctionImportMapping FunctionImportName="updateRateCodeviaTableParameter" FunctionName="IESModel.Store.updateRateCodeviaTableParameter" />
           <FunctionImportMapping FunctionImportName="updateRateCodeYearviaTableParameter" FunctionName="IESModel.Store.updateRateCodeYearviaTableParameter" />
+          <EntitySetMapping Name="RevisionSegmentLUs">
+            <EntityTypeMapping TypeName="IESModel.RevisionSegmentLU">
+              <MappingFragment StoreEntitySet="RevisionSegmentLU">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

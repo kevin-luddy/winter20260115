@@ -19,16 +19,28 @@ namespace GenBOE.ActionLogic.ModelView
 
         public RateType? rateType { get; set; }
 
-        public decimal? percentSpread { get; set; }
+		public ElementOfCostType? ElementOfCost { get; set; }
+
+		public decimal? percentSpread { get; set; }
 
         public bool? percentLocked { get; set; }
 
         public ICollection<LaborSpreadDataModelView> spreads { get; set; }
 
-        /// <summary>
-        /// Returns true if valid.
-        /// </summary>
-        public bool IsValid()
+		/// <summary>
+		/// UCOT Spreads
+		/// </summary>
+		public ICollection<LaborSpreadDataModelView> ucotSpreads { get; set; }
+
+		/// <summary>
+		/// UCOT Hours
+		/// </summary>
+		public decimal? ucotHours { get; set; }
+
+		/// <summary>
+		/// Returns true if valid.
+		/// </summary>
+		public bool IsValid()
         {
             return start.HasValue && end.HasValue && curve.HasValue && rateType.HasValue && percentLocked.HasValue &&
                 ((percentLocked.Value && percentSpread.HasValue) || (!percentLocked.Value && value.HasValue));

@@ -445,7 +445,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         }
 
         /// <summary>
-        /// Gets  model views for custom fields in the BOE Header
+        /// Gets model views for custom fields in the BOE Header
         /// </summary>
         /// <param name="ws">workspace containing the BOE/Custom fields</param>
         /// <returns>model views for custom fields in the BOE Header</returns>
@@ -462,10 +462,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 IReadOnlyCollection<CustomFieldValueDTO> allCustomFieldValues = ws.CustomFieldValues;
                 foreach (CustomFieldDTO customField in ws.CustomFields)
                 {
-                    BOECustomFieldsGridModelView metadata = new BOECustomFieldsGridModelView(customField);
+                    BOECustomFieldsInUseGridModelView metadata = new BOECustomFieldsInUseGridModelView(customField);
                     Collection<CustomFieldValueDTO> options = allCustomFieldValues.Where(i => i.CustomFieldID == customField.Id).ToCollection();
-
-                    metadata.inUse = options.Any(x => x.CustomFieldValueInUseFlag);
 
                     if (metadata.CustomFieldDisplayID == CustomFieldType.BoeDisplay)
                     {

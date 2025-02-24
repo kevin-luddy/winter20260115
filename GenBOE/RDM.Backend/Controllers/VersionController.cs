@@ -26,7 +26,7 @@ namespace RDM.Backend.Controllers
 	/// Controller for the Versions.
 	/// </summary>
 	[Authorize]
-	[Route("api/ersion")]
+	[Route("api/Version")]
 	public class VersionController : RDMController
 	{
 		/// <summary>
@@ -102,7 +102,7 @@ namespace RDM.Backend.Controllers
 		/// <param name="releaseNotes">The release notes for publishing.</param>
 		/// <returns>JsonResult containing the Id of the new WIP revision.</returns>
 		[HttpPost("[action]")]
-		public ActionResult Publish(string revision, string history, string releaseNotes)
+		public ActionResult Publish(VersionComparisonModelView version)
 		{
 			int? newId = null;
 			IESResponse<(int?, ICollection<AreaLockData>)> response = new();
@@ -118,14 +118,14 @@ namespace RDM.Backend.Controllers
 					this.log.LogDebug($"Revision locked successfully by {this.Logic.ActiveUser.DisplayName}.");
 					RevisionModelView wipRevision = this.Logic.WipRevision;
 
-					if (wipRevision.Revision != revision)
+					if (wipRevision.Revision != version.FirstSelectedRevision.Revision)
 					{
-						message = $"Publish failed - Revision {revision} is no longer the WIP.  Please refresh the page.";
+						message = $"Publish failed - Revision {version.FirstSelectedRevision.Revision} is no longer the WIP.  Please refresh the page.";
 					}
 					else
 					{
-						wipRevision.History = history;
-						wipRevision.ReleaseNotes = releaseNotes;
+						wipRevision.History = version.WorkInProgressHistory;
+						wipRevision.ReleaseNotes = version.ReleaseNotes;
 
 						using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
 						{
@@ -151,6 +151,11 @@ namespace RDM.Backend.Controllers
 				response.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 			catch (GeneralAppException ex)
+			{
+				message = "Publish failed due to a system exception.";
+				this.log.LogError(ex, message);
+			}
+			catch (Exception ex)
 			{
 				message = "Publish failed due to a system exception.";
 				this.log.LogError(ex, message);
@@ -201,7 +206,7 @@ namespace RDM.Backend.Controllers
 					else
 					{
 						RevisionModelView lastPublishedRevision = this.Logic.LastPublishedRevision;
-						using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
+						using (TransactionScope scope = new(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = TimeSpan.FromMinutes(5) }))
 						{
 							id = this.Logic.RevisionMediator.Rollback(lastPublishedRevision, wipRevision);
 							scope.Complete();
@@ -222,6 +227,11 @@ namespace RDM.Backend.Controllers
 				response.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 			catch (GeneralAppException ex)
+			{
+				message = "Rollback failed due to a system exception.";
+				this.log.LogError(ex, message);
+			}
+			catch (Exception ex)
 			{
 				message = "Rollback failed due to a system exception.";
 				this.log.LogError(ex, message);

@@ -1039,10 +1039,36 @@ namespace IES.Common
 
 				return isSkillMixEnabled.Value;
 			}
-			internal set // be able to override for unit test purposes
+
+			// be able to override for unit test purposes
+			internal set => isSkillMixEnabled = value;
+		}
+
+		/// <summary>
+		/// Private for Is Assign Task Author Enabled, used for unit testing. Following above design principle
+		/// </summary>
+		private static bool? isAssignTaskAuthorEnabled;
+
+		/// <summary>
+		/// Indicates whether Assign Task Author features are enabled
+		/// </summary>
+		public static bool IsAssignTaskAuthorEnabledForSystem
+		{
+			get
 			{
-				isSkillMixEnabled = value;
+				if (isAssignTaskAuthorEnabled == null)
+				{
+					if (bool.TryParse(ConfigurationUtilities.GetAppSetting("EnableAssignTaskAuthor"), out bool value))
+					{
+						isAssignTaskAuthorEnabled = value;
+					}
+				}
+
+				return isAssignTaskAuthorEnabled ?? false;
 			}
+
+			// be able to override for unit test purposes
+			internal set => isAssignTaskAuthorEnabled = value;
 		}
 
 		/// <summary>
@@ -1067,12 +1093,12 @@ namespace IES.Common
 
 			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
 			{
-				showSkillMixRationale = IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate;
+				showSkillMixRationale = ShowSkillMixForWorkspace(workspaceCreationDate);
 			}
 			// For space only: Shows Skill Mix Rationale section when the workspace is NOT using T&M.
 			else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 			{
-				showSkillMixRationale = IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate && !hasTMRates;
+				showSkillMixRationale = ShowSkillMixForWorkspace(workspaceCreationDate) && !hasTMRates;
 			}
 
 			return showSkillMixRationale;

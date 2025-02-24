@@ -140,7 +140,6 @@ namespace GenBOE.Web.Controllers
 			}
 
 			ViewData["EnableSkillMix"] = enableSkillMix;
-			ViewData["IsSkillMixManual"] = true;
 
 			//create a var for list items
 			Collection < SelectListItem> orderOfResourceTypes = new Collection<SelectListItem>();
@@ -671,13 +670,11 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Calculates the spread.
 		/// </summary>
-		/// <param name="value">The spread value.</param>
-		/// <param name="start">The start.</param>
-		/// <param name="end">The end.</param>
-		/// <param name="curve">The spread curve.</param>
-		/// <param name="precision">The precision.</param>
+		/// <param name="items">The items to calculate spread for.</param>
+		/// <param name="moqTotalHours">The total MOQ Hours</param>
+		/// <param name="calculateUCOT">Whether to calculate UCOT</param>
 		/// <returns></returns>
-		public ActionResult CalculateSpread(string workspace, RecalcSpreadModelView[] items, decimal moqTotalHours)
+		public ActionResult CalculateSpread(string workspace, RecalcSpreadModelView[] items, decimal moqTotalHours, bool calculateUCOT)
 		{
 			if (ReferenceEquals(items, null))
 			{
@@ -719,7 +716,7 @@ namespace GenBOE.Web.Controllers
 				}
 			}
 
-			this._BoeLaborControllerLogic.RecalculateLaborSpreads(ws, items, moqTotalHours);
+			this._BoeLaborControllerLogic.RecalculateLaborSpreads(ws, items, moqTotalHours, calculateUCOT && Utilities.IsUCOTEnabled);
 
 			return this.Json(items);
 		}

@@ -40,6 +40,7 @@
 		ptmTrackingNumberNotRequired: CreateWorkspaceModelView.PtmTrackingNumberNotRequired || CreateWorkspaceModelView.IsAdmin, // SSC only TODO - remove admin part
 		nextRevision: '', // SSC only, the next revision of the PTM tracking number
 		isSAPConfigurationEnabled: CreateWorkspaceModelView.IsSAPConnectionEnabled,   // This value will be grabbed from Web.config
+		isAssignTaskAuthorEnabled: CreateWorkspaceModelView.IsAssignTaskAuthorEnabled,
 		updatePreviousWorkspace: false,         // Space only
 		openCurrentDialog: false                // Space only
 	};
@@ -89,7 +90,9 @@
 			SelectedContractTypes: [],              // SSC only, array of strings
 			UsingTemplateBoe: '',
 			EnableSAPConnection: false,
-			CurrentPTMWorkspace : false
+			CurrentPTMWorkspace: false,
+			EnableAssignTaskAuthor: false,
+			isAssignTaskAuthorEnabled: CreateWorkspaceModelView.IsAssignTaskAuthorEnabled
 		};
 	};
 
@@ -940,6 +943,13 @@
 			$scope.data.EnableSAPConnection = result.EnableSAPConnection;
 			$scope.data.CurrentPTMWorkspace = result.CurrentPTMWorkspace;
 			$scope.model.openCurrentDialog = result.CurrentPTMWorkspace;
+
+			if (CreateWorkspaceModelView.IsAssignTaskAuthorEnabled) {
+				$scope.data.EnableAssignTaskAuthor = result.EnableAssignTaskAuthor;
+			}
+			else {
+				$scope.data.EnableAssignTaskAuthor = false;
+			}
 				
 			if ($scope.data.WSExactCopy) {
 				$scope.data.ContainsOCI = result.ContainsOCI;

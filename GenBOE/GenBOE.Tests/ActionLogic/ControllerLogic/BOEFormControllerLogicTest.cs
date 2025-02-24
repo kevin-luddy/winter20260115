@@ -907,7 +907,9 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(StubbedData.TaskElementCollection);
 			retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny <IEnumerable<BoeTaskElementDTO>>())).Returns(StubbedData.BoeCollection);
-
+			this.retriever.Setup(x => x.GetOdcCollectionByBoeIds(It.IsAny<ICollection<int>>(), It.IsAny<bool>())).Returns(new List<OtherDirectCostDTO>());
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { StubbedData.Res1, StubbedData.Res2, StubbedData.Res3, StubbedData.Res4, StubbedData.Res5, StubbedData.Res6 });
+			
 
 			Collection <BOEFormModelView> BOEFormModelViewCollection = sut.GetSummaryForms(workspace) as Collection<BOEFormModelView>;
             Assert.AreEqual( BOEFormModelViewCollection.Count , BOEFormIboeDTOCollection.Count + BOEFormPboeDTOCollection.Count );

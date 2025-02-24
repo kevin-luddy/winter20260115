@@ -51,7 +51,7 @@ namespace GenBOE.DataBridge.DTO
 								  IsUserInput = sm.IsUserInput
 							  }).ToList();
 				}
-				DoPostProcessiong(result);
+				DoPostProcessing(result);
 
 				return result;
 			}
@@ -89,7 +89,7 @@ namespace GenBOE.DataBridge.DTO
 								  IsUserInput = sm.IsUserInput
 							  }).ToList();
 				}
-				DoPostProcessiong(result);
+				DoPostProcessing(result);
 
 				return result;
 			}
@@ -127,7 +127,7 @@ namespace GenBOE.DataBridge.DTO
 								  IsUserInput = sm.IsUserInput
 							  }).ToList();
 				}
-				DoPostProcessiong(result);
+				DoPostProcessing(result);
 
 				return result;
 			}
@@ -198,7 +198,7 @@ namespace GenBOE.DataBridge.DTO
 								  IsUserInput = sm.IsUserInput
 							  }).ToList();
 				}
-				DoPostProcessiong(result);
+				DoPostProcessing(result);
 
 				return result;
 			}
@@ -241,7 +241,7 @@ namespace GenBOE.DataBridge.DTO
 		/// Do post processing on the skill mix dtos
 		/// </summary>
 		/// <param name="skillMixes">skill mix dtos</param>
-		private void DoPostProcessiong(ICollection<SkillMixDTO> skillMixes)
+		private void DoPostProcessing(ICollection<SkillMixDTO> skillMixes)
 		{
 			IEnumerable<IGrouping<int, SkillMixDTO>> groupedResourceHours =
 				skillMixes.GroupBy(r => r.BOETaskElementID);
@@ -254,7 +254,7 @@ namespace GenBOE.DataBridge.DTO
 				{
 					foreach (SkillMixDTO dto in grouping)
 					{
-						dto.LaborSkillMix = dto.HistoricalHours / totalGroupHours;
+						dto.LaborSkillMix = dto.HistoricalHours * 100m / totalGroupHours;
 					}
 				}
 			}

@@ -6,7 +6,8 @@
 
 namespace IES.DataBridge.ModelViews
 {
-    using System.Collections.Generic;
+	using IES.Common;
+	using System.Collections.Generic;
 
     /// <summary>
     /// The model for RDSB document detail
@@ -87,5 +88,10 @@ namespace IES.DataBridge.ModelViews
         /// Gets or sets the parent section to be put in front of section numbers.
         /// </summary>
         public string ParentSection { get; set; }
+
+		/// <summary>
+		/// Gets or sets the revision segment.
+		/// </summary>
+		public RevisionSegment RevisionSegment { get; set; }
     }
 }

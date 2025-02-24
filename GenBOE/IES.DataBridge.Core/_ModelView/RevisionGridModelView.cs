@@ -26,26 +26,6 @@ namespace IES.DataBridge.ModelViews
         public ICollection<RevisionModelView> Revisions { get; set; }
 
         /// <summary>
-        /// Gets or sets the Manage PPR&amp;D menu information.
-        /// </summary>
-        public MenuOptionModelView ManagePprdMenu { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Manage Rates menu information.
-        /// </summary>
-        public MenuOptionModelView ManageRatesMenu { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Manage Burden Pools menu information.
-        /// </summary>
-        public MenuOptionModelView ManageBurdenPoolsMenu { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Manage COBRA Mappings menu information.
-        /// </summary>
-        public MenuOptionModelView ManageCobraMappingsMenu { get; set; }
-
-        /// <summary>
         /// Gets or sets the flag whether the user is RDM Admin.
         /// </summary>
         public bool IsRdmAdminUser { get; set; }

@@ -469,7 +469,7 @@ namespace GenBOE.Tests.ActionLogic
         {
             SetupExceptionTest(out PerfOrgLoader);
 
-			VariableSelectBOEtoSumCalculation sut = new VariableSelectBOEtoSumCalculation(PerfOrgLoader.Object);
+			VariableSelectBOEtoSumCalculation sut = new VariableSelectBOEtoSumCalculationMST(PerfOrgLoader.Object);
             Collection<int> SumVariableResourceTypes = new Collection<int> { (int)SumVariableResourceType.DSLabor, (int)SumVariableResourceType.ESLabor, (int)SumVariableResourceType.TSLabor };
 
             sut.GetTotalBasedOnBoeID(1, SumVariableResourceTypes, null);

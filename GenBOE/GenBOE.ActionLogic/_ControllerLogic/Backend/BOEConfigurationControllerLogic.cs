@@ -70,6 +70,7 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 			configurationData.ShowUserName = ConfigurationUtilities.GetAppSetting<bool>("ShowUserName");
 			configurationData.IsIdentitySwappingAllowed = ConfigurationUtilities.GetAppSetting<bool>("IsIdentitySwappingAllowed");
 			configurationData.ShowCompanyConfiguration = ConfigurationUtilities.GetAppSetting<bool>("ShowCompanyConfiguration");
+			configurationData.ActiveApp = ConfigurationUtilities.GetAppSetting("ActiveApp");
 
 			return configurationData;
 		}

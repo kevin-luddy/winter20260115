@@ -177,7 +177,10 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), new ActiveDirectoryUtilities());
 
 			this.moqTypeDataLoader = new Mock<IMoqTypeDataLoader>();
-        }
+
+			this._permissionLoader.Setup(x => x.GetCreateWorkspaceRolesForPtm(It.IsAny<string>(), It.IsAny<string>())).Returns(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("test", "") });
+
+		}
 
         private void DoGetWorkspaceIdentificationTest(IWorkspaceControllerLogic sut, CompanyConfiguration config)
         {
@@ -438,7 +441,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             _customFieldValueLoader.Setup(x => x.GetCustomFieldValueDTOsByCustomFieldIds(new Collection<int>() { customFieldDTO.Id })).Returns(new Collection<CustomFieldValueDTO>() { customFieldValueDTO });
 
-            ICollection<BOECustomFieldsGridModelView> result = sut.GetCustomFieldsGridModelViews(new Collection<CustomFieldDTO>() { customFieldDTO }, 0);
+            ICollection<BOECustomFieldsInUseGridModelView> result = sut.GetCustomFieldsGridModelViews(new Collection<CustomFieldDTO>() { customFieldDTO }, 0);
 
             Assert.IsTrue(result.Count == 1);
             Assert.AreEqual(customFieldMV.CustomFieldID, result.First().CustomFieldID);
@@ -1743,11 +1746,14 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             WorkspaceControllerLogicSpaceSystems sut = this.CreateSystemSpaceSystems();
 
             FullWorkspace ws = new FullWorkspace() { Id = 100 };
-            IWorkspaceIdentificationModelView wsDetails = new WorkspaceIdentificationSpaceModelView() { WorkspaceID = 100, WorkspaceName = DateTime.Now.Ticks.ToString(), CostVolumeLeadPricerNTID = "paliderd" };
+			this._userLoader.Setup(x => x.GetOrCreateUserByNtid("paliderd")).Returns(new UserDTO { NTID = "test", UserID = 1 });
+			
+			IWorkspaceIdentificationModelView wsDetails = new WorkspaceIdentificationSpaceModelView() { WorkspaceID = 100, WorkspaceName = DateTime.Now.Ticks.ToString(), CostVolumeLeadPricerNTID = "paliderd" };
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(ws.Id)).Returns(new List<FullClin>());
+			this.wsLoader.Setup(x => x.GetById(ws.Id)).Returns(ws);
 
-            // No -> No -- Valid
-            ws.UsingTemplateBOE = false;
+			// No -> No -- Valid
+			ws.UsingTemplateBOE = false;
             wsDetails.UsingTemplateBoe = false;
             Assert.IsFalse(sut.SaveWorkspaceIdentificationValidation(ws, wsDetails, false, false).Any());
 
@@ -1777,10 +1783,10 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             FullWorkspace ws = new FullWorkspace() { Id = 100 };
 			this._userLoader.Setup(x => x.GetOrCreateUserByNtid("paliderd")).Returns(new UserDTO { NTID = "test", UserID = 1 });
-
+			
 			IWorkspaceIdentificationModelView wsDetails = new WorkspaceIdentificationMSTModelView() { WorkspaceID = 100, WorkspaceName = DateTime.Now.Ticks.ToString(), ShortName = DateTime.Now.ToShortTimeString(), CostVolumeLeadPricerNTID = "paliderd" };
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(ws.Id)).Returns(new List<FullClin>());
-            
+			this.wsLoader.Setup(x => x.GetById(ws.Id)).Returns(ws);
             // No -> No -- Valid
             ws.UsingTemplateBOE = false;
             wsDetails.UsingTemplateBoe = false;

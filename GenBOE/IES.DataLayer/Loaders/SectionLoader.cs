@@ -87,10 +87,14 @@ namespace IES.DataBridge.Loaders
 					DisplayRateCode = r.DisplayRateCode,
 					RevisionUniqueSectionId = r.RevisionUniqueSectionId,
 					IsRdsbRequired = r.IsRdsbRequired,
-					SectionContainsCasbDisclosure = r.SectionContainsCasbDisclosure,
-					IsDisclosureStatementAdequate = r.IsDisclosureStatementAdequate is null ? false : r.IsDisclosureStatementAdequate.Value,
-					SectionContainsNonCompliance = r.SectionContainsNonCompliance,
-					NonComplianceNotification = r.NonComplianceNotification is null ? false : r.NonComplianceNotification.Value,
+					SectionContainsCasbDisclosureCore = r.SectionContainsCasbDisclosureCore,
+					SectionContainsCasbDisclosureService = r.SectionContainsCasbDisclosureService,
+					IsDisclosureStatementAdequateCore = r.IsDisclosureStatementAdequateCore is null ? false : r.IsDisclosureStatementAdequateCore.Value,
+					IsDisclosureStatementAdequateService = r.IsDisclosureStatementAdequateService is null ? false : r.IsDisclosureStatementAdequateService.Value,
+					SectionContainsNonComplianceCore = r.SectionContainsNonComplianceCore,
+					SectionContainsNonComplianceService = r.SectionContainsNonComplianceService,
+					NonComplianceNotificationCore = r.NonComplianceNotificationCore is null ? false : r.NonComplianceNotificationCore.Value,
+					NonComplianceNotificationService = r.NonComplianceNotificationService is null ? false : r.NonComplianceNotificationService.Value,
 					Office = r.Office,
 					Agency = r.Agency,
 					LMBA = r.LMBA,
@@ -339,8 +343,8 @@ namespace IES.DataBridge.Loaders
                         dtoToUpsert.ParentId, dtoToUpsert.DisplayOrder, dtoToUpsert.Title,
                         dtoToUpsert.TextContent, (int)dtoToUpsert.ContentType, dtoToUpsert.IsInternalSection,
                         dtoToUpsert.DisplayRateCode, dtoToUpsert.RevisionUniqueSectionId, dtoToUpsert.IsRdsbRequired,
-                        dtoToUpsert.SectionContainsCasbDisclosure, dtoToUpsert.IsDisclosureStatementAdequate, dtoToUpsert.SectionContainsNonCompliance, dtoToUpsert.NonComplianceNotification,
-                        dtoToUpsert.Office, dtoToUpsert.Agency, dtoToUpsert.LMBA, dtoToUpsert.Name, dtoToUpsert.Street, dtoToUpsert.CityST, dtoToUpsert.Phone, dtoToUpsert.Email, dtoToUpsert.Other, dtoToUpsert.IncludeInCoversheet
+                        dtoToUpsert.SectionContainsCasbDisclosureCore, dtoToUpsert.SectionContainsCasbDisclosureService, dtoToUpsert.IsDisclosureStatementAdequateCore, dtoToUpsert.IsDisclosureStatementAdequateService, dtoToUpsert.SectionContainsNonComplianceCore, dtoToUpsert.SectionContainsNonComplianceService, dtoToUpsert.NonComplianceNotificationCore, dtoToUpsert.NonComplianceNotificationService,
+						dtoToUpsert.Office, dtoToUpsert.Agency, dtoToUpsert.LMBA, dtoToUpsert.Name, dtoToUpsert.Street, dtoToUpsert.CityST, dtoToUpsert.Phone, dtoToUpsert.Email, dtoToUpsert.Other, dtoToUpsert.IncludeInCoversheet
                         ).First();
                 }
             }
@@ -472,12 +476,16 @@ namespace IES.DataBridge.Loaders
                 s.Title = section.Title;
                 s.RevisionUniqueSectionId = section.RevisionUniqueSectionId;
                 s.IsRdsbRequired = section.IsRdsbRequired;
-                s.SectionContainsCasbDisclosure = section.SectionContainsCasbDisclosure;
-                s.IsDisclosureStatementAdequate = section.IsDisclosureStatementAdequate;
-                s.SectionContainsNonCompliance = section.SectionContainsNonCompliance;
-                s.NonComplianceNotification = section.NonComplianceNotification;
+                s.SectionContainsCasbDisclosureCore = section.SectionContainsCasbDisclosureCore;
+                s.SectionContainsCasbDisclosureService = section.SectionContainsCasbDisclosureService;
+				s.IsDisclosureStatementAdequateCore = section.IsDisclosureStatementAdequateCore;
+				s.IsDisclosureStatementAdequateService = section.IsDisclosureStatementAdequateService;
+				s.SectionContainsNonComplianceCore = section.SectionContainsNonComplianceCore;
+				s.SectionContainsNonComplianceService = section.SectionContainsNonComplianceService;
+				s.NonComplianceNotificationCore = section.NonComplianceNotificationCore;
+				s.NonComplianceNotificationService = section.NonComplianceNotificationService;
 
-                s.Office = section.Office;
+				s.Office = section.Office;
                 s.Agency = section.Agency;
                 s.LMBA = section.LMBA;
                 s.Name = section.Name;
@@ -496,8 +504,8 @@ namespace IES.DataBridge.Loaders
             {
                 SectionModelView s = new SectionModelView(section.RevisionId, section.DisplayOrder, section.IsInternalSection,
                     section.Title, section.TextContent, section.DisplayRateCode, section.ContentType, section.ReferenceNumber,
-                    section.RevisionUniqueSectionId, section.SectionContainsCasbDisclosure, section.IsDisclosureStatementAdequate, section.SectionContainsNonCompliance, section.NonComplianceNotification,
-                    section.Office, section.Agency, section.LMBA, section.Name, section.Street, section.CityST, section.Phone, section.Email, section.Other, section.IncludeInCoversheet);
+                    section.RevisionUniqueSectionId, section.SectionContainsCasbDisclosureCore, section.SectionContainsCasbDisclosureService, section.IsDisclosureStatementAdequateCore, section.IsDisclosureStatementAdequateService, section.SectionContainsNonComplianceCore, section.SectionContainsNonComplianceService, section.NonComplianceNotificationCore, section.NonComplianceNotificationService,
+					section.Office, section.Agency, section.LMBA, section.Name, section.Street, section.CityST, section.Phone, section.Email, section.Other, section.IncludeInCoversheet);
                 s.Id = -1; // Force upsert to insert new row
                 parent.ChildNodes.Add(s);
                 this.UpdateSectionsAndContent(s, section.ChildNodes, sectionsToDelete);
@@ -630,10 +638,11 @@ namespace IES.DataBridge.Loaders
                 {
                     ICollection<SectionModelView> flatSections = FlattenSections(RetrieveAllSections(new RevisionModelView() { Id = rdmRevision.Value }, true));
 
-                    casbSection = flatSections.FirstOrDefault(x => x.SectionContainsCasbDisclosure)?.ReferenceNumber;
-                    nonCompliance = flatSections.FirstOrDefault(x => x.SectionContainsNonCompliance)?.ReferenceNumber;
-                    adequateDisclosure = flatSections.Any(x => x.IsDisclosureStatementAdequate.HasValue && x.IsDisclosureStatementAdequate.Value == true) ? true : false;
-                    noncomplianceNotification = flatSections.Any(x => x.NonComplianceNotification.HasValue && x.NonComplianceNotification.Value == true) ? true : false;
+					// TODO: PROPH-2454, Update this for Coversheet
+                    casbSection = flatSections.FirstOrDefault(x => x.SectionContainsCasbDisclosureCore)?.ReferenceNumber;
+                    nonCompliance = flatSections.FirstOrDefault(x => x.SectionContainsNonComplianceCore)?.ReferenceNumber;
+                    adequateDisclosure = flatSections.Any(x => x.IsDisclosureStatementAdequateCore.HasValue && x.IsDisclosureStatementAdequateCore.Value == true) ? true : false;
+                    noncomplianceNotification = flatSections.Any(x => x.NonComplianceNotificationCore.HasValue && x.NonComplianceNotificationCore.Value == true) ? true : false;
                 }
             }
 

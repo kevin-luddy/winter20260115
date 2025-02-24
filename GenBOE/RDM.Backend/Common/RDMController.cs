@@ -17,6 +17,7 @@ namespace RDM.Backend.Common
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Exceptions;
 	using IES.Common.Core.Interfaces;
+	using IES.DataBridge.Core._ModelView;
 	using IES.DataBridge.Loaders;
 	using IES.DataBridge.ModelViews;
 	using Microsoft.AspNetCore.Authorization;
@@ -134,6 +135,22 @@ namespace RDM.Backend.Common
 		{
 			ICollection<WhosOnlineModelView> whosOnline = this.WhosOnlineLoader.GetWhosOnlineData(ApplicationName.RDM.GetDescription());
 			return whosOnline;
+		}
+
+		/// <summary>
+		/// Gets current user access info
+		/// </summary>
+		/// <returns>current user access</returns>
+		[HttpGet("[action]")]
+		public ActionResult GetUserAccess()
+		{
+			UserAccessModelView model = new()
+			{
+				IsRdmAdminUser = this.Logic.IsRDMAdminUser,
+				IsRdmCobraAdminUser = this.Logic.IsRDMCobraAdminUser
+			};
+
+			return this.Json(model);
 		}
 
 		#region Menu

@@ -1012,6 +1012,40 @@ button.generation.loader
     display: inline;
 }
 
+.edit-section-form-row {
+	display: flex !important;
+}
+
+.edit-section-form-label {
+	width: 80% !important;
+}
+
+.edit-section-form-element {
+	margin: auto !important;
+}
+
+.detailed-element {
+	font-weight: bold;
+	text-align: center;
+	width: 20vh;
+	margin: auto;
+}
+
+.core-service-container {
+	display: flex;
+	justify-content: space-evenly;
+}
+
+.element-core {
+	display: inline-grid;
+	width: 100%;
+}
+
+.element-services {
+	display: inline-grid;
+	width: 100%;
+}
+
 .form-row {
     display: block;
     margin-bottom: 10px;

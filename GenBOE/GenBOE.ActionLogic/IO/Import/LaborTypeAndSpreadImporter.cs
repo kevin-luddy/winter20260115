@@ -1618,7 +1618,7 @@ namespace GenBOE.ActionLogic.IO.Import
 					this.Resource = inResourceDTODataLoader.GetById(inBOELaborType.ResourceID.Value).ResourceName;
 				}
 
-				if (inBOELaborType.BusinessResourceCodeID.HasValue)
+				if (inBOELaborType.BusinessResourceCodeID.HasValue && inBOELaborType.BusinessResourceCodeID.Value != 0)
 				{
 					this.BusinessResourceCode = inResourceDTODataLoader.GetById(inBOELaborType.BusinessResourceCodeID.Value).ResourceName;
 				}

@@ -126,7 +126,7 @@ namespace IES.DataBridge.Loaders
             {
                 using (IESEntities context = new IESEntities())
                 {
-                    result = context.upsertRDSBDocumentInformation(dtoToUpsert.Id, dtoToUpsert.UpdateDate, dtoToUpsert.ProposalId, dtoToUpsert.DocumentCreatedBy, dtoToUpsert.SelectedRevisionId, dtoToUpsert.StartYear, dtoToUpsert.EndYear, dtoToUpsert.ParentSection).First();
+                    result = context.upsertRDSBDocumentInformation(dtoToUpsert.Id, dtoToUpsert.UpdateDate, dtoToUpsert.ProposalId, dtoToUpsert.DocumentCreatedBy, dtoToUpsert.SelectedRevisionId, dtoToUpsert.StartYear, dtoToUpsert.EndYear, dtoToUpsert.ParentSection, (int?)dtoToUpsert.RevisionSegment).First();
                 }
             }
 

@@ -790,6 +790,7 @@ namespace GenBOE.Web.Controllers
 				_securityInformation.IsMemberOfADGroupInAppSettingsList(this._securityInformation.ActiveUserNTID, "CanCreateWorkspaceWithoutPtmTrackingNumber");
 
 			model.IsSAPConnectionEnabled = Utilities.IsSAPEnabledForSystem;
+			model.IsAssignTaskAuthorEnabled = Utilities.IsAssignTaskAuthorEnabledForSystem;
 
 			ViewResult toReturn = View(WebConstants.VIEW_HOME_CREATE_WORKSPACE, model);
 
@@ -1523,7 +1524,7 @@ namespace GenBOE.Web.Controllers
 			/** Valid Model Check */
 			if (ModelState.IsValid)
 			{
-				ICollection<BOECustomFieldsGridModelView> theModelViews = _ControllerLogic.GetCustomFieldsGridModelViews(customFields, ws.Id);
+				ICollection<BOECustomFieldsInUseGridModelView> theModelViews = _ControllerLogic.GetCustomFieldsGridModelViews(customFields, ws.Id);
 
 				ViewData["IsProjectMapWorkspace"] = ws.IsProjectMapWorkspace;
 				ViewData["UsingTemplateBoe"] = ws.UsingTemplateBOE;
@@ -1555,7 +1556,7 @@ namespace GenBOE.Web.Controllers
 			// Initialize Action
 			Stopwatch sw = InitializeAction(_log, "DisplayBOECustomField", SecurityPage.BoeCustomFields, SecurityAuthorization.Read, ws, null);
 
-			BOECustomFieldsGridModelView metaData;
+			BOECustomFieldsInUseGridModelView metaData;
 			Collection<BOECustomFieldOptionModelView> options = new Collection<BOECustomFieldOptionModelView>();
 
 			if (boeCustomFieldID != null)
@@ -1564,7 +1565,7 @@ namespace GenBOE.Web.Controllers
 				_CustomFieldValueLoader.RefreshCustomFieldInUseByWorkspaceID(ws.Id);
 
 				CustomFieldDTO metaFromDB = this.Factory.CreateCustomField(boeCustomFieldID.Value);
-				metaData = new BOECustomFieldsGridModelView(metaFromDB);
+				metaData = new BOECustomFieldsInUseGridModelView(metaFromDB);
 				ICollection<CustomFieldValueDTO> customFieldValues = _CustomFieldValueLoader.GetCustomFieldValueDTOsByCustomFieldID(boeCustomFieldID.Value);
 				metaData.inUse = customFieldValues.Any(x => x.CustomFieldValueInUseFlag);
 
@@ -1582,7 +1583,7 @@ namespace GenBOE.Web.Controllers
 			}
 			else
 			{
-				metaData = new BOECustomFieldsGridModelView();
+				metaData = new BOECustomFieldsInUseGridModelView();
 			}
 
 			//BOECustomField
@@ -2995,6 +2996,10 @@ namespace GenBOE.Web.Controllers
 				ws.EnableSAPConnection = workspaceDetails.EnableSAPConnection;
 				ws.CurrentPTMWorkspace = workspaceDetails.CurrentPTMWorkspace;
 
+				// Keep track of the previous value of Enable Assign Task Author
+				bool previousValueEnableAssignTaskAuthor = ws.EnableAssignTaskAuthor;
+				ws.EnableAssignTaskAuthor = workspaceDetails.EnableAssignTaskAuthor;
+
 				// Populate the company specific properties
 				_ControllerLogic.PopulateCompanySpecificWorkspaceProperties(workspaceDetails, ws);
 
@@ -3096,6 +3101,31 @@ namespace GenBOE.Web.Controllers
 									_BoeMediator.MediatedSave(ws, boe);
 									_BOEStateMachine.PerformStateTransitionAction(boe, ws, boe.State, BOEState.Draft);
 								}
+							}
+						}
+
+						// If Authors Assignable at Task Level is set to false and it was previously set to true,
+						// change all of the BOEs to Draft and clear all authors from tasks
+						if (Utilities.IsAssignTaskAuthorEnabledForSystem && !ws.EnableAssignTaskAuthor && previousValueEnableAssignTaskAuthor)
+						{
+							ws.RefreshBoes();
+
+							foreach (FullBoe boe in ws.Boes)
+							{
+								boe.State = BOEState.Draft;
+								boe.Updateable = UpdateType.Upsert;
+
+								// Get the task and remove the author
+								ICollection<BoeTaskElementDTO> editableTasks = (ICollection<BoeTaskElementDTO>)boe.TaskElements;
+								foreach (BoeTaskElementDTO task in editableTasks)
+								{
+									task.AuthorUserId = null;
+									task.Updateable = UpdateType.Upsert;
+								}
+
+								_BoeTaskElementMediator.MediatedBulkSaveTaskElements(editableTasks, ws);
+								_BoeMediator.MediatedSave(ws, boe);
+								_BOEStateMachine.PerformStateTransitionAction(boe, ws, boe.State, BOEState.Draft);
 							}
 						}
 
@@ -5053,6 +5083,7 @@ namespace GenBOE.Web.Controllers
 					newWorkspaceDTO.UsingTemplateBOE = newWorkspace.UsingTemplateBoe;
 					newWorkspaceDTO.EnableSAPConnection = newWorkspace.EnableSAPConnection;
 					newWorkspaceDTO.CurrentPTMWorkspace = newWorkspace.CurrentPTMWorkspace;
+					newWorkspaceDTO.EnableAssignTaskAuthor = newWorkspace.EnableAssignTaskAuthor;
 
 					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 					{
@@ -5530,7 +5561,8 @@ namespace GenBOE.Web.Controllers
 					RteSizeLimit = workspace.RteSizeLimit,
 					UsingTemplateBoe = workspace.UsingTemplateBOE,
 					EnableSAPConnection = workspace.EnableSAPConnection,
-					CurrentPTMWorkspace = workspace.CurrentPTMWorkspace
+					CurrentPTMWorkspace = workspace.CurrentPTMWorkspace,
+					EnableAssignTaskAuthor = workspace.EnableAssignTaskAuthor,
 				};
 
 				toReturn = Json(modelView);

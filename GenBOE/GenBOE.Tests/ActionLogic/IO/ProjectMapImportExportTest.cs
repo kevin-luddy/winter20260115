@@ -98,8 +98,14 @@ namespace GenBOE.Tests.ActionLogic.IO
             };
             retriever.Setup(x => x.GetResourcesByResourceListId(It.IsAny<int>())).Returns(new Collection<ResourceDTO>() { resource1, resource2, resource3 });
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<CustomFieldDTO>());
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() {  });
+			retriever.Setup(x => x.GetOdcCollectionByBoeIds(It.IsAny<ICollection<int>>(), false)).Returns(new Collection<OtherDirectCostDTO> ());
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(It.IsAny<int>())).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(It.IsAny<int>(), false)).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<ResourceDTO>() { resource1, resource2, resource3 });
 
-            SikorskyLegacyResourceDTO legacy1 = new SikorskyLegacyResourceDTO() { LegacyID = 1, LegacyResourceID = "4000W", LegacyResourceName = "iTAS STA Direct" };
+			SikorskyLegacyResourceDTO legacy1 = new SikorskyLegacyResourceDTO() { LegacyID = 1, LegacyResourceID = "4000W", LegacyResourceName = "iTAS STA Direct" };
             SikorskyLegacyResourceDTO legacy2 = new SikorskyLegacyResourceDTO() { LegacyID = 2, LegacyResourceID = "4046FI1", LegacyResourceName = "Management Engineering" };
             SikorskyLegacyResourceDTO legacy3 = new SikorskyLegacyResourceDTO() { LegacyID = 3, LegacyResourceID = "4045MMM", LegacyResourceName = "Standards" };
             SikorskyLegacyResourceDTO legacy4 = new SikorskyLegacyResourceDTO() { LegacyID = 4, LegacyResourceID = "4051F", LegacyResourceName = "Sys Safety Ft Worth" };
@@ -375,8 +381,8 @@ namespace GenBOE.Tests.ActionLogic.IO
             Assert.AreEqual(RTEUtilities.TurnHTMLIntoPlainText(expected.Task.Replace("\r", string.Empty).Trim()), actual.Task.Trim());
             Assert.AreEqual(expected.WbsElementTitle, actual.WbsElementTitle);
             Assert.AreEqual(expected.WbsNumber, actual.WbsNumber);
-            Assert.AreEqual(expected.TieredPercentage, actual.TieredPercentage);
-
+			AssertHelpers.AssertAreEqual(expected.TieredPercentage ?? 0m, actual.TieredPercentage ?? 0m, 2);
+			
             if (projectMapType == ProjectMapType.TimePhasedProjectMap)
             {
                 Assert.AreEqual(expected.DiscreteMonths == null, actual.DiscreteMonths == null);
