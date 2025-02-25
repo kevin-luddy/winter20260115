@@ -136,7 +136,7 @@
 
     $scope.showSkillMixAddButton = function (resourceID) {
         // Hide add button for Space
-        return !$scope.ManageTaskModel.IsSpace && !checkEmptyString(resourceID);
+        return !$scope.ManageTaskModel.IsSpace && !$scope.checkEmptyString(resourceID);
     }
 
     $scope.showSkillMixDeleteButton = function (resourceOld) {
@@ -152,7 +152,7 @@
 
     $scope.showCommonDisclosureAddButton = function (resourceID) {
         // Hide add button for Space
-        return !$scope.ManageTaskModel.IsSpace && checkEmptyString(resourceID);
+        return !$scope.ManageTaskModel.IsSpace && $scope.checkEmptyString(resourceID);
     }
     $scope.showCommonDisclosureDeleteButton = function (resourceID) {
         // Hide delete button for Space
