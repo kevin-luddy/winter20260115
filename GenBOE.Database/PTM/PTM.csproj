@@ -6,4 +6,16 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Release Scripts\Older\ClassifiedReleaseBOE2024.12\**" />
+    <Compile Remove="Release Scripts\Older\ClassifiedReleaseBOE2025.03\**" />
+    <Compile Remove="Release Scripts\Older\OlderClassifiedReleases\**" />
+    <EmbeddedResource Remove="Release Scripts\Older\ClassifiedReleaseBOE2024.12\**" />
+    <EmbeddedResource Remove="Release Scripts\Older\ClassifiedReleaseBOE2025.03\**" />
+    <EmbeddedResource Remove="Release Scripts\Older\OlderClassifiedReleases\**" />
+    <None Remove="Release Scripts\Older\ClassifiedReleaseBOE2024.12\**" />
+    <None Remove="Release Scripts\Older\ClassifiedReleaseBOE2025.03\**" />
+    <None Remove="Release Scripts\Older\OlderClassifiedReleases\**" />
+  </ItemGroup>
+
 </Project>
