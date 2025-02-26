@@ -753,7 +753,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 			}
 
 			// Changing from a fixed size array to a list
-			importedRates = importedRates.ToList();
+			importedRates = new List<RateDetailModelView> (importedRates);
 
 			ReplicateRateCodes(importedRates);
 
@@ -853,6 +853,8 @@ namespace IES.ActionLogic.Core.ControllerLogic
 				throw new GenValidationException("Imported Rates are null.");
 			}
 
+			// Changing from a fixed size array to a list
+			importedRates = new List<RateDetailModelView>(importedRates);
 			this.ReplicateRateCodes(importedRates);
 
 			try
@@ -900,6 +902,11 @@ namespace IES.ActionLogic.Core.ControllerLogic
 
 			ICollection<RateCodeModelView> replications = replicationLoader.GetAll();
 
+			RevisionModelView revision = this.RevisionMediator.GetById(importedRates.First().RevisionId);
+
+			// Load the existing RateDetails for all the imported Rates.
+			ICollection<RateDetailModelView> existingRates = this.rateDetailLoader.GetRatesForImport(revision, replications.Select(r => r.To).ToArray());
+
 			foreach (RateCodeModelView replication in replications)
 			{
 				RateDetailModelView importedRate = importedRates.FirstOrDefault(r => r.RateCode == replication.From);
@@ -907,6 +914,32 @@ namespace IES.ActionLogic.Core.ControllerLogic
 				{
 					// replicate the imported rate
 					RateDetailModelView duplicate = importedRate.DeepClone();
+
+					// update duplicate Id and year Id
+					RateDetailModelView replicateImportedRate = importedRates.FirstOrDefault(p => p.RateCode == replication.To);
+					if(replicateImportedRate != null)
+					{
+						duplicate.Id = replicateImportedRate.Id;
+						foreach (RateYearModelView val in duplicate.Values)
+						{
+							RateYearModelView replicateImportedRateYear = replicateImportedRate.Values.FirstOrDefault(y => y.Year == val.Year);
+							if(replicateImportedRateYear != null)
+							{
+								val.Id = replicateImportedRateYear.Id;
+							}
+							else
+							{
+								val.Id = -1;
+							}
+						}
+						importedRates.Remove(replicateImportedRate);
+					}
+					else
+					{
+						RateDetailModelView replicatedexistingRate = existingRates.FirstOrDefault(p => p.RateCode == replication.To);
+						duplicate.Id = replicatedexistingRate.Id;
+					}
+
 					duplicate.RateCode = replication.To;
 					importedRates.Add(duplicate);
 				}
