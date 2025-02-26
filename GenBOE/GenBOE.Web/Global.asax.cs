@@ -1005,11 +1005,11 @@ namespace GenBOE
 					GenBOEUnityContainer.Container.RegisterType(typeof(BOEExporter), typeof(BOEExporter), GetLifetimeManager(), new InjectionConstructor(
 																																	new ResolvedParameter(typeof(IPermissionsDTODataLoader)),
 																																	new ResolvedParameter(typeof(IUserDTODataLoader)),
+																																	new ResolvedParameter(typeof(IRetriever)),
 																																	new ResolvedParameter(typeof(ICommonDataMapper)),
 																																	new ResolvedParameter(typeof(IVariableSelectBOEtoSumCalculation)),
 																																	new ResolvedParameter(typeof(IActiveDirectoryUtilities)),
-																																	new ResolvedParameter(typeof(BOEExportConverterRMS)),
-																																	new ResolvedParameter(typeof(IRetriever))
+																																	new ResolvedParameter(typeof(BOEExportConverterRMS))
 																																	));
 					GenBOEUnityContainer.Container.RegisterType(typeof(BOEExporterMST), typeof(BOEExporterMST), GetLifetimeManager(), new InjectionConstructor(
 																																	new ResolvedParameter(typeof(IPermissionsDTODataLoader)),
@@ -1061,7 +1061,8 @@ namespace GenBOE
 																													new ResolvedParameter(typeof(TravelTripCostCalculation)),
 																													new ResolvedParameter(typeof(IVariableSelectBOEtoSumCalculation)),
 																													new ResolvedParameter(typeof(MSTZoneTravelResourceDTODataLoader)),
-																													new ResolvedParameter(typeof(RMSZoneTravelRatesFeesDataLoader))));
+																													new ResolvedParameter(typeof(RMSZoneTravelRatesFeesDataLoader)),
+																													new ResolvedParameter(typeof(IRetriever))));
 					break;
 
 				case CompanyConfiguration.SpaceSystems:
@@ -1121,7 +1122,8 @@ namespace GenBOE
 																																				new ResolvedParameter(typeof(ILocationDTODataLoader)),
 																																				new ResolvedParameter(typeof(ICLINExporter)),
 																																				new ResolvedParameter(typeof(TravelUnitCostExporterRMS)),
-																																				new ResolvedParameter(typeof(TravelExtendedCostExporterRMS))));
+																																				new ResolvedParameter(typeof(TravelExtendedCostExporterRMS)),
+																																				new ResolvedParameter(typeof(IRetriever))));
 					break;
 
 				case CompanyConfiguration.SpaceSystems:
