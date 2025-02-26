@@ -14,7 +14,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
     using System.Linq;
     using System.Text;
     using GenBOE.ActionLogic;
-    using GenBOE.ActionLogic.Common.Calculations;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -43,6 +44,11 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
         /// </summary>
         private TravelTripCostCalculation travelTripCostCalculation;
 
+		/// <summary>
+		/// Retriever
+		/// </summary>
+		private IRetriever retriever;
+
         /// <summary>
         /// Gets the workspace decimal precision.
         /// </summary>
@@ -66,8 +72,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
         /// <param name="variableSelectBOEtoSumCalculation">The variable select boe to sum calculation.</param>
         /// <param name="travelTripCostCalculation">The travel trip cost calculation.</param>
         public BOEExportConverter(IUserDTODataLoader userDTODataLoader, ICommonDataMapper commonDataMapper, IVariableSelectBOEtoSumCalculation variableSelectBOEtoSumCalculation,
-            TravelTripCostCalculation travelTripCostCalculation)
-                    : base(userDTODataLoader)
+            TravelTripCostCalculation travelTripCostCalculation, IRetriever retriever)
+                    : base(userDTODataLoader, retriever)
         {
             this.Logger = new Logger(typeof(BOEExportConverter));
             this.CurrencyFormatter = new NumberFormatInfo();
@@ -76,6 +82,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             this.commonDataMapper = commonDataMapper;
             this.variableSelectBOEtoSumCalculation = variableSelectBOEtoSumCalculation;
             this.travelTripCostCalculation = travelTripCostCalculation;
+			this.retriever = retriever;
         }
 
         /// <summary>
@@ -446,12 +453,12 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                 boeExportTaskElement.IMS_ID = boeTaskElement.IMS_ID;
                 boeExportTaskElement.BOETaskElementOrder = boeTaskElement.BOETaskElementOrder;
                 boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
+				boeExportTaskElement.HasTMRates = BOETaskUtility.IsUsingTMRates(exportInputs.Workspace.Id, boeTaskElement.taskElementLabors, retriever);
 
-				if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, boeTaskElement.HasTMRates))
+				if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, boeExportTaskElement.HasTMRates))
 				{
 					boeExportTaskElement.SkillMixTable = boeTaskElement.SkillMixTable;
 					boeExportTaskElement.CommonDisclosureTable = boeTaskElement.CommonDisclosureTable;
-					boeExportTaskElement.HasTMRates = boeTaskElement.HasTMRates;
 				}
 
 				boeExportTaskElement.SetTaskElementType(boeTaskElement.TaskElementType);

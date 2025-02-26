@@ -26,6 +26,7 @@ namespace GenBOE.ActionLogic.IO.Export
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
+	using GenTRAC.Objects;
 	using IES.Common;
 	using IES.Common.classes;
 	using IES.Common.Exceptions;
@@ -47,6 +48,7 @@ namespace GenBOE.ActionLogic.IO.Export
         private IVariableSelectBOEtoSumCalculation _VariableSelectBOEtoSumCalculation;
 
         protected NumberFormatInfo _CurrencyFormatter { get; set; }
+		private Objects.IRetriever _Retriever;
 
         #endregion
 
@@ -64,9 +66,10 @@ namespace GenBOE.ActionLogic.IO.Export
             IUserDTODataLoader inIUserDTODataLoader,
             ICommonDataMapper inICommonDataMapper,
             TravelTripCostCalculation inTravelTripCostCalculation,
-            IVariableSelectBOEtoSumCalculation inVariableSelectBOEtoSumCalculation
+            IVariableSelectBOEtoSumCalculation inVariableSelectBOEtoSumCalculation,
+			Objects.IRetriever retriever
             )
-            : base(inIUserDTODataLoader)
+            : base(inIUserDTODataLoader, retriever)
         {
             this._ICommonDataMapper = inICommonDataMapper;
             this._TravelTripCostCalculation = inTravelTripCostCalculation;
@@ -75,6 +78,7 @@ namespace GenBOE.ActionLogic.IO.Export
             this._CurrencyFormatter.CurrencySymbol = "$";
             this.DefaultCurrencyFormat = BOEExporterConstants.CURRENCY_FORMAT_DEFAULT;
             this._VariableSelectBOEtoSumCalculation = inVariableSelectBOEtoSumCalculation;
+			this._Retriever = retriever;
             this._log = new Logger(typeof(BOECustomExporter)); 
         }
 
@@ -1414,8 +1418,10 @@ namespace GenBOE.ActionLogic.IO.Export
                 allLaborTaskElementsFull = allLaborTaskElementsFull.OrderBy(x => x.BOETaskElementOrder).ThenBy(y => y.BOETaskElementID).ToList();
                 foreach (BOEExportTaskElement laborTaskElement in allLaborTaskElementsFull)
                 {
-                    //  create (clone) a new container for this task
-                    SdtElement containerElement = this.CloneContainerTemplate(laborTaskContainerTemplateElement);
+					BoeTaskElementDTO CurrentTaskElement = taskElementCollection.FirstOrDefault(x => x.Id == laborTaskElement.BOETaskElementID.Value);
+
+					//  create (clone) a new container for this task
+					SdtElement containerElement = this.CloneContainerTemplate(laborTaskContainerTemplateElement);
 
                     #region Process the data (IS&GS)
                     if (containsBoeHeaderInTask)
@@ -1429,7 +1435,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     this.ProcessLaborTaskCostSpreadRollupTable(containerElement, exportInputs, boeExportModelView, laborTaskElement, allLaborTaskElements, selectedComponents, true);
                     this.ProcessLaborTaskCostSpreadRollupTable(containerElement, exportInputs, boeExportModelView, laborTaskElement, allLaborTaskElements, selectedComponents, false);
                     this.ProcessLaborTaskResources(containerElement, exportInputs, laborTaskElement, allLaborTaskElements, selectedComponents, exportBoe.IsMultiClinWbs);
-					this.ProcessSkillMixTable(laborTaskElement, selectedComponents, containerElement, exportInputs);
+					this.ProcessSkillMixTable(laborTaskElement, selectedComponents, containerElement, exportInputs, CurrentTaskElement.taskElementLabors);
 
 					#endregion
 
@@ -4558,16 +4564,16 @@ namespace GenBOE.ActionLogic.IO.Export
                 boeExportTaskElement.IMS_ID = boeTaskElement.IMS_ID;
                 boeExportTaskElement.BOETaskElementOrder = boeTaskElement.BOETaskElementOrder;
 				bool skillMixEnabled = false;
+				boeExportTaskElement.HasTMRates = BOETaskUtility.IsUsingTMRates(exportInputs.Workspace.Id, boeTaskElement.taskElementLabors, _Retriever);
 
 				if (exportInputs.Workspace.UsingTemplateBOE)
                 {
                     boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
-					skillMixEnabled = Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, boeTaskElement.HasTMRates);
+					skillMixEnabled = Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, boeExportTaskElement.HasTMRates);
 					if (skillMixEnabled)
 					{
 						boeExportTaskElement.SkillMixTable = boeTaskElement.SkillMixTable;
 						boeExportTaskElement.CommonDisclosureTable = boeTaskElement.CommonDisclosureTable;
-						boeExportTaskElement.HasTMRates = boeTaskElement.HasTMRates;
 					}
                 }
 

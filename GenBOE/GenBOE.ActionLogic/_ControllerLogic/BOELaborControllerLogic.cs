@@ -822,17 +822,18 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// </summary>
 		/// <param name="ws">workspace</param>
 		/// <param name="taskElement">task element</param>
-		/// <param name="moqTypes">MOQ Types</param>
+		/// <param name="modelView">labor task</param>
 		/// <returns>Any Validation errors</returns>
 		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-		public ICollection<ValidationMessage> ValidateTaskElementDto(FullWorkspace ws, BoeTaskElementDTO taskElement, ICollection<MoqTypeSelection> moqTypes)
+		public ICollection<ValidationMessage> ValidateTaskElementDto(FullWorkspace ws, BoeTaskElementDTO taskElement, LaborTaskDataModelView modelView)
 		{
 			_ = ws ?? throw new ArgumentNullException(nameof(ws));
 			_ = taskElement ?? throw new ArgumentNullException(nameof(taskElement));
-			_ = moqTypes ?? throw new ArgumentNullException(nameof(moqTypes));
+			_ = modelView ?? throw new ArgumentNullException(nameof(modelView));
 
 			ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
 			FullBoe boe = factory.CreateFullBoe(taskElement.BoeID);
+			ICollection<MoqTypeSelection> moqTypes = modelView.MOQTypes;
 
 			// Validate Task Variables
 			VariableCircularReferenceCheckerCache circularReferenceCache = new VariableCircularReferenceCheckerCache();
@@ -933,7 +934,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 			#endregion
 			
-			if (Utilities.ShowSkillMixForTask(ws.CreationDate, taskElement.HasTMRates))
+			if (Utilities.ShowSkillMixForTask(ws.CreationDate, CheckTMRates(ws, modelView.LaborTypesData)))
 			{
 				decimal historicalHoursTotals = 0;
 				// determine if SkillMix is manual or automatic

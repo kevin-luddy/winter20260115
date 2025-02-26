@@ -14,6 +14,7 @@ namespace GenBOE.ActionLogic.IO.Export
 	using System.Threading.Tasks;
 	using DocumentFormat.OpenXml.Packaging;
 	using DocumentFormat.OpenXml.Spreadsheet;
+	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.Common.MOQ;
 	using GenBOE.ActionLogic.IO.Export.BOE;
@@ -65,6 +66,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		private TravelTripCostCalculation travelTripCostCalculation;
 		private ILocationDTODataLoader locationDtoDataLoader;
 		private ICLINExporter clinExporter;
+		private IRetriever retriever;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WorkspaceExporter"/> class.
@@ -87,7 +89,8 @@ namespace GenBOE.ActionLogic.IO.Export
 			WbsExporter wbsExporter,
 			TravelTripCostCalculation travelTripCostCalculation,
 			ILocationDTODataLoader locationDtoDataLoader,
-			ICLINExporter clinExporter)
+			ICLINExporter clinExporter,
+			IRetriever retriever)
 		{
 			this.CommonDataMapper = commonDataMapper;
 			this.permissionsDTOLoader = permissionsDTOLoader;
@@ -98,6 +101,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			this.travelTripCostCalculation = travelTripCostCalculation;
 			this.locationDtoDataLoader = locationDtoDataLoader;
 			this.clinExporter = clinExporter;
+			this.retriever = retriever;
 		}
 
 		/// <summary>
@@ -425,7 +429,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			{
 				foreach (BoeTaskElementDTO task in exportInputs.TaskElements.Where(x => x.BoeID == boe.Id))
 				{
-					if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, task.HasTMRates))
+					if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.Workspace.Id, task.taskElementLabors, retriever)))
 					{
 						ICollection<MoqTypeSelection> moqTypesForTask = exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).ToList();
 						
@@ -515,7 +519,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			{
 				foreach (BoeTaskElementDTO task in exportInputs.TaskElements.Where(x => x.BoeID == boe.Id))
 				{
-					if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, task.HasTMRates))
+					if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.Workspace.Id, task.taskElementLabors, retriever)))
 					{
 						ICollection<MoqTypeSelection> moqTypesForTask = exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).ToList();
 

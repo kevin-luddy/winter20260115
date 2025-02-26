@@ -105,6 +105,11 @@ namespace GenBOE.Web.Controllers
 		private IUserDTODataLoader userDataLoader { get; set; }
 
 		/// <summary>
+		/// Retriever
+		/// </summary>
+		private IRetriever retriever { get; set; }
+
+		/// <summary>
 		/// Contract Type loader
 		/// </summary>
 		private readonly ContractTypeLoader contractTypeLoader;
@@ -150,7 +155,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="traceTableExporter">Trace Table data exporter</param>
 		/// <param name="boeFormControllerLogic">BOE Form Controller logic</param>
 		/// <param name="contractTypeLoader">Pick List loader for Contract Types</param>
-		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, IBOEFormIBOEDTODataLoader boeFormIBOEDTODataLoader, IActiveDirectoryUtilities activeDirectoryUtilities, IUserDTODataLoader userDataLoader, ContractTypeLoader contractTypeLoader, IResourceDTODataLoader resourceLoader, ITMResourceRateDTODataLoader tmResourceRateLoader, TMCalculator tmCalculator, IInUseDataLoader inUseDataLoader)
+		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, IBOEFormIBOEDTODataLoader boeFormIBOEDTODataLoader, IActiveDirectoryUtilities activeDirectoryUtilities, IUserDTODataLoader userDataLoader, ContractTypeLoader contractTypeLoader, IResourceDTODataLoader resourceLoader, ITMResourceRateDTODataLoader tmResourceRateLoader, TMCalculator tmCalculator, IInUseDataLoader inUseDataLoader, IRetriever retriever)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.loader = loader;
@@ -170,6 +175,7 @@ namespace GenBOE.Web.Controllers
 			this.tmResourceRateLoader = tmResourceRateLoader;
 			this.tmCalculator = tmCalculator;
 			this.inUseDataLoader = inUseDataLoader;
+			this.retriever = retriever;
 		}
 		#endregion
 
@@ -1370,7 +1376,7 @@ namespace GenBOE.Web.Controllers
 				ICollection<WorkspaceDTO> workspaces = loader.GetWorkspacesByTrackingNumber(pboes.First().PTMTrackingNumber).Where(x => x.CurrentPTMWorkspace).ToList();
 
 				// Instantiate PBOE Exporter
-				PBOEFormExporter exporter = new PBOEFormExporter(userDataLoader, resourceLoader, tmCalculator);
+				PBOEFormExporter exporter = new PBOEFormExporter(userDataLoader, resourceLoader, tmCalculator, retriever);
 
 
 				foreach (PBOEViewModel pboe in pboes)
@@ -1464,7 +1470,7 @@ namespace GenBOE.Web.Controllers
 				ICollection<WorkspaceDTO> workspaces = loader.GetWorkspacesByTrackingNumber(iboes.First().PTMTrackingNumber).Where(x => x.CurrentPTMWorkspace).ToList();
 
 				// Instantiate IBOE Exporter
-				IBOEFormExporter exporter = new IBOEFormExporter(userDataLoader, resourceLoader, tmCalculator);
+				IBOEFormExporter exporter = new IBOEFormExporter(userDataLoader, resourceLoader, tmCalculator, retriever);
 
 				foreach (IBOEViewModel iboe in iboes)
 				{

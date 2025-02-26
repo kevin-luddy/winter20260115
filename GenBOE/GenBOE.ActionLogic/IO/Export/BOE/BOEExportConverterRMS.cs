@@ -17,7 +17,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
-    using IES.Common;
+	using GenBOE.Objects;
+	using IES.Common;
 
     /// <summary>
     /// The BOE Export Converter for RMS.
@@ -46,8 +47,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
         /// <param name="rmsZoneTravelRatesFeesDataLoader">The RMS zone travel rates fees data loader.</param>
         public BOEExportConverterRMS(IUserDTODataLoader userDTODataLoader, ICommonDataMapper commonDataMapper, IVariableSelectBOEtoSumCalculation variableSelectBOEtoSumCalculation,
             TravelTripCostCalculation travelTripCostCalculation, MSTZoneTravelResourceDTODataLoader mstZoneTravelResourceDTODataLoader,
-            RMSZoneTravelRatesFeesDataLoader rmsZoneTravelRatesFeesDataLoader)
-                    : base(userDTODataLoader, commonDataMapper, variableSelectBOEtoSumCalculation, travelTripCostCalculation)
+            RMSZoneTravelRatesFeesDataLoader rmsZoneTravelRatesFeesDataLoader, IRetriever retriever)
+                    : base(userDTODataLoader, commonDataMapper, variableSelectBOEtoSumCalculation, travelTripCostCalculation, retriever)
         {
             this.mstZoneTravelResourceDTODataLoader = mstZoneTravelResourceDTODataLoader;
             this.rmsZoneTravelRatesFeesDataLoader = rmsZoneTravelRatesFeesDataLoader;

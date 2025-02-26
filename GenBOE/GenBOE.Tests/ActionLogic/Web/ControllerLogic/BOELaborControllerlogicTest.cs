@@ -1928,7 +1928,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			circularReferenceChecker.Setup(x => x.WorkspaceVariablesCreateCircularReference(It.IsAny<VariableCircularReferenceCheckerCache>(), It.IsAny<int>(), It.IsAny<ICollection<WorkspaceVariableDTO>>(), It.IsAny<FullWorkspace>())).Returns(new Collection<WorkspaceVariableDTO>());
 			_ResourceLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<ResourceDTO>());
 
-			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new Collection<MoqTypeSelection>());
+			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new LaborTaskDataModelView());
 
 			Assert.IsFalse(result.Any());
 		}
@@ -1948,7 +1948,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			circularReferenceChecker.Setup(x => x.WorkspaceVariablesCreateCircularReference(It.IsAny<VariableCircularReferenceCheckerCache>(), It.IsAny<int>(), It.IsAny<ICollection<WorkspaceVariableDTO>>(), It.IsAny<FullWorkspace>())).Returns(new Collection<WorkspaceVariableDTO>());
 			_ResourceLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<ResourceDTO>());
 
-			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new Collection<MoqTypeSelection>());
+			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new LaborTaskDataModelView());
 
 			Assert.AreEqual(1, result.Count());
 		}
@@ -1968,7 +1968,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			circularReferenceChecker.Setup(x => x.WorkspaceVariablesCreateCircularReference(It.IsAny<VariableCircularReferenceCheckerCache>(), It.IsAny<int>(), It.IsAny<ICollection<WorkspaceVariableDTO>>(), It.IsAny<FullWorkspace>())).Returns(new Collection<WorkspaceVariableDTO>() { new WorkspaceVariableDTO() { WorkspaceVariableName = "Test" } });
 			_ResourceLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<ResourceDTO>());
 
-			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new Collection<MoqTypeSelection>());
+			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new LaborTaskDataModelView());
 
 			Assert.AreEqual(1, result.Count());
 		}
@@ -1990,7 +1990,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 			task.taskElementLabors.First().LaborSpreads.First().LaborSpreadDate = DateTime.MinValue;
 
-			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new Collection<MoqTypeSelection>());
+			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new LaborTaskDataModelView());
 
 			Assert.AreEqual(1, result.Count());
 		}
@@ -2012,7 +2012,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 			task.taskElementLabors.First().LaborSpreads.First().LaborSpreadDate = DateTime.MaxValue;
 
-			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new Collection<MoqTypeSelection>());
+			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new LaborTaskDataModelView());
 
 			Assert.AreEqual(1, result.Count());
 		}
@@ -2034,7 +2034,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 			task.StartDate = DateTime.MinValue;
 
-			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new Collection<MoqTypeSelection>());
+			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new LaborTaskDataModelView());
 
 			Assert.AreEqual(1, result.Count());
 		}
@@ -2056,7 +2056,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 			task.EndDate = DateTime.MaxValue;
 
-			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new Collection<MoqTypeSelection>());
+			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new LaborTaskDataModelView());
 
 			Assert.AreEqual(1, result.Count());
 		}
@@ -2068,7 +2068,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		public void Test_ValidateTaskElementDto_ExWs()
 		{
 			BOELaborControllerLogic sut = CreateSystem();
-			sut.ValidateTaskElementDto(null, new BoeTaskElementDTO(), new Collection<MoqTypeSelection>());
+			sut.ValidateTaskElementDto(null, new BoeTaskElementDTO(), new LaborTaskDataModelView());
 		}
 
 		/// <summary>
@@ -2078,7 +2078,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		public void Test_ValidateTaskElementDto_ExTaskElement()
 		{
 			BOELaborControllerLogic sut = CreateSystem();
-			sut.ValidateTaskElementDto(new FullWorkspace(), null, new Collection<MoqTypeSelection>());
+			sut.ValidateTaskElementDto(new FullWorkspace(), null, new LaborTaskDataModelView());
 		}
 
 		/// <summary>

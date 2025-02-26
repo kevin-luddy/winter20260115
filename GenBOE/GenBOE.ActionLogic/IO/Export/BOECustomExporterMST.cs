@@ -19,7 +19,8 @@ namespace GenBOE.ActionLogic.IO.Export
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
-    using IES.Common;
+	using GenBOE.Objects;
+	using IES.Common;
     using IES.Common.classes;
     using IES.Common.OfficeUtilities;
 
@@ -36,12 +37,14 @@ namespace GenBOE.ActionLogic.IO.Export
                 TravelTripCostCalculation inTravelTripCostCalculation,
                 IVariableSelectBOEtoSumCalculation inVariableSelectBOEtoSumCalculation,
                 MSTZoneTravelResourceDTODataLoader mstZoneTravelResourceDTODataLoader,
-                RMSZoneTravelRatesFeesDataLoader rmsZoneTravelRatesFeesDataLoader
+                RMSZoneTravelRatesFeesDataLoader rmsZoneTravelRatesFeesDataLoader,
+				IRetriever retriever
             ) : base(
                 inIUserDTODataLoader,
                 inICommonDataMapper,
                 inTravelTripCostCalculation,
-                inVariableSelectBOEtoSumCalculation
+                inVariableSelectBOEtoSumCalculation,
+				retriever
             )
         {
             // constructor

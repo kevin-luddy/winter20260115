@@ -467,7 +467,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 		[TestMethod]
 		public void WordExporter_MaskSSCEmployeeIds_Test()
 		{
-			WordExporter wordExporter = new BOEExporter(null, null, null, null, null, null);
+			WordExporter wordExporter = new BOEExporter(null, null, null, null, null, null, null);
 			string filters = $"{BOEExporterConstants.EMPLOYEE_ID_FILTERS_LABEL} = 123456";
 			ICollection<Tuple<string, IList<string>>> employeeIdFilters = WordExporter.GetEmployeeIds(filters);
 			string output = wordExporter.MaskSpaceEmployeeIds(employeeIdFilters, filters);
@@ -495,7 +495,7 @@ namespace GenBOE.Tests.ActionLogic.Export
         public void WordExporter_MaskRmsEmployeeIds_Test()
         {
             // Test for single ID
-			WordExporter wordExporter = new BOEExporter(null, null, null, null, null, null);
+			WordExporter wordExporter = new BOEExporter(null, null, null, null, null, null, null);
 			string filters = $"{BOEExporterConstants.EMPLOYEE_ID_FILTERS_LABEL} = 123456";
 			ICollection<Tuple<string, IList<string>>> employeeIdFilters = WordExporter.GetEmployeeIds(filters);
 			string output = WordExporter.MaskRmsEmployeeIds(employeeIdFilters, filters);

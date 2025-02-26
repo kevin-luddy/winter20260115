@@ -36,7 +36,8 @@ namespace GenBOE.ActionLogic.IO.Export
             WbsExporter inWbsExporter,
             TravelTripCostCalculation inTravelTripCostCalculation,
             ILocationDTODataLoader inLocationDtoDataLoader,
-            ICLINExporter inClinExporter)
+            ICLINExporter inClinExporter,
+			IRetriever retriever)
             : base(inICommonDataMapper,
              inIPermissionsDTOLoader,
              inICustomFieldValueDTODataLoader,
@@ -45,7 +46,8 @@ namespace GenBOE.ActionLogic.IO.Export
              inWbsExporter,
              inTravelTripCostCalculation,
              inLocationDtoDataLoader,
-             inClinExporter)
+             inClinExporter,
+			 retriever)
         {
 
         }

@@ -29,12 +29,14 @@ namespace GenBOE.ActionLogic.IO.Export
                 IUserDTODataLoader inIUserDTODataLoader,
                 ICommonDataMapper inICommonDataMapper,
                 TravelTripCostCalculation inTravelTripCostCalculation,
-                IVariableSelectBOEtoSumCalculation inVariableSelectBOEtoSumCalculation
+                IVariableSelectBOEtoSumCalculation inVariableSelectBOEtoSumCalculation,
+				IRetriever retriever
             ) : base(
                 inIUserDTODataLoader,
                 inICommonDataMapper,
                 inTravelTripCostCalculation,
-                inVariableSelectBOEtoSumCalculation
+                inVariableSelectBOEtoSumCalculation,
+				retriever
             )
         {
             // constructor
