@@ -272,7 +272,8 @@ namespace GenBOE.ActionLogic
 		/// <param name="laborTypes">labor type data</param>
 		/// <param name="currentCommonDisclosureData">Current Common Disclosure Data</param>
 		/// <param name="refreshedModel">The Refreshed Skill Mix Model</param>
-		protected override void CreateCommonDisclosureRows(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<LaborTypeDataModelView> laborTypes, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, RefreshSkillMixModelView refreshedModel)
+		/// <param name="ucotFactor">The UCOT Factor for the workspace</param>
+		protected override void CreateCommonDisclosureRows(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<LaborTypeDataModelView> laborTypes, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, RefreshSkillMixModelView refreshedModel, decimal ucotFactor)
 		{
 			if (laborTypes == null)
 			{
@@ -304,7 +305,8 @@ namespace GenBOE.ActionLogic
 							BusinessResourceID = brcGrouping.Key,
 							LaborSkillMix = totalHours == 0m ? 0m : totalGroupHours * 100.0m / totalHours,
 							Included = false,
-							ProposedHours = 0m
+							ProposedHours = 0m,
+							UCOTHours = 0m
 						}
 					);
 				}
@@ -333,7 +335,8 @@ namespace GenBOE.ActionLogic
 							BusinessResourceID = labor.BusinessResourceCodeName,
 							HistoricalHours = 0m,
 							ProposedHours = proposedHours,
-							Included = true
+							Included = true,
+							UCOTHours = proposedHours * ucotFactor / 100
 						};
 
 						refreshedModel.CommonDisclosureRows.Add(newRow);
