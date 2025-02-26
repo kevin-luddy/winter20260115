@@ -61,7 +61,7 @@ namespace GenBOE.ActionLogic.Common
 						.Select(lt => new LaborTypeDataModelView(lt,
 							lt.ResourceID.HasValue ? resourcesFromDb.First(x => x.Id == lt.ResourceID.Value) : new ResourceDTO(),
 							lt.BusinessResourceCodeID.HasValue ? businessResourcesFromDb.First(x => x.Id == lt.BusinessResourceCodeID.Value) : new ResourceDTO(),
-							null,
+							new PerformingOrgDTO(),
 							0, false))
 						.ToList();
 
