@@ -937,7 +937,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 					else
 					{
 						RateDetailModelView replicatedexistingRate = existingRates.FirstOrDefault(p => p.RateCode == replication.To);
-						duplicate.Id = replicatedexistingRate.Id;
+						duplicate.Id = replicatedexistingRate?.Id ?? -1;
 					}
 
 					duplicate.RateCode = replication.To;
