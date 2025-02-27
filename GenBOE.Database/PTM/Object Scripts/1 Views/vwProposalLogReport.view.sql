@@ -201,6 +201,7 @@ SELECT
 	END AS ContractActionType,
 	PC.CostThroughCom,
 	ppr.Response AS NlfResponse,
+	ppr11.Response AS SupplierMilestoneDatesResponse,
 	P.IsSupportDefinitizingUCA,
 	CASE
 		WHEN pCD.IsInsuranceDirect = 1 THEN 'Yes'
@@ -354,6 +355,12 @@ SELECT
 				FROM ProposalPPRChecklistXREF xref 
 					INNER JOIN ResponseLU r ON r.ResponseID = xref.ResponseID
 					INNER JOIN PPRChecklistContent ppr ON (xref.PPRChecklistContentID = ppr.PPRChecklistContentID AND ppr.ChecklistText LIKE '%NLF Forms%')) AS ppr
+			ON ppr.ProposalId = p.ProposalId 
+	LEFT OUTER JOIN
+			(SELECT xref.ProposalID, ppr.SortOrder, ppr.ChecklistText, r.Response
+				FROM ProposalPPRChecklistXREF xref 
+					INNER JOIN ResponseLU r ON r.ResponseID = xref.ResponseID
+					INNER JOIN PPRChecklistContent ppr ON (xref.PPRChecklistContentID = ppr.PPRChecklistContentID AND ppr.ChecklistText LIKE '%Does the proposal include subcontractors of any dollar value or material supplier > CCoPD threshold with planned dates that go beyond proposal submittal%')) AS ppr11
 			ON ppr.ProposalId = p.ProposalId 
 	LEFT OUTER JOIN [CcopdReasonsNo] cNo ON P.ReasonCcopdNo = cNO.Id
 GO

@@ -339,6 +339,7 @@ SELECT V.[ProposalID]
 	 ,V.CostThroughCom
 	 ,V.CustomerDueDate
 	 ,V.NlfResponse
+	 ,V.SupplierMilestoneDatesResponse
 	 ,AdditionalClassification =
 		CASE V.[AdditionalClassification]
 			WHEN 1 THEN 'Yes'
