@@ -426,7 +426,9 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                 this.Logger.Info("Exporting - BOEExporter - ConvertBoeDTOToExportMV - labor tasks begin");
             }
 
-            Collection<BOEExportTaskElement> boeExportTaskElements = new Collection<BOEExportTaskElement>();
+			bool hasTMRatesForWorkspace = BOETaskUtility.IsUsingTMRates(retriever.GetTMResourceRates(exportInputs.Workspace.Id), exportInputs.FullWorkspace.ResourcesUsedInWsBoes?.ToList());
+
+			Collection<BOEExportTaskElement> boeExportTaskElements = new Collection<BOEExportTaskElement>();
             IDictionary<int, ElementOfCostTypeModelView> allElementOfCostTypes = this.commonDataMapper.GetElementOfCostTypesDictionary();
             IDictionary<int, SpreadCurveModelView> allSpreadCurves = exportInputs.Workspace.IsProjectMapWorkspace ? this.commonDataMapper.getProjectMapSpreadCurveDictionary() : this.commonDataMapper.getSpreadCurveDictionary();
             IDictionary<int, SikorskyLegacyResourceDTO> allLegacyResources = this.commonDataMapper.GetSikorskyLegacyResourcesDictionary(exportInputs.Workspace.IsProjectMapWorkspace);
@@ -453,7 +455,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                 boeExportTaskElement.IMS_ID = boeTaskElement.IMS_ID;
                 boeExportTaskElement.BOETaskElementOrder = boeTaskElement.BOETaskElementOrder;
                 boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
-				boeExportTaskElement.HasTMRates = BOETaskUtility.IsUsingTMRates(exportInputs.Workspace.Id, boeTaskElement.taskElementLabors, retriever);
+				boeExportTaskElement.HasTMRates = hasTMRatesForWorkspace;
 
 				if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, boeExportTaskElement.HasTMRates))
 				{

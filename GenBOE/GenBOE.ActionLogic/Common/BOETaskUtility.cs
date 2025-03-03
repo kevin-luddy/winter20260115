@@ -6,11 +6,8 @@
 
 namespace GenBOE.ActionLogic.Common
 {
-	using GenBOE.ActionLogic.ModelView;
-	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
-	using IES.Common.classes;
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
@@ -39,35 +36,42 @@ namespace GenBOE.ActionLogic.Common
 				throw new ArgumentNullException(nameof(retriever));
 			}
 
-			bool isUsingTMRatesInTask = false;
+			ICollection<TMResourceRateDTO> tmResourceRates = retriever.GetTMResourceRates(workspaceId);
+			ICollection<ResourceDTO> resources = laborTypes.Where(lt => lt.ResourceID.HasValue).Select(lt => new ResourceDTO { Id = lt.ResourceID.Value }).ToList();
 
-			// Check if the company mode is Space Systems as T&M rates only apply to space.
-			if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
+			return IsUsingTMRates(tmResourceRates, resources);
+		}
+
+		/// <summary>
+		/// Checks the usage of active T&M rates in the task.
+		/// </summary>
+		/// <param name="tmResourceRates">The T&M resource rates.</param>
+		/// <param name="resources">The resources.</param>
+		/// <returns>If T&M Rates are being used in the Task.</returns>
+		public static bool IsUsingTMRates(ICollection<TMResourceRateDTO> tmResourceRates, ICollection<ResourceDTO> resources)
+		{
+			if (tmResourceRates == null)
 			{
-				ICollection<TMResourceRateDTO> tmResourceRates = retriever.GetTMResourceRates(workspaceId);
+				throw new ArgumentNullException(nameof(tmResourceRates));
+			}
 
-				if (tmResourceRates.Any())
+			if (resources == null)
+			{
+				throw new ArgumentNullException(nameof(resources));
+			}
+
+			if (tmResourceRates.Any() && resources.Any())
+			{
+				foreach (TMResourceRateDTO tmResourceRate in tmResourceRates)
 				{
-					// Get the resource IDs and business resource code IDs
-					List<int> resourceIds = laborTypes.Where(lt => lt.ResourceID.HasValue).Select(lt => lt.ResourceID.Value).Distinct().ToList();
-					List<int> businessResourceCodeIds = laborTypes.Where(lt => lt.BusinessResourceCodeID.HasValue).Select(lt => lt.BusinessResourceCodeID.Value).Distinct().ToList();
-
-					// Get the resources and business resource codes from the database
-					HashSet<ResourceDTO> resourcesFromDb = new HashSet<ResourceDTO>(retriever.GetResourcesByIds(resourceIds.Concat(businessResourceCodeIds).ToList()));
-
-					// Check if there's a matching T&M resource rate for any resource
-					foreach (TMResourceRateDTO tmResourceRate in tmResourceRates)
+					if (resources.Any(r => r.ResourceName == tmResourceRate.ResourceName))
 					{
-						if (resourcesFromDb.Any(r => r.ResourceName == tmResourceRate.ResourceName))
-						{
-							isUsingTMRatesInTask = true;
-							break;
-						}
+						return true;
 					}
 				}
 			}
 
-			return isUsingTMRatesInTask;
+			return false;
 		}
 	}
 }
