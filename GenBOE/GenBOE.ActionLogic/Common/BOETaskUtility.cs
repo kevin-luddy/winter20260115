@@ -36,7 +36,7 @@ namespace GenBOE.ActionLogic.Common
 
 			if (retriever == null)
 			{
-				throw new ArgumentNullException(nameof (retriever));
+				throw new ArgumentNullException(nameof(retriever));
 			}
 
 			bool isUsingTMRatesInTask = false;
@@ -46,32 +46,19 @@ namespace GenBOE.ActionLogic.Common
 			{
 				ICollection<TMResourceRateDTO> tmResourceRates = retriever.GetTMResourceRates(workspaceId);
 
-				if (tmResourceRates.Any() && laborTypes != null)
+				if (tmResourceRates.Any())
 				{
 					// Get the resource IDs and business resource code IDs
 					List<int> resourceIds = laborTypes.Where(lt => lt.ResourceID.HasValue).Select(lt => lt.ResourceID.Value).Distinct().ToList();
 					List<int> businessResourceCodeIds = laborTypes.Where(lt => lt.BusinessResourceCodeID.HasValue).Select(lt => lt.BusinessResourceCodeID.Value).Distinct().ToList();
 
 					// Get the resources and business resource codes from the database
-					HashSet<ResourceDTO> resourcesFromDb = new HashSet<ResourceDTO>(retriever.GetResourcesByIds(resourceIds));
-					HashSet<ResourceDTO> businessResourcesFromDb = new HashSet<ResourceDTO>(retriever.GetResourcesByIds(businessResourceCodeIds));
+					HashSet<ResourceDTO> resourcesFromDb = new HashSet<ResourceDTO>(retriever.GetResourcesByIds(resourceIds.Concat(businessResourceCodeIds).ToList()));
 
-					// Convert ResourceTypeDto to LaborTypeDataModelView for comparison
-					ICollection<LaborTypeDataModelView> laborTypeDataModelViews = laborTypes
-						.Select(lt => new LaborTypeDataModelView(lt,
-							lt.ResourceID.HasValue ? resourcesFromDb.First(x => x.Id == lt.ResourceID.Value) : new ResourceDTO(),
-							lt.BusinessResourceCodeID.HasValue ? businessResourcesFromDb.First(x => x.Id == lt.BusinessResourceCodeID.Value) : new ResourceDTO(),
-							new PerformingOrgDTO(),
-							0, false))
-						.ToList();
-
-					foreach (LaborTypeDataModelView laborType in laborTypeDataModelViews)
+					// Check if there's a matching T&M resource rate for any resource
+					foreach (TMResourceRateDTO tmResourceRate in tmResourceRates)
 					{
-						// Check if there's a matching T&M resource rate
-						TMResourceRateDTO matchingResourceRate = tmResourceRates.FirstOrDefault(r => r.ResourceName == laborType.ResourceName || r.ResourceName == laborType.BusinessResourceCodeName);
-
-						// If a match is found then T&M resource rates are being used.
-						if (matchingResourceRate != null)
+						if (resourcesFromDb.Any(r => r.ResourceName == tmResourceRate.ResourceName))
 						{
 							isUsingTMRatesInTask = true;
 							break;
