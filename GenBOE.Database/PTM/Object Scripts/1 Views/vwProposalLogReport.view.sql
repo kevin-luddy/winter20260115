@@ -30,6 +30,7 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 **		8/19/24		Dusan				PROPH-2080: Added IsSupportDefinitizingUCA field
 **      11/20/24	twilson3			proph-2357 Add Insurance fields
 **		12/3/24		twilson3			proph-2544 Add SetupComments, Backup Estimator Name
+**		02/27/25	Carlos				PROPH-2642 Add checklist question 11 to log report
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	

@@ -47,6 +47,7 @@ AS
 **		7/18/24		Dusan				PROPH-1560: Added Include International Costs
 **		8/19/24		Dusan				PROPH-2080: Added IsSupportDefinitizingUCA field
 **		11/21/24	twilson3			proph-2357 Add Insurance fields
+**		02/27/25	Carlos				PROPH-2642 Added SupplierMilestoneDatesResponse field
 *******************************************************************************/
 
 SET NOCOUNT ON
