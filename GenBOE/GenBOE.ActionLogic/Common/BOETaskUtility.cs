@@ -37,7 +37,10 @@ namespace GenBOE.ActionLogic.Common
 			}
 
 			ICollection<TMResourceRateDTO> tmResourceRates = retriever.GetTMResourceRates(workspaceId);
-			ICollection<ResourceDTO> resources = laborTypes.Where(lt => lt.ResourceID.HasValue).Select(lt => new ResourceDTO { Id = lt.ResourceID.Value }).ToList();
+			ICollection<int> resourceIds = laborTypes.Where(lt => lt.ResourceID.HasValue).Select(lt => lt.ResourceID.Value).ToList();
+			ICollection<int> businessResourceCodeIds = laborTypes.Where(lt => lt.BusinessResourceCodeID.HasValue).Select(lt => lt.BusinessResourceCodeID.Value).ToList();
+
+			ICollection<ResourceDTO> resources = retriever.GetResourcesByIds(resourceIds.Concat(businessResourceCodeIds).ToList());
 
 			return IsUsingTMRates(tmResourceRates, resources);
 		}
