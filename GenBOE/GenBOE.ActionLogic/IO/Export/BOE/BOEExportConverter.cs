@@ -426,8 +426,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                 this.Logger.Info("Exporting - BOEExporter - ConvertBoeDTOToExportMV - labor tasks begin");
             }
 
-			bool hasTMRatesForWorkspace = BOETaskUtility.IsUsingTMRates(retriever.GetTMResourceRates(exportInputs.Workspace.Id), exportInputs.FullWorkspace.ResourcesUsedInWsBoes?.ToList());
-
 			Collection<BOEExportTaskElement> boeExportTaskElements = new Collection<BOEExportTaskElement>();
             IDictionary<int, ElementOfCostTypeModelView> allElementOfCostTypes = this.commonDataMapper.GetElementOfCostTypesDictionary();
             IDictionary<int, SpreadCurveModelView> allSpreadCurves = exportInputs.Workspace.IsProjectMapWorkspace ? this.commonDataMapper.getProjectMapSpreadCurveDictionary() : this.commonDataMapper.getSpreadCurveDictionary();
@@ -437,6 +435,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             
             IReadOnlyCollection<ResourceDTO> resourcesForLabors = exportInputs.ResourcesUsedInWsBoes;
             IReadOnlyCollection<PerformingOrgDTO> performingOrgsFromDb = exportInputs.PerformingOrgsUsedInBoes;
+
+			bool hasTMRatesForWorkspace = BOETaskUtility.IsUsingTMRates(retriever.GetTMResourceRates(exportInputs.Workspace.Id), resourcesForLabors?.ToList());
 
 			foreach (BoeTaskElementDTO boeTaskElement in taskElements)
             {
