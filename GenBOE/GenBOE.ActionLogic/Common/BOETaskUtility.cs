@@ -43,6 +43,7 @@ namespace GenBOE.ActionLogic.Common
 			}
 
 			List<int> resourceIds = laborTypes
+				.Where(te => te.taskElementLabors != null)
 				.SelectMany(te => te.taskElementLabors)
 				.Where(lt => lt.ResourceID.HasValue)
 				.Select(lt => lt.ResourceID.Value)
@@ -50,11 +51,17 @@ namespace GenBOE.ActionLogic.Common
 				.ToList();
 
 			List<int> businessResourceCodeIds = laborTypes
+				.Where(te => te.taskElementLabors != null)
 				.SelectMany(te => te.taskElementLabors)
 				.Where(lt => lt.BusinessResourceCodeID.HasValue)
 				.Select(lt => lt.BusinessResourceCodeID.Value)
 				.Distinct()
 				.ToList();
+
+			if (!resourceIds.Any() && !businessResourceCodeIds.Any())
+			{
+				return false;
+			}
 
 			HashSet<int> allResourceIds = resourceIds.Concat(businessResourceCodeIds).ToHashSet();
 
