@@ -118,7 +118,7 @@ namespace GenBOE.Tests.ActionLogic
             Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
             Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             return sut;
         }
@@ -181,7 +181,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
             retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -287,7 +287,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
             retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
 
-            IValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            IValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -315,7 +315,7 @@ namespace GenBOE.Tests.ActionLogic
             }
 
             //now test it in Space Systems mode
-            sut = new ValidateBOESpaceSystems(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            sut = new ValidateBOESpaceSystems(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -422,7 +422,7 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { });
 
-			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -535,7 +535,7 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -657,7 +657,7 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -797,7 +797,7 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { });
 
-			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -897,7 +897,7 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             #region Setup Unity references
 
@@ -1029,7 +1029,7 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             FullWorkspace workspaceObject = new FullWorkspace(workspace);
 
@@ -1149,7 +1149,7 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             FullWorkspace workspaceObject = new FullWorkspace(workspace);
 
@@ -1258,7 +1258,7 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             #region Setup Unity references
 
@@ -1394,7 +1394,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByTaskElementIds(It.IsAny<Collection<int>>())).Returns(toReturn);
 
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -1532,7 +1532,7 @@ namespace GenBOE.Tests.ActionLogic
             resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
             retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByTaskElementIds(It.IsAny<Collection<int>>())).Returns(new Dictionary<int, ICollection<KeyValuePair<int, int>>>() { });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
             FullWorkspace workspaceObject = new FullWorkspace(workspace);
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -1726,7 +1726,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByMoqTypeTableIds(It.IsAny<Collection<int>>())).Returns(toReturn);
             retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByTaskElementIds(It.IsAny<Collection<int>>())).Returns(new Dictionary<int, ICollection<KeyValuePair<int, int>>>() { });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -1861,7 +1861,7 @@ namespace GenBOE.Tests.ActionLogic
             _MiscTravelRateDTOLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<MiscTravelRateDTO>());
             _LocationDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<LocationDTO>());
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -1983,7 +1983,7 @@ namespace GenBOE.Tests.ActionLogic
             resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
             retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByLaborTypeIds(It.IsAny<Collection<int>>())).Returns(new Dictionary<int, ICollection<KeyValuePair<int, int>>>() { });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             FullWorkspace workspaceObject = new FullWorkspace(workspace);
             //Act
@@ -2115,7 +2115,7 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.CheckIfBoeExistsGivenCustomFieldID(boe.Id, customField.Id)).Returns(true);
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -2214,7 +2214,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -2321,7 +2321,7 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -2431,7 +2431,7 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -2509,7 +2509,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, EndDate = Convert.ToDateTime("07/01/2011"), StartDate = Convert.ToDateTime("06/01/2011"), PerformingOrgID = null, ResourceID = null } }, WasDescriptionSet = true, WasMoqTextSet = true } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -2641,7 +2641,7 @@ namespace GenBOE.Tests.ActionLogic
 
             ResourceLoader.Setup(x => x.GetByListIdAndElementOfCost(workspace.ResourceListID, ElementOfCostType.Travel)).Returns(new Collection<ResourceDTO> { new ResourceDTO { Id = 1, ResourceName = "test" } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -2729,7 +2729,7 @@ namespace GenBOE.Tests.ActionLogic
                                                                         ZoneOriginName = "Test Origin",
                                                                         ZoneDestinationName = "Test Destination"}}}});
 
-            ValidateBOE sut = new ValidateBOEMst(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, mstZoneTravelValidator.Object, zoneTravelLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            ValidateBOE sut = new ValidateBOEMst(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, mstZoneTravelValidator.Object, zoneTravelLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
             mstZoneTravelValidator.Setup(x => x.ValidateTravelTaskDetails(It.IsAny<TravelDTO>(), It.IsAny<int>())).Returns(new Collection<ValidationMessage>() { new ValidationMessage() { ValidationIssue = "Test Travel Details Issue" } });
             mstZoneTravelValidator.Setup(x => x.ValidateTravelTrips(It.IsAny<ICollection<MSTTravelTripType>>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<int>(), It.IsAny<ICollection<int>>(), It.IsAny<bool>(), It.IsAny<string>())).Returns(new Collection<ValidationMessage>() { new ValidationMessage() { ValidationIssue = "Test Travel Trip Issue" } });
 
@@ -2861,7 +2861,7 @@ namespace GenBOE.Tests.ActionLogic
             Dictionary<int, ICollection<KeyValuePair<int, int>>> toReturn = new Dictionary<int, ICollection<KeyValuePair<int, int>>>();
             toReturn[12] = new Collection<KeyValuePair<int, int>> { new KeyValuePair<int, int>() };
             retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByTravelTripsIds(It.IsAny<Collection<int>>())).Returns(toReturn);
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -2935,7 +2935,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
             retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -3013,7 +3013,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
             resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>());
 
-            IValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            IValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -3035,7 +3035,7 @@ namespace GenBOE.Tests.ActionLogic
             }
 
             // now test in Space Systems mode - only the MOQ Text difference needs to be verified
-            sut = new ValidateBOESpaceSystems(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            sut = new ValidateBOESpaceSystems(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -3114,7 +3114,7 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>());
 
-            IValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            IValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -3136,7 +3136,7 @@ namespace GenBOE.Tests.ActionLogic
             }
 
             // now test in Space Systems mode - only the MOQ Text difference needs to be verified
-            sut = new ValidateBOESpaceSystems(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            sut = new ValidateBOESpaceSystems(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
@@ -3230,7 +3230,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
             retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
             #region Setup Unity references
@@ -3316,7 +3316,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int> { boe.Id, boe2.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object, retriever.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             Collection<FullBoe> boesToValidate = new Collection<FullBoe>();
             boesToValidate.Add(boeObject);
