@@ -16,7 +16,6 @@ namespace GenBOE.ActionLogic.IO.Export
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Objects;
-	using IES.Common;
 	using IES.Common.OfficeUtilities;
 
 	[ExcludeFromCodeCoverage]
@@ -36,8 +35,7 @@ namespace GenBOE.ActionLogic.IO.Export
             WbsExporter inWbsExporter,
             TravelTripCostCalculation inTravelTripCostCalculation,
             ILocationDTODataLoader inLocationDtoDataLoader,
-            ICLINExporter inClinExporter,
-			IRetriever retriever)
+            ICLINExporter inClinExporter)
             : base(inICommonDataMapper,
              inIPermissionsDTOLoader,
              inICustomFieldValueDTODataLoader,
@@ -46,8 +44,7 @@ namespace GenBOE.ActionLogic.IO.Export
              inWbsExporter,
              inTravelTripCostCalculation,
              inLocationDtoDataLoader,
-             inClinExporter,
-			 retriever)
+             inClinExporter)
         {
 
         }

@@ -22,7 +22,6 @@ namespace GenBOE.ActionLogic.IO.Export
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
-	using GenBOE.Objects;
 	using IES.Common;
 	using IES.Common.classes;
 	using IES.Common.OfficeUtilities;

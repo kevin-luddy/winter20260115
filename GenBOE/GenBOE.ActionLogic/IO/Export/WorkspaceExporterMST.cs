@@ -64,8 +64,7 @@ namespace GenBOE.ActionLogic.IO.Export
             ILocationDTODataLoader locationDtoDataLoader,
             ICLINExporter clinExporter,
             TravelUnitCostExporterRMS travelUnitCostExporter,
-            TravelExtendedCostExporterRMS travelExtendedCostExporter,
-			IRetriever retriever)
+            TravelExtendedCostExporterRMS travelExtendedCostExporter)
             : base(commonDataMapper,
              permissionsDTOLoader,
              customFieldValueDTODataLoader,
@@ -74,8 +73,7 @@ namespace GenBOE.ActionLogic.IO.Export
              wbsExporter,
              travelTripCostCalculation,
              locationDtoDataLoader,
-             clinExporter,
-			 retriever)
+             clinExporter)
         {
             this.travelUnitCostExporter = travelUnitCostExporter;
             this.travelExtendedCostExporter = travelExtendedCostExporter;

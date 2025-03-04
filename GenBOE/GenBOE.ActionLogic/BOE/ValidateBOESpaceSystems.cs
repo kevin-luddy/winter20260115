@@ -27,9 +27,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
             IMiscTravelRateDTOLoader inMiscTravelRateDTOLoader,
             ILocationDTODataLoader inLocationDTODataLoader,
             IOffloadRatesDTOLoader offloadRatesDTOLoader,
-            IRteTemplateDataLoader rteTemplateDataLoader,
-			IRetriever retriever
-            )
+            IRteTemplateDataLoader rteTemplateDataLoader)
             : base(
             inVariableSelectBOEtoSumCalculation,
             inBOECommentsResponsesValidator, 
@@ -37,8 +35,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
             inMiscTravelRateDTOLoader, 
             inLocationDTODataLoader,  
             offloadRatesDTOLoader, 
-            rteTemplateDataLoader,
-			retriever)
+            rteTemplateDataLoader)
         {
 
         }
