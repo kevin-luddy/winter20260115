@@ -177,7 +177,6 @@ namespace GenBOE.ActionLogic.DateShift
                 // Pre-load emails (to get original start/end dates)
                 this.GenerateEmails(dateShiftable, dateShiftModel);
 
-				bool isBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspaceShortname);
 
 				// Check if we have Skill Mix enabled to adjust Skill Mix table data as needed
 				if (Utilities.ShowSkillMixForWorkspace(fullWorkspace?.CreationDate))
@@ -187,6 +186,8 @@ namespace GenBOE.ActionLogic.DateShift
 					{
 						if (Utilities.ShowSkillMixForTask(fullWorkspace?.CreationDate, BOETaskUtility.IsUsingTMRates(fullWorkspace, fullWorkspace.TMResourceRatesForWorkspace, fullWorkspace.TaskElements)))
 						{
+							bool isBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspaceShortname);
+
 							// Run Skill Mix update
 							ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours = fullWorkspace?.MoqTypeSelections
 								.SelectMany(moqType => moqType.TableData)
