@@ -17,6 +17,7 @@ namespace GenBOE.ActionLogic.IO.Export
 	using DocumentFormat.OpenXml;
 	using DocumentFormat.OpenXml.Packaging;
 	using DocumentFormat.OpenXml.Wordprocessing;
+	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.IO.Export.BOE;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.DataBridge.DTO;
@@ -825,12 +826,10 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <summary>
 		/// Populate the Skill Mix Tables
 		/// </summary>
-		/// <param name="moqType">MOQ Type Selection</param>
 		/// <param name="selectedComponents">Selected components for a custom export</param>
-		/// <param name="skillMixTablesContainer">SDT Element Container for the Skill Mix tables</param>
 		/// <param name="taskContainer">SDT Element container for the MOQ Types</param>
 		/// <param name="exportInputs">Export Inputs</param>
-		protected void ProcessSkillMixTable(BOEExportTaskElement laborTaskElement, ICollection<BoeCustomReportComponent> selectedComponents, SdtElement taskContainer, BOEExportInputs exportInputs)
+		protected void ProcessSkillMixTable(BOEExportTaskElement laborTaskElement, ICollection<BoeCustomReportComponent> selectedComponents, SdtElement taskContainer, BOEExportInputs exportInputs, BoeTaskElementDTO task)
 		{
 			_ = laborTaskElement ?? throw new ArgumentNullException(nameof(laborTaskElement));
 			_ = selectedComponents ?? throw new ArgumentNullException(nameof(selectedComponents));
@@ -840,7 +839,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			if (skillMixTablesContainer != null)
 			{
 				if ((selectedComponents.Contains(BoeCustomReportComponent.SkillMixTables) || !selectedComponents.Any())
-					&& Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, laborTaskElement.HasTMRates))
+					&& Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, task)))
 				{
 					// populate Current/Legacy Skill Mix Table
 					SdtElement currentTableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_CurrentSkillMix);

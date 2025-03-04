@@ -26,6 +26,7 @@ namespace GenBOE.ActionLogic.IO.Export
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
+	using GenTRAC.Objects;
 	using IES.Common;
 	using IES.Common.classes;
 	using IES.Common.Exceptions;
@@ -1414,8 +1415,8 @@ namespace GenBOE.ActionLogic.IO.Export
                 allLaborTaskElementsFull = allLaborTaskElementsFull.OrderBy(x => x.BOETaskElementOrder).ThenBy(y => y.BOETaskElementID).ToList();
                 foreach (BOEExportTaskElement laborTaskElement in allLaborTaskElementsFull)
                 {
-                    //  create (clone) a new container for this task
-                    SdtElement containerElement = this.CloneContainerTemplate(laborTaskContainerTemplateElement);
+					//  create (clone) a new container for this task
+					SdtElement containerElement = this.CloneContainerTemplate(laborTaskContainerTemplateElement);
 
                     #region Process the data (IS&GS)
                     if (containsBoeHeaderInTask)
@@ -1429,7 +1430,9 @@ namespace GenBOE.ActionLogic.IO.Export
                     this.ProcessLaborTaskCostSpreadRollupTable(containerElement, exportInputs, boeExportModelView, laborTaskElement, allLaborTaskElements, selectedComponents, true);
                     this.ProcessLaborTaskCostSpreadRollupTable(containerElement, exportInputs, boeExportModelView, laborTaskElement, allLaborTaskElements, selectedComponents, false);
                     this.ProcessLaborTaskResources(containerElement, exportInputs, laborTaskElement, allLaborTaskElements, selectedComponents, exportBoe.IsMultiClinWbs);
-					this.ProcessSkillMixTable(laborTaskElement, selectedComponents, containerElement, exportInputs);
+
+					ICollection<BoeTaskElementDTO> taskElements = exportInputs.TaskElements.Where(x => x.BoeID == boeExportModelView.BoeID).ToList();
+					this.ProcessSkillMixTable(laborTaskElement, selectedComponents, containerElement, exportInputs, taskElements.FirstOrDefault(x => x.Id == laborTaskElement.BOETaskElementID.Value));
 
 					#endregion
 
@@ -4562,12 +4565,11 @@ namespace GenBOE.ActionLogic.IO.Export
 				if (exportInputs.Workspace.UsingTemplateBOE)
                 {
                     boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
-					skillMixEnabled = Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, boeTaskElement.HasTMRates);
+					skillMixEnabled = Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, boeTaskElement));
 					if (skillMixEnabled)
 					{
 						boeExportTaskElement.SkillMixTable = boeTaskElement.SkillMixTable;
 						boeExportTaskElement.CommonDisclosureTable = boeTaskElement.CommonDisclosureTable;
-						boeExportTaskElement.HasTMRates = boeTaskElement.HasTMRates;
 					}
                 }
 

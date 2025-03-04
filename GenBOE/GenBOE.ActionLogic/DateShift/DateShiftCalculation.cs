@@ -12,7 +12,8 @@ namespace GenBOE.ActionLogic.DateShift
     using System.Linq;
     using System.Transactions;
     using GenBOE.ActionLogic.BOETransitions;
-    using GenBOE.ActionLogic.Common.Email;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.Common.Email;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.Workspace;
 	using GenBOE.DataBridge.DTO;
@@ -120,21 +121,21 @@ namespace GenBOE.ActionLogic.DateShift
             this.boeStateMachine = GenBOEUnityContainer.Container.Resolve(typeof(IBOEStateMachine)) as IBOEStateMachine;
             this.factory = GenBOEUnityContainer.Container.Resolve(typeof(IFullObjectFactory)) as IFullObjectFactory;
 			this.boeLaborControllerLogic = GenBOEUnityContainer.Container.Resolve(typeof(IBOELaborControllerLogic)) as IBOELaborControllerLogic;
-        }
+		}
 
-        /// <summary>
-        /// Performs the date shift.
-        /// </summary>
-        /// <param name="dateShiftable">The date shiftable object.</param>
-        /// <param name="dateShiftModel">The dateshift model.</param>
-        /// <param name="parentStart">The parent start.</param>
-        /// <param name="parentEnd">The parent end.</param>
-        /// <param name="validateOnly">If this should only validate the dateshift.</param>
-        /// <param name="parentLevel">The parent level.</param>
+		/// <summary>
+		/// Performs the date shift.
+		/// </summary>
+		/// <param name="dateShiftable">The date shiftable object.</param>
+		/// <param name="dateShiftModel">The dateshift model.</param>
+		/// <param name="parentStart">The parent start.</param>
+		/// <param name="parentEnd">The parent end.</param>
+		/// <param name="validateOnly">If this should only validate the dateshift.</param>
+		/// <param name="parentLevel">The parent level.</param>
 		/// <param name="workspaceShortname">Workspace ShortName</param>
 		/// <param name="fullWorkspace">The full workspace</param>
-        /// <exception cref="ArgumentNullException">dateShiftable or details</exception>
-        public void PerformDateShift(IDateShiftable dateShiftable, DateShiftModelView dateShiftModel, DateTime? parentStart, DateTime? parentEnd, 
+		/// <exception cref="ArgumentNullException">dateShiftable or details</exception>
+		public void PerformDateShift(IDateShiftable dateShiftable, DateShiftModelView dateShiftModel, DateTime? parentStart, DateTime? parentEnd, 
             bool validateOnly, Level parentLevel, string workspaceShortname, FullWorkspace fullWorkspace)
         {
             if (dateShiftable == null)
@@ -176,7 +177,6 @@ namespace GenBOE.ActionLogic.DateShift
                 // Pre-load emails (to get original start/end dates)
                 this.GenerateEmails(dateShiftable, dateShiftModel);
 
-				bool isBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspaceShortname);
 
 				// Check if we have Skill Mix enabled to adjust Skill Mix table data as needed
 				if (Utilities.ShowSkillMixForWorkspace(fullWorkspace?.CreationDate))
@@ -184,8 +184,10 @@ namespace GenBOE.ActionLogic.DateShift
 					// Iterate through each task and check for Skill Mix
 					foreach (BoeTaskElementDTO task in fullWorkspace?.TaskElements)
 					{
-						if (Utilities.ShowSkillMixForTask(fullWorkspace?.CreationDate, task.HasTMRates))
+						if (Utilities.ShowSkillMixForTask(fullWorkspace?.CreationDate, BOETaskUtility.IsUsingTMRates(fullWorkspace, task)))
 						{
+							bool isBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspaceShortname);
+
 							// Run Skill Mix update
 							ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours = fullWorkspace?.MoqTypeSelections
 								.SelectMany(moqType => moqType.TableData)
