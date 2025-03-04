@@ -48,7 +48,6 @@ namespace GenBOE.ActionLogic.IO.Export
         private IVariableSelectBOEtoSumCalculation _VariableSelectBOEtoSumCalculation;
 
         protected NumberFormatInfo _CurrencyFormatter { get; set; }
-		private Objects.IRetriever _Retriever;
 
         #endregion
 
@@ -66,10 +65,9 @@ namespace GenBOE.ActionLogic.IO.Export
             IUserDTODataLoader inIUserDTODataLoader,
             ICommonDataMapper inICommonDataMapper,
             TravelTripCostCalculation inTravelTripCostCalculation,
-            IVariableSelectBOEtoSumCalculation inVariableSelectBOEtoSumCalculation,
-			Objects.IRetriever retriever
+            IVariableSelectBOEtoSumCalculation inVariableSelectBOEtoSumCalculation
             )
-            : base(inIUserDTODataLoader, retriever)
+            : base(inIUserDTODataLoader)
         {
             this._ICommonDataMapper = inICommonDataMapper;
             this._TravelTripCostCalculation = inTravelTripCostCalculation;
@@ -78,7 +76,6 @@ namespace GenBOE.ActionLogic.IO.Export
             this._CurrencyFormatter.CurrencySymbol = "$";
             this.DefaultCurrencyFormat = BOEExporterConstants.CURRENCY_FORMAT_DEFAULT;
             this._VariableSelectBOEtoSumCalculation = inVariableSelectBOEtoSumCalculation;
-			this._Retriever = retriever;
             this._log = new Logger(typeof(BOECustomExporter)); 
         }
 
@@ -1418,8 +1415,6 @@ namespace GenBOE.ActionLogic.IO.Export
                 allLaborTaskElementsFull = allLaborTaskElementsFull.OrderBy(x => x.BOETaskElementOrder).ThenBy(y => y.BOETaskElementID).ToList();
                 foreach (BOEExportTaskElement laborTaskElement in allLaborTaskElementsFull)
                 {
-					BoeTaskElementDTO CurrentTaskElement = taskElementCollection.FirstOrDefault(x => x.Id == laborTaskElement.BOETaskElementID.Value);
-
 					//  create (clone) a new container for this task
 					SdtElement containerElement = this.CloneContainerTemplate(laborTaskContainerTemplateElement);
 
@@ -1435,7 +1430,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     this.ProcessLaborTaskCostSpreadRollupTable(containerElement, exportInputs, boeExportModelView, laborTaskElement, allLaborTaskElements, selectedComponents, true);
                     this.ProcessLaborTaskCostSpreadRollupTable(containerElement, exportInputs, boeExportModelView, laborTaskElement, allLaborTaskElements, selectedComponents, false);
                     this.ProcessLaborTaskResources(containerElement, exportInputs, laborTaskElement, allLaborTaskElements, selectedComponents, exportBoe.IsMultiClinWbs);
-					this.ProcessSkillMixTable(laborTaskElement, selectedComponents, containerElement, exportInputs, CurrentTaskElement.taskElementLabors);
+					this.ProcessSkillMixTable(laborTaskElement, selectedComponents, containerElement, exportInputs);
 
 					#endregion
 
@@ -4564,7 +4559,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 boeExportTaskElement.IMS_ID = boeTaskElement.IMS_ID;
                 boeExportTaskElement.BOETaskElementOrder = boeTaskElement.BOETaskElementOrder;
 				bool skillMixEnabled = false;
-				boeExportTaskElement.HasTMRates = BOETaskUtility.IsUsingTMRates(exportInputs.Workspace.Id, boeTaskElement.taskElementLabors, _Retriever);
+				boeExportTaskElement.HasTMRates = BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace.TMResourceRatesForWorkspace.ToList(), exportInputs.FullWorkspace.ResourcesUsedInWsBoes.ToList());
 
 				if (exportInputs.Workspace.UsingTemplateBOE)
                 {

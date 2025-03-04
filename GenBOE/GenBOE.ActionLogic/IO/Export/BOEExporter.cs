@@ -338,12 +338,11 @@ namespace GenBOE.ActionLogic.IO.Export
         public BOEExporter(
             IPermissionsDTODataLoader permissionsDTOLoader,
             IUserDTODataLoader userDTODataLoader,
-			IRetriever retriever,
             ICommonDataMapper commonDataMapper,
             IVariableSelectBOEtoSumCalculation variableSelectBOEtoSumCalculation,
             IActiveDirectoryUtilities ADUtils,
             BOEExportConverter exportConverter)
-            : base(userDTODataLoader, retriever)
+            : base(userDTODataLoader)
         {
             this.permissionsDTOLoader = permissionsDTOLoader;
             this.commonDataMapper = commonDataMapper;
@@ -1073,9 +1072,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                                 this.PopulateSOWResourceTable(exportInputs, TableAlias2, boeExportModelView, resourceTypeDtos);
                                             }
 
-											BoeTaskElementDTO CurrentTaskElement = taskElements.FirstOrDefault(x => x.Id == taskElement.BOETaskElementID.Value);
-
-											this.ProcessSkillMixTable(taskElement, new Collection<BoeCustomReportComponent>(), (SdtElement)taskContainer.TaskContainer, exportInputs, CurrentTaskElement.taskElementLabors);
+											this.ProcessSkillMixTable(taskElement, new Collection<BoeCustomReportComponent>(), (SdtElement)taskContainer.TaskContainer, exportInputs);
 
 											break;
 

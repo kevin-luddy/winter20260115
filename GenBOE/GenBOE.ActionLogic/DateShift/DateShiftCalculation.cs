@@ -185,11 +185,11 @@ namespace GenBOE.ActionLogic.DateShift
 
 				bool isBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspaceShortname);
 
-				ICollection<TMResourceRateDTO> tmRates = retriever.GetTMResourceRates(fullWorkspace.Id);
-
 				// Check if we have Skill Mix enabled to adjust Skill Mix table data as needed
 				if (Utilities.ShowSkillMixForWorkspace(fullWorkspace?.CreationDate))
 				{
+					ICollection<TMResourceRateDTO> tmRates = retriever.GetTMResourceRates(fullWorkspace.Id);
+
 					// Iterate through each task and check for Skill Mix
 					foreach (BoeTaskElementDTO task in fullWorkspace?.TaskElements)
 					{

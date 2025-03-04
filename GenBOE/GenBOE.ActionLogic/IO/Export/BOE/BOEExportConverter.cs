@@ -44,11 +44,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
         /// </summary>
         private TravelTripCostCalculation travelTripCostCalculation;
 
-		/// <summary>
-		/// Retriever
-		/// </summary>
-		private IRetriever retriever;
-
         /// <summary>
         /// Gets the workspace decimal precision.
         /// </summary>
@@ -72,8 +67,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
         /// <param name="variableSelectBOEtoSumCalculation">The variable select boe to sum calculation.</param>
         /// <param name="travelTripCostCalculation">The travel trip cost calculation.</param>
         public BOEExportConverter(IUserDTODataLoader userDTODataLoader, ICommonDataMapper commonDataMapper, IVariableSelectBOEtoSumCalculation variableSelectBOEtoSumCalculation,
-            TravelTripCostCalculation travelTripCostCalculation, IRetriever retriever)
-                    : base(userDTODataLoader, retriever)
+            TravelTripCostCalculation travelTripCostCalculation)
+                    : base(userDTODataLoader)
         {
             this.Logger = new Logger(typeof(BOEExportConverter));
             this.CurrencyFormatter = new NumberFormatInfo();
@@ -82,7 +77,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             this.commonDataMapper = commonDataMapper;
             this.variableSelectBOEtoSumCalculation = variableSelectBOEtoSumCalculation;
             this.travelTripCostCalculation = travelTripCostCalculation;
-			this.retriever = retriever;
         }
 
         /// <summary>
@@ -436,7 +430,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             IReadOnlyCollection<ResourceDTO> resourcesForLabors = exportInputs.ResourcesUsedInWsBoes;
             IReadOnlyCollection<PerformingOrgDTO> performingOrgsFromDb = exportInputs.PerformingOrgsUsedInBoes;
 
-			bool hasTMRatesForWorkspace = BOETaskUtility.IsUsingTMRates(retriever.GetTMResourceRates(exportInputs.Workspace.Id), resourcesForLabors?.ToList());
+			bool hasTMRatesForWorkspace = BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace.TMResourceRatesForWorkspace.ToList(), resourcesForLabors?.ToList());
 
 			foreach (BoeTaskElementDTO boeTaskElement in taskElements)
             {

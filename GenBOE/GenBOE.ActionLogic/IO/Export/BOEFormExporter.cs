@@ -122,8 +122,8 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="userDTODataLoader">The user dataloader.</param>
         /// <param name="resourceDTODataLoader">The resource dataloader.</param>
         /// <param name="tmCalculator">The T&amp;M Calculator.</param>
-        protected BOEFormExporter(IUserDTODataLoader userDTODataLoader, IResourceDTODataLoader resourceDTODataLoader, TMCalculator tmCalculator, IRetriever retriever)
-            : base(userDTODataLoader, retriever)
+        protected BOEFormExporter(IUserDTODataLoader userDTODataLoader, IResourceDTODataLoader resourceDTODataLoader, TMCalculator tmCalculator)
+            : base(userDTODataLoader)
         {
             this._CurrencyFormatter = new NumberFormatInfo();
             this._CurrencyFormatter.CurrencyNegativePattern = 1;

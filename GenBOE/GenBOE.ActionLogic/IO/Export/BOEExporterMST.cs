@@ -42,11 +42,9 @@ namespace GenBOE.ActionLogic.IO.Export
             ICommonDataMapper inICommonDataMapper,
             IVariableSelectBOEtoSumCalculation inVariableSelectBOEtoSumCalculation,
             IActiveDirectoryUtilities ADUtils,
-            BOEExportConverter exportConverter,
-			IRetriever retriever)
+            BOEExportConverter exportConverter)
             : base(inIPermissionsDTOLoader, 
             inIUserDTODataLoader,
-			retriever,
 			inICommonDataMapper,
 			inVariableSelectBOEtoSumCalculation,
             ADUtils,

@@ -37,14 +37,12 @@ namespace GenBOE.ActionLogic.IO.Export
                 TravelTripCostCalculation inTravelTripCostCalculation,
                 IVariableSelectBOEtoSumCalculation inVariableSelectBOEtoSumCalculation,
                 MSTZoneTravelResourceDTODataLoader mstZoneTravelResourceDTODataLoader,
-                RMSZoneTravelRatesFeesDataLoader rmsZoneTravelRatesFeesDataLoader,
-				IRetriever retriever
+                RMSZoneTravelRatesFeesDataLoader rmsZoneTravelRatesFeesDataLoader
             ) : base(
                 inIUserDTODataLoader,
                 inICommonDataMapper,
                 inTravelTripCostCalculation,
-                inVariableSelectBOEtoSumCalculation,
-				retriever
+                inVariableSelectBOEtoSumCalculation
             )
         {
             // constructor

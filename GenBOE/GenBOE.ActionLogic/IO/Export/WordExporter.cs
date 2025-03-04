@@ -30,8 +30,8 @@ namespace GenBOE.ActionLogic.IO.Export
 	[ExcludeFromCodeCoverage]
 	public abstract class WordExporter : BOEExportUtilities
 	{
-		protected WordExporter(IUserDTODataLoader UserDTODataLoader, IRetriever retriever)
-			: base(UserDTODataLoader, retriever)
+		protected WordExporter(IUserDTODataLoader UserDTODataLoader)
+			: base(UserDTODataLoader)
 		{
 		}
 
@@ -131,12 +131,10 @@ namespace GenBOE.ActionLogic.IO.Export
 	public class BOEExportUtilities
 	{
 		protected IUserDTODataLoader _IUserDTODataLoader { get; set; }
-		protected IRetriever _Retriever { get; set; }
 
-		public BOEExportUtilities(IUserDTODataLoader UserDTODataLoader, IRetriever Retriever)
+		public BOEExportUtilities(IUserDTODataLoader UserDTODataLoader)
 		{
 			this._IUserDTODataLoader = UserDTODataLoader;
-			this._Retriever = Retriever;
 		}
 
 		/// <summary>
@@ -829,12 +827,10 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <summary>
 		/// Populate the Skill Mix Tables
 		/// </summary>
-		/// <param name="moqType">MOQ Type Selection</param>
 		/// <param name="selectedComponents">Selected components for a custom export</param>
-		/// <param name="skillMixTablesContainer">SDT Element Container for the Skill Mix tables</param>
 		/// <param name="taskContainer">SDT Element container for the MOQ Types</param>
 		/// <param name="exportInputs">Export Inputs</param>
-		protected void ProcessSkillMixTable(BOEExportTaskElement laborTaskElement, ICollection<BoeCustomReportComponent> selectedComponents, SdtElement taskContainer, BOEExportInputs exportInputs, ICollection<ResourceTypeDto> laborTypes)
+		protected void ProcessSkillMixTable(BOEExportTaskElement laborTaskElement, ICollection<BoeCustomReportComponent> selectedComponents, SdtElement taskContainer, BOEExportInputs exportInputs)
 		{
 			_ = laborTaskElement ?? throw new ArgumentNullException(nameof(laborTaskElement));
 			_ = selectedComponents ?? throw new ArgumentNullException(nameof(selectedComponents));
@@ -844,7 +840,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			if (skillMixTablesContainer != null)
 			{
 				if ((selectedComponents.Contains(BoeCustomReportComponent.SkillMixTables) || !selectedComponents.Any())
-					&& Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.Workspace.Id, laborTypes, _Retriever)))
+					&& Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace.TMResourceRatesForWorkspace?.ToList(), exportInputs.FullWorkspace.ResourcesUsedInWsBoes?.ToList())))
 				{
 					// populate Current/Legacy Skill Mix Table
 					SdtElement currentTableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_CurrentSkillMix);
