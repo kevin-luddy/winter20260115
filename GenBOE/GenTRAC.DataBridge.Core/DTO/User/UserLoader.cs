@@ -324,7 +324,7 @@ namespace GenTRAC.DataBridge.Core.DTO.User
 		/// <returns>All Group User Ids</returns>
 		public ICollection<int> GetAllGroupIds()
 		{
-			ICollection<int> toReturn = null;
+			ICollection<int> toReturn = new List<int>();
 
 			using (StopwatchTimer sw = new("UserLoader.GetAllGroupIds", Log))
 			{
