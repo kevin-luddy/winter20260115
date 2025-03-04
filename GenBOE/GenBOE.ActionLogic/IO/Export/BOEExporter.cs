@@ -1072,7 +1072,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                                 this.PopulateSOWResourceTable(exportInputs, TableAlias2, boeExportModelView, resourceTypeDtos);
                                             }
 
-											this.ProcessSkillMixTable(taskElement, new Collection<BoeCustomReportComponent>(), (SdtElement)taskContainer.TaskContainer, exportInputs);
+											this.ProcessSkillMixTable(taskElement, new Collection<BoeCustomReportComponent>(), (SdtElement)taskContainer.TaskContainer, exportInputs, taskElements.FirstOrDefault(x => x.Id == taskElement.BOETaskElementID.Value));
 
 											break;
 

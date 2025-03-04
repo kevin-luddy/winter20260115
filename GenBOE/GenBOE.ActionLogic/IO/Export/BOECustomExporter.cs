@@ -1430,7 +1430,9 @@ namespace GenBOE.ActionLogic.IO.Export
                     this.ProcessLaborTaskCostSpreadRollupTable(containerElement, exportInputs, boeExportModelView, laborTaskElement, allLaborTaskElements, selectedComponents, true);
                     this.ProcessLaborTaskCostSpreadRollupTable(containerElement, exportInputs, boeExportModelView, laborTaskElement, allLaborTaskElements, selectedComponents, false);
                     this.ProcessLaborTaskResources(containerElement, exportInputs, laborTaskElement, allLaborTaskElements, selectedComponents, exportBoe.IsMultiClinWbs);
-					this.ProcessSkillMixTable(laborTaskElement, selectedComponents, containerElement, exportInputs);
+
+					ICollection<BoeTaskElementDTO> taskElements = exportInputs.TaskElements.Where(x => x.BoeID == boeExportModelView.BoeID).ToList();
+					this.ProcessSkillMixTable(laborTaskElement, selectedComponents, containerElement, exportInputs, taskElements.FirstOrDefault(x => x.Id == laborTaskElement.BOETaskElementID.Value));
 
 					#endregion
 
@@ -4559,7 +4561,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 boeExportTaskElement.IMS_ID = boeTaskElement.IMS_ID;
                 boeExportTaskElement.BOETaskElementOrder = boeTaskElement.BOETaskElementOrder;
 				bool skillMixEnabled = false;
-				boeExportTaskElement.HasTMRates = BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, exportInputs.FullWorkspace.TMResourceRatesForWorkspace.ToList(), exportInputs.FullWorkspace.TaskElements);
+				boeExportTaskElement.HasTMRates = BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, exportInputs.FullWorkspace.TMResourceRatesForWorkspace.ToList(), boeTaskElement);
 
 				if (exportInputs.Workspace.UsingTemplateBOE)
                 {

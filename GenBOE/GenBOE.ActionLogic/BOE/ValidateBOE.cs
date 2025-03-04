@@ -239,11 +239,9 @@ namespace GenBOE.ActionLogic.WBS.BOE
 			this.ValidateTemplateMoqTypes(ws, inBOE, ValidationBOE);
 			List<TMResourceRateDTO> tmRates = ws.TMResourceRatesForWorkspace.ToList();
 
-			BOETaskUtility.IsUsingTMRates(ws, tmRates, ws.TaskElements);
-
 			inBOE.TaskElements.ForEach(task =>
 			{
-				if (Utilities.ShowSkillMixForTask(ws.CreationDate, BOETaskUtility.IsUsingTMRates(ws, tmRates, ws.TaskElements)))
+				if (Utilities.ShowSkillMixForTask(ws.CreationDate, BOETaskUtility.IsUsingTMRates(ws, tmRates, task)))
 				{
 					ICollection<string> errorMessages = new List<string>();
 					errorMessages = ActionLogicUtility.ValidateSkillMixTable(task.SkillMixTable);

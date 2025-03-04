@@ -829,7 +829,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="selectedComponents">Selected components for a custom export</param>
 		/// <param name="taskContainer">SDT Element container for the MOQ Types</param>
 		/// <param name="exportInputs">Export Inputs</param>
-		protected void ProcessSkillMixTable(BOEExportTaskElement laborTaskElement, ICollection<BoeCustomReportComponent> selectedComponents, SdtElement taskContainer, BOEExportInputs exportInputs)
+		protected void ProcessSkillMixTable(BOEExportTaskElement laborTaskElement, ICollection<BoeCustomReportComponent> selectedComponents, SdtElement taskContainer, BOEExportInputs exportInputs, BoeTaskElementDTO task)
 		{
 			_ = laborTaskElement ?? throw new ArgumentNullException(nameof(laborTaskElement));
 			_ = selectedComponents ?? throw new ArgumentNullException(nameof(selectedComponents));
@@ -839,7 +839,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			if (skillMixTablesContainer != null)
 			{
 				if ((selectedComponents.Contains(BoeCustomReportComponent.SkillMixTables) || !selectedComponents.Any())
-					&& Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, exportInputs.FullWorkspace.TMResourceRatesForWorkspace?.ToList(), exportInputs.FullWorkspace.TaskElements)))
+					&& Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, exportInputs.FullWorkspace.TMResourceRatesForWorkspace?.ToList(), task)))
 				{
 					// populate Current/Legacy Skill Mix Table
 					SdtElement currentTableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_CurrentSkillMix);

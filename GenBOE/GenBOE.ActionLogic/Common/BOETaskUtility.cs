@@ -25,7 +25,7 @@ namespace GenBOE.ActionLogic.Common
 		/// <param name="laborTypes">Boe Task Element.</param>
 		/// <param name="laborTypes">Task elements</param>
 		/// <returns>If T&M Rates are being used in the Task.</returns>
-		public static bool IsUsingTMRates(FullWorkspace ws, IReadOnlyCollection<TMResourceRateDTO> tmResourceRates, IReadOnlyCollection<BoeTaskElementDTO> laborTypes)
+		public static bool IsUsingTMRates(FullWorkspace ws, IReadOnlyCollection<TMResourceRateDTO> tmResourceRates, BoeTaskElementDTO laborTypes)
 		{
 			if (laborTypes == null)
 			{
@@ -42,17 +42,13 @@ namespace GenBOE.ActionLogic.Common
 				throw new ArgumentNullException(nameof(tmResourceRates));
 			}
 
-			List<int> resourceIds = laborTypes
-				.Where(te => te.taskElementLabors != null)
-				.SelectMany(te => te.taskElementLabors)
+			List<int> resourceIds = laborTypes.taskElementLabors
 				.Where(lt => lt.ResourceID.HasValue)
 				.Select(lt => lt.ResourceID.Value)
 				.Distinct()
 				.ToList();
 
-			List<int> businessResourceCodeIds = laborTypes
-				.Where(te => te.taskElementLabors != null)
-				.SelectMany(te => te.taskElementLabors)
+			List<int> businessResourceCodeIds = laborTypes.taskElementLabors
 				.Where(lt => lt.BusinessResourceCodeID.HasValue)
 				.Select(lt => lt.BusinessResourceCodeID.Value)
 				.Distinct()
@@ -69,7 +65,7 @@ namespace GenBOE.ActionLogic.Common
 				.Where(r => allResourceIds.Contains(r.Id))
 				.ToList();
 
-			return IsUsingTMRates(tmResourceRates, resources);
+			return CompareResources(tmResourceRates, resources);
 		}
 
 		/// <summary>
@@ -78,7 +74,7 @@ namespace GenBOE.ActionLogic.Common
 		/// <param name="tmResourceRates">The T&M resource rates.</param>
 		/// <param name="resources">The resources.</param>
 		/// <returns>If T&M Rates are being used in the Task.</returns>
-		public static bool IsUsingTMRates(IReadOnlyCollection<TMResourceRateDTO> tmResourceRates, ICollection<ResourceDTO> resources)
+		public static bool CompareResources(IReadOnlyCollection<TMResourceRateDTO> tmResourceRates, ICollection<ResourceDTO> resources)
 		{
 			if (tmResourceRates == null)
 			{
