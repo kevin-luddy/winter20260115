@@ -10,6 +10,7 @@ namespace GenBOE.ActionLogic.IO.Export
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
+	using DocumentFormat.OpenXml.Spreadsheet;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.Dtos;
@@ -24,6 +25,16 @@ namespace GenBOE.ActionLogic.IO.Export
 	/// </summary>
 	public class TraceTableExporter : ITraceTableExporter
 	{
+		/// <summary>
+		/// UCOT hardcoded resource Id
+		/// </summary>
+		private int ucotResourceId = -9000;
+
+		/// <summary>
+		/// UCOT hardcoded performing org id
+		/// </summary>
+		private int ucotPerformingOrgId = -9001;
+
 		/// <summary>
 		/// ctor
 		/// </summary>
@@ -73,8 +84,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			TraceTableBoeDataGroup boeData = new TraceTableBoeDataGroup();
 
 			// Get labors, filter by Rate Type from settings data
-			List<ResourceTypeDto> taskElementLabors = workspace.Boes
-				.SelectMany(x => x.TaskElements)
+			List<ResourceTypeDto> taskElementLabors = workspace.TaskElements
 				.SelectMany(x => x.taskElementLabors)
 				.Where(x => (int)x.SpreadType == settingsData.RateType).ToList();
 
@@ -84,6 +94,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
 			// Filter by element of cost from the settings data
 			ICollection<int> laborsToRemove = new Collection<int>();
+			Dictionary<int, ElementOfCostType> laborToElementOfCost = new Dictionary<int, ElementOfCostType>();
 			foreach (ResourceTypeDto labor in taskElementLabors)
 			{
 				ResourceDTO resource = workspace.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == labor.ResourceID);
@@ -91,9 +102,16 @@ namespace GenBOE.ActionLogic.IO.Export
 				{
 					laborsToRemove.Add(labor.Id);
 				}
+				else
+				{
+					laborToElementOfCost[labor.Id] = resource.ElementOfCost;
+				}
 			}
 
 			taskElementLabors.RemoveAll(x => laborsToRemove.Contains(x.Id));
+
+			// Add UCOT data
+			taskElementLabors = AddUCOT(taskElementLabors, workspace.UCOTFactor, laborToElementOfCost);
 
 			// Populate CLIN and WBS IDs for non-multi-clin-wbs
 			foreach (ResourceTypeDto labor in taskElementLabors)
@@ -111,6 +129,76 @@ namespace GenBOE.ActionLogic.IO.Export
 
 			// return child data - top level is empty and child data will contain the first summary field
 			return boeData.ChildData;
+		}
+
+		/// <summary>
+		/// Adds UCOT (Uncompensated Overtime) where applicable
+		/// </summary>
+		/// <param name="taskElementLabors">The task Element labors</param>
+		/// <param name="ucotFactor">The UCOT Factor</param>
+		/// <returns></returns>
+		private List<ResourceTypeDto> AddUCOT(List<ResourceTypeDto> taskElementLabors, decimal ucotFactor, Dictionary<int, ElementOfCostType> laborToElementOfCost)
+		{
+			List<ResourceTypeDto> ucotLabors = taskElementLabors;
+
+			if (Utilities.IsUCOTEnabled)
+			{
+				// First we clone so that we do not touch any Task Element Labor that may be attached to a Cached Property in the Cached FullWorkspace
+				ucotLabors = taskElementLabors.DeepClone();
+
+				decimal ucotMultiplier = ucotFactor / 100.0m;
+
+				int idCounter = -100;
+				// Now, we loop over all the spreads and add the UCOT factor where needed
+				foreach (ResourceTypeDto labor in taskElementLabors)
+				{
+					
+					// UCOT is only applicable if ResourceTypeDto is Hours and LMLabor Element of Cost, and Spread is past 1LMX date
+					if (labor.SpreadType == SpreadType.Hours &&
+						laborToElementOfCost[labor.Id] == ElementOfCostType.LMLabor &&
+						labor.LaborSpreads != null && labor.LaborSpreads.Any() && 
+						labor.EndDate >= Utilities.OneLmxStartDate)
+					{
+						int newLaborTypeId = idCounter--;
+						Collection<ResourceSpreadDto> spreads = new Collection<ResourceSpreadDto>();
+						foreach (ResourceSpreadDto spread in labor.LaborSpreads)
+						{
+							spreads.Add(new ResourceSpreadDto()
+							{
+								LaborSpreadDate = spread.LaborSpreadDate,
+								LaborTypeId = newLaborTypeId,
+								BoeID = spread.BoeID,
+								Id = idCounter--,
+								LaborSpreadValue = (Utilities.OneLmxStartDate <= spread.LaborSpreadDate)
+									? spread.LaborSpreadValue * ucotMultiplier
+									: 0.0m
+							});
+						}
+
+						ResourceTypeDto ucot = new ResourceTypeDto()
+						{
+							BoeID = labor.BoeID,
+							LaborSpreads = spreads,
+							CLINID = labor.CLINID,
+							WBSID = labor.WBSID,
+							EndDate = labor.EndDate,
+							StartDate = labor.StartDate,
+							SpreadCurveID = labor.SpreadCurveID,
+							SpreadType = labor.SpreadType,
+							BusinessResourceCodeID = ucotResourceId,
+							ResourceID = ucotResourceId,
+							PerformingOrgID = ucotPerformingOrgId,
+							TaskElementId = labor.TaskElementId,
+							Id = newLaborTypeId,
+							ValueSpread = spreads.Sum(s => s.LaborSpreadValue)
+						};
+
+						ucotLabors.Add(ucot);
+					}
+				}
+			}
+
+			return ucotLabors;
 		}
 
 		/// <summary>
@@ -277,10 +365,16 @@ namespace GenBOE.ActionLogic.IO.Export
 				{
 					foreach (int? resourceId in resourceTypes.Select(x => x.ResourceID).Distinct())
 					{
+						string summaryFieldValue = "UCOT";
+						if (resourceId != ucotResourceId)
+						{
+							summaryFieldValue = workspace.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == resourceId)?.ResourceDesc ?? "NO RESOURCE DESCRIPTION";
+						}
+
 						TraceTableBoeDataGroup newChild = new TraceTableBoeDataGroup()
 						{
 							SummaryField = currentLevel.GetDescription(),
-							SummaryFieldValue = workspace.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == resourceId)?.ResourceName ?? "NO RESOURCE ID"
+							SummaryFieldValue = summaryFieldValue
 						};
 
 						ProcessLaborData(workspace, nextLevel, nextAdditionalLevels, resourceTypes.Where(x => x.ResourceID == resourceId).ToList(), newChild, includeYearlyData, groupingField, customGroupingField);
@@ -291,10 +385,16 @@ namespace GenBOE.ActionLogic.IO.Export
 				{
 					foreach (int? resourceId in resourceTypes.Select(x => x.ResourceID).Distinct())
 					{
+						string summaryFieldValue = "UCOT";
+						if (resourceId != ucotResourceId)
+						{
+							summaryFieldValue = workspace.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == resourceId)?.ResourceDesc ?? "NO RESOURCE DESCRIPTION";
+						}
+
 						TraceTableBoeDataGroup newChild = new TraceTableBoeDataGroup()
 						{
 							SummaryField = currentLevel.GetDescription(),
-							SummaryFieldValue = workspace.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == resourceId)?.ResourceDesc ?? "NO RESOURCE DESCRIPTION"
+							SummaryFieldValue = summaryFieldValue
 						};
 
 						ProcessLaborData(workspace, nextLevel, nextAdditionalLevels, resourceTypes.Where(x => x.ResourceID == resourceId).ToList(), newChild, includeYearlyData, groupingField, customGroupingField);
@@ -305,10 +405,16 @@ namespace GenBOE.ActionLogic.IO.Export
 				{
 					foreach (int? perfOrgId in resourceTypes.Select(x => x.PerformingOrgID).Distinct())
 					{
+						string summaryFieldValue = "UCOT";
+						if (perfOrgId != ucotPerformingOrgId)
+						{
+							summaryFieldValue = workspace.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == perfOrgId)?.ResourceDesc ?? "NO RESOURCE DESCRIPTION";
+						}
+
 						TraceTableBoeDataGroup newChild = new TraceTableBoeDataGroup()
 						{
 							SummaryField = currentLevel.GetDescription(),
-							SummaryFieldValue = workspace.PerformingOrgsUsedInBoes.FirstOrDefault(x => x.Id == perfOrgId)?.PerformingOrgName ?? "NO PERF ORG ID"
+							SummaryFieldValue = summaryFieldValue
 						};
 
 						ProcessLaborData(workspace, nextLevel, nextAdditionalLevels, resourceTypes.Where(x => x.PerformingOrgID == perfOrgId).ToList(), newChild, includeYearlyData, groupingField, customGroupingField);
