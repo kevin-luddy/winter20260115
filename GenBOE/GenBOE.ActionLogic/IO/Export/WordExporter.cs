@@ -839,7 +839,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			if (skillMixTablesContainer != null)
 			{
 				if ((selectedComponents.Contains(BoeCustomReportComponent.SkillMixTables) || !selectedComponents.Any())
-					&& Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, exportInputs.FullWorkspace.TMResourceRatesForWorkspace?.ToList(), task)))
+					&& Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, task)))
 				{
 					// populate Current/Legacy Skill Mix Table
 					SdtElement currentTableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_CurrentSkillMix);

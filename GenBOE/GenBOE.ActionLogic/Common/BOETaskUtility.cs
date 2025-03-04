@@ -22,10 +22,9 @@ namespace GenBOE.ActionLogic.Common
 		/// Checks the usage of active T&M rates in the task.
 		/// </summary>
 		/// <param name="ws">Full workspace.</param>
-		/// <param name="tmResourceRates">TM Resource Rates.</param>
 		/// <param name="taskElement">Task element</param>
 		/// <returns>If T&M Rates are being used in the Task.</returns>
-		public static bool IsUsingTMRates(FullWorkspace ws, IReadOnlyCollection<TMResourceRateDTO> tmResourceRates, BoeTaskElementDTO taskElement)
+		public static bool IsUsingTMRates(FullWorkspace ws, BoeTaskElementDTO taskElement)
 		{
 			if (taskElement == null)
 			{
@@ -35,11 +34,6 @@ namespace GenBOE.ActionLogic.Common
 			if (ws == null)
 			{
 				throw new ArgumentNullException(nameof(ws));
-			}
-
-			if (tmResourceRates == null)
-			{
-				throw new ArgumentNullException(nameof(tmResourceRates));
 			}
 
 			List<int> resourceIds = taskElement.taskElementLabors
@@ -65,7 +59,7 @@ namespace GenBOE.ActionLogic.Common
 				.Where(r => allResourceIds.Contains(r.Id))
 				.ToList();
 
-			return CompareResources(tmResourceRates, resources);
+			return CompareResources(ws.TMResourceRatesForWorkspace, resources);
 		}
 
 		/// <summary>

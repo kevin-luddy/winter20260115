@@ -446,9 +446,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                 boeExportTaskElement.IMS_ID = boeTaskElement.IMS_ID;
                 boeExportTaskElement.BOETaskElementOrder = boeTaskElement.BOETaskElementOrder;
                 boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
-				boeExportTaskElement.HasTMRates = BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, exportInputs.FullWorkspace.TMResourceRatesForWorkspace.ToList(), boeTaskElement);
 
-				if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, boeExportTaskElement.HasTMRates))
+				if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, boeTaskElement)))
 				{
 					boeExportTaskElement.SkillMixTable = boeTaskElement.SkillMixTable;
 					boeExportTaskElement.CommonDisclosureTable = boeTaskElement.CommonDisclosureTable;

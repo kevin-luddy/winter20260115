@@ -421,13 +421,12 @@ namespace GenBOE.ActionLogic.IO.Export
 			_ = exportInputs ?? throw new ArgumentNullException(nameof(exportInputs));
 
 			ExcelExportWorksheet toReturn = new ExcelExportWorksheet(SkillMixTableSheetName);
-			List<TMResourceRateDTO> tmRates = exportInputs.FullWorkspace.TMResourceRatesForWorkspace.ToList();
 
 			foreach (BoeDTO boe in exportInputs.Boes)
 			{
 				foreach (BoeTaskElementDTO task in exportInputs.TaskElements.Where(x => x.BoeID == boe.Id))
 				{
-					if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, tmRates, task)))
+					if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, task)))
 					{
 						ICollection<MoqTypeSelection> moqTypesForTask = exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).ToList();
 						
@@ -512,13 +511,12 @@ namespace GenBOE.ActionLogic.IO.Export
 		private ExcelExportWorksheet GetCommonDisclosureSkillMixTableData(BOEExportInputs exportInputs)
 		{
 			ExcelExportWorksheet toReturn = new ExcelExportWorksheet(CommonDisclosureSheetName);
-			List<TMResourceRateDTO> tmRates = exportInputs.FullWorkspace.TMResourceRatesForWorkspace.ToList();
 
 			foreach (BoeDTO boe in exportInputs.Boes)
 			{
 				foreach (BoeTaskElementDTO task in exportInputs.TaskElements.Where(x => x.BoeID == boe.Id))
 				{
-					if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, tmRates, task)))
+					if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, task)))
 					{
 						ICollection<MoqTypeSelection> moqTypesForTask = exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).ToList();
 
