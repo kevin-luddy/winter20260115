@@ -25,7 +25,7 @@ namespace GenBOE.ActionLogic.Common
 		/// <param name="laborTypes">Boe Task Element.</param>
 		/// <param name="retriever">Retriever object</param>
 		/// <returns>If T&M Rates are being used in the Task.</returns>
-		public static bool IsUsingTMRates(FullWorkspace ws, ICollection<TMResourceRateDTO> tmResourceRates, IReadOnlyCollection<BoeTaskElementDTO> laborTypes)
+		public static bool IsUsingTMRates(FullWorkspace ws, IReadOnlyCollection<TMResourceRateDTO> tmResourceRates, IReadOnlyCollection<BoeTaskElementDTO> laborTypes)
 		{
 			if (laborTypes == null)
 			{
@@ -71,7 +71,7 @@ namespace GenBOE.ActionLogic.Common
 		/// <param name="tmResourceRates">The T&M resource rates.</param>
 		/// <param name="resources">The resources.</param>
 		/// <returns>If T&M Rates are being used in the Task.</returns>
-		public static bool IsUsingTMRates(ICollection<TMResourceRateDTO> tmResourceRates, ICollection<ResourceDTO> resources)
+		public static bool IsUsingTMRates(IReadOnlyCollection<TMResourceRateDTO> tmResourceRates, ICollection<ResourceDTO> resources)
 		{
 			if (tmResourceRates == null)
 			{

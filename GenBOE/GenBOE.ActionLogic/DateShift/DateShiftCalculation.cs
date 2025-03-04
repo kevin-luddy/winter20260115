@@ -100,11 +100,6 @@ namespace GenBOE.ActionLogic.DateShift
 		private readonly IBOELaborControllerLogic boeLaborControllerLogic;
 
 		/// <summary>
-		/// Retriever
-		/// </summary>
-		private IRetriever retriever = null;
-
-		/// <summary>
 		/// Initializes a new instance of the <see cref="DateShiftCalculation"/> class.
 		/// </summary>
 		/// <param name="workspaceLoader">The workspace loader.</param>
@@ -126,7 +121,6 @@ namespace GenBOE.ActionLogic.DateShift
             this.boeStateMachine = GenBOEUnityContainer.Container.Resolve(typeof(IBOEStateMachine)) as IBOEStateMachine;
             this.factory = GenBOEUnityContainer.Container.Resolve(typeof(IFullObjectFactory)) as IFullObjectFactory;
 			this.boeLaborControllerLogic = GenBOEUnityContainer.Container.Resolve(typeof(IBOELaborControllerLogic)) as IBOELaborControllerLogic;
-			this.retriever = GenBOEUnityContainer.Container.Resolve(typeof(IRetriever)) as IRetriever;
 		}
 
 		/// <summary>
@@ -188,12 +182,10 @@ namespace GenBOE.ActionLogic.DateShift
 				// Check if we have Skill Mix enabled to adjust Skill Mix table data as needed
 				if (Utilities.ShowSkillMixForWorkspace(fullWorkspace?.CreationDate))
 				{
-					ICollection<TMResourceRateDTO> tmRates = retriever.GetTMResourceRates(fullWorkspace.Id);
-
 					// Iterate through each task and check for Skill Mix
 					foreach (BoeTaskElementDTO task in fullWorkspace?.TaskElements)
 					{
-						if (Utilities.ShowSkillMixForTask(fullWorkspace?.CreationDate, BOETaskUtility.IsUsingTMRates(fullWorkspace, tmRates, fullWorkspace.TaskElements)))
+						if (Utilities.ShowSkillMixForTask(fullWorkspace?.CreationDate, BOETaskUtility.IsUsingTMRates(fullWorkspace, fullWorkspace.TMResourceRatesForWorkspace, fullWorkspace.TaskElements)))
 						{
 							// Run Skill Mix update
 							ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours = fullWorkspace?.MoqTypeSelections
