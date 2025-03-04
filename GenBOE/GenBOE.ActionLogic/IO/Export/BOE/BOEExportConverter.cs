@@ -429,7 +429,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             
             IReadOnlyCollection<PerformingOrgDTO> performingOrgsFromDb = exportInputs.PerformingOrgsUsedInBoes;
 
-
 			foreach (BoeTaskElementDTO boeTaskElement in taskElements)
             {
 				BOEExportTaskElement boeExportTaskElement = new BOEExportTaskElement();
@@ -448,7 +447,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                 boeExportTaskElement.BOETaskElementOrder = boeTaskElement.BOETaskElementOrder;
                 boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
 				boeExportTaskElement.HasTMRates = BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, exportInputs.FullWorkspace.TMResourceRatesForWorkspace.ToList(), boeTaskElement);
-				;
 
 				if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, boeExportTaskElement.HasTMRates))
 				{
