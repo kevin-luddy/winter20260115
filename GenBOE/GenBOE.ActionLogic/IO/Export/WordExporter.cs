@@ -830,7 +830,8 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="skillMixTablesContainer">SDT Element Container for the Skill Mix tables</param>
 		/// <param name="taskContainer">SDT Element container for the MOQ Types</param>
 		/// <param name="exportInputs">Export Inputs</param>
-		protected void ProcessSkillMixTable(BOEExportTaskElement laborTaskElement, ICollection<BoeCustomReportComponent> selectedComponents, SdtElement taskContainer, BOEExportInputs exportInputs)
+		/// <param name="ucotFactor">UCOT Factor for the workspace</param>
+		protected void ProcessSkillMixTable(BOEExportTaskElement laborTaskElement, ICollection<BoeCustomReportComponent> selectedComponents, SdtElement taskContainer, BOEExportInputs exportInputs, decimal ucotFactor)
 		{
 			_ = laborTaskElement ?? throw new ArgumentNullException(nameof(laborTaskElement));
 			_ = selectedComponents ?? throw new ArgumentNullException(nameof(selectedComponents));
@@ -873,7 +874,6 @@ namespace GenBOE.ActionLogic.IO.Export
 								// Add the row to the table
 								currentInsertionRow.InsertAfterSelf(dataRow);
 								currentInsertionRow = dataRow;
-
 							}
 
 							// remove template row
@@ -927,6 +927,13 @@ namespace GenBOE.ActionLogic.IO.Export
 									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_ProposedHours), commonDisclosureRow.ProposedHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
 									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Rationale), commonDisclosureRow.Rationale);
 
+									// UCOT Hours is Space only
+									if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+									{
+										commonDisclosureRow.UCOTHours = commonDisclosureRow.ProposedHours * ucotFactor / 100;
+										WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_UCOTHours), commonDisclosureRow.UCOTHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
+									}
+
 									// Add the row to the table
 									currentInsertionRow.InsertAfterSelf(dataRow);
 									currentInsertionRow = dataRow;
@@ -945,12 +952,19 @@ namespace GenBOE.ActionLogic.IO.Export
 								string historicalHoursTotal = laborTaskElement.CommonDisclosureTable.Sum(x => x.HistoricalHours).ToString("F");
 								string boeSkillMixTotal = (laborTaskElement.CommonDisclosureTable.Where(x => x.Included).Sum(x => x.BOESkillMix ?? 0.0m) / 100m).ToString("P1");
 								string proposedHoursTotal = laborTaskElement.CommonDisclosureTable.Where(x => x.Included).Sum(x => x.ProposedHours).ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision));
+								string ucotHoursTotal = laborTaskElement.CommonDisclosureTable.Sum(x => x.UCOTHours).ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision));
 
 								// populate totals
 								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_HistoricalHours), historicalHoursTotal);
 								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_LaborSkillMix), 1.0m.ToString("P1"));
 								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_BoeSkillMix), boeSkillMixTotal);
 								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_ProposedHours), proposedHoursTotal);
+
+								// UCOT Hours is Space only
+								if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+								{
+									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_UCOTHoursTotal), ucotHoursTotal);
+								}
 							}
 						}
 					}

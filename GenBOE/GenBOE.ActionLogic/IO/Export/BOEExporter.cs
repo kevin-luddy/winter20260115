@@ -540,7 +540,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 emptyBOE = lastBOE.CloneNode(true) as SdtElement;
             }
 
-            if (boeExportModelViews.Any() || boeSummaryGridModelViews.Any())
+			if (boeExportModelViews.Any() || boeSummaryGridModelViews.Any())
             {
                 Collection<ResourceDTO> TravelResources = null;
 
@@ -1072,7 +1072,8 @@ namespace GenBOE.ActionLogic.IO.Export
                                                 this.PopulateSOWResourceTable(exportInputs, TableAlias2, boeExportModelView, resourceTypeDtos);
                                             }
 
-											this.ProcessSkillMixTable(taskElement, new Collection<BoeCustomReportComponent>(), (SdtElement)taskContainer.TaskContainer, exportInputs);
+											//SdtElement ucotHoursContainer = WordUtilities.GetTaggedElement(document, BOEExporterConstants.FieldName_UCOTHoursContainer);
+											this.ProcessSkillMixTable(taskElement, new Collection<BoeCustomReportComponent>(), (SdtElement)taskContainer.TaskContainer, exportInputs, ws.UCOTFactor);
 
 											break;
 
