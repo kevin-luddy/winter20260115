@@ -27,7 +27,7 @@ namespace IES.ActionLogic.Core.Validation
 		/// <summary>
 		/// No Commercial or Government Burden Pool selected and not in list of rates allowed to have both blank
 		/// </summary>
-		public const string RATEMAPPING_COMMERCIAL_AND_GOVERNMENT_BURDENPOOL_REQUIRED = "Commercial Burden Pool and Government Burden Pool are required for ProPricer Direct Rate Mapping.";
+		public const string RATEMAPPING_COMMERCIAL_AND_GOVERNMENT_BURDENPOOL_REQUIRED = "Commercial Burden Pool and Government Burden Pool are required for ProPricer Direct Rate Mapping. Can only be blank for Resources ******NL, Mileage, NLBESCCH, Travel Escalation, Travel Factor, or TRAVLESC";
 
 		/// <summary>
 		/// No Rate Type Selected
