@@ -2518,7 +2518,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		private ExcelExportWorksheet GetCLINsSheetExportData(BOEExportInputs exportInputs, ICollection<PickListDto> contractTypes)
 		{
 			// Get Workspace CLINs
-			Collection<FullClin> clins = exportInputs.ClinsNoMultiClin.ToCollection();
+			Collection<ClinDTO> clins = exportInputs.ClinsNoMultiClin.ToCollection();
 
 			// Reuse CLIN Exporter since formats are the same
 			ExcelExportWorksheet toReturn = this.clinExporter.GetExcelExportWorksheet(clins, contractTypes);
