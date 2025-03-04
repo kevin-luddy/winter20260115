@@ -37,7 +37,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
 		private ILocationDTODataLoader _LocationDTODataLoader;
 		private IOffloadRatesDTOLoader offloadRatesDTOLoader;
 		private IRteTemplateDataLoader rteTemplateDataLoader;
-		private IRetriever retriever;
 
 		/// <summary>
 		/// Default constructor
@@ -49,8 +48,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 			IMiscTravelRateDTOLoader inMiscTravelRateDTOLoader,
 			ILocationDTODataLoader inLocationDTODataLoader,
 			IOffloadRatesDTOLoader offloadRatesDTOLoader,
-			IRteTemplateDataLoader rteTemplateDataLoader,
-			IRetriever retriever
+			IRteTemplateDataLoader rteTemplateDataLoader
 			)
 		{
 			this.miscTravelRateDTOLoader = inMiscTravelRateDTOLoader;
@@ -61,7 +59,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 			this.offloadRatesDTOLoader = offloadRatesDTOLoader;
 			this.rteTemplateDataLoader = rteTemplateDataLoader;
-			this.retriever = retriever;
 		}
 
 		/// <summary>
@@ -240,10 +237,12 @@ namespace GenBOE.ActionLogic.WBS.BOE
 			}
 
 			this.ValidateTemplateMoqTypes(ws, inBOE, ValidationBOE);
+			List<ResourceDTO> resources = ws.ResourcesUsedInWsBoes.ToList();
+			List<TMResourceRateDTO> tmRates = ws.TMResourceRatesForWorkspace.ToList();
 
 			inBOE.TaskElements.ForEach(task =>
 			{
-				if (Utilities.ShowSkillMixForTask(ws.CreationDate, BOETaskUtility.IsUsingTMRates(ws.Id, task.taskElementLabors, retriever)))
+				if (Utilities.ShowSkillMixForTask(ws.CreationDate, BOETaskUtility.IsUsingTMRates(tmRates, resources)))
 				{
 					ICollection<string> errorMessages = new List<string>();
 					errorMessages = ActionLogicUtility.ValidateSkillMixTable(task.SkillMixTable);
