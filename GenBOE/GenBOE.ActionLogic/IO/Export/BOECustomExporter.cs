@@ -4559,7 +4559,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 boeExportTaskElement.IMS_ID = boeTaskElement.IMS_ID;
                 boeExportTaskElement.BOETaskElementOrder = boeTaskElement.BOETaskElementOrder;
 				bool skillMixEnabled = false;
-				boeExportTaskElement.HasTMRates = BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace.TMResourceRatesForWorkspace.ToList(), exportInputs.FullWorkspace.ResourcesUsedInWsBoes.ToList());
+				boeExportTaskElement.HasTMRates = BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, exportInputs.FullWorkspace.TMResourceRatesForWorkspace.ToList(), exportInputs.FullWorkspace.TaskElements);
 
 				if (exportInputs.Workspace.UsingTemplateBOE)
                 {

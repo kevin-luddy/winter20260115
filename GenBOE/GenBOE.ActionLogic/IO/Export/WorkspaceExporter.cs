@@ -422,13 +422,12 @@ namespace GenBOE.ActionLogic.IO.Export
 
 			ExcelExportWorksheet toReturn = new ExcelExportWorksheet(SkillMixTableSheetName);
 			List<TMResourceRateDTO> tmRates = exportInputs.FullWorkspace.TMResourceRatesForWorkspace.ToList();
-			List<ResourceDTO> resources = exportInputs.FullWorkspace.ResourcesUsedInWsBoes.ToList();
 
 			foreach (BoeDTO boe in exportInputs.Boes)
 			{
 				foreach (BoeTaskElementDTO task in exportInputs.TaskElements.Where(x => x.BoeID == boe.Id))
 				{
-					if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(tmRates, resources)))
+					if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, tmRates, exportInputs.FullWorkspace.TaskElements)))
 					{
 						ICollection<MoqTypeSelection> moqTypesForTask = exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).ToList();
 						
@@ -514,13 +513,12 @@ namespace GenBOE.ActionLogic.IO.Export
 		{
 			ExcelExportWorksheet toReturn = new ExcelExportWorksheet(CommonDisclosureSheetName);
 			List<TMResourceRateDTO> tmRates = exportInputs.FullWorkspace.TMResourceRatesForWorkspace.ToList();
-			List<ResourceDTO> resources = exportInputs.FullWorkspace.ResourcesUsedInWsBoes.ToList();
 
 			foreach (BoeDTO boe in exportInputs.Boes)
 			{
 				foreach (BoeTaskElementDTO task in exportInputs.TaskElements.Where(x => x.BoeID == boe.Id))
 				{
-					if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(tmRates, resources)))
+					if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, tmRates, exportInputs.FullWorkspace.TaskElements)))
 					{
 						ICollection<MoqTypeSelection> moqTypesForTask = exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).ToList();
 
