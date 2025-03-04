@@ -983,18 +983,14 @@ namespace GenBOE
 																																	new ResolvedParameter(typeof(IUserDTODataLoader)),
 																																	new ResolvedParameter(typeof(ICommonDataMapper)),
 																																	new ResolvedParameter(typeof(IVariableSelectBOEtoSumCalculation)),
-																																	new ResolvedParameter(typeof(TravelTripCostCalculation)),
-																																	new ResolvedParameter(typeof(IRetriever))
-																																	));
+																																	new ResolvedParameter(typeof(TravelTripCostCalculation))));
 			GenBOEUnityContainer.Container.RegisterType(typeof(BOEExportConverterRMS), typeof(BOEExportConverterRMS), GetLifetimeManager(), new InjectionConstructor(
 																																	new ResolvedParameter(typeof(IUserDTODataLoader)),
 																																	new ResolvedParameter(typeof(ICommonDataMapper)),
 																																	new ResolvedParameter(typeof(IVariableSelectBOEtoSumCalculation)),
 																																	new ResolvedParameter(typeof(TravelTripCostCalculation)),
 																																	new ResolvedParameter(typeof(MSTZoneTravelResourceDTODataLoader)),
-																																	new ResolvedParameter(typeof(RMSZoneTravelRatesFeesDataLoader)),
-																																	new ResolvedParameter(typeof(IRetriever))
-																																	));
+																																	new ResolvedParameter(typeof(RMSZoneTravelRatesFeesDataLoader))));
 			switch (SysConfig.CompanyMode)
 			{
 				case CompanyConfiguration.MST:
@@ -1017,9 +1013,8 @@ namespace GenBOE
 																																	new ResolvedParameter(typeof(ICommonDataMapper)),
 																																	new ResolvedParameter(typeof(IVariableSelectBOEtoSumCalculation)),
 																																	new ResolvedParameter(typeof(IActiveDirectoryUtilities)),
-																																	new ResolvedParameter(typeof(BOEExportConverterRMS)),
-																																	new ResolvedParameter(typeof(IRetriever))
-																																	));
+																																	new ResolvedParameter(typeof(BOEExportConverterRMS)))
+																																	);
 					break;
 
 				case CompanyConfiguration.SpaceSystems: // The ISGS behavior can be used here.  The SSC requirements are identical.  If this changes SSC specific classes should be created.
@@ -1028,12 +1023,10 @@ namespace GenBOE
 					GenBOEUnityContainer.Container.RegisterType(typeof(IBOEExporter), typeof(BOEExporter), GetLifetimeManager(), new InjectionConstructor(
 																																	new ResolvedParameter(typeof(IPermissionsDTODataLoader)),
 																																	new ResolvedParameter(typeof(IUserDTODataLoader)),
-																																	new ResolvedParameter(typeof(IRetriever)),
 																																	new ResolvedParameter(typeof(ICommonDataMapper)),
 																																	new ResolvedParameter(typeof(IVariableSelectBOEtoSumCalculation)),
 																																	new ResolvedParameter(typeof(IActiveDirectoryUtilities)),
-																																	new ResolvedParameter(typeof(BOEExportConverter))
-																																	));
+																																	new ResolvedParameter(typeof(BOEExportConverter))));
 					break;
 			}
 			
@@ -1044,13 +1037,11 @@ namespace GenBOE
 			GenBOEUnityContainer.Container.RegisterType(typeof(IBOEFormExporter), typeof(IBOEFormExporter), GetLifetimeManager(), new InjectionConstructor(
 																												new ResolvedParameter(typeof(IUserDTODataLoader)),
 																												new ResolvedParameter(typeof(IResourceDTODataLoader)),
-																												new ResolvedParameter(typeof(TMCalculator)),
-																												new ResolvedParameter(typeof(IRetriever))));
+																												new ResolvedParameter(typeof(TMCalculator))));
 			GenBOEUnityContainer.Container.RegisterType(typeof(PBOEFormExporter), typeof(PBOEFormExporter), GetLifetimeManager(), new InjectionConstructor(
 																												new ResolvedParameter(typeof(IUserDTODataLoader)),
 																												new ResolvedParameter(typeof(IResourceDTODataLoader)),
-																												new ResolvedParameter(typeof(TMCalculator)), 
-																												new ResolvedParameter(typeof(IRetriever))));
+																												new ResolvedParameter(typeof(TMCalculator))));
 
 			switch (SysConfig.CompanyMode)
 			{
@@ -1061,8 +1052,7 @@ namespace GenBOE
 																													new ResolvedParameter(typeof(TravelTripCostCalculation)),
 																													new ResolvedParameter(typeof(IVariableSelectBOEtoSumCalculation)),
 																													new ResolvedParameter(typeof(MSTZoneTravelResourceDTODataLoader)),
-																													new ResolvedParameter(typeof(RMSZoneTravelRatesFeesDataLoader)),
-																													new ResolvedParameter(typeof(IRetriever))));
+																													new ResolvedParameter(typeof(RMSZoneTravelRatesFeesDataLoader))));
 					break;
 
 				case CompanyConfiguration.SpaceSystems:
@@ -1070,8 +1060,7 @@ namespace GenBOE
 																														new ResolvedParameter(typeof(IUserDTODataLoader)),
 																														new ResolvedParameter(typeof(ICommonDataMapper)),
 																														new ResolvedParameter(typeof(TravelTripCostCalculation)),
-																														new ResolvedParameter(typeof(IVariableSelectBOEtoSumCalculation)), 
-																														new ResolvedParameter(typeof(IRetriever))));
+																														new ResolvedParameter(typeof(IVariableSelectBOEtoSumCalculation))));
 					break;
 
 				case CompanyConfiguration.ISGS:
@@ -1122,8 +1111,7 @@ namespace GenBOE
 																																				new ResolvedParameter(typeof(ILocationDTODataLoader)),
 																																				new ResolvedParameter(typeof(ICLINExporter)),
 																																				new ResolvedParameter(typeof(TravelUnitCostExporterRMS)),
-																																				new ResolvedParameter(typeof(TravelExtendedCostExporterRMS)),
-																																				new ResolvedParameter(typeof(IRetriever))));
+																																				new ResolvedParameter(typeof(TravelExtendedCostExporterRMS))));
 					break;
 
 				case CompanyConfiguration.SpaceSystems:
@@ -1139,8 +1127,7 @@ namespace GenBOE
 																																				new ResolvedParameter(typeof(WbsExporter)),
 																																				new ResolvedParameter(typeof(TravelTripCostCalculation)),
 																																				new ResolvedParameter(typeof(ILocationDTODataLoader)),
-																																				new ResolvedParameter(typeof(ICLINExporter)),
-																																				new ResolvedParameter(typeof(IRetriever))));
+																																				new ResolvedParameter(typeof(ICLINExporter))));
 					break;
 
 				case CompanyConfiguration.ISGS:
@@ -1333,8 +1320,7 @@ namespace GenBOE
 																																new ResolvedParameter(typeof(IMiscTravelRateDTOLoader)),
 																																new ResolvedParameter(typeof(ILocationDTODataLoader)),
 																																new ResolvedParameter(typeof(IOffloadRatesDTOLoader)),
-																																new ResolvedParameter(typeof(IRteTemplateDataLoader)),
-																																new ResolvedParameter(typeof(IRetriever))));
+																																new ResolvedParameter(typeof(IRteTemplateDataLoader))));
 					break;
 
 				default:
@@ -1345,8 +1331,7 @@ namespace GenBOE
 																																new ResolvedParameter(typeof(IMiscTravelRateDTOLoader)),
 																																new ResolvedParameter(typeof(ILocationDTODataLoader)),
 																																new ResolvedParameter(typeof(IOffloadRatesDTOLoader)),
-																																new ResolvedParameter(typeof(IRteTemplateDataLoader)), 
-																																new ResolvedParameter(typeof(IRetriever))));
+																																new ResolvedParameter(typeof(IRteTemplateDataLoader))));
 					break;
 			}
 
