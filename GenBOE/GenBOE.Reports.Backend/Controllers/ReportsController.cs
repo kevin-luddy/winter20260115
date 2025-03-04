@@ -10,15 +10,12 @@ namespace GenBOE.Reports.Backend.Controllers
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Linq;
-	using System.Reflection;
 	using System.Threading.Tasks;
 	using GenBOE.DataBridge.Core.DTO.Export.BOE;
 	using GenBOE.DataBridge.Core.WorkspaceExportFormat;
-	using GenBOE.Reports.Backend.Models;
 	using GenBOE.Reports.Backend.Services;
 	using IES.Common.Core.Configuration;
 	using IES.Common.Core.Enums;
-	using IES.Common.Core.Exceptions;
 	using IES.Common.Core.Interfaces;
 	using IES.Common.Core.OfficeUtilities;
 	using Microsoft.AspNetCore.Mvc;
@@ -28,7 +25,7 @@ namespace GenBOE.Reports.Backend.Controllers
 	[Route("Reports")]
 	public class ReportsController : IES.Common.Core.IESController
 	{
-		private BoeExportService boeExportService;
+		private IBoeExportService boeExportService;
 
 		private static readonly string[] Summaries = new[]
 		{
@@ -42,12 +39,15 @@ namespace GenBOE.Reports.Backend.Controllers
 		/// <param name="boeExportService">word export service</param>
 		/// <param name="securityInformation">security information</param>
 		/// <param name="configuration">configuration</param>
-		public ReportsController(ILogger<ReportsController> logger, BoeExportService boeExportService,
+		public ReportsController(ILogger<ReportsController> logger, IBoeExportService boeExportService,
 			ISecurityInformation securityInformation, IConfiguration configuration) : base(logger, securityInformation, configuration)
 		{
 			this.boeExportService = boeExportService;
 		}
 
+		/// <summary>
+		/// Exports BOE(s) to Word document, may be zipped
+		/// </summary>
 		/// <param name="workspace">The current workspace</param>
 		/// <param name="selectedComponents">List of BOEs to be included in the report; if null, then include ALL</param>
 		/// <param name="isCustomExport">Flag indicating wheter the export is a custom export</param>
@@ -62,23 +62,24 @@ namespace GenBOE.Reports.Backend.Controllers
 			ICollection<BoeCustomReportComponent> selectedComponents,
 			bool isCustomExport,
 			WorkspaceExportFormatDTO wsExportFormatDTO,
-			//BOEExportInputs exportInputs,
+			BOEExportInputs exportInputs,
 			ICollection<BOEExportModelView> boeExportModelViews,
 			List<BOESummaryGridModelView> boeSummaryGridModelViews,
 			bool segmentedOutput)
 		{
 			try
 			{
-				//this.boeExportService.ExportBoeToWord(
-				//	);
-				string serverFileName = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "/Templates/Export/RateCodesImportExample.xlsx");
+				string exportedFileName = this.boeExportService.ExportBoeToWord(selectedComponents, isCustomExport, wsExportFormatDTO,
+					exportInputs, boeExportModelViews, boeSummaryGridModelViews, segmentedOutput);
+
+				//string serverFileName = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "/Templates/Export/RateCodesImportExample.xlsx");
 				//RateGridModelView rates = this.controllerLogic.GetRatesByVersion(id, this.Logic.Revisions);
 
 				// Call the export function and get back the file name of the populated file.
 				//string exportedFileName = RateCodeExporter.ExportToExcelFile(serverFileName, rates);
-				string exportedFileName = "";
+
 				// Generate a custom ActionResult to cause a file download to the client
-				string fileName = "RateCodesExport.xlsx";
+				string fileName = Path.GetFileName(exportedFileName);
 				// Generate a custom ActionResult to cause a file download to the client
 				FileStream fs = new(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
@@ -87,7 +88,7 @@ namespace GenBOE.Reports.Backend.Controllers
 					contentType: ExportFileDownloadBase.GetContentType(fileName),
 					fileDownloadName: fileName);
 			}
-			catch (GeneralAppException e)
+			catch (Exception e)
 			{
 				this.log.LogError(e, "Unknown Exception.");
 				return await this.CreateTextFileWithErrorMessage(e.Message);
