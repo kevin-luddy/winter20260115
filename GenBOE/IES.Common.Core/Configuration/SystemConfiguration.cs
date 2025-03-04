@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2025 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -34,8 +34,13 @@ namespace IES.Common.Core.Configuration
 			//get the company configuration string if it doesn't contain a valid value set to IS&GS
 			// Note: This MUST NOT use the ConfigurationUtilities methods or an infinite loop condition will occur
 			string sCompany = ConfigurationManager.AppSettings["CompanyConfiguration"];
-			CompanyMode = string.IsNullOrEmpty(sCompany) ? CompanyConfiguration.ISGS : sCompany.GetEnumeratedValue<CompanyConfiguration>(CompanyConfiguration.ISGS);
+			if (string.IsNullOrEmpty(sCompany))
+			{
+				// try to pull from appsettings.json
+				sCompany = ApplicationConfigurationBase.Configuration["CompanyConfiguration"];
+			}
 
+			CompanyMode = string.IsNullOrEmpty(sCompany) ? CompanyConfiguration.ISGS : sCompany.GetEnumeratedValue<CompanyConfiguration>(CompanyConfiguration.ISGS);
 			CompanyConfigurationSettings = SystemConfigurationSection.Section[CompanyMode];
 		}
 

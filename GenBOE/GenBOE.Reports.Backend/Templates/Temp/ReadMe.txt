@@ -1,0 +1,1 @@
+﻿This file is needed so logs directory is built when publishing.  Otherwise, bad things happen (App will not start in production).
