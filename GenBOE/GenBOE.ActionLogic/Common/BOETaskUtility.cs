@@ -21,9 +21,9 @@ namespace GenBOE.ActionLogic.Common
 		/// <summary>
 		/// Checks the usage of active T&M rates in the task.
 		/// </summary>
-		/// <param name="workspaceId">Workspace Id.</param>
+		/// <param name="ws">Full workspace.</param>
 		/// <param name="laborTypes">Boe Task Element.</param>
-		/// <param name="retriever">Retriever object</param>
+		/// <param name="laborTypes">Task elements</param>
 		/// <returns>If T&M Rates are being used in the Task.</returns>
 		public static bool IsUsingTMRates(FullWorkspace ws, IReadOnlyCollection<TMResourceRateDTO> tmResourceRates, IReadOnlyCollection<BoeTaskElementDTO> laborTypes)
 		{

@@ -427,10 +427,9 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
             ICollection<BoeTaskElementDTO> taskElements = exportInputs.TaskElements.Where(x => x.BoeID == boe.Id).ToList();
             
-            IReadOnlyCollection<ResourceDTO> resourcesForLabors = exportInputs.ResourcesUsedInWsBoes;
             IReadOnlyCollection<PerformingOrgDTO> performingOrgsFromDb = exportInputs.PerformingOrgsUsedInBoes;
 
-			bool hasTMRatesForWorkspace = BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace.TMResourceRatesForWorkspace.ToList(), resourcesForLabors?.ToList());
+			bool hasTMRatesForWorkspace = BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, exportInputs.FullWorkspace.TMResourceRatesForWorkspace.ToList(), exportInputs.FullWorkspace.TaskElements);
 
 			foreach (BoeTaskElementDTO boeTaskElement in taskElements)
             {
@@ -526,7 +525,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
                     if (laborType.ResourceID.HasValue)
                     {
-                        ResourceDTO resource = resourcesForLabors.First(x => x.Id == laborType.ResourceID.Value);
+                        ResourceDTO resource = exportInputs.ResourcesUsedInWsBoes.First(x => x.Id == laborType.ResourceID.Value);
 
 						if (exportFormatDTO.ExportFormat.TemplateType == ExcelReportTemplateType.DS_ES_STANDARD_PORTRAIT_WITH_COST ||
                             exportFormatDTO.ExportFormat.TemplateType == ExcelReportTemplateType.DS_ES_STANDARD_PORTRAIT_WITHOUT_COST ||
