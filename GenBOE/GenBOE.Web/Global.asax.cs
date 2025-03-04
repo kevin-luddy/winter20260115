@@ -1001,7 +1001,6 @@ namespace GenBOE
 					GenBOEUnityContainer.Container.RegisterType(typeof(BOEExporter), typeof(BOEExporter), GetLifetimeManager(), new InjectionConstructor(
 																																	new ResolvedParameter(typeof(IPermissionsDTODataLoader)),
 																																	new ResolvedParameter(typeof(IUserDTODataLoader)),
-																																	new ResolvedParameter(typeof(IRetriever)),
 																																	new ResolvedParameter(typeof(ICommonDataMapper)),
 																																	new ResolvedParameter(typeof(IVariableSelectBOEtoSumCalculation)),
 																																	new ResolvedParameter(typeof(IActiveDirectoryUtilities)),
@@ -1309,8 +1308,7 @@ namespace GenBOE
 																																new ResolvedParameter(typeof(IMSTZoneTravelValidator)),
 																																new ResolvedParameter(typeof(RMSZoneTravelRatesFeesDataLoader)),
 																																new ResolvedParameter(typeof(IOffloadRatesDTOLoader)),
-																																new ResolvedParameter(typeof(IRteTemplateDataLoader)),
-																																new ResolvedParameter(typeof(IRetriever))));
+																																new ResolvedParameter(typeof(IRteTemplateDataLoader))));
 					break;
 				case CompanyConfiguration.SpaceSystems:
 					GenBOEUnityContainer.Container.RegisterType(typeof(IValidateBOE), typeof(ValidateBOESpaceSystems), GetLifetimeManager(), new InjectionConstructor(
