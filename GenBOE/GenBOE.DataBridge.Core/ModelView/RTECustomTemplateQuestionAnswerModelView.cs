@@ -89,10 +89,5 @@
 		/// Gets or sets the enumeration for Source Ids.
 		/// </summary>
 		internal IEnumerable<int> SourceIdEnum { get; set; }
-
-		/// <summary>
-		/// Gets or sets the List of Source Ids (used during retrieval from database).
-		/// </summary>
-		internal ICollection<int> SourceIdList { get; set; }
 	}
 }

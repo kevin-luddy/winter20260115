@@ -1,0 +1,66 @@
+﻿namespace GenBOE.DataBridge.Core.DTO
+{
+	using System;
+
+	/// <summary>
+	/// DTO for MOQ Type Selection Table Data Resource Hours.
+	/// </summary>
+	[Serializable()]
+	public class MOQTypeSelectionTableDataResourceHoursDTO
+	{
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		public MOQTypeSelectionTableDataResourceHoursDTO()
+		{
+			MOQTypeSelectionTableDataResourceHoursId = -1;
+			ResourceName = string.Empty;
+			BRCName = string.Empty;
+			WbsHours = 0;
+			TotalHours = 0;
+			MOQTypeSelectionTableDataId = 0;
+			BOETaskElementID = -1;
+			BOEID = -1;
+		}
+
+		/// <summary>
+		/// MOQ Type Selection Table Data Resource Hours primary key
+		/// </summary>
+		public int MOQTypeSelectionTableDataResourceHoursId { get; set; }
+
+		/// <summary>
+		/// Resource
+		/// </summary>
+		public string ResourceName { get; set; }
+
+		/// <summary>
+		/// BRC name
+		/// </summary>
+		public string BRCName { get; set; }
+
+		/// <summary>
+		/// Wbs Hours
+		/// </summary>
+		public decimal WbsHours { get; set; }
+
+		/// <summary>
+		/// Total Hours
+		/// </summary>
+		public decimal TotalHours { get; set; }
+
+		/// <summary>
+		/// MOQ Type Selection Table Data Id FK
+		/// </summary>
+		public int MOQTypeSelectionTableDataId { get; set; }
+
+		/// <summary>
+		/// BOE Task Element Id FK
+		/// </summary>
+		public int BOETaskElementID { get; set; }
+
+		/// <summary>
+		/// BOE Id FK
+		/// </summary>
+		public int BOEID { get; set; }
+	}
+}

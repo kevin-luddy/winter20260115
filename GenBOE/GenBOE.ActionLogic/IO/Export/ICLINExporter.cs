@@ -6,18 +6,17 @@
 
 namespace GenBOE.ActionLogic.IO.Export
 {
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Diagnostics.CodeAnalysis;
-    using GenBOE.Dtos;
-    using GenBOE.Objects;
-    using IES.Common.OfficeUtilities;
-    using IES.Common.PickList;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Diagnostics.CodeAnalysis;
+	using GenBOE.Dtos;
+	using IES.Common.OfficeUtilities;
+	using IES.Common.PickList;
 
-    /// <summary>
-    /// Interface for CLIN exporters
-    /// </summary>
-    public interface ICLINExporter
+	/// <summary>
+	/// Interface for CLIN exporters
+	/// </summary>
+	public interface ICLINExporter
     {
         /// <summary>
         /// Exports CLINs to an Excel file.
@@ -29,7 +28,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <returns>
         /// Path to the exported Clin file
         /// </returns>
-        string ExportToExcelFile(string templateFileLocation, Collection<FullClin> clinDTOs, WorkspaceDTO workspace, ICollection<PickListDto> contractTypes);
+        string ExportToExcelFile(string templateFileLocation, Collection<ClinDTO> clinDTOs, WorkspaceDTO workspace, ICollection<PickListDto> contractTypes);
 
         /// <summary>
         /// Gets the excel export worksheet.
@@ -38,6 +37,6 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="contractTypes">The contract types.</param>
         /// <returns>New Excel Export worksheet.</returns>
         [SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists", Justification = "ExcelExportWorksheet's base class is List<T> but Collection<T> does not have AddRange()")]
-        ExcelExportWorksheet GetExcelExportWorksheet(Collection<FullClin> clinDTOs, ICollection<PickListDto> contractTypes);
+        ExcelExportWorksheet GetExcelExportWorksheet(Collection<ClinDTO> clinDTOs, ICollection<PickListDto> contractTypes);
     }        
 }

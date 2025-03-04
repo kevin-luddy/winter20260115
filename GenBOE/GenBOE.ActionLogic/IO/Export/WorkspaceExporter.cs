@@ -2493,7 +2493,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		private ExcelExportWorksheet GetWBSSheetExportData(BOEExportInputs exportInputs)
 		{
 			// Get Workspace WBSs
-			IReadOnlyCollection<FullWbs> wbs = exportInputs.WbsElementsNoMultiWbs;
+			IReadOnlyCollection<WbsDTO> wbs = exportInputs.WbsElementsNoMultiWbs;
 
 			// Get WBSID to CLIN String mappings
 			Dictionary<int, string> clinStrings = (from w in wbs

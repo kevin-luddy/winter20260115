@@ -234,7 +234,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
         /// <summary>
         /// Clins belonging to the Workspace without Multi Clin
         /// </summary>
-        public IReadOnlyCollection<FullClin> ClinsNoMultiClin { get { return this.FullWorkspace.ClinsNoMultiClin; } }
+        public IReadOnlyCollection<ClinDTO> ClinsNoMultiClin { get { return this.FullWorkspace.ClinsNoMultiClin; } }
 
         /// <summary>
         /// Gets the WBS elements.
@@ -244,7 +244,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
         /// <summary>
         /// Wbs Elements belonging to the Workspace without Multi
         /// </summary>
-        public IReadOnlyCollection<FullWbs> WbsElementsNoMultiWbs { get { return this.FullWorkspace.WbsElementsNoMultiWbs; } }
+        public IReadOnlyCollection<WbsDTO> WbsElementsNoMultiWbs { get { return this.FullWorkspace.WbsElementsNoMultiWbs; } }
 
         /// <summary>
         /// Gets the boe mapping with approver responses.

@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GenBOE.Models.Standard\GenBOE.Models.Standard.csproj" />
+    <ProjectReference Include="..\GenTRAC.DataBridge.Core\GenTRAC.DataBridge.Core.csproj" />
     <ProjectReference Include="..\IES.Common.Core\IES.Common.Core.csproj" />
   </ItemGroup>
 
