@@ -1410,9 +1410,9 @@ namespace GenBOE.ActionLogic.IO.Export
                 RemoveUnusedFieldsFromResourceTypesTable(exportInputs, boeExportModelView, laborTaskContainerTemplateElement);
 
                 SdtElement currentLaborTaskContainerInsertionPoint = laborTaskContainerTemplateElement;
-                
-                //order the elements by order id then the creation date.
-                allLaborTaskElementsFull = allLaborTaskElementsFull.OrderBy(x => x.BOETaskElementOrder).ThenBy(y => y.BOETaskElementID).ToList();
+
+				//order the elements by order id then the creation date.
+				allLaborTaskElementsFull = allLaborTaskElementsFull.OrderBy(x => x.BOETaskElementOrder).ThenBy(y => y.BOETaskElementID).ToList();
                 foreach (BOEExportTaskElement laborTaskElement in allLaborTaskElementsFull)
                 {
 					//  create (clone) a new container for this task
@@ -1432,7 +1432,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     this.ProcessLaborTaskResources(containerElement, exportInputs, laborTaskElement, allLaborTaskElements, selectedComponents, exportBoe.IsMultiClinWbs);
 
 					ICollection<BoeTaskElementDTO> taskElements = exportInputs.TaskElements.Where(x => x.BoeID == boeExportModelView.BoeID).ToList();
-					this.ProcessSkillMixTable(laborTaskElement, selectedComponents, containerElement, exportInputs, taskElements.FirstOrDefault(x => x.Id == laborTaskElement.BOETaskElementID.Value));
+					this.ProcessSkillMixTable(laborTaskElement, selectedComponents, containerElement, exportInputs, taskElements.FirstOrDefault(x => x.Id == laborTaskElement.BOETaskElementID.Value), ws.UCOTFactor);
 
 					#endregion
 
