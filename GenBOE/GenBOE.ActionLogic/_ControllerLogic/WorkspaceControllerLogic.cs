@@ -1775,7 +1775,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			if (!this.CustomFieldAlreadyExists(ProPricerCFConstants.PROPRICER_CF_FUNCTION, existingCustomFields))
 			{
-				CustomFieldDTO project = new CustomFieldDTO
+				CustomFieldDTO function = new CustomFieldDTO
 				{
 					Id = -5,
 					WorkspaceID = wsId,
@@ -1786,17 +1786,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					Updateable = UpdateType.Upsert
 				};
 
-				int? projectId = this.customFieldLoader.Save(project);
-
-				customFieldValues.Add(new CustomFieldValueDTO
-				{
-					Updateable = UpdateType.Upsert,
-					CustomFieldID = projectId.Value,
-					CustomFieldValueName = "USER1",
-					CustomFieldValueDescription = "User Defined",
-					Id = -6,
-					CustomFieldValueID = -6
-				});
+				this.customFieldLoader.Save(function);
 			}
 
 			this.customFieldValueLoader.Save(customFieldValues);
