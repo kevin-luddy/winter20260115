@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace GenBOE.DataBridge.Core.DTO
+namespace GenBOE.DataBridge.Core.DTO.Travel
 {
 	using System;
 	using System.Collections.Generic;
@@ -19,7 +19,7 @@ namespace GenBOE.DataBridge.Core.DTO
 	{
 		public MSTTravelTripType()
 		{
-			this.Id = -1;
+			Id = -1;
 			GroupID = null;
 			CustomFieldValueContainers = new Collection<CustomFieldValueContainer>();
 		}

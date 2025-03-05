@@ -4,12 +4,13 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace GenBOE.DataBridge.Core.WorkspaceExportFormat
+namespace GenBOE.DataBridge.Core.Loaders
 {
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
+	using GenBOE.DataBridge.Core;
 	using GenBOE.Models;
 	using IES.Common;
 	using IES.Common.Core;
@@ -38,7 +39,7 @@ namespace GenBOE.DataBridge.Core.WorkspaceExportFormat
 		{
 			Collection<WorkspaceExportFormatDTO> toReturn = new Collection<WorkspaceExportFormatDTO>();
 
-			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			using (StopwatchTimer sw = new StopwatchTimer(Log))
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
@@ -62,7 +63,7 @@ namespace GenBOE.DataBridge.Core.WorkspaceExportFormat
 									IsActive = t.IsActive,
 									UpdateDate = t.UpdateDT,
 									IsAvailableToAllWorkspaces = t.IsAvailableToAllWorkspaces
-								}).Distinct().ToCollection<WorkspaceExportFormatDTO>();
+								}).Distinct().ToCollection();
 				}
 
 				/*
@@ -92,7 +93,7 @@ namespace GenBOE.DataBridge.Core.WorkspaceExportFormat
 		{
 			Collection<WorkspaceExportFormatDTO> toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			using (StopwatchTimer sw = new StopwatchTimer(Log))
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
@@ -111,7 +112,7 @@ namespace GenBOE.DataBridge.Core.WorkspaceExportFormat
 									IsActive = t.IsActive,
 									UpdateDate = t.UpdateDT,
 									IsAvailableToAllWorkspaces = t.IsAvailableToAllWorkspaces
-								}).ToCollection<WorkspaceExportFormatDTO>();
+								}).ToCollection();
 				}
 			}
 
@@ -123,12 +124,12 @@ namespace GenBOE.DataBridge.Core.WorkspaceExportFormat
 		/// </summary>
 		/// <param name="templateID">The template ID of the workspace export format.</param>
 		/// <returns>The name of the WS Export Format</returns>
-		
+
 		public string GetNameById(int templateID)
 		{
 			string exportName;
 
-			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			using (StopwatchTimer sw = new StopwatchTimer(Log))
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
@@ -151,7 +152,7 @@ namespace GenBOE.DataBridge.Core.WorkspaceExportFormat
 		{
 			ICollection<WorkspaceExportFormatDTO> toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			using (StopwatchTimer sw = new StopwatchTimer(Log))
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
@@ -171,7 +172,7 @@ namespace GenBOE.DataBridge.Core.WorkspaceExportFormat
 									IsActive = t.IsActive,
 									UpdateDate = t.UpdateDT,
 									IsAvailableToAllWorkspaces = t.IsAvailableToAllWorkspaces
-								}).ToCollection<WorkspaceExportFormatDTO>();
+								}).ToCollection();
 				}
 			}
 
@@ -188,7 +189,7 @@ namespace GenBOE.DataBridge.Core.WorkspaceExportFormat
 		{
 			Collection<int> toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			using (StopwatchTimer sw = new StopwatchTimer(Log))
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
@@ -214,7 +215,7 @@ namespace GenBOE.DataBridge.Core.WorkspaceExportFormat
 		{
 			Collection<int> toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			using (StopwatchTimer sw = new StopwatchTimer(Log))
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
@@ -241,7 +242,7 @@ namespace GenBOE.DataBridge.Core.WorkspaceExportFormat
 		{
 			Collection<int> toReturn = null;
 
-			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			using (StopwatchTimer sw = new StopwatchTimer(Log))
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
@@ -301,7 +302,7 @@ namespace GenBOE.DataBridge.Core.WorkspaceExportFormat
 				throw new ArgumentNullException(nameof(inWorkspaceIds));
 			}
 
-			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			using (StopwatchTimer sw = new StopwatchTimer(Log))
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
@@ -344,7 +345,7 @@ namespace GenBOE.DataBridge.Core.WorkspaceExportFormat
 		/// <param name="templateId">Template to delete</param>
 		public void DeleteTemplateForAllWorkspaces(int templateId)
 		{
-			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			using (StopwatchTimer sw = new StopwatchTimer(Log))
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
@@ -367,7 +368,7 @@ namespace GenBOE.DataBridge.Core.WorkspaceExportFormat
 				throw new ArgumentNullException(nameof(inWorkspaceIds));
 			}
 
-			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			using (StopwatchTimer sw = new StopwatchTimer(Log))
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
@@ -394,7 +395,7 @@ namespace GenBOE.DataBridge.Core.WorkspaceExportFormat
 				throw new ArgumentNullException(nameof(inTemplatesForWorkspaces));
 			}
 
-			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			using (StopwatchTimer sw = new StopwatchTimer(Log))
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{

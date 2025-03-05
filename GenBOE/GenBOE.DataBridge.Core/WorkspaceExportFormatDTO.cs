@@ -5,8 +5,10 @@ using System.Web;
 using System.IO;
 using IES.Common.Core.Models;
 using IES.Common.Core.Enums;
+using System.Reflection;
+using GenBOE.DataBridge.Core.Common;
 
-namespace GenBOE.DataBridge.Core.WorkspaceExportFormat
+namespace GenBOE.DataBridge.Core
 {
 	[ExcludeFromCodeCoverage]
 	[Serializable()]
@@ -63,30 +65,30 @@ namespace GenBOE.DataBridge.Core.WorkspaceExportFormat
 		/// </summary>
 		private string templateFilePath = null;
 
-		///// <summary>
-		///// Get the location of the file on disk.  This is a temporary copy that is flushed whenever there is a build
-		///// but it allows copying to take place for exports, etc.
-		///// </summary>
-		//public string PhysicalFilePathCache
-		//{
-		//	get
-		//	{
-		//		// check to see if the temporary file already exists
-		//		string physicalFileLocation = templateFilePath == null ? HttpContext.Current.Server.MapPath("~/Templates/Export/Temp/" + ExportFormatName +
-		//			(ExportFormat.TemplateType == ExcelReportTemplateType.MASTER ||
-		//			  ExportFormat.TemplateType == ExcelReportTemplateType.LMSI_STANDARD_LANDSCAPE
-		//			  ? ".docx" : ".xslx")) : templateFilePath;
+		/// <summary>
+		/// Get the location of the file on disk.  This is a temporary copy that is flushed whenever there is a build
+		/// but it allows copying to take place for exports, etc.
+		/// </summary>
+		public string PhysicalFilePathCache
+		{
+			get
+			{
+				// check to see if the temporary file already exists
+				string physicalFileLocation = templateFilePath == null ? Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), ImportExportConstants.EXPORT_PATH) + ExportFormatName +
+					(ExportFormat.TemplateType == ExcelReportTemplateType.MASTER ||
+					  ExportFormat.TemplateType == ExcelReportTemplateType.LMSI_STANDARD_LANDSCAPE
+					  ? ".docx" : ".xslx") : templateFilePath;
 
-		//		//added back in for 2.4, will be updated to not create temp files in 2.5
-		//		//currently required for templates uploaded via UI
-		//		if (!File.Exists(physicalFileLocation))
-		//		{
-		//			// not found, create it
-		//			File.WriteAllBytes(physicalFileLocation, FileData);
-		//		}
+				//added back in for 2.4, will be updated to not create temp files in 2.5
+				//currently required for templates uploaded via UI
+				if (!File.Exists(physicalFileLocation))
+				{
+					// not found, create it
+					File.WriteAllBytes(physicalFileLocation, FileData);
+				}
 
-		//		return physicalFileLocation;
-		//	}
-		//}
+				return physicalFileLocation;
+			}
+		}
 	}
 }

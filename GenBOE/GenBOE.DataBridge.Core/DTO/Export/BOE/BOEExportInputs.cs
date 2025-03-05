@@ -6,8 +6,9 @@
 	using System.Text;
 	using System.Threading.Tasks;
 	using Dapper;
+	using GenBOE.DataBridge.Core;
+	using GenBOE.DataBridge.Core.DTO.Travel;
 	using GenBOE.DataBridge.Core.ModelView;
-	using GenBOE.DataBridge.Core.WorkspaceExportFormat;
 	using GenTRAC.DataBridge.Core.DTO.User;
 	using IES.Common.Core.PickList;
 	using Microsoft.Extensions.Logging;
@@ -187,6 +188,11 @@
 		public IReadOnlyCollection<TravelDTO> Travels { get; set; }
 
 		/// <summary>
+		/// Locations used by trips
+		/// </summary>
+		public IReadOnlyCollection<LocationDTO> LocationsUsedByTrips { get; set; }
+
+		/// <summary>
 		/// Gets the materials.
 		/// </summary>
 		public IReadOnlyCollection<MaterialDTO> Materials { get; set; }
@@ -206,5 +212,19 @@
 		/// Gets the MOQ Types
 		/// </summary>
 		public IReadOnlyCollection<MoqTypeSelection> MOQTypes { get; set; }
+
+		/// <summary>
+		/// Clears the RTE Overrides List
+		/// </summary>
+		public void ClearRteOverrides()
+		{
+			// release all references inside original list to free up memory.
+			if (this.rteTemplatesOverridesCollection != null)
+			{
+				this.rteTemplatesOverridesCollection.Clear();
+			}
+
+			this.RTETemplatesOverrides = new List<RTECustomTemplateQuestionAnswerModelView>().AsReadOnly();
+		}
 	}
 }

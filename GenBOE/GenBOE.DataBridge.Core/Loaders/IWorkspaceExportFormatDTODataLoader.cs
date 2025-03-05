@@ -4,9 +4,10 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace GenBOE.DataBridge.Core.WorkspaceExportFormat
+namespace GenBOE.DataBridge.Core.Loaders
 {
 	using System.Collections.ObjectModel;
+	using GenBOE.DataBridge.Core;
 	using IES.Common.Core.Loaders;
 
 	public interface IWorkspaceExportFormatDTODataLoader : IDataLoader<WorkspaceExportFormatDTO>

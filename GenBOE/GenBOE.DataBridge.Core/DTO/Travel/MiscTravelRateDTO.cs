@@ -3,7 +3,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace GenBOE.DataBridge.Core.DTO
+namespace GenBOE.DataBridge.Core.DTO.Travel
 {
 	using System;
 	using System.Diagnostics.CodeAnalysis;

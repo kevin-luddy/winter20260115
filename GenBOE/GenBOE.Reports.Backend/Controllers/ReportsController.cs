@@ -11,8 +11,9 @@ namespace GenBOE.Reports.Backend.Controllers
 	using System.IO;
 	using System.Linq;
 	using System.Threading.Tasks;
+	using GenBOE.DataBridge.Core;
 	using GenBOE.DataBridge.Core.DTO.Export.BOE;
-	using GenBOE.DataBridge.Core.WorkspaceExportFormat;
+	using GenBOE.DataBridge.Core.DTO.FullObjects;
 	using GenBOE.Reports.Backend.Services;
 	using IES.Common.Core.Configuration;
 	using IES.Common.Core.Enums;
@@ -58,7 +59,7 @@ namespace GenBOE.Reports.Backend.Controllers
 		/// <param name="segmentedOutput">Should the output be broken into segments and zipped</param>
 		[HttpPost("[action]")]
 		public async Task<IActionResult> ExportBoeToWord(
-			//FullWorkspace workspace,
+			FullWorkspace workspace,
 			ICollection<BoeCustomReportComponent> selectedComponents,
 			bool isCustomExport,
 			WorkspaceExportFormatDTO wsExportFormatDTO,
@@ -67,29 +68,51 @@ namespace GenBOE.Reports.Backend.Controllers
 			List<BOESummaryGridModelView> boeSummaryGridModelViews,
 			bool segmentedOutput)
 		{
+			string tempFileLocation = string.Empty;
+			string exportedFileName = string.Empty;
 			try
 			{
-				string exportedFileName = this.boeExportService.ExportBoeToWord(selectedComponents, isCustomExport, wsExportFormatDTO,
-					exportInputs, boeExportModelViews, boeSummaryGridModelViews, segmentedOutput);
+				FileStream fs;
+				if (segmentedOutput)
+				{
+					tempFileLocation = this.boeExportService.ExportBoeToZip(workspace, selectedComponents, isCustomExport, wsExportFormatDTO,
+						exportInputs, boeExportModelViews, boeSummaryGridModelViews);
 
-				//string serverFileName = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "/Templates/Export/RateCodesImportExample.xlsx");
-				//RateGridModelView rates = this.controllerLogic.GetRatesByVersion(id, this.Logic.Revisions);
-
-				// Call the export function and get back the file name of the populated file.
-				//string exportedFileName = RateCodeExporter.ExportToExcelFile(serverFileName, rates);
+					fs = new(tempFileLocation, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+					exportedFileName = string.Format("genBOEExport-{0}.zip", workspace.WorkspaceName).Replace(",", string.Empty);
+				}
+				else
+				{
+					tempFileLocation = Path.GetTempFileName();
+					fs = new(tempFileLocation, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+					
+					exportedFileName = this.boeExportService.ExportBoeToWord(fs, workspace, selectedComponents, isCustomExport, wsExportFormatDTO,
+						exportInputs, boeExportModelViews, boeSummaryGridModelViews);
+				}
 
 				// Generate a custom ActionResult to cause a file download to the client
-				string fileName = Path.GetFileName(exportedFileName);
-				// Generate a custom ActionResult to cause a file download to the client
-				FileStream fs = new(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+				
+				fs.Seek(0, SeekOrigin.Begin);
 
 				return this.File(
 					fileStream: fs,
-					contentType: ExportFileDownloadBase.GetContentType(fileName),
-					fileDownloadName: fileName);
+					contentType: segmentedOutput ?  ExportFileDownloadBase.ContentType_ZIP : ExportFileDownloadBase.ContentType_DOCX,
+					fileDownloadName: exportedFileName);
 			}
 			catch (Exception e)
 			{
+				if (!string.IsNullOrWhiteSpace(exportedFileName) && System.IO.File.Exists(exportedFileName))
+				{
+					try
+					{
+						System.IO.File.Delete(exportedFileName);
+					}
+					catch
+					{
+						// if it errored out, that is ok
+					}
+				}
+
 				this.log.LogError(e, "Unknown Exception.");
 				return await this.CreateTextFileWithErrorMessage(e.Message);
 			}

@@ -4,8 +4,13 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using GenBOE.DataBridge.Core.Common;
+using GenBOE.DataBridge.Core.Common.Calculations;
+using GenBOE.DataBridge.Core.IO.Export;
 using GenBOE.Reports.Backend.Services;
 using IES.Common.Core;
+using IES.Common.Core.Configuration;
+using IES.Common.Core.Enums;
 using IES.Common.Core.Interfaces;
 using IES.Common.Core.Loaders;
 using IES.Common.Core.Security;
@@ -23,7 +28,23 @@ builder.Services.AddScoped<ISecurityInformation, SecurityInformation>();
 builder.Services.AddSingleton<ICacheService, CacheService>();
 builder.Services.AddScoped<IActiveDirectoryService, ActiveDirectoryService>();
 builder.Services.AddScoped<ICacheDataLoader, CacheDataLoader>();
-builder.Services.AddSingleton<IBoeExportService, BoeExportService>();
+builder.Services.AddScoped<IBoeExportService, BoeExportService>();
+builder.Services.AddSingleton<ICommonDataLoader, CommonDataLoader>();
+builder.Services.AddSingleton<ICommonDataMapper, CommonDataMapper>();
+
+CompanyConfiguration companyMode = SystemConfiguration.Instance().CompanyMode;
+if (companyMode == CompanyConfiguration.SpaceSystems)
+{
+	builder.Services.AddScoped<IVariableSelectBOEtoSumCalculation, VariableSelectBOEtoSumCalculationSpaceSystems>();
+	builder.Services.AddScoped<IBOEExporter, BOEExporter>();
+}
+else if (companyMode == CompanyConfiguration.MST)
+{
+	builder.Services.AddScoped<IVariableSelectBOEtoSumCalculation, VariableSelectBOEtoSumCalculationMST>();
+	builder.Services.AddScoped<BOEExporter>();
+	builder.Services.AddScoped<BOEExporterMST>();
+	builder.Services.AddScoped<IBOEExporter, BOEExporterMSTDecorator>();
+}
 
 WebApplication app = config.ConfigureAppBuilder(builder);
 IES.Common.Core.Utilities.CommonUtilities.LogEnvironmentSettings(app, app.Configuration, app.Environment);

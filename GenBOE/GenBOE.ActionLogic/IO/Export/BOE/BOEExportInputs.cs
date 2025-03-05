@@ -159,6 +159,11 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		public IReadOnlyCollection<EscalationRatesDTO> EscalationRates { get { return this.FullWorkspace.EscalationRates; } }
 
 		/// <summary>
+		/// Locations used by trips
+		/// </summary>
+		public IReadOnlyCollection<LocationDTO> LocationsUsedByTrips { get { return this.FullWorkspace.LocationsUsedByTrips; } }
+
+		/// <summary>
 		/// Gets the task elements mapping with custom fields values and container ids.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]

@@ -28,22 +28,22 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <summary>
 		/// MIME content type for macro-enabled Excel (XLSM) documents
 		/// </summary>
-		protected const string ContentType_XLSM = "application/vnd.ms-excel.sheet.macroEnabled.12";
+		public const string ContentType_XLSM = "application/vnd.ms-excel.sheet.macroEnabled.12";
 
 		/// <summary>
 		/// MIME content type for CSV files
 		/// </summary>
-		protected const string ContentType_CSV = "text/csv";
+		public const string ContentType_CSV = "text/csv";
 
 		/// <summary>
 		/// MIME content type for ZIP files
 		/// </summary>
-		protected const string ContentType_ZIP = "application/zip";
+		public const string ContentType_ZIP = "application/zip";
 
 		/// <summary>
 		/// MIME content type for JSON files
 		/// </summary>
-		protected const string ContentType_JSON = "application/json";
+		public const string ContentType_JSON = "application/json";
 
 		/// <summary>
 		/// Gets the content type based on the filename

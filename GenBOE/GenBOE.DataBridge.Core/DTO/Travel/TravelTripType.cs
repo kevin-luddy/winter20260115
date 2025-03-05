@@ -7,7 +7,7 @@ using IES.Common;
 using IES.Common.Core.Enums;
 using IES.Common.Core.Models;
 
-namespace GenBOE.DataBridge.Core.DTO
+namespace GenBOE.DataBridge.Core.DTO.Travel
 {
 	[Serializable()]
 	[ExcludeFromCodeCoverage]
