@@ -336,7 +336,7 @@ namespace GenBOE.ActionLogic
 							HistoricalHours = 0m,
 							ProposedHours = proposedHours,
 							Included = true,
-							UCOTHours = proposedHours * ucotFactor / 100
+							UCOTHours = proposedHours * ucotFactor / 100m
 						};
 
 						refreshedModel.CommonDisclosureRows.Add(newRow);
