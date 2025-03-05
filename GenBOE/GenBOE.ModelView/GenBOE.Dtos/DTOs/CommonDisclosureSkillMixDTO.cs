@@ -31,6 +31,7 @@ namespace GenBOE.Dtos
 			this.BOEID = -1;
 			this.BOETaskElementID = -1;
 			this.IsUserInput = false;
+			this.UCOTHours = 0;
 		}
 
 		/// <summary>
@@ -92,5 +93,10 @@ namespace GenBOE.Dtos
 		/// Is this data User Input
 		/// </summary>
 		public bool IsUserInput { get; set; }
+
+		/// <summary>
+		/// UCOT Hours, Space only
+		/// </summary>
+		public decimal UCOTHours { get; set; }
 	}
 }

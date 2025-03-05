@@ -3697,10 +3697,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="currentSkillMixData">The current skill mix data</param>
 		/// <param name="isBRCEnabled">Is BRC Enabled for CD row check.</param>
 		/// <param name="isManual">If the Historical Resource/Hours are Manually input or not</param>
+		/// <param name="ucotFactor">The UCOT Factor for the workspace</param>
 		/// <returns></returns>
 		public virtual RefreshSkillMixModelView RefreshSkillMixTables(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
 			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData,
-			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isBRCEnabled, bool isManual)
+			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isBRCEnabled, bool isManual, decimal ucotFactor)
 		{
 			// null checks 
 			if (resourceHours == null)
@@ -3780,7 +3781,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				if (isBRCEnabled)
 				{
-					CreateCommonDisclosureRows(resourceHours, laborTypes, currentCommonDisclosureData, refreshedModel);
+					CreateCommonDisclosureRows(resourceHours, laborTypes, currentCommonDisclosureData, refreshedModel, ucotFactor);
 				}
 				else
 				{
@@ -4371,7 +4372,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="laborTypes">labor type data</param>
 		/// <param name="currentCommonDisclosureData">Current Common Disclosure Data</param>
 		/// <param name="refreshedModel">The Refreshed Skill Mix Model</param>
-		protected virtual void CreateCommonDisclosureRows(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<LaborTypeDataModelView> laborTypes, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, RefreshSkillMixModelView refreshedModel)
+		/// <param name="ucotFactor">The UCOT Factor for the workspace</param>
+		protected virtual void CreateCommonDisclosureRows(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<LaborTypeDataModelView> laborTypes, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, RefreshSkillMixModelView refreshedModel, decimal ucotFactor)
 		{
 			if (laborTypes == null)
 			{
@@ -4640,6 +4642,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			refreshedModel.CommonDisclosureTotals.HistoricalHours = refreshedModel.CommonDisclosureRows.Sum(s => s.HistoricalHours);
 			refreshedModel.CommonDisclosureTotals.LaborSkillMix = 100.0m;
 			refreshedModel.CommonDisclosureTotals.ProposedHours = refreshedModel.CommonDisclosureRows.Where(d => d.Included).Sum(s => s.ProposedHours);
+			refreshedModel.CommonDisclosureTotals.UCOTHours = refreshedModel.CommonDisclosureRows.Sum(s => s.UCOTHours);
 		}
 
 		#endregion Private Methods
