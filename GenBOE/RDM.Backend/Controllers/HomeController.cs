@@ -57,10 +57,6 @@ namespace RDM.Backend.Controllers
 			RevisionGridModelView model = new()
 			{
 				Revisions = this.Logic.Revisions,
-				ManagePprdMenu = this.GetPprdMenuOption(IESWebConstants.CONTROLLER_HOME),
-				ManageRatesMenu = this.GetManageRatesMenuOption(),
-				ManageBurdenPoolsMenu = this.GetManageBurdenPoolsMenuOption(),
-				ManageCobraMappingsMenu = this.GetManageCobraMappingsMenuOption(),
 				IsRdmAdminUser = this.Logic.IsRDMAdminUser,
 				IsRdmCobraAdminUser = this.Logic.IsRDMCobraAdminUser
 			};

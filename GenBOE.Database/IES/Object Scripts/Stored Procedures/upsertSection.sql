@@ -21,10 +21,14 @@ CREATE PROCEDURE [dbo].[upsertSection]
 	@DisplayRateCode		BIT = 0,
 	@RevisionUniqueSectionId INT,
 	@IsRdsbRequired			BIT = 0,
-	@SectionContainsCasbDisclosure BIT,
-	@IsDisclosureStatementAdequate BIT,
-	@SectionContainsNonCompliance BIT,
-	@NonComplianceNotification BIT,
+	@SectionContainsCasbDisclosureCore BIT,
+	@SectionContainsCasbDisclosureService BIT,
+	@IsDisclosureStatementAdequateCore BIT,
+	@IsDisclosureStatementAdequateService BIT,
+	@SectionContainsNonComplianceCore BIT,
+	@SectionContainsNonComplianceService BIT,
+	@NonComplianceNotificationCore BIT,
+	@NonComplianceNotificationService BIT,
 	@Office					varchar(100),
 	@Agency				    varchar(100),
 	@LMBA					varchar(100),
@@ -62,6 +66,7 @@ AS
 	**		07/18/2023	May				    PROPH-925 Added address fields into section table
 	**		10/9/2023	May				    PROPH-931 Added IncludeInCoversheet field into section table
 	**		11/06/2023  Hazrat				PROPH-56 and 57 Added two Questions IsDisclosureStatementAdequate and NonComplianceNotification
+	**		01/21/2025	Hazrat				PROPH-2453 PPR&D Edit Section Modifications
 	*******************************************************************************/
 	SET NOCOUNT ON 
 	DECLARE @ErrorMessage varchar (500)
@@ -91,10 +96,14 @@ AS
 					   ,[DisplayRateCode]
 					   ,[RevisionUniqueSectionId]
 					   ,[IsRdsbRequired]
-					   ,[SectionContainsCasbDisclosure]
-					   ,[IsDisclosureStatementAdequate]
-					   ,[SectionContainsNonCompliance]
-					   ,[NonComplianceNotification]
+					   ,[SectionContainsCasbDisclosureCore]
+					   ,[SectionContainsCasbDisclosureService]
+					   ,[IsDisclosureStatementAdequateCore]
+					   ,[IsDisclosureStatementAdequateService]
+					   ,[SectionContainsNonComplianceCore]
+					   ,[SectionContainsNonComplianceService]
+					   ,[NonComplianceNotificationCore]
+					   ,[NonComplianceNotificationService]
 					   ,[Office]
 					   ,[Agency]
 					   ,[LMBA]
@@ -118,10 +127,14 @@ AS
 					   ,@DisplayRateCode
 					   ,@RevisionUniqueSectionId
 					   ,@IsRdsbRequired
-					   ,@SectionContainsCasbDisclosure
-					   ,@IsDisclosureStatementAdequate
-					   ,@SectionContainsNonCompliance
-					   ,@NonComplianceNotification
+					   ,@SectionContainsCasbDisclosureCore
+					   ,@SectionContainsCasbDisclosureService
+					   ,@IsDisclosureStatementAdequateCore
+					   ,@IsDisclosureStatementAdequateService
+					   ,@SectionContainsNonComplianceCore
+					   ,@SectionContainsNonComplianceService
+					   ,@NonComplianceNotificationCore
+					   ,@NonComplianceNotificationService
 					   ,@Office
 					   ,@Agency
 					   ,@LMBA
@@ -153,10 +166,14 @@ AS
 					       ,DisplayRateCode = @DisplayRateCode
 						   ,RevisionUniqueSectionId = @RevisionUniqueSectionId
 						   ,IsRdsbRequired = @IsRdsbRequired
-						   ,SectionContainsCasbDisclosure = @SectionContainsCasbDisclosure
-						   ,IsDisclosureStatementAdequate = @IsDisclosureStatementAdequate
-						   ,SectionContainsNonCompliance = @SectionContainsNonCompliance
-						   ,NonComplianceNotification = @NonComplianceNotification
+						   ,SectionContainsCasbDisclosureCore = @SectionContainsCasbDisclosureCore
+						   ,SectionContainsCasbDisclosureService = @SectionContainsCasbDisclosureService
+						   ,IsDisclosureStatementAdequateCore = @IsDisclosureStatementAdequateCore
+						   ,IsDisclosureStatementAdequateService = @IsDisclosureStatementAdequateService
+						   ,SectionContainsNonComplianceCore = @SectionContainsNonComplianceCore
+						   ,SectionContainsNonComplianceService = @SectionContainsNonComplianceService
+						   ,NonComplianceNotificationCore = @NonComplianceNotificationCore
+						   ,NonComplianceNotificationService = @NonComplianceNotificationService
 						   ,Office = @Office
 					       ,Agency =@Agency
 					       ,LMBA =@LMBA

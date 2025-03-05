@@ -59,16 +59,18 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         Mock<IWorkspaceDTODataLoader> workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
         Mock<ISystemSettingDTODataLoader> systemsLoader = new Mock<ISystemSettingDTODataLoader>();
         private Mock<IProjectMapDataLoader> projectMapLoader;
-        /// <summary>
-        /// Initialize all objects required for tests.
-        /// </summary>
-        [TestInitialize]
+		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
+		/// <summary>
+		/// Initialize all objects required for tests.
+		/// </summary>
+		[TestInitialize]
         public void TestInitialize()
         {
             sut = new SSRSControllerLogic(offloadRatesDTOLoader.Object, resourceLoader.Object, workspaceLoader.Object, commonDataMapper.Object);
 
             this.projectMapLoader = new Mock<IProjectMapDataLoader>();
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IProjectMapDataLoader), this.projectMapLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IProjectMapDataLoader), this.projectMapLoader.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), commonDataMapper.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader),
@@ -311,8 +313,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             // Set up Resources and PerformingOrgs.
             resource1 = new ResourceDTO() {Id = 1, ResourceName = "Resource1", ResourceDesc = "Resource1Desc"};
             resource2 = new ResourceDTO() {Id = 2, ResourceName = "Resource2", ResourceDesc = "Resource2Desc"};
-            subresource1 = new ResourceDTO() { Id = 1, ResourceName = "SubResource1", ResourceDesc = "subResource1Desc" };
-            subresource2 = new ResourceDTO() { Id = 2, ResourceName = "SubResource2", ResourceDesc = "subResource2Desc" };
+            subresource1 = new ResourceDTO() { Id = 3, ResourceName = "SubResource1", ResourceDesc = "subResource1Desc" };
+            subresource2 = new ResourceDTO() { Id = 4, ResourceName = "SubResource2", ResourceDesc = "subResource2Desc" };
             perfOrg1 = new PerformingOrgDTO()
             {
                 Id = 1,

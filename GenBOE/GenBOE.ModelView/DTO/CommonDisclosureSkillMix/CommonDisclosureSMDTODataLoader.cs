@@ -257,7 +257,7 @@ namespace GenBOE.DataBridge.DTO
 				{
 					foreach (CommonDisclosureSkillMixDTO dto in grouping)
 					{
-						dto.LaborSkillMix = dto.HistoricalHours / totalGroupHours;
+						dto.LaborSkillMix = dto.HistoricalHours * 100m / totalGroupHours;
 					}
 				}
 			}

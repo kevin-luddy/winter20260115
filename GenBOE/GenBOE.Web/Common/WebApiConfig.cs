@@ -6,25 +6,23 @@
 
 namespace GenBOE
 {
-    using System;
-    using System.Net.Http.Formatting;
-    using System.Net.Http.Headers;
-    using System.Web.Http;
+	using System;
+	using System.Net.Http.Formatting;
+	using System.Net.Http.Headers;
+	using System.Web.Http;
+	using System.Web.Http.Cors;
 
 	/// <summary>
 	/// Class to add Web API to an MVC application
 	/// </summary>
-    public static class WebApiConfig
-    {
-        /// <summary>
-        /// Register API configuration
-        /// </summary>
-        public static void Register(HttpConfiguration config)
-        {
+	public static class WebApiConfig
+	{
+		/// <summary>
+		/// Register API configuration
+		/// </summary>
+		public static void Register(HttpConfiguration config)
+		{
 			_ = config ?? throw new ArgumentNullException(nameof(config));
-
-			// Enable cors
-			config.EnableCors();
 
 			// Web API routes
 			config.MapHttpAttributeRoutes();
@@ -40,5 +38,5 @@ namespace GenBOE
 
 			config.Formatters.JsonFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("text/html"));
 		}
-    }
+	}
 }

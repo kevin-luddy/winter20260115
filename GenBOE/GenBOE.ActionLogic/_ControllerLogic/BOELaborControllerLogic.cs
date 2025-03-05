@@ -175,7 +175,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="workspaceData">The workspace data.</param>
 		/// <param name="laborTabData">The labor tab data.</param>
 		/// <param name="moqTotalHours">The moq total hours.</param>
-		public void RecalculateLaborSpreads(FullWorkspace workspaceData, RecalcSpreadModelView[] laborTabData, decimal moqTotalHours)
+		/// <param name="calculateUCOT">Whether to calculate UCOT</param>
+		public void RecalculateLaborSpreads(FullWorkspace workspaceData, RecalcSpreadModelView[] laborTabData, decimal moqTotalHours, bool calculateUCOT)
 		{
 			if (workspaceData == null)
 			{
@@ -249,11 +250,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					int precision = (resourceTypeData.rateType == RateType.Cost) ? workspaceData.CostDecimalPrecision : workspaceData.DecimalPrecision;
 
 					decimal hourSpreadValue = resourceTypeData.value.HasValue ? Utilities.AdjustPrecision(resourceTypeData.value.Value, precision) : 0;
-					resourceTypeData.spreads = this.CalculateLaborSpreads(hourSpreadValue, resourceTypeData.start.Value, resourceTypeData.end.Value, resourceTypeData.curve.Value, precision);
+					bool calculateUCOTForRow = calculateUCOT && resourceTypeData.ElementOfCost == ElementOfCostType.LMLabor && resourceTypeData.rateType == RateType.Hours;
+					resourceTypeData.spreads = this.CalculateLaborSpreads(hourSpreadValue, resourceTypeData.start.Value, resourceTypeData.end.Value, resourceTypeData.curve.Value, precision, calculateUCOTForRow, workspaceData.UCOTFactor, out ICollection<LaborSpreadDataModelView> ucotSpreads);
+					resourceTypeData.ucotSpreads = ucotSpreads;
+					resourceTypeData.ucotHours = resourceTypeData.ucotSpreads.Sum(x => x.LaborSpreadValue);
 				}
 				else
 				{
 					resourceTypeData.spreads = new List<LaborSpreadDataModelView>();
+					resourceTypeData.ucotSpreads = new List<LaborSpreadDataModelView>();
 				}
 			}
 
@@ -527,7 +532,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					foreach (ResourceTypeDto missing in missingLabors)
 					{
 						this.logger.Error("During Save of Task Element, there was a missing task element labor found in the DB that will be deleted with id " + missing.Id);
-						LaborTypeDataModelView toDelete = new LaborTypeDataModelView(missing, new ResourceDTO(), new ResourceDTO(), new PerformingOrgDTO());
+						LaborTypeDataModelView toDelete = new LaborTypeDataModelView(missing, new ResourceDTO(), new ResourceDTO(), new PerformingOrgDTO(), 0m, false);
 						toDelete.Deleted = true;
 						modelView.LaborTypesData.Add(toDelete);
 					}
@@ -1543,11 +1548,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				IReadOnlyCollection<CustomFieldValueDTO> allCustomFieldValues = ws.CustomFieldValues;
 				foreach (CustomFieldDTO customField in customFields)
 				{
-					BOECustomFieldsGridModelView metadata = new BOECustomFieldsGridModelView(customField);
+					BOECustomFieldsInUseGridModelView metadata = new BOECustomFieldsInUseGridModelView(customField);
 
 					ICollection<CustomFieldValueDTO> options = allCustomFieldValues.Where(i => i.CustomFieldID == customField.Id).ToCollection<CustomFieldValueDTO>();
-
-					metadata.inUse = options.Any(x => x.CustomFieldValueInUseFlag);
 
 					if ((inTypeToGet == ControllerCustomFieldType.Task && metadata.CustomFieldDisplayID == CustomFieldType.TaskDisplay) ||
 						(inTypeToGet == ControllerCustomFieldType.LaborTypes && metadata.CustomFieldDisplayID == CustomFieldType.LaborTypeDisplay) ||
@@ -1623,11 +1626,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="endDate">End Date</param>
 		/// <param name="curve">Spread curve ID</param>
 		/// <param name="precision">decimal precision</param>
+		/// <param name="calculateUCOT">whether to calculate UCOT</param>
+		/// <param name="ucotFactor">The UCOT factor</param>
+		/// <param name="ucotSpreads">The UCOT Spreads output</param>
 		/// <returns>Recalculated labor spreads</returns>
-		public ICollection<LaborSpreadDataModelView> CalculateLaborSpreads(decimal value, DateTime startDate, DateTime endDate, SpreadCurves curve, int precision)
+		public ICollection<LaborSpreadDataModelView> CalculateLaborSpreads(decimal value, DateTime startDate, DateTime endDate, SpreadCurves curve, int precision, bool calculateUCOT, decimal ucotFactor, out ICollection<LaborSpreadDataModelView> ucotSpreads)
 		{
 			ICollection<LaborSpreadDataModelView> toReturn = new Collection<LaborSpreadDataModelView>();
-
+			List<LaborSpreadDataModelView> ucotSpreadsToReturn = new List<LaborSpreadDataModelView>();
 			LaborSpreadRequest request = new LaborSpreadRequest()
 			{
 				CurveID = curve,
@@ -1646,7 +1652,18 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					LaborSpreadDate = dto.LaborSpreadDate.ToMonthString(),
 					LaborSpreadValue = dto.LaborSpreadValue
 				});
+
+				if (calculateUCOT && dto.LaborSpreadDate >= Utilities.OneLmxStartDate)
+				{
+					ucotSpreadsToReturn.Add(new LaborSpreadDataModelView()
+					{
+						LaborSpreadDate = dto.LaborSpreadDate.ToMonthString(),
+						LaborSpreadValue = dto.LaborSpreadValue * ucotFactor / 100.0m
+					});
+				}
 			}
+
+			ucotSpreads = ucotSpreadsToReturn;
 
 			return toReturn;
 		}
@@ -1852,7 +1869,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			HashSet<ResourceDTO> resourcesFromDb = new HashSet<ResourceDTO>(this._ResourceLoader.GetByIds(dto.taskElementLabors.Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value).Union(dto.taskElementLabors.Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value)).Distinct().ToList()));
 			HashSet<PerformingOrgDTO> performingOrgsFromDb = new HashSet<PerformingOrgDTO>(this.PerfOrgLoader.GetByIds(dto.taskElementLabors.Where(x => x.PerformingOrgID.HasValue).Select(x => x.PerformingOrgID.Value).Distinct().ToList()));
-
+			bool calculateUCOT = Utilities.IsUCOTEnabled && toReturn.MOQTypes != null && toReturn.MOQTypes.Count == 1 && toReturn.MOQTypes.All(m => m.SelectedMOQType == MOQType.Comparative || m.SelectedMOQType == MOQType.Historical || m.SelectedMOQType == MOQType.AnalogousRelationships);
 			foreach (ResourceTypeDto labor in dto.taskElementLabors)
 			{
 				ResourceDTO resource = new ResourceDTO();
@@ -1873,7 +1890,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					perfOrg = performingOrgsFromDb.First(x => x.Id == labor.PerformingOrgID.Value);
 				}
 
-				LaborTypeDataModelView laborToAdd = new LaborTypeDataModelView(labor, resource, businessResourceCode, perfOrg);
+				LaborTypeDataModelView laborToAdd = new LaborTypeDataModelView(labor, resource, businessResourceCode, perfOrg, ws.UCOTFactor, calculateUCOT && businessResourceCode.ElementOfCost == ElementOfCostType.LMLabor && businessResourceCode.RateType == RateType.Hours);
 
 				ICollection<CustomFieldSelectionModelView> laborCustomFieldSelection = new Collection<CustomFieldSelectionModelView>();
 				ICollection<CustomFieldValueContainer> laborCustomFieldValues = labor.CustomFieldValueContainers;
@@ -3680,7 +3697,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="isBRCEnabled">Is BRC Enabled for CD row check.</param>
 		/// <param name="isManual">If the Historical Resource/Hours are Manually input or not</param>
 		/// <returns></returns>
-		public RefreshSkillMixModelView RefreshSkillMixTables(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
+		public virtual RefreshSkillMixModelView RefreshSkillMixTables(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
 			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData,
 			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isBRCEnabled, bool isManual)
 		{
@@ -3707,14 +3724,16 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			{
 				// Mock out the Resource Hours from input data
 				resourceHours = MockResourceHours(currentSkillMixData);
-			}	
-			
-			if (resourceHours.Any())
+			}
+
+			bool isSpace = SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems;
+
+			if (isSpace || resourceHours.Any())
 			{
-				bool addBlankRow = true;
+				bool addBlankRow = !isSpace;
 				
 				// filter out bad data in currentSkillMixData
-				FilterBadData(laborTypes, currentSkillMixData, currentCommonDisclosureData, isManual);
+				FilterBadData(laborTypes, currentSkillMixData, currentCommonDisclosureData, isManual, isSpace);
 
 				decimal totalHours = resourceHours.Sum(n => n.TotalHours);
 				ICollection<IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO>> groupedResourceHours = resourceHours.GroupBy(r => r.ResourceName).OrderBy(t => t.Key).ToList();
@@ -3749,6 +3768,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					{
 						HistoricalHours = 0m,
 						ResourceOld = string.Empty,
+						ResourceNew = string.Empty,
 						LaborSkillMix = 0m,
 						Included = false
 					});
@@ -3759,7 +3779,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				if (isBRCEnabled)
 				{
-					CreateCommonDisclosureRows(laborTypes, currentCommonDisclosureData, refreshedModel);
+					CreateCommonDisclosureRows(resourceHours, laborTypes, currentCommonDisclosureData, refreshedModel);
 				}
 				else
 				{
@@ -3784,7 +3804,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			// reorder the lists
 			refreshedModel.SkillMixRows = refreshedModel.SkillMixRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceOld)).ThenBy(r => r.ResourceOld).ToList();
-			refreshedModel.CommonDisclosureRows = refreshedModel.CommonDisclosureRows.OrderBy(r => r.ResourceID).ThenBy(s => s.BusinessResourceID).ToList();
+			refreshedModel.CommonDisclosureRows = refreshedModel.CommonDisclosureRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceID)).ThenBy(r => r.ResourceID).ThenBy(s => s.BusinessResourceID).ToList();
 
 			return refreshedModel;
 		}
@@ -3821,8 +3841,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="currentSkillMixData">The current skill mix data</param>
 		/// <param name="currentCommonDisclosureData">Current Common Disclosure data</param>
 		/// <param name="isManual">If the Historical Resource/Hours are Manually input or not</param>
+		/// <param name="isSpace">Whether this is Space or not</param>
 		private void FilterBadData(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, 
-			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isManual)
+			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isManual, bool isSpace)
 		{
 			if (laborTypes.Any())
 			{
@@ -3851,9 +3872,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						commonDisclosureModel.LaborSkillMix = 0m;
 					}
 
-					if (!string.IsNullOrWhiteSpace(commonDisclosureModel.BusinessResourceID) && !brcs.Contains(commonDisclosureModel.BusinessResourceID))
+					if (!isSpace && !string.IsNullOrWhiteSpace(commonDisclosureModel.BusinessResourceID) && !brcs.Contains(commonDisclosureModel.BusinessResourceID))
 					{
-						// this skill mix model is pointing towards a missing Resource, remove the resource name
+						// this RMS skill mix model is pointing towards a missing Resource, remove the resource name
 						commonDisclosureModel.BusinessResourceID = string.Empty;
 						commonDisclosureModel.ProposedHours = 0m;
 						commonDisclosureModel.BOESkillMix = 0m;
@@ -4345,11 +4366,22 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <summary>
 		/// Create the Common Disclosure Rows from the data
 		/// </summary>
+		/// <param name="resourceHours">The resource hours</param>
 		/// <param name="laborTypes">labor type data</param>
 		/// <param name="currentCommonDisclosureData">Current Common Disclosure Data</param>
 		/// <param name="refreshedModel">The Refreshed Skill Mix Model</param>
-		private static void CreateCommonDisclosureRows(ICollection<LaborTypeDataModelView> laborTypes, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, RefreshSkillMixModelView refreshedModel)
+		protected virtual void CreateCommonDisclosureRows(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<LaborTypeDataModelView> laborTypes, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, RefreshSkillMixModelView refreshedModel)
 		{
+			if (laborTypes == null)
+			{
+				throw new ArgumentNullException(nameof(laborTypes));
+			}
+
+			if (refreshedModel == null)
+			{
+				throw new ArgumentNullException(nameof(refreshedModel));
+			}
+			
 			// Create Common Disclosure Rows by taking the list of Resources assigned in Skill Mix table, then finding the BRCs assigned to those Resources in LaborTypes data
 			ICollection<string> resourceNames = refreshedModel.SkillMixRows.Where(s => !string.IsNullOrWhiteSpace(s.ResourceNew) && s.Included).Select(r => r.ResourceNew).Distinct().ToList();
 			foreach (string resourceName in resourceNames)
@@ -4435,8 +4467,18 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="currentSkillMixData">Current Skill Mix Data</param>
 		/// <param name="refreshedModel">The Refreshed SKill Mix Model</param>
 		/// <param name="isBRCEnabled">Is BRC Enabled for this workspace</param>
-		private static void CopyMatchingSkillMixRowData(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, RefreshSkillMixModelView refreshedModel, bool isBRCEnabled, bool isManual)
+		protected virtual void CopyMatchingSkillMixRowData(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, RefreshSkillMixModelView refreshedModel, bool isBRCEnabled, bool isManual)
 		{
+			if (laborTypes == null)
+			{
+				throw new ArgumentNullException(nameof(laborTypes));
+			}
+
+			if (refreshedModel == null)
+			{
+				throw new ArgumentNullException(nameof(refreshedModel));
+			}
+
 			if (currentSkillMixData != null && currentSkillMixData.Any())
 			{
 				bool emptyRowInCDTable = false;

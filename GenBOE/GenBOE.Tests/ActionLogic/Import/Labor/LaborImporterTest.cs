@@ -16,7 +16,7 @@ namespace GenBOE.Tests.ActionLogic.Import
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
-    using GenBOE.Objects;
+	using GenBOE.Objects;
     using IES.Common;
     using IES.Common.classes;
     using IES.Common.OfficeUtilities;
@@ -94,9 +94,9 @@ namespace GenBOE.Tests.ActionLogic.Import
             {
                 this.resourceDTODataLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
             }
+			retriever.Setup(x => x.GetResourcesByResourceListId(It.IsAny<int>())).Returns(resources);
 
-
-            laborImporter = new LaborTypeAndSpreadImporter(this.resourceDTODataLoader.Object, this.perfOrgLoader.Object, this.commonDataMapper.Object);
+			laborImporter = new LaborTypeAndSpreadImporter(this.resourceDTODataLoader.Object, this.perfOrgLoader.Object, this.commonDataMapper.Object);
 
         }
 

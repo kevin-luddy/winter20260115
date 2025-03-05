@@ -39,6 +39,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 			this.CostPrecisionSelect.Add(new SelectListItem { Text = "2", Value = "2", Selected = true });
 			this.CustomFieldSortingSelect = ExtensionMethods.GetSelectItems<CustomFieldSorting>();
 			this.CurrentPTMWorkspace = false;
+			this.EnableAssignTaskAuthor = false;
 		}
 
 		/// <summary>
@@ -78,6 +79,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 				this.UsingTemplateBoe = workspaceDTO.UsingTemplateBOE;
 				this.CreatedPriorToBoeTemplates = !workspaceDTO.CreationDate.HasValue || workspaceDTO.CreationDate < DateTime.Parse(ConfigurationUtilities.GetAppSetting("MoqTemplateStartDate"));
 				this.EnableSAPConnection = workspaceDTO.EnableSAPConnection;
+				this.EnableAssignTaskAuthor = workspaceDTO.EnableAssignTaskAuthor;
 				this.CurrentPTMWorkspace = workspaceDTO.CurrentPTMWorkspace;
 			}
 			if (costVolumeLeadDTO != null)
@@ -247,5 +249,11 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// Get or set whether the workspace should be marked as Current for the PTM Tracking Number
 		/// </summary>
 		public bool CurrentPTMWorkspace { get; set; }
+
+		/// <summary>
+		/// Get or set the Assign Authors at Task level property
+		/// </summary>
+		[Required(ErrorMessage = "Authors Assignable at Task Level selection is required.")]
+		public bool EnableAssignTaskAuthor { get; set; }
 	}
 }

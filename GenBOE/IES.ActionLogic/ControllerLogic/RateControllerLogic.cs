@@ -844,8 +844,16 @@ namespace IES.ActionLogic.ControllerLogic
 			{
 				foreach (RateDetailModelView importedRateDetailMV in importedRates)
 				{
-					// Save is different for import because it is possbile to Save a new Rate Code
-					importedRateDetailMV.Updateable = UpdateType.Upsert;
+					// Save is different for import because it is possible to Save a new Rate Code
+					if (importedRateDetailMV.IsDeleted)
+					{
+						importedRateDetailMV.Updateable = UpdateType.Deleted;
+					}
+					else
+					{
+						importedRateDetailMV.Updateable = UpdateType.Upsert;
+					}
+
 					importResults.Add(importedRateDetailMV);
 				}
 

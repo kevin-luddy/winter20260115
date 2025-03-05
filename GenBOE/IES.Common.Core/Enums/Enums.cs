@@ -809,6 +809,16 @@ namespace IES.Common.Core.Enums
 	}
 
 	/// <summary>
+	/// Revision segment selection.
+	/// </summary>
+	public enum RevisionSegment
+	{
+		None = 0,
+		Core = 1,
+		Services = 2
+	}
+
+	/// <summary>
 	/// Task Element Types
 	/// </summary>
 	public enum TaskElementType

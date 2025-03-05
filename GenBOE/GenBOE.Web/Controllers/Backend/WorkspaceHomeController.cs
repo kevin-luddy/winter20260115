@@ -16,18 +16,19 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using GenBOE.Web.Common;
+	using GenBOE.Web.ModelView;
 	using IES.Common;
 	using IES.Common.Exceptions;
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.Net.Http;
+	using System.Web.Http;
 	using System.Web.Http.Cors;
-	using System.Web.Mvc;
 
 	/// <summary>
 	/// Workspace Home Controller for getting workspace home data.
 	/// </summary>
-	[EnableCors("*", "*", "*", SupportsCredentials = true)]
 	public class WorkspaceHomeController : BoeDataBaseAPIController
 	{
 		#region Properties & Ctor
@@ -105,7 +106,7 @@ namespace GenBOE.Web.Controllers
 					{
 						ICollection<GenBOEMasterMenuItemModelView> menuItems = new Collection<GenBOEMasterMenuItemModelView>();
 
-						ViewResult viewResult = controller.DisplaySiteMasterMenu(workspaceShortname);
+						System.Web.Mvc.ViewResult viewResult = controller.DisplaySiteMasterMenu(workspaceShortname);
 
 						if (viewResult != null)
 						{
@@ -169,6 +170,36 @@ namespace GenBOE.Web.Controllers
 			{
 				logger.Error(ex);
 				result.Messages.Add($"Unknown error occured returning Workspace Grid Data: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Ability to update favorite workspace
+		/// </summary>
+		/// <param name="workspaceId"></param>
+		/// <param name="isFavorite"></param>
+		/// <returns></returns>
+		[HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<bool> UpdateFavorite([FromBody]FavoriteModelView favoriteModelView)
+		{
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+
+			try
+			{
+				if (favoriteModelView != null)
+				{
+					UserDTO currentUser = UserLoader.GetUserForActiveUser();
+					workspaceHomeControllerLogic.UpdateFavorite(currentUser, favoriteModelView.WorkspaceId, favoriteModelView.IsFavorite);
+					result.Data = true;
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add("Error saving Favorites");
 			}
 
 			return result;

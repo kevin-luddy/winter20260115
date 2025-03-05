@@ -1526,33 +1526,57 @@ namespace GenTRAC.ActionLogic
 		/// <returns>SelectList</returns>
 		private ICollection<UserDTO> GetUsersForSelectList(PtmRole role)
 		{
-			string groupName = string.Empty;
+			string groupNames = string.Empty;
+			string[] groupNamesArray = null;
+			ICollection<UserDTO> users = new Collection<UserDTO>();
 
 			// get ad user group from config based on role, return select list
 			switch (role)
 			{
 				case PtmRole.Pricer:
-					groupName = IES.Common.ConfigurationUtilities.GetAppSetting("LeadEstimators");
+					groupNames = IES.Common.ConfigurationUtilities.GetAppSetting("LeadEstimators");
 					break;
 				case PtmRole.LOBEstMgr:
-					groupName = IES.Common.ConfigurationUtilities.GetAppSetting("LOBManagers");
+					groupNames = IES.Common.ConfigurationUtilities.GetAppSetting("LOBManagers");
 					break;
 				case PtmRole.PeerReviewer:
-					groupName = IES.Common.ConfigurationUtilities.GetAppSetting("IndependentReviewers");
+					groupNames = IES.Common.ConfigurationUtilities.GetAppSetting("IndependentReviewers");
 					break;
 				case PtmRole.PricingVerification:
-					groupName = IES.Common.ConfigurationUtilities.GetAppSetting("PricingVerifications");
+					groupNames = IES.Common.ConfigurationUtilities.GetAppSetting("PricingVerifications");
 					break;
 				case PtmRole.CoverSheetApprover:
-					groupName = IES.Common.ConfigurationUtilities.GetAppSetting("CoverSheetApprovers");
+					groupNames = IES.Common.ConfigurationUtilities.GetAppSetting("CoverSheetApprovers");
 					break;
 				case PtmRole.ContractsPOC:
 				case PtmRole.BackupContractsPOC:
-					groupName = IES.Common.ConfigurationUtilities.GetAppSetting("ContractsLead");
+					groupNames = IES.Common.ConfigurationUtilities.GetAppSetting("ContractsLead");
+					break;
+				case PtmRole.SupplyChainPOCMatl:
+				case PtmRole.BackupMaterialLead:
+					groupNames = IES.Common.ConfigurationUtilities.GetAppSetting("MaterialsLead");
+					break;
+				case PtmRole.SupplyChainPOCSubs:
+				case PtmRole.BackupSubcontractsLead:
+					groupNames = IES.Common.ConfigurationUtilities.GetAppSetting("SubcontractsLead");
 					break;
 			}
 
-			return this.userLoader.GetUserDTOsByADGroup(groupName.GetObjectName());
+			if (groupNames.Contains(","))
+			{
+				groupNamesArray = groupNames.Split(',');
+			}
+			else
+			{
+				groupNamesArray = new string[] { groupNames };
+			}
+
+			foreach (string groupName in groupNamesArray)
+			{
+				users.AddRange(userLoader.GetUserDTOsByADGroup(groupName.GetObjectName()));
+			}
+
+			return users.Distinct().ToCollection();
 		}
 
 		/// <summary>
@@ -1754,7 +1778,13 @@ namespace GenTRAC.ActionLogic
 					}
 				}
 			}
+			model = PopulateUserInformationLists(model);
 
+			return model;
+		}
+
+		public ProposalUserInformationModelView PopulateUserInformationLists(ProposalUserInformationModelView model)
+		{
 			// Primary and Backup Contracts PoC share the same AD List, get the data once for both
 			ICollection<UserDTO> contractsUsers = this.GetUsersForSelectList(PtmRole.ContractsPOC);
 
@@ -1788,6 +1818,36 @@ namespace GenTRAC.ActionLogic
 					Value = x.Key // NTID
 				}).ToCollection());
 			}
+
+			// Populate Material Leads and backup leads lists
+			ICollection<UserDTO> materialsUsers = this.GetUsersForSelectList(PtmRole.SupplyChainPOCMatl);
+
+			model.SupplyChainPOCMaterialsLeadsList = materialsUsers?
+				.Select(x => new SelectListItem() { Value = x.Ntid, Text = x.DisplayName })
+				.OrderBy(x => x.Text)
+				.ToList();
+			model.SupplyChainPOCMaterialsLeadsList.Insert(0, new SelectListItem() { Value = string.Empty, Text = "Select PBOE/MPBOE Preparer" });
+
+			model.SupplyChainPOCMaterialsBackupLeadsList = materialsUsers?
+				.Select(x => new SelectListItem() { Value = x.Ntid, Text = x.DisplayName })
+				.OrderBy(x => x.Text)
+				.ToList();
+			model.SupplyChainPOCMaterialsBackupLeadsList.Insert(0, new SelectListItem() { Value = string.Empty, Text = "Select Backup PBOE/MPBOE Preparer" });
+
+			// Populate Subcontract Leads and Backup Leads lists
+			ICollection<UserDTO> subcontractUsers = this.GetUsersForSelectList(PtmRole.SupplyChainPOCSubs);
+
+			model.SupplyChainPOCSubsLeadsList = subcontractUsers?
+				.Select(x => new SelectListItem() { Value = x.Ntid, Text = x.DisplayName })
+				.OrderBy(x => x.Text)
+				.ToList();
+			model.SupplyChainPOCSubsLeadsList.Insert(0, new SelectListItem() { Value = string.Empty, Text = "Select IBOE Preparer" });
+
+			model.SupplyChainPOCSubsBackupLeadsList = subcontractUsers?
+				.Select(x => new SelectListItem() { Value = x.Ntid, Text = x.DisplayName })
+				.OrderBy(x => x.Text)
+				.ToList();
+			model.SupplyChainPOCSubsBackupLeadsList.Insert(0, new SelectListItem() { Value = string.Empty, Text = "Select Backup IBOE Preparer" });
 
 			return model;
 		}

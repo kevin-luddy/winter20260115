@@ -51,6 +51,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 			this.ProjectMapType = ProjectMapType.StandardWithoutOffload;
 			this.EnableSAPConnection = true;
 			this.CurrentPTMWorkspace = false;
+			this.EnableAssignTaskAuthor = false;
 
 		}
 
@@ -76,7 +77,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 				", CopyPermissions=" + this.CopyPermissions +
 				", CopyTasks=" + this.CopyTasks +
 				", CopyLaborSpreads=" + this.CopyLaborSpreads +
-				", WSExactCopy=" + this.WSExactCopy; 
+				", WSExactCopy=" + this.WSExactCopy;
 		}
 
 		/// <summary>
@@ -265,5 +266,11 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// Get/set whether the new workspace is Current for PTM
 		/// </summary>
 		public bool CurrentPTMWorkspace { get; set; }
+
+		/// <summary>
+		/// Get/set whether Enable assign task author is selected.
+		/// </summary>
+		[Required(ErrorMessage = "Enable assign task author is required.")]
+		public bool EnableAssignTaskAuthor { get; set; }
 	}
 }

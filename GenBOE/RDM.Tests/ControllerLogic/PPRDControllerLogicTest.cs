@@ -200,7 +200,7 @@ namespace RDM.Tests.ControllerLogic
         public void TestValidateSections_2()
         {
             Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
-            this.sections.First().SectionContainsCasbDisclosure = true;
+            this.sections.First().SectionContainsCasbDisclosureCore = true;
             this.sut.ValidateSections(this.sections, validationErrors);
             Assert.AreEqual(4, validationErrors.Count);
         }
@@ -215,8 +215,8 @@ namespace RDM.Tests.ControllerLogic
         public void TestValidateSections_3()
         {
             Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
-            this.sections.First().SectionContainsCasbDisclosure = true;
-            this.sections.Last().SectionContainsNonCompliance = true;
+            this.sections.First().SectionContainsCasbDisclosureCore = true;
+            this.sections.Last().SectionContainsNonComplianceCore = true;
             this.sut.ValidateSections(this.sections, validationErrors);
             Assert.AreEqual(3, validationErrors.Count);
         }
@@ -231,9 +231,9 @@ namespace RDM.Tests.ControllerLogic
         public void TestValidateSections_4()
         {
             Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
-            this.sections.First().SectionContainsCasbDisclosure = true;
-            this.sections.First().SectionContainsNonCompliance = true;
-            this.sections.First().ChildNodes.First().SectionContainsNonCompliance = true;
+            this.sections.First().SectionContainsCasbDisclosureCore = true;
+            this.sections.First().SectionContainsNonComplianceCore = true;
+            this.sections.First().ChildNodes.First().SectionContainsNonComplianceCore = true;
             this.sut.ValidateSections(this.sections, validationErrors);
             Assert.AreEqual(4, validationErrors.Count);
         }

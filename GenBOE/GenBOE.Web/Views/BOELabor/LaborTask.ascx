@@ -840,19 +840,36 @@
 											<td title="{{item.BusinessResourceCodeName}}" data-ng-if="IsBRCEnabled"><span>{{ item.BusinessResourceCodeName ? item.BusinessResourceCodeName : '_'}}</span></td>
 											<td class="PerformingOrgName" title="{{item.PerformingOrgName}}"><span>{{item.PerformingOrgName ? item.PerformingOrgName : "_"}}</span></td>
 										</tr>
+                                        <tr data-ng-if="showUCOT" class="subheader">
+				                            <td colspan="3" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">UCOT Business Resource Code</td>
+                                        </tr>
+                                        <tr data-ng-if="showUCOT" data-ng-repeat="item in tableData | filter: { Deleted: false, NewLaborType: false } track by item.BOELaborTypeID">
+				                            <td data-ng-if="item.RateType === ManageTaskModel.RateTypeHours && item.UcotHours > 0" colspan="3" title="{{item.BusinessResourceCodeName}}"><span>{{ item.BusinessResourceCodeName}}</span></td>
+                                        </tr>
 										<tr id="LaborSpreadHeaderDividerRow" class="subheader">
 											<td colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; line-height: 2px; padding: 0px;">&nbsp;</td>
 										</tr>
 										<tr>
-											<td class="subheader" colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %> by Months</td>
+											<td class="subheader" colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %> by Months{{showUCOT ? ' excluding UCOT' : ''}}</td>
 										</tr>
+                                        <tr data-ng-if="showUCOT">
+				                            <td class="subheader" colspan="3" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total UCOT <%: Model.HoursLabel %> by Months</td>
+                                        </tr>
 										<tr>
 											<td class="subheader" colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total Discrete Cost by Months</td>
 										</tr>
 										<tr>
-											<td class="subheader" colspan="{{IsBRCEnabled ? 2 : 1}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %></td>
+											<td class="subheader" colspan="{{IsBRCEnabled ? 2 : 1}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total <%: Model.HoursLabel %>{{showUCOT ? ' excluding UCOT' : ''}}</td>
 											<td class="hours-total">{{totalSpreadHours}}</td>
 										</tr>
+                                        <tr data-ng-if="showUCOT">
+				                            <td class="subheader" colspan="2" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total UCOT <%: Model.HoursLabel %></td>
+				                            <td class="hours-total">{{totalUcotSpreadHours}}</td>
+                                        </tr>
+                                        <tr data-ng-if="showUCOT">
+				                            <td class="subheader" colspan="2" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Grand Total <%: Model.HoursLabel %></td>
+				                            <td class="hours-total">{{grandTotalHours}}</td>
+                                        </tr>
 										<tr>
 											<td class="subheader" colspan="{{IsBRCEnabled ? 2 : 1}}" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">Total Discrete Cost</td>
 											<td class="cost-total"><span class="labor-spread-currency">$</span>{{totalSpreadCost}}</td>
@@ -885,11 +902,25 @@
                                                 <input class="LSDateinput" data-ng-hide="isInRange" type="text" disabled="disabled" />
                                             </td>
                                         </tr>
+                                        <tr data-ng-if="showUCOT" class="subheader" colspan="2" style="background-color: #EBEBEB;">
+                                            <td colspan="{{model.SpreadDatesFull.length}}" style="border: 0;padding: 2px">&nbsp;</td>
+                                        </tr>
+                                        <tr data-ng-if="showUCOT && item.UcotHours > 0" data-ng-repeat="item in tableData | filter: { Deleted: false, NewLaborType: false, RateType: ManageTaskModel.RateTypeHours } track by item.BOELaborTypeID">
+                                            <!--<td data-ng-repeat="dt in model.SpreadDatesFull" date="{{dt}}" data-ng-class="{inputError: item.SpreadDataInvalid[$index]}">{{ isInRange = isMonthInRange(dt.toDate(), item.StartDate.toDate(), item.EndDate.toDate()); "" }}
+                                                <input class="LSDateinput" data-ng-show="isInRange" type="text" data-ng-model="item.UcotSpreadData[$index]" disabled="disabled"
+                                                     />
+                                                <input class="LSDateinput" data-ng-hide="isInRange" type="text" disabled="disabled" />
+                                            </td>-->
+                                            <td data-ng-repeat="dt in model.SpreadDatesFull" date="{{dt}}">{{getUcotSpreadMonthText(item, dt)}}</td>
+                                        </tr>
                                         <tr id="LaborSpreadDataDividerRow">
                                             <td colspan="{{model.SpreadDatesFull.length}}" class="subheader" style="background-color: #EBEBEB; line-height: 2px; padding: 0px;">&nbsp;</td>
                                         </tr>
                                         <tr class="hours-total">
                                             <td data-ng-repeat="dt in model.SpreadDatesFull" date="{{dt}}">{{getHoursTotals(dt)}}</td>
+                                        </tr>
+                                        <tr data-ng-if="showUCOT" class="hours-total">
+                                            <td data-ng-repeat="dt in model.SpreadDatesFull" date="{{dt}}">{{getUcotHoursTotals(dt)}}</td>
                                         </tr>
                                         <tr class="cost-total">
                                             <td data-ng-repeat="dt in model.SpreadDatesFull" date="{{dt}}"><span class="labor-spread-currency">$</span>{{getCostTotals(dt)}}</td>
@@ -939,14 +970,14 @@
                             <thead>
                                 <tr>
                                     <th style="width: 95px;">Resource</th>
-                                    <th style="width: 130px;">Current Resource</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" style="width: 130px;">Current Resource</th>
                                     <th style="width: 100px;">Historical Hours</th>
                                     <th style="width: 90px;">Labor Skill Mix</th>
                                     <th style="width: 55px">Included</th>
                                     <th style="width: 90px;">BOE Skill Mix</th>
                                     <th style="width: 95px;">Proposed Hours</th>
                                     <th>Rationale**</th>
-                                    <th style="width: 38px;"></th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" style="width: 38px;"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -954,7 +985,7 @@
                                 <tr ng-repeat="row in skillMixRationale.data.SkillMixRows">
                                     <td data-ng-if="!isSkillMixManual()">{{row.ResourceOld}}</td>
                                     <td data-ng-if="isSkillMixManual()" class="bootstrap"><input type="text" data-ng-blur="refreshSkillMixTables()" class="form-control" data-ng-model="row.ResourceOld" style="width: 100%; height: 14px;" maxlength="20" /></td>
-                                    <td>
+                                    <td data-ng-if="!ManageTaskModel.IsSpace">
                                         <!-- Select for Current Resource ID will change the Included column and IsUserInput backend value. -->
                                         <select
                                             data-ng-options="option for option in skillMixRationaleLaborTypeSelections track by option"
@@ -965,46 +996,31 @@
                                     <td data-ng-if="!isSkillMixManual()" style="text-align: right">{{row.HistoricalHours | number:2}}</td>
                                     <td data-ng-if="isSkillMixManual()" style="text-align: right"><input type="number" data-ng-blur="refreshSkillMixTables()" data-ng-model="row.HistoricalHours" step="any" style="width: 100%; height: 14px;" /></td>
                                     <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
-                                    <td>
-                                        <!-- Read only for Included when loaded in as True -->
-                                        <span ng-if="!row.metadata.ManuallySetIncluded && row.Included">
-                                            <span ng-switch="row.Included">
-                                                <span ng-switch-when="true">Yes</span>
-                                                <span ng-switch-when="false">No</span>
-                                            </span>
-                                        </span>
-                                        <!-- Dropdown Selection for Included when loaded in as False. -->
-                                        <span ng-if="row.metadata.ManuallySetIncluded || !row.Included">
-                                            <select ng-model="row.Included"
-                                                ng-change="setSkillMixIsUserInput($index, row.Included)"
-                                                ng-options="option === true ? 'Yes' : 'No' for option in [true, false]">
-                                            </select>
-                                        </span>
-                                    </td>
+                                    <td>{{row.Included | yesNo}}</td>
                                     <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{row.ProposedHours}}</td>
                                     <td>
                                         <div id="skill-mix-table-rationale">
-                                            <textarea id="skill-mix-rationale" data-ng-model="row.Rationale" style="width: 100%; height: 14px; max-height: 42px; overflow-y: auto; resize: vertical;" maxlength="255"></textarea>
+                                            <textarea id="skill-mix-rationale" data-ng-model="row.Rationale" data-ng-blur="rationaleUpdated()" style="width: 100%; height: 14px; max-height: 42px; overflow-y: auto; resize: vertical;" maxlength="255"></textarea>
                                         </div>
                                     </td>
                                     <!-- Action Buttons for adding (+) and deleting (-) rows. -->
-                                    <td>
-                                        <button ng-click="addSkillMixRow($index)" ng-show="!checkEmptyString(row.ResourceNew)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
+                                    <td data-ng-if="!ManageTaskModel.IsSpace">
+                                        <button ng-click="addSkillMixRow($index)" ng-show="showSkillMixAddButton(row.ResourceNew)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
                                         <button ng-click="deleteSkillMixRow($index)" ng-show="showSkillMixDeleteButton(row.ResourceOld)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">-</button>
                                     </td>
                                 </tr>
                                 <!-- Display the Skill Mix Totals row. -->
                                 <tr>
                                     <td>Totals</td>
-                                    <td></td>
+                                    <td data-ng-if="!ManageTaskModel.IsSpace"></td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.LaborSkillMix | number:1}}%</td>
                                     <td></td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.BoeSkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.ProposedHours}}</td>
                                     <td></td>
-                                    <td></td>
+                                    <td data-ng-if="!ManageTaskModel.IsSpace"></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -1017,7 +1033,7 @@
                         <table name="currentSkillMix" class="grid editable" style="width: 100%;">
                             <thead>
                                 <tr>
-                                    <th style="width: 95px;">Current Resource</th>
+                                    <th style="width: 95px;">Resource</th>
                                     <th style="width: 130px;">Business Resource Code</th>
                                     <th style="width: 100px;">Historical Hours</th>
                                     <th style="width: 90px;">Labor Skill Mix</th>
@@ -1025,14 +1041,15 @@
                                     <th style="width: 90px;">BOE Skill Mix</th>
                                     <th style="width: 95px;">Proposed Hours</th>
                                     <th>Rationale**</th>
-                                    <th style="width: 38px;"></th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" style="width: 38px;"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <!-- Display the data for each of the Common Disclosure Skill Mix Table rows. -->
                                 <tr ng-repeat="row in skillMixRationale.data.CommonDisclosureRows">
                                     <td>{{row.ResourceID}}</td>
-                                    <td>
+                                    <td data-ng-if="ManageTaskModel.IsSpace">{{row.BusinessResourceID}}</td>
+                                    <td data-ng-if="!ManageTaskModel.IsSpace">
                                         <!-- Select for Business Resouce ID if the Resource ID has a value. -->
                                         <select
                                             ng-if="!row.ResourceID.length"
@@ -1049,12 +1066,12 @@
                                     <td style="text-align: right">{{row.ProposedHours}}</td>
                                     <td>
                                         <div id="cd-table-rationale">
-                                            <textarea id="cd-rationale" data-ng-model="row.Rationale" style="width: 100%; height: 14px; max-height: 45px; overflow-y: auto; resize: vertical;" maxlength="255"></textarea>
+                                            <textarea id="cd-rationale" data-ng-model="row.Rationale" data-ng-blur="rationaleUpdated()" style="width: 100%; height: 14px; max-height: 45px; overflow-y: auto; resize: vertical;" maxlength="255"></textarea>
                                         </div>
                                     </td>
                                     <!-- Action Buttons for adding (+) and deleting (-) rows. -->
-                                    <td>
-                                        <button ng-click="addCommonDisclosureRow($index)" ng-show="checkEmptyString(row.ResourceID)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
+                                    <td data-ng-if="!ManageTaskModel.IsSpace">
+                                        <button ng-click="addCommonDisclosureRow($index)" ng-show="showCommonDisclosureAddButton(row.ResourceID)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
                                         <button ng-click="deleteCommonDisclosureRow($index)" ng-show="showCommonDisclosureDeleteButton(row.ResourceID)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">-</button>
                                     </td>
                                 </tr>
@@ -1068,7 +1085,7 @@
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.BoeSkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.ProposedHours}}</td>
                                     <td></td>
-                                    <td></td>
+                                    <td data-ng-if="!ManageTaskModel.IsSpace"></td>
                                 </tr>
                             </tbody>
                         </table>

@@ -73,8 +73,18 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		public bool IsSAPConnectionEnabled { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether or not the Assign Task Author feature is enabled, via the value in the config
+		/// </summary>
+		public bool IsAssignTaskAuthorEnabled { get; set; }
+
+		/// <summary>
 		/// Gets or sets a value indicating whether the new Workspace should be the current workspace for PTM
 		/// </summary>
 		public bool CurrentPTMWorkspace { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether or not authors are assignable at task level
+		/// </summary>
+		public bool IsAuthorAssignableAtTaskLevelEnabled { get; set; }
 	}
 }

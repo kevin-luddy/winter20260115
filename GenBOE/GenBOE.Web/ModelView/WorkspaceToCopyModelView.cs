@@ -29,6 +29,7 @@ namespace GenBOE.Web.ModelView
             ProjectMapType = (int)IES.Common.ProjectMapType.StandardWithoutOffload;
             LineOfBusinessID = -1;
 			CurrentPTMWorkspace = false;
+			EnableAssignTaskAuthor = false;
         }
         
         public int LineOfBusinessID { get; set; }
@@ -95,5 +96,10 @@ namespace GenBOE.Web.ModelView
 		/// Get or set whether PTM Workspace is Current
 		/// </summary>
 		public bool CurrentPTMWorkspace { get; set; }
-    }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether or not authors are assignable at task level
+		/// </summary>
+		public bool EnableAssignTaskAuthor { get; set; }
+	}
 }
