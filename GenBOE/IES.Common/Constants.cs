@@ -960,14 +960,9 @@ namespace IES.Common
             public const string PROPRICER_CF_CLASSOFCOST = "Class Of Cost";
 
             /// <summary>
-            /// Project Custom Field Name
+            /// Function Custom Field Name
             /// </summary>
-            public const string PROPRICER_CF_PROJECT = "Project";
-
-            /// <summary>
-            /// Field-A Custom Field Name
-            /// </summary>
-            public const string PROPRICER_CF_FIELDA = "Field-A";
+            public const string PROPRICER_CF_FUNCTION = "Function";
         }
 
         public const string WORD_SSRS_FORMAT = "WORDOPENXML";
