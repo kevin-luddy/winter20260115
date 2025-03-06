@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace GenBOE.DataBridge.Core.Common
+namespace GenBOE.DataBridge.Core.Loaders
 {
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;

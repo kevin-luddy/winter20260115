@@ -30,7 +30,7 @@
 		/// <param name="boeSummaryGridModelViews">the boe summary grid model veiws</param>
 		/// <returns>Name of document</returns>
 		string ExportBoeToWord(FileStream fileStream, ICollection<BoeCustomReportComponent> selectedComponents, bool isCustomExport,
-			WorkspaceExportFormatDTO wsExportFormatDTO, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, 
+			WorkspaceExportFormatDTO exportFormat, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, 
 			List<BOESummaryGridModelView> boeSummaryGridModelViews);
 
 		/// <summary>

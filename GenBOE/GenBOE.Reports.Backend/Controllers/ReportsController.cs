@@ -12,7 +12,7 @@ namespace GenBOE.Reports.Backend.Controllers
 	using System.Linq;
 	using System.Threading.Tasks;
 	using GenBOE.DataBridge.Core.DTO.Export.BOE;
-	using GenBOE.Reports.Backend.Models;
+	using GenBOE.DataBridge.Core.ModelView;
 	using GenBOE.Reports.Backend.Services;
 	using IES.Common.Core.Configuration;
 	using IES.Common.Core.Interfaces;
@@ -62,22 +62,23 @@ namespace GenBOE.Reports.Backend.Controllers
 			string exportedFileName = string.Empty;
 			try
 			{
+				BOEExportInputs exportInputs = new(requestModel);
 				FileStream fs;
-				if (requestModel.segmentedOutput)
+				if (requestModel.SegmentedOutput)
 				{
-					tempFileLocation = this.boeExportService.ExportBoeToZip(requestModel.selectedComponents, requestModel.isCustomExport, requestModel.wsExportFormatDTO,
-						requestModel.exportInputs, requestModel.boeExportModelViews, requestModel.boeSummaryGridModelViews);
+					tempFileLocation = this.boeExportService.ExportBoeToZip(requestModel.SelectedComponents, requestModel.IsCustomExport, requestModel.ExportFormatDTO,
+						exportInputs, requestModel.BoeExportModelViews, requestModel.BoeSummaryGridModelViews);
 
 					fs = new(tempFileLocation, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
-					exportedFileName = string.Format("genBOEExport-{0}.zip", requestModel.exportInputs.Workspace.WorkspaceName).Replace(",", string.Empty);
+					exportedFileName = string.Format("genBOEExport-{0}.zip", requestModel.Workspace.WorkspaceName).Replace(",", string.Empty);
 				}
 				else
 				{
 					tempFileLocation = Path.GetTempFileName();
 					fs = new(tempFileLocation, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 					
-					exportedFileName = this.boeExportService.ExportBoeToWord(fs, requestModel.selectedComponents, requestModel.isCustomExport, requestModel.wsExportFormatDTO,
-						requestModel.exportInputs, requestModel.boeExportModelViews, requestModel.boeSummaryGridModelViews);
+					exportedFileName = this.boeExportService.ExportBoeToWord(fs, requestModel.SelectedComponents, requestModel.IsCustomExport, requestModel.ExportFormatDTO,
+						exportInputs, requestModel.BoeExportModelViews, requestModel.BoeSummaryGridModelViews);
 				}
 
 				// Generate a custom ActionResult to cause a file download to the client
@@ -86,7 +87,7 @@ namespace GenBOE.Reports.Backend.Controllers
 
 				return this.File(
 					fileStream: fs,
-					contentType: requestModel.segmentedOutput ?  ExportFileDownloadBase.ContentType_ZIP : ExportFileDownloadBase.ContentType_DOCX,
+					contentType: requestModel.SegmentedOutput ?  ExportFileDownloadBase.ContentType_ZIP : ExportFileDownloadBase.ContentType_DOCX,
 					fileDownloadName: exportedFileName);
 			}
 			catch (Exception e)

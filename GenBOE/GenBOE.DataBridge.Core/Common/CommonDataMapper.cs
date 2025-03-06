@@ -11,6 +11,7 @@ namespace GenBOE.DataBridge.Core.Common
 	using System.Collections.ObjectModel;
 	using System.Linq;
 	using GenBOE.DataBridge.Core.DTO;
+	using GenBOE.DataBridge.Core.Loaders;
 	using GenBOE.DataBridge.Core.ModelView;
 	using IES.Common;
 	using IES.Common.Core.Constants;
