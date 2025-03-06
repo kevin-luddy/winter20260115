@@ -131,6 +131,7 @@ AS
 **		1/16/18		twilson3			BOEJ-2887 Remove Historical Metrics
 **		4/2/18		ranzalon			BOEJ-3268 - Update for Open Ended Custom Fields
 **		6/5/20		ranzalon			BOEJ-4658 - Update for RTE Template Answers
+**		3/6/25		e405721				PROPH-2895 - Update Delete for Skill Mix and Common Disclosure
 *******************************************************************************/
 SET NOCOUNT ON 
 
