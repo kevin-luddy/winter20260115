@@ -277,8 +277,21 @@ SET NOCOUNT ON
 					TE.UpdateDT = TT.UpdateDT
 
 
-			
-				
+			DELETE FROM dbo.CommonDisclosureSkillMix
+				FROM dbo.CommonDisclosureSkillMix CS
+					INNER JOIN dbo.BOETaskElement TE ON CS.BOETaskElementID = TE.BOETaskElementID
+					INNER JOIN @BOETaskElement TT ON 
+						TE.BOETaskElementID = TT.BOETaskElementID AND
+						TE.UpdateDT = TT.UpdateDT
+
+			DELETE FROM dbo.SkillMix
+				FROM dbo.SkillMix S
+					INNER JOIN dbo.BOETaskElement TE ON S.BOETaskElementID = TE.BOETaskElementID
+					INNER JOIN @BOETaskElement TT ON 
+						TE.BOETaskElementID = TT.BOETaskElementID AND
+						TE.UpdateDT = TT.UpdateDT
+
+
 			DELETE FROM [dbo].[BOETaskElement]
 			FROM [dbo].[BOETaskElement] TE
 				INNER JOIN @BOETaskElement TT ON 
