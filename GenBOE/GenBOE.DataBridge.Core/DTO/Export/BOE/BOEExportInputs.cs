@@ -7,6 +7,7 @@
 	using System.Threading.Tasks;
 	using Dapper;
 	using GenBOE.DataBridge.Core;
+	using GenBOE.DataBridge.Core.DTO.FullObjects;
 	using GenBOE.DataBridge.Core.DTO.Travel;
 	using GenBOE.DataBridge.Core.ModelView;
 	using GenTRAC.DataBridge.Core.DTO.User;
@@ -38,10 +39,10 @@
 		/// </summary>
 		public IReadOnlyCollection<BoeDTO> AllWorkspaceBoes { get; }
 
-		///// <summary>
-		///// Gets the full workspace, only to be used when rewriting is impossible.
-		///// </summary>
-		//public FullWorkspace FullWorkspace { get; }
+		/// <summary>
+		/// Gets the full workspace, only to be used when rewriting is impossible.
+		/// </summary>
+		public FullWorkspace FullWorkspace { get; }
 
 		/// <summary>
 		/// Gets all Travel Trips for the workspace.

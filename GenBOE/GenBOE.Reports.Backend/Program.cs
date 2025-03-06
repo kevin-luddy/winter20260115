@@ -7,6 +7,7 @@
 using GenBOE.DataBridge.Core.Common;
 using GenBOE.DataBridge.Core.Common.Calculations;
 using GenBOE.DataBridge.Core.IO.Export;
+using GenBOE.DataBridge.Core.Loaders;
 using GenBOE.Reports.Backend.Services;
 using IES.Common.Core;
 using IES.Common.Core.Configuration;
@@ -27,23 +28,37 @@ config.AddWindowsAuthentication(builder.Services, builder.Configuration);
 builder.Services.AddScoped<ISecurityInformation, SecurityInformation>();
 builder.Services.AddSingleton<ICacheService, CacheService>();
 builder.Services.AddScoped<IActiveDirectoryService, ActiveDirectoryService>();
-builder.Services.AddScoped<ICacheDataLoader, CacheDataLoader>();
+builder.Services.AddSingleton<ICacheDataLoader, CacheDataLoader>();
 builder.Services.AddScoped<IBoeExportService, BoeExportService>();
 builder.Services.AddSingleton<ICommonDataLoader, CommonDataLoader>();
 builder.Services.AddSingleton<ICommonDataMapper, CommonDataMapper>();
 
+builder.Services.AddSingleton<TravelTripCostCalculation>();
+
+// builder.Services.AddSingleton<IWorkspaceExportFormatDTODataLoader, WorkspaceExportFormatDTODataLoader>();
+
+SystemConfiguration.BuildConfiguration = builder.Configuration;
 CompanyConfiguration companyMode = SystemConfiguration.Instance().CompanyMode;
 if (companyMode == CompanyConfiguration.SpaceSystems)
 {
 	builder.Services.AddScoped<IVariableSelectBOEtoSumCalculation, VariableSelectBOEtoSumCalculationSpaceSystems>();
 	builder.Services.AddScoped<IBOEExporter, BOEExporter>();
+	builder.Services.AddSingleton<BOEExportConverter>();
+	builder.Services.AddSingleton<IVariableSelectBOEtoSumCalculation, VariableSelectBOEtoSumCalculationSpaceSystems>();
+	builder.Services.AddSingleton<IBOECustomExporter, BOECustomExporterSSC>();
 }
 else if (companyMode == CompanyConfiguration.MST)
 {
+	builder.Services.AddSingleton<IVariableSelectBOEtoSumCalculation, VariableSelectBOEtoSumCalculationMST>();
+	builder.Services.AddSingleton<IEscalationRatesDTOLoader, EscalationRatesDTOLoader>();
+	builder.Services.AddSingleton<IMSTTravelNonzoneFeesAndCostsDTODataLoader, MSTTravelNonzoneFeesAndCostsDTODataLoader>();
+	builder.Services.AddSingleton<IMSTZoneTravelResourceDTODataLoader, MSTZoneTravelResourceDTODataLoader>();
 	builder.Services.AddScoped<IVariableSelectBOEtoSumCalculation, VariableSelectBOEtoSumCalculationMST>();
 	builder.Services.AddScoped<BOEExporter>();
 	builder.Services.AddScoped<BOEExporterMST>();
+	builder.Services.AddScoped<BOEExportConverter, BOEExportConverterRMS>();
 	builder.Services.AddScoped<IBOEExporter, BOEExporterMSTDecorator>();
+	builder.Services.AddSingleton<IBOECustomExporter, BOECustomExporterMST>();
 }
 
 WebApplication app = config.ConfigureAppBuilder(builder);
