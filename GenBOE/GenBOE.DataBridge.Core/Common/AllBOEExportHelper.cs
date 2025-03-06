@@ -39,12 +39,11 @@ namespace GenBOE.DataBridge.Core.Common
 			BOEExportInputs exportInputs,
 			ICollection<BOEExportModelView> boeExportModelViews,
 			ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
-			FullWorkspace workSpace,
 		byte[] fileData,
-			Func<BOEExportInputs, ICollection<BOEExportModelView>, ICollection<BOESummaryGridModelView>, FullWorkspace, byte[], Stream, ExcelReportTemplateType, T> getWordDocStream,
+			Func<BOEExportInputs, ICollection<BOEExportModelView>, ICollection<BOESummaryGridModelView>, byte[], Stream, ExcelReportTemplateType, T> getWordDocStream,
 			ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
 		{
-			_ = workSpace ?? throw new ArgumentNullException(nameof(workSpace));
+			_ = exportInputs ?? throw new ArgumentNullException(nameof(exportInputs));
 
 			Dictionary<string, Stream> zipFiles = new Dictionary<string, Stream>();
 
@@ -57,9 +56,9 @@ namespace GenBOE.DataBridge.Core.Common
 						// in order to reuse GenerateBOEToWordStream: we will create the expected list, but with just the single model
 						ICollection<BOEExportModelView> boe = new List<BOEExportModelView>() { model };
 
-						string fileName = GenerateExportFileName(model.WBSNumber, model.CLINNumber, model.BOETitle, model.BoeID, workSpace.BOEExportSortByID);
+						string fileName = GenerateExportFileName(model.WBSNumber, model.CLINNumber, model.BOETitle, model.BoeID, exportInputs.Workspace.BOEExportSortByID);
 
-						getWordDocStream(exportInputs, boe, boeSummaryGridModelViews, workSpace, fileData, file, templateType);
+						getWordDocStream(exportInputs, boe, boeSummaryGridModelViews, fileData, file, templateType);
 						zipFiles.Add(fileName, new MemoryStream(file.ToArray()));
 					}
 				}
@@ -93,12 +92,11 @@ namespace GenBOE.DataBridge.Core.Common
 			BOEExportInputs exportInputs,
 			ICollection<BOEExportModelView> boeExportModelViews,
 			ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
-			FullWorkspace workSpace,
 			ICollection<BoeCustomReportComponent> selectedComponents,
 			WorkspaceExportFormatDTO exportFormat,
-			Func<BOEExportInputs, ICollection<BOEExportModelView>, ICollection<BOESummaryGridModelView>, FullWorkspace, ICollection<BoeCustomReportComponent>, Stream, WorkspaceExportFormatDTO, T> getWordDocStream)
+			Func<BOEExportInputs, ICollection<BOEExportModelView>, ICollection<BOESummaryGridModelView>, ICollection<BoeCustomReportComponent>, Stream, WorkspaceExportFormatDTO, T> getWordDocStream)
 		{
-			_ = workSpace ?? throw new ArgumentNullException(nameof(workSpace));
+			_ = exportInputs ?? throw new ArgumentNullException(nameof(exportInputs));
 
 			Dictionary<string, Stream> zipFiles = new Dictionary<string, Stream>();
 
@@ -111,9 +109,9 @@ namespace GenBOE.DataBridge.Core.Common
 						// in order to reuse GenerateBOEToWordStream: we will create the expected list, but with just the single model
 						ICollection<BOEExportModelView> boe = new List<BOEExportModelView>() { model };
 
-						string fileName = GenerateExportFileName(model.WBSNumber, model.CLINNumber, model.BOETitle, model.BoeID, workSpace.BOEExportSortByID);
+						string fileName = GenerateExportFileName(model.WBSNumber, model.CLINNumber, model.BOETitle, model.BoeID, exportInputs.Workspace.BOEExportSortByID);
 
-						getWordDocStream(exportInputs, boe, boeSummaryGridModelViews, workSpace, selectedComponents, file, exportFormat);
+						getWordDocStream(exportInputs, boe, boeSummaryGridModelViews, selectedComponents, file, exportFormat);
 						zipFiles.Add(fileName, new MemoryStream(file.ToArray()));
 					}
 				}

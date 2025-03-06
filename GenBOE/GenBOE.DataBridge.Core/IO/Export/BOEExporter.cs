@@ -25,6 +25,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 	using GenBOE.DataBridge.Core.DTO.Travel;
 	using GenBOE.DataBridge.Core.IO.Export;
 	using GenBOE.DataBridge.Core.Misc;
+	using GenBOE.DataBridge.Core.ModelView;
 	using GenTRAC.DataBridge.Core.DTO.User;
 	using IES.Common.Core;
 	using IES.Common.Core.Configuration;
@@ -401,15 +402,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="exportInputs">The export inputs.</param>
 		/// <param name="boeExportModelViews">Object to hold most of the BOE's data</param>
 		/// <param name="boeSummaryGridModelViews">Object to hold data for the BOE Summary Grid</param>
-		/// <param name="ws">Full WS</param>
-		/// <param name="fileNameToDisplayToBrowser">the file name to display to the browser in the download dialog</param>
 		/// <param name="fileData">byte[] the template to copy and populate.</param>
 		/// <param name="templateType">Template type</param>
 		/// <exception cref="System.ArgumentNullException">Response</exception>
 		public void ExportBOEToWordFile(FileStream fileStream, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
-			FullWorkspace ws, byte[] fileData, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
+			byte[] fileData, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
 		{
-			this.ExportBOEToWordStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, ws, fileData, fileStream, templateType);
+			this.ExportBOEToWordStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, fileData, fileStream, templateType);
 		}
 
 		/// <summary>
@@ -418,13 +417,12 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="exportInputs">The export inputs</param>
 		/// <param name="boeExportModelViews">Collection of BOE View Models</param>
 		/// <param name="boeSummaryGridModelViews"></param>
-		/// <param name="workSpace">Full workspace</param>
 		/// <param name="fileData">byte[] the template to copy and populate.</param>
 		/// <param name="templateType">Type of the export template</param>
 		public string ExportBOEsToZipFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
-			FullWorkspace workSpace, byte[] fileData, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
+			byte[] fileData, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
 		{
-			return AllBOEExportHelper.ExportBOEsToZipFile<bool>(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workSpace, fileData, ExportBOEToWordStream);
+			return AllBOEExportHelper.ExportBOEsToZipFile<bool>(exportInputs, boeExportModelViews, boeSummaryGridModelViews, fileData, ExportBOEToWordStream);
 		}
 
 		/// <summary>
@@ -450,7 +448,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="exportInputs">The export inputs.</param>
 		/// <param name="boeExportModelViews">Object to hold most of the BOE's data</param>
 		/// <param name="boeSummaryGridModelViews">Object to hold data for the BOE Summary Grid</param>
-		/// <param name="ws">Full Workspace</param>
 		/// <param name="fileData">byte[] the template to copy and populate.</param>
 		/// <param name="returnStream">Output stream</param>
 		/// <param name="templateType">Template type</param>
@@ -458,7 +455,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <exception cref="GeneralAppException"></exception>
 		/// <returns>true if successful, exception otherwise</returns>
 		public bool ExportBOEToWordStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, 
-			ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, FullWorkspace ws, byte[] fileData, Stream returnStream, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
+			ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, byte[] fileData, Stream returnStream, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
 		{
 			if (exportInputs == null)
 			{
@@ -472,7 +469,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				// template file is on disk
 				this.Export(fileData, (document) =>
 				{
-					this.PopulateDataExportBOE(exportInputs, boeExportModelViews, boeSummaryGridModelViews, ws, templateType, document);
+					this.PopulateDataExportBOE(exportInputs, boeExportModelViews, boeSummaryGridModelViews, templateType, document);
 				}, returnStream);
 			}
 
@@ -489,7 +486,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="templateType">Template type</param>
 		/// <param name="document">The openxml word document.</param>
 		[SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals"), SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-		private void PopulateDataExportBOE(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, FullWorkspace ws,
+		private void PopulateDataExportBOE(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
 			ExcelReportTemplateType templateType, WordprocessingDocument document)
 		{
 			ChunkCounter counters = new ChunkCounter();
@@ -781,7 +778,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 								if (taskContainer != null)
 								{
 									// Populate the task-specific items in the template
-									PopulateTaskElementContent(exportInputs, taskContainer, taskElement, ws, document.MainDocumentPart, wsHasMoqRteTemplate, ref counters);
+									PopulateTaskElementContent(exportInputs, taskContainer, taskElement, document.MainDocumentPart, wsHasMoqRteTemplate, ref counters);
 
 									switch (taskElement.ElementType)
 									{
@@ -1486,49 +1483,37 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		}
 
 		/// <summary>
-		/// Exports the BOE Import Template with the correct dropdowns populated.
-		/// </summary>
-		/// <param name="templateFileLocation">Template file location.</param>
-		/// <param name="workspace">Full Workspace.</param>
-		/// <param name="blankTemplate">Bool to determine if template should be blank or contain all BOEs</param>
-		/// <returns>Saved Excel file location.</returns>
-		public string ExportTemplate(string templateFileLocation, FullWorkspace workspace, bool blankTemplate)
-		{
-			return ExportToExcelFile(templateFileLocation, workspace, blankTemplate);
-		}
-
-		/// <summary>
 		/// Exports the BOEs to Excel.
 		/// </summary>
-		/// <param name="templateFileLocation">Template file location.</param>
-		/// <param name="workspace">Full Workspace.</param>
-		/// <param name="blankTemplate">Bool to determine if template should be blank or contain all BOEs</param>
+		/// <param name="exportInputs">BOE exportInputs.</param>
 		/// <returns>Saved Excel file location.</returns>
 		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-		public string ExportToExcelFile(string templateFileLocation, FullWorkspace workspace, bool blankTemplate)
+		public string ExportToExcelFile(BOEExcelExportInputs exportInputs)
 		{
 			// TODO TIW FUTURE
-			//if (workspace == null) { throw new ArgumentNullException(nameof(workspace)); }
+			if (exportInputs == null) { throw new ArgumentNullException(nameof(exportInputs)); }
 
-			//Collection<WbsDTO> allWbs = workspace.WbsElements.ToCollection<WbsDTO>();
-			//Collection<ClinDTO> allClins = workspace.Clins.ToCollection<ClinDTO>();
+			Collection<WbsDTO> allWbs = exportInputs.WbsElements.ToCollection<WbsDTO>();
+			Collection<ClinDTO> allClins = exportInputs.Clins.ToCollection<ClinDTO>();
+
+			//// TODO TIW FUTURE
 			//Collection<PermissionsDTO> permissionsForWorkspace = permissionsDTOLoader.GetBOEPotentialPermissionsForWorkspace(workspace.Id);
 			//HashSet<UserDTO> allUsersWithPotentialPermissions = new HashSet<UserDTO>(this._IUserDTODataLoader.GetByIds(permissionsForWorkspace.Select(x => x.ETIUserId).Distinct().ToList()).ToCollection());
 
-			//List<int> boeIds = workspace.Boes.Select(x => x.Id).ToList();
+			//List<int> boeIds = exportInputs.Boes.Select(x => x.Id).ToList();
 			//HashSet<PermissionsDTO> rolesWithBoes = new HashSet<PermissionsDTO>(permissionsDTOLoader.GetBOEPermissions(boeIds).Where(x => x.BOEId.HasValue).ToCollection());
 
 			//// Get users broken down by roles, for the boes
 			//HashSet<UserDTO> allBoeUsers = new HashSet<UserDTO>(this._IUserDTODataLoader.GetByIds(rolesWithBoes.Select(x => x.ETIUserId).Distinct().ToList()).ToCollection());
 
-			//HashSet<int> authorIds = new HashSet<int>(permissionsForWorkspace.Where(x => x.Role == Role.Author).Select(x => x.ETIUserId).ToCollection());
-			//Collection<UserDTO> allAuthors = allUsersWithPotentialPermissions.Where(u => authorIds.Contains(u.UserID)).OrderBy(x => x.DisplayName).ToCollection<UserDTO>();
+			//HashSet<int> authorIds = new HashSet<int>(exportInputs.PotentialWorkspacelPermissions.Where(x => x.Role == Role.Author).Select(x => x.ETIUserId).ToCollection());
+			//Collection<UserDTO> allAuthors = exportInputs.PotentialWorkspaceUsers.Where(u => authorIds.Contains(u.UserID)).OrderBy(x => x.DisplayName).ToCollection<UserDTO>();
 
-			//HashSet<int> subcontractorAuthorIds = new HashSet<int>(permissionsForWorkspace.Where(x => x.Role == Role.SubcontractorAuthor).Select(x => x.ETIUserId).ToCollection());
-			//Collection<UserDTO> allSubcontratorAuthors = allUsersWithPotentialPermissions.Where(x => subcontractorAuthorIds.Contains(x.UserID)).OrderBy(x => x.DisplayName).ToCollection();
+			//HashSet<int> subcontractorAuthorIds = new HashSet<int>(exportInputs.PotentialWorkspacelPermissions.Where(x => x.Role == Role.SubcontractorAuthor).Select(x => x.ETIUserId).ToCollection());
+			//Collection<UserDTO> allSubcontratorAuthors = exportInputs.PotentialWorkspaceUsers.Where(x => subcontractorAuthorIds.Contains(x.UserID)).OrderBy(x => x.DisplayName).ToCollection();
 
-			//HashSet<int> approverIds = new HashSet<int>(permissionsForWorkspace.Where(x => x.Role == Role.Approver).Select(x => x.ETIUserId).ToCollection());
-			//Collection<UserDTO> allApprovers = allUsersWithPotentialPermissions.Where(x => approverIds.Contains(x.UserID)).OrderBy(x => x.DisplayName).ToCollection();
+			//HashSet<int> approverIds = new HashSet<int>(exportInputs.PotentialWorkspacelPermissions.Where(x => x.Role == Role.Approver).Select(x => x.ETIUserId).ToCollection());
+			//Collection<UserDTO> allApprovers = exportInputs.PotentialWorkspaceUsers.Where(x => approverIds.Contains(x.UserID)).OrderBy(x => x.DisplayName).ToCollection();
 
 			//#region Remove AD Groups from users
 
@@ -1538,154 +1523,113 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			//#endregion
 
-			//Collection<string> allMaterials = new Collection<string> { "Yes", "No" };
-			//Collection<string> allMultiBOE = new Collection<string> { "Yes", "No" };
+			Collection<string> allMaterials = new Collection<string> { "Yes", "No" };
+			Collection<string> allMultiBOE = new Collection<string> { "Yes", "No" };
 
-			//HashSet<BOEStateModelView> allStates = new HashSet<BOEStateModelView>(commonDataMapper.getBOEStates().Where(b => b.BOEStateID != (int)BOEState.DateShiftDraft && b.BOEStateID != (int)BOEState.DraftLocked));
-			//Collection<string> allStatus = new Collection<string>(allStates.Select(x => x.BOEState).ToList());
-			//allStatus.Add("Delete");
+			HashSet<BOEStateModelView> allStates = new HashSet<BOEStateModelView>(commonDataMapper.getBOEStates().Where(b => b.BOEStateID != (int)BOEState.DateShiftDraft && b.BOEStateID != (int)BOEState.DraftLocked));
+			Collection<string> allStatus = new Collection<string>(allStates.Select(x => x.BOEState).ToList());
+			allStatus.Add("Delete");
 
-			//#region Create Options tab
+			#region Create Options tab
 
-			//// Create collections of strings for each row in the export file
-			//ExcelExportWorksheet optionsListWorksheet = new ExcelExportWorksheet("Options Lists");
+			// Create collections of strings for each row in the export file
+			ExcelExportWorksheet optionsListWorksheet = new ExcelExportWorksheet("Options Lists");
 
-			//int maxRows = allWbs.Count > allClins.Count ? allWbs.Count : allClins.Count;
-			//maxRows = maxRows > allAuthors.Count ? maxRows : allAuthors.Count;
-			//maxRows = maxRows > allApprovers.Count ? maxRows : allApprovers.Count;
-			//maxRows = maxRows > allStatus.Count ? maxRows : allStatus.Count;
-			//maxRows = maxRows > allMaterials.Count ? maxRows : allMaterials.Count;
-			//maxRows = maxRows > allMultiBOE.Count ? maxRows : allMultiBOE.Count;
-			//maxRows = maxRows > allSubcontratorAuthors.Count ? maxRows : allSubcontratorAuthors.Count;
+			int maxRows = allWbs.Count > allClins.Count ? allWbs.Count : allClins.Count;
+			maxRows = maxRows > exportInputs.Authors.Count ? maxRows : exportInputs.Authors.Count;
+			maxRows = maxRows > exportInputs.Approvers.Count ? maxRows : exportInputs.Approvers.Count;
+			maxRows = maxRows > allStatus.Count ? maxRows : allStatus.Count;
+			maxRows = maxRows > allMaterials.Count ? maxRows : allMaterials.Count;
+			maxRows = maxRows > allMultiBOE.Count ? maxRows : allMultiBOE.Count;
+			maxRows = maxRows > exportInputs.SubcontractorAuthors.Count ? maxRows : exportInputs.SubcontractorAuthors.Count;
 
-			//string toReturn = string.Empty;
+			string toReturn = string.Empty;
 
-			//for (int i = 0; i < maxRows; i++)
-			//{
-			//	optionsListWorksheet.Add(new Collection<string>
-			//	{
-			//		allWbs.ElementAtOrDefault(i) != null ? allWbs[i].WbsString : string.Empty,
-			//		allClins.ElementAtOrDefault(i) != null ? allClins[i].ClinString : string.Empty,
-			//		allAuthors.ElementAtOrDefault(i) != null ? allAuthors[i].DisplayName : string.Empty,
-			//		allApprovers.ElementAtOrDefault(i) != null ? allApprovers[i].DisplayName : string.Empty,
-			//		allStatus.ElementAtOrDefault(i) != null ? allStatus[i] : string.Empty,
-			//		allMaterials.ElementAtOrDefault(i) != null ? allMaterials[i] : string.Empty,
-			//		allSubcontratorAuthors.ElementAtOrDefault(i) != null ? allSubcontratorAuthors[i].DisplayName : string.Empty,
-			//		allMultiBOE.ElementAtOrDefault(i) != null ? allMultiBOE[i] : string.Empty
-			//	});
-			//}
+			for (int i = 0; i < maxRows; i++)
+			{
+				optionsListWorksheet.Add(new Collection<string>
+				{
+					allWbs.ElementAtOrDefault(i) != null ? allWbs[i].WbsString : string.Empty,
+					allClins.ElementAtOrDefault(i) != null ? allClins[i].ClinString : string.Empty,
+					exportInputs.Authors.ElementAtOrDefault(i) != null ? exportInputs.Authors.ElementAtOrDefault(i).DisplayName : string.Empty,
+					exportInputs.Approvers.ElementAtOrDefault(i) != null ? exportInputs.Approvers.ElementAtOrDefault(i).DisplayName : string.Empty,
+					allStatus.ElementAtOrDefault(i) != null ? allStatus[i] : string.Empty,
+					allMaterials.ElementAtOrDefault(i) != null ? allMaterials[i] : string.Empty,
+					exportInputs.SubcontractorAuthors.ElementAtOrDefault(i) != null ? exportInputs.SubcontractorAuthors.ElementAtOrDefault(i).DisplayName : string.Empty,
+					allMultiBOE.ElementAtOrDefault(i) != null ? allMultiBOE[i] : string.Empty
+				});
+			}
 
-			//#endregion
+			#endregion
 
-			//ExcelExportWorksheet firstWorksheet = new ExcelExportWorksheet();
+			ExcelExportWorksheet firstWorksheet = new ExcelExportWorksheet();
 
-			//if (workspace.Boes.Any() && !blankTemplate)
-			//{
-			//	foreach (FullBoe boe in workspace.Boes)
-			//	{
-			//		HashSet<int> boeAuthorIds = new HashSet<int>(rolesWithBoes.Where(x => x.Role == Role.Author && x.BOEId == boe.Id).Select(x => x.ETIUserId).ToCollection());
-			//		Collection<string> authors = allBoeUsers.Where(x => boeAuthorIds.Contains(x.UserID)).OrderBy(x => x.DisplayName).Select(x => x.DisplayName).ToCollection();
+			if (exportInputs.Boes.Any() && !exportInputs.IsBlankTemplate)
+			{
+				foreach (BoeDTO boe in exportInputs.Boes)
+				{
+					HashSet<int> boeAuthorIds = new HashSet<int>(exportInputs.BOEPermissions.Where(x => x.Role == Role.Author && x.BOEId == boe.Id).Select(x => x.ETIUserId).ToCollection());
+					Collection<string> authors = exportInputs.BOEUsers.Where(x => boeAuthorIds.Contains(x.UserID)).OrderBy(x => x.DisplayName).Select(x => x.DisplayName).ToCollection();
 
-			//		HashSet<int> boeSubcontractorAuthorIds = new HashSet<int>(rolesWithBoes.Where(x => x.Role == Role.SubcontractorAuthor && x.BOEId == boe.Id).Select(x => x.ETIUserId).ToCollection());
-			//		Collection<string> subcontractorAuthors = allBoeUsers.Where(x => boeSubcontractorAuthorIds.Contains(x.UserID)).OrderBy(x => x.DisplayName).Select(x => x.DisplayName).ToCollection();
+					HashSet<int> boeSubcontractorAuthorIds = new HashSet<int>(exportInputs.BOEPermissions.Where(x => x.Role == Role.SubcontractorAuthor && x.BOEId == boe.Id).Select(x => x.ETIUserId).ToCollection());
+					Collection<string> subcontractorAuthors = exportInputs.BOEUsers.Where(x => boeSubcontractorAuthorIds.Contains(x.UserID)).OrderBy(x => x.DisplayName).Select(x => x.DisplayName).ToCollection();
 
-			//		HashSet<int> boeApproverIds = new HashSet<int>(rolesWithBoes.Where(x => x.Role == Role.Approver && x.BOEId == boe.Id).Select(x => x.ETIUserId).ToCollection());
-			//		Collection<string> approvers = allBoeUsers.Where(x => boeApproverIds.Contains(x.UserID)).OrderBy(x => x.DisplayName).Select(x => x.DisplayName).ToCollection();
+					HashSet<int> boeApproverIds = new HashSet<int>(exportInputs.BOEPermissions.Where(x => x.Role == Role.Approver && x.BOEId == boe.Id).Select(x => x.ETIUserId).ToCollection());
+					Collection<string> approvers = exportInputs.BOEUsers.Where(x => boeApproverIds.Contains(x.UserID)).OrderBy(x => x.DisplayName).Select(x => x.DisplayName).ToCollection();
 
-			//		string authorString = string.Join("\n", authors);
-			//		string subcontractorAuthorString = string.Join("\n", subcontractorAuthors);
-			//		string approverString = string.Join("\n", approvers);
+					string authorString = string.Join("\n", authors);
+					string subcontractorAuthorString = string.Join("\n", subcontractorAuthors);
+					string approverString = string.Join("\n", approvers);
 
-			//		WbsDTO wbs = allWbs.FirstOrDefault(x => x.Id == boe.WBSID);
-			//		ClinDTO clin = allClins.FirstOrDefault(x => x.Id == boe.CLINID);
-			//		string state = allStates.Where(x => x.BOEStateID == (int)boe.State).Select(x => x.BOEState).FirstOrDefault();
-			//		if (boe.State == BOEState.DraftLocked || boe.State == BOEState.DateShiftDraft)
-			//		{
-			//			state = allStates.FirstOrDefault(s => s.BOEStateID == (int)BOEState.Draft).BOEState;
-			//		}
+					WbsDTO wbs = allWbs.FirstOrDefault(x => x.Id == boe.WBSID);
+					ClinDTO clin = allClins.FirstOrDefault(x => x.Id == boe.CLINID);
+					string state = allStates.Where(x => x.BOEStateID == (int)boe.State).Select(x => x.BOEState).FirstOrDefault();
+					if (boe.State == BOEState.DraftLocked || boe.State == BOEState.DateShiftDraft)
+					{
+						state = allStates.FirstOrDefault(s => s.BOEStateID == (int)BOEState.Draft).BOEState;
+					}
 
-			//		firstWorksheet.Add(new Collection<string>
-			//		{
-			//			boe.Id.ToString(),
-			//			wbs != null ? wbs.WbsString : string.Empty,
-			//			boe.Title,
-			//			clin != null ? clin.ClinString : string.Empty,
-			//			boe.IsMultiClinWbs ? "Yes" : "No",
-			//			boe.isMaterial ? "Yes" : "No",
-			//			authorString,
-			//			subcontractorAuthorString,
-			//			approverString,
-			//			state
-			//		});
-			//	}
-			//}
+					firstWorksheet.Add(new Collection<string>
+					{
+						boe.Id.ToString(),
+						wbs != null ? wbs.WbsString : string.Empty,
+						boe.Title,
+						clin != null ? clin.ClinString : string.Empty,
+						boe.IsMultiClinWbs ? "Yes" : "No",
+						boe.isMaterial ? "Yes" : "No",
+						authorString,
+						subcontractorAuthorString,
+						approverString,
+						state
+					});
+				}
+			}
 
-			//toReturn = ExcelExporter.ExportToExcelFile(templateFileLocation, optionsListWorksheet, firstWorksheet);
+			toReturn = ExcelExporter.ExportToExcelFile(exportInputs.TemplateFileLocation, optionsListWorksheet, firstWorksheet);
 
-			//// Adjust Defined Names
-			//Dictionary<string, int> lengths = new Dictionary<string, int>()
-			//{
-			//	{ "WBS", allWbs.Count },
-			//	{ "CLINs", allClins.Count },
-			//	{ "Authors", allAuthors.Count },
-			//	{ "Approvers", allApprovers.Count },
-			//	{ "Status", allStatus.Count },
-			//	{ "Material", allMaterials.Count},
-			//	{ "Subcontractor_Authors", allSubcontratorAuthors.Count },
-			//	{ "MultiBOE", allMultiBOE.Count }
-			//};
+			// Adjust Defined Names
+			Dictionary<string, int> lengths = new Dictionary<string, int>()
+			{
+				{ "WBS", allWbs.Count },
+				{ "CLINs", allClins.Count },
+				{ "Authors", exportInputs.Authors.Count },
+				{ "Approvers", exportInputs.Approvers.Count },
+				{ "Status", allStatus.Count },
+				{ "Material", allMaterials.Count},
+				{ "Subcontractor_Authors", exportInputs.SubcontractorAuthors.Count },
+				{ "MultiBOE", allMultiBOE.Count }
+			};
 
-			//ExcelExporter.AdjustDefinedNames(toReturn, lengths);
+			ExcelExporter.AdjustDefinedNames(toReturn, lengths);
 
-			//return toReturn;
-			return string.Empty;
+			return toReturn;
+			
+			//return string.Empty;
 		}
 
 		#endregion Public Functions
 
 		#region Private Functions
-
-		///// <summary>
-		///// Breaks down AD Groups into individual users
-		///// </summary>
-		///// <param name="incomingUsers">incoming users potentially containing AD groups</param>
-		///// <returns>individual users</returns>
-		//private Collection<UserDTO> CleanupAdGroupsFromUsers(Collection<UserDTO> incomingUsers)
-		//{
-		//	List<UserDTO> tempUsers = new List<UserDTO>();
-
-		//	// all users can contain groups. need to break those down.
-		//	foreach (UserDTO user in incomingUsers)
-		//	{
-		//		if (user.Ntid.Contains('.')) // AD group name
-		//		{
-		//			ICollection<UserData> members = adUtils.GetAdGroupUsers(user.DisplayName);
-
-		//			ICollection<UserData> orderedMembers = members.OrderBy(m => m.DisplayName).ToList();
-
-		//			List<int> userIds = new List<int>();
-
-		//			foreach (UserData member in orderedMembers)
-		//			{
-		//				int userId;
-		//				bool userExists = this._IUserDTODataLoader.UserExists(member.Ntid, out userId);
-
-		//				if (userExists)
-		//				{
-		//					userIds.Add(userId);
-		//				}
-		//			}
-
-		//			tempUsers.AddRange(this._IUserDTODataLoader.GetByIds(userIds));
-		//		}
-		//		else // just a regular user
-		//		{
-		//			tempUsers.Add(user);
-		//		}
-		//	}
-
-		//	return new Collection<UserDTO>(tempUsers);
-		//}
 
 		/// <summary>
 		/// Adds another blank task type to the current task for the BOE
@@ -4741,11 +4685,10 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="exportInputs">The export inputs.</param>
 		/// <param name="taskContainer">The task container.</param>
 		/// <param name="taskElement">The task element whose data will populate the template</param>
-		/// <param name="ws">Full WS</param>
 		/// <param name="mainPart">Main Document Part</param>
 		/// <param name="wsHasMoqRteTemplate">Whether there are any MOQ RTE Templates</param>
 		/// <param name="counters">The counters.</param>
-		private void PopulateTaskElementContent(BOEExportInputs exportInputs, BOEExportTaskContainer taskContainer, BOEExportTaskElement taskElement, FullWorkspace ws,
+		private void PopulateTaskElementContent(BOEExportInputs exportInputs, BOEExportTaskContainer taskContainer, BOEExportTaskElement taskElement, 
 			MainDocumentPart mainPart, bool wsHasMoqRteTemplate, ref ChunkCounter counters)
 		{
 			// Iterate over all SdtElements in the document
@@ -4870,7 +4813,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					{
 						if (taskElement.ElementType == BOEExportTaskElementType.Labor)
 						{
-							SetElementText(element, GetMOQEquationToDisplay(taskElement, exportInputs, ws));
+							SetElementText(element, GetMOQEquationToDisplay(taskElement, exportInputs));
 							alias.RemoveIt();
 						}
 						else
@@ -6856,10 +6799,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// </summary>
 		/// <param name="taskElement">The task element containing the data needed to construct the moq equation display</param>
 		/// <param name="exportInputs">The export's inputs.</param>
-		/// <param name="ws">Full WS</param>
 		/// <returns>The MOQ equation display text.</returns>
 		/// <exception cref="ArgumentException">Workspace does not contain the expect boe with id of " + taskElement.BoeID - ws</exception>
-		private string GetMOQEquationToDisplay(BOEExportTaskElement taskElement, BOEExportInputs exportInputs, FullWorkspace ws)
+		private string GetMOQEquationToDisplay(BOEExportTaskElement taskElement, BOEExportInputs exportInputs)
 		{
 			string moqToDisplay = string.Empty;
 			BoeDTO boeForTaskElement = exportInputs.AllWorkspaceBoes.FirstOrDefault(x => x.Id == taskElement.BoeID);

@@ -97,17 +97,16 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="exportInputs">The export inputs.</param>
 		/// <param name="boeExportModelViews">Object to hold most of the BOE's data</param>
 		/// <param name="boeSummaryGridModelViews">Object to hold data for the BOE Summary Grid</param>
-		/// <param name="ws">Full WS</param>
 		/// <param name="components">List of selected components</param>
 		/// <param name="exportFormat">Export file info</param>
 		public void ExportBOEToWordFile(FileStream fileStream, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, 
-			ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, FullWorkspace ws, ICollection<BoeCustomReportComponent> components, 
+			ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, ICollection<BoeCustomReportComponent> components, 
 			WorkspaceExportFormatDTO exportFormat)
 		{
 			if (exportFormat == null) { throw new ArgumentNullException(nameof(exportFormat)); }
-			_ = ws ?? throw new ArgumentNullException(nameof(ws));
+			_ = exportInputs ?? throw new ArgumentNullException(nameof(exportInputs));
 
-			this.ExportBOEToWordStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, ws, components, fileStream, exportFormat);
+			this.ExportBOEToWordStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, components, fileStream, exportFormat);
 		}
 		
 		/// <summary>
@@ -117,12 +116,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="exportInputs">The export inputs.</param>
 		/// <param name="boeExportModelViews">Object to hold most of the BOE's data</param>
 		/// <param name="boeSummaryGridModelViews">Object to hold data for the BOE Summary Grid</param>
-		/// <param name="ws">Full WS</param>
 		/// <param name="components">List of selected components</param>
 		/// <param name="returnStream">Output stream</param>
 		/// <param name="exportFormat">Export file info</param>
 		/// <returns>true if successful, exception otherwise</returns>
-		public bool ExportBOEToWordStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, FullWorkspace ws,
+		public bool ExportBOEToWordStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
 			ICollection<BoeCustomReportComponent> components, Stream returnStream, WorkspaceExportFormatDTO exportFormat)
 		{
 			if (exportInputs == null)
@@ -145,7 +143,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					// template file is on disk
 					this.Export(exportFormat.PhysicalFilePathCache, (document) =>
 					{
-						this.PopulateDataExportBOE(exportInputs, document, boeExportModelViews, ws, boeSummaryGridModelViews, components, ref counters);
+						this.PopulateDataExportBOE(exportInputs, document, boeExportModelViews, boeSummaryGridModelViews, components, ref counters);
 					}, returnStream);
 				}
 				else
@@ -153,7 +151,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					// template file content was serialized to the DB (i.e. this template was DERIVED from the master)
 					this.Export(exportFormat.FileData, (document) =>
 					{
-						this.PopulateDataExportBOE(exportInputs, document, boeExportModelViews, ws, boeSummaryGridModelViews, components, ref counters);
+						this.PopulateDataExportBOE(exportInputs, document, boeExportModelViews, boeSummaryGridModelViews, components, ref counters);
 					}, returnStream);
 				}
 			}
@@ -360,7 +358,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="boeSummaryGridModelViews">The boe summary grid model views.</param>
 		/// <param name="selectedComponents">The selected components.</param>
 		/// <param name="counters">The counters.</param>
-		private void PopulateDataExportBOE(BOEExportInputs exportInputs, WordprocessingDocument document, ICollection<BOEExportModelView> boeExportModelViews, FullWorkspace ws,
+		private void PopulateDataExportBOE(BOEExportInputs exportInputs, WordprocessingDocument document, ICollection<BOEExportModelView> boeExportModelViews, 
 			ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, ICollection<BoeCustomReportComponent> selectedComponents, ref ChunkCounter counters)
 		{
 			/*
@@ -483,7 +481,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						List<LaborRollupByDateNew> nonLaborRollupCostData = ProcessNonLaborCostSummaryTable(boe, boeContainer, boeExportModelView, selectedComponents, exportInputs);
 						ProcessLaborAndNonLaborCostSummaryTable(boeContainer, laborTasksRollupCostData, nonLaborRollupCostData, selectedComponents);
 
-						ProcessAllTaskElements(document, boeContainer, taskElementCollection, ws, boe, exportInputs, boeExportModelView, resourcesByElementOfCost, selectedComponents, containsBoeHeaderInTask, ref counters);
+						ProcessAllTaskElements(document, boeContainer, taskElementCollection, boe, exportInputs, boeExportModelView, resourcesByElementOfCost, selectedComponents, containsBoeHeaderInTask, ref counters);
 
 						ProcessBOEHoursSummaryTable(boeContainer, boeExportModelView, selectedComponents);
 						this.ProcessBOECostSummaryTable(boeContainer, exportInputs.Workspace, travelResources, boeExportModelView, selectedComponents);
@@ -1336,7 +1334,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="containsBoeHeaderInTask">if set to <c>true</c> [contains boe header in task].</param>
 		/// <param name="counters">The counters.</param>
 		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-		private void ProcessAllTaskElements(WordprocessingDocument document, SdtElement boeContainer, ICollection<BoeTaskElementDTO> taskElementCollection, FullWorkspace ws, BoeDTO exportBoe, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView,
+		private void ProcessAllTaskElements(WordprocessingDocument document, SdtElement boeContainer, ICollection<BoeTaskElementDTO> taskElementCollection, BoeDTO exportBoe, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView,
 			IDictionary<ElementOfCostType, Collection<ResourceDTO>> resourcesByElementOfCost, ICollection<BoeCustomReportComponent> selectedComponents, bool containsBoeHeaderInTask, ref ChunkCounter counters)
 		{
 			Collection<ResourceDTO> travelResources = resourcesByElementOfCost[ElementOfCostType.Travel];
@@ -1421,7 +1419,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					{
 						ProcessTaskHeaderWithBoeData(containerElement, selectedComponents, boeExportModelView);
 					}
-					ProcessLaborTaskHeader(document, containerElement, laborTaskElement, selectedComponents, exportInputs, ws, ref counters);
+					ProcessLaborTaskHeader(document, containerElement, laborTaskElement, selectedComponents, exportInputs, ref counters);
 					this.ProcessLaborTaskCustomFields(containerElement, laborTaskElement, exportInputs.CustomFields, selectedComponents, exportInputs);
 					this.ProcessLaborTaskResourceTable(containerElement, laborTaskElement, allLaborTaskElements, exportInputs.CustomFields, selectedComponents, exportInputs);
 					ProcessLaborTaskHoursRollupTable(containerElement, laborTaskElement, allLaborTaskElements, selectedComponents, exportInputs, boeExportModelView);
@@ -2314,7 +2312,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="counters">The counters.</param>
 		/// <exception cref="ArgumentNullException">selectedComponents</exception>
 		private void ProcessLaborTaskHeader(WordprocessingDocument document, SdtElement containerElement, BOEExportTaskElement laborTaskElement,
-			ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, FullWorkspace ws, ref ChunkCounter counters)
+			ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, ref ChunkCounter counters)
 		{
 			if (selectedComponents == null)
 			{
@@ -5881,14 +5879,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="returnFilename">File name that will be passed to browser (for download)</param>
 		/// <param name="exportFormat">Export format DTO</param>
 		public string ExportBOEsToZipFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, 
-			ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, FullWorkspace workSpace, ICollection<BoeCustomReportComponent> components, 
+			ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, ICollection<BoeCustomReportComponent> components, 
 			WorkspaceExportFormatDTO exportFormat)
 		{
 			return AllBOEExportHelper.ExportCustomComponentBOEsToZipFile<bool>(
 				exportInputs,
 				boeExportModelViews,
 				boeSummaryGridModelViews,
-				workSpace,
 				components,
 				exportFormat,
 				ExportBOEToWordStream);

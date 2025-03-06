@@ -11,13 +11,10 @@ namespace GenBOE.Reports.Backend.Controllers
 	using System.IO;
 	using System.Linq;
 	using System.Threading.Tasks;
-	using GenBOE.DataBridge.Core;
 	using GenBOE.DataBridge.Core.DTO.Export.BOE;
-	using GenBOE.DataBridge.Core.DTO.FullObjects;
 	using GenBOE.Reports.Backend.Models;
 	using GenBOE.Reports.Backend.Services;
 	using IES.Common.Core.Configuration;
-	using IES.Common.Core.Enums;
 	using IES.Common.Core.Interfaces;
 	using IES.Common.Core.OfficeUtilities;
 	using Microsoft.AspNetCore.Mvc;
@@ -27,7 +24,7 @@ namespace GenBOE.Reports.Backend.Controllers
 	[Route("Reports")]
 	public class ReportsController : IES.Common.Core.IESController
 	{
-		private IBoeExportService boeExportService;
+		private readonly IBoeExportService boeExportService;
 
 		private static readonly string[] Summaries = new[]
 		{
@@ -68,8 +65,7 @@ namespace GenBOE.Reports.Backend.Controllers
 				FileStream fs;
 				if (requestModel.segmentedOutput)
 				{
-					tempFileLocation = this.boeExportService.ExportBoeToZip(requestModel.exportInputs.FullWorkspace,
-						requestModel.selectedComponents, requestModel.isCustomExport, requestModel.wsExportFormatDTO,
+					tempFileLocation = this.boeExportService.ExportBoeToZip(requestModel.selectedComponents, requestModel.isCustomExport, requestModel.wsExportFormatDTO,
 						requestModel.exportInputs, requestModel.boeExportModelViews, requestModel.boeSummaryGridModelViews);
 
 					fs = new(tempFileLocation, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
@@ -80,8 +76,7 @@ namespace GenBOE.Reports.Backend.Controllers
 					tempFileLocation = Path.GetTempFileName();
 					fs = new(tempFileLocation, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 					
-					exportedFileName = this.boeExportService.ExportBoeToWord(fs, requestModel.exportInputs.FullWorkspace, 
-						requestModel.selectedComponents, requestModel.isCustomExport, requestModel.wsExportFormatDTO,
+					exportedFileName = this.boeExportService.ExportBoeToWord(fs, requestModel.selectedComponents, requestModel.isCustomExport, requestModel.wsExportFormatDTO,
 						requestModel.exportInputs, requestModel.boeExportModelViews, requestModel.boeSummaryGridModelViews);
 				}
 
@@ -113,9 +108,42 @@ namespace GenBOE.Reports.Backend.Controllers
 			}
 		}
 
+		/// <summary>
+		/// Exports BOE to Excel
+		/// </summary>
+		/// <param name="requestModel"></param>
+		/// <returns></returns>
+		[HttpPost("[action]")]
+		public async Task<IActionResult> ExportBoeToExcel(BOEExcelExportInputs requestModel)
+		{
+			string tempFileLocation = string.Empty;
+			string exportedFileName = string.Empty;
+			try
+			{
+				FileStream fs;
+				tempFileLocation = this.boeExportService.ExportBoeToExcel(requestModel);
 
-		[HttpGet(Name = "GetWeatherForecast")]
-		public IEnumerable<WeatherForecast> Get()
+				fs = new(tempFileLocation, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+				exportedFileName = string.Format("genBOEExcelExport-{0}.zip", requestModel.WorkspaceName).Replace(",", string.Empty);
+				
+
+				// Generate a custom ActionResult to cause a file download to the client
+				fs.Seek(0, SeekOrigin.Begin);
+
+				return this.File(
+					fileStream: fs,
+					contentType: ExportFileDownloadBase.ContentType_XLSX,
+					fileDownloadName: exportedFileName);
+			}
+			catch (Exception e)
+			{
+				this.log.LogError(e, "Unknown Exception.");
+				return await this.CreateTextFileWithErrorMessage(e.Message);
+			}
+		}
+
+		[HttpGet("[action]")]
+		public IEnumerable<WeatherForecast> GetWeatherForecast()
 		{
 			this.log.LogDebug("Company Mode is " + SystemConfiguration.Instance().CompanyMode.ToString());
 			this.log.LogDebug("Inside weather forecast get");

@@ -30,9 +30,18 @@
 		}
 
 		/// <summary>
+		/// Exports BOE(s) to Excel document.
+		/// </summary>
+		/// <param name="requestModel">Export Inputs</param>
+		/// <returns>File location of Excel document</returns>
+		public string ExportBoeToExcel(BOEExcelExportInputs exportInputs)
+		{
+			return this.boeExporter.ExportToExcelFile(exportInputs);
+		}
+
+		/// <summary>
 		/// Exports BOE(s) to Word document(s) that are then zipped
 		/// </summary>
-		/// <param name="workspace">The full workspace</param>
 		/// <param name="selectedComponents">List of BOEs to be included in the report; if null, then include ALL</param>
 		/// <param name="isCustomExport">Flag indicating wheter the export is a custom export</param>
 		/// <param name="exportFormat">the Workspace Format DTO</param>
@@ -40,7 +49,7 @@
 		/// <param name="boeExportModelViews">the boe export model views</param>
 		/// <param name="boeSummaryGridModelViews">the boe summary grid model veiws</param>
 		/// <returns>string location of Word or zipped Word document(s)</returns>
-		public string ExportBoeToZip(FullWorkspace workspace, ICollection<BoeCustomReportComponent> selectedComponents, bool isCustomExport,
+		public string ExportBoeToZip(ICollection<BoeCustomReportComponent> selectedComponents, bool isCustomExport,
 			WorkspaceExportFormatDTO exportFormat, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews,
 			List<BOESummaryGridModelView> boeSummaryGridModelViews)
 		{
@@ -50,7 +59,6 @@
 						exportInputs,
 						boeExportModelViews,
 						boeSummaryGridModelViews,
-						workspace,
 						selectedComponents,
 						exportFormat);
 			}
@@ -60,7 +68,6 @@
 						exportInputs,
 						boeExportModelViews,
 						boeSummaryGridModelViews,
-						workspace,
 						exportFormat.FileData,
 						exportFormat.ExportFormat.TemplateType
 					);
@@ -71,7 +78,6 @@
 		/// Exports BOE(s) to Word document
 		/// </summary>
 		/// <param name="fileStream">FileStream to stream file into</param>
-		/// <param name="workspace">The full workspace</param>
 		/// <param name="selectedComponents">List of BOEs to be included in the report; if null, then include ALL</param>
 		/// <param name="isCustomExport">Flag indicating wheter the export is a custom export</param>
 		/// <param name="exportFormat">the Workspace Format DTO</param>
@@ -79,24 +85,24 @@
 		/// <param name="boeExportModelViews">the boe export model views</param>
 		/// <param name="boeSummaryGridModelViews">the boe summary grid model veiws</param>
 		/// <returns>Name of document</returns>
-		public string ExportBoeToWord(FileStream fileStream, FullWorkspace workspace, ICollection<BoeCustomReportComponent> selectedComponents, bool isCustomExport, 
+		public string ExportBoeToWord(FileStream fileStream, ICollection<BoeCustomReportComponent> selectedComponents, bool isCustomExport, 
 			WorkspaceExportFormatDTO exportFormat, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, 
 			List<BOESummaryGridModelView> boeSummaryGridModelViews)
 		{
 			if (isCustomExport)
 			{
 				// Call the export function in the business layer
-				this.boeCustomExporter.ExportBOEToWordStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workspace, 
+				this.boeCustomExporter.ExportBOEToWordStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, 
 					selectedComponents, fileStream, exportFormat);
-				return string.Format("genBOECustomExport-{0}.docx", workspace.WorkspaceName).Replace(",", string.Empty);
+				return string.Format("genBOECustomExport-{0}.docx", exportInputs.Workspace.WorkspaceName).Replace(",", string.Empty);
 			}
 			else
 			{
 				// Call the export function in the business layer
-				this.boeExporter.ExportBOEToWordStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workspace, 
+				this.boeExporter.ExportBOEToWordStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, 
 						exportFormat.FileData, fileStream, exportFormat.ExportFormat.TemplateType);
 
-				return string.Format("genBOEExport-{0}.docx", workspace.WorkspaceName).Replace(",", string.Empty);
+				return string.Format("genBOEExport-{0}.docx", exportInputs.Workspace.WorkspaceName).Replace(",", string.Empty);
 			}
 		}
 	}

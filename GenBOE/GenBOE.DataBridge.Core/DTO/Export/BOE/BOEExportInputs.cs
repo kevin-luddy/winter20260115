@@ -40,11 +40,6 @@
 		public IReadOnlyCollection<BoeDTO> AllWorkspaceBoes { get; }
 
 		/// <summary>
-		/// Gets the full workspace, only to be used when rewriting is impossible.
-		/// </summary>
-		public FullWorkspace FullWorkspace { get; }
-
-		/// <summary>
 		/// Gets all Travel Trips for the workspace.
 		/// </summary>
 		public IReadOnlyCollection<TripDTO> TravelTrips { get; set; } 
