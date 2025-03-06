@@ -31,7 +31,7 @@ namespace IES.Common
 		/// <summary>
 		/// Http Client
 		/// </summary>
-		protected HttpClient httpClient { get; }
+		protected HttpClient httpClient = new HttpClient();
 
 		/// <summary>
 		/// Logger
@@ -44,13 +44,8 @@ namespace IES.Common
 		/// <param name="serviceController">Service controller</param>
 		/// <param name="httpClient">Http client</param>
 		/// <param name="logger">Logger</param>
-		public BaseHttpService(string serviceName, string serviceController, IHttpClientFactory httpClientFactory, Logger logger)
+		public BaseHttpService(string serviceName, string serviceController, Logger logger)
 		{
-			if (httpClientFactory == null)
-			{
-				throw new ArgumentNullException(nameof(httpClientFactory));
-			}
-
 			if (string.IsNullOrEmpty(serviceName))
 			{
 				throw new ArgumentNullException(nameof(serviceName));
@@ -76,6 +71,7 @@ namespace IES.Common
 
 			this.httpClient = httpClientFactory.CreateClient(serviceName);
 			this.httpClient.Timeout = Constants.HTTP_TIMEOUT;
+			this.httpClient.DefaultRequestHeaders.Authorization
 		}
 
 		/// <summary>
