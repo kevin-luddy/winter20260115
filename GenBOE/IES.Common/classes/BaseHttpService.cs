@@ -9,14 +9,13 @@ namespace IES.Common
 	using System;
 	using System.Collections.Generic;
 	using System.Net.Http;
-	using System.Net.Http.Json;
 	using System.Threading.Tasks;
 	using Newtonsoft.Json;
 
 	/// <summary>
 	/// Helper class for wiring http services
 	/// </summary>
-	public class BaseHttpService
+	public class BaseHttpService : IDisposable
 	{
 		/// <summary>
 		/// Base URL
@@ -29,14 +28,19 @@ namespace IES.Common
 		private readonly string serviceController;
 
 		/// <summary>
-		/// Http Client
+		/// Has this been disposed
 		/// </summary>
-		protected HttpClient httpClient = new HttpClient();
+		private bool disposedValue;
 
 		/// <summary>
 		/// Logger
 		/// </summary>
 		protected Logger Logger { get; }
+
+		/// <summary>
+		/// The Http Client
+		/// </summary>
+		protected HttpClient HttpClient { get; } = new HttpClient();
 
 		/// <summary>
 		/// ctor
@@ -69,7 +73,7 @@ namespace IES.Common
 				baseUrl += "/";
 			}
 
-			this.httpClient.Timeout = Constants.HTTP_TIMEOUT;
+			this.HttpClient.Timeout = Constants.HTTP_TIMEOUT;
 			
 		}
 
@@ -82,7 +86,7 @@ namespace IES.Common
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public async Task<IESSingleResponse<T>> Get<T>(string url)
 		{
-			HttpResponseMessage response = await httpClient.GetAsync($"{baseUrl}{serviceController}{url}");
+			HttpResponseMessage response = await HttpClient.GetAsync($"{baseUrl}{serviceController}{url}");
 
 			if (!response.IsSuccessStatusCode)
 			{
@@ -96,7 +100,7 @@ namespace IES.Common
 				return new IESSingleResponse<T>() { IsSuccessful = false, Messages = new List<string>() { Constants.GENERIC_USER_ERROR } };
 			}
 
-			return await response.Content.ReadFromJsonAsync<IESSingleResponse<T>>();
+			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); // .ReadFromJsonAsync<IESSingleResponse<T>>();
 		}
 
 		/// <summary>
@@ -108,7 +112,7 @@ namespace IES.Common
 		public T GetSync<T>(string url)
 		{
 			// runing http Get synchronously taken from https://stackoverflow.com/questions/53529061/whats-the-right-way-to-use-httpclient-synchronously
-			Task<HttpResponseMessage> getTask = Task.Run(() => httpClient.GetAsync($"{baseUrl}{serviceController}{url}"));
+			Task<HttpResponseMessage> getTask = Task.Run(() => HttpClient.GetAsync($"{baseUrl}{serviceController}{url}"));
 			getTask.Wait();
 			HttpResponseMessage response = getTask.Result;
 
@@ -118,7 +122,7 @@ namespace IES.Common
 				return default;
 			}
 
-			Task<T> returnTask = response.Content.ReadFromJsonAsync<T>();
+			Task<T> returnTask = response.Content.ReadAsAsync<T>(); // .ReadFromJsonAsync<T>();
 			returnTask.Wait();
 			return returnTask.Result;
 		}
@@ -132,7 +136,7 @@ namespace IES.Common
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public async Task<IESSingleResponse<T>> Delete<T>(string url)
 		{
-			HttpResponseMessage response = await httpClient.DeleteAsync($"{baseUrl}{serviceController}{url}");
+			HttpResponseMessage response = await HttpClient.DeleteAsync($"{baseUrl}{serviceController}{url}");
 
 			if (!response.IsSuccessStatusCode)
 			{
@@ -145,7 +149,7 @@ namespace IES.Common
 				return new IESSingleResponse<T>() { IsSuccessful = false, Messages = new List<string>() { Constants.GENERIC_USER_ERROR } };
 			}
 
-			return await response.Content.ReadFromJsonAsync<IESSingleResponse<T>>();
+			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); // .ReadFromJsonAsync<IESSingleResponse<T>>();
 		}
 
 		/// <summary>
@@ -163,7 +167,7 @@ namespace IES.Common
 			string serializedResult = JsonConvert.SerializeObject(data, new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects, ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
 
 			// Get an authetnicated HTTP client
-			HttpResponseMessage response = await httpClient.PostAsync($"{baseUrl}{serviceController}{url}", new StringContent(serializedResult, System.Text.Encoding.UTF8, "application/json"));
+			HttpResponseMessage response = await HttpClient.PostAsync($"{baseUrl}{serviceController}{url}", new StringContent(serializedResult, System.Text.Encoding.UTF8, "application/json"));
 
 			if (!response.IsSuccessStatusCode)
 			{
@@ -176,7 +180,7 @@ namespace IES.Common
 				return new IESSingleResponse<T>() { IsSuccessful = false, Messages = new List<string>() { Constants.GENERIC_USER_ERROR } };
 			}
 
-			return await response.Content.ReadFromJsonAsync<IESSingleResponse<T>>();
+			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); // .ReadFromJsonAsync<IESSingleResponse<T>>();
 		}
 
 		/// <summary>
@@ -198,7 +202,7 @@ namespace IES.Common
 				formData.Add(new StringContent(JsonConvert.SerializeObject(dataItem1, new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects, ReferenceLoopHandling = ReferenceLoopHandling.Ignore })), "Object1");
 
 				// Get an authetnicated HTTP client
-				response = await httpClient.PostAsync($"{baseUrl}{serviceController}{url}", formData);
+				response = await HttpClient.PostAsync($"{baseUrl}{serviceController}{url}", formData);
 			}
 
 			if (!response.IsSuccessStatusCode)
@@ -212,7 +216,7 @@ namespace IES.Common
 				return new IESSingleResponse<T>() { IsSuccessful = false, Messages = new List<string>() { Constants.GENERIC_USER_ERROR } };
 			}
 
-			return await response.Content.ReadFromJsonAsync<IESSingleResponse<T>>();
+			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); // .ReadFromJsonAsync<IESSingleResponse<T>>();
 		}
 
 		/// <summary>
@@ -239,7 +243,7 @@ namespace IES.Common
 				formData.Add(new StringContent(JsonConvert.SerializeObject(dataItem2, new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects, ReferenceLoopHandling = ReferenceLoopHandling.Ignore })), "Object2");
 
 				// Get an authetnicated HTTP client
-				response = await httpClient.PostAsync($"{baseUrl}{serviceController}{url}", formData);
+				response = await HttpClient.PostAsync($"{baseUrl}{serviceController}{url}", formData);
 			}
 
 			if (!response.IsSuccessStatusCode)
@@ -253,7 +257,7 @@ namespace IES.Common
 				return new IESSingleResponse<T>() { IsSuccessful = false, Messages = new List<string>() { Constants.GENERIC_USER_ERROR } };
 			}
 
-			return await response.Content.ReadFromJsonAsync<IESSingleResponse<T>>();
+			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); // .ReadFromJsonAsync<IESSingleResponse<T>>();
 		}
 
 		/// <summary>
@@ -285,7 +289,7 @@ namespace IES.Common
 				formData.Add(new StringContent(JsonConvert.SerializeObject(dataItem3, new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects, ReferenceLoopHandling = ReferenceLoopHandling.Ignore })), "Object3");
 
 				// Get an authetnicated HTTP client
-				response = await httpClient.PostAsync($"{baseUrl}{serviceController}{url}", formData);
+				response = await HttpClient.PostAsync($"{baseUrl}{serviceController}{url}", formData);
 			}
 
 			if (!response.IsSuccessStatusCode)
@@ -299,7 +303,7 @@ namespace IES.Common
 				return new IESSingleResponse<T>() { IsSuccessful = false, Messages = new List<string>() { Constants.GENERIC_USER_ERROR } };
 			}
 
-			return await response.Content.ReadFromJsonAsync<IESSingleResponse<T>>();
+			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); // .ReadFromJsonAsync<IESSingleResponse<T>>();
 		}
 
 		/// <summary>
@@ -336,7 +340,7 @@ namespace IES.Common
 				formData.Add(new StringContent(JsonConvert.SerializeObject(dataItem4, new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects, ReferenceLoopHandling = ReferenceLoopHandling.Ignore })), "Object4");
 
 				// Get an authetnicated HTTP client
-				response = await httpClient.PostAsync($"{baseUrl}{serviceController}{url}", formData);
+				response = await HttpClient.PostAsync($"{baseUrl}{serviceController}{url}", formData);
 			}
 
 			if (!response.IsSuccessStatusCode)
@@ -350,7 +354,7 @@ namespace IES.Common
 				return new IESSingleResponse<T>() { IsSuccessful = false, Messages = new List<string>() { Constants.GENERIC_USER_ERROR } };
 			}
 
-			return await response.Content.ReadFromJsonAsync<IESSingleResponse<T>>();
+			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); // .ReadFromJsonAsync<IESSingleResponse<T>>();
 		}
 
 		/// <summary>
@@ -393,7 +397,7 @@ namespace IES.Common
 				formData.Add(new StringContent(JsonConvert.SerializeObject(dataItem5, new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects, ReferenceLoopHandling = ReferenceLoopHandling.Ignore })), "Object5");
 
 				// Get an authetnicated HTTP client
-				response = await httpClient.PostAsync($"{baseUrl}{serviceController}{url}", formData);
+				response = await HttpClient.PostAsync($"{baseUrl}{serviceController}{url}", formData);
 			}
 
 			if (!response.IsSuccessStatusCode)
@@ -407,7 +411,7 @@ namespace IES.Common
 				return new IESSingleResponse<T>() { IsSuccessful = false, Messages = new List<string>() { Constants.GENERIC_USER_ERROR } };
 			}
 
-			return await response.Content.ReadFromJsonAsync<IESSingleResponse<T>>();
+			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); // .ReadFromJsonAsync<IESSingleResponse<T>>();
 		}
 
 		/// <summary>
@@ -455,7 +459,7 @@ namespace IES.Common
 				formData.Add(new StringContent(JsonConvert.SerializeObject(dataItem6, new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects, ReferenceLoopHandling = ReferenceLoopHandling.Ignore })), "Object6");
 
 				// Get an authenticated HTTP client
-				response = await httpClient.PostAsync($"{baseUrl}{serviceController}{url}", formData);
+				response = await HttpClient.PostAsync($"{baseUrl}{serviceController}{url}", formData);
 			}
 
 			if (!response.IsSuccessStatusCode)
@@ -469,7 +473,7 @@ namespace IES.Common
 				return new IESSingleResponse<T>() { IsSuccessful = false, Messages = new List<string>() { Constants.GENERIC_USER_ERROR } };
 			}
 
-			return await response.Content.ReadFromJsonAsync<IESSingleResponse<T>>();
+			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); // .ReadFromJsonAsync<IESSingleResponse<T>>();
 		}
 
 		/// <summary>
@@ -487,7 +491,7 @@ namespace IES.Common
 			string serializedResult = JsonConvert.SerializeObject(data, new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects, ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
 
 			// Get an authetnicated HTTP client
-			HttpResponseMessage response = await httpClient.PutAsync($"{baseUrl}{serviceController}{url}", new StringContent(serializedResult, System.Text.Encoding.UTF8, "application/json"));
+			HttpResponseMessage response = await HttpClient.PutAsync($"{baseUrl}{serviceController}{url}", new StringContent(serializedResult, System.Text.Encoding.UTF8, "application/json"));
 
 			if (!response.IsSuccessStatusCode)
 			{
@@ -500,7 +504,30 @@ namespace IES.Common
 				return new IESSingleResponse<T>() { IsSuccessful = false, Messages = new List<string>() { Constants.GENERIC_USER_ERROR } };
 			}
 
-			return await response.Content.ReadFromJsonAsync<IESSingleResponse<T>>();
+			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); // .ReadFromJsonAsync<IESSingleResponse<T>>();
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposedValue)
+			{
+				if (disposing)
+				{
+					// TODO: dispose managed state (managed objects)
+					this.HttpClient.Dispose();
+				}
+
+				// TODO: free unmanaged resources (unmanaged objects) and override finalizer
+				// TODO: set large fields to null
+				disposedValue = true;
+			}
+		}
+
+		public void Dispose()
+		{
+			// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+			Dispose(disposing: true);
+			GC.SuppressFinalize(this);
 		}
 	}
 }
