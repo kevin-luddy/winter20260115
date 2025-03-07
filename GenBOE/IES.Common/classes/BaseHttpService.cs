@@ -69,9 +69,8 @@ namespace IES.Common
 				baseUrl += "/";
 			}
 
-			this.httpClient = httpClientFactory.CreateClient(serviceName);
 			this.httpClient.Timeout = Constants.HTTP_TIMEOUT;
-			this.httpClient.DefaultRequestHeaders.Authorization
+			
 		}
 
 		/// <summary>
