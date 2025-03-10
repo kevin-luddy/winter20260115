@@ -31,6 +31,7 @@ namespace GenBOE.DataBridge.Core.DTO
 			BOEID = -1;
 			BOETaskElementID = -1;
 			IsUserInput = false;
+			this.UCOTHours = 0;
 		}
 
 		/// <summary>
@@ -92,5 +93,10 @@ namespace GenBOE.DataBridge.Core.DTO
 		/// Is this data User Input
 		/// </summary>
 		public bool IsUserInput { get; set; }
+
+		/// <summary>
+		/// UCOT Hours, Space only
+		/// </summary>
+		public decimal UCOTHours { get; set; }
 	}
 }

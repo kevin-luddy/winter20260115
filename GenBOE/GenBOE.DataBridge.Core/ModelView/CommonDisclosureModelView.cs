@@ -32,6 +32,7 @@ namespace GenBOE.DataBridge.Core.ModelView
 				BusinessResourceID = disclosureDTO.BusinessResourceID;
 				ResourceID = disclosureDTO.ResourceID;
 				IsUserInput = disclosureDTO.IsUserInput;
+				this.UCOTHours = disclosureDTO.UCOTHours;
 			}
 		}
 
@@ -54,7 +55,8 @@ namespace GenBOE.DataBridge.Core.ModelView
 				CommonDisclosureSkillMixID = CommonDisclosureSkillMixID,
 				BOEID = BOEID,
 				BOETaskElementID = BOETaskElementID,
-				IsUserInput = IsUserInput
+				IsUserInput = IsUserInput,
+				UCOTHours = this.UCOTHours
 			};
 		}
 	}

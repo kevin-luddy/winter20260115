@@ -929,7 +929,7 @@ namespace GenBOE.ActionLogic.IO.Export
 									// UCOT Hours is Space only
 									if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 									{
-										commonDisclosureRow.UCOTHours = commonDisclosureRow.ProposedHours * ucotFactor / 100;
+										commonDisclosureRow.UCOTHours = commonDisclosureRow.ProposedHours * ucotFactor / 100m;
 										WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_UCOTHours), commonDisclosureRow.UCOTHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
 									}
 
