@@ -639,6 +639,10 @@
                                     <th style="width: 55px">Included</th>
                                     <th style="width: 90px;">BOE Skill Mix</th>
                                     <th style="width: 95px;">Proposed Hours</th>
+                                    <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+                                        {  %>
+                                        <th style="width: 90px;">UCOT Hours</th>
+                                    <% } %>
                                     <th>Rationale**</th>
                                 </tr>
                             </thead>
@@ -652,6 +656,10 @@
                                     <td>{{row.Included | yesNo}}</td>
                                     <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{row.ProposedHours}}</td>
+                                    <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+                                    {  %>
+                                        <td style="text-align: right">{{row.UCOTHours | number:2}}</td>
+                                    <% } %>
                                     <td>{{row.Rationale}}</td>
                                 </tr>
                                 <!-- Display the Common Disclosure Totals row. -->
@@ -663,6 +671,10 @@
                                     <td></td>
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.BoeSkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.ProposedHours}}</td>
+                                    <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+                                        {  %>
+                                        <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.UCOTHours | number:2}}</td>
+                                    <% } %>
                                     <td></td>
                                 </tr>
                             </tbody>

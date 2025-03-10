@@ -17,8 +17,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 	using IES.Common;
 	using IES.Common.classes;
 	using System.Collections.Generic;
-	using GenBOE.DataBridge.DTO;
-	using System.Linq;
+	using IES.Common.PickList;
 
 	/// <summary>
 	/// Workspace Identification (Space Systems Company) ModelView that extends WorkspaceIdentificationModelView
@@ -134,7 +133,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// Gets or sets a value indicating whether this instance is using T&amp;M.
 		/// </summary>
 		public bool IsUsingTM { get; set; }
-		
+
 		/// <summary>
 		/// Revised Submitted Date. Allows 01-12 for month, 01-31 for day, 1999-2000 for year
 		/// </summary>
@@ -144,5 +143,27 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// Check whether or not this Tracking Number has multiple workspaces
 		/// </summary>
 		public bool IsMultipleWorkspaces { get; set; }
+
+		#region new genBOE UI
+		/// <summary>
+		/// Hours Label depending on system and workpace preferences
+		/// </summary>
+		public string HoursLabel { get; set; }
+
+		/// <summary>
+		/// Enable SAP for new genBOE
+		/// </summary>
+		public bool EnableSAP { get; set; }
+
+		/// <summary>
+		/// Will SAP show to user for workspace
+		/// </summary>
+		public bool ShowSAP { get; set; }
+
+		/// <summary>
+		/// Check if PTM Tracking Number has multiple workspaces
+		/// </summary>
+		public bool DoesPTMMultipleWorkspaces { get; set; }
+		#endregion
 	}
 }

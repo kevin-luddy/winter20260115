@@ -11,9 +11,9 @@ namespace GenBOE.ActionLogic.IO.Export
 	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
-	using System.Threading.Tasks;
 	using DocumentFormat.OpenXml.Packaging;
 	using DocumentFormat.OpenXml.Spreadsheet;
+	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.Common.MOQ;
 	using GenBOE.ActionLogic.IO.Export.BOE;
@@ -87,7 +87,8 @@ namespace GenBOE.ActionLogic.IO.Export
 			WbsExporter wbsExporter,
 			TravelTripCostCalculation travelTripCostCalculation,
 			ILocationDTODataLoader locationDtoDataLoader,
-			ICLINExporter clinExporter)
+			ICLINExporter clinExporter
+			)
 		{
 			this.CommonDataMapper = commonDataMapper;
 			this.permissionsDTOLoader = permissionsDTOLoader;
@@ -425,7 +426,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			{
 				foreach (BoeTaskElementDTO task in exportInputs.TaskElements.Where(x => x.BoeID == boe.Id))
 				{
-					if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, task.HasTMRates))
+					if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, task)))
 					{
 						ICollection<MoqTypeSelection> moqTypesForTask = exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).ToList();
 						
@@ -515,7 +516,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			{
 				foreach (BoeTaskElementDTO task in exportInputs.TaskElements.Where(x => x.BoeID == boe.Id))
 				{
-					if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, task.HasTMRates))
+					if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, task)))
 					{
 						ICollection<MoqTypeSelection> moqTypesForTask = exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).ToList();
 

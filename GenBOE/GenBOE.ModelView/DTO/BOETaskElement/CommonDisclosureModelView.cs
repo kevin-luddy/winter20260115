@@ -32,6 +32,7 @@ namespace GenBOE.DataBridge.DTO
 				this.BusinessResourceID = disclosureDTO.BusinessResourceID;
 				this.ResourceID = disclosureDTO.ResourceID;
 				this.IsUserInput = disclosureDTO.IsUserInput;
+				this.UCOTHours = disclosureDTO.UCOTHours;
 			}
 		}
 
@@ -54,7 +55,8 @@ namespace GenBOE.DataBridge.DTO
 				CommonDisclosureSkillMixID = this.CommonDisclosureSkillMixID,
 				BOEID = this.BOEID,
 				BOETaskElementID = this.BOETaskElementID,
-				IsUserInput = this.IsUserInput
+				IsUserInput = this.IsUserInput,
+				UCOTHours = this.UCOTHours
 			};
 		}
 	}

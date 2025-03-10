@@ -19,7 +19,8 @@ namespace GenBOE.ActionLogic.IO.Export
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
-    using IES.Common;
+	using GenBOE.Objects;
+	using IES.Common;
     using IES.Common.classes;
 
     [ExcludeFromCodeCoverage]
@@ -43,11 +44,12 @@ namespace GenBOE.ActionLogic.IO.Export
             IActiveDirectoryUtilities ADUtils,
             BOEExportConverter exportConverter)
             : base(inIPermissionsDTOLoader, 
-            inIUserDTODataLoader, 
-            inICommonDataMapper,
-            inVariableSelectBOEtoSumCalculation,
+            inIUserDTODataLoader,
+			inICommonDataMapper,
+			inVariableSelectBOEtoSumCalculation,
             ADUtils,
-            exportConverter)
+            exportConverter
+			)
         {
         }
 

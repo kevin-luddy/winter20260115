@@ -1773,56 +1773,20 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				});
 			}
 
-			if (!this.CustomFieldAlreadyExists(ProPricerCFConstants.PROPRICER_CF_PROJECT, existingCustomFields))
+			if (!this.CustomFieldAlreadyExists(ProPricerCFConstants.PROPRICER_CF_FUNCTION, existingCustomFields))
 			{
-				CustomFieldDTO project = new CustomFieldDTO
+				CustomFieldDTO function = new CustomFieldDTO
 				{
 					Id = -5,
 					WorkspaceID = wsId,
-					CustomFieldName = ProPricerCFConstants.PROPRICER_CF_PROJECT,
+					CustomFieldName = ProPricerCFConstants.PROPRICER_CF_FUNCTION,
 					CustomFieldDisplayID = CustomFieldType.BoeDisplay,
 					CustomFieldRequired = false,
-					IsOpenEnded = false,
+					IsOpenEnded = true,
 					Updateable = UpdateType.Upsert
 				};
 
-				int? projectId = this.customFieldLoader.Save(project);
-
-				customFieldValues.Add(new CustomFieldValueDTO
-				{
-					Updateable = UpdateType.Upsert,
-					CustomFieldID = projectId.Value,
-					CustomFieldValueName = "USER1",
-					CustomFieldValueDescription = "User Defined",
-					Id = -6,
-					CustomFieldValueID = -6
-				});
-			}
-
-			if (!this.CustomFieldAlreadyExists(ProPricerCFConstants.PROPRICER_CF_FIELDA, existingCustomFields))
-			{
-				CustomFieldDTO fieldA = new CustomFieldDTO
-				{
-					Id = -6,
-					WorkspaceID = wsId,
-					CustomFieldName = ProPricerCFConstants.PROPRICER_CF_FIELDA,
-					CustomFieldDisplayID = CustomFieldType.BoeDisplay,
-					CustomFieldRequired = false,
-					IsOpenEnded = false,
-					Updateable = UpdateType.Upsert
-				};
-
-				int? fieldAId = this.customFieldLoader.Save(fieldA);
-
-				customFieldValues.Add(new CustomFieldValueDTO
-				{
-					Updateable = UpdateType.Upsert,
-					CustomFieldID = fieldAId.Value,
-					CustomFieldValueName = "USER2",
-					CustomFieldValueDescription = "User Defined 2",
-					Id = -7,
-					CustomFieldValueID = -7
-				});
+				this.customFieldLoader.Save(function);
 			}
 
 			this.customFieldValueLoader.Save(customFieldValues);

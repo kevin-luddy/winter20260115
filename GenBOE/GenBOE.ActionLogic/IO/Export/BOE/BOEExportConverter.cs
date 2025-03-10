@@ -14,7 +14,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
     using System.Linq;
     using System.Text;
     using GenBOE.ActionLogic;
-    using GenBOE.ActionLogic.Common.Calculations;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -419,14 +420,13 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                 this.Logger.Info("Exporting - BOEExporter - ConvertBoeDTOToExportMV - labor tasks begin");
             }
 
-            Collection<BOEExportTaskElement> boeExportTaskElements = new Collection<BOEExportTaskElement>();
+			Collection<BOEExportTaskElement> boeExportTaskElements = new Collection<BOEExportTaskElement>();
             IDictionary<int, ElementOfCostTypeModelView> allElementOfCostTypes = this.commonDataMapper.GetElementOfCostTypesDictionary();
             IDictionary<int, SpreadCurveModelView> allSpreadCurves = exportInputs.Workspace.IsProjectMapWorkspace ? this.commonDataMapper.getProjectMapSpreadCurveDictionary() : this.commonDataMapper.getSpreadCurveDictionary();
             IDictionary<int, SikorskyLegacyResourceDTO> allLegacyResources = this.commonDataMapper.GetSikorskyLegacyResourcesDictionary(exportInputs.Workspace.IsProjectMapWorkspace);
 
             ICollection<BoeTaskElementDTO> taskElements = exportInputs.TaskElements.Where(x => x.BoeID == boe.Id).ToList();
             
-            IReadOnlyCollection<ResourceDTO> resourcesForLabors = exportInputs.ResourcesUsedInWsBoes;
             IReadOnlyCollection<PerformingOrgDTO> performingOrgsFromDb = exportInputs.PerformingOrgsUsedInBoes;
 
 			foreach (BoeTaskElementDTO boeTaskElement in taskElements)
@@ -447,11 +447,10 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                 boeExportTaskElement.BOETaskElementOrder = boeTaskElement.BOETaskElementOrder;
                 boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
 
-				if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, boeTaskElement.HasTMRates))
+				if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, boeTaskElement)))
 				{
 					boeExportTaskElement.SkillMixTable = boeTaskElement.SkillMixTable;
 					boeExportTaskElement.CommonDisclosureTable = boeTaskElement.CommonDisclosureTable;
-					boeExportTaskElement.HasTMRates = boeTaskElement.HasTMRates;
 				}
 
 				boeExportTaskElement.SetTaskElementType(boeTaskElement.TaskElementType);
@@ -523,7 +522,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
                     if (laborType.ResourceID.HasValue)
                     {
-                        ResourceDTO resource = resourcesForLabors.First(x => x.Id == laborType.ResourceID.Value);
+                        ResourceDTO resource = exportInputs.ResourcesUsedInWsBoes.First(x => x.Id == laborType.ResourceID.Value);
 
 						if (exportFormatDTO.ExportFormat.TemplateType == ExcelReportTemplateType.DS_ES_STANDARD_PORTRAIT_WITH_COST ||
                             exportFormatDTO.ExportFormat.TemplateType == ExcelReportTemplateType.DS_ES_STANDARD_PORTRAIT_WITHOUT_COST ||
