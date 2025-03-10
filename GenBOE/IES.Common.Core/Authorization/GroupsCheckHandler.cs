@@ -2,6 +2,7 @@
 {
 	using IES.Common.Core.Interfaces;
 	using IES.Common.Core.Models;
+	using IES.Common.Core.Utilities;
 	using Microsoft.AspNetCore.Authorization;
 
 	public class GroupsCheckHandler : AuthorizationHandler<GroupsCheckRequirement>
@@ -27,13 +28,17 @@
 			}
 			else
 			{
-				ICollection<GroupData> groups = activeDirectoryUtilities.GetGroupsForUser(context.User.Identity.Name);
-				foreach (GroupData group in groups)
+				if (context.User?.Identity?.Name != null)
 				{
-					if (requirement.Groups.Contains(group.Ntid.ToLower()))
+					string ntId = CommonUtilities.StripDomain(context.User.Identity.Name);
+					foreach (string group in requirement.Groups)
 					{
-						result = true;
-						break;
+						ICollection<UserData> users = this.activeDirectoryUtilities.GetAdGroupUsers(group);
+						if (users.Any(u => u.Ntid.ToLower() == ntId))
+						{
+							result = true;
+							break;
+						}
 					}
 				}
 			}

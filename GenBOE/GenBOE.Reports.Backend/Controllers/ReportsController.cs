@@ -19,10 +19,12 @@ namespace GenBOE.Reports.Backend.Controllers
 	using IES.Common.Core.Models;
 	using IES.Common.Core.OfficeUtilities;
 	using IES.Common.Core.Utilities;
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.Logging;
 
+	[Authorize(Policy = "OnlyNegotiate")]
 	[Route("Reports")]
 	public class ReportsController : IES.Common.Core.IESController
 	{

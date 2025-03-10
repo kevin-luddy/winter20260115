@@ -1249,5 +1249,23 @@ namespace IES.Common.Core.Utilities
 		{
 			return workspaceCreationDate.HasValue && workspaceCreationDate.Value.Date >= HistoricalReferenceExplanationStartDate.Date;
 		}
+
+		/// <summary>
+		/// Strips domain from Resource Account Name
+		/// </summary>
+		/// <param name="ntIdWithDomain">Domain\\NTID</param>
+		/// <returns>ntid lowercase</returns>
+		public static string StripDomain(string ntIdWithDomain)
+		{
+			if (string.IsNullOrWhiteSpace(ntIdWithDomain))
+			{
+				return ntIdWithDomain;
+			}
+
+			string[] splitDomainAndNTID = ntIdWithDomain.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
+			string ntIDOnly = splitDomainAndNTID.Length == 2 ? splitDomainAndNTID[1] : splitDomainAndNTID[0];
+
+			return ntIDOnly.ToLower();
+		}
 	}
 }
