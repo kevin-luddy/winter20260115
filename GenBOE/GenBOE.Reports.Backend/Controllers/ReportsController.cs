@@ -16,7 +16,9 @@ namespace GenBOE.Reports.Backend.Controllers
 	using GenBOE.Reports.Backend.Services;
 	using IES.Common.Core.Configuration;
 	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.Models;
 	using IES.Common.Core.OfficeUtilities;
+	using IES.Common.Core.Utilities;
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.Logging;
@@ -56,10 +58,10 @@ namespace GenBOE.Reports.Backend.Controllers
 		/// <param name="boeSummaryGridModelViews">the boe summary grid model veiws</param>
 		/// <param name="segmentedOutput">Should the output be broken into segments and zipped</param>
 		[HttpPost("[action]")]
-		public async Task<IActionResult> ExportBoeToWord(ExportBoeWordRequestViewModel requestModel)
+		public async Task<IESResponse<byte[]>> ExportBoeToWord(ExportBoeWordRequestViewModel requestModel)
 		{
+			IESResponse<byte[]> response = new();
 			string tempFileLocation = string.Empty;
-			string exportedFileName = string.Empty;
 			try
 			{
 				BOEExportInputs exportInputs = new(requestModel);
@@ -69,44 +71,50 @@ namespace GenBOE.Reports.Backend.Controllers
 					tempFileLocation = this.boeExportService.ExportBoeToZip(requestModel.SelectedComponents, requestModel.IsCustomExport, requestModel.ExportFormatDTO,
 						exportInputs, requestModel.BoeExportModelViews, requestModel.BoeSummaryGridModelViews);
 
-					fs = new(tempFileLocation, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
-					exportedFileName = string.Format("genBOEExport-{0}.zip", requestModel.Workspace.WorkspaceName).Replace(",", string.Empty);
+					response.Data = System.IO.File.ReadAllBytes(tempFileLocation);
 				}
 				else
 				{
-					tempFileLocation = Path.GetTempFileName();
-					fs = new(tempFileLocation, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
-					
-					exportedFileName = this.boeExportService.ExportBoeToWord(fs, requestModel.SelectedComponents, requestModel.IsCustomExport, requestModel.ExportFormatDTO,
-						exportInputs, requestModel.BoeExportModelViews, requestModel.BoeSummaryGridModelViews);
+					// initialize memory stream to 1 MB to start
+					using (MemoryStream ms = new(1000000))
+					{
+						tempFileLocation = Path.GetTempFileName();
+						fs = new(tempFileLocation, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+						this.boeExportService.ExportBoeToWord(ms, requestModel.SelectedComponents, requestModel.IsCustomExport, requestModel.ExportFormatDTO,
+							exportInputs, requestModel.BoeExportModelViews, requestModel.BoeSummaryGridModelViews);
+
+						ms.Seek(0, SeekOrigin.Begin);
+						response.Data = ms.ToArray();
+					}
 				}
 
-				// Generate a custom ActionResult to cause a file download to the client
-				
-				fs.Seek(0, SeekOrigin.Begin);
-
-				return this.File(
-					fileStream: fs,
-					contentType: requestModel.SegmentedOutput ?  ExportFileDownloadBase.ContentType_ZIP : ExportFileDownloadBase.ContentType_DOCX,
-					fileDownloadName: exportedFileName);
+				response.IsSuccessful = true;
 			}
 			catch (Exception e)
 			{
-				if (!string.IsNullOrWhiteSpace(exportedFileName) && System.IO.File.Exists(exportedFileName))
+				this.log.LogError(e, "Unknown Exception.");
+
+				string supportLink = CommonUtilities.ServiceCentralLink();
+
+				response.Messages.Add($"An error has occurred.  This might be the result of invalid data.  If the data is valid, and the error persists, please create a ticket with IES Helpdesk at {supportLink}.");
+			}
+			finally
+			{
+				if (!string.IsNullOrWhiteSpace(tempFileLocation) && System.IO.File.Exists(tempFileLocation))
 				{
 					try
 					{
-						System.IO.File.Delete(exportedFileName);
+						System.IO.File.Delete(tempFileLocation);
 					}
 					catch
 					{
 						// if it errored out, that is ok
 					}
 				}
-
-				this.log.LogError(e, "Unknown Exception.");
-				return await this.CreateTextFileWithErrorMessage(e.Message);
 			}
+
+			return response;
 		}
 
 		/// <summary>

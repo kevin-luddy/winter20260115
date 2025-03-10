@@ -106,7 +106,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			bool writelogstatements = ConfigurationUtilities.GetAppSetting("ExportLoggingEnableInternalMV", false);
 
 			// The workspace's export format doesn't have the correct template type if this is a user template so always use the exportFormatDTO
-			WorkspaceExportFormatDTO exportFormatDTO = exportInputs.WorkspaceExportFormats.FirstOrDefault(x => x.Id == exportInputs.Workspace.TemplateID);
+			WorkspaceExportFormatDTO exportFormatDTO = exportInputs.WorkspaceExportFormat;
 
 			CustomFieldDTO boeSegregationCustomField = (from c in exportInputs.CustomFields
 														where c.CustomFieldName.Equals(BOEExporterConstants.CustomFieldName_BOESegregation, StringComparison.CurrentCultureIgnoreCase) &&

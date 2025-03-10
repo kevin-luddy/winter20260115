@@ -1278,5 +1278,24 @@ namespace GenBOE.Objects
 				return this.moqTypeSelections;
 			}
 		}
+
+		/// <summary>
+		/// Convert from Full Object to DTO
+		/// </summary>
+		/// <returns>DTO version of this FullObject</returns>
+		public WorkspaceDTO ToDTO()
+		{
+			WorkspaceDTO boe = new WorkspaceDTO();
+			Type type = typeof(WorkspaceDTO);
+			foreach (PropertyInfo prop in type.GetProperties())
+			{
+				if (prop.CanRead && prop.CanWrite)
+				{
+					type.GetProperty(prop.Name).SetValue(boe, prop.GetValue(this, null), null);
+				}
+			}
+
+			return boe;
+		}
 	}
 }

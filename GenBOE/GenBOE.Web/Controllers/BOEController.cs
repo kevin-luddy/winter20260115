@@ -923,7 +923,7 @@ namespace GenBOE.Web.Controllers
 		/// <returns>A special ActionResult that generates a file download for the user to download the
 		/// populated Word template.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public ActionResult ExportBOEToWordFile(string workspace, int boeId, string summarizeByCustomField)
+		public async Task<ActionResult> ExportBOEToWordFile(string workspace, int boeId, string summarizeByCustomField)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -946,7 +946,7 @@ namespace GenBOE.Web.Controllers
 
 				this.reportsControllerLogic.PrepareAllBOEsReport(ws, isSubcontractorUser, summarizeByCustomField, ids, ViewData, out isCustomExport, out wsExportFormatDTO,
 					out exportInputs, out boeExportModelViews, out boeSummaryGridModelViews, false);
-				this.reportsControllerLogic.ExportAllBOEsReport(ws, null, Response, isCustomExport, wsExportFormatDTO, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
+				await this.reportsControllerLogic.ExportAllBOEsReport(ws, null, Response, isCustomExport, wsExportFormatDTO, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
 			}
 			catch (Exception ex)
 			{

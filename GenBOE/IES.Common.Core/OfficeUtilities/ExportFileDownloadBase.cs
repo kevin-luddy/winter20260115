@@ -46,6 +46,11 @@ namespace IES.Common.Core.OfficeUtilities
 		public const string ContentType_JSON = "application/json";
 
 		/// <summary>
+		/// MIME content type for txt files
+		/// </summary>
+		public const string ContentType_TEXT_PLAIN = "text/plain";
+
+		/// <summary>
 		/// Gets the content type based on the filename
 		/// </summary>
 		/// <param name="fileName">File to get content type against</param>

@@ -61,7 +61,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				throw new ArgumentNullException(nameof(exportInputs));
 			}
 			// The workspace's export format doesn't have the correct template type if this is a user template so always use the exportFormatDTO
-			WorkspaceExportFormatDTO exportFormatDTO = exportInputs.WorkspaceExportFormats.FirstOrDefault(x => x.Id == exportInputs.Workspace.TemplateID);
+			WorkspaceExportFormatDTO exportFormatDTO = exportInputs.WorkspaceExportFormat;
 
 			if (exportFormatDTO != null && (int)exportFormatDTO.ExportFormat.TemplateType < 1001)
 			{

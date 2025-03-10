@@ -26,10 +26,10 @@
 		{
 			ExportBoeWordRequestViewModel model = new ExportBoeWordRequestViewModel(exportInputs)
 			{
-				SelectedComponents = selectedComponents.ToList(),
+				SelectedComponents = selectedComponents?.ToList(),
 				IsCustomExport = isCustomExport,
 				ExportFormatDTO = wsExportFormatDTO,
-				BoeExportModelViews = boeExportModelViews.ToList(),
+				BoeExportModelViews = boeExportModelViews?.ToList(),
 				BoeSummaryGridModelViews = boeSummaryGridModelViews,
 				SegmentedOutput = segmentedOutput
 			};
@@ -48,7 +48,7 @@
 				}
 			}
 
-			IESSingleResponse<Stream> returnStream = await this.PostReturnStream<ExportBoeWordRequestViewModel>("ExportBoeToWord", model);
+			IESSingleResponse<byte[]> returnStream = await this.Post<byte[], ExportBoeWordRequestViewModel>("ExportBoeToWord", model);
 
 			if (returnStream.IsSuccessful)
 			{
@@ -58,7 +58,7 @@
 				httpResponse.BufferOutput = true;
 				httpResponse.AppendHeader("Content-Disposition", $"attachment;filename={returnFilename}");
 
-				await returnStream.Data.CopyToAsync(httpResponse.OutputStream);
+				await httpResponse.OutputStream.WriteAsync(returnStream.Data, 0, returnStream.Data.Length);
 			}
 			else
 			{

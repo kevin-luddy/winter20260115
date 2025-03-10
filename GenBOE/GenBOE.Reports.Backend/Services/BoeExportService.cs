@@ -4,7 +4,6 @@
 	using System.IO;
 	using GenBOE.DataBridge.Core;
 	using GenBOE.DataBridge.Core.DTO.Export.BOE;
-	using GenBOE.DataBridge.Core.DTO.FullObjects;
 	using GenBOE.DataBridge.Core.IO.Export;
 	using IES.Common.Core.Enums;
 
@@ -77,7 +76,7 @@
 		/// <summary>
 		/// Exports BOE(s) to Word document
 		/// </summary>
-		/// <param name="fileStream">FileStream to stream file into</param>
+		/// <param name="stream">Stream to stream file into</param>
 		/// <param name="selectedComponents">List of BOEs to be included in the report; if null, then include ALL</param>
 		/// <param name="isCustomExport">Flag indicating wheter the export is a custom export</param>
 		/// <param name="exportFormat">the Workspace Format DTO</param>
@@ -85,7 +84,7 @@
 		/// <param name="boeExportModelViews">the boe export model views</param>
 		/// <param name="boeSummaryGridModelViews">the boe summary grid model veiws</param>
 		/// <returns>Name of document</returns>
-		public string ExportBoeToWord(FileStream fileStream, ICollection<BoeCustomReportComponent> selectedComponents, bool isCustomExport, 
+		public string ExportBoeToWord(Stream stream, ICollection<BoeCustomReportComponent> selectedComponents, bool isCustomExport, 
 			WorkspaceExportFormatDTO exportFormat, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, 
 			List<BOESummaryGridModelView> boeSummaryGridModelViews)
 		{
@@ -93,14 +92,14 @@
 			{
 				// Call the export function in the business layer
 				this.boeCustomExporter.ExportBOEToWordStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, 
-					selectedComponents, fileStream, exportFormat);
+					selectedComponents, stream, exportFormat);
 				return string.Format("genBOECustomExport-{0}.docx", exportInputs.Workspace.WorkspaceName).Replace(",", string.Empty);
 			}
 			else
 			{
 				// Call the export function in the business layer
 				this.boeExporter.ExportBOEToWordStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, 
-						exportFormat.FileData, fileStream, exportFormat.ExportFormat.TemplateType);
+						exportFormat.FileData, stream, exportFormat.ExportFormat.TemplateType);
 
 				return string.Format("genBOEExport-{0}.docx", exportInputs.Workspace.WorkspaceName).Replace(",", string.Empty);
 			}

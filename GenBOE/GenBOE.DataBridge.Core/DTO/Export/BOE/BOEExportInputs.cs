@@ -31,8 +31,6 @@
 			this.BoeMappingWithApproverResponses = requestModel.BoeMappingWithApproverResponses;
 			this.Boes = requestModel.Boes;
 			this.Clins = requestModel.Clins;
-			this.ClinsNoMultiClin = requestModel.ClinsNoMultiClin;
-			this.ContractTypes = requestModel.ContractTypes;
 			this.CustomFields = requestModel.CustomFields;
 			this.CustomFieldValues = requestModel.CustomFieldValues;
 			this.EscalationRates = requestModel.EscalationRates;
@@ -56,9 +54,8 @@
 			this.Travels = requestModel.Travels;
 			this.TravelTrips = requestModel.TravelTrips;
 			this.WbsElements = requestModel.WbsElements;
-			this.WbsElementsNoMultiWbs = requestModel.WbsElementsNoMultiWbs;
 			this.Workspace = requestModel.Workspace;
-			this.WorkspaceExportFormats = requestModel.WorkspaceExportFormats;
+			this.WorkspaceExportFormat = requestModel.ExportFormatDTO;
 			this.WorkspaceVariables = requestModel.WorkspaceVariables;
 		}
 
@@ -140,7 +137,7 @@
 		/// <summary>
 		/// Gets the workspace export formats.
 		/// </summary>
-		public IReadOnlyCollection<WorkspaceExportFormatDTO> WorkspaceExportFormats { get; private set; }
+		public WorkspaceExportFormatDTO WorkspaceExportFormat { get; private set; }
 
 		/// <summary>
 		/// Gets the workspace.
@@ -163,19 +160,9 @@
 		public IReadOnlyCollection<ClinDTO> Clins { get; private set; }
 
 		/// <summary>
-		/// Clins belonging to the Workspace without Multi Clin
-		/// </summary>
-		public IReadOnlyCollection<ClinDTO> ClinsNoMultiClin { get; private set; }
-
-		/// <summary>
 		/// Gets the WBS elements.
 		/// </summary>
 		public IReadOnlyCollection<WbsDTO> WbsElements { get; private set; }
-
-		/// <summary>
-		/// Wbs Elements belonging to the Workspace without Multi
-		/// </summary>
-		public IReadOnlyCollection<WbsDTO> WbsElementsNoMultiWbs { get; private set; }
 
 		/// <summary>
 		/// Gets the boe mapping with approver responses.
@@ -227,11 +214,6 @@
 		/// used by the All BOEs report when running with the special format template.
 		/// </summary>
 		public string SummarizeByCustomField { get; private set; }
-
-		/// <summary>
-		/// Gets or sets the contract types.
-		/// </summary>
-		public ICollection<PickListDto> ContractTypes { get; private set; }
 
 		/// <summary>
 		/// Gets the MOQ Types

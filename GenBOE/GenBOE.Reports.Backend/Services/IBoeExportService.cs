@@ -22,14 +22,15 @@
 		/// <summary>
 		/// Exports BOE(s) to Word document.  
 		/// </summary>
+		/// <param name="stream">The Stream to export into</param>
+		/// <param name="exportFormat">The Export Format</param>
 		/// <param name="selectedComponents">List of BOEs to be included in the report; if null, then include ALL</param>
 		/// <param name="isCustomExport">Flag indicating wheter the export is a custom export</param>
-		/// <param name="wsExportFormatDTO">the Workspace Format DTO</param>
 		/// <param name="exportInputs">the export inputs</param>
 		/// <param name="boeExportModelViews">the boe export model views</param>
 		/// <param name="boeSummaryGridModelViews">the boe summary grid model veiws</param>
 		/// <returns>Name of document</returns>
-		string ExportBoeToWord(FileStream fileStream, ICollection<BoeCustomReportComponent> selectedComponents, bool isCustomExport,
+		string ExportBoeToWord(Stream stream, ICollection<BoeCustomReportComponent> selectedComponents, bool isCustomExport,
 			WorkspaceExportFormatDTO exportFormat, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, 
 			List<BOESummaryGridModelView> boeSummaryGridModelViews);
 

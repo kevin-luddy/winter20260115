@@ -43,8 +43,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 			this.BoeMappingWithApproverResponses = exportInputs.BoeMappingWithApproverResponses.ToDictionary(kvp => kvp.Key, kvp => kvp.Value); ;
 			this.Boes = exportInputs.Boes.ToList();
 			this.Clins = exportInputs.Clins.ToList();
-			this.ClinsNoMultiClin = exportInputs.ClinsNoMultiClin.ToList();
-			this.ContractTypes = exportInputs.ContractTypes.ToList();
 			this.CustomFields = exportInputs.CustomFields.ToList();
 			this.CustomFieldValues = exportInputs.CustomFieldValues.ToList();
 			this.EscalationRates = exportInputs.EscalationRates.ToList();
@@ -68,9 +66,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 			this.Travels = exportInputs.Travels.ToList();
 			this.TravelTrips = exportInputs.TravelTrips.ToList();
 			this.WbsElements = exportInputs.WbsElements.ToList();
-			this.WbsElementsNoMultiWbs = exportInputs.WbsElementsNoMultiWbs.ToList();
 			this.Workspace = exportInputs.Workspace;
-			this.WorkspaceExportFormats = exportInputs.WorkspaceExportFormats.ToList();
 			this.WorkspaceVariables = exportInputs.WorkspaceVariables.ToList();
 		}
 
@@ -183,11 +179,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		public List<ResourceDTO> ResourcesUsedInWsBoes { get; set; }
 
 		/// <summary>
-		/// Gets the workspace export formats.
-		/// </summary>
-		public List<WorkspaceExportFormatDTO> WorkspaceExportFormats { get; set; }
-
-		/// <summary>
 		/// Gets the workspace.
 		/// </summary>
 		public WorkspaceDTO Workspace { get; set; }
@@ -208,19 +199,9 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		public List<ClinDTO> Clins { get; set; }
 
 		/// <summary>
-		/// Clins belonging to the Workspace without Multi Clin
-		/// </summary>
-		public List<ClinDTO> ClinsNoMultiClin { get; set; }
-
-		/// <summary>
 		/// Gets the WBS elements.
 		/// </summary>
 		public List<WbsDTO> WbsElements { get; set; }
-
-		/// <summary>
-		/// Wbs Elements belonging to the Workspace without Multi
-		/// </summary>
-		public List<WbsDTO> WbsElementsNoMultiWbs { get; set; }
 
 		/// <summary>
 		/// Gets the boe mapping with approver responses.
@@ -273,11 +254,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// used by the All BOEs report when running with the special format template.
 		/// </summary>
 		public string SummarizeByCustomField { get; set; }
-
-		/// <summary>
-		/// Gets or sets the contract types.
-		/// </summary>
-		public List<PickListDto> ContractTypes { get; set; }
 
 		/// <summary>
 		/// Gets the MOQ Types

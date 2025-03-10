@@ -10,6 +10,7 @@ namespace IES.Common
 	using System.Collections.Generic;
 	using System.IO;
 	using System.Net.Http;
+	using System.Runtime.InteropServices.ComTypes;
 	using System.Threading.Tasks;
 	using Newtonsoft.Json;
 
@@ -33,10 +34,12 @@ namespace IES.Common
 		/// </summary>
 		private bool disposedValue;
 
+		#pragma warning disable CA2000
 		/// <summary>
 		/// The http client
 		/// </summary>
-		private HttpClient httpClient = new HttpClient();
+		private readonly HttpClient httpClient = new HttpClient(new HttpClientHandler() { UseDefaultCredentials = true }, true);
+		#pragma warning restore CA2000
 
 		/// <summary>
 		/// Logger
@@ -199,30 +202,44 @@ namespace IES.Common
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public async Task<IESSingleResponse<Stream>> PostReturnStream<TData>(string url, TData data)
 		{
-			// Handles self referencing loop with Newtonsoft serializing options
-			string serializedResult = JsonConvert.SerializeObject(data, new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects, ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
-
-			// Get an authenticated HTTP client
-			HttpResponseMessage response = await HttpClient.PostAsync($"{baseUrl}{serviceController}{url}", new StringContent(serializedResult, System.Text.Encoding.UTF8, "application/json"));
-
-			if (!response.IsSuccessStatusCode)
+			try
 			{
-				Logger.Error(string.Format("{0} was not successful w/ code {1}", "Post", response.StatusCode));
-				if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+				// Handles self referencing loop with Newtonsoft serializing options
+				string serializedResult = JsonConvert.SerializeObject(data, new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects, ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+
+				// Get an authenticated HTTP client
+				HttpResponseMessage response = await HttpClient.PostAsync($"{baseUrl}{serviceController}{url}", new StringContent(serializedResult, System.Text.Encoding.UTF8, "application/json"));
+
+				if (!response.IsSuccessStatusCode)
 				{
-					return new IESSingleResponse<Stream>() { IsSuccessful = false, Messages = new List<string>() { Constants.GENERIC_USER_UNAUTHORIZED } };
+					Logger.Error(string.Format("{0} was not successful w/ code {1}", "Post", response.StatusCode));
+					if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+					{
+						return new IESSingleResponse<Stream>() { IsSuccessful = false, Messages = new List<string>() { Constants.GENERIC_USER_UNAUTHORIZED } };
+					}
+
+					return new IESSingleResponse<Stream>() { IsSuccessful = false, Messages = new List<string>() { Constants.GENERIC_USER_ERROR } };
 				}
 
-				return new IESSingleResponse<Stream>() { IsSuccessful = false, Messages = new List<string>() { Constants.GENERIC_USER_ERROR } };
-			}
+				Stream stream = await response.Content.ReadAsStreamAsync();
+				
+				return new IESSingleResponse<Stream>()
+				{
+					IsSuccessful = true,
+					Messages = new List<string>(),
+					Data = stream
+				};
 
-			Stream stream = await response.Content.ReadAsStreamAsync();
-			return new IESSingleResponse<Stream>() 
-			{ 
-				IsSuccessful = true, 
-				Messages = new List<string>(), 
-				Data = stream 
-			};
+			}
+			catch (Exception ex)
+			{
+				// since this is being called inside async, we will wrap the exception nicely
+				return new IESSingleResponse<Stream>()
+				{
+					IsSuccessful = false,
+					Messages = new List<string>() { ex.Message, ex.StackTrace }
+				};
+			}
 		}
 
 		/// <summary>

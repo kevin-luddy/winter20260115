@@ -196,7 +196,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			bool writelogstatements = ConfigurationUtilities.GetAppSetting<bool>(BOEExporterConstants.CONFIG_SETTING_LOG_VIEW_MODELS, false);
 
 			// The workspace's export format doesn't have the correct template type if this is a user template so always use the exportFormatDTO
-			WorkspaceExportFormatDTO exportFormatDTO = exportInputs.WorkspaceExportFormats.FirstOrDefault(x => x.Id == exportInputs.Workspace.TemplateID);
+			WorkspaceExportFormatDTO exportFormatDTO = exportInputs.WorkspaceExportFormat;
 
 			CustomFieldDTO BOESegregationCustomField = (from c in exportInputs.CustomFields
 														where c.CustomFieldName.Equals(BOEExporterConstants.CustomFieldName_BOESegregation, StringComparison.CurrentCultureIgnoreCase) &&
@@ -4532,7 +4532,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			if (logEnabled) { _log.LogInformation("Exporting - BOECustomExporter - ProcessLaborTasks - labor tasks begin"); }
 
 			// The workspace's export format doesn't have the correct template type if this is a user template so always use the exportFormatDTO
-			WorkspaceExportFormatDTO exportFormatDTO = exportInputs.WorkspaceExportFormats.FirstOrDefault(x => x.Id == exportInputs.Workspace.TemplateID);
+			WorkspaceExportFormatDTO exportFormatDTO = exportInputs.WorkspaceExportFormat;
 
 			ICollection<BoeTaskElementDTO> allBoeTaskElements = exportInputs.TaskElements.Where(x => x.BoeID == boe.Id).ToList();
 			IReadOnlyCollection<CustomFieldValueDTO> workspaceCustomFieldValues = exportInputs.CustomFieldValues;

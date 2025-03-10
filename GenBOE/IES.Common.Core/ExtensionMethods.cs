@@ -508,11 +508,6 @@ namespace IES.Common.Core
 		/// <returns>The copied object</returns>
 		public static T DeepClone<T>(this T source) where T: class 
 		{
-			if (!typeof(T).IsSerializable)
-			{
-				throw new ArgumentException("The type must be serializable.", nameof(source));
-			}
-
 			// Don't serialize a null object, simply return the default for that object
 			if (ReferenceEquals(source, null))
 			{

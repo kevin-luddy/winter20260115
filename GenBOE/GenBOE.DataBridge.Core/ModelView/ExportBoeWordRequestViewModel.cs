@@ -120,11 +120,6 @@
 		public List<ResourceDTO> ResourcesUsedInWsBoes { get; set; }
 
 		/// <summary>
-		/// Gets the workspace export formats.
-		/// </summary>
-		public List<WorkspaceExportFormatDTO> WorkspaceExportFormats { get; set; }
-
-		/// <summary>
 		/// Gets the workspace.
 		/// </summary>
 		public WorkspaceDTO Workspace { get; set; }
@@ -145,19 +140,9 @@
 		public List<ClinDTO> Clins { get; set; }
 
 		/// <summary>
-		/// Clins belonging to the Workspace without Multi Clin
-		/// </summary>
-		public List<ClinDTO> ClinsNoMultiClin { get; set; }
-
-		/// <summary>
 		/// Gets the WBS elements.
 		/// </summary>
 		public List<WbsDTO> WbsElements { get; set; }
-
-		/// <summary>
-		/// Wbs Elements belonging to the Workspace without Multi
-		/// </summary>
-		public List<WbsDTO> WbsElementsNoMultiWbs { get; set; }
 
 		/// <summary>
 		/// Gets the boe mapping with approver responses.
@@ -209,11 +194,6 @@
 		/// used by the All BOEs report when running with the special format template.
 		/// </summary>
 		public string SummarizeByCustomField { get; set; }
-
-		/// <summary>
-		/// Gets or sets the contract types.
-		/// </summary>
-		public List<PickListDto> ContractTypes { get; set; }
 
 		/// <summary>
 		/// Gets the MOQ Types

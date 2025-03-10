@@ -33,7 +33,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     /// <summary>
     /// Action Logic for the Reports Controller
     /// </summary>
-    public class ReportsControllerLogic : IReportsControllerLogic
+    public class ReportsControllerLogic : IReportsControllerLogic, IDisposable
     {
         /// <summary>
         /// The AD utils
@@ -54,14 +54,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// Cache Object
 		/// </summary>
 		private MemoryCache cache;
+		private bool disposedValue;
 
-        /// <summary>
-        /// The number of seconds to store in cache - 10 minutes
-        /// 
-        /// This can be extended to this long because it's manually cleared when you visit the report on the page; so the cached data will only be used when
-        /// you are on the report page, and hit export.. It's meant to avoid recalculations for the export generation.
-        /// </summary>
-        private const int SECONDS_TO_CACHE_DISCREPANCY_REPORT = 600;
+		/// <summary>
+		/// The number of seconds to store in cache - 10 minutes
+		/// 
+		/// This can be extended to this long because it's manually cleared when you visit the report on the page; so the cached data will only be used when
+		/// you are on the report page, and hit export.. It's meant to avoid recalculations for the export generation.
+		/// </summary>
+		private const int SECONDS_TO_CACHE_DISCREPANCY_REPORT = 600;
 
         /// <summary>
         /// Key for the cache
@@ -143,10 +144,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
             List<BoeTaskElementDTO> tasks = workspace.TaskElements.ToList();
             boeSummaryGridModelViews = new List<BOESummaryGridModelView>();
 
-            #region Override assigned output format template
+			#region Override assigned output format template
 
-            // Get template based on workspace preferences
-            wsExportFormatDTO = workspace.WorkspaceExportFormats.First(x => x.ExportFormat.TemplateId == workspace.TemplateID);
+			// Get template based on workspace preferences
+			wsExportFormatDTO = workspaceExportFormatDTOLoader.GetById(workspace.TemplateID);
 
             #endregion
 
@@ -239,7 +240,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="boeExportModelViews">the boe export model views</param>
 		/// <param name="boeSummaryGridModelViews">the boe summary grid model veiws</param>
 		/// <param name="segmentedOutput">Should the output be broken into segments and zipped</param>
-		public void ExportAllBOEsReport(FullWorkspace workspace, ICollection<BoeCustomReportComponent> selectedComponents, HttpResponseBase httpResponse, bool isCustomExport,
+		public async Task ExportAllBOEsReport(FullWorkspace workspace, ICollection<BoeCustomReportComponent> selectedComponents, HttpResponseBase httpResponse, bool isCustomExport,
 			WorkspaceExportFormatDTO wsExportFormatDTO, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, List<BOESummaryGridModelView> boeSummaryGridModelViews, bool segmentedOutput = false)
 		{
 			if (workspace == null)
@@ -257,11 +258,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				throw new ArgumentNullException(nameof(wsExportFormatDTO));
 			}
 
+			// TODO TIW
 			if (segmentedOutput == true || segmentedOutput == false)
 			{
-				Task returnTask = this.boeHttpService.ExportBOEsToWord(selectedComponents, httpResponse, isCustomExport, wsExportFormatDTO, exportInputs, boeExportModelViews,
+				await this.boeHttpService.ExportBOEsToWord(selectedComponents, httpResponse, isCustomExport, wsExportFormatDTO, exportInputs, boeExportModelViews,
 					boeSummaryGridModelViews, segmentedOutput);
-				returnTask.GetAwaiter().GetResult();
 			}
 			else
 			{
@@ -741,5 +742,37 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             return toReturn;
         }
-    }
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposedValue)
+			{
+				if (disposing)
+				{
+					if (this.boeHttpService != null)
+					{
+						this.boeHttpService.Dispose();
+					}
+				}
+
+				// TODO: free unmanaged resources (unmanaged objects) and override finalizer
+				// TODO: set large fields to null
+				disposedValue = true;
+			}
+		}
+
+		// // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+		// ~ReportsControllerLogic()
+		// {
+		//     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+		//     Dispose(disposing: false);
+		// }
+
+		public void Dispose()
+		{
+			// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+			Dispose(disposing: true);
+			GC.SuppressFinalize(this);
+		}
+	}
 }
