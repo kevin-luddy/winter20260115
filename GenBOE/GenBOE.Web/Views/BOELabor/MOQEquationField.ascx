@@ -371,7 +371,7 @@
                 <span>The following tasks are estimates in this BOE: *</span><div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.SMETasksSuffix);"></div>
             </div>
             <div class="form-element">
-                <textarea data-ng-if="!ActualReadOnly()" cols="20" name="SmeTaskEstimates_{{moqType.SelectedMOQType}}" placeholder="{{MoqTypesPlaceholder('Rationale', moqType.SelectedMOQType)}}" data-ng-model="moqType.SmeTaskEstimates"></textarea>
+                <textarea data-ng-if="!ActualReadOnly()" cols="20" name="SmeTaskEstimates_{{moqType.SelectedMOQType}}" placeholder="{{MoqTypesPlaceholder('Rationale', moqType.SelectedMOQType, Model.Company)}}" data-ng-model="moqType.SmeTaskEstimates"></textarea>
                 <span data-ng-if="ActualReadOnly()" data-ng-bind-html="moqType.SmeTaskEstimates"></span>
             </div>
         </div>
@@ -380,7 +380,7 @@
 		        <span>Provide an explanation of Why the Historical Reference was Selected: *</span>
 	        </div>
             <div class="form-element">
-                <textarea data-ng-if="!ActualReadOnly()" cols="20" name="HistoricalReferenceExplanation_{{moqType.SelectedMOQType}}" placeholder="{{MoqTypesPlaceholder('Historical Reference Explanation', moqType.SelectedMOQType)}}" data-ng-model="moqType.HistoricalReferenceExplanation"></textarea>
+                <textarea data-ng-if="!ActualReadOnly()" cols="20" name="HistoricalReferenceExplanation_{{moqType.SelectedMOQType}}" placeholder="{{MoqTypesPlaceholder('Historical Reference Explanation', moqType.SelectedMOQType, Model.Company)}}" data-ng-model="moqType.HistoricalReferenceExplanation"></textarea>
                 <span data-ng-if="ActualReadOnly()" data-ng-bind-html="moqType.HistoricalReferenceExplanation"></span>
             </div>
         </div>
@@ -397,7 +397,7 @@
                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.NonLabor%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.NonLaborRationaleSuffix);"></div>
             </div>
             <div class="form-element">
-                <textarea data-ng-if="!ActualReadOnly()" cols="20" name="Rationale_{{moqType.SelectedMOQType}}" placeholder="{{MoqTypesPlaceholder('Rationale', moqType.SelectedMOQType)}}" data-ng-model="moqType.Rationale"></textarea>
+                <textarea data-ng-if="!ActualReadOnly()" cols="20" name="Rationale_{{moqType.SelectedMOQType}}" placeholder="{{MoqTypesPlaceholder('Rationale', moqType.SelectedMOQType, Model.Company)}}" data-ng-model="moqType.Rationale"></textarea>
                 <span data-ng-if="ActualReadOnly()" data-ng-bind-html="moqType.Rationale"></span>
             </div>
         </div>
@@ -414,7 +414,7 @@
                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SME%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.SmeSkillMixSuffix);"></div>
             </div>
             <div class="form-element">
-                <textarea data-ng-if="!ActualReadOnly()" cols="20" name="SkillMixRationale_{{moqType.SelectedMOQType}}" placeholder="{{MoqTypesPlaceholder('Skill Mix Rationale', moqType.SelectedMOQType)}}" data-ng-model="moqType.SkillMixRationale"></textarea>
+                <textarea data-ng-if="!ActualReadOnly()" cols="20" name="SkillMixRationale_{{moqType.SelectedMOQType}}" placeholder="{{MoqTypesPlaceholder('Skill Mix Rationale', moqType.SelectedMOQType, Model.Company)}}" data-ng-model="moqType.SkillMixRationale"></textarea>
                 <span data-ng-if="ActualReadOnly()" data-ng-bind-html="moqType.SkillMixRationale"></span>
             </div>
         </div>
