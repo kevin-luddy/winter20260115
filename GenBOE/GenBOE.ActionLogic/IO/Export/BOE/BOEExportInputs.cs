@@ -8,6 +8,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Linq;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ModelView;
@@ -48,7 +49,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             this.SetRteTemplateOverrides(rteTemplatesOverrides);
             this.SetMoqTypes(moqTypes);
             this.Boes = new List<BoeDTO> { boe }.AsReadOnly();
-			this.TaskElements = workspace.TaskElements;
+			this.TaskElements = workspace.TaskElements.DeepClone();
             this.Workspace = workspace;
 
             // since the resources used may not contain offloaded resources, need to manually get this
@@ -57,32 +58,37 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - end");
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BOEExportInputs" /> class.
-        /// </summary>
-        /// <param name="boesToExport">The boes.</param>
-        /// <param name="allWorkspaceBoes">All of the workspace's boes.</param>
-        /// <param name="taskElements">The task elements for entire workspace.</param>
-        /// <param name="workspace">The workspace.</param>
+		/// <summary>
+		/// TODO Thomas: Create a flag param if we should do UCOT. I.e. BOE Report and if UCOT is enabled then it will be true, otherwise, it will be false for everything else.
+		///		Look into ReportsController.cs for this for where its being called we compare it against the different types. Do it for BOE Search Preview (since it goes BOE to word).
+		///		If (useUCOT && IsUcotEnabled)
+		/// Initializes a new instance of the <see cref="BOEExportInputs" /> class.
+		/// </summary>
+		/// <param name="boesToExport">The boes.</param>
+		/// <param name="allWorkspaceBoes">All of the workspace's boes.</param>
+		/// <param name="taskElements">The task elements for entire workspace.</param>
+		/// <param name="workspace">The workspace.</param>
 		/// <param name="rteTemplatesOverrides">RTE Template Overrides</param>
 		/// <param name="moqTypes">MOQ Types</param>
 		/// <param name="processLaborTypesForBrc">Should Labor Types be processed for BRCs?</param>
-        /// <exception cref="ArgumentNullException">workspace</exception>
-        public BOEExportInputs(ICollection<FullBoe> boesToExport, ICollection<FullBoe> allWorkspaceBoes, ICollection<BoeTaskElementDTO> taskElements,
-            FullWorkspace workspace, ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesOverrides = null, 
-			ICollection<MoqTypeSelection> moqTypes = null, bool processLaborTypesForBrc = false)
-        {
+		/// <exception cref="ArgumentNullException">workspace</exception>
+		public BOEExportInputs(ICollection<FullBoe> boesToExport, ICollection<FullBoe> allWorkspaceBoes, ICollection<BoeTaskElementDTO> taskElements,
+	FullWorkspace workspace, ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesOverrides = null,
+	ICollection<MoqTypeSelection> moqTypes = null, bool processLaborTypesForBrc = false, bool useUCOT = false)
+		{
 			_ = taskElements ?? throw new ArgumentNullException(nameof(taskElements));
-            if (ReferenceEquals(workspace, null))
-            {
-                throw new ArgumentNullException(nameof(workspace));
-            }
+			if (ReferenceEquals(workspace, null))
+			{
+				throw new ArgumentNullException(nameof(workspace));
+			}
 
-            this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - begin");
-            IRetriever retriever = GenBOEUnityContainer.Container.Resolve(typeof(IRetriever)) as IRetriever;
-            this.SetRteTemplateOverrides(rteTemplatesOverrides);
-            this.SetMoqTypes(moqTypes);
-            this.Boes = boesToExport.ToList<BoeDTO>().AsReadOnly();
+			taskElements = taskElements.DeepClone();
+
+			this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - begin");
+			IRetriever retriever = GenBOEUnityContainer.Container.Resolve(typeof(IRetriever)) as IRetriever;
+			this.SetRteTemplateOverrides(rteTemplatesOverrides);
+			this.SetMoqTypes(moqTypes);
+			this.Boes = boesToExport.ToList<BoeDTO>().AsReadOnly();
 			// since the resources used may not contain offloaded resources, need to manually get this
 			ICollection<int> resourceIds = taskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value)
 						.Union(workspace.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value))
@@ -91,6 +97,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 						.Union(workspace.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value))
 						.Distinct().ToList();
 
+			// TODO Thomas: if ucot thing add a bogus resource for.
 			this.ResourcesUsedInWsBoes = retriever.GetResourcesByIds(resourceIds).ToList().AsReadOnly();
 
 			int startingIndex = -1;
@@ -106,22 +113,69 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 					}
 				}
 			}
-			
+
+			// TODO Thomas: Remove this since we will be using it from the constructor.
+			useUCOT = true;
+
+			if (useUCOT && Utilities.IsUCOTEnabled)
+			{
+
+				// Get labors, filter by element of cost
+				List<ResourceTypeDto> taskElementLabors = taskElements
+					.SelectMany(x => x.taskElementLabors)
+					.ToList();
+
+				// Filter by element of cost
+				ICollection<int> laborsToRemove = new Collection<int>();
+				Dictionary<int, ElementOfCostType> laborToElementOfCost = new Dictionary<int, ElementOfCostType>();
+				foreach (ResourceTypeDto labor in taskElementLabors)
+				{
+					ResourceDTO resource = workspace.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == labor.ResourceID);
+					if (resource == null)
+					{
+						laborsToRemove.Add(labor.Id);
+					}
+					else
+					{
+						laborToElementOfCost[labor.Id] = resource.ElementOfCost;
+					}
+				}
+
+				taskElementLabors.RemoveAll(x => laborsToRemove.Contains(x.Id));
+
+				// Add UCOT data
+				taskElementLabors = AddUCOT(taskElementLabors, workspace.UCOTFactor, laborToElementOfCost);
+
+				// Update TaskElements with the new labors
+				foreach (BoeTaskElementDTO taskElement in taskElements)
+				{
+					taskElement.taskElementLabors = taskElement.taskElementLabors
+						.Where(x => taskElementLabors.Select(y => y.Id).Contains(x.Id))
+						.ToCollection();
+					foreach (ResourceTypeDto labor in taskElementLabors)
+					{
+						if (labor.TaskElementId == taskElement.Id)
+						{
+							taskElement.taskElementLabors.Add(labor);
+						}
+					}
+				}
+			}
+
 			this.TaskElements = taskElements.ToList().AsReadOnly();
 			PopulateLaborTypesMappingWithCustomFieldsValuesAndContainerIds();
 
 			this.Workspace = workspace;
 
-            
-            this.FullWorkspace = workspace;
-            this.AllWorkspaceBoes = allWorkspaceBoes.ToList<BoeDTO>().AsReadOnly();
-            this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - end");
-        }
+			this.FullWorkspace = workspace;
+			this.AllWorkspaceBoes = allWorkspaceBoes.ToList<BoeDTO>().AsReadOnly();
+			this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - end");
+		}
 
-        /// <summary>
-        /// Gets or sets all of the RTE Custom Template Overrides.
-        /// </summary>
-        public IReadOnlyCollection<RTECustomTemplateQuestionAnswerModelView> RTETemplatesOverrides { get; private set; }
+		/// <summary>
+		/// Gets or sets all of the RTE Custom Template Overrides.
+		/// </summary>
+		public IReadOnlyCollection<RTECustomTemplateQuestionAnswerModelView> RTETemplatesOverrides { get; private set; }
 
         /// <summary>
         /// The original collection of RTE Custom Template Overrides.
@@ -378,6 +432,77 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				}
 
 			}
+		}
+
+		/// <summary>
+		/// TODO Thomas: Look at how we do this and pull this out into a helper
+		/// Adds UCOT (Uncompensated Overtime) where applicable
+		/// </summary>
+		/// <param name="taskElementLabors">The task Element labors</param>
+		/// <param name="ucotFactor">The UCOT Factor</param>
+		/// <returns></returns>
+		private List<ResourceTypeDto> AddUCOT(List<ResourceTypeDto> taskElementLabors, decimal ucotFactor, Dictionary<int, ElementOfCostType> laborToElementOfCost)
+		{
+			List<ResourceTypeDto> ucotLabors = taskElementLabors;
+
+			if (Utilities.IsUCOTEnabled)
+			{
+				// First we clone so that we do not touch any Task Element Labor that may be attached to a Cached Property in the Cached FullWorkspace
+				ucotLabors = taskElementLabors.DeepClone();
+
+				decimal ucotMultiplier = ucotFactor / 100.0m;
+
+				int idCounter = -100;
+				// Now, we loop over all the spreads and add the UCOT factor where needed
+				foreach (ResourceTypeDto labor in taskElementLabors)
+				{
+
+					// UCOT is only applicable if ResourceTypeDto is Hours and LMLabor Element of Cost, and Spread is past 1LMX date
+					if (labor.SpreadType == SpreadType.Hours &&
+						laborToElementOfCost[labor.Id] == ElementOfCostType.LMLabor &&
+						labor.LaborSpreads != null && labor.LaborSpreads.Any() &&
+						labor.EndDate >= Utilities.OneLmxStartDate)
+					{
+						int newLaborTypeId = idCounter--;
+						Collection<ResourceSpreadDto> spreads = new Collection<ResourceSpreadDto>();
+						foreach (ResourceSpreadDto spread in labor.LaborSpreads)
+						{
+							spreads.Add(new ResourceSpreadDto()
+							{
+								LaborSpreadDate = spread.LaborSpreadDate,
+								LaborTypeId = newLaborTypeId,
+								BoeID = spread.BoeID,
+								Id = idCounter--,
+								LaborSpreadValue = (Utilities.OneLmxStartDate <= spread.LaborSpreadDate)
+									? spread.LaborSpreadValue * ucotMultiplier
+									: 0.0m
+							});
+						}
+
+						ResourceTypeDto ucot = new ResourceTypeDto()
+						{
+							BoeID = labor.BoeID,
+							LaborSpreads = spreads,
+							CLINID = labor.CLINID,
+							WBSID = labor.WBSID,
+							EndDate = labor.EndDate,
+							StartDate = labor.StartDate,
+							SpreadCurveID = labor.SpreadCurveID,
+							SpreadType = labor.SpreadType,
+							BusinessResourceCodeID = 9000,
+							ResourceID = 9000,
+							PerformingOrgID = -9001,
+							TaskElementId = labor.TaskElementId,
+							Id = newLaborTypeId,
+							ValueSpread = spreads.Sum(s => s.LaborSpreadValue)
+						};
+
+						ucotLabors.Add(ucot);
+					}
+				}
+			}
+
+			return ucotLabors;
 		}
 	}
 }

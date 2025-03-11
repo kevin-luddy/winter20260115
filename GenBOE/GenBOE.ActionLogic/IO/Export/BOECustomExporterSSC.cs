@@ -77,7 +77,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
 					foreach (ResourceSummaryRowData resource in resourceData)
 					{
-						if (resource.ResourceType == ElementOfCostType.LMLabor.ToString())
+						if (resource.ResourceType == ElementOfCostType.LMLabor.ToString() && resource.HoursTotal > 0)
 						{
 							ResourceSummaryRowData ucotResource = new ResourceSummaryRowData
 							{
@@ -85,7 +85,7 @@ namespace GenBOE.ActionLogic.IO.Export
 								ResourceName = resource.ResourceName + "-UCOT",
 								ResourceDescription = resource.ResourceDescription,
 								CostTotal = 0m,
-								HoursTotal = resource.HoursTotal * ws.UCOTFactor / 100
+								HoursTotal = resource.HoursTotal * ws.UCOTFactor / 100m
 							};
 
 							modifiedResourceData.Add(ucotResource);
@@ -95,18 +95,19 @@ namespace GenBOE.ActionLogic.IO.Export
 					// derive the rollup data
 					ICollection<ResourceSummaryRowData> rollupData =
 						modifiedResourceData
-							.OrderBy(x => x.ResourceType == "LM UCOT Labor" ? x.ResourceName.Substring(0, x.ResourceName.Length - 5) : x.ResourceName)
-							.ThenBy(x => x.ResourceType == "LM UCOT Labor" ? 1 : 0)
-							.GroupBy(x => new { x.ResourceName }.ToString())
+							.OrderBy(x => x.ResourceName.EndsWith("-UCOT") ? x.ResourceName.Substring(0, x.ResourceName.Length - 5) : x.ResourceName)
+							.ThenBy(x => x.ResourceName.EndsWith("-UCOT") ? 1 : 0)
+							.GroupBy(x => x.ResourceType + (x.ResourceName.EndsWith("-UCOT") ? x.ResourceName.Substring(0, x.ResourceName.Length - 5) : x.ResourceName))
 							.Select(g => new ResourceSummaryRowData
 							{
 								ResourceType = g.First().ResourceType,
-								ResourceName = g.First().ResourceName,
+								ResourceName = g.FirstOrDefault(x => !x.ResourceName.EndsWith("-UCOT")).ResourceName,
 								ResourceDescription = g.First().ResourceDescription,
 								CostTotal = g.Sum(x => x.CostTotal),
 								HoursTotal = g.Sum(x => x.HoursTotal)
 							})
-							.OrderBy(x => x.ResourceType == "LM UCOT Labor" ? x.ResourceName.Substring(0, x.ResourceName.Length - 5) : x.ResourceName)
+							.OrderBy(x => x.ResourceType)
+							.ThenBy(x => x.ResourceName)
 							.ToList();
 
 					this.PopulateResourceSummaryTable(tableContainerElement, rollupData);
