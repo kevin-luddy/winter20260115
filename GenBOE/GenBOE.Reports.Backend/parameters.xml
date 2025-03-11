@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<parameters>
+	<!--  http://colinsalmcorner.com/post/end-to-end-walkthrough-deploying-web-applications-using-team-build-and-release-management
+        The publish profile takes care of the connection strings – but you will have noticed that it doesn’t ask for values for appSettings 
+        (or any other configuration) anywhere. In order to tokenize anything in your web.config other than connection strings, you’ll need to 
+        create a parameters.xml file (yes, it has to be called that) in the root of your web application project. When the build runs, it 
+        will use this file to expose properties for you to tokenize (it doesn’t actually transform the config at build time).-->
+
+	<!--appSettings-->
+
+	<parameter name="AllowedOrigins" description="doesn't matter" defaultvalue="__AllowedOrigins__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_AllowedOrigins_">
+		</parameterentry>
+	</parameter>
+	<parameter name="PortionMarkingAPI" description="doesn't matter" defaultvalue="__PortionMarkingAPI__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_PortionMarkingAPI_">
+		</parameterentry>
+	</parameter>
+	<parameter name="_APPLICATION_VERSION" description="doesn't matter" defaultvalue="__APPLICATION_VERSION__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_APPLICATION_VERSION_">
+		</parameterentry>
+	</parameter>
+	<parameter name="IESDatabase" description="doesn't matter" defaultvalue="__IES_DATABASE__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_IES_DATABASE_">
+		</parameterentry>
+	</parameter>
+	<parameter name="SplunkHost" description="doesn't matter" defaultvalue="__Splunk_Host__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SPLUNK_HOST_">
+		</parameterentry>
+	</parameter>
+	<parameter name="IsProduction" description="doesn't matter" defaultvalue="__IsProduction__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_IS_PRODUCTION_">
+		</parameterentry>
+	</parameter>
+	<parameter name="SplunkToken" description="doesn't matter" defaultvalue="__Splunk_Token__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SPLUNK_TOKEN_">
+		</parameterentry>
+	</parameter>
+	
+	<!--system.web-->
+	<parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.web/authorization/allow/@roles">
+		</parameterentry>
+	</parameter>
+
+	<!--app.config-->
+	<parameter name="ActiveDirectoryPath" description="doesn't matter" defaultvalue="__ActiveDirectoryPath__" tags="">
+		<parameterentry kind="XmlFile" scope="\\RDM.Backend.dll.config$" match="/configuration/appSettings/add[@key='ActiveDirectoryPath']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="IESEntities" description="doesn't matter" defaultvalue="__IESEntities__" tags="">
+		<parameterentry kind="XmlFile" scope="\\RDM.Backend.dll.config$" match="/configuration/connectionStrings/add[@name='IESEntities']/@connectionString">
+		</parameterentry>
+	</parameter>
+</parameters>
