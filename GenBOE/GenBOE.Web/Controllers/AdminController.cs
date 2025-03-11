@@ -3182,8 +3182,8 @@ namespace GenBOE.Web.Controllers
                             allDeletedResources = allDeletedResources.Concat(globalResources.Where(x => x.ElementOfCost == ElementOfCostType.Materials)).ToList();
                         }
 
-                        // get list of deleted resources. This query only pulls back rows that are in the database but not in the excel file
-                        allDeletedResources = (from a in allDeletedResources
+						// get list of deleted resources. This query only pulls back rows that are in the database but not in the excel file
+						deletedResources = (from a in allDeletedResources
 							where !(from n in newResources
 									select n.Id).Contains(a.Id)
 							select a).ToList();
