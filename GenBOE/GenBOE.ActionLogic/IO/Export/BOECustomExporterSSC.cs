@@ -41,72 +41,120 @@ namespace GenBOE.ActionLogic.IO.Export
             this.DefaultCurrencyFormat = BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS;
         }
 
-        #region Method overrides
+		#region Method overrides
 
-        #region Resource summary
+		#region Resource summary
 
-        protected override void PopulateResourceSummaryByElementOfCostTable(SdtElement tableContainerElement, BOEExportModelView boeExportModelView, ICollection<BOESummaryGridModelView> data)
-        {
-            if (boeExportModelView == null)
-            {
-                throw new ArgumentNullException(nameof(boeExportModelView));
-            }
+		protected override void PopulateResourceSummaryByElementOfCostTable(SdtElement tableContainerElement, BOEExportModelView boeExportModelView, ICollection<BOESummaryGridModelView> data, FullWorkspace ws)
+		{
+			if (boeExportModelView == null)
+			{
+				throw new ArgumentNullException(nameof(boeExportModelView));
+			}
 
-            ICollection<ResourceSummaryRowData> resourceData = boeExportModelView.TaskElements
-                .SelectMany(t => t.taskElementLabors)
-                .Where(c => c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_ResourceName) && c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_ResourceElementOfCost))                
-                .Select(r => new ResourceSummaryRowData
-                {
-                    ResourceType = r.ExportFields[BOEExporterConstants.FieldName_ResourceElementOfCost],
-                    ResourceName = r.ExportFields[BOEExporterConstants.FieldName_ResourceName],
-                    ResourceDescription = r.ExportFields[BOEExporterConstants.FieldName_ResourceDescription],
-                    CostTotal = r.Cost.HasValue ? r.Cost.Value : 0m,
-                    HoursTotal = r.Hours.HasValue ? r.Hours.Value : 0m
-                }).ToList();
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
 
-            if (resourceData.Any())
-            {
-                // derive the rollup data
-                ICollection<ResourceSummaryRowData> rollupData =
-                    resourceData
-                        .GroupBy(x => x.GroupKey)
-                        .Select(g => new ResourceSummaryRowData
-                        {
-                            ResourceType = g.First().ResourceType,
-                            ResourceName = g.First().ResourceName,
-                            ResourceDescription = g.First().ResourceDescription,
-                            CostTotal = g.Sum(x => x.CostTotal),
-                            HoursTotal = g.Sum(x => x.HoursTotal)
-                        })
-                        .OrderBy(x => x.GroupKey).ToList();
+			ICollection<ResourceSummaryRowData> resourceData = boeExportModelView.TaskElements
+				.SelectMany(t => t.taskElementLabors)
+				.Where(c => c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_ResourceName) && c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_ResourceElementOfCost))
+				.Select(r => new ResourceSummaryRowData
+				{
+					ResourceType = r.ExportFields[BOEExporterConstants.FieldName_ResourceElementOfCost],
+					ResourceName = r.ExportFields[BOEExporterConstants.FieldName_ResourceName],
+					ResourceDescription = r.ExportFields[BOEExporterConstants.FieldName_ResourceDescription],
+					CostTotal = r.Cost.HasValue ? r.Cost.Value : 0m,
+					HoursTotal = r.Hours.HasValue ? r.Hours.Value : 0m
+				}).ToList();
 
-                this.PopulateResourceSummaryTable(tableContainerElement, rollupData);
-            }
-            else
-            {
-                this.RemoveElement(tableContainerElement);
-            }
-        }
+			if (resourceData.Any())
+			{
+				if (Utilities.IsUCOTEnabled)
+				{
+					ICollection<ResourceSummaryRowData> modifiedResourceData = new List<ResourceSummaryRowData>(resourceData);
 
-        #endregion
+					foreach (ResourceSummaryRowData resource in resourceData)
+					{
+						if (resource.ResourceType == ElementOfCostType.LMLabor.ToString())
+						{
+							ResourceSummaryRowData ucotResource = new ResourceSummaryRowData
+							{
+								ResourceType = "LM Labor",
+								ResourceName = resource.ResourceName + "-UCOT",
+								ResourceDescription = resource.ResourceDescription,
+								CostTotal = 0m,
+								HoursTotal = resource.HoursTotal * ws.UCOTFactor / 100
+							};
 
-        #region Spread rollup tables
+							modifiedResourceData.Add(ucotResource);
+						}
+					}
 
-        /// <summary>
-        /// Process the Labor Task Hours Rollup Table before populating it
-        /// </summary>
-        /// <param name="containerElement">Container element for task</param>
-        /// <param name="laborTaskElement">Element for the labor task</param>
-        /// <param name="allLaborTaskElements">All task elements for the BOE</param>
-        /// <param name="selectedComponents">Components selected for the output</param>
-        /// <param name="exportInputs">The export inputs.</param>
-        /// <param name="boeExportModelView">The boe export model view.</param>
-        /// <exception cref="System.ArgumentNullException">
-        /// selectedComponents
-        /// or
-        /// exportInputs
-        /// </exception>
-        protected override void ProcessLaborTaskHoursRollupTable(SdtElement containerElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView)
+					// derive the rollup data
+					ICollection<ResourceSummaryRowData> rollupData =
+						modifiedResourceData
+							.OrderBy(x => x.ResourceType == "LM UCOT Labor" ? x.ResourceName.Substring(0, x.ResourceName.Length - 5) : x.ResourceName)
+							.ThenBy(x => x.ResourceType == "LM UCOT Labor" ? 1 : 0)
+							.GroupBy(x => new { x.ResourceName }.ToString())
+							.Select(g => new ResourceSummaryRowData
+							{
+								ResourceType = g.First().ResourceType,
+								ResourceName = g.First().ResourceName,
+								ResourceDescription = g.First().ResourceDescription,
+								CostTotal = g.Sum(x => x.CostTotal),
+								HoursTotal = g.Sum(x => x.HoursTotal)
+							})
+							.OrderBy(x => x.ResourceType == "LM UCOT Labor" ? x.ResourceName.Substring(0, x.ResourceName.Length - 5) : x.ResourceName)
+							.ToList();
+
+					this.PopulateResourceSummaryTable(tableContainerElement, rollupData);
+				}
+				else
+				{
+					// derive the rollup data
+					ICollection<ResourceSummaryRowData> rollupData =
+						resourceData
+							.GroupBy(x => x.GroupKey)
+							.Select(g => new ResourceSummaryRowData
+							{
+								ResourceType = g.First().ResourceType,
+								ResourceName = g.First().ResourceName,
+								ResourceDescription = g.First().ResourceDescription,
+								CostTotal = g.Sum(x => x.CostTotal),
+								HoursTotal = g.Sum(x => x.HoursTotal)
+							})
+							.OrderBy(x => x.GroupKey).ToList();
+
+					this.PopulateResourceSummaryTable(tableContainerElement, rollupData);
+				}
+			}
+			else
+			{
+				this.RemoveElement(tableContainerElement);
+			}
+		}
+
+		#endregion
+
+		#region Spread rollup tables
+
+		/// <summary>
+		/// Process the Labor Task Hours Rollup Table before populating it
+		/// </summary>
+		/// <param name="containerElement">Container element for task</param>
+		/// <param name="laborTaskElement">Element for the labor task</param>
+		/// <param name="allLaborTaskElements">All task elements for the BOE</param>
+		/// <param name="selectedComponents">Components selected for the output</param>
+		/// <param name="exportInputs">The export inputs.</param>
+		/// <param name="boeExportModelView">The boe export model view.</param>
+		/// <exception cref="System.ArgumentNullException">
+		/// selectedComponents
+		/// or
+		/// exportInputs
+		/// </exception>
+		protected override void ProcessLaborTaskHoursRollupTable(SdtElement containerElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView)
         {
             if (selectedComponents == null)
             {
