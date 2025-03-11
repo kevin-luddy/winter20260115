@@ -359,8 +359,48 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 							Please refer to the following Compliance Corner articles: 4/8/24 Same vs. Similar Rationale as well as, training, BOE Gold Card, 23 Question Checklist and other guidance on All Things BOE website (https://rmsestimationcompliance.us.lmco.com/all-things-boe/)`;
 					break;
 			}
-        }
-		
+		}
+
+		if (company == "SpaceSystems") {
+			switch (field) {
+				case 'Rationale':
+					switch (parseInt(selectedMOQType)) {
+						case 5001:
+							return 'Need to provide how the actual hours are relevant to the proposed effort.  Explain complexity factors.';
+						case 5002:
+							return 'Need to provide how the similar historical actuals are relevant to the proposed effort.  Explain all complexity factors and skill mix.';
+						case 5003:
+							return 'If CERs is not submitted in advance to USG, provide a complete explanation of how the model works, the historical or other data sources used, and how any model output was used to calculate proposed hours.  Proposal teams cannot claim the model is Lockheed Martin Proprietary Information and not provide.';
+						case 5004:
+							return 'If parametric estimating model is not submitted in advance to USG, provide a complete explanation of how the model works, the historical or other data sources used, and how any model output was used to calculate proposed hours.  Proposal teams cannot claim the model is Lockheed Martin Proprietary Information and not provide.';
+						case 5005:
+							return 'If AR is not submitted in advance to USG, provide a complete explanation of how the model works, the historical or other data sources used, and how any model output was used to calculate proposed hours.  Proposal teams cannot claim the model is Lockheed Martin Proprietary Information and not provide.';
+						case 5006:
+							return 'Document any business area hours per month used.';
+						case 5007:
+							return 'Document any business area hours per month used & why LOE selected.';
+						case 5009:
+							return 'Document any Non-Labor values used & why.';
+						case 5008:
+							return 'For each task please provide task name, a description of the task and the number of hours.  In the SME judgment estimate please break estimated tasks into small enough chunks that customer can fully understand what is being estimated.';
+					}
+					break;
+				case 'Location':
+					switch (parseInt(selectedMOQType)) {
+						case 5003:
+						case 5004:
+						case 5005:
+							return 'Reminder:  need to provide a copy of any model used/created that was used for estimating.';
+					}
+					break;
+				case 'Skill Mix Rationale':
+					return 'Need to provide a narrative which documents the source and rationale as to why the proposed skill mix was selected. Remember: If based on actuals and not the exact same labor mix, a summary table of the historical labor mix is required. Click the grey question mark for additional information and suggested format.';
+					break;
+				case 'Historical Reference Explanation':
+					return 'Please provide a brief explanation why the selected historical reference is a good/reasonable basis for the BOE being written.';
+					break;
+			}
+        }	
 	}
 
 	// Toggles an item between collapsed and expended
