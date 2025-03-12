@@ -132,7 +132,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
 			if (useUCOT && Utilities.IsUCOTEnabled)
 			{
-
 				// Get labors, filter by element of cost
 				List<ResourceTypeDto> taskElementLabors = taskElements
 					.SelectMany(x => x.taskElementLabors)
@@ -143,7 +142,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				Dictionary<int, ElementOfCostType> laborToElementOfCost = new Dictionary<int, ElementOfCostType>();
 				foreach (ResourceTypeDto labor in taskElementLabors)
 				{
-					ResourceDTO resource = workspace.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == labor.ResourceID);
+					ResourceDTO resource = this.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == labor.ResourceID);
 					if (resource == null)
 					{
 						if (labor.ResourceID == -9000)
@@ -166,20 +165,20 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				// Add UCOT data
 				taskElementLabors = AddUCOT(taskElementLabors, workspace.UCOTFactor, laborToElementOfCost);
 
-				// Update TaskElements with the new labors
-				foreach (BoeTaskElementDTO taskElement in taskElements)
-				{
-					taskElement.taskElementLabors = taskElement.taskElementLabors
-						.Where(x => taskElementLabors.Select(y => y.Id).Contains(x.Id))
-						.ToCollection();
-					foreach (ResourceTypeDto labor in taskElementLabors)
-					{
-						if (labor.TaskElementId == taskElement.Id)
-						{
-							taskElement.taskElementLabors.Add(labor);
-						}
-					}
-				}
+				//// Update TaskElements with the new labors
+				//foreach (BoeTaskElementDTO taskElement in taskElements)
+				//{
+				//	taskElement.taskElementLabors = taskElement.taskElementLabors
+				//		.Where(x => taskElementLabors.Select(y => y.Id).Contains(x.Id))
+				//		.ToCollection();
+				//	foreach (ResourceTypeDto labor in taskElementLabors)
+				//	{
+				//		if (labor.TaskElementId == taskElement.Id)
+				//		{
+				//			taskElement.taskElementLabors.Add(labor);
+				//		}
+				//	}
+				//}
 			}
 
 			this.TaskElements = taskElements.ToList().AsReadOnly();
