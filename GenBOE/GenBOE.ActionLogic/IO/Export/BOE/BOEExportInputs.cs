@@ -19,6 +19,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 	using IES.Common.classes;
 	using IES.Common.PickList;
 	using Microsoft.Practices.Unity;
+	using MoreLinq;
 
 	/// <summary>
 	/// Inputs used for the BOE Exporters.
@@ -54,7 +55,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
             // since the resources used may not contain offloaded resources, need to manually get this
             this.ResourcesUsedInWsBoes = workspace.ResourcesUsedInWsBoes;
-            this.FullWorkspace = workspace;
+			this.PerformingOrgsUsedInBoes = workspace.PerformingOrgsUsedInBoes;
+			this.FullWorkspace = workspace;
             this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - end");
         }
 
@@ -85,6 +87,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 			// TODO Thomas: Remove this since we will be using it from the constructor.
 			useUCOT = true;
 			taskElements = taskElements.DeepClone();
+			this.PerformingOrgsUsedInBoes = workspace.PerformingOrgsUsedInBoes;
 
 			this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - begin");
 			IRetriever retriever = GenBOEUnityContainer.Container.Resolve(typeof(IRetriever)) as IRetriever;
@@ -101,15 +104,28 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
 			if (useUCOT && Utilities.IsUCOTEnabled)
 			{
+				// Setup the ucot resource
 				ResourceDTO ucotResource = new ResourceDTO
 				{
-					Id = -9000,
+					Id = Constants.UCOT_RESOURCE_ID,
 					ElementOfCost = ElementOfCostType.LMLabor,
 					ResourceDesc = "UCOT",
 					SegRegion = ""
 				};
 
 				this.ResourcesUsedInWsBoes = retriever.GetResourcesByIds(resourceIds).Concat(new[] { ucotResource }).ToList().AsReadOnly();
+
+				// Setup the ucot performing orgs.
+				PerformingOrgDTO ucotPerformingOrg = new PerformingOrgDTO
+				{
+					Id = Constants.UCOT_PERF_ORG_ID,
+					PerformingOrgDesc = "UCOT",
+					PerformingOrgName = "UCOT",
+					// Add any other necessary properties here
+				};
+
+
+				this.PerformingOrgsUsedInBoes = this.PerformingOrgsUsedInBoes.Concat(new[] { ucotPerformingOrg }).ToList().AsReadOnly();
 			}
 			else
 			{
@@ -132,27 +148,25 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
 			if (useUCOT && Utilities.IsUCOTEnabled)
 			{
+				// Loop over tasks
 				// Get labors, filter by element of cost
 				List<ResourceTypeDto> taskElementLabors = taskElements
 					.SelectMany(x => x.taskElementLabors)
 					.ToList();
 
-				// Filter by element of cost
-				ICollection<int> laborsToRemove = new Collection<int>();
+				// Filter by element of cost only want to work on labor
 				Dictionary<int, ElementOfCostType> laborToElementOfCost = new Dictionary<int, ElementOfCostType>();
 				foreach (ResourceTypeDto labor in taskElementLabors)
 				{
+					// TODO Thomas: Need to do this with performing orgs.
 					ResourceDTO resource = this.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == labor.ResourceID);
 					if (resource == null)
 					{
-						if (labor.ResourceID == -9000)
+						if (labor.ResourceID == Constants.UCOT_RESOURCE_ID)
 						{
 							laborToElementOfCost[labor.Id] = ElementOfCostType.LMLabor;
 						}
-						else
-						{
-							laborsToRemove.Add(labor.Id);
-						}
+
 					}
 					else
 					{
@@ -160,25 +174,21 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 					}
 				}
 
-				taskElementLabors.RemoveAll(x => laborsToRemove.Contains(x.Id));
-
 				// Add UCOT data
 				taskElementLabors = AddUCOT(taskElementLabors, workspace.UCOTFactor, laborToElementOfCost);
 
-				//// Update TaskElements with the new labors
-				//foreach (BoeTaskElementDTO taskElement in taskElements)
-				//{
-				//	taskElement.taskElementLabors = taskElement.taskElementLabors
-				//		.Where(x => taskElementLabors.Select(y => y.Id).Contains(x.Id))
-				//		.ToCollection();
-				//	foreach (ResourceTypeDto labor in taskElementLabors)
-				//	{
-				//		if (labor.TaskElementId == taskElement.Id)
-				//		{
-				//			taskElement.taskElementLabors.Add(labor);
-				//		}
-				//	}
-				//}
+				// Update TaskElements with the new labors
+				foreach (BoeTaskElementDTO taskElement in taskElements)
+				{
+					foreach (ResourceTypeDto labor in taskElementLabors)
+					{
+						if (labor.TaskElementId == taskElement.Id)
+						{
+							taskElement.taskElementLabors.Add(labor);
+						}
+					}
+					taskElement.taskElementLabors = taskElement.taskElementLabors.ToCollection();
+				}
 			}
 
 			this.TaskElements = taskElements.ToList().AsReadOnly();
@@ -330,10 +340,10 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
         /// </summary>
         public IReadOnlyCollection<UserDTO> GetUserDataForBoesForWs { get { return this.FullWorkspace.GetUserDataForBoesForWs; } }
 
-        /// <summary>
-        /// Gets the performing orgs used in boes.
-        /// </summary>
-        public IReadOnlyCollection<PerformingOrgDTO> PerformingOrgsUsedInBoes { get { return this.FullWorkspace.PerformingOrgsUsedInBoes; } }
+		/// <summary>
+		/// Gets the performing orgs used in boes.
+		/// </summary>
+		public IReadOnlyCollection<PerformingOrgDTO> PerformingOrgsUsedInBoes { get; }
 
         /// <summary>
         /// Gets the performing orgs for ws list.
@@ -508,9 +518,9 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 							StartDate = labor.StartDate,
 							SpreadCurveID = labor.SpreadCurveID,
 							SpreadType = labor.SpreadType,
-							BusinessResourceCodeID = 9000,
-							ResourceID = 9000,
-							PerformingOrgID = -9001,
+							BusinessResourceCodeID = Constants.UCOT_RESOURCE_ID,
+							ResourceID = Constants.UCOT_RESOURCE_ID,
+							PerformingOrgID = Constants.UCOT_PERF_ORG_ID,
 							TaskElementId = labor.TaskElementId,
 							Id = newLaborTypeId,
 							ValueSpread = spreads.Sum(s => s.LaborSpreadValue)

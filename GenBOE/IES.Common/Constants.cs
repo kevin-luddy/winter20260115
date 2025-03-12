@@ -387,6 +387,16 @@ namespace IES.Common
         /// </summary>
         public const int PERF_ORG_DESC_MAX_LENGTH = 50;
 
+		/// <summary>
+		/// Fake resource ID for UCOT resources.
+		/// </summary>
+		public const int UCOT_RESOURCE_ID = 9000;
+
+		/// <summary>
+		/// Fake perf org ID for UCOT perf orgs.
+		/// </summary>
+		public const int UCOT_PERF_ORG_ID = 9001;
+
         /// <summary>
         /// The read only roles for RDSB.
         /// </summary>
