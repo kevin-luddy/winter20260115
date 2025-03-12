@@ -82,6 +82,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				throw new ArgumentNullException(nameof(workspace));
 			}
 
+			// TODO Thomas: Remove this since we will be using it from the constructor.
+			useUCOT = true;
 			taskElements = taskElements.DeepClone();
 
 			this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - begin");
@@ -98,7 +100,22 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 						.Distinct().ToList();
 
 			// TODO Thomas: if ucot thing add a bogus resource for.
-			this.ResourcesUsedInWsBoes = retriever.GetResourcesByIds(resourceIds).ToList().AsReadOnly();
+			if (useUCOT && Utilities.IsUCOTEnabled)
+			{
+				ResourceDTO ucotResource = new ResourceDTO
+				{
+					Id = -9000,
+					ElementOfCost = ElementOfCostType.LMLabor,
+					ResourceDesc = "UCOT",
+					SegRegion = ""
+				};
+
+				this.ResourcesUsedInWsBoes = retriever.GetResourcesByIds(resourceIds).Concat(new[] { ucotResource }).ToList().AsReadOnly();
+			}
+			else
+			{
+				this.ResourcesUsedInWsBoes = retriever.GetResourcesByIds(resourceIds).ToList().AsReadOnly();
+			}
 
 			int startingIndex = -1;
 			if (Utilities.IsBRCEnabledForWorkspace(workspace.Shortname) && processLaborTypesForBrc)
@@ -113,9 +130,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 					}
 				}
 			}
-
-			// TODO Thomas: Remove this since we will be using it from the constructor.
-			useUCOT = true;
 
 			if (useUCOT && Utilities.IsUCOTEnabled)
 			{
@@ -133,7 +147,14 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 					ResourceDTO resource = workspace.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == labor.ResourceID);
 					if (resource == null)
 					{
-						laborsToRemove.Add(labor.Id);
+						if (labor.ResourceID == -9000)
+						{
+							laborToElementOfCost[labor.Id] = ElementOfCostType.LMLabor;
+						}
+						else
+						{
+							laborsToRemove.Add(labor.Id);
+						}
 					}
 					else
 					{
