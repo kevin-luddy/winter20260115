@@ -358,6 +358,30 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 							As a reminder, no other BOE rationale belongs in this field. 
 							Please refer to the following Compliance Corner articles: 4/8/24 Same vs. Similar Rationale as well as, training, BOE Gold Card, 23 Question Checklist and other guidance on All Things BOE website (https://rmsestimationcompliance.us.lmco.com/all-things-boe/)`;
 					break;
+				case 'Hours Required and Location':
+					return 'Statement of Work (SOW) must be clearly directed by the RFP language. Input RFP section and RFP language.';
+					break;
+				case 'Description of Hours':
+					return 'Level of Effort (LOE) must be clearly directed by the RFP language. Input RFP section and verbiage.';
+					break;
+
+				// SME Placeholders
+				case 'Expert Judgment reasons':
+					return `Describe in detail why SME judgement was chosen as the last resort.  Have you truly looked at historical or comparative actual (even at a higher level)?  Do not use verbiage such as “actuals are not found at a lower or more granular level” or “I have been a SME for 30 years.”
+							Refer to and use 8/7/23 SME Judgement BOE Compliance Corner with SME Judgement Model and other guidance on All Things BOE website (https://rmsestimationcompliance.us.lmco.com/all-things-boe/)`;
+					break;
+				case 'Logic and Assumptions Hours Estimate':
+					return `Include tasks with clear, detailed rationale and logic with related estimated hours.  Estimate should be at a level of detail so it can be deemed reasonable.
+							Refer to and use 8/7/23 SME Judgement BOE Compliance Corner with SME Judgement Model and other guidance on All Things BOE website (https://rmsestimationcompliance.us.lmco.com/all-things-boe/)`;
+					break;
+				case 'Logic and Assumptions Duration Estimate':
+					return `Describe and detail the period of performance for this BOE (broken down by task if possible)
+							Refer to and use 8/7/23 SME Judgement BOE Compliance Corner with SME Judgement Model and other guidance on All Things BOE website (https://rmsestimationcompliance.us.lmco.com/all-things-boe/)`;
+					break;
+				case 'Task Estimates':
+					return `For each task please provide task name, a description of the task and the number of hours.  In the SME judgment estimate please break estimated tasks into small enough chunks that customer can fully understand what is being estimated.
+							Refer to and use 8/7/23 SME Judgement BOE Compliance Corner with SME Judgement Model and other guidance on All Things BOE website (https://rmsestimationcompliance.us.lmco.com/all-things-boe/)`;
+					break;
 			}
 		}
 
@@ -396,8 +420,30 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				case 'Skill Mix Rationale':
 					return 'Need to provide a narrative which documents the source and rationale as to why the proposed skill mix was selected. Remember: If based on actuals and not the exact same labor mix, a summary table of the historical labor mix is required. Click the grey question mark for additional information and suggested format.';
 					break;
+
+				// Blank for now while space confirms text
 				case 'Historical Reference Explanation':
 					return 'Please provide a brief explanation why the selected historical reference is a good/reasonable basis for the BOE being written.';
+					break;
+				case 'Hours Required and Location':
+					return '';
+					break;
+				case 'Description of Hours':
+					return '';
+					break;
+
+				// SME Placeholders
+				case 'Expert Judgment reasons':
+					return '';
+					break;
+				case 'Logic and Assumptions Hours Estimate':
+					return '';
+					break;
+				case 'Logic and Assumptions Duration Estimate':
+					return '';
+					break;
+				case 'Task Estimates':
+					return '';
 					break;
 			}
         }	
