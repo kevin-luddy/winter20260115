@@ -99,7 +99,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 						.Union(workspace.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value))
 						.Distinct().ToList();
 
-			// TODO Thomas: if ucot thing add a bogus resource for.
 			if (useUCOT && Utilities.IsUCOTEnabled)
 			{
 				ResourceDTO ucotResource = new ResourceDTO
