@@ -4409,11 +4409,6 @@ namespace GenBOE.ActionLogic.IO.Export
                         resourceTypeValue = elementOfCostEnumValue.GetDescription();
                     }
 
-					if (rollupRowData.ResourceDescription.Equals("UCOT"))
-					{
-						rollupRowData.ResourceName = "UCOT";
-					}
-
                     WordUtilities.SetElementText(resourceTypeElement, resourceTypeValue);
 
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_ResourceName), rollupRowData.ResourceName);
