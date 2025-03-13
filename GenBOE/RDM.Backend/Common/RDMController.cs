@@ -147,7 +147,9 @@ namespace RDM.Backend.Common
 			UserAccessModelView model = new()
 			{
 				IsRdmAdminUser = this.Logic.IsRDMAdminUser,
-				IsRdmCobraAdminUser = this.Logic.IsRDMCobraAdminUser
+				IsRdmCobraAdminUser = this.Logic.IsRDMCobraAdminUser,
+				IsRdmViewerUser = this.Logic.IsRdmViewerUser,
+				UserNtid = this.securityInformation.ActiveUserNTID
 			};
 
 			return this.Json(model);
