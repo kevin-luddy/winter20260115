@@ -4167,11 +4167,110 @@ namespace GenBOE.ActionLogic.IO.Export
             WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_EndDate), rowData.ExpendDate.ToString());
         }
 
-        #endregion
+		#endregion
 
-        #region Resource Summary tables
+		#region Resource Summary tables
 
-        protected virtual void PopulateResourceSummaryByElementOfCostTable(SdtElement tableContainerElement, BOEExportModelView boeExportModelView, ICollection<BOESummaryGridModelView> data)
+		///// <summary>
+		///// TODO Thomas: Temporary
+		///// </summary>
+		///// <param name="tableContainerElement"></param>
+		///// <param name="boeExportModelView"></param>
+		///// <param name="data"></param>
+		///// <param name="ws"></param>
+		///// <exception cref="ArgumentNullException"></exception>
+		//protected override void PopulateResourceSummaryByElementOfCostTable(SdtElement tableContainerElement, BOEExportModelView boeExportModelView, ICollection<BOESummaryGridModelView> data, FullWorkspace ws)
+		//{
+		//	if (boeExportModelView == null)
+		//	{
+		//		throw new ArgumentNullException(nameof(boeExportModelView));
+		//	}
+
+		//	if (ws == null)
+		//	{
+		//		throw new ArgumentNullException(nameof(ws));
+		//	}
+
+		//	ICollection<ResourceSummaryRowData> resourceData = boeExportModelView.TaskElements
+		//		.SelectMany(t => t.taskElementLabors)
+		//		.Where(c => c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_ResourceName) && c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_ResourceElementOfCost))
+		//		.Select(r => new ResourceSummaryRowData
+		//		{
+		//			ResourceType = r.ExportFields[BOEExporterConstants.FieldName_ResourceElementOfCost],
+		//			ResourceName = r.ExportFields[BOEExporterConstants.FieldName_ResourceName],
+		//			ResourceDescription = r.ExportFields[BOEExporterConstants.FieldName_ResourceDescription],
+		//			CostTotal = r.Cost.HasValue ? r.Cost.Value : 0m,
+		//			HoursTotal = r.Hours.HasValue ? r.Hours.Value : 0m
+		//		}).ToList();
+
+		//	if (resourceData.Any())
+		//	{
+		//		if (Utilities.IsUCOTEnabled)
+		//		{
+		//			ICollection<ResourceSummaryRowData> modifiedResourceData = new List<ResourceSummaryRowData>(resourceData);
+
+		//			foreach (ResourceSummaryRowData resource in resourceData)
+		//			{
+		//				if (resource.ResourceType == ElementOfCostType.LMLabor.ToString() && resource.HoursTotal > 0)
+		//				{
+		//					ResourceSummaryRowData ucotResource = new ResourceSummaryRowData
+		//					{
+		//						ResourceType = "LM UCOT Labor",
+		//						ResourceName = resource.ResourceName + "-UCOT",
+		//						ResourceDescription = resource.ResourceDescription,
+		//						CostTotal = 0m,
+		//						HoursTotal = resource.HoursTotal * ws.UCOTFactor / 100
+		//					};
+
+		//					modifiedResourceData.Add(ucotResource);
+		//				}
+		//			}
+
+		//			// derive the rollup data
+		//			ICollection<ResourceSummaryRowData> rollupData =
+		//				modifiedResourceData
+		//					.OrderBy(x => x.ResourceType == "LM UCOT Labor" ? x.ResourceName.Substring(0, x.ResourceName.Length - 5) : x.ResourceName)
+		//					.ThenBy(x => x.ResourceType == "LM UCOT Labor" ? 1 : 0)
+		//					.GroupBy(x => new { x.ResourceName }.ToString())
+		//					.Select(g => new ResourceSummaryRowData
+		//					{
+		//						ResourceType = g.First().ResourceType,
+		//						ResourceName = g.First().ResourceName,
+		//						ResourceDescription = g.First().ResourceDescription,
+		//						CostTotal = g.Sum(x => x.CostTotal),
+		//						HoursTotal = g.Sum(x => x.HoursTotal)
+		//					})
+		//					.OrderBy(x => x.ResourceType == "LM UCOT Labor" ? x.ResourceName.Substring(0, x.ResourceName.Length - 5) : x.ResourceName)
+		//					.ToList();
+
+		//			this.PopulateResourceSummaryTable(tableContainerElement, rollupData);
+		//		}
+		//		else
+		//		{
+		//			// derive the rollup data
+		//			ICollection<ResourceSummaryRowData> rollupData =
+		//				resourceData
+		//					.GroupBy(x => x.GroupKey)
+		//					.Select(g => new ResourceSummaryRowData
+		//					{
+		//						ResourceType = g.First().ResourceType,
+		//						ResourceName = g.First().ResourceName,
+		//						ResourceDescription = g.First().ResourceDescription,
+		//						CostTotal = g.Sum(x => x.CostTotal),
+		//						HoursTotal = g.Sum(x => x.HoursTotal)
+		//					})
+		//					.OrderBy(x => x.GroupKey).ToList();
+
+		//			this.PopulateResourceSummaryTable(tableContainerElement, rollupData);
+		//		}
+		//	}
+		//	else
+		//	{
+		//		this.RemoveElement(tableContainerElement);
+		//	}
+		//}
+
+		protected virtual void PopulateResourceSummaryByElementOfCostTable(SdtElement tableContainerElement, BOEExportModelView boeExportModelView, ICollection<BOESummaryGridModelView> data)
         {
             if (data.Any())
             {
@@ -4309,6 +4408,12 @@ namespace GenBOE.ActionLogic.IO.Export
                     {
                         resourceTypeValue = elementOfCostEnumValue.GetDescription();
                     }
+
+					if (rollupRowData.ResourceDescription.Equals("UCOT"))
+					{
+						rollupRowData.ResourceName = "UCOT";
+					}
+
                     WordUtilities.SetElementText(resourceTypeElement, resourceTypeValue);
 
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_ResourceName), rollupRowData.ResourceName);
