@@ -271,7 +271,7 @@
     </div>
 
     <div class="module-content-data expanded-content" >
-        <h3>The following documents are required for upload:</h3>
+        <h3>The following documents are required for upload. PTM will perform a validation check to ensure the documents have been uploaded when the Workflow Approval process is initiated by the Estimator:</h3>
         <br />
         <ul>
             @foreach (AttachmentDto attachment in Model.PostSubmittalAttachments.Where(file => file.AttachmentType != AttachmentType.Other && file.AttachmentType != AttachmentType.DelegationOfAuthority))
@@ -280,7 +280,7 @@
             }
         </ul>
         <br />
-        <h3>The following document is optional:</h3>
+		<h3>The following document, although not required to initiate the PTM Approval Workflow, shall be either 1.) manually uploaded as soon as it becomes available (when eEPP tool is not utilized for EPP approval) or 2.) PTM will electronically provide a link to the eEPP record used to document approval:</h3>
         <br />
         <ul>
             <li>@Html.Raw(AttachmentType.DelegationOfAuthority.GetDescription())</li>

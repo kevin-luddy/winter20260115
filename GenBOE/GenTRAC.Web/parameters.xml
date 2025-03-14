@@ -48,6 +48,10 @@
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EmailsToCurrentlyLoggedInUser']/@value">
     </parameterentry>
   </parameter>
+  <parameter name="DocumentReminderCutoffDate" description="doesn't matter" defaultvalue="__DocumentReminderCutoffDate__" tags="">
+	<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='DocumentReminderCutoffDate']/@value">
+	</parameterentry>
+  </parameter>
   <parameter name="IESHomeUrl" description="doesn't matter" defaultvalue="__IESHomeUrl__" tags="">
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IESHomeUrl']/@value">
     </parameterentry>

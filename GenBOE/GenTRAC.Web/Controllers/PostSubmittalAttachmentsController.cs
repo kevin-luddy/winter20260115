@@ -34,22 +34,29 @@ namespace GenTRAC.Web.Controllers
         /// </summary>
         private readonly IES.Common.ISecurityInformation securityInformation;
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="postSubmittalAttachmentsControllerLogic">business logic for this controller</param>
-        /// <param name="genTRACControllerLogic">Controller Logic</param>
-        /// <param name="siteMasterUtilities">Site Master Utilities</param>
-        /// <param name="securityInformation">security information about user and their context</param>
-        public PostSubmittalAttachmentsController(
+		/// <summary>
+		/// Proposal Loader
+		/// </summary>
+		private readonly IProposalLoader proposalLoader;
+
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="postSubmittalAttachmentsControllerLogic">business logic for this controller</param>
+		/// <param name="genTRACControllerLogic">Controller Logic</param>
+		/// <param name="siteMasterUtilities">Site Master Utilities</param>
+		/// <param name="securityInformation">security information about user and their context</param>
+		public PostSubmittalAttachmentsController(
             PostSubmittalAttachmentsControllerLogic postSubmittalAttachmentsControllerLogic,
             GenTRACControllerLogic genTRACControllerLogic,
             SiteMasterUtilities siteMasterUtilities,
-            IES.Common.ISecurityInformation securityInformation)
+            IES.Common.ISecurityInformation securityInformation,
+			IProposalLoader proposalLoader)
             : base(securityInformation, genTRACControllerLogic, siteMasterUtilities)
         {
             this.psaLogic = postSubmittalAttachmentsControllerLogic;
             this.securityInformation = securityInformation;
+			this.proposalLoader = proposalLoader;
         }
 
         /// <summary>
@@ -69,6 +76,46 @@ namespace GenTRAC.Web.Controllers
                 PostSubmittalAttachments = this.psaLogic.GetPostSubmittalAttachments(proposalId),
                 MaxOtherFileCount = SiteMasterUtilities.MaxOtherFileCount
             };
+
+			// If there is an attachment of Delegation of Authority that already exists, show the current upload in the UI
+			if (model.PostSubmittalAttachments.Any(x => x.AttachmentType == AttachmentType.DelegationOfAuthority))
+			{
+				AttachmentDto attachment = model.PostSubmittalAttachments.First(x => x.AttachmentType == AttachmentType.DelegationOfAuthority);
+				attachment.ShowPTMUploadForDelegationOfAuthority = true;
+			}
+			// If unclassified and there is no existing attachment thru PTM, check the status of the associated eEPP record linked to the PTM tracking number, if any
+			else
+			{
+				if (!SiteMasterUtilities.IsClassEnvironment)
+				{
+					ProposalDto proposal = this.proposalLoader.GetById(model.ProposalId);
+					if (proposal != null)
+					{
+						// Check if this exists in eEPP
+						// TODO Katie: API call to return status/ID of eEPP record with param of PTM tracking #
+
+						if ()
+						{
+							AttachmentDto attachment = new AttachmentDto()
+							{
+								Name = ,
+								Contents = ,
+								UploadedBy = WebConstants.ATTACHMENT_UPLOADED_BY_EEPP,
+								AttachmentType = AttachmentType.DelegationOfAuthority,
+								ProposalId = model.ProposalId,
+								IsRevisionReference = false,
+								IsAttachmentFromeEPP = true,
+								ShowPTMUploadForDelegationOfAuthority = false
+							};
+						}
+						// The record does not exist in eEPP, so keep the upload button
+						else
+						{
+							// TODO Katie: Do we set anything here?
+						}
+					}
+				}
+			}
 
             FullProposal prop = this.psaLogic.GetFullProposalDto(proposalId);
 
