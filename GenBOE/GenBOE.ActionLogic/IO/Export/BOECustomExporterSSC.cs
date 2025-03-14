@@ -66,21 +66,20 @@ namespace GenBOE.ActionLogic.IO.Export
 
             if (resourceData.Any())
             {
-                // derive the rollup data
-                ICollection<ResourceSummaryRowData> rollupData =
-                    resourceData
-                        .GroupBy(x => x.GroupKey)
-                        .Select(g => new ResourceSummaryRowData
-                        {
-                            ResourceType = g.First().ResourceType,
-                            ResourceName = g.First().ResourceName,
-                            ResourceDescription = g.First().ResourceDescription,
-                            CostTotal = g.Sum(x => x.CostTotal),
-                            HoursTotal = g.Sum(x => x.HoursTotal)
-                        })
-                        .OrderBy(x => x.GroupKey).ToList();
+				// derive the rollup data
+				ICollection<ResourceSummaryRowData> rollupData =
+					resourceData
+						.Select(x => new ResourceSummaryRowData
+						{
+							ResourceType = x.ResourceType,
+							ResourceName = x.ResourceName,
+							ResourceDescription = x.ResourceDescription,
+							CostTotal = x.CostTotal,
+							HoursTotal = x.HoursTotal
+						})
+						.OrderBy(x => x.ResourceType == "LMLabor" && x.ResourceDescription == "UCOT" ? x.GroupKey + "-UCOT" : x.GroupKey).ToList();
 
-                this.PopulateResourceSummaryTable(tableContainerElement, rollupData);
+				this.PopulateResourceSummaryTable(tableContainerElement, rollupData);
             }
             else
             {
