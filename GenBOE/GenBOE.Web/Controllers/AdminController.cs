@@ -3182,17 +3182,15 @@ namespace GenBOE.Web.Controllers
                             allDeletedResources = allDeletedResources.Concat(globalResources.Where(x => x.ElementOfCost == ElementOfCostType.Materials)).ToList();
                         }
 
-                        // get list of deleted resources. This query only pulls back rows that are in the database but not in the excel file
-                        allDeletedResources = (from a in allDeletedResources
-	where !(from n in newResources
-	        select n.Id).Contains(a.Id)
-	select a).ToList();
+						// get list of deleted resources. This query only pulls back rows that are in the database but not in the excel file
+						deletedResources = (from a in allDeletedResources
+							where !(from n in newResources
+									select n.Id).Contains(a.Id)
+							select a).ToList();
 
-                        // in use resources cannot be deleted so remove them from the final list
+                        // in use resources to only allow certain fields to be updated
                         HashSet<int> resourceIDsInUse = _InUseDataLoader.GetSystemResourceIDsInUse();
-                        deletedResources = allDeletedResources.Where(x => resourceIDsInUse.Contains(x.Id) == false).ToList();
-
-
+                        
                         // Set Updateable on each deleted item
                         foreach (ResourceDTO deletedResource in deletedResources)
                         {
@@ -3209,8 +3207,8 @@ namespace GenBOE.Web.Controllers
                             addedResource.Updateable = UpdateType.Upsert;
                         }
 
-                        // get edited resources that aren't currently in use. any resource field can be updated
-                        ICollection<ResourceDTO> editedResourcesQuery =
+						// get edited resources that aren't currently in use. any resource field can be updated
+						ICollection<ResourceDTO> editedResourcesQuery =
                             (from db in globalResources
                             join file in resourcesFromImportFile on db.Id equals file.Id
                             where
