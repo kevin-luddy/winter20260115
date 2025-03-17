@@ -7,17 +7,25 @@
 namespace GenBOE.ActionLogic._ControllerLogic.Backend
 {
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Linq;
+	using System.Web.Mvc;
 	using GenBOE.ActionLogic.ControllerLogic;
 	using GenBOE.ActionLogic.ModelView.Workspace;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
+	using GenTRAC.DataBridge.DTO;
 	using IES.Common;
 	using IES.Common.PickList;
 
 	public class WorkspaceSettingsControllerLogic
 	{
+		/// <summary>
+		/// Security Information
+		/// </summary>
+		private ISecurityInformation _securityInformation { get; set; }
+
 		/// <summary>
 		/// Service for Workspace Controller
 		/// </summary>
@@ -29,9 +37,19 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 		private IWorkspaceDTODataLoader workspaceDTODataLoader { get; set; }
 
 		/// <summary>
+		/// Proposal Loader
+		/// </summary>
+		private GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader { get; set; }
+
+		/// <summary>
 		/// BOE Pick List Mapper
 		/// </summary>
 		private BoePickListMapper boePickListMapper { get; set; }
+
+		/// <summary>
+		/// PTM Security Mapper
+		/// </summary>
+		private GenTRAC.DataBridge.Common.Security.ISecurityMapper ptmSecurityMapper { get; set; }
 
 		/// <summary>
 		/// Ctor
@@ -39,14 +57,20 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 		/// <param name="workspaceControllerLogic"></param>
 		/// <param name="workspaceDTODataLoader"></param>
 		public WorkspaceSettingsControllerLogic(
+			ISecurityInformation _securityInformation,
 			IWorkspaceControllerLogic workspaceControllerLogic, 
 			IWorkspaceDTODataLoader workspaceDTODataLoader,
-			BoePickListMapper boePickListMapper
+			BoePickListMapper boePickListMapper,
+			GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader,
+			GenTRAC.DataBridge.Common.Security.ISecurityMapper ptmSecurityMapper
 		)
 		{
+			this._securityInformation = _securityInformation;
 			this.workspaceControllerLogic = workspaceControllerLogic;
 			this.workspaceDTODataLoader = workspaceDTODataLoader;
 			this.boePickListMapper = boePickListMapper;
+			this.proposalLoader = proposalLoader;
+			this.ptmSecurityMapper = ptmSecurityMapper;
 		}
 
 		/// <summary>
@@ -110,6 +134,42 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 		public ICollection<PickListDto> GetContractTypeOptionList()
 		{
 			return boePickListMapper.GetPickListValues(PickListEnum.ContractType).PickLists;
+		}
+
+		/// <summary>
+		/// Get Tracking Number List
+		/// </summary>
+		/// <param name="trackingNumber"></param>
+		/// <returns></returns>
+		public ICollection<SelectListItem> GetTrackingNumberOptionList(string trackingNumber)
+		{
+			Collection<SelectListItem> trackingNumbers = new Collection<SelectListItem>();
+			IReadOnlyCollection<GenTRAC.DataBridge.Common.Security.SecurityPermissionsResponse> roles = this.ptmSecurityMapper.GetRolesForLoggedInUser();
+			bool isAdmin = roles.Any(r => r.AuthorizedRole == PtmRole.Admin);
+
+			ICollection<ProposalDto> proposals = (isAdmin ? this.proposalLoader.GetAllSlim() : this.proposalLoader.GetProposalsByUser(this._securityInformation.ActiveUserNTID, true))
+																					.Where(p => !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.NoBid && p.ProposalStatus != ProposalStatus.Revised).ToList();
+
+			if (!string.IsNullOrWhiteSpace(trackingNumber) && !proposals.Any(p => p.TrackingNumber == trackingNumber))
+			{
+				// Currently has a bad Tracking Number saved in DB, but we will let that slide
+				trackingNumbers.Add(new SelectListItem
+				{
+					Text = trackingNumber,
+					Value = trackingNumber
+				});
+			}
+
+			foreach (ProposalDto proposal in proposals)
+			{
+				trackingNumbers.Add(new SelectListItem
+				{
+					Text = proposal.TrackingNumber + " - " + proposal.ProposalTitle,
+					Value = proposal.TrackingNumber
+				});
+			}
+
+			return trackingNumbers;
 		}
 	}
 }
