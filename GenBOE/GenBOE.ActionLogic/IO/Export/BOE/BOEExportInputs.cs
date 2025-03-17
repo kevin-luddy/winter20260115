@@ -104,12 +104,14 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
 			if (useUCOT && Utilities.IsUCOTEnabled)
 			{
+				// TODO Thomas: The issue is we're creating 1 ucot resource when we should be creating multiple ucot resources per labor type.
 				// Setup the ucot resource
 				ResourceDTO ucotResource = new ResourceDTO
 				{
 					Id = Constants.UCOT_RESOURCE_ID,
 					ElementOfCost = ElementOfCostType.LMLabor,
 					ResourceDesc = "UCOT",
+					ResourceName = "UCOT Name",
 					SegRegion = ""
 				};
 
@@ -148,7 +150,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
 			if (useUCOT && Utilities.IsUCOTEnabled)
 			{
-				// Loop over tasks
 				// Get labors, filter by element of cost
 				List<ResourceTypeDto> taskElementLabors = taskElements
 					.SelectMany(x => x.taskElementLabors)
@@ -158,7 +159,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				Dictionary<int, ElementOfCostType> laborToElementOfCost = new Dictionary<int, ElementOfCostType>();
 				foreach (ResourceTypeDto labor in taskElementLabors)
 				{
-					// TODO Thomas: Need to do this with performing orgs.
 					ResourceDTO resource = this.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == labor.ResourceID);
 					if (resource == null)
 					{
@@ -166,7 +166,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 						{
 							laborToElementOfCost[labor.Id] = ElementOfCostType.LMLabor;
 						}
-
 					}
 					else
 					{
