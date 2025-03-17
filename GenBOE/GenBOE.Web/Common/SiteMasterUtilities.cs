@@ -19,6 +19,7 @@ namespace GenBOE.Web.Common
 	using System.Collections.Generic;
 	using GenBOE.Dtos;
 	using System.Linq;
+	using System.Configuration;
 
 	[ExcludeFromCodeCoverage]
 	sealed public class SiteMasterUtilities
@@ -374,6 +375,17 @@ namespace GenBOE.Web.Common
 			get
 			{
 				return ConfigurationUtilities.GetAppSetting("UnclassifiedBannerText");
+			}
+		}
+
+		/// <summary>
+		/// Are we in a classified environment?
+		/// </summary>
+		public static bool IsClassEnvironment
+		{
+			get
+			{
+				return bool.TrueString.ToLower() == ConfigurationManager.AppSettings["IsClassEnvironment"].ToLower();
 			}
 		}
 	}
