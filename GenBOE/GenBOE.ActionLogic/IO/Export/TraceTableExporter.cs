@@ -79,7 +79,6 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <returns>Trace Table Data group</returns>
 		public ICollection<TraceTableBoeDataGroup> ExportTraceTableDataGroup(FullWorkspace workspace, TraceTableSettingsData settingsData)
 		{
-			// TODO Thomas: Look at lines 93 - 116 
 			_ = workspace ?? throw new ArgumentNullException(nameof(workspace));
 
 			TraceTableBoeDataGroup boeData = new TraceTableBoeDataGroup();

@@ -125,13 +125,6 @@ namespace GenBOE.ActionLogic.IO.Export
 
 					foreach (ResourceSummaryRowData rollupRowData in rollupData)
 					{
-						if (rollupRowData.ResourceType == "Labor")
-						{
-							// TODO Thomas: Delete this
-							// Add a debug message or breakpoint here to verify that UCOT data is being populated
-							Console.WriteLine(rollupRowData.ResourceType, rollupRowData.HoursTotal, rollupRowData.CostTotal);
-						}
-
 						//create a new summary data row in the table
 						//clone marked template row
 						TableRow tableRow = templateDataRow.CloneNode(true) as TableRow;

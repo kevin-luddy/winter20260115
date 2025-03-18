@@ -61,9 +61,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		}
 
 		/// <summary>
-		/// TODO Thomas: Create a flag param if we should do UCOT. I.e. BOE Report and if UCOT is enabled then it will be true, otherwise, it will be false for everything else.
-		///		Look into ReportsController.cs for this for where its being called we compare it against the different types. Do it for BOE Search Preview (since it goes BOE to word).
-		///		If (useUCOT && IsUcotEnabled)
 		/// Initializes a new instance of the <see cref="BOEExportInputs" /> class.
 		/// </summary>
 		/// <param name="boesToExport">The boes.</param>
@@ -75,8 +72,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// <param name="processLaborTypesForBrc">Should Labor Types be processed for BRCs?</param>
 		/// <exception cref="ArgumentNullException">workspace</exception>
 		public BOEExportInputs(ICollection<FullBoe> boesToExport, ICollection<FullBoe> allWorkspaceBoes, ICollection<BoeTaskElementDTO> taskElements,
-	FullWorkspace workspace, ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesOverrides = null,
-	ICollection<MoqTypeSelection> moqTypes = null, bool processLaborTypesForBrc = false, bool useUCOT = false)
+			FullWorkspace workspace, ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesOverrides = null,
+			ICollection<MoqTypeSelection> moqTypes = null, bool processLaborTypesForBrc = false)
 		{
 			_ = taskElements ?? throw new ArgumentNullException(nameof(taskElements));
 			if (ReferenceEquals(workspace, null))
@@ -84,8 +81,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				throw new ArgumentNullException(nameof(workspace));
 			}
 
-			// TODO Thomas: Remove this since we will be using it from the constructor.
-			useUCOT = true;
 			taskElements = taskElements.DeepClone();
 			this.PerformingOrgsUsedInBoes = workspace.PerformingOrgsUsedInBoes;
 
@@ -102,7 +97,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 						.Union(workspace.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value))
 						.Distinct().ToList();
 
-			if (useUCOT && Utilities.IsUCOTEnabled)
+			if (Utilities.IsUCOTEnabled)
 			{
 				// Setup the ucot performing orgs.
 				PerformingOrgDTO ucotPerformingOrg = new PerformingOrgDTO
@@ -131,7 +126,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				}
 			}
 
-			if (useUCOT && Utilities.IsUCOTEnabled)
+			if (Utilities.IsUCOTEnabled)
 			{
 				// Get labors, filter by element of cost
 				List<ResourceTypeDto> taskElementLabors = taskElements
@@ -430,7 +425,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		}
 
 		/// <summary>
-		/// TODO Thomas: Look at how we do this and pull this out into a helper
 		/// Adds UCOT (Uncompensated Overtime) where applicable
 		/// </summary>
 		/// <param name="taskElementLabors">The task Element labors</param>
