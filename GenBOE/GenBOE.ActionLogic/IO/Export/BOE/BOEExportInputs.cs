@@ -104,35 +104,18 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
 			if (useUCOT && Utilities.IsUCOTEnabled)
 			{
-				// TODO Thomas: The issue is we're creating 1 ucot resource when we should be creating multiple ucot resources per labor type.
-				// Setup the ucot resource
-				ResourceDTO ucotResource = new ResourceDTO
-				{
-					Id = Constants.UCOT_RESOURCE_ID,
-					ElementOfCost = ElementOfCostType.LMLabor,
-					ResourceDesc = "UCOT",
-					ResourceName = "UCOT Name",
-					SegRegion = ""
-				};
-
-				this.ResourcesUsedInWsBoes = retriever.GetResourcesByIds(resourceIds).Concat(new[] { ucotResource }).ToList().AsReadOnly();
-
 				// Setup the ucot performing orgs.
 				PerformingOrgDTO ucotPerformingOrg = new PerformingOrgDTO
 				{
 					Id = Constants.UCOT_PERF_ORG_ID,
 					PerformingOrgDesc = "UCOT",
 					PerformingOrgName = "UCOT",
-					// Add any other necessary properties here
 				};
-
 
 				this.PerformingOrgsUsedInBoes = this.PerformingOrgsUsedInBoes.Concat(new[] { ucotPerformingOrg }).ToList().AsReadOnly();
 			}
-			else
-			{
-				this.ResourcesUsedInWsBoes = retriever.GetResourcesByIds(resourceIds).ToList().AsReadOnly();
-			}
+
+			this.ResourcesUsedInWsBoes = retriever.GetResourcesByIds(resourceIds).ToList().AsReadOnly();
 
 			int startingIndex = -1;
 			if (Utilities.IsBRCEnabledForWorkspace(workspace.Shortname) && processLaborTypesForBrc)
@@ -160,17 +143,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				foreach (ResourceTypeDto labor in taskElementLabors)
 				{
 					ResourceDTO resource = this.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == labor.ResourceID);
-					if (resource == null)
-					{
-						if (labor.ResourceID == Constants.UCOT_RESOURCE_ID)
-						{
-							laborToElementOfCost[labor.Id] = ElementOfCostType.LMLabor;
-						}
-					}
-					else
-					{
-						laborToElementOfCost[labor.Id] = resource.ElementOfCost;
-					}
+
+					laborToElementOfCost[labor.Id] = resource.ElementOfCost;
 				}
 
 				// Add UCOT data
@@ -279,7 +253,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// <summary>
 		/// Gets the resources used in ws boes.
 		/// </summary>
-		public IReadOnlyCollection<ResourceDTO> ResourcesUsedInWsBoes { get; }
+		public IReadOnlyCollection<ResourceDTO> ResourcesUsedInWsBoes { get; private set; }
 
 		/// <summary>
 		/// Gets the workspace export formats.
@@ -449,7 +423,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				// Add keyValuePairs to dictionary if it has value
 				if (keyValuePairs.Any())
 				{
-				this.LaborTypesMappingWithCustomFieldsValuesAndContainerIds[resource.Id] = keyValuePairs;
+					this.LaborTypesMappingWithCustomFieldsValuesAndContainerIds[resource.Id] = keyValuePairs;
 				}
 
 			}
@@ -468,6 +442,11 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
 			if (Utilities.IsUCOTEnabled)
 			{
+				int ucotResourceIndex = Constants.UCOT_RESOURCE_ID;
+
+				// Keyed by original resource name to new ucot resource 
+				Dictionary<int, ResourceDTO> ucotResourceBindings = new Dictionary<int, ResourceDTO>();
+
 				// First we clone so that we do not touch any Task Element Labor that may be attached to a Cached Property in the Cached FullWorkspace
 				ucotLabors = taskElementLabors.DeepClone();
 
@@ -482,9 +461,27 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 					if (labor.SpreadType == SpreadType.Hours &&
 						laborToElementOfCost[labor.Id] == ElementOfCostType.LMLabor &&
 						labor.LaborSpreads != null && labor.LaborSpreads.Any() &&
-						labor.EndDate >= Utilities.OneLmxStartDate)
+						labor.EndDate >= Utilities.OneLmxStartDate && labor.BusinessResourceCodeID.HasValue)
 					{
 						int newLaborTypeId = idCounter--;
+
+						// If it doesn't find the ucot resource then we need to create the ucot resource and add it back into our dictonary.
+						if (!ucotResourceBindings.TryGetValue(labor.BusinessResourceCodeID.Value, out ResourceDTO ucotResource))
+						{
+							ResourceDTO originalResource = this.ResourcesUsedInWsBoes.First(x => x.Id == labor.BusinessResourceCodeID);
+
+							ucotResource = new ResourceDTO
+							{
+								Id = ucotResourceIndex--,
+								ElementOfCost = ElementOfCostType.LMLabor,
+								ResourceDesc = originalResource.ResourceDesc + "-UCOT",
+								ResourceName = originalResource.ResourceName + "-UCOT",
+								SegRegion = originalResource.SegRegion,
+							};
+
+							ucotResourceBindings.Add(labor.BusinessResourceCodeID.Value, ucotResource);
+						}
+
 						Collection<ResourceSpreadDto> spreads = new Collection<ResourceSpreadDto>();
 						foreach (ResourceSpreadDto spread in labor.LaborSpreads)
 						{
@@ -510,8 +507,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 							StartDate = labor.StartDate,
 							SpreadCurveID = labor.SpreadCurveID,
 							SpreadType = labor.SpreadType,
-							BusinessResourceCodeID = Constants.UCOT_RESOURCE_ID,
-							ResourceID = Constants.UCOT_RESOURCE_ID,
+							BusinessResourceCodeID = ucotResource.Id,
+							ResourceID = ucotResource.Id,
 							PerformingOrgID = Constants.UCOT_PERF_ORG_ID,
 							TaskElementId = labor.TaskElementId,
 							Id = newLaborTypeId,
@@ -521,6 +518,11 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 						ucotLabors.Add(ucot);
 					}
 				}
+
+				List<ResourceDTO> updatedResources = new List<ResourceDTO>(this.ResourcesUsedInWsBoes);
+				updatedResources.AddRange(ucotResourceBindings.Values);
+
+				this.ResourcesUsedInWsBoes = updatedResources.AsReadOnly();
 			}
 
 			return ucotLabors;
