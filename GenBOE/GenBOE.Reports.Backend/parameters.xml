@@ -49,5 +49,10 @@
 		<parameterentry kind="XmlFile" scope="\\GenBOE.Reports.Backend.dll.config$" match="/configuration/appSettings/add[@key='ActiveDirectoryPath']/@value">
 		</parameterentry>
 	</parameter>
+	<parameter name="IESEntities" description="doesn't matter" defaultvalue="__IESEntities__" tags="">
+		<parameterentry kind="XmlFile" scope="\\GenBOE.Reports.Backend.dll.config$" match="/configuration/connectionStrings/add[@name='IESEntities']/@connectionString">
+		</parameterentry>
+	</parameter>
+
 
 </parameters>
