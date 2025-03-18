@@ -4170,6 +4170,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		#endregion
 
 		#region Resource Summary tables
+
 		protected virtual void PopulateResourceSummaryByElementOfCostTable(SdtElement tableContainerElement, BOEExportModelView boeExportModelView, ICollection<BOESummaryGridModelView> data)
         {
             if (data.Any())
@@ -4308,7 +4309,6 @@ namespace GenBOE.ActionLogic.IO.Export
                     {
                         resourceTypeValue = elementOfCostEnumValue.GetDescription();
                     }
-
                     WordUtilities.SetElementText(resourceTypeElement, resourceTypeValue);
 
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_ResourceName), rollupRowData.ResourceName);
