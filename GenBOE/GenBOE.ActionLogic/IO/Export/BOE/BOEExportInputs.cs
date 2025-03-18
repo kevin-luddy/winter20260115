@@ -429,7 +429,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// </summary>
 		/// <param name="taskElementLabors">The task Element labors</param>
 		/// <param name="ucotFactor">The UCOT Factor</param>
-		/// <returns></returns>
+		/// <returns>UCOT resources.</returns>
 		private List<ResourceTypeDto> AddUCOT(List<ResourceTypeDto> taskElementLabors, decimal ucotFactor, Dictionary<int, ElementOfCostType> laborToElementOfCost)
 		{
 			List<ResourceTypeDto> ucotLabors = taskElementLabors;
@@ -459,7 +459,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 					{
 						int newLaborTypeId = idCounter--;
 
-						// If it doesn't find the ucot resource then we need to create the ucot resource and add it back into our dictonary.
+						// If it doesn't find the ucot resource then we need to create the ucot resource and add it back into our dictonary to pair the labor resource with its ucot counterpart (i.e. C1MDAAA1 vs. C1MDAAA1-UCOT)
 						if (!ucotResourceBindings.TryGetValue(labor.BusinessResourceCodeID.Value, out ResourceDTO ucotResource))
 						{
 							ResourceDTO originalResource = this.ResourcesUsedInWsBoes.First(x => x.Id == labor.BusinessResourceCodeID);
