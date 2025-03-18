@@ -103,8 +103,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				PerformingOrgDTO ucotPerformingOrg = new PerformingOrgDTO
 				{
 					Id = Constants.UCOT_PERF_ORG_ID,
-					PerformingOrgDesc = "UCOT",
-					PerformingOrgName = "UCOT",
+					PerformingOrgDesc = Constants.UCOT_LABEL,
+					PerformingOrgName = Constants.UCOT_LABEL
 				};
 
 				this.PerformingOrgsUsedInBoes = this.PerformingOrgsUsedInBoes.Concat(new[] { ucotPerformingOrg }).ToList().AsReadOnly();
@@ -468,8 +468,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 							{
 								Id = ucotResourceIndex--,
 								ElementOfCost = ElementOfCostType.LMLabor,
-								ResourceDesc = originalResource.ResourceDesc + "-UCOT",
-								ResourceName = originalResource.ResourceName + "-UCOT",
+								ResourceDesc = $"{originalResource.ResourceDesc}-{Constants.UCOT_LABEL}",
+								ResourceName = $"{originalResource.ResourceName}-{Constants.UCOT_LABEL}",
 								SegRegion = originalResource.SegRegion,
 							};
 

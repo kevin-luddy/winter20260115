@@ -397,6 +397,11 @@ namespace IES.Common
 		/// </summary>
 		public const int UCOT_PERF_ORG_ID = 9001;
 
+		/// <summary>
+		/// UCOT string constant.
+		/// </summary>
+		public const string UCOT_LABEL = "UCOT";
+
         /// <summary>
         /// The read only roles for RDSB.
         /// </summary>
