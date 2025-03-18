@@ -1605,6 +1605,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 		$scope.IsSapSetAndAnyTableSapRepository();
 		$scope.refreshDisableSave();
+
+		// Repo updated, Trigger the event to make sure to tell Task so that SkillMix is shown/hidden
+		$scope.$emit('MOQ_TYPE_SELECTION_CHANGED', $scope.model.SelectedMoqTypes);
 	};
 
 	$scope.getAndSetIsResourceValid = function (input, models) {
