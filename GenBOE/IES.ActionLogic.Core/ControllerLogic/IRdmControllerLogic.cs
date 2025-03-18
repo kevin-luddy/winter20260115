@@ -68,6 +68,11 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		UserData ActiveUser { get; }
 
 		/// <summary>
+		/// Helper method to determine if the current user is a member of the RDMViewer user group.
+		/// </summary>
+		bool IsRdmViewerUser { get;  }
+
+		/// <summary>
 		/// Helper method to determine if the current user is a member of the RDMAdmin user group.
 		/// </summary>
 		bool IsRDMAdminUser { get; }

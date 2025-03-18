@@ -55,6 +55,11 @@ namespace IES.Common.Core.Constants
 		public readonly static string ACTION_GET_REVISIONS = "GetRevisions";
 
 		/// <summary>
+		/// The action name for getting current user access
+		/// </summary>
+		public readonly static string ACTION_GET_USER_ACCESS = "GetUserAccess";
+
+		/// <summary>
 		/// The action name for locking a revision.
 		/// </summary>
 		public readonly static string ACTION_LOCK = "Lock";
