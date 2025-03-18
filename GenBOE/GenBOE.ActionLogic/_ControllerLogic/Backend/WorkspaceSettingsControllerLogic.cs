@@ -81,7 +81,7 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 		/// Logic to get Workspace Identification
 		/// </summary>
 		/// <param name="ws"></param>
-		/// <return></returns>
+		/// <returns></returns>
 		public IWorkspaceIdentificationModelView GetWorkspaceIdentification(FullWorkspace ws)
 		{
 			IWorkspaceIdentificationModelView workspaceIdentificationModelView = this.workspaceControllerLogic.GetWorkspaceIdentificationModelView(ws);
