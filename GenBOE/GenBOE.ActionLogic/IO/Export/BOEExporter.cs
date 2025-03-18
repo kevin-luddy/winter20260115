@@ -3209,9 +3209,9 @@ namespace GenBOE.ActionLogic.IO.Export
                         otherCostTotal += otherCost;
                         costTotal += cost;
 
-                        // populate the row
-                        WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_ResourceName), rollupRowData.ResourceName);
-                        WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Hours), Utilities.FormatStringWithPrecision(hours, this.WorkspaceDecimalPrecision));
+						// populate the row
+						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_ResourceName), rollupRowData.ResourceName);
+						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Hours), Utilities.FormatStringWithPrecision(hours, this.WorkspaceDecimalPrecision));
                         WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Months), months.ToString(BOEExporterConstants.NUMERIC_FORMAT_COMMAS_NO_DECIMALS));
                         WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_MatSubIWTACost), matSubIwtaCost.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, this.CurrencyFormatter));
                         WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_OtherCost), otherCost.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, this.CurrencyFormatter));
