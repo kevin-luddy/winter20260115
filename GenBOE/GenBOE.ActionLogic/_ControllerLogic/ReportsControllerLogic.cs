@@ -46,7 +46,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private readonly IProposalLoader proposalLoader;
         private readonly IWorkspaceControllerLogic workspaceControllerLogic;
         private readonly TravelTripCostCalculation travelTripCostCalculator;
-		private readonly BOEHttpService boeHttpService = new BOEHttpService();
+		private readonly BOEReportsHttpService boeHttpService = new BOEReportsHttpService();
 
 		#region Cache Setup
 

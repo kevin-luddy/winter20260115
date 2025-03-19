@@ -77,7 +77,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private readonly IESSAPClient iesSapClient;
         private readonly ITokenService tokenService;
         private readonly Logger logger = new Logger(typeof(BOEControllerLogic));
-		private readonly BOEHttpService boeHttpService = new BOEHttpService();
+		private readonly BOEReportsHttpService boeHttpService = new BOEReportsHttpService();
 
 		/// <summary>
 		/// Memory Cache

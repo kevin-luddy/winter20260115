@@ -257,7 +257,7 @@
     <Compile Include="IO\Export\BOE\BOEExportConverter.cs" />
     <Compile Include="IO\Export\BOE\BOEExportInputs.cs" />
     <Compile Include="IO\Export\BOE\BOEExportConverterRMS.cs" />
-    <Compile Include="IO\Export\BOE\BOEHttpService.cs" />
+    <Compile Include="IO\Export\BOE\BOEReportsHttpService.cs" />
     <Compile Include="IO\Export\BOE\ExportBoeWordRequestViewModel.cs" />
     <Compile Include="IO\Export\CommentsAndResponsesExporter.cs" />
     <Compile Include="IO\Export\IBOEConfidenceReportExporter.cs" />

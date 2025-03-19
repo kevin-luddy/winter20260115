@@ -2,21 +2,19 @@
 {
 	using System;
 	using System.Collections.Generic;
-	using System.IO;
 	using System.Linq;
-	using System.Text;
 	using System.Threading.Tasks;
 	using System.Web;
 	using GenBOE.Dtos;
 	using IES.Common;
 	using IES.Common.Exceptions;
 
-	public class BOEHttpService : BaseHttpService
+	public class BOEReportsHttpService : BaseHttpService
 	{
 		/// <summary>
 		/// Default Constructor
 		/// </summary>
-		public BOEHttpService() : base("ReportsBackendServiceUrl", "Reports", new Logger(typeof(BOEHttpService)))
+		public BOEReportsHttpService() : base("ReportsBackendServiceUrl", "Reports", new Logger(typeof(BOEReportsHttpService)))
 		{
 		}
 
