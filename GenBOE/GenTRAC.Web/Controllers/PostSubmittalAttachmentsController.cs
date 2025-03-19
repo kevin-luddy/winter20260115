@@ -24,12 +24,13 @@ namespace GenTRAC.Web.Controllers
 	using GenTRAC.ActionLogic;
     using GenTRAC.ActionLogic.ModelView.PostSubmittalAttachments;
     using GenTRAC.DataBridge.DTO;
-    using GenTRAC.Objects.FullObject;
+	using GenTRAC.Objects.FullObject;
     using GenTRAC.Web.Common;
 	using Glimpse.AspNet.Model;
 	using IES.ActionLogic.Common;
 	using IES.Common;
     using IES.Common.Exceptions;
+	using Newtonsoft.Json;
 	using static System.Net.Mime.MediaTypeNames;
 	using static System.Net.WebRequestMethods;
 
@@ -118,32 +119,8 @@ namespace GenTRAC.Web.Controllers
 					if (proposal != null)
 					{
 						// Check if this exists in eEPP
-						// TODO Katie: API call to return status/ID of eEPP record with param of PTM tracking #
-
-						/*using (HttpClient httpClient = new HttpClient(new HttpClientHandler()
-						{
-							UseDefaultCredentials = true
-						}, true))
-						{
-							string eeppAPI = IES.Common.ConfigurationUtilities.GetAppSetting("eEPPUrl");
-							Task<HttpResponseMessage> syncAPICall = Task.Run(() => httpClient.GetAsync(eeppAPI + "/api/eEPP/EPPController/GeteEPPDataByTrackingNumber/" + proposal.TrackingNumber));
-							try
-							{
-								syncAPICall.Wait();
-								HttpResponseMessage response = syncAPICall.Result;
-							}
-							catch (Exception ex)
-							{
-								this.log.Error(ex);
-								Result<byte[]> tempResult = new Result<byte[]>();
-								MemoryStream stream = new MemoryStream();
-								tempResult.Messages.Add("The requested action could not be completed. If the problem persists, please contact your application administrator.");
-								HelperCreateErrorDocument(tempResult, stream);
-							}
-						}*/
-
 						// WIP - NEED TO FIX
-						/*using (HttpClient httpClient = new HttpClient(new HttpClientHandler()
+						using (HttpClient httpClient = new HttpClient(new HttpClientHandler()
 						{
 							UseDefaultCredentials = true
 						}))
@@ -155,29 +132,46 @@ namespace GenTRAC.Web.Controllers
 							{
 								HttpResponseMessage response = await httpClient.GetAsync(url);
 								response.EnsureSuccessStatusCode();
+
 								// Process the response
+								string stringResult = await response.Content.ReadAsStringAsync();
+								Result<int> deserializedResult = JsonConvert.DeserializeObject<Result<int>>(stringResult);
+
+								if (deserializedResult != null && deserializedResult.Data != -1)
+								{
+									AttachmentDto doaDoc = model.PostSubmittalAttachments.FirstOrDefault(x => x.AttachmentType == AttachmentType.DelegationOfAuthority);
+									if (doaDoc != null)
+									{
+										doaDoc.Name = WebConstants.ATTACHMENT_FROM_EEPP;
+										doaDoc.UploadedBy = WebConstants.ATTACHMENT_UPLOADED_BY_EEPP;
+										doaDoc.IsAttachmentFromeEPP = true;
+										doaDoc.Id = 1;  // We need this to bypass the FileHasBeenUploaded flag in the UI, but the actual ID won't matter for eEPP docs
+									}
+								}
+								// Do nothing (let the user upload a file) if there is no eEPP data with the tracking number
 							}
 							catch (HttpRequestException ex)
 							{
 								this.log.Error(ex);
-
 							}
-						}*/
+						}
 
 
 
 
-						try
+						/*try
 						{
 							Result<byte[]> tempResult = new Result<byte[]>();
-							MemoryStream stream = new MemoryStream();
 							tempResult.Messages.Add("This is a test.");
 
-							AttachmentDto doaDoc = model.PostSubmittalAttachments.Where(x => x.AttachmentType == AttachmentType.DelegationOfAuthority).FirstOrDefault();
-							doaDoc.Name = WebConstants.ATTACHMENT_FROM_EEPP;
-							doaDoc.UploadedBy = WebConstants.ATTACHMENT_UPLOADED_BY_EEPP;
-							doaDoc.IsAttachmentFromeEPP = true;
-							doaDoc.Id = 1;	// We need this to bypass the FileHasBeenUploaded flag in the UI, but the actual ID won't matter for eEPP docs
+							AttachmentDto doaDoc = model.PostSubmittalAttachments.FirstOrDefault(x => x.AttachmentType == AttachmentType.DelegationOfAuthority);
+							if (doaDoc != null)
+							{
+								doaDoc.Name = WebConstants.ATTACHMENT_FROM_EEPP;
+								doaDoc.UploadedBy = WebConstants.ATTACHMENT_UPLOADED_BY_EEPP;
+								doaDoc.IsAttachmentFromeEPP = true;
+								doaDoc.Id = 1;  // We need this to bypass the FileHasBeenUploaded flag in the UI, but the actual ID won't matter for eEPP docs
+							}
 						}
 						catch (Exception ex)
 						{
@@ -186,7 +180,7 @@ namespace GenTRAC.Web.Controllers
 							MemoryStream stream = new MemoryStream();
 							tempResult.Messages.Add("The requested action could not be completed. If the problem persists, please contact your application administrator.");
 							HelperCreateErrorDocument(tempResult, stream);
-						}
+						}*/
 
 						
 
