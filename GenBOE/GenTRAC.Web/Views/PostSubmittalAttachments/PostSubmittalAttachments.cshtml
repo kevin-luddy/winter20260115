@@ -345,7 +345,7 @@
                     <td>@Html.Raw(attachment.AttachmentTypeDisplayString)</td>
                     <td>
                         @Html.Hidden("IsRevisionReference-" + attachmentIdentifier, attachment.IsRevisionReference, new { id = "IsRevisionReference-" + attachmentIdentifier })
-                        <a id="filenameLink-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded ? "" : "display:none")" href="/@WebConstants.Controller.PSA/@WebConstants.Action.DOWNLOAD_ATTACHMENT/id/@Model.ProposalId/?fileId=@attachment.Id">
+                        <a id="filenameLink-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded ? "" : "display:none")" href="/@WebConstants.Controller.PSA/@WebConstants.Action.DOWNLOAD_ATTACHMENT/id/@Model.ProposalId/?fileId=@attachment.Id&isFromeEPP=@attachment.IsAttachmentFromeEPP.ToString()">
                             @(attachment.IsRevisionReference ? @referencePrefix : string.Empty) @attachment.Name
                         </a>
                         <span id="filenameLabel-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded ? "display:none" : "")">Select File</span>
