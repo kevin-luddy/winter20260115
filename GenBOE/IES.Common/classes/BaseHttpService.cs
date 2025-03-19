@@ -109,7 +109,7 @@ namespace IES.Common
 				return new IESSingleResponse<T>() { IsSuccessful = false, Messages = new List<string>() { Constants.GENERIC_USER_ERROR } };
 			}
 
-			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); // .ReadFromJsonAsync<IESSingleResponse<T>>();
+			return await response.Content.ReadAsAsync<IESSingleResponse<T>>();
 		}
 
 		/// <summary>
@@ -120,7 +120,7 @@ namespace IES.Common
 		/// <returns>Result of method</returns>
 		public T GetSync<T>(string url)
 		{
-			// runing http Get synchronously taken from https://stackoverflow.com/questions/53529061/whats-the-right-way-to-use-httpclient-synchronously
+			// running http Get synchronously taken from https://stackoverflow.com/questions/53529061/whats-the-right-way-to-use-httpclient-synchronously
 			Task<HttpResponseMessage> getTask = Task.Run(() => HttpClient.GetAsync($"{baseUrl}{serviceController}{url}"));
 			getTask.Wait();
 			HttpResponseMessage response = getTask.Result;
@@ -131,7 +131,7 @@ namespace IES.Common
 				return default;
 			}
 
-			Task<T> returnTask = response.Content.ReadAsAsync<T>(); // .ReadFromJsonAsync<T>();
+			Task<T> returnTask = response.Content.ReadAsAsync<T>();
 			returnTask.Wait();
 			return returnTask.Result;
 		}
@@ -158,7 +158,7 @@ namespace IES.Common
 				return new IESSingleResponse<T>() { IsSuccessful = false, Messages = new List<string>() { Constants.GENERIC_USER_ERROR } };
 			}
 
-			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); // .ReadFromJsonAsync<IESSingleResponse<T>>();
+			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); 
 		}
 
 		/// <summary>
@@ -175,7 +175,7 @@ namespace IES.Common
 			// Handles self referencing loop with Newtonsoft serializing options
 			string serializedResult = JsonConvert.SerializeObject(data, new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects, ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
 
-			// Get an authetnicated HTTP client
+			// Get an authenticated HTTP client
 			HttpResponseMessage response = await HttpClient.PostAsync($"{baseUrl}{serviceController}{url}", new StringContent(serializedResult, System.Text.Encoding.UTF8, "application/json"));
 
 			if (!response.IsSuccessStatusCode)
@@ -189,7 +189,7 @@ namespace IES.Common
 				return new IESSingleResponse<T>() { IsSuccessful = false, Messages = new List<string>() { Constants.GENERIC_USER_ERROR } };
 			}
 
-			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); // .ReadFromJsonAsync<IESSingleResponse<T>>();
+			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); 
 		}
 
 		/// <summary>
@@ -275,7 +275,7 @@ namespace IES.Common
 				return new IESSingleResponse<T>() { IsSuccessful = false, Messages = new List<string>() { Constants.GENERIC_USER_ERROR } };
 			}
 
-			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); // .ReadFromJsonAsync<IESSingleResponse<T>>();
+			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); 
 		}
 
 		/// <summary>
@@ -316,7 +316,7 @@ namespace IES.Common
 				return new IESSingleResponse<T>() { IsSuccessful = false, Messages = new List<string>() { Constants.GENERIC_USER_ERROR } };
 			}
 
-			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); // .ReadFromJsonAsync<IESSingleResponse<T>>();
+			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); 
 		}
 
 		/// <summary>
@@ -362,7 +362,7 @@ namespace IES.Common
 				return new IESSingleResponse<T>() { IsSuccessful = false, Messages = new List<string>() { Constants.GENERIC_USER_ERROR } };
 			}
 
-			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); // .ReadFromJsonAsync<IESSingleResponse<T>>();
+			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); 
 		}
 
 		/// <summary>
@@ -413,7 +413,7 @@ namespace IES.Common
 				return new IESSingleResponse<T>() { IsSuccessful = false, Messages = new List<string>() { Constants.GENERIC_USER_ERROR } };
 			}
 
-			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); // .ReadFromJsonAsync<IESSingleResponse<T>>();
+			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); 
 		}
 
 		/// <summary>
@@ -470,7 +470,7 @@ namespace IES.Common
 				return new IESSingleResponse<T>() { IsSuccessful = false, Messages = new List<string>() { Constants.GENERIC_USER_ERROR } };
 			}
 
-			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); // .ReadFromJsonAsync<IESSingleResponse<T>>();
+			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); 
 		}
 
 		/// <summary>
@@ -532,7 +532,7 @@ namespace IES.Common
 				return new IESSingleResponse<T>() { IsSuccessful = false, Messages = new List<string>() { Constants.GENERIC_USER_ERROR } };
 			}
 
-			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); // .ReadFromJsonAsync<IESSingleResponse<T>>();
+			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); 
 		}
 
 		/// <summary>
@@ -563,7 +563,7 @@ namespace IES.Common
 				return new IESSingleResponse<T>() { IsSuccessful = false, Messages = new List<string>() { Constants.GENERIC_USER_ERROR } };
 			}
 
-			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); // .ReadFromJsonAsync<IESSingleResponse<T>>();
+			return await response.Content.ReadAsAsync<IESSingleResponse<T>>(); 
 		}
 
 		protected virtual void Dispose(bool disposing)
