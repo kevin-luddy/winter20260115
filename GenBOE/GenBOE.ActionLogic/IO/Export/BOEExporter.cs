@@ -453,8 +453,21 @@ namespace GenBOE.ActionLogic.IO.Export
             }
 
             this.WorkspaceDecimalPrecision = workspace.DecimalPrecision;
-            this.DefaultHoursFormat = Utilities.PrecisionFormattingString(this.WorkspaceDecimalPrecision);
-            this.exportConverter.SetWorkspacePrecisionVariables(workspace);
+
+			// If UCOT is enabled then sent decimal precision to be 3 if it is set to be less than 3.
+			if (Utilities.IsUCOTEnabled)
+			{
+				if (this.WorkspaceDecimalPrecision < 3)
+				{
+					this.DefaultHoursFormat = Utilities.PrecisionFormattingString(3);
+				}
+			}
+			else
+			{
+				this.DefaultHoursFormat = Utilities.PrecisionFormattingString(this.WorkspaceDecimalPrecision);
+			}
+
+			this.exportConverter.SetWorkspacePrecisionVariables(workspace);
         }
 
         /// <summary>
