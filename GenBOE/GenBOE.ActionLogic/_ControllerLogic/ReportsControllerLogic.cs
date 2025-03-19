@@ -742,6 +742,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
             return toReturn;
         }
 
+		/// <summary>
+		/// Dispose managed resources
+		/// </summary>
+		/// <param name="disposing"></param>
 		protected virtual void Dispose(bool disposing)
 		{
 			if (!disposedValue)

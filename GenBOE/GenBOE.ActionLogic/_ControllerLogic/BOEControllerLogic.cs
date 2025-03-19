@@ -41,8 +41,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using IES.Common.Exceptions;
 	using Microsoft.Practices.ObjectBuilder2;
 
-	public class BOEControllerLogic : IBOEControllerLogic
-    {
+	public class BOEControllerLogic : IBOEControllerLogic, IDisposable
+	{
         private readonly IBOESummary _BOESummary;
         private readonly IUserDTODataLoader UserLoader;
         private readonly IActiveDirectoryUtilities _ADUtils;
@@ -77,11 +77,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private readonly IESSAPClient iesSapClient;
         private readonly ITokenService tokenService;
         private readonly Logger logger = new Logger(typeof(BOEControllerLogic));
+		private readonly BOEHttpService boeHttpService = new BOEHttpService();
 
 		/// <summary>
 		/// Memory Cache
 		/// </summary>
 		private MemoryCache memCache;
+		private bool disposedValue;
 
 		/// <summary>
 		/// Cache key for Get All Operators
@@ -784,7 +786,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="ws">Workspace containing the boe</param>
         /// <param name="boeID">ID of BOE to preview</param>
         /// <param name="Response">current HTTP response</param>
-        public void ExportBOESearchPreview(FullWorkspace ws, int boeID, HttpResponseBase Response)
+        public async Task ExportBOESearchPreview(FullWorkspace ws, int boeID, HttpResponseBase Response)
         {
             // Get the BOE to export
             FullBoe boe = this.Factory.CreateFullBoe(boeID);
@@ -813,27 +815,49 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     BOEExportInputs inputs = new BOEExportInputs(new FullBoe[] { boe }, exportWorkspace.Boes.ToList(), exportWorkspace.TaskElements.ToList(), exportWorkspace, rteTemplateOverrides, exportWorkspace.MoqTypeSelections.ToList(), true);
 
                     // Get BOE Summary Grid data for the current BOE. Used for populating the summary grid on the template
-                    ICollection<BOESummaryGridModelView> boeSummaryGridModelViews = this._BOESummary.GetBOESummaryGridModelViews(boe, inputs, isSubcontractorUser);
+                    List<BOESummaryGridModelView> boeSummaryGridModelViews = this._BOESummary.GetBOESummaryGridModelViews(boe, inputs, isSubcontractorUser).ToList();
 
                     // Get template based on workspace preferences
                     WorkspaceExportFormatDTO wsExportFormatDTO = ws.WorkspaceExportFormats.First(x => x.Id == ws.TemplateID);
 
                     // Get BOE Export Model View for the current BOE. Used for filling in most of the data on the template.
                     BOEExportModelView boeExportModelView;
-                                        
-                    if (wsExportFormatDTO.ExportFormat.TemplateType == ExcelReportTemplateType.MASTER)
-                    {
-                        //use the custom exporter for master template types
-                        this._boeCustomExporter.SetWorkspacePrecisionVariables(exportWorkspace);
-                        boeExportModelView = this._boeCustomExporter.ConvertBoeDTOsToExportMVs(new FullBoe[] { boe }, inputs).First();
-                        this._boeCustomExporter.ExportBOEToWordFile(inputs, new List<BOEExportModelView> { boeExportModelView }, boeSummaryGridModelViews, ws, null, Response, string.Format("genBOEExport-{0}.docx", boeID), wsExportFormatDTO);
-                    }
-                    else
-                    {
-                        this._BOEExporter.SetWorkspacePrecisionVariables(exportWorkspace);
-                        boeExportModelView = this._BOEExporter.ConvertBoeDTOsToExportMVs(inputs).First();
-                        this._BOEExporter.ExportBOEToWordFile(inputs, new List<BOEExportModelView> { boeExportModelView }, boeSummaryGridModelViews, ws, Response, string.Format("genBOEExport-{0}.docx", boeID), wsExportFormatDTO.PhysicalFilePathCache);
-                    }
+					bool isCustomExport = wsExportFormatDTO.ExportFormat.TemplateType == ExcelReportTemplateType.MASTER;
+					ICollection<BOEExportModelView> boeExportModelViews;
+
+					// Setup BOE Export ModelViews
+					if (isCustomExport)
+					{
+						//use the custom exporter for master template types
+						this._boeCustomExporter.SetWorkspacePrecisionVariables(exportWorkspace);
+						boeExportModelView = this._boeCustomExporter.ConvertBoeDTOsToExportMVs(new FullBoe[] { boe }, inputs).First();
+						boeExportModelViews = new List<BOEExportModelView> { boeExportModelView };
+					}
+					else
+					{
+						this._BOEExporter.SetWorkspacePrecisionVariables(exportWorkspace);
+						boeExportModelView = this._BOEExporter.ConvertBoeDTOsToExportMVs(inputs).First();
+						boeExportModelViews = new List<BOEExportModelView> { boeExportModelView };
+					}
+
+					if (Utilities.IsReportGenerationExternal)
+					{
+						await this.boeHttpService.ExportBOEsToWord(null, Response, isCustomExport, wsExportFormatDTO, inputs, boeExportModelViews,
+							boeSummaryGridModelViews, false);
+					}
+					else
+					{
+
+						if (isCustomExport)
+						{
+							
+							this._boeCustomExporter.ExportBOEToWordFile(inputs, boeExportModelViews, boeSummaryGridModelViews, ws, null, Response, string.Format("genBOEExport-{0}.docx", boeID), wsExportFormatDTO);
+						}
+						else
+						{
+							this._BOEExporter.ExportBOEToWordFile(inputs, boeExportModelViews, boeSummaryGridModelViews, ws, Response, string.Format("genBOEExport-{0}.docx", boeID), wsExportFormatDTO.PhysicalFilePathCache);
+						}
+					}
                 }
                 else
                 {
@@ -3390,5 +3414,41 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 return new List<QueryFieldViewModel>();
             }
 		}
-    }
+
+		/// <summary>
+		/// Dispose managed resources
+		/// </summary>
+		/// <param name="disposing"></param>
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposedValue)
+			{
+				if (disposing)
+				{
+					if (this.boeHttpService != null)
+					{
+						this.boeHttpService.Dispose();
+					}
+				}
+
+				// TODO: free unmanaged resources (unmanaged objects) and override finalizer
+				// TODO: set large fields to null
+				disposedValue = true;
+			}
+		}
+
+		// // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+		// ~BOEControllerLogic()
+		// {
+		//     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+		//     Dispose(disposing: false);
+		// }
+
+		public void Dispose()
+		{
+			// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+			Dispose(disposing: true);
+			GC.SuppressFinalize(this);
+		}
+	}
 }

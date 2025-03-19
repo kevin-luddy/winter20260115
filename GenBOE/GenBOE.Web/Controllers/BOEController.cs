@@ -983,7 +983,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeID">BOE</param>
 		/// <returns>A special ActionResult that generates a file download for the user to download the
 		/// populated Word template.</returns>
-		public ActionResult BOESearchPreview(string workspace, int boeID)
+		public async Task<ActionResult> BOESearchPreview(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -991,7 +991,7 @@ namespace GenBOE.Web.Controllers
 			//The BOE id sent in is not the BOE the user has permissions too its the BOE they are previewing which they are allowed to view if it is searchable.
 			Stopwatch sw = InitializeAction(_log, "BOESearchPreview", SecurityPage.BoeCopyConflicts, SecurityAuthorization.Read, ws, null);
 
-			_ControllerLogic.ExportBOESearchPreview(ws, boeID, Response);
+			await _ControllerLogic.ExportBOESearchPreview(ws, boeID, Response);
 
 			// Finalize Action
 			FinalizeAction(_log, "BOESearchPreview", sw);
