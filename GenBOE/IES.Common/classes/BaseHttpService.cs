@@ -549,7 +549,7 @@ namespace IES.Common
 			// Handles self referencing loop with Newtonsoft serializing options
 			string serializedResult = JsonConvert.SerializeObject(data, new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects, ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
 
-			// Get an authetnicated HTTP client
+			// Get an authenticated HTTP client
 			HttpResponseMessage response = await HttpClient.PutAsync($"{baseUrl}{serviceController}{url}", new StringContent(serializedResult, System.Text.Encoding.UTF8, "application/json"));
 
 			if (!response.IsSuccessStatusCode)
