@@ -1490,13 +1490,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		public string ExportToExcelFile(BOEExcelExportInputs exportInputs)
 		{
-			// TODO TIW FUTURE
+			// TODO TIW FUTURE Pt 2
 			if (exportInputs == null) { throw new ArgumentNullException(nameof(exportInputs)); }
 
 			Collection<WbsDTO> allWbs = exportInputs.WbsElements.ToCollection<WbsDTO>();
 			Collection<ClinDTO> allClins = exportInputs.Clins.ToCollection<ClinDTO>();
 
-			//// TODO TIW FUTURE
+			//// TODO TIW FUTURE Pt 2
 			//Collection<PermissionsDTO> permissionsForWorkspace = permissionsDTOLoader.GetBOEPotentialPermissionsForWorkspace(workspace.Id);
 			//HashSet<UserDTO> allUsersWithPotentialPermissions = new HashSet<UserDTO>(this._IUserDTODataLoader.GetByIds(permissionsForWorkspace.Select(x => x.ETIUserId).Distinct().ToList()).ToCollection());
 

@@ -67,6 +67,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 			this.TravelTrips = exportInputs.TravelTrips.ToList();
 			this.WbsElements = exportInputs.WbsElements.ToList();
 			this.Workspace = exportInputs.Workspace;
+			this.WorkspaceHistory = exportInputs.FullWorkspace.WorkspaceHistory.ToList();
 			this.WorkspaceVariables = exportInputs.WorkspaceVariables.ToList();
 		}
 
@@ -157,6 +158,11 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// Gets the resources for system resource list identifier.
 		/// </summary>
 		public List<ResourceDTO> ResourcesForSystemResourceListId { get; set; }
+
+		/// <summary>
+		/// Workspace History
+		/// </summary>
+		public List<WorkspaceHistoryDTO> WorkspaceHistory { get; set; }
 
 		/// <summary>
 		/// Gets the workspace variables.

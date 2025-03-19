@@ -105,6 +105,11 @@
 		public List<WorkspaceVariableDTO> WorkspaceVariables { get; set; }
 
 		/// <summary>
+		/// Workspace History
+		/// </summary>
+		public List<WorkspaceHistoryDTO> WorkspaceHistory { get; set; }
+
+		/// <summary>
 		/// Gets the boes.
 		/// </summary>
 		public List<BoeDTO> Boes { get; set; }

@@ -258,8 +258,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				throw new ArgumentNullException(nameof(wsExportFormatDTO));
 			}
 
-			// TODO TIW
-			if (segmentedOutput == true || segmentedOutput == false)
+			if (Utilities.IsReportGenerationExternal)
 			{
 				await this.boeHttpService.ExportBOEsToWord(selectedComponents, httpResponse, isCustomExport, wsExportFormatDTO, exportInputs, boeExportModelViews,
 					boeSummaryGridModelViews, segmentedOutput);

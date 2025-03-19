@@ -4944,7 +4944,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					decimal miscRate = exportInputs.MiscTravelRatesForTravelTrips.FirstOrDefault(x => x.Id == systemTrip.MiscTravelRateID).MiscTravelRate;
 					PerDiemDTO perDiem = exportInputs.PerDiemsForTravelTrips.FirstOrDefault(x => x.Id == systemTrip.PerDiemID);
 
-					boeExportLabor.Cost = _TravelTripCostCalculation.CalculateTravelCost(travelTrip, exportInputs.Workspace, systemTrip, miscRate, perDiem, exportInputs.EscalationRates).CostTotal;
+					boeExportLabor.Cost = _TravelTripCostCalculation.CalculateTravelCost(travelTrip, exportInputs.Workspace, exportInputs.WorkspaceHistory, systemTrip, miscRate, perDiem, exportInputs.EscalationRates).CostTotal;
 					boeExportLabor.ExportFields[BOEExporterConstants.FieldName_LaborTypeCost] = boeExportLabor.Cost.Value.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, _CurrencyFormatter);
 					boeExportLabor.ExportFields[BOEExporterConstants.FieldName_TravelTripID] = travelTrip.TravelTripID.ToString();
 

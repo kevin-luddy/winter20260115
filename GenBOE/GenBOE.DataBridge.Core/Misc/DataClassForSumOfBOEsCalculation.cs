@@ -130,7 +130,7 @@ namespace GenBOE.DataBridge.Core.Misc
 			{
 				allWbsBoesWithNestingLoaded[wbs] = this.FindNestedBoes(wbs, boes, wbsElements).ToCollection();
 
-				// TODO TIW FUTURE (this happened when moving from FullWBS to WbsDTO
+				// TODO TIW FUTURE Pt 2 (this happened when moving from FullWBS to WbsDTO
 				// make sure the WBS's child BOEs are included in "all BOEs"
 				//foreach (BoeDTO wbsBoe in wbs.BoesWithNesting)
 				//{

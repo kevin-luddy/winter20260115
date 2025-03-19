@@ -27,7 +27,7 @@ namespace GenBOE.DataBridge.Core.Common.Calculations
 		/// <param name="perDiem">Per Diem</param>
 		/// <param name="escalations">Escalations</param>
 		/// <returns>Travel Trip Cost Data</returns>
-		public virtual TravelTripCostData CalculateTravelCost(TravelTripType inTravelTrip, WorkspaceDTO inWorkspace, TripDTO trip, decimal miscRate, PerDiemDTO perDiem, IReadOnlyCollection<EscalationRatesDTO> escalations)
+		public virtual TravelTripCostData CalculateTravelCost(TravelTripType inTravelTrip, WorkspaceDTO inWorkspace, IReadOnlyCollection<WorkspaceHistoryDTO> workspaceHistory, TripDTO trip, decimal miscRate, PerDiemDTO perDiem, IReadOnlyCollection<EscalationRatesDTO> escalations)
 		{
 			if (inTravelTrip == null)
 			{
@@ -87,11 +87,10 @@ namespace GenBOE.DataBridge.Core.Common.Calculations
 				|| inWorkspace.WorkspaceState == WorkspaceState.Closed
 				|| inWorkspace.WorkspaceState == WorkspaceState.Complete)
 			{
-				// TODO TIW
-				//if (inWorkspace.WorkspaceHistory != null)
-				//{
-				//	DateWSStatusChange = inWorkspace.WorkspaceHistory.Where(x => x.NewValue == inWorkspace.WorkspaceState).OrderByDescending(y => y.Date).First().Date;
-				//}
+				if (workspaceHistory != null)
+				{
+					DateWSStatusChange = workspaceHistory.Where(x => x.NewValue == inWorkspace.WorkspaceState).OrderByDescending(y => y.Date).First().Date;
+				}
 			}
 
 			Hotel = perDiem.HotelRate;

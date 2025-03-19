@@ -57,6 +57,7 @@
 			this.Workspace = requestModel.Workspace;
 			this.WorkspaceExportFormat = requestModel.ExportFormatDTO;
 			this.WorkspaceVariables = requestModel.WorkspaceVariables;
+			this.WorkspaceHistory = requestModel.WorkspaceHistory;
 		}
 
 		/// <summary>
@@ -143,6 +144,11 @@
 		/// Gets the workspace.
 		/// </summary>
 		public WorkspaceDTO Workspace { get; private set; }
+
+		/// <summary>
+		/// Workspace History
+		/// </summary>
+		public IReadOnlyCollection<WorkspaceHistoryDTO> WorkspaceHistory { get; private set; }
 
 		/// <summary>
 		/// Gets the custom fields.
