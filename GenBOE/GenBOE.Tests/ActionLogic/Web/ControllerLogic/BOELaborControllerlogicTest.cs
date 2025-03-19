@@ -1928,7 +1928,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			circularReferenceChecker.Setup(x => x.WorkspaceVariablesCreateCircularReference(It.IsAny<VariableCircularReferenceCheckerCache>(), It.IsAny<int>(), It.IsAny<ICollection<WorkspaceVariableDTO>>(), It.IsAny<FullWorkspace>())).Returns(new Collection<WorkspaceVariableDTO>());
 			_ResourceLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<ResourceDTO>());
 
-			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new Collection<MoqTypeSelection>());
+			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new LaborTaskDataModelView());
 
 			Assert.IsFalse(result.Any());
 		}
@@ -1948,7 +1948,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			circularReferenceChecker.Setup(x => x.WorkspaceVariablesCreateCircularReference(It.IsAny<VariableCircularReferenceCheckerCache>(), It.IsAny<int>(), It.IsAny<ICollection<WorkspaceVariableDTO>>(), It.IsAny<FullWorkspace>())).Returns(new Collection<WorkspaceVariableDTO>());
 			_ResourceLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<ResourceDTO>());
 
-			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new Collection<MoqTypeSelection>());
+			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new LaborTaskDataModelView());
 
 			Assert.AreEqual(1, result.Count());
 		}
@@ -1968,7 +1968,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			circularReferenceChecker.Setup(x => x.WorkspaceVariablesCreateCircularReference(It.IsAny<VariableCircularReferenceCheckerCache>(), It.IsAny<int>(), It.IsAny<ICollection<WorkspaceVariableDTO>>(), It.IsAny<FullWorkspace>())).Returns(new Collection<WorkspaceVariableDTO>() { new WorkspaceVariableDTO() { WorkspaceVariableName = "Test" } });
 			_ResourceLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<ResourceDTO>());
 
-			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new Collection<MoqTypeSelection>());
+			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new LaborTaskDataModelView());
 
 			Assert.AreEqual(1, result.Count());
 		}
@@ -1990,7 +1990,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 			task.taskElementLabors.First().LaborSpreads.First().LaborSpreadDate = DateTime.MinValue;
 
-			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new Collection<MoqTypeSelection>());
+			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new LaborTaskDataModelView());
 
 			Assert.AreEqual(1, result.Count());
 		}
@@ -2012,7 +2012,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 			task.taskElementLabors.First().LaborSpreads.First().LaborSpreadDate = DateTime.MaxValue;
 
-			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new Collection<MoqTypeSelection>());
+			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new LaborTaskDataModelView());
 
 			Assert.AreEqual(1, result.Count());
 		}
@@ -2034,7 +2034,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 			task.StartDate = DateTime.MinValue;
 
-			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new Collection<MoqTypeSelection>());
+			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new LaborTaskDataModelView());
 
 			Assert.AreEqual(1, result.Count());
 		}
@@ -2056,7 +2056,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 			task.EndDate = DateTime.MaxValue;
 
-			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new Collection<MoqTypeSelection>());
+			ICollection<ValidationMessage> result = sut.ValidateTaskElementDto(ws, task, new LaborTaskDataModelView());
 
 			Assert.AreEqual(1, result.Count());
 		}
@@ -2068,7 +2068,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		public void Test_ValidateTaskElementDto_ExWs()
 		{
 			BOELaborControllerLogic sut = CreateSystem();
-			sut.ValidateTaskElementDto(null, new BoeTaskElementDTO(), new Collection<MoqTypeSelection>());
+			sut.ValidateTaskElementDto(null, new BoeTaskElementDTO(), new LaborTaskDataModelView());
 		}
 
 		/// <summary>
@@ -2078,7 +2078,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		public void Test_ValidateTaskElementDto_ExTaskElement()
 		{
 			BOELaborControllerLogic sut = CreateSystem();
-			sut.ValidateTaskElementDto(new FullWorkspace(), null, new Collection<MoqTypeSelection>());
+			sut.ValidateTaskElementDto(new FullWorkspace(), null, new LaborTaskDataModelView());
 		}
 
 		/// <summary>
@@ -3381,7 +3381,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		public void RefreshSkillMix_Empty_Test_RMS()
 		{
 			BOELaborControllerLogic sut = CreateSystemMST();
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(null, null, null, null, true, false);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(null, null, null, null, true, false, 0);
 			Assert.IsNotNull(result);
 		}
 
@@ -3392,7 +3392,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		public void RefreshSkillMix_Empty_Test_SSC()
 		{
 			BOELaborControllerLogic sut = CreateSystemSSC();
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(null, null, null, null, true, false);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(null, null, null, null, true, false, 0);
 			Assert.IsNotNull(result);
 		}
 
@@ -3435,7 +3435,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, null, null, null, true, false);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, null, null, null, true, false, 0);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -3499,7 +3499,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, null, null, null, true, false);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, null, null, null, true, false, 1);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -3521,6 +3521,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.IsFalse(result.SkillMixRows.ElementAt(0).Included);
 			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included);
 			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included);
+			Assert.IsNotNull(result.CommonDisclosureRows.ElementAt(0).UCOTHours);
 		}
 
 		/// <summary>
@@ -3585,7 +3586,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, null, null, true, false);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, null, null, true, false, 0);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -3675,7 +3676,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, null, null, true, false);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, null, null, true, false, 1);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -3697,6 +3698,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.IsFalse(result.SkillMixRows.ElementAt(0).Included);
 			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included);
 			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included);
+			Assert.IsNotNull(result.CommonDisclosureRows.ElementAt(0).UCOTHours);
 		}
 
 		/// <summary>
@@ -3770,7 +3772,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, null, true, false);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, null, true, false, 0);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -3861,7 +3863,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			{
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, null, true, false);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, null, true, false, 1);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -3886,6 +3888,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included);
 			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included);
 			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included);
+			Assert.IsNotNull(result.CommonDisclosureRows.ElementAt(0).UCOTHours);
 		}
 
 		/// <summary>
@@ -3959,7 +3962,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, null, true, false);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, null, true, false, 0);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -4054,7 +4057,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			{
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, null, true, false);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, null, true, false, 1);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -4085,6 +4088,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included);
 			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included);
 			Assert.IsTrue(result.SkillMixRows.ElementAt(3).Included);
+			Assert.IsNotNull(result.CommonDisclosureRows.ElementAt(0).UCOTHours);
 		}
 
 		/// <summary>
@@ -4171,7 +4175,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false, 0);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -4294,7 +4298,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false, 1);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -4349,6 +4353,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual(0.0m, result.CommonDisclosureRows.ElementAt(2).ProposedHours);
 			Assert.AreEqual(0.0m, result.CommonDisclosureRows.ElementAt(2).BOESkillMix);
 			Assert.IsTrue(string.IsNullOrWhiteSpace(result.CommonDisclosureRows.ElementAt(2).Rationale));
+			Assert.IsNotNull(result.CommonDisclosureRows.ElementAt(0).UCOTHours);
 		}
 
 		/// <summary>
@@ -4481,7 +4486,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false, 0);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -4668,7 +4673,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false, 1);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -4721,6 +4726,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			AssertHelpers.AssertAreEqualEpsilon(0.0m  * 100m / result.CommonDisclosureTotals.HistoricalHours, result.CommonDisclosureRows.ElementAt(1).LaborSkillMix);
 			AssertHelpers.AssertAreEqualEpsilon(40.0m * 100m / result.CommonDisclosureTotals.HistoricalHours, result.CommonDisclosureRows.ElementAt(2).LaborSkillMix);
 
+			Assert.IsNotNull(result.CommonDisclosureRows.ElementAt(0).UCOTHours);
 		}
 
 		/// <summary>
@@ -4859,7 +4865,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false, 0);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -5068,7 +5074,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false, 1);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -5127,6 +5133,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			AssertHelpers.AssertAreEqualEpsilon(150.0m * 100m / result.CommonDisclosureTotals.HistoricalHours, result.CommonDisclosureRows.ElementAt(0).LaborSkillMix);
 			AssertHelpers.AssertAreEqualEpsilon(0.0m * 100m / result.CommonDisclosureTotals.HistoricalHours, result.CommonDisclosureRows.ElementAt(1).LaborSkillMix);
 			AssertHelpers.AssertAreEqualEpsilon(110m * 100m / result.CommonDisclosureTotals.HistoricalHours, result.CommonDisclosureRows.ElementAt(3).LaborSkillMix);
+			Assert.IsNotNull(result.CommonDisclosureRows.ElementAt(0).UCOTHours);
 		}
 
 		/// <summary>
@@ -5271,7 +5278,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false, 0);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -5481,7 +5488,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false, 0);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -5687,7 +5694,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false);
+			RefreshSkillMixModelView result = sut.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false, 0);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);

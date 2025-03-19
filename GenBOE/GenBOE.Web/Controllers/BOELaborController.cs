@@ -821,7 +821,7 @@ namespace GenBOE.Web.Controllers
 			// Validate DTO 
 			if (!isLocked)
 			{
-				validationErrors.AddRange(this._BoeLaborControllerLogic.ValidateTaskElementDto(ws, dto, modelView.MOQTypes));
+				validationErrors.AddRange(this._BoeLaborControllerLogic.ValidateTaskElementDto(ws, dto, modelView));
 			}
 
 			if (validationErrors.Any())
@@ -1666,7 +1666,7 @@ namespace GenBOE.Web.Controllers
 				.ToList();
 
 			// Call to Controller Logic
-			RefreshSkillMixModelView response = this._BoeLaborControllerLogic.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData, isBRCEnabled, isManual);
+			RefreshSkillMixModelView response = this._BoeLaborControllerLogic.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData, isBRCEnabled, isManual, ws.UCOTFactor);
 
 			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });
 

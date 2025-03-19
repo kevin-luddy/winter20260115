@@ -218,6 +218,7 @@
     <Compile Include="BOE\PBOERow.cs" />
     <Compile Include="BOE\PBOEViewModel.cs" />
     <Compile Include="Common\AllBOEExportHelper.cs" />
+    <Compile Include="Common\BOETaskUtility.cs" />
     <Compile Include="Common\Calculations\BoeTaskElementRecalculation.cs" />
     <Compile Include="Common\Calculations\FullWorkspaceRecalculation.cs" />
     <Compile Include="Common\Calculations\IBoeTaskElementRecalculation.cs" />
@@ -276,6 +277,7 @@
     <Compile Include="Reporting\ConfidenceReportConstants.cs" />
     <Compile Include="Reporting\IBOEConfidenceReport.cs" />
     <Compile Include="_ControllerLogic\Backend\BOEConfigurationControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\Backend\WorkspaceSettingsControllerLogic.cs" />
     <Compile Include="_ControllerLogic\Backend\WorkspaceHomeControllerLogic.cs" />
     <Compile Include="_ModelView\Backend\BOEConfigurationViewModel.cs" />
     <Compile Include="_ModelView\Backend\WorkspaceSettingsViewModel.cs" />

@@ -42,7 +42,6 @@ namespace GenBOE.Dtos
             this.MOQTypes = new Collection<MoqTypeSelection>();
 			SkillMixTable = new Collection<SkillMixModelView>();
 			CommonDisclosureTable = new Collection<CommonDisclosureModelView>();
-			HasTMRates = false;
         }
 
         public void SetTaskElementType(TaskElementType taskElementType)
@@ -115,11 +114,6 @@ namespace GenBOE.Dtos
 		/// Common Disclosure table
 		/// </summary>
 		public ICollection<CommonDisclosureModelView> CommonDisclosureTable { get; set; }
-
-		/// <summary>
-		/// Gets or sets a value indicating whether this task instance has any T&M rates.
-		/// </summary>
-		public bool HasTMRates { get; set; }
 	}
 
 	public enum BOEExportTaskElementType

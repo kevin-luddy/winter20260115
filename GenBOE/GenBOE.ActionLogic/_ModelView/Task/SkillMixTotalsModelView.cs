@@ -24,5 +24,10 @@
 		/// Proposed Hours Totals
 		/// </summary>
 		public decimal ProposedHours { get; set; }
+
+		/// <summary>
+		/// UCOT Hours Totals
+		/// </summary>
+		public decimal UCOTHours { get; set; }
 	}
 }

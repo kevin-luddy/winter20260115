@@ -59,7 +59,7 @@
                      <span>UCOT Factor %</span>
                  </div>
                  <div class="form-element">
-                     <input value="<%:Model %>"  id="ucot" name="ucot" type = "number", step = "any" onkeyup = "ManageUCOTWidget.EnableSave()" />&nbsp;&nbsp;
+                     <input value="<%:Model %>"  id="ucot" name="ucot" type = "number", step = "any" onchange = "ManageUCOTWidget.EnableSave()" />&nbsp;&nbsp;
                      <div class ="buttons inline">
                          <button id="Save-ManageUCOT" class="ies-action disabled" name="save-button" type="button">Save</button>
                          <div id="Loader-ManageUCOT" class="loader display-none"></div>

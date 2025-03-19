@@ -7,7 +7,10 @@
 namespace GenBOE.ActionLogic.ModelView.Workspace
 {
 	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using IES.Common;
+	using IES.Common.PickList;
 
 	public interface IWorkspaceIdentificationModelView
 	{
@@ -57,7 +60,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// Get/Set the ProposalSubmittalDate
 		/// </summary>
 		string ProposalSubmittalDate { get; set; }
-		
+
 		/// <summary>
 		/// Get/Set the RFPNumber
 		/// </summary>
@@ -168,5 +171,37 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// Get or set whether the workspace should be marked as Current for the PTM Tracking Number
 		/// </summary>
 		bool CurrentPTMWorkspace { get; set; }
+
+		#region new genBOE UI
+		/// <summary>
+		/// Hours Label depending on system and workpace preferences
+		/// </summary>
+		string HoursLabel { get; set; }
+
+		/// <summary>
+		/// Enable SAP for new genBOE
+		/// </summary>
+		bool EnableSAP { get; set; }
+
+		/// <summary>
+		/// Will SAP show to user for workspace
+		/// </summary>
+		bool ShowSAP { get; set; }
+
+		/// <summary>
+		/// Check if PTM Tracking Number has multiple workspaces
+		/// </summary>
+		bool DoesPTMMultipleWorkspaces { get; set; }
+
+		/// <summary>
+		/// Contract Types
+		/// </summary>
+		ICollection<int> ContractTypes { get; set; }
+
+		/// <summary>
+		/// Selected Contract Types
+		/// </summary>
+		ICollection<int> SelectedContractTypes { get; set; }
+		#endregion
 	}
 }

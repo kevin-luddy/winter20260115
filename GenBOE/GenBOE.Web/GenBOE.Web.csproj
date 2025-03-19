@@ -277,6 +277,7 @@
     <Compile Include="Common\WorkspaceIdentificationModelBinder.cs" />
     <Compile Include="Controllers\Backend\BOEConfigurationController.cs" />
     <Compile Include="Controllers\Backend\WorkspaceHomeController.cs" />
+    <Compile Include="Controllers\Backend\WorkspaceSettingsController.cs" />
     <Compile Include="Controllers\BoeDataBaseAPIController.cs" />
     <Compile Include="Controllers\WorkspaceRecalculateActualsController.cs" />
     <Compile Include="ModelView\AcvWorkspaceData.cs" />

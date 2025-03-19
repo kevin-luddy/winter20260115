@@ -16,7 +16,6 @@ namespace GenBOE.ActionLogic.IO.Export
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Objects;
-	using IES.Common;
 	using IES.Common.OfficeUtilities;
 
 	[ExcludeFromCodeCoverage]

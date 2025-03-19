@@ -983,16 +983,14 @@ namespace GenBOE
 																																	new ResolvedParameter(typeof(IUserDTODataLoader)),
 																																	new ResolvedParameter(typeof(ICommonDataMapper)),
 																																	new ResolvedParameter(typeof(IVariableSelectBOEtoSumCalculation)),
-																																	new ResolvedParameter(typeof(TravelTripCostCalculation))
-																																	));
+																																	new ResolvedParameter(typeof(TravelTripCostCalculation))));
 			GenBOEUnityContainer.Container.RegisterType(typeof(BOEExportConverterRMS), typeof(BOEExportConverterRMS), GetLifetimeManager(), new InjectionConstructor(
 																																	new ResolvedParameter(typeof(IUserDTODataLoader)),
 																																	new ResolvedParameter(typeof(ICommonDataMapper)),
 																																	new ResolvedParameter(typeof(IVariableSelectBOEtoSumCalculation)),
 																																	new ResolvedParameter(typeof(TravelTripCostCalculation)),
 																																	new ResolvedParameter(typeof(MSTZoneTravelResourceDTODataLoader)),
-																																	new ResolvedParameter(typeof(RMSZoneTravelRatesFeesDataLoader))
-																																	));
+																																	new ResolvedParameter(typeof(RMSZoneTravelRatesFeesDataLoader))));
 			switch (SysConfig.CompanyMode)
 			{
 				case CompanyConfiguration.MST:
@@ -1014,8 +1012,8 @@ namespace GenBOE
 																																	new ResolvedParameter(typeof(ICommonDataMapper)),
 																																	new ResolvedParameter(typeof(IVariableSelectBOEtoSumCalculation)),
 																																	new ResolvedParameter(typeof(IActiveDirectoryUtilities)),
-																																	new ResolvedParameter(typeof(BOEExportConverterRMS))
-																																	));
+																																	new ResolvedParameter(typeof(BOEExportConverterRMS)))
+																																	);
 					break;
 
 				case CompanyConfiguration.SpaceSystems: // The ISGS behavior can be used here.  The SSC requirements are identical.  If this changes SSC specific classes should be created.
@@ -1027,8 +1025,7 @@ namespace GenBOE
 																																	new ResolvedParameter(typeof(ICommonDataMapper)),
 																																	new ResolvedParameter(typeof(IVariableSelectBOEtoSumCalculation)),
 																																	new ResolvedParameter(typeof(IActiveDirectoryUtilities)),
-																																	new ResolvedParameter(typeof(BOEExportConverter))
-																																	));
+																																	new ResolvedParameter(typeof(BOEExportConverter))));
 					break;
 			}
 			

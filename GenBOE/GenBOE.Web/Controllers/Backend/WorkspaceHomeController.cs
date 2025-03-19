@@ -6,6 +6,10 @@
 
 namespace GenBOE.Web.Controllers
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Web.Http;
 	using GenBOE.ActionLogic.ControllerLogic;
 	using GenBOE.ActionLogic.ControllerLogic.Backend;
 	using GenBOE.ActionLogic.Metrics;
@@ -19,12 +23,6 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.Web.ModelView;
 	using IES.Common;
 	using IES.Common.Exceptions;
-	using System;
-	using System.Collections.Generic;
-	using System.Collections.ObjectModel;
-	using System.Net.Http;
-	using System.Web.Http;
-	using System.Web.Http.Cors;
 
 	/// <summary>
 	/// Workspace Home Controller for getting workspace home data.
@@ -80,7 +78,7 @@ namespace GenBOE.Web.Controllers
 			this.securityInformation = securityInformation;
 			this.workspaceHomeControllerLogic = workspaceHomeControllerLogic;
 		}
-		#endregion
+		#endregion 
 
 		/// <summary>
 		/// Gets the site menu items based on the workspace short name.

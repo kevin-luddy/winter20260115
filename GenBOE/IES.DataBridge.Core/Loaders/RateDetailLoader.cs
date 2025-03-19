@@ -1040,6 +1040,21 @@ namespace IES.DataBridge.Loaders
 						this.proPricerXrefLoader.BulkSave(saveableProPricerXrefs);
 					}
 
+					foreach(RateDetailModelView col in upsertableRateDetailCollection)
+					{
+						foreach (RateYearModelView val in col.Values.Where(y => y.Dirty))
+						{
+							if (val.Value.HasValue)
+							{
+								val.Updateable = UpdateType.Upsert;
+							}
+							else
+							{
+								val.Updateable = UpdateType.Deleted;
+							}
+						}
+					}
+
 					// Grab all the RateYears that are to be deleted, inserted, or updated
 					ICollection<RateYearModelView> saveableRateYears = (from rateDetail in upsertableRateDetailCollection
 																		where rateDetail.Values != null
