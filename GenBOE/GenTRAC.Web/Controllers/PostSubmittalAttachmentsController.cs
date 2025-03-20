@@ -341,32 +341,20 @@ namespace GenTRAC.Web.Controllers
 				//Result<byte[]> tempResult = new Result<byte[]>();
 				//HelperCreateErrorDocument(tempResult, stream);
 
-				//return this.File(stream.ToArray(), System.Net.Mime.MediaTypeNames.Application.Octet, WebConstants.ATTACHMENT_FROM_EEPP);
+				//return this.File(stream.ToArray(), System.Net.Mime.MediaTypeNames.Application.Octet, "error.docx");
 				// END ERROR HANDLING
 
 
 				// HTML download code
-				string address = "https://localhost:44386/Print?proposalId=221";
-				//string tempFileName = Path.GetRandomFileName();
-
+				/*string address = "https://localhost:44386/Print?proposalId=221"; // TODO KATIE: Change the address later
 				WebClient client = new WebClient();
 				Uri uri = new Uri(address);
 				byte[] fileBytes = null; // assign bytesreturn File(fileBytes, "application/octet-stream");
 				client.UseDefaultCredentials = true;
-				/*client.DownloadFile(uri, tempFileName);
-
-				FileStream fs = new FileStream(tempFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
-
-
-				return this.File(
-								fileStream: fs,
-								contentType: ExportFileDownloadBase.ContentType_XLSX,
-								fileDownloadName: WebConstants.ATTACHMENT_FROM_EEPP);
-				*/
 
 
 				fileBytes = client.DownloadData(uri);
-				return this.File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Pdf, WebConstants.ATTACHMENT_FROM_EEPP);
+				return this.File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, WebConstants.ATTACHMENT_FROM_EEPP + ".html");*/
 
 				//return this.File(, System.Net.Mime.MediaTypeNames.Application.Octet, WebConstants.ATTACHMENT_FROM_EEPP);
 			}
