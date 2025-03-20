@@ -433,7 +433,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// <returns>UCOT resources.</returns>
 		private List<ResourceTypeDto> AddUCOT(List<ResourceTypeDto> taskElementLabors, decimal ucotFactor, Dictionary<int, ElementOfCostType> laborToElementOfCost)
 		{
-			List<ResourceTypeDto> ucotLabors = taskElementLabors;
+			List<ResourceTypeDto> ucotLabors = taskElementLabors.ToList();
 
 			if (Utilities.IsUCOTEnabled)
 			{
