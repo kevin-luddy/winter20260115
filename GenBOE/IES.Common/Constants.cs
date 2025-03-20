@@ -390,12 +390,12 @@ namespace IES.Common
 		/// <summary>
 		/// Fake resource ID for UCOT resources.
 		/// </summary>
-		public const int UCOT_RESOURCE_ID = 9000;
+		public const int UCOT_RESOURCE_ID = -9000;
 
 		/// <summary>
 		/// Fake perf org ID for UCOT perf orgs.
 		/// </summary>
-		public const int UCOT_PERF_ORG_ID = 9001;
+		public const int UCOT_PERF_ORG_ID = -9001;
 
 		/// <summary>
 		/// UCOT string constant.
