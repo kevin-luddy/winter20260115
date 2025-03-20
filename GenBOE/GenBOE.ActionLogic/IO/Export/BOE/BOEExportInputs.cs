@@ -149,7 +149,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				foreach (BoeTaskElementDTO taskElement in taskElements)
 				{
 					taskElement.taskElementLabors = taskElementLabors.Where(x => x.TaskElementId == taskElement.Id).ToCollection();
-					taskElement.TotalHours = taskElement.taskElementLabors.Where(tl => tl.SpreadType == SpreadType.Hours).Sum(l => l.ValueSpread);
+					taskElement.TotalHours = taskElementLabors.Where(tl => tl.SpreadType == SpreadType.Hours).Sum(l => l.ValueSpread);
 				}
 			}
 
