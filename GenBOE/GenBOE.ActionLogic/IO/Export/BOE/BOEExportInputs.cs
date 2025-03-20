@@ -441,9 +441,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				// Keyed by original resource name to new ucot resource 
 				Dictionary<int, ResourceDTO> ucotResourceBindings = new Dictionary<int, ResourceDTO>();
 
-				// First we clone so that we do not touch any Task Element Labor that may be attached to a Cached Property in the Cached FullWorkspace
-				ucotLabors = taskElementLabors.DeepClone();
-
 				decimal ucotMultiplier = ucotFactor / 100.0m;
 
 				int idCounter = -100;
