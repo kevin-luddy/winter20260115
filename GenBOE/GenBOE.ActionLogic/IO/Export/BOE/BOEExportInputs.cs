@@ -440,10 +440,9 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
 				// Keyed by original resource name to new ucot resource 
 				Dictionary<int, ResourceDTO> ucotResourceBindings = new Dictionary<int, ResourceDTO>();
-
 				decimal ucotMultiplier = ucotFactor / 100.0m;
-
 				int idCounter = -100;
+
 				// Now, we loop over all the spreads and add the UCOT factor where needed
 				foreach (ResourceTypeDto labor in taskElementLabors)
 				{
