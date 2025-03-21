@@ -269,7 +269,7 @@ namespace RDSB.Backend.Controllers
 		/// <param name="toRevisionID">the Revision ID being changed to</param>
 		/// <param name="selectedSectionIds">Currently selected Section IDs</param>
 		/// <returns>IDs of Sections to be selected for the revision changed to</returns>
-		[HttpGet("[action]")]
+		[HttpPost("[action]")]
 		public SectionSelectionModelView GetSectionSelectionForRevisionChange(int fromRevisionID, int toRevisionID, [FromQuery] ICollection<int> selectedSectionIds)
 		{
 			SectionSelectionModelView selections = this.documentControllerLogic.GetSectionSelectionForRevisionChange(fromRevisionID, toRevisionID, selectedSectionIds);
