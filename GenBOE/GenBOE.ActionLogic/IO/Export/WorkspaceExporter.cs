@@ -288,7 +288,6 @@ namespace GenBOE.ActionLogic.IO.Export
 				}
 				else if (customField.CustomFieldDisplayID == CustomFieldType.MoqTypeTableDataDisplay)
 				{
-					moqTableCustomFieldNames.Add(customField.CustomFieldName + " ID");
 					moqTableCustomFieldNames.Add(customField.CustomFieldName);
 				}
 			}
@@ -689,6 +688,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					for (int i = 0; i < emptyCellsToAdd; i++)
 					{
 						row.Add(this.sEmpty);
+						row.Add(this.sEmpty);
 					}
 
 					// Task Description and Task MOQ Text are now HTML formatted rich text. We need to get plain text out of them
@@ -778,6 +778,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						for (int i = 0; i < emptyCellsToAdd; i++)
 						{
 							row.Add(this.sEmpty);
+							row.Add(this.sEmpty);
 						}
 
 						row.AddRange(taskpart1);
@@ -785,6 +786,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						emptyCellsToAdd = workspace_customFields.Count(c => c.CustomFieldDisplayID == CustomFieldType.TaskDisplay);
 						for (int i = 0; i < emptyCellsToAdd; i++)
 						{
+							row.Add(this.sEmpty);
 							row.Add(this.sEmpty);
 						}
 
@@ -868,6 +870,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					for (int i = 0; i < emptyCellsToAdd; i++)
 					{
 						row.Add(this.sEmpty);
+						row.Add(this.sEmpty);
 					}
 
 					ICollection<string> plainText = RTEUtilities.TurnHTMLIntoPlainText(new List<string>() { material.TaskDescription, material.MoqText });
@@ -891,6 +894,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					emptyCellsToAdd = workspace_customFields.Count(c => c.CustomFieldDisplayID == CustomFieldType.TaskDisplay);
 					for (int i = 0; i < emptyCellsToAdd; i++)
 					{
+						row.Add(this.sEmpty);
 						row.Add(this.sEmpty);
 					}
 
@@ -924,6 +928,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					for (int i = 0; i < emptyCellsToAdd; i++)
 					{
 						row.Add(this.sEmpty);
+						row.Add(this.sEmpty);
 					}
 
 					ICollection<string> plainText = RTEUtilities.TurnHTMLIntoPlainText(new List<string>() { odc.TaskDescription, odc.MoqText });
@@ -947,6 +952,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					emptyCellsToAdd = workspace_customFields.Count(c => c.CustomFieldDisplayID == CustomFieldType.TaskDisplay);
 					for (int i = 0; i < emptyCellsToAdd; i++)
 					{
+						row.Add(this.sEmpty);
 						row.Add(this.sEmpty);
 					}
 
@@ -978,6 +984,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						for (int i = 0; i < emptyCellsToAdd; i++)
 						{
 							row.Add(this.sEmpty);
+							row.Add(this.sEmpty);
 						}
 
 						row.AddRange(odcPart1);
@@ -985,6 +992,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						emptyCellsToAdd = workspace_customFields.Count(c => c.CustomFieldDisplayID == CustomFieldType.TaskDisplay);
 						for (int i = 0; i < emptyCellsToAdd; i++)
 						{
+							row.Add(this.sEmpty);
 							row.Add(this.sEmpty);
 						}
 
@@ -1021,6 +1029,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						for (int i = 0; i < emptyCellsToAdd; i++)
 						{
 							row.Add(this.sEmpty);
+							row.Add(this.sEmpty);
 						}
 
 						toReturn.Add(row);
@@ -1050,6 +1059,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					int emptyCellsToAdd = workspace_customFields.Count(c => c.CustomFieldDisplayID == CustomFieldType.BoeDisplay);
 					for (int i = 0; i < emptyCellsToAdd; i++)
 					{
+						row.Add(this.sEmpty);
 						row.Add(this.sEmpty);
 					}
 
@@ -1115,6 +1125,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						for (int i = 0; i < emptyCellsToAdd; i++)
 						{
 							row.Add(this.sEmpty);
+							row.Add(this.sEmpty);
 						}
 
 						row.AddRange(travelPart1);
@@ -1122,6 +1133,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						emptyCellsToAdd = workspace_customFields.Count(c => c.CustomFieldDisplayID == CustomFieldType.TaskDisplay);
 						for (int i = 0; i < emptyCellsToAdd; i++)
 						{
+							row.Add(this.sEmpty);
 							row.Add(this.sEmpty);
 						}
 

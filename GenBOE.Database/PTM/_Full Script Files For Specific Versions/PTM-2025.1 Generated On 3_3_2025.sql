@@ -913,7 +913,7 @@ SELECT
 				FROM ProposalPPRChecklistXREF xref 
 					INNER JOIN ResponseLU r ON r.ResponseID = xref.ResponseID
 					INNER JOIN PPRChecklistContent ppr ON (xref.PPRChecklistContentID = ppr.PPRChecklistContentID AND ppr.ChecklistText LIKE '%Does the proposal include subcontractors of any dollar value or material supplier > CCoPD threshold with planned dates that go beyond proposal submittal%')) AS ppr11
-			ON ppr.ProposalId = p.ProposalId 
+			ON ppr11.ProposalId = p.ProposalId 
 	LEFT OUTER JOIN [CcopdReasonsNo] cNo ON P.ReasonCcopdNo = cNO.Id
 GO
 

@@ -55,6 +55,11 @@ namespace IES.Common.Core.Constants
 		public readonly static string ACTION_GET_REVISIONS = "GetRevisions";
 
 		/// <summary>
+		/// The action name for getting current user access
+		/// </summary>
+		public readonly static string ACTION_GET_USER_ACCESS = "GetUserAccess";
+
+		/// <summary>
 		/// The action name for locking a revision.
 		/// </summary>
 		public readonly static string ACTION_LOCK = "Lock";
@@ -254,7 +259,7 @@ namespace IES.Common.Core.Constants
 		/// <summary>
 		/// The action name for exporting the rates.
 		/// </summary>
-		public readonly static string ACTION_EXPORT_RATES = "Export";
+		public readonly static string ACTION_EXPORT_RATES = "ExportRates";
 
 		/// <summary>
 		/// The action name for validating a rate code file.
@@ -352,6 +357,11 @@ namespace IES.Common.Core.Constants
 		/// The action name for exporting Cobra data.
 		/// </summary>
 		public readonly static string ACTION_EXPORT_COBRA_DATA = "ExportCobraData";
+
+		/// <summary>
+		/// The action name for getting reports.
+		/// </summary>
+		public readonly static string ACTION_REPORTS_MODEL_VIEW = "GetReportsModelView";
 
 		/// <summary>
 		/// The action name for exporting ProPricer data.

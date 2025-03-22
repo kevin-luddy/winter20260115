@@ -9,13 +9,17 @@ namespace GenBOE.Web.Controllers.Backend
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Web.Http;
+	using System.Web.Mvc;
 	using GenBOE.ActionLogic._ControllerLogic.Backend;
+	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.Workspace;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Objects;
+	using GenBOE.Web.ModelView;
 	using IES.Common;
 	using IES.Common.PickList;
+	using HttpGetAttribute = System.Web.Http.HttpGetAttribute;
 
 	/// <summary>
 	/// Workspace Settings Controller
@@ -121,6 +125,10 @@ namespace GenBOE.Web.Controllers.Backend
 			return result;
 		}
 
+		/// <summary>
+		/// Get Contract Type Options
+		/// </summary>
+		/// <returns></returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESResponse<PickListDto> GetContractTypeOptionList()
@@ -138,6 +146,58 @@ namespace GenBOE.Web.Controllers.Backend
 				result.Messages.Add($"Unknown error occured returning list of Contract Types: {ex.Message}");
 			}
 
+			return result;
+		}
+
+		/// <summary>
+		/// Get Tracking Numbers
+		/// </summary>
+		/// <param name="trackingNumber"></param>
+		/// <returns></returns>
+		[HttpGet]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESResponse<SelectListItem> GetTrackingNumberOptionList(string trackingNumber)
+		{
+			IESResponse<SelectListItem> result = new IESResponse<SelectListItem>();
+			if (trackingNumber != null && Utilities.IsPTMIntegrated)
+			{
+				try
+				{
+					ICollection<SelectListItem> trackingNumbers = workspaceSettingsControllerLogic.GetTrackingNumberOptionList(trackingNumber);
+					result.Data = trackingNumbers;
+				}
+				catch (Exception ex)
+				{
+					logger.Error(ex);
+					result.Messages.Add($"Unknown error occured returning list of Tracking Numbers: {ex.Message}");
+				}
+			}
+			return result;
+		}
+
+		/// <summary>
+		/// Update Workspace Data when tracking number is updated
+		/// </summary>
+		/// <param name="trackingNumberRevisionModelView"></param>
+		/// <returns></returns>
+		[System.Web.Http.HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<RefreshPTMResponseData> GetNextTrackingNumberRevision([FromBody] TrackingNumberRevisionModelView trackingNumberRevisionModelView)
+		{
+			IESSingleResponse<RefreshPTMResponseData> result = new IESSingleResponse<RefreshPTMResponseData>();
+			if (trackingNumberRevisionModelView != null && trackingNumberRevisionModelView.TrackingNumber != null)
+			{
+				try
+				{
+					RefreshPTMResponseData data = workspaceSettingsControllerLogic.GetNextTrackingNumberRevision(trackingNumberRevisionModelView.TrackingNumber);
+					result.Data = data;
+				}
+				catch (Exception ex)
+				{
+					logger.Error(ex);
+					result.Messages.Add($"Unknown error occured GetNextTrackingNumberRevision: {ex.Message}");
+				}
+			}
 			return result;
 		}
 	}

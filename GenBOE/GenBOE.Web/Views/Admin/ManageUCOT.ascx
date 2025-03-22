@@ -4,6 +4,7 @@
 
 <script type="text/javascript">
     var ManageUCOTWidget = new Widget('ManageUCOT', false);
+	$('#Save-ManageUCOT').prop('disabled', true);
 
     ManageUCOTWidget.BindEvents = function () {
         ManageUCOTWidget.registerForLiveEvent('click', "#Save-ManageUCOT", function () {
@@ -12,12 +13,19 @@
     };
 
     ManageUCOTWidget.EnableSave = function () {
-        $('#Save-ManageUCOT').removeClass('disabled');
+		$('#Save-ManageUCOT').removeClass('disabled');
+		$('#Save-ManageUCOT').removeAttr('disabled');
     };
 
-    ManageUCOTWidget.SaveButtonClick = function () {
-        console.log("dataToSend", "got here");
-        $('#Save-ManageUCOT').addClass('display-none');
+	ManageUCOTWidget.SaveButtonClick = function () {
+		// Hide the button first
+		$('#Save-ManageUCOT').addClass('display-none');
+
+		// Disable the button
+		$('#Save-ManageUCOT').addClass('disabled');
+		$('#Save-ManageUCOT').prop('disabled', true);
+
+		// Show loader
         $('#Loader-ManageUCOT').removeClass('display-none');
         const dataToSend = JSON.stringify({ ucot: $('#ucot').val() });
 
@@ -59,7 +67,7 @@
                      <span>UCOT Factor %</span>
                  </div>
                  <div class="form-element">
-                     <input value="<%:Model %>"  id="ucot" name="ucot" type = "number", step = "any" onkeyup = "ManageUCOTWidget.EnableSave()" />&nbsp;&nbsp;
+                     <input value="<%:Model %>"  id="ucot" name="ucot" type = "number", step = "any" onchange = "ManageUCOTWidget.EnableSave()" />&nbsp;&nbsp;
                      <div class ="buttons inline">
                          <button id="Save-ManageUCOT" class="ies-action disabled" name="save-button" type="button">Save</button>
                          <div id="Loader-ManageUCOT" class="loader display-none"></div>

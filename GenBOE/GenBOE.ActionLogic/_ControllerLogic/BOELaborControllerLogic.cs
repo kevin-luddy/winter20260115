@@ -948,9 +948,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				if (!isManual)
 				{
-					if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
+					string sapRepo = RepositoryName.SapWebi.GetDescription();
+					// we need to do a check for Space to make sure all the Repository for the MOQ Tables are set to SAP/Webi
+					if (SystemConfiguration.Instance().CompanyMode != IES.Common.CompanyConfiguration.SpaceSystems || moqTypes.All(x => x.TableData != null &&
+						x.TableData.Any() && x.TableData.All(t => t.RepositoryName == sapRepo)))
 					{
-						validationErrors.Add(new ValidationMessage(string.Format("Skill Mix Total Historical Hours do not match the sum of the Total Relevant Hours.")));
+						if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
+						{
+							validationErrors.Add(new ValidationMessage(string.Format("Skill Mix Total Historical Hours do not match the sum of the Total Relevant Hours.")));
+						}
 					}
 				}
 			

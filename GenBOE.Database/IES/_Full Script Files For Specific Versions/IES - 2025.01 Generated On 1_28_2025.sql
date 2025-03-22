@@ -1,6 +1,6 @@
 PRINT '###### SCRIPT IS STARTING ######';
 /*
-    This file was auto-generated for Release: 2025.01, on 1/28/2025.
+    This file was auto-generated for Release: 2025.01, on 3/11/2025.
     It contains all of the Release specific scripts, modifying data/tables as well as all of the Stored Procedures and User Defined Table Types.
 */
 
@@ -18,44 +18,98 @@ Story: SLMX_POLM_PROPH-2453 */
 -- upsertSection.sql
 -- copyRevision.sql
 
+-- 02/11/2025 [Thomas Asuncion] - PROPH-2454 Added new column RevisionSegmentId to RDSBDocumentInformation table
+-- Tables updated:
+-- RDSBDocumentInformation
+-- Added new LU table RevisionSegmentLU
+
 /**** PROPH-2453 Edit Sections Modifications ****/
 /********** ALTER TABLE: dbo.Section ************/
 /* Altering existing Columns to be of Type CORE */
 
-GO
-EXEC sp_rename 'dbo.Section.SectionContainsCasbDisclosure', 'SectionContainsCasbDisclosureCore', 'COLUMN';
-GO
-
-GO
-EXEC sp_rename 'dbo.Section.SectionContainsNonCompliance', 'SectionContainsNonComplianceCore', 'COLUMN';
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[Section]') AND name = N'SectionContainsCasbDisclosure')
+BEGIN
+    EXEC sp_rename 'dbo.Section.SectionContainsCasbDisclosure', 'SectionContainsCasbDisclosureCore', 'COLUMN';
+END
 GO
 
-GO
-EXEC sp_rename 'dbo.Section.IsDisclosureStatementAdequate', 'IsDisclosureStatementAdequateCore', 'COLUMN';
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[Section]') AND name = N'SectionContainsNonCompliance')
+BEGIN
+    EXEC sp_rename 'dbo.Section.SectionContainsNonCompliance', 'SectionContainsNonComplianceCore', 'COLUMN';
+END
 GO
 
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[Section]') AND name = N'IsDisclosureStatementAdequate')
+BEGIN
+    EXEC sp_rename 'dbo.Section.IsDisclosureStatementAdequate', 'IsDisclosureStatementAdequateCore', 'COLUMN';
+END
 GO
-EXEC sp_rename 'dbo.Section.NonComplianceNotification', 'NonComplianceNotificationCore', 'COLUMN';
+
+IF EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[Section]') AND name = N'NonComplianceNotification')
+BEGIN
+    EXEC sp_rename 'dbo.Section.NonComplianceNotification', 'NonComplianceNotificationCore', 'COLUMN';
+END
 GO
 
 /* Alter Table to add new columns that align to Service */
 
-GO
-ALTER TABLE [dbo].[Section] ADD SectionContainsCasbDisclosureService bit NOT NULL CONSTRAINT [Default_SectionContainsCasbDisclosureService] DEFAULT 0
-GO
-
-GO
-ALTER TABLE [dbo].[Section] ADD SectionContainsNonComplianceService bit NOT NULL CONSTRAINT [Default_SectionContainsNonComplianceService] DEFAULT 0
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[Section]') AND name = N'SectionContainsCasbDisclosureService')
+BEGIN
+    ALTER TABLE [dbo].[Section] ADD SectionContainsCasbDisclosureService bit NOT NULL CONSTRAINT [Default_SectionContainsCasbDisclosureService] DEFAULT 0
+END
 GO
 
-GO
-ALTER TABLE [dbo].[Section] ADD IsDisclosureStatementAdequateService bit NULL
-GO
-
-GO
-ALTER TABLE [dbo].[Section] ADD NonComplianceNotificationService bit NULL
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[Section]') AND name = N'SectionContainsNonComplianceService')
+BEGIN
+    ALTER TABLE [dbo].[Section] ADD SectionContainsNonComplianceService bit NOT NULL CONSTRAINT [Default_SectionContainsNonComplianceService] DEFAULT 0
+END
 GO
 
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[Section]') AND name = N'IsDisclosureStatementAdequateService')
+BEGIN
+    ALTER TABLE [dbo].[Section] ADD IsDisclosureStatementAdequateService bit NULL
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[Section]') AND name = N'NonComplianceNotificationService')
+BEGIN
+    ALTER TABLE [dbo].[Section] ADD NonComplianceNotificationService bit NULL
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[RevisionSegmentLU]') AND type in (N'U'))
+BEGIN
+    CREATE TABLE [dbo].[RevisionSegmentLU]
+    (
+        [ID] INT PRIMARY KEY,
+        [Description] nvarchar(50) NOT NULL
+    );
+
+    INSERT INTO [dbo].[RevisionSegmentLU] ([ID], [Description])
+    VALUES
+        (0, ''),
+        (1, 'Core'),
+        (2, 'Services');
+END
+GO
+
+-- Check if the RevisionSegmentId column exists in the RDSBDocumentInformation table.
+IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[dbo].[RDSBDocumentInformation]') AND name = N'RevisionSegmentId')
+BEGIN
+    ALTER TABLE [dbo].[RDSBDocumentInformation] 
+    ADD [RevisionSegmentId] INT NOT NULL CONSTRAINT [Default_RevisionSegmentId] DEFAULT 0;
+END
+GO
+
+-- Check if the foreign key constraint exists in the RDSBDocumentInformation table.
+IF NOT EXISTS (SELECT * FROM sys.foreign_keys WHERE parent_object_id = OBJECT_ID(N'[dbo].[RDSBDocumentInformation]') AND name = N'FK_RDSBDocumentInformation_RevisionSegmentLU')
+BEGIN
+    ALTER TABLE [dbo].[RDSBDocumentInformation]
+    ADD CONSTRAINT [FK_RDSBDocumentInformation_RevisionSegmentLU]
+    FOREIGN KEY ([RevisionSegmentId])
+    REFERENCES [dbo].[RevisionSegmentLU]([ID]);
+END
+GO
 
 /*
     File: \Stored Procedures\copyRevision.sql
@@ -2421,6 +2475,7 @@ CREATE PROCEDURE [dbo].[upsertRDSBDocumentInformation]
 	,@StartYear INT
 	,@EndYear INT
 	,@ParentSection VARCHAR(10) = NULL
+	,@RevisionSegmentId INT = 0
 )
 AS
 	/******************************************************************************
@@ -2437,8 +2492,7 @@ AS
 	*******************************************************************************
 	**		Date:		Author:				Description:
 	**		--------	--------			---------------------------------------
-	**		02/01/2018	brunworg			Added StartYear and EndYear fields.
-	**		4/27/18		twilson3			BOEJ-3384 Added Parent Section
+	**      02/12/2025	e405721				Update for new revision segment columns
 	*******************************************************************************/
 	SET NOCOUNT ON 
 	DECLARE @ErrorMessage varchar (500)
@@ -2459,7 +2513,8 @@ AS
 							   ,RDMRevisionID
 							   ,StartYear
 							   ,EndYear
-							   ,ParentSection)
+							   ,ParentSection
+							   ,RevisionSegmentId)
 						 OUTPUT inserted.ID INTO @Inserted
 						 VALUES
 							   (@PTMProposalID
@@ -2469,7 +2524,8 @@ AS
 							   ,@RDMRevisionID
 							   ,@StartYear
 							   ,@EndYear
-							   ,@ParentSection)
+							   ,@ParentSection
+							   ,@RevisionSegmentId)
 
 					SELECT @Id = Id FROM @Inserted
 				END
@@ -2485,6 +2541,7 @@ AS
 								  ,StartYear = @StartYear
 								  ,EndYear = @EndYear
 								  ,ParentSection = @ParentSection
+								  ,RevisionSegmentId = @RevisionSegmentId
 								WHERE 
 									ID = @Id
 						END
