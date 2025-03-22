@@ -289,7 +289,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			SME = 5008,
 			NonLabor = 5009
 		*/
-        if (company == $scope.model.IsRMS) {
+        if ($scope.model.IsRMS) {
 			switch (field) {
 				case 'Rationale':
 					switch (parseInt(selectedMOQType)) {
@@ -385,7 +385,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			}
 		}
 
-		if (company == ManageTaskModel.IsSpace) {
+		if (ManageTaskModel.IsSpace) {
 			switch (field) {
 				case 'Rationale':
 					switch (parseInt(selectedMOQType)) {
