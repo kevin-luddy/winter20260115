@@ -13,7 +13,10 @@ namespace GenTRAC.ActionLogic
     using System.Linq;
     using System.Transactions;
     using System.Web;
-    using GenTRAC.ActionLogic.Mediator;
+	using Aspose.Html;
+	using Aspose.Html.Converters;
+	using Aspose.Html.Saving;
+	using GenTRAC.ActionLogic.Mediator;
     using GenTRAC.DataBridge.Common.Security;
     using GenTRAC.DataBridge.DTO;
     using GenTRAC.Objects;
@@ -239,6 +242,27 @@ namespace GenTRAC.ActionLogic
         {
             return this.attachmentLoader.GetById(fileId);
         }
+
+		/// <summary>
+		/// Process attachment for eEPP
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:DisposeObjectsBeforeLosingScope")]
+		public MemoryStream ProcesseEPPAttachment(/*int proposalId*/)
+		{
+			HTMLDocument document = new HTMLDocument("https://localhost:44386/Print?proposalId=221");
+			PdfSaveOptions options = new PdfSaveOptions();
+			string tempFileName = Path.GetRandomFileName() + ".pdf";
+			string tempFileLocation = Path.Combine(HttpContext.Current.Server.MapPath("~/Export"), tempFileName);
+			Converter.ConvertHTML(document, options, tempFileLocation);
+
+			MemoryStream ms = new MemoryStream();
+			using (FileStream file = new FileStream(tempFileLocation, FileMode.Open, FileAccess.Read))
+			{
+				file.CopyTo(ms);
+			}
+
+			return ms;
+		}
 
         /// <summary>
         /// Deletes an attachment

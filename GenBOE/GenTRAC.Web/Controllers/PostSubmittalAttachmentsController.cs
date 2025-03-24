@@ -31,13 +31,18 @@ namespace GenTRAC.Web.Controllers
 	using IES.Common;
     using IES.Common.Exceptions;
 	using Newtonsoft.Json;
-	using static System.Net.Mime.MediaTypeNames;
-	using static System.Net.WebRequestMethods;
+	using Aspose.Html;
+	using Aspose.Html.Converters;
+	using Aspose.Html.IO;
+	using Aspose.Html.Saving;
+
+	//using static System.Net.Mime.MediaTypeNames;
+	//using static System.Net.WebRequestMethods;
 
 	/// <summary>
 	/// Post Submittal Attachments controller
 	/// </summary>
-    public class PostSubmittalAttachmentsController : GenTRACController
+	public class PostSubmittalAttachmentsController : GenTRACController
     {
         /// <summary>
         /// Post Submittal Controller Logic
@@ -357,6 +362,48 @@ namespace GenTRAC.Web.Controllers
 				return this.File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, WebConstants.ATTACHMENT_FROM_EEPP + ".html");*/
 
 				//return this.File(, System.Net.Mime.MediaTypeNames.Application.Octet, WebConstants.ATTACHMENT_FROM_EEPP);
+
+
+
+
+
+				MemoryStream ms = psaLogic.ProcesseEPPAttachment();
+				byte[] eeppBytes = new byte[ms.Length];
+
+				ms.Read(eeppBytes, 0, (int)ms.Length);
+				ms.Write(eeppBytes, 0, eeppBytes.Length);
+
+				return this.File(eeppBytes, System.Net.Mime.MediaTypeNames.Application.Octet, WebConstants.ATTACHMENT_FROM_EEPP + ".pdf");
+
+
+
+				// This commented block is moved to the logic, need to test
+				/* HTMLDocument document = new HTMLDocument("https://localhost:44386/Print?proposalId=221");
+				PdfSaveOptions options = new PdfSaveOptions();
+				string tempFileName = Path.GetRandomFileName() + ".pdf";
+				string tempFileLocation = Path.Combine(Server.MapPath("~/Templates/Export"), tempFileName);
+				Converter.ConvertHTML(document, options, tempFileName);
+
+				// Return the file
+				//using (FileStream fs = new FileStream(WebConstants.ATTACHMENT_FROM_EEPP + ".pdf", FileMode.Open, FileAccess.Read))
+				//{
+				//	byte[] bytes = new byte[fs.Length];
+				//	fs.Read(bytes, 0, (int)fs.Length);
+				//	fs.Write(bytes, 0, bytes.Length);
+
+				//}
+				MemoryStream ms = new MemoryStream();
+				using (FileStream file = new FileStream(tempFileLocation, FileMode.Open, FileAccess.Read))
+				{
+					file.CopyTo(ms);
+				} */
+
+				// MemoryStream attempt
+				//MultipartMemoryStreamProvider streamProvider = new MultipartMemoryStreamProvider();
+				//Converter.ConvertHTML(document, options, (ICreateStreamProvider)streamProvider);
+
+				// Get access to the memory stream that contains the result data
+				//return this.File(ms, System.Net.Mime.MediaTypeNames.Application.Octet, WebConstants.ATTACHMENT_FROM_EEPP + ".pdf");
 			}
 			else
 			{
