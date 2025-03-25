@@ -373,7 +373,7 @@ namespace GenTRAC.Web.Controllers
 				ms.Read(eeppBytes, 0, (int)ms.Length);
 				ms.Write(eeppBytes, 0, eeppBytes.Length);
 
-				return this.File(eeppBytes, System.Net.Mime.MediaTypeNames.Application.Octet, WebConstants.ATTACHMENT_FROM_EEPP + ".pdf");
+				return this.File(ms.ToArray(), System.Net.Mime.MediaTypeNames.Application.Pdf, WebConstants.ATTACHMENT_FROM_EEPP + ".pdf");
 
 
 

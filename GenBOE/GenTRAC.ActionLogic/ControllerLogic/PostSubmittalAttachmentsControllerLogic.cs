@@ -16,6 +16,7 @@ namespace GenTRAC.ActionLogic
 	using Aspose.Html;
 	using Aspose.Html.Converters;
 	using Aspose.Html.Saving;
+	using GenTRAC.ActionLogic.GeneralHelper;
 	using GenTRAC.ActionLogic.Mediator;
     using GenTRAC.DataBridge.Common.Security;
     using GenTRAC.DataBridge.DTO;
@@ -249,6 +250,8 @@ namespace GenTRAC.ActionLogic
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:DisposeObjectsBeforeLosingScope")]
 		public MemoryStream ProcesseEPPAttachment(/*int proposalId*/)
 		{
+			Helpers.SetLicense();
+
 			HTMLDocument document = new HTMLDocument("https://localhost:44386/Print?proposalId=221");
 			PdfSaveOptions options = new PdfSaveOptions();
 			string tempFileName = Path.GetRandomFileName() + ".pdf";
