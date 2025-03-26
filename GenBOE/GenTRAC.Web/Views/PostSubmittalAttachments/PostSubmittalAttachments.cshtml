@@ -334,13 +334,20 @@
 
 				<tr>
 					@if (Model.PsaVisibility == SecurityAuthorization.CreateReadUpdateDelete)
-					{
+                    {
 						<td style="text-align: center;">
-							<a id="deleteEnabled-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded && !this.ViewBag.ReadOnly ? "" : "display:none")" onclick="psaWidget.DeleteAttachment('@((int)attachment.AttachmentType)', '@((int)attachment.Id)')">
-								<img id="deleteButton-@attachmentIdentifier" class="enabled" src="~/Content/images/Cancel_16x.png" />
-							</a>
-							<img id="deleteDisabled-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded || this.ViewBag.ReadOnly ? "display:none" : "")" class="disabled" src="~/Content/images/Cancel_16x.png" />
-						</td>
+							@if (attachment.IsAttachmentFromeEPP)
+							{
+                                <img id="deleteDisabled-@attachmentIdentifier" style="display:none" class="disabled" src="~/Content/images/Cancel_16x.png" />
+							}
+							else
+							{
+								<a id="deleteEnabled-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded && !this.ViewBag.ReadOnly ? "" : "display:none")" onclick="psaWidget.DeleteAttachment('@((int)attachment.AttachmentType)', '@((int)attachment.Id)')">
+									<img id="deleteButton-@attachmentIdentifier" class="enabled" src="~/Content/images/Cancel_16x.png" />
+								</a>
+								<img id="deleteDisabled-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded || this.ViewBag.ReadOnly ? "display:none" : "")" class="disabled" src="~/Content/images/Cancel_16x.png" />
+							}
+						</td>						
 					}
 					<td>@Html.Raw(attachment.AttachmentTypeDisplayString)</td>
 					<td>
@@ -355,7 +362,11 @@
 						}
 						<span id="filenameLabel-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded ? "display:none" : "")">Select File</span>
 					</td>
-					@if (!this.ViewBag.ReadOnly && Model.PsaVisibility == SecurityAuthorization.CreateReadUpdateDelete)
+                    @if (attachment.IsAttachmentFromeEPP)
+                    {
+                        <td></td>
+                    }
+					else if (!this.ViewBag.ReadOnly && Model.PsaVisibility == SecurityAuthorization.CreateReadUpdateDelete)
 					{
 						<td style="text-align: center;">
 							@if (attachment.AttachmentType != AttachmentType.Other) // The upload button should not be visible for 'Other' attachments.  These should be added via the Add Attachment button.
