@@ -1,4 +1,10 @@
-﻿namespace RDSB.Backend.Models
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2025 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
+
+namespace RDSB.Backend.Models
 {
 	using System.Collections.Generic;
 
