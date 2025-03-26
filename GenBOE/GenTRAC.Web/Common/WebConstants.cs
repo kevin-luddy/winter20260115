@@ -1093,11 +1093,6 @@ namespace GenTRAC.Web.Common
 		public const string ATTACHMENT_UPLOADED_BY_EEPP = "From eEPP";
 
 		/// <summary>
-		/// Uploaded Date field, set for when the document is fetched successfully from eEPP
-		/// </summary>
-		public const string ATTACHMENT_UPLOADED_DATE_BY_EEPP = "N/A";
-
-		/// <summary>
 		/// Default file name for when an attachment is coming from eEPP
 		/// </summary>
 		public const string ATTACHMENT_FROM_EEPP = "eEPP Proposal/Negotiation Authority Record";

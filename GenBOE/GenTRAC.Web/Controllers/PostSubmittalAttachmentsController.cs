@@ -6,40 +6,25 @@
 
 namespace GenTRAC.Web.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-	using System.IO;
-	using System.Linq;
-	using System.Net;
-	using System.Net.Http;
-	using System.Security.Policy;
-	using System.Threading.Tasks;
-	using System.Web;
-    using System.Web.Mvc;
-	using DocumentFormat.OpenXml;
-	using DocumentFormat.OpenXml.EMMA;
-	using DocumentFormat.OpenXml.Packaging;
-	using DocumentFormat.OpenXml.Presentation;
-	using DocumentFormat.OpenXml.Wordprocessing;
 	using GenTRAC.ActionLogic;
-    using GenTRAC.ActionLogic.ModelView.PostSubmittalAttachments;
-    using GenTRAC.DataBridge.DTO;
+	using GenTRAC.ActionLogic.ModelView.PostSubmittalAttachments;
+	using GenTRAC.DataBridge.DTO;
 	using GenTRAC.Objects.FullObject;
-    using GenTRAC.Web.Common;
-	using Glimpse.AspNet.Model;
+	using GenTRAC.Web.Common;
+	using GenTRAC.Web.ModelView;
 	using IES.ActionLogic.Common;
 	using IES.Common;
-    using IES.Common.Exceptions;
+	using IES.Common.Exceptions;
 	using Newtonsoft.Json;
-	using Aspose.Html;
-	using Aspose.Html.Converters;
-	using Aspose.Html.IO;
-	using Aspose.Html.Saving;
+	using System;
+	using System.Collections.Generic;
+	using System.IO;
+	using System.Linq;
+	using System.Net.Http;
 	using System.Text;
-	using GenTRAC.Web.ModelView;
-
-	//using static System.Net.Mime.MediaTypeNames;
-	//using static System.Net.WebRequestMethods;
+	using System.Threading.Tasks;
+	using System.Web;
+	using System.Web.Mvc;
 
 	/// <summary>
 	/// Post Submittal Attachments controller

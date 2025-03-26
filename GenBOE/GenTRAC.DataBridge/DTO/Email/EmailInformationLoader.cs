@@ -45,7 +45,6 @@ namespace GenTRAC.DataBridge.DTO
 		/// <summary>
 		/// The document reminder cutoff date, set by config values
 		/// </summary>
-		//      private static DateTime DOCUMENT_REMINDER_CUTOFF_DATE = new DateTime(2020, CutoffDateMonth, 1);
 		private DateTime DOCUMENT_REMINDER_CUTOFF_DATE { get; set; }
 
         /// <summary>
