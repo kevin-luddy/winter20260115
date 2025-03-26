@@ -595,6 +595,42 @@ namespace IES.Common
 		}
 
 		/// <summary>
+		/// Override for CreateModelStateValidationErrorList to be used in genBOE Angular rewrite
+		/// </summary>
+		/// <param name="modelStateDictionary"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		public static Collection<ValidationMessage> CreateModelStateValidationErrorList(System.Web.Http.ModelBinding.ModelStateDictionary modelStateDictionary)
+		{
+			if (modelStateDictionary == null)
+			{
+				throw new ArgumentNullException(nameof(modelStateDictionary));
+			}
+
+			Collection<ValidationMessage> errors = new Collection<ValidationMessage>();
+
+			foreach (KeyValuePair<string, System.Web.Http.ModelBinding.ModelState> state in modelStateDictionary)
+			{
+				foreach (System.Web.Http.ModelBinding.ModelError error in state.Value.Errors)
+				{
+					if (!string.IsNullOrEmpty(error.ErrorMessage))
+					{
+						errors.Add(new ValidationMessage(state.Key, error.ErrorMessage));
+					}
+					else
+					{
+						errors.Add(new ValidationMessage(state.Key, "Field was not valid."));
+					}
+				}
+			}
+
+			// remove duplicate messages.
+			errors = new Collection<ValidationMessage>(errors.GroupBy(x => x.ValidationIssue).Select(x => x.First()).ToCollection());
+
+			return errors;
+		}
+
+		/// <summary>
 		/// Concatenates number, seperator, and title into one string or returns UNIQUE_MULTI_NUMBER.
 		/// </summary>
 		/// <param name="number">Number string</param>

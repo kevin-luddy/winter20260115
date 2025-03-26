@@ -16,8 +16,10 @@ namespace GenBOE.Web.Controllers.Backend
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Objects;
+	using GenBOE.Web.Common;
 	using GenBOE.Web.ModelView;
 	using IES.Common;
+	using IES.Common.Exceptions;
 	using IES.Common.PickList;
 	using HttpGetAttribute = System.Web.Http.HttpGetAttribute;
 
@@ -41,7 +43,7 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <summary>
 		/// ctor
 		/// </summary>
-		public WorkspaceSettingsController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, 
+		public WorkspaceSettingsController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader,
 			WorkspaceSettingsControllerLogic workspaceSettingsControllerLogic)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
@@ -198,6 +200,44 @@ namespace GenBOE.Web.Controllers.Backend
 					result.Messages.Add($"Unknown error occured GetNextTrackingNumberRevision: {ex.Message}");
 				}
 			}
+			return result;
+		}
+
+		[System.Web.Http.HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<string> SaveWorkspaceIdentification([WorkspaceIdentificationBinder][FromBody] IWorkspaceIdentificationModelView workspaceIdentificationModelView)
+		{
+			if (workspaceIdentificationModelView == null)
+			{
+				throw new ArgumentNullException(nameof(workspaceIdentificationModelView));
+			}
+
+			IESSingleResponse<string> result = new IESSingleResponse<string>();
+
+			try
+			{
+				string workspaceShortName = workspaceIdentificationModelView.ShortName;
+				FullWorkspace ws = Factory.CreateFullWorkspace(workspaceShortName);
+
+				if (ModelState.IsValid)
+				{
+					string warnings = workspaceSettingsControllerLogic.SaveWorkspaceIdentification(Factory, ws, workspaceIdentificationModelView);
+					// this causes the cache to fully blow out
+					this.Factory.ClearWorkspaceCache(workspaceShortName);
+
+					result.Data = warnings;
+				}
+				else
+				{
+					throw new GenValidationException(Utilities.CreateModelStateValidationErrorList(ModelState));
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occured SaveWorkspaceIdentification: {ex.Message}");
+			}
+
 			return result;
 		}
 	}
