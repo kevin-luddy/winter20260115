@@ -35,6 +35,8 @@ namespace GenTRAC.Web.Controllers
 	using Aspose.Html.Converters;
 	using Aspose.Html.IO;
 	using Aspose.Html.Saving;
+	using System.Text;
+	using GenTRAC.Web.ModelView;
 
 	//using static System.Net.Mime.MediaTypeNames;
 	//using static System.Net.WebRequestMethods;
@@ -64,11 +66,6 @@ namespace GenTRAC.Web.Controllers
 		/// </summary>
 		private IES.Common.Logger log = new IES.Common.Logger(typeof(PostSubmittalAttachmentsController));
 
-		///// <summary>
-		///// Token Service
-		///// </summary>
-		//private readonly ITokenService tokenService;
-
 		/// <summary>
 		/// Constructor
 		/// </summary>
@@ -82,13 +79,11 @@ namespace GenTRAC.Web.Controllers
             SiteMasterUtilities siteMasterUtilities,
             IES.Common.ISecurityInformation securityInformation,
 			IProposalLoader proposalLoader)
-			//ITokenService tokenService)
             : base(securityInformation, genTRACControllerLogic, siteMasterUtilities)
         {
             this.psaLogic = postSubmittalAttachmentsControllerLogic;
             this.securityInformation = securityInformation;
 			this.proposalLoader = proposalLoader;
-			//this.tokenService = tokenService;
         }
 
         /// <summary>
@@ -124,7 +119,6 @@ namespace GenTRAC.Web.Controllers
 					if (proposal != null)
 					{
 						// Check if this exists in eEPP
-						// WIP - NEED TO FIX
 						using (HttpClient httpClient = new HttpClient(new HttpClientHandler()
 						{
 							UseDefaultCredentials = true
@@ -140,9 +134,9 @@ namespace GenTRAC.Web.Controllers
 
 								// Process the response
 								string stringResult = await response.Content.ReadAsStringAsync();
-								Result<int> deserializedResult = JsonConvert.DeserializeObject<Result<int>>(stringResult);
+								Result<EeppProposal> deserializedResult = JsonConvert.DeserializeObject<Result<EeppProposal>>(stringResult);
 
-								if (deserializedResult != null && deserializedResult.Data != -1)
+								if (deserializedResult != null && deserializedResult.Data != null && deserializedResult.Data.Id != -1)
 								{
 									AttachmentDto doaDoc = model.PostSubmittalAttachments.FirstOrDefault(x => x.AttachmentType == AttachmentType.DelegationOfAuthority);
 									if (doaDoc != null)
@@ -150,7 +144,11 @@ namespace GenTRAC.Web.Controllers
 										doaDoc.Name = WebConstants.ATTACHMENT_FROM_EEPP;
 										doaDoc.UploadedBy = WebConstants.ATTACHMENT_UPLOADED_BY_EEPP;
 										doaDoc.IsAttachmentFromeEPP = true;
-										doaDoc.Id = 1;  // We need this to bypass the FileHasBeenUploaded flag in the UI, but the actual ID won't matter for eEPP docs
+
+										// We need this to bypass the FileHasBeenUploaded flag in the UI
+										// We'll also utilize the Id field to send over to eEPP for the proposal ID there
+										doaDoc.Id = deserializedResult.Data.Id;
+										doaDoc.EeppStatus = deserializedResult.Data.Status;
 									}
 								}
 								// Do nothing (let the user upload a file) if there is no eEPP data with the tracking number
@@ -160,95 +158,6 @@ namespace GenTRAC.Web.Controllers
 								this.log.Error(ex);
 							}
 						}
-
-
-
-
-						/*try
-						{
-							Result<byte[]> tempResult = new Result<byte[]>();
-							tempResult.Messages.Add("This is a test.");
-
-							AttachmentDto doaDoc = model.PostSubmittalAttachments.FirstOrDefault(x => x.AttachmentType == AttachmentType.DelegationOfAuthority);
-							if (doaDoc != null)
-							{
-								doaDoc.Name = WebConstants.ATTACHMENT_FROM_EEPP;
-								doaDoc.UploadedBy = WebConstants.ATTACHMENT_UPLOADED_BY_EEPP;
-								doaDoc.IsAttachmentFromeEPP = true;
-								doaDoc.Id = 1;  // We need this to bypass the FileHasBeenUploaded flag in the UI, but the actual ID won't matter for eEPP docs
-							}
-						}
-						catch (Exception ex)
-						{
-							this.log.Error(ex);
-							Result<byte[]> tempResult = new Result<byte[]>();
-							MemoryStream stream = new MemoryStream();
-							tempResult.Messages.Add("The requested action could not be completed. If the problem persists, please contact your application administrator.");
-							HelperCreateErrorDocument(tempResult, stream);
-						}*/
-
-						
-
-
-						//try
-						//{
-						//syncAPICall.Wait();
-						// TODO KATIE: getting 401'd here
-						//HttpResponseMessage response = syncAPICall.Result;
-
-						/*Result<byte[]> tempResult = new Result<byte[]>();
-						MemoryStream stream = new MemoryStream();
-						tempResult.Messages.Add("This is a test.");
-						HelperCreateErrorDocument(tempResult, stream);
-
-						AttachmentDto doaDoc = model.PostSubmittalAttachments.Where(x => x.AttachmentType == AttachmentType.DelegationOfAuthority).FirstOrDefault();
-						doaDoc.Name = WebConstants.ATTACHMENT_FROM_EEPP;
-						doaDoc.Contents = stream.ToArray();	// This may not be needed if this is being handled in the Logic
-						doaDoc.UploadedBy = WebConstants.ATTACHMENT_UPLOADED_BY_EEPP;
-						doaDoc.IsAttachmentFromeEPP = true;
-						// Using -1 for the ID will be used as a flag for retrieving the document
-						doaDoc.Id = 1;*/
-						//AttachmentDto attachment = new AttachmentDto()
-						//{
-						//	Name = WebConstants.ATTACHMENT_FROM_EEPP,
-						//	Contents = ,
-						//	UploadedBy = WebConstants.ATTACHMENT_UPLOADED_BY_EEPP,
-						//	AttachmentType = AttachmentType.DelegationOfAuthority,
-						//	ProposalId = model.ProposalId,
-						//	IsRevisionReference = false,
-						//	IsAttachmentFromeEPP = true,
-						//	ShowPTMUploadForDelegationOfAuthority = false
-						//};
-
-						//}
-						//catch (Exception ex)
-						//{
-						//	this.log.Error(ex);
-						//	Result<byte[]> tempResult = new Result<byte[]>();
-						//	MemoryStream stream = new MemoryStream();
-						//	tempResult.Messages.Add("The requested action could not be completed. If the problem persists, please contact your application administrator.");
-						//	HelperCreateErrorDocument(tempResult, stream);
-						//}
-
-						/*if ()
-						{
-							AttachmentDto attachment = new AttachmentDto()
-							{
-								Name = WebConstants.ATTACHMENT_FROM_EEPP,
-								Contents = ,
-								UploadedBy = WebConstants.ATTACHMENT_UPLOADED_BY_EEPP,
-								AttachmentType = AttachmentType.DelegationOfAuthority,
-								ProposalId = model.ProposalId,
-								IsRevisionReference = false,
-								IsAttachmentFromeEPP = true,
-								ShowPTMUploadForDelegationOfAuthority = false
-							};
-						}
-						// The record does not exist in eEPP, so keep the upload button
-						else
-						{
-							// TODO Katie: Do we set anything here?
-						}*/
 					}
 				}
 			}
@@ -262,33 +171,37 @@ namespace GenTRAC.Web.Controllers
         }
 
 		/// <summary>
-		/// Helper for creating a document to return an error message to the user. Returns the result as a byte stream.
+		/// This method can be used to stream a text file to the browser that contains a series of error messages separated
+		/// by newlines. This is a quick and easy way to alert the user that there was a problem (e.g. an exception thrown)
+		/// during file download processing.
 		/// </summary>
-		/// <param name="deserializedResult">Failed http response</param>
-		/// <param name="stream">Stream into which to write the exported error Word document.</param>
-		private void HelperCreateErrorDocument(Result<byte[]> deserializedResult, Stream stream)
+		/// <param name="errorMessages">List of error messages</param>
+		/// <returns>Text file</returns>
+		protected ActionResult CreateTextFileWithErrorMessage(params string[] errorMessages)
 		{
-			string tempErrorFilename = Path.GetTempFileName();
-			lock (CacheConstants.OPEN_XML_LOCK)
+			this.Response.ClearHeaders();
+			this.Response.ClearContent();
+			this.Response.Clear();
+
+			this.Response.ContentType = "text/plain";
+			this.Response.ContentEncoding = Encoding.ASCII;
+			this.Response.AppendHeader("Content-Disposition", "attachment;filename=error.txt");
+
+			byte[] newline = Encoding.ASCII.GetBytes("\r\n");
+
+			if (errorMessages != null)
 			{
-				using (WordprocessingDocument errorDocument = WordprocessingDocument.Create(tempErrorFilename, WordprocessingDocumentType.Document))
+				foreach (string errorMessage in errorMessages)
 				{
-					MainDocumentPart mainPart = errorDocument.AddMainDocumentPart();
-					mainPart.Document = new Document();
-					Body body = mainPart.Document.AppendChild(new Body());
-					foreach (string message in deserializedResult.Messages)
-					{
-						Paragraph para = body.AppendChild(new Paragraph());
-						Run run = para.AppendChild(new Run());
-						run.AppendChild(new DocumentFormat.OpenXml.Drawing.Text(message));
-					}
+					byte[] errorContent = Encoding.ASCII.GetBytes(errorMessage);
+					this.Response.OutputStream.Write(errorContent, 0, errorContent.Length);
+					this.Response.OutputStream.Write(newline, 0, newline.Length);
 				}
 			}
-			using (Stream errorStream = new FileStream(tempErrorFilename, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.DeleteOnClose))
-			{
-				errorStream.Seek(0, SeekOrigin.Begin);
-				errorStream.CopyTo(stream);
-			}
+
+			this.Response.OutputStream.Flush();
+
+			return new EmptyResult();
 		}
 
 		/// <summary>
@@ -332,78 +245,26 @@ namespace GenTRAC.Web.Controllers
 		/// Downloads the attachment with fileId
 		/// </summary>
 		/// <param name="proposalId">Proposal ID</param>
-		/// <param name="fileId">File ID</param>
+		/// <param name="fileId">File ID, or the proposal ID (in the case of an eEPP doc)</param>
 		/// <param name="isFromeEPP">Is the file from eEPP?</param>
 		/// <returns>File to download</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "proposalId")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:DisposeObjectsBeforeLosingScope")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public FileResult DownloadAttachment(int proposalId, int fileId, bool isFromeEPP)
         {
 			if (isFromeEPP)
 			{
-				// Error handling - NEEDS TESTING
-				//MemoryStream stream = new MemoryStream();
-				//Result<byte[]> tempResult = new Result<byte[]>();
-				//HelperCreateErrorDocument(tempResult, stream);
-
-				//return this.File(stream.ToArray(), System.Net.Mime.MediaTypeNames.Application.Octet, "error.docx");
-				// END ERROR HANDLING
-
-
-				// HTML download code
-				/*string address = "https://localhost:44386/Print?proposalId=221"; // TODO KATIE: Change the address later
-				WebClient client = new WebClient();
-				Uri uri = new Uri(address);
-				byte[] fileBytes = null; // assign bytesreturn File(fileBytes, "application/octet-stream");
-				client.UseDefaultCredentials = true;
-
-
-				fileBytes = client.DownloadData(uri);
-				return this.File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, WebConstants.ATTACHMENT_FROM_EEPP + ".html");*/
-
-				//return this.File(, System.Net.Mime.MediaTypeNames.Application.Octet, WebConstants.ATTACHMENT_FROM_EEPP);
-
-
-
-
-
-				MemoryStream ms = psaLogic.ProcesseEPPAttachment();
-				byte[] eeppBytes = new byte[ms.Length];
-
-				ms.Read(eeppBytes, 0, (int)ms.Length);
-				ms.Write(eeppBytes, 0, eeppBytes.Length);
-
-				return this.File(ms.ToArray(), System.Net.Mime.MediaTypeNames.Application.Pdf, WebConstants.ATTACHMENT_FROM_EEPP + ".pdf");
-
-
-
-				// This commented block is moved to the logic, need to test
-				/* HTMLDocument document = new HTMLDocument("https://localhost:44386/Print?proposalId=221");
-				PdfSaveOptions options = new PdfSaveOptions();
-				string tempFileName = Path.GetRandomFileName() + ".pdf";
-				string tempFileLocation = Path.Combine(Server.MapPath("~/Templates/Export"), tempFileName);
-				Converter.ConvertHTML(document, options, tempFileName);
-
-				// Return the file
-				//using (FileStream fs = new FileStream(WebConstants.ATTACHMENT_FROM_EEPP + ".pdf", FileMode.Open, FileAccess.Read))
-				//{
-				//	byte[] bytes = new byte[fs.Length];
-				//	fs.Read(bytes, 0, (int)fs.Length);
-				//	fs.Write(bytes, 0, bytes.Length);
-
-				//}
-				MemoryStream ms = new MemoryStream();
-				using (FileStream file = new FileStream(tempFileLocation, FileMode.Open, FileAccess.Read))
+				try
 				{
-					file.CopyTo(ms);
-				} */
-
-				// MemoryStream attempt
-				//MultipartMemoryStreamProvider streamProvider = new MultipartMemoryStreamProvider();
-				//Converter.ConvertHTML(document, options, (ICreateStreamProvider)streamProvider);
-
-				// Get access to the memory stream that contains the result data
-				//return this.File(ms, System.Net.Mime.MediaTypeNames.Application.Octet, WebConstants.ATTACHMENT_FROM_EEPP + ".pdf");
+					MemoryStream ms = psaLogic.ProcesseEPPAttachment(fileId);
+					return this.File(ms.ToArray(), System.Net.Mime.MediaTypeNames.Application.Pdf, WebConstants.ATTACHMENT_FROM_EEPP + ".pdf");
+				}
+				catch (Exception ex)
+				{
+					string[] errors = { "An error occurred downloading the file from eEPP: " + ex.Message };
+					return this.CreateTextFileWithErrorMessage(errors) as FileResult;
+				}
 			}
 			else
 			{

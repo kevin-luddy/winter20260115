@@ -102,5 +102,10 @@ namespace GenTRAC.DataBridge.DTO
 		/// Show the PTM upload button for Delegation of Authority. Set to true if the attachment is already uploaded to PTM, or if there is no eEPP record
 		/// </summary>
 		public bool ShowPTMUploadForDelegationOfAuthority { get; set; }
+
+		/// <summary>
+		/// Show the eEPP status, if any
+		/// </summary>
+		public string EeppStatus { get; set; }
     }
 }

@@ -332,41 +332,53 @@
                 string attachmentIdentifier = ((int)attachment.AttachmentType).ToString();
                 attachmentIdentifier += attachment.AttachmentType == AttachmentType.Other ? "-" + attachment.Id : string.Empty;
 
-                <tr>
-                    @if (Model.PsaVisibility == SecurityAuthorization.CreateReadUpdateDelete)
-                    {
-                        <td style="text-align: center;">
-                            <a id="deleteEnabled-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded && !this.ViewBag.ReadOnly ? "" : "display:none")" onclick="psaWidget.DeleteAttachment('@((int)attachment.AttachmentType)', '@((int)attachment.Id)')">
-                                <img id="deleteButton-@attachmentIdentifier" class="enabled" src="~/Content/images/Cancel_16x.png" />
-                            </a>
-                            <img id="deleteDisabled-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded || this.ViewBag.ReadOnly ? "display:none" : "")" class="disabled" src="~/Content/images/Cancel_16x.png" />
-                        </td>
-                    }
-                    <td>@Html.Raw(attachment.AttachmentTypeDisplayString)</td>
-                    <td>
-                        @Html.Hidden("IsRevisionReference-" + attachmentIdentifier, attachment.IsRevisionReference, new { id = "IsRevisionReference-" + attachmentIdentifier })
-                        <a id="filenameLink-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded ? "" : "display:none")" href="/@WebConstants.Controller.PSA/@WebConstants.Action.DOWNLOAD_ATTACHMENT/id/@Model.ProposalId/?fileId=@attachment.Id&isFromeEPP=@attachment.IsAttachmentFromeEPP.ToString()">
-                            @(attachment.IsRevisionReference ? @referencePrefix : string.Empty) @attachment.Name
-                        </a>
-                        <span id="filenameLabel-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded ? "display:none" : "")">Select File</span>
-                    </td>
-                    @if (!this.ViewBag.ReadOnly && Model.PsaVisibility == SecurityAuthorization.CreateReadUpdateDelete)
-                    {
-                        <td style="text-align: center;">
-                            @if (attachment.AttachmentType != AttachmentType.Other) // The upload button should not be visible for 'Other' attachments.  These should be added via the Add Attachment button.
-                            {
-                                <a onclick="psaWidget.AddAttachment('@attachmentIdentifier-file', '@((int) attachment.AttachmentType)')">
-                                    <img id="uploadButton-@attachmentIdentifier" src="~/Content/images/UploadFile_16x.png" />
-                                </a>
-                            }
-                            <input type="file" id="@attachmentIdentifier-file" onchange="psaWidget.UploadAttachment(this, '@((int) attachment.AttachmentType)')" style="display: none;">
-                            <input id="fileId-@attachmentIdentifier" value="@attachment.Id" type="hidden" />
-                            <input id="updateDateLong-@attachmentIdentifier" value="@attachment.UpdateDateLong" type="hidden" />
-                        </td>
-                    }
-                    <td id="uploadedBy-@attachmentIdentifier">@attachment.UploadedBy</td>
-                    <td id="updateDate-@attachmentIdentifier" data-utcdate="@(attachment.FileHasBeenUploaded ? attachment.UpdateDate.ToUniversalTime().ToString("s", System.Globalization.CultureInfo.InvariantCulture) : string.Empty)"></td>
-                </tr>
+				<tr>
+					@if (Model.PsaVisibility == SecurityAuthorization.CreateReadUpdateDelete)
+					{
+						<td style="text-align: center;">
+							<a id="deleteEnabled-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded && !this.ViewBag.ReadOnly ? "" : "display:none")" onclick="psaWidget.DeleteAttachment('@((int)attachment.AttachmentType)', '@((int)attachment.Id)')">
+								<img id="deleteButton-@attachmentIdentifier" class="enabled" src="~/Content/images/Cancel_16x.png" />
+							</a>
+							<img id="deleteDisabled-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded || this.ViewBag.ReadOnly ? "display:none" : "")" class="disabled" src="~/Content/images/Cancel_16x.png" />
+						</td>
+					}
+					<td>@Html.Raw(attachment.AttachmentTypeDisplayString)</td>
+					<td>
+						@Html.Hidden("IsRevisionReference-" + attachmentIdentifier, attachment.IsRevisionReference, new { id = "IsRevisionReference-" + attachmentIdentifier })
+						<a id="filenameLink-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded ? "" : "display:none")" href="/@WebConstants.Controller.PSA/@WebConstants.Action.DOWNLOAD_ATTACHMENT/id/@Model.ProposalId/?fileId=@attachment.Id&isFromeEPP=@attachment.IsAttachmentFromeEPP.ToString()">
+							@(attachment.IsRevisionReference ? @referencePrefix : string.Empty) @attachment.Name
+						</a>
+						<!-- Show eEPP status if it exists -->
+						@if (attachment.IsAttachmentFromeEPP)
+						{
+							<span>&nbsp; - @attachment.EeppStatus</span>
+						}
+						<span id="filenameLabel-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded ? "display:none" : "")">Select File</span>
+					</td>
+					@if (!this.ViewBag.ReadOnly && Model.PsaVisibility == SecurityAuthorization.CreateReadUpdateDelete)
+					{
+						<td style="text-align: center;">
+							@if (attachment.AttachmentType != AttachmentType.Other) // The upload button should not be visible for 'Other' attachments.  These should be added via the Add Attachment button.
+							{
+								<a onclick="psaWidget.AddAttachment('@attachmentIdentifier-file', '@((int) attachment.AttachmentType)')">
+									<img id="uploadButton-@attachmentIdentifier" src="~/Content/images/UploadFile_16x.png" />
+								</a>
+							}
+							<input type="file" id="@attachmentIdentifier-file" onchange="psaWidget.UploadAttachment(this, '@((int) attachment.AttachmentType)')" style="display: none;">
+							<input id="fileId-@attachmentIdentifier" value="@attachment.Id" type="hidden" />
+							<input id="updateDateLong-@attachmentIdentifier" value="@attachment.UpdateDateLong" type="hidden" />
+						</td>
+					}
+					<td id="uploadedBy-@attachmentIdentifier">@attachment.UploadedBy</td>
+					@if (attachment.IsAttachmentFromeEPP)
+					{
+                        <td id="uploadDate-@attachmentIdentifier">N/A</td>
+					}
+					else
+					{
+						<td id="updateDate-@attachmentIdentifier" data-utcdate="@(attachment.FileHasBeenUploaded ? attachment.UpdateDate.ToUniversalTime().ToString("s", System.Globalization.CultureInfo.InvariantCulture) : string.Empty)"></td>
+					}
+				</tr>
             }
         </table>
     </div>
