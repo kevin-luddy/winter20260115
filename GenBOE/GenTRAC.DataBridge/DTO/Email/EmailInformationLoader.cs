@@ -42,7 +42,10 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         private IAttachmentLoader AttachmentLoader { get; set; }
 
-        private static DateTime DOCUMENT_REMINDER_CUTOFF_DATE = new DateTime(2020, 1, 1);
+		/// <summary>
+		/// The document reminder cutoff date, set by config values
+		/// </summary>
+		private DateTime DOCUMENT_REMINDER_CUTOFF_DATE { get; set; }
 
         /// <summary>
         /// Default Constructor
@@ -55,7 +58,8 @@ namespace GenTRAC.DataBridge.DTO
             this.ProposalLoader = new ProposalLoader();
             this.UserLoader = new UserLoader();
             this.AttachmentLoader = new AttachmentLoader();
-        }
+			this.DOCUMENT_REMINDER_CUTOFF_DATE = DateTime.Parse(ConfigurationUtilities.GetAppSetting("DocumentReminderCutoffDate"));
+		}
 
         /// <summary>
         /// Polls the database to return all Proposals that require an email to be sent.

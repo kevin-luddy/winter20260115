@@ -9,10 +9,10 @@ namespace GenTRAC.ActionLogic.GeneralHelper
     using System;
     using IES.Common;
 
-    /// <summary>
-    /// General Helpers class
-    /// </summary>
-    public static class Helpers
+	/// <summary>
+	/// General Helpers class
+	/// </summary>
+	public static class Helpers
     {
         /// <summary>
         /// Is Proposal Certification Required and Missing
@@ -30,5 +30,14 @@ namespace GenTRAC.ActionLogic.GeneralHelper
                 && (!submittedToContracts.HasValue 
                     || DateTime.Now.Date > submittedToContracts.Value.AddDays(60).Date);
         }
-    }
+
+		/// <summary>
+		/// A method to set Aspose licenses
+		/// </summary>
+		public static void SetLicense()
+		{
+			new Aspose.Pdf.License().SetLicense("Aspose.Total.lic");
+			new Aspose.Html.License().SetLicense("Aspose.Total.lic");
+		}
+	}
 }

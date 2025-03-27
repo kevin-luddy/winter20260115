@@ -1085,5 +1085,17 @@ namespace GenTRAC.Web.Common
 			public const string RESET_WORKFLOW = "Clicking ‘Reset Workflow’ will erase all existing signatures and start the workflow from the beginning.";
 		}
 		#endregion
+
+		#region Miscellaneous
+		/// <summary>
+		/// Uploaded By field, set for when the document is fetched successfully from eEPP 
+		/// </summary>
+		public const string ATTACHMENT_UPLOADED_BY_EEPP = "From eEPP";
+
+		/// <summary>
+		/// Default file name for when an attachment is coming from eEPP
+		/// </summary>
+		public const string ATTACHMENT_FROM_EEPP = "eEPP Proposal/Negotiation Authority Record";
+		#endregion
 	}
 }
