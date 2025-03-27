@@ -17,7 +17,6 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
-	using GenBOE.Web.ModelView;
 	using GenTRAC.DataBridge.DTO;
 	using IES.Common;
 	using IES.Common.Exceptions;
@@ -62,7 +61,7 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 		/// <param name="workspaceDTODataLoader"></param>
 		public WorkspaceSettingsControllerLogic(
 			ISecurityInformation _securityInformation,
-			IWorkspaceControllerLogic workspaceControllerLogic, 
+			IWorkspaceControllerLogic workspaceControllerLogic,
 			IWorkspaceDTODataLoader workspaceDTODataLoader,
 			BoePickListMapper boePickListMapper,
 			GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader,
