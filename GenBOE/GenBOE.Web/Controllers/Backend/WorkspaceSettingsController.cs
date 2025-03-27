@@ -205,14 +205,34 @@ namespace GenBOE.Web.Controllers.Backend
 		}
 
 		/// <summary>
-		/// Save the Workspace Identification
+		/// Save the Workspace Identification (Space)
 		/// </summary>
 		/// <param name="workspaceIdentificationModelView"></param>
 		/// <returns></returns>
 		/// <exception cref="ArgumentNullException"></exception>
 		[System.Web.Http.HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESSingleResponse<ActionResult> SaveWorkspaceIdentification([FromBody] WorkspaceIdentificationPostBody workspaceIdentificationModelView)
+		public IESSingleResponse<ActionResult> SaveWorkspaceIdentificationSpace([FromBody] WorkspaceIdentificationSpaceModelView workspaceIdentificationModelView)
+		{
+			_ = workspaceIdentificationModelView ?? throw new ArgumentNullException(nameof(workspaceIdentificationModelView));
+
+			IESSingleResponse<ActionResult> result = new IESSingleResponse<ActionResult>();
+
+			ActionResult data = this.workspaceController.SaveWorkspaceIdentification(workspaceIdentificationModelView.ShortName, workspaceIdentificationModelView);
+			result.Data = data;
+
+			return result;
+		}
+
+		/// <summary>
+		/// Save the Workspace Identification (MST)
+		/// </summary>
+		/// <param name="workspaceIdentificationModelView"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		[System.Web.Http.HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<ActionResult> SaveWorkspaceIdentificationMST([FromBody] WorkspaceIdentificationMSTModelView workspaceIdentificationModelView)
 		{
 			_ = workspaceIdentificationModelView ?? throw new ArgumentNullException(nameof(workspaceIdentificationModelView));
 
