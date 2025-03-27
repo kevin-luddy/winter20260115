@@ -33,7 +33,7 @@ tinymce.PluginManager.add('placeholder', function(editor) {
 
     var Label = function(){
         var placeholder_text = editor.getElement().getAttribute("placeholder") || editor.settings.placeholder;
-        var placeholder_attrs = editor.settings.placeholder_attrs || {style: {position: 'absolute', top:'5px', left:0, color: '#888', padding: '1%', width:'98%', overflow: 'hidden', 'white-space': 'pre-wrap'} };
+        var placeholder_attrs = editor.settings.placeholder_attrs || {style: {position: 'absolute', top:'5px', left:0, color: '#888', padding: '1%', width:'98%', overflow: 'hidden', 'white-space': 'pre-line'} };
         var contentAreaContainer = editor.getContentAreaContainer();
 
         tinymce.DOM.setStyle(contentAreaContainer, 'position', 'relative');
