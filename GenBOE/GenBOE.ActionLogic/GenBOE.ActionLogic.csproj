@@ -500,6 +500,7 @@
     <Compile Include="_ModelView\Workspace\WorkspaceCalculateActualsModelView.cs" />
     <Compile Include="_ModelView\Workspace\WorkspaceEmailOverrideModelView.cs" />
     <Compile Include="_ModelView\Workspace\WorkspaceIdentificationMSTModelView.cs" />
+    <Compile Include="_ModelView\Workspace\WorkspaceIdentificationPostBody.cs" />
     <Compile Include="_ModelView\Workspace\WorkspaceResourceRateGridTMModelView.cs" />
     <Compile Include="_ModelView\Workspace\WorkspaceResourceRateTMModelView.cs" />
     <Compile Include="_ModelView\Workspace\WorkspaceSearchResultModelView.cs" />

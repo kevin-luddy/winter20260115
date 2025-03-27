@@ -35,6 +35,8 @@ namespace GenBOE.Web.Controllers.Backend
 		/// </summary>
 		private WorkspaceSettingsControllerLogic workspaceSettingsControllerLogic { get; set; }
 
+		private WorkspaceController workspaceController { get; set; }
+
 		/// <summary>
 		/// Logger
 		/// </summary>
@@ -44,10 +46,11 @@ namespace GenBOE.Web.Controllers.Backend
 		/// ctor
 		/// </summary>
 		public WorkspaceSettingsController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader,
-			WorkspaceSettingsControllerLogic workspaceSettingsControllerLogic)
+			WorkspaceSettingsControllerLogic workspaceSettingsControllerLogic, WorkspaceController workspaceController)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.workspaceSettingsControllerLogic = workspaceSettingsControllerLogic;
+			this.workspaceController = workspaceController;
 		}
 		#endregion
 
@@ -203,40 +206,22 @@ namespace GenBOE.Web.Controllers.Backend
 			return result;
 		}
 
+		/// <summary>
+		/// Save the Workspace Identification
+		/// </summary>
+		/// <param name="workspaceIdentificationModelView"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
 		[System.Web.Http.HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESSingleResponse<string> SaveWorkspaceIdentification([WorkspaceIdentificationBinder][FromBody] IWorkspaceIdentificationModelView workspaceIdentificationModelView)
+		public IESSingleResponse<ActionResult> SaveWorkspaceIdentification([FromBody] WorkspaceIdentificationPostBody workspaceIdentificationModelView)
 		{
-			if (workspaceIdentificationModelView == null)
-			{
-				throw new ArgumentNullException(nameof(workspaceIdentificationModelView));
-			}
+			_ = workspaceIdentificationModelView ?? throw new ArgumentNullException(nameof(workspaceIdentificationModelView));
 
-			IESSingleResponse<string> result = new IESSingleResponse<string>();
+			IESSingleResponse<ActionResult> result = new IESSingleResponse<ActionResult>();
 
-			try
-			{
-				string workspaceShortName = workspaceIdentificationModelView.ShortName;
-				FullWorkspace ws = Factory.CreateFullWorkspace(workspaceShortName);
-
-				if (ModelState.IsValid)
-				{
-					string warnings = workspaceSettingsControllerLogic.SaveWorkspaceIdentification(Factory, ws, workspaceIdentificationModelView);
-					// this causes the cache to fully blow out
-					this.Factory.ClearWorkspaceCache(workspaceShortName);
-
-					result.Data = warnings;
-				}
-				else
-				{
-					throw new GenValidationException(Utilities.CreateModelStateValidationErrorList(ModelState));
-				}
-			}
-			catch (Exception ex)
-			{
-				logger.Error(ex);
-				result.Messages.Add($"Unknown error occured SaveWorkspaceIdentification: {ex.Message}");
-			}
+			ActionResult data = this.workspaceController.SaveWorkspaceIdentification(workspaceIdentificationModelView.ShortName, workspaceIdentificationModelView);
+			result.Data = data;
 
 			return result;
 		}

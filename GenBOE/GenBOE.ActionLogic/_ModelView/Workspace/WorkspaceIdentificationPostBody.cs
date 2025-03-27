@@ -1,205 +1,202 @@
-﻿// -----------------------------------------------------------------------
-// <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
-// </copyright>
-// -----------------------------------------------------------------------
-
-namespace GenBOE.ActionLogic.ModelView.Workspace
+﻿namespace GenBOE.ActionLogic.ModelView.Workspace
 {
 	using System;
 	using System.Collections.Generic;
 	using IES.Common;
 
-	public interface IWorkspaceIdentificationModelView
+	/// <summary>
+	/// This class is created for the genBOE Angular POST payload
+	/// </summary>
+	public class WorkspaceIdentificationPostBody : IWorkspaceIdentificationModelView
 	{
 		// Only fields used by all company configurations should be declared here
 
 		/// <summary>
 		/// Get/Set the ContainsOCI
 		/// </summary>
-		bool ContainsOCI { get; set; }
+		public bool ContainsOCI { get; set; }
 
 		/// <summary>
 		/// Get/Set the ContractEndDate
 		/// </summary>
-		string ContractEndDate { get; set; }
+		public string ContractEndDate { get; set; }
 
 		/// <summary>
 		/// Get/Set the ContractStartDate
 		/// </summary>
-		string ContractStartDate { get; set; }
+		public string ContractStartDate { get; set; }
 
 		/// <summary>
 		/// Get/Set the CostVolumeLeadPricerDisplayName
 		/// </summary>
-		string CostVolumeLeadPricerDisplayName { get; set; }
+		public string CostVolumeLeadPricerDisplayName { get; set; }
 
 		/// <summary>
 		/// Get/Set the CostVolumeLeadPricerNTID
 		/// </summary>
-		string CostVolumeLeadPricerNTID { get; set; }
+		public string CostVolumeLeadPricerNTID { get; set; }
 
 		/// <summary>
 		/// Get/Set the Description
 		/// </summary>
-		string Description { get; set; }
+		public string Description { get; set; }
 
 		/// <summary>
 		/// Get/Set the LineOfBusinessTypeID
 		/// </summary>
-		int LineOfBusinessTypeID { get; set; }
+		public int LineOfBusinessTypeID { get; set; }
 
 		/// <summary>
 		/// Get/Set the ProposalStatus
 		/// </summary>
-		ProposalStatusType ProposalStatus { get; set; }
+		public ProposalStatusType ProposalStatus { get; set; }
 
 		/// <summary>
 		/// Get/Set the ProposalSubmittalDate
 		/// </summary>
-		string ProposalSubmittalDate { get; set; }
+		public string ProposalSubmittalDate { get; set; }
 
 		/// <summary>
 		/// Get/Set the RFPNumber
 		/// </summary>
-		string RFPNumber { get; set; }
+		public string RFPNumber { get; set; }
 
 		/// <summary>
 		/// Get/Set the StatusComments
 		/// </summary>
-		string StatusComments { get; set; }
+		public string StatusComments { get; set; }
 
 		/// <summary>
 		/// Get/Set the WorkspaceID
 		/// </summary>
-		int WorkspaceID { get; set; }
+		public int WorkspaceID { get; set; }
 
 		/// <summary>
 		/// Get/Set the WorkspaceName
 		/// </summary>
-		string WorkspaceName { get; set; }
+		public string WorkspaceName { get; set; }
 
 		/// <summary>
 		/// Line of Business display name for the UI.
 		/// </summary>
-		string LineOfBusinessDisplayName { get; set; }
+		public string LineOfBusinessDisplayName { get; set; }
 
 		/// <summary>
 		/// Number of decimal digits for labor hours precision.
 		/// </summary>
-		int? ResourceDecimalPrecision { get; set; }
+		public int? ResourceDecimalPrecision { get; set; }
 
 		/// <summary>
 		/// Number of decimal digits for labor costs precision.
 		/// </summary>
-		int CostDecimalPrecision { get; set; }
+		public int CostDecimalPrecision { get; set; }
 
 		// methods from parent class PersistedDataModelView
 		/// <summary>
 		/// Get/Set the UpdateDate
 		/// </summary>
-		DateTime UpdateDate { get; set; }
+		public DateTime UpdateDate { get; set; }
 
 		/// <summary>
 		/// Get/Set the UpdateDateLong
 		/// </summary>
-		string UpdateDateLong { get; set; }
+		public string UpdateDateLong { get; set; }
 
 		/// <summary>
 		/// Get/Set the LabelLeadPricer 
 		/// </summary>
-		String LabelLeadPricer { get; }
+		public String LabelLeadPricer { get; }
 
 		/// <summary>
 		/// Get/Set the ApplicationURL
 		/// </summary>
-		Uri ApplicationURL { get; set; }
+		public Uri ApplicationURL { get; set; }
 
 		/// <summary>
 		/// Get/Set the ShortName
 		/// </summary>
-		string ShortName { get; set; }
+		public string ShortName { get; set; }
 
 		/// <summary>
 		/// Gets or sets the custom field sorting.
 		/// </summary>
-		CustomFieldSorting CustomFieldSorting { get; set; }
+		public CustomFieldSorting CustomFieldSorting { get; set; }
 
 		/// <summary>
 		/// Gets or sets the resource sorting.
 		/// </summary>
-		CustomFieldSorting ResourceSorting { get; set; }
+		public CustomFieldSorting ResourceSorting { get; set; }
 
 		/// <summary>
 		/// Gets or sets the perf org sorting.
 		/// </summary>
-		CustomFieldSorting PerfOrgSorting { get; set; }
+		public CustomFieldSorting PerfOrgSorting { get; set; }
 
 		/// <summary>
 		/// PTM Tracking number
 		/// </summary>
-		string TrackingNumber { get; set; }
+		public string TrackingNumber { get; set; }
 
 		/// <summary>
 		/// Get/Set the RTE Size Limit (number of characters)
 		/// </summary>
-		int? RteSizeLimit { get; set; }
+		public int? RteSizeLimit { get; set; }
 
 		/// <summary>
 		/// Get/Set whether using Template BOE
 		/// </summary>
-		bool UsingTemplateBoe { get; set; }
+		public bool UsingTemplateBoe { get; set; }
 
 		/// <summary>
 		/// Get/set whether using Enable SAP Connection is selected.
 		/// </summary>
-		bool EnableSAPConnection { get; set; }
+		public bool EnableSAPConnection { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether or not authors are assignable at task level
 		/// </summary>
-		bool EnableAssignTaskAuthor { get; set; }
+		public bool EnableAssignTaskAuthor { get; set; }
 
 		/// <summary>
 		/// Was WS created prior to Boe Templates being enabled
 		/// </summary>
-		bool CreatedPriorToBoeTemplates { get; set; }
+		public bool CreatedPriorToBoeTemplates { get; set; }
 
 		/// <summary>
 		/// Get or set whether the workspace should be marked as Current for the PTM Tracking Number
 		/// </summary>
-		bool CurrentPTMWorkspace { get; set; }
+		public bool CurrentPTMWorkspace { get; set; }
 
 		#region new genBOE UI
 		/// <summary>
 		/// Hours Label depending on system and workpace preferences
 		/// </summary>
-		string HoursLabel { get; set; }
+		public string HoursLabel { get; set; }
 
 		/// <summary>
 		/// Enable SAP for new genBOE
 		/// </summary>
-		bool EnableSAP { get; set; }
+		public bool EnableSAP { get; set; }
 
 		/// <summary>
 		/// Will SAP show to user for workspace
 		/// </summary>
-		bool ShowSAP { get; set; }
+		public bool ShowSAP { get; set; }
 
 		/// <summary>
 		/// Check if PTM Tracking Number has multiple workspaces
 		/// </summary>
-		bool DoesPTMMultipleWorkspaces { get; set; }
+		public bool DoesPTMMultipleWorkspaces { get; set; }
 
 		/// <summary>
 		/// Contract Types
 		/// </summary>
-		ICollection<int> ContractTypes { get; set; }
+		public ICollection<int> ContractTypes { get; set; }
 
 		/// <summary>
 		/// Selected Contract Types
 		/// </summary>
-		ICollection<int> SelectedContractTypes { get; set; }
+		public ICollection<int> SelectedContractTypes { get; set; }
 		#endregion
 	}
 }
