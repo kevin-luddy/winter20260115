@@ -89,15 +89,17 @@
                 '<%: WebConstants.ACTION_DISPLAY_BOE_MATERIAL_COMPOSITE %>',
 			'boe/' + boeId);
 		var isZoneTravel = false;
-        <% if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-	{ %>
-		isZoneTravel = true;
-        <% } %>
+		<% if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+		{ %>
+			isZoneTravel = true;
+		<% } %>
+		var displayODC = <%: ViewData["displayODCTab"] %>;
+		var displayTravel = <%: ViewData["displayTravelTab"] %>;
 
 		AfterDomLoadBOEDetailsWidget(BOEDetails, displayTaskElementDetailsEvent, displayTaskElementCompositeUrl, displayOdcDetailsEvent,
 			displayOdcCompositeUrl, displayTravelDetailsEvent, displayTravelCompositeUrl, displayZoneTravelCompositeUrl, displayTaskElementGridUrl,
 			displayBoeSummaryUrl, boeDetailsReloadCommentEvent, displayBoeCommentUrl, boeDetailsReloadHistoryEvent, displayBoeHistoryUrl, displayOdcGridUrl, displayTravelGridUrl,
-			displayZoneTravelGridUrl, displayMaterialGridUrl, displayMaterialDetailsEvent, displayMaterialCompositeUrl, isZoneTravel);
+            displayZoneTravelGridUrl, displayMaterialGridUrl, displayMaterialDetailsEvent, displayMaterialCompositeUrl, isZoneTravel, displayODC, displayTravel);
 	});
 </script>
 <div class="boe-details">
