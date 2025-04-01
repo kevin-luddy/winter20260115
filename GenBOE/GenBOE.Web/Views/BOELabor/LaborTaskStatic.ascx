@@ -127,7 +127,8 @@
             '#', // saveReorderLaborTypes url not needed for static page
             '<%: showDescQuestions %>'.isTrue(),
             <%: numberDescQuestions %>,
-            <%: rteFieldSize %>
+            <%: rteFieldSize %>,
+			'<%= SiteMasterUtilities.IsClassEnvironment %>'
         );
 
         // End Task Element details       

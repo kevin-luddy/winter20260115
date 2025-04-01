@@ -413,7 +413,8 @@
             saveReorderLaborTypesUrl,
             '<%: showDescQuestions %>'.isTrue(),
             <%: numberDescQuestions %>,
-            <%: rteFieldSize %>
+            <%: rteFieldSize %>,
+			'<%= SiteMasterUtilities.IsClassEnvironment %>'
         );
 
         TaskElementDetailsWidget.waitingBeforeSubmit = false;

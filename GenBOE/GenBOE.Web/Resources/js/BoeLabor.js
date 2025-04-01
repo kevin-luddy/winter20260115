@@ -188,13 +188,14 @@ function AfterDomLoadImportLaborTypeWidget(ImportLaborType) {
 function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetricsDialogIdSuffix, readOnly, workspaceState, boeId, taskElementId, laborTypeWarning,
 	loadMOQEquationUrl, confirmWarningUrl, searchHistoricalMetricsMSTUrl, historicalMetricsDetailsUrl, pagingMetricsUrl,
 	boeStateNotDraft, boeStateDraftOrDraftLocked, isMetricStoreConnected, searchTypeAheadUrl, allowDateShift, recalculateAndRefreshPageUrl, dateShiftUrl,
-	saveReorderLaborTypesUrl, showDescQuestions, numberDescQuestions, rteFieldSize) {
+	saveReorderLaborTypesUrl, showDescQuestions, numberDescQuestions, rteFieldSize, isClassEnvironment) {
 	var TaskElementDetailsWidget;
 	var formConfigs = [];
 	formConfigs.push({
 		ElementID: 'TaskElementDetailsForm',
 		Buttons: [],
 		HideOCI: true,
+		IsClassEnvironment: isClassEnvironment
 	});
 
 	var dialogConfigs = [];
