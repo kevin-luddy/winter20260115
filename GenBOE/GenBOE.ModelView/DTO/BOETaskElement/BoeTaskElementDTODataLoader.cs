@@ -723,7 +723,7 @@ namespace GenBOE.DataBridge.DTO
 
 					if (Utilities.IsSkillMixEnabledForSystem)
 					{
-						SaveSkillMixRationale(dtosToSave);
+						SaveSkillMixRationale(upsertableTaskElementCollection);
 					}
 				}
 			}

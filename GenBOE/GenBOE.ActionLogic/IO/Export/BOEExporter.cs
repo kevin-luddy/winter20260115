@@ -540,7 +540,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 emptyBOE = lastBOE.CloneNode(true) as SdtElement;
             }
 
-            if (boeExportModelViews.Any() || boeSummaryGridModelViews.Any())
+			if (boeExportModelViews.Any() || boeSummaryGridModelViews.Any())
             {
                 Collection<ResourceDTO> TravelResources = null;
 
@@ -792,7 +792,7 @@ namespace GenBOE.ActionLogic.IO.Export
 								// Get the container that will hold this task
 								BOEExportTaskContainer taskContainer = this.GetTaskContainer(taskElement.ElementType, taskContainers);
 
-                                if (taskContainer != null)
+								if (taskContainer != null)
                                 {
                                     // Populate the task-specific items in the template
                                     this.PopulateTaskElementContent(exportInputs, taskContainer, taskElement, ws, document.MainDocumentPart, wsHasMoqRteTemplate, ref counters);
@@ -809,13 +809,13 @@ namespace GenBOE.ActionLogic.IO.Export
 
                                             if (TableAlias2 != null)
                                             {
-                                                BoeTaskElementDTO CurrentTaskElement = taskElements.FirstOrDefault(x => x.Id == taskElement.BOETaskElementID.Value);
+                                                BoeTaskElementDTO currentTaskElement = taskElements.FirstOrDefault(x => x.Id == taskElement.BOETaskElementID.Value);
 
                                                 Dictionary<int, List<LaborRollupByDate>> TaskRollup =
-                                                    this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { CurrentTaskElement }, taskElement.taskElementLabors, boeExportModelView);
+                                                    this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentTaskElement }, taskElement.taskElementLabors, boeExportModelView);
 
                                                 this.PopulateTaskElementRollup(TableAlias2.Ancestors<SdtElement>().FirstOrDefault(), TaskRollup,
-                                                    new DateRange(CurrentTaskElement.StartDate, CurrentTaskElement.EndDate), this.DefaultHoursFormat, null,
+                                                    new DateRange(currentTaskElement.StartDate, currentTaskElement.EndDate), this.DefaultHoursFormat, null,
                                                     useFont, useFontSizeDflt24, useHeaderFontSizeDflt24, JustificationValues.Center);
                                             }
 
@@ -823,14 +823,14 @@ namespace GenBOE.ActionLogic.IO.Export
 
                                             if (TableAlias2 != null)
                                             {
-                                                BoeTaskElementDTO CurrentTaskElement = taskElements.FirstOrDefault(x => x.Id == taskElement.BOETaskElementID.Value);
+                                                BoeTaskElementDTO currentTaskElement = taskElements.FirstOrDefault(x => x.Id == taskElement.BOETaskElementID.Value);
 
-                                                Dictionary<int, List<GSMOLaborRollupByDate>> TaskRollup = this.GetGSMOTaskHourRollup(new Collection<BoeTaskElementDTO> { CurrentTaskElement },
+                                                Dictionary<int, List<GSMOLaborRollupByDate>> TaskRollup = this.GetGSMOTaskHourRollup(new Collection<BoeTaskElementDTO> { currentTaskElement },
                                                     taskElement.taskElementLabors, true, exportInputs, boeExportModelView, false);
                                                 string tempFontSize = (boeExportModelView.ExportFormat.TemplateType == ExcelReportTemplateType.LMSI_GSM_O_LANDSACPE_WITH_TIME_PHASED_SUMMARIES) ? "22" : "24";
 
                                                 this.PopulateGSMOTaskElementRollup(TableAlias2.Ancestors<SdtElement>().FirstOrDefault(), TaskRollup,
-                                                    new DateRange(CurrentTaskElement.StartDate, CurrentTaskElement.EndDate), this.DefaultHoursFormat, null,
+                                                    new DateRange(currentTaskElement.StartDate, currentTaskElement.EndDate), this.DefaultHoursFormat, null,
                                                     "Times New Roman", tempFontSize, templateType);
                                             }
 
@@ -838,13 +838,13 @@ namespace GenBOE.ActionLogic.IO.Export
                                                 StringComparison.CurrentCultureIgnoreCase));
                                             if (TableAlias2 != null)
                                             {
-                                                BoeTaskElementDTO CurrentTaskElement = taskElements.FirstOrDefault(x => x.Id == taskElement.BOETaskElementID.Value);
+                                                BoeTaskElementDTO currentTaskElement = taskElements.FirstOrDefault(x => x.Id == taskElement.BOETaskElementID.Value);
 
-                                                Dictionary<int, List<GSMOLaborRollupByDate>> TaskRollup = this.GetGSMOTaskHourRollup(new Collection<BoeTaskElementDTO> { CurrentTaskElement },
+                                                Dictionary<int, List<GSMOLaborRollupByDate>> TaskRollup = this.GetGSMOTaskHourRollup(new Collection<BoeTaskElementDTO> { currentTaskElement },
                                                     taskElement.taskElementLabors, false, exportInputs, boeExportModelView, false);
 
                                                 this.PopulateGSMOTaskElementRollupWithoutResTotals(TableAlias2.Ancestors<SdtElement>().FirstOrDefault(), TaskRollup,
-                                                    new DateRange(CurrentTaskElement.StartDate, CurrentTaskElement.EndDate), this.DefaultHoursFormat, null,
+                                                    new DateRange(currentTaskElement.StartDate, currentTaskElement.EndDate), this.DefaultHoursFormat, null,
                                                     "Times New Roman", "20");
                                             }
 
@@ -853,16 +853,16 @@ namespace GenBOE.ActionLogic.IO.Export
                                                                                                                              StringComparison.CurrentCultureIgnoreCase));
                                             if (TableAlias2 != null)
                                             {
-                                                BoeTaskElementDTO CurrentTaskElement = taskElements.FirstOrDefault(x => x.Id == taskElement.BOETaskElementID.Value);
+                                                BoeTaskElementDTO currentTaskElement = taskElements.FirstOrDefault(x => x.Id == taskElement.BOETaskElementID.Value);
 
                                                 bool includePerfOrg = TableAlias2.Val.Value.Contains("PerfOrg");
 
                                                 //we can just use the GSMO task rollup for the SMORS template
-                                                Dictionary<int, List<GSMOLaborRollupByDate>> TaskRollup = this.GetGSMOTaskHourRollup(new Collection<BoeTaskElementDTO> { CurrentTaskElement },
+                                                Dictionary<int, List<GSMOLaborRollupByDate>> TaskRollup = this.GetGSMOTaskHourRollup(new Collection<BoeTaskElementDTO> { currentTaskElement },
                                                     taskElement.taskElementLabors, false, exportInputs, boeExportModelView, includePerfOrg);
 
                                                 this.PopulateSMORSTaskElementRollup(TableAlias2.Ancestors<SdtElement>().FirstOrDefault(), TaskRollup,
-                                                    new DateRange(CurrentTaskElement.StartDate, CurrentTaskElement.EndDate), this.DefaultHoursFormat, null,
+                                                    new DateRange(currentTaskElement.StartDate, currentTaskElement.EndDate), this.DefaultHoursFormat, null,
                                                     "Times New Roman", "20", includePerfOrg);
                                             }
 
@@ -870,11 +870,11 @@ namespace GenBOE.ActionLogic.IO.Export
                                                 StringComparison.CurrentCultureIgnoreCase));
                                             if (TableAlias2 != null)
                                             {
-                                                BoeTaskElementDTO CurrentTaskElement = taskElements.FirstOrDefault(x => x.Id == taskElement.BOETaskElementID.Value);
+                                                BoeTaskElementDTO currentTaskElement = taskElements.FirstOrDefault(x => x.Id == taskElement.BOETaskElementID.Value);
 
-                                                if (CurrentTaskElement != null)
+                                                if (currentTaskElement != null)
                                                 {
-                                                    Collection<LaborRollupByDate> TaskRollup = this.GetRollupByYearData(new List<BoeTaskElementDTO>() { CurrentTaskElement }).ToCollection();
+                                                    Collection<LaborRollupByDate> TaskRollup = this.GetRollupByYearData(new List<BoeTaskElementDTO>() { currentTaskElement }).ToCollection();
 
                                                     if (TaskRollup != null && TaskRollup.Any())
                                                     {
@@ -1072,7 +1072,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                                 this.PopulateSOWResourceTable(exportInputs, TableAlias2, boeExportModelView, resourceTypeDtos);
                                             }
 
-											this.ProcessSkillMixTable(taskElement, new Collection<BoeCustomReportComponent>(), (SdtElement)taskContainer.TaskContainer, exportInputs);
+											this.ProcessSkillMixTable(taskElement, new Collection<BoeCustomReportComponent>(), (SdtElement)taskContainer.TaskContainer, exportInputs, taskElements.FirstOrDefault(x => x.Id == taskElement.BOETaskElementID.Value), ws.UCOTFactor);
 
 											break;
 

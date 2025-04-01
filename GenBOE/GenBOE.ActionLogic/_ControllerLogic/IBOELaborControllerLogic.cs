@@ -247,9 +247,9 @@ namespace GenBOE.ActionLogic
 		/// </summary>
 		/// <param name="ws">workspace</param>
 		/// <param name="taskElement">task element</param>
-		/// <param name="moqTypes">MOQ Types</param>
+		/// <param name="modelView">labor task</param>
 		/// <returns>Any Validation errors</returns>
-		ICollection<ValidationMessage> ValidateTaskElementDto(FullWorkspace ws, BoeTaskElementDTO taskElement, ICollection<MoqTypeSelection> moqTypes);
+		ICollection<ValidationMessage> ValidateTaskElementDto(FullWorkspace ws, BoeTaskElementDTO taskElement, LaborTaskDataModelView modelView);
 
 		/// <summary>
 		/// Recalculates the labor types that have percent spread locked.
@@ -369,10 +369,11 @@ namespace GenBOE.ActionLogic
 		/// <param name="currentSkillMixData">The current skill mix data</param>
 		/// <param name="isBRCEnabled">Is BRC Enabled for CD row check.</param>
 		/// <param name="isManual">If the Historical Resource/Hours are Manually input or not</param>
+		/// <param name="ucotFactor">The UCOT Factor for the workspace</param>
 		/// <returns></returns>
 		RefreshSkillMixModelView RefreshSkillMixTables(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
 			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, 
-			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isBRCEnabled, bool isManual);
+			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isBRCEnabled, bool isManual, decimal ucotFactor);
 
 		/// <summary>
 		/// Checks the usage of active T&M rates in the task.

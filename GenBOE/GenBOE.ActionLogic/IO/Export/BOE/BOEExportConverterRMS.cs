@@ -17,7 +17,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
-    using IES.Common;
+	using GenBOE.Objects;
+	using IES.Common;
 
     /// <summary>
     /// The BOE Export Converter for RMS.

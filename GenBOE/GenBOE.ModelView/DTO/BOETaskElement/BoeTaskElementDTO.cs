@@ -209,11 +209,6 @@ namespace GenBOE.DataBridge.DTO
 		public ICollection<CommonDisclosureModelView> CommonDisclosureTable { get; set; } = new List<CommonDisclosureModelView>();
 
 		/// <summary>
-		/// Gets or sets a value indicating whether this task instance has any T&M rates.
-		/// </summary>
-		public bool HasTMRates { get; set; }
-
-		/// <summary>
 		/// Gets or sets the Author User Id, referenced from the ETIUser table
 		/// </summary>
 		public int? AuthorUserId { get; set; }
