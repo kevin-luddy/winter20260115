@@ -4,6 +4,7 @@
 
 <script type="text/javascript">
     var ManageUCOTWidget = new Widget('ManageUCOT', false);
+	$('#Save-ManageUCOT').prop('disabled', true);
 
     ManageUCOTWidget.BindEvents = function () {
         ManageUCOTWidget.registerForLiveEvent('click', "#Save-ManageUCOT", function () {
@@ -12,12 +13,19 @@
     };
 
     ManageUCOTWidget.EnableSave = function () {
-        $('#Save-ManageUCOT').removeClass('disabled');
+		$('#Save-ManageUCOT').removeClass('disabled');
+		$('#Save-ManageUCOT').removeAttr('disabled');
     };
 
-    ManageUCOTWidget.SaveButtonClick = function () {
-        console.log("dataToSend", "got here");
-        $('#Save-ManageUCOT').addClass('display-none');
+	ManageUCOTWidget.SaveButtonClick = function () {
+		// Hide the button first
+		$('#Save-ManageUCOT').addClass('display-none');
+
+		// Disable the button
+		$('#Save-ManageUCOT').addClass('disabled');
+		$('#Save-ManageUCOT').prop('disabled', true);
+
+		// Show loader
         $('#Loader-ManageUCOT').removeClass('display-none');
         const dataToSend = JSON.stringify({ ucot: $('#ucot').val() });
 

@@ -332,7 +332,7 @@
                 <span>Description of Hours required & location in SOW: *</span><div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.SOWDescriptionSuffix);"></div>
             </div>
             <div class="form-element">
-                <textarea data-ng-if="!ActualReadOnly()" cols="20" name="DescriptionHoursRequired_{{moqType.SelectedMOQType}}" data-ng-model="moqType.DescriptionHoursRequired"></textarea>
+                <textarea data-ng-if="!ActualReadOnly()" cols="20" name="DescriptionHoursRequired_{{moqType.SelectedMOQType}}" placeholder="{{MoqTypesPlaceholder('Hours Required and Location', moqType.SelectedMOQType)}}" data-ng-model="moqType.DescriptionHoursRequired"></textarea>
                 <span data-ng-if="ActualReadOnly()" data-ng-bind-html="moqType.DescriptionHoursRequired"></span>
             </div>
         </div>
@@ -341,7 +341,7 @@
                 <span>The SME selected Expert judgment for this basis of estimate for the following reasons: *</span><div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.SMEReasonsSuffix);"></div>
             </div>
             <div class="form-element">
-                <textarea data-ng-if="!ActualReadOnly()" cols="20" name="SmeReason_{{moqType.SelectedMOQType}}" data-ng-model="moqType.SmeReason"></textarea>
+                <textarea data-ng-if="!ActualReadOnly()" cols="20" name="SmeReason_{{moqType.SelectedMOQType}}" placeholder="{{MoqTypesPlaceholder('Expert Judgment reasons', moqType.SelectedMOQType)}}" data-ng-model="moqType.SmeReason"></textarea>
                 <span data-ng-if="ActualReadOnly()" data-ng-bind-html="moqType.SmeReason"></span>
             </div>           
         </div>
@@ -353,7 +353,7 @@
                 <span>The logic and assumptions used to estimate hours is: *</span><div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.SMEHoursLogicSuffix);"></div>
             </div>
             <div class="form-element">
-                <textarea data-ng-if="!ActualReadOnly()" cols="20" name="SmeHoursLogic_{{moqType.SelectedMOQType}}" data-ng-model="moqType.SmeHoursLogic"></textarea>
+                <textarea data-ng-if="!ActualReadOnly()" cols="20" name="SmeHoursLogic_{{moqType.SelectedMOQType}}" placeholder="{{MoqTypesPlaceholder('Logic and Assumptions Hours Estimate', moqType.SelectedMOQType)}}" data-ng-model="moqType.SmeHoursLogic"></textarea>
                 <span data-ng-if="ActualReadOnly()" data-ng-bind-html="moqType.SmeHoursLogic"></span>
             </div>
         </div>
@@ -362,7 +362,7 @@
                 <span>The logic and assumptions used to estimate duration is: *</span><div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.SMEDurationLogicSuffix);"></div>
             </div>
             <div class="form-element">
-                <textarea data-ng-if="!ActualReadOnly()" cols="20" name="SmeDurationLogic_{{moqType.SelectedMOQType}}" data-ng-model="moqType.SmeDurationLogic"></textarea>
+                <textarea data-ng-if="!ActualReadOnly()" cols="20" name="SmeDurationLogic_{{moqType.SelectedMOQType}}" placeholder="{{MoqTypesPlaceholder('Logic and Assumptions Duration Estimate', moqType.SelectedMOQType)}}" data-ng-model="moqType.SmeDurationLogic"></textarea>
                 <span data-ng-if="ActualReadOnly()" data-ng-bind-html="moqType.SmeDurationLogic"></span>
             </div>
         </div>
@@ -371,7 +371,7 @@
                 <span>The following tasks are estimates in this BOE: *</span><div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.SMETasksSuffix);"></div>
             </div>
             <div class="form-element">
-                <textarea data-ng-if="!ActualReadOnly()" cols="20" name="SmeTaskEstimates_{{moqType.SelectedMOQType}}" placeholder="{{MoqTypesPlaceholder('Rationale', moqType.SelectedMOQType)}}" data-ng-model="moqType.SmeTaskEstimates"></textarea>
+                <textarea data-ng-if="!ActualReadOnly()" cols="20" name="SmeTaskEstimates_{{moqType.SelectedMOQType}}" placeholder="{{MoqTypesPlaceholder('Task Estimates', moqType.SelectedMOQType)}}" data-ng-model="moqType.SmeTaskEstimates"></textarea>
                 <span data-ng-if="ActualReadOnly()" data-ng-bind-html="moqType.SmeTaskEstimates"></span>
             </div>
         </div>

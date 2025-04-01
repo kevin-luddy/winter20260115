@@ -6,23 +6,30 @@
 
 namespace GenTRAC.Web.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Web;
-    using System.Web.Mvc;
-    using GenTRAC.ActionLogic;
-    using GenTRAC.ActionLogic.ModelView.PostSubmittalAttachments;
-    using GenTRAC.DataBridge.DTO;
-    using GenTRAC.Objects.FullObject;
-    using GenTRAC.Web.Common;
-    using IES.Common;
-    using IES.Common.Exceptions;
+	using GenTRAC.ActionLogic;
+	using GenTRAC.ActionLogic.ModelView.PostSubmittalAttachments;
+	using GenTRAC.DataBridge.DTO;
+	using GenTRAC.Objects.FullObject;
+	using GenTRAC.Web.Common;
+	using GenTRAC.Web.ModelView;
+	using IES.ActionLogic.Common;
+	using IES.Common;
+	using IES.Common.Exceptions;
+	using Newtonsoft.Json;
+	using System;
+	using System.Collections.Generic;
+	using System.IO;
+	using System.Linq;
+	using System.Net.Http;
+	using System.Text;
+	using System.Threading.Tasks;
+	using System.Web;
+	using System.Web.Mvc;
 
-    /// <summary>
-    /// Post Submittal Attachments controller
-    /// </summary>
-    public class PostSubmittalAttachmentsController : GenTRACController
+	/// <summary>
+	/// Post Submittal Attachments controller
+	/// </summary>
+	public class PostSubmittalAttachmentsController : GenTRACController
     {
         /// <summary>
         /// Post Submittal Controller Logic
@@ -34,22 +41,34 @@ namespace GenTRAC.Web.Controllers
         /// </summary>
         private readonly IES.Common.ISecurityInformation securityInformation;
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="postSubmittalAttachmentsControllerLogic">business logic for this controller</param>
-        /// <param name="genTRACControllerLogic">Controller Logic</param>
-        /// <param name="siteMasterUtilities">Site Master Utilities</param>
-        /// <param name="securityInformation">security information about user and their context</param>
-        public PostSubmittalAttachmentsController(
+		/// <summary>
+		/// Proposal Loader
+		/// </summary>
+		private readonly IProposalLoader proposalLoader;
+
+		/// <summary>
+		/// Logger
+		/// </summary>
+		private IES.Common.Logger log = new IES.Common.Logger(typeof(PostSubmittalAttachmentsController));
+
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="postSubmittalAttachmentsControllerLogic">business logic for this controller</param>
+		/// <param name="genTRACControllerLogic">Controller Logic</param>
+		/// <param name="siteMasterUtilities">Site Master Utilities</param>
+		/// <param name="securityInformation">security information about user and their context</param>
+		public PostSubmittalAttachmentsController(
             PostSubmittalAttachmentsControllerLogic postSubmittalAttachmentsControllerLogic,
             GenTRACControllerLogic genTRACControllerLogic,
             SiteMasterUtilities siteMasterUtilities,
-            IES.Common.ISecurityInformation securityInformation)
+            IES.Common.ISecurityInformation securityInformation,
+			IProposalLoader proposalLoader)
             : base(securityInformation, genTRACControllerLogic, siteMasterUtilities)
         {
             this.psaLogic = postSubmittalAttachmentsControllerLogic;
             this.securityInformation = securityInformation;
+			this.proposalLoader = proposalLoader;
         }
 
         /// <summary>
@@ -58,7 +77,7 @@ namespace GenTRAC.Web.Controllers
         /// <param name="proposalId">Proposal ID</param>
         /// <param name="psaVisibility">Indiciates the level of access to PSA the current user has</param>
         /// <returns>Displays all of the current user's approvals</returns>
-        public ViewResult DisplayPostSubmittalAttachments(int proposalId, SecurityAuthorization psaVisibility)
+        public async Task<ViewResult> DisplayPostSubmittalAttachments(int proposalId, SecurityAuthorization psaVisibility)
         {
             PostSubmittalAttachmentModelView model = new PostSubmittalAttachmentModelView
             {
@@ -70,6 +89,64 @@ namespace GenTRAC.Web.Controllers
                 MaxOtherFileCount = SiteMasterUtilities.MaxOtherFileCount
             };
 
+			// If there is an attachment of Delegation of Authority that already exists, show the current upload in the UI
+			if (model.PostSubmittalAttachments.Any(x => x.AttachmentType == AttachmentType.DelegationOfAuthority && x.FileHasBeenUploaded))
+			{
+				AttachmentDto attachment = model.PostSubmittalAttachments.First(x => x.AttachmentType == AttachmentType.DelegationOfAuthority);
+				attachment.ShowPTMUploadForDelegationOfAuthority = true;
+			}
+			// If unclassified and there is no existing attachment thru PTM, check the status of the associated eEPP record linked to the PTM tracking number, if any
+			else
+			{
+				if (!SiteMasterUtilities.IsClassEnvironment)
+				{
+					ProposalDto proposal = this.proposalLoader.GetById(model.ProposalId);
+					if (proposal != null)
+					{
+						// Check if this exists in eEPP
+						using (HttpClient httpClient = new HttpClient(new HttpClientHandler()
+						{
+							UseDefaultCredentials = true
+						}))
+						{
+							string eeppAPI = IES.Common.ConfigurationUtilities.GetAppSetting("eEPPUrl");
+							string url = $"{eeppAPI}/api/eEPP/EPPController/GeteEPPDataByTrackingNumber/{proposal.TrackingNumber}";
+
+							try
+							{
+								HttpResponseMessage response = await httpClient.GetAsync(url);
+								response.EnsureSuccessStatusCode();
+
+								// Process the response
+								string stringResult = await response.Content.ReadAsStringAsync();
+								Result<EeppProposal> deserializedResult = JsonConvert.DeserializeObject<Result<EeppProposal>>(stringResult);
+
+								if (deserializedResult != null && deserializedResult.Data != null && deserializedResult.Data.Id != -1)
+								{
+									AttachmentDto doaDoc = model.PostSubmittalAttachments.FirstOrDefault(x => x.AttachmentType == AttachmentType.DelegationOfAuthority);
+									if (doaDoc != null)
+									{
+										doaDoc.Name = WebConstants.ATTACHMENT_FROM_EEPP;
+										doaDoc.UploadedBy = WebConstants.ATTACHMENT_UPLOADED_BY_EEPP;
+										doaDoc.IsAttachmentFromeEPP = true;
+
+										// We need this to bypass the FileHasBeenUploaded flag in the UI
+										// We'll also utilize the Id field to send over to eEPP for the proposal ID there
+										doaDoc.Id = deserializedResult.Data.Id;
+										doaDoc.EeppStatus = deserializedResult.Data.Status;
+									}
+								}
+								// Do nothing (let the user upload a file) if there is no eEPP data with the tracking number
+							}
+							catch (HttpRequestException ex)
+							{
+								this.log.Error(ex);
+							}
+						}
+					}
+				}
+			}
+
             FullProposal prop = this.psaLogic.GetFullProposalDto(proposalId);
 
             this.ViewBag.IsRevision = prop.IsRevision;
@@ -78,14 +155,48 @@ namespace GenTRAC.Web.Controllers
             return this.View(WebConstants.View.POST_SUBMITTAL_ATTACHMENTS, model);
         }
 
-        /// <summary>
-        /// Uploads PSA file
-        /// </summary>
-        /// <param name="proposalId">Proposal to upload file to</param>
-        /// <param name="file">File being uploaded</param>
-        /// <param name="attachment">attachment data</param>
-        /// <returns>File upload status</returns>
-        [HttpPost]
+		/// <summary>
+		/// This method can be used to stream a text file to the browser that contains a series of error messages separated
+		/// by newlines. This is a quick and easy way to alert the user that there was a problem (e.g. an exception thrown)
+		/// during file download processing.
+		/// </summary>
+		/// <param name="errorMessages">List of error messages</param>
+		/// <returns>Text file</returns>
+		protected ActionResult CreateTextFileWithErrorMessage(params string[] errorMessages)
+		{
+			this.Response.ClearHeaders();
+			this.Response.ClearContent();
+			this.Response.Clear();
+
+			this.Response.ContentType = "text/plain";
+			this.Response.ContentEncoding = Encoding.ASCII;
+			this.Response.AppendHeader("Content-Disposition", "attachment;filename=error.txt");
+
+			byte[] newline = Encoding.ASCII.GetBytes("\r\n");
+
+			if (errorMessages != null)
+			{
+				foreach (string errorMessage in errorMessages)
+				{
+					byte[] errorContent = Encoding.ASCII.GetBytes(errorMessage);
+					this.Response.OutputStream.Write(errorContent, 0, errorContent.Length);
+					this.Response.OutputStream.Write(newline, 0, newline.Length);
+				}
+			}
+
+			this.Response.OutputStream.Flush();
+
+			return new EmptyResult();
+		}
+
+		/// <summary>
+		/// Uploads PSA file
+		/// </summary>
+		/// <param name="proposalId">Proposal to upload file to</param>
+		/// <param name="file">File being uploaded</param>
+		/// <param name="attachment">attachment data</param>
+		/// <returns>File upload status</returns>
+		[HttpPost]
         public JsonResult UploadAttachment(int proposalId, HttpPostedFileBase file, AttachmentDto attachment)
         {
             if (attachment == null || (file == null && !attachment.IsRevisionReference))
@@ -115,17 +226,36 @@ namespace GenTRAC.Web.Controllers
             }
         }
 
-        /// <summary>
-        /// Downloads the attachment with fileId
-        /// </summary>
-        /// <param name="proposalId">Proposal ID</param>
-        /// <param name="fileId">File ID</param>
-        /// <returns>File to download</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "proposalId")]
-        public FileResult DownloadAttachment(int proposalId, int fileId)
+		/// <summary>
+		/// Downloads the attachment with fileId
+		/// </summary>
+		/// <param name="proposalId">Proposal ID</param>
+		/// <param name="fileId">File ID, or the proposal ID (in the case of an eEPP doc)</param>
+		/// <param name="isFromeEPP">Is the file from eEPP?</param>
+		/// <returns>File to download</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "proposalId")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:DisposeObjectsBeforeLosingScope")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public FileResult DownloadAttachment(int proposalId, int fileId, bool isFromeEPP)
         {
-            AttachmentDto attachment = this.psaLogic.DownloadAttachment(fileId);
-            return this.File(attachment.Contents, System.Net.Mime.MediaTypeNames.Application.Octet, attachment.Name);
+			if (isFromeEPP)
+			{
+				try
+				{
+					MemoryStream ms = psaLogic.ProcesseEPPAttachment(fileId);
+					return this.File(ms.ToArray(), System.Net.Mime.MediaTypeNames.Application.Pdf, WebConstants.ATTACHMENT_FROM_EEPP + ".pdf");
+				}
+				catch (Exception ex)
+				{
+					string[] errors = { "An error occurred downloading the file from eEPP: " + ex.Message };
+					return this.CreateTextFileWithErrorMessage(errors) as FileResult;
+				}
+			}
+			else
+			{
+				AttachmentDto attachment = this.psaLogic.DownloadAttachment(fileId);
+				return this.File(attachment.Contents, System.Net.Mime.MediaTypeNames.Application.Octet, attachment.Name);
+			}
         }
 
         /// <summary>

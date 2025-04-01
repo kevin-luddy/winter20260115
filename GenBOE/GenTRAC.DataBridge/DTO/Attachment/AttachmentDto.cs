@@ -92,5 +92,20 @@ namespace GenTRAC.DataBridge.DTO
         /// True -> means you are referencing previous revision's file
         /// </summary>
         public bool IsRevisionReference { get; set; } = false;
+
+		/// <summary>
+		/// Is the attachment from eEPP? (Only applies to DelegationOfAuthority attachments)
+		/// </summary>
+		public bool IsAttachmentFromeEPP { get; set; }
+
+		/// <summary>
+		/// Show the PTM upload button for Delegation of Authority. Set to true if the attachment is already uploaded to PTM, or if there is no eEPP record
+		/// </summary>
+		public bool ShowPTMUploadForDelegationOfAuthority { get; set; }
+
+		/// <summary>
+		/// Show the eEPP status, if any
+		/// </summary>
+		public string EeppStatus { get; set; }
     }
 }

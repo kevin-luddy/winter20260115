@@ -80,7 +80,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         })
                         .OrderBy(x => x.GroupKey).ToList();
 
-                this.PopulateResourceSummaryTable(tableContainerElement, rollupData);
+				this.PopulateResourceSummaryTable(tableContainerElement, rollupData);
             }
             else
             {

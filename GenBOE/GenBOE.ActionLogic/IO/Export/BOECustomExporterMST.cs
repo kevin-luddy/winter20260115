@@ -98,111 +98,111 @@ namespace GenBOE.ActionLogic.IO.Export
             }
         }
 
-        /// <summary>
-        /// Populates the resource summary table
-        /// </summary>
-        /// <param name="tableContainerElement">container element for the table</param>
-        /// <param name="rollupData">rollup data to be displayed in the table</param>
-        protected override void PopulateResourceSummaryTable(SdtElement tableContainerElement, ICollection<ResourceSummaryRowData> rollupData)
-        {
-            if (rollupData != null && rollupData.Any())
-            {
-                // locate the table markers
-                SdtElement dataRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_DataRow);
-                SdtElement dataTotalsRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_TotalsRow);
+		/// <summary>
+		/// Populates the resource summary table
+		/// </summary>
+		/// <param name="tableContainerElement">container element for the table</param>
+		/// <param name="rollupData">rollup data to be displayed in the table</param>
+		protected override void PopulateResourceSummaryTable(SdtElement tableContainerElement, ICollection<ResourceSummaryRowData> rollupData)
+		{
+			if (rollupData != null && rollupData.Any())
+			{
+				// locate the table markers
+				SdtElement dataRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_DataRow);
+				SdtElement dataTotalsRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_TotalsRow);
 
-                // initialize the "insertion" row
-                TableRow templateDataRow = dataRowMarkerTag.Ancestors<TableRow>().FirstOrDefault();
-                if (templateDataRow != null)
-                {
-                    TableRow currentInsertionRow = templateDataRow;
+				// initialize the "insertion" row
+				TableRow templateDataRow = dataRowMarkerTag.Ancestors<TableRow>().FirstOrDefault();
+				if (templateDataRow != null)
+				{
+					TableRow currentInsertionRow = templateDataRow;
 
-                    // accumulate totals
-                    decimal matSubIwtaCostTotal = 0m;
-                    decimal otherCostTotal = 0m;
-                    decimal hoursTotal = 0m;
-                    decimal costTotal = 0m;
+					// accumulate totals
+					decimal matSubIwtaCostTotal = 0m;
+					decimal otherCostTotal = 0m;
+					decimal hoursTotal = 0m;
+					decimal costTotal = 0m;
 
-                    foreach (ResourceSummaryRowData rollupRowData in rollupData)
-                    {
-                        //create a new summary data row in the table
-                        //clone marked template row
-                        TableRow tableRow = templateDataRow.CloneNode(true) as TableRow;
-                        Parallel.ForEach(tableRow.Descendants(), descendant =>
-                        {
-                            if (descendant is SdtId || descendant is SdtPlaceholder)
-                            {
-                                descendant.RemoveIt();
-                            }
-                        }
-                        );
+					foreach (ResourceSummaryRowData rollupRowData in rollupData)
+					{
+						//create a new summary data row in the table
+						//clone marked template row
+						TableRow tableRow = templateDataRow.CloneNode(true) as TableRow;
+						Parallel.ForEach(tableRow.Descendants(), descendant =>
+						{
+							if (descendant is SdtId || descendant is SdtPlaceholder)
+							{
+								descendant.RemoveIt();
+							}
+						}
+						);
 
-                        decimal hours = rollupRowData.HoursTotal.HasValue ? rollupRowData.HoursTotal.Value : 0m;
-                        hoursTotal += hours;
-                        
-                        decimal matSubIwtaCost = 0m;
-                        decimal otherCost = 0m;
-                        decimal cost = rollupRowData.CostTotal.HasValue ? rollupRowData.CostTotal.Value : 0m;
-                        if (rollupRowData.ResourceType == ElementOfCostType.Materials.ToString() 
-                            || rollupRowData.ResourceType == ElementOfCostType.Sub.ToString() 
-                            || rollupRowData.ResourceType == ElementOfCostType.IWTA.ToString())
-                        {
-                            matSubIwtaCost = cost;
-                        }
-                        else if (rollupRowData.ResourceType == ElementOfCostType.ODC.ToString()
-                            || rollupRowData.ResourceType == ElementOfCostType.Travel.ToString())
-                        {
-                            otherCost = cost;
-                        }
+						decimal hours = rollupRowData.HoursTotal.HasValue ? rollupRowData.HoursTotal.Value : 0m;
+						hoursTotal += hours;
 
-                        matSubIwtaCostTotal += matSubIwtaCost;
-                        otherCostTotal += otherCost;
-                        costTotal += cost;
-                        
-                        //populate the row
-                        WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_ResourceName), rollupRowData.ResourceName);
-                        WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Hours), hours.ToString(this.DefaultHoursFormat));
-                        WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_MatSubIWTACost), matSubIwtaCost.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, this._CurrencyFormatter));
-                        WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_OtherCost), otherCost.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, this._CurrencyFormatter));
-                        WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Cost), cost.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, this._CurrencyFormatter));
+						decimal matSubIwtaCost = 0m;
+						decimal otherCost = 0m;
+						decimal cost = rollupRowData.CostTotal.HasValue ? rollupRowData.CostTotal.Value : 0m;
+						if (rollupRowData.ResourceType == ElementOfCostType.Materials.ToString()
+							|| rollupRowData.ResourceType == ElementOfCostType.Sub.ToString()
+							|| rollupRowData.ResourceType == ElementOfCostType.IWTA.ToString())
+						{
+							matSubIwtaCost = cost;
+						}
+						else if (rollupRowData.ResourceType == ElementOfCostType.ODC.ToString()
+							|| rollupRowData.ResourceType == ElementOfCostType.Travel.ToString())
+						{
+							otherCost = cost;
+						}
 
-                        //add the row to the table
-                        currentInsertionRow.InsertAfterSelf(tableRow);
-                        currentInsertionRow = tableRow;
-                    }
+						matSubIwtaCostTotal += matSubIwtaCost;
+						otherCostTotal += otherCost;
+						costTotal += cost;
 
-                    //total row doesn't need to be cloned
-                    TableRow totalsRow = dataTotalsRowMarkerTag.Ancestors<TableRow>().FirstOrDefault();
+						//populate the row
+						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_ResourceName), rollupRowData.ResourceName);
+						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Hours), hours.ToString(this.DefaultHoursFormat));
+						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_MatSubIWTACost), matSubIwtaCost.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, this._CurrencyFormatter));
+						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_OtherCost), otherCost.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, this._CurrencyFormatter));
+						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Cost), cost.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, this._CurrencyFormatter));
 
-                    if (totalsRow != null)
-                    {
-                        //populate the overall totals
-                        WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalsRow, BOEExporterConstants.FieldName_HoursTotal), hoursTotal.ToString(this.DefaultHoursFormat));
-                        WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalsRow, BOEExporterConstants.FieldName_MatSubIWTACostTotal), matSubIwtaCostTotal.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, this._CurrencyFormatter));
-                        WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalsRow, BOEExporterConstants.FieldName_OtherCostTotal), otherCostTotal.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, this._CurrencyFormatter));
-                        WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalsRow, BOEExporterConstants.FieldName_CostTotal), costTotal.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, this._CurrencyFormatter));
-                    }
+						//add the row to the table
+						currentInsertionRow.InsertAfterSelf(tableRow);
+						currentInsertionRow = tableRow;
+					}
 
-                    //remove template rows
-                    templateDataRow.RemoveIt();
-                }
-            }
-            else
-            {
-                this.RemoveElement(tableContainerElement);
-            }
-        }
+					//total row doesn't need to be cloned
+					TableRow totalsRow = dataTotalsRowMarkerTag.Ancestors<TableRow>().FirstOrDefault();
 
-        /// <summary>
-        /// Prepare data for the Labor Task Resource Table before populating it
-        /// </summary>
-        /// <param name="tableElement">SdtElement for the Labor Task Resource Table</param>
-        /// <param name="laborTaskElement">Element for the labor task</param>
-        /// <param name="allLaborTaskElements">All task elements for the BOE</param>
-        /// <param name="allWorkspaceCustomFields">All custom fields in the current workspace</param>
-        /// <param name="exportInputs">The export inputs.</param>
-        /// <exception cref="System.ArgumentNullException">laborTaskElement</exception>
-        protected override void PrepareLaborTaskResourceTableData(SdtElement tableElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, IReadOnlyCollection<CustomFieldDTO> allWorkspaceCustomFields, BOEExportInputs exportInputs)
+					if (totalsRow != null)
+					{
+						//populate the overall totals
+						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalsRow, BOEExporterConstants.FieldName_HoursTotal), hoursTotal.ToString(this.DefaultHoursFormat));
+						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalsRow, BOEExporterConstants.FieldName_MatSubIWTACostTotal), matSubIwtaCostTotal.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, this._CurrencyFormatter));
+						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalsRow, BOEExporterConstants.FieldName_OtherCostTotal), otherCostTotal.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, this._CurrencyFormatter));
+						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalsRow, BOEExporterConstants.FieldName_CostTotal), costTotal.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, this._CurrencyFormatter));
+					}
+
+					//remove template rows
+					templateDataRow.RemoveIt();
+				}
+			}
+			else
+			{
+				this.RemoveElement(tableContainerElement);
+			}
+		}
+
+		/// <summary>
+		/// Prepare data for the Labor Task Resource Table before populating it
+		/// </summary>
+		/// <param name="tableElement">SdtElement for the Labor Task Resource Table</param>
+		/// <param name="laborTaskElement">Element for the labor task</param>
+		/// <param name="allLaborTaskElements">All task elements for the BOE</param>
+		/// <param name="allWorkspaceCustomFields">All custom fields in the current workspace</param>
+		/// <param name="exportInputs">The export inputs.</param>
+		/// <exception cref="System.ArgumentNullException">laborTaskElement</exception>
+		protected override void PrepareLaborTaskResourceTableData(SdtElement tableElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, IReadOnlyCollection<CustomFieldDTO> allWorkspaceCustomFields, BOEExportInputs exportInputs)
         {
             if (laborTaskElement == null)
             {
