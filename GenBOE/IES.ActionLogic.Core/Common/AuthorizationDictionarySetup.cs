@@ -34,18 +34,21 @@ namespace IES.ActionLogic.Core.Common
 				"index", // remove if non-admin users aren't allowed access to page at all
                 IESWebConstants.ACTION_VIEW_RATES.ToLower(),    // provides read-only menu access to manage rates
                 IESWebConstants.ACTION_GET_RATES_BY_VERSION.ToLower(),
-				IESWebConstants.ACTION_GET_VERSION_DIFFERENCES.ToLower()
+				IESWebConstants.ACTION_GET_VERSION_DIFFERENCES.ToLower(),
+				IESWebConstants.ACTION_EXPORT_RATES.ToLower()
 			});
 
 			result.Add(IESWebConstants.CONTROLLER_HOME.ToLower(), new List<string>()
 			{
 				"index", // remove if non-admin users aren't allowed access to page at all
-                IESWebConstants.ACTION_GET_REVISIONS.ToLower()
+                IESWebConstants.ACTION_GET_REVISIONS.ToLower(),
+				IESWebConstants.ACTION_GET_USER_ACCESS.ToLower()
 			});
 
 			result.Add(IESWebConstants.CONTROLLER_PPRD.ToLower(), new List<string>()
 			{
-				IESWebConstants.ACTION_GET_PPRD.ToLower()
+				IESWebConstants.ACTION_GET_PPRD.ToLower(),
+				IESWebConstants.ACTION_GET_APP_SETTINGS_FEATURE.ToLower()
 			});
 
 			result.Add(IESWebConstants.CONTROLLER_VERSION.ToLower(), new List<string>()
@@ -56,13 +59,20 @@ namespace IES.ActionLogic.Core.Common
 				IESWebConstants.VIEW_VERSION_DIFF.ToLower()
 			});
 
-			result.Add(IESWebConstants.CONTROLLER_BURDEN_POOL.ToLower(), new List<string>());
+			result.Add(IESWebConstants.CONTROLLER_BURDEN_POOL.ToLower(), new List<string>()
+			{
+				 IESWebConstants.ACTION_GET_BURDEN_POOLS.ToLower(),
+			});
 
 			result.Add(IESWebConstants.CONTROLLER_REPORTS.ToLower(), new List<string>()
 			{
 				"index", // remove if non-admin users aren't allowed access to page at all
                 IESWebConstants.VIEW_REPORTS.ToLower(),
-				IESWebConstants.ACTION_GENERATE_FULL_PPRD.ToLower()
+				IESWebConstants.ACTION_GENERATE_FULL_PPRD.ToLower(),
+				IESWebConstants.ACTION_GET_APP_SETTINGS_FEATURE.ToLower(),
+				IESWebConstants.ACTION_REPORTS_MODEL_VIEW.ToLower(),
+				IESWebConstants.ACTION_EXPORT_PRO_PRICER_DATA.ToLower(),
+				IESWebConstants.ACTION_EXPORT_REVISION_AS_JSON.ToLower()
 			});
 
 			result.Add(IESWebConstants.CONTROLLER_ADMIN.ToLower(), new List<string>()

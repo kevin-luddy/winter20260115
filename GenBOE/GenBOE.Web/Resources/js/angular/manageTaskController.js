@@ -257,6 +257,10 @@
                 $scope.isLoading = false;
                 $(document).trigger("HIDE_LOADING_BOX");
             });
+        } else {
+            $scope.skillMixRationale = [];
+            $scope.model.SkillMixData = [];
+            $scope.model.CommonDisclosureSkillMixData = [];
         }
     }
 
@@ -2069,7 +2073,15 @@
     };
 
     $scope.isSkillMixManualPerMOQ = function () {
-        return ($scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0 || !ManageTaskModel.SapConnectionEnabled || !$scope.SelectedMoqTypes.every(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002'));
+        let isSkillMixManual = ($scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0 || !ManageTaskModel.SapConnectionEnabled || !$scope.SelectedMoqTypes.every(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002'));
+        if (!isSkillMixManual && $scope.ManageTaskModel.IsSpace) {
+            angular.forEach($scope.SelectedMoqTypes, function (item, key) {
+                if (item.TableData === undefined || item.TableData.length === 0 || !item.TableData.every(y => y.RepositoryName == $scope.ManageTaskModel.SapWebiRepository)) {
+                    isSkillMixManual = true;
+                } 
+            });
+        }
+        return isSkillMixManual;
     };
 
     $scope.isSkillMixDisabled = function () {

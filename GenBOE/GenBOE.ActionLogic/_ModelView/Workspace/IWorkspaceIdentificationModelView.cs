@@ -8,9 +8,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Collections.ObjectModel;
 	using IES.Common;
-	using IES.Common.PickList;
 
 	public interface IWorkspaceIdentificationModelView
 	{

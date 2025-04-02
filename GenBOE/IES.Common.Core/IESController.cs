@@ -65,7 +65,7 @@ namespace IES.Common.Core
 		{
 			return this.securityInformation.ActiveUserNTID;
 		}
-		
+		 
 		/// <summary>
 		/// Get User Info with Domain
 		/// </summary>

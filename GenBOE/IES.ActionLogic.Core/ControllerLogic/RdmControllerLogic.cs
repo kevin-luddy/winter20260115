@@ -197,6 +197,18 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		}
 
 		/// <summary>
+		/// Helper method to determine if the current user is a member of the RDMIsRdmViewerUserViewer user group.
+		/// </summary>
+		public bool IsRdmViewerUser
+		{
+			get
+			{
+				// return false; // For testing only - Uncomment this line and comment out next line to set current user to non-viewer
+				return SecurityInformation.IsRdmViewerUser(ActiveUserNTID);
+			}
+		}
+
+		/// <summary>
 		/// Helper method to determine if the current user is a member of the RDMAdmin user group.
 		/// </summary>
 		public bool IsRDMAdminUser

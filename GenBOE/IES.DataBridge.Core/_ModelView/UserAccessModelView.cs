@@ -18,6 +18,11 @@ namespace IES.DataBridge.Core._ModelView
 	public class UserAccessModelView
 	{
 		/// <summary>
+		/// Gets or sets the flag whether the user is RDM Viewer.
+		/// </summary>
+		public bool IsRdmViewerUser { get; set; }
+
+		/// <summary>
 		/// Gets or sets the flag whether the user is RDM Admin.
 		/// </summary>
 		public bool IsRdmAdminUser { get; set; }
@@ -26,5 +31,10 @@ namespace IES.DataBridge.Core._ModelView
 		/// Gets or sets the flag whether the user is RDM Cobra Admin.
 		/// </summary>
 		public bool IsRdmCobraAdminUser { get; set; }
+
+		/// <summary>
+		/// Gets or sets the current user ntid.
+		/// </summary>
+		public string UserNtid { get; set; }
 	}
 }

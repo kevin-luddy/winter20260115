@@ -163,20 +163,32 @@ namespace GenBOE.ActionLogic.IO.Export
             return true;
         }
 
-        /// <summary>
-        /// Sets the WorkspaceDecimalPrecision and DefaultHoursFormat variables for the export
-        /// </summary>
-        /// <param name="ws">Workspace containing BOE(s) in export</param>
-        public void SetWorkspacePrecisionVariables(WorkspaceDTO ws)
-        {
-            if (ws == null)
-            {
-                throw new ArgumentNullException(nameof(ws));
-            }
+		/// <summary>
+		/// Sets the WorkspaceDecimalPrecision and DefaultHoursFormat variables for the export
+		/// </summary>
+		/// <param name="ws">Workspace containing BOE(s) in export</param>
+		public void SetWorkspacePrecisionVariables(WorkspaceDTO ws)
+		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
 
-            this.WorkspaceDecimalPrecision = ws.DecimalPrecision;
-            this.DefaultHoursFormat = Utilities.PrecisionFormattingString(this.WorkspaceDecimalPrecision);
-        }
+			this.WorkspaceDecimalPrecision = ws.DecimalPrecision;
+
+			// If UCOT is enabled then sent decimal precision to be 3 if it is set to be less than 3.
+			if (Utilities.IsUCOTEnabled)
+			{
+				if (this.WorkspaceDecimalPrecision < 3)
+				{
+					this.DefaultHoursFormat = Utilities.PrecisionFormattingString(3);
+				}
+			}
+			else
+			{
+				this.DefaultHoursFormat = Utilities.PrecisionFormattingString(this.WorkspaceDecimalPrecision);
+			}
+		}
 
         /// <summary>
         /// This function will populate the BOEExportModelViews based on the BOE DTOs.
@@ -4167,11 +4179,11 @@ namespace GenBOE.ActionLogic.IO.Export
             WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_EndDate), rowData.ExpendDate.ToString());
         }
 
-        #endregion
+		#endregion
 
-        #region Resource Summary tables
+		#region Resource Summary tables
 
-        protected virtual void PopulateResourceSummaryByElementOfCostTable(SdtElement tableContainerElement, BOEExportModelView boeExportModelView, ICollection<BOESummaryGridModelView> data)
+		protected virtual void PopulateResourceSummaryByElementOfCostTable(SdtElement tableContainerElement, BOEExportModelView boeExportModelView, ICollection<BOESummaryGridModelView> data)
         {
             if (data.Any())
             {

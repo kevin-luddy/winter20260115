@@ -183,20 +183,35 @@
 						if (contextFeature.Error != null &&
 							contextFeature.Error.GetType() == typeof(AuthorizationException))
 						{
-							filterContext.Response.Redirect("SecurityError");
+							await WriteErrorResponseAsync(
+										filterContext,
+										logger,
+										contextFeature.Error,
+										HttpStatusCode.Forbidden
+									);
 						}
 						else if (contextFeature.Error != null &&
 							contextFeature.Error.InnerException != null &&
 							contextFeature.Error.InnerException.GetType() == typeof(AuthorizationException))
 						{
-							filterContext.Response.Redirect("SecurityError");
+							await WriteErrorResponseAsync(
+										filterContext,
+										logger,
+										contextFeature.Error,
+										HttpStatusCode.Forbidden
+									);
 						}
 						else if (contextFeature.Error != null &&
 							contextFeature.Error.InnerException != null &&
 							contextFeature.Error.InnerException.InnerException != null &&
 							contextFeature.Error.InnerException.InnerException.GetType() == typeof(AuthorizationException))
 						{
-							filterContext.Response.Redirect("SecurityError");
+							await WriteErrorResponseAsync(
+										filterContext,
+										logger,
+										contextFeature.Error,
+										HttpStatusCode.Forbidden
+									);
 						}
 						else if (contextFeature.Error != null &&
 							contextFeature.Error.InnerException != null &&
@@ -204,12 +219,22 @@
 							contextFeature.Error.InnerException.InnerException.InnerException != null &&
 							contextFeature.Error.InnerException.InnerException.InnerException.GetType() == typeof(AuthorizationException))
 						{
-							filterContext.Response.Redirect("SecurityError");
+							await WriteErrorResponseAsync(
+										filterContext,
+										logger,
+										contextFeature.Error,
+										HttpStatusCode.Forbidden
+									);
 						}
 						else if (contextFeature.Error != null &&
 							contextFeature.Error.GetType() == typeof(InvalidDataRelationException))
 						{
-							filterContext.Response.Redirect("InvalidParameters");
+							await WriteErrorResponseAsync(
+										filterContext,
+										logger,
+										contextFeature.Error,
+										HttpStatusCode.Forbidden
+									);
 						}
 						else
 						{
@@ -227,6 +252,24 @@
 						}
 					}
 				});
+			});
+		}
+
+		private static async Task WriteErrorResponseAsync(
+										HttpContext context,
+										ILogger logger,
+										Exception ex,
+										HttpStatusCode statusCode)
+		{
+			context.Response.StatusCode = (int)statusCode;
+			context.Response.ContentType = "application/json";
+
+			logger.LogError(ex, ex.Message);
+
+			await context.Response.WriteAsJsonAsync(new
+			{
+				StatusCode = context.Response.StatusCode,
+				Message = ex.Message
 			});
 		}
 	}
