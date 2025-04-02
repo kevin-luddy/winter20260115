@@ -3783,11 +3783,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					addBlankRow = false;
 				}
 
-				CopyMatchingSkillMixRowData(laborTypes, currentSkillMixData, refreshedModel, isBRCEnabled, false);
+				CopyMatchingSkillMixRowData(laborTypes, currentSkillMixData, refreshedModel, isBRCEnabled, isManual);
 
 				if (isBRCEnabled)
 				{
-					CreateCommonDisclosureRows(resourceHours, laborTypes, currentCommonDisclosureData, refreshedModel, ucotFactor);
+					CreateCommonDisclosureRows(resourceHours, laborTypes, currentCommonDisclosureData, refreshedModel, ucotFactor, isManual);
 				}
 				else
 				{
@@ -4007,22 +4007,39 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						if (Utilities.IsBRCEnabledForWorkspace(workspace.Shortname) && (!dto.ResourceID.HasValue || !tmResourceIds.Contains(dto.ResourceID.Value)))
 						{
 							// do validation per row item
-							if (dto.EndDate.HasValue && dto.EndDate.Value < OneLmxCutOffDate && dto.ResourceID == null && dto.ResourceID == 0)
+							// RMS requires Resource to always be selected
+							if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)
 							{
-								validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected because End Date is before 1LMX Cutoff Date"));
-							}
+								if (dto.ResourceID == null && dto.ResourceID == 0)
+								{
+									validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected"));
+								}
 
-							if (dto.StartDate.HasValue && dto.StartDate.Value < OneLmxCutOffDate
-								&& dto.EndDate.HasValue && dto.EndDate.Value > OneLmxCutOffDate
-								&& (dto.ResourceID == null || dto.ResourceID == 0 || dto.BusinessResourceCodeID == null || dto.BusinessResourceCodeID == 0))
-							{
-								validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected when Start Date is before 1LMX Cutoff Date. Element row needs to have Business Resource Code Selected when End Date is after 1LMX Cutoff Date"));
-							}
-
-							if (dto.StartDate.HasValue && dto.StartDate.Value >= OneLmxCutOffDate
+								if (dto.EndDate.HasValue && dto.EndDate.Value >= OneLmxCutOffDate
 								&& dto.BusinessResourceCodeID == null && dto.BusinessResourceCodeID == 0)
+								{
+									validationErrors.Add(new ValidationMessage("Element row needs Business Resource Code Selected because end date is after 1LMX Cutoff Date"));
+								}
+							}
+							else
 							{
-								validationErrors.Add(new ValidationMessage("Element row needs Business Resource Code Selected because start date is after 1LMX Cutoff Date"));
+								if (dto.EndDate.HasValue && dto.EndDate.Value < OneLmxCutOffDate && dto.ResourceID == null && dto.ResourceID == 0)
+								{
+									validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected because End Date is before 1LMX Cutoff Date"));
+								}
+
+								if (dto.StartDate.HasValue && dto.StartDate.Value < OneLmxCutOffDate
+									&& dto.EndDate.HasValue && dto.EndDate.Value > OneLmxCutOffDate
+									&& (dto.ResourceID == null || dto.ResourceID == 0 || dto.BusinessResourceCodeID == null || dto.BusinessResourceCodeID == 0))
+								{
+									validationErrors.Add(new ValidationMessage("Element row needs to have Resource Selected when Start Date is before 1LMX Cutoff Date. Element row needs to have Business Resource Code Selected when End Date is after 1LMX Cutoff Date"));
+								}
+
+								if (dto.StartDate.HasValue && dto.StartDate.Value >= OneLmxCutOffDate
+								&& dto.BusinessResourceCodeID == null && dto.BusinessResourceCodeID == 0)
+								{
+									validationErrors.Add(new ValidationMessage("Element row needs Business Resource Code Selected because start date is after 1LMX Cutoff Date"));
+								}
 							}
 						}
 						else
@@ -4379,7 +4396,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="currentCommonDisclosureData">Current Common Disclosure Data</param>
 		/// <param name="refreshedModel">The Refreshed Skill Mix Model</param>
 		/// <param name="ucotFactor">The UCOT Factor for the workspace</param>
-		protected virtual void CreateCommonDisclosureRows(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<LaborTypeDataModelView> laborTypes, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, RefreshSkillMixModelView refreshedModel, decimal ucotFactor)
+		/// <param name="isManual">Is this manual or not</param>
+		protected virtual void CreateCommonDisclosureRows(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<LaborTypeDataModelView> laborTypes, 
+			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, RefreshSkillMixModelView refreshedModel, decimal ucotFactor, bool isManual)
 		{
 			if (laborTypes == null)
 			{
@@ -4398,23 +4417,26 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				decimal totalResourceHistoricalHours = refreshedModel.SkillMixRows.Where(r => r.ResourceNew == resourceName && r.Included).Sum(l => l.HistoricalHours);
 
 				ICollection<LaborTypeDataModelView> resourceLaborTypes = laborTypes.Where(l => l.ResourceName == resourceName).ToList();
-				// TODO: Test during integration that HourSpread is properly set from the two different UI and DB calls
 				decimal totalResourceLaborHours = resourceLaborTypes.Sum(l => l.HourSpread ?? 0.0m);
 
-				foreach (CommonDisclosureModelView refreshedRow in refreshedModel.CommonDisclosureRows.Where(r => r.ResourceID == resourceName))
+				foreach (CommonDisclosureModelView refreshedRow in refreshedModel.CommonDisclosureRows.Where(r => r.ResourceID == resourceName).ToList())
 				{
 					ICollection<LaborTypeDataModelView> laborTypeDataModelViews = resourceLaborTypes.Where(l => l.BusinessResourceCodeName.NullEmptyEquals(refreshedRow.BusinessResourceID)).ToList();
 
 					if (!laborTypeDataModelViews.Any())
 					{
 						// No labor types found that match this Resource/BRC combo, this BRC is invalid so we need to remove the BRC
-						refreshedRow.BusinessResourceID = string.Empty;
-						refreshedRow.Included = false;
+						refreshedModel.CommonDisclosureRows.Remove(refreshedRow);
+						continue;
 					}
 
-					// Historical Hours of CD are based off the ratio of the BRCs being used in Labor Types multiplied by the Sum of Historical Hours for the matching Resource in SM table
-					decimal totalBRCLaborHours = laborTypeDataModelViews.Sum(lt => lt.HourSpread ?? 0.0m);
-					refreshedRow.HistoricalHours = totalResourceLaborHours == 0m ? 0m : totalResourceHistoricalHours * totalBRCLaborHours / totalResourceLaborHours;
+					// Automatic Historical Hours of CD are based off the ratio of the BRCs being used in Labor Types multiplied by the Sum of Historical Hours for the matching Resource in SM table
+					if (!isManual)
+					{
+						decimal totalBRCLaborHours = laborTypeDataModelViews.Sum(lt => lt.HourSpread ?? 0.0m);
+						refreshedRow.HistoricalHours = totalResourceLaborHours == 0m ? 0m : totalResourceHistoricalHours * totalBRCLaborHours / totalResourceLaborHours;
+					}
+
 					refreshedRow.ProposedHours = laborTypeDataModelViews.SelectMany(x => x.Spreads).Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) >= Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
 
 					if (currentCommonDisclosureData != null)
@@ -4430,40 +4452,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							refreshedRow.Included = disclosureRow.Included;
 							refreshedRow.CommonDisclosureSkillMixID = disclosureRow.CommonDisclosureSkillMixID;
 							refreshedRow.IsUserInput = disclosureRow.IsUserInput;
+							if (isManual)
+							{
+								refreshedRow.HistoricalHours = disclosureRow.HistoricalHours;
+							}
 						}
-					}
-				}
-			}
-
-			// Now to merge data in when there are no Resources (only BRCs set in the rows of LaborTypes)
-			if (currentCommonDisclosureData != null && currentCommonDisclosureData.Any(c => string.IsNullOrWhiteSpace(c.ResourceID)))
-			{
-				// first should there be any empty rows
-				IEnumerable<SkillMixModelView> emptyResourceIncludedRows = refreshedModel.SkillMixRows.Where(r => string.IsNullOrWhiteSpace(r.ResourceNew) && r.Included);
-
-				if (emptyResourceIncludedRows.Any())
-				{
-					decimal totalResourceHistoricalHours = emptyResourceIncludedRows.Sum(l => l.HistoricalHours);
-					ICollection<LaborTypeDataModelView> resourceLaborTypes = laborTypes.Where(l => string.IsNullOrWhiteSpace(l.ResourceName)).ToList();
-					decimal totalResourceLaborHours = resourceLaborTypes.Sum(l => l.HourSpread ?? 0.0m);
-
-					// remove any current row(s) where there is empty Resource ID and add these rows in
-					foreach (CommonDisclosureModelView oldRow in refreshedModel.CommonDisclosureRows.Where(c => string.IsNullOrWhiteSpace(c.ResourceID)).ToList())
-					{
-						refreshedModel.CommonDisclosureRows.Remove(oldRow);
-					}
-
-					// add the overridden data back in
-					foreach (CommonDisclosureModelView currentRow in currentCommonDisclosureData.Where(c => string.IsNullOrWhiteSpace(c.ResourceID)))
-					{
-						ICollection<LaborTypeDataModelView> laborTypeDataModelViews = resourceLaborTypes.Where(l => !string.IsNullOrWhiteSpace(currentRow.BusinessResourceID) && l.BusinessResourceCodeName == currentRow.BusinessResourceID).ToList();
-						// Historical Hours of CD are based off the ratio of the BRCs being used in Labor Types multiplied by the Sum of Historical Hours for the matching Resource in SM table
-						decimal totalBRCLaborHours = laborTypeDataModelViews.Sum(lt => lt.HourSpread ?? 0.0m);
-						currentRow.HistoricalHours = totalResourceLaborHours == 0m ? 0m : totalResourceHistoricalHours * totalBRCLaborHours / totalResourceLaborHours;
-						currentRow.ProposedHours = laborTypeDataModelViews.SelectMany(x => x.Spreads).Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) >= Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
-						currentRow.ResourceID = string.Empty;
-						currentRow.Included = true;
-						refreshedModel.CommonDisclosureRows.Add(currentRow);
 					}
 				}
 			}
