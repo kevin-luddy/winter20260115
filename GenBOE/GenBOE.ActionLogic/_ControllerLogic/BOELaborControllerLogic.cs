@@ -4522,8 +4522,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							}
 
 							// Merge the two rows
-							currentRow.HistoricalHours = anyValidCurrentRows ? 0m : refreshedRow.HistoricalHours;
-							currentRow.LaborSkillMix = anyValidCurrentRows ? 0m : refreshedRow.LaborSkillMix;
+							currentRow.HistoricalHours = currentRow.HistoricalHours == 0m ? 0m : currentRow.HistoricalHours;
+							currentRow.LaborSkillMix = currentRow.HistoricalHours == 0m ? 0m : currentRow.HistoricalHours * 100.0m / refreshedRow.LaborSkillMix;
 							currentRow.ResourceNew = currentRow.ResourceNew ?? string.Empty;
 
 							anyValidCurrentRows = true;
