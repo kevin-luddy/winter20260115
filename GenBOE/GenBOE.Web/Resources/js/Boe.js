@@ -1273,7 +1273,7 @@ function InitializeBOEDetailsWidget(isMaterial, boeDetailsReloadHistoryEvent, bo
 function AfterDomLoadBOEDetailsWidget(BOEDetails, displayTaskElementDetailsEvent, displayTaskElementCompositeUrl, displayOdcDetailsEvent,
     displayOdcCompositeUrl, displayTravelDetailsEvent, displayTravelCompositeUrl, displayZoneTravelCompositeUrl, displayTaskElementGridUrl,
     displayBoeSummaryUrl, boeDetailsReloadCommentEvent, displayBoeCommentUrl, boeDetailsReloadHistoryEvent, displayBoeHistoryUrl, displayOdcGridUrl, displayTravelGridUrl,
-    displayZoneTravelGridUrl, displayMaterialGridUrl, displayMaterialDetailsEvent, displayMaterialCompositeUrl, isZoneTravel) {
+    displayZoneTravelGridUrl, displayMaterialGridUrl, displayMaterialDetailsEvent, displayMaterialCompositeUrl, isZoneTravel, displayODC, displayTravel) {
     BOEDetails.afterDOMLoad();
 
     window.onhashchange = BOEDetails.LoadTab;
@@ -1499,40 +1499,44 @@ function AfterDomLoadBOEDetailsWidget(BOEDetails, displayTaskElementDetailsEvent
         });
     });
 
-    BOEDetails.registerForEvent('LOAD_ODC_ELEMENT_GRID', function () {
-        $("div[tab*=ODC] .odc-grid").html(BOEDetails.LoadingHtml);
-        $.ajax({
-            type: "POST",
-            dataType: 'html',
-            contentType: 'application/json; charset=utf-8',
-            url: displayOdcGridUrl,
-            success: function (response) {
-                $("div[tab*=ODC] .odc-grid").html(response);
-            }
-        });
-    });
+	if (displayODC) {
+		BOEDetails.registerForEvent('LOAD_ODC_ELEMENT_GRID', function () {
+			$("div[tab*=ODC] .odc-grid").html(BOEDetails.LoadingHtml);
+			$.ajax({
+				type: "POST",
+				dataType: 'html',
+				contentType: 'application/json; charset=utf-8',
+				url: displayOdcGridUrl,
+				success: function (response) {
+					$("div[tab*=ODC] .odc-grid").html(response);
+				}
+			});
+		});
+	}
 
-    BOEDetails.registerForEvent('LOAD_TRAVEL_ELEMENT_GRID', function () {
-        $("div[tab*=Travel] .travel-grid").html(BOEDetails.LoadingHtml);
+	if (displayTravel) {
+		BOEDetails.registerForEvent('LOAD_TRAVEL_ELEMENT_GRID', function () {
+			$("div[tab*=Travel] .travel-grid").html(BOEDetails.LoadingHtml);
 
-        var travelGridUrl = "";
-        if (isZoneTravel && isZoneTravel == true) {
-            travelGridUrl = displayZoneTravelGridUrl;
-        }
-        else {
-            travelGridUrl = displayTravelGridUrl;
-        }
+			var travelGridUrl = "";
+			if (isZoneTravel && isZoneTravel == true) {
+				travelGridUrl = displayZoneTravelGridUrl;
+			}
+			else {
+				travelGridUrl = displayTravelGridUrl;
+			}
 
-        $.ajax({
-            type: "POST",
-            dataType: 'html',
-            contentType: 'application/json; charset=utf-8',
-            url: travelGridUrl,
-            success: function (response) {
-                $("div[tab*=Travel] .travel-grid").html(response);
-            }
-        });
-    });
+			$.ajax({
+				type: "POST",
+				dataType: 'html',
+				contentType: 'application/json; charset=utf-8',
+				url: travelGridUrl,
+				success: function (response) {
+					$("div[tab*=Travel] .travel-grid").html(response);
+				}
+			});
+		});
+	}
 
     BOEDetails.registerForEvent("DISPLAY_MATERIAL_ELEMENT_GRID", function (e) {
         if ($("div[tab*=Material] .material-grid").hasClass('display-none')) {
@@ -1543,7 +1547,7 @@ function AfterDomLoadBOEDetailsWidget(BOEDetails, displayTaskElementDetailsEvent
         }
     });
 
-    BOEDetails.registerForEvent('LOAD_MATERIAL_ELEMENT_GRID', function (e) {
+	BOEDetails.registerForEvent('LOAD_MATERIAL_ELEMENT_GRID', function (e) {
         $("div[tab*=Material] .material-grid").html(BOEDetails.LoadingHtml);
         $.ajax({
             type: "POST",
