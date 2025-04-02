@@ -319,7 +319,7 @@ function SetupMonthPickerJquery(inputBox) {
 }
 
 function AfterDomLoadBoeHeaderWidget(containsOCI, readOnly, workspaceState, saveEditBoeHeaderUrl,  
-    boeStateNotDraft, allowDateShift, rteFieldSize, dateShiftUrl, findAdjacentBoesUrl, boeId, newBoeUrl, useQuestions, numberQuestions) {
+    boeStateNotDraft, allowDateShift, rteFieldSize, dateShiftUrl, findAdjacentBoesUrl, boeId, newBoeUrl, useQuestions, numberQuestions, isClassEnvironment) {
     var formConfigs = [];
     formConfigs.push({
         ElementID: 'BoeHeaderForm',
@@ -376,7 +376,8 @@ function AfterDomLoadBoeHeaderWidget(containsOCI, readOnly, workspaceState, save
                 Stateful: false
             }
         ],
-        ContainsOCI: containsOCI,
+		ContainsOCI: containsOCI,
+		IsClassEnvironment: isClassEnvironment,
         OnDataRetrieved: function(data) {
             data.CustomFieldValues=[];
 

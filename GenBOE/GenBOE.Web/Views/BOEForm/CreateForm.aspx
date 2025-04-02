@@ -38,7 +38,9 @@
                     },
                     Stateful: false
                 }],
-                ContainsOCI: false,
+				ContainsOCI: false,
+				HideOCI: false,
+				IsClassEnvironment: <%= SiteMasterUtilities.IsClassEnvironment.ToString().ToLower() %>
             });
 
             var widgetConfig = {

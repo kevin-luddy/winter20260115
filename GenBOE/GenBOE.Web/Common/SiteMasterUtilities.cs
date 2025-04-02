@@ -388,5 +388,10 @@ namespace GenBOE.Web.Common
 				return bool.TrueString.ToLower() == ConfigurationManager.AppSettings["IsClassEnvironment"].ToLower();
 			}
 		}
+
+		public static string GetBannerText(bool containsOCI = false)
+		{
+			return containsOCI ? ConfigurationManager.AppSettings["ClassifiedBannerTextWithOCI"] : ConfigurationManager.AppSettings["ClassifiedBannerTextWithoutOCI"];
+		}
 	}
 }

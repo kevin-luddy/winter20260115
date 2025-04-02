@@ -46,8 +46,11 @@
                         }
                     });
                 }
-            }]
-        });
+			}],
+			HideOCI: false,
+			IsClassEnvironment: <%: SiteMasterUtilities.IsClassEnvironment.ToString().ToLower() %>
+		});
+		console.log(FormConfigs);
         var widgetConfig = {};
         widgetConfig.ContextID = "InlFormExportSelectorDialog";
         widgetConfig.IsModule = false;

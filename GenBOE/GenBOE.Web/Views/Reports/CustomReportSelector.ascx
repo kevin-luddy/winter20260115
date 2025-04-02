@@ -52,7 +52,9 @@
                 },
                 Stateful: false
             }],
-            ContainsOCI: <%= ViewData["ContainsOCI"] %>
+			ContainsOCI: <%= ViewData["ContainsOCI"] %>,
+			HideOCI: false,
+			IsClassEnvironment: <%: SiteMasterUtilities.IsClassEnvironment.ToString().ToLower() %>
         });
 
         var widgetConfig = {};

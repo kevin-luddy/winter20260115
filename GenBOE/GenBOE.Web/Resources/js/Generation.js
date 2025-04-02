@@ -4228,6 +4228,11 @@ function GenForm(inFormConfig, inContext) {
 	*/
 	var isClassEnvironment = inFormConfig.IsClassEnvironment;
 
+	/**
+	* @private 
+	*/
+	var bannerText = inFormConfig.BannerText;
+
     /**
     * @private
     */
@@ -4320,10 +4325,12 @@ function GenForm(inFormConfig, inContext) {
                 buttonContainer.append(ociContainer);
             }
 
-			var contents = '<b>Note:</b> Must not contain any '
-				+ (containsOCI ? 'OCI, ' : '')
-				+ (isClassEnvironment ? '' : 'classified, ')
-				+ 'export controlled or third party proprietary information.';
+			var contents = '<b>Note: </b> ' + bannerText;
+
+			//var contents = '<b>Note:</b> Must not contain any '
+			//	+ (containsOCI ? 'OCI, ' : '')
+			//	+ (isClassEnvironment ? '' : 'classified, ')
+			//	+ 'export controlled or third party proprietary information.';
 
 			ociContainer.html(contents);
         }

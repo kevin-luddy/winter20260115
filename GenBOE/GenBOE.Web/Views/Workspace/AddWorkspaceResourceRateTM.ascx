@@ -73,7 +73,9 @@
                     window.location.href = '#ResourceRatesTM';
                     }, 
                 }
-			]
+			],
+			HideOCI: false,
+			IsClassEnvironment: <%: SiteMasterUtilities.IsClassEnvironment.ToString().ToLower() %>
         });
 
         var widgetConfig = {};

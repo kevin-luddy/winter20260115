@@ -414,7 +414,7 @@
             '<%: showDescQuestions %>'.isTrue(),
             <%: numberDescQuestions %>,
             <%: rteFieldSize %>,
-			'<%= SiteMasterUtilities.IsClassEnvironment %>'
+			<%: SiteMasterUtilities.IsClassEnvironment.ToString().ToLower() %>
         );
 
         TaskElementDetailsWidget.waitingBeforeSubmit = false;

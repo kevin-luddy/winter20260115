@@ -106,7 +106,9 @@
                 ButtonAction: function (buttonPressed) {
                     ResourceRatesTMWidget.performImportPreview(importPreviewURL, "#ImportWorkspaceResourceRatesTMForm", UploadComplete, buttonPressed);
                 }
-            }]
+			}],
+			HideOCI: false,
+			IsClassEnvironment: <%: SiteMasterUtilities.IsClassEnvironment.ToString().ToLower() %>
         });
         FormConfigs.push({
             ElementID: "FinishImportWorkspaceResourceRatesTMForm",
@@ -137,7 +139,9 @@
                         }
                     }, buttonPressed);
                 }
-            }]
+			}],
+			HideOCI: false,
+			IsClassEnvironment: '<%= SiteMasterUtilities.IsClassEnvironment %>'
         });
 
         var widgetConfig = {};
