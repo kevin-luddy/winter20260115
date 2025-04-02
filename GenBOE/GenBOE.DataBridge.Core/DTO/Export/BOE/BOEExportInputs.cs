@@ -26,7 +26,16 @@
 		public BOEExportInputs(ExportBoeWordRequestViewModel requestModel)
 		{
 			this.AllWorkspaceBoes = requestModel.AllWorkspaceBoes;
-			this.AssignedBoeIdsAndCustomFieldValuesMapping = requestModel.AssignedBoeIdsAndCustomFieldValuesMapping;
+			this.AssignedBoeIdsAndCustomFieldValuesMapping = new Dictionary<int, IDictionary<CustomFieldValueDTO, CustomFieldDTO>>();
+			foreach (KeyValuePair<int, List<CustomFieldGrouping>> kvp in requestModel.AssignedBoeIdsAndCustomFieldValuesMapping)
+			{
+				Dictionary<CustomFieldValueDTO, CustomFieldDTO> group = new Dictionary<CustomFieldValueDTO, CustomFieldDTO>();
+				foreach (CustomFieldGrouping grouping in kvp.Value)
+				{
+					group.Add(grouping.CustomFieldValue, grouping.CustomField);
+				}
+				this.AssignedBoeIdsAndCustomFieldValuesMapping.Add(kvp.Key, group);
+			}
 			this.BoeIdsAndLastUserToSubmitThemForApprovalMapping = requestModel.BoeIdsAndLastUserToSubmitThemForApprovalMapping;
 			this.BoeMappingWithApproverResponses = requestModel.BoeMappingWithApproverResponses;
 			this.Boes = requestModel.Boes;

@@ -84,10 +84,5 @@
 		/// Gets or sets the Template Source Id.
 		/// </summary>
 		public int SourceId { get; set; }
-
-		/// <summary>
-		/// Gets or sets the enumeration for Source Ids.
-		/// </summary>
-		internal IEnumerable<int> SourceIdEnum { get; set; }
 	}
 }

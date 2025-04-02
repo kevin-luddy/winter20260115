@@ -13,7 +13,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
 	using IES.Common;
-	using IES.Common.PickList;
 
 	/// <summary>
 	/// Export BOE to Word Request
@@ -38,7 +37,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 			}
 
 			this.AllWorkspaceBoes = exportInputs.AllWorkspaceBoes.ToList();
-			this.AssignedBoeIdsAndCustomFieldValuesMapping = exportInputs.AssignedBoeIdsAndCustomFieldValuesMapping.ToDictionary(kvp => kvp.Key, kvp => kvp.Value); ;
+			this.AssignedBoeIdsAndCustomFieldValuesMapping = exportInputs.AssignedBoeIdsAndCustomFieldValuesMapping.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Select(x => new CustomFieldGrouping { CustomField = x.Value, CustomFieldValue = x.Key }).ToList());
 			this.BoeIdsAndLastUserToSubmitThemForApprovalMapping = exportInputs.BoeIdsAndLastUserToSubmitThemForApprovalMapping;
 			this.BoeMappingWithApproverResponses = exportInputs.BoeMappingWithApproverResponses.ToDictionary(kvp => kvp.Key, kvp => kvp.Value); ;
 			this.Boes = exportInputs.Boes.ToList();
@@ -141,7 +140,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// Gets a mapping of all custom field values and custom fields to Boes that use them, for the entire WS
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public Dictionary<int, IDictionary<CustomFieldValueDTO, CustomFieldDTO>> AssignedBoeIdsAndCustomFieldValuesMapping { get; set; }
+		public Dictionary<int, List<CustomFieldGrouping>> AssignedBoeIdsAndCustomFieldValuesMapping { get; set; }
 
 		/// <summary>
 		///// Gets the labor types mapping with custom fields values and container ids.

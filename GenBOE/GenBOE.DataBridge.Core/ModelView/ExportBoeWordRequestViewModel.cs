@@ -82,7 +82,7 @@
 		/// <summary>
 		/// Gets a mapping of all custom field values and custom fields to Boes that use them, for the entire WS
 		/// </summary>
-		public Dictionary<int, IDictionary<CustomFieldValueDTO, CustomFieldDTO>> AssignedBoeIdsAndCustomFieldValuesMapping { get; set; }
+		public Dictionary<int, List<CustomFieldGrouping>> AssignedBoeIdsAndCustomFieldValuesMapping { get; set; }
 
 		/// <summary>
 		///// Gets the labor types mapping with custom fields values and container ids.
