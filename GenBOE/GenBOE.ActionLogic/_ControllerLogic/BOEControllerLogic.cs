@@ -77,12 +77,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private readonly IESSAPClient iesSapClient;
         private readonly ITokenService tokenService;
         private readonly Logger logger = new Logger(typeof(BOEControllerLogic));
-		private readonly BOEReportsHttpService boeHttpService = new BOEReportsHttpService();
+		private readonly BOEReportsHttpService boeReportsHttpService = new BOEReportsHttpService();
 
 		/// <summary>
 		/// Memory Cache
 		/// </summary>
-		private MemoryCache memCache;
+		private readonly MemoryCache memCache;
 		private bool disposedValue;
 
 		/// <summary>
@@ -842,21 +842,17 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 					if (Utilities.IsReportGenerationExternal)
 					{
-						await this.boeHttpService.ExportBOEsToWord(null, Response, isCustomExport, wsExportFormatDTO, inputs, boeExportModelViews,
+						await this.boeReportsHttpService.ExportBOEsToWord(null, Response, isCustomExport, wsExportFormatDTO, inputs, boeExportModelViews,
 							boeSummaryGridModelViews, false);
+					}
+					else if (isCustomExport)
+					{
+							
+						this._boeCustomExporter.ExportBOEToWordFile(inputs, boeExportModelViews, boeSummaryGridModelViews, ws, null, Response, string.Format("genBOEExport-{0}.docx", boeID), wsExportFormatDTO);
 					}
 					else
 					{
-
-						if (isCustomExport)
-						{
-							
-							this._boeCustomExporter.ExportBOEToWordFile(inputs, boeExportModelViews, boeSummaryGridModelViews, ws, null, Response, string.Format("genBOEExport-{0}.docx", boeID), wsExportFormatDTO);
-						}
-						else
-						{
-							this._BOEExporter.ExportBOEToWordFile(inputs, boeExportModelViews, boeSummaryGridModelViews, ws, Response, string.Format("genBOEExport-{0}.docx", boeID), wsExportFormatDTO.PhysicalFilePathCache);
-						}
+						this._BOEExporter.ExportBOEToWordFile(inputs, boeExportModelViews, boeSummaryGridModelViews, ws, Response, string.Format("genBOEExport-{0}.docx", boeID), wsExportFormatDTO.PhysicalFilePathCache);
 					}
                 }
                 else
@@ -3425,9 +3421,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			{
 				if (disposing)
 				{
-					if (this.boeHttpService != null)
+					if (this.boeReportsHttpService != null)
 					{
-						this.boeHttpService.Dispose();
+						this.boeReportsHttpService.Dispose();
 					}
 				}
 

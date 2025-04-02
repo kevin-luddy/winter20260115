@@ -1,4 +1,9 @@
-﻿namespace GenBOE.ActionLogic.IO.Export.BOE
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2025 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
+namespace GenBOE.ActionLogic.IO.Export.BOE
 {
 	using System;
 	using System.Collections.Generic;
@@ -18,6 +23,19 @@
 		{
 		}
 
+		/// <summary>
+		/// Export BOEs to Word
+		/// </summary>
+		/// <param name="selectedComponents">optional selected components</param>
+		/// <param name="httpResponse">HttpResponse to add response to</param>
+		/// <param name="isCustomExport">Whether this is a custom export or not</param>
+		/// <param name="wsExportFormatDTO">The workspace export format</param>
+		/// <param name="exportInputs">The export input params</param>
+		/// <param name="boeExportModelViews">The Export ModelViews for BOE</param>
+		/// <param name="boeSummaryGridModelViews">The summary grid modelviews for BOE</param>
+		/// <param name="segmentedOutput">Whether this is a segmented output (different files zipped) or not</param>
+		/// <returns></returns>
+		/// <exception cref="GenValidationException"></exception>
 		public async Task ExportBOEsToWord(ICollection<BoeCustomReportComponent> selectedComponents, HttpResponseBase httpResponse, bool isCustomExport,
 			WorkspaceExportFormatDTO wsExportFormatDTO, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, 
 			List<BOESummaryGridModelView> boeSummaryGridModelViews, bool segmentedOutput)
@@ -64,6 +82,10 @@
 			}
 		}
 
+		/// <summary>
+		/// TODO
+		/// </summary>
+		/// <returns></returns>
 		public async Task ExportBOEsToExcel()
 		{ }
 	}

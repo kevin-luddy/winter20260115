@@ -260,8 +260,6 @@ namespace IES.Common.Core
 				return 0;
 			}
 
-			// return endDate.Value.Subtract(startDate.Value).Days / CommonConstants.POP_MONTHS_DIVISOR;
-
 			// if Space & Monthly -> we need to add +1 month to the calculation, for the following reason:
 			// if it's March - March, it's supposed to be 1 month
 			// if it's March - April, it's supposed to be 2 months

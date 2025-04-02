@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2025 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -9,6 +9,9 @@ namespace GenBOE.DataBridge.Core.Common.Calculations
 	using GenBOE.DataBridge.Core.DTO;
 	using GenBOE.DataBridge.Core.Misc;
 
+	/// <summary>
+	/// Interface for Sum calculation of variables inside selected BOEs
+	/// </summary>
 	public interface IVariableSelectBOEtoSumCalculation
 	{
 		decimal GetTaskVarLabelTotal(OrdinaryVariableDto taskVar, DataClassForSumOfBOEsCalculation dataForSumOfBoeCalc);

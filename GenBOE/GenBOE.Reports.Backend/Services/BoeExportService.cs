@@ -1,4 +1,9 @@
-﻿namespace GenBOE.Reports.Backend.Services
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2025 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
+namespace GenBOE.Reports.Backend.Services
 {
 	using System.Collections.Generic;
 	using System.IO;

@@ -320,7 +320,7 @@ namespace IES.Common
 		}
 
 		/// <summary>
-		/// POST method for two complex objects
+		/// POST method for three complex objects
 		/// </summary>
 		/// <typeparam name="T">Generic type</typeparam>
 		/// <typeparam name="TData1">Generic data type</typeparam>
@@ -366,7 +366,7 @@ namespace IES.Common
 		}
 
 		/// <summary>
-		/// POST method for two complex objects
+		/// POST method for four complex objects
 		/// </summary>
 		/// <typeparam name="T">Generic type</typeparam>
 		/// <typeparam name="TData1">Generic data type</typeparam>
@@ -417,7 +417,7 @@ namespace IES.Common
 		}
 
 		/// <summary>
-		/// POST method for two complex objects
+		/// POST method for five complex objects
 		/// </summary>
 		/// <typeparam name="T">Generic type</typeparam>
 		/// <typeparam name="TData1">Generic data type</typeparam>
@@ -474,7 +474,7 @@ namespace IES.Common
 		}
 
 		/// <summary>
-		/// POST method for two complex objects
+		/// POST method for six complex objects
 		/// </summary>
 		/// <typeparam name="T">Generic type</typeparam>
 		/// <typeparam name="TData1">Generic data type</typeparam>
@@ -572,12 +572,9 @@ namespace IES.Common
 			{
 				if (disposing)
 				{
-					// TODO: dispose managed state (managed objects)
 					this.httpClient.Dispose();
 				}
 
-				// TODO: free unmanaged resources (unmanaged objects) and override finalizer
-				// TODO: set large fields to null
 				disposedValue = true;
 			}
 		}
