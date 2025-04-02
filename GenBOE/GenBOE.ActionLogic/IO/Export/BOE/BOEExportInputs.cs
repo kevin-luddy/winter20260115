@@ -46,6 +46,11 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				throw new ArgumentNullException(nameof(workspace));
 			}
 
+			if (ReferenceEquals(boe, null))
+			{
+				throw new ArgumentNullException(nameof(boe));
+			}
+
 			this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - begin");
 			this.SetRteTemplateOverrides(rteTemplatesOverrides);
 			this.SetMoqTypes(moqTypes);
