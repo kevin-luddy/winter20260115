@@ -46,12 +46,17 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				throw new ArgumentNullException(nameof(workspace));
 			}
 
+			if (ReferenceEquals(boe, null))
+			{
+				throw new ArgumentNullException(nameof(boe));
+			}
+
 			this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - begin");
 			this.SetRteTemplateOverrides(rteTemplatesOverrides);
 			this.SetMoqTypes(moqTypes);
-			this.Boes = new List<BoeDTO> { boe }.AsReadOnly();
+			this.Boes = new List<BoeDTO> { boe.ToDTO() }.AsReadOnly();
 			this.TaskElements = workspace.TaskElements.DeepClone();
-			this.Workspace = workspace;
+			this.Workspace = workspace.ToDTO();
 
 			// since the resources used may not contain offloaded resources, need to manually get this
 			this.ResourcesUsedInWsBoes = workspace.ResourcesUsedInWsBoes;
@@ -88,9 +93,12 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 			IRetriever retriever = GenBOEUnityContainer.Container.Resolve(typeof(IRetriever)) as IRetriever;
 			this.SetRteTemplateOverrides(rteTemplatesOverrides);
 			this.SetMoqTypes(moqTypes);
-			this.Boes = boesToExport.ToList<BoeDTO>().AsReadOnly();
-			// since the resources used may not contain offloaded resources, need to manually get this
-			ICollection<int> resourceIds = taskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value)
+            this.Boes = boesToExport.Select(x => x.ToDTO()).ToList().AsReadOnly();
+            this.Clins = workspace.Clins.Select(x => x.ToDTO()).ToList().AsReadOnly();
+            this.WbsElements = workspace.WbsElements.Select(x => new WbsDTO(x)).ToList().AsReadOnly();
+
+            // since the resources used may not contain offloaded resources, need to manually get this
+            ICollection<int> resourceIds = taskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value)
 						.Union(workspace.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value))
 						.Union(workspace.Odcs.SelectMany(x => x.ODCTypes).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value))
 						.Union(taskElements.SelectMany(x => x.taskElementLabors).Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value))
@@ -156,11 +164,11 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 			this.TaskElements = taskElements.ToList().AsReadOnly();
 			PopulateLaborTypesMappingWithCustomFieldsValuesAndContainerIds();
 
-			this.Workspace = workspace;
+			this.Workspace = workspace.ToDTO();
 
 			this.FullWorkspace = workspace;
-			this.AllWorkspaceBoes = allWorkspaceBoes.ToList<BoeDTO>().AsReadOnly();
-			this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - end");
+            this.AllWorkspaceBoes = allWorkspaceBoes.Select(x => x.ToDTO()).ToList().AsReadOnly();
+            this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - end");
 		}
 
 		/// <summary>
@@ -202,6 +210,11 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// Gets all Escalation Rates for the workspace.
 		/// </summary>
 		public IReadOnlyCollection<EscalationRatesDTO> EscalationRates { get { return this.FullWorkspace.EscalationRates; } }
+
+		/// <summary>
+		/// Locations used by trips
+		/// </summary>
+		public IReadOnlyCollection<LocationDTO> LocationsUsedByTrips { get { return this.FullWorkspace.LocationsUsedByTrips; } }
 
 		/// <summary>
 		/// Gets the task elements mapping with custom fields values and container ids.
@@ -271,28 +284,28 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// </summary>
 		public IReadOnlyCollection<CustomFieldValueDTO> CustomFieldValues { get { return this.FullWorkspace.CustomFieldValues; } }
 
-		/// <summary>
-		/// Gets the clins.
-		/// </summary>
-		public IReadOnlyCollection<ClinDTO> Clins { get { return this.FullWorkspace.Clins; } }
+        /// <summary>
+        /// Gets the clins.
+        /// </summary>
+        public IReadOnlyCollection<ClinDTO> Clins { get; }
 
-		/// <summary>
-		/// Clins belonging to the Workspace without Multi Clin
-		/// </summary>
-		public IReadOnlyCollection<FullClin> ClinsNoMultiClin { get { return this.FullWorkspace.ClinsNoMultiClin; } }
+        /// <summary>
+        /// Clins belonging to the Workspace without Multi Clin
+        /// </summary>
+        public IReadOnlyCollection<ClinDTO> ClinsNoMultiClin { get { return this.FullWorkspace.ClinsNoMultiClin; } }
 
-		/// <summary>
-		/// Gets the WBS elements.
-		/// </summary>
-		public IReadOnlyCollection<WbsDTO> WbsElements { get { return this.FullWorkspace.WbsElements; } }
+        /// <summary>
+        /// Gets the WBS elements.
+        /// </summary>
+        public IReadOnlyCollection<WbsDTO> WbsElements { get; }
 
-		/// <summary>
-		/// Wbs Elements belonging to the Workspace without Multi
-		/// </summary>
-		public IReadOnlyCollection<FullWbs> WbsElementsNoMultiWbs { get { return this.FullWorkspace.WbsElementsNoMultiWbs; } }
+        /// <summary>
+        /// Wbs Elements belonging to the Workspace without Multi
+        /// </summary>
+        public IReadOnlyCollection<WbsDTO> WbsElementsNoMultiWbs { get { return this.FullWorkspace.WbsElementsNoMultiWbs; } }
 
-		/// <summary>
-		/// Gets the boe mapping with approver responses.
+        /// <summary>
+        /// Gets the boe mapping with approver responses.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public IDictionary<int, ICollection<BoeApproverResponseDTO>> BoeMappingWithApproverResponses { get { return this.FullWorkspace.BoeMappingWithApproverResponses; } }

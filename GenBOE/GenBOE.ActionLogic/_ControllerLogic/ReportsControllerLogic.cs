@@ -10,7 +10,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
-    using System.Web;
+	using System.Threading.Tasks;
+	using System.Web;
     using System.Web.Mvc;
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.Calculations;
@@ -32,7 +33,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     /// <summary>
     /// Action Logic for the Reports Controller
     /// </summary>
-    public class ReportsControllerLogic : IReportsControllerLogic
+    public class ReportsControllerLogic : IReportsControllerLogic, IDisposable
     {
         /// <summary>
         /// The AD utils
@@ -45,21 +46,23 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private readonly IProposalLoader proposalLoader;
         private readonly IWorkspaceControllerLogic workspaceControllerLogic;
         private readonly TravelTripCostCalculation travelTripCostCalculator;
+		private readonly BOEReportsHttpService boeReportsHttpService = new BOEReportsHttpService();
 
-        #region Cache Setup
+		#region Cache Setup
 
-        /// <summary>
-        /// Cache Object
-        /// </summary>
-        private MemoryCache cache;
+		/// <summary>
+		/// Cache Object
+		/// </summary>
+		private MemoryCache cache;
+		private bool disposedValue;
 
-        /// <summary>
-        /// The number of seconds to store in cache - 10 minutes
-        /// 
-        /// This can be extended to this long because it's manually cleared when you visit the report on the page; so the cached data will only be used when
-        /// you are on the report page, and hit export.. It's meant to avoid recalculations for the export generation.
-        /// </summary>
-        private const int SECONDS_TO_CACHE_DISCREPANCY_REPORT = 600;
+		/// <summary>
+		/// The number of seconds to store in cache - 10 minutes
+		/// 
+		/// This can be extended to this long because it's manually cleared when you visit the report on the page; so the cached data will only be used when
+		/// you are on the report page, and hit export.. It's meant to avoid recalculations for the export generation.
+		/// </summary>
+		private const int SECONDS_TO_CACHE_DISCREPANCY_REPORT = 600;
 
         /// <summary>
         /// Key for the cache
@@ -141,10 +144,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
             List<BoeTaskElementDTO> tasks = workspace.TaskElements.ToList();
             boeSummaryGridModelViews = new List<BOESummaryGridModelView>();
 
-            #region Override assigned output format template
+			#region Override assigned output format template
 
-            // Get template based on workspace preferences
-            wsExportFormatDTO = workspace.WorkspaceExportFormats.First(x => x.ExportFormat.TemplateId == workspace.TemplateID);
+			// Get template based on workspace preferences
+			wsExportFormatDTO = workspaceExportFormatDTOLoader.GetById(workspace.TemplateID);
 
             #endregion
 
@@ -225,82 +228,87 @@ namespace GenBOE.ActionLogic.ControllerLogic
             }
         }
 
-        /// <summary>
-        /// Reusable logic for exporting the "All BOEs" report
-        /// </summary>
-        /// <param name="workspace">The current workspace</param>
-        /// <param name="selectedComponents">List of BOEs to be included in the report; if null, then include ALL</param>
-        /// <param name="httpResponse">HTTP response object</param>
-        /// <param name="isCustomExport">Flag indicating wheter the export is a custom export</param>
-        /// <param name="wsExportFormatDTO">the Workspace Format DTO</param>
-        /// <param name="exportInputs">the export inputs</param>
-        /// <param name="boeExportModelViews">the boe export model views</param>
-        /// <param name="boeSummaryGridModelViews">the boe summary grid model veiws</param>
-        /// <param name="segmentedOutput">Should the output be broken into segments and zipped</param>
-        public void ExportAllBOEsReport(FullWorkspace workspace, ICollection<BoeCustomReportComponent> selectedComponents, HttpResponseBase httpResponse, bool isCustomExport, 
-            WorkspaceExportFormatDTO wsExportFormatDTO, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, List<BOESummaryGridModelView> boeSummaryGridModelViews, bool segmentedOutput = false)
-        {
-            if (workspace == null)
-            {
-                throw new ArgumentNullException(nameof(workspace));
-            }
+		/// <summary>
+		/// Reusable logic for exporting the "All BOEs" report
+		/// </summary>
+		/// <param name="workspace">The current workspace</param>
+		/// <param name="selectedComponents">List of BOEs to be included in the report; if null, then include ALL</param>
+		/// <param name="httpResponse">HTTP response object</param>
+		/// <param name="isCustomExport">Flag indicating wheter the export is a custom export</param>
+		/// <param name="wsExportFormatDTO">the Workspace Format DTO</param>
+		/// <param name="exportInputs">the export inputs</param>
+		/// <param name="boeExportModelViews">the boe export model views</param>
+		/// <param name="boeSummaryGridModelViews">the boe summary grid model veiws</param>
+		/// <param name="segmentedOutput">Should the output be broken into segments and zipped</param>
+		public async Task ExportAllBOEsReport(FullWorkspace workspace, ICollection<BoeCustomReportComponent> selectedComponents, HttpResponseBase httpResponse, bool isCustomExport,
+			WorkspaceExportFormatDTO wsExportFormatDTO, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, List<BOESummaryGridModelView> boeSummaryGridModelViews, bool segmentedOutput = false)
+		{
+			if (workspace == null)
+			{
+				throw new ArgumentNullException(nameof(workspace));
+			}
 
-            if (httpResponse == null)
-            {
-                throw new ArgumentNullException(nameof(httpResponse));
-            }
+			if (httpResponse == null)
+			{
+				throw new ArgumentNullException(nameof(httpResponse));
+			}
 
-            if (wsExportFormatDTO == null)
-            {
-                throw new ArgumentNullException(nameof(wsExportFormatDTO));
-            }
+			if (wsExportFormatDTO == null)
+			{
+				throw new ArgumentNullException(nameof(wsExportFormatDTO));
+			}
 
-            if (isCustomExport)
-            {
-                // distinguish between MASTER and legacy templates
-                // if legacy, use original MASTER, otherwise use selected template
-                WorkspaceExportFormatDTO exportFormat = wsExportFormatDTO.ExportFormat.ParentTemplateId < 9001 || wsExportFormatDTO.ExportFormat.ParentTemplateId >10000 || wsExportFormatDTO.ExportFormat.ParentTemplateId == null ? this.workspaceExportFormatDTOLoader.GetById((int)ExcelReportTemplateType.MASTER) : wsExportFormatDTO;
+			if (Utilities.IsReportGenerationExternal)
+			{
+				await this.boeReportsHttpService.ExportBOEsToWord(selectedComponents, httpResponse, isCustomExport, wsExportFormatDTO, exportInputs, boeExportModelViews,
+					boeSummaryGridModelViews, segmentedOutput);
+			}
+			else if (isCustomExport)
+			{
+				// distinguish between MASTER and legacy templates
+				// if legacy, use original MASTER, otherwise use selected template
+				WorkspaceExportFormatDTO exportFormat = wsExportFormatDTO.ExportFormat.ParentTemplateId < 9001 || wsExportFormatDTO.ExportFormat.ParentTemplateId > 10000 || wsExportFormatDTO.ExportFormat.ParentTemplateId == null ? this.workspaceExportFormatDTOLoader.GetById((int)ExcelReportTemplateType.MASTER) : wsExportFormatDTO;
 
-                if (segmentedOutput)
-                {
-                    this.boeCustomExporter.ExportBOEsToZipFile(
-                        exportInputs,
-                        boeExportModelViews,
-                        boeSummaryGridModelViews,
-                        workspace,
-                        selectedComponents,
-                        httpResponse,
-                        string.Format("genBOEExport-{0}.zip", workspace.WorkspaceName).Replace(",", string.Empty),
-                        exportFormat);
-                }
-                else
-                {
-                    // Call the export function in the business layer and get back the file name of the populated template.
-                    this.boeCustomExporter.ExportBOEToWordFile(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workspace, selectedComponents, httpResponse, string.Format("genBOECustomExport-{0}.docx", workspace.WorkspaceName).Replace(",", string.Empty), exportFormat);
-                }
-            }
-            else
-            {
-                // Call the export function in the business layer and get back the file name of the populated template.
-                if (segmentedOutput)
-                {
-                    this.boeExporter.ExportBOEsToZipFile(
-                        exportInputs,
-                        boeExportModelViews,
-                        boeSummaryGridModelViews,
-                        workspace,
-                        httpResponse,
-                        string.Format("genBOEExport-{0}.zip", workspace.WorkspaceName).Replace(",", string.Empty),
-                        wsExportFormatDTO.PhysicalFilePathCache,
-                        wsExportFormatDTO.ExportFormat.TemplateType
-                    );
-                }
-                else
-                {
-                    this.boeExporter.ExportBOEToWordFile(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workspace, httpResponse, string.Format("genBOEExport-{0}.docx", workspace.WorkspaceName).Replace(",", string.Empty), wsExportFormatDTO.PhysicalFilePathCache, wsExportFormatDTO.ExportFormat.TemplateType);
-                }
-            }
-        }
+				if (segmentedOutput)
+				{
+					this.boeCustomExporter.ExportBOEsToZipFile(
+						exportInputs,
+						boeExportModelViews,
+						boeSummaryGridModelViews,
+						workspace,
+						selectedComponents,
+						httpResponse,
+						string.Format("genBOEExport-{0}.zip", workspace.WorkspaceName).Replace(",", string.Empty),
+						exportFormat);
+				}
+				else
+				{
+					// Call the export function in the business layer and get back the file name of the populated template.
+					this.boeCustomExporter.ExportBOEToWordFile(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workspace, selectedComponents, httpResponse, string.Format("genBOECustomExport-{0}.docx", workspace.WorkspaceName).Replace(",", string.Empty), exportFormat);
+				}
+			}
+			else
+			{
+				// Call the export function in the business layer and get back the file name of the populated template.
+				if (segmentedOutput)
+				{
+					this.boeExporter.ExportBOEsToZipFile(
+						exportInputs,
+						boeExportModelViews,
+						boeSummaryGridModelViews,
+						workspace,
+						httpResponse,
+						string.Format("genBOEExport-{0}.zip", workspace.WorkspaceName).Replace(",", string.Empty),
+						wsExportFormatDTO.PhysicalFilePathCache,
+						wsExportFormatDTO.ExportFormat.TemplateType
+					);
+				}
+				else
+				{
+					this.boeExporter.ExportBOEToWordFile(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workspace, httpResponse, string.Format("genBOEExport-{0}.docx", workspace.WorkspaceName).Replace(",", string.Empty), wsExportFormatDTO.PhysicalFilePathCache, wsExportFormatDTO.ExportFormat.TemplateType);
+				}
+			}
+		}
 
         /// <summary>
         /// Sorts an unordered collection of BOEExportModelViews
@@ -729,5 +737,41 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             return toReturn;
         }
-    }
+
+		/// <summary>
+		/// Dispose managed resources
+		/// </summary>
+		/// <param name="disposing"></param>
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!disposedValue)
+			{
+				if (disposing)
+				{
+					if (this.boeReportsHttpService != null)
+					{
+						this.boeReportsHttpService.Dispose();
+					}
+				}
+
+				// TODO: free unmanaged resources (unmanaged objects) and override finalizer
+				// TODO: set large fields to null
+				disposedValue = true;
+			}
+		}
+
+		// // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+		// ~ReportsControllerLogic()
+		// {
+		//     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+		//     Dispose(disposing: false);
+		// }
+
+		public void Dispose()
+		{
+			// Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+			Dispose(disposing: true);
+			GC.SuppressFinalize(this);
+		}
+	}
 }

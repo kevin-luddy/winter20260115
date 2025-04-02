@@ -1,0 +1,309 @@
+﻿namespace GenBOE.DataBridge.Core.DTO
+{
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Linq;
+	using System.Text;
+	using System.Threading.Tasks;
+	using DocumentFormat.OpenXml.Office2010.Excel;
+	using IES.Common.Core;
+	using IES.Common.Core.Configuration;
+	using IES.Common.Core.Constants;
+	using IES.Common.Core.Enums;
+	using IES.Common.Core.Models;
+
+	/// <summary>
+	/// MOQ Table Data class
+	/// </summary>
+	[Serializable]
+	public class MoqTableData : UpdateableDTO
+	{
+		/// <summary>
+		/// Query Type Monthly
+		/// </summary>
+		public static readonly string MONTHLY = "Monthly";
+
+		/// <summary>
+		/// Query Type Weekly
+		/// </summary>
+		public static readonly string WEEKLY = "Weekly";
+
+		/// <summary>
+		/// Query Type Weekly (DateTime), the space on the end is intentional
+		/// </summary>
+		public static readonly string WEEKLY_DATETIME = "Weekly ";
+
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		public MoqTableData()
+		{
+			Id = -1;
+			Order = 2000;
+			CustomFieldValueContainers = new Collection<CustomFieldValueContainer>();
+			ResourceHours = new Collection<MOQTypeSelectionTableDataResourceHoursDTO>();
+		}
+
+		/// <summary>
+		/// Table Name
+		/// </summary>
+		public string TableName { get; set; }
+
+		/// <summary>
+		/// Repository Name
+		/// </summary>
+		public string RepositoryName { get; set; }
+
+		/// <summary>
+		/// Selected Repository Name Option
+		/// </summary>
+		public string RepositoryNameSelection
+		{
+			get
+			{
+				return this.RepositoryName == IES.Common.Core.Enums.RepositoryName.SapWebi.GetDescription() || string.IsNullOrEmpty(this.RepositoryName)
+					? this.RepositoryName
+					: IES.Common.Core.Enums.RepositoryName.Other.GetDescription();
+			}
+		}
+
+		/// <summary>
+		/// Query Type
+		/// </summary>
+		public string QueryType { get; set; }
+
+		/// <summary>
+		/// Date Of Report
+		/// </summary>
+		public DateTime DateOfReport { get; set; }
+
+		/// <summary>
+		/// Historical Program Name
+		/// </summary>
+		public string HistoricalProgramName { get; set; }
+
+		/// <summary>
+		/// Contract Number
+		/// </summary>
+		public string ContractNumber { get; set; }
+
+		/// <summary>
+		/// Wbs Element
+		/// </summary>
+		public string WbsElement { get; set; }
+
+		#region PoP Dates
+
+		/// <summary>
+		/// PoP Start Date field, to allow us the different handling of weekly dates
+		/// </summary>
+		private DateTime? popStart { get; set; }
+
+		/// <summary>
+		/// PoP End Date field, to allow us the different handling of weekly dates
+		/// </summary>
+		private DateTime? popEnd { get; set; }
+
+		/// <summary>
+		/// PoP Start
+		/// </summary>
+		public DateTime? PoPStart
+		{
+			get
+			{
+				DateTime? result = this.popStart;
+				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && this.QueryType == MoqTableData.WEEKLY)
+				{
+					result = GetDateFromWeekYear(this.PoPStartWeek ?? 0, this.PoPStartYear ?? 0);
+				}
+
+				return result;
+			}
+			set
+			{
+				if (value == null)
+				{
+					this.PoPStartWeek = null;
+					this.PoPStartYear = null;
+				}
+				else if (value.Value.Date == DateTime.MinValue.Date)
+				{
+					value = null;
+					this.PoPStartWeek = null;
+					this.PoPStartYear = null;
+				}
+				else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && this.QueryType == MoqTableData.WEEKLY)
+				{
+					this.PoPStartWeek = GetWeekFromDate(value.Value);
+					this.PoPStartYear = value.Value.Year;
+				}
+
+				this.popStart = value;
+			}
+		}
+
+		/// <summary>
+		/// PoP End
+		/// </summary>
+		public DateTime? PoPEnd
+		{
+			get
+			{
+				DateTime? result = this.popEnd;
+				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && this.QueryType == MoqTableData.WEEKLY)
+				{
+					result = GetDateFromWeekYear(this.PoPEndWeek ?? 0, this.PoPEndYear ?? 0);
+				}
+
+				return result;
+			}
+			set
+			{
+				if (value == null)
+				{
+					this.PoPEndWeek = null;
+					this.PoPEndYear = null;
+				}
+				else if (value.Value.Date == DateTime.MinValue.Date)
+				{
+					value = null;
+					this.PoPStartWeek = null;
+					this.PoPStartYear = null;
+				}
+				else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && this.QueryType == MoqTableData.WEEKLY)
+				{
+					this.PoPEndWeek = GetWeekFromDate(value.Value);
+					this.PoPEndYear = value.Value.Year;
+				}
+
+				this.popEnd = value;
+			}
+		}
+
+		/// <summary>
+		/// PoP Start Week - only used when Space and Weekly
+		/// </summary>
+		public int? PoPStartWeek { get; set; }
+
+		/// <summary>
+		/// PoP Start Year - only used when Space and Weekly
+		/// </summary>
+		public int? PoPStartYear { get; set; }
+
+		/// <summary>
+		/// PoP End Week - only used when Space and Weekly
+		/// </summary>
+		public int? PoPEndWeek { get; set; }
+
+		/// <summary>
+		/// PoP End Year- only used when Space and Weekly
+		/// </summary>
+		public int? PoPEndYear { get; set; }
+
+		/// <summary>
+		/// String version of the PoP Start date. Needed because SSC and RMS are handling things differently..
+		/// </summary>
+		public string PoPStartString { get { return FormatMoqTablePoPDate(this.PoPStart, this.PoPStartWeek, this.PoPStartYear, this.QueryType); } }
+
+		/// <summary>
+		/// String version of the PoP End date. Needed because SSC and RMS are handling things differently..
+		/// </summary>
+		public string PoPEndString { get { return FormatMoqTablePoPDate(this.PoPEnd, this.PoPEndWeek, this.PoPEndYear, this.QueryType); } }
+
+		/// <summary>
+		/// Number of months between PoP Start and PoP End
+		/// </summary>
+		public decimal PoPMonths { get { return this.PoPStart.MonthDifferenceDecimal(this.PoPEnd, SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && QueryType == MoqTableData.MONTHLY); } }
+
+		/// <summary>
+		/// PoP Months as string with 2 decimal places
+		/// </summary>
+		public string PoPMonthsString { get { return this.PoPMonths.ToString("0.##"); } }
+
+		/// <summary>
+		/// Formats the PoP Date for printing purposes, based on the Company and Query Type
+		/// 
+		/// RMS -> just print the date
+		/// 
+		/// Space -> the date is formatted based on the query Type (Weekly / Monthly)
+		///         month -> MM/YYYY
+		///         weeks -> FW ww/YYYY, where ww is the week value of 1-53
+		/// </summary>
+		/// <param name="date"></param>
+		/// <param name="queryType"></param>
+		/// <returns></returns>
+		public static string FormatMoqTablePoPDate(DateTime? date, int? week, int? year, string queryType)
+		{
+			return date.HasValue ?
+				SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST || queryType == MoqTableData.WEEKLY_DATETIME
+					? date.Value.ToString(CommonConstants.DATE_FORMATTING_MONTH_DAY_YEAR) :
+					queryType == MoqTableData.MONTHLY ? $"{date.Value.Month.ToString("00")}/{date.Value.Year}" : $"FW {week ?? 0:00}/{year}"
+					: string.Empty;
+
+		}
+
+		/// <summary>
+		/// Creates a date out of week / year. The way we split weeks is week 1-30 will fall into January 1-30. Weeks 31-53 will fall into February.
+		/// </summary>
+		/// <param name="week">Week</param>
+		/// <param name="year">Year</param>
+		/// <returns>Date representing the Week / Year</returns>
+		public static DateTime? GetDateFromWeekYear(int week, int year)
+		{
+			if (week == 0) { return null; }
+
+			int month = week > 30 ? 2 : 1;
+			int day = week > 30 ? week - 30 : week;
+
+			return new DateTime(year, month, day);
+		}
+
+		/// <summary>
+		/// Gets week from the Date. This is a reverse of GetDateFromWeekYear method
+		/// </summary>
+		/// <param name="date">Date representing the week</param>
+		/// <returns>Week based on the date</returns>
+		public static int GetWeekFromDate(DateTime date)
+		{
+			return date.Day + (date.Month == 2 ? 30 : 0);
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Total WbsHours
+		/// </summary>
+		public decimal TotalWbsHours { get; set; }
+
+		/// <summary>
+		/// Additional Query Filters
+		/// </summary>
+		public string AdditionalQueryFilters { get; set; }
+
+		/// <summary>
+		/// Total Relevant hours
+		/// </summary>
+		public decimal TotalRelevantHours { get; set; }
+
+		/// <summary>
+		/// Number representing the order the MOQ Type table is displayed in when there are multiple MOQ Type tables
+		/// </summary>
+		public int Order { get; set; }
+
+		/// <summary>
+		/// ID of the MOQ Type Selection this table data belongs to
+		/// </summary>
+		public int MOQTypeSelectionId { get; set; }
+
+		/// <summary>
+		/// Resource Hours collection for this MOQ Type Table Data
+		/// </summary>
+		public ICollection<MOQTypeSelectionTableDataResourceHoursDTO> ResourceHours { get; set; }
+
+		/// <summary>
+		/// Custom Field Value Containers for the MOQ Table
+		/// </summary>
+		public ICollection<CustomFieldValueContainer> CustomFieldValueContainers { get; set; }
+	}
+}

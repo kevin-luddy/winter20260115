@@ -56,6 +56,9 @@ namespace IES.Common.Core.Utilities
 		private static DateTime? sapSpaceStartDate;
 		private static DateTime? skillMixStartDate;
 		private static DateTime? oneLmxStartDate;
+		private static DateTime? datepickerRestrictionRMS;
+		private static DateTime? historicalReferenceExplanationStartDate;
+		private static DateTime? showINLCutoffDate;
 
 		/// <summary>
 		/// Asserts the equality of decimal values within an epsilon error range.
@@ -89,6 +92,29 @@ namespace IES.Common.Core.Utilities
 				}
 
 				return oneLmxStartDate.Value;
+			}
+		}
+
+		/// <summary>
+		/// Get the restricted date set in the config for RMS
+		/// </summary>
+		public static DateTime DatepickerRestrictionRMS
+		{
+			get
+			{
+				if (!datepickerRestrictionRMS.HasValue)
+				{
+					if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("DatepickerRestrictionRMS"), out DateTime dateRestriction))
+					{
+						datepickerRestrictionRMS = DateTime.MinValue;
+					}
+					else
+					{
+						datepickerRestrictionRMS = dateRestriction;
+					}
+				}
+
+				return datepickerRestrictionRMS.Value;
 			}
 		}
 
@@ -135,6 +161,52 @@ namespace IES.Common.Core.Utilities
 				}
 
 				return skillMixStartDate.Value;
+			}
+		}
+
+		/// <summary>
+		/// Date to begin using Historical Reference Explanation
+		/// </summary>
+		public static DateTime HistoricalReferenceExplanationStartDate
+		{
+			get
+			{
+				if (!historicalReferenceExplanationStartDate.HasValue)
+				{
+					if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("HistoricalReferenceExplanationStartDate"), out DateTime startDate))
+					{
+						historicalReferenceExplanationStartDate = DateTime.MaxValue;
+					}
+					else
+					{
+						historicalReferenceExplanationStartDate = startDate;
+					}
+				}
+
+				return historicalReferenceExplanationStartDate.Value;
+			}
+		}
+
+		/// <summary>
+		/// Cutoff date to show PBOE/IBOE forms for workspace
+		/// </summary>
+		public static DateTime ShowINLCutoffDate
+		{
+			get
+			{
+				if (!showINLCutoffDate.HasValue)
+				{
+					if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("ShowINLCutoffDate"), out DateTime cutoffDate))
+					{
+						showINLCutoffDate = DateTime.MaxValue;
+					}
+					else
+					{
+						showINLCutoffDate = cutoffDate;
+					}
+				}
+
+				return showINLCutoffDate.Value;
 			}
 		}
 
@@ -669,6 +741,25 @@ namespace IES.Common.Core.Utilities
 		}
 
 		/// <summary>
+		/// Removes characters that cause issues when present in file names; Some may look like duplicates, but they actually aren't
+		/// </summary>
+		/// <param name="target">String to be cleaned</param>
+		/// <param name="replacementValue">Character to replace the illegal characters with. Defaults to "."</param>
+		/// <returns>String with illegal characters replaced</returns>
+		public static string StripIllegalFileNameCharacters(string target, string replacementValue = ".")
+		{
+			if (string.IsNullOrEmpty(target))
+			{
+				throw new ArgumentNullException("target");
+			}
+
+			char[] illegalCharacters = new[] { ' ', ' ', '/', '\\', '\n', '\r', '\'', '"', '–', '-', '%', '#', '$', '&', ')', '(', '!', ',', ':', ';', '{', '}', '`', '~', '^', '/', '<', '>' };
+			string[] cleanedParts = target.Split(illegalCharacters, StringSplitOptions.RemoveEmptyEntries);
+
+			return string.Join(replacementValue, cleanedParts);
+		}
+
+		/// <summary>
 		/// Replaces spaces with underscores and removes invalid file name characters
 		/// </summary>
 		/// <param name="filename">Filename to clean</param>
@@ -680,7 +771,7 @@ namespace IES.Common.Core.Utilities
 				throw new ArgumentNullException(nameof(filename));
 			}
 
-			return string.Concat(filename.Replace(' ', '_').Split(Path.GetInvalidFileNameChars()));
+			return StripIllegalFileNameCharacters(string.Concat(filename.Replace(' ', '_').Split(Path.GetInvalidFileNameChars())));
 		}
 
 		/// <summary>
@@ -798,6 +889,30 @@ namespace IES.Common.Core.Utilities
 			{
 				isBRCEnabled = value;
 			}
+		}
+
+		/// <summary>
+		/// Be able to override for unit test purposes
+		/// </summary>
+		/// <param name="value"></param>
+		static internal void SetBRCEnabled(bool value)
+		{
+			isBRCEnabled = value;
+		}
+
+		/// <summary>
+		/// Is BRC Enabled for Workspace
+		/// </summary>
+		/// <param name="workspaceShortName">workspace short name</param>
+		/// <returns>True if BRC enabled, false if disabled or workspace overridden to be disabled</returns>
+		public static bool IsBRCEnabledForWorkspace(string workspaceShortName)
+		{
+			if (OverrideBRCValues != null && OverrideBRCValues.Contains(workspaceShortName))
+			{
+				return false;
+			}
+
+			return IsBRCEnabledForSystem;
 		}
 
 		/// <summary>
@@ -1123,6 +1238,34 @@ namespace IES.Common.Core.Utilities
 				Serilog.Log.Debug(sb.ToString());
 				Serilog.Log.Debug("End LogEnvironmentInfo");
 			}
+		}
+
+		/// <summary>
+		/// Is HistoricalReferenceExplanation required and displayed
+		/// </summary>
+		/// <param name="workspaceCreationDate">workspace creation date</param>
+		/// <returns>True if workspace creation date after the start date for Historical Reference Explanation</returns>
+		public static bool IsHistoricalReferenceExplanationRequired(DateTime? workspaceCreationDate)
+		{
+			return workspaceCreationDate.HasValue && workspaceCreationDate.Value.Date >= HistoricalReferenceExplanationStartDate.Date;
+		}
+
+		/// <summary>
+		/// Strips domain from Resource Account Name
+		/// </summary>
+		/// <param name="ntIdWithDomain">Domain\\NTID</param>
+		/// <returns>ntid lowercase</returns>
+		public static string StripDomain(string ntIdWithDomain)
+		{
+			if (string.IsNullOrWhiteSpace(ntIdWithDomain))
+			{
+				return ntIdWithDomain;
+			}
+
+			string[] splitDomainAndNTID = ntIdWithDomain.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
+			string ntIDOnly = splitDomainAndNTID.Length == 2 ? splitDomainAndNTID[1] : splitDomainAndNTID[0];
+
+			return ntIDOnly.ToLower();
 		}
 	}
 }

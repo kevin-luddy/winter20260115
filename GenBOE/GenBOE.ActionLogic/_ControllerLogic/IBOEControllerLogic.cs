@@ -100,7 +100,7 @@ namespace GenBOE.ActionLogic
         /// <param name="ws">Workspace containing the boe</param>
         /// <param name="boeID">ID of BOE to preview</param>
         /// <param name="Response">current HTTP response</param>
-        void ExportBOESearchPreview(FullWorkspace ws, int boeID, HttpResponseBase Response);
+        Task ExportBOESearchPreview(FullWorkspace ws, int boeID, HttpResponseBase Response);
 
         /// <summary>
         /// Exports a ProjectMap to a pre-formatted MS Word template and sends the file as a download

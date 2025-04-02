@@ -3,6 +3,7 @@
 	using System;
 	using System.Diagnostics;
 	using System.Security.Principal;
+	using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 	using HealthChecks.UI.Client;
 	using IES.Common.Core.Authorization;
 	using IES.Common.Core.Constants;
@@ -17,6 +18,7 @@
 	using Microsoft.AspNetCore.Hosting;
 	using Microsoft.AspNetCore.Http;
 	using Microsoft.AspNetCore.HttpOverrides;
+	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.DependencyModel;
@@ -174,6 +176,26 @@
 				{
 					{ securityScheme, Array.Empty<string>() }
 				});
+			});
+
+			ConfigureModelBinding(builder);
+		}
+
+		protected virtual void ConfigureModelBinding(WebApplicationBuilder builder)
+		{
+			builder.Services.Configure<ApiBehaviorOptions>(options =>
+			{
+				options.InvalidModelStateResponseFactory = actionContext =>
+				{
+					ValidationProblemDetails error = actionContext.ModelState
+						.Where(e => e.Value.Errors.Count > 0)
+						.Select(e => new ValidationProblemDetails(actionContext.ModelState)).FirstOrDefault();
+
+					Log.Error("{0} received invalid message format: {1}",
+					   actionContext.HttpContext.Request.Path.Value,
+					   error.Errors.Values);
+					return new BadRequestObjectResult(error);
+				};
 			});
 		}
 
