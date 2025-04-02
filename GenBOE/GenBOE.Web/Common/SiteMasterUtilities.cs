@@ -389,9 +389,14 @@ namespace GenBOE.Web.Common
 			}
 		}
 
+		/// <summary>
+		/// Gets Banner Text from Web Config
+		/// </summary>
+		/// <param name="containsOCI">Contains OCI Data</param>
+		/// <returns>Text for Banner</returns>
 		public static string GetBannerText(bool containsOCI = false)
 		{
-			return containsOCI ? ConfigurationManager.AppSettings["ClassifiedBannerTextWithOCI"] : ConfigurationManager.AppSettings["ClassifiedBannerTextWithoutOCI"];
+			return containsOCI ? ConfigurationManager.AppSettings["BannerTextWithOCI"] : ConfigurationManager.AppSettings["BannerTextWithoutOCI"];
 		}
 	}
 }

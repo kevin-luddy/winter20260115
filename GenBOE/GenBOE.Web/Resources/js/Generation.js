@@ -4226,12 +4226,12 @@ function GenForm(inFormConfig, inContext) {
 	/**
 	* @private 
 	*/
-	var isClassEnvironment = inFormConfig.IsClassEnvironment;
+	var bannerTextWithOCI = inFormConfig.BannerTextWithOCI;
 
 	/**
 	* @private 
 	*/
-	var bannerText = inFormConfig.BannerText;
+	var bannerTextWithoutOCI = inFormConfig.BannerTextWithoutOCI;
 
     /**
     * @private
@@ -4325,7 +4325,7 @@ function GenForm(inFormConfig, inContext) {
                 buttonContainer.append(ociContainer);
             }
 
-			var contents = '<b>Note: </b> ' + bannerText;
+			var contents = '<b>Note: </b> ' + containsOCI ? bannerTextWithOCI : bannerTextWithoutOCI;
 
 			//var contents = '<b>Note:</b> Must not contain any '
 			//	+ (containsOCI ? 'OCI, ' : '')

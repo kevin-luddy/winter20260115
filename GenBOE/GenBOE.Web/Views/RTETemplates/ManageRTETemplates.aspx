@@ -237,7 +237,7 @@
                 <div class="form-row last-form-row">
                     <div class="form-element">
                         <div id="OCINote" class="oci-note">
-                            <span><b>Note:</b> Must not contain any OCI, classified, export controlled or third party proprietary information.</span>
+                            <span><b>Note:</b> <%: SiteMasterUtilities.GetBannerText() %></span>
                         </div>
                         <div class="button-container">
                             <div class="buttons">

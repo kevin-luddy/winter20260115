@@ -204,11 +204,13 @@
 
         ManageBackupVersionsWidget.ContainsOCI = <%= ViewData["ContainsOCI"] %>;
 
-        if (ManageBackupVersionsWidget.ContainsOCI == true){
-            $('#OCINote').html('<b>Note:</b> Must not contain any classified, export controlled or third party proprietary information.');
+		if (ManageBackupVersionsWidget.ContainsOCI == true) {
+			var text = <%: SiteMasterUtilities.GetBannerText(true) %>;
+            $('#OCINote').html('<b>Note:</b> ' + text);
         }
-        else {
-            $('#OCINote').html('<b>Note:</b> Must not contain any OCI, classified, export controlled or third party proprietary information.');
+		else {
+			var text = <%: SiteMasterUtilities.GetBannerText() %>;
+            $('#OCINote').html('<b>Note:</b> ' + text);
         }
 
         createModule(ManageBackupVersionsWidget.Module);

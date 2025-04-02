@@ -416,7 +416,7 @@ function InitializeODCElementsCompositeWidget(summaryGridReloadEvent) {
     return ODCElementsComposite;
 }
 
-function AfterDomLoadODCElementsCompositeWidget(ODCElementsComposite, ODC_ContainsOCI) {
+function AfterDomLoadODCElementsCompositeWidget(ODCElementsComposite, ODC_ContainsOCI, bannerTextWithOCI, bannerTextWithoutOCI) {
     $("#Cancel-ODCUpdates").click(ODCElementsComposite.CancelToMainGrid);
 
     ODCElementsComposite.widgetsLoaded=0;
@@ -431,11 +431,11 @@ function AfterDomLoadODCElementsCompositeWidget(ODCElementsComposite, ODC_Contai
     });
       
     //Change the OCI note based off the workspace
-    if (ODC_ContainsOCI == true){
-        $('#ODC-OCINote').html('Must not contain any classified, export controlled or third party proprietary information.');
+	if (ODC_ContainsOCI == true) {
+		$('#ODC-OCINote').html(bannerTextWithOCI);
     }
-    else {
-        $('#ODC-OCINote').html('Must not contain any OCI, classified, export controlled or third party proprietary information.');
+	else {
+		$('#ODC-OCINote').html(bannerTextWithoutOCI);
     }
 
     refreshModule($('.odc-details .module'));

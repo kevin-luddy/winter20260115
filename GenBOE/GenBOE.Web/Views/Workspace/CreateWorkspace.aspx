@@ -58,7 +58,10 @@
         var event_WorkSpaceNameURL = window.location.protocol + '//' + window.location.host + '/' + 'default/' + 
                 '<%= WebConstants.CONTROLLER_WORKSPACE %>' + '/' + '<%:WebConstants.ACTION_IS_WORKSPACE_NAME_AVAILABLE %>';
         var event_WorkSpaceShortNameURL = window.location.protocol + '//' + window.location.host + '/' + 'default/' +
-                '<%= WebConstants.CONTROLLER_WORKSPACE %>' + '/' + '<%:WebConstants.ACTION_IS_WORKSPACE_SHORT_NAME_AVAILABLE %>';
+			'<%= WebConstants.CONTROLLER_WORKSPACE %>' + '/' + '<%:WebConstants.ACTION_IS_WORKSPACE_SHORT_NAME_AVAILABLE %>';
+
+		var bannerTextFull = <%: SiteMasterUtilities.GetBannerText(true)%>;
+		var bannerTextSplit = bannerTextFull.split('any')
         $(function () {
             $('.header .title').addClass('genBOE');
             $('.main').addClass('create-workspace');
@@ -120,9 +123,7 @@
                         <button name="cancel-button" class="ies left-margin" data-ng-click="cancel()" type="button">Cancel</button>
                     </div>
                     <div data-ng-show="model.showOCINote" class="create-oci-note">
-                        <b>Note:</b> Information on this form must not contain<br/>
-                        any OCI, classified, export controlled or third party<br/>
-                        proprietary information.
+                        <b>Note:</b> Information on this form <%: SiteMasterUtilities.GetBannerText(true) %>
                     </div>
                     <% Html.EndForm(); %>
                 </div>
