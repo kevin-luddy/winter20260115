@@ -247,7 +247,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 					if (Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
 					{
-						errorMessages.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(task.CommonDisclosureTable, task.SkillMixTable));
+						errorMessages.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(task.CommonDisclosureTable));
 					}
 
 					if (errorMessages.Any())

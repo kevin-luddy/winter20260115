@@ -105,9 +105,8 @@ namespace GenBOE.ActionLogic.Common
 		/// Validate the Common Disclosure Skill Mix Table for any errors
 		/// </summary>
 		/// <param name="commonDisclosures">Common Disclosures</param>
-		/// <param name="skillMixModels">SkillMix Models</param>
 		/// <returns>A collection of validation errors/messages</returns>
-		public static ICollection<string> ValidateCommonDisclosureSkillMixTable(ICollection<CommonDisclosureModelView> commonDisclosures, ICollection<SkillMixModelView> skillMixModels)
+		public static ICollection<string> ValidateCommonDisclosureSkillMixTable(ICollection<CommonDisclosureModelView> commonDisclosures)
 		{
 			ICollection<string> errorMessages = new Collection<string>();
 
@@ -149,12 +148,10 @@ namespace GenBOE.ActionLogic.Common
 
 			foreach (string commonDisclosureRow in commonDisclosureHasBRC.Select(x => x.ResourceID).Distinct())
 			{
-				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: BRC must be selected for each occurance of Resource {0}.", commonDisclosureRow));
+				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: BRC must be selected for each occurrence of Resource {0}.", commonDisclosureRow));
 			}
 
 			ValidateResourceAndBRCCombos(commonDisclosures, errorMessages);
-
-			ValidateHistoricalHours(commonDisclosures, skillMixModels, errorMessages);
 
 			return errorMessages;
 		}
@@ -185,52 +182,6 @@ namespace GenBOE.ActionLogic.Common
 				}
 			});
 		}
-
-		/// <summary>
-		/// Validate  each Resource and BRC combo is unique in the Common Disclosure Table
-		/// </summary>
-		/// <param name="commonDisclosures">Collection of Common Disclosures</param>
-		/// <param name="skillMixModels">Collection of Skill Mix Data</param>
-		/// <param name="errorMessages">Error Messages</param>
-		private static void ValidateHistoricalHours(ICollection<CommonDisclosureModelView> commonDisclosures, ICollection<SkillMixModelView> skillMixModels, ICollection<String> errorMessages)
-		{
-			Dictionary<string, decimal> resourceToHistoricalHoursMap = new Dictionary<string, decimal>();
-
-			//TBD: for RMS, might have duplicate new resources and then we'll have to total historical
-			if (skillMixModels != null && skillMixModels.Any())
-			{
-				skillMixModels.Where(s => s.Included && !string.IsNullOrEmpty(s.ResourceNew)).ForEach(s =>
-				{
-					if (resourceToHistoricalHoursMap.TryGetValue(s.ResourceNew, out decimal currentTotal))
-					{
-						resourceToHistoricalHoursMap[s.ResourceNew] = currentTotal + s.HistoricalHours;
-					}
-					else
-					{
-						resourceToHistoricalHoursMap.Add(s.ResourceNew, s.HistoricalHours);
-					}
-				});
-			}
-
-			Dictionary<string, List<CommonDisclosureModelView>> resourceToCDRowMap = commonDisclosures?.Where(cd => cd.ResourceID != null)
-				?.GroupBy(cd => cd.ResourceID)
-				?.ToDictionary(g => g.Key, g => g.ToList());
-
-
-			if (resourceToCDRowMap != null)
-			{
-				resourceToCDRowMap.ForEach(pair =>
-				{
-					decimal historicalHoursTotal = pair.Value.Sum(v => v.HistoricalHours);
-
-					if (resourceToHistoricalHoursMap.TryGetValue(pair.Key, out decimal historicalHours) && historicalHoursTotal != historicalHours)
-					{
-						errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: Historical Hours for all rows in group for Resource {0} must total {1}, matching the row in the Skill Mix table.", pair.Key, historicalHours));
-					}
-				});
-			}
-		}
-
 		#endregion Private Methods
 	}
 }
