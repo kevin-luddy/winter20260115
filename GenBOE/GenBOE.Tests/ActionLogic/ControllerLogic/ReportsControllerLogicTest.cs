@@ -62,6 +62,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), _retriever.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _perissionsDtoDataLoader.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _commonDataMapper.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), new ActiveDirectoryUtilities());
 
             _TravelTripCostCalculator = new Mock<TravelTripCostCalculation>();
             _RMSZoneTravelRatesFeesDataLoader = new Mock<RMSZoneTravelRatesFeesDataLoader>();
@@ -282,12 +283,13 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             _retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(1, false, It.IsAny<int>(), It.IsAny<int>())).Returns(TaskElementsID);
             _retriever.Setup(x => x.GetQuestionsAndAnswersByWorkspaceId(workspace.Id)).Returns(new List<RTECustomTemplateQuestionAnswerModelView>());
             _retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(workspace.Id)).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
-
+			_retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new List<TravelDTO>());
             Collection<int> BoeIds = boes.Select(x => x.Id).ToCollection();
             _retriever.Setup(x => x.GetOdcCollectionByBoeIds(BoeIds, false)).Returns(dtoID);
             _retriever.Setup(x => x.GetMaterialsByBoeIds(BoeIds, false)).Returns(MaterialID);
+			_retriever.Setup(x => x.GetPerformingOrgsByIds(It.IsAny<ICollection<int>>())).Returns(new List<PerformingOrgDTO>());
 
-            _retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, true)).Returns(new ReadOnlyCollection<TravelDTO>(new List<TravelDTO>()));
+			_retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, true)).Returns(new ReadOnlyCollection<TravelDTO>(new List<TravelDTO>()));
             _retriever.Setup(x => x.GetMaterialsByBoeIds(BoeIds, true)).Returns(new ReadOnlyCollection<MaterialDTO>(new List<MaterialDTO>()));
 
             this._retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(resourcesFromDB);
@@ -702,8 +704,10 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             _retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(TaskElementsID);
             _retriever.Setup(x => x.GetOdcCollectionByBoeIds(BoeIds, false)).Returns(dtoID);
             this._retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(resourcesFromDB);
+			_retriever.Setup(x => x.GetTravelByWorkspaceId(1, It.IsAny<bool>())).Returns(new Collection<TravelDTO>());
+			_retriever.Setup(x => x.GetPerformingOrgsByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<PerformingOrgDTO>());
 
-            BOEExportInputs result = sut.GetExportInputsForStatusAndWbsReports(workspace);
+			BOEExportInputs result = sut.GetExportInputsForStatusAndWbsReports(workspace);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(workspace.Id, result.Workspace.Id);
@@ -752,8 +756,9 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             _retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO>());
             _retriever.Setup(x => x.GetEscalationRatesByWorkspace(workspace)).Returns(new Collection<EscalationRatesDTO>());
             _retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(workspace.Id)).Returns(wbs);
+			_retriever.Setup(x => x.GetPerformingOrgsByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<PerformingOrgDTO>());
 
-            BOEExportInputs inputs = new BOEExportInputs(boes, boes, TaskElementsID, workspace, null);
+			BOEExportInputs inputs = new BOEExportInputs(boes, boes, TaskElementsID, workspace, null);
 
 
             ICollection<BoeWbsReportModelView> result = sut.GenerateWbsBoeReport(inputs);
@@ -802,8 +807,10 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             _retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(TaskElementsID);
             _retriever.Setup(x => x.GetOdcCollectionByBoeIds(BoeIds, false)).Returns(dtoID);
             this._retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(resourcesFromDB);
+			_retriever.Setup(x => x.GetTravelByWorkspaceId(1, It.IsAny<bool>())).Returns(new Collection<TravelDTO>());
+			_retriever.Setup(x => x.GetPerformingOrgsByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<PerformingOrgDTO>());
 
-            BOEExportInputs inputs = new BOEExportInputs(boes, boes, TaskElementsID, workspace, null);
+			BOEExportInputs inputs = new BOEExportInputs(boes, boes, TaskElementsID, workspace, null);
             ICollection<BoeWbsReportModelView> reportModelView = new Collection<BoeWbsReportModelView>()
             {
                 new BoeWbsReportModelView()

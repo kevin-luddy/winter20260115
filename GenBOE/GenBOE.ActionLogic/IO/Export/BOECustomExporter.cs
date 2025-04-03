@@ -4952,7 +4952,6 @@ namespace GenBOE.ActionLogic.IO.Export
                 {
                     BOEExportTaskElementLabor boeExportLabor = new BOEExportTaskElementLabor(boeExportTaskElement);
                     boeExportLabor.Cost = this._TravelTripCostCalculation.CalculateTravelCost(travelTrip, exportInputs.FullWorkspace).CostTotal;
-                    boeExportLabor.Cost = this._TravelTripCostCalculation.CalculateTravelCost(travelTrip, exportInputs.FullWorkspace).CostTotal;
                     boeExportLabor.ExportFields[BOEExporterConstants.FieldName_LaborTypeCost] = boeExportLabor.Cost.Value.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, this._CurrencyFormatter);
                     boeExportLabor.ExportFields[BOEExporterConstants.FieldName_TravelTripID] = travelTrip.TravelTripID.ToString();
 

@@ -156,5 +156,24 @@ namespace GenBOE.Objects
         {
             this.boes = inBoes.Where(x => x.CLINID == this.Id).ToList().AsReadOnly();
         }
-    }
+
+		/// <summary>
+		/// Convert from Full Object to DTO
+		/// </summary>
+		/// <returns>DTO version of this FullObject</returns>
+		public ClinDTO ToDTO()
+		{
+			ClinDTO clin = new ClinDTO();
+			Type type = typeof(ClinDTO);
+			foreach (PropertyInfo prop in type.GetProperties())
+			{
+				if (prop.CanRead && prop.CanWrite)
+				{
+					type.GetProperty(prop.Name).SetValue(clin, prop.GetValue(this, null), null);
+				}
+			}
+
+			return clin;
+		}
+	}
 }

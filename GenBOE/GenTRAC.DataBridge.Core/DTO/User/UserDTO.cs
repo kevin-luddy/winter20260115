@@ -54,6 +54,7 @@ namespace GenTRAC.DataBridge.Core.DTO.User
 		/// <summary>
 		/// Ntid
 		/// </summary>
+		[System.Text.Json.Serialization.JsonPropertyName("NTID")]
 		public string Ntid { get; set; }
 
 		/// <summary>
@@ -133,5 +134,20 @@ namespace GenTRAC.DataBridge.Core.DTO.User
 		/// AD Property -> employeeType -> values: G sub, E is emp
 		/// </summary>
 		public bool? IsSubcontractor { get; set; }
+
+		/// <summary>
+		/// Passthrough for Id
+		/// </summary>
+		public int UserID
+		{
+			get
+			{
+				return this.Id;
+			}
+			set
+			{
+				this.Id = value;
+			}
+		}
 	}
 }

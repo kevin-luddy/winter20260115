@@ -1,0 +1,239 @@
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
+
+namespace GenBOE.DataBridge.Core.Common.Calculations
+{
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Linq;
+	using System.Threading.Tasks;
+	using GenBOE.DataBridge.Core.DTO;
+	using GenBOE.DataBridge.Core.Misc;
+	using IES.Common.Core;
+	using IES.Common.Core.Enums;
+
+	public abstract class VariableSelectBOEtoSumCalculation : IVariableSelectBOEtoSumCalculation
+	{
+		/// <summary>
+		/// This method checks to see if the Workspace var has been cached, if not, it calculates it
+		/// </summary>
+		/// <param name="workspaceVar">Workspace variable</param>
+		/// <param name="dataForSumOfBoeCalc">The data for sum of boe calculate.</param>
+		/// <returns>
+		/// Its value
+		/// </returns>
+		/// <exception cref="ArgumentNullException">
+		/// inWorkspaceVar
+		/// or
+		/// dataForSumOfBoeCalc
+		/// </exception>
+		public virtual decimal GetWorkspaceVarLabelTotal(WorkspaceVariableDTO workspaceVar, DataClassForSumOfBOEsCalculation dataForSumOfBoeCalc)
+		{
+			if (workspaceVar == null)
+			{
+				throw new ArgumentNullException(nameof(workspaceVar));
+			}
+			if (dataForSumOfBoeCalc == null)
+			{
+				throw new ArgumentNullException(nameof(dataForSumOfBoeCalc));
+			}
+
+			decimal toReturn = 0;
+
+			// extra check that this is indeed a SumOfBOEs workspace variable
+			if (workspaceVar.ValueType.Equals(VarValueType.SumOfBOEs))
+			{
+				// for everything that is selected, get the total hours
+				foreach (SelectBOEsToSum selectBoe in workspaceVar.SelectedBOEsToSum)
+				{
+					// get selected BOE total hours
+					if (selectBoe.BoeID.HasValue)
+					{
+						toReturn = toReturn + Convert.ToDecimal(this.GetTotalBasedOnBoeID(selectBoe.BoeID.Value, workspaceVar.SumVariableResourceTypeIDs, dataForSumOfBoeCalc));
+					}
+
+					// get selected CLINs
+					else if (selectBoe.CLINID.HasValue)
+					{
+						toReturn = toReturn + Convert.ToDecimal(this.GetTotalBasedOnCLINID(selectBoe.CLINID.Value, workspaceVar.SumVariableResourceTypeIDs, dataForSumOfBoeCalc));
+					}
+
+					// get selected WBSs
+					else if (selectBoe.WBSID.HasValue)
+					{
+						toReturn = toReturn + Convert.ToDecimal(this.GetTotalBasedOnWBSID(selectBoe.WBSID.Value, workspaceVar.SumVariableResourceTypeIDs, dataForSumOfBoeCalc));
+					}
+				}
+			}
+			else
+			{
+				toReturn = workspaceVar.WorkspaceVariableValue;
+			}
+
+			return toReturn;  // decimal variable values should NOT be adjusted for decimal precision
+		}
+
+		/// <summary>
+		/// Get the total value of Boes that are associated with a WBS ID
+		/// </summary>
+		/// <param name="wbsId">wbs id</param>
+		/// <param name="sumVariableResourceTypes">The sum variable resource types.</param>
+		/// <param name="dataForSumOfBoeCalc">The data for sum of boe calculate.</param>
+		/// <returns>total</returns>
+		/// <exception cref="ArgumentNullException">inSumVariableResourceTypes or dataForSumOfBoeCalc</exception>
+		public virtual decimal GetTotalBasedOnWBSID(int wbsId, Collection<int> sumVariableResourceTypes, DataClassForSumOfBOEsCalculation dataForSumOfBoeCalc)
+		{
+			if (sumVariableResourceTypes == null)
+			{
+				throw new ArgumentNullException(nameof(sumVariableResourceTypes));
+			}
+
+			if (dataForSumOfBoeCalc == null)
+			{
+				throw new ArgumentNullException(nameof(dataForSumOfBoeCalc));
+			}
+
+			decimal toReturn = 0;
+
+			List<int> nestedBOEs = dataForSumOfBoeCalc.WbsIdToBoeIds[wbsId].ToList();
+
+			object LOCK = new object();
+			Collection<decimal> tempResults = new Collection<decimal>();
+
+			if (nestedBOEs.Any())
+			{
+				Parallel.ForEach(nestedBOEs, new ParallelOptions { MaxDegreeOfParallelism = 5 }, id =>
+				{
+					decimal number = GetTotalBasedOnBoeID(id, sumVariableResourceTypes, dataForSumOfBoeCalc);
+
+					lock (LOCK)
+					{
+						tempResults.Add(number);
+					}
+				});
+
+				toReturn = tempResults.Sum();
+			}
+
+			return toReturn;  // decimal variable values should NOT be adjusted for decimal precision
+		}
+
+		/// <summary>
+		/// Get the total value of Boes that are associated with a CLIN ID
+		/// </summary>
+		/// <param name="clinId">clin id</param>
+		/// <param name="sumVariableResourceTypes">The sum variable resource types.</param>
+		/// <param name="dataForSumOfBoeCalc">The data for sum of boe calculate.</param>
+		/// <returns>total</returns>
+		/// <exception cref="ArgumentNullException">sumVariableResourceTypes or dataForSumOfBoeCalc</exception>
+		public virtual decimal GetTotalBasedOnCLINID(int clinId, Collection<int> sumVariableResourceTypes, DataClassForSumOfBOEsCalculation dataForSumOfBoeCalc)
+		{
+			if (sumVariableResourceTypes == null)
+			{
+				throw new ArgumentNullException(nameof(sumVariableResourceTypes));
+			}
+
+			if (dataForSumOfBoeCalc == null)
+			{
+				throw new ArgumentNullException(nameof(dataForSumOfBoeCalc));
+			}
+
+			decimal toReturn = 0;
+
+			// for the given CLIN, find all BOEs that use that CLIN and return the total hours
+			List<int> boeIds = dataForSumOfBoeCalc.ClinIdToBoeIds.ContainsKey(clinId) ? dataForSumOfBoeCalc.ClinIdToBoeIds[clinId] : new List<int>(0);
+
+			object LOCK = new object();
+			Collection<decimal> tempResults = new Collection<decimal>();
+
+			if (boeIds.Any())
+			{
+				Parallel.ForEach(boeIds, new ParallelOptions { MaxDegreeOfParallelism = 5 }, id =>
+				{
+					decimal number = GetTotalBasedOnBoeID(id, sumVariableResourceTypes, dataForSumOfBoeCalc);
+
+					lock (LOCK)
+					{
+						tempResults.Add(number);
+					}
+				});
+
+				toReturn = tempResults.Sum();
+			}
+
+			return toReturn;  // decimal variable values should NOT be adjusted for decimal precision
+		}
+
+		/// <summary>
+		/// Get the total value of Boes that are associated with a BOE ID
+		/// </summary>
+		/// <param name="boeId">The boe identifier.</param>
+		/// <param name="sumVariableResourceTypes">The sum variable resource types.</param>
+		/// <param name="dataForSumOfBoeCalc">The data for sum of boe calculate.</param>
+		/// <returns>total</returns>
+		/// <exception cref="ArgumentNullException">inSumVariableResourceTypes or dataForSumOfBoeCalc</exception>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
+		public virtual decimal GetTotalBasedOnBoeID(int boeId, Collection<int> sumVariableResourceTypes, DataClassForSumOfBOEsCalculation dataForSumOfBoeCalc)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Get task variable total based on what's currently saved in the database
+		/// </summary>
+		/// <param name="taskVar">task variable</param>
+		/// <param name="dataForSumOfBoeCalc">The data for sum of boe calculation.</param>
+		/// <returns>total</returns>
+		public virtual decimal GetTaskVarLabelTotal(OrdinaryVariableDto taskVar, DataClassForSumOfBOEsCalculation dataForSumOfBoeCalc)
+		{
+			if (taskVar == null)
+			{
+				throw new ArgumentNullException(nameof(taskVar));
+			}
+
+			if (dataForSumOfBoeCalc == null)
+			{
+				throw new ArgumentNullException(nameof(dataForSumOfBoeCalc));
+			}
+
+			decimal toReturn = 0;
+
+			// extra check that this is indeed a SumOfBOEs task variable
+			if (taskVar.ValueType.Equals(VarValueType.SumOfBOEs))
+			{
+				// for everything selected, get the hours
+				foreach (SelectBOEsToSum selectBoe in taskVar.SelectedBOEsToSum)
+				{
+					// if a BOE ID was selected, get the total hours from the boe task
+					if (selectBoe.BoeID.HasValue)
+					{
+						toReturn += Convert.ToDecimal(this.GetTotalBasedOnBoeID(selectBoe.BoeID.Value, taskVar.SumVariableResourceTypeIDs.ToCollection(), dataForSumOfBoeCalc));
+					}
+
+					// if a WBS ID was selected, get all BOEs within the WBS
+					else if (selectBoe.WBSID.HasValue)
+					{
+						toReturn += Convert.ToDecimal(this.GetTotalBasedOnWBSID(selectBoe.WBSID.Value, taskVar.SumVariableResourceTypeIDs.ToCollection(), dataForSumOfBoeCalc));
+					}
+
+					// if a CLIN ID was selected, get all BOEs within the CLIN
+					else if (selectBoe.CLINID.HasValue)
+					{
+						toReturn += Convert.ToDecimal(this.GetTotalBasedOnCLINID(selectBoe.CLINID.Value, taskVar.SumVariableResourceTypeIDs.ToCollection(), dataForSumOfBoeCalc));
+					}
+				}
+			}
+			else
+			{
+				toReturn = taskVar.OrdinaryVariableValue ?? 0;
+			}
+
+			return toReturn;  // decimal variable values should NOT be adjusted for decimal precision
+		}
+
+	}
+}

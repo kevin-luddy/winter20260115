@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using IES.Common;
+using Newtonsoft.Json;
 
 namespace GenBOE.Dtos
 {
@@ -55,6 +56,7 @@ namespace GenBOE.Dtos
         /// <summary>
         /// This is an internal object, for use only when making DB calls
         /// </summary>
-        internal IEnumerable<SelectBOEsToSum> SelectedBOEsToSumIEnum { get; set; }
+        [JsonIgnore]
+		internal IEnumerable<SelectBOEsToSum> SelectedBOEsToSumIEnum { get; set; }
     }
 }

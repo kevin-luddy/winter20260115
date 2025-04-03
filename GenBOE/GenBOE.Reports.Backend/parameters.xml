@@ -46,11 +46,13 @@
 
 	<!--app.config-->
 	<parameter name="ActiveDirectoryPath" description="doesn't matter" defaultvalue="__ActiveDirectoryPath__" tags="">
-		<parameterentry kind="XmlFile" scope="\\RDM.Backend.dll.config$" match="/configuration/appSettings/add[@key='ActiveDirectoryPath']/@value">
+		<parameterentry kind="XmlFile" scope="\\GenBOE.Reports.Backend.dll.config$" match="/configuration/appSettings/add[@key='ActiveDirectoryPath']/@value">
 		</parameterentry>
 	</parameter>
 	<parameter name="IESEntities" description="doesn't matter" defaultvalue="__IESEntities__" tags="">
-		<parameterentry kind="XmlFile" scope="\\RDM.Backend.dll.config$" match="/configuration/connectionStrings/add[@name='IESEntities']/@connectionString">
+		<parameterentry kind="XmlFile" scope="\\GenBOE.Reports.Backend.dll.config$" match="/configuration/connectionStrings/add[@name='IESEntities']/@connectionString">
 		</parameterentry>
 	</parameter>
+
+
 </parameters>

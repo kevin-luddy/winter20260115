@@ -75,6 +75,29 @@ namespace GenBOE.Objects
             }
         }
 
+		/// <summary>
+		/// Convert from Full Object to DTO
+		/// </summary>
+		/// <returns>DTO version of this FullObject</returns>
+		public BoeDTO ToDTO()
+		{
+			BoeDTO boe = new BoeDTO();
+			Type type = typeof(BoeDTO);
+			foreach (PropertyInfo prop in type.GetProperties())
+			{
+				// if the Boe's RTE fields were not loaded yet, we do not copy them
+				bool skipPropertyCopy = (prop.Name == "Description" && !this.WasDescriptionSet)
+									 || (prop.Name == "DataSource" && !this.WasDataSourceSet);
+
+				if (!skipPropertyCopy && prop.CanRead && prop.CanWrite)
+				{
+					type.GetProperty(prop.Name).SetValue(boe, prop.GetValue(this, null), null);
+				}
+			}
+
+			return boe;
+		}
+
         /// <summary>
         /// Populates RTE data for all Boes
         /// </summary>

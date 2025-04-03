@@ -4,16 +4,24 @@
     <TargetFramework>net8.0-windows7.0</TargetFramework>
     <Nullable>disable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
+	<SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
   </PropertyGroup>
 
   <ItemGroup>
     <Content Include="app_offlineX.htm" />
     <Content Include="logs\ReadMe.txt" />
     <Content Include="parameters.xml" />
+    <Content Include="Templates\GoldCopy\ReadMe.txt" />
+    <Content Include="Templates\Temp\ReadMe.txt" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GenBOE.DataBridge.Core\GenBOE.DataBridge.Core.csproj" />
     <ProjectReference Include="..\IES.Common.Core\IES.Common.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

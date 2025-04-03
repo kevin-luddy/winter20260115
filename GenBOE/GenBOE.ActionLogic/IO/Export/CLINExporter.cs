@@ -27,7 +27,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="workspace">The workspace for the CLINs.</param>
         /// <param name="contractTypes">The contract types.</param>
         /// <returns>Path to the exported Clin file</returns>
-        public string ExportToExcelFile(string templateFileLocation, Collection<FullClin> clinDTOs, WorkspaceDTO workspace, ICollection<PickListDto> contractTypes)
+        public string ExportToExcelFile(string templateFileLocation, Collection<ClinDTO> clinDTOs, WorkspaceDTO workspace, ICollection<PickListDto> contractTypes)
         {
             // Check inputs
             if (templateFileLocation == null)
@@ -57,7 +57,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="contractTypes">The contract types.</param>
         /// <returns></returns>
         [SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists", Justification = "ExcelExportWorksheet's base class is List<T> but Collection<T> does not have AddRange()")]
-        public ExcelExportWorksheet GetExcelExportWorksheet(Collection<FullClin> clinDTOs, ICollection<PickListDto> contractTypes)
+        public ExcelExportWorksheet GetExcelExportWorksheet(Collection<ClinDTO> clinDTOs, ICollection<PickListDto> contractTypes)
         {
             if (clinDTOs == null)
             {
@@ -68,7 +68,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
             if (clinDTOs.Count > 0)
             {
-                foreach (FullClin clin in clinDTOs)
+                foreach (ClinDTO clin in clinDTOs)
                 {
                     toReturn.Add(
                         clin.Id.ToString(),

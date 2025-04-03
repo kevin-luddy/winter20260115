@@ -741,8 +741,8 @@ namespace GenBOE.Web.Controllers
             /** Valid Model Check */
             if (this.ModelState.IsValid)
             {
-                //filter out multi boe's to hide from user. 
-                Collection<FullClin> clins = ws.ClinsNoMultiClin.OrderBy(c => c.ClinNumber).ToCollection();
+				//filter out multi boe's to hide from user. 
+				Collection<ClinDTO> clins = ws.ClinsNoMultiClin.OrderBy(c => c.ClinNumber).ToCollection<ClinDTO>();
 
 				// Get the CLIN template file name
 				string templateFileName = this.Server.MapPath("~/Templates/Export/CLINs.xlsx");

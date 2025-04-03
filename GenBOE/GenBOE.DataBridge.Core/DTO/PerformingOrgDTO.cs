@@ -1,0 +1,31 @@
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
+
+namespace GenBOE.DataBridge.Core.DTO
+{
+	using System;
+	using System.Diagnostics.CodeAnalysis;
+	using IES.Common.Core.Models;
+
+	[Serializable()]
+	[ExcludeFromCodeCoverage]
+	public class PerformingOrgDTO : UpdateableDTO
+	{
+		public PerformingOrgDTO()
+		{
+			Id = -1;
+			PerformingOrgName = string.Empty;
+			PerformingOrgDesc = string.Empty;
+			IsSystemPerfOrg = false;
+		}
+
+		public string PerformingOrgName { get; set; }
+		public string PerformingOrgDesc { get; set; }
+
+		// used only to determine if this performing org is a system or workspace performing org for caching purposes
+		public bool IsSystemPerfOrg { get; set; }
+	}
+}

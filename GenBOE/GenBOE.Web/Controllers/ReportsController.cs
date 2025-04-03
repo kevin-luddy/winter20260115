@@ -13,6 +13,7 @@ namespace GenBOE.Web.Controllers
 	using System.Diagnostics;
 	using System.IO;
 	using System.Linq;
+	using System.Threading.Tasks;
 	using System.Transactions;
 	using System.Web.Mvc;
 	using GenBOE.ActionLogic;
@@ -1734,11 +1735,11 @@ namespace GenBOE.Web.Controllers
 		/// <param name="ComponentsSelected">Selected report components</param>
 		/// <param name="summarizeByCustomField">Name of custom field to group by when running All BOEs report with special format template; null otherwise.</param>
 		/// <returns>Report</returns>
-		public ActionResult ExportCustomReport(string workspace, ICollection<int> BoesSelected, ICollection<BoeCustomReportComponent> ComponentsSelected, string summarizeByCustomField)
+		public async Task<ActionResult> ExportCustomReport(string workspace, ICollection<int> BoesSelected, ICollection<BoeCustomReportComponent> ComponentsSelected, string summarizeByCustomField)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			return this.ExportAllBOEsReport(ws, summarizeByCustomField, BoesSelected, ComponentsSelected, custom: true);
+			return await this.ExportAllBOEsReport(ws, summarizeByCustomField, BoesSelected, ComponentsSelected, custom: true);
 		}
 
 		/// <summary>
@@ -1752,7 +1753,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="segmented">Whether the output should be broken into segments and zipped</param>
 		/// <returns>Contents of the ALL BOEs report</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.")]
-		private ActionResult ExportAllBOEsReport(FullWorkspace workspace, string summarizeByCustomField, ICollection<int> selectedBOEs, ICollection<BoeCustomReportComponent> selectedComponents, bool custom, bool segmented = false)
+		private async Task<ActionResult> ExportAllBOEsReport(FullWorkspace workspace, string summarizeByCustomField, ICollection<int> selectedBOEs, ICollection<BoeCustomReportComponent> selectedComponents, bool custom, bool segmented = false)
 		{
 			ActionResult result = new EmptyResult();
 
@@ -1766,7 +1767,7 @@ namespace GenBOE.Web.Controllers
 
 				this.reportsControllerLogic.PrepareAllBOEsReport(workspace, IsSubcontractorUser(workspace), summarizeByCustomField, selectedBOEs, ViewData, out isCustomExport,
 					out wsExportFormatDTO, out exportInputs, out boeExportModelViews, out boeSummaryGridModelViews, custom);
-				this.reportsControllerLogic.ExportAllBOEsReport(workspace, selectedComponents, Response, isCustomExport, wsExportFormatDTO, exportInputs,
+				await this.reportsControllerLogic.ExportAllBOEsReport(workspace, selectedComponents, Response, isCustomExport, wsExportFormatDTO, exportInputs,
 					boeExportModelViews, boeSummaryGridModelViews, segmented);
 			}
 			catch (GenValidationException ex)
@@ -1947,7 +1948,7 @@ namespace GenBOE.Web.Controllers
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "reportModelView")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.")]
-		public ActionResult Export(string workspace, int reportID, string summarizeByCustomField)
+		public async Task<ActionResult> Export(string workspace, int reportID, string summarizeByCustomField)
 		{
 			ActionResult toReturn = null;
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -2029,11 +2030,11 @@ namespace GenBOE.Web.Controllers
 				//
 				else if (reportID == (int)Reports.AllBOEs)
 				{
-					toReturn = this.ExportAllBOEsReport(ws, summarizeByCustomField, null, null, false);
+					toReturn = await this.ExportAllBOEsReport(ws, summarizeByCustomField, null, null, false);
 				}
 				else if (reportID == (int)Reports.AllBOEsSegmented)
 				{
-					toReturn = this.ExportAllBOEsReport(ws, summarizeByCustomField, null, null, false, true);
+					toReturn = await this.ExportAllBOEsReport(ws, summarizeByCustomField, null, null, false, true);
 				}
 				else if (reportID == (int)Reports.WorkspaceData)
 				{

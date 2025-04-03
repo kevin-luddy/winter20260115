@@ -12,11 +12,12 @@ namespace GenBOE.Dtos
     using System.Diagnostics.CodeAnalysis;
     using System.Collections.ObjectModel;
     using IES.Common;
+	using Newtonsoft.Json;
 
-    /// <summary>
-    /// DTO to show all WBS info.
-    /// </summary>
-    [ExcludeFromCodeCoverage]
+	/// <summary>
+	/// DTO to show all WBS info.
+	/// </summary>
+	[ExcludeFromCodeCoverage]
     [Serializable()]
     public class WbsDTO : UpdateableDTO, IWorkspaceMembership
 
@@ -83,7 +84,8 @@ namespace GenBOE.Dtos
         /// <summary>
         /// Internal IEnum for loader processing only
         /// </summary>
-        internal IEnumerable<int> ClinIDsIEnum { get; set; }
+        [JsonIgnore]
+		internal IEnumerable<int> ClinIDsIEnum { get; set; }
 
 
         /// <summary>
@@ -91,10 +93,11 @@ namespace GenBOE.Dtos
         /// </summary>
         public Collection<int> ClinsInUse { get; set; }
 
-        /// <summary>
-        /// Internal IEnum for loader processing only
-        /// </summary>
-        internal IEnumerable<int> ClinsInUseIEnum { get; set; }
+		/// <summary>
+		/// Internal IEnum for loader processing only
+		/// </summary>
+		[JsonIgnore]
+		internal IEnumerable<int> ClinsInUseIEnum { get; set; }
 
         /// <summary>
         /// Gets or sets WorkspaceID

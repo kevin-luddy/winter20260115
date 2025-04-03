@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2025 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -8,6 +8,7 @@ namespace IES.Common.Core.Configuration
 {
 	using System.Configuration;
 	using IES.Common.Core.Enums;
+	using Microsoft.Extensions.Configuration;
 
 	/// <summary>
 	/// Singleton that stores system configurations from web.config
@@ -33,9 +34,23 @@ namespace IES.Common.Core.Configuration
 		{
 			//get the company configuration string if it doesn't contain a valid value set to IS&GS
 			// Note: This MUST NOT use the ConfigurationUtilities methods or an infinite loop condition will occur
-			string sCompany = ConfigurationManager.AppSettings["CompanyConfiguration"];
-			CompanyMode = string.IsNullOrEmpty(sCompany) ? CompanyConfiguration.ISGS : sCompany.GetEnumeratedValue<CompanyConfiguration>(CompanyConfiguration.ISGS);
+			string sCompany = System.Configuration.ConfigurationManager.AppSettings["CompanyConfiguration"];
+			if (string.IsNullOrEmpty(sCompany))
+			{
+				// try to pull from BuildConfiguration first
+				if (BuildConfiguration != null)
+				{
+					sCompany = BuildConfiguration["CompanyConfiguration"];
+				}
 
+				// try to pull from appsettings.json
+				if (string.IsNullOrEmpty(sCompany) && ApplicationConfigurationBase.Configuration != null)
+				{
+					sCompany = ApplicationConfigurationBase.Configuration["CompanyConfiguration"];
+				}
+			}
+
+			CompanyMode = string.IsNullOrEmpty(sCompany) ? CompanyConfiguration.ISGS : sCompany.GetEnumeratedValue<CompanyConfiguration>(CompanyConfiguration.ISGS);
 			CompanyConfigurationSettings = SystemConfigurationSection.Section[CompanyMode];
 		}
 
@@ -54,6 +69,8 @@ namespace IES.Common.Core.Configuration
 		/// Company-specific configuration override settings
 		/// </summary>
 		public CompanyConfigurationSection CompanyConfigurationSettings { get; }
+
+		public static IConfigurationManager BuildConfiguration { get; set; }
 
 		#region public methods
 
