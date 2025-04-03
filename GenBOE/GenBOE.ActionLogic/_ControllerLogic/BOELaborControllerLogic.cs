@@ -4525,7 +4525,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 							// Merge the two rows
 							currentRow.HistoricalHours = currentRow.HistoricalHours == 0m ? 0m : currentRow.HistoricalHours;
-							currentRow.LaborSkillMix = currentRow.HistoricalHours == 0m ? 0m : currentRow.HistoricalHours * 100.0m / refreshedRow.LaborSkillMix;
 							currentRow.ResourceNew = currentRow.ResourceNew ?? string.Empty;
 
 							anyValidCurrentRows = true;
@@ -4555,6 +4554,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							{
 								// No resource selected, zero out the proposed hours.  BOE Skill Mix % will be 0% auto-calculated later
 								currentRow.ProposedHours = 0m;
+								currentRow.HistoricalHours = refreshedRow.HistoricalHours;
 							}
 
 							if (isBRCEnabled)
@@ -4628,10 +4628,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			// Set BOE Skill Mix Percent on Common Disclosure table
 			foreach (CommonDisclosureModelView row in refreshedModel.CommonDisclosureRows)
 			{
+				row.LaborSkillMix = refreshedModel.CommonDisclosureTotals.HistoricalHours == 0m ? 0m : row.HistoricalHours * 100.0m / refreshedModel.CommonDisclosureTotals.HistoricalHours;
 				if (row.Included && refreshedModel.CommonDisclosureTotals.ProposedHours != 0.0m)
 				{
 					row.BOESkillMix = row.ProposedHours * 100.0m / refreshedModel.CommonDisclosureTotals.ProposedHours;
-					row.LaborSkillMix = refreshedModel.CommonDisclosureTotals.HistoricalHours == 0m ? 0m : row.HistoricalHours * 100.0m / refreshedModel.CommonDisclosureTotals.HistoricalHours;
 				}
 				else
 				{
