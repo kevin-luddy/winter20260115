@@ -821,7 +821,7 @@
                                 <table class="header-rows">
                                     <thead>
                                         <tr>
-                                            <th>Resource</th>
+                                            <th>Resource<% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)     {  %> *<%  } %> %></th>
                                             <th data-ng-if="IsBRCEnabled">Business Resource Code</th>
                                             <th>Performing Org</th>
                                         </tr>
@@ -994,7 +994,7 @@
                                         </select>
                                     </td>
                                     <td data-ng-if="!isSkillMixManual()" style="text-align: right">{{row.HistoricalHours | number:2}}</td>
-                                    <td data-ng-if="isSkillMixManual()" style="text-align: right"><input type="number" data-ng-blur="refreshSkillMixTables()" data-ng-model="row.HistoricalHours" step="any" style="width: 100%; height: 14px;" /></td>
+                                    <td data-ng-if="isSkillMixManual()" style="text-align: right"><input type="number" data-ng-model="row.HistoricalHours" step="any" style="width: 100%; height: 14px;" /></td>
                                     <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
                                     <td>{{row.Included | yesNo}}</td>
                                     <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
@@ -1046,25 +1046,15 @@
                                         <th style="width: 90px;">UCOT Hours</th>
                                     <% } %>
                                     <th>Rationale**</th>
-                                    <th data-ng-if="!ManageTaskModel.IsSpace" style="width: 38px;"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <!-- Display the data for each of the Common Disclosure Skill Mix Table rows. -->
                                 <tr ng-repeat="row in skillMixRationale.data.CommonDisclosureRows">
                                     <td>{{row.ResourceID}}</td>
-                                    <td data-ng-if="ManageTaskModel.IsSpace">{{row.BusinessResourceID}}</td>
-                                    <td data-ng-if="!ManageTaskModel.IsSpace">
-                                        <!-- Select for Business Resouce ID if the Resource ID has a value. -->
-                                        <select
-                                            ng-if="!row.ResourceID.length"
-                                            data-ng-options="option for option in commonDisclosureLaborTypeSelections track by option"
-                                            ng-model="row.BusinessResourceID"
-                                            ng-change="refreshSkillMixTables()">
-                                        </select>
-                                        <span ng-if="row.ResourceID.length">{{row.BusinessResourceID}}</span>
-                                    </td>
-                                    <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>
+                                    <td>{{row.BusinessResourceID}}</td>
+                                    <td data-ng-if="!isSkillMixManual()" style="text-align: right">{{row.HistoricalHours | number:2}}</td>
+                                    <td data-ng-if="isSkillMixManual()" style="text-align: right"><input type="number" data-ng-model="row.HistoricalHours" step="any" style="width: 100%; height: 14px;" /></td>
                                     <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
                                     <td>{{row.Included | yesNo}}</td>
                                     <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
@@ -1077,11 +1067,6 @@
                                         <div id="cd-table-rationale">
                                             <textarea id="cd-rationale" data-ng-model="row.Rationale" data-ng-blur="rationaleUpdated()" style="width: 100%; height: 14px; max-height: 45px; overflow-y: auto; resize: vertical;" maxlength="255"></textarea>
                                         </div>
-                                    </td>
-                                    <!-- Action Buttons for adding (+) and deleting (-) rows. -->
-                                    <td data-ng-if="!ManageTaskModel.IsSpace">
-                                        <button ng-click="addCommonDisclosureRow($index)" ng-show="showCommonDisclosureAddButton(row.ResourceID)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
-                                        <button ng-click="deleteCommonDisclosureRow($index)" ng-show="showCommonDisclosureDeleteButton(row.ResourceID)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">-</button>
                                     </td>
                                 </tr>
                                 <!-- Display the Common Disclosure Totals row. -->

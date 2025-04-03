@@ -17,7 +17,7 @@ namespace GenBOE.Tests.ActionLogic
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
-    using IES.Common;
+	using IES.Common;
     using IES.Common.classes;
     using Microsoft.Practices.Unity;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -157,6 +157,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boe });
+			retriever.Setup(x => x.GetPerformingOrgsByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<PerformingOrgDTO>());
 
 			BOESummary sut = new BOESummary(TravelTripCostCalculator.Object, rmsTripCalculate.Object);
             BOEExportInputs exportInputs = new BOEExportInputs(boe, workspace);

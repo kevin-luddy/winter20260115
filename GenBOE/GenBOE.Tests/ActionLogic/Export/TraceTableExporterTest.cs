@@ -240,7 +240,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 			TraceTableBoeData resIdField = wbsField.ChildData.FirstOrDefault();
 			Assert.IsNotNull(resIdField);
 			Assert.AreEqual(SummaryFieldType.ResourceOrActivityId.GetDescription(), resIdField.SummaryField);
-			Assert.AreEqual(resource1.ResourceName, resIdField.SummaryFieldValue);
+			Assert.AreEqual(resource1.ResourceDesc, resIdField.SummaryFieldValue);
 			Assert.AreEqual(resourceType1.ValueSpread + resourceType3.ValueSpread, resIdField.TotalValue);
 			Assert.IsFalse(resIdField.ChildData.Any());
 
@@ -279,7 +279,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 			TraceTableBoeData resDescField = taskField.ChildData.FirstOrDefault();
 			Assert.IsNotNull(wbsField);
 			Assert.AreEqual(SummaryFieldType.ResourceDescription.GetDescription(), resDescField.SummaryField);
-			Assert.AreEqual(resource1.ResourceDesc, resDescField.SummaryFieldValue);
+			Assert.AreEqual(resource1.ResourceName, resDescField.SummaryFieldValue);
 			Assert.AreEqual(0, resDescField.TotalValue);
 			Assert.IsFalse(resDescField.SpreadValuesForYear.Any());
 			Assert.IsTrue(resDescField.ChildData.Any());
