@@ -16,9 +16,6 @@ namespace GenBOE.Web.Common
 	using IES.Common;
 	using GenBOE.Objects;
 	using IES.Common.classes;
-	using System.Collections.Generic;
-	using GenBOE.Dtos;
-	using System.Linq;
 	using System.Configuration;
 
 	[ExcludeFromCodeCoverage]
