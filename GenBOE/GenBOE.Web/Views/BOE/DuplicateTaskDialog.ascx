@@ -123,7 +123,7 @@
             </table>
         </div>
         <div class="form-row">
-            <div class="form-element">Note: Must not contain any OCI, classified, export controlled or third party proprietary information.</div>
+            <div class="form-element">Note: <%: SiteMasterUtilities.GetBannerText() %></div>
         </div>
         <div class="buttons">
             <button id="DuplicateTaskElementDialogSave" class="ies-action disabled" name="save-button" type="button">Save</button>

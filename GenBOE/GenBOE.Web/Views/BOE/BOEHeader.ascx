@@ -68,7 +68,7 @@
 
         BoeHeaderWidget = AfterDomLoadBoeHeaderWidget(containsOCI, readOnly, workspaceState, saveEditBoeHeaderUrl, 
 			boeStateNotDraft, allowDateShift, <%:rteFieldSize%>, dateShiftUrl, findAdjacentBoesUrl, boeId, newBoeUrl,
-			'<%:showCustomQuestions.ToString()%>'.isTrue(), <%:numberQuestions%>, <%: SiteMasterUtilities.IsClassEnvironment.ToString().ToLower() %>);
+			'<%:showCustomQuestions.ToString()%>'.isTrue(), <%:numberQuestions%>);
     });
 </script>
 

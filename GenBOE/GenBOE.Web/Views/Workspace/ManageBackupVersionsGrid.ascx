@@ -157,11 +157,13 @@
             }
         });
 
-        if (<%= ViewData["ContainsOCI"] %>) {
-            $('.oci-note').html('<b>Note:</b> Must not contain any classified, export controlled or third party proprietary information.');
+		if (<%= ViewData["ContainsOCI"] %>) {
+			var text = <%: SiteMasterUtilities.GetBannerText(true) %>;
+            $('.oci-note').html('<b>Note:</b> ' + text);
         }
-        else {
-            $('.oci-note').html('<b>Note:</b> Must not contain any OCI, classified, export controlled or third party proprietary information.');
+		else {
+			var = text = <%: SiteMasterUtilities.GetBannerText() %>;
+            $('.oci-note').html('<b>Note:</b> ' + text);
         }
     });
 </script>

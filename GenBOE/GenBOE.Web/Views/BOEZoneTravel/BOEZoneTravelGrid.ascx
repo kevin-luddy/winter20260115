@@ -98,7 +98,7 @@
                 </div>
             </div>
             <div class="form-row">
-                <div class="form-element">Note: Must not contain any OCI, classified, export controlled or third party proprietary information.</div>
+                <div class="form-element">Note: <%: SiteMasterUtilities.GetBannerText(true) %></div>
 
             </div>
             <div class="buttons">

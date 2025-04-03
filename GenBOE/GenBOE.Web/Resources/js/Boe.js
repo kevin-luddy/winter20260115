@@ -319,7 +319,7 @@ function SetupMonthPickerJquery(inputBox) {
 }
 
 function AfterDomLoadBoeHeaderWidget(containsOCI, readOnly, workspaceState, saveEditBoeHeaderUrl,  
-    boeStateNotDraft, allowDateShift, rteFieldSize, dateShiftUrl, findAdjacentBoesUrl, boeId, newBoeUrl, useQuestions, numberQuestions, isClassEnvironment) {
+    boeStateNotDraft, allowDateShift, rteFieldSize, dateShiftUrl, findAdjacentBoesUrl, boeId, newBoeUrl, useQuestions, numberQuestions) {
     var formConfigs = [];
     formConfigs.push({
         ElementID: 'BoeHeaderForm',
@@ -377,7 +377,6 @@ function AfterDomLoadBoeHeaderWidget(containsOCI, readOnly, workspaceState, save
             }
         ],
 		ContainsOCI: containsOCI,
-		IsClassEnvironment: isClassEnvironment,
         OnDataRetrieved: function(data) {
             data.CustomFieldValues=[];
 
@@ -2122,11 +2121,11 @@ function AfterDomLoadBOECommentsGridWidget(BOECommentsGrid) {
         BOECommentsGrid.EnableApprovals();
     }
 
-    if (BOECommentsGrid.ContainsOCI == true) {
-        $('.oci-note').html('<b>Note:</b> Must not contain any classified, export controlled or third party proprietary information.');
+	if (BOECommentsGrid.ContainsOCI == true) {
+        $('.oci-note').html('<b>Note:</b> ' + BOECommentsGrid.BannerTextWithoutOCI);
     }
     else {
-        $('.oci-note').html('<b>Note:</b> Must not contain any OCI, classified, export controlled or third party proprietary information.');
+        $('.oci-note').html('<b>Note:</b> ' + BOECommentsGrid.BannerTextWithOCI);
     }
 
     refreshModule($('.boe-comments.module'));

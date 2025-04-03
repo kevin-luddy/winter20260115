@@ -26,13 +26,13 @@ function InitializeWorkspaceIdentificationWidget(widgetConfig, jumpUrl) {
     WorkspaceIdentificationWidget.ContainsOCIRadioClick = function () {
         var form = $('#WorkspaceIdentificationForm');
 
-        if (form.find('input[name=ContainsOCI]:checked').val() === 'True') {
-            form.find('.oci-note').html('<b>Note:</b> Must not contain any classified, export controlled or third party proprietary information.');
+		if (form.find('input[name=ContainsOCI]:checked').val() === 'True') {
+            form.find('.oci-note').html('<b>Note:</b> ' + form.BannerTextWithoutOCI);
         }
         else {
             GenSession.confirmDialog("Contains OCI Information", "Is the Workspace clean of all OCI data?",
                 function () {
-                    form.find('.oci-note').html('<b>Note:</b> Must not contain any OCI, classified, export controlled or third party proprietary information.');
+                    form.find('.oci-note').html('<b>Note:</b> ' + form.BannerTextWithOCI);
                 },
                 function () {
                     $('#ContainsOCI-Yes').prop("checked", true);

@@ -49,8 +49,8 @@
 			}],
 			HideOCI: false,
 			// We Load both OCI and NON OCI texts so that the Generation.JS will use the ContainsOCI to display the correct text
-			BannerTextWithOCI: <%: SiteMasterUtilities.GetBannerText(true) %>,
-			BannerTextWithoutOCI: <%: SiteMasterUtilities.GetBannerText() %>
+			BannerTextWithOCI: <%: SiteMasterUtilities.GetBannerText() %>,
+			BannerTextWithoutOCI: <%: SiteMasterUtilities.GetBannerText(true) %>
 		});
 		console.log(FormConfigs);
         var widgetConfig = {};

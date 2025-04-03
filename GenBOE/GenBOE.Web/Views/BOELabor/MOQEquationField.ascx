@@ -536,7 +536,7 @@
                 </div>
             </div>
             <div class="form-row">
-                <div class="form-element">Note: Must not contain any OCI, classified, export controlled or third party proprietary information.</div>
+                <div class="form-element">Note: <%: SiteMasterUtilities.GetBannerText() %></div>
             </div>
             <div class="buttons">
                 <button id="ReOrderMoqTypesDialog-Close" class="ies" data-ng-click="closeReOrderMoqTypes()" name="cancel-button" type="button">Close</button>
@@ -558,7 +558,7 @@
                 </div>
             </div>
             <div class="form-row">
-                <div class="form-element">Note: Must not contain any OCI, classified, export controlled or third party proprietary information.</div>
+                <div class="form-element">Note: <%: SiteMasterUtilities.GetBannerText() %></div>
             </div>
             <div class="buttons">
                 <button id="ReOrderMoqTablesDialog-Close" class="ies" data-ng-click="closeReOrderMoqTables()" name="cancel-button" type="button">Close</button>

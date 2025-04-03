@@ -379,24 +379,13 @@ namespace GenBOE.Web.Common
 		}
 
 		/// <summary>
-		/// Are we in a classified environment?
-		/// </summary>
-		public static bool IsClassEnvironment
-		{
-			get
-			{
-				return bool.TrueString.ToLower() == ConfigurationManager.AppSettings["IsClassEnvironment"].ToLower();
-			}
-		}
-
-		/// <summary>
 		/// Gets Banner Text from Web Config
 		/// </summary>
-		/// <param name="containsOCI">Contains OCI Data</param>
+		/// <param name="containsOCI">Does the Data Contain OCI Data?</param>
 		/// <returns>Text for Banner</returns>
 		public static string GetBannerText(bool containsOCI = false)
 		{
-			return containsOCI ? ConfigurationManager.AppSettings["BannerTextWithOCI"] : ConfigurationManager.AppSettings["BannerTextWithoutOCI"];
+			return containsOCI ? ConfigurationManager.AppSettings["BannerTextWithoutOCI"] : ConfigurationManager.AppSettings["BannerTextWithOCI"];
 		}
 	}
 }

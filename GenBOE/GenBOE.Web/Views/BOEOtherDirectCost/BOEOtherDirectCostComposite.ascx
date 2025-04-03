@@ -5,12 +5,12 @@
     // Get the read-only attribute passed in from the controller
     var ODC_ContainsOCI = <%= ViewData["ContainsOCI"] %>;
     var summaryGridReloadEvent = '<%:WebConstants.EVENT_BOESUMMARYGRID_RELOAD %>';
-	var bannerTextWithOCI = '<%= SiteMasterUtilities.GetBannerText(true) %>';
-	var bannerTextWithoutOCI = '<%= SiteMasterUtilities.GetBannerText() %>';
     var ODCElementsComposite = InitializeODCElementsCompositeWidget(summaryGridReloadEvent);
+	ODCElementsComposite.BannerTextWithOCI = '<%= SiteMasterUtilities.GetBannerText() %>';
+	ODCElementsComposite.BannerTextWithoutOCI = '<%= SiteMasterUtilities.GetBannerText(true) %>';
 
 	$(function () {
-		AfterDomLoadODCElementsCompositeWidget(ODCElementsComposite, ODC_ContainsOCI, bannerTextWithOCI, bannerTextWithoutOCI);
+		AfterDomLoadODCElementsCompositeWidget(ODCElementsComposite, ODC_ContainsOCI);
     });
 </script>
     

@@ -14,12 +14,10 @@
         saveTravelDetailsCompositeUrl);        
 
     $(function () {
-    
-        AfterDomLoadTravelElementsCompositeWidget(TravelElementsComposite);
-        
+		TravelElementsComposite.BannerTextWithOCI = <%: SiteMasterUtilities.GetBannerText() %>;
+		TravelElementsComposite.BannerTextWithoutOCI = <%: SiteMasterUtilities.GetBannerText(true) %>;
+        AfterDomLoadTravelElementsCompositeWidget(TravelElementsComposite); 
     });
-
-    
 </script>
     
 <div id="TravelElementsComposite" class="travel-elements-composite composite">

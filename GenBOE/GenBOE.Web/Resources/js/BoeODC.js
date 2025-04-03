@@ -416,7 +416,7 @@ function InitializeODCElementsCompositeWidget(summaryGridReloadEvent) {
     return ODCElementsComposite;
 }
 
-function AfterDomLoadODCElementsCompositeWidget(ODCElementsComposite, ODC_ContainsOCI, bannerTextWithOCI, bannerTextWithoutOCI) {
+function AfterDomLoadODCElementsCompositeWidget(ODCElementsComposite, ODC_ContainsOCI) {
     $("#Cancel-ODCUpdates").click(ODCElementsComposite.CancelToMainGrid);
 
     ODCElementsComposite.widgetsLoaded=0;
@@ -432,10 +432,10 @@ function AfterDomLoadODCElementsCompositeWidget(ODCElementsComposite, ODC_Contai
       
     //Change the OCI note based off the workspace
 	if (ODC_ContainsOCI == true) {
-		$('#ODC-OCINote').html(bannerTextWithOCI);
+		$('#ODC-OCINote').html(ODCElementsComposite.BannerTextWithoutOCI);
     }
 	else {
-		$('#ODC-OCINote').html(bannerTextWithoutOCI);
+		$('#ODC-OCINote').html(ODCElementsComposite.BannerTextWithOCI);
     }
 
     refreshModule($('.odc-details .module'));
@@ -542,8 +542,6 @@ function InitializeBOEOtherDirectCostWidget(BOEOtherDirectCostWidget_ReadOnly, l
                 $('#ReOrderODCTaskElementDialog #ReOrderODCTaskElementDialog-Save').removeClass('display-none');
             }
         });
-
-
     };
 
     BOEOtherDirectCostWidget.ShiftSelectedItemsDown = function (list) {

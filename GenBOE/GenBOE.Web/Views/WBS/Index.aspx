@@ -21,8 +21,6 @@
         createBOEsAction: '<%:WebConstants.ACTION_CREATE_BOES %>'
      });
 
-	var isClassEnvironment = <%: SiteMasterUtilities.IsClassEnvironment.ToString().ToLower() %>;
-	console.log(isClassEnvironment);
     var ManageWBSWidget;
     $(".main").addClass("wbs");
 

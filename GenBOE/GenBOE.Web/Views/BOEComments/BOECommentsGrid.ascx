@@ -38,7 +38,9 @@
     InitializeBOECommentsGridWidget(BOECommentsGrid, originalApproverInfo,workspaceLocked, reloadCommentGridEvent, saveBOECommentsUrl, 
         reloadHistoryGridEvent, workspace);        
 
-    $(function () {
+	$(function () {
+		BOECommentsGrid.BannerTextWithOCI = <%: SiteMasterUtilities.GetBannerText() %>;
+		BOECommentsGrid.BannerTextWithoutOCI = <%: SiteMasterUtilities.GetBannerText(true) %>;
         AfterDomLoadBOECommentsGridWidget(BOECommentsGrid);
     });
 </script>

@@ -326,8 +326,8 @@
 					</div>
 				</div>
 				<div id="OCINote" data-ng-show="dialog.showSteps" class="oci-note">
-					<span data-ng-show="gridModel.ContainsOCI"><b>Note:</b> Must not contain any classified, export controlled or third party proprietary information.</span>
-					<span data-ng-hide="gridModel.ContainsOCI"><b>Note:</b> Must not contain any OCI, classified, export controlled or third party proprietary information.</span>
+					<span data-ng-show="gridModel.ContainsOCI"><b>Note:</b> <%: SiteMasterUtilities.GetBannerText(true) %></span>
+					<span data-ng-hide="gridModel.ContainsOCI"><b>Note:</b> <%: SiteMasterUtilities.GetBannerText() %></span>
 				</div>
 				<div>
 					<div class="buttons" data-ng-show="dialog.showSteps">
