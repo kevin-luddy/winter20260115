@@ -16,7 +16,6 @@ namespace GenBOE.Web.Common
 	using IES.Common;
 	using GenBOE.Objects;
 	using IES.Common.classes;
-	using System.Configuration;
 
 	[ExcludeFromCodeCoverage]
 	sealed public class SiteMasterUtilities
@@ -382,7 +381,7 @@ namespace GenBOE.Web.Common
 		/// <returns>Text for Banner</returns>
 		public static string GetBannerText(bool containsOCI = false)
 		{
-			return containsOCI ? ConfigurationManager.AppSettings["BannerTextWithoutOCI"] : ConfigurationManager.AppSettings["BannerTextWithOCI"];
+			return containsOCI ? ConfigurationUtilities.GetAppSetting("BannerTextWithoutOCI") : ConfigurationUtilities.GetAppSetting("BannerTextWithOCI");
 		}
 	}
 }
