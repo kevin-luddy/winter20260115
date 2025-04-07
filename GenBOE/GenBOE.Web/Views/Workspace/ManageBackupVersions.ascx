@@ -205,11 +205,11 @@
         ManageBackupVersionsWidget.ContainsOCI = <%= ViewData["ContainsOCI"] %>;
 
 		if (ManageBackupVersionsWidget.ContainsOCI == true) {
-			var text = <%: SiteMasterUtilities.GetBannerText(true) %>;
+			var text = '<%: SiteMasterUtilities.GetBannerText(true) %>';
             $('#OCINote').html('<b>Note:</b> ' + text);
         }
 		else {
-			var text = <%: SiteMasterUtilities.GetBannerText() %>;
+			var text = '<%: SiteMasterUtilities.GetBannerText() %>';
             $('#OCINote').html('<b>Note:</b> ' + text);
         }
 

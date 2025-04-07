@@ -14,8 +14,8 @@
         saveZoneTravelDetailsCompositeUrl); 
     
 	$(function () {
-		ZoneTravelElementsComposite.BannerTextWithoutOCI = <%: SiteMasterUtilities.GetBannerText(true) %>;
-		ZoneTravelElementsComposite.BannerTextWithOCI = <%: SiteMasterUtilities.GetBannerText() %>;
+		ZoneTravelElementsComposite.BannerTextWithoutOCI = '<%: SiteMasterUtilities.GetBannerText(true) %>';
+		ZoneTravelElementsComposite.BannerTextWithOCI = '<%: SiteMasterUtilities.GetBannerText() %>';
         AfterDomLoadZoneTravelElementsCompositeWidget(ZoneTravelElementsComposite);
     });
 </script>

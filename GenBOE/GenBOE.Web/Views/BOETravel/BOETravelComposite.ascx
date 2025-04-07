@@ -14,8 +14,8 @@
         saveTravelDetailsCompositeUrl);        
 
     $(function () {
-		TravelElementsComposite.BannerTextWithOCI = <%: SiteMasterUtilities.GetBannerText() %>;
-		TravelElementsComposite.BannerTextWithoutOCI = <%: SiteMasterUtilities.GetBannerText(true) %>;
+		TravelElementsComposite.BannerTextWithOCI = '<%: SiteMasterUtilities.GetBannerText() %>';
+		TravelElementsComposite.BannerTextWithoutOCI = '<%: SiteMasterUtilities.GetBannerText(true) %>';
         AfterDomLoadTravelElementsCompositeWidget(TravelElementsComposite); 
     });
 </script>

@@ -80,11 +80,11 @@
 
         //Change the OCI note based off the workspace
 		if (MaterialElementsComposite_ContainsOCI == true) {
-			var text = <%: SiteMasterUtilities.GetBannerText(true) %>;
+			var text = '<%: SiteMasterUtilities.GetBannerText(true) %>';
            $('#OCINote').html(text);
         }
 		else {
-			var text = <%: SiteMasterUtilities.GetBannerText() %>;
+			var text = '<%: SiteMasterUtilities.GetBannerText() %>';
            $('#OCINote').html(text);
         }
 

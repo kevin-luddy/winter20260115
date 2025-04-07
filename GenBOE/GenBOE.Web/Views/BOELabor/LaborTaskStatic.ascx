@@ -136,11 +136,11 @@
 
         //Change the OCI note based off the workspace
 		if (ManageWBS_ContainsOCI == true) {
-			var text = <%: SiteMasterUtilities.GetBannerText(true) %>;
+			var text = '<%: SiteMasterUtilities.GetBannerText(true) %>';
             $('#Task-OCINote').html(text);
         }
 		else {
-			var text = <%: SiteMasterUtilities.GetBannerText() %>;
+			var text = '<%: SiteMasterUtilities.GetBannerText() %>';
             $('#Task-OCINote').html(text);
         }
 

@@ -4325,12 +4325,13 @@ function GenForm(inFormConfig, inContext) {
                 buttonContainer.append(ociContainer);
             }
 
-			var contents = '<b>Note: </b> ' + containsOCI ? bannerTextWithOCI : bannerTextWithoutOCI;
+			var contents = '<b>Note: </b> ';
 
-			//var contents = '<b>Note:</b> Must not contain any '
-			//	+ (containsOCI ? 'OCI, ' : '')
-			//	+ (isClassEnvironment ? '' : 'classified, ')
-			//	+ 'export controlled or third party proprietary information.';
+			if (containsOCI) {
+				contents += bannerTextWithoutOCI;
+			} else {
+				contents += bannerTextWithOCI;
+			}
 
 			ociContainer.html(contents);
         }

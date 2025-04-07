@@ -39,8 +39,8 @@
         reloadHistoryGridEvent, workspace);        
 
 	$(function () {
-		BOECommentsGrid.BannerTextWithOCI = <%: SiteMasterUtilities.GetBannerText() %>;
-		BOECommentsGrid.BannerTextWithoutOCI = <%: SiteMasterUtilities.GetBannerText(true) %>;
+		BOECommentsGrid.BannerTextWithOCI = '<%: SiteMasterUtilities.GetBannerText() %>';
+		BOECommentsGrid.BannerTextWithoutOCI = '<%: SiteMasterUtilities.GetBannerText(true) %>';
         AfterDomLoadBOECommentsGridWidget(BOECommentsGrid);
     });
 </script>
