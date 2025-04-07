@@ -147,7 +147,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				{
 					ResourceDTO resource = this.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == labor.ResourceID);
 
-					laborToElementOfCost[labor.Id] = resource.ElementOfCost;
+					laborToElementOfCost[labor.Id] = resource?.ElementOfCost ?? ElementOfCostType.NotSet;
 				}
 
 				// Add UCOT data
