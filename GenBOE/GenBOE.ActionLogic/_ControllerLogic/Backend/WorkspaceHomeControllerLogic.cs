@@ -18,15 +18,17 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 		/// WorkspaceDTODataLoader
 		/// </summary>
 		private IWorkspaceDTODataLoader workspaceDTODataLoader { get; set; }
+		private GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader;
 
 		/// <summary>
 		/// ActiveDirectoryUtilities
 		/// </summary>
 		private ActiveDirectoryUtilities adUtils { get; set; }
 
-		public WorkspaceHomeControllerLogic(IWorkspaceDTODataLoader workspaceDTODataLoader, ActiveDirectoryUtilities adUtils)
+		public WorkspaceHomeControllerLogic(IWorkspaceDTODataLoader workspaceDTODataLoader, GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader, ActiveDirectoryUtilities adUtils)
 		{
 			this.workspaceDTODataLoader = workspaceDTODataLoader;
+			this.proposalLoader = proposalLoader;
 			this.adUtils = adUtils;
 		}
 
@@ -102,6 +104,60 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 			}
 
 			workspaceDTODataLoader.UpdateFavorite(workspaceId, currentUser.UserID, isFavorite);
+		}
+
+		/// <summary>
+		/// Update the favorite in the Home Grid
+		/// </summary>
+		/// <param name="currentUser">current user</param>
+		/// <param name="workspaceId">the workspace being favorited</param>
+		/// <param name="inSoftDelete">soft delete workspace/param>
+		/// <param name="isFavorite">the favorite boolean value</param>
+		public void UpdateDeletedStatus(int workspaceId, UserDTO currentUser, bool inSoftDelete, DateTime updateDate)
+		{
+			if (currentUser == null)
+			{
+				throw new ArgumentNullException(nameof(currentUser));
+			}
+
+			workspaceDTODataLoader.UpdateDeletedStatus(workspaceId, updateDate, inSoftDelete, currentUser.UserID);
+		}
+
+		/// <summary>
+		/// Save the data within Workspace Identification and the Output Format Template
+		/// </summary>
+		/// <param name="userID">Curent user ID</param>
+		/// <param name="wsToSave">the workspace identification and output format to save</param>
+		public void SaveIdentificationAndExportFormat(int userID, WorkspaceDTO wsToSave)
+		{
+			workspaceDTODataLoader.SaveIdentificationAndExportFormat(userID, wsToSave);
+		}
+
+		/// <summary>
+		/// Gets wprkspace by ID
+		/// </summary>
+		/// <param name="workspaceId">workspace Id</param>
+		public WorkspaceDTO GetWorkspaceByID(int workspaceId)
+		{
+			return workspaceDTODataLoader.GetById(workspaceId);
+		}
+
+		/// <summary>
+		/// Gets proposal by ID
+		/// </summary>
+		/// <param name="proposalId">proposal Id</param>
+		public GenTRAC.DataBridge.DTO.ProposalDto GetProposalByID(int proposalId)
+		{
+			return proposalLoader.GetById(proposalId);
+		}
+
+		/// <summary>
+		/// Gets proposal by tracking number
+		/// </summary>
+		/// <param name="trackingNumber">tracking number</param>
+		public int GetProposalIdByTrackingNumber(string trackingNumber)
+		{
+			return proposalLoader.GetIdByTrackingNumber(trackingNumber);
 		}
 	}
 }

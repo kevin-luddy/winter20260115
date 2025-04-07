@@ -101,6 +101,11 @@ namespace GenBOE.ActionLogic.ModelView.Backend
 		public bool IsProjectMapEnabled { get; set; }
 
 		/// <summary>
+		/// Is PTM integrated
+		/// </summary>
+		public bool IsPTMIntegrated { get; set; }
+
+		/// <summary>
 		/// The max amount of rows in project map from configuration.
 		/// </summary>
 		public int MaximumRowsInProjectMap { get; set; }

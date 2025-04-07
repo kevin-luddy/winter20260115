@@ -9,7 +9,11 @@ namespace GenBOE.Web.Controllers
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.Diagnostics;
+	using System.Linq;
+	using System.Transactions;
 	using System.Web.Http;
+	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ControllerLogic;
 	using GenBOE.ActionLogic.ControllerLogic.Backend;
 	using GenBOE.ActionLogic.Metrics;
@@ -23,6 +27,8 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.Web.ModelView;
 	using IES.Common;
 	using IES.Common.Exceptions;
+	using IES.Common.PickList;
+	using Microsoft.VisualBasic.Logging;
 
 	/// <summary>
 	/// Workspace Home Controller for getting workspace home data.
@@ -60,6 +66,8 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		private WorkspaceHomeControllerLogic workspaceHomeControllerLogic { get; set; }
 
+		private IWorkspaceControllerLogic workspaceLogic;
+
 		/// <summary>
 		/// Logger
 		/// </summary>
@@ -68,7 +76,7 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// ctor
 		/// </summary>
-		public WorkspaceHomeController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, ICommonDataMapper commonDataMapper, SiteMasterUtilities siteMasterUtilities, SystemMetrics systemMetrics, IGenBOEControllerLogic genBOEControllerLogic, ISecurityInformation securityInformation, WorkspaceHomeControllerLogic workspaceHomeControllerLogic)
+		public WorkspaceHomeController(ISecurityAccess securityAccess, IFullObjectFactory factory, IWorkspaceControllerLogic workspaceLogic, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, ICommonDataMapper commonDataMapper, SiteMasterUtilities siteMasterUtilities, SystemMetrics systemMetrics, IGenBOEControllerLogic genBOEControllerLogic, ISecurityInformation securityInformation, WorkspaceHomeControllerLogic workspaceHomeControllerLogic)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.commonDataMapper = commonDataMapper;
@@ -77,8 +85,9 @@ namespace GenBOE.Web.Controllers
 			this.genBOEControllerLogic = genBOEControllerLogic;
 			this.securityInformation = securityInformation;
 			this.workspaceHomeControllerLogic = workspaceHomeControllerLogic;
+			this.workspaceLogic = workspaceLogic;
 		}
-		#endregion 
+		#endregion
 
 		/// <summary>
 		/// Gets the site menu items based on the workspace short name.
@@ -153,7 +162,7 @@ namespace GenBOE.Web.Controllers
 				if (!userIsSubcontractor)
 				{
 					model.isSysAdmin = CheckPermission(SecurityPage.Admin, null) != SecurityAuthorization.None;
-					if (model.isSysAdmin) 
+					if (model.isSysAdmin)
 					{
 						model.isReadOnly = false;
 					}
@@ -198,6 +207,139 @@ namespace GenBOE.Web.Controllers
 			{
 				logger.Error(ex);
 				result.Messages.Add("Error saving Favorites");
+			}
+
+			return result;
+		}
+
+		[HttpDelete]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<bool> DeleteWorkspaces(GenBOEHomepageWorkspaceRowModelView[] toBeDeleted)
+		{
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+
+			if (toBeDeleted == null || !toBeDeleted.Any())
+			{
+				throw new ArgumentNullException(nameof(toBeDeleted));
+			}
+			UserDTO currentUser = this.UserLoader.GetUserForActiveUser();
+
+			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+			{
+				foreach (GenBOEHomepageWorkspaceRowModelView wsToDelete in toBeDeleted)
+				{
+					FullWorkspace ws = this.Factory.CreateFullWorkspace(wsToDelete.WorkspaceShortName);
+					workspaceHomeControllerLogic.UpdateDeletedStatus(wsToDelete.WorkspaceId, currentUser, true, ws.UpdateDate);
+					this.Factory.ClearWorkspaceCache(ws.Shortname);
+				}
+				scope.Complete();
+				result.Data = true;
+				result.IsSuccessful = true;
+			}
+			return result;
+		}
+
+
+		[HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<bool> RestorePtmWorkspace(GenBOEHomepageWorkspaceRowModelView toBeRestored)
+		{
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+			try
+			{
+				if (toBeRestored == null)
+				{
+					throw new ArgumentNullException(nameof(toBeRestored));
+				}
+
+				FullWorkspace ws = this.Factory.CreateFullWorkspace(toBeRestored.WorkspaceShortName);
+				UserDTO currentUser = this.UserLoader.GetUserForActiveUser();
+				if (String.IsNullOrEmpty(toBeRestored.TrackingNumber))
+				{
+					result.Messages.Add($"A tracking number is required to restore this workspace.");
+					return result;
+				}
+
+				// see if this is a valid PTM Tracking Number
+				int proposalId = workspaceHomeControllerLogic.GetProposalIdByTrackingNumber(toBeRestored.TrackingNumber);
+				if (proposalId > 0)
+				{
+					// found the proposal
+					GenTRAC.DataBridge.DTO.ProposalDto proposal = workspaceHomeControllerLogic.GetProposalByID(proposalId);
+
+					// Copy over the PTM Proposal values from the Tracking Number and from UI
+					ws.CostVolumeLeadPricerUserID = this.UserLoader.GetIdsByNtid(new string[] { toBeRestored.CostVolumeLeadPricerNtId }).First();
+					ws.TrackingNumber = toBeRestored.TrackingNumber;
+					ws.RFPNumber = proposal.RFPNumber;
+					ws.ProposalTitle = proposal.ProposalTitle;
+					if (proposal.ContractTypeIds.Any())
+					{
+						List<int> contractTypeIds = new List<int>();
+						foreach (int contractTypeId in proposal.ContractTypeIds)
+						{
+							int convertedContractTypeId = this.workspaceLogic.ConvertPTMContractTypeId(contractTypeId);
+							if (convertedContractTypeId > 0)
+							{
+								contractTypeIds.Add(convertedContractTypeId);
+							}
+						}
+
+						ws.SelectedContractTypes = contractTypeIds.ToArray();
+					}
+
+					ws.ProposalClass = new PickListDto { Id = this.workspaceLogic.ConvertPTMProposalClassId(proposal.ProposalClass) };
+					ws.LineOfBusiness = new PickListDto { Id = this.workspaceLogic.ConvertPTMLineOfBusiness(proposal.LineOfBusinessID) };
+					ws.ProposalSubmittalDate = proposal.DeliveryDate;
+					ws.RevisedSubmittalDate = proposal.RevisedSubmittalDate;
+				}
+				else
+				{
+					result.Messages.Add($"PTM Tracking Number is invalid. Please choose another from the dropdown list.");
+					return result;
+				}
+
+				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+				{
+					workspaceHomeControllerLogic.SaveIdentificationAndExportFormat(currentUser.UserID, ws);
+					// get the updateDT from DB
+					WorkspaceDTO dto = workspaceHomeControllerLogic.GetWorkspaceByID(toBeRestored.WorkspaceId);
+					workspaceHomeControllerLogic.UpdateDeletedStatus(toBeRestored.WorkspaceId, currentUser, false, dto.UpdateDate);
+					this.Factory.ClearWorkspaceCache(ws.Shortname);
+					scope.Complete();
+					result.Data = true;
+					result.IsSuccessful = true;
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add(ex.Message);
+			}
+
+			return result;
+		}
+
+		[HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<bool> RestoreWorkspace(GenBOEHomepageWorkspaceRowModelView toBeRestored)
+		{
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+
+			if (toBeRestored == null)
+			{
+				throw new ArgumentNullException(nameof(toBeRestored));
+			}
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(toBeRestored.WorkspaceShortName);
+			UserDTO currentUser = this.UserLoader.GetUserForActiveUser();
+
+			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+			{
+				workspaceHomeControllerLogic.UpdateDeletedStatus(toBeRestored.WorkspaceId, currentUser, false, ws.UpdateDate);
+				this.Factory.ClearWorkspaceCache(ws.Shortname);
+				scope.Complete();
+				result.Data = true;
+				result.IsSuccessful = true;
 			}
 
 			return result;
