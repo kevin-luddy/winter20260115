@@ -162,7 +162,7 @@
             $('.oci-note').html('<b>Note:</b> ' + text);
         }
 		else {
-			var = text = '<%: SiteMasterUtilities.GetBannerText() %>';
+			var text = '<%: SiteMasterUtilities.GetBannerText() %>';
             $('.oci-note').html('<b>Note:</b> ' + text);
         }
     });
