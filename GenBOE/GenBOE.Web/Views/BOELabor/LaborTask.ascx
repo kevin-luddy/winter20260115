@@ -821,7 +821,7 @@
                                 <table class="header-rows">
                                     <thead>
                                         <tr>
-                                            <th>Resource<% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)     {  %> *<%  } %> %></th>
+                                            <th>Resource<% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)     {  %> *<%  } %></th>
                                             <th data-ng-if="IsBRCEnabled">Business Resource Code</th>
                                             <th>Performing Org</th>
                                         </tr>

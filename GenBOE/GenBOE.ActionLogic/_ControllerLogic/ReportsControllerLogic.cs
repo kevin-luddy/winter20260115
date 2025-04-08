@@ -151,7 +151,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             #endregion
 
-            isCustomExport = custom || (wsExportFormatDTO.ExportFormat.TemplateType == ExcelReportTemplateType.MASTER);
+            isCustomExport = custom || (wsExportFormatDTO?.ExportFormat?.TemplateType == ExcelReportTemplateType.MASTER);
             bool isOffloading = workspace.ProjectMapType != ProjectMapType.StandardWithoutOffload;
             if (selectedBOEs != null && selectedBOEs.Any())
             {
