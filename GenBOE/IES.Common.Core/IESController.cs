@@ -17,6 +17,7 @@ namespace IES.Common.Core
 	using IES.Common.Core.Configuration;
 	using IES.Common.Core.Interfaces;
 	using IES.Common.Core.Logging;
+	using IES.Common.Core.OfficeUtilities;
 	using IES.Common.Core.Utilities;
 	using Microsoft.AspNetCore.Authentication.Negotiate;
 	using Microsoft.AspNetCore.Authorization;
@@ -246,24 +247,21 @@ namespace IES.Common.Core
 		protected async Task<IActionResult> CreateTextFileWithErrorMessage(params string[] errorMessages)
 		{
 			Response.Headers.Clear();
-			Response.ContentType = "text/plain";
-			Response.Headers.Add("Content-Disposition", new Microsoft.Extensions.Primitives.StringValues("attachment;filename=error.txt"));
-
-			byte[] newline = Encoding.ASCII.GetBytes("\r\n");
-
-			if (errorMessages != null)
+			
+			MemoryStream ms = new MemoryStream();
+			StreamWriter sw = new StreamWriter(ms);
+			foreach (string errorMessage in errorMessages)
 			{
-				foreach (string errorMessage in errorMessages)
-				{
-					byte[] errorContent = Encoding.ASCII.GetBytes(errorMessage);
-					await Response.Body.WriteAsync(errorContent, 0, errorContent.Length);
-					await Response.Body.WriteAsync(newline, 0, newline.Length);
-				}
+				sw.WriteLine(errorMessage);
 			}
+			await sw.FlushAsync();
 
-			Response.Body.Flush();
+			ms.Seek(0, SeekOrigin.Begin);
 
-			return new EmptyResult();
+			return this.File(
+					fileStream: ms,
+					contentType: ExportFileDownloadBase.ContentType_TEXT_PLAIN,
+					fileDownloadName: "error.txt");
 		}
 
 		/// <summary>

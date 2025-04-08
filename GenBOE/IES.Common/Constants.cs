@@ -1045,5 +1045,15 @@ namespace IES.Common
 		/// Skill Mix table name for RMS.
 		/// </summary>
 		public readonly static string RMS_SKILL_MIX_TABLE_HEADER = "Current Skill Mix Table";
+
+		/// <summary>
+		/// Error to display to the user when they encounter an application error.
+		/// </summary>
+		public static readonly string GENERIC_USER_ERROR = "The requested action could not be completed. If the problem persists, please contact your application administrator.";
+
+		/// <summary>
+		/// Error to display to the user when they encounter a 401 error.
+		/// </summary>
+		public static readonly string GENERIC_USER_UNAUTHORIZED = "You are not authorized to access the requested action. If the problem persists, please contact your application administrator.";
 	}
 }

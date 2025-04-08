@@ -47,6 +47,7 @@ namespace GenBOE.Tests.ActionLogic
         public override void Setup()
         {
             base.Setup();
+			retriever.Setup(x => x.GetTMResourceRates(It.IsAny<int>())).Returns(new List<TMResourceRateDTO>());
 
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
@@ -106,7 +107,7 @@ namespace GenBOE.Tests.ActionLogic
         private ValidateBOE CreateSystem()
         {
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
             Mock<IPermissionsDTODataLoader> permloader = new Mock<IPermissionsDTODataLoader>();
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permloader.Object);
 
@@ -119,8 +120,8 @@ namespace GenBOE.Tests.ActionLogic
             Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
 
             ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
-
-            return sut;
+			
+			return sut;
         }
 
         /// <summary>

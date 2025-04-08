@@ -15,14 +15,16 @@ namespace GenBOE.DataBridge.DTO
 	using GenBOE.Dtos;
 	using IES.Common;
     using IES.Common.Interfaces;
+	using Newtonsoft.Json;
 
-    /// <summary>
-    /// This is the task element data associated with the BOE DTO
-    /// </summary>
-    [ExcludeFromCodeCoverage]
+	/// <summary>
+	/// This is the task element data associated with the BOE DTO
+	/// </summary>
+	[ExcludeFromCodeCoverage]
     [Serializable()]
     public class BoeTaskElementDTO : UpdateableDTO, IBOEMembership, IStartEndDates, ICachableDTO, IDateShiftable
     {
+		[JsonIgnore]
         [NonSerialized]
         private static BoeTaskElementDTODataLoader loader;
 
@@ -162,10 +164,11 @@ namespace GenBOE.DataBridge.DTO
         // the ordinary variables within the MOQ equation
         public Collection<OrdinaryVariableDto> OrdinaryVariables { get; set; }
 
-        /// <summary>
-        /// These are used for data load.. During the load the data is stored here temporarily, then it's placed into the public property and cleared out
-        /// </summary>
-        internal IEnumerable<int> WorkspaceVariableIDsIEnum { get; set; }
+		/// <summary>
+		/// These are used for data load.. During the load the data is stored here temporarily, then it's placed into the public property and cleared out
+		/// </summary>
+		[JsonIgnore]
+		internal IEnumerable<int> WorkspaceVariableIDsIEnum { get; set; }
 
         // the workspace variable IDs currently associated with the MOQ equation
         public Collection<int> WorkspaceVariableIDs { get; set; }
@@ -186,10 +189,11 @@ namespace GenBOE.DataBridge.DTO
 
         public string IMS_ID { get; set; }
 
-        /// <summary>
-        /// These are used for data load.. During the load the data is stored here temporarily, then it's placed into the public property and cleared out
-        /// </summary>
-        internal IEnumerable<CustomFieldValueContainer> CustomFieldValueContainersIEnum { get; set; }
+		/// <summary>
+		/// These are used for data load.. During the load the data is stored here temporarily, then it's placed into the public property and cleared out
+		/// </summary>
+		[JsonIgnore]
+		internal IEnumerable<CustomFieldValueContainer> CustomFieldValueContainersIEnum { get; set; }
 
         //BOE Task Element Custom Fields
         public Collection<CustomFieldValueContainer> CustomFieldValueContainers { get; set; }

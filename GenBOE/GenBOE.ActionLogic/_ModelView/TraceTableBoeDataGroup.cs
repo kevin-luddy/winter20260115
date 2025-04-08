@@ -7,8 +7,8 @@
 namespace GenBOE.ActionLogic.ModelView
 {
 	using MoreLinq;
-    using System;
-    using System.Collections.Generic;
+	using System;
+	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 
 	/// <summary>
@@ -20,34 +20,34 @@ namespace GenBOE.ActionLogic.ModelView
 		/// Converts TraceTableBoeData to TraceTableBoeDataGroup model
 		/// </summary>
 		/// <param name="boeData">TraceTableBoeData model</param>
-        public TraceTableBoeDataGroup(TraceTableBoeData boeData)
-        {
+		public TraceTableBoeDataGroup(TraceTableBoeData boeData)
+		{
 			if (boeData == null)
 			{
-                throw new ArgumentNullException(nameof(boeData));
-            }
-            SummaryField = boeData.SummaryField;
-            SummaryFieldValue = boeData.SummaryFieldValue;
-            TotalValue = boeData.TotalValue;
-            SpreadPrecision = boeData.SpreadPrecision;
+				throw new ArgumentNullException(nameof(boeData));
+			}
+			SummaryField = boeData.SummaryField;
+			SummaryFieldValue = boeData.SummaryFieldValue;
+			TotalValue = boeData.TotalValue;
+			SpreadPrecision = boeData.SpreadPrecision;
 
-            foreach (KeyValuePair<int, decimal> boeDataKvp in boeData.SpreadValuesForYear)
-            {
-                SpreadValuesForGroup.Add(boeDataKvp.Key.ToString(), boeDataKvp.Value);
-            }
+			foreach (KeyValuePair<int, decimal> boeDataKvp in boeData.SpreadValuesForYear)
+			{
+				SpreadValuesForGroup.Add(boeDataKvp.Key.ToString(), boeDataKvp.Value);
+			}
 
-            boeData.ChildData.ForEach(x => ChildData.Add(new TraceTableBoeDataGroup(x)));
-        }
+			boeData.ChildData.ForEach(x => ChildData.Add(new TraceTableBoeDataGroup(x)));
+		}
 
 		/// <summary>
 		/// Blank constructor
 		/// </summary>
-        public TraceTableBoeDataGroup() { }
+		public TraceTableBoeDataGroup() { }
 
-        /// <summary>
-        /// Summary field name
-        /// </summary>
-        public string SummaryField { get; set; }
+		/// <summary>
+		/// Summary field name
+		/// </summary>
+		public string SummaryField { get; set; }
 
 		/// <summary>
 		/// Summary Field Value

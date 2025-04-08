@@ -245,7 +245,9 @@ namespace IES.Common.Core.Enums
 		[Description("WBS Summary of Hours, ODC Costs")]
 		WbsBoeReport = 38,
 		[Description("All BOEs broken down in segments")]
-		AllBOEsSegmented = 39
+		AllBOEsSegmented = 39,
+		[Description("Confidence Report")]
+		ConfidenceReport = 40
 
 	}
 

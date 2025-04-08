@@ -948,6 +948,37 @@ namespace IES.Common
 		}
 
 		/// <summary>
+		/// Private for Is Report Generation External
+		/// </summary>
+		private static bool? isReportGenerationExternal;
+
+		/// <summary>
+		/// Is the generation of Reports External; specifically BOE Export to Word (and future to Excel)
+		/// </summary>
+		public static bool IsReportGenerationExternal
+		{
+			get
+			{
+				if (isReportGenerationExternal == null)
+				{
+					if (bool.TryParse(ConfigurationUtilities.GetAppSetting("IsReportGenerationExternal"), out bool value))
+					{
+						isReportGenerationExternal = value;
+					}
+					else
+					{
+						// default to false
+						isReportGenerationExternal = false;
+					}
+				}
+
+				return isReportGenerationExternal.Value;
+			}
+		}
+
+
+
+		/// <summary>
 		/// Be able to override for unit test purposes
 		/// </summary>
 		/// <param name="value"></param>

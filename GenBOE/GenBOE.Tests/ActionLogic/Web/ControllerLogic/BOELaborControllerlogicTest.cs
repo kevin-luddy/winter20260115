@@ -228,6 +228,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			this.moqTableExporter = new Mock<IMoqTableExporter>();
 			this.moqTableImporter = new Mock<IMoqTableImporter>();
 			this.tmResourceRateDTODataLoader = new Mock<ITMResourceRateDTODataLoader>();
+			this.tmResourceRateDTODataLoader.Setup(x => x.GetByWorkspaceId(It.IsAny<int>())).Returns(new List<TMResourceRateDTO>());
 
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
@@ -5600,7 +5601,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			{
 				new LaborTypeDataModelView
 				{
-					ResourceName = string.Empty,
+					ResourceName = RESOURCE_NAME1,
 					BusinessResourceCodeName = BRC_RESOURCE_NAME1,
 					Spreads = new List<LaborSpreadDataModelView> {
 						new LaborSpreadDataModelView
@@ -5620,7 +5621,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				},
 				new LaborTypeDataModelView
 				{
-					ResourceName = null,
+					ResourceName = RESOURCE_NAME2,
 					BusinessResourceCodeName = BRC_RESOURCE_NAME2,
 					Spreads = new List<LaborSpreadDataModelView> {
 						new LaborSpreadDataModelView
@@ -5664,14 +5665,14 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			{
 				new SkillMixModelView {
 					ResourceOld = HISTORICAL_RESOURCE_NAME1,
-					ResourceNew = null,
+					ResourceNew = RESOURCE_NAME1,
 					Included = true,
 					IsUserInput = true,
 					Rationale = Rationale1
 				},
 				new SkillMixModelView {
 					ResourceOld = HISTORICAL_RESOURCE_NAME2,
-					ResourceNew = string.Empty,
+					ResourceNew = RESOURCE_NAME2,
 					Included = true,
 					IsUserInput = true,
 					Rationale = Rationale2
@@ -5681,13 +5682,13 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			List<CommonDisclosureModelView> commonDisclosures = new List<CommonDisclosureModelView>
 			{
 				new CommonDisclosureModelView {
-					ResourceID = null,
+					ResourceID = RESOURCE_NAME1,
 					BusinessResourceID = BRC_RESOURCE_NAME1,
 					Included = true,
 					Rationale = Rationale3
 				},
 				new CommonDisclosureModelView {
-					ResourceID = string.Empty,
+					ResourceID = RESOURCE_NAME2,
 					BusinessResourceID = BRC_RESOURCE_NAME2,
 					Included = true,
 					Rationale = Rationale1
@@ -5703,8 +5704,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual(HISTORICAL_RESOURCE_NAME1, result.SkillMixRows.First().ResourceOld);
 			Assert.AreEqual(HISTORICAL_RESOURCE_NAME2, result.SkillMixRows.ElementAt(1).ResourceOld);
 			Assert.AreEqual(HISTORICAL_RESOURCE_NAME3, result.SkillMixRows.ElementAt(2).ResourceOld);
-			Assert.AreEqual(string.Empty, result.SkillMixRows.ElementAt(0).ResourceNew);
-			Assert.AreEqual(string.Empty, result.SkillMixRows.ElementAt(1).ResourceNew);
+			Assert.AreEqual(RESOURCE_NAME1, result.SkillMixRows.ElementAt(0).ResourceNew);
+			Assert.AreEqual(RESOURCE_NAME2, result.SkillMixRows.ElementAt(1).ResourceNew);
 			Assert.AreEqual(string.Empty, result.SkillMixRows.ElementAt(2).ResourceNew);
 			Assert.AreEqual(string.Empty, result.SkillMixRows.ElementAt(3).ResourceNew);
 			Assert.AreEqual(150.0m, result.SkillMixRows.ElementAt(0).HistoricalHours);
@@ -5727,8 +5728,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.IsTrue(string.IsNullOrEmpty(result.SkillMixRows.ElementAt(2).Rationale));
 
 			Assert.AreEqual(2, result.CommonDisclosureRows.Count);
-			Assert.AreEqual(string.Empty, result.CommonDisclosureRows.ElementAt(0).ResourceID);
-			Assert.AreEqual(string.Empty, result.CommonDisclosureRows.ElementAt(1).ResourceID);
+			Assert.AreEqual(RESOURCE_NAME1, result.CommonDisclosureRows.ElementAt(0).ResourceID);
+			Assert.AreEqual(RESOURCE_NAME2, result.CommonDisclosureRows.ElementAt(1).ResourceID);
 			Assert.AreEqual(BRC_RESOURCE_NAME1, result.CommonDisclosureRows.ElementAt(0).BusinessResourceID);
 			Assert.AreEqual(BRC_RESOURCE_NAME2, result.CommonDisclosureRows.ElementAt(1).BusinessResourceID);
 			Assert.AreEqual(Rationale3, result.CommonDisclosureRows.ElementAt(0).Rationale);
@@ -5744,10 +5745,10 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			CheckSkillMixTotals(result);
 
 			// Historical Hours is percentage the brc is linked to in the labor types for this resource multiplied by historical hours in skill mix for this resource
-			AssertHelpers.AssertAreEqualEpsilon(105.55555m, result.CommonDisclosureRows.ElementAt(0).HistoricalHours);
-			AssertHelpers.AssertAreEqualEpsilon(84.44444m, result.CommonDisclosureRows.ElementAt(1).HistoricalHours);
-			AssertHelpers.AssertAreEqualEpsilon(55.555555m, result.CommonDisclosureRows.ElementAt(0).LaborSkillMix);
-			AssertHelpers.AssertAreEqualEpsilon(44.444444m, result.CommonDisclosureRows.ElementAt(1).LaborSkillMix);
+			AssertHelpers.AssertAreEqualEpsilon(150m, result.CommonDisclosureRows.ElementAt(0).HistoricalHours);
+			AssertHelpers.AssertAreEqualEpsilon(40m, result.CommonDisclosureRows.ElementAt(1).HistoricalHours);
+			AssertHelpers.AssertAreEqualEpsilon(100m * 150m/190m, result.CommonDisclosureRows.ElementAt(0).LaborSkillMix);
+			AssertHelpers.AssertAreEqualEpsilon(100m * 40m / 190m, result.CommonDisclosureRows.ElementAt(1).LaborSkillMix);
 
 
 

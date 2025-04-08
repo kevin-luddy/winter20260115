@@ -270,6 +270,7 @@
     <Compile Include="classes\ActiveDirectoryUtilities.cs" />
     <Compile Include="classes\AreaLockData.cs" />
     <Compile Include="classes\AsIsBundleOrderer.cs" />
+    <Compile Include="classes\BaseHttpService.cs" />
     <Compile Include="classes\BoeCustomReportComponentEnum.cs" />
     <Compile Include="classes\BulkSaveMetaData.cs" />
     <Compile Include="classes\CacheConstants.cs" />
