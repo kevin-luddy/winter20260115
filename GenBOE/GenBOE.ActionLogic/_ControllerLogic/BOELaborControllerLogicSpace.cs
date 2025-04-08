@@ -6,25 +6,24 @@
 
 namespace GenBOE.ActionLogic
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-	using System.Web.Caching;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Linq;
 	using GenBOE.ActionLogic.BLL;
-    using GenBOE.ActionLogic.BOETransitions;
-    using GenBOE.ActionLogic.ControllerLogic;
-    using GenBOE.ActionLogic.IO.Export;
-    using GenBOE.ActionLogic.IO.Import;
+	using GenBOE.ActionLogic.BOETransitions;
+	using GenBOE.ActionLogic.ControllerLogic;
+	using GenBOE.ActionLogic.IO.Export;
+	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.Validation;
-    using GenBOE.ActionLogic.WBS.BOE;
-    using GenBOE.DataBridge.Common;
-    using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
-    using GenBOE.Objects;
-    using IES.Common;
-    using IES.Common.classes;
+	using GenBOE.ActionLogic.WBS.BOE;
+	using GenBOE.DataBridge.Common;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
+	using IES.Common;
+	using IES.Common.classes;
 
 	public class BOELaborControllerLogicSpace : BOELaborControllerLogic
 	{
@@ -286,7 +285,7 @@ namespace GenBOE.ActionLogic
 		/// <param name="currentCommonDisclosureData">Current Common Disclosure Data</param>
 		/// <param name="refreshedModel">The Refreshed Skill Mix Model</param>
 		/// <param name="ucotFactor">The UCOT Factor for the workspace</param>
-		/// /// <param name="isManual">Is this Manual or Automated SkillMix</param>
+		/// <param name="isManual">Is this Manual or Automated SkillMix</param>
 		protected override void CreateCommonDisclosureRows(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, 
 			ICollection<LaborTypeDataModelView> laborTypes, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, 
 			RefreshSkillMixModelView refreshedModel, decimal ucotFactor, bool isManual)
