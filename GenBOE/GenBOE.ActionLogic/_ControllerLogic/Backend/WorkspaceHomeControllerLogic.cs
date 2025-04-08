@@ -8,9 +8,14 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Linq;
+	using System.Transactions;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
+	using GenBOE.Objects;
 	using IES.Common;
+	using IES.Common.Exceptions;
+	using IES.Common.PickList;
 
 	public class WorkspaceHomeControllerLogic
 	{
@@ -20,14 +25,38 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 		private IWorkspaceDTODataLoader workspaceDTODataLoader { get; set; }
 
 		/// <summary>
+		/// User loader
+		/// </summary>
+		protected IUserDTODataLoader userLoader { get; set; }
+
+		/// <summary>
+		/// Proposal loader
+		/// </summary>
+		private readonly GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader;
+
+		/// <summary>
+		/// Full object factory
+		/// </summary>
+		protected IFullObjectFactory factory { get; set; }
+
+		/// <summary>
+		/// Workspace logic
+		/// </summary>
+		private readonly IWorkspaceControllerLogic workspaceLogic;
+
+		/// <summary>
 		/// ActiveDirectoryUtilities
 		/// </summary>
 		private ActiveDirectoryUtilities adUtils { get; set; }
 
-		public WorkspaceHomeControllerLogic(IWorkspaceDTODataLoader workspaceDTODataLoader, ActiveDirectoryUtilities adUtils)
+		public WorkspaceHomeControllerLogic(IWorkspaceControllerLogic workspaceLogic, IWorkspaceDTODataLoader workspaceDTODataLoader, GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader, IUserDTODataLoader userLoader, IFullObjectFactory factory, ActiveDirectoryUtilities adUtils)
 		{
+			this.workspaceLogic = workspaceLogic;
 			this.workspaceDTODataLoader = workspaceDTODataLoader;
+			this.proposalLoader = proposalLoader;
+			this.userLoader = userLoader;
 			this.adUtils = adUtils;
+			this.factory = factory;
 		}
 
 		/// <summary>
@@ -102,6 +131,138 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 			}
 
 			workspaceDTODataLoader.UpdateFavorite(workspaceId, currentUser.UserID, isFavorite);
+		}
+
+		/// <summary>
+		/// Delete workspaces
+		/// </summary>
+		/// <param name="toBeDeleted">workspaces to be deleted</param>
+		/// <returns>bool to indicate if operation is successfull</returns>
+		public bool DeleteWorkspaces(GenBOEHomepageWorkspaceRowModelView[] toBeDeleted)
+		{
+			bool result = false;
+
+			if (toBeDeleted == null)
+			{
+				throw new ArgumentNullException(nameof(toBeDeleted));
+			}
+
+			UserDTO currentUser = this.userLoader.GetUserForActiveUser();
+			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+			{
+				foreach (GenBOEHomepageWorkspaceRowModelView wsToDelete in toBeDeleted)
+				{
+					FullWorkspace ws = this.factory.CreateFullWorkspace(wsToDelete.WorkspaceShortName);
+					workspaceDTODataLoader.UpdateDeletedStatus(wsToDelete.WorkspaceId, ws.UpdateDate, true, currentUser.UserID);
+					this.factory.ClearWorkspaceCache(ws.Shortname);
+				}
+				scope.Complete();
+				result = true;
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Restore workspace when not PTM Integrated
+		/// </summary>
+		/// <param name="toBeRestored">workspace to be restored</param>
+		/// <returns>bool to indicate if operation is successfull</returns>
+		public bool RestoreWorkspace(GenBOEHomepageWorkspaceRowModelView toBeRestored)
+		{
+			bool result = false;
+
+			if (toBeRestored == null)
+			{
+				throw new ArgumentNullException(nameof(toBeRestored));
+			}
+
+			FullWorkspace ws = this.factory.CreateFullWorkspace(toBeRestored.WorkspaceShortName);
+			UserDTO currentUser = this.userLoader.GetUserForActiveUser();
+
+			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+			{
+				workspaceDTODataLoader.UpdateDeletedStatus(toBeRestored.WorkspaceId, ws.UpdateDate, false, currentUser.UserID);
+				this.factory.ClearWorkspaceCache(ws.Shortname);
+				scope.Complete();
+				result = true;
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Restore workspace when PTM Integrated
+		/// </summary>
+		/// <param name="toBeRestored">workspace to be restored</param>
+		/// <returns>bool to indicate if operation is successfull</returns>
+		public bool RestorePtmWorkspace(GenBOEHomepageWorkspaceRowModelView toBeRestored)
+		{
+			bool result = false;
+
+			if (toBeRestored == null)
+			{
+				throw new ArgumentNullException(nameof(toBeRestored));
+			}
+
+			UserDTO currentUser = this.userLoader.GetUserForActiveUser();
+			FullWorkspace ws = this.factory.CreateFullWorkspace(toBeRestored.WorkspaceShortName);
+
+			// Make sure a tracking number was selected or entered
+			if (String.IsNullOrEmpty(toBeRestored.TrackingNumber))
+			{
+				throw new GenValidationException("A tracking number is required to restore this workspace.");
+			}
+
+			// see if this is a valid PTM Tracking Number
+			int proposalId = proposalLoader.GetIdByTrackingNumber(toBeRestored.TrackingNumber);
+			if (proposalId > 0)
+			{
+				// found the proposal
+				GenTRAC.DataBridge.DTO.ProposalDto proposal = proposalLoader.GetById(proposalId);
+
+				// Copy over the PTM Proposal values from the Tracking Number and from UI
+				ws.CostVolumeLeadPricerUserID = userLoader.GetIdsByNtid(new string[] { toBeRestored.CostVolumeLeadPricerNtId }).First();
+				ws.TrackingNumber = toBeRestored.TrackingNumber;
+				ws.RFPNumber = proposal.RFPNumber;
+				ws.ProposalTitle = proposal.ProposalTitle;
+				if (proposal.ContractTypeIds.Any())
+				{
+					List<int> contractTypeIds = new List<int>();
+					foreach (int contractTypeId in proposal.ContractTypeIds)
+					{
+						int convertedContractTypeId = this.workspaceLogic.ConvertPTMContractTypeId(contractTypeId);
+						if (convertedContractTypeId > 0)
+						{
+							contractTypeIds.Add(convertedContractTypeId);
+						}
+					}
+
+					ws.SelectedContractTypes = contractTypeIds.ToArray();
+				}
+
+				ws.ProposalClass = new PickListDto { Id = this.workspaceLogic.ConvertPTMProposalClassId(proposal.ProposalClass) };
+				ws.LineOfBusiness = new PickListDto { Id = this.workspaceLogic.ConvertPTMLineOfBusiness(proposal.LineOfBusinessID) };
+				ws.ProposalSubmittalDate = proposal.DeliveryDate;
+				ws.RevisedSubmittalDate = proposal.RevisedSubmittalDate;
+			}
+			else
+			{
+				throw new GenValidationException("PTM Tracking Number is invalid. Please choose another from the dropdown list.");
+			}
+
+			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+			{
+				workspaceDTODataLoader.SaveIdentificationAndExportFormat(currentUser.UserID, ws);
+				// get the updateDT from DB
+				WorkspaceDTO dto = workspaceDTODataLoader.GetById(toBeRestored.WorkspaceId);
+				workspaceDTODataLoader.UpdateDeletedStatus(toBeRestored.WorkspaceId, dto.UpdateDate, false, currentUser.UserID);
+				this.factory.ClearWorkspaceCache(ws.Shortname);
+				scope.Complete();
+				result = true;
+			}
+
+			return result;
 		}
 	}
 }

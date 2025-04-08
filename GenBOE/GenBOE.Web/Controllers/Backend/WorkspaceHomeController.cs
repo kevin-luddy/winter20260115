@@ -9,7 +9,11 @@ namespace GenBOE.Web.Controllers
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.Diagnostics;
+	using System.Linq;
+	using System.Transactions;
 	using System.Web.Http;
+	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ControllerLogic;
 	using GenBOE.ActionLogic.ControllerLogic.Backend;
 	using GenBOE.ActionLogic.Metrics;
@@ -23,6 +27,8 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.Web.ModelView;
 	using IES.Common;
 	using IES.Common.Exceptions;
+	using IES.Common.PickList;
+	using Microsoft.VisualBasic.Logging;
 
 	/// <summary>
 	/// Workspace Home Controller for getting workspace home data.
@@ -78,7 +84,7 @@ namespace GenBOE.Web.Controllers
 			this.securityInformation = securityInformation;
 			this.workspaceHomeControllerLogic = workspaceHomeControllerLogic;
 		}
-		#endregion 
+		#endregion
 
 		/// <summary>
 		/// Gets the site menu items based on the workspace short name.
@@ -153,7 +159,7 @@ namespace GenBOE.Web.Controllers
 				if (!userIsSubcontractor)
 				{
 					model.isSysAdmin = CheckPermission(SecurityPage.Admin, null) != SecurityAuthorization.None;
-					if (model.isSysAdmin) 
+					if (model.isSysAdmin)
 					{
 						model.isReadOnly = false;
 					}
@@ -198,6 +204,96 @@ namespace GenBOE.Web.Controllers
 			{
 				logger.Error(ex);
 				result.Messages.Add("Error saving Favorites");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Delete workspaces
+		/// </summary>
+		/// <param name="toBeDeleted">workspaces to be deleted</param>
+		/// <returns>bool to indicate if operation is successfull</returns>
+		[HttpDelete]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<bool> DeleteWorkspaces(GenBOEHomepageWorkspaceRowModelView[] toBeDeleted)
+		{
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+
+			if (toBeDeleted == null || !toBeDeleted.Any())
+			{
+				throw new ArgumentNullException(nameof(toBeDeleted));
+			}
+
+			try
+			{
+				result.Data = workspaceHomeControllerLogic.DeleteWorkspaces(toBeDeleted); 
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add(ex.Message);
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Restore workspace when PTM integrated
+		/// </summary>
+		/// <param name="toBeRestored">workspace to be restored</param>
+		/// <returns>bool to indicate if operation is successfull</returns>
+		[HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<bool> RestorePtmWorkspace(GenBOEHomepageWorkspaceRowModelView toBeRestored)
+		{
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+
+			if (toBeRestored == null)
+			{
+				throw new ArgumentNullException(nameof(toBeRestored));
+			}
+
+			try
+			{
+				result.Data = workspaceHomeControllerLogic.RestorePtmWorkspace(toBeRestored);
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add(ex.Message);
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Restore workspace when not PTM integrated
+		/// </summary>
+		/// <param name="toBeRestored">workspace to be restored</param>
+		/// <returns>bool to indicate if operation is successfull</returns>
+		[HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<bool> RestoreWorkspace(GenBOEHomepageWorkspaceRowModelView toBeRestored)
+		{
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+
+			if (toBeRestored == null)
+			{
+				throw new ArgumentNullException(nameof(toBeRestored));
+			}
+
+			try
+			{
+				result.Data = workspaceHomeControllerLogic.RestoreWorkspace(toBeRestored);
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add(ex.Message);
 			}
 
 			return result;
