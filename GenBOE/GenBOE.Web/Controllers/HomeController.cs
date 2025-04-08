@@ -242,6 +242,11 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
+		/// <summary>
+		/// Restore the given Workspace that was previously soft deleted
+		/// </summary>
+		/// <param name="toBeRestored">Workspace to be restored</param>
+		/// <returns>Json result with restore status</returns>
         public JsonResult RestoreWorkspace(GenBOEHomepageWorkspaceRowModelView toBeRestored)
         {
             if (toBeRestored == null)
@@ -258,7 +263,7 @@ namespace GenBOE.Web.Controllers
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
             {
-                this._WorkspaceDTODataLoader.UpdateDeletedStatus(toBeRestored.WorkspaceId, new DateTime(toBeRestored.updateDT), false, currentUser.UserID);
+                this._WorkspaceDTODataLoader.UpdateDeletedStatus(ws.Id, ws.UpdateDate, false, currentUser.UserID);
                 this.Factory.ClearWorkspaceCache(ws.Shortname);
                 scope.Complete();
             }
