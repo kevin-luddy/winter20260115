@@ -2448,7 +2448,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace containing BOEs</param>
 		/// <returns></returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-		public ActionResult ExportManageBOE(string workspace)
+		public async Task<ActionResult> ExportManageBOE(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -2458,7 +2458,7 @@ namespace GenBOE.Web.Controllers
 			// Get BOEs template file name
 			string templateFileName = Server.MapPath("~/Templates/Export/BOEs.xlsm");
 
-			string[] fileNames = _ControllerLogic.ExportManageBOE(ws, templateFileName, false);
+			string[] fileNames = await _ControllerLogic.ExportManageBOE(ws, templateFileName, false);
 
 			// Generate a custom ActionResult to cause a file download to the client
 			FileStream fs = new FileStream(fileNames[0], FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
@@ -2478,7 +2478,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace containing BOEs</param>
 		/// <returns></returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-		public ActionResult ExportManageBOETemplate(string workspace)
+		public async Task<ActionResult> ExportManageBOETemplate(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -2489,7 +2489,7 @@ namespace GenBOE.Web.Controllers
 			string templateFileName = Server.MapPath("~/Templates/Export/BOEs.xlsm");
 
 			//code used was the same as ExportManageBOE, so can use the same method
-			string[] fileNames = _ControllerLogic.ExportManageBOE(ws, templateFileName, true);
+			string[] fileNames = await _ControllerLogic.ExportManageBOE(ws, templateFileName, true);
 
 			// Generate a custom ActionResult to cause a file download to the client
 			FileStream fs = new FileStream(fileNames[0], FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);

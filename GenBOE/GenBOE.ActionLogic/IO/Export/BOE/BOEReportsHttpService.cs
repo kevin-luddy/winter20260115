@@ -7,9 +7,11 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 {
 	using System;
 	using System.Collections.Generic;
+	using System.IO;
 	using System.Linq;
 	using System.Threading.Tasks;
 	using System.Web;
+	using DocumentFormat.OpenXml.EMMA;
 	using GenBOE.Dtos;
 	using IES.Common;
 	using IES.Common.Exceptions;
@@ -83,10 +85,25 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		}
 
 		/// <summary>
-		/// TODO
+		/// Exports the BOEs to Excel.
 		/// </summary>
-		/// <returns></returns>
-		public async Task ExportBOEsToExcel()
-		{ }
+		/// <param name="exportInputs">BOE exportInputs.</param>
+		/// <returns>Export File location</returns>
+		public async Task<string> ExportBOEsToExcel(BOEExcelExportInputs exportInputs)
+		{
+			IESSingleResponse<byte[]> returnStream = await this.Post<byte[], BOEExcelExportInputs>("ExportBOEsToExcel", exportInputs);
+
+			if (returnStream.IsSuccessful)
+			{
+				// Save the return byte[] to a file
+				string tempFilename = Path.GetTempFileName();
+				File.WriteAllBytes(tempFilename, returnStream.Data);
+				return tempFilename;
+			}
+			else
+			{
+				throw new GenValidationException("Error calling Reports Service", string.Join(Environment.NewLine, returnStream.Messages));
+			}
+		}
 	}
 }

@@ -127,15 +127,12 @@ namespace GenBOE.Reports.Backend.Controllers
 		[HttpPost("[action]")]
 		public async Task<IActionResult> ExportBoeToExcel(BOEExcelExportInputs requestModel)
 		{
-			string tempFileLocation = string.Empty;
-			string exportedFileName = string.Empty;
 			try
 			{
-				FileStream fs;
-				tempFileLocation = this.boeExportService.ExportBoeToExcel(requestModel);
+				string tempFileLocation = this.boeExportService.ExportBoeToExcel(requestModel);
 
-				fs = new(tempFileLocation, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
-				exportedFileName = string.Format("genBOEExcelExport-{0}.zip", requestModel.WorkspaceName).Replace(",", string.Empty);
+				FileStream fs = new(tempFileLocation, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+				string exportedFileName = string.Format("genBOEExcelExport-{0}.zip", requestModel.WorkspaceName).Replace(",", string.Empty);
 				
 
 				// Generate a custom ActionResult to cause a file download to the client

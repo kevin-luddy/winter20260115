@@ -1969,19 +1969,30 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="ws">Workspace containing BOEs</param>
         /// <param name="templateFileName">file name of the template used for export</param>
         /// <param name="blankTemplate">Bool to determine if template should be blank or contain all BOEs</param>
-        /// <returns>exprted file name and formatted filename in an array</returns>
-        public string[] ExportManageBOE(FullWorkspace ws, string templateFileName, bool blankTemplate)
+        /// <returns>exported file name and formatted filename in an array</returns>
+        public async Task<string[]> ExportManageBOE(FullWorkspace ws, string templateFileName, bool blankTemplate)
         {
             if (ws == null)
             {
                 throw new ArgumentNullException(nameof(ws));
             }
-            // Call the export function in the business layer and get back the file name of the populated template.
-            string exportedFileName = this._BOEExporter.ExportToExcelFile(templateFileName, ws, blankTemplate);
+			// Call the export function in the business layer and get back the file name of the populated template.
+			string exportedFileName;
+			if (Utilities.IsReportGenerationExternal)
+			{
+				BOEExcelExportInputs exportInputs = new BOEExcelExportInputs(ws, templateFileName, blankTemplate,
+					this.UserLoader, this._ADUtils, this.PermissionsLoader);
+				exportedFileName = await this.boeReportsHttpService.ExportBOEsToExcel(exportInputs);
+			}
+			else
+			{
+				exportedFileName = this._BOEExporter.ExportToExcelFile(templateFileName, ws, blankTemplate);
+			}
+			
+			string formattedWithWorkspace = string.Format("genBOE-{0}-BOEs.xlsm", ws.WorkspaceName);
 
-            string formattedWithWorkspace = string.Format("genBOE-{0}-BOEs.xlsm", ws.WorkspaceName);
-
-            return new string[] { exportedFileName, formattedWithWorkspace };
+			return new string[] { exportedFileName, formattedWithWorkspace };
+			
         }
 
         /// <summary>
