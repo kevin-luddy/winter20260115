@@ -46,8 +46,13 @@
                         }
                     });
                 }
-            }]
-        });
+			}],
+			HideOCI: false,
+			// We Load both OCI and NON OCI texts so that the Generation.JS will use the ContainsOCI to display the correct text
+			BannerTextWithOCI: '<%: SiteMasterUtilities.GetBannerText() %>',
+			BannerTextWithoutOCI: '<%: SiteMasterUtilities.GetBannerText(true) %>'
+		});
+
         var widgetConfig = {};
         widgetConfig.ContextID = "InlFormExportSelectorDialog";
         widgetConfig.IsModule = false;

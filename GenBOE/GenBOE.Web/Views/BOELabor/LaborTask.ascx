@@ -423,11 +423,13 @@
         $("#Cancel-BOEUpdates").click(TaskElementDetailsWidget.CancelToMainGrid);
 
         //Change the OCI note based off the workspace
-        if (ManageWBS_ContainsOCI == true) {
-            $('#Task-OCINote').html('Must not contain any classified, export controlled or third party proprietary information.');
+		if (ManageWBS_ContainsOCI == true) {
+			var text = '<%: SiteMasterUtilities.GetBannerText(true) %>';
+            $('#Task-OCINote').html(text);
         }
-        else {
-            $('#Task-OCINote').html('Must not contain any OCI, classified, export controlled or third party proprietary information.');
+		else {
+			var text = '<%: SiteMasterUtilities.GetBannerText() %>';
+            $('#Task-OCINote').html(text);
         }
 
         AfterDomLoadImportLaborTypeWidget(ImportLaborType);
@@ -1556,7 +1558,7 @@
                 </div>
             </div>
             <div class="form-row">
-                <div class="form-element">Note: Must not contain any OCI, classified, export controlled or third party proprietary information.</div>
+                <div class="form-element">Note: <%: SiteMasterUtilities.GetBannerText() %></div>
             </div>
             <div class="buttons">
                 <button id="ReOrderLaborTypesDialog-Save" class="ies-action disabled" onclick="TaskElementDetailsWidget.SaveReOrderLaborTypes()" name="save-button" type="button">Save</button>
@@ -1640,7 +1642,7 @@
                 </table>
             </div>
             <div class="form-row">
-                <div class="form-element">Note: Must not contain any OCI, classified, export controlled or third party proprietary information.</div>
+                <div class="form-element">Note: <%: SiteMasterUtilities.GetBannerText() %></div>
             </div>
             <div class="buttons">
                 <button id="DuplicateLaborTypesDialog-Save" class="ies-action disabled" data-ng-click="saveDuplicateResourceTypes()" name="save-button" type="button">Save</button>
