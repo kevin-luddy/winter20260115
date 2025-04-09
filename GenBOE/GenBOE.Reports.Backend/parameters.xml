@@ -20,7 +20,7 @@
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_PortionMarkingAPI_">
 		</parameterentry>
 	</parameter>
-	<parameter name="COMPANY_CONFIGURATION" description="doesn't matter" defaultvalue="__COMPANY_CONFIGURATION__" tags="">
+	<parameter name="CompanyConfiguration" description="doesn't matter" defaultvalue="__CompanyConfiguration__" tags="">
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_COMPANY_CONFIGURATION_">
 		</parameterentry>
 	</parameter>
