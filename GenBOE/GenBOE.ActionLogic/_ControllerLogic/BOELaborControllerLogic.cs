@@ -3749,24 +3749,32 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				// filter out bad data in currentSkillMixData
 				FilterBadData(laborTypes, currentSkillMixData, currentCommonDisclosureData, isManual, isSpace);
 
-				ICollection<IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO>> groupedResourceHours = resourceHours.GroupBy(r => r.ResourceName).OrderBy(t => t.Key).ToList();
-				foreach (IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO> grouping in groupedResourceHours)
+				if (isManual)
 				{
-					decimal totalGroupHours = grouping.Sum(g => g.TotalHours);
-
-					refreshedModel.SkillMixRows.Add(
-						new SkillMixModelView
-						{
-							HistoricalHours = totalGroupHours,
-							ResourceOld = grouping.Key,
-							ResourceNew = string.Empty,
-							Included = false
-						}
-					);
-
-					if (string.IsNullOrWhiteSpace(grouping.Key))
+					refreshedModel.SkillMixRows.AddRange(currentSkillMixData);
+					addBlankRow = !currentSkillMixData.Any(s => string.IsNullOrWhiteSpace(s.ResourceOld));
+				}
+				else
+				{
+					ICollection<IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO>> groupedResourceHours = resourceHours.GroupBy(r => r.ResourceName).OrderBy(t => t.Key).ToList();
+					foreach (IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO> grouping in groupedResourceHours)
 					{
-						addBlankRow = false;
+						decimal totalGroupHours = grouping.Sum(g => g.TotalHours);
+
+						refreshedModel.SkillMixRows.Add(
+							new SkillMixModelView
+							{
+								HistoricalHours = totalGroupHours,
+								ResourceOld = grouping.Key,
+								ResourceNew = string.Empty,
+								Included = false
+							}
+						);
+
+						if (string.IsNullOrWhiteSpace(grouping.Key))
+						{
+							addBlankRow = false;
+						}
 					}
 				}
 

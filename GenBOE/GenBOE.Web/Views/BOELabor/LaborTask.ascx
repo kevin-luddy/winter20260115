@@ -996,7 +996,7 @@
                                         </select>
                                     </td>
                                     <td data-ng-if="!isSkillMixManual()" style="text-align: right">{{row.HistoricalHours | number:2}}</td>
-                                    <td data-ng-if="isSkillMixManual()" style="text-align: right"><input type="number" data-ng-model="row.HistoricalHours" step="any" style="width: 100%; height: 14px;" /></td>
+                                    <td data-ng-if="isSkillMixManual()" style="text-align: right"><input type="number" data-ng-blur="setDirty()" data-ng-model="row.HistoricalHours" step="any" style="width: 100%; height: 14px;" /></td>
                                     <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
                                     <td>{{row.Included | yesNo}}</td>
                                     <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
