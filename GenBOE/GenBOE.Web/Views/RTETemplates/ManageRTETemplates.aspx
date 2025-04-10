@@ -11,6 +11,7 @@
     <%  bool isWorkingState = (((GenBOEMasterModelView)Model).WorkspaceState == "Working" || ((GenBOEMasterModelView)Model).WorkspaceState == "Initialization" || ((GenBOEMasterModelView)Model).WorkspaceState == "Locked");
         var serializer = new System.Web.Script.Serialization.JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };
     %>
+
     <script type="text/javascript">
         var RteWidget = new Widget('RteWidget', false);
         $(function () {
