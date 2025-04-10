@@ -1558,7 +1558,7 @@
                 </div>
             </div>
             <div class="form-row">
-                <div class="form-element">Note: <%: SiteMasterUtilities.GetBannerText() %></div>
+                <div class="form-element">Note: <%: SiteMasterUtilities.GetBannerText(Model.ContainsOci) %></div>
             </div>
             <div class="buttons">
                 <button id="ReOrderLaborTypesDialog-Save" class="ies-action disabled" onclick="TaskElementDetailsWidget.SaveReOrderLaborTypes()" name="save-button" type="button">Save</button>
@@ -1642,7 +1642,7 @@
                 </table>
             </div>
             <div class="form-row">
-                <div class="form-element">Note: <%: SiteMasterUtilities.GetBannerText() %></div>
+                <div class="form-element">Note: <%: SiteMasterUtilities.GetBannerText(Model.ContainsOci) %></div>
             </div>
             <div class="buttons">
                 <button id="DuplicateLaborTypesDialog-Save" class="ies-action disabled" data-ng-click="saveDuplicateResourceTypes()" name="save-button" type="button">Save</button>

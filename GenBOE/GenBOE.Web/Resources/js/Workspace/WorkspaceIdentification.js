@@ -3,6 +3,7 @@
 */
 
 function InitializeWorkspaceIdentificationWidget(widgetConfig, jumpUrl) {
+	console.log(widgetConfig);
     WorkspaceIdentificationWidget = new GenWidget(widgetConfig);
 
     WorkspaceIdentificationWidget.AdjustDates = {};
@@ -21,24 +22,25 @@ function InitializeWorkspaceIdentificationWidget(widgetConfig, jumpUrl) {
         else {
             WorkspaceIdentificationWidget.BackToJumpPage();
         }
-    };
+	};
+	console.log(WorkspaceIdentificationWidget);
 
     WorkspaceIdentificationWidget.ContainsOCIRadioClick = function () {
-        var form = $('#WorkspaceIdentificationForm');
-
+		var form = $('#WorkspaceIdentificationForm');
 		if (form.find('input[name=ContainsOCI]:checked').val() === 'True') {
-            form.find('.oci-note').html('<b>Note:</b> ' + form.BannerTextWithoutOCI);
+            form.find('.oci-note').html('<b>Note:</b> ' + widgetConfig.FormConfigs[0].BannerTextWithoutOCI);
         }
         else {
             GenSession.confirmDialog("Contains OCI Information", "Is the Workspace clean of all OCI data?",
-                function () {
-                    form.find('.oci-note').html('<b>Note:</b> ' + form.BannerTextWithOCI);
+				function () {
+					form.find('.oci-note').html('<b>Note:</b> ' + widgetConfig.FormConfigs[0].BannerTextWithOCI);
                 },
                 function () {
-                    $('#ContainsOCI-Yes').prop("checked", true);
+					$('#ContainsOCI-Yes').prop("checked", true);
+
                 },
                 function () {
-                    $('#ContainsOCI-Yes').prop("checked", true);
+					$('#ContainsOCI-Yes').prop("checked", true);
                 });
         }
     };

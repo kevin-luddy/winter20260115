@@ -2,8 +2,9 @@
 
 <script type="text/javascript">
 
-    var DuplicateTaskWidget = new GridWidget('DupTask', '', '<%= ViewData["READONLY"] %>'.isTrue());
-
+	var DuplicateTaskWidget = new GridWidget('DupTask', '', '<%= ViewData["READONLY"] %>'.isTrue());
+	<%--var workspace = <%: SiteMasterUtilities.GetCurrentWorkspace() %>;
+	console.log(DuplicateTaskWidget);--%>
     //Save Duplicate Task Form
     DuplicateTaskWidget.SaveDuplicateTaskElements = function () {
         $('#DuplicateTaskElementDialog #DuplicateTaskElementDialogSave').addClass('display-none');
@@ -123,7 +124,9 @@
             </table>
         </div>
         <div class="form-row">
-            <div class="form-element">Note: <%: SiteMasterUtilities.GetBannerText() %></div>
+            <div class="form-element">Note: <%: SiteMasterUtilities.GetBannerText(Model.ContainsOCI) %></div>
+            <%--<div data-ng-hide="workspace.containsOCI" class="form-element">Note: <%: SiteMasterUtilities.GetBannerText(true) %></div>--%>
+
         </div>
         <div class="buttons">
             <button id="DuplicateTaskElementDialogSave" class="ies-action disabled" name="save-button" type="button">Save</button>

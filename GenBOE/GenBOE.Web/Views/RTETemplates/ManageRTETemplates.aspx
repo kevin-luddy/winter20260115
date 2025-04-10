@@ -10,8 +10,8 @@
     <%: Scripts.Render("~/bundles/manageRTETemplates") %>
     <%  bool isWorkingState = (((GenBOEMasterModelView)Model).WorkspaceState == "Working" || ((GenBOEMasterModelView)Model).WorkspaceState == "Initialization" || ((GenBOEMasterModelView)Model).WorkspaceState == "Locked");
         var serializer = new System.Web.Script.Serialization.JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };
+		bool containsOCI = ((GenBOEMasterModelView)Model).HeaderFooter.Contains("Organizational Conflict of Interest");
     %>
-    
     <script type="text/javascript">
         var RteWidget = new Widget('RteWidget', false);
         $(function () {
@@ -37,7 +37,8 @@
             searchAction: '<%:WebConstants.ACTION_SEARCH_RTE_TEMPLATES %>',
             copyAction: '<%:WebConstants.ACTION_COPY_RTE_TEMPLATE %>',
             workspaceId: '<%:ViewData["WorkspaceId"]%>',
-            templateSources: <%= serializer.Serialize(ViewData["TemplateSources"])%>
+			templateSources: <%= serializer.Serialize(ViewData["TemplateSources"])%>,
+			containsOCI: '<%: containsOCI%>'.isTrue()
         });
     </script>
 
@@ -237,7 +238,8 @@
                 <div class="form-row last-form-row">
                     <div class="form-element">
                         <div id="OCINote" class="oci-note">
-                            <span><b>Note:</b> <%: SiteMasterUtilities.GetBannerText() %></span>
+                            <span data-ng-show="containsOCI"><b>Note:</b> <%: SiteMasterUtilities.GetBannerText() %></span>
+                            <span data-ng-hide="containsOCI"><b>Note:</b> <%: SiteMasterUtilities.GetBannerText(true) %></span>
                         </div>
                         <div class="button-container">
                             <div class="buttons">
