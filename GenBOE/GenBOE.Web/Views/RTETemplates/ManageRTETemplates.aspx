@@ -36,7 +36,7 @@
             searchAction: '<%:WebConstants.ACTION_SEARCH_RTE_TEMPLATES %>',
             copyAction: '<%:WebConstants.ACTION_COPY_RTE_TEMPLATE %>',
             workspaceId: '<%:ViewData["WorkspaceId"]%>',
-			templateSources: <%= serializer.Serialize(ViewData["TemplateSources"])%>, 
+			templateSources: <%= serializer.Serialize(ViewData["TemplateSources"])%>
         });
 	</script>
 
