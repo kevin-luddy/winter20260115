@@ -23,7 +23,6 @@ function InitializeWorkspaceIdentificationWidget(widgetConfig, jumpUrl) {
             WorkspaceIdentificationWidget.BackToJumpPage();
         }
 	};
-	console.log(WorkspaceIdentificationWidget);
 
     WorkspaceIdentificationWidget.ContainsOCIRadioClick = function () {
 		var form = $('#WorkspaceIdentificationForm');
@@ -37,7 +36,6 @@ function InitializeWorkspaceIdentificationWidget(widgetConfig, jumpUrl) {
                 },
                 function () {
 					$('#ContainsOCI-Yes').prop("checked", true);
-
                 },
                 function () {
 					$('#ContainsOCI-Yes').prop("checked", true);
