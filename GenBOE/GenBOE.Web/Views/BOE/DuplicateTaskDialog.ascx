@@ -2,7 +2,7 @@
 
 <script type="text/javascript">
 
-    var DuplicateTaskWidget = new GridWidget('DupTask', '', '<%= ViewData["READONLY"] %>'.isTrue());
+	var DuplicateTaskWidget = new GridWidget('DupTask', '', '<%= ViewData["READONLY"] %>'.isTrue());
 
     //Save Duplicate Task Form
     DuplicateTaskWidget.SaveDuplicateTaskElements = function () {
@@ -123,7 +123,7 @@
             </table>
         </div>
         <div class="form-row">
-            <div class="form-element">Note: <%: SiteMasterUtilities.GetBannerText() %></div>
+            <div class="form-element">Note: <%: SiteMasterUtilities.GetBannerText(Model.ContainsOCI) %></div>
         </div>
         <div class="buttons">
             <button id="DuplicateTaskElementDialogSave" class="ies-action disabled" name="save-button" type="button">Save</button>

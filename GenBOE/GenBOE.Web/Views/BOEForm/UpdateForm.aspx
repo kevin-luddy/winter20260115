@@ -47,7 +47,7 @@
                     },
                     Stateful: false
                 }],
-				ContainsOCI: false,
+				ContainsOCI: <%: (Model.HeaderFooter.Contains("Organizational Conflict of Interest")).ToString().ToLower() %>,
 				HideOCI: false,
 				// We Load both OCI and NON OCI texts so that the Generation.JS will use the ContainsOCI to display the correct text
 				BannerTextWithOCI: '<%: SiteMasterUtilities.GetBannerText() %>',
