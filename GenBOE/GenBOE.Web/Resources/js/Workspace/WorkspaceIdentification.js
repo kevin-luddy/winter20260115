@@ -3,7 +3,6 @@
 */
 
 function InitializeWorkspaceIdentificationWidget(widgetConfig, jumpUrl) {
-	console.log(widgetConfig);
     WorkspaceIdentificationWidget = new GenWidget(widgetConfig);
 
     WorkspaceIdentificationWidget.AdjustDates = {};
