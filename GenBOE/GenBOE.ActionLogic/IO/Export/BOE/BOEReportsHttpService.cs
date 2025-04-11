@@ -85,13 +85,13 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		}
 
 		/// <summary>
-		/// Exports the BOEs to Excel.
+		/// Exports the Manage BOEs information to Excel.
 		/// </summary>
 		/// <param name="exportInputs">BOE exportInputs.</param>
 		/// <returns>Export File location</returns>
-		public async Task<string> ExportBOEsToExcel(BOEExcelExportInputs exportInputs)
+		public async Task<string> ExportManageBoesToExcel(BOEExcelExportInputs exportInputs)
 		{
-			IESSingleResponse<byte[]> returnStream = await this.Post<byte[], BOEExcelExportInputs>("ExportBOEsToExcel", exportInputs);
+			IESSingleResponse<byte[]> returnStream = await this.Post<byte[], BOEExcelExportInputs>("ExportManageBoesToExcel", exportInputs);
 
 			if (returnStream.IsSuccessful)
 			{

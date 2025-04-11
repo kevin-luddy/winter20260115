@@ -1976,13 +1976,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
             {
                 throw new ArgumentNullException(nameof(ws));
             }
+
 			// Call the export function in the business layer and get back the file name of the populated template.
 			string exportedFileName;
 			if (Utilities.IsReportGenerationExternal)
 			{
 				BOEExcelExportInputs exportInputs = new BOEExcelExportInputs(ws, templateFileName, blankTemplate,
 					this.UserLoader, this._ADUtils, this.PermissionsLoader);
-				exportedFileName = await this.boeReportsHttpService.ExportBOEsToExcel(exportInputs);
+				exportedFileName = await this.boeReportsHttpService.ExportManageBoesToExcel(exportInputs);
 			}
 			else
 			{

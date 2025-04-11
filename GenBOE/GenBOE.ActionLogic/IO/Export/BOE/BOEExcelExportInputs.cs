@@ -85,7 +85,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// <summary>
 		/// Gets all of the boes in the workspace.
 		/// </summary>
-		public ICollection<BoeDTO> Boes { get; }
+		public ICollection<BoeDTO> Boes { get; set; }
 
 		/// <summary>
 		/// Gets the clins.

@@ -40,6 +40,7 @@ namespace GenBOE.Web.Controllers
 	using IES.Common.classes;
 	using IES.Common.Exceptions;
 	using IES.Common.OfficeUtilities;
+	using Microsoft.VisualBasic.Logging;
 
 	public class BOEController : GenBOEController
 	{
@@ -2451,25 +2452,40 @@ namespace GenBOE.Web.Controllers
 		public async Task<ActionResult> ExportManageBOE(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-
+			ActionResult result;
 			// Initialize Action
 			Stopwatch sw = InitializeAction(_log, "ExportManageBOE", SecurityPage.ManageBOEs, SecurityAuthorization.Read, ws, null);
 
-			// Get BOEs template file name
-			string templateFileName = Server.MapPath("~/Templates/Export/BOEs.xlsm");
+			try
+			{
+				// Get BOEs template file name
+				string templateFileName = Server.MapPath("~/Templates/Export/BOEs.xlsm");
 
-			string[] fileNames = await _ControllerLogic.ExportManageBOE(ws, templateFileName, false);
+				string[] fileNames = await _ControllerLogic.ExportManageBOE(ws, templateFileName, false);
 
-			// Generate a custom ActionResult to cause a file download to the client
-			FileStream fs = new FileStream(fileNames[0], FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+				// Generate a custom ActionResult to cause a file download to the client
+				FileStream fs = new FileStream(fileNames[0], FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
-			// Finalize Action
-			FinalizeAction(_log, "ExportManageBOE", sw);
+				// Finalize Action
+				FinalizeAction(_log, "ExportManageBOE", sw);
 
-			return File(
-				fileStream: fs,
-				contentType: ExportFileDownloadBase.GetContentType(fileNames[1]),
-				fileDownloadName: fileNames[1]);
+				result = File(
+					fileStream: fs,
+					contentType: ExportFileDownloadBase.GetContentType(fileNames[1]),
+					fileDownloadName: fileNames[1]);
+			}
+			catch (GenValidationException ex)
+			{
+				result = this.CreateTextFileWithErrorMessage(ex.Message);
+			}
+			catch (Exception e)
+			{
+				this._log.Error(e);
+
+				result = this.CreateTextFileWithErrorMessage(e);
+			}
+
+			return result;
 		}
 
 		/// <summary>
@@ -2484,23 +2500,39 @@ namespace GenBOE.Web.Controllers
 
 			// Initialize Action
 			Stopwatch sw = InitializeAction(_log, "ExportManageBOETemplate", SecurityPage.ManageBOEs, SecurityAuthorization.Read, ws, null);
+			ActionResult result;
 
-			// Get Performing Orgs template file name
-			string templateFileName = Server.MapPath("~/Templates/Export/BOEs.xlsm");
+			try
+			{
+				// Get Performing Orgs template file name
+				string templateFileName = Server.MapPath("~/Templates/Export/BOEs.xlsm");
 
-			//code used was the same as ExportManageBOE, so can use the same method
-			string[] fileNames = await _ControllerLogic.ExportManageBOE(ws, templateFileName, true);
+				//code used was the same as ExportManageBOE, so can use the same method
+				string[] fileNames = await _ControllerLogic.ExportManageBOE(ws, templateFileName, true);
 
-			// Generate a custom ActionResult to cause a file download to the client
-			FileStream fs = new FileStream(fileNames[0], FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+				// Generate a custom ActionResult to cause a file download to the client
+				FileStream fs = new FileStream(fileNames[0], FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
-			// Finalize Action
-			FinalizeAction(_log, "ExportManageBOETemplate", sw);
+				// Finalize Action
+				FinalizeAction(_log, "ExportManageBOETemplate", sw);
 
-			return File(
-				fileStream: fs,
-				contentType: ExportFileDownloadBase.GetContentType(fileNames[1]),
-				fileDownloadName: fileNames[1]);
+				result = File(
+					fileStream: fs,
+					contentType: ExportFileDownloadBase.GetContentType(fileNames[1]),
+					fileDownloadName: fileNames[1]);
+			}
+			catch (GenValidationException ex)
+			{
+				result = this.CreateTextFileWithErrorMessage(ex.Message);
+			}
+			catch (Exception e)
+			{
+				this._log.Error(e);
+
+				result = this.CreateTextFileWithErrorMessage(e);
+			}
+
+			return result;
 		}
 
 		/// <summary>

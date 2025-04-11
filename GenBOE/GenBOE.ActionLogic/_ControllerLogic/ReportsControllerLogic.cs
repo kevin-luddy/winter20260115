@@ -117,11 +117,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="summarizeByCustomField">Name of custom field to group by when running All BOEs report with special format template.</param>
         /// <param name="selectedBOEs">List of BOEs to be included in the report; if null, then include ALL</param>
         /// <param name="viewDataDictionary">View data</param>
-        /// <param name="isCustomExport">Flag indicating wheter the export is a custom export</param>
+        /// <param name="isCustomExport">Flag indicating whether the export is a custom export</param>
         /// <param name="wsExportFormatDTO">the Workspace Format DTO</param>
         /// <param name="exportInputs">the export inputs</param>
         /// <param name="boeExportModelViews">the boe export model views</param>
-        /// <param name="boeSummaryGridModelViews">the boe summary grid model veiws</param>
+        /// <param name="boeSummaryGridModelViews">the boe summary grid model views</param>
         /// <param name="custom">Flag indicating whether the template file is based on the custom export template</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "9")]
         public void PrepareAllBOEsReport(FullWorkspace workspace, bool isSubcontractorUser, string summarizeByCustomField, ICollection<int> selectedBOEs,
@@ -234,11 +234,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="workspace">The current workspace</param>
 		/// <param name="selectedComponents">List of BOEs to be included in the report; if null, then include ALL</param>
 		/// <param name="httpResponse">HTTP response object</param>
-		/// <param name="isCustomExport">Flag indicating wheter the export is a custom export</param>
+		/// <param name="isCustomExport">Flag indicating whether the export is a custom export</param>
 		/// <param name="wsExportFormatDTO">the Workspace Format DTO</param>
 		/// <param name="exportInputs">the export inputs</param>
 		/// <param name="boeExportModelViews">the boe export model views</param>
-		/// <param name="boeSummaryGridModelViews">the boe summary grid model veiws</param>
+		/// <param name="boeSummaryGridModelViews">the boe summary grid model views</param>
 		/// <param name="segmentedOutput">Should the output be broken into segments and zipped</param>
 		public async Task ExportAllBOEsReport(FullWorkspace workspace, ICollection<BoeCustomReportComponent> selectedComponents, HttpResponseBase httpResponse, bool isCustomExport,
 			WorkspaceExportFormatDTO wsExportFormatDTO, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, List<BOESummaryGridModelView> boeSummaryGridModelViews, bool segmentedOutput = false)

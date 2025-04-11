@@ -29,7 +29,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// </summary>
 		private IBOEExporter mstExporter;
 
-		public BOEExporterMSTDecorator(IBOEExporter baseExporter, IBOEExporter mstExporter)
+		public BOEExporterMSTDecorator(BOEExporter baseExporter, BOEExporterMST mstExporter)
 		{
 			this.baseExporter = baseExporter;
 			this.mstExporter = mstExporter;

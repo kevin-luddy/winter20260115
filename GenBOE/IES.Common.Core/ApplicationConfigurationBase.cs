@@ -219,7 +219,7 @@
 				.Enrich.WithThreadId()
 				.Enrich.With<ApplicationNameEnricher>()
 				.WriteTo.Console(
-					outputTemplate: "{Level} {Timestamp:HH:mm:ss.fff} {CorrelationId} {UserNTID} {Message}{NewLine}"
+					outputTemplate: "{Level} {Timestamp:HH:mm:ss.fff} {CorrelationId} {UserNTID} {Message}{NewLine}{Exception}"
 				);
 
 			if (logToFile)
@@ -229,7 +229,7 @@
 						.Filter.ByIncludingOnly(l => l.Level == Serilog.Events.LogEventLevel.Verbose)
 						.WriteTo.File(
 							path: "logs/log-.csv",
-							outputTemplate: "{Timestamp:HH:mm:ss.fff},{SourceContext},{CorrelationId},{UserNTID},{Message}{NewLine}",
+							outputTemplate: "{Timestamp:HH:mm:ss.fff},{SourceContext},{CorrelationId},{UserNTID},{Message}{NewLine}{Exception}",
 							fileSizeLimitBytes: 20000000,
 							rollingInterval: RollingInterval.Day,
 							rollOnFileSizeLimit: true,

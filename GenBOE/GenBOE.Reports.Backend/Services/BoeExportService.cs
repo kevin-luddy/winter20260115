@@ -34,11 +34,11 @@ namespace GenBOE.Reports.Backend.Services
 		}
 
 		/// <summary>
-		/// Exports BOE(s) to Excel document.
+		/// Exports Manage BOE(s) to Excel document.
 		/// </summary>
 		/// <param name="requestModel">Export Inputs</param>
 		/// <returns>File location of Excel document</returns>
-		public string ExportBoeToExcel(BOEExcelExportInputs exportInputs)
+		public string ExportManageBoesToExcel(BOEExcelExportInputs exportInputs)
 		{
 			return this.boeExporter.ExportToExcelFile(exportInputs);
 		}
@@ -47,11 +47,11 @@ namespace GenBOE.Reports.Backend.Services
 		/// Exports BOE(s) to Word document(s) that are then zipped
 		/// </summary>
 		/// <param name="selectedComponents">List of BOEs to be included in the report; if null, then include ALL</param>
-		/// <param name="isCustomExport">Flag indicating wheter the export is a custom export</param>
+		/// <param name="isCustomExport">Flag indicating whether the export is a custom export</param>
 		/// <param name="exportFormat">the Workspace Format DTO</param>
 		/// <param name="exportInputs">the export inputs</param>
 		/// <param name="boeExportModelViews">the boe export model views</param>
-		/// <param name="boeSummaryGridModelViews">the boe summary grid model veiws</param>
+		/// <param name="boeSummaryGridModelViews">the boe summary grid model views</param>
 		/// <returns>string location of Word or zipped Word document(s)</returns>
 		public string ExportBoeToZip(ICollection<BoeCustomReportComponent> selectedComponents, bool isCustomExport,
 			WorkspaceExportFormatDTO exportFormat, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews,
@@ -83,11 +83,11 @@ namespace GenBOE.Reports.Backend.Services
 		/// </summary>
 		/// <param name="stream">Stream to stream file into</param>
 		/// <param name="selectedComponents">List of BOEs to be included in the report; if null, then include ALL</param>
-		/// <param name="isCustomExport">Flag indicating wheter the export is a custom export</param>
+		/// <param name="isCustomExport">Flag indicating whether the export is a custom export</param>
 		/// <param name="exportFormat">the Workspace Format DTO</param>
 		/// <param name="exportInputs">the export inputs</param>
 		/// <param name="boeExportModelViews">the boe export model views</param>
-		/// <param name="boeSummaryGridModelViews">the boe summary grid model veiws</param>
+		/// <param name="boeSummaryGridModelViews">the boe summary grid model views</param>
 		/// <returns>Name of document</returns>
 		public string ExportBoeToWord(Stream stream, ICollection<BoeCustomReportComponent> selectedComponents, bool isCustomExport, 
 			WorkspaceExportFormatDTO exportFormat, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, 
