@@ -6,25 +6,24 @@
 
 namespace GenBOE.ActionLogic
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-	using System.Web.Caching;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Linq;
 	using GenBOE.ActionLogic.BLL;
-    using GenBOE.ActionLogic.BOETransitions;
-    using GenBOE.ActionLogic.ControllerLogic;
-    using GenBOE.ActionLogic.IO.Export;
-    using GenBOE.ActionLogic.IO.Import;
+	using GenBOE.ActionLogic.BOETransitions;
+	using GenBOE.ActionLogic.ControllerLogic;
+	using GenBOE.ActionLogic.IO.Export;
+	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.Validation;
-    using GenBOE.ActionLogic.WBS.BOE;
-    using GenBOE.DataBridge.Common;
-    using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
-    using GenBOE.Objects;
-    using IES.Common;
-    using IES.Common.classes;
+	using GenBOE.ActionLogic.WBS.BOE;
+	using GenBOE.DataBridge.Common;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
+	using IES.Common;
+	using IES.Common.classes;
 
 	public class BOELaborControllerLogicSpace : BOELaborControllerLogic
 	{
@@ -200,11 +199,15 @@ namespace GenBOE.ActionLogic
 		/// <summary>
 		/// Copy Data from Matching Skill Mix Rows
 		/// </summary>
+		/// <param name="resourceHours">Historical Resource Hours</param>
 		/// <param name="laborTypes">The labor type data</param>
 		/// <param name="currentSkillMixData">Current Skill Mix Data</param>
 		/// <param name="refreshedModel">The Refreshed SKill Mix Model</param>
 		/// <param name="isBRCEnabled">Is BRC Enabled for this workspace</param>
-		protected override void CopyMatchingSkillMixRowData(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, RefreshSkillMixModelView refreshedModel, bool isBRCEnabled, bool isManual)
+		/// <param name="isManual">Is this a manual SkillMix</param>
+		protected override void CopyMatchingSkillMixRowData(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, 
+			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, 
+			RefreshSkillMixModelView refreshedModel, bool isBRCEnabled, bool isManual)
 		{
 			if (laborTypes == null)
 			{
@@ -236,6 +239,15 @@ namespace GenBOE.ActionLogic
 						// If match, add the labor data (summation to group all proposed hours for this matching Resource)
 						historicalSkillMix.ProposedHours += proposedHours;
 						historicalSkillMix.Included = true;
+
+						if (!isManual && historicalSkillMix.ProposedHours != 0m)
+						{
+							// for Automated SkillMix, the Historical Hours is supposed to be a fraction of the real Historical Hours.
+							// That fraction is the % that the Proposed Hours are of the Total Hours for this Resource
+							decimal totalLaborHours = laborTypes.Where(l => l.ResourceName == historicalSkillMix.ResourceOld).Sum(x => x.HourSpread ?? 0m);
+							decimal realHistoricalHours = resourceHours.Where(r => r.ResourceName == historicalSkillMix.ResourceOld).Sum(l => l.TotalHours);
+							historicalSkillMix.HistoricalHours = totalLaborHours == 0m ? 0m : (historicalSkillMix.ProposedHours / totalLaborHours) * realHistoricalHours;
+						}
 					}
 					else
 					{
@@ -273,7 +285,10 @@ namespace GenBOE.ActionLogic
 		/// <param name="currentCommonDisclosureData">Current Common Disclosure Data</param>
 		/// <param name="refreshedModel">The Refreshed Skill Mix Model</param>
 		/// <param name="ucotFactor">The UCOT Factor for the workspace</param>
-		protected override void CreateCommonDisclosureRows(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<LaborTypeDataModelView> laborTypes, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, RefreshSkillMixModelView refreshedModel, decimal ucotFactor)
+		/// <param name="isManual">Is this Manual or Automated SkillMix</param>
+		protected override void CreateCommonDisclosureRows(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, 
+			ICollection<LaborTypeDataModelView> laborTypes, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, 
+			RefreshSkillMixModelView refreshedModel, decimal ucotFactor, bool isManual)
 		{
 			if (laborTypes == null)
 			{
@@ -287,7 +302,6 @@ namespace GenBOE.ActionLogic
 
 			// First add the Historical Hours
 			refreshedModel.CommonDisclosureRows.Clear();
-			decimal totalHours = resourceHours.Sum(n => n.TotalHours);
 			ICollection<IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO>> groupedResourceHours = resourceHours.GroupBy(r => r.ResourceName).OrderBy(t => t.Key).ToList();
 			foreach (IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO> grouping in groupedResourceHours)
 			{
@@ -303,7 +317,6 @@ namespace GenBOE.ActionLogic
 							HistoricalHours = totalGroupHours,
 							ResourceID = grouping.Key,
 							BusinessResourceID = brcGrouping.Key,
-							LaborSkillMix = totalHours == 0m ? 0m : totalGroupHours * 100.0m / totalHours,
 							Included = false,
 							ProposedHours = 0m,
 							UCOTHours = 0m
@@ -313,7 +326,7 @@ namespace GenBOE.ActionLogic
 			}
 
 			// Merge in the Labor Types
-			foreach (LaborTypeDataModelView labor in laborTypes)
+			foreach (LaborTypeDataModelView labor in laborTypes.ToList())
 			{
 				if (!string.IsNullOrWhiteSpace(labor.BusinessResourceCodeName))
 				{
@@ -325,6 +338,15 @@ namespace GenBOE.ActionLogic
 						// If match, add the labor data
 						historicalSkillMix.ProposedHours += proposedHours;
 						historicalSkillMix.Included = true;
+
+						if (historicalSkillMix.ProposedHours != 0m && !isManual)
+						{
+							// for Automated SkillMix, the Historical Hours is supposed to be a fraction of the real Historical Hours.
+							// That fraction is the % that the Proposed Hours are of the Total Hours for this Resource
+							decimal totalLaborHours = laborTypes.Where(l => l.BusinessResourceCodeName == historicalSkillMix.BusinessResourceID && l.ResourceName == historicalSkillMix.ResourceID).Sum(x => x.HourSpread ?? 0m);
+							decimal realHistoricalHours = resourceHours.Where(r => r.ResourceName == historicalSkillMix.ResourceID).Sum(l => l.TotalHours);
+							historicalSkillMix.HistoricalHours = totalLaborHours == 0m ? 0m : (historicalSkillMix.ProposedHours / totalLaborHours) * realHistoricalHours;
+						}
 					}
 					else
 					{

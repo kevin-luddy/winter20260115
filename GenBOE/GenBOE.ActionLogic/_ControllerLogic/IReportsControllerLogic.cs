@@ -8,7 +8,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 {
     using System;
     using System.Collections.Generic;
-    using System.Web;
+	using System.Threading.Tasks;
+	using System.Web;
     using System.Web.Mvc;
     using GenBOE.ActionLogic.IO.Export.BOE;
     using GenBOE.ActionLogic.ModelView;
@@ -50,7 +51,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="boeExportModelViews">the boe export model views</param>
         /// <param name="boeSummaryGridModelViews">the boe summary grid model veiws</param>
         /// <param name="segmentedOutput">Should the output be broken into segments and zipped</param>
-        void ExportAllBOEsReport(FullWorkspace workspace, ICollection<BoeCustomReportComponent> selectedComponents, HttpResponseBase httpResponse, bool isCustomExport,
+        Task ExportAllBOEsReport(FullWorkspace workspace, ICollection<BoeCustomReportComponent> selectedComponents, HttpResponseBase httpResponse, bool isCustomExport,
             WorkspaceExportFormatDTO wsExportFormatDTO, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, List<BOESummaryGridModelView> boeSummaryGridModelViews,
             bool segmentedOutput = false);
 

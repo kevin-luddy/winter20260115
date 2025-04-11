@@ -387,6 +387,21 @@ namespace IES.Common
         /// </summary>
         public const int PERF_ORG_DESC_MAX_LENGTH = 50;
 
+		/// <summary>
+		/// Fake resource ID for UCOT resources.
+		/// </summary>
+		public const int UCOT_RESOURCE_ID = -9000;
+
+		/// <summary>
+		/// Fake perf org ID for UCOT perf orgs.
+		/// </summary>
+		public const int UCOT_PERF_ORG_ID = -9001;
+
+		/// <summary>
+		/// UCOT string constant.
+		/// </summary>
+		public const string UCOT_LABEL = "UCOT";
+
         /// <summary>
         /// The read only roles for RDSB.
         /// </summary>
@@ -1030,5 +1045,15 @@ namespace IES.Common
 		/// Skill Mix table name for RMS.
 		/// </summary>
 		public readonly static string RMS_SKILL_MIX_TABLE_HEADER = "Current Skill Mix Table";
+
+		/// <summary>
+		/// Error to display to the user when they encounter an application error.
+		/// </summary>
+		public static readonly string GENERIC_USER_ERROR = "The requested action could not be completed. If the problem persists, please contact your application administrator.";
+
+		/// <summary>
+		/// Error to display to the user when they encounter a 401 error.
+		/// </summary>
+		public static readonly string GENERIC_USER_UNAUTHORIZED = "You are not authorized to access the requested action. If the problem persists, please contact your application administrator.";
 	}
 }

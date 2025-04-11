@@ -6,6 +6,7 @@
 	  <ImplicitUsings>disable</ImplicitUsings>
 	  <Configurations>Debug;Release;ReleaseTFSCore</Configurations>
 	  <OutputType>Exe</OutputType>
+	  <SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
   </PropertyGroup>
 
 	<ItemGroup>

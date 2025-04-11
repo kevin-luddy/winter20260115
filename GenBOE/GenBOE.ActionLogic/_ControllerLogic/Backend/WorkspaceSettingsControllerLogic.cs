@@ -6,17 +6,20 @@
 
 namespace GenBOE.ActionLogic._ControllerLogic.Backend
 {
+	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
 	using System.Web.Mvc;
 	using GenBOE.ActionLogic.ControllerLogic;
+	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.Workspace;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using GenTRAC.DataBridge.DTO;
 	using IES.Common;
+	using IES.Common.Exceptions;
 	using IES.Common.PickList;
 
 	public class WorkspaceSettingsControllerLogic
@@ -58,7 +61,7 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 		/// <param name="workspaceDTODataLoader"></param>
 		public WorkspaceSettingsControllerLogic(
 			ISecurityInformation _securityInformation,
-			IWorkspaceControllerLogic workspaceControllerLogic, 
+			IWorkspaceControllerLogic workspaceControllerLogic,
 			IWorkspaceDTODataLoader workspaceDTODataLoader,
 			BoePickListMapper boePickListMapper,
 			GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader,
@@ -170,6 +173,95 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 			}
 
 			return trackingNumbers;
+		}
+
+		/// <summary>
+		/// Gets the next Tracking Number details when workspace tracking number is updated
+		/// </summary>
+		/// <param name="trackingNumber"></param>
+		/// <returns></returns>
+		public RefreshPTMResponseData GetNextTrackingNumberRevision(string trackingNumber)
+		{
+			RefreshPTMResponseData response = new RefreshPTMResponseData();
+
+			string nextRevision = this.GetNextTrackingNumber(trackingNumber);
+
+			int proposalId = this.proposalLoader.GetIdByTrackingNumber(trackingNumber);
+			if (proposalId > 0)
+			{
+				response.TrackingNumberRevision = nextRevision;
+				ProposalDto proposal = this.proposalLoader.GetById(proposalId);
+				response.RFPNumber = proposal.RFPNumber;
+				response.Title = proposal.ProposalTitle;
+				if (proposal.ContractTypeIds.Any())
+				{
+					List<int> contractTypeIds = new List<int>();
+					foreach (int contractTypeId in proposal.ContractTypeIds)
+					{
+						int convertedContractTypeId = workspaceControllerLogic.ConvertPTMContractTypeId(contractTypeId);
+						if (convertedContractTypeId > 0)
+						{
+							contractTypeIds.Add(convertedContractTypeId);
+						}
+					}
+					response.ContractTypes = contractTypeIds.ToArray();
+				}
+
+				response.ProposalClassId = workspaceControllerLogic.ConvertPTMProposalClassId(proposal.ProposalClass);
+
+				response.LOBId = workspaceControllerLogic.ConvertPTMLineOfBusiness(proposal.LineOfBusinessID);
+
+				response.AnticipatedDeliveryDate = proposal.DeliveryDate.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR);
+
+				response.RevisedSubmittalDate = proposal.RevisedSubmittalDate.HasValue
+					? proposal.RevisedSubmittalDate.Value.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR)
+					: string.Empty;
+
+				// Default Template BOE switch to Yes if CCoPD is set to true
+				response.UsingTemplateBoe = proposal.IsCCPDRequired.HasValue ? proposal.IsCCPDRequired.Value : false;
+
+				response.IsSAPEnabledConfig = Utilities.IsSAPEnabledForSystem;
+			}
+			else
+			{
+				throw new GenValidationException("PTM Tracking Number is invalid. Please delete the current Tracking Number and choose another from the dropdown list.");
+			}
+
+			return response;
+		}
+
+		/// <summary>
+		/// Gets the next tracking number
+		/// </summary>
+		/// <param name="trackingNumber"></param>
+		/// <returns></returns>
+		private string GetNextTrackingNumber(string trackingNumber)
+		{
+			string nextRevision = trackingNumber;
+			ICollection<WorkspaceDTO> trackingNameData = this.workspaceDTODataLoader.GetAllWsNamesAndTrackingNumberInfo().Where(w => w.TrackingNumber == trackingNumber || w.Shortname.StartsWith(trackingNumber, StringComparison.InvariantCultureIgnoreCase)).ToList();
+			if (trackingNameData.Any())
+			{
+				// extract revision numbers - short names should be of the format [TrackingNumber] or [TrackingNumber]_XX, where XX is the revision number
+				IList<string> revisionStrings = trackingNameData.Where(x => x.Shortname.StartsWith(nextRevision + "_")).Select(x => x.Shortname.Substring(x.Shortname.IndexOf("_") + 1, 2)).ToList();
+				IList<int> revisions = new List<int>();
+
+				// confirm the extracted values are numbers and convert them to ints
+				foreach (string revision in revisionStrings)
+				{
+					int revisionNumber;
+					if (int.TryParse(revision, out revisionNumber))
+					{
+						revisions.Add(revisionNumber);
+					}
+				}
+
+				// Get highest number or 0 if there are none
+				int highestRevision = revisions.Any() ? revisions.OrderByDescending(x => x).First() : 0;
+
+				nextRevision = nextRevision + "_" + (highestRevision + 1).ToString("00");
+			}
+
+			return nextRevision;
 		}
 	}
 }
