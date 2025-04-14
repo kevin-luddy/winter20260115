@@ -309,12 +309,10 @@ namespace GenBOE.ActionLogic
 				ICollection<IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO>> brcGroupings = grouping.GroupBy(r => r.BRCName).OrderBy(t => t.Key).ToList();
 				foreach (IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO> brcGrouping in brcGroupings)
 				{
-					decimal totalGroupHours = brcGrouping.Sum(g => g.TotalHours);
-
 					refreshedModel.CommonDisclosureRows.Add(
 						new CommonDisclosureModelView
 						{
-							HistoricalHours = totalGroupHours,
+							HistoricalHours = 0m,
 							ResourceID = grouping.Key,
 							BusinessResourceID = brcGrouping.Key,
 							Included = false,
@@ -339,13 +337,20 @@ namespace GenBOE.ActionLogic
 						historicalSkillMix.ProposedHours += proposedHours;
 						historicalSkillMix.Included = true;
 
-						if (historicalSkillMix.ProposedHours != 0m && !isManual)
+						if (!isManual)
 						{
-							// for Automated SkillMix, the Historical Hours is supposed to be a fraction of the real Historical Hours.
-							// That fraction is the % that the Proposed Hours are of the Total Hours for this Resource
-							decimal totalLaborHours = laborTypes.Where(l => l.BusinessResourceCodeName == historicalSkillMix.BusinessResourceID && l.ResourceName == historicalSkillMix.ResourceID).Sum(x => x.HourSpread ?? 0m);
-							decimal realHistoricalHours = resourceHours.Where(r => r.ResourceName == historicalSkillMix.ResourceID).Sum(l => l.TotalHours);
-							historicalSkillMix.HistoricalHours = totalLaborHours == 0m ? 0m : (historicalSkillMix.ProposedHours / totalLaborHours) * realHistoricalHours;
+							if (historicalSkillMix.ProposedHours != 0m)
+							{
+								// for Automated SkillMix, the Historical Hours is supposed to be a fraction of the real Historical Hours.
+								// That fraction is the % that the Proposed Hours are of the Total Hours for this Resource
+								decimal totalLaborHours = laborTypes.Where(l => l.BusinessResourceCodeName == historicalSkillMix.BusinessResourceID && l.ResourceName == historicalSkillMix.ResourceID).Sum(x => x.HourSpread ?? 0m);
+								decimal realHistoricalHours = resourceHours.Where(r => r.ResourceName == historicalSkillMix.ResourceID).Sum(l => l.TotalHours);
+								historicalSkillMix.HistoricalHours = totalLaborHours == 0m ? 0m : (historicalSkillMix.ProposedHours / totalLaborHours) * realHistoricalHours;
+							}
+							else
+							{
+								historicalSkillMix.HistoricalHours = 0.0m;
+							}
 						}
 					}
 					else
