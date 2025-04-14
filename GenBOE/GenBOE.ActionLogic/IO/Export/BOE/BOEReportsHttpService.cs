@@ -88,6 +88,48 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		}
 
 		/// <summary>
+		/// Export BOEs to Word
+		/// </summary>
+		/// <param name="selectedComponents">optional selected components</param>
+		/// <param name="httpResponse">HttpResponse to add response to</param>
+		/// <param name="isCustomExport">Whether this is a custom export or not</param>
+		/// <param name="wsExportFormatDTO">The workspace export format</param>
+		/// <param name="exportInputs">The export input params</param>
+		/// <param name="boeExportModelViews">The Export ModelViews for BOE</param>
+		/// <param name="boeSummaryGridModelViews">The summary grid modelviews for BOE</param>
+		/// <param name="segmentedOutput">Whether this is a segmented output (different files zipped) or not</param>
+		/// <returns></returns>
+		/// <exception cref="GenValidationException"></exception>
+		public async Task ExportBOEsToWordStream(ICollection<BoeCustomReportComponent> selectedComponents, Stream stream, bool isCustomExport,
+			WorkspaceExportFormatDTO wsExportFormatDTO, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews,
+			List<BOESummaryGridModelView> boeSummaryGridModelViews, bool segmentedOutput)
+		{
+			ExportBoeWordRequestViewModel model = new ExportBoeWordRequestViewModel(exportInputs)
+			{
+				SelectedComponents = selectedComponents?.ToList(),
+				IsCustomExport = isCustomExport,
+				ExportFormatDTO = wsExportFormatDTO,
+				BoeExportModelViews = boeExportModelViews?.ToList(),
+				BoeSummaryGridModelViews = boeSummaryGridModelViews,
+				SegmentedOutput = segmentedOutput
+			};
+
+			IESSingleResponse<byte[]> returnStream = await this.Post<byte[], ExportBoeWordRequestViewModel>("ExportBoeToWord", model);
+
+			if (returnStream.IsSuccessful)
+			{
+				await stream.WriteAsync(returnStream.Data, 0, returnStream.Data.Length);
+			}
+			else
+			{
+				string supportLink = Utilities.ServiceCentralLink();
+				string message = string.Format("An error has occurred.  This might be the result of invalid data.  Try running the 'Validate All BOEs' report, and correct any errors it may find.  If the data is valid, and the error persists, please create a ticket with Helpdesk at {0}.", supportLink);
+
+				throw new GenValidationException(message, string.Join(Environment.NewLine, returnStream.Messages));
+			}
+		}
+
+		/// <summary>
 		/// Exports the Manage BOEs information to Excel.
 		/// </summary>
 		/// <param name="exportInputs">BOE exportInputs.</param>

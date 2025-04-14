@@ -174,20 +174,17 @@ namespace GenBOE.ActionLogic.IO.Export
 				throw new ArgumentNullException(nameof(ws));
 			}
 
-			this.WorkspaceDecimalPrecision = ws.DecimalPrecision;
-
 			// If UCOT is enabled then sent decimal precision to be 3 if it is set to be less than 3.
 			if (Utilities.IsUCOTEnabled)
 			{
-				if (this.WorkspaceDecimalPrecision < 3)
-				{
-					this.DefaultHoursFormat = Utilities.PrecisionFormattingString(3);
-				}
+				this.WorkspaceDecimalPrecision = Math.Max(3, ws.DecimalPrecision);
 			}
 			else
 			{
-				this.DefaultHoursFormat = Utilities.PrecisionFormattingString(this.WorkspaceDecimalPrecision);
+				this.WorkspaceDecimalPrecision = ws.DecimalPrecision;
 			}
+
+			this.DefaultHoursFormat = Utilities.PrecisionFormattingString(this.WorkspaceDecimalPrecision);
 		}
 
         /// <summary>

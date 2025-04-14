@@ -258,6 +258,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				throw new ArgumentNullException(nameof(wsExportFormatDTO));
 			}
 
+			if (isCustomExport)
+			{
+				// distinguish between MASTER and legacy templates
+				// if legacy, use original MASTER, otherwise use selected template
+				wsExportFormatDTO = wsExportFormatDTO.ExportFormat.ParentTemplateId < 9001 || wsExportFormatDTO.ExportFormat.ParentTemplateId > 10000 || wsExportFormatDTO.ExportFormat.ParentTemplateId == null ? this.workspaceExportFormatDTOLoader.GetById((int)ExcelReportTemplateType.MASTER) : wsExportFormatDTO;
+			}
+
 			if (Utilities.IsReportGenerationExternal)
 			{
 				await this.boeReportsHttpService.ExportBOEsToWord(selectedComponents, httpResponse, isCustomExport, wsExportFormatDTO, exportInputs, boeExportModelViews,
@@ -265,10 +272,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 			else if (isCustomExport)
 			{
-				// distinguish between MASTER and legacy templates
-				// if legacy, use original MASTER, otherwise use selected template
-				WorkspaceExportFormatDTO exportFormat = wsExportFormatDTO.ExportFormat.ParentTemplateId < 9001 || wsExportFormatDTO.ExportFormat.ParentTemplateId > 10000 || wsExportFormatDTO.ExportFormat.ParentTemplateId == null ? this.workspaceExportFormatDTOLoader.GetById((int)ExcelReportTemplateType.MASTER) : wsExportFormatDTO;
-
+				
 				if (segmentedOutput)
 				{
 					this.boeCustomExporter.ExportBOEsToZipFile(
@@ -279,12 +283,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						selectedComponents,
 						httpResponse,
 						string.Format("genBOEExport-{0}.zip", workspace.WorkspaceName).Replace(",", string.Empty),
-						exportFormat);
+						wsExportFormatDTO);
 				}
 				else
 				{
 					// Call the export function in the business layer and get back the file name of the populated template.
-					this.boeCustomExporter.ExportBOEToWordFile(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workspace, selectedComponents, httpResponse, string.Format("genBOECustomExport-{0}.docx", workspace.WorkspaceName).Replace(",", string.Empty), exportFormat);
+					this.boeCustomExporter.ExportBOEToWordFile(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workspace, selectedComponents, httpResponse, string.Format("genBOECustomExport-{0}.docx", workspace.WorkspaceName).Replace(",", string.Empty), wsExportFormatDTO);
 				}
 			}
 			else

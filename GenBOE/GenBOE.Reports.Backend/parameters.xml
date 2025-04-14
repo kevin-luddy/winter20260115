@@ -50,6 +50,10 @@
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SPLUNK_TOKEN_">
 		</parameterentry>
 	</parameter>
+	<parameter name="EnableUCOT" description="doesn't matter" defaultvalue="__EnableUCOT__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_EnableUCOT_">
+		</parameterentry>
+	</parameter>
 	
 	<!--system.web-->
 	<parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">
