@@ -59,6 +59,7 @@ namespace GenBOE.Reports.Backend.Services
 		{
 			if (isCustomExport)
 			{
+				this.boeCustomExporter.SetWorkspacePrecisionVariables(exportInputs.Workspace);
 				return this.boeCustomExporter.ExportBOEsToZipFile(
 						exportInputs,
 						boeExportModelViews,
@@ -68,6 +69,7 @@ namespace GenBOE.Reports.Backend.Services
 			}
 			else
 			{
+				this.boeExporter.SetWorkspacePrecisionVariables(exportInputs.Workspace);
 				return this.boeExporter.ExportBOEsToZipFile(
 						exportInputs,
 						boeExportModelViews,
@@ -96,6 +98,7 @@ namespace GenBOE.Reports.Backend.Services
 			if (isCustomExport)
 			{
 				// Call the export function in the business layer
+				this.boeCustomExporter.SetWorkspacePrecisionVariables(exportInputs.Workspace);
 				this.boeCustomExporter.ExportBOEToWordStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, 
 					selectedComponents, stream, exportFormat);
 				return string.Format("genBOECustomExport-{0}.docx", exportInputs.Workspace.WorkspaceName).Replace(",", string.Empty);
@@ -103,6 +106,7 @@ namespace GenBOE.Reports.Backend.Services
 			else
 			{
 				// Call the export function in the business layer
+				this.boeExporter.SetWorkspacePrecisionVariables(exportInputs.Workspace);
 				this.boeExporter.ExportBOEToWordStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, 
 						exportFormat.FileData, stream, exportFormat.ExportFormat.TemplateType);
 

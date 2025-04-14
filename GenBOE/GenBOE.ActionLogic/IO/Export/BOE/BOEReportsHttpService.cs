@@ -80,7 +80,10 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 			}
 			else
 			{
-				throw new GenValidationException("Error calling Reports Service", string.Join(Environment.NewLine, returnStream.Messages));
+				string supportLink = Utilities.ServiceCentralLink();
+				string message = string.Format("An error has occurred.  This might be the result of invalid data.  Try running the 'Validate All BOEs' report, and correct any errors it may find.  If the data is valid, and the error persists, please create a ticket with Helpdesk at {0}.", supportLink);
+
+				throw new GenValidationException(message, string.Join(Environment.NewLine, returnStream.Messages));
 			}
 		}
 
