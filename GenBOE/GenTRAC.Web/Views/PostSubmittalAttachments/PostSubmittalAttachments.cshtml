@@ -336,7 +336,7 @@
 					@if (Model.PsaVisibility == SecurityAuthorization.CreateReadUpdateDelete)
                     {
 						<td style="text-align: center;">
-							@if (attachment.IsAttachmentFromeEPP)
+							@if (Model.IsEPPIntegrationEnabled && attachment.IsAttachmentFromeEPP)
 							{
                                 <img id="deleteDisabled-@attachmentIdentifier" style="display:none" class="disabled" src="~/Content/images/Cancel_16x.png" />
 							}
@@ -356,13 +356,13 @@
 							@(attachment.IsRevisionReference ? @referencePrefix : string.Empty) @attachment.Name
 						</a>
 						<!-- Show eEPP status if it exists -->
-						@if (attachment.IsAttachmentFromeEPP)
+						@if (Model.IsEPPIntegrationEnabled && attachment.IsAttachmentFromeEPP)
 						{
 							<span>&nbsp; - @attachment.EeppStatus</span>
 						}
 						<span id="filenameLabel-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded ? "display:none" : "")">Select File</span>
 					</td>
-                    @if (attachment.IsAttachmentFromeEPP)
+                    @if (Model.IsEPPIntegrationEnabled && attachment.IsAttachmentFromeEPP)
                     {
                         <td></td>
                     }
@@ -381,7 +381,7 @@
 						</td>
 					}
 					<td id="uploadedBy-@attachmentIdentifier">@attachment.UploadedBy</td>
-					@if (attachment.IsAttachmentFromeEPP)
+					@if (Model.IsEPPIntegrationEnabled && attachment.IsAttachmentFromeEPP)
 					{
                         <td id="uploadDate-@attachmentIdentifier">N/A</td>
 					}
