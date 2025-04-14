@@ -44,5 +44,10 @@ namespace GenTRAC.ActionLogic.ModelView.PostSubmittalAttachments
         /// Max number of allowed "Other" attachments.
         /// </summary>
         public int? MaxOtherFileCount { get; set; }
+
+		/// <summary>
+		/// Is EPP Integration Enabled?
+		/// </summary>
+		public bool IsEPPIntegrationEnabled { get; set; }
     }
 }
