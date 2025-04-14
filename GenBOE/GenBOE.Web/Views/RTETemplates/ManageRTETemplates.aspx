@@ -237,7 +237,7 @@
                 <div class="form-row last-form-row">
                     <div class="form-element">
                         <div id="OCINote" class="oci-note">
-                            <span><b>Note:</b> <%: SiteMasterUtilities.GetBannerText(((GenBOEMasterModelView)Model).HeaderFooter.Contains("Organizational Conflict of Interest")) %></span>
+                            <span><b>Note:</b> <%: SiteMasterUtilities.GetBannerText(((GenBOEMasterModelView)Model).ContainsOCI) %></span>
                         </div>
                         <div class="button-container">
                             <div class="buttons">
