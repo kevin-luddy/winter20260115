@@ -135,11 +135,13 @@
         $("#Cancel-BOEUpdates").click(TaskElementDetailsWidget.CancelToMainGrid);
 
         //Change the OCI note based off the workspace
-        if (ManageWBS_ContainsOCI == true) {
-            $('#Task-OCINote').html('Must not contain any classified, export controlled or third party proprietary information.');
+		if (ManageWBS_ContainsOCI == true) {
+			var text = '<%: SiteMasterUtilities.GetBannerText(true) %>';
+            $('#Task-OCINote').html(text);
         }
-        else {
-            $('#Task-OCINote').html('Must not contain any OCI, classified, export controlled or third party proprietary information.');
+		else {
+			var text = '<%: SiteMasterUtilities.GetBannerText() %>';
+            $('#Task-OCINote').html(text);
         }
 
         $(document).one("MOQWidgetLoaded", function () {

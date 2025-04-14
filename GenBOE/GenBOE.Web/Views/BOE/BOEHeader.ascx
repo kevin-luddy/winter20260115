@@ -67,7 +67,8 @@
         'boe/');
 
         BoeHeaderWidget = AfterDomLoadBoeHeaderWidget(containsOCI, readOnly, workspaceState, saveEditBoeHeaderUrl, 
-            boeStateNotDraft, allowDateShift, <%:rteFieldSize%>, dateShiftUrl, findAdjacentBoesUrl, boeId, newBoeUrl, '<%:showCustomQuestions.ToString()%>'.isTrue(), <%:numberQuestions%>);
+			boeStateNotDraft, allowDateShift, <%:rteFieldSize%>, dateShiftUrl, findAdjacentBoesUrl, boeId, newBoeUrl,
+			'<%:showCustomQuestions.ToString()%>'.isTrue(), <%:numberQuestions%>);
     });
 </script>
 

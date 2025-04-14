@@ -41,6 +41,7 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 			BOEConfigurationViewModel configurationData = new BOEConfigurationViewModel();
 
 			configurationData.CompanyConfiguration = SystemConfiguration.Instance().CompanyMode;
+			configurationData.IsPTMIntegrated = Utilities.IsPTMIntegrated;
 			configurationData.IsBRCEnabled = ConfigurationUtilities.GetAppSetting<bool>("EnableBRC");
 			configurationData.IsReadOnly = ConfigurationUtilities.GetAppSetting<bool>("IsReadOnly");
 			configurationData.DisableExternalLinksForClassifiedInstall = Utilities.DisableExternalHelpLinksForClassifiedInstallations();

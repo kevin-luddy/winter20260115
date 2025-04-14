@@ -12,7 +12,7 @@
         var ManageBOEFormsWidget;
         $(function () {
 
-            var formConfigs = [];
+			var formConfigs = [];
             formConfigs.push({
                 ElementID: 'CreateBOEForm',
                 Buttons: [
@@ -38,8 +38,12 @@
                     },
                     Stateful: false
                 }],
-                ContainsOCI: false,
-            });
+				ContainsOCI: <%: (Model.HeaderFooter.Contains("Organizational Conflict of Interest")).ToString().ToLower() %>,
+				HideOCI: false,
+				// We Load both OCI and NON OCI texts so that the Generation.JS will use the ContainsOCI to display the correct text
+				BannerTextWithOCI: '<%: SiteMasterUtilities.GetBannerText() %>',
+				BannerTextWithoutOCI: '<%: SiteMasterUtilities.GetBannerText(true) %>'
+			});
 
             var widgetConfig = {
                 ContextID: "CreateBOEFormsForm",

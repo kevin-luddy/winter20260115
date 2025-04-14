@@ -402,8 +402,8 @@
                 <div class="form-label"></div>
                 <div class="form-element">
                     <div id="OCINote" class="oci-note">
-                        <span data-ng-show="gridModel.ContainsOCI"><b>Note:</b> Must not contain any classified, export controlled or third party proprietary information.</span>
-                        <span data-ng-hide="gridModel.ContainsOCI"><b>Note:</b> Must not contain any OCI, classified, export controlled or third party proprietary information.</span>
+                        <span data-ng-show="gridModel.ContainsOCI"><b>Note:</b> <%: SiteMasterUtilities.GetBannerText(true) %></span>
+                        <span data-ng-hide="gridModel.ContainsOCI"><b>Note:</b> <%: SiteMasterUtilities.GetBannerText() %></span>
                     </div>
                     <div class="button-container">
                         <div class="buttons">
@@ -485,8 +485,8 @@
                             <input type="file" size="60" id="ImportDialog-File" name="file" onchange="angular.element(this).scope().fileUploadChange(this)" />
                         </div>
                         <div id="OCINoteImport" class="oci-note">
-                            <span data-ng-show="gridModel.ContainsOCI"><b>Note:</b> Must not contain any classified, export controlled or third party proprietary information.</span>
-                            <span data-ng-hide="gridModel.ContainsOCI"><b>Note:</b> Must not contain any OCI, classified, export controlled or third party proprietary information.</span>
+                            <span data-ng-show="gridModel.ContainsOCI"><b>Note:</b> <%: SiteMasterUtilities.GetBannerText(true) %></span>
+                            <span data-ng-hide="gridModel.ContainsOCI"><b>Note:</b> <%: SiteMasterUtilities.GetBannerText() %></span>
                         </div>
                         <div class="buttons">
                             <button id="ImportBOEDialog-ImportButton" type="button" class="ies-action" data-ng-hide="dialog.importWorking" data-ng-disabled="dialog.disableImport" data-ng-click="importBOEs()" name="import-button">Import</button>

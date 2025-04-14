@@ -434,11 +434,11 @@ function AfterDomLoadZoneTravelElementsCompositeWidget(ZoneTravelElementsComposi
     });
 
     //Change the OCI note based off the workspace
-    if (ZoneTravelElementsComposite.ContainsOCI == true) {
-        $('#ZoneTravel-OCINote').html('Must not contain any classified, export controlled or third party proprietary information.');
+	if (ZoneTravelElementsComposite.ContainsOCI == true) {
+		$('#ZoneTravel-OCINote').html(ZoneTravelElementsComposite.BannerTextWithoutOCI);
     }
     else {
-        $('#ZoneTravel-OCINote').html('Must not contain any OCI, classified, export controlled or third party proprietary information.');
+		$('#ZoneTravel-OCINote').html(ZoneTravelElementsComposite.BannerTextWithOCI);
     }
 
     if (ZoneTravelElementsComposite.isReadOnly()) {

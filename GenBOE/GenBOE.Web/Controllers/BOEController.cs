@@ -276,6 +276,8 @@ namespace GenBOE.Web.Controllers
 			ViewData["BOEID"] = boeID;
 			TaskElementDuplicateFormCollection theModelView = _ControllerLogic.GetDuplicateTaskModelView(boeObject, taskType);
 
+			theModelView.ContainsOCI = ws.ContainsOCI;
+
 			// Perform Action
 			ViewResult toReturn = View(WebConstants.VIEW_DUPLICATE_TASK_DIALOG, theModelView);
 
@@ -308,7 +310,7 @@ namespace GenBOE.Web.Controllers
 			GenericTaskElementGridModelView theModelView = _ControllerLogic.GetTaskGridModelView(boe, workspaceObject);
 
 			theModelView.TaskElements = theModelView.TaskElements.OrderBy(teOrder => teOrder.BOETaskElementOrder).ThenBy(teOrder => teOrder.TaskElementDetailID).ToCollection();
-
+			theModelView.ContainsOCI = workspaceObject.ContainsOCI;
 
 			ViewData["DISABLE_ALLOCATED_LABOR"] = false;
 
