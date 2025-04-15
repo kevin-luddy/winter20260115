@@ -1,8 +1,7 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-
 namespace APTSPropricerApi.Pages
 {
+	using Microsoft.AspNetCore.Mvc.RazorPages;
+
 	/// <summary>
 	/// Index Model
 	/// </summary>
