@@ -36,7 +36,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// <param name="boeExportModelViews">The Export ModelViews for BOE</param>
 		/// <param name="boeSummaryGridModelViews">The summary grid modelviews for BOE</param>
 		/// <param name="segmentedOutput">Whether this is a segmented output (different files zipped) or not</param>
-		/// <returns></returns>
+		/// <returns>Async Task used for await</returns>
 		/// <exception cref="GenValidationException"></exception>
 		public async Task ExportBOEsToWord(ICollection<BoeCustomReportComponent> selectedComponents, HttpResponseBase httpResponse, bool isCustomExport,
 			WorkspaceExportFormatDTO wsExportFormatDTO, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, 
@@ -91,14 +91,14 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// Export BOEs to Word
 		/// </summary>
 		/// <param name="selectedComponents">optional selected components</param>
-		/// <param name="httpResponse">HttpResponse to add response to</param>
+		/// <param name="stream">The stream to export into</param>
 		/// <param name="isCustomExport">Whether this is a custom export or not</param>
 		/// <param name="wsExportFormatDTO">The workspace export format</param>
 		/// <param name="exportInputs">The export input params</param>
 		/// <param name="boeExportModelViews">The Export ModelViews for BOE</param>
 		/// <param name="boeSummaryGridModelViews">The summary grid modelviews for BOE</param>
 		/// <param name="segmentedOutput">Whether this is a segmented output (different files zipped) or not</param>
-		/// <returns></returns>
+		/// <returns>Async Task used for await</returns>
 		/// <exception cref="GenValidationException"></exception>
 		public async Task ExportBOEsToWordStream(ICollection<BoeCustomReportComponent> selectedComponents, Stream stream, bool isCustomExport,
 			WorkspaceExportFormatDTO wsExportFormatDTO, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews,

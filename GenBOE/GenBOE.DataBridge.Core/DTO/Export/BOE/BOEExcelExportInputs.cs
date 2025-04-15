@@ -8,6 +8,9 @@
 	using System.Threading.Tasks;
 	using GenTRAC.DataBridge.Core.DTO.User;
 
+	/// <summary>
+	/// BOE Export to Excel Inputs
+	/// </summary>
 	public class BOEExcelExportInputs
 	{
 		/// <summary>
