@@ -115,10 +115,13 @@ namespace APTSPropricerApi.Connection
 		/// <returns>True if activated online</returns>
 		private bool GetActivation(ProPricerActivation activation, ref bool changeKey)
 		{
-			Task<bool> task = activation.Activate();
-			task.Wait();
+			changeKey = true;
+			if (!activation.Status.IsActivated())
+			{
+				activation.Activate();
+			}
 
-			return true;
+			return activation.Status.IsActivated();
 		}
 
 		/// <summary>
