@@ -145,6 +145,8 @@ namespace GenBOE.Web.Common
                 model.WorkspaceState = _CommonDataMapper.getWorkspaceStateName(WorkspaceState.None);
 
                 model.HeaderFooter = "Lockheed Martin Proprietary Information";
+
+				model.ContainsOCI = false;
 			}
             else
             {
@@ -155,6 +157,8 @@ namespace GenBOE.Web.Common
                 model.HeaderFooter = ws.ContainsOCI ?
                     "Organizational Conflict of Interest - Lockheed Martin Proprietary Information" :
                     "Lockheed Martin Proprietary Information";
+
+				model.ContainsOCI = ws.ContainsOCI;
 			}
         }
 
