@@ -236,8 +236,7 @@
 			<div class="form-label"></div>
 			<div class="form-element">
 				<div id="OCINote" class="oci-note">
-					<span data-ng-show="gridModel.ContainsOCI"><b>Note:</b> <%: SiteMasterUtilities.GetBannerText() %></span>
-					<span data-ng-hide="gridModel.ContainsOCI"><b>Note:</b> <%: SiteMasterUtilities.GetBannerText(true) %></span>
+					<span><b>Note:</b> <%: SiteMasterUtilities.GetBannerText(((GenBOEMasterModelView)Model).ContainsOCI) %></span>
 				</div>
 				<div class="button-container">
 					<div class="buttons">
@@ -326,8 +325,7 @@
 					</div>
 				</div>
 				<div id="OCINote" data-ng-show="dialog.showSteps" class="oci-note">
-					<span data-ng-show="gridModel.ContainsOCI"><b>Note:</b> <%: SiteMasterUtilities.GetBannerText() %></span>
-					<span data-ng-hide="gridModel.ContainsOCI"><b>Note:</b> <%: SiteMasterUtilities.GetBannerText(true) %></span>
+					<span><b>Note:</b> <%: SiteMasterUtilities.GetBannerText(((GenBOEMasterModelView)Model).ContainsOCI) %></span>
 				</div>
 				<div>
 					<div class="buttons" data-ng-show="dialog.showSteps">
