@@ -625,6 +625,17 @@ namespace GenBOE.Objects
 		}
 
 		/// <summary>
+		/// Get Materials for the Workspace with the given ID
+		/// </summary>
+		/// <param name="workspaceId">Workspace ID</param>
+		/// <param name="includeRTEFields">Indicates whether RTE fields should be retrieved as a part of the data pull</param>
+		/// <returns>Material Dtos</returns>
+		public ICollection<MaterialDTO> GetMaterialsByWorkspaceId(int workspaceId, bool includeRTEFields)
+		{
+			return this.materialLoader.GetByWorkspaceId(workspaceId, includeRTEFields).ToList();
+		}
+
+		/// <summary>
 		/// Used during exports, this methods gets (for every BoeId in the WS) the last user to submit the Boe for approval
 		/// </summary>
 		/// <param name="wsId">Workspace Id</param>
@@ -776,10 +787,21 @@ namespace GenBOE.Objects
 		/// </summary>
 		/// <param name="boeIds">Boe Ids</param>
 		/// <param name="loadRteData">Indicate whether RTE data should be loaded automatically</param>
-		/// <returns>Other direct Costs assiciated with Boes.</returns>
+		/// <returns>Other direct Costs associated with Boes.</returns>
 		public ICollection<OtherDirectCostDTO> GetOdcCollectionByBoeIds(ICollection<int> boeIds, bool loadRteData)
 		{
 			return this.otherDirectCostLoader.GetByBoeIds(boeIds, loadRteData);
+		}
+
+		/// <summary>
+		/// Gets a list of other direct Costs associated with Workspace
+		/// </summary>
+		/// <param name="workspaceId">Workspace ID</param>
+		/// <param name="loadRteData">Indicate whether RTE data should be loaded automatically</param>
+		/// <returns>Other direct Costs associated with the Workspace.</returns>
+		public ICollection<OtherDirectCostDTO> GetOdcCollectionByWorkspaceId(int workspaceId, bool loadRteData)
+		{
+			return this.otherDirectCostLoader.GetByWorkspaceId(workspaceId, loadRteData);
 		}
 
 		/// <summary>

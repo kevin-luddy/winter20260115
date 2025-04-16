@@ -77,7 +77,34 @@ namespace GenBOE.Tests.DAL.DataLoaders
             VerifyDtos(nonRteLoadedBoe, rteLoadedBoe);
         }
 
-        public static void VerifyCollections(ICollection<OtherDirectCostDTO> collection1, ICollection<OtherDirectCostDTO> collection2, bool skipFieldsNotRestoredFromBackup = false)
+		/// <summary>
+		/// Test GetByWorkspaceId
+		/// </summary>
+		[TestMethod]
+		public void GetByWorkspaceIdTest()
+		{
+			OtherDirectCostDTODataLoader loader = CreateTestLoader();
+
+			ODCTaskElement odc;
+			BOE boe;
+
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				odc = gbe.ODCTaskElements.FirstOrDefault(x => x.ODCTaskDescription.Length > 0);
+				boe = gbe.BOEs.FirstOrDefault(x => x.BOEID == odc.BOEID);
+			}
+
+			if (boe != null)
+			{
+				ICollection<OtherDirectCostDTO> result = loader.GetByWorkspaceId(boe.WorkspaceID);
+
+				Assert.IsTrue(result.Any());
+				Assert.IsTrue(result.Any(x => x.TaskTitle == odc.ODCTaskTitle));
+				Assert.IsTrue(result.Any(x => x.TaskDescription == odc.ODCTaskDescription));
+			}
+		}
+
+		public static void VerifyCollections(ICollection<OtherDirectCostDTO> collection1, ICollection<OtherDirectCostDTO> collection2, bool skipFieldsNotRestoredFromBackup = false)
         {
             Assert.AreEqual(collection1.Count, collection2.Count);
             for (int i = 0; i < collection1.Count; i++)
@@ -153,7 +180,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
                                     dto2.ODCTypes.ElementAt(i).ODCSpreads.ElementAt(j).UpdateDate);
                 }
             }
-
         }
-    }
+	}
 }
