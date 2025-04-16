@@ -117,11 +117,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="summarizeByCustomField">Name of custom field to group by when running All BOEs report with special format template.</param>
         /// <param name="selectedBOEs">List of BOEs to be included in the report; if null, then include ALL</param>
         /// <param name="viewDataDictionary">View data</param>
-        /// <param name="isCustomExport">Flag indicating wheter the export is a custom export</param>
+        /// <param name="isCustomExport">Flag indicating whether the export is a custom export</param>
         /// <param name="wsExportFormatDTO">the Workspace Format DTO</param>
         /// <param name="exportInputs">the export inputs</param>
         /// <param name="boeExportModelViews">the boe export model views</param>
-        /// <param name="boeSummaryGridModelViews">the boe summary grid model veiws</param>
+        /// <param name="boeSummaryGridModelViews">the boe summary grid model views</param>
         /// <param name="custom">Flag indicating whether the template file is based on the custom export template</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "9")]
         public void PrepareAllBOEsReport(FullWorkspace workspace, bool isSubcontractorUser, string summarizeByCustomField, ICollection<int> selectedBOEs,
@@ -234,11 +234,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="workspace">The current workspace</param>
 		/// <param name="selectedComponents">List of BOEs to be included in the report; if null, then include ALL</param>
 		/// <param name="httpResponse">HTTP response object</param>
-		/// <param name="isCustomExport">Flag indicating wheter the export is a custom export</param>
+		/// <param name="isCustomExport">Flag indicating whether the export is a custom export</param>
 		/// <param name="wsExportFormatDTO">the Workspace Format DTO</param>
 		/// <param name="exportInputs">the export inputs</param>
 		/// <param name="boeExportModelViews">the boe export model views</param>
-		/// <param name="boeSummaryGridModelViews">the boe summary grid model veiws</param>
+		/// <param name="boeSummaryGridModelViews">the boe summary grid model views</param>
 		/// <param name="segmentedOutput">Should the output be broken into segments and zipped</param>
 		public async Task ExportAllBOEsReport(FullWorkspace workspace, ICollection<BoeCustomReportComponent> selectedComponents, HttpResponseBase httpResponse, bool isCustomExport,
 			WorkspaceExportFormatDTO wsExportFormatDTO, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, List<BOESummaryGridModelView> boeSummaryGridModelViews, bool segmentedOutput = false)
@@ -258,6 +258,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				throw new ArgumentNullException(nameof(wsExportFormatDTO));
 			}
 
+			if (isCustomExport)
+			{
+				// distinguish between MASTER and legacy templates
+				// if legacy, use original MASTER, otherwise use selected template
+				wsExportFormatDTO = wsExportFormatDTO.ExportFormat.ParentTemplateId < 9001 || wsExportFormatDTO.ExportFormat.ParentTemplateId > 10000 || wsExportFormatDTO.ExportFormat.ParentTemplateId == null ? this.workspaceExportFormatDTOLoader.GetById((int)ExcelReportTemplateType.MASTER) : wsExportFormatDTO;
+			}
+
 			if (Utilities.IsReportGenerationExternal)
 			{
 				await this.boeReportsHttpService.ExportBOEsToWord(selectedComponents, httpResponse, isCustomExport, wsExportFormatDTO, exportInputs, boeExportModelViews,
@@ -265,10 +272,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 			else if (isCustomExport)
 			{
-				// distinguish between MASTER and legacy templates
-				// if legacy, use original MASTER, otherwise use selected template
-				WorkspaceExportFormatDTO exportFormat = wsExportFormatDTO.ExportFormat.ParentTemplateId < 9001 || wsExportFormatDTO.ExportFormat.ParentTemplateId > 10000 || wsExportFormatDTO.ExportFormat.ParentTemplateId == null ? this.workspaceExportFormatDTOLoader.GetById((int)ExcelReportTemplateType.MASTER) : wsExportFormatDTO;
-
+				
 				if (segmentedOutput)
 				{
 					this.boeCustomExporter.ExportBOEsToZipFile(
@@ -279,12 +283,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						selectedComponents,
 						httpResponse,
 						string.Format("genBOEExport-{0}.zip", workspace.WorkspaceName).Replace(",", string.Empty),
-						exportFormat);
+						wsExportFormatDTO);
 				}
 				else
 				{
 					// Call the export function in the business layer and get back the file name of the populated template.
-					this.boeCustomExporter.ExportBOEToWordFile(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workspace, selectedComponents, httpResponse, string.Format("genBOECustomExport-{0}.docx", workspace.WorkspaceName).Replace(",", string.Empty), exportFormat);
+					this.boeCustomExporter.ExportBOEToWordFile(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workspace, selectedComponents, httpResponse, string.Format("genBOECustomExport-{0}.docx", workspace.WorkspaceName).Replace(",", string.Empty), wsExportFormatDTO);
 				}
 			}
 			else

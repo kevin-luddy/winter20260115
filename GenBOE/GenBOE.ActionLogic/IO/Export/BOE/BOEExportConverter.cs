@@ -1259,7 +1259,15 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                 throw new ArgumentNullException(nameof(ws));
             }
 
-            this.WorkspaceDecimalPrecision = ws.DecimalPrecision;
+			// If UCOT is enabled then sent decimal precision to be 3 if it is set to be less than 3.
+			if (Utilities.IsUCOTEnabled)
+			{
+				this.WorkspaceDecimalPrecision = Math.Max(3, ws.DecimalPrecision);
+			}
+			else
+			{
+				this.WorkspaceDecimalPrecision = ws.DecimalPrecision;
+			}
         }
 
         /// <summary>
