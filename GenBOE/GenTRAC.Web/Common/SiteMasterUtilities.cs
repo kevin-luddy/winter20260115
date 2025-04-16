@@ -302,5 +302,13 @@ namespace GenTRAC.Web.Common
                 return bool.TrueString.ToLower() == ConfigurationManager.AppSettings["IsClassEnvironment"].ToLower();
             }
         }
+
+		/// <summary>
+		/// Is EPP Integration Enabled?
+		/// </summary>
+		public static bool IsEPPIntegrationEnabled
+		{
+			get => bool.TrueString.ToLower() == ConfigurationManager.AppSettings["EnableEppIntegration"].ToLower();
+		}
     }
 }
