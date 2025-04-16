@@ -406,8 +406,8 @@ namespace GenBOE.Tests.ActionLogic
 
             this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { task1, task2 });
             this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { });
-            this.retriever.Setup(x => x.GetMaterialsByBoeIds(It.IsAny<Collection<int>>(), false)).Returns(new Collection<MaterialDTO> { });
-            this.retriever.Setup(x => x.GetOdcCollectionByBoeIds(It.IsAny<List<int>>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
+            this.retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, false)).Returns(new Collection<MaterialDTO> { });
+            this.retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(It.IsAny<int>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
 
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<CustomFieldDTO> { customField1, customField2 });
 
@@ -537,8 +537,8 @@ namespace GenBOE.Tests.ActionLogic
 
             this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { task1, task2 });
             this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { });
-            this.retriever.Setup(x => x.GetMaterialsByBoeIds(It.IsAny<Collection<int>>(), false)).Returns(new Collection<MaterialDTO> { });
-            this.retriever.Setup(x => x.GetOdcCollectionByBoeIds(It.IsAny<List<int>>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
+            this.retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, false)).Returns(new Collection<MaterialDTO> { });
+            this.retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(It.IsAny<int>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
 
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<CustomFieldDTO> { customField1, customField2 });
 
@@ -643,8 +643,8 @@ namespace GenBOE.Tests.ActionLogic
             TravelDTO travel = new TravelDTO { Id = 1, TaskTitle = "MOCKTRAVEL", TravelTrips = new Collection<TravelTripType> { travelTrip, travelTrip2, travelTrip3, travelTrip4 }, BoeID = this.Boe2.Id, StartDate = Convert.ToDateTime("07/01/2011"), EndDate = Convert.ToDateTime("12/01/2011") };
             this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { laborElement1 });
             this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { travel });
-            this.retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int> { this.Boe1.Id, this.Boe2.Id }, false)).Returns(new Collection<OtherDirectCostDTO> { });
-            this.retriever.Setup(x => x.GetMaterialsByBoeIds(It.IsAny<Collection<int>>(), false)).Returns(new Collection<MaterialDTO> { });
+            this.retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, false)).Returns(new Collection<OtherDirectCostDTO> { });
+            this.retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, false)).Returns(new Collection<MaterialDTO> { });
             this.retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<MoqTypeSelection>());
             workspace.UsingTemplateBOE = false;
             
@@ -699,261 +699,261 @@ namespace GenBOE.Tests.ActionLogic
             Assert.AreEqual("072011,,TOTAL,,122011,TIDN000001,,\"MOCKTRAVEL\",\"\",\"mock wbs title\",2.2,,,,21,1,,\"Travel/ODC BOE\",\"\",", TaskData[3]);
         }
 
-       // [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "TaskData")]
-       // [TestMethod, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-        //public void BL_ExportProPricer_MSTTravelTrips()
-        //{
-        //    DateTime LaborstartDate = Convert.ToDateTime("11/01/2010");
-        //    DateTime LaborendDate = Convert.ToDateTime("01/01/2011");
+		// [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "TaskData")]
+		// [TestMethod, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
+		//public void BL_ExportProPricer_MSTTravelTrips()
+		//{
+		//    DateTime LaborstartDate = Convert.ToDateTime("11/01/2010");
+		//    DateTime LaborendDate = Convert.ToDateTime("01/01/2011");
 
-        //    GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-        //    GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-        //    GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), commonDataMapper.Object);
-        //    GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionsDataLoader.Object);
-        //    FullWorkspace workspace = new FullWorkspace(this.Workspace);
+		//    GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+		//    GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+		//    GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), commonDataMapper.Object);
+		//    GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionsDataLoader.Object);
+		//    FullWorkspace workspace = new FullWorkspace(this.Workspace);
 
-        //    this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
-        //    this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullWbs>() { new FullWbs(this.Wbs) });
-        //    this.retriever.Setup(x => x.GetClinsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullClin>() { new FullClin(this.Clin1) });
-        //    this.retriever.Setup(x => x.GetClinById(this.Boe1.CLINID.Value)).Returns(this.Clin1);
-        //    this.retriever.Setup(x => x.GetWbsById(this.Wbs.Id)).Returns(this.Wbs);
-        //    PerformingOrgDTO Perforg2 = new PerformingOrgDTO() { Id = 2, IsSystemPerfOrg = true, PerformingOrgDesc = "test2", PerformingOrgName = "test2", Updateable = UpdateType.None };
-        //    this.retriever.Setup(x => x.GetPerformingOrgsByIds(It.IsAny<ICollection<int>>())).Returns(new List<PerformingOrgDTO> { this.Perforg, Perforg2 });
+		//    this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
+		//    this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullWbs>() { new FullWbs(this.Wbs) });
+		//    this.retriever.Setup(x => x.GetClinsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullClin>() { new FullClin(this.Clin1) });
+		//    this.retriever.Setup(x => x.GetClinById(this.Boe1.CLINID.Value)).Returns(this.Clin1);
+		//    this.retriever.Setup(x => x.GetWbsById(this.Wbs.Id)).Returns(this.Wbs);
+		//    PerformingOrgDTO Perforg2 = new PerformingOrgDTO() { Id = 2, IsSystemPerfOrg = true, PerformingOrgDesc = "test2", PerformingOrgName = "test2", Updateable = UpdateType.None };
+		//    this.retriever.Setup(x => x.GetPerformingOrgsByIds(It.IsAny<ICollection<int>>())).Returns(new List<PerformingOrgDTO> { this.Perforg, Perforg2 });
 
-        //    // setup resources dto mapper
-        //    Collection<ResourceDTO> resources = new Collection<ResourceDTO>();
-        //    ResourceDTO Laborresource = new ResourceDTO { Id = 2, ResourceName = "BBBBBBB", ResourceDesc = "Lots of Bs", SegRegion = "BB", LaborType = "BBBB", ElementOfCost = ElementOfCostType.LMLabor };
-        //    ResourceDTO TravelResource = new ResourceDTO { Id = 7, ResourceName = "TT", ResourceDesc = "Lots of Ts", SegRegion = "TT", LaborType = "TT", ElementOfCost = ElementOfCostType.Travel, Segment = SegmentType.TS };
-        //    ResourceDTO TravelResource2 = new ResourceDTO { Id = 8, ResourceName = "TD", ResourceDesc = "Lots of TDs", SegRegion = "TD", LaborType = "TD", ElementOfCost = ElementOfCostType.Travel, Segment = SegmentType.DS };
+		//    // setup resources dto mapper
+		//    Collection<ResourceDTO> resources = new Collection<ResourceDTO>();
+		//    ResourceDTO Laborresource = new ResourceDTO { Id = 2, ResourceName = "BBBBBBB", ResourceDesc = "Lots of Bs", SegRegion = "BB", LaborType = "BBBB", ElementOfCost = ElementOfCostType.LMLabor };
+		//    ResourceDTO TravelResource = new ResourceDTO { Id = 7, ResourceName = "TT", ResourceDesc = "Lots of Ts", SegRegion = "TT", LaborType = "TT", ElementOfCost = ElementOfCostType.Travel, Segment = SegmentType.TS };
+		//    ResourceDTO TravelResource2 = new ResourceDTO { Id = 8, ResourceName = "TD", ResourceDesc = "Lots of TDs", SegRegion = "TD", LaborType = "TD", ElementOfCost = ElementOfCostType.Travel, Segment = SegmentType.DS };
 
-        //    resources.Add(Laborresource);
-        //    resources.Add(TravelResource);
-        //    resources.Add(TravelResource2);
+		//    resources.Add(Laborresource);
+		//    resources.Add(TravelResource);
+		//    resources.Add(TravelResource2);
 
-        //    this.retriever.Setup(x => x.GetResourcesByResourceListId(It.IsAny<int>())).Returns(resources);
-        //    this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(resources);
+		//    this.retriever.Setup(x => x.GetResourcesByResourceListId(It.IsAny<int>())).Returns(resources);
+		//    this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(resources);
 
-        //    BoeTaskElementDTO laborElement1 = new BoeTaskElementDTO
-        //    {
-        //        Id = 6,
-        //        BoeID = this.Boe1.Id,
-        //        BOETaskID = "1234",
-        //        TaskTitle = "MOCK TASK2",
-        //        Description = "MOCK TASK2",
-        //        StartDate = this.Boe1.StartDate,
-        //        EndDate = this.Boe1.EndDate,
-        //        MOQType = MOQType.LevelOfEffort,
-        //        taskElementLabors = new Collection<ResourceTypeDto>{new ResourceTypeDto{Id=7, StartDateValue=LaborstartDate, EndDateValue=LaborendDate, ResourceID=Laborresource.Id, PerformingOrgID=this.Perforg.Id,  SpreadCurveID = SpreadCurves.DiscreteHours,
-        //                    LaborSpreads=new Collection<ResourceSpreadDto>{new ResourceSpreadDto{Id=8, LaborSpreadDate=Convert.ToDateTime("11/01/2010"), LaborSpreadValue=150 },
-        //                    new ResourceSpreadDto{Id=9, LaborSpreadDate=Convert.ToDateTime("12/01/2010"), LaborSpreadValue=150 },
-        //                    new ResourceSpreadDto{Id=10, LaborSpreadDate=Convert.ToDateTime("01/01/2011"), LaborSpreadValue=150 }}
-        //                }}
-        //    };
+		//    BoeTaskElementDTO laborElement1 = new BoeTaskElementDTO
+		//    {
+		//        Id = 6,
+		//        BoeID = this.Boe1.Id,
+		//        BOETaskID = "1234",
+		//        TaskTitle = "MOCK TASK2",
+		//        Description = "MOCK TASK2",
+		//        StartDate = this.Boe1.StartDate,
+		//        EndDate = this.Boe1.EndDate,
+		//        MOQType = MOQType.LevelOfEffort,
+		//        taskElementLabors = new Collection<ResourceTypeDto>{new ResourceTypeDto{Id=7, StartDateValue=LaborstartDate, EndDateValue=LaborendDate, ResourceID=Laborresource.Id, PerformingOrgID=this.Perforg.Id,  SpreadCurveID = SpreadCurves.DiscreteHours,
+		//                    LaborSpreads=new Collection<ResourceSpreadDto>{new ResourceSpreadDto{Id=8, LaborSpreadDate=Convert.ToDateTime("11/01/2010"), LaborSpreadValue=150 },
+		//                    new ResourceSpreadDto{Id=9, LaborSpreadDate=Convert.ToDateTime("12/01/2010"), LaborSpreadValue=150 },
+		//                    new ResourceSpreadDto{Id=10, LaborSpreadDate=Convert.ToDateTime("01/01/2011"), LaborSpreadValue=150 }}
+		//                }}
+		//    };
 
-        //    CustomFieldDTO customField1 = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.TaskDisplay, WorkspaceID = workspace.Id };
-        //    CustomFieldDTO customField2 = new CustomFieldDTO { Id = 2, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, WorkspaceID = workspace.Id };
+		//    CustomFieldDTO customField1 = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.TaskDisplay, WorkspaceID = workspace.Id };
+		//    CustomFieldDTO customField2 = new CustomFieldDTO { Id = 2, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, WorkspaceID = workspace.Id };
 
-        //    CustomFieldValueDTO cv = new CustomFieldValueDTO();
-        //    cv.CustomFieldID = customField1.Id;
-        //    cv.CustomFieldValueID = 1;
-        //    cv.CustomFieldValueName = "P<br/><BR /><bR/>E";
-        //    cv.CustomFieldValueDescription = "an exercise<br> class";
+		//    CustomFieldValueDTO cv = new CustomFieldValueDTO();
+		//    cv.CustomFieldID = customField1.Id;
+		//    cv.CustomFieldValueID = 1;
+		//    cv.CustomFieldValueName = "P<br/><BR /><bR/>E";
+		//    cv.CustomFieldValueDescription = "an exercise<br> class";
 
-        //    CustomFieldValueDTO cv2 = new CustomFieldValueDTO();
-        //    cv2.CustomFieldID = customField2.Id;
-        //    cv2.CustomFieldValueID = 2;
-        //    cv2.CustomFieldValueName = "Hist<BR />ory";
-        //    cv2.CustomFieldValueDescription = "where you learn past<BR> events";
-        //    this.retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO> { customField1, customField2 });
-        //    this.retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new List<CustomFieldValueDTO>() { cv, cv2 });
-
-
-        //    //------------------------------mst travel trips -------------------------------//
-        //    MSTTravelTripType MSTTravelTrip1 = new MSTTravelTripType();
-        //    MSTTravelTripType MSTTravelTrip2 = new MSTTravelTripType();
-        //    MSTTravelTripType MSTTravelTrip3 = new MSTTravelTripType();
-        //    MSTTravelTripType MSTTravelTrip4 = new MSTTravelTripType();
-        //    MSTTravelTripType MSTTravelTrip5 = new MSTTravelTripType();
+		//    CustomFieldValueDTO cv2 = new CustomFieldValueDTO();
+		//    cv2.CustomFieldID = customField2.Id;
+		//    cv2.CustomFieldValueID = 2;
+		//    cv2.CustomFieldValueName = "Hist<BR />ory";
+		//    cv2.CustomFieldValueDescription = "where you learn past<BR> events";
+		//    this.retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO> { customField1, customField2 });
+		//    this.retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new List<CustomFieldValueDTO>() { cv, cv2 });
 
 
-        //    //MSTTravelTrip1.Id = 111;
-        //    MSTTravelTrip1.ModeID = MSTTravelMode.NonZoneDomestic;
-        //    MSTTravelTrip1.GroupID = 111;
-        //    MSTTravelTrip1.BoeID = this.Boe1.Id;
-        //    MSTTravelTrip1.Cost = 111;
-        //    MSTTravelTrip1.CustomFieldValueContainers = new Collection<CustomFieldValueContainer>();
-        //    MSTTravelTrip1.EstimateDate = Convert.ToDateTime("01/01/2011");
-        //    MSTTravelTrip1.NonZoneAirfareEstimate = 111;
-        //    MSTTravelTrip1.NonZoneCarRentalTrans = 111;
-        //    MSTTravelTrip1.NonZoneFrom = "NonZoneFrom1";
-        //    MSTTravelTrip1.NonZoneNumCars = 2;
-        //    MSTTravelTrip1.NonZonePerDiemDaily = 22;
-        //    MSTTravelTrip1.NonZoneTo = "NonZoneto";
-        //    MSTTravelTrip1.NumOfDays = 5;
-        //    MSTTravelTrip1.NumOfPeople = 1;
-        //    MSTTravelTrip1.PerfOrgID = Perforg2.Id;
-        //    MSTTravelTrip1.Purpose = "MstTravelTrip1.Purpose";
-        //    MSTTravelTrip1.Segment = SegmentType.MST;
-        //    MSTTravelTrip1.TripDate = Convert.ToDateTime("01/01/2011");
-        //    MSTTravelTrip1.UpdateDate = Convert.ToDateTime("01/01/2011");
+		//    //------------------------------mst travel trips -------------------------------//
+		//    MSTTravelTripType MSTTravelTrip1 = new MSTTravelTripType();
+		//    MSTTravelTripType MSTTravelTrip2 = new MSTTravelTripType();
+		//    MSTTravelTripType MSTTravelTrip3 = new MSTTravelTripType();
+		//    MSTTravelTripType MSTTravelTrip4 = new MSTTravelTripType();
+		//    MSTTravelTripType MSTTravelTrip5 = new MSTTravelTripType();
+
+
+		//    //MSTTravelTrip1.Id = 111;
+		//    MSTTravelTrip1.ModeID = MSTTravelMode.NonZoneDomestic;
+		//    MSTTravelTrip1.GroupID = 111;
+		//    MSTTravelTrip1.BoeID = this.Boe1.Id;
+		//    MSTTravelTrip1.Cost = 111;
+		//    MSTTravelTrip1.CustomFieldValueContainers = new Collection<CustomFieldValueContainer>();
+		//    MSTTravelTrip1.EstimateDate = Convert.ToDateTime("01/01/2011");
+		//    MSTTravelTrip1.NonZoneAirfareEstimate = 111;
+		//    MSTTravelTrip1.NonZoneCarRentalTrans = 111;
+		//    MSTTravelTrip1.NonZoneFrom = "NonZoneFrom1";
+		//    MSTTravelTrip1.NonZoneNumCars = 2;
+		//    MSTTravelTrip1.NonZonePerDiemDaily = 22;
+		//    MSTTravelTrip1.NonZoneTo = "NonZoneto";
+		//    MSTTravelTrip1.NumOfDays = 5;
+		//    MSTTravelTrip1.NumOfPeople = 1;
+		//    MSTTravelTrip1.PerfOrgID = Perforg2.Id;
+		//    MSTTravelTrip1.Purpose = "MstTravelTrip1.Purpose";
+		//    MSTTravelTrip1.Segment = SegmentType.MST;
+		//    MSTTravelTrip1.TripDate = Convert.ToDateTime("01/01/2011");
+		//    MSTTravelTrip1.UpdateDate = Convert.ToDateTime("01/01/2011");
 
 
 
-        //    MSTTravelTrip2.ModeID = MSTTravelMode.ZoneAirfare;
-        //    MSTTravelTrip2.GroupID = 222;
-        //    MSTTravelTrip2.BoeID = this.Boe1.Id;
-        //    MSTTravelTrip2.Cost = 111;
-        //    MSTTravelTrip2.CustomFieldValueContainers = new Collection<CustomFieldValueContainer>();
-        //    MSTTravelTrip2.EstimateDate = Convert.ToDateTime("01/01/2011");
-        //    MSTTravelTrip2.NonZoneAirfareEstimate = 111;
-        //    MSTTravelTrip2.NonZoneCarRentalTrans = 111;
-        //    MSTTravelTrip2.NonZoneFrom = "NonZoneFrom1";
-        //    MSTTravelTrip2.NonZoneNumCars = 2;
-        //    MSTTravelTrip2.NonZonePerDiemDaily = 22;
-        //    MSTTravelTrip2.NonZoneTo = "NonZoneto";
-        //    MSTTravelTrip2.NumOfDays = 5;
-        //    MSTTravelTrip2.NumOfPeople = 1;
-        //    MSTTravelTrip2.PerfOrgID = Perforg2.Id;
-        //    MSTTravelTrip2.Purpose = "MstTravelTrip2.Purpose";
-        //    MSTTravelTrip2.Segment = SegmentType.MST;
-        //    MSTTravelTrip2.TripDate = Convert.ToDateTime("01/01/2011");
-        //    MSTTravelTrip2.UpdateDate = Convert.ToDateTime("01/01/2011");
+		//    MSTTravelTrip2.ModeID = MSTTravelMode.ZoneAirfare;
+		//    MSTTravelTrip2.GroupID = 222;
+		//    MSTTravelTrip2.BoeID = this.Boe1.Id;
+		//    MSTTravelTrip2.Cost = 111;
+		//    MSTTravelTrip2.CustomFieldValueContainers = new Collection<CustomFieldValueContainer>();
+		//    MSTTravelTrip2.EstimateDate = Convert.ToDateTime("01/01/2011");
+		//    MSTTravelTrip2.NonZoneAirfareEstimate = 111;
+		//    MSTTravelTrip2.NonZoneCarRentalTrans = 111;
+		//    MSTTravelTrip2.NonZoneFrom = "NonZoneFrom1";
+		//    MSTTravelTrip2.NonZoneNumCars = 2;
+		//    MSTTravelTrip2.NonZonePerDiemDaily = 22;
+		//    MSTTravelTrip2.NonZoneTo = "NonZoneto";
+		//    MSTTravelTrip2.NumOfDays = 5;
+		//    MSTTravelTrip2.NumOfPeople = 1;
+		//    MSTTravelTrip2.PerfOrgID = Perforg2.Id;
+		//    MSTTravelTrip2.Purpose = "MstTravelTrip2.Purpose";
+		//    MSTTravelTrip2.Segment = SegmentType.MST;
+		//    MSTTravelTrip2.TripDate = Convert.ToDateTime("01/01/2011");
+		//    MSTTravelTrip2.UpdateDate = Convert.ToDateTime("01/01/2011");
 
 
-        //    MSTTravelTrip3.ModeID = MSTTravelMode.NonZoneInternational;
-        //    MSTTravelTrip3.GroupID = 333;
-        //    MSTTravelTrip3.BoeID = this.Boe1.Id;
-        //    MSTTravelTrip3.Cost = 111;
-        //    MSTTravelTrip3.CustomFieldValueContainers = new Collection<CustomFieldValueContainer>();
-        //    MSTTravelTrip3.EstimateDate = Convert.ToDateTime("01/01/2011");
-        //    MSTTravelTrip3.NonZoneAirfareEstimate = 111;
-        //    MSTTravelTrip3.NonZoneCarRentalTrans = 111;
-        //    MSTTravelTrip3.NonZoneFrom = "NonZoneFrom1";
-        //    MSTTravelTrip3.NonZoneNumCars = 2;
-        //    MSTTravelTrip3.NonZonePerDiemDaily = 22;
-        //    MSTTravelTrip3.NonZoneTo = "NonZoneto";
-        //    MSTTravelTrip3.NumOfDays = 5;
-        //    MSTTravelTrip3.NumOfPeople = 1;
-        //    MSTTravelTrip3.PerfOrgID = Perforg2.Id;
-        //    MSTTravelTrip3.Purpose = "MstTravelTrip3.Purpose";
-        //    MSTTravelTrip3.Segment = SegmentType.MST;
-        //    MSTTravelTrip3.TripDate = Convert.ToDateTime("01/01/2011");
-        //    MSTTravelTrip3.UpdateDate = Convert.ToDateTime("01/01/2011");
+		//    MSTTravelTrip3.ModeID = MSTTravelMode.NonZoneInternational;
+		//    MSTTravelTrip3.GroupID = 333;
+		//    MSTTravelTrip3.BoeID = this.Boe1.Id;
+		//    MSTTravelTrip3.Cost = 111;
+		//    MSTTravelTrip3.CustomFieldValueContainers = new Collection<CustomFieldValueContainer>();
+		//    MSTTravelTrip3.EstimateDate = Convert.ToDateTime("01/01/2011");
+		//    MSTTravelTrip3.NonZoneAirfareEstimate = 111;
+		//    MSTTravelTrip3.NonZoneCarRentalTrans = 111;
+		//    MSTTravelTrip3.NonZoneFrom = "NonZoneFrom1";
+		//    MSTTravelTrip3.NonZoneNumCars = 2;
+		//    MSTTravelTrip3.NonZonePerDiemDaily = 22;
+		//    MSTTravelTrip3.NonZoneTo = "NonZoneto";
+		//    MSTTravelTrip3.NumOfDays = 5;
+		//    MSTTravelTrip3.NumOfPeople = 1;
+		//    MSTTravelTrip3.PerfOrgID = Perforg2.Id;
+		//    MSTTravelTrip3.Purpose = "MstTravelTrip3.Purpose";
+		//    MSTTravelTrip3.Segment = SegmentType.MST;
+		//    MSTTravelTrip3.TripDate = Convert.ToDateTime("01/01/2011");
+		//    MSTTravelTrip3.UpdateDate = Convert.ToDateTime("01/01/2011");
 
 
-        //    MSTTravelTrip4.ModeID = MSTTravelMode.ZoneNoAirfare;
-        //    MSTTravelTrip4.GroupID = 111;
-        //    MSTTravelTrip4.BoeID = this.Boe1.Id;
-        //    MSTTravelTrip4.Cost = 444;
-        //    MSTTravelTrip4.CustomFieldValueContainers = new Collection<CustomFieldValueContainer>();
-        //    MSTTravelTrip4.EstimateDate = Convert.ToDateTime("01/01/2011");
-        //    MSTTravelTrip4.NonZoneAirfareEstimate = 111;
-        //    MSTTravelTrip4.NonZoneCarRentalTrans = 111;
-        //    MSTTravelTrip4.NonZoneFrom = "NonZoneFrom1";
-        //    MSTTravelTrip4.NonZoneNumCars = 2;
-        //    MSTTravelTrip4.NonZonePerDiemDaily = 22;
-        //    MSTTravelTrip4.NonZoneTo = "NonZoneto";
-        //    MSTTravelTrip4.NumOfDays = 5;
-        //    MSTTravelTrip4.NumOfPeople = 1;
-        //    MSTTravelTrip4.PerfOrgID = Perforg2.Id;
-        //    MSTTravelTrip4.Purpose = "MstTravelTrip4.Purpose";
-        //    MSTTravelTrip4.Segment = SegmentType.MST;
-        //    MSTTravelTrip4.TripDate = Convert.ToDateTime("01/01/2011");
-        //    MSTTravelTrip4.UpdateDate = Convert.ToDateTime("01/01/2011");
+		//    MSTTravelTrip4.ModeID = MSTTravelMode.ZoneNoAirfare;
+		//    MSTTravelTrip4.GroupID = 111;
+		//    MSTTravelTrip4.BoeID = this.Boe1.Id;
+		//    MSTTravelTrip4.Cost = 444;
+		//    MSTTravelTrip4.CustomFieldValueContainers = new Collection<CustomFieldValueContainer>();
+		//    MSTTravelTrip4.EstimateDate = Convert.ToDateTime("01/01/2011");
+		//    MSTTravelTrip4.NonZoneAirfareEstimate = 111;
+		//    MSTTravelTrip4.NonZoneCarRentalTrans = 111;
+		//    MSTTravelTrip4.NonZoneFrom = "NonZoneFrom1";
+		//    MSTTravelTrip4.NonZoneNumCars = 2;
+		//    MSTTravelTrip4.NonZonePerDiemDaily = 22;
+		//    MSTTravelTrip4.NonZoneTo = "NonZoneto";
+		//    MSTTravelTrip4.NumOfDays = 5;
+		//    MSTTravelTrip4.NumOfPeople = 1;
+		//    MSTTravelTrip4.PerfOrgID = Perforg2.Id;
+		//    MSTTravelTrip4.Purpose = "MstTravelTrip4.Purpose";
+		//    MSTTravelTrip4.Segment = SegmentType.MST;
+		//    MSTTravelTrip4.TripDate = Convert.ToDateTime("01/01/2011");
+		//    MSTTravelTrip4.UpdateDate = Convert.ToDateTime("01/01/2011");
 
 
-        //    MSTTravelTrip5.ModeID = MSTTravelMode.NonZoneDomestic;
-        //    MSTTravelTrip5.GroupID = 555;
-        //    MSTTravelTrip5.BoeID = this.Boe1.Id;
-        //    MSTTravelTrip5.Cost = 111;
-        //    MSTTravelTrip5.CustomFieldValueContainers = new Collection<CustomFieldValueContainer>
-        //    {
-        //        new CustomFieldValueContainer { CustomFieldValueID = cv.CustomFieldValueID  },
-        //    };
-        //    MSTTravelTrip5.EstimateDate = Convert.ToDateTime("01/01/2011");
-        //    MSTTravelTrip5.NonZoneAirfareEstimate = 111;
-        //    MSTTravelTrip5.NonZoneCarRentalTrans = 111;
-        //    MSTTravelTrip5.NonZoneFrom = "NonZoneFrom1";
-        //    MSTTravelTrip5.NonZoneNumCars = 2;
-        //    MSTTravelTrip5.NonZonePerDiemDaily = 22;
-        //    MSTTravelTrip5.NonZoneTo = "NonZoneto";
-        //    MSTTravelTrip5.NumOfDays = 5;
-        //    MSTTravelTrip5.NumOfPeople = 1;
-        //    MSTTravelTrip5.PerfOrgID = Perforg2.Id;
-        //    MSTTravelTrip5.Purpose = "MstTravelTrip5.Purpose";
-        //    MSTTravelTrip5.Segment = SegmentType.MST;
-        //    MSTTravelTrip5.TripDate = Convert.ToDateTime("01/01/2011");
-        //    MSTTravelTrip5.UpdateDate = Convert.ToDateTime("01/01/2011");
-
-            
-
-        //    TravelDTO travel = new TravelDTO
-        //    {
-        //        Id = 1,
-        //        TaskTitle = "MOCKMSTTRAVEL",
-        //        MSTTravelTrips = new Collection<MSTTravelTripType> { MSTTravelTrip1, MSTTravelTrip2, MSTTravelTrip3, MSTTravelTrip4, MSTTravelTrip5 },
-        //        BoeID = this.Boe2.Id,
-        //        StartDate = Convert.ToDateTime("07/01/2011"),
-        //        EndDate = Convert.ToDateTime("12/01/2011")
-        //    };
+		//    MSTTravelTrip5.ModeID = MSTTravelMode.NonZoneDomestic;
+		//    MSTTravelTrip5.GroupID = 555;
+		//    MSTTravelTrip5.BoeID = this.Boe1.Id;
+		//    MSTTravelTrip5.Cost = 111;
+		//    MSTTravelTrip5.CustomFieldValueContainers = new Collection<CustomFieldValueContainer>
+		//    {
+		//        new CustomFieldValueContainer { CustomFieldValueID = cv.CustomFieldValueID  },
+		//    };
+		//    MSTTravelTrip5.EstimateDate = Convert.ToDateTime("01/01/2011");
+		//    MSTTravelTrip5.NonZoneAirfareEstimate = 111;
+		//    MSTTravelTrip5.NonZoneCarRentalTrans = 111;
+		//    MSTTravelTrip5.NonZoneFrom = "NonZoneFrom1";
+		//    MSTTravelTrip5.NonZoneNumCars = 2;
+		//    MSTTravelTrip5.NonZonePerDiemDaily = 22;
+		//    MSTTravelTrip5.NonZoneTo = "NonZoneto";
+		//    MSTTravelTrip5.NumOfDays = 5;
+		//    MSTTravelTrip5.NumOfPeople = 1;
+		//    MSTTravelTrip5.PerfOrgID = Perforg2.Id;
+		//    MSTTravelTrip5.Purpose = "MstTravelTrip5.Purpose";
+		//    MSTTravelTrip5.Segment = SegmentType.MST;
+		//    MSTTravelTrip5.TripDate = Convert.ToDateTime("01/01/2011");
+		//    MSTTravelTrip5.UpdateDate = Convert.ToDateTime("01/01/2011");
 
 
-        //    this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, false)).Returns(new Collection<BoeTaskElementDTO> { laborElement1 });
-        //    this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { travel });
-        //    this.retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int> { this.Boe1.Id, this.Boe2.Id }, false)).Returns(new Collection<OtherDirectCostDTO> { });
-        //    this.retriever.Setup(x => x.GetMaterialsByBoeIds(It.IsAny<Collection<int>>(), false)).Returns(new Collection<MaterialDTO> { });
 
-        //    foreach (FullBoe boe in workspace.Boes)
-        //    {
-        //        if (boe.Id == 20)
-        //        {
-        //            boe.Title = "Labor/Material BOE";
-        //        }
-        //        else if (boe.Id == 21)
-        //        {
-        //            boe.Title = "Travel/ODC BOE";
-        //        }
-        //    }
-
-        //    var TripCalculate = new Mock<TravelTripCostCalculation>();
-        //    var rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
-        //    rmsTripCalculate.Setup(x => x.getAllFeesAndCostsByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSTravelNonzoneFeesAndCostsDTO>());
-        //    ProPricerExporter expReport = new ProPricerExporter(TripCalculate.Object, rmsTripCalculate.Object);
-        //    ProPricerDTO proPricerExport = SetUpProPricerDTO(this.Workspace.Id);
-
-        //    PpDataReadyForExport result = expReport.ExportProPricer(proPricerExport, workspace);
-        //    Collection<string> TaskData = result.TaskData.ToCollection();
-        //    Collection<string> ResourceCost = result.ResourceData.ToCollection();
+		//    TravelDTO travel = new TravelDTO
+		//    {
+		//        Id = 1,
+		//        TaskTitle = "MOCKMSTTRAVEL",
+		//        MSTTravelTrips = new Collection<MSTTravelTripType> { MSTTravelTrip1, MSTTravelTrip2, MSTTravelTrip3, MSTTravelTrip4, MSTTravelTrip5 },
+		//        BoeID = this.Boe2.Id,
+		//        StartDate = Convert.ToDateTime("07/01/2011"),
+		//        EndDate = Convert.ToDateTime("12/01/2011")
+		//    };
 
 
-        //    foreach (string t in TaskData) Trace.WriteLine(t);
-        //    foreach (string s in ResourceCost) Trace.WriteLine(s);
-            
-            
-        //    //should be four cost rows because of the grouping of custom fields and perfor orgs
-        //    Assert.AreEqual(6, ResourceCost.Count);
+		//    this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, false)).Returns(new Collection<BoeTaskElementDTO> { laborElement1 });
+		//    this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { travel });
+		//    this.retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int> { this.Boe1.Id, this.Boe2.Id }, false)).Returns(new Collection<OtherDirectCostDTO> { });
+		//    this.retriever.Setup(x => x.GetMaterialsByBoeIds(It.IsAny<Collection<int>>(), false)).Returns(new Collection<MaterialDTO> { });
 
-        //    //get the values of the cost output
+		//    foreach (FullBoe boe in workspace.Boes)
+		//    {
+		//        if (boe.Id == 20)
+		//        {
+		//            boe.Title = "Labor/Material BOE";
+		//        }
+		//        else if (boe.Id == 21)
+		//        {
+		//            boe.Title = "Travel/ODC BOE";
+		//        }
+		//    }
 
-        //    //because of the grouping by perf org and custom field values we should see 
-        //    Assert.AreEqual(",\"\",TIDN000002,2.2,,,,D,,\"\",012011,\"mock wbs title\",21,1,\"\",\"Travel/ODC BOE\",\"test2\",\"MOCKMSTTRAVEL\",\"\",", ResourceCost[1]);
-        //    Assert.AreEqual(",\"\",TIDN000003,2.2,,,,D,,\"\",012011,\"mock wbs title\",21,1,\"\",\"Travel/ODC BOE\",\"test2\",\"MOCKMSTTRAVEL\",\"\",", ResourceCost[2]);
-        //    Assert.AreEqual(",\"\",TIDN000004,2.2,,,,D,,\"\",012011,\"mock wbs title\",21,1,\"\",\"Travel/ODC BOE\",\"test2\",\"MOCKMSTTRAVEL\",\"\",", ResourceCost[3]);
-        //    Assert.AreEqual(",\"\",TIDN000005,2.2,,,,D,,\"\",012011,\"mock wbs title\",21,1,\"\",\"Travel/ODC BOE\",\"test2\",\"MOCKMSTTRAVEL\",\"\",", ResourceCost[4]);
-        //    Assert.AreEqual(",\"\",TIDN000006,2.2,,,,D,,\"\",012011,\"mock wbs title\",21,1,\"\",\"Travel/ODC BOE\",\"test2\",\"MOCKMSTTRAVEL\",\"\",", ResourceCost[5]);
+		//    var TripCalculate = new Mock<TravelTripCostCalculation>();
+		//    var rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
+		//    rmsTripCalculate.Setup(x => x.getAllFeesAndCostsByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSTravelNonzoneFeesAndCostsDTO>());
+		//    ProPricerExporter expReport = new ProPricerExporter(TripCalculate.Object, rmsTripCalculate.Object);
+		//    ProPricerDTO proPricerExport = SetUpProPricerDTO(this.Workspace.Id);
+
+		//    PpDataReadyForExport result = expReport.ExportProPricer(proPricerExport, workspace);
+		//    Collection<string> TaskData = result.TaskData.ToCollection();
+		//    Collection<string> ResourceCost = result.ResourceData.ToCollection();
 
 
-        //    //at the task level we should see similar responses.
-        //    Assert.AreEqual(6, TaskData.Count);
+		//    foreach (string t in TaskData) Trace.WriteLine(t);
+		//    foreach (string s in ResourceCost) Trace.WriteLine(s);
 
-        //    Assert.AreEqual("072011,,TOTAL,,122011,TIDN000002,,\"MOCKMSTTRAVEL\",\"\",\"mock wbs title\",2.2,,,,\"\",\"test2\",21,1,\"\",\"Travel/ODC BOE\",\"\",", TaskData[1]);
-        //    Assert.AreEqual("072011,,TOTAL,,122011,TIDN000003,,\"MOCKMSTTRAVEL\",\"\",\"mock wbs title\",2.2,,,,\"\",\"test2\",21,1,\"\",\"Travel/ODC BOE\",\"\",", TaskData[2]);
-        //    Assert.AreEqual("072011,,TOTAL,,122011,TIDN000004,,\"MOCKMSTTRAVEL\",\"\",\"mock wbs title\",2.2,,,,\"\",\"test2\",21,1,\"\",\"Travel/ODC BOE\",\"\",", TaskData[3]);
-        //    Assert.AreEqual("072011,,TOTAL,,122011,TIDN000005,,\"MOCKMSTTRAVEL\",\"\",\"mock wbs title\",2.2,,,,\"\",\"test2\",21,1,\"\",\"Travel/ODC BOE\",\"\",", TaskData[4]);
-        //    Assert.AreEqual("072011,,TOTAL,,122011,TIDN000006,,\"MOCKMSTTRAVEL\",\"\",\"mock wbs title\",2.2,,,,\"\",\"test2\",21,1,\"\",\"Travel/ODC BOE\",\"\",", TaskData[5]);
-        //}
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), TestMethod]
+		//    //should be four cost rows because of the grouping of custom fields and perfor orgs
+		//    Assert.AreEqual(6, ResourceCost.Count);
+
+		//    //get the values of the cost output
+
+		//    //because of the grouping by perf org and custom field values we should see 
+		//    Assert.AreEqual(",\"\",TIDN000002,2.2,,,,D,,\"\",012011,\"mock wbs title\",21,1,\"\",\"Travel/ODC BOE\",\"test2\",\"MOCKMSTTRAVEL\",\"\",", ResourceCost[1]);
+		//    Assert.AreEqual(",\"\",TIDN000003,2.2,,,,D,,\"\",012011,\"mock wbs title\",21,1,\"\",\"Travel/ODC BOE\",\"test2\",\"MOCKMSTTRAVEL\",\"\",", ResourceCost[2]);
+		//    Assert.AreEqual(",\"\",TIDN000004,2.2,,,,D,,\"\",012011,\"mock wbs title\",21,1,\"\",\"Travel/ODC BOE\",\"test2\",\"MOCKMSTTRAVEL\",\"\",", ResourceCost[3]);
+		//    Assert.AreEqual(",\"\",TIDN000005,2.2,,,,D,,\"\",012011,\"mock wbs title\",21,1,\"\",\"Travel/ODC BOE\",\"test2\",\"MOCKMSTTRAVEL\",\"\",", ResourceCost[4]);
+		//    Assert.AreEqual(",\"\",TIDN000006,2.2,,,,D,,\"\",012011,\"mock wbs title\",21,1,\"\",\"Travel/ODC BOE\",\"test2\",\"MOCKMSTTRAVEL\",\"\",", ResourceCost[5]);
+
+
+		//    //at the task level we should see similar responses.
+		//    Assert.AreEqual(6, TaskData.Count);
+
+		//    Assert.AreEqual("072011,,TOTAL,,122011,TIDN000002,,\"MOCKMSTTRAVEL\",\"\",\"mock wbs title\",2.2,,,,\"\",\"test2\",21,1,\"\",\"Travel/ODC BOE\",\"\",", TaskData[1]);
+		//    Assert.AreEqual("072011,,TOTAL,,122011,TIDN000003,,\"MOCKMSTTRAVEL\",\"\",\"mock wbs title\",2.2,,,,\"\",\"test2\",21,1,\"\",\"Travel/ODC BOE\",\"\",", TaskData[2]);
+		//    Assert.AreEqual("072011,,TOTAL,,122011,TIDN000004,,\"MOCKMSTTRAVEL\",\"\",\"mock wbs title\",2.2,,,,\"\",\"test2\",21,1,\"\",\"Travel/ODC BOE\",\"\",", TaskData[3]);
+		//    Assert.AreEqual("072011,,TOTAL,,122011,TIDN000005,,\"MOCKMSTTRAVEL\",\"\",\"mock wbs title\",2.2,,,,\"\",\"test2\",21,1,\"\",\"Travel/ODC BOE\",\"\",", TaskData[4]);
+		//    Assert.AreEqual("072011,,TOTAL,,122011,TIDN000006,,\"MOCKMSTTRAVEL\",\"\",\"mock wbs title\",2.2,,,,\"\",\"test2\",21,1,\"\",\"Travel/ODC BOE\",\"\",", TaskData[5]);
+		//}
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), TestMethod]
         public void BL_ExportProPricer_UniqueTrips()
         {
             #region setup
@@ -1039,8 +1039,8 @@ namespace GenBOE.Tests.ActionLogic
             TravelDTO travel = new TravelDTO { Id = 1, TaskTitle = "MOCKTRAVEL", TravelTrips = new Collection<TravelTripType> { travelTrip, travelTrip2, travelTrip3, travelTrip4, travelTrip5 }, BoeID = this.Boe2.Id, StartDate = Convert.ToDateTime("07/01/2011"), EndDate = Convert.ToDateTime("12/01/2011") };
             this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { laborElement1 });
             this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { travel });
-            this.retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int> { this.Boe1.Id, this.Boe2.Id }, false)).Returns(new Collection<OtherDirectCostDTO> { });
-            this.retriever.Setup(x => x.GetMaterialsByBoeIds(It.IsAny<Collection<int>>(), false)).Returns(new Collection<MaterialDTO> { });
+            this.retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, false)).Returns(new Collection<OtherDirectCostDTO> { });
+            this.retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, false)).Returns(new Collection<MaterialDTO> { });
             this.retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<MoqTypeSelection>());
             workspace.UsingTemplateBOE = false;
             
@@ -1176,8 +1176,8 @@ namespace GenBOE.Tests.ActionLogic
             TravelDTO travel = new TravelDTO { Id = 1, TaskTitle = "MOCKTRAVEL", TravelTrips = new Collection<TravelTripType> { }, BoeID = this.Boe2.Id, StartDate = Convert.ToDateTime("07/01/2011"), EndDate = Convert.ToDateTime("12/01/2011") };
             this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { laborElement1 });
             this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { travel });
-            this.retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int> { this.Boe1.Id, this.Boe2.Id }, false)).Returns(new Collection<OtherDirectCostDTO> { });
-            this.retriever.Setup(x => x.GetMaterialsByBoeIds(It.IsAny<Collection<int>>(), false)).Returns(new Collection<MaterialDTO> { });
+            this.retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, false)).Returns(new Collection<OtherDirectCostDTO> { });
+            this.retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, false)).Returns(new Collection<MaterialDTO> { });
             factory.Setup(x => x.CreateFullBoe(this.Boe1.Id)).Returns(new FullBoe() { Title = "Labor/Material BOE" });
             factory.Setup(x => x.CreateFullBoe(this.Boe2.Id)).Returns(new FullBoe() { Title = "Travel/ODC BOE" });
             this.retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<MoqTypeSelection>());
@@ -1450,8 +1450,8 @@ namespace GenBOE.Tests.ActionLogic
 
             this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { laborElement1, laborElement2, IWTAElement1, SubElement1, matElement, odcElement, travelElement });
             this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { travel });
-            this.retriever.Setup(x => x.GetMaterialsByBoeIds(It.IsAny<Collection<int>>(), false)).Returns(new Collection<MaterialDTO> { material });
-            this.retriever.Setup(x => x.GetOdcCollectionByBoeIds(It.IsAny<List<int>>(), false)).Returns(new Collection<OtherDirectCostDTO> { odc });
+            this.retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, false)).Returns(new Collection<MaterialDTO> { material });
+            this.retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(It.IsAny<int>(), false)).Returns(new Collection<OtherDirectCostDTO> { odc });
             this.retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<MoqTypeSelection>());
             workspace.UsingTemplateBOE = false;
 
@@ -1546,7 +1546,7 @@ namespace GenBOE.Tests.ActionLogic
 
             this.retriever.Setup(x => x.GetPerformingOrgsByIds(It.IsAny<ICollection<int>>())).Returns(new List<PerformingOrgDTO> { this.Perforg });
             this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { laborElement1 });
-            this.retriever.Setup(x => x.GetOdcCollectionByBoeIds(It.IsAny<List<int>>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
+            this.retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(It.IsAny<int>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
             this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { });
             this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
 			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>());
@@ -1556,7 +1556,7 @@ namespace GenBOE.Tests.ActionLogic
 			this.retriever.Setup(x => x.GetClinsByWorkspaceId(It.IsAny<int>())).Returns(new List<FullClin>());
 			this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(It.IsAny<int>())).Returns(new List<FullWbs>());
 			this.retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>());
-			this.retriever.Setup(x => x.GetMaterialsByBoeIds(It.IsAny<Collection<int>>(), It.IsAny<bool>())).Returns(new List<MaterialDTO>());
+			this.retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new List<MaterialDTO>());
 			
 			Mock <TravelTripCostCalculation> TripCalculate = new Mock<TravelTripCostCalculation>();
 			Mock<RMSZoneTravelRatesFeesDataLoader> rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
@@ -1616,7 +1616,7 @@ namespace GenBOE.Tests.ActionLogic
 
             this.retriever.Setup(x => x.GetPerformingOrgsByIds(It.IsAny<ICollection<int>>())).Returns(new List<PerformingOrgDTO> { this.Perforg });
             this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { laborElement1 });
-            this.retriever.Setup(x => x.GetOdcCollectionByBoeIds(It.IsAny<List<int>>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
+            this.retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(It.IsAny<int>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
             this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { });
             this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
 
@@ -1678,7 +1678,7 @@ namespace GenBOE.Tests.ActionLogic
 
             this.retriever.Setup(x => x.GetPerformingOrgsByIds(It.IsAny<ICollection<int>>())).Returns(new List<PerformingOrgDTO> { });
             this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { laborElement1 });
-            this.retriever.Setup(x => x.GetOdcCollectionByBoeIds(It.IsAny<List<int>>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
+            this.retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(It.IsAny<int>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
             this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { });
             this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
 
@@ -1790,8 +1790,8 @@ namespace GenBOE.Tests.ActionLogic
 
             this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { task1, task2 });
             this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { });
-            this.retriever.Setup(x => x.GetMaterialsByBoeIds(It.IsAny<Collection<int>>(), false)).Returns(new Collection<MaterialDTO> { });
-            this.retriever.Setup(x => x.GetOdcCollectionByBoeIds(It.IsAny<List<int>>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
+            this.retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, false)).Returns(new Collection<MaterialDTO> { });
+            this.retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(It.IsAny<int>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
 
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<CustomFieldDTO> { customField1, customField2 });
 
@@ -1918,8 +1918,8 @@ namespace GenBOE.Tests.ActionLogic
 
             this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { task1, task2 });
             this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { });
-            this.retriever.Setup(x => x.GetMaterialsByBoeIds(It.IsAny<Collection<int>>(), false)).Returns(new Collection<MaterialDTO> { });
-            this.retriever.Setup(x => x.GetOdcCollectionByBoeIds(It.IsAny<List<int>>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
+            this.retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, false)).Returns(new Collection<MaterialDTO> { });
+            this.retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(It.IsAny<int>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
 
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<CustomFieldDTO> { customField1, customField2 });
 
@@ -2059,8 +2059,8 @@ namespace GenBOE.Tests.ActionLogic
             this.factory.Setup(x => x.CreateFullBoe(It.IsAny<BoeDTO>())).Returns((BoeDTO b) => new FullBoe(b));
 
             this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { });
-            this.retriever.Setup(x => x.GetMaterialsByBoeIds(It.IsAny<Collection<int>>(), false)).Returns(new Collection<MaterialDTO> { });
-            this.retriever.Setup(x => x.GetOdcCollectionByBoeIds(It.IsAny<List<int>>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
+            this.retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, false)).Returns(new Collection<MaterialDTO> { });
+            this.retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(It.IsAny<int>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
             this.retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<MoqTypeSelection>());
             workspace.UsingTemplateBOE = false;
 
@@ -2295,8 +2295,8 @@ namespace GenBOE.Tests.ActionLogic
 
             this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { task1, task2 });
             this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { });
-            this.retriever.Setup(x => x.GetMaterialsByBoeIds(It.IsAny<Collection<int>>(), false)).Returns(new Collection<MaterialDTO> { });
-            this.retriever.Setup(x => x.GetOdcCollectionByBoeIds(It.IsAny<List<int>>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
+            this.retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, false)).Returns(new Collection<MaterialDTO> { });
+            this.retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(It.IsAny<int>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
 
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<CustomFieldDTO> { customField1, customField2 });
 

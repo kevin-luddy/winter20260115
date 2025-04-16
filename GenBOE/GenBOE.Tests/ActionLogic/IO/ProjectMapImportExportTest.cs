@@ -100,7 +100,7 @@ namespace GenBOE.Tests.ActionLogic.IO
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<CustomFieldDTO>());
 			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
 			retriever.Setup(x => x.GetFullBoesByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() {  });
-			retriever.Setup(x => x.GetOdcCollectionByBoeIds(It.IsAny<ICollection<int>>(), false)).Returns(new Collection<OtherDirectCostDTO> ());
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(It.IsAny<int>(), false)).Returns(new Collection<OtherDirectCostDTO> ());
 			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(It.IsAny<int>())).Returns(0);
 			retriever.Setup(x => x.GetMaterialCollectionByBoeID(It.IsAny<int>(), false)).Returns(new Collection<MaterialDTO> { });
 			retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<ResourceDTO>() { resource1, resource2, resource3 });

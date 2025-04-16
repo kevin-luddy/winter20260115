@@ -647,27 +647,59 @@ namespace GenBOE.Tests.Objects
         public void WorkspaceMaterialsTest()
         {
             FullWorkspace fullWorkspace = new FullWorkspace(_workspaceDto);
-            Collection<MaterialDTO> materials = new Collection<MaterialDTO>();
-            materials.Add(new MaterialDTO { Id = 1 });
-            materials.Add(new MaterialDTO { Id = 2 });
-            _retriever.Setup(i => i.GetMaterialsByBoeIds(It.IsAny<Collection<int>>(), It.IsAny<bool>())).Returns(materials);
-            Collection<FullBoe> boes = new Collection<FullBoe>();
-            boes.Add(new FullBoe { Id = 1 });
-            _retriever.Setup(i => i.GetFullBoesByWorkspaceId(_workspaceDto.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boes);
+            Collection<MaterialDTO> materials = new Collection<MaterialDTO>
+			{
+				new MaterialDTO { Id = 1 },
+				new MaterialDTO { Id = 2 }
+			};
+
+            _retriever.Setup(i => i.GetMaterialsByWorkspaceId(fullWorkspace.Id, false)).Returns(materials);
 
             IReadOnlyCollection<MaterialDTO> returnedMaterials = fullWorkspace.Materials;
             // Call a second time. Ensure it does not go to the DB again to retrieve.
             returnedMaterials = fullWorkspace.Materials;
-            _retriever.Verify(x => x.GetMaterialsByBoeIds(It.IsAny<Collection<int>>(), It.IsAny<bool>()), Times.Exactly(1));
+
+            _retriever.Verify(x => x.GetMaterialsByWorkspaceId(fullWorkspace.Id, false), Times.Once());
             Assert.IsTrue(returnedMaterials.Count == 2);
             Assert.AreEqual(materials[0].Id, returnedMaterials.First().Id);
             Assert.AreEqual(materials[1].Id, returnedMaterials.Last().Id);
         }
 
-        /// <summary>
-        /// Verifies the last accessed only called once.
-        /// </summary>
-        [TestMethod]
+		/// <summary>
+		/// FullWorkspace LoadMaterialsRTEData test.
+		/// </summary>
+		[TestMethod]
+		public void LoadMaterialsRTEDataTest()
+		{
+			FullWorkspace fullWorkspace = new FullWorkspace(_workspaceDto);
+			Collection<MaterialDTO> materials = new Collection<MaterialDTO>
+			{
+				new MaterialDTO { Id = 1 },
+				new MaterialDTO { Id = 2 }
+			};
+
+			_retriever.Setup(i => i.GetMaterialsByWorkspaceId(fullWorkspace.Id, true)).Returns(materials);
+
+			// Call twice - first call hits GetMaterialsByWorkspaceId, second hits PopulateRTEData
+			fullWorkspace.LoadMaterialsRTEData();
+			fullWorkspace.LoadMaterialsRTEData();
+
+			IReadOnlyCollection<MaterialDTO> returnedMaterials = fullWorkspace.Materials;
+
+			// verify GetMaterialsByWorkspaceId called by LoadMaterialsRTEData
+			_retriever.Verify(x => x.GetMaterialsByWorkspaceId(fullWorkspace.Id, true), Times.Once());
+			// verify not called by .Materials
+			_retriever.Verify(x => x.GetMaterialsByWorkspaceId(fullWorkspace.Id, false), Times.Never());
+			_retriever.Verify(x => x.PopulateRTEData(It.IsAny<ICollection<MaterialDTO>>()), Times.Once());
+			Assert.IsTrue(returnedMaterials.Count == 2);
+			Assert.AreEqual(materials[0].Id, returnedMaterials.First().Id);
+			Assert.AreEqual(materials[1].Id, returnedMaterials.Last().Id);
+		}
+
+		/// <summary>
+		/// Verifies the last accessed only called once.
+		/// </summary>
+		[TestMethod]
         public void VerifyLastAccessedTest()
         {
             Mock<IWorkspaceDTODataLoader> wsLoader = new Mock<IWorkspaceDTODataLoader>();
@@ -679,34 +711,69 @@ namespace GenBOE.Tests.Objects
             wsLoader.Setup(x => x.UpdateLastAccessed(wsId, user.UserID));
             wsLoader.Setup(x => x.GetById(wsId)).Returns(new WorkspaceDTO { Id = wsId });
 
+			// Clear cache to ensure it's empty when running all tests
+			sut.ClearLastAccessCache(wsId, user.UserID);
+
             FullWorkspace ws = sut.CreateFullWorkspace(wsId);
             ws = sut.CreateFullWorkspace(wsId);
 
             wsLoader.Verify(x => x.UpdateLastAccessed(wsId, user.UserID), Times.Exactly(1));
-        }
+		}
 
-        /// <summary>
-        /// FullWorkspace get Odcs test.
-        /// </summary>
-        [TestMethod]
-        public void WorkspaceOdcsTest()
-        {
-            FullWorkspace fullWorkspace = new FullWorkspace(_workspaceDto);
-            Collection<OtherDirectCostDTO> odcs = new Collection<OtherDirectCostDTO>();
-            odcs.Add(new OtherDirectCostDTO { Id = 1 });
-            odcs.Add(new OtherDirectCostDTO { Id = 2 });
-            _retriever.Setup(i => i.GetOdcCollectionByBoeIds(It.IsAny<List<int>>(), It.IsAny<bool>())).Returns(odcs);
-            Collection<FullBoe> boes = new Collection<FullBoe>();
-            boes.Add(new FullBoe { Id = 1 });
-            _retriever.Setup(i => i.GetFullBoesByWorkspaceId(_workspaceDto.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boes);
+		/// <summary>
+		/// FullWorkspace get Odcs test.
+		/// </summary>
+		[TestMethod]
+		public void WorkspaceOdcsTest()
+		{
+			FullWorkspace fullWorkspace = new FullWorkspace(_workspaceDto);
+			Collection<OtherDirectCostDTO> odcs = new Collection<OtherDirectCostDTO>
+			{
+				new OtherDirectCostDTO { Id = 1 },
+				new OtherDirectCostDTO { Id = 2 }
+			};
 
-            IReadOnlyCollection<OtherDirectCostDTO> returnedOdcs = fullWorkspace.Odcs;
-            // Call a second time. Ensure it does not go to the DB again to retrieve.
-            returnedOdcs = fullWorkspace.Odcs;
-            _retriever.Verify(x => x.GetOdcCollectionByBoeIds(It.IsAny<List<int>>(), It.IsAny<bool>()), Times.Exactly(1));
-            Assert.IsTrue(returnedOdcs.Count == 2);
-            Assert.AreEqual(odcs[0].Id, returnedOdcs.First().Id);
-            Assert.AreEqual(odcs[1].Id, returnedOdcs.Last().Id);
-        }
-    }
+			_retriever.Setup(i => i.GetOdcCollectionByWorkspaceId(fullWorkspace.Id, false)).Returns(odcs);
+
+			IReadOnlyCollection<OtherDirectCostDTO> returnedOdcs = fullWorkspace.Odcs;
+			// Call a second time. Ensure it does not go to the DB again to retrieve.
+			returnedOdcs = fullWorkspace.Odcs;
+
+			_retriever.Verify(x => x.GetOdcCollectionByWorkspaceId(fullWorkspace.Id, false), Times.Once());
+			Assert.IsTrue(returnedOdcs.Count == 2);
+			Assert.AreEqual(odcs[0].Id, returnedOdcs.First().Id);
+			Assert.AreEqual(odcs[1].Id, returnedOdcs.Last().Id);
+		}
+
+		/// <summary>
+		/// FullWorkspace LoadODCsRTEData test.
+		/// </summary>
+		[TestMethod]
+		public void LoadODCsRTEDataTest()
+		{
+			FullWorkspace fullWorkspace = new FullWorkspace(_workspaceDto);
+			Collection<OtherDirectCostDTO> odcs = new Collection<OtherDirectCostDTO>
+			{
+				new OtherDirectCostDTO { Id = 1 },
+				new OtherDirectCostDTO { Id = 2 }
+			};
+
+			_retriever.Setup(i => i.GetOdcCollectionByWorkspaceId(fullWorkspace.Id, true)).Returns(odcs);
+
+			// Call twice - first call hits GetMaterialsByWorkspaceId, second hits PopulateRTEData
+			fullWorkspace.LoadODCsRTEData();
+			fullWorkspace.LoadODCsRTEData();
+
+			IReadOnlyCollection<OtherDirectCostDTO> returnedOdcs = fullWorkspace.Odcs;
+
+			// verify GetOdcCollectionByWorkspaceId called by LoadMaterialsRTEData
+			_retriever.Verify(x => x.GetOdcCollectionByWorkspaceId(fullWorkspace.Id, true), Times.Once());
+			// verify not called by .Materials
+			_retriever.Verify(x => x.GetOdcCollectionByWorkspaceId(fullWorkspace.Id, false), Times.Never());
+			_retriever.Verify(x => x.PopulateRTEData(It.IsAny<ICollection<OtherDirectCostDTO>>()), Times.Once());
+			Assert.IsTrue(returnedOdcs.Count == 2);
+			Assert.AreEqual(odcs[0].Id, returnedOdcs.First().Id);
+			Assert.AreEqual(odcs[1].Id, returnedOdcs.Last().Id);
+		}
+	}
 }
