@@ -11,6 +11,9 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 	using IES.Common;
 	using IES.Common.PickList;
 
+	/// <summary>
+	/// Workspace Admin Controller Logic
+	/// </summary>
 	public class WorkspaceAdminControllerLogic
 	{
 		/// <summary>

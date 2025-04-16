@@ -53,6 +53,11 @@ namespace GenBOE.Web.Controllers.Backend
 			this.contractTypeLoader = contractTypeLoader;
 		}
 
+		/// <summary>
+		/// Get CLINS for Workspace in Manage CLINS page
+		/// </summary>
+		/// <param name="workspaceShortName"></param>
+		/// <returns></returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<ManageCLINGridModelView> GetManageCLINs(string workspaceShortName)
