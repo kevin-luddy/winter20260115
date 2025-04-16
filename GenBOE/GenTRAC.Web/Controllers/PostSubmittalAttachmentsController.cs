@@ -86,7 +86,8 @@ namespace GenTRAC.Web.Controllers
                 MaxFileSize = SiteMasterUtilities.MaxFileSize,
                 AllowedFileTypes = SiteMasterUtilities.AllowedFileTypes,
                 PostSubmittalAttachments = this.psaLogic.GetPostSubmittalAttachments(proposalId),
-                MaxOtherFileCount = SiteMasterUtilities.MaxOtherFileCount
+                MaxOtherFileCount = SiteMasterUtilities.MaxOtherFileCount,
+				IsEPPIntegrationEnabled = SiteMasterUtilities.IsEPPIntegrationEnabled
             };
 
 			// If there is an attachment of Delegation of Authority that already exists, show the current upload in the UI
@@ -95,53 +96,50 @@ namespace GenTRAC.Web.Controllers
 				AttachmentDto attachment = model.PostSubmittalAttachments.First(x => x.AttachmentType == AttachmentType.DelegationOfAuthority);
 				attachment.ShowPTMUploadForDelegationOfAuthority = true;
 			}
-			// If unclassified and there is no existing attachment thru PTM, check the status of the associated eEPP record linked to the PTM tracking number, if any
-			else
+			// If EPP is integrated and there is no existing attachment thru PTM, check the status of the associated eEPP record linked to the PTM tracking number, if any
+			else if (SiteMasterUtilities.IsEPPIntegrationEnabled)
 			{
-				if (!SiteMasterUtilities.IsClassEnvironment)
+				ProposalDto proposal = this.proposalLoader.GetById(model.ProposalId);
+				if (proposal != null)
 				{
-					ProposalDto proposal = this.proposalLoader.GetById(model.ProposalId);
-					if (proposal != null)
+					// Check if this exists in eEPP
+					using (HttpClient httpClient = new HttpClient(new HttpClientHandler()
 					{
-						// Check if this exists in eEPP
-						using (HttpClient httpClient = new HttpClient(new HttpClientHandler()
-						{
-							UseDefaultCredentials = true
-						}))
-						{
-							string eeppAPI = IES.Common.ConfigurationUtilities.GetAppSetting("eEPPUrl");
-							string url = $"{eeppAPI}/api/eEPP/EPPController/GeteEPPDataByTrackingNumber/{proposal.TrackingNumber}";
+						UseDefaultCredentials = true
+					}))
+					{
+						string eeppAPI = IES.Common.ConfigurationUtilities.GetAppSetting("eEPPUrl");
+						string url = $"{eeppAPI}/api/eEPP/EPPController/GeteEPPDataByTrackingNumber/{proposal.TrackingNumber}";
 
-							try
+						try
+						{
+							HttpResponseMessage response = await httpClient.GetAsync(url);
+							response.EnsureSuccessStatusCode();
+
+							// Process the response
+							string stringResult = await response.Content.ReadAsStringAsync();
+							Result<EeppProposal> deserializedResult = JsonConvert.DeserializeObject<Result<EeppProposal>>(stringResult);
+
+							if (deserializedResult != null && deserializedResult.Data != null && deserializedResult.Data.Id != -1)
 							{
-								HttpResponseMessage response = await httpClient.GetAsync(url);
-								response.EnsureSuccessStatusCode();
-
-								// Process the response
-								string stringResult = await response.Content.ReadAsStringAsync();
-								Result<EeppProposal> deserializedResult = JsonConvert.DeserializeObject<Result<EeppProposal>>(stringResult);
-
-								if (deserializedResult != null && deserializedResult.Data != null && deserializedResult.Data.Id != -1)
+								AttachmentDto doaDoc = model.PostSubmittalAttachments.FirstOrDefault(x => x.AttachmentType == AttachmentType.DelegationOfAuthority);
+								if (doaDoc != null)
 								{
-									AttachmentDto doaDoc = model.PostSubmittalAttachments.FirstOrDefault(x => x.AttachmentType == AttachmentType.DelegationOfAuthority);
-									if (doaDoc != null)
-									{
-										doaDoc.Name = WebConstants.ATTACHMENT_FROM_EEPP;
-										doaDoc.UploadedBy = WebConstants.ATTACHMENT_UPLOADED_BY_EEPP;
-										doaDoc.IsAttachmentFromeEPP = true;
+									doaDoc.Name = WebConstants.ATTACHMENT_FROM_EEPP;
+									doaDoc.UploadedBy = WebConstants.ATTACHMENT_UPLOADED_BY_EEPP;
+									doaDoc.IsAttachmentFromeEPP = true;
 
-										// We need this to bypass the FileHasBeenUploaded flag in the UI
-										// We'll also utilize the Id field to send over to eEPP for the proposal ID there
-										doaDoc.Id = deserializedResult.Data.Id;
-										doaDoc.EeppStatus = deserializedResult.Data.Status;
-									}
+									// We need this to bypass the FileHasBeenUploaded flag in the UI
+									// We'll also utilize the Id field to send over to eEPP for the proposal ID there
+									doaDoc.Id = deserializedResult.Data.Id;
+									doaDoc.EeppStatus = deserializedResult.Data.Status;
 								}
-								// Do nothing (let the user upload a file) if there is no eEPP data with the tracking number
 							}
-							catch (HttpRequestException ex)
-							{
-								this.log.Error(ex);
-							}
+							// Do nothing (let the user upload a file) if there is no eEPP data with the tracking number
+						}
+						catch (HttpRequestException ex)
+						{
+							this.log.Error(ex);
 						}
 					}
 				}
