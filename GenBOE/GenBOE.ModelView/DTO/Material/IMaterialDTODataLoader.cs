@@ -56,7 +56,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <summary>
 		/// Gets Materials by Workspace ID
 		/// </summary>
-		/// <param name="workspaceId">Boe Ids</param>
+		/// <param name="workspaceId">Workspace Id</param>
 		/// <param name="includeRTEFields">Indicates whether RTE fields should be retrieved as a part of the data pull</param>
 		/// <returns>Material Dtos</returns>
 		ICollection<MaterialDTO> GetByWorkspaceId(int workspaceId, bool includeRTEFields = false);
