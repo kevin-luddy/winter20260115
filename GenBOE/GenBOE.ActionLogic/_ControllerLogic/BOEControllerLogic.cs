@@ -812,7 +812,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     // Get RTE overrides
                     ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateOverrides = this.rteTemplateDataLoader.GetByWorkspaceId(exportWorkspace.Id, new FullBoe[] { boe });
 
-                    BOEExportInputs inputs = new BOEExportInputs(new FullBoe[] { boe }, exportWorkspace.Boes.ToList(), exportWorkspace.TaskElements.ToList(), exportWorkspace, rteTemplateOverrides, exportWorkspace.MoqTypeSelections.ToList(), true);
+                    BOEExportInputs inputs = new BOEExportInputs(new FullBoe[] { boe }, exportWorkspace.Boes.ToList(), exportWorkspace.TaskElements.ToList(), exportWorkspace, rteTemplateOverrides, exportWorkspace.MoqTypeSelections.ToList(), true, true);
 
                     // Get BOE Summary Grid data for the current BOE. Used for populating the summary grid on the template
                     List<BOESummaryGridModelView> boeSummaryGridModelViews = this._BOESummary.GetBOESummaryGridModelViews(boe, inputs, isSubcontractorUser).ToList();
