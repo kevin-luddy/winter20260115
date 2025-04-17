@@ -15,8 +15,8 @@ CREATE PROCEDURE [dbo].[updateDateShift]
     @BOETaskElementID int,
     @CLINID int,
     @TravelTripTaskElementID int,
-    @ContractStartDate date,
-    @ContractEndDate date,
+    @StartDate date,
+    @EndDate date,
     @UpdateDT datetime2
 )
 AS
@@ -50,8 +50,8 @@ BEGIN
         BEGIN
             UPDATE [dbo].[Workspace]
             SET 
-                ContractStartDate = @ContractStartDate,
-                ContractEndDate = @ContractEndDate,
+                ContractStartDate = @StartDate,
+                ContractEndDate = @EndDate,
                 UpdateDT = GETDATE()
             WHERE 
                 WorkspaceID = @WorkspaceID
@@ -77,8 +77,8 @@ BEGIN
             UPDATE [dbo].[BOE]
             SET 
                 BOEStateID = @BOEStateID,
-                BOEStartDate = @ContractStartDate,
-                BOEEndDate = @ContractEndDate,
+                BOEStartDate = @StartDate,
+                BOEEndDate = @EndDate,
                 UpdateDT = GETDATE()
             WHERE 
                 BOEID = @BOEID
@@ -103,8 +103,8 @@ BEGIN
         BEGIN
             UPDATE [dbo].[BOETaskElement]
             SET 
-                TaskStartDate = @ContractStartDate,
-                TaskEndDate = @ContractEndDate,
+                TaskStartDate = @StartDate,
+                TaskEndDate = @EndDate,
                 UpdateDT = GETDATE()
             WHERE 
                 BOETaskElementID = @BOETaskElementID
@@ -129,8 +129,8 @@ BEGIN
         BEGIN
             UPDATE [dbo].[CLIN]
             SET 
-                CLINStartDate = @ContractStartDate,
-                CLINEndDate = @ContractEndDate,
+                CLINStartDate = @StartDate,
+                CLINEndDate = @EndDate,
                 UpdateDT = GETDATE()
             WHERE 
                 CLINID = @CLINID
@@ -155,8 +155,8 @@ BEGIN
         BEGIN
             UPDATE [dbo].[TravelTripTaskElement]
             SET 
-                TaskStartDate = @ContractStartDate,
-                TaskEndDate = @ContractEndDate,
+                TaskStartDate = @StartDate,
+                TaskEndDate = @EndDate,
                 UpdateDT = GETDATE()
             WHERE 
                 TravelTripTaskElementID = @TravelTripTaskElementID
