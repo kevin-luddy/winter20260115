@@ -696,10 +696,15 @@ namespace GenBOE.ActionLogic.WBS.BOE
 				{
 					switch (moqType.SelectedMOQType)
 					{
+						//return $scope.IsSkillMixEnabled && $scope.IsUsingTMRatesInTask === false &&
+						//(!$scope.ManageTaskModel.IsSpace || !$scope.isSkillMixManualPerMOQ());
 						case (MOQType.AnalogousRelationships):
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.CerName, "Analogous relationship name", Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
-							ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
+							if (Utilities.ShowSkillMixForTask(ws.CreationDate, BOETaskUtility.IsUsingTMRates(ws, ws.TaskElements)))
+							{
+								ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages); 
+							}
 							break;
 						case (MOQType.Comparative):
 						case (MOQType.Historical):
@@ -799,7 +804,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 							});
 
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
-							ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages); 
 
 							if ((moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative)
 								&& Utilities.IsHistoricalReferenceExplanationRequired(ws.CreationDate))
@@ -864,6 +869,39 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 			ValidateFieldLength(maxFieldLength, field, label, errorMessages);
 		}
+
+		///// <summary>
+		///// Validates a required field
+		///// </summary>
+		///// <param name="moqType">Moq Type</param>
+		///// <param name="field">Property to check</param>
+		///// <param name="label">Label for the field</param>
+		///// <param name="maxFieldLength">RTE Size Limit</param>
+		///// <param name="errorMessages">Error Messages</param>
+		//private static void ValidateRequiredField(MOQType moqType, string field, string label, int? maxFieldLength, Collection<string> errorMessages, )
+		//{
+		//	//return $scope.IsSkillMixEnabled && $scope.IsUsingTMRatesInTask === false &&
+		//	//(!$scope.ManageTaskModel.IsSpace || !$scope.isSkillMixManualPerMOQ());
+		//	if (string.IsNullOrEmpty(field))
+		//	{
+		//		moqType.
+		//		if (label == "Skill Mix Rationale")
+		//		{
+		//			if (Utilities.ShowSkillMixForTask(BOETaskUtility.IsUsingTMRates(ws, BOETaskUtility.IsUsingTMRates()))
+		//			{
+
+		//			}
+
+		//		}
+		//		else
+		//		{
+		//			errorMessages.Add($"{moqType.GetDescription()}: {label} is required.");
+		//		}
+		//	}
+
+		//	ValidateFieldLength(maxFieldLength, field, label, errorMessages);
+		//}
+
 
 		/// <summary>
 		/// Validates Tasks Description, including RTE Templates in the process
