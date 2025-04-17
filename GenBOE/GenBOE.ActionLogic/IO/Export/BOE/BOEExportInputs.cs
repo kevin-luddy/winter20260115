@@ -37,6 +37,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// </summary>
 		/// <param name="boe">The boe.</param>
 		/// <param name="workspace">The workspace.</param>
+		/// <param name="moqTypes">The moq types selected</param>
+		/// <param name="rteTemplatesOverrides">The RTE Template overrides</param>
 		/// <exception cref="System.ArgumentNullException">workspace</exception>
 		public BOEExportInputs(FullBoe boe, FullWorkspace workspace, ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesOverrides = null,
 			ICollection<MoqTypeSelection> moqTypes = null)
@@ -75,6 +77,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// <param name="rteTemplatesOverrides">RTE Template Overrides</param>
 		/// <param name="moqTypes">MOQ Types</param>
 		/// <param name="processLaborTypesForBrc">Should Labor Types be processed for BRCs?</param>
+		/// <param name="processLaborTypesForUCOT">Should Labor Types be processed for UCOT?</param>
 		/// <exception cref="ArgumentNullException">workspace</exception>
 		public BOEExportInputs(ICollection<FullBoe> boesToExport, ICollection<FullBoe> allWorkspaceBoes, ICollection<BoeTaskElementDTO> taskElements,
 			FullWorkspace workspace, ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesOverrides = null,
