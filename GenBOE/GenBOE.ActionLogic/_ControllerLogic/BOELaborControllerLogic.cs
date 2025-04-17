@@ -1531,6 +1531,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				this.ValidateTaskElementRteSizeLimit(laborTaskData, ws, inValidationErrors);
 			}
 
+			
 			this.ValidateTaskElementDates(laborTaskData, ws, boeDTO, inValidationErrors, out BoeTaskElementDTO taskElement);
 			this.ValidateLaborTypeDates(laborTaskData, inValidationErrors);
 			this.ValidateLaborTypeCustomFields(laborTaskData, ws, taskElement, inValidationErrors);
@@ -4387,7 +4388,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		{
 			if (ws.UsingTemplateBOE)
 			{
-				ICollection<string> taskErrors = this.validateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws, false, moqEquationTotal);
+				bool validateSkillMix = Utilities.ShowSkillMixForTask(ws.CreationDate, taskData.IsUsingTMRatesInTask);
+				ICollection<string> taskErrors = this.validateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws, false, moqEquationTotal, validateSkillMix);
 				errors.AddRange(taskErrors.Select(error => new ValidationMessage(error)));
 			}
 		}
