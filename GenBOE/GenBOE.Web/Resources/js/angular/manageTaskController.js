@@ -52,12 +52,18 @@
         $scope.refreshSkillMixTables();
     });
 
-    $scope.updateShowUcot = function () {
-        $scope.showUCOT = $scope.ManageTaskModel.IsUcotEnabled &&
-            $scope.IsBRCEnabled && 
-            $scope.SelectedMoqTypes &&
-            $scope.SelectedMoqTypes.length === 1 && 
-            $scope.SelectedMoqTypes.every(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002' || x.SelectedMOQType == '5005')
+	$scope.updateShowUcot = function () {
+		let originalShowUCOT = $scope.showUCOT;
+
+		$scope.showUCOT = $scope.ManageTaskModel.IsUcotEnabled &&
+			$scope.IsBRCEnabled &&
+			$scope.SelectedMoqTypes &&
+			$scope.SelectedMoqTypes.length === 1 &&
+			$scope.SelectedMoqTypes.every(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002' || x.SelectedMOQType == '5005');
+
+		if (originalShowUCOT != $scope.showUCOT) {
+			recalculateAllSpreadsAndTotals();
+		}
     };
         
     $scope.addSkillMixRow = function (currentIndex) {
@@ -1213,7 +1219,7 @@
         });
     };
     var loadData = function (callback) {
-        $(document).trigger("SHOW_LOADING_BOX");
+		$(document).trigger("SHOW_LOADING_BOX");
         $scope.isLoading = true;
         $scope.dataLoaded = false;
         $scope.TaskCustomFields = [];
