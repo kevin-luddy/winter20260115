@@ -1,5 +1,21 @@
+-- Drop the existing stored procedure if it exists
 IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[updateDateShift]') AND type in (N'P', N'PC'))
     DROP PROCEDURE [dbo].[updateDateShift];
+GO
+
+-- Drop the existing table type if it exists
+IF  EXISTS (SELECT 1 FROM sys.types st JOIN sys.schemas ss ON st.schema_id = ss.schema_id WHERE st.name = N'TT_DateShift' AND ss.name = N'dbo')
+    DROP TYPE [dbo].[TT_DateShift];
+GO
+
+CREATE TYPE [dbo].[TT_DateShift] AS TABLE(
+    [Level] nvarchar(50),
+    [Id] int,
+    [StartDate] date,
+    [EndDate] date,
+    [BOEStateID] int NULL,
+    [UpdateDT] datetime2
+);
 GO
 
 SET ANSI_NULLS OFF
@@ -9,15 +25,7 @@ GO
 
 CREATE PROCEDURE [dbo].[updateDateShift]
 (
-    @WorkspaceID int,
-    @BOEID int,
-    @BOEStateID int,
-    @BOETaskElementID int,
-    @CLINID int,
-    @TravelTripTaskElementID int,
-    @StartDate date,
-    @EndDate date,
-    @UpdateDT datetime2
+    @DateShifts [dbo].[TT_DateShift] READONLY  -- The table-valued parameter containing the date shifts
 )
 AS
 /******************************************************************************
@@ -25,6 +33,8 @@ AS
 **		Name: [updateDateShift]
 **		Desc: Update date shifts for workspace, BOE, BOE task element, CLIN, and travel trip task element
 **			
+**		
+**
 **		Auth: [e405721]
 **		Date: [4/17/25]
 *******************************************************************************
@@ -36,140 +46,108 @@ AS
 *******************************************************************************/
 SET NOCOUNT ON 
 
+-- Declare a table variable to hold the date shifts
+DECLARE @TT_DateShift TABLE
+(
+    [Level] nvarchar(50),
+    [Id] int,
+    [StartDate] date,
+    [EndDate] date,
+    [BOEStateID] int NULL,
+    [UpdateDT] datetime2
+);
+
+-- Insert the date shifts from the table-valued parameter into the table variable
+INSERT INTO @TT_DateShift SELECT * FROM @DateShifts;
+
+-- Declare a variable to keep track of the current row
+DECLARE @CurrentRow TABLE
+(
+    [Level] nvarchar(50),
+    [Id] int,
+    [StartDate] date,
+    [EndDate] date,
+    [BOEStateID] int NULL,
+    [UpdateDT] datetime2
+);
+
+-- Loop through the date shifts and update the corresponding tables
+WHILE EXISTS (SELECT 1 FROM @TT_DateShift)
 BEGIN
-    -- Update workspace
-    IF @WorkspaceID IS NOT NULL
-    BEGIN
-        IF NOT EXISTS (SELECT 1 FROM [dbo].[Workspace] WHERE WorkspaceID = @WorkspaceID)
-        BEGIN
-            RAISERROR ('The workspace with ID %d does not exist.', 11, 1, @WorkspaceID)
-            RETURN
-        END
+    -- Select the top date shift from the table variable
+    INSERT INTO @CurrentRow
+    SELECT TOP 1 
+        [Level],
+        [Id],
+        [StartDate],
+        [EndDate],
+        [BOEStateID],
+        [UpdateDT]
+    FROM @TT_DateShift;
 
-        IF (SELECT UpdateDT FROM [dbo].[Workspace] WHERE WorkspaceID = @WorkspaceID) = @UpdateDT
-        BEGIN
-            UPDATE [dbo].[Workspace]
-            SET 
-                ContractStartDate = @StartDate,
-                ContractEndDate = @EndDate,
-                UpdateDT = GETDATE()
-            WHERE 
-                WorkspaceID = @WorkspaceID
-        END
-        ELSE
-        BEGIN
-            RAISERROR ('The workspace with ID %d has been updated and is out of sync with the data in your browser.  Please refresh your data.', 11, 1, @WorkspaceID)
-            RETURN
-        END
+    -- Update the corresponding table based on the level
+    IF (SELECT [Level] FROM @CurrentRow) = 'Workspace'
+    BEGIN
+        -- Update the Workspace table
+        UPDATE w
+        SET 
+            ContractStartDate = (SELECT [StartDate] FROM @CurrentRow),
+            ContractEndDate = (SELECT [EndDate] FROM @CurrentRow),
+            UpdateDT = (SELECT [UpdateDT] FROM @CurrentRow)
+        FROM [dbo].[Workspace] w
+        WHERE w.WorkspaceID = (SELECT [Id] FROM @CurrentRow) AND w.UpdateDT = (SELECT [UpdateDT] FROM @CurrentRow);
+    END
+    ELSE IF (SELECT [Level] FROM @CurrentRow) = 'BOE'
+    BEGIN
+        -- Update the BOE table
+        UPDATE b
+        SET 
+            BOEStartDate = (SELECT [StartDate] FROM @CurrentRow),
+            BOEEndDate = (SELECT [EndDate] FROM @CurrentRow),
+            BOEStateID = (SELECT [BOEStateID] FROM @CurrentRow),
+            UpdateDT = (SELECT [UpdateDT] FROM @CurrentRow)
+        FROM [dbo].[BOE] b
+        WHERE b.BOEID = (SELECT [Id] FROM @CurrentRow) AND b.UpdateDT = (SELECT [UpdateDT] FROM @CurrentRow);
+    END
+    ELSE IF (SELECT [Level] FROM @CurrentRow) = 'BOETaskElement'
+    BEGIN
+        -- Update the BOETaskElement table
+        UPDATE bt
+        SET 
+            TaskStartDate = (SELECT [StartDate] FROM @CurrentRow),
+            TaskEndDate = (SELECT [EndDate] FROM @CurrentRow),
+            UpdateDT = (SELECT [UpdateDT] FROM @CurrentRow)
+        FROM [dbo].[BOETaskElement] bt
+        WHERE bt.BOEID = (SELECT [Id] FROM @CurrentRow) AND bt.UpdateDT = (SELECT [UpdateDT] FROM @CurrentRow);
+    END
+    ELSE IF (SELECT [Level] FROM @CurrentRow) = 'CLIN'
+    BEGIN
+        -- Update the CLIN table
+        UPDATE c
+        SET 
+            CLINStartDate = (SELECT [StartDate] FROM @CurrentRow),
+            CLINEndDate = (SELECT [EndDate] FROM @CurrentRow),
+            UpdateDT = (SELECT [UpdateDT] FROM @CurrentRow)
+        FROM [dbo].[CLIN] c
+        WHERE c.CLINID = (SELECT [Id] FROM @CurrentRow) AND c.UpdateDT = (SELECT [UpdateDT] FROM @CurrentRow);
+    END
+    ELSE IF (SELECT [Level] FROM @CurrentRow) = 'TravelTripTaskElement'
+    BEGIN
+        -- Update the TravelTripTaskElement table
+        UPDATE tt
+        SET 
+            TaskStartDate = (SELECT [StartDate] FROM @CurrentRow),
+            TaskEndDate = (SELECT [EndDate] FROM @CurrentRow),
+            UpdateDT = (SELECT [UpdateDT] FROM @CurrentRow)
+        FROM [dbo].[TravelTripTaskElement] tt
+        WHERE tt.TravelTripTaskElementID = (SELECT [Id] FROM @CurrentRow) AND tt.UpdateDT = (SELECT [UpdateDT] FROM @CurrentRow);
     END
 
-    -- Update BOE
-    IF @BOEID IS NOT NULL
-    BEGIN
-        IF NOT EXISTS (SELECT 1 FROM [dbo].[BOE] WHERE BOEID = @BOEID)
-        BEGIN
-            RAISERROR ('The BOE with ID %d does not exist.', 11, 1, @BOEID)
-            RETURN
-        END
-    
-        IF (SELECT UpdateDT FROM [dbo].[BOE] WHERE BOEID = @BOEID) = @UpdateDT
-        BEGIN
-            UPDATE [dbo].[BOE]
-            SET 
-                BOEStateID = @BOEStateID,
-                BOEStartDate = @StartDate,
-                BOEEndDate = @EndDate,
-                UpdateDT = GETDATE()
-            WHERE 
-                BOEID = @BOEID
-        END
-        ELSE
-        BEGIN
-            RAISERROR ('The BOE with ID %d has been updated and is out of sync with the data in your browser.  Please refresh your data.', 11, 1, @BOEID)
-            RETURN
-        END
-    END
+    -- Delete the current row from the table variable
+    DELETE FROM @TT_DateShift
+    WHERE [Level] = (SELECT [Level] FROM @CurrentRow) AND [Id] = (SELECT [Id] FROM @CurrentRow);
 
-    -- Update BOE task element
-    IF @BOETaskElementID IS NOT NULL
-    BEGIN
-        IF NOT EXISTS (SELECT 1 FROM [dbo].[BOETaskElement] WHERE BOETaskElementID = @BOETaskElementID)
-        BEGIN
-            RAISERROR ('The BOE task element with ID %d does not exist.', 11, 1, @BOETaskElementID)
-            RETURN
-        END
-
-        IF (SELECT UpdateDT FROM [dbo].[BOETaskElement] WHERE BOETaskElementID = @BOETaskElementID) = @UpdateDT
-        BEGIN
-            UPDATE [dbo].[BOETaskElement]
-            SET 
-                TaskStartDate = @StartDate,
-                TaskEndDate = @EndDate,
-                UpdateDT = GETDATE()
-            WHERE 
-                BOETaskElementID = @BOETaskElementID
-        END
-        ELSE
-        BEGIN
-            RAISERROR ('The BOE task element with ID %d has been updated and is out of sync with the data in your browser.  Please refresh your data.', 11, 1, @BOETaskElementID)
-            RETURN
-        END
-    END
-
-    -- Update CLIN
-    IF @CLINID IS NOT NULL
-    BEGIN
-        IF NOT EXISTS (SELECT 1 FROM [dbo].[CLIN] WHERE CLINID = @CLINID)
-        BEGIN
-            RAISERROR ('The CLIN with ID %d does not exist.', 11, 1, @CLINID)
-            RETURN
-        END
-
-        IF (SELECT UpdateDT FROM [dbo].[CLIN] WHERE CLINID = @CLINID) = @UpdateDT
-        BEGIN
-            UPDATE [dbo].[CLIN]
-            SET 
-                CLINStartDate = @StartDate,
-                CLINEndDate = @EndDate,
-                UpdateDT = GETDATE()
-            WHERE 
-                CLINID = @CLINID
-        END
-        ELSE
-        BEGIN
-            RAISERROR ('The CLIN with ID %d has been updated and is out of sync with the data in your browser.  Please refresh your data.', 11, 1, @CLINID)
-            RETURN
-        END
-    END
-
-    -- Update travel trip task element
-    IF @TravelTripTaskElementID IS NOT NULL
-    BEGIN
-        IF NOT EXISTS (SELECT 1 FROM [dbo].[TravelTripTaskElement] WHERE TravelTripTaskElementID = @TravelTripTaskElementID)
-        BEGIN
-            RAISERROR ('The travel trip task element with ID %d does not exist.', 11, 1, @TravelTripTaskElementID)
-            RETURN
-        END
-
-        IF (SELECT UpdateDT FROM [dbo].[TravelTripTaskElement] WHERE TravelTripTaskElementID = @TravelTripTaskElementID) = @UpdateDT
-        BEGIN
-            UPDATE [dbo].[TravelTripTaskElement]
-            SET 
-                TaskStartDate = @StartDate,
-                TaskEndDate = @EndDate,
-                UpdateDT = GETDATE()
-            WHERE 
-                TravelTripTaskElementID = @TravelTripTaskElementID
-        END
-        ELSE
-        BEGIN
-            RAISERROR ('The travel trip task element with ID %d has been updated and is out of sync with the data in your browser.  Please refresh your data.', 11, 1, @TravelTripTaskElementID)
-            RETURN
-        END
-    END
+    -- Clear the current row table
+    DELETE FROM @CurrentRow;
 END
-GO
-
-IF @@ERROR = 0
-    PRINT 'Update successful'
 GO
