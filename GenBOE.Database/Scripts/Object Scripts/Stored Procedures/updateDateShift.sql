@@ -60,94 +60,54 @@ DECLARE @TT_DateShift TABLE
 -- Insert the date shifts from the table-valued parameter into the table variable
 INSERT INTO @TT_DateShift SELECT * FROM @DateShifts;
 
--- Declare a variable to keep track of the current row
-DECLARE @CurrentRow TABLE
-(
-    [Level] nvarchar(50),
-    [Id] int,
-    [StartDate] date,
-    [EndDate] date,
-    [BOEStateID] int NULL,
-    [UpdateDT] datetime2
-);
+-- Update the Workspace table
+UPDATE w
+SET 
+    ContractStartDate = ds.StartDate,
+    ContractEndDate = ds.EndDate,
+    UpdateDT = ds.UpdateDT
+FROM [dbo].[Workspace] w
+INNER JOIN @TT_DateShift ds ON w.WorkspaceID = ds.Id AND ds.Level = 'Workspace'
+WHERE w.UpdateDT = ds.UpdateDT;
 
--- Loop through the date shifts and update the corresponding tables
-WHILE EXISTS (SELECT 1 FROM @TT_DateShift)
-BEGIN
-    -- Select the top date shift from the table variable
-    INSERT INTO @CurrentRow
-    SELECT TOP 1 
-        [Level],
-        [Id],
-        [StartDate],
-        [EndDate],
-        [BOEStateID],
-        [UpdateDT]
-    FROM @TT_DateShift;
+-- Update the BOE table
+UPDATE b
+SET 
+    BOEStartDate = ds.StartDate,
+    BOEEndDate = ds.EndDate,
+    BOEStateID = ds.BOEStateID,
+    UpdateDT = ds.UpdateDT
+FROM [dbo].[BOE] b
+INNER JOIN @TT_DateShift ds ON b.BOEID = ds.Id AND ds.Level = 'BOE'
+WHERE b.UpdateDT = ds.UpdateDT;
 
-    -- Update the corresponding table based on the level
-    IF (SELECT [Level] FROM @CurrentRow) = 'Workspace'
-    BEGIN
-        -- Update the Workspace table
-        UPDATE w
-        SET 
-            ContractStartDate = (SELECT [StartDate] FROM @CurrentRow),
-            ContractEndDate = (SELECT [EndDate] FROM @CurrentRow),
-            UpdateDT = (SELECT [UpdateDT] FROM @CurrentRow)
-        FROM [dbo].[Workspace] w
-        WHERE w.WorkspaceID = (SELECT [Id] FROM @CurrentRow) AND w.UpdateDT = (SELECT [UpdateDT] FROM @CurrentRow);
-    END
-    ELSE IF (SELECT [Level] FROM @CurrentRow) = 'BOE'
-    BEGIN
-        -- Update the BOE table
-        UPDATE b
-        SET 
-            BOEStartDate = (SELECT [StartDate] FROM @CurrentRow),
-            BOEEndDate = (SELECT [EndDate] FROM @CurrentRow),
-            BOEStateID = (SELECT [BOEStateID] FROM @CurrentRow),
-            UpdateDT = (SELECT [UpdateDT] FROM @CurrentRow)
-        FROM [dbo].[BOE] b
-        WHERE b.BOEID = (SELECT [Id] FROM @CurrentRow) AND b.UpdateDT = (SELECT [UpdateDT] FROM @CurrentRow);
-    END
-    ELSE IF (SELECT [Level] FROM @CurrentRow) = 'BOETaskElement'
-    BEGIN
-        -- Update the BOETaskElement table
-        UPDATE bt
-        SET 
-            TaskStartDate = (SELECT [StartDate] FROM @CurrentRow),
-            TaskEndDate = (SELECT [EndDate] FROM @CurrentRow),
-            UpdateDT = (SELECT [UpdateDT] FROM @CurrentRow)
-        FROM [dbo].[BOETaskElement] bt
-        WHERE bt.BOEID = (SELECT [Id] FROM @CurrentRow) AND bt.UpdateDT = (SELECT [UpdateDT] FROM @CurrentRow);
-    END
-    ELSE IF (SELECT [Level] FROM @CurrentRow) = 'CLIN'
-    BEGIN
-        -- Update the CLIN table
-        UPDATE c
-        SET 
-            CLINStartDate = (SELECT [StartDate] FROM @CurrentRow),
-            CLINEndDate = (SELECT [EndDate] FROM @CurrentRow),
-            UpdateDT = (SELECT [UpdateDT] FROM @CurrentRow)
-        FROM [dbo].[CLIN] c
-        WHERE c.CLINID = (SELECT [Id] FROM @CurrentRow) AND c.UpdateDT = (SELECT [UpdateDT] FROM @CurrentRow);
-    END
-    ELSE IF (SELECT [Level] FROM @CurrentRow) = 'TravelTripTaskElement'
-    BEGIN
-        -- Update the TravelTripTaskElement table
-        UPDATE tt
-        SET 
-            TaskStartDate = (SELECT [StartDate] FROM @CurrentRow),
-            TaskEndDate = (SELECT [EndDate] FROM @CurrentRow),
-            UpdateDT = (SELECT [UpdateDT] FROM @CurrentRow)
-        FROM [dbo].[TravelTripTaskElement] tt
-        WHERE tt.TravelTripTaskElementID = (SELECT [Id] FROM @CurrentRow) AND tt.UpdateDT = (SELECT [UpdateDT] FROM @CurrentRow);
-    END
+-- Update the BOETaskElement table
+UPDATE bt
+SET 
+    TaskStartDate = ds.StartDate,
+    TaskEndDate = ds.EndDate,
+    UpdateDT = ds.UpdateDT
+FROM [dbo].[BOETaskElement] bt
+INNER JOIN @TT_DateShift ds ON bt.BOEID = ds.Id AND ds.Level = 'BOETaskElement'
+WHERE bt.UpdateDT = ds.UpdateDT;
 
-    -- Delete the current row from the table variable
-    DELETE FROM @TT_DateShift
-    WHERE [Level] = (SELECT [Level] FROM @CurrentRow) AND [Id] = (SELECT [Id] FROM @CurrentRow);
+-- Update the CLIN table
+UPDATE c
+SET 
+    CLINStartDate = ds.StartDate,
+    CLINEndDate = ds.EndDate,
+    UpdateDT = ds.UpdateDT
+FROM [dbo].[CLIN] c
+INNER JOIN @TT_DateShift ds ON c.CLINID = ds.Id AND ds.Level = 'CLIN'
+WHERE c.UpdateDT = ds.UpdateDT;
 
-    -- Clear the current row table
-    DELETE FROM @CurrentRow;
-END
+-- Update the TravelTripTaskElement table
+UPDATE tt
+SET 
+    TaskStartDate = ds.StartDate,
+    TaskEndDate = ds.EndDate,
+    UpdateDT = ds.UpdateDT
+FROM [dbo].[TravelTripTaskElement] tt
+INNER JOIN @TT_DateShift ds ON tt.TravelTripTaskElementID = ds.Id AND ds.Level = 'TravelTripTaskElement'
+WHERE tt.UpdateDT = ds.UpdateDT;
 GO
