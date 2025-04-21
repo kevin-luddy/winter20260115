@@ -159,5 +159,10 @@ namespace GenBOE.ActionLogic.ModelView.Backend
 		/// Active App name in Web.Config
 		/// </summary>
 		public string ActiveApp { get; set; }
+
+		/// <summary>
+		/// Service Central Link
+		/// </summary>
+		public string ServiceCentralLink { get; set; }
 	}
 }
