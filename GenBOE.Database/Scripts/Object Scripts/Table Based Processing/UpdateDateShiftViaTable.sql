@@ -1,6 +1,6 @@
--- Drop the existing stored procedure if it exists
-IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[updateDateShift]') AND type in (N'P', N'PC'))
-    DROP PROCEDURE [dbo].[updateDateShift];
+-- Drop SPs 1st
+IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[updateDateShiftviaTableParameter]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].updateDateShiftviaTableParameter;
 GO
 
 -- Drop the existing table type if it exists
@@ -23,15 +23,15 @@ GO
 SET QUOTED_IDENTIFIER OFF
 GO
 
-CREATE PROCEDURE [dbo].[updateDateShift]
+CREATE PROCEDURE [dbo].[updateDateShiftviaTableParameter]
 (
     @DateShifts [dbo].[TT_DateShift] READONLY  -- The table-valued parameter containing the date shifts
 )
 AS
 /******************************************************************************
 **		 
-**		Name: [updateDateShift]
-**		Desc: Update date shifts for workspace, BOE, BOE task element, CLIN, and travel trip task element
+**		Name: [updateDateShiftviaTableParameter]
+**		Desc: Update date shifts for workspace, BOE, BOE task element, and CLIN.
 **			
 **		
 **
