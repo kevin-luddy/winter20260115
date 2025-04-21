@@ -44,7 +44,7 @@ AS
 **		--------	--------			-------------------------------------------
 **		[4/17/25]	[e405721]			Initial creation
 *******************************************************************************/
-SET NOCOUNT ON 
+SET NOCOUNT ON
 
 -- Declare a table variable to hold the date shifts
 DECLARE @TT_DateShift TABLE
@@ -67,8 +67,7 @@ SET
     ContractEndDate = ds.EndDate,
     UpdateDT = ds.UpdateDT
 FROM [dbo].[Workspace] w
-INNER JOIN @TT_DateShift ds ON w.WorkspaceID = ds.Id AND ds.Level = 'Workspace'
-WHERE w.UpdateDT = ds.UpdateDT;
+INNER JOIN @TT_DateShift ds ON w.WorkspaceID = ds.Id AND ds.Level = 'Workspace' AND w.UpdateDT = ds.UpdateDT;
 
 -- Update the BOE table
 UPDATE b
@@ -78,8 +77,7 @@ SET
     BOEStateID = ds.BOEStateID,
     UpdateDT = ds.UpdateDT
 FROM [dbo].[BOE] b
-INNER JOIN @TT_DateShift ds ON b.BOEID = ds.Id AND ds.Level = 'BOE'
-WHERE b.UpdateDT = ds.UpdateDT;
+INNER JOIN @TT_DateShift ds ON b.BOEID = ds.Id AND ds.Level = 'BOE' AND b.UpdateDT = ds.UpdateDT;
 
 -- Update the BOETaskElement table
 UPDATE bt
@@ -88,8 +86,7 @@ SET
     TaskEndDate = ds.EndDate,
     UpdateDT = ds.UpdateDT
 FROM [dbo].[BOETaskElement] bt
-INNER JOIN @TT_DateShift ds ON bt.BOEID = ds.Id AND ds.Level = 'BOETaskElement'
-WHERE bt.UpdateDT = ds.UpdateDT;
+INNER JOIN @TT_DateShift ds ON bt.BOEID = ds.Id AND ds.Level = 'BOETaskElement' AND bt.UpdateDT = ds.UpdateDT;
 
 -- Update the CLIN table
 UPDATE c
@@ -98,16 +95,5 @@ SET
     CLINEndDate = ds.EndDate,
     UpdateDT = ds.UpdateDT
 FROM [dbo].[CLIN] c
-INNER JOIN @TT_DateShift ds ON c.CLINID = ds.Id AND ds.Level = 'CLIN'
-WHERE c.UpdateDT = ds.UpdateDT;
-
--- Update the TravelTripTaskElement table
-UPDATE tt
-SET 
-    TaskStartDate = ds.StartDate,
-    TaskEndDate = ds.EndDate,
-    UpdateDT = ds.UpdateDT
-FROM [dbo].[TravelTripTaskElement] tt
-INNER JOIN @TT_DateShift ds ON tt.TravelTripTaskElementID = ds.Id AND ds.Level = 'TravelTripTaskElement'
-WHERE tt.UpdateDT = ds.UpdateDT;
+INNER JOIN @TT_DateShift ds ON c.CLINID = ds.Id AND ds.Level = 'CLIN' AND c.UpdateDT = ds.UpdateDT;
 GO
