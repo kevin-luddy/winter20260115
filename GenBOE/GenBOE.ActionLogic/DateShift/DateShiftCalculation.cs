@@ -85,11 +85,6 @@ namespace GenBOE.ActionLogic.DateShift
         private readonly HashSet<UserDateChangeInfo> userDateChangeInfoErrors = new HashSet<UserDateChangeInfo>();
 
         /// <summary>
-        /// The workspace version data loader.
-        /// </summary>
-        private readonly IWorkspaceVersionMetaDataDTODataLoader workspaceVersionMetaDataDTODataLoader;
-
-        /// <summary>
         /// The BOE state machine.
         /// </summary>
         private readonly IBOEStateMachine boeStateMachine = null;
@@ -116,7 +111,6 @@ namespace GenBOE.ActionLogic.DateShift
 		public DateShiftCalculation()
         {
 			this.dateShiftLoader = GenBOEUnityContainer.Container.Resolve(typeof(IDateShiftDTODataLoader)) as IDateShiftDTODataLoader;
-			this.workspaceLoader = GenBOEUnityContainer.Container.Resolve(typeof(IWorkspaceDTODataLoader)) as IWorkspaceDTODataLoader;
             this.clinLoader = GenBOEUnityContainer.Container.Resolve(typeof(IClinDTODataLoader)) as IClinDTODataLoader;
             this.boeLoader = GenBOEUnityContainer.Container.Resolve(typeof(IBoeDTODataLoader)) as IBoeDTODataLoader;
             this.taskLoader = GenBOEUnityContainer.Container.Resolve(typeof(IBoeTaskElementDTODataLoader)) as IBoeTaskElementDTODataLoader;
@@ -124,7 +118,6 @@ namespace GenBOE.ActionLogic.DateShift
             this.travelLoader = GenBOEUnityContainer.Container.Resolve(typeof(ITravelDTODataLoader)) as ITravelDTODataLoader;
             this.emailer = GenBOEUnityContainer.Container.Resolve(typeof(IBoeEmailer)) as IBoeEmailer;
             this.permissionLoader = GenBOEUnityContainer.Container.Resolve(typeof(IPermissionsDTODataLoader)) as IPermissionsDTODataLoader;
-            this.workspaceVersionMetaDataDTODataLoader = GenBOEUnityContainer.Container.Resolve(typeof(IWorkspaceVersionMetaDataDTODataLoader)) as IWorkspaceVersionMetaDataDTODataLoader;
             this.boeStateMachine = GenBOEUnityContainer.Container.Resolve(typeof(IBOEStateMachine)) as IBOEStateMachine;
             this.factory = GenBOEUnityContainer.Container.Resolve(typeof(IFullObjectFactory)) as IFullObjectFactory;
 			this.boeLaborControllerLogic = GenBOEUnityContainer.Container.Resolve(typeof(IBOELaborControllerLogic)) as IBOELaborControllerLogic;
@@ -881,38 +874,41 @@ namespace GenBOE.ActionLogic.DateShift
                 // separate transaction for backup
                 using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("CopyWorkspaceTransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
                 {
-                    FullWorkspace workspace = dateShiftable as FullWorkspace;
-                    // make a backup first
-                    string versionName = "SYSTEM: DATE SHIFT " + DateTime.Now.ToString();
-                    IReadOnlyCollection<WorkspaceVersionMetaDataDTO> workspaceVersions = workspace.WorkspaceVersionMetaData;
+                    //FullWorkspace workspace = dateShiftable as FullWorkspace;
+                    //// make a backup first
+                    //string versionName = "SYSTEM: DATE SHIFT " + DateTime.Now.ToString();
+                    //IReadOnlyCollection<WorkspaceVersionMetaDataDTO> workspaceVersions = workspace.WorkspaceVersionMetaData;
 
-                    foreach (WorkspaceVersionMetaDataDTO versionToCheck in workspaceVersions)
-                    {
-                        if (versionName == versionToCheck.VersionName)
-                        {
-                            // Version name must be unique
-                            versionName += DateTime.Now.Millisecond.ToString();
-                        }
-                    }
+                    //foreach (WorkspaceVersionMetaDataDTO versionToCheck in workspaceVersions)
+                    //{
+                    //    if (versionName == versionToCheck.VersionName)
+                    //    {
+                    //        // Version name must be unique
+                    //        versionName += DateTime.Now.Millisecond.ToString();
+                    //    }
+                    //}
 
-                    Collection<WorkspaceVersionMetaDataDTO> toSave = new Collection<WorkspaceVersionMetaDataDTO>()
-                    {
-                        new WorkspaceVersionMetaDataDTO()
-                        {
-                            VersionName = versionName,
-                            Updateable = UpdateType.Upsert,
-                            CreatedByID = 0, // genBOE System 
-                            DateCreated = new DateTime(),
-                            VersionState = workspace.WorkspaceState
-                        }
-                    };
+                    //Collection<WorkspaceVersionMetaDataDTO> toSave = new Collection<WorkspaceVersionMetaDataDTO>()
+                    //{
+                    //    new WorkspaceVersionMetaDataDTO()
+                    //    {
+                    //        VersionName = versionName,
+                    //        Updateable = UpdateType.Upsert,
+                    //        CreatedByID = 0, // genBOE System 
+                    //        DateCreated = new DateTime(),
+                    //        VersionState = workspace.WorkspaceState
+                    //    }
+                    //};
 
 					// TODO Thomas: Figure out the loader logic.
-					DateShiftDTO dateShiftToSave = dateShiftable as DateShiftDTO;
-					dateShiftToSave.Updateable = UpdateType.Upsert;
-					this.dateShiftLoader.Save(dateShiftToSave);
+					ICollection<DateShiftDTO> dateShiftedItems = new List<DateShiftDTO>();
+					DateShiftDTO dateShiftItem = dateShiftable as DateShiftDTO;
+					dateShiftItem.Updateable = UpdateType.Upsert;
+
+					dateShiftedItems.Add(dateShiftItem);
+					this.dateShiftLoader.Update(dateShiftedItems);
                     
-					this.workspaceVersionMetaDataDTODataLoader.Save(toSave, workspace.Id);
+					//this.workspaceVersionMetaDataDTODataLoader.Save(toSave, workspace.Id);
 
                     scope.Complete();
                 }

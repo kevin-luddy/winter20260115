@@ -102,12 +102,12 @@ namespace GenBOE.Dtos
 		/// <summary>
 		/// Start date.
 		/// </summary>
-		public DateTime StartDate { get; set; } = DateTime.MinValue;
+		public DateTime StartDate { get; set; }
 
 		/// <summary>
 		/// End date.
 		/// </summary>
-		public DateTime EndDate { get; set; } = DateTime.MaxValue;
+		public DateTime EndDate { get; set; }
 
 		/// <summary>
 		/// Value spread.
@@ -168,6 +168,10 @@ namespace GenBOE.Dtos
 					dateShiftDTO.BoeId = ((TravelDTO)dateShiftable).BoeID;
 					break;
 			}
+
+			// Explicitly set the StartDate and EndDate properties
+			dateShiftDTO.StartDate = ((IDateShiftable)dateShiftDTO).StartDate ?? DateTime.MinValue;
+			dateShiftDTO.EndDate = ((IDateShiftable)dateShiftDTO).EndDate ?? DateTime.MaxValue;
 
 			foreach (IDateShiftable child in dateShiftable.Children)
 			{

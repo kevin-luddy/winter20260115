@@ -382,6 +382,7 @@ namespace GenBOE
 			GenBOEUnityContainer.Container.RegisterType(typeof(IPermissionsDTODataLoader), typeof(PermissionsDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IPermissionsDTODataLoader>(new InterfaceInterceptor());
 			GenBOEUnityContainer.Container.RegisterType(typeof(IBoeDTODataLoader), typeof(BoeDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
 			GenBOEUnityContainer.Container.RegisterType(typeof(IClinDTODataLoader), typeof(ClinDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
+			GenBOEUnityContainer.Container.RegisterType(typeof(IDateShiftDTODataLoader), typeof(DateShiftDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
 			GenBOEUnityContainer.Container.RegisterType(typeof(IUserDTODataLoader), typeof(UserDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
 			GenBOEUnityContainer.Container.RegisterType(typeof(IWorkspaceExportFormatDTODataLoader), typeof(WorkspaceExportFormatDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
 			GenBOEUnityContainer.Container.RegisterType(typeof(IWbsDTODataLoader), typeof(WbsDTODataLoader), GetLifetimeManager(), new InjectionConstructor()).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
@@ -416,7 +417,8 @@ namespace GenBOE
 			GenBOEUnityContainer.Container.RegisterType(typeof(IProjectMapSpreadLoader), typeof(ProjectMapSpreadLoader), GetLifetimeManager(), new InjectionMember[] { });
 			GenBOEUnityContainer.Container.RegisterType(typeof(IProjectMapDataLoader), typeof(ProjectMapDataLoader), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IProjectMapSpreadLoader))));
 			GenBOEUnityContainer.Container.RegisterType(typeof(GenTRAC.DataBridge.DTO.IProposalLoader), typeof(GenTRAC.DataBridge.DTO.ProposalLoader), this.GetLifetimeManager(), new InjectionConstructor()).Configure<Interception>().SetInterceptorFor<GenTRAC.DataBridge.DTO.IProposalLoader>(new InterfaceInterceptor());
-			
+
+
 			GenBOEUnityContainer.Container.RegisterType(typeof(IBoeTaskElementDTODataLoader), typeof(BoeTaskElementDTODataLoader), GetLifetimeManager(),
 				new InjectionConstructor(
 					new ResolvedParameter(typeof(IResourceTypeLoader)),
