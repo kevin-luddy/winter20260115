@@ -1116,7 +1116,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 
 		data.tableData.push(table);
-
+		
 		if (data.tableData.length > 0) {
 			// send to backend
 			// display response to user
@@ -1265,215 +1265,223 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	};
 
 	$scope.calculateAllMoqActuals = function () {
-		$scope.actualsValidation.errors = new Map();
-		$scope.actualsValidation.isDirty = new Map();
-		// Get all the data tables
-		const data = {
-			tableData: []
-		};
+		GenSession.confirmDialog("Recalculate All Workspace Actuals", "This is a long running process and will recalculate the actuals on each MOQ table in this workspace",
+			function () {
+				$scope.actualsValidation.errors = new Map();
+				$scope.actualsValidation.isDirty = new Map();
+				// Get all the data tables
+				const data = {
+					tableData: []
+				};
 
-		const moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
-		if (moqTypes) {
-			moqTypes.forEach(moq => {
-				if (moq.TableData) {
-					moq.TableData.forEach(tableData => {
-						if ($scope.IsSapEnabledAndSetAsRepository(tableData.RepositoryName)) {
-							const table = {
-								WbsElement: tableData.WbsElement,
-								PoPStart: tableData.PoPStart,
-								PoPEnd: tableData.PoPEnd,
-								QueryType: tableData.QueryType,
-								Filters: tableData.AdditionalQueryFilters,
-								TableId: tableData.Id
-							};
+				const moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
+				if (moqTypes) {
+					moqTypes.forEach(moq => {
+						if (moq.TableData) {
+							moq.TableData.forEach(tableData => {
+								if ($scope.IsSapEnabledAndSetAsRepository(tableData.RepositoryName)) {
+									const table = {
+										WbsElement: tableData.WbsElement,
+										PoPStart: tableData.PoPStart,
+										PoPEnd: tableData.PoPEnd,
+										QueryType: tableData.QueryType,
+										Filters: tableData.AdditionalQueryFilters,
+										TableId: tableData.Id
+									};
 
-							if ($scope.model.IsRMS) {
-								// Set the repo name to the source once we've checked that it is an SAP Enabled Source
-								tableData.RepositoryName = $scope.model.RmsSapEnabledSource;
-							}
+									if ($scope.model.IsRMS) {
+										// Set the repo name to the source once we've checked that it is an SAP Enabled Source
+										tableData.RepositoryName = $scope.model.RmsSapEnabledSource;
+									}
 
-							$scope.setPoP(table, tableData);
+									$scope.setPoP(table, tableData);
 
-							if (Array.isArray(tableData.AdditionalQueryFilters)) {
-								table.Filters = tableData.AdditionalQueryFilters.join("\n");
-							}
+									if (Array.isArray(tableData.AdditionalQueryFilters)) {
+										table.Filters = tableData.AdditionalQueryFilters.join("\n");
+									}
 
-							data.tableData.push(table);
+									data.tableData.push(table);
+								}
+							});
 						}
 					});
 				}
-			});
-		}
 
-		data.boeId = ManageTaskModel.boeId;
+				data.boeId = ManageTaskModel.boeId;
 
-		if (data.tableData.length > 0) {
-			// send to backend
-			// display response to user
-			$(document).trigger("SHOW_LOADING_BOX");
+				if (data.tableData.length > 0) {
+					// send to backend
+					// display response to user
+					$(document).trigger("SHOW_LOADING_BOX");
 
-			$http({
-				method: 'POST',
-				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.CalculateAllActualsSapAction, ''),
-				data: data
-			}).then(function (response) {
-				// place returned html into the content div
-				if (response.data.IsSuccessful === true) {
-					// the response is wrapped inside response.data.data array
-					if (response.data.data && Array.isArray(response.data.data)) {
+					$http({
+						method: 'POST',
+						url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.CalculateAllActualsSapAction, ''),
+						data: data
+					}).then(function (response) {
+						// place returned html into the content div
+						if (response.data.IsSuccessful === true) {
+							// the response is wrapped inside response.data.data array
+							if (response.data.data && Array.isArray(response.data.data)) {
 
-						// find the moq table data and update the data with calculated values
-						response.data.data.forEach(result => {
-							const res = result.Data[0];
-							if (result.Messages && result.Messages.length > 0) {
-								$scope.setActualsErrors(res.TableId, result.Messages);
-							} else {
-								const moqTypes2 = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
-								moqTypes2.forEach(moq => {
-									const tableData = moq.TableData.find(t => t.Id == res.TableId);
-									if (tableData) {
-										tableData.DateOfReport = new Date();
-										tableData.TotalRelevantHours = res.TotalHours;
-										if (res.WbsHours) {
-											tableData.TotalWbsHours = res.WbsHours;
-										} else {
-											tableData.TotalWbsHours = 0;
-										}
+								// find the moq table data and update the data with calculated values
+								response.data.data.forEach(result => {
+									const res = result.Data[0];
+									if (result.Messages && result.Messages.length > 0) {
+										$scope.setActualsErrors(res.TableId, result.Messages);
+									} else {
+										const moqTypes2 = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
+										moqTypes2.forEach(moq => {
+											const tableData = moq.TableData.find(t => t.Id == res.TableId);
+											if (tableData) {
+												tableData.DateOfReport = new Date();
+												tableData.TotalRelevantHours = res.TotalHours;
+												if (res.WbsHours) {
+													tableData.TotalWbsHours = res.WbsHours;
+												} else {
+													tableData.TotalWbsHours = 0;
+												}
 
-										// this is RMS only
-										if (!ManageTaskModel.IsSpace && !tableData.ContractNumber && res.ContractNumber) {
-											// only set if currently unset and response is set
-											tableData.ContractNumber = res.ContractNumber;
-										}
+												// this is RMS only
+												if (!ManageTaskModel.IsSpace && !tableData.ContractNumber && res.ContractNumber) {
+													// only set if currently unset and response is set
+													tableData.ContractNumber = res.ContractNumber;
+												}
 
-										MOQEquationFieldWidget.setDirty();
+												MOQEquationFieldWidget.setDirty();
+											}
+										});
 									}
 								});
 							}
-						});
-					}
 
-					$scope.refreshDisableSave();
-				} else {
-					RaiseNotification('Error talking to backend to Calculate All Actuals');
+							$scope.refreshDisableSave();
+						} else {
+							RaiseNotification('Error talking to backend to Calculate All Actuals');
+						}
+
+						$(document).trigger("HIDE_LOADING_BOX");
+					}).catch(function () {
+						RaiseNotification('Error talking to backend to Calculate All Actuals');
+						$(document).trigger("HIDE_LOADING_BOX");
+					});
 				}
 
-				$(document).trigger("HIDE_LOADING_BOX");
-			}).catch(function () {
-				RaiseNotification('Error talking to backend to Calculate All Actuals');
-				$(document).trigger("HIDE_LOADING_BOX");
-			});
-		}
-
-		$scope.refreshDisableSave();
+				$scope.refreshDisableSave();
+			}
+			, null);
 	};
 
 	$scope.calculateAllMoqActualsWithSkillMix = function () {
-		$scope.actualsValidation.errors = new Map();
-		$scope.actualsValidation.isDirty = new Map();
-		// Get all the data tables
-		const data = {
-			tableData: []
-		};
+		GenSession.confirmDialog("Recalculate All Workspace Actuals", "This is a long running process and will recalculate the actuals on each MOQ table in this workspace",
+			function () {
+				$scope.actualsValidation.errors = new Map();
+				$scope.actualsValidation.isDirty = new Map();
+				// Get all the data tables
+				const data = {
+					tableData: []
+				};
 
-		const moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
-		if (moqTypes) {
-			moqTypes.forEach(moq => {
-				if (moq.TableData) {
-					moq.TableData.forEach(tableData => {
-						if ($scope.IsSapEnabledAndSetAsRepository(tableData.RepositoryName)) {
-							const table = {
-								WbsElement: tableData.WbsElement,
-								PoPStart: tableData.PoPStart,
-								PoPEnd: tableData.PoPEnd,
-								QueryType: tableData.QueryType,
-								Filters: tableData.AdditionalQueryFilters,
-								TableId: tableData.Id
-							};
+				const moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
+				if (moqTypes) {
+					moqTypes.forEach(moq => {
+						if (moq.TableData) {
+							moq.TableData.forEach(tableData => {
+								if ($scope.IsSapEnabledAndSetAsRepository(tableData.RepositoryName)) {
+									const table = {
+										WbsElement: tableData.WbsElement,
+										PoPStart: tableData.PoPStart,
+										PoPEnd: tableData.PoPEnd,
+										QueryType: tableData.QueryType,
+										Filters: tableData.AdditionalQueryFilters,
+										TableId: tableData.Id
+									};
 
-							if ($scope.model.IsRMS) {
-								// Set the repo name to the source once we've checked that it is an SAP Enabled Source
-								tableData.RepositoryName = $scope.model.RmsSapEnabledSource;
-							}
+									if ($scope.model.IsRMS) {
+										// Set the repo name to the source once we've checked that it is an SAP Enabled Source
+										tableData.RepositoryName = $scope.model.RmsSapEnabledSource;
+									}
 
-							$scope.setPoP(table, tableData);
+									$scope.setPoP(table, tableData);
 
-							if (Array.isArray(tableData.AdditionalQueryFilters)) {
-								table.Filters = tableData.AdditionalQueryFilters.join("\n");
-							}
+									if (Array.isArray(tableData.AdditionalQueryFilters)) {
+										table.Filters = tableData.AdditionalQueryFilters.join("\n");
+									}
 
-							data.tableData.push(table);
+									data.tableData.push(table);
+								}
+							});
 						}
 					});
 				}
-			});
-		}
 
-		data.boeId = ManageTaskModel.boeId;
+				data.boeId = ManageTaskModel.boeId;
 
-		if (data.tableData.length > 0) {
-			// send to backend
-			// display response to user
-			$(document).trigger("SHOW_LOADING_BOX");
+				if (data.tableData.length > 0) {
+					// send to backend
+					// display response to user
+					$(document).trigger("SHOW_LOADING_BOX");
 
-			$http({
-				method: 'POST',
-				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.CalculateAllActualsSapWithSkillMixAction, ''),
-				data: data
-			}).then(function (response) {
-				// place returned html into the content div
-				if (response.data.IsSuccessful === true) {
-					// the response is wrapped inside response.data.data array
-					if (response.data.data && Array.isArray(response.data.data)) {
+					$http({
+						method: 'POST',
+						url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.CalculateAllActualsSapWithSkillMixAction, ''),
+						data: data
+					}).then(function (response) {
+						// place returned html into the content div
+						if (response.data.IsSuccessful === true) {
+							// the response is wrapped inside response.data.data array
+							if (response.data.data && Array.isArray(response.data.data)) {
 
-						const moqTypes2 = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
-						// find the moq table data and update the data with calculated values
-						response.data.data.forEach(result => {
-							const res = result.Data[0];
-							if (result.Messages && result.Messages.length > 0) {
-								$scope.setActualsErrors(res.TableId, result.Messages);
-							} else {
+								const moqTypes2 = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
+								// find the moq table data and update the data with calculated values
+								response.data.data.forEach(result => {
+									const res = result.Data[0];
+									if (result.Messages && result.Messages.length > 0) {
+										$scope.setActualsErrors(res.TableId, result.Messages);
+									} else {
 
-								moqTypes2.forEach(moq => {
-									const tableData = moq.TableData.find(t => t.Id == res.TableId);
-									if (tableData) {
-										tableData.DateOfReport = new Date();
-										tableData.TotalRelevantHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.TotalHours, 0) + Number.EPSILON) * 100) / 100;
-										tableData.TotalWbsHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.WbsHours, 0) + Number.EPSILON) * 100) / 100;
-										tableData.ResourceHours = res.SkillMixDataTable.map(skillMix => ({ ResourceName: skillMix.ResourceID, WbsHours: skillMix.WbsHours, TotalHours: skillMix.TotalHours, BRCName: skillMix.Brc }));
+										moqTypes2.forEach(moq => {
+											const tableData = moq.TableData.find(t => t.Id == res.TableId);
+											if (tableData) {
+												tableData.DateOfReport = new Date();
+												tableData.TotalRelevantHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.TotalHours, 0) + Number.EPSILON) * 100) / 100;
+												tableData.TotalWbsHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.WbsHours, 0) + Number.EPSILON) * 100) / 100;
+												tableData.ResourceHours = res.SkillMixDataTable.map(skillMix => ({ ResourceName: skillMix.ResourceID, WbsHours: skillMix.WbsHours, TotalHours: skillMix.TotalHours, BRCName: skillMix.Brc }));
 
-										// this is RMS only
-										if (!ManageTaskModel.IsSpace && !tableData.ContractNumber && res.ContractNumber) {
-											// only set if currently unset and response is set
-											tableData.ContractNumber = res.ContractNumber;
-										}
+												// this is RMS only
+												if (!ManageTaskModel.IsSpace && !tableData.ContractNumber && res.ContractNumber) {
+													// only set if currently unset and response is set
+													tableData.ContractNumber = res.ContractNumber;
+												}
 
-										MOQEquationFieldWidget.setDirty();
+												MOQEquationFieldWidget.setDirty();
+											}
+										});
+
+										// Trigger the event to update the Selected MOQ Types in manageTaskController.js.
+										$scope.$emit('MOQ_TYPE_SELECTION_CHANGED', $scope.model.SelectedMoqTypes);
+
+										// Trigger the event to refresh the Skill Mix tables
+										$scope.$emit('SAP_HOURS_CHANGED');
 									}
 								});
-
-								// Trigger the event to update the Selected MOQ Types in manageTaskController.js.
-								$scope.$emit('MOQ_TYPE_SELECTION_CHANGED', $scope.model.SelectedMoqTypes);
-
-								// Trigger the event to refresh the Skill Mix tables
-								$scope.$emit('SAP_HOURS_CHANGED');
 							}
-						});
-					}
 
-					$scope.refreshDisableSave();
-				} else {
-					RaiseNotification('Error talking to backend to Calculate All Actuals');
+							$scope.refreshDisableSave();
+						} else {
+							RaiseNotification('Error talking to backend to Calculate All Actuals');
+						}
+
+						$(document).trigger("HIDE_LOADING_BOX");
+					}).catch(function () {
+						RaiseNotification('Error talking to backend to Calculate All Actuals');
+						$(document).trigger("HIDE_LOADING_BOX");
+					});
 				}
 
-				$(document).trigger("HIDE_LOADING_BOX");
-			}).catch(function () {
-				RaiseNotification('Error talking to backend to Calculate All Actuals');
-				$(document).trigger("HIDE_LOADING_BOX");
-			});
-		}
-
-		$scope.refreshDisableSave();
+				$scope.refreshDisableSave();
+			}
+			, null);
 	};
 
 	$scope.setActualsErrors = function (id, errors) {

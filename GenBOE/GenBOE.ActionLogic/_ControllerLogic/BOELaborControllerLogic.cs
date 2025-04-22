@@ -30,6 +30,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using GenBOE.ActionLogic.WBS.BOE;
 	using GenBOE.DataBridge.Common;
 	using GenBOE.DataBridge.DTO;
+	using GenBOE.DataBridge.DTO.Request;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using IES.Common;
@@ -57,6 +58,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		private readonly IRteTemplateDataLoader rteTemplateDataLoader;
 		private readonly IMoqTypeDataLoader moqTypeDataLoader;
 		private readonly ITMResourceRateDTODataLoader tmResourceRateDTODataLoader;
+		private readonly IRequestDataLoader requestDataLoader;
 		private readonly IValidateBOE validateBOE;
 		private readonly IMoqTableExporter moqTableExporter;
 		private readonly IMoqTableImporter moqTableImporter;
@@ -93,6 +95,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			IRteTemplateDataLoader rteTemplateDataLoader,
 			IMoqTypeDataLoader moqTypeDataLoader,
 			ITMResourceRateDTODataLoader tmResourceRateDTODataLoader,
+			IRequestDataLoader requestDataLoader,
 			IValidateBOE validateBOE,
 			IMoqTableExporter moqTableExporter,
 			IMoqTableImporter moqTableImporter,
@@ -120,6 +123,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			this.rteTemplateDataLoader = rteTemplateDataLoader;
 			this.moqTypeDataLoader = moqTypeDataLoader;
 			this.tmResourceRateDTODataLoader = tmResourceRateDTODataLoader;
+			this.requestDataLoader = requestDataLoader;
 			this.validateBOE = validateBOE;
 			this.moqTableExporter = moqTableExporter;
 			this.moqTableImporter = moqTableImporter;
@@ -3547,9 +3551,17 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		public async Task<IESResponse<byte>> ExportActualsSap(MoqTableDataModelView tableData)
 		{
 			IESResponse<byte> response = new IESResponse<byte>();
+			UserDTO currentUser = this.UserLoader.GetUserForActiveUser();
 
 			try
 			{
+				//insert to request table
+				int? requestId = requestDataLoader.Insert(RequestType.ExportBOE, currentUser.NTID);
+				if (!requestId.HasValue || requestId < 1)
+				{
+					throw new GeneralAppException("There is already a current Request to calculate all Actuals, please wait until that request is complete");
+				}
+
 				// Get Token
 				Token token = await this.tokenservice.GetToken();
 				Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
@@ -3582,6 +3594,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				response.Messages.Add("Error calling SAP API to Export Actuals");
 				response.IsSuccessful = false;
 			}
+			finally
+			{
+				requestDataLoader.Delete(RequestType.CalculateActuals, currentUser.NTID);
+			}
 
 			return response;
 		}
@@ -3594,9 +3610,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		public async Task<ICollection<IESResponse<CalculateActualsViewModel>>> CalculateAllActualsSap(ICollection<MoqTableDataModelView> tableData)
 		{
 			ICollection<IESResponse<CalculateActualsViewModel>> response = new List<IESResponse<CalculateActualsViewModel>>();
-
+			UserDTO currentUser = this.UserLoader.GetUserForActiveUser();
 			try
 			{
+				int? requestId = requestDataLoader.Insert(RequestType.CalculateActuals, currentUser.NTID);
+				if (!requestId.HasValue || requestId < 1)
+				{
+					throw new GeneralAppException("There is already a current Request to Calculate Actuals, please wait until that request is complete");
+				}
+
 				// Get Token
 				Token token = await this.tokenservice.GetToken();
 				Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
@@ -3633,6 +3655,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				// throw error and let UI handle it
 				logger.Error(ex, "Error calling SAP API to Calculate All Actuals");
 				throw new GeneralAppException("Error calling SAP API to Calculate All Actuals");
+			}
+			finally
+			{
+				requestDataLoader.Delete(RequestType.CalculateActuals, currentUser.NTID);
 			}
 
 			return response;
@@ -3941,9 +3967,17 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		public async Task<ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>>> CalculateAllActualsSapWithSkillMix(ICollection<MoqTableDataModelView> tableData)
 		{
 			ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>> response = new List<IESResponse<CalculateActualsWithSkillMixViewModel>>();
+			UserDTO currentUser = this.UserLoader.GetUserForActiveUser();
 
 			try
 			{
+				//insert to request table
+				int? requestId = requestDataLoader.Insert(RequestType.CalculateActuals, currentUser.NTID);
+				if (!requestId.HasValue || requestId < 1)
+				{
+					throw new GeneralAppException("There is already a current Request to calculate all Actuals, please wait until that request is complete");
+				}
+
 				// Get Token
 				Token token = await this.tokenservice.GetToken();
 				Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
@@ -3980,6 +4014,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				// throw error and let UI handle it
 				logger.Error(ex, "Error calling SAP API to Calculate All Actuals");
 				throw new GeneralAppException("Error calling SAP API to Calculate All Actuals");
+			}
+			finally
+			{
+				requestDataLoader.Delete(RequestType.CalculateActuals, currentUser.NTID);
 			}
 
 			return response;
