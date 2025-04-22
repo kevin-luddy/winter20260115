@@ -6,6 +6,7 @@
 
 namespace GenBOE.Dtos
 {
+	using GenBOE.DataBridge.DTO;
 	using IES.Common;
 	using System;
 	using System.Collections.Generic;
@@ -63,6 +64,11 @@ namespace GenBOE.Dtos
 		UpdateType IDateShiftable.Updateable { get; set; }
 
 		/// <summary>
+		/// Boe ID.
+		/// </summary>
+		public int BoeId { get; set; }
+
+		/// <summary>
 		/// Conversion for incoming inherit classes.
 		/// </summary>
 		public static DateShiftDTO FromIDateShiftable(IDateShiftable dateShiftable)
@@ -84,6 +90,20 @@ namespace GenBOE.Dtos
 				dateShiftDTO.UpdateDate = updateableDTO.UpdateDate;
 				dateShiftDTO.UpdateDateLong = updateableDTO.UpdateDateLong;
 				((IDateShiftable)dateShiftDTO).Updateable = updateableDTO.Updateable;
+			}
+
+			// Store the BOE Id
+			switch (dateShiftable.DateShiftLevel)
+			{
+				case Level.BOE:
+					dateShiftDTO.BoeId = ((UpdateableDTO)dateShiftable).Id;
+					break;
+				case Level.Task:
+					dateShiftDTO.BoeId = ((BoeTaskElementDTO)dateShiftable).BoeID;
+					break;
+				case Level.Travel:
+					dateShiftDTO.BoeId = ((TravelDTO)dateShiftable).BoeID;
+					break;
 			}
 
 			foreach (IDateShiftable child in dateShiftable.Children)

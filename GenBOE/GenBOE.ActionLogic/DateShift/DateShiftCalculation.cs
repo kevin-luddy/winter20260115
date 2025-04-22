@@ -266,6 +266,7 @@ namespace GenBOE.ActionLogic.DateShift
             {
                 switch (dateShiftable.DateShiftLevel)
                 {
+					// TODO Thomas: Breaks here when BOE Task because the labor isn't correct?
                     case Level.Labor:
                         PerformLaborSpreadShift(dateShiftable, detail, modelView);
                         Validate(dateShiftable, detail, parentStart, parentEnd, parentBoeId, Level.Task, workspaceShortname);
@@ -1325,19 +1326,16 @@ namespace GenBOE.ActionLogic.DateShift
 				// TODO Thomas: Left off with boe being null here for some reason?
                 switch (dateShiftable.DateShiftLevel)
                 {
-                    case Level.BOE:
-                        FullBoe boe = dateShiftable as FullBoe;
-                        boeId = boe.Id;
-                        break;
-                    case Level.Task:
-                        BoeTaskElementDTO task = dateShiftable as BoeTaskElementDTO;
-                        boeId = task.BoeID;
-                        break;
-                    case Level.Travel:
-                        TravelDTO travel = dateShiftable as TravelDTO;
-                        boeId = travel.BoeID;
-                        break;
-                    default:
+					case Level.BOE:
+						boeId = ((DateShiftDTO)dateShiftable)?.BoeId;
+						break;
+					case Level.Task:
+						boeId = ((DateShiftDTO)dateShiftable)?.BoeId;
+						break;
+					case Level.Travel:
+						boeId = ((DateShiftDTO)dateShiftable)?.BoeId;
+						break;
+					default:
                         // no boe attached (clin/workspace/labor)
                         break;
                 }
