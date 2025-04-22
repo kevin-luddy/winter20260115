@@ -1322,6 +1322,7 @@ namespace GenBOE.ActionLogic.DateShift
             }
             else
             {
+				// TODO Thomas: Left off with boe being null here for some reason?
                 switch (dateShiftable.DateShiftLevel)
                 {
                     case Level.BOE:
