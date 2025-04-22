@@ -1,0 +1,90 @@
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
+
+namespace GenBOE.Dtos
+{
+	using IES.Common;
+	using System;
+	using System.Collections.Generic;
+	using System.Diagnostics.CodeAnalysis;
+
+	/// <summary>
+	/// DTO that will contain Date Shifts.
+	/// </summary>
+	[ExcludeFromCodeCoverage]
+	[Serializable()]
+	public sealed class DateShiftDTO : UpdateableDTO, IDateShiftable
+	{
+		private readonly List<IDateShiftable> children = new List<IDateShiftable>();
+		private bool hasSpread;
+		private Level dateShiftLevel;
+
+		/// <summary>
+		/// Start date.
+		/// </summary>
+		DateTime? IDateShiftable.StartDate { get; set; }
+
+		/// <summary>
+		/// End date.
+		/// </summary>
+		DateTime? IDateShiftable.EndDate { get; set; }
+
+		/// <summary>
+		/// Child date shift objects.
+		/// </summary>
+		ICollection<IDateShiftable> IDateShiftable.Children => children;
+
+		/// <summary>
+		/// Has spread?
+		/// </summary>
+		bool IDateShiftable.HasSpread => hasSpread;
+
+		/// <summary>
+		/// Has spread value due to readonly has spread on interface.
+		/// </summary>
+		public bool HasSpreadValue { get => hasSpread; set => hasSpread = value; }
+
+		/// <summary>
+		/// Date shift level.
+		/// </summary>
+		Level IDateShiftable.DateShiftLevel => dateShiftLevel;
+
+		/// <summary>
+		/// Date shift level value due to readonly date shift level on interface.
+		/// </summary>
+		public Level DateShiftLevelValue { get => dateShiftLevel; set => dateShiftLevel = value; }
+
+		/// <summary>
+		/// Updatable.
+		/// </summary>
+		UpdateType IDateShiftable.Updateable { get; set; }
+
+		/// <summary>
+		/// Conversion for incoming inherit classes.
+		/// </summary>
+		public static DateShiftDTO FromIDateShiftable(IDateShiftable dateShiftable)
+		{
+			if (dateShiftable == null)
+			{
+				throw new ArgumentNullException(nameof(dateShiftable));
+			}
+
+			DateShiftDTO dateShiftDTO = new DateShiftDTO();
+			((IDateShiftable)dateShiftDTO).StartDate = dateShiftable.StartDate;
+			((IDateShiftable)dateShiftDTO).EndDate = dateShiftable.EndDate;
+			((IDateShiftable)dateShiftDTO).Updateable = dateShiftable.Updateable;
+			dateShiftDTO.DateShiftLevelValue = dateShiftable.DateShiftLevel;
+			dateShiftDTO.HasSpreadValue = dateShiftable.HasSpread;
+
+			foreach (IDateShiftable child in dateShiftable.Children)
+			{
+				dateShiftDTO.children.Add(FromIDateShiftable(child));
+			}
+
+			return dateShiftDTO;
+		}
+	}
+}

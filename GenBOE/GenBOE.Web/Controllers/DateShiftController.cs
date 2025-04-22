@@ -88,7 +88,7 @@ namespace GenBOE.Web.Controllers
         public JsonResult ApplyDateShift(string workspace, int id, Level dateShiftLevel, DateShiftModelView dateShiftModel, bool validateOnly)
         {
             Stopwatch sw;
-            IDateShiftable dateShiftable = null;
+            DateShiftDTO dateShiftable = null;
             Level parentLevel = Level.Workspace;
             try
             {
@@ -143,7 +143,7 @@ namespace GenBOE.Web.Controllers
                     case Level.BOE:
                         FullBoe boe = this.Factory.CreateFullBoe(id);
                         sw = this.InitializeAction(this.logger, WebConstants.ACTION_APPLY_DATE_SHIFT, SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, id);
-                        dateShiftable = boe;
+                        dateShiftable = DateShiftDTO.FromIDateShiftable(boe);
                         if (boe.CLINID.HasValue && boe.Clin.StartDate.HasValue && boe.Clin.EndDate.HasValue)
                         {
                             parentStart = boe.Clin.StartDate;
@@ -159,7 +159,7 @@ namespace GenBOE.Web.Controllers
                     case Level.CLIN:
                         FullClin clin = this.Factory.CreateFullClin(id);
                         sw = this.InitializeAction(this.logger, WebConstants.ACTION_APPLY_DATE_SHIFT, SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
-                        dateShiftable = clin;
+                        dateShiftable = DateShiftDTO.FromIDateShiftable(clin);
 
                         // preload data
                         IReadOnlyCollection<FullBoe> boes = clin.Boes;
@@ -179,7 +179,7 @@ namespace GenBOE.Web.Controllers
                     case Level.Task:
                         BoeTaskElementDTO taskElement = this.Factory.CreateTaskElement(id, ws.DecimalPrecision, ws.CostDecimalPrecision);
                         sw = this.InitializeAction(this.logger, WebConstants.ACTION_APPLY_DATE_SHIFT, SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, taskElement.BoeID);
-                        dateShiftable = taskElement;
+                        dateShiftable = DateShiftDTO.FromIDateShiftable(taskElement);
                         FullBoe taskBoe = this.Factory.CreateFullBoe(taskElement.BoeID);
                         parentStart = taskBoe.StartDate;
                         parentEnd = taskBoe.EndDate;
@@ -188,7 +188,7 @@ namespace GenBOE.Web.Controllers
                     case Level.Travel:
                         TravelDTO travel = this.Factory.CreateTravel(id);
                         sw = this.InitializeAction(this.logger, WebConstants.ACTION_APPLY_DATE_SHIFT, SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, travel.BoeID);
-                        dateShiftable = travel;
+                        dateShiftable = DateShiftDTO.FromIDateShiftable(travel);
                         FullBoe travelBoe = this.Factory.CreateFullBoe(travel.BoeID);
                         parentStart = travelBoe.StartDate;
                         parentEnd = travelBoe.EndDate;
@@ -196,7 +196,7 @@ namespace GenBOE.Web.Controllers
                         break;
                     case Level.Workspace:
                         sw = this.InitializeAction(this.logger, WebConstants.ACTION_APPLY_DATE_SHIFT, SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
-                        dateShiftable = ws;
+                        dateShiftable = DateShiftDTO.FromIDateShiftable(ws);
                         parentStart = parentEnd = null;
 
 						// pre-load the data efficiently
@@ -236,9 +236,14 @@ namespace GenBOE.Web.Controllers
             // Finalize Action
             this.FinalizeAction(this.logger, WebConstants.ACTION_APPLY_DATE_SHIFT, sw);
 
-            JsonResult toReturn = this.Json(new { Success = true, startDate = dateShiftable.StartDate.Value.ToMonthString(), endDate = dateShiftable.EndDate.Value.ToMonthString() });
+			JsonResult toReturn = this.Json(new
+			{
+				Success = true,
+				startDate = ((IDateShiftable)dateShiftable).StartDate.HasValue ? ((IDateShiftable)dateShiftable).StartDate.Value.ToMonthString() : null,
+				endDate = ((IDateShiftable)dateShiftable).EndDate.HasValue ? ((IDateShiftable)dateShiftable).EndDate.Value.ToMonthString() : null
+			});
 
-            return toReturn;
+			return toReturn;
         }
 
         /// <summary>

@@ -86,7 +86,7 @@ SET
     TaskEndDate = ds.EndDate,
     UpdateDT = ds.UpdateDT
 FROM [dbo].[BOETaskElement] bt
-INNER JOIN @TT_DateShift ds ON bt.BOEID = ds.Id AND ds.Level = 'BOETaskElement' AND bt.UpdateDT = ds.UpdateDT;
+INNER JOIN @TT_DateShift ds ON bt.TaskID = ds.Id AND ds.Level = 'BOETaskElement' AND bt.UpdateDT = ds.UpdateDT;
 
 -- Update the CLIN table
 UPDATE c
