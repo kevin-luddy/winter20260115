@@ -4093,10 +4093,26 @@ table.manage-historical-metrics-grid
     *zoom: 1;
 }
 
-.right-header
-{
+#SkillMixDeltaLabel, #SkillMixDelta {
+    float: left;
+    margin-top: -8px;
+}
+
+.skill-mix-spacer {
+    float: left;
+    width: 1px;
+    height: 32px;
+    margin-top: 2px;
+    background-color: #999A95;
+}
+
+.skillmix-calc-container .module-header-data-first-row {
+    line-height: 20px;
+}
+
+.right-header {
     color: #999A95;
-    font-size:12px;
+    font-size: 12px;
     display: inline-block;
     *display: inline;
     *zoom: 1;

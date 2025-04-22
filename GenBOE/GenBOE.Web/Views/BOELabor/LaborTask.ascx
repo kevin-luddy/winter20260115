@@ -946,16 +946,16 @@
 
     <% if (Model.EnableSkillMix)
         { %>
-    <div id="SkillMixPlaceholder"  data-ng-show="showSkillMix()">
+    <div id="SkillMixPlaceholder" data-ng-show="showSkillMix()">
         <div class="skill-mix-tables module collapsed" id="SkillMixRationaleContainer">
             <div class="module-header-data">
                 <div class="float-left">Skill Mix Rationale</div>
                 <div data-ng-show="showSkillMix()" class="float-right right-header">
-                    <div style="float: left; margin-top: -8px;" id="SkillMixDeltaLabel" class="skillmix-label">Delta <%: Model.HoursLabel%></div>
-                    <div style="float: left; margin-top: -8px;" id="SkillMixDelta" class="skillmix"><span data-ng-if="!invalidSpreads">{{deltaSkillMixHours}}</span><span data-ng-if="invalidSpreads">#ERR</span></div>
-                    <div style="float: left; width: 1px; height: 32px; margin-top: 2px; background-color: #999A95;">&nbsp;</div>
+                    <div id="SkillMixDeltaLabel" class="skillmix-label">Delta <%: Model.HoursLabel%></div>
+                    <div id="SkillMixDelta" class="skillmix"><span data-ng-if="!invalidSpreads">{{deltaSkillMixHours}}</span><span data-ng-if="invalidSpreads">#ERR</span></div>
+                    <div class="skill-mix-spacer">&nbsp;</div>
                     <div class="float-right skillmix-calc-container">
-                        <div class="module-header-data-first-row" style="line-height: 20px;">
+                        <div class="module-header-data-first-row">
                             <div id="SkillMixTotalLabel" class="skillmix-label">Total <%: Model.HoursLabel%> </div>
                             <div id="SkillMixTotal" class="skillmix float-right"><span data-ng-if="invalidSpreads">#ERR</span><span data-ng-if="!invalidSpreads">{{totalSkillMixHours}}</span></div>
                         </div>
