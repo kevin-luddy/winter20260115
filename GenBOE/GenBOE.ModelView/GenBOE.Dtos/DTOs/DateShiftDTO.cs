@@ -10,6 +10,7 @@ namespace GenBOE.Dtos
 	using IES.Common;
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
 
 	/// <summary>
@@ -69,6 +70,11 @@ namespace GenBOE.Dtos
 		public int BoeId { get; set; }
 
 		/// <summary>
+		/// Labor spreads across resources that needs to be date shifted.
+		/// </summary>
+		public Collection<ResourceSpreadDto> LaborSpreads { get; set; }
+
+		/// <summary>
 		/// Conversion for incoming inherit classes.
 		/// </summary>
 		public static DateShiftDTO FromIDateShiftable(IDateShiftable dateShiftable)
@@ -90,6 +96,11 @@ namespace GenBOE.Dtos
 				dateShiftDTO.UpdateDate = updateableDTO.UpdateDate;
 				dateShiftDTO.UpdateDateLong = updateableDTO.UpdateDateLong;
 				((IDateShiftable)dateShiftDTO).Updateable = updateableDTO.Updateable;
+			}
+
+			if (dateShiftable is ResourceTypeDto resourceTypeDto)
+			{
+				dateShiftDTO.LaborSpreads = resourceTypeDto.LaborSpreads;
 			}
 
 			// Store the BOE Id
