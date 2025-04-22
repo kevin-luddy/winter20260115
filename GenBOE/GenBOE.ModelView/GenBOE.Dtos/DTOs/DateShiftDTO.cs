@@ -75,6 +75,46 @@ namespace GenBOE.Dtos
 		public Collection<ResourceSpreadDto> LaborSpreads { get; set; }
 
 		/// <summary>
+		/// Skill Mix table
+		/// </summary>
+		public ICollection<SkillMixModelView> SkillMixTable { get; set; } = new List<SkillMixModelView>();
+
+		/// <summary>
+		/// Common Disclosure table
+		/// </summary>
+		public ICollection<CommonDisclosureModelView> CommonDisclosureTable { get; set; } = new List<CommonDisclosureModelView>();
+
+		/// <summary>
+		/// The task element labors associated with the task.
+		/// </summary>
+		public Collection<ResourceTypeDto> TaskElementLabors { get; set; }
+
+		/// <summary>
+		/// Spread curve id.
+		/// </summary>
+		public SpreadCurves? SpreadCurveID { get; set; }
+
+		/// <summary>
+		/// Gets/Sets Spread Type (Hours/Cost).
+		/// </summary>
+		public SpreadType SpreadType { get; set; }
+
+		/// <summary>
+		/// Start date.
+		/// </summary>
+		public DateTime StartDate { get; set; } = DateTime.MinValue;
+
+		/// <summary>
+		/// End date.
+		/// </summary>
+		public DateTime EndDate { get; set; } = DateTime.MaxValue;
+
+		/// <summary>
+		/// Value spread.
+		/// </summary>
+		public decimal? ValueSpread { get; set; }
+
+		/// <summary>
 		/// Conversion for incoming inherit classes.
 		/// </summary>
 		public static DateShiftDTO FromIDateShiftable(IDateShiftable dateShiftable)
@@ -98,9 +138,21 @@ namespace GenBOE.Dtos
 				((IDateShiftable)dateShiftDTO).Updateable = updateableDTO.Updateable;
 			}
 
+			if (dateShiftable is BoeTaskElementDTO boeTaskElementDTO)
+			{
+				dateShiftDTO.CommonDisclosureTable = boeTaskElementDTO.CommonDisclosureTable;
+				dateShiftDTO.SkillMixTable = boeTaskElementDTO.SkillMixTable;
+				dateShiftDTO.TaskElementLabors = boeTaskElementDTO.taskElementLabors;
+			}
+
 			if (dateShiftable is ResourceTypeDto resourceTypeDto)
 			{
 				dateShiftDTO.LaborSpreads = resourceTypeDto.LaborSpreads;
+				dateShiftDTO.SpreadCurveID = resourceTypeDto.SpreadCurveID;
+				dateShiftDTO.StartDate = resourceTypeDto.StartDate ?? DateTime.MinValue;
+				dateShiftDTO.EndDate = resourceTypeDto.EndDate ?? DateTime.MaxValue;
+				dateShiftDTO.SpreadType = resourceTypeDto.SpreadType;
+				dateShiftDTO.ValueSpread = resourceTypeDto.ValueSpread;
 			}
 
 			// Store the BOE Id
