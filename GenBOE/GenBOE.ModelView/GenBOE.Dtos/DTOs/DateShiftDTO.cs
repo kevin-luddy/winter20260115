@@ -75,9 +75,16 @@ namespace GenBOE.Dtos
 			DateShiftDTO dateShiftDTO = new DateShiftDTO();
 			((IDateShiftable)dateShiftDTO).StartDate = dateShiftable.StartDate;
 			((IDateShiftable)dateShiftDTO).EndDate = dateShiftable.EndDate;
-			((IDateShiftable)dateShiftDTO).Updateable = dateShiftable.Updateable;
 			dateShiftDTO.DateShiftLevelValue = dateShiftable.DateShiftLevel;
 			dateShiftDTO.HasSpreadValue = dateShiftable.HasSpread;
+
+			if (dateShiftable is UpdateableDTO updateableDTO)
+			{
+				dateShiftDTO.Id = updateableDTO.Id;
+				dateShiftDTO.UpdateDate = updateableDTO.UpdateDate;
+				dateShiftDTO.UpdateDateLong = updateableDTO.UpdateDateLong;
+				((IDateShiftable)dateShiftDTO).Updateable = updateableDTO.Updateable;
+			}
 
 			foreach (IDateShiftable child in dateShiftable.Children)
 			{
