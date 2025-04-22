@@ -39,8 +39,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
 		/// <param name="ws">the workspace</param>
 		/// <param name="onButtonPress">True if this validation is being performed as part of the Validate BOE button</param>		
 		/// <param name="moqEquationTotal"> Moq equation total</param>
-		/// <param name="validateSkillMix">Variable to control whether Skill Mix Rationale field should be validated or not</param>
+		/// <param name="showSkillMixTable">Variable that determines whether the skill mix table is shown or not</param>
 		/// <returns>Errors, if any</returns>
-		ICollection<string> ValidateTemplateMoqForTask(ICollection<MoqTypeSelection> moqTypesForTask, FullWorkspace ws, bool onButtonPress, decimal? moqEquationTotal = null, bool validateSkillMix = false);
+		ICollection<string> ValidateTemplateMoqForTask(ICollection<MoqTypeSelection> moqTypesForTask, FullWorkspace ws, bool onButtonPress, decimal? moqEquationTotal = null, bool showSkillMixTable = false);
 	}
 }

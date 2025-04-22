@@ -654,8 +654,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
 				{
 					// Variables for Validation of Skill Mix Rationale Field
 					bool isUsingTMRatesInTask = BOETaskUtility.IsUsingTMRates(ws, task);
-					bool validateSkillMix = Utilities.ShowSkillMixForTask(ws.CreationDate, isUsingTMRatesInTask);
-					errorMessages = ValidateTemplateMoqForTask(boe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList(), ws, true, null, validateSkillMix);
+					bool showSkillMixTable = Utilities.ShowSkillMixForTask(ws.CreationDate, isUsingTMRatesInTask);
+					errorMessages = ValidateTemplateMoqForTask(boe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList(), ws, true, null, showSkillMixTable);
 
 					if (errorMessages.Any())
 					{
@@ -679,10 +679,10 @@ namespace GenBOE.ActionLogic.WBS.BOE
 		/// <param name="ws">the workspace</param>
 		/// <param name="onButtonPress">True if this validation is being performed as part of the Validate BOE button</param>
 		/// <param name="moqEquationTotal"> Moq equation total</param>
-		/// <param name="validateSkillMix">Variable to control whether Skill Mix Rationale field should be validated or not</param>
+		/// <param name="showSkillMixTable">Variable that determines whether the skill mix table is shown or not</param>
 		/// <returns>Errors, if any</returns>
 		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-		public ICollection<string> ValidateTemplateMoqForTask(ICollection<MoqTypeSelection> moqTypesForTask, FullWorkspace ws, bool onButtonPress, decimal? moqEquationTotal = null, bool validateSkillMix = false)
+		public ICollection<string> ValidateTemplateMoqForTask(ICollection<MoqTypeSelection> moqTypesForTask, FullWorkspace ws, bool onButtonPress, decimal? moqEquationTotal = null, bool showSkillMixTable = false)
 		{
 			_ = moqTypesForTask ?? throw new ArgumentNullException(nameof(moqTypesForTask));
 
@@ -705,7 +705,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
 
 							// Only Validate if the SkillMix Rationale field is showing in the MOQ Types Section
-							if (validateSkillMix)
+							if (!showSkillMixTable)
 							{
 								ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages); 
 							}
@@ -810,7 +810,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
 
 							// Only Validate if the SkillMix Rationale field is showing in the MOQ Types Section
-							if (validateSkillMix)
+							if (!showSkillMixTable)
 							{
 								ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
 							}
@@ -826,7 +826,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
 
 							// Only Validate if the SkillMix Rationale field is showing in the MOQ Types Section
-							if (validateSkillMix)
+							if (!showSkillMixTable)
 							{
 								ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
 							}
@@ -836,7 +836,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
 
 							// Only Validate if the SkillMix Rationale field is showing in the MOQ Types Section
-							if (validateSkillMix)
+							if (!showSkillMixTable)
 							{
 								ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
 							}
@@ -849,7 +849,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
 
 							// Only Validate if the SkillMix Rationale field is showing in the MOQ Types Section
-							if (validateSkillMix)
+							if (!showSkillMixTable)
 							{
 								ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
 							}
@@ -861,7 +861,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeTaskEstimates, "The SME tasks estimated in this BOE", ws.RteSizeLimit, errorMessages);
 
 							// Only Validate if the SkillMix Rationale field is showing in the MOQ Types Section
-							if (validateSkillMix)
+							if (!showSkillMixTable)
 							{
 								ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
 							}
@@ -871,7 +871,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
 
 							// Only Validate if the SkillMix Rationale field is showing in the MOQ Types Section
-							if (validateSkillMix)
+							if (!showSkillMixTable)
 							{
 								ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
 							}
@@ -903,39 +903,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 			ValidateFieldLength(maxFieldLength, field, label, errorMessages);
 		}
-
-		///// <summary>
-		///// Validates a required field
-		///// </summary>
-		///// <param name="moqType">Moq Type</param>
-		///// <param name="field">Property to check</param>
-		///// <param name="label">Label for the field</param>
-		///// <param name="maxFieldLength">RTE Size Limit</param>
-		///// <param name="errorMessages">Error Messages</param>
-		//private static void ValidateRequiredField(MOQType moqType, string field, string label, int? maxFieldLength, Collection<string> errorMessages, )
-		//{
-		//	//return $scope.IsSkillMixEnabled && $scope.IsUsingTMRatesInTask === false &&
-		//	//(!$scope.ManageTaskModel.IsSpace || !$scope.isSkillMixManualPerMOQ());
-		//	if (string.IsNullOrEmpty(field))
-		//	{
-		//		moqType.
-		//		if (label == "Skill Mix Rationale")
-		//		{
-		//			if (Utilities.ShowSkillMixForTask(BOETaskUtility.IsUsingTMRates(ws, BOETaskUtility.IsUsingTMRates()))
-		//			{
-
-		//			}
-
-		//		}
-		//		else
-		//		{
-		//			errorMessages.Add($"{moqType.GetDescription()}: {label} is required.");
-		//		}
-		//	}
-
-		//	ValidateFieldLength(maxFieldLength, field, label, errorMessages);
-		//}
-
 
 		/// <summary>
 		/// Validates Tasks Description, including RTE Templates in the process
