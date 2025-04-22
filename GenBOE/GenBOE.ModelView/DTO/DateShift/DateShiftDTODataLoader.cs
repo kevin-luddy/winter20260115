@@ -25,6 +25,12 @@ namespace GenBOE.DataBridge.DTO
 			this.Log = new Logger(typeof(DateShiftDTODataLoader));
 		}
 
+		/// <summary>
+		/// Not implemented and not needed.
+		/// </summary>
+		/// <param name="ids"></param>
+		/// <returns></returns>
+		/// <exception cref="NotImplementedException"></exception>
 		public override ICollection<DateShiftDTO> GetByIds(ICollection<int> ids)
 		{
 			throw new NotImplementedException();

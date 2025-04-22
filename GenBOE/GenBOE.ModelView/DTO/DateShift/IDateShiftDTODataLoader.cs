@@ -6,12 +6,14 @@
 
 namespace GenBOE.DataBridge.DTO
 {
-    using System.Collections.ObjectModel;
-    using GenBOE.Dtos;
-    using IES.Common;
+	using GenBOE.Dtos;
+	using IES.Common;
 
-    public interface IDateShiftDTODataLoader : IDataLoader<DateShiftDTO>
-    {
+	/// <summary>
+	/// Interface for the Date Shift loader.
+	/// </summary>
+	public interface IDateShiftDTODataLoader : IDataLoader<DateShiftDTO>
+	{
 
-    }
+	}
 }

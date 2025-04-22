@@ -29,6 +29,11 @@ namespace GenBOE.ActionLogic.DateShift
     /// </summary>
     public class DateShiftCalculation
     {
+		/// <summary>
+		/// The loader for date shifts.
+		/// </summary>
+		private readonly IDateShiftDTODataLoader dateShiftLoader;
+
         /// <summary>
         /// The workspace loader
         /// </summary>
@@ -102,6 +107,7 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DateShiftCalculation"/> class.
 		/// </summary>
+		/// <param name="dateShiftLoader">The loader for the date shift.</param>
 		/// <param name="workspaceLoader">The workspace loader.</param>
 		/// <param name="clinLoader">The clin loader.</param>
 		/// <param name="boeLoader">The boe loader.</param>
@@ -109,7 +115,8 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <param name="travelLoader">The travel loader.</param>
 		public DateShiftCalculation()
         {
-            this.workspaceLoader = GenBOEUnityContainer.Container.Resolve(typeof(IWorkspaceDTODataLoader)) as IWorkspaceDTODataLoader;
+			this.dateShiftLoader = GenBOEUnityContainer.Container.Resolve(typeof(IDateShiftDTODataLoader)) as IDateShiftDTODataLoader;
+			this.workspaceLoader = GenBOEUnityContainer.Container.Resolve(typeof(IWorkspaceDTODataLoader)) as IWorkspaceDTODataLoader;
             this.clinLoader = GenBOEUnityContainer.Container.Resolve(typeof(IClinDTODataLoader)) as IClinDTODataLoader;
             this.boeLoader = GenBOEUnityContainer.Container.Resolve(typeof(IBoeDTODataLoader)) as IBoeDTODataLoader;
             this.taskLoader = GenBOEUnityContainer.Container.Resolve(typeof(IBoeTaskElementDTODataLoader)) as IBoeTaskElementDTODataLoader;
@@ -900,7 +907,12 @@ namespace GenBOE.ActionLogic.DateShift
                         }
                     };
 
-                    this.workspaceVersionMetaDataDTODataLoader.Save(toSave, workspace.Id);
+					// TODO Thomas: Figure out the loader logic.
+					DateShiftDTO dateShiftToSave = dateShiftable as DateShiftDTO;
+					dateShiftToSave.Updateable = UpdateType.Upsert;
+					this.dateShiftLoader.Save(dateShiftToSave);
+                    
+					this.workspaceVersionMetaDataDTODataLoader.Save(toSave, workspace.Id);
 
                     scope.Complete();
                 }
