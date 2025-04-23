@@ -1265,7 +1265,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	};
 
 	$scope.calculateAllMoqActuals = function () {
-		GenSession.confirmDialog("Recalculate All Workspace Actuals", "This is a long running process and will recalculate the actuals on each MOQ table in this workspace",
+		GenSession.confirmDialog("Recalculate All Workspace Actuals", "This is a long running process and will recalculate the actuals on each MOQ table in this task",
 			function () {
 				$scope.actualsValidation.errors = new Map();
 				$scope.actualsValidation.isDirty = new Map();
@@ -1373,7 +1373,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	};
 
 	$scope.calculateAllMoqActualsWithSkillMix = function () {
-		GenSession.confirmDialog("Recalculate All Workspace Actuals", "This is a long running process and will recalculate the actuals on each MOQ table in this workspace",
+		GenSession.confirmDialog("Recalculate All Workspace Actuals", "This is a long running process and will recalculate the actuals on each MOQ table in this task",
 			function () {
 				$scope.actualsValidation.errors = new Map();
 				$scope.actualsValidation.isDirty = new Map();

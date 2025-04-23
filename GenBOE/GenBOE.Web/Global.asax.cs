@@ -882,7 +882,6 @@ namespace GenBOE
 						new ResolvedParameter(typeof(BOEDiscrepancyReport)),
 						new ResolvedParameter(typeof(ICommonDataMapper)),
 						new ResolvedParameter(typeof(IProposalLoader)),
-						//new ResolvedParameter(typeof(IRequestDataLoader)),
 						new ResolvedParameter(typeof(IWorkspaceControllerLogic)),
 						new ResolvedParameter(typeof(TravelTripCostCalculation))
 						));
@@ -899,7 +898,6 @@ namespace GenBOE
 						new ResolvedParameter(typeof(IBOEFormPBOEDTODataLoader)),
 						new ResolvedParameter(typeof(IInUseDataLoader)),
 						new ResolvedParameter(typeof(IProposalLoader)),
-						//new ResolvedParameter(typeof(IRequestDataLoader)),
 						new ResolvedParameter(typeof(IWorkspaceControllerLogic)),
 						new ResolvedParameter(typeof(TravelTripCostCalculation))
 						));
