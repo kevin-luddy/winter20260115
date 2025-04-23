@@ -811,8 +811,10 @@ namespace GenBOE
 																														 new ResolvedParameter(typeof(IUserDTODataLoader)),
 																														 new ResolvedParameter(typeof(IActiveDirectoryUtilities)),
 																														 new ResolvedParameter(typeof(ISecurityInformation)),
-																														 new ResolvedParameter(typeof(IFullObjectFactory))
+																														 new ResolvedParameter(typeof(IFullObjectFactory)),
+																														 new ResolvedParameter(typeof(ICommonDataMapper))
 																														));
+
 			GenBOEUnityContainer.Container.RegisterType(typeof(BOECommentsControllerLogic), typeof(BOECommentsControllerLogic), GetLifetimeManager(), new InjectionConstructor(
 																														  new ResolvedParameter(typeof(BOECommentDTODataLoader)),
 																														  new ResolvedParameter(typeof(UserDTODataLoader)),

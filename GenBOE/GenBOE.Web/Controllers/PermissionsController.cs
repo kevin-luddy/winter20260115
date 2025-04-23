@@ -467,7 +467,7 @@ namespace GenBOE.Web.Controllers
         }
         #endregion AJAX Calls
 
-        public PermissionModelView _GetPermissionsGrid(FullWorkspace ws)
+        private PermissionModelView _GetPermissionsGrid(FullWorkspace ws)
         {
             Collection<PermissionsDTO> allPerms = this.PermissionsLoader.GetPermissionsForGridData(ws.Id);
 

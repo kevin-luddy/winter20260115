@@ -9,7 +9,9 @@ namespace GenBOE.Web.Controllers
 	using System;
 	using System.Linq;
 	using System.Web.Http;
+	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.ControllerLogic.Backend;
+	using GenBOE.ActionLogic.ModelView.Backend;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Objects;
@@ -24,7 +26,7 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Service for PermissionsController
 		/// </summary>
-		private PermissionsController PermissionsController { get; set; }
+		private PermissionControllerLogic PermissionControllerLogic { get; set; }
 
 		/// <summary>
 		/// Logger
@@ -34,26 +36,26 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// ctor
 		/// </summary>
-		public ManagePermissionsController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, PermissionsController PermissionsController)
+		public ManagePermissionsController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, PermissionControllerLogic PermissionControllerLogic)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
-			this.PermissionsController = PermissionsController;
+			this.PermissionControllerLogic = PermissionControllerLogic;
 		}
 
 		/// <summary>
 		/// Gets Permissions Model
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>PermissionViewModel that includes PermissionsGridViewModel</returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESSingleResponse<PermissionModelView> GetManagePermissionModel(string workspace)
+		public IESSingleResponse<PermissionViewModel> GetManagePermissionModel(string workspace)
 		{
-			IESSingleResponse<PermissionModelView> result = new IESSingleResponse<PermissionModelView>();
+			IESSingleResponse<PermissionViewModel> result = new IESSingleResponse<PermissionViewModel>();
 
 			try
 			{
 				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-				result.Data = PermissionsController._GetPermissionsGrid(ws);
+				result.Data = PermissionControllerLogic._GetPermissionsGrid(ws);
 				result.IsSuccessful = true;
 			}
 			catch (Exception ex)
@@ -73,9 +75,9 @@ namespace GenBOE.Web.Controllers
 		/// <returns>Object to indicate if operation is successfull</returns>
 		[HttpDelete]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESSingleResponse<Object> DeleteUserPermissions(string workspace, string inUserID)
+		public IESSingleResponse<bool> DeleteUserPermissions(string workspace, string inUserID)
 		{
-			IESSingleResponse<Object> result = new IESSingleResponse<Object>();
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
 
 			if (inUserID == null || !inUserID.Any())
 			{
@@ -84,7 +86,7 @@ namespace GenBOE.Web.Controllers
 
 			try
 			{
-				result.Data = PermissionsController.DeleteUserPermissions(workspace, Int32.Parse(inUserID)).Data;
+				result.Data = PermissionControllerLogic.DeleteUserPermissions(workspace, Int32.Parse(inUserID));
 				result.IsSuccessful = true;
 			}
 			catch (Exception ex)
