@@ -824,22 +824,12 @@ namespace GenBOE.ActionLogic.WBS.BOE
 						case MOQType.CostEstimatingRelationships:
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.CerName, "CER tool name", Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
-
-							// Only Validate if the SkillMix Rationale field is showing in the MOQ Types Section
-							if (!showSkillMixTable)
-							{
-								ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
-							}
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
 							break;
 						case MOQType.LOE:
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.DescriptionHoursRequired, "Description of Hours required", ws.RteSizeLimit, errorMessages);
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
-
-							// Only Validate if the SkillMix Rationale field is showing in the MOQ Types Section
-							if (!showSkillMixTable)
-							{
-								ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
-							}
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
 							break;
 						case MOQType.NonLabor:
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
@@ -847,34 +837,19 @@ namespace GenBOE.ActionLogic.WBS.BOE
 						case MOQType.ParametricEstimates:
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.CerName, "Parametric model name", Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
-
-							// Only Validate if the SkillMix Rationale field is showing in the MOQ Types Section
-							if (!showSkillMixTable)
-							{
-								ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
-							}
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
 							break;
 						case MOQType.SME:
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeReason, "The SME selected Expert judgment reasons", ws.RteSizeLimit, errorMessages);
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeHoursLogic, "The logic and assumptions used to estimate hours", ws.RteSizeLimit, errorMessages);
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeDurationLogic, "The logic and assumptions used to estimate duration", ws.RteSizeLimit, errorMessages);
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeTaskEstimates, "The SME tasks estimated in this BOE", ws.RteSizeLimit, errorMessages);
-
-							// Only Validate if the SkillMix Rationale field is showing in the MOQ Types Section
-							if (!showSkillMixTable)
-							{
-								ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
-							}
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
 							break;
 						case MOQType.SOW:
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.DescriptionHoursRequired, "Description of Hours required & location in SOW", ws.RteSizeLimit, errorMessages);
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
-
-							// Only Validate if the SkillMix Rationale field is showing in the MOQ Types Section
-							if (!showSkillMixTable)
-							{
-								ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
-							}
+							ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
 							break;
 						default:
 							errorMessages.Add("Invalid MOQ Type selected");

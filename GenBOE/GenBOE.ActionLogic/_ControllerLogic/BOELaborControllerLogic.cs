@@ -1531,7 +1531,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				this.ValidateTaskElementRteSizeLimit(laborTaskData, ws, inValidationErrors);
 			}
 
-			
 			this.ValidateTaskElementDates(laborTaskData, ws, boeDTO, inValidationErrors, out BoeTaskElementDTO taskElement);
 			this.ValidateLaborTypeDates(laborTaskData, inValidationErrors);
 			this.ValidateLaborTypeCustomFields(laborTaskData, ws, taskElement, inValidationErrors);

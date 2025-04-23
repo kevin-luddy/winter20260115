@@ -589,7 +589,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.FieldName_HistoricalRefExp);
 					}
 
-					if (moqType.SelectedMOQType != MOQType.NonLabor)
+					if (moqType.SelectedMOQType != MOQType.NonLabor && !Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, false))
 					{
 						WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SkillMix),
 							moqType.SkillMixRationale, ref counters, true);
