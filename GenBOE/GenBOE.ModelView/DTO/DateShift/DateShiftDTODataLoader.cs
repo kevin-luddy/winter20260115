@@ -28,9 +28,9 @@ namespace GenBOE.DataBridge.DTO
 		}
 
 		/// <summary>
-		/// Update the respective levels in the database with the Date Shift data.
+		/// Updates the date shifted objects in the database.
 		/// </summary>
-		/// <param name="dateShiftDTOs">Collection of Date Shift dates for updating.</param>
+		/// <param name="dateShiftDTOs">Date shifted DTOs.</param>
 		public void Update(ICollection<DateShiftDTO> dateShiftDTOs)
 		{
 			if (dateShiftDTOs == null)
@@ -38,12 +38,14 @@ namespace GenBOE.DataBridge.DTO
 				throw new ArgumentNullException(nameof(dateShiftDTOs));
 			}
 
+			List<DateShiftDTO> dateShiftDTOsToUpdate = new List<DateShiftDTO>();
+
 			foreach (DateShiftDTO dateShiftDTO in dateShiftDTOs)
 			{
-				dateShiftDTO.Updateable = UpdateType.Upsert;
+				dateShiftDTOsToUpdate.AddRange(RecursivelyGetDateShiftDTOs(dateShiftDTO.OriginalObject as IDateShiftable));
 			}
 
-			this.UpdateDateShifts(dateShiftDTOs);
+			this.UpdateDateShifts(dateShiftDTOsToUpdate);
 		}
 
 		#region Inheritted
@@ -68,41 +70,64 @@ namespace GenBOE.DataBridge.DTO
 			throw new NotImplementedException();
 		}
 
-		public virtual int? UpdateDateShifts(ICollection<DateShiftDTO> dateShifts)
+		public virtual void UpdateDateShifts(ICollection<DateShiftDTO> dateShifts)
 		{
-			int? toReturn = null;
 			if (dateShifts == null || dateShifts.Count == 0) { throw new ArgumentNullException(nameof(dateShifts)); }
 
 			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
 			{
 				Collection<string> dateShiftPropertiesToIncludeInTable = new Collection<string>()
 				{
-					"Level", "Id", "StartDate", "EndDate", "BOEStateID", "UpdateDate"
+					"Level", "Id", "StartDate", "EndDate", "UpdateDate"
 				};
 
 				using (DbContext objectContext = new DbContext(Constants.BOE_DB_CONTEXT_NAME))
 				{
 					DataTable dateShiftsDataTable = StoredProcedureHelper.ToDataTable<DateShiftDTO>(dateShifts, dateShiftPropertiesToIncludeInTable);
 
-					// Convert the Level and BOEStateID columns to integers
-					foreach (DataRow row in dateShiftsDataTable.Rows)
-					{
-						row["Level"] = (int)row["Level"];
-						row["BOEStateID"] = (int)row["BOEStateID"];
-					}
-
-					toReturn = StoredProcedureHelper.ExecuteTableValueProcedure(
+					StoredProcedureHelper.ExecuteTableValueProcedure(
 						objectContext,
 						dateShiftsDataTable,
 						"updateDateShiftviaTableParameter",
 						"@DateShifts",
 						"TT_DateShift",
 						false
-					).FirstOrDefault().Key;
+					);
 				}
-				return toReturn;
 			}
 		}
 		#endregion
+
+		/// <summary>
+		/// Gets the date shift child DTOs recursively.
+		/// </summary>
+		/// <param name="dateShiftable">Date shiftable.</param>
+		/// <returns>List of date shift dtos that were in the child property.</returns>
+		private List<DateShiftDTO> RecursivelyGetDateShiftDTOs(IDateShiftable dateShiftable)
+		{
+			if (dateShiftable == null)
+			{
+				throw new ArgumentNullException(nameof(dateShiftable));
+			}
+
+			List<DateShiftDTO> dateShiftDTOs = new List<DateShiftDTO>();
+
+			DateShiftDTO dateShiftDTO = DateShiftDTO.FromIDateShiftable(dateShiftable);
+
+			if (dateShiftDTO != null)
+			{
+				dateShiftDTOs.Add(dateShiftDTO);
+			}
+
+			if (dateShiftable.Children != null)
+			{
+				foreach (IDateShiftable child in dateShiftable.Children)
+				{
+					dateShiftDTOs.AddRange(RecursivelyGetDateShiftDTOs(child));
+				}
+			}
+
+			return dateShiftDTOs;
+		}
 	}
 }

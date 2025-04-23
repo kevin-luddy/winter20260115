@@ -24,16 +24,17 @@ namespace GenBOE.Dtos
 		private readonly List<IDateShiftable> children = new List<IDateShiftable>();
 		private bool hasSpread;
 		private Level dateShiftLevel;
+		private object originalObject;
 
 		/// <summary>
 		/// Start date.
 		/// </summary>
-		DateTime? IDateShiftable.StartDate { get; set; }
+		public DateTime? StartDate { get; set; }
 
 		/// <summary>
 		/// End date.
 		/// </summary>
-		DateTime? IDateShiftable.EndDate { get; set; }
+		public DateTime? EndDate { get; set; }
 
 		/// <summary>
 		/// Child date shift objects.
@@ -53,17 +54,17 @@ namespace GenBOE.Dtos
 		/// <summary>
 		/// Date shift level.
 		/// </summary>
-		Level IDateShiftable.DateShiftLevel => dateShiftLevel;
+		public Level DateShiftLevel => dateShiftLevel;
 
 		/// <summary>
 		/// Date shift level value due to readonly date shift level on interface.
 		/// </summary>
-		public int Level { get => (int)dateShiftLevel; set => dateShiftLevel = (Level)value; }
+		public int Level { get; set; }
 
 		/// <summary>
 		/// Updatable.
 		/// </summary>
-		UpdateType IDateShiftable.Updateable { get; set; }
+		public UpdateType Updateable { get; set; }
 
 		/// <summary>
 		/// Boe ID.
@@ -106,19 +107,14 @@ namespace GenBOE.Dtos
 		public SpreadType SpreadType { get; set; }
 
 		/// <summary>
-		/// Start date.
-		/// </summary>
-		public DateTime StartDate { get; set; }
-
-		/// <summary>
-		/// End date.
-		/// </summary>
-		public DateTime EndDate { get; set; }
-
-		/// <summary>
 		/// Value spread.
 		/// </summary>
 		public decimal? ValueSpread { get; set; }
+
+		/// <summary>
+		/// Original object data.
+		/// </summary>
+		public object OriginalObject { get => this.originalObject; set => this.originalObject = value; }
 
 		/// <summary>
 		/// Conversion for incoming inherit classes.
@@ -130,23 +126,28 @@ namespace GenBOE.Dtos
 				throw new ArgumentNullException(nameof(dateShiftable));
 			}
 
+			if (dateShiftable.Updateable != UpdateType.Upsert)
+			{
+				return null;
+			}
+
 			DateShiftDTO dateShiftDTO = new DateShiftDTO();
-			((IDateShiftable)dateShiftDTO).StartDate = dateShiftable.StartDate;
-			((IDateShiftable)dateShiftDTO).EndDate = dateShiftable.EndDate;
+			dateShiftDTO.OriginalObject = dateShiftable;
+			dateShiftDTO.StartDate = dateShiftable.StartDate;
+			dateShiftDTO.EndDate = dateShiftable.EndDate;
 			dateShiftDTO.Level = (int)dateShiftable.DateShiftLevel;
 			dateShiftDTO.HasSpreadValue = dateShiftable.HasSpread;
+			dateShiftDTO.Updateable = dateShiftable.Updateable;
 
-			if (dateShiftable is UpdateableDTO updateableDTO)
+			if (dateShiftable is IUpdateableDTO updateableDTO)
 			{
 				dateShiftDTO.Id = updateableDTO.Id;
 				dateShiftDTO.UpdateDate = updateableDTO.UpdateDate;
-				dateShiftDTO.UpdateDateLong = updateableDTO.UpdateDateLong;
-				((IDateShiftable)dateShiftDTO).Updateable = updateableDTO.Updateable;
 			}
 
-			if (dateShiftable is FullBoe fullBoeDTO)
+			if (dateShiftable is BoeDTO boeDTO)
 			{
-				dateShiftDTO.BOEStateID = (int)fullBoeDTO.State;
+				dateShiftDTO.BOEStateID = (int)boeDTO.State;
 			}
 
 			if (dateShiftable is BoeTaskElementDTO boeTaskElementDTO)
@@ -158,37 +159,20 @@ namespace GenBOE.Dtos
 				dateShiftDTO.TaskElementLabors = boeTaskElementDTO.taskElementLabors;
 			}
 
-			if (dateShiftable is ResourceTypeDto resourceTypeDto)
+			if (dateShiftable is ResourceTypeDto resourceTypeDto && (resourceTypeDto.SpreadCurveID == SpreadCurves.DiscreteCost || resourceTypeDto.SpreadCurveID == SpreadCurves.DiscreteHours))
 			{
+				// Check if Labor Spreads is not null and if not null then save them later.
 				dateShiftDTO.LaborSpreads = resourceTypeDto.LaborSpreads;
-				dateShiftDTO.SpreadCurveID = resourceTypeDto.SpreadCurveID;
-				dateShiftDTO.StartDate = resourceTypeDto.StartDate ?? DateTime.MinValue;
-				dateShiftDTO.EndDate = resourceTypeDto.EndDate ?? DateTime.MaxValue;
-				dateShiftDTO.SpreadType = resourceTypeDto.SpreadType;
-				dateShiftDTO.ValueSpread = resourceTypeDto.ValueSpread;
 			}
-
-			// Store the BOE Id
-			switch (dateShiftable.DateShiftLevel)
-			{
-				case IES.Common.Level.BOE:
-					dateShiftDTO.BoeId = ((UpdateableDTO)dateShiftable).Id;
-					break;
-				case IES.Common.Level.Task:
-					dateShiftDTO.BoeId = ((BoeTaskElementDTO)dateShiftable).BoeID;
-					break;
-				case IES.Common.Level.Travel:
-					dateShiftDTO.BoeId = ((TravelDTO)dateShiftable).BoeID;
-					break;
-			}
-
-			// Explicitly set the StartDate and EndDate properties
-			dateShiftDTO.StartDate = ((IDateShiftable)dateShiftDTO).StartDate ?? DateTime.MinValue;
-			dateShiftDTO.EndDate = ((IDateShiftable)dateShiftDTO).EndDate ?? DateTime.MaxValue;
 
 			foreach (IDateShiftable child in dateShiftable.Children)
 			{
-				dateShiftDTO.children.Add(FromIDateShiftable(child));
+				DateShiftDTO childDTO = FromIDateShiftable(child);
+
+				if (childDTO != null)
+				{
+					dateShiftDTO.children.Add(childDTO);
+				}
 			}
 
 			return dateShiftDTO;
