@@ -11,7 +11,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
     using System.Collections.ObjectModel;
     using System.IO;
     using System.Linq;
-    using System.Web;
+	using System.Threading.Tasks;
+	using System.Web;
     using System.Web.Mvc;
     using DocumentFormat.OpenXml.Packaging;
     using GenBOE.ActionLogic.Common;
@@ -90,7 +91,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         /// Master template with the boe custom exporter.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), TestMethod]
-        public void ExportAllBOEsReportTest()
+        public async Task ExportAllBOEsReportTest()
         {
             //Value Declarations
             FullWorkspace workspace = new FullWorkspace() { Id = 1, BOEExportSortByID = 2, TemplateID = 2, ProjectMapType = ProjectMapType.StandardWithoutOffload };
@@ -167,12 +168,9 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             _retriever.Setup(x => x.GetQuestionsAndAnswersByWorkspaceId(workspace.Id)).Returns(new List<RTECustomTemplateQuestionAnswerModelView>());
             _retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>());
 
-            this._retriever.Setup(x => x.GetMaterialsByBoeIds(It.IsAny<Collection<int>>(), It.IsAny<bool>())).Returns(MaterialID.ToList());
-            this._retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(resourcesFromDB);
-
-            Collection<int> BoeIds = boes.Select(x => x.Id).ToCollection();
-            _retriever.Setup(x => x.GetOdcCollectionByBoeIds(BoeIds, It.IsAny<bool>())).Returns(dtoID);
-            _retriever.Setup(x => x.GetMaterialsByBoeIds(BoeIds, It.IsAny<bool>())).Returns(MaterialID);
+            _retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(resourcesFromDB);
+            _retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(dtoID);
+            _retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(MaterialID);
             _retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(workspace.Id)).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
             ResourceLoader.Setup(x => x.GetByIds(resourceIds)).Returns(resourcesFromDB);
@@ -182,9 +180,9 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             boeSummary.Setup(x => x.GetBOESummaryGridModelViews(boes.ToCollection()[0], It.IsAny<BOEExportInputs>(), isSubContractorUser)).Returns(boeSummaryGridModelViewsRange1);
             boeSummary.Setup(x => x.GetBOESummaryGridModelViews(boes.ToCollection()[2], It.IsAny<BOEExportInputs>(), isSubContractorUser)).Returns(boeSummaryGridModelViewsRange2);
             boeSummary.Setup(x => x.GetBOESummaryGridModelViews(boes.ToCollection()[3], It.IsAny<BOEExportInputs>(), isSubContractorUser)).Returns(boeSummaryGridModelViewsRange3);
-            workspaceExportFormatDTOLoader.Setup(x => x.GetById((int)ExcelReportTemplateType.MASTER)).Returns(wsExportFormatDTO);
+			workspaceExportFormatDTOLoader.Setup(x => x.GetById(It.IsAny<int>())).Returns(wsExportFormatDTO);
 
-            boeCustomExporter.Setup(x => x.ConvertBoeDTOsToExportMVs(It.IsAny<ICollection<FullBoe>>(), It.IsAny<BOEExportInputs>())).Returns(new List<BOEExportModelView> { boeModel1, boeModel3, boeModel4 });
+			boeCustomExporter.Setup(x => x.ConvertBoeDTOsToExportMVs(It.IsAny<ICollection<FullBoe>>(), It.IsAny<BOEExportInputs>())).Returns(new List<BOEExportModelView> { boeModel1, boeModel3, boeModel4 });
             List<RTECustomTemplateQuestionAnswerModelView> answers = new List<RTECustomTemplateQuestionAnswerModelView>();
             answers.Add(new RTECustomTemplateQuestionAnswerModelView
             {
@@ -206,13 +204,13 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             //Act
             sut.PrepareAllBOEsReport(workspace, isSubContractorUser, null, selectBOEs, viewDataDictionary, out isCustomExport, out wsExportFormat, out exportInputs,
                 out boeExportModelViews, out boeSummaryGridModelViews, true);
-            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, isCustomExport, wsExportFormat, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
+            await sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, isCustomExport, wsExportFormat, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
             sut.PrepareAllBOEsReport(workspace, isSubContractorUser, null, selectBOEs, viewDataDictionary, out isCustomExport, out wsExportFormat, out exportInputs,
                 out boeExportModelViews, out boeSummaryGridModelViews, false);
-            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, isCustomExport, wsExportFormat, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
+            await sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, isCustomExport, wsExportFormat, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
             sut.PrepareAllBOEsReport(workspace, isSubContractorUser, null, selectBOEs, viewDataDictionary, out isCustomExport, out wsExportFormat, out exportInputs,
                 out boeExportModelViews, out boeSummaryGridModelViews, true);
-            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, isCustomExport, wsExportFormat, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
+            await sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, isCustomExport, wsExportFormat, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
 
             //Assert
             boeSummary.Verify(x => x.GetBOESummaryGridModelViews(boes.ToCollection()[0], It.IsAny<BOEExportInputs>(), isSubContractorUser), Times.Exactly(3));
@@ -229,7 +227,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
         [TestMethod]
-        public void ExportAllBOEsReportTestCustomFalse()
+        public async Task ExportAllBOEsReportTestCustomFalse()
         {
             //Value Declarations
             FullWorkspace workspace = new FullWorkspace() { Id = 1, BOEExportSortByID = 1, TemplateID = 2 };
@@ -284,13 +282,13 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             _retriever.Setup(x => x.GetQuestionsAndAnswersByWorkspaceId(workspace.Id)).Returns(new List<RTECustomTemplateQuestionAnswerModelView>());
             _retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(workspace.Id)).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 			_retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new List<TravelDTO>());
-            Collection<int> BoeIds = boes.Select(x => x.Id).ToCollection();
-            _retriever.Setup(x => x.GetOdcCollectionByBoeIds(BoeIds, false)).Returns(dtoID);
-            _retriever.Setup(x => x.GetMaterialsByBoeIds(BoeIds, false)).Returns(MaterialID);
+            _retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, false)).Returns(dtoID);
+            _retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, false)).Returns(MaterialID);
 			_retriever.Setup(x => x.GetPerformingOrgsByIds(It.IsAny<ICollection<int>>())).Returns(new List<PerformingOrgDTO>());
-
+			_retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new Collection<FullClin>());
+			_retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(workspace.Id)).Returns(new Collection<FullWbs>());
 			_retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, true)).Returns(new ReadOnlyCollection<TravelDTO>(new List<TravelDTO>()));
-            _retriever.Setup(x => x.GetMaterialsByBoeIds(BoeIds, true)).Returns(new ReadOnlyCollection<MaterialDTO>(new List<MaterialDTO>()));
+            _retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, true)).Returns(new ReadOnlyCollection<MaterialDTO>(new List<MaterialDTO>()));
 
             this._retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(resourcesFromDB);
 
@@ -306,7 +304,9 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             boeExporter.Setup(x => x.ConvertBoeDTOsToExportMVs(It.IsAny<BOEExportInputs>())).Returns(new List<BOEExportModelView> { boeModel1, boeModel3 });
             boeExporter.Setup(x => x.ExportBOEToWordFile(exportInputs, boeModelCollection, listOfBOEs, workspace, httpResponse.Object, string.Format("genBOEExport-{0}.docx", workspace.WorkspaceName), wsExportFormatDTO.PhysicalFilePathCache, wsExportFormatDTO.ExportFormat.TemplateType));
 
-            ReportsControllerLogic sut = CreateSut();
+			workspaceExportFormatDTOLoader.Setup(x => x.GetById(It.IsAny<int>())).Returns(wsExportFormatDTO);
+
+			ReportsControllerLogic sut = CreateSut();
 
             bool isCustomExport;
             WorkspaceExportFormatDTO wsExportFormat;
@@ -315,10 +315,10 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             //Act
             sut.PrepareAllBOEsReport(workspace, true, null, selectBOEs, viewDataDictionary, out isCustomExport, out wsExportFormat, out exportInputs,
                 out boeModelCollection, out boeSummaryGridModelViews, false);
-            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, isCustomExport, wsExportFormat, exportInputs, boeModelCollection, boeSummaryGridModelViews);
+            await sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, isCustomExport, wsExportFormat, exportInputs, boeModelCollection, boeSummaryGridModelViews);
             sut.PrepareAllBOEsReport(workspace, true, null, selectBOEs, viewDataDictionary, out isCustomExport, out wsExportFormat, out exportInputs,
                 out boeModelCollection, out boeSummaryGridModelViews, false);
-            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, isCustomExport, wsExportFormat, exportInputs, boeModelCollection, boeSummaryGridModelViews);
+            await sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, isCustomExport, wsExportFormat, exportInputs, boeModelCollection, boeSummaryGridModelViews);
 
             //Assert
             boeExporter.Verify(x => x.ExportBOEToWordFile(exportInputs, boeModelCollection, listOfBOEs, workspace, httpResponse.Object, string.Format("genBOEExport-{0}.docx", workspace.WorkspaceName), wsExportFormatDTO.PhysicalFilePathCache, wsExportFormatDTO.ExportFormat.TemplateType), Times.Once());
@@ -393,7 +393,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         /// </summary>
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void ExportAllBOEsReportTestWorkspaceNull()
+        public async Task ExportAllBOEsReportTestWorkspaceNull()
         {
             //Value Declarations
             FullWorkspace workspace = null;
@@ -405,7 +405,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             ReportsControllerLogic sut = CreateSut();
 
             //Act
-            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, false, null, null, null, null);
+            await sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, false, null, null, null, null);
         }
 
         /// <summary>
@@ -415,7 +415,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         /// </summary>
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void ExportAllBOEsReportTesthttpResponseNull()
+        public async Task ExportAllBOEsReportTesthttpResponseNull()
         {
             //Value Declarations
             FullWorkspace workspace = new FullWorkspace() { Id = 1 };
@@ -425,7 +425,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             ReportsControllerLogic sut = CreateSut();
 
             //Act
-            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse, true, null, null, null, null);
+            await sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse, true, null, null, null, null);
         }
 
         /// <summary>
@@ -435,7 +435,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         /// </summary>
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void ExportAllBOEsReportTestWsExportFormatDTONull()
+        public async Task ExportAllBOEsReportTestWsExportFormatDTONull()
         {
             //Value Declarations
             FullWorkspace workspace = new FullWorkspace();
@@ -447,7 +447,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             ReportsControllerLogic sut = CreateSut();
 
             //Act
-            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, false, null, null, null, null);
+            await sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, false, null, null, null, null);
         }
         #endregion
 
@@ -702,10 +702,12 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             _retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boes);
             _retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(TaskElementsID);
-            _retriever.Setup(x => x.GetOdcCollectionByBoeIds(BoeIds, false)).Returns(dtoID);
+            _retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, false)).Returns(dtoID);
             this._retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(resourcesFromDB);
 			_retriever.Setup(x => x.GetTravelByWorkspaceId(1, It.IsAny<bool>())).Returns(new Collection<TravelDTO>());
 			_retriever.Setup(x => x.GetPerformingOrgsByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<PerformingOrgDTO>());
+			_retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new Collection<FullClin>());
+			_retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(workspace.Id)).Returns(new Collection<FullWbs>());
 
 			BOEExportInputs result = sut.GetExportInputsForStatusAndWbsReports(workspace);
 
@@ -730,7 +732,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 new FullBoe() { Id = 2, Title = "BOE2" },
                 new FullBoe() { Id = 3, WBSID = 2, Title = "BOE3" },
                 new FullBoe() { Id = 4, WBSID = 3, Title = "BOE4" }};
-            ICollection<int> BoeIds = boes.Select(x => x.Id).ToCollection();
+
             TaskElementsID = new Collection<BoeTaskElementDTO>(){
                 new BoeTaskElementDTO() { Id = 1, BoeID = 1, taskElementLabors = new Collection<ResourceTypeDto>() { new ResourceTypeDto(){ ResourceID = 1, ValueSpread = 10, SpreadType = SpreadType.Hours}, new ResourceTypeDto() { ResourceID = 1, ValueSpread = 20, SpreadType = SpreadType.Hours } } },
                 new BoeTaskElementDTO() { Id = 2, BoeID = 2, taskElementLabors = new Collection<ResourceTypeDto>() { new ResourceTypeDto(){ ResourceID = 2, ValueSpread = 10, SpreadType = SpreadType.Cost }, new ResourceTypeDto(){ ResourceID = 2, ValueSpread = 20, SpreadType = SpreadType.Cost } }},
@@ -751,15 +753,15 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             _retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boes);
             _retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(TaskElementsID);
-            _retriever.Setup(x => x.GetOdcCollectionByBoeIds(BoeIds, false)).Returns(dtoID);
+            _retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, false)).Returns(dtoID);
             this._retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(resourcesFromDB);
             _retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO>());
             _retriever.Setup(x => x.GetEscalationRatesByWorkspace(workspace)).Returns(new Collection<EscalationRatesDTO>());
             _retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(workspace.Id)).Returns(wbs);
 			_retriever.Setup(x => x.GetPerformingOrgsByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<PerformingOrgDTO>());
+			_retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new Collection<FullClin>());
 
 			BOEExportInputs inputs = new BOEExportInputs(boes, boes, TaskElementsID, workspace, null);
-
 
             ICollection<BoeWbsReportModelView> result = sut.GenerateWbsBoeReport(inputs);
 
@@ -805,10 +807,12 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             _retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boes);
             _retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(TaskElementsID);
-            _retriever.Setup(x => x.GetOdcCollectionByBoeIds(BoeIds, false)).Returns(dtoID);
+            _retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, false)).Returns(dtoID);
             this._retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(resourcesFromDB);
 			_retriever.Setup(x => x.GetTravelByWorkspaceId(1, It.IsAny<bool>())).Returns(new Collection<TravelDTO>());
 			_retriever.Setup(x => x.GetPerformingOrgsByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<PerformingOrgDTO>());
+			_retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new Collection<FullClin>());
+			_retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(workspace.Id)).Returns(new Collection<FullWbs>());
 
 			BOEExportInputs inputs = new BOEExportInputs(boes, boes, TaskElementsID, workspace, null);
             ICollection<BoeWbsReportModelView> reportModelView = new Collection<BoeWbsReportModelView>()

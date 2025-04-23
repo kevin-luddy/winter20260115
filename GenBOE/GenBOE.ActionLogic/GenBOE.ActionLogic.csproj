@@ -254,6 +254,7 @@
     <Compile Include="DateShift\SpreadHandling.cs" />
     <Compile Include="DateShift\Operation.cs" />
     <Compile Include="IO\Export\BOEConfidenceReportExporter.cs" />
+    <Compile Include="IO\Export\BOE\BOEExcelExportInputs.cs" />
     <Compile Include="IO\Export\BOE\BOEExportConverter.cs" />
     <Compile Include="IO\Export\BOE\BOEExportInputs.cs" />
     <Compile Include="IO\Export\BOE\BOEExportConverterRMS.cs" />
@@ -280,6 +281,7 @@
     <Compile Include="Reporting\ConfidenceReportConstants.cs" />
     <Compile Include="Reporting\IBOEConfidenceReport.cs" />
     <Compile Include="_ControllerLogic\Backend\BOEConfigurationControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\Backend\WorkspaceAdminControllerLogic.cs" />
     <Compile Include="_ControllerLogic\Backend\WorkspaceSettingsControllerLogic.cs" />
     <Compile Include="_ControllerLogic\Backend\WorkspaceHomeControllerLogic.cs" />
     <Compile Include="_ModelView\Backend\BOEConfigurationViewModel.cs" />

@@ -6,14 +6,14 @@
 
 namespace GenBOE.DataBridge.DTO
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using IES.Common;
-    using GenBOE.Models;
-    using GenBOE.Dtos;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using GenBOE.Dtos;
+	using GenBOE.Models;
+	using IES.Common;
 
-    public class OtherDirectCostDTODataLoader : IOtherDirectCostDTODataLoader
+	public class OtherDirectCostDTODataLoader : IOtherDirectCostDTODataLoader
     {
         private Logger _log = new Logger(typeof(OtherDirectCostDTODataLoader));
 
@@ -195,13 +195,95 @@ namespace GenBOE.DataBridge.DTO
             return result;
         }
 
-        #region RTE Load Methods
+		/// <summary>
+		/// Gets data by Workspace ID
+		/// </summary>
+		/// <param name="workspaceId">Workspace ID</param>
+		/// <param name="includeRTEFields">Indicates whether RTE fields should be retrieved as a part of the data pull</param>
+		/// <returns>Corresponding data</returns>
+		[DbQuery(2)]
+		public ICollection<OtherDirectCostDTO> GetByWorkspaceId(int workspaceId, bool includeRTEFields = false)
+		{
+			ICollection<OtherDirectCostDTO> result;
 
-        /// <summary>
-        /// Pulls RTE fields for the DTOs, and updates them as needed
-        /// </summary>
-        /// <param name="dtos">DTOs that whose RTE fields will be loaded, if they are null</param>
-        [DbQuery]
+			using (StopwatchTimer sw = new StopwatchTimer(this._log))
+			{
+				// Get the ODC Data
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					result = (from o in gbe.ODCTaskElements
+							  join b in gbe.BOEs on o.BOEID equals b.BOEID
+							  where b.WorkspaceID == workspaceId
+							  select new OtherDirectCostDTO
+							  {
+								  // 2 RTE fields:
+								  TaskDescription = includeRTEFields ? o.ODCTaskDescription : null,
+								  MoqText = includeRTEFields ? o.ODCMOQText : null,
+								  WasMoqTextSet = includeRTEFields,
+								  WasDescriptionSet = includeRTEFields,
+
+								  Id = o.ODCTaskElementID,
+								  TaskID = o.ODCTaskID,
+								  TaskTitle = o.ODCTaskTitle,
+								  UpdateDate = o.UpdateDT,
+								  BoeID = o.BOEID,
+								  StartDate = o.TaskStartDate,
+								  EndDate = o.TaskEndDate,
+								  BOETaskElementOrder = o.SortOrderID
+							  }).ToList();
+
+					List<int> odcIds = result.Select(o => o.Id).Distinct().ToList();
+
+					var ODCTypes = gbe.ODCTypes.Where(oT => odcIds.Contains(oT.ODCTaskElementID)).OrderBy(oT => oT.ODCTypeID).Select(oT => new
+					{
+						Key = oT.ODCTaskElementID,
+						Value = new OtherDirectCostType
+						{
+							ODCTypeID = oT.ODCTypeID,
+							ResourceID = oT.ResourceID,
+							PerformingOrgID = oT.PerformingOrganizationID,
+							SpreadCurve = (SpreadCurves)oT.SpreadCurveID,
+							Cost = oT.ODCTypeCost,
+							UpdateDate = oT.UpdateDT,
+							StartDate = oT.ODCTypeStartDate,
+							EndDate = oT.ODCTypeEndDate,
+
+							ODCSpreadsIEnum = gbe.ODCSpreads.Where(oS => oS.ODCTypeID == oT.ODCTypeID).OrderBy(oS => oS.ODCSpreadDate).Select(oS =>
+													new OtherDirectCostSpread
+													{
+														ODCSpreadID = oS.ODCSpreadID,
+														ODCSpreadDate = oS.ODCSpreadDate,
+														CostSpreadValue = oS.ODCSpreadValue
+													})
+						}
+					}).ToList();
+
+					foreach (OtherDirectCostDTO odc in result)
+					{
+						odc.StartDate = odc.StartDate.HasValue ? GenBOEUtilities.AdjustDateTimePrecision((DateTime)odc.StartDate, DateTimePrecision.Month) : odc.ODCTypes.Min(z => z.StartDate);
+						odc.EndDate = odc.EndDate.HasValue ? GenBOEUtilities.AdjustDateTimePrecision((DateTime)odc.EndDate, DateTimePrecision.Month) : odc.ODCTypes.Max(z => z.EndDate);
+
+						odc.ODCTypes = ODCTypes.Where(z => z.Key == odc.Id).Select(z => z.Value).ToCollection();
+						odc.ODCTypes.ToList().ForEach(oT =>
+						{
+							oT.ODCSpreads = oT.ODCSpreadsIEnum.ToCollection();
+							oT.ODCSpreadsIEnum = null;
+							oT.ODCSpreads.ToList().ForEach(oS => { oS.BoeID = odc.BoeID; });
+						});
+					}
+				}
+			}
+
+			return result;
+		}
+
+		#region RTE Load Methods
+
+		/// <summary>
+		/// Pulls RTE fields for the DTOs, and updates them as needed
+		/// </summary>
+		/// <param name="dtos">DTOs that whose RTE fields will be loaded, if they are null</param>
+		[DbQuery]
         public void LoadRTEFields(ICollection<OtherDirectCostDTO> dtos)
         {
             if (dtos == null || !dtos.Any()) { return; }

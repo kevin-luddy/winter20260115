@@ -39,5 +39,13 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <param name="dtos">DTOs that whose RTE fields will be loaded, if they are null</param>
         void LoadRTEFields(ICollection<OtherDirectCostDTO> dtos);
-    }
+
+		/// <summary>
+		/// Gets data by Workspace ID
+		/// </summary>
+		/// <param name="workspaceId">Workspace ID</param>
+		/// <param name="includeRTEFields">Indicates whether RTE fields should be retrieved as a part of the data pull</param>
+		/// <returns>Corresponding data</returns>
+		ICollection<OtherDirectCostDTO> GetByWorkspaceId(int workspaceId, bool includeRTEFields = false);
+	}
 }

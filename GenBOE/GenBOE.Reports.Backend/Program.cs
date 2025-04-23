@@ -53,7 +53,9 @@ else if (companyMode == CompanyConfiguration.MST)
 	builder.Services.AddSingleton<IEscalationRatesDTOLoader, EscalationRatesDTOLoader>();
 	builder.Services.AddSingleton<IMSTTravelNonzoneFeesAndCostsDTODataLoader, MSTTravelNonzoneFeesAndCostsDTODataLoader>();
 	builder.Services.AddSingleton<IMSTZoneTravelResourceDTODataLoader, MSTZoneTravelResourceDTODataLoader>();
-	builder.Services.AddScoped<IVariableSelectBOEtoSumCalculation, VariableSelectBOEtoSumCalculationMST>();
+	builder.Services.AddSingleton<MSTZoneTravelResourceDTODataLoader>();
+	builder.Services.AddSingleton<RMSZoneTravelRatesFeesDataLoader>();
+	builder.Services.AddSingleton<IVariableSelectBOEtoSumCalculation, VariableSelectBOEtoSumCalculationMST>();
 	builder.Services.AddScoped<BOEExporter>();
 	builder.Services.AddScoped<BOEExporterMST>();
 	builder.Services.AddScoped<BOEExportConverter, BOEExportConverterRMS>();

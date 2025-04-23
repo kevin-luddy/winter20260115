@@ -163,6 +163,17 @@ namespace GenBOE.Objects
 		}
 
 		/// <summary>
+		/// Clears the last access cache
+		/// </summary>
+		/// <param name="workspaceId">Workspace ID</param>
+		/// <param name="userId">User ID</param>
+		public void ClearLastAccessCache(int workspaceId, int userId)
+		{
+			string key = string.Format(this.cacheKeyLastAccessed, workspaceId, userId);
+			cache.Remove(key);
+		}
+
+		/// <summary>
 		/// Creates a full workspace.
 		/// </summary>
 		/// <param name="shortname">shortname</param>

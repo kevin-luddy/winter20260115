@@ -658,7 +658,8 @@ namespace IES.Common
 		ResourceSegmentRegion = 77,
 		ProjMapResourceSegmentRegion = 79,
 		TaskUrl = 81,
-		WorkspaceUrl = 83
+		WorkspaceUrl = 83,
+		MOQType = 84
 
 	}
 

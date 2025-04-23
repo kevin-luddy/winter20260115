@@ -74,7 +74,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			byte[] fileData, Stream returnStream, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet);
 
 		/// <summary>
-		/// Exports the BOEs to Excel.
+		/// Exports the Manage BOEs to Excel.
 		/// </summary>
 		/// <param name="exportInputs">BOE ExportInputs.</param>
 		/// <returns></returns>

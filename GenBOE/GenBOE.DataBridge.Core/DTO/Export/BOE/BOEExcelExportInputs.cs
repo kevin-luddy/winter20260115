@@ -8,12 +8,15 @@
 	using System.Threading.Tasks;
 	using GenTRAC.DataBridge.Core.DTO.User;
 
+	/// <summary>
+	/// BOE Export to Excel Inputs
+	/// </summary>
 	public class BOEExcelExportInputs
 	{
 		/// <summary>
 		/// Gets all of the boes in the workspace.
 		/// </summary>
-		public ICollection<BoeDTO> Boes { get; }
+		public ICollection<BoeDTO> Boes { get; set; }
 
 		/// <summary>
 		/// Gets the clins.
@@ -43,12 +46,12 @@
 		/// <summary>
 		/// BOE Permissions
 		/// </summary>
-		public ICollection<PermissionsDTO> BOEPermissions { get; set; }
+		public ICollection<PermissionsDTO> RolesWithBoes { get; set; }
 
 		/// <summary>
 		/// BOE Users based off BOE Permissions
 		/// </summary>
-		public ICollection<UserDTO> BOEUsers { get; set; }
+		public ICollection<UserDTO> AllBOEUsers { get; set; }
 
 		/// <summary>
 		/// Should this export to a blank template
@@ -56,9 +59,9 @@
 		public bool IsBlankTemplate { get; set; }
 
 		/// <summary>
-		/// The BOE Template File Location
+		/// The BOE Template File
 		/// </summary>
-		public string TemplateFileLocation { get; set; }
+		public byte[] TemplateFile { get; set; }
 
 		/// <summary>
 		/// The Workspace Name

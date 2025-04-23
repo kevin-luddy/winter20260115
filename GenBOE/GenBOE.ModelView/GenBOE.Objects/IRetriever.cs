@@ -470,7 +470,7 @@ namespace GenBOE.Objects
 		/// </summary>
 		/// <param name="boeIds">Boe Ids</param>
 		/// <param name="loadRteData">Indicate whether RTE data should be loaded automatically</param>
-		/// <returns>Other direct Costs assiciated with Boes.</returns>
+		/// <returns>Other direct Costs associated with Boes.</returns>
 		ICollection<OtherDirectCostDTO> GetOdcCollectionByBoeIds(ICollection<int> boeIds, bool loadRteData);
 
 		#endregion
@@ -596,5 +596,21 @@ namespace GenBOE.Objects
 		/// <param name="templateID">The template ID of the workspace export format.</param>
 		/// <returns>The name of the WS Export Format</returns>
 		string GetWorkspaceExportFormatNameByTemplateId(int templateID);
+
+		/// <summary>
+		/// Get Materials for the Workspace with the given ID
+		/// </summary>
+		/// <param name="workspaceId">Workspace ID</param>
+		/// <param name="includeRTEFields">Indicates whether RTE fields should be retrieved as a part of the data pull</param>
+		/// <returns>Material Dtos</returns>
+		ICollection<MaterialDTO> GetMaterialsByWorkspaceId(int workspaceId, bool includeRTEFields);
+
+		/// <summary>
+		/// Gets a list of other direct Costs associated with Workspace
+		/// </summary>
+		/// <param name="workspaceId">Workspace ID</param>
+		/// <param name="loadRteData">Indicate whether RTE data should be loaded automatically</param>
+		/// <returns>Other direct Costs associated with the Workspace.</returns>
+		ICollection<OtherDirectCostDTO> GetOdcCollectionByWorkspaceId(int workspaceId, bool loadRteData);
 	}
 }

@@ -6,15 +6,14 @@
 
 namespace GenBOE.DataBridge.DTO
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using IES.Common;
-    using GenBOE.Dtos;
-    using GenBOE.Models;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Linq;
+	using GenBOE.Models;
+	using IES.Common;
 
-    public class MaterialDTODataLoader : IMaterialDTODataLoader
+	public class MaterialDTODataLoader : IMaterialDTODataLoader
     {
         private Logger _log = new Logger(typeof(MaterialDTODataLoader));
 
@@ -119,13 +118,51 @@ namespace GenBOE.DataBridge.DTO
             return result.ToCollection();
         }
 
-        #region RTE Load Methods
+		/// <summary>
+		/// Gets Materials by Workspace ID
+		/// </summary>
+		/// <param name="workspaceId">Workspace Id</param>
+		/// <param name="includeRTEFields">Indicates whether RTE fields should be retrieved as a part of the data pull</param>
+		/// <returns>Material Dtos</returns>
+		[DbQuery]
+		public ICollection<MaterialDTO> GetByWorkspaceId(int workspaceId, bool includeRTEFields = false)
+		{
+			ICollection<MaterialDTO> result;
 
-        /// <summary>
-        /// Pulls RTE fields for the DTOs, and updates them as needed
-        /// </summary>
-        /// <param name="dtos">DTOs that whose RTE fields will be loaded, if they are null</param>
-        [DbQuery]
+			using (StopwatchTimer sw = new StopwatchTimer(_log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					result = (from m in gbe.MaterialTaskElements
+							  join b in gbe.BOEs on m.BOEID equals b.BOEID
+							  where b.WorkspaceID == workspaceId
+							  select new MaterialDTO
+							  {
+								  // 2 RTE fields:
+								  TaskDescription = includeRTEFields ? m.MaterialTaskDescription : null,
+								  MoqText = includeRTEFields ? m.MaterialMOQText : null,
+								  WasMoqTextSet = includeRTEFields,
+								  WasDescriptionSet = includeRTEFields,
+
+								  Id = m.MaterialTaskElementID,
+								  TaskID = m.MaterialTaskID,
+								  TaskTitle = m.MaterialTaskTitle,
+								  UpdateDate = m.UpdateDT,
+								  BoeID = m.BOEID
+							  }).ToList();
+				}
+			}
+
+			return result;
+		}
+
+		#region RTE Load Methods
+
+		/// <summary>
+		/// Pulls RTE fields for the DTOs, and updates them as needed
+		/// </summary>
+		/// <param name="dtos">DTOs that whose RTE fields will be loaded, if they are null</param>
+		[DbQuery]
         public void LoadRTEFields(ICollection<MaterialDTO> dtos)
         {
             if (dtos == null || !dtos.Any()) { return; }

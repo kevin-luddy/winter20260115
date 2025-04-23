@@ -32,18 +32,18 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <summary>
 		/// The MST zone travel resource dto data loader.
 		/// </summary>
-		private MSTZoneTravelResourceDTODataLoader mstZoneTravelResourceDTODataLoader;
+		private readonly MSTZoneTravelResourceDTODataLoader mstZoneTravelResourceDTODataLoader;
 
 		/// <summary>
 		/// The RMS zone travel rates fees data loader.
 		/// </summary>
-		private RMSZoneTravelRatesFeesDataLoader rmsZoneTravelRatesFeesDataLoader;
+		private readonly RMSZoneTravelRatesFeesDataLoader rmsZoneTravelRatesFeesDataLoader;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="BOEExportConverterRMS" /> class.
 		/// </summary>
-		/// <param name="userDTODataLoader">The user dto data loader.</param>
 		/// <param name="commonDataMapper">The common data mapper.</param>
+		/// <param name="logger">The logger</param>
 		/// <param name="variableSelectBOEtoSumCalculation">The variable select bo eto sum calculation.</param>
 		/// <param name="travelTripCostCalculation">The travel trip cost calculation.</param>
 		/// <param name="mstZoneTravelResourceDTODataLoader">The MST zone travel resource dto data loader.</param>
