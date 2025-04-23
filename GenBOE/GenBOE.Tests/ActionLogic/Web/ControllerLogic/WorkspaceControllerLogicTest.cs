@@ -2288,7 +2288,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual(BOEState.Draft, boe2.State);
 
 			// This is needed since there is no feasible way to override a member of the class with MOQ and use the original code :(
-			BOELaborControllerLogic boeLaborControllerLogic = new BOELaborControllerLogic(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+			BOELaborControllerLogic boeLaborControllerLogic = new BOELaborControllerLogic(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 		}
 
 		/// <summary>

@@ -175,6 +175,8 @@ namespace GenBOE.Models
         public virtual DbSet<CommonDisclosureSkillMix> CommonDisclosureSkillMixes { get; set; }
         public virtual DbSet<MOQTypeSelection> MOQTypeSelections { get; set; }
         public virtual DbSet<SkillMix> SkillMixes { get; set; }
+        public virtual DbSet<CurrentRequest> CurrentRequest { get; set; }
+        public virtual DbSet<RequestTypeLU> RequestTypeLU { get; set; }
     
         [DbFunction("GenBoeEntities", "SplitString")]
         public virtual IQueryable<SplitString_Result> SplitString(string list, string delimiter, string emptyListItem)
@@ -4761,6 +4763,37 @@ namespace GenBOE.Models
         public virtual int insertSkillMixviaTableParameter()
         {
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertSkillMixviaTableParameter");
+        }
+    
+        public virtual int deleteAllRequests()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteAllRequests");
+        }
+    
+        public virtual int deleteRequest(Nullable<int> requestTypeID, string ntid)
+        {
+            var requestTypeIDParameter = requestTypeID.HasValue ?
+                new ObjectParameter("RequestTypeID", requestTypeID) :
+                new ObjectParameter("RequestTypeID", typeof(int));
+    
+            var ntidParameter = ntid != null ?
+                new ObjectParameter("Ntid", ntid) :
+                new ObjectParameter("Ntid", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteRequest", requestTypeIDParameter, ntidParameter);
+        }
+    
+        public virtual int insertRequest(Nullable<int> requestTypeID, string ntid, ObjectParameter newRequestID)
+        {
+            var requestTypeIDParameter = requestTypeID.HasValue ?
+                new ObjectParameter("RequestTypeID", requestTypeID) :
+                new ObjectParameter("RequestTypeID", typeof(int));
+    
+            var ntidParameter = ntid != null ?
+                new ObjectParameter("Ntid", ntid) :
+                new ObjectParameter("Ntid", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertRequest", requestTypeIDParameter, ntidParameter, newRequestID);
         }
     }
 }
