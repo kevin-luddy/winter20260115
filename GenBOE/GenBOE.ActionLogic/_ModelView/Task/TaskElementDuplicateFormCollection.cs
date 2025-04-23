@@ -19,6 +19,8 @@ namespace GenBOE.ActionLogic.ModelView
 
         public TaskType TaskType { get; set; }
 
+		public bool ContainsOCI { get; set; }
+
         /// <summary>
         /// Collection of task element IDs and the number of duplicates that should be created for each
         /// </summary>

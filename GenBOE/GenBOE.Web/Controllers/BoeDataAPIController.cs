@@ -15,6 +15,8 @@ namespace GenBOE.Web.Controllers
 	using System.Net;
 	using System.Net.Http;
 	using System.Net.Http.Headers;
+	using System.Threading.Tasks;
+	using System.Web;
 	using System.Web.Http;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.BOE;
@@ -133,6 +135,11 @@ namespace GenBOE.Web.Controllers
 		/// Logger
 		/// </summary>
 		private Logger logger = new Logger("BoeDataAPIController");
+
+		/// <summary>
+		/// BOE Reports Http Service
+		/// </summary>
+		private readonly BOEReportsHttpService boeReportsHttpService = new BOEReportsHttpService();
 
 		/// <summary>
 		/// Ctor
@@ -377,7 +384,7 @@ namespace GenBOE.Web.Controllers
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public HttpResponseMessage ExportAllBOEs(string workspaceShortName)
+		public async Task<HttpResponseMessage> ExportAllBOEs(string workspaceShortName)
 		{
 			try
 			{
@@ -409,12 +416,24 @@ namespace GenBOE.Web.Controllers
 
 				if (isCustomExport)
 				{
-					WorkspaceExportFormatDTO exportFormat = wsExportFormatDTO.ExportFormat.ParentTemplateId < 9001 || wsExportFormatDTO.ExportFormat.ParentTemplateId > 10000 || wsExportFormatDTO.ExportFormat.ParentTemplateId == null ? this.workspaceExportFormatDTOLoader.GetById((int)ExcelReportTemplateType.MASTER) : wsExportFormatDTO;
-					boeCustomExporter.ExportBOEToWordFileStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workspace, null, stream, exportFormat);
+					wsExportFormatDTO = wsExportFormatDTO.ExportFormat.ParentTemplateId < 9001 || wsExportFormatDTO.ExportFormat.ParentTemplateId > 10000 || wsExportFormatDTO.ExportFormat.ParentTemplateId == null ? this.workspaceExportFormatDTOLoader.GetById((int)ExcelReportTemplateType.MASTER) : wsExportFormatDTO;
+				}
+
+				if (Utilities.IsReportGenerationExternal)
+				{
+					await this.boeReportsHttpService.ExportBOEsToWordStream(null, stream, isCustomExport, wsExportFormatDTO, exportInputs, boeExportModelViews,
+						boeSummaryGridModelViews, false);
 				}
 				else
 				{
-					boeExporter.ExportBOEToWordFileStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workspace, fileName, stream, wsExportFormatDTO.ExportFormat.TemplateType);
+					if (isCustomExport)
+					{
+						boeCustomExporter.ExportBOEToWordFileStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workspace, null, stream, wsExportFormatDTO);
+					}
+					else
+					{
+						boeExporter.ExportBOEToWordFileStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workspace, fileName, stream, wsExportFormatDTO.ExportFormat.TemplateType);
+					}
 				}
 
 				stream.Position = 0; //We need to set this to return the file

@@ -376,7 +376,7 @@ function AfterDomLoadBoeHeaderWidget(containsOCI, readOnly, workspaceState, save
                 Stateful: false
             }
         ],
-        ContainsOCI: containsOCI,
+		ContainsOCI: containsOCI,
         OnDataRetrieved: function(data) {
             data.CustomFieldValues=[];
 
@@ -2125,11 +2125,11 @@ function AfterDomLoadBOECommentsGridWidget(BOECommentsGrid) {
         BOECommentsGrid.EnableApprovals();
     }
 
-    if (BOECommentsGrid.ContainsOCI == true) {
-        $('.oci-note').html('<b>Note:</b> Must not contain any classified, export controlled or third party proprietary information.');
+	if (BOECommentsGrid.ContainsOCI == true) {
+        $('.oci-note').html('<b>Note:</b> ' + BOECommentsGrid.BannerTextWithoutOCI);
     }
     else {
-        $('.oci-note').html('<b>Note:</b> Must not contain any OCI, classified, export controlled or third party proprietary information.');
+        $('.oci-note').html('<b>Note:</b> ' + BOECommentsGrid.BannerTextWithOCI);
     }
 
     refreshModule($('.boe-comments.module'));

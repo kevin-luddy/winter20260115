@@ -949,9 +949,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				if (!isManual)
 				{
 					string sapRepo = RepositoryName.SapWebi.GetDescription();
-					// we need to do a check for Space to make sure all the Repository for the MOQ Tables are set to SAP/Webi
-					if (SystemConfiguration.Instance().CompanyMode != IES.Common.CompanyConfiguration.SpaceSystems || moqTypes.All(x => x.TableData != null &&
-						x.TableData.Any() && x.TableData.All(t => t.RepositoryName == sapRepo)))
+
+					// RMS checks that the totals of both tables combines equals MOQ Hours
+					// Space checks that the totals of each table equals MOQ Hours
+					if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)
 					{
 						if (taskElement.SkillMixTable != null && Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
 						{
@@ -962,6 +963,26 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
 						{
 							validationErrors.Add(new ValidationMessage(string.Format("Skill Mix Total Historical Hours do not match the sum of the Total Relevant Hours.")));
+						}
+					}
+					// we need to do a check for Space to make sure all the Repository for the MOQ Tables are set to SAP/Webi
+					else if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems && 
+						moqTypes.All(x => x.TableData != null && x.TableData.Any() && x.TableData.All(t => t.RepositoryName == sapRepo)))
+					{
+						if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
+						{
+							validationErrors.Add(new ValidationMessage(string.Format("Skill Mix Total Historical Hours in Legacy Skill Mix Table do not match the sum of the Total Relevant Hours.")));
+						}
+
+						if (taskElement.SkillMixTable != null && Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
+						{
+							// add the Common Disclosure table totals to historical totals
+							historicalHoursTotals = taskElement.CommonDisclosureTable.Sum(c => c.HistoricalHours);
+
+							if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
+							{
+								validationErrors.Add(new ValidationMessage(string.Format("Skill Mix Total Historical Hours in LM Enterprise Skill Mix Table do not match the sum of the Total Relevant Hours.")));
+							}
 						}
 					}
 				}
@@ -3749,24 +3770,32 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				// filter out bad data in currentSkillMixData
 				FilterBadData(laborTypes, currentSkillMixData, currentCommonDisclosureData, isManual, isSpace);
 
-				ICollection<IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO>> groupedResourceHours = resourceHours.GroupBy(r => r.ResourceName).OrderBy(t => t.Key).ToList();
-				foreach (IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO> grouping in groupedResourceHours)
+				if (isManual)
 				{
-					decimal totalGroupHours = grouping.Sum(g => g.TotalHours);
-
-					refreshedModel.SkillMixRows.Add(
-						new SkillMixModelView
-						{
-							HistoricalHours = totalGroupHours,
-							ResourceOld = grouping.Key,
-							ResourceNew = string.Empty,
-							Included = false
-						}
-					);
-
-					if (string.IsNullOrWhiteSpace(grouping.Key))
+					refreshedModel.SkillMixRows.AddRange(currentSkillMixData);
+					addBlankRow = !currentSkillMixData.Any(s => string.IsNullOrWhiteSpace(s.ResourceOld));
+				}
+				else
+				{
+					ICollection<IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO>> groupedResourceHours = resourceHours.GroupBy(r => r.ResourceName).OrderBy(t => t.Key).ToList();
+					foreach (IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO> grouping in groupedResourceHours)
 					{
-						addBlankRow = false;
+						decimal totalGroupHours = grouping.Sum(g => g.TotalHours);
+
+						refreshedModel.SkillMixRows.Add(
+							new SkillMixModelView
+							{
+								HistoricalHours = totalGroupHours,
+								ResourceOld = grouping.Key,
+								ResourceNew = string.Empty,
+								Included = false
+							}
+						);
+
+						if (string.IsNullOrWhiteSpace(grouping.Key))
+						{
+							addBlankRow = false;
+						}
 					}
 				}
 

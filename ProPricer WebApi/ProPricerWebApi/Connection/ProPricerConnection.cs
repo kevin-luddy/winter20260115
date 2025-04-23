@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016-2020 Lockheed Martin Corporation.
+    Copyright 2016-2025 Lockheed Martin Corporation.
 
     This computer software has been provided in confidence, and contains trade secret and/or privileged or confidential 
     commercial or financial information. Public disclosure of any information marked as indicated above is prohibited 
@@ -11,7 +11,6 @@ namespace APTSPropricerApi.Connection
 {
 	using ACV.Shared;
 	using EBS.ProPricer.Client;
-	using EBS.ProPricer.Data;
 	using EBS.ProPricer.Model;
 	using EBS.ProPricer.Registration;
 
@@ -99,7 +98,7 @@ namespace APTSPropricerApi.Connection
 		/// Gets if registration key works
 		/// </summary>
 		/// <param name="registrationInfo">The registration info</param>
-		/// <returns>True if propricer license key is registered</returns>
+		/// <returns>True if ProPricer license key is registered</returns>
 		private static bool GetRegistration(RegistrationInformation registrationInfo)
 		{
 			string sProPricerRegistrationKey = ConfigurationServiceWeb.Configuration.GetValue<string>("ProPricerRegistrationKey");
@@ -116,12 +115,13 @@ namespace APTSPropricerApi.Connection
 		/// <returns>True if activated online</returns>
 		private bool GetActivation(ProPricerActivation activation, ref bool changeKey)
 		{
-			if (!activation.IsActivated)
+			changeKey = true;
+			if (!activation.Status.IsActivated())
 			{
-				activation.ActivateOnline();
+				activation.Activate();
 			}
 
-			return true;
+			return activation.Status.IsActivated();
 		}
 
 		/// <summary>

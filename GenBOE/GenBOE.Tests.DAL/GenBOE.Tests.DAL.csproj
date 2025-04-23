@@ -144,6 +144,7 @@
     <Compile Include="DataLoaders\CommonDataLoaderTest.cs" />
     <Compile Include="DataLoaders\BOEFormDTODataLoaderTest.cs" />
     <Compile Include="DataLoaders\CommonDisclosureSMDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\MaterialDTODataLoaderTest.cs" />
     <Compile Include="DataLoaders\MoqTypeDataLoaderTest.cs" />
     <Compile Include="DataLoaders\MOQTypeSelectionTableDataResourceHoursDataLoaderTest.cs" />
     <Compile Include="DataLoaders\MoqTypeTableCustomFieldValueXREFLoaderTest.cs" />

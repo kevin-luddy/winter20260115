@@ -135,11 +135,13 @@
         $("#Cancel-BOEUpdates").click(TaskElementDetailsWidget.CancelToMainGrid);
 
         //Change the OCI note based off the workspace
-        if (ManageWBS_ContainsOCI == true) {
-            $('#Task-OCINote').html('Must not contain any classified, export controlled or third party proprietary information.');
+		if (ManageWBS_ContainsOCI == true) {
+			var text = '<%: SiteMasterUtilities.GetBannerText(true) %>';
+            $('#Task-OCINote').html(text);
         }
-        else {
-            $('#Task-OCINote').html('Must not contain any OCI, classified, export controlled or third party proprietary information.');
+		else {
+			var text = '<%: SiteMasterUtilities.GetBannerText() %>';
+            $('#Task-OCINote').html(text);
         }
 
         $(document).one("MOQWidgetLoaded", function () {
@@ -566,7 +568,18 @@
     <div id="SkillMixPlaceholder" data-ng-show="showSkillMix()">
         <div class="skill-mix-tables module collapsed" id="SkillMixRationaleContainer">
             <div class="module-header-data">
-                Skill Mix Rationale
+                <div class="float-left">Skill Mix Rationale</div>
+                <div data-ng-show="showSkillMix()" class="float-right right-header">
+                    <div id="SkillMixDeltaLabel" class="skillmix-label">Delta <%: Model.HoursLabel%></div>
+                    <div id="SkillMixDelta" class="skillmix"><span data-ng-if="!invalidSpreads">{{deltaSkillMixHours}}</span><span data-ng-if="invalidSpreads">#ERR</span></div>
+                    <div class="skill-mix-spacer">&nbsp;</div>
+                    <div class="float-right skillmix-calc-container">
+                        <div class="module-header-data-first-row">
+                            <div id="SkillMixTotalLabel" class="skillmix-label">Total <%: Model.HoursLabel%> </div>
+                            <div id="SkillMixTotal" class="skillmix float-right"><span data-ng-if="invalidSpreads">#ERR</span><span data-ng-if="!invalidSpreads">{{totalSkillMixHours}}</span></div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="module-content-data expanded-content">
                 <div class="form-element" data-ng-if="isSkillMixDisabled()">

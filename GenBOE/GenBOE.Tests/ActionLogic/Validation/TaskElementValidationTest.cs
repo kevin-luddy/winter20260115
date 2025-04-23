@@ -56,7 +56,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
 
-			this.retriever.Setup(x => x.GetOdcCollectionByBoeIds(It.IsAny<ICollection<int>>(), It.IsAny<bool>())).Returns(new List<OtherDirectCostDTO>());
+			this.retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>())).Returns(new List<OtherDirectCostDTO>());
 			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> {  });
 
 

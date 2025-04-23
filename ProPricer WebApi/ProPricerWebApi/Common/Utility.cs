@@ -100,7 +100,7 @@ namespace APTSPropricerApi.Common
 			if (exportType == ExportType.Pdf)
 			{
 				extension = ".pdf";
-			} 
+			}
 			else if (exportType == ExportType.Word)
 			{
 				extension = ".docx";

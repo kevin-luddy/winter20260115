@@ -35,14 +35,12 @@ namespace APTSPropricerApi.Common
 		/// <param name="options">The options</param>
 		/// <param name="logger">The logger</param>
 		/// <param name="encoder">Url Encoder</param>
-		/// <param name="clock">System Clock</param>
 		/// <param name="configuration">Configuration</param>
 		public TokenAuthenticationSchemeHandler(
 			IOptionsMonitor<TokenAuthenticationOptions> options,
 			ILoggerFactory logger,
 			UrlEncoder encoder,
-			ISystemClock clock,
-			IConfiguration configuration) : base(options, logger, encoder, clock)
+			IConfiguration configuration) : base(options, logger, encoder)
 		{
 			string authDomain = configuration.GetValue<string>("oAuthDomain");
 			this.metadataAddressForAuthDomain = authDomain + ".well-known/openid-configuration";

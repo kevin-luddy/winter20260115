@@ -211,8 +211,8 @@ namespace GenBOE.ActionLogic
         /// <param name="ws">Workspace containing BOEs</param>
         /// <param name="templateFileName">file name of the template used for export</param>
         /// <param name="blankTemplate">Bool to determine if template should be blank or contain all BOEs</param>
-        /// <returns>exprted file name and formatted filename in an array</returns>
-        string[] ExportManageBOE(FullWorkspace ws, string templateFileName, bool blankTemplate);
+        /// <returns>exported file name and formatted filename in an array</returns>
+        Task<string[]> ExportManageBOE(FullWorkspace ws, string templateFileName, bool blankTemplate);
 
         /// <summary>
         /// Performs actions to start import of BOEs on the Manage BOEs page

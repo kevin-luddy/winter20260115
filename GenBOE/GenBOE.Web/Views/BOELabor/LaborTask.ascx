@@ -423,11 +423,13 @@
         $("#Cancel-BOEUpdates").click(TaskElementDetailsWidget.CancelToMainGrid);
 
         //Change the OCI note based off the workspace
-        if (ManageWBS_ContainsOCI == true) {
-            $('#Task-OCINote').html('Must not contain any classified, export controlled or third party proprietary information.');
+		if (ManageWBS_ContainsOCI == true) {
+			var text = '<%: SiteMasterUtilities.GetBannerText(true) %>';
+            $('#Task-OCINote').html(text);
         }
-        else {
-            $('#Task-OCINote').html('Must not contain any OCI, classified, export controlled or third party proprietary information.');
+		else {
+			var text = '<%: SiteMasterUtilities.GetBannerText() %>';
+            $('#Task-OCINote').html(text);
         }
 
         AfterDomLoadImportLaborTypeWidget(ImportLaborType);
@@ -944,10 +946,21 @@
 
     <% if (Model.EnableSkillMix)
         { %>
-    <div id="SkillMixPlaceholder"  data-ng-show="showSkillMix()">
+    <div id="SkillMixPlaceholder" data-ng-show="showSkillMix()">
         <div class="skill-mix-tables module collapsed" id="SkillMixRationaleContainer">
             <div class="module-header-data">
-                Skill Mix Rationale
+                <div class="float-left">Skill Mix Rationale</div>
+                <div data-ng-show="showSkillMix()" class="float-right right-header">
+                    <div id="SkillMixDeltaLabel" class="skillmix-label">Delta <%: Model.HoursLabel%></div>
+                    <div id="SkillMixDelta" class="skillmix"><span data-ng-if="!invalidSpreads">{{deltaSkillMixHours}}</span><span data-ng-if="invalidSpreads">#ERR</span></div>
+                    <div class="skill-mix-spacer">&nbsp;</div>
+                    <div class="float-right skillmix-calc-container">
+                        <div class="module-header-data-first-row">
+                            <div id="SkillMixTotalLabel" class="skillmix-label">Total <%: Model.HoursLabel%> </div>
+                            <div id="SkillMixTotal" class="skillmix float-right"><span data-ng-if="invalidSpreads">#ERR</span><span data-ng-if="!invalidSpreads">{{totalSkillMixHours}}</span></div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="module-content-data expanded-content">
                 <div class="form-element" data-ng-if="isSkillMixDisabled()">
@@ -994,7 +1007,7 @@
                                         </select>
                                     </td>
                                     <td data-ng-if="!isSkillMixManual()" style="text-align: right">{{row.HistoricalHours | number:2}}</td>
-                                    <td data-ng-if="isSkillMixManual()" style="text-align: right"><input type="number" data-ng-model="row.HistoricalHours" step="any" style="width: 100%; height: 14px;" /></td>
+                                    <td data-ng-if="isSkillMixManual()" style="text-align: right"><input type="number" data-ng-blur="setDirty()" data-ng-model="row.HistoricalHours" step="any" style="width: 100%; height: 14px;" /></td>
                                     <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
                                     <td>{{row.Included | yesNo}}</td>
                                     <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
@@ -1556,7 +1569,7 @@
                 </div>
             </div>
             <div class="form-row">
-                <div class="form-element">Note: Must not contain any OCI, classified, export controlled or third party proprietary information.</div>
+                <div class="form-element">Note: <%: SiteMasterUtilities.GetBannerText(Model.ContainsOci) %></div>
             </div>
             <div class="buttons">
                 <button id="ReOrderLaborTypesDialog-Save" class="ies-action disabled" onclick="TaskElementDetailsWidget.SaveReOrderLaborTypes()" name="save-button" type="button">Save</button>
@@ -1640,7 +1653,7 @@
                 </table>
             </div>
             <div class="form-row">
-                <div class="form-element">Note: Must not contain any OCI, classified, export controlled or third party proprietary information.</div>
+                <div class="form-element">Note: <%: SiteMasterUtilities.GetBannerText(Model.ContainsOci) %></div>
             </div>
             <div class="buttons">
                 <button id="DuplicateLaborTypesDialog-Save" class="ies-action disabled" data-ng-click="saveDuplicateResourceTypes()" name="save-button" type="button">Save</button>

@@ -431,11 +431,11 @@ function AfterDomLoadODCElementsCompositeWidget(ODCElementsComposite, ODC_Contai
     });
       
     //Change the OCI note based off the workspace
-    if (ODC_ContainsOCI == true){
-        $('#ODC-OCINote').html('Must not contain any classified, export controlled or third party proprietary information.');
+	if (ODC_ContainsOCI == true) {
+		$('#ODC-OCINote').html(ODCElementsComposite.BannerTextWithoutOCI);
     }
-    else {
-        $('#ODC-OCINote').html('Must not contain any OCI, classified, export controlled or third party proprietary information.');
+	else {
+		$('#ODC-OCINote').html(ODCElementsComposite.BannerTextWithOCI);
     }
 
     refreshModule($('.odc-details .module'));
@@ -542,8 +542,6 @@ function InitializeBOEOtherDirectCostWidget(BOEOtherDirectCostWidget_ReadOnly, l
                 $('#ReOrderODCTaskElementDialog #ReOrderODCTaskElementDialog-Save').removeClass('display-none');
             }
         });
-
-
     };
 
     BOEOtherDirectCostWidget.ShiftSelectedItemsDown = function (list) {

@@ -861,6 +861,28 @@ namespace IES.Common.Core.Utilities
 		}
 
 		/// <summary>
+		/// Private for Is UCOT Enabled
+		/// </summary>
+		private static bool? isUCOTEnabled;
+
+		/// <summary>
+		/// Is UCOT/Uncompensated Overtime enabled?
+		/// </summary>
+		public static bool IsUCOTEnabled
+		{
+			get
+			{
+				if (isUCOTEnabled == null)
+				{
+					bool.TryParse(ConfigurationUtilities.GetAppSetting("EnableUCOT"), out bool ucotEnabled);
+					isUCOTEnabled = ucotEnabled;
+				}
+
+				return isUCOTEnabled.Value;
+			}
+		}
+
+		/// <summary>
 		/// Private for Is BRC Enabled, used for unit testing
 		/// </summary>
 		private static bool? isBRCEnabled;
