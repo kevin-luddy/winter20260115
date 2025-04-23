@@ -151,9 +151,9 @@ namespace GenBOE.Web.Controllers
                             parentLevel = Level.CLIN;
                         }
 
-                        // preload data
-                        boe.LoadTaskElementRTEData();
-                        boe.LoadTravelRTEData();
+                        //// preload data
+                        //boe.LoadTaskElementRTEData();
+                        //boe.LoadTravelRTEData();
 
                         break;
                     case Level.CLIN:
@@ -162,12 +162,12 @@ namespace GenBOE.Web.Controllers
                         dateShiftable = DateShiftDTO.FromIDateShiftable(clin);
 
                         // preload data
-                        IReadOnlyCollection<FullBoe> boes = clin.Boes;
-                        foreach (FullBoe clinboe in boes)
-                        {
-                            clinboe.LoadTravelRTEData();
-                            clinboe.LoadTaskElementRTEData();
-                        }
+       //                 IReadOnlyCollection<FullBoe> boes = clin.Boes;
+       //                 foreach (FullBoe clinboe in boes)
+       //                 {
+							//clinboe.Travels;
+       //                     clinboe.LoadTaskElementRTEData();
+       //                 }
 
                         if (!clin.StartDate.HasValue || !clin.EndDate.HasValue)
                         {

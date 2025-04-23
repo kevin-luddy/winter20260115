@@ -266,7 +266,6 @@ namespace GenBOE.ActionLogic.DateShift
             {
                 switch (dateShiftable.DateShiftLevel)
                 {
-					// TODO Thomas: Breaks here when BOE Task because the labor isn't correct?
                     case Level.Labor:
                         PerformLaborSpreadShift(dateShiftable, detail, modelView);
                         Validate(dateShiftable, detail, parentStart, parentEnd, parentBoeId, Level.Task, workspaceShortname);

@@ -7,6 +7,7 @@
 namespace GenBOE.Dtos
 {
 	using GenBOE.DataBridge.DTO;
+	using GenBOE.Objects;
 	using IES.Common;
 	using System;
 	using System.Collections.Generic;
@@ -57,7 +58,7 @@ namespace GenBOE.Dtos
 		/// <summary>
 		/// Date shift level value due to readonly date shift level on interface.
 		/// </summary>
-		public Level DateShiftLevelValue { get => dateShiftLevel; set => dateShiftLevel = value; }
+		public int Level { get => (int)dateShiftLevel; set => dateShiftLevel = (Level)value; }
 
 		/// <summary>
 		/// Updatable.
@@ -68,6 +69,11 @@ namespace GenBOE.Dtos
 		/// Boe ID.
 		/// </summary>
 		public int BoeId { get; set; }
+
+		/// <summary>
+		/// BOE State ID.
+		/// </summary>
+		public int BOEStateID { get; set; }
 
 		/// <summary>
 		/// Labor spreads across resources that needs to be date shifted.
@@ -127,7 +133,7 @@ namespace GenBOE.Dtos
 			DateShiftDTO dateShiftDTO = new DateShiftDTO();
 			((IDateShiftable)dateShiftDTO).StartDate = dateShiftable.StartDate;
 			((IDateShiftable)dateShiftDTO).EndDate = dateShiftable.EndDate;
-			dateShiftDTO.DateShiftLevelValue = dateShiftable.DateShiftLevel;
+			dateShiftDTO.Level = (int)dateShiftable.DateShiftLevel;
 			dateShiftDTO.HasSpreadValue = dateShiftable.HasSpread;
 
 			if (dateShiftable is UpdateableDTO updateableDTO)
@@ -138,8 +144,15 @@ namespace GenBOE.Dtos
 				((IDateShiftable)dateShiftDTO).Updateable = updateableDTO.Updateable;
 			}
 
+			if (dateShiftable is FullBoe fullBoeDTO)
+			{
+				dateShiftDTO.BOEStateID = (int)fullBoeDTO.State;
+			}
+
 			if (dateShiftable is BoeTaskElementDTO boeTaskElementDTO)
 			{
+				// TODO Thomas: Will need to save all the task and check if its skill mix data.
+
 				dateShiftDTO.CommonDisclosureTable = boeTaskElementDTO.CommonDisclosureTable;
 				dateShiftDTO.SkillMixTable = boeTaskElementDTO.SkillMixTable;
 				dateShiftDTO.TaskElementLabors = boeTaskElementDTO.taskElementLabors;
@@ -158,13 +171,13 @@ namespace GenBOE.Dtos
 			// Store the BOE Id
 			switch (dateShiftable.DateShiftLevel)
 			{
-				case Level.BOE:
+				case IES.Common.Level.BOE:
 					dateShiftDTO.BoeId = ((UpdateableDTO)dateShiftable).Id;
 					break;
-				case Level.Task:
+				case IES.Common.Level.Task:
 					dateShiftDTO.BoeId = ((BoeTaskElementDTO)dateShiftable).BoeID;
 					break;
-				case Level.Travel:
+				case IES.Common.Level.Travel:
 					dateShiftDTO.BoeId = ((TravelDTO)dateShiftable).BoeID;
 					break;
 			}

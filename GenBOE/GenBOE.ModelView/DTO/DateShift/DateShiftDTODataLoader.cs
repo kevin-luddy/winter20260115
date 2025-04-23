@@ -11,6 +11,7 @@ namespace GenBOE.DataBridge.DTO
 	using IES.Common.Exceptions;
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Data;
 	using System.Data.Entity;
 	using System.Data.SqlClient;
@@ -42,7 +43,7 @@ namespace GenBOE.DataBridge.DTO
 				dateShiftDTO.Updateable = UpdateType.Upsert;
 			}
 
-			this.Save(dateShiftDTOs);
+			this.UpdateDateShifts(dateShiftDTOs);
 		}
 
 		#region Inheritted
@@ -67,62 +68,40 @@ namespace GenBOE.DataBridge.DTO
 			throw new NotImplementedException();
 		}
 
-		public override Dictionary<int, int> Save(ICollection<DateShiftDTO> dtosToSave)
+		public virtual int? UpdateDateShifts(ICollection<DateShiftDTO> dateShifts)
 		{
-			if (dtosToSave == null)
+			int? toReturn = null;
+			if (dateShifts == null || dateShifts.Count == 0) { throw new ArgumentNullException(nameof(dateShifts)); }
+
+			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
 			{
-				throw new ArgumentNullException(nameof(dtosToSave));
-			}
-
-			Dictionary<int, int> toReturn = new Dictionary<int, int>();
-
-			try
-			{
-				// Create a data table to hold the date shift data
-				DataTable dataTable = new DataTable();
-				dataTable.Columns.Add("Level", typeof(string));
-				dataTable.Columns.Add("Id", typeof(int));
-				dataTable.Columns.Add("StartDate", typeof(DateTime));
-				dataTable.Columns.Add("EndDate", typeof(DateTime));
-				dataTable.Columns.Add("BOEStateID", typeof(int));
-				dataTable.Columns.Add("UpdateDT", typeof(DateTime));
-
-				// Add the date shift data to the data table
-				foreach (DateShiftDTO dto in dtosToSave)
+				Collection<string> dateShiftPropertiesToIncludeInTable = new Collection<string>()
 				{
-					dataTable.Rows.Add(dto.DateShiftLevelValue.ToString(), dto.Id, dto.StartDate, dto.EndDate, null, DateTime.Now);
-				}
+					"Level", "Id", "StartDate", "EndDate", "BOEStateID", "UpdateDate"
+				};
 
-				// Execute the stored procedure to update the date shifts
 				using (DbContext objectContext = new DbContext(Constants.BOE_DB_CONTEXT_NAME))
 				{
-					ICollection<KeyValuePair<int, DateTime?>> updateResult = StoredProcedureHelper.ExecuteTableValueProcedure(
+					DataTable dateShiftsDataTable = StoredProcedureHelper.ToDataTable<DateShiftDTO>(dateShifts, dateShiftPropertiesToIncludeInTable);
+
+					// Convert the Level and BOEStateID columns to integers
+					foreach (DataRow row in dateShiftsDataTable.Rows)
+					{
+						row["Level"] = (int)row["Level"];
+						row["BOEStateID"] = (int)row["BOEStateID"];
+					}
+
+					toReturn = StoredProcedureHelper.ExecuteTableValueProcedure(
 						objectContext,
-						dataTable,
+						dateShiftsDataTable,
 						"updateDateShiftviaTableParameter",
 						"@DateShifts",
 						"TT_DateShift",
-						false);
-
-					// Get the updated IDs and update dates
-					for (int i = 0; i < dtosToSave.Count; i++)
-					{
-						DateShiftDTO dto = dtosToSave.ElementAt(i);
-						if (updateResult.Any())
-						{
-							KeyValuePair<int, DateTime?> kvp = updateResult.ElementAt(i);
-							toReturn.Add(dto.BoeId, kvp.Key);
-						}
-					}
+						false
+					).FirstOrDefault().Key;
 				}
+				return toReturn;
 			}
-			catch (SqlException ex)
-			{
-				Log.Error(ex);
-				throw new GeneralAppException("There was an error updating from a Date shift.  Contact a system administrator for assistance.");
-			}
-
-			return toReturn;
 		}
 		#endregion
 	}
