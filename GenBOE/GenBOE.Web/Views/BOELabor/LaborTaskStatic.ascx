@@ -568,7 +568,18 @@
     <div id="SkillMixPlaceholder" data-ng-show="showSkillMix()">
         <div class="skill-mix-tables module collapsed" id="SkillMixRationaleContainer">
             <div class="module-header-data">
-                Skill Mix Rationale
+                <div class="float-left">Skill Mix Rationale</div>
+                <div data-ng-show="showSkillMix()" class="float-right right-header">
+                    <div id="SkillMixDeltaLabel" class="skillmix-label">Delta <%: Model.HoursLabel%></div>
+                    <div id="SkillMixDelta" class="skillmix"><span data-ng-if="!invalidSpreads">{{deltaSkillMixHours}}</span><span data-ng-if="invalidSpreads">#ERR</span></div>
+                    <div class="skill-mix-spacer">&nbsp;</div>
+                    <div class="float-right skillmix-calc-container">
+                        <div class="module-header-data-first-row">
+                            <div id="SkillMixTotalLabel" class="skillmix-label">Total <%: Model.HoursLabel%> </div>
+                            <div id="SkillMixTotal" class="skillmix float-right"><span data-ng-if="invalidSpreads">#ERR</span><span data-ng-if="!invalidSpreads">{{totalSkillMixHours}}</span></div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="module-content-data expanded-content">
                 <div class="form-element" data-ng-if="isSkillMixDisabled()">
