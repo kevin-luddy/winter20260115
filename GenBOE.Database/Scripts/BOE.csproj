@@ -188,7 +188,6 @@
     <Content Include="Object Scripts\Stored Procedures\insertMessageConfirmation.sql" />
     <Content Include="Object Scripts\Stored Procedures\updateBOEApproval.sql" />
     <Content Include="Object Scripts\Stored Procedures\updateBOETaskElementLaborTypeWarningFlag.sql" />
-    <Content Include="Object Scripts\Stored Procedures\UpdateDateShiftViaTable.sql" />
     <Content Include="Object Scripts\Stored Procedures\UpdateDbVersion.sql" />
     <Content Include="Object Scripts\Stored Procedures\updateMileageReimbursementRate.sql" />
     <Content Include="Object Scripts\Stored Procedures\UpdateMSTTravelNonzoneFeesAndCosts.sql" />
@@ -274,6 +273,7 @@
     <Content Include="Object Scripts\Table Based Processing\TaskElementCustomFieldViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\TaskElementViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\TaskElementWorkspaceVariableViaTable.sql" />
+    <Content Include="Object Scripts\Table Based Processing\UpdateDateShiftViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\WorkspaceResourceViaTable.sql" />
     <Content Include="Object Scripts\Views\UsersWithRolesReport.sql" />
     <Content Include="Object Scripts\X_Data Cleanup\ErrorLogs.sql" />
