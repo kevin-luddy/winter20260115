@@ -188,6 +188,7 @@
     <Content Include="Object Scripts\Stored Procedures\insertMessageConfirmation.sql" />
     <Content Include="Object Scripts\Stored Procedures\updateBOEApproval.sql" />
     <Content Include="Object Scripts\Stored Procedures\updateBOETaskElementLaborTypeWarningFlag.sql" />
+    <Content Include="Object Scripts\Stored Procedures\UpdateDateShiftViaTable.sql" />
     <Content Include="Object Scripts\Stored Procedures\UpdateDbVersion.sql" />
     <Content Include="Object Scripts\Stored Procedures\updateMileageReimbursementRate.sql" />
     <Content Include="Object Scripts\Stored Procedures\UpdateMSTTravelNonzoneFeesAndCosts.sql" />
