@@ -1,6 +1,6 @@
 PRINT '###### SCRIPT IS STARTING ######';
 /*
-    This file was auto-generated for Release: 2025.06, on 4/22/2025.
+    This file was auto-generated for Release: 2025.06, on 4/23/2025.
     It contains all of the Release specific scripts, modifying data/tables as well as all of the Stored Procedures and User Defined Table Types.
 */
 
@@ -61,147 +61,6 @@ GO
 CREATE NONCLUSTERED INDEX [IX_CurrentRequest_Ntid]
 ON [dbo].[CurrentRequest] ([Ntid]);
 GO
-
-
--- dbo.InsertRequest
-IF OBJECT_ID('dbo.insertRequest', 'P') IS NOT NULL
-    DROP PROCEDURE [dbo].[insertRequest];
-GO
-
-/****** Object:  StoredProcedure [dbo].[insertRequest]    Script Date: 4/21/2025 9:15:37 AM ******/
-SET ANSI_NULLS OFF
-GO
-
-SET QUOTED_IDENTIFIER OFF
-GO
-
-CREATE PROCEDURE [dbo].[insertRequest]
-(
-	@RequestTypeID int,
-	@Ntid varchar(20),
-    @NewRequestID INT OUTPUT
-)
-AS
-/******************************************************************************
-**		 
-**		Name: insertRequest
-**		Desc: Inserts a record into the Current Request table for DTO
-**			
-**		
-**
-**		Auth: Yemi Oyetoro
-**		Date: 04/14/2025
-*******************************************************************************
-**		Change History
-*******************************************************************************
-**		Date:		Author:				Description:
-**		--------	--------			---------------------------------------
-*******************************************************************************/
-SET NOCOUNT ON 
-IF EXISTS (SELECT 1 FROM dbo.CurrentRequest WHERE RequestTypeID = @RequestTypeID AND Ntid = @Ntid)
-BEGIN
-
-	DECLARE	@ErrorMessage varchar (500)
-
-	SET @ErrorMessage =   'You cannot add another request of this request type'
-	RAISERROR (
-		@ErrorMessage, -- Message text.
-        11, -- Severity,/*Severity Changed to 11*/
-		1 -- State,
-		)
-	RETURN
-END
-					
-INSERT INTO [dbo].CurrentRequest
-           (RequestTypeID
-           ,Ntid
-           ,[UpdateDT])
-     VALUES
-           (
-            @RequestTypeID,
-            @Ntid, 
-            GetDate()
-            )
-
-SET @NewRequestID = SCOPE_IDENTITY();
-GO
-
-
--- dbo.deleteRequest
-IF OBJECT_ID('dbo.deleteRequest', 'P') IS NOT NULL
-    DROP PROCEDURE [dbo].[deleteRequest];
-GO
-/****** Object:  StoredProcedure [dbo].[deleteRequest]    Script Date: 4/21/2025 9:17:13 AM ******/
-SET ANSI_NULLS OFF
-GO
-
-SET QUOTED_IDENTIFIER OFF
-GO
-
-
-CREATE PROCEDURE [dbo].[deleteRequest]
-(
-	@RequestTypeID int,
-	@Ntid varchar(20)
-)
-AS
-/******************************************************************************
-**		 
-**		Name: deleteRequest
-**		Desc: delete a record in the Current Request table
-**			
-**		
-**
-**		Auth: Yemi Oyetoro
-**		Date: 04/14/2025
-*******************************************************************************
-**		Change History
-*******************************************************************************
-**		Date:		Author:				Description:
-**		--------	--------			---------------------------------------
-*******************************************************************************/
-SET NOCOUNT ON 
-
-	DELETE FROM [dbo].CurrentRequest
-    WHERE RequestTypeID = @RequestTypeID
-    AND Ntid = @Ntid
-GO
-
-
--- dbo.deleteAllRequests
-IF OBJECT_ID('dbo.deleteAllRequests', 'P') IS NOT NULL
-    DROP PROCEDURE [dbo].[deleteAllRequests];
-GO
-/****** Object:  StoredProcedure [dbo].[deleteAllRequests]    Script Date: 4/21/2025 9:19:14 AM ******/
-SET ANSI_NULLS OFF
-GO
-
-SET QUOTED_IDENTIFIER OFF
-GO
-
-
-CREATE PROCEDURE [dbo].[deleteAllRequests]
-AS
-/******************************************************************************
-**		 
-**		Name: deleteRequest
-**		Desc: delete all records in the Current Request table
-**			
-**		
-**
-**		Auth: Yemi Oyetoro
-**		Date: 04/14/2025
-*******************************************************************************
-**		Change History
-*******************************************************************************
-**		Date:		Author:				Description:
-**		--------	--------			---------------------------------------
-*******************************************************************************/
-SET NOCOUNT ON 
-			
-TRUNCATE TABLE [dbo].CurrentRequest
-GO
-
 
 
 /*
@@ -9224,6 +9083,43 @@ SET NOCOUNT ON
 GO
 
 /*
+    File: \Stored Procedures\deleteAllRequest.sql
+*/
+PRINT '### Starting file: \Stored Procedures\deleteAllRequest.sql';
+IF OBJECT_ID('dbo.deleteAllRequests', 'P') IS NOT NULL
+    DROP PROCEDURE [dbo].[deleteAllRequests];
+GO
+/****** Object:  StoredProcedure [dbo].[deleteAllRequests]    Script Date: 4/21/2025 9:19:14 AM ******/
+SET ANSI_NULLS OFF
+GO
+
+SET QUOTED_IDENTIFIER OFF
+GO
+
+
+CREATE PROCEDURE [dbo].[deleteAllRequests]
+AS
+/******************************************************************************
+**		 
+**		Name: deleteRequest
+**		Desc: delete all records in the Current Request table
+**			
+**		
+**
+**		Auth: Yemi Oyetoro
+**		Date: 04/14/2025
+*******************************************************************************
+**		Change History
+*******************************************************************************
+**		Date:		Author:				Description:
+**		--------	--------			---------------------------------------
+*******************************************************************************/
+SET NOCOUNT ON 
+			
+TRUNCATE TABLE [dbo].CurrentRequest
+GO
+
+/*
     File: \Stored Procedures\deleteAllTravelTripTaskElements.sql
 */
 PRINT '### Starting file: \Stored Procedures\deleteAllTravelTripTaskElements.sql';
@@ -14099,6 +13995,49 @@ SET NOCOUNT ON
 			RETURN
 
 		END
+GO
+
+/*
+    File: \Stored Procedures\deleteRequest.sql
+*/
+PRINT '### Starting file: \Stored Procedures\deleteRequest.sql';
+IF OBJECT_ID('dbo.deleteRequest', 'P') IS NOT NULL
+    DROP PROCEDURE [dbo].[deleteRequest];
+GO
+/****** Object:  StoredProcedure [dbo].[deleteRequest]    Script Date: 4/21/2025 9:17:13 AM ******/
+SET ANSI_NULLS OFF
+GO
+
+SET QUOTED_IDENTIFIER OFF
+GO
+
+
+CREATE PROCEDURE [dbo].[deleteRequest]
+(
+	@RequestTypeID int,
+	@Ntid varchar(20)
+)
+AS
+/******************************************************************************
+**		 
+**		Name: deleteRequest
+**		Desc: delete a record in the Current Request table
+**			
+**		
+**
+**		Auth: Yemi Oyetoro
+**		Date: 04/14/2025
+*******************************************************************************
+**		Change History
+*******************************************************************************
+**		Date:		Author:				Description:
+**		--------	--------			---------------------------------------
+*******************************************************************************/
+SET NOCOUNT ON 
+
+	DELETE FROM [dbo].CurrentRequest
+    WHERE RequestTypeID = @RequestTypeID
+    AND Ntid = @Ntid
 GO
 
 /*
@@ -20254,6 +20193,72 @@ VALUES
 		GetDate()
 		)
 
+GO
+
+/*
+    File: \Stored Procedures\insertRequest.sql
+*/
+PRINT '### Starting file: \Stored Procedures\insertRequest.sql';
+IF OBJECT_ID('dbo.insertRequest', 'P') IS NOT NULL
+    DROP PROCEDURE [dbo].[insertRequest];
+GO
+
+/****** Object:  StoredProcedure [dbo].[insertRequest]    Script Date: 4/21/2025 9:15:37 AM ******/
+SET ANSI_NULLS OFF
+GO
+
+SET QUOTED_IDENTIFIER OFF
+GO
+
+CREATE PROCEDURE [dbo].[insertRequest]
+(
+	@RequestTypeID int,
+	@Ntid varchar(20),
+    @NewRequestID INT OUTPUT
+)
+AS
+/******************************************************************************
+**		 
+**		Name: insertRequest
+**		Desc: Inserts a record into the Current Request table for DTO
+**			
+**		
+**
+**		Auth: Yemi Oyetoro
+**		Date: 04/14/2025
+*******************************************************************************
+**		Change History
+*******************************************************************************
+**		Date:		Author:				Description:
+**		--------	--------			---------------------------------------
+*******************************************************************************/
+SET NOCOUNT ON 
+IF EXISTS (SELECT 1 FROM dbo.CurrentRequest WHERE RequestTypeID = @RequestTypeID AND Ntid = @Ntid)
+BEGIN
+
+	DECLARE	@ErrorMessage varchar (500)
+
+	SET @ErrorMessage =   'You cannot add another request of this request type'
+	RAISERROR (
+		@ErrorMessage, -- Message text.
+        11, -- Severity,/*Severity Changed to 11*/
+		1 -- State,
+		)
+	RETURN
+END
+					
+INSERT INTO [dbo].CurrentRequest
+           (RequestTypeID
+           ,Ntid
+           ,[UpdateDT])
+     VALUES
+           (
+            @RequestTypeID,
+            @Ntid, 
+            GetDate()
+            )
+
+SET @NewRequestID = SCOPE_IDENTITY();
 GO
 
 /*
@@ -38730,6 +38735,110 @@ SELECT BW.[BOETaskWSVarID]
 			BW.WorkspaceVariableID = WS.WorkspaceVariableID AND
 			BW.BOETaskElementID = WS.BOETaskElementID
 ;
+GO
+
+/*
+    File: \Table Based Processing\UpdateDateShiftViaTable.sql
+*/
+PRINT '### Starting file: \Table Based Processing\UpdateDateShiftViaTable.sql';
+-- Drop SPs 1st
+IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[updateDateShiftviaTableParameter]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].updateDateShiftviaTableParameter;
+GO
+
+-- Drop the existing table type if it exists
+IF  EXISTS (SELECT 1 FROM sys.types st JOIN sys.schemas ss ON st.schema_id = ss.schema_id WHERE st.name = N'TT_DateShift' AND ss.name = N'dbo')
+    DROP TYPE [dbo].[TT_DateShift];
+GO
+
+CREATE TYPE [dbo].[TT_DateShift] AS TABLE(
+    [Level] nvarchar(50),
+    [Id] int,
+    [StartDate] date,
+    [EndDate] date,
+    [BOEStateID] int NULL,
+    [UpdateDT] datetime2
+);
+GO
+
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER OFF
+GO
+
+CREATE PROCEDURE [dbo].[updateDateShiftviaTableParameter]
+(
+    @DateShifts [dbo].[TT_DateShift] READONLY  -- The table-valued parameter containing the date shifts
+)
+AS
+/******************************************************************************
+**		 
+**		Name: [updateDateShiftviaTableParameter]
+**		Desc: Update date shifts for workspace, BOE, BOE task element, and CLIN.
+**			
+**		
+**
+**		Auth: [e405721]
+**		Date: [4/17/25]
+*******************************************************************************
+**		Change History
+*******************************************************************************
+**		Date:		Author:				Description:
+**		--------	--------			-------------------------------------------
+**		[4/17/25]	[e405721]			Initial creation
+*******************************************************************************/
+SET NOCOUNT ON
+
+-- Declare a table variable to hold the date shifts
+DECLARE @TT_DateShift TABLE
+(
+    [Level] nvarchar(50),
+    [Id] int,
+    [StartDate] date,
+    [EndDate] date,
+    [BOEStateID] int NULL,
+    [UpdateDT] datetime2
+);
+
+-- Insert the date shifts from the table-valued parameter into the table variable
+INSERT INTO @TT_DateShift SELECT * FROM @DateShifts;
+
+-- Update the Workspace table
+UPDATE w
+SET 
+    ContractStartDate = ds.StartDate,
+    ContractEndDate = ds.EndDate,
+    UpdateDT = ds.UpdateDT
+FROM [dbo].[Workspace] w
+INNER JOIN @TT_DateShift ds ON w.WorkspaceID = ds.Id AND ds.Level = 'Workspace' AND w.UpdateDT = ds.UpdateDT;
+
+-- Update the BOE table
+UPDATE b
+SET 
+    BOEStartDate = ds.StartDate,
+    BOEEndDate = ds.EndDate,
+    BOEStateID = ds.BOEStateID,
+    UpdateDT = ds.UpdateDT
+FROM [dbo].[BOE] b
+INNER JOIN @TT_DateShift ds ON b.BOEID = ds.Id AND ds.Level = 'BOE' AND b.UpdateDT = ds.UpdateDT;
+
+-- Update the BOETaskElement table
+UPDATE bt
+SET 
+    TaskStartDate = ds.StartDate,
+    TaskEndDate = ds.EndDate,
+    UpdateDT = ds.UpdateDT
+FROM [dbo].[BOETaskElement] bt
+INNER JOIN @TT_DateShift ds ON bt.BOEID = ds.Id AND ds.Level = 'BOETaskElement' AND bt.UpdateDT = ds.UpdateDT;
+
+-- Update the CLIN table
+UPDATE c
+SET 
+    CLINStartDate = ds.StartDate,
+    CLINEndDate = ds.EndDate,
+    UpdateDT = ds.UpdateDT
+FROM [dbo].[CLIN] c
+INNER JOIN @TT_DateShift ds ON c.CLINID = ds.Id AND ds.Level = 'CLIN' AND c.UpdateDT = ds.UpdateDT;
 GO
 
 /*
