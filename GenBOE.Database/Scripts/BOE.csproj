@@ -350,6 +350,7 @@
     <Content Include="Release Scripts\Release 2025.05\1 - Release 2025.05 Script.sql" />
     <Content Include="Release Scripts\Older\Release 2025.04\1 - Release 2025.04 Script.sql" />
     <Content Include="Release Scripts\Release 2025.06\1 - Release 2025.06 Script.sql" />
+    <Content Include="Release Scripts\Release 2025.07\1 - Release 2025.07 Script.sql" />
     <Content Include="_Full Script Files For Specific Versions\BOE - 2025.05 Generated On 3_10_2025.sql" />
     <Content Include="_Full Script Files For Specific Versions\BOE - 2025.06 Generated On 4_22_2025.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\ClassifiedRelease2025.03\BOE - 2024.11.sql" />
