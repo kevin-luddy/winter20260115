@@ -1564,17 +1564,26 @@ namespace GenBOE.Web.Controllers
 				throw new ArgumentNullException(nameof(tableData));
 			}
 
+			string exMessage = string.Empty;
+			IESResponse<byte> response = null;
 			// Initialize Action
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_ACTUALS_SAP, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
+			string data = string.Empty;
+			try
+			{
+				// Call to Controller Logic
+				response = await this._BoeLaborControllerLogic.ExportActualsSap(tableData);
+			}
+			catch(Exception ex)
+			{
+				exMessage = ex.Message;
+			}
 
-			// Call to Controller Logic
-			IESResponse<byte> response = await this._BoeLaborControllerLogic.ExportActualsSap(tableData);
-
-			List<ErrorModelView> errors = response.Messages?.Select(m => new ErrorModelView() { ValidationIssue = m }).ToList();
-			string data = response.Data != null ? System.Convert.ToBase64String(response.Data.ToArray()) : String.Empty;
-			JsonResult toReturn = this.Json(new { IsSuccessful = response.IsSuccessful, Messages = errors, Data = data });
+			List<ErrorModelView> errors = response?.Messages?.Select(m => new ErrorModelView() { ValidationIssue = m }).ToList();
+			data = response?.Data != null ? System.Convert.ToBase64String(response.Data.ToArray()) : String.Empty;
+			JsonResult toReturn = this.Json(new { IsSuccessful = response != null && response.IsSuccessful, Messages = errors, Data = data, errorMessage = exMessage });
 
 			// Finalize Action
 			FinalizeAction(_log, WebConstants.ACTION_EXPORT_ACTUALS_SAP, sw);
@@ -1595,15 +1604,26 @@ namespace GenBOE.Web.Controllers
 				throw new ArgumentNullException(nameof(tableData));
 			}
 
+			string errorMessage = string.Empty;
+
 			// Initialize Action
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_CALCULATE_ALL_ACTUALS_SAP, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
 
-			// Call to Controller Logic
-			ICollection<IESResponse<CalculateActualsViewModel>> response = await this._BoeLaborControllerLogic.CalculateAllActualsSap(tableData);
+			ICollection<IESResponse<CalculateActualsViewModel>> response = null;
 
-			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });
+			try
+			{
+				// Call to Controller Logic
+				response = await this._BoeLaborControllerLogic.CalculateAllActualsSap(tableData);
+			}
+			catch (Exception ex)
+			{
+				errorMessage = ex.Message;
+			}
+
+			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response, errorMessage });
 
 			// Finalize Action
 			FinalizeAction(_log, WebConstants.ACTION_CALCULATE_ALL_ACTUALS_SAP, sw);
@@ -1624,15 +1644,26 @@ namespace GenBOE.Web.Controllers
 				throw new ArgumentNullException(nameof(tableData));
 			}
 
+			string errorMessage = string.Empty;
+
 			// Initialize Action
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_CALCULATE_ALL_ACTUALS_SAP_WITH_SKILL_MIX, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
 
-			// Call to Controller Logic
-			ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>> response = await this._BoeLaborControllerLogic.CalculateAllActualsSapWithSkillMix(tableData);
+			ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>> response = null;
 
-			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });
+			try
+			{
+				// Call to Controller Logic
+				response = await this._BoeLaborControllerLogic.CalculateAllActualsSapWithSkillMix(tableData);
+			}
+			catch(Exception ex)
+			{
+				errorMessage = ex.Message;
+			}
+
+			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response, errorMessage });
 
 			// Finalize Action
 			FinalizeAction(_log, WebConstants.ACTION_CALCULATE_ALL_ACTUALS_SAP_WITH_SKILL_MIX, sw);

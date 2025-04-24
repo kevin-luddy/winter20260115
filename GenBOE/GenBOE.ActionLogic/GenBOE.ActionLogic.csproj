@@ -285,6 +285,10 @@
     <Compile Include="_ControllerLogic\Backend\WorkspaceSettingsControllerLogic.cs" />
     <Compile Include="_ControllerLogic\Backend\WorkspaceHomeControllerLogic.cs" />
     <Compile Include="_ModelView\Backend\BOEConfigurationViewModel.cs" />
+    <Compile Include="_ModelView\Backend\PermissionRoleViewModel.cs" />
+    <Compile Include="_ModelView\Backend\PermissionsGridViewModel.cs" />
+    <Compile Include="_ModelView\Backend\PermissionUserViewModel.cs" />
+    <Compile Include="_ModelView\Backend\PermissionViewModel.cs" />
     <Compile Include="_ModelView\Backend\WorkspaceSettingsViewModel.cs" />
     <Compile Include="_ModelView\BOECustomFieldsInUseGridModelView.cs" />
     <Compile Include="_ModelView\ConfidenceReportItem.cs" />

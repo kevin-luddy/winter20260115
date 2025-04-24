@@ -35,7 +35,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         Mock<MemoryCache> memCache = new Mock<MemoryCache>();
         Mock<SecurityInformation> _SecurityInformation;
 
-        [TestInitialize]
+		[TestInitialize]
         public void Init()
         {
             //Very important! This happens to allow for me to use the constructor on FullWorkspace
@@ -67,7 +67,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             permissionLoader.Setup(x => x.SavePermission(inPermission));
 
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             //Act
             sut.SavePotentialPermission(inPermission);
@@ -89,7 +89,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             permissionLoader.Setup(x => x.SavePermission(inPermission));
 
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             //Act
             sut.SavePotentialPermission(inPermission);
@@ -114,7 +114,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             permissionLoader.Setup(x => x.SavePermission(inPermission));
 
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             //Act
             sut.SavePotentialPermission(inPermission);
@@ -130,7 +130,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             //Pass in null to make sure we throw the Null Excpetion
             PermissionsDTO inPermission = null;
 
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             sut.SavePotentialPermission(inPermission);
         }
@@ -154,7 +154,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             permissionLoader.Setup(x => x.SavePermission(inPermission));
 
             //Pass in Mock setups
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             //Act to throw ArgumentException "Permissions already exist"
             sut.SavePotentialPermission(inPermission);
@@ -223,7 +223,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             permissionLoader.Setup(x => x.SavePermission(new PermissionsDTO { BOEId = null, ETIUserId = EIdsDTO.UserID, Role = Role.Approver, Updateable = UpdateType.Upsert, WorkspaceId = ws.Id }));
             permissionLoader.Setup(x => x.SavePermission(new PermissionsDTO { BOEId = null, ETIUserId = EIdsDTO.UserID, Role = Role.Author, Updateable = UpdateType.Upsert, WorkspaceId = ws.Id }));
 
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             //Act
             sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
@@ -276,7 +276,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             permissionLoader.Setup(x => x.SavePermission(new PermissionsDTO { BOEId = null, ETIUserId = EIdsDTO.UserID, Role = Role.SubcontractorAuthor, Updateable = UpdateType.Upsert, WorkspaceId = ws.Id }));
 
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
 
@@ -319,7 +319,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             _ADUTils.Setup(x => x.GetAuthorizationGroupsFromWebConfig()).Returns(new Collection<GroupData>());
             _ADUTils.Setup(x => x.CheckUsersBoeAccess(It.IsAny<ICollection<UserData>>(), It.IsAny<ICollection<GroupData>>())).Returns(new Dictionary<UserData, bool>());
 
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
         }
@@ -358,7 +358,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             _ADUTils.Setup(x => x.GetAuthorizationGroupsFromWebConfig()).Returns(new Collection<GroupData>());
             _ADUTils.Setup(x => x.CheckUsersBoeAccess(It.IsAny<ICollection<UserData>>(), It.IsAny<ICollection<GroupData>>())).Returns(new Dictionary<UserData, bool>());
 
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
         }
@@ -398,7 +398,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             permissionLoader.Setup(x => x.SavePermission(new PermissionsDTO { BOEId = null, ETIUserId = EIdsDTO.UserID, Role = Role.SubcontractAdmin, Updateable = UpdateType.Upsert, WorkspaceId = ws.Id }));
 
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
 
@@ -429,7 +429,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             permissionLoader.Setup(x => x.GetWorkspacePermissions(ws.Id)).Returns(currentWorkspacePermissions);
             permissionLoader.Setup(x => x.GetBOEPotentialPermissionsForWorkspace(ws.Id)).Returns(currentBoePermissions);
 
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
         }
@@ -457,7 +457,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             permissionLoader.Setup(x => x.GetWorkspacePermissions(ws.Id)).Returns(currentWorkspacePermissions);
             permissionLoader.Setup(x => x.GetBOEPotentialPermissionsForWorkspace(ws.Id)).Returns(currentBoePermissions);
 
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
         }
@@ -472,7 +472,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             Factory.Setup(x => x.CreateFullWorkspace(workspace, It.IsAny<bool>())).Returns(new FullWorkspace() { Id = 1 });
 
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
         }
@@ -487,7 +487,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             Factory.Setup(x => x.CreateFullWorkspace(workspace, It.IsAny<bool>())).Returns(new FullWorkspace() { Id = 1 });
 
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
         }
@@ -501,7 +501,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             Factory.Setup(x => x.CreateFullWorkspace(workspace, It.IsAny<bool>())).Returns(new FullWorkspace() { Id = 1 });
 
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
         }
@@ -513,7 +513,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             string workspace = "MyWorkspace";
             SavePermissionModelView inPermission = null;
 
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
         }
@@ -578,7 +578,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             permissionLoader.Setup(x => x.SavePermission(new PermissionsDTO { BOEId = null, ETIUserId = EIdsDTO.UserID, Role = Role.Approver, Updateable = UpdateType.Upsert, WorkspaceId = ws.Id }));
             permissionLoader.Setup(x => x.SavePermission(new PermissionsDTO { BOEId = null, ETIUserId = EIdsDTO.UserID, Role = Role.Author, Updateable = UpdateType.Upsert, WorkspaceId = ws.Id }));
 
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             //Act
             sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
@@ -634,7 +634,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             _ADUTils.Setup(x => x.GetUserByQualifiedAccount(EIds1, false)).Returns(EIds1Data);          //Since this is taking else path must be false(hard coded value)
 
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             //Act
             sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
@@ -680,7 +680,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             _ADUTils.Setup(x => x.GetUserByQualifiedAccount(EIds1, false)).Returns(EIds1Data);          //Since this is taking else path must be false(hard coded value)
 
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             //Act
             sut.SaveNewPermissions(workspace, new SavePermissionModelView[] { inPermission });
@@ -701,7 +701,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             ICollection<Role> roles = new List<Role>() { Role.WorkspaceAdmin, Role.Author };
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             this.Factory.Setup(x => x.GetPermissionsForUser(ntid)).Returns(new List<SecurityPermissionsResponse>());
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             sut.ValidateWsAdminMustHaveCreateWsPermission(ntid, roles);
         }
@@ -718,7 +718,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             ICollection<Role> roles = new List<Role>() { Role.WorkspaceAdmin };
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             this.Factory.Setup(x => x.GetPermissionsForUser(ntid)).Returns(new List<SecurityPermissionsResponse>() { new SecurityPermissionsResponse(Role.WorkspaceAdmin, ws.Id + 1, null) });
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             sut.ValidateWsAdminMustHaveCreateWsPermission(ntid, roles);
         }
@@ -734,7 +734,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             string ntid = "someNtid";
             ICollection<Role> roles = new List<Role>() { Role.Author };
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             sut.ValidateWsAdminMustHaveCreateWsPermission(ntid, roles);
         }
@@ -751,7 +751,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             ICollection<Role> roles = new List<Role>() { Role.WorkspaceAdmin };
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             this.Factory.Setup(x => x.GetPermissionsForUser(ntid)).Returns(new List<SecurityPermissionsResponse>() { new SecurityPermissionsResponse(Role.SystemAdmin, null, null) });
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             sut.ValidateWsAdminMustHaveCreateWsPermission(ntid, roles);
         }
@@ -768,7 +768,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             ICollection<Role> roles = new List<Role>() { Role.WorkspaceAdmin };
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             this.Factory.Setup(x => x.GetPermissionsForUser(ntid)).Returns(new List<SecurityPermissionsResponse>() { new SecurityPermissionsResponse(Role.CreateWorkspacePermissions, null, null) });
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             sut.ValidateWsAdminMustHaveCreateWsPermission(ntid, roles);
         }
@@ -785,7 +785,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             ICollection<Role> roles = new List<Role>() { Role.WorkspaceAdmin, Role.Author };
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             this.Factory.Setup(x => x.GetPermissionsForUser(ntid)).Returns(new List<SecurityPermissionsResponse>() { new SecurityPermissionsResponse(Role.WorkspaceAdmin, ws.Id, null) });
-            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object, _commonDataMapper.Object);
 
             sut.ValidateWsAdminMustHaveCreateWsPermission(ntid, roles);
         }
