@@ -34,16 +34,6 @@ namespace GenBOE.ActionLogic.DateShift
 		/// </summary>
 		private readonly IDateShiftDTODataLoader dateShiftLoader;
 
-		///// <summary>
-		///// The workspace loader
-		///// </summary>
-		//private readonly IWorkspaceDTODataLoader workspaceLoader;
-
-		///// <summary>
-		///// The clin loader
-		///// </summary>
-		//private readonly IClinDTODataLoader clinLoader;
-
 		/// <summary>
 		/// The boe loader
 		/// </summary>
@@ -53,16 +43,6 @@ namespace GenBOE.ActionLogic.DateShift
 		/// The workspace version data loader.
 		/// </summary>
 		private readonly IWorkspaceVersionMetaDataDTODataLoader workspaceVersionMetaDataDTODataLoader;
-
-		///// <summary>
-		///// The task loader
-		///// </summary>
-		//private readonly IBoeTaskElementDTODataLoader taskLoader;
-
-		///// <summary>
-		///// The travel loader
-		///// </summary>
-		//private readonly ITravelDTODataLoader travelLoader;
 
 		/// <summary>
 		/// The user dto loader
@@ -116,11 +96,8 @@ namespace GenBOE.ActionLogic.DateShift
 		public DateShiftCalculation()
 		{
 			this.dateShiftLoader = GenBOEUnityContainer.Container.Resolve(typeof(IDateShiftDTODataLoader)) as IDateShiftDTODataLoader;
-			//this.clinLoader = GenBOEUnityContainer.Container.Resolve(typeof(IClinDTODataLoader)) as IClinDTODataLoader;
 			this.boeLoader = GenBOEUnityContainer.Container.Resolve(typeof(IBoeDTODataLoader)) as IBoeDTODataLoader;
-			//this.taskLoader = GenBOEUnityContainer.Container.Resolve(typeof(IBoeTaskElementDTODataLoader)) as IBoeTaskElementDTODataLoader;
 			this.userDTOLoader = GenBOEUnityContainer.Container.Resolve(typeof(IUserDTODataLoader)) as IUserDTODataLoader;
-			//this.travelLoader = GenBOEUnityContainer.Container.Resolve(typeof(ITravelDTODataLoader)) as ITravelDTODataLoader;
 			this.emailer = GenBOEUnityContainer.Container.Resolve(typeof(IBoeEmailer)) as IBoeEmailer;
 			this.permissionLoader = GenBOEUnityContainer.Container.Resolve(typeof(IPermissionsDTODataLoader)) as IPermissionsDTODataLoader;
 			this.workspaceVersionMetaDataDTODataLoader = GenBOEUnityContainer.Container.Resolve(typeof(IWorkspaceVersionMetaDataDTODataLoader)) as IWorkspaceVersionMetaDataDTODataLoader;
@@ -919,27 +896,6 @@ namespace GenBOE.ActionLogic.DateShift
 
 				this.dateShiftLoader.Update(dateShiftedItems);
 
-				//switch (dateShiftable.Level)
-				//{
-				//	case (int)Level.Workspace:
-				//		this.SaveWorkspaceData(dateShiftable as FullWorkspace);
-				//		break;
-				//	case (int)Level.BOE:
-				//		this.SaveBoeData(dateShiftable as FullBoe);
-				//		break;
-				//	case (int)Level.CLIN:
-				//		this.SaveClinData(dateShiftable as FullClin);
-				//		break;
-				//	case (int)Level.Task:
-				//		this.SaveTaskData(dateShiftable as BoeTaskElementDTO);
-				//		break;
-				//	case (int)Level.Travel:
-				//		this.SaveTravelData(dateShiftable as TravelDTO);
-				//		break;
-				//	default:
-				//		throw new NotSupportedException("This Date Shift Level is not supported for saving.");
-				//}
-
 				// Transition BOEs to Draft if needed
 				this.TransitionBOEs(dateShiftable, dateShiftModel);
 
@@ -989,96 +945,6 @@ namespace GenBOE.ActionLogic.DateShift
 				}
 			}
 		}
-
-		///// <summary>
-		///// Saves the workspace data.
-		///// </summary>
-		///// <param name="workspace">The workspace dto.</param>
-		//private void SaveWorkspaceData(FullWorkspace workspace)
-		//{
-		//	if (workspace == null)
-		//	{
-		//		throw new ArgumentNullException(nameof(workspace));
-		//	}
-
-		//	// Get the user who is saving the BOE(s)
-		//	int currentUserID = this.userDTOLoader.GetUserForActiveUser().UserID;
-		//	this.workspaceLoader.SaveWorkspaceSettings(currentUserID, workspace);
-
-		//	// Need to update last update date from DB
-		//	WorkspaceDTO updatedWs = this.workspaceLoader.GetById(workspace.Id);
-		//	workspace.UpdateDate = updatedWs.UpdateDate;
-
-		//	ICollection<ClinDTO> clins = workspace.Clins.Where(c => c.Updateable == UpdateType.Upsert).ToList<ClinDTO>();
-		//	this.clinLoader.Save(clins);
-
-		//	List<FullBoe> boeCollection = workspace.Boes.Where(b => b.Updateable == UpdateType.Upsert).ToList();
-		//	this.boeLoader.Save(boeCollection.ToList<BoeDTO>());
-
-		//	ICollection<BoeTaskElementDTO> taskCollection = workspace.TaskElements.Where(t => t.Updateable == UpdateType.Upsert).ToList();
-		//	ICollection<TravelDTO> travelCollection = workspace.Travels.Where(t => t.Updateable == UpdateType.Upsert).ToList();
-
-		//	this.travelLoader.SaveTravels(travelCollection);
-
-		//	// Use bulk save to insert resources and spreads (and correctly delete spreads)
-		//	this.taskLoader.BulkSave(taskCollection);
-		//}
-
-		///// <summary>
-		///// Saves the clin data.
-		///// </summary>
-		///// <param name="clin">The clin.</param>
-		//private void SaveClinData(FullClin clin)
-		//{
-		//	this.clinLoader.Save(clin);
-
-		//	List<FullBoe> boeCollection = clin.Boes.Where(b => b.Updateable == UpdateType.Upsert).ToList();
-		//	this.boeLoader.Save(boeCollection.ToList<BoeDTO>());
-
-		//	ICollection<BoeTaskElementDTO> taskCollection = boeCollection.SelectMany(b => b.TaskElements).Where(t => t.Updateable == UpdateType.Upsert).ToList();
-		//	ICollection<TravelDTO> travelCollection = boeCollection.SelectMany(b => b.Travels).Where(t => t.Updateable == UpdateType.Upsert).ToList();
-
-		//	this.travelLoader.SaveTravels(travelCollection);
-
-		//	// Use bulk save to insert resources and spreads (and correctly delete spreads)
-		//	this.taskLoader.BulkSave(taskCollection);
-		//}
-
-		///// <summary>
-		///// Saves the boe data.
-		///// </summary>
-		///// <param name="boe">The boe.</param>
-		//private void SaveBoeData(FullBoe boe)
-		//{
-		//	this.boeLoader.Save(boe);
-
-		//	ICollection<BoeTaskElementDTO> taskCollection = boe.TaskElements.Where(t => t.Updateable == UpdateType.Upsert).ToList();
-		//	ICollection<TravelDTO> travelCollection = boe.Travels.Where(t => t.Updateable == UpdateType.Upsert).ToList();
-
-		//	this.travelLoader.SaveTravels(travelCollection);
-
-		//	// Use bulk save to insert resources and spreads (and correctly delete spreads)
-		//	this.taskLoader.BulkSave(taskCollection);
-		//}
-
-		///// <summary>
-		///// Saves the travel data.
-		///// </summary>
-		///// <param name="travelDTO">The travel dto.</param>
-		//private void SaveTravelData(TravelDTO travelDTO)
-		//{
-		//	this.travelLoader.SaveTravels(new List<TravelDTO>() { travelDTO });
-		//}
-
-		///// <summary>
-		///// Saves the task data.
-		///// </summary>
-		///// <param name="task">The task.</param>
-		//private void SaveTaskData(BoeTaskElementDTO task)
-		//{
-		//	// Use bulk save to insert resources and spreads (and correctly delete spreads)
-		//	this.taskLoader.BulkSave(new List<BoeTaskElementDTO>() { task });
-		//}
 
 		/// <summary>
 		/// Adds email information.
