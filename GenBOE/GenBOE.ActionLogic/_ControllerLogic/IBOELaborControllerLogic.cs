@@ -16,7 +16,6 @@ namespace GenBOE.ActionLogic
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.DataBridge.DTO;
-	using GenBOE.DataBridge.DTO.SkillMix;
 	using GenBOE.Dtos;
     using GenBOE.Objects;
     using IES.Common;
@@ -383,11 +382,5 @@ namespace GenBOE.ActionLogic
 		/// <param name="laborTask">Labor Task.</param>
 		/// <returns></returns>
 		bool CheckTMRates(FullWorkspace ws, ICollection<LaborTypeDataModelView> laborTypes);
-
-		/// <summary>
-		/// Returns help urls to be used for the Skill Mix Tables
-		/// </summary>
-		/// <returns>Help urls</returns>
-		SkillMixTableHelpUrls GetSkillMixTableHelpUrls();
 	}
 }

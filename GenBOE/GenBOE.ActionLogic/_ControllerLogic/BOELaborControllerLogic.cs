@@ -31,7 +31,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using GenBOE.DataBridge.Common;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.DataBridge.DTO.Request;
-	using GenBOE.DataBridge.DTO.SkillMix;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using IES.Common;
@@ -3894,15 +3893,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			refreshedModel.CommonDisclosureRows = refreshedModel.CommonDisclosureRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceID)).ThenBy(r => r.ResourceID).ThenBy(s => s.BusinessResourceID).ToList();
 
 			return refreshedModel;
-		}
-
-		/// <summary>
-		/// Returns help urls to be used for the Skill Mix Tables.
-		/// </summary>
-		/// <returns>Help urls</returns>
-		public virtual SkillMixTableHelpUrls GetSkillMixTableHelpUrls()
-		{
-			return new SkillMixTableHelpUrls();
 		}
 
 		/// <summary>
