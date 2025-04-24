@@ -1,13 +1,12 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2025 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
 namespace GenBOE.Dtos
 {
 	using GenBOE.DataBridge.DTO;
-	using GenBOE.Objects;
 	using IES.Common;
 	using System;
 	using System.Collections.Generic;

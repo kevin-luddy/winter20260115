@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2025 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -11,16 +11,13 @@ namespace GenBOE.Web.Controllers
     using System.Diagnostics;
     using System.Linq;
     using System.Web.Mvc;
-	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.ControllerLogic;
     using GenBOE.ActionLogic.DateShift;
     using GenBOE.ActionLogic.Metrics;
-	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.Common.Interfaces;
     using GenBOE.DataBridge.DTO;
-	using GenBOE.Dtos;
 	using GenBOE.Objects;
     using GenBOE.Web.Common;
     using GenBOE.Web.ModelView;
