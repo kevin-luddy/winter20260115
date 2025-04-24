@@ -33,6 +33,7 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.DataBridge.Common;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
+	using GenBOE.DataBridge.DTO.SkillMix;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using GenBOE.Web.Common;
@@ -156,6 +157,7 @@ namespace GenBOE.Web.Controllers
 			this.ViewBag.RteFieldSize = ws.RteSizeLimit ?? Constants.MAX_RTE_LENGTH;
 			this.ViewData["BOEID"] = boeID;
 			ViewData["UcotFactor"] = ws.UCOTFactor / 100.0m;
+			ViewData["SkillMixTableHelpUrls"] = new SkillMixTableHelpUrls();
 			this.ViewData["ElementsOfCost"] = this._CommonDataMapper.GetElementOfCostTypes().Where(
 				x => x.ElementOfCostId == (int)ElementOfCostType.LMLabor ||
 					x.ElementOfCostId == (int)ElementOfCostType.IWTA ||

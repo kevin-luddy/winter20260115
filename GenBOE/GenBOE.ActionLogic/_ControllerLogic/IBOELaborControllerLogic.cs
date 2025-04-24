@@ -16,7 +16,7 @@ namespace GenBOE.ActionLogic
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
+	using GenBOE.Dtos;
     using GenBOE.Objects;
     using IES.Common;
     using IES.Common.Exceptions;
