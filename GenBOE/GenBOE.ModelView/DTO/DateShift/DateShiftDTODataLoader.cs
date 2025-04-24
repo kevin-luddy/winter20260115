@@ -62,24 +62,27 @@ namespace GenBOE.DataBridge.DTO
 			foreach (DateShiftDTO dateShiftDTO in dateShiftDTOs)
 			{
 				dateShiftDTOsToUpdate.AddRange(RecursivelyGetDateShiftDTOs(dateShiftDTO.OriginalObject as IDateShiftable));
+			}
 
+			foreach (DateShiftDTO dateShiftDTOtoUpdate in dateShiftDTOsToUpdate)
+			{
 				// Update any labor spreads.
-				if (dateShiftDTO.LaborSpreads != null && dateShiftDTO.Level == (int)Level.Labor)
+				if (dateShiftDTOtoUpdate.LaborSpreads != null && dateShiftDTOtoUpdate.Level == (int)Level.Labor)
 				{
-					resourceSpreadLoader.BulkSave(dateShiftDTO.LaborSpreads);
+					resourceSpreadLoader.BulkSave(dateShiftDTOtoUpdate.LaborSpreads);
 				}
 
 				// Update any skill mixes and common disclosure for BOE Task Elements.
-				if (dateShiftDTO.BOETaskElementId != null && dateShiftDTO.Level == (int)Level.Task)
+				if (dateShiftDTOtoUpdate.BOETaskElementId != null && dateShiftDTOtoUpdate.Level == (int)Level.Task)
 				{
-					if (dateShiftDTO.SkillMixTable != null && dateShiftDTO.SkillMixTable.Any())
+					if (dateShiftDTOtoUpdate.SkillMixTable != null && dateShiftDTOtoUpdate.SkillMixTable.Any())
 					{
 						List<SkillMixDTO> dtos = new List<SkillMixDTO>();
-						foreach (SkillMixModelView skillMixModelView in dateShiftDTO.SkillMixTable)
+						foreach (SkillMixModelView skillMixModelView in dateShiftDTOtoUpdate.SkillMixTable)
 						{
 							SkillMixDTO dto = skillMixModelView.ToDto();
-							dto.BOEID = dateShiftDTO.BoeId;
-							dto.BOETaskElementID = dateShiftDTO.BOETaskElementId.Value;
+							dto.BOEID = dateShiftDTOtoUpdate.BoeId;
+							dto.BOETaskElementID = dateShiftDTOtoUpdate.BOETaskElementId.Value;
 							dtos.Add(dto);
 						}
 
@@ -88,18 +91,18 @@ namespace GenBOE.DataBridge.DTO
 					else
 					{
 						// If the dto has no skill mix tables, it's possible they were cleared out, so make sure old data is deleted
-						this.skillMixLoader.DeleteSkillMixByBOETaskElementID(dateShiftDTO.BOETaskElementId.Value);
+						this.skillMixLoader.DeleteSkillMixByBOETaskElementID(dateShiftDTOtoUpdate.BOETaskElementId.Value);
 					}
 
 					// Save the Common Disclosure DTOs
-					if (dateShiftDTO.CommonDisclosureTable != null && dateShiftDTO.CommonDisclosureTable.Any())
+					if (dateShiftDTOtoUpdate.CommonDisclosureTable != null && dateShiftDTOtoUpdate.CommonDisclosureTable.Any())
 					{
 						List<CommonDisclosureSkillMixDTO> dtos = new List<CommonDisclosureSkillMixDTO>();
-						foreach (CommonDisclosureModelView commonDisclosure in dateShiftDTO.CommonDisclosureTable)
+						foreach (CommonDisclosureModelView commonDisclosure in dateShiftDTOtoUpdate.CommonDisclosureTable)
 						{
 							CommonDisclosureSkillMixDTO dto = commonDisclosure.ToDto();
-							dto.BOEID = dateShiftDTO.BoeId;
-							dto.BOETaskElementID = dateShiftDTO.BOETaskElementId.Value;
+							dto.BOEID = dateShiftDTOtoUpdate.BoeId;
+							dto.BOETaskElementID = dateShiftDTOtoUpdate.BOETaskElementId.Value;
 							dtos.Add(dto);
 						}
 
@@ -108,7 +111,7 @@ namespace GenBOE.DataBridge.DTO
 					else
 					{
 						// If the dto has no common disclosure tables, it's possible they were cleared out, so make sure old data is deleted
-						this.commonDisclosureLoader.DeleteCommonDisclosureSkillMixByBOETaskElementID(dateShiftDTO.Id);
+						this.commonDisclosureLoader.DeleteCommonDisclosureSkillMixByBOETaskElementID(dateShiftDTOtoUpdate.Id);
 					}
 				}
 			}

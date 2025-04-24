@@ -157,6 +157,7 @@ namespace GenBOE.Dtos
 
 			if (dateShiftable is BoeTaskElementDTO boeTaskElementDTO)
 			{
+				dateShiftDTO.BoeId = boeTaskElementDTO.BoeID;
 				dateShiftDTO.BOETaskElementId = boeTaskElementDTO.Id;
 				dateShiftDTO.CommonDisclosureTable = boeTaskElementDTO.CommonDisclosureTable;
 				dateShiftDTO.SkillMixTable = boeTaskElementDTO.SkillMixTable;
