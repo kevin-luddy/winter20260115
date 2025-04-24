@@ -120,7 +120,7 @@ namespace GenBOE.DataBridge.DTO
 			this.UpdateDateShifts(dateShiftDTOsToUpdate);
 		}
 
-		#region Inheritted
+		#region Inherited
 		/// <summary>
 		/// Not implemented and not needed.
 		/// </summary>
