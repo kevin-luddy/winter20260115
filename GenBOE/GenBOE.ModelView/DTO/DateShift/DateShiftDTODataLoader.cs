@@ -113,6 +113,7 @@ namespace GenBOE.DataBridge.DTO
 				}
 			}
 
+			// Update the dates in the database for all shifted items.
 			this.UpdateDateShifts(dateShiftDTOsToUpdate);
 		}
 
