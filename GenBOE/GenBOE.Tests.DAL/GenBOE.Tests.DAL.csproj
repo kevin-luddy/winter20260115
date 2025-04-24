@@ -228,10 +228,6 @@
       <Project>{AA84EB3D-E855-41E8-85BD-E98DBAAB0CA0}</Project>
       <Name>GenBOE.Tests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GenBOE.Web\GenBOE.Web.csproj">
-      <Project>{AD87CC58-CFBC-4901-9AE3-418473E78590}</Project>
-      <Name>GenBOE.Web</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

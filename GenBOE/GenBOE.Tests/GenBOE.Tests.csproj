@@ -298,10 +298,6 @@
       <Project>{F909CD46-E2D7-4D57-B647-6D93F9DD9618}</Project>
       <Name>GenBOE.DataBridge</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GenBOE.Web\GenBOE.Web.csproj">
-      <Project>{AD87CC58-CFBC-4901-9AE3-418473E78590}</Project>
-      <Name>GenBOE.Web</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
