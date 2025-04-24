@@ -235,12 +235,7 @@ namespace GenBOE.Web.Controllers
             // Finalize Action
             this.FinalizeAction(this.logger, WebConstants.ACTION_APPLY_DATE_SHIFT, sw);
 
-			JsonResult toReturn = this.Json(new
-			{
-				Success = true,
-				startDate = dateShiftable.StartDate.HasValue ? dateShiftable.StartDate.Value.ToMonthString() : null,
-				endDate = dateShiftable.EndDate.HasValue ? dateShiftable.EndDate.Value.ToMonthString() : null
-			});
+			JsonResult toReturn = this.Json(new { Success = true, startDate = dateShiftable.StartDate.Value.ToMonthString(), endDate = dateShiftable.EndDate.Value.ToMonthString() });
 
 			return toReturn;
         }
