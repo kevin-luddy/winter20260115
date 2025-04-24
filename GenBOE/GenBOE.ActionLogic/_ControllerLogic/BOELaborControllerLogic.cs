@@ -3573,7 +3573,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		{
 			IESResponse<byte> response = new IESResponse<byte>();
 			UserDTO currentUser = this.UserLoader.GetUserForActiveUser();
-			RequestType requestType = RequestType.ExportBOE;
+			RequestType requestType = RequestType.ExportActuals;
 			int? requestId = null;
 
 			try
