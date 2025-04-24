@@ -705,7 +705,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
 
 							// Only Validate if the SkillMix Rationale field is showing in the MOQ Types Section
-							if (!showSkillMixTable)
+							if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST || !showSkillMixTable)
 							{
 								ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages); 
 							}
