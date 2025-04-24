@@ -128,6 +128,8 @@
     <Compile Include="Common\Delegates.cs" />
     <Compile Include="Common\Interfaces\ISecurityUserAuthorizationsDataLoader.cs" />
     <Compile Include="Common\security\SecurityAccessSpaceSystems.cs" />
+    <Compile Include="DTO\DateShift\DateShiftDTODataLoader.cs" />
+    <Compile Include="DTO\DateShift\IDateShiftDTODataLoader.cs" />
     <Compile Include="DTO\MOQTypeSelectionTableDataResourceHours\IMOQTypeSelectionTableDataResourceHoursDTOLoader.cs" />
     <Compile Include="DTO\MOQTypeSelectionTableDataResourceHours\MOQTypeSelectionTableDataResourceHoursDTOLoader.cs" />
     <Compile Include="DTO\BOETaskElement\CommonDisclosureModelView.cs" />
@@ -169,6 +171,7 @@
     <Compile Include="GenBOE.Dtos\DTOs\CustomFieldDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\CustomFieldValueContainer.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\CustomFieldValueDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\DateShiftDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\EscalationRatesDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\FindReplaceDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\GenBOEMetricsDTO.cs" />

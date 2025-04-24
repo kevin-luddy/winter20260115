@@ -171,7 +171,7 @@ namespace IES.Common
                                                  where property.Name.Equals(propertyName)
                                                  select property).FirstOrDefault();
 
-                if (matchingProperty == null)
+				if (matchingProperty == null)
                 {
                     foreach (PropertyInfo property in properties)
                     {
