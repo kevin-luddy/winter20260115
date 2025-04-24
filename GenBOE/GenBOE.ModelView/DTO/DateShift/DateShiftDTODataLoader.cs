@@ -124,19 +124,25 @@ namespace GenBOE.DataBridge.DTO
 		/// <summary>
 		/// Not implemented and not needed.
 		/// </summary>
-		/// <param name="ids"></param>
-		/// <returns></returns>
 		/// <exception cref="NotImplementedException"></exception>
 		public override ICollection<DateShiftDTO> GetByIds(ICollection<int> ids)
 		{
 			throw new NotImplementedException();
 		}
 
+		/// <summary>
+		/// Not implemented and not needed.
+		/// </summary>
+		/// <exception cref="NotImplementedException"></exception>
 		protected override int? Delete(DateShiftDTO dtoToDelete)
 		{
 			throw new NotImplementedException();
 		}
 
+		/// <summary>
+		/// Not implemented and not needed.
+		/// </summary>
+		/// <exception cref="NotImplementedException"></exception>
 		protected override int? Upsert(DateShiftDTO dtoToUpsert)
 		{
 			throw new NotImplementedException();

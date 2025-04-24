@@ -87,12 +87,6 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DateShiftCalculation"/> class.
 		/// </summary>
-		/// <param name="dateShiftLoader">The loader for the date shift.</param>
-		/// <param name="workspaceLoader">The workspace loader.</param>
-		/// <param name="clinLoader">The clin loader.</param>
-		/// <param name="boeLoader">The boe loader.</param>
-		/// <param name="taskLoader">The task loader.</param>
-		/// <param name="travelLoader">The travel loader.</param>
 		public DateShiftCalculation()
 		{
 			this.dateShiftLoader = GenBOEUnityContainer.Container.Resolve(typeof(IDateShiftDTODataLoader)) as IDateShiftDTODataLoader;
