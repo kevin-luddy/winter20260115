@@ -200,7 +200,6 @@ namespace GenBOE.Web.Controllers
 						parentStart = parentEnd = null;
 
 						// pre-load the data efficiently
-						//ws.LoadTaskElementRTEData();
 						ws.LoadClinsAndBoes(false);
 						ICollection<BoeTaskElementDTO> tasks = ws.TaskElements.ToList();
 						ICollection<TravelDTO> travels = ws.Travels.ToList();
