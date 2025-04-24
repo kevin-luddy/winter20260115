@@ -72,6 +72,11 @@ namespace GenBOE.Dtos
 		public int BoeId { get; set; }
 
 		/// <summary>
+		/// Boe task element Id if date shiftable is a task.
+		/// </summary>
+		public int? BOETaskElementId { get; set; }
+
+		/// <summary>
 		/// BOE State ID.
 		/// </summary>
 		public int BOEStateID { get; set; }
@@ -152,8 +157,7 @@ namespace GenBOE.Dtos
 
 			if (dateShiftable is BoeTaskElementDTO boeTaskElementDTO)
 			{
-				// TODO Thomas: Will need to save all the task and check if its skill mix data.
-
+				dateShiftDTO.BOETaskElementId = boeTaskElementDTO.Id;
 				dateShiftDTO.CommonDisclosureTable = boeTaskElementDTO.CommonDisclosureTable;
 				dateShiftDTO.SkillMixTable = boeTaskElementDTO.SkillMixTable;
 				dateShiftDTO.TaskElementLabors = boeTaskElementDTO.taskElementLabors;

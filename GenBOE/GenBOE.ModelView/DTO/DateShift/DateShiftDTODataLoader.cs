@@ -8,23 +8,42 @@ namespace GenBOE.DataBridge.DTO
 {
 	using GenBOE.Dtos;
 	using IES.Common;
-	using IES.Common.Exceptions;
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Data;
 	using System.Data.Entity;
-	using System.Data.SqlClient;
 	using System.Linq;
 
+	/// <summary>
+	/// Date shift DTO data loader.
+	/// </summary>
 	public class DateShiftDTODataLoader : DataLoader<DateShiftDTO>, IDateShiftDTODataLoader
 	{
 		/// <summary>
+		/// Resource spread loader.
+		/// </summary>
+		private readonly IResourceSpreadLoader resourceSpreadLoader;
+
+		/// <summary>
+		/// Skill mix loader.
+		/// </summary>
+		private readonly ISkillMixDTOLoader skillMixLoader;
+
+		/// <summary>
+		/// Common discolsure loader.
+		/// </summary>
+		private readonly ICommonDisclosureSMDTODataLoader commonDisclosureLoader;
+
+		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public DateShiftDTODataLoader()
+		public DateShiftDTODataLoader(IResourceSpreadLoader resourceSpreadLoader, ISkillMixDTOLoader skillMixLoader, ICommonDisclosureSMDTODataLoader commonDisclosureLoader)
 		{
 			this.Log = new Logger(typeof(DateShiftDTODataLoader));
+			this.resourceSpreadLoader = resourceSpreadLoader;
+			this.skillMixLoader = skillMixLoader;
+			this.commonDisclosureLoader = commonDisclosureLoader;
 		}
 
 		/// <summary>
@@ -43,6 +62,55 @@ namespace GenBOE.DataBridge.DTO
 			foreach (DateShiftDTO dateShiftDTO in dateShiftDTOs)
 			{
 				dateShiftDTOsToUpdate.AddRange(RecursivelyGetDateShiftDTOs(dateShiftDTO.OriginalObject as IDateShiftable));
+
+				// Update any labor spreads.
+				if (dateShiftDTO.LaborSpreads != null)
+				{
+					resourceSpreadLoader.BulkSave(dateShiftDTO.LaborSpreads);
+				}
+
+				// Update any skill mixes and common disclosure for BOE Task Elements.
+				if (dateShiftDTO.BOETaskElementId != null)
+				{
+					if (dateShiftDTO.SkillMixTable != null && dateShiftDTO.SkillMixTable.Any())
+					{
+						List<SkillMixDTO> dtos = new List<SkillMixDTO>();
+						foreach (SkillMixModelView skillMixModelView in dateShiftDTO.SkillMixTable)
+						{
+							SkillMixDTO dto = skillMixModelView.ToDto();
+							dto.BOEID = dateShiftDTO.BoeId;
+							dto.BOETaskElementID = dateShiftDTO.BOETaskElementId.Value;
+							dtos.Add(dto);
+						}
+
+						this.skillMixLoader.InsertSkillMix(dtos);
+					}
+					else
+					{
+						// If the dto has no skill mix tables, it's possible they were cleared out, so make sure old data is deleted
+						this.skillMixLoader.DeleteSkillMixByBOETaskElementID(dateShiftDTO.BOETaskElementId.Value);
+					}
+
+					// Save the Common Disclosure DTOs
+					if (dateShiftDTO.CommonDisclosureTable != null && dateShiftDTO.CommonDisclosureTable.Any())
+					{
+						List<CommonDisclosureSkillMixDTO> dtos = new List<CommonDisclosureSkillMixDTO>();
+						foreach (CommonDisclosureModelView commonDisclosure in dateShiftDTO.CommonDisclosureTable)
+						{
+							CommonDisclosureSkillMixDTO dto = commonDisclosure.ToDto();
+							dto.BOEID = dateShiftDTO.BoeId;
+							dto.BOETaskElementID = dateShiftDTO.BOETaskElementId.Value;
+							dtos.Add(dto);
+						}
+
+						this.commonDisclosureLoader.InsertCommonDisclosureSM(dtos);
+					}
+					else
+					{
+						// If the dto has no common disclosure tables, it's possible they were cleared out, so make sure old data is deleted
+						this.commonDisclosureLoader.DeleteCommonDisclosureSkillMixByBOETaskElementID(dateShiftDTO.Id);
+					}
+				}
 			}
 
 			this.UpdateDateShifts(dateShiftDTOsToUpdate);
@@ -69,7 +137,12 @@ namespace GenBOE.DataBridge.DTO
 		{
 			throw new NotImplementedException();
 		}
+		#endregion
 
+		/// <summary>
+		/// Update date shifts in the database.
+		/// </summary>
+		/// <param name="dateShifts">Dateshift objects</param>
 		public virtual void UpdateDateShifts(ICollection<DateShiftDTO> dateShifts)
 		{
 			if (dateShifts == null || dateShifts.Count == 0) { throw new ArgumentNullException(nameof(dateShifts)); }
@@ -96,7 +169,6 @@ namespace GenBOE.DataBridge.DTO
 				}
 			}
 		}
-		#endregion
 
 		/// <summary>
 		/// Gets the date shift child DTOs recursively.

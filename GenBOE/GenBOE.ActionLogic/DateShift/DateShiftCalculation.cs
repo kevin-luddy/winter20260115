@@ -49,6 +49,11 @@ namespace GenBOE.ActionLogic.DateShift
 		/// </summary>
 		private readonly IBoeDTODataLoader boeLoader;
 
+		/// <summary>
+		/// The workspace version data loader.
+		/// </summary>
+		private readonly IWorkspaceVersionMetaDataDTODataLoader workspaceVersionMetaDataDTODataLoader;
+
 		///// <summary>
 		///// The task loader
 		///// </summary>
@@ -118,6 +123,7 @@ namespace GenBOE.ActionLogic.DateShift
 			//this.travelLoader = GenBOEUnityContainer.Container.Resolve(typeof(ITravelDTODataLoader)) as ITravelDTODataLoader;
 			this.emailer = GenBOEUnityContainer.Container.Resolve(typeof(IBoeEmailer)) as IBoeEmailer;
 			this.permissionLoader = GenBOEUnityContainer.Container.Resolve(typeof(IPermissionsDTODataLoader)) as IPermissionsDTODataLoader;
+			this.workspaceVersionMetaDataDTODataLoader = GenBOEUnityContainer.Container.Resolve(typeof(IWorkspaceVersionMetaDataDTODataLoader)) as IWorkspaceVersionMetaDataDTODataLoader;
 			this.boeStateMachine = GenBOEUnityContainer.Container.Resolve(typeof(IBOEStateMachine)) as IBOEStateMachine;
 			this.factory = GenBOEUnityContainer.Container.Resolve(typeof(IFullObjectFactory)) as IFullObjectFactory;
 			this.boeLaborControllerLogic = GenBOEUnityContainer.Container.Resolve(typeof(IBOELaborControllerLogic)) as IBOELaborControllerLogic;
@@ -869,42 +875,42 @@ namespace GenBOE.ActionLogic.DateShift
 		private void Save(IDateShiftable dateShiftable, DateShiftModelView dateShiftModel)
 		{
 			DateShiftDTO dateShiftDTO = DateShiftDTO.FromIDateShiftable(dateShiftable);
-			//if (dateShiftable.DateShiftLevel == Level.Workspace)
-			//{
-			//	// separate transaction for backup
-			//	using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("CopyWorkspaceTransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
-			//	{
-			//		FullWorkspace workspace = dateShiftable as FullWorkspace;
-			//		// make a backup first
-			//		string versionName = "SYSTEM: DATE SHIFT " + DateTime.Now.ToString();
-			//		IReadOnlyCollection<WorkspaceVersionMetaDataDTO> workspaceVersions = workspace.WorkspaceVersionMetaData;
+			if (dateShiftable.DateShiftLevel == Level.Workspace)
+			{
+				// separate transaction for backup
+				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("CopyWorkspaceTransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+				{
+					FullWorkspace workspace = dateShiftable as FullWorkspace;
+					// make a backup first
+					string versionName = "SYSTEM: DATE SHIFT " + DateTime.Now.ToString();
+					IReadOnlyCollection<WorkspaceVersionMetaDataDTO> workspaceVersions = workspace.WorkspaceVersionMetaData;
 
-			//		foreach (WorkspaceVersionMetaDataDTO versionToCheck in workspaceVersions)
-			//		{
-			//			if (versionName == versionToCheck.VersionName)
-			//			{
-			//				// Version name must be unique
-			//				versionName += DateTime.Now.Millisecond.ToString();
-			//			}
-			//		}
+					foreach (WorkspaceVersionMetaDataDTO versionToCheck in workspaceVersions)
+					{
+						if (versionName == versionToCheck.VersionName)
+						{
+							// Version name must be unique
+							versionName += DateTime.Now.Millisecond.ToString();
+						}
+					}
 
-			//		Collection<WorkspaceVersionMetaDataDTO> toSave = new Collection<WorkspaceVersionMetaDataDTO>()
-			//		{
-			//			new WorkspaceVersionMetaDataDTO()
-			//			{
-			//				VersionName = versionName,
-			//				Updateable = UpdateType.Upsert,
-			//				CreatedByID = 0, // genBOE System 
-   //                         DateCreated = new DateTime(),
-			//				VersionState = workspace.WorkspaceState
-			//			}
-			//		};
+					Collection<WorkspaceVersionMetaDataDTO> toSave = new Collection<WorkspaceVersionMetaDataDTO>()
+					{
+						new WorkspaceVersionMetaDataDTO()
+						{
+							VersionName = versionName,
+							Updateable = UpdateType.Upsert,
+							CreatedByID = 0, // genBOE System 
+                            DateCreated = new DateTime(),
+							VersionState = workspace.WorkspaceState
+						}
+					};
 
-			//		this.workspaceVersionMetaDataDTODataLoader.Save(toSave, workspace.Id);
+					this.workspaceVersionMetaDataDTODataLoader.Save(toSave, workspace.Id);
 
-			//		scope.Complete();
-			//	}
-			//}
+					scope.Complete();
+				}
+			}
 
 			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("CopyWorkspaceTransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
 			{
