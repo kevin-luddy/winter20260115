@@ -64,13 +64,13 @@ namespace GenBOE.DataBridge.DTO
 				dateShiftDTOsToUpdate.AddRange(RecursivelyGetDateShiftDTOs(dateShiftDTO.OriginalObject as IDateShiftable));
 
 				// Update any labor spreads.
-				if (dateShiftDTO.LaborSpreads != null)
+				if (dateShiftDTO.LaborSpreads != null && dateShiftDTO.Level == (int)Level.Labor)
 				{
 					resourceSpreadLoader.BulkSave(dateShiftDTO.LaborSpreads);
 				}
 
 				// Update any skill mixes and common disclosure for BOE Task Elements.
-				if (dateShiftDTO.BOETaskElementId != null)
+				if (dateShiftDTO.BOETaskElementId != null && dateShiftDTO.Level == (int)Level.Task)
 				{
 					if (dateShiftDTO.SkillMixTable != null && dateShiftDTO.SkillMixTable.Any())
 					{
