@@ -359,6 +359,9 @@
         <AssociationConnector Association="GenBOE.Models.FK__MOQTypeSe__MOQTy__2B0636C1" />
         <AssociationConnector Association="GenBOE.Models.FK__MOQTypeSe__MOQTy__2FCAEBDE" />
         <AssociationConnector Association="GenBOE.Models.FK_AuthorUserId" />
+        <EntityTypeShape EntityType="GenBOE.Models.CurrentRequest" Width="1.5" PointX="19.625" PointY="7.875" />
+        <EntityTypeShape EntityType="GenBOE.Models.RequestTypeLU" Width="1.5" PointX="17.375" PointY="8.125" />
+        <AssociationConnector Association="GenBOE.Models.FK_CurrentRequest_RequestTypeLU" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

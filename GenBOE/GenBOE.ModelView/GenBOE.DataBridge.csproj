@@ -142,6 +142,9 @@
     <Compile Include="DTO\MOQTypes\MoqTypeTableCustomFieldValueXREFLoader.cs" />
     <Compile Include="DTO\MOQTypes\MoqTypeTableDataLabels.cs" />
     <Compile Include="DTO\BOETaskElement\SkillMixModelView.cs" />
+    <Compile Include="DTO\Request\IRequestDataLoader.cs" />
+    <Compile Include="DTO\Request\RequestDataLoader.cs" />
+    <Compile Include="DTO\Request\RequestType.cs" />
     <Compile Include="DTO\RteTemplate\IRteTemplateDataLoader.cs" />
     <Compile Include="DTO\RteTemplate\RteTemplateDataLoader.cs" />
     <Compile Include="DTO\SkillMix\ISkillMixDTOLoader.cs" />

@@ -10,7 +10,9 @@
     $scope.model = {};
     $scope.tableData = []; // cloned copy of model (data) that is connected to labor table, useful for determining deltas
     $scope.deltaHours = '0';
+    $scope.deltaSkillMixHours = '0';
     $scope.totalHours = '0';
+    $scope.totalSkillMixHours = '0';
     $scope.totalCost = '0';
     $scope.totalUcotHours = '0';
     $scope.grandTotalHours = '0';
@@ -151,6 +153,7 @@
                 $scope.model.CommonDisclosureSkillMixData = $scope.skillMixRationale.data.CommonDisclosureRows;
 
                 // Set ManuallySetIncluded (flag to show dropdown) to true for rows where Included is false and ResourceNew is false.
+                let sumHours = 0;
                 $scope.skillMixRationale.data.SkillMixRows.forEach(function (row) {
                     if (row.Included === false || row.ResourceNew === '') {
                         row.metadata = {
@@ -160,6 +163,7 @@
                         row.metadata = {
                             ManuallySetIncluded: false
                         };
+                        sumHours += row.ProposedHours;
                     }
                 });
 
@@ -172,9 +176,12 @@
                         row.metadata = {
                             ManuallySetIncluded: false
                         };
+                        sumHours += row.ProposedHours;
                     }
                 });
 
+                $scope.totalSkillMixHours = sumHours;
+                $scope.deltaSkillMixHours = $scope.getMOQTotal().minus($scope.totalSkillMixHours).toString();
                 $scope.updateDropdowns();
 
                 $scope.isLoading = false;
@@ -190,6 +197,8 @@
             $scope.skillMixRationale = [];
             $scope.model.SkillMixData = [];
             $scope.model.CommonDisclosureSkillMixData = [];
+            $scope.totalSkillMixHours = 0;
+            $scope.deltaSkillMixHours = 0;
         }
     }
 

@@ -199,6 +199,9 @@
     <Compile Include="CommonDisclosureSkillMix.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="CurrentRequest.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="MOQTypeSelection.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
@@ -367,6 +370,9 @@
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="ReportLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RequestTypeLU.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Resource.cs">

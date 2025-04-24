@@ -493,6 +493,15 @@ warning 6002: The table/view 'genBOESpace_DEV.dbo.BOEFormPBOEResourcesXREF' does
           <Property Name="CostElementID" Type="int" Nullable="false" />
           <Property Name="CostElement" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
+        <EntityType Name="CurrentRequest">
+          <Key>
+            <PropertyRef Name="CurrentRequestID" />
+          </Key>
+          <Property Name="CurrentRequestID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Ntid" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="RequestTypeID" Type="int" Nullable="false" />
+          <Property Name="UpdateDT" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="CustomField">
           <Key>
             <PropertyRef Name="CustomFieldID" />
@@ -1024,6 +1033,13 @@ warning 6002: The table/view 'genBOESpace_DEV.dbo.BOEFormPBOEResourcesXREF' does
           <Property Name="ReportID" Type="int" Nullable="false" />
           <Property Name="ReportName" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="500" />
+        </EntityType>
+        <EntityType Name="RequestTypeLU">
+          <Key>
+            <PropertyRef Name="RequestTypeID" />
+          </Key>
+          <Property Name="RequestTypeID" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="20" Nullable="false" />
         </EntityType>
         <EntityType Name="Resource">
           <Key>
@@ -2662,6 +2678,18 @@ warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' do
             </Principal>
             <Dependent Role="CommonDisclosureSkillMix">
               <PropertyRef Name="BOETaskElementID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CurrentRequest_RequestTypeLU">
+          <End Role="RequestTypeLU" Type="Self.RequestTypeLU" Multiplicity="1" />
+          <End Role="CurrentRequest" Type="Self.CurrentRequest" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RequestTypeLU">
+              <PropertyRef Name="RequestTypeID" />
+            </Principal>
+            <Dependent Role="CurrentRequest">
+              <PropertyRef Name="RequestTypeID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -4343,6 +4371,7 @@ warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' do
         <Function Name="deleteAllMSTTravelTripTaskElements" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="BoeId" Type="int" Mode="In" />
         </Function>
+        <Function Name="deleteAllRequests" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="deleteAllTravelTripTaskElements" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="BoeId" Type="int" Mode="In" />
         </Function>
@@ -4503,6 +4532,10 @@ warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' do
         <Function Name="deleteProPricerExportTasks" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProPricerExportID" Type="int" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
+        </Function>
+        <Function Name="deleteRequest" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="RequestTypeID" Type="int" Mode="In" />
+          <Parameter Name="Ntid" Type="varchar" Mode="In" />
         </Function>
         <Function Name="deleteResourceList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ResourceListID" Type="int" Mode="In" />
@@ -4786,6 +4819,11 @@ warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' do
         <Function Name="insertReportXml" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Nonce" Type="varchar" Mode="In" />
           <Parameter Name="xml" Type="varchar(max)" Mode="In" />
+        </Function>
+        <Function Name="insertRequest" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="RequestTypeID" Type="int" Mode="In" />
+          <Parameter Name="Ntid" Type="varchar" Mode="In" />
+          <Parameter Name="NewRequestID" Type="int" Mode="InOut" />
         </Function>
         <Function Name="insertSkillMixviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="insertSumOfBOE_OrdinaryVariable" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
@@ -5627,6 +5665,7 @@ warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' do
           <EntitySet Name="CommonDisclosureSkillMix" EntityType="Self.CommonDisclosureSkillMix" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ContractTypeLU" EntityType="Self.ContractTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CostElementLU" EntityType="Self.CostElementLU" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CurrentRequest" EntityType="Self.CurrentRequest" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CustomField" EntityType="Self.CustomField" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CustomFieldDisplayLU" EntityType="Self.CustomFieldDisplayLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CustomFieldValue" EntityType="Self.CustomFieldValue" Schema="dbo" store:Type="Tables" />
@@ -5675,6 +5714,7 @@ warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' do
           <EntitySet Name="ProPricerTypeLU" EntityType="Self.ProPricerTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RateTypeLU" EntityType="Self.RateTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ReportLU" EntityType="Self.ReportLU" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RequestTypeLU" EntityType="Self.RequestTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Resource" EntityType="Self.Resource" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ResourceList" EntityType="Self.ResourceList" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RoleLU" EntityType="Self.RoleLU" Schema="dbo" store:Type="Tables" />
@@ -6169,6 +6209,10 @@ warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' do
           <AssociationSet Name="FK_CommonDisclosureSkillMix_BOETaskElement" Association="Self.FK_CommonDisclosureSkillMix_BOETaskElement">
             <End Role="BOETaskElement" EntitySet="BOETaskElement" />
             <End Role="CommonDisclosureSkillMix" EntitySet="CommonDisclosureSkillMix" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CurrentRequest_RequestTypeLU" Association="Self.FK_CurrentRequest_RequestTypeLU">
+            <End Role="RequestTypeLU" EntitySet="RequestTypeLU" />
+            <End Role="CurrentRequest" EntitySet="CurrentRequest" />
           </AssociationSet>
           <AssociationSet Name="FK_CustomField_CustomFieldDisplayLU" Association="Self.FK_CustomField_CustomFieldDisplayLU">
             <End Role="CustomFieldDisplayLU" EntitySet="CustomFieldDisplayLU" />
@@ -11746,6 +11790,22 @@ warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' do
             <End Role="ETIuser" EntitySet="ETIusers" />
             <End Role="BOETaskElement" EntitySet="BOETaskElements" />
           </AssociationSet>
+          <EntitySet Name="CurrentRequest" EntityType="GenBOE.Models.CurrentRequest" />
+          <EntitySet Name="RequestTypeLU" EntityType="GenBOE.Models.RequestTypeLU" />
+          <AssociationSet Name="FK_CurrentRequest_RequestTypeLU" Association="GenBOE.Models.FK_CurrentRequest_RequestTypeLU">
+            <End Role="RequestTypeLU" EntitySet="RequestTypeLU" />
+            <End Role="CurrentRequest" EntitySet="CurrentRequest" />
+          </AssociationSet>
+          <FunctionImport Name="deleteAllRequests" />
+          <FunctionImport Name="deleteRequest">
+            <Parameter Name="RequestTypeID" Mode="In" Type="Int32" />
+            <Parameter Name="Ntid" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="insertRequest">
+            <Parameter Name="RequestTypeID" Mode="In" Type="Int32" />
+            <Parameter Name="Ntid" Mode="In" Type="String" />
+            <Parameter Name="NewRequestID" Mode="InOut" Type="Int32" />
+          </FunctionImport>
           </EntityContainer>
 		<ComplexType Name="getBOEForFindReplace_Result">
 		  <Property Type="Int32" Name="BOEID" Nullable="true" />
@@ -13756,6 +13816,36 @@ warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' do
             </Principal>
             <Dependent Role="BOETaskElement">
               <PropertyRef Name="AuthorUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="CurrentRequest">
+          <Key>
+            <PropertyRef Name="CurrentRequestID" />
+          </Key>
+          <Property Name="CurrentRequestID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Ntid" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="RequestTypeID" Type="Int32" Nullable="false" />
+          <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="RequestTypeLU" Relationship="GenBOE.Models.FK_CurrentRequest_RequestTypeLU" FromRole="CurrentRequest" ToRole="RequestTypeLU" />
+        </EntityType>
+        <EntityType Name="RequestTypeLU">
+          <Key>
+            <PropertyRef Name="RequestTypeID" />
+          </Key>
+          <Property Name="RequestTypeID" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="CurrentRequest" Relationship="GenBOE.Models.FK_CurrentRequest_RequestTypeLU" FromRole="RequestTypeLU" ToRole="CurrentRequest" />
+        </EntityType>
+        <Association Name="FK_CurrentRequest_RequestTypeLU">
+          <End Type="GenBOE.Models.RequestTypeLU" Role="RequestTypeLU" Multiplicity="1" />
+          <End Type="GenBOE.Models.CurrentRequest" Role="CurrentRequest" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RequestTypeLU">
+              <PropertyRef Name="RequestTypeID" />
+            </Principal>
+            <Dependent Role="CurrentRequest">
+              <PropertyRef Name="RequestTypeID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -15863,6 +15953,27 @@ warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' do
           </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="insertCommonDisclosureSkillMixviaTableParameter" FunctionName="GenBOE.Models.Store.insertCommonDisclosureSkillMixviaTableParameter" />
           <FunctionImportMapping FunctionImportName="insertSkillMixviaTableParameter" FunctionName="GenBOE.Models.Store.insertSkillMixviaTableParameter" />
+          <EntitySetMapping Name="CurrentRequest">
+            <EntityTypeMapping TypeName="GenBOE.Models.CurrentRequest">
+              <MappingFragment StoreEntitySet="CurrentRequest">
+                <ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
+                <ScalarProperty Name="RequestTypeID" ColumnName="RequestTypeID" />
+                <ScalarProperty Name="Ntid" ColumnName="Ntid" />
+                <ScalarProperty Name="CurrentRequestID" ColumnName="CurrentRequestID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RequestTypeLU">
+            <EntityTypeMapping TypeName="GenBOE.Models.RequestTypeLU">
+              <MappingFragment StoreEntitySet="RequestTypeLU">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="RequestTypeID" ColumnName="RequestTypeID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="deleteAllRequests" FunctionName="GenBOE.Models.Store.deleteAllRequests" />
+          <FunctionImportMapping FunctionImportName="deleteRequest" FunctionName="GenBOE.Models.Store.deleteRequest" />
+          <FunctionImportMapping FunctionImportName="insertRequest" FunctionName="GenBOE.Models.Store.insertRequest" />
 		</EntityContainerMapping>
 	  </Mapping>
 	</edmx:Mappings>
@@ -15877,7 +15988,7 @@ warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' do
 	<Options>
 	  <DesignerInfoPropertySet>
 		<DesignerProperty Name="ValidateOnBuild" Value="true" />
-		<DesignerProperty Name="EnablePluralization" Value="true" />
+		<DesignerProperty Name="EnablePluralization" Value="False" />
 		<DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
 		<DesignerProperty Name="UseLegacyProvider" Value="false" />
 		<DesignerProperty Name="CodeGenerationStrategy" Value="None" />

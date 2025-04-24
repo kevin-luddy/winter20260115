@@ -4058,13 +4058,11 @@ table.manage-historical-metrics-grid
     font-weight: bold;
 }
 
-#LaborTypesWidgetContainer .labortype-label
-{
+#LaborTypesWidgetContainer .labortype-label, #SkillMixRationaleContainer .skillmix-label {
     margin-left: 5px;
 }
 
-#LaborTypesWidgetContainer .labor-calc-container
-{
+#LaborTypesWidgetContainer .labor-calc-container, #SkillMixRationaleContainer .skillmix-calc-container{
     width: 225px;
 }
 
@@ -4089,26 +4087,41 @@ table.manage-historical-metrics-grid
 }
 
 .labortype-label,
-#LaborTypeDeltaLabel, #LaborTypeTotalLabel, #LaborTypeTotal, #LaborTypeCostTotal, #LaborTypeCostDelta, #LaborTypeDelta, #TaskStartDateLabel, #TaskStartDate, #TaskEndDate, #TaskEndDateLabel, #ODCStartDateLabel, #ODCStartDate, #ODCEndDate, #ODCEndDateLabel {
+#LaborTypeDeltaLabel, #LaborTypeTotalLabel, #LaborTypeTotal, #LaborTypeCostTotal, #LaborTypeCostDelta, #LaborTypeDelta, #TaskStartDateLabel, #TaskStartDate, #TaskEndDate, #TaskEndDateLabel, #ODCStartDateLabel, #ODCStartDate, #ODCEndDate, #ODCEndDateLabel, #SkillMixDeltaLabel, #SkillMixTotalLabel {
     display: inline-block;
     *display: inline;
     *zoom: 1;
 }
 
-.right-header
-{
+#SkillMixDeltaLabel, #SkillMixDelta {
+    float: left;
+    margin-top: -8px;
+}
+
+.skill-mix-spacer {
+    float: left;
+    width: 1px;
+    height: 32px;
+    margin-top: 2px;
+    background-color: #999A95;
+}
+
+.skillmix-calc-container .module-header-data-first-row {
+    line-height: 20px;
+}
+
+.right-header {
     color: #999A95;
-    font-size:12px;
+    font-size: 12px;
     display: inline-block;
     *display: inline;
     *zoom: 1;
 }
 
 .labortype,
-#LaborTypeDelta, #TaskStartDate, #TaskEndDate, #LaborTypeTotal
-{
-    margin-right:2.5px;
-    margin-left:2.5px;
+#LaborTypeDelta, #TaskStartDate, #TaskEndDate, #LaborTypeTotal, #SkillMixDelta, #SkillMixTotal, .skillmix {
+    margin-right: 2.5px;
+    margin-left: 2.5px;
 }
  
  .no-boe-workspace
