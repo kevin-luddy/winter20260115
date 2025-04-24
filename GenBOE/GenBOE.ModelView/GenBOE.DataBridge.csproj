@@ -146,6 +146,7 @@
     <Compile Include="DTO\SkillMix\SkillMixDTOLoader.cs" />
     <Compile Include="DTO\CommonDisclosureSkillMix\ICommonDisclosureSMDTODataLoader.cs" />
     <Compile Include="DTO\CommonDisclosureSkillMix\CommonDisclosureSMDTODataLoader.cs" />
+    <Compile Include="DTO\SkillMix\SkillMixTableHelpUrls.cs" />
     <Compile Include="GenBOE.Dtos\Common\IBOEMembership.cs" />
     <Compile Include="GenBOE.Dtos\Common\IVariableDTO.cs" />
     <Compile Include="GenBOE.Dtos\Common\IWorkspaceMembership.cs" />

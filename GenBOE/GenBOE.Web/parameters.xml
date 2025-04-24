@@ -238,6 +238,22 @@
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='SkillMixStartDate']/@value">
 		</parameterentry>
 	</parameter>
+	<parameter name="RMSCurrentSkillMixTableHelpUrl" description="doesn't matter" defaultvalue="__RMSCurrentSkillMixTableHelpUrl__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='RMSCurrentSkillMixTableHelpUrl']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="RMSLMEnterpriseSkillMixTableHelpUrl" description="doesn't matter" defaultvalue="__RMSLMEnterpriseSkillMixTableHelpUrl__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='RMSLMEnterpriseSkillMixTableHelpUrl']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="SpaceLegacySkillMixTableHelpUrl" description="doesn't matter" defaultvalue="__SpaceLegacySkillMixTableHelpUrl__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='SpaceLegacySkillMixTableHelpUrl']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="SpaceLMEnterpriseSkillMixTableHelpUrl" description="doesn't matter" defaultvalue="__SpaceLMEnterpriseSkillMixTableHelpUrl__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='SpaceLMEnterpriseSkillMixTableHelpUrl']/@value">
+		</parameterentry>
+	</parameter>
 	<parameter name="InternationalCostStartDate" description="doesn't matter" defaultvalue="__InternationalCostStartDate__" tags="">
 		<parameterValidation kind="AllowEmpty" />
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='InternationalCostStartDate']/@value">
