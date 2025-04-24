@@ -167,10 +167,6 @@
       <Project>{d9645139-bd1d-474b-8960-ed105bb1a4dc}</Project>
       <Name>GenBOE.MSTMetricModel</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GenBOE.Web\GenBOE.Web.csproj">
-      <Project>{ad87cc58-cfbc-4901-9ae3-418473e78590}</Project>
-      <Name>GenBOE.Web</Name>
-    </ProjectReference>
     <ProjectReference Include="..\GenTRAC.Models\GenTRAC.Models.csproj">
       <Project>{2802b2b5-80b1-4447-88d4-caad5fc36ba1}</Project>
       <Name>GenTRAC.Models</Name>

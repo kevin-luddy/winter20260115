@@ -52,7 +52,8 @@
     <Compile Include="..\GenBOE.Models\CLIN1.cs" Link="CLIN1.cs" />
     <Compile Include="..\GenBOE.Models\ContractTypeLU.cs" Link="ContractTypeLU.cs" />
     <Compile Include="..\GenBOE.Models\CostElementLU.cs" Link="CostElementLU.cs" />
-    <Compile Include="..\GenBOE.Models\CustomField.cs" Link="CustomField.cs" />
+	<Compile Include="..\GenBOE.Models\CustomField.cs" Link="CustomField.cs" />
+	<Compile Include="..\GenBOE.Models\CurrentRequest.cs" Link="CurrentRequest.cs" />
     <Compile Include="..\GenBOE.Models\CustomFieldDisplayLU.cs" Link="CustomFieldDisplayLU.cs" />
     <Compile Include="..\GenBOE.Models\CustomFieldValue.cs" Link="CustomFieldValue.cs" />
     <Compile Include="..\GenBOE.Models\ELMAH_Error.cs" Link="ELMAH_Error.cs" />
@@ -106,7 +107,8 @@
     <Compile Include="..\GenBOE.Models\RateTypeLU.cs" Link="RateTypeLU.cs" />
     <Compile Include="..\GenBOE.Models\ReportLU.cs" Link="ReportLU.cs" />
     <Compile Include="..\GenBOE.Models\Resource.cs" Link="Resource.cs" />
-    <Compile Include="..\GenBOE.Models\ResourceList.cs" Link="ResourceList.cs" />
+	<Compile Include="..\GenBOE.Models\ResourceList.cs" Link="ResourceList.cs" />
+	<Compile Include="..\GenBOE.Models\RequestTypeLU.cs" Link="RequestTypeLU.cs" />
     <Compile Include="..\GenBOE.Models\RoleLU.cs" Link="RoleLU.cs" />
     <Compile Include="..\GenBOE.Models\RteTemplate.cs" Link="RteTemplate.cs" />
     <Compile Include="..\GenBOE.Models\RteTemplateAnswer.cs" Link="RteTemplateAnswer.cs" />

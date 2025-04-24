@@ -27,6 +27,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 	using GenBOE.ActionLogic.WBS.BOE;
 	using GenBOE.DataBridge.Common;
 	using GenBOE.DataBridge.DTO;
+	using GenBOE.DataBridge.DTO.Request;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using IES.Common;
@@ -61,6 +62,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		private Mock<IRteTemplateDataLoader> rteTemplateDataLoader = null;
 		private Mock<IMoqTypeDataLoader> moqTypeDataLoader = null;
 		private Mock<ITMResourceRateDTODataLoader> tmResourceRateDTODataLoader = null;
+		private Mock<IRequestDataLoader> requestDataLoader = null;
 		private Mock<IValidateBOE> validateBOE = null;
 		private Mock<IMoqTableExporter> moqTableExporter = null;
 		private Mock<IMoqTableImporter> moqTableImporter = null;
@@ -119,6 +121,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				   this.rteTemplateDataLoader.Object,
 				   this.moqTypeDataLoader.Object,
 				   this.tmResourceRateDTODataLoader.Object,
+				   this.requestDataLoader.Object,
 				   this.validateBOE.Object,
 				   this.moqTableExporter.Object,
 				   this.moqTableImporter.Object,
@@ -154,6 +157,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				   rteTemplateDataLoader.Object,
 				   this.moqTypeDataLoader.Object,
 				   this.tmResourceRateDTODataLoader.Object,
+				   this.requestDataLoader.Object,
 				   this.validateBOE.Object,
 				   this.moqTableExporter.Object,
 				   this.moqTableImporter.Object,
@@ -189,6 +193,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				   rteTemplateDataLoader.Object,
 				   this.moqTypeDataLoader.Object,
 				   this.tmResourceRateDTODataLoader.Object,
+				   this.requestDataLoader.Object,
 				   this.validateBOE.Object,
 				   this.moqTableExporter.Object,
 				   this.moqTableImporter.Object,

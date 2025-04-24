@@ -149,6 +149,7 @@
     <Compile Include="DataLoaders\MOQTypeSelectionTableDataResourceHoursDataLoaderTest.cs" />
     <Compile Include="DataLoaders\MoqTypeTableCustomFieldValueXREFLoaderTest.cs" />
     <Compile Include="DataLoaders\ProjectMapDataLoaderTest.cs" />
+    <Compile Include="DataLoaders\RequestDataLoaderTest.cs" />
     <Compile Include="DataLoaders\RteTemplateDataLoaderTest.cs" />
     <Compile Include="DataLoaders\CommonDisclosureSMDTODataLoaderTest.cs" />
     <Compile Include="DataLoaders\SkillMixDTODataLoaderTest.cs" />
@@ -226,10 +227,6 @@
     <ProjectReference Include="..\GenBOE.Tests\GenBOE.Tests.csproj">
       <Project>{AA84EB3D-E855-41E8-85BD-E98DBAAB0CA0}</Project>
       <Name>GenBOE.Tests</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GenBOE.Web\GenBOE.Web.csproj">
-      <Project>{AD87CC58-CFBC-4901-9AE3-418473E78590}</Project>
-      <Name>GenBOE.Web</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -20,6 +20,7 @@ namespace GenBOE.ActionLogic
 	using GenBOE.ActionLogic.WBS.BOE;
 	using GenBOE.DataBridge.Common;
 	using GenBOE.DataBridge.DTO;
+	using GenBOE.DataBridge.DTO.Request;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using IES.Common;
@@ -69,6 +70,7 @@ namespace GenBOE.ActionLogic
 			IRteTemplateDataLoader rteTemplateDataLoader,
 			IMoqTypeDataLoader moqTypeDataLoader,
 			ITMResourceRateDTODataLoader tmResourceRateDTODataLoader,
+			IRequestDataLoader requestDataLoader,
 			IValidateBOE validateBOE,
 			IMoqTableExporter moqTableExporter,
 			IMoqTableImporter moqTableImporter,
@@ -94,6 +96,7 @@ namespace GenBOE.ActionLogic
 				rteTemplateDataLoader,
 				moqTypeDataLoader,
 				tmResourceRateDTODataLoader,
+				requestDataLoader,
 				validateBOE,
 				moqTableExporter,
 				moqTableImporter,
