@@ -48,20 +48,6 @@ SET NOCOUNT ON
 DECLARE @UpdateDT datetime2
 SET @UpdateDT = GETDATE()
 
------- Declare a table variable to hold the date shifts
-----DECLARE @TT_DateShift TABLE
-----(
-----    [Level] int,
-----    [Id] int,
-----    [StartDate] date NULL,
-----    [EndDate] date NULL,
-----    [UpdateDate] datetime2,
-----    [OrderID] int NOT NULL
-----);
-
----- Insert the date shifts from the table-valued parameter into the table variable
---INSERT INTO @TT_DateShift SELECT * FROM @DateShifts;
-
 -- Update the Workspace table
 UPDATE w
 SET 
