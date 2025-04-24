@@ -3573,14 +3573,16 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		{
 			IESResponse<byte> response = new IESResponse<byte>();
 			UserDTO currentUser = this.UserLoader.GetUserForActiveUser();
+			RequestType requestType = RequestType.ExportActuals;
+			int? requestId = null;
 
 			try
 			{
 				//insert to request table
-				int? requestId = requestDataLoader.Insert(RequestType.ExportBOE, currentUser.NTID);
+				requestId = requestDataLoader.Insert(requestType, currentUser.NTID);
 				if (!requestId.HasValue || requestId < 1)
 				{
-					throw new GeneralAppException("There is already a current Request to calculate all Actuals, please wait until that request is complete");
+					throw new GeneralAppException("There is already a current Request to Export Actuals, please wait until that request is complete");
 				}
 
 				// Get Token
@@ -3608,16 +3610,23 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				response.IsSuccessful = result.IsSuccessful;
 				response.Data = result.Data.Data;
 			}
+			catch (GeneralAppException ex)
+			{
+				logger.Error(ex, $"ex.Message: Request Type : {requestType}, NTID: {currentUser.NTID}");
+				throw;
+			}
 			catch (Exception ex)
 			{
 				// gracefully handle error
 				logger.Error(ex, "Error calling SAP API to Export Actuals.");
-				response.Messages.Add("Error calling SAP API to Export Actuals");
-				response.IsSuccessful = false;
+				throw new GeneralAppException("Error talking to backend to Export Actuals");
 			}
 			finally
 			{
-				requestDataLoader.Delete(RequestType.CalculateActuals, currentUser.NTID);
+				if (requestId.HasValue && requestId > 0)
+				{
+					requestDataLoader.Delete(requestType, currentUser.NTID);
+				}
 			}
 
 			return response;
@@ -3632,9 +3641,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		{
 			ICollection<IESResponse<CalculateActualsViewModel>> response = new List<IESResponse<CalculateActualsViewModel>>();
 			UserDTO currentUser = this.UserLoader.GetUserForActiveUser();
+			RequestType requestType = RequestType.CalculateActuals;
+			int? requestId = null;
+
 			try
 			{
-				int? requestId = requestDataLoader.Insert(RequestType.CalculateActuals, currentUser.NTID);
+				requestId = requestDataLoader.Insert(requestType, currentUser.NTID);
 				if (!requestId.HasValue || requestId < 1)
 				{
 					throw new GeneralAppException("There is already a current Request to Calculate Actuals, please wait until that request is complete");
@@ -3671,15 +3683,22 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}).ToList();
 
 			}
+			catch (GeneralAppException ex)
+			{
+				logger.Error(ex, $"ex.Message: Request Type : {requestType}, NTID: {currentUser.NTID}");
+				throw;
+			}
 			catch (Exception ex)
 			{
-				// throw error and let UI handle it
 				logger.Error(ex, "Error calling SAP API to Calculate All Actuals");
-				throw new GeneralAppException("Error calling SAP API to Calculate All Actuals");
+				throw new GeneralAppException("Error talking to backend to Calculate All Actuals");
 			}
 			finally
 			{
-				requestDataLoader.Delete(RequestType.CalculateActuals, currentUser.NTID);
+				if (requestId.HasValue && requestId > 0)
+				{
+					requestDataLoader.Delete(requestType, currentUser.NTID);
+				}
 			}
 
 			return response;
@@ -3989,14 +4008,16 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		{
 			ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>> response = new List<IESResponse<CalculateActualsWithSkillMixViewModel>>();
 			UserDTO currentUser = this.UserLoader.GetUserForActiveUser();
+			RequestType requestType = RequestType.CalculateActuals;
+			int? requestId = null;
 
 			try
 			{
 				//insert to request table
-				int? requestId = requestDataLoader.Insert(RequestType.CalculateActuals, currentUser.NTID);
+				requestId = requestDataLoader.Insert(requestType, currentUser.NTID);
 				if (!requestId.HasValue || requestId < 1)
 				{
-					throw new GeneralAppException("There is already a current Request to calculate all Actuals, please wait until that request is complete");
+					throw new GeneralAppException("There is already a current Request to Calculate Actuals, please wait until that request is complete");
 				}
 
 				// Get Token
@@ -4030,15 +4051,23 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}).ToList();
 
 			}
+			catch (GeneralAppException ex)
+			{
+				logger.Error(ex, $"ex.Message: Request Type : {requestType}, NTID: {currentUser.NTID}");
+				throw;
+			}
 			catch (Exception ex)
 			{
 				// throw error and let UI handle it
 				logger.Error(ex, "Error calling SAP API to Calculate All Actuals");
-				throw new GeneralAppException("Error calling SAP API to Calculate All Actuals");
+				throw new GeneralAppException("Error talking to backend to Calculate All Actuals");
 			}
 			finally
 			{
-				requestDataLoader.Delete(RequestType.CalculateActuals, currentUser.NTID);
+				if (requestId.HasValue && requestId > 0)
+				{
+					requestDataLoader.Delete(requestType, currentUser.NTID);
+				}
 			}
 
 			return response;
