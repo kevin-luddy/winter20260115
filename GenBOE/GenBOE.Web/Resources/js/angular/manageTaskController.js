@@ -2019,10 +2019,32 @@
         $scope.setDirty();
     };
 
-	$scope.showSkillMix = function () {
-		// Show Skill Mix if Feature Flag enabled and no T&M rates are in the task
-        return $scope.IsSkillMixEnabled && $scope.IsUsingTMRatesInTask === false &&
-            (!$scope.ManageTaskModel.IsSpace || !$scope.isSkillMixManualPerMOQ());
+    // TODO Thomas: Look into this for story.
+    $scope.showSkillMix = function () {
+        if ($scope.IsSkillMixEnabled && $scope.IsUsingTMRatesInTask === false) {
+            if ($scope.ManageTaskModel.IsSpace) {
+                // Check if at least one MOQ type is one of the big three (Comparative, Historical, Analagous)
+                let hasBigThreeMoqType = $scope.SelectedMoqTypes.some(function (item) {
+                    return [5001, 5002, 5005].includes(item.SelectedMOQType);
+                });
+
+                // Check if at least one MOQ table has a SAP/WEBI repository
+                let hasSapWebiRepository = $scope.SelectedMoqTypes.some(function (item) {
+                    return item.TableData !== undefined && item.TableData.some(function (table) {
+                        return table.RepositoryName === $scope.ManageTaskModel.SapWebiRepository;
+                    });
+                });
+
+                // Show Skill Mix if both conditions are met with space
+                return hasBigThreeMoqType && hasSapWebiRepository;
+            } else {
+                // For RMS show Skill Mix if it's not manual
+                return !$scope.isSkillMixManualPerMOQ();
+            }
+        } else {
+            // If the feature flag is disabled hide always
+            return false;
+        }
     };
 
     $scope.isSkillMixManual = function () {
