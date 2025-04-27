@@ -17,7 +17,7 @@
 
        if (errors.Count() != 0)
        {
-           %><br />Errors Occured<BR /><%
+           %><br />Errors occurred<BR /><%
            foreach (String error in errors)
            {
                %><%:error %><BR /><%

@@ -705,7 +705,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), _ResourceLoader.Object);
 
 			sut.ValidateMOQEquation(boe.Id, task, validations, ws);
-			Assert.IsTrue(validations.Count == 0, "validation errors occured");
+			Assert.IsTrue(validations.Count == 0, "validation errors occurred");
 		}
 
 		/// <summary>
@@ -741,7 +741,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Collection<ValidationMessage> validations = new Collection<ValidationMessage>();
 
 			sut.ValidateMOQEquation(boe.Id, task, validations, ws);
-			Assert.IsTrue(validations.Count == 1, " no validation errors occured");
+			Assert.IsTrue(validations.Count == 1, " no validation errors occurred");
 		}
 
 		[TestMethod]
@@ -794,7 +794,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			FullWorkspace ws = new FullWorkspace(workspace);
 
 			sut.ValidateMOQEquation(boe.Id, task2, validations, ws);
-			Assert.IsTrue(validations.Count == 0, "validation errors occured");
+			Assert.IsTrue(validations.Count == 0, "validation errors occurred");
 		}
 
 

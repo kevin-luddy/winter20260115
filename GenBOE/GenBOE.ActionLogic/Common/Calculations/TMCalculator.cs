@@ -57,7 +57,9 @@ namespace GenBOE.ActionLogic.Common.Calculations
 			}
 			catch (NullReferenceException)
 			{
-				throw new GenValidationException($"T&M Rates are missing for Resource: {laborTask.ResourceID.ToString()}.");
+				// try to get Resource Name out of Workspace
+				string resourceName = workspace.ResourcesForWsResourceListId.FirstOrDefault(r => r.Id == laborTask.ResourceID)?.ResourceName ?? "{Unknown Resource Name}";
+				throw new GenValidationException($"T&M Rates are missing for Resource: {resourceName}.");
 			}
 			catch (Exception ex)
 			{
