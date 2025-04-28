@@ -939,7 +939,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			#endregion
 
 			bool hasSapWebi = modelView.MOQTypes.Any(x => x.TableData.Any(y => y.RepositoryName == RepositoryName.SapWebi.GetDescription()))
-				|| SystemConfiguration.Instance().CompanyMode != CompanyConfiguration.SpaceSystems;
+				|| SystemConfiguration.Instance().CompanyMode != IES.Common.CompanyConfiguration.SpaceSystems;
 
 			if (Utilities.ShowSkillMixForTask(ws.CreationDate, CheckTMRates(ws, modelView.LaborTypesData), taskElement.MOQType.GetDescription()) && hasSapWebi)
 			{
@@ -2003,7 +2003,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			toReturn.BOETaskElementOrder = modelview.TaskElementData.BOETaskElementOrder;
 
 			bool hasSapWebi = modelview.MOQTypes.Any(x => x.TableData.Any(y => y.RepositoryName == RepositoryName.SapWebi.GetDescription()))
-				|| SystemConfiguration.Instance().CompanyMode != CompanyConfiguration.SpaceSystems;
+				|| SystemConfiguration.Instance().CompanyMode != IES.Common.CompanyConfiguration.SpaceSystems;
 
 			if (Utilities.ShowSkillMixForTask(ws.CreationDate, modelview.IsUsingTMRatesInTask, toReturn.MOQType.GetDescription()) && hasSapWebi)
 			{

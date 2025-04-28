@@ -1133,7 +1133,7 @@ namespace IES.Common
 									  moqType == MOQType.Comparative.GetDescription() ||
 									  moqType == MOQType.AnalogousRelationships.GetDescription();
 
-				showSkillMixRationale = ShowSkillMixForWorkspace(workspaceCreationDate) && !hasTMRates && isValidMoqTypes
+				showSkillMixRationale = ShowSkillMixForWorkspace(workspaceCreationDate) && !hasTMRates && isValidMoqTypes;
 			}
 
 			return showSkillMixRationale;
