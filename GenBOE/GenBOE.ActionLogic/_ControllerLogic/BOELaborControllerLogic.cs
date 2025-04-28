@@ -16,6 +16,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using System.Web;
 	using System.Web.Configuration;
 	using System.Web.Mvc;
+	using DocumentFormat.OpenXml.Drawing.Charts;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
@@ -536,7 +537,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					foreach (ResourceTypeDto missing in missingLabors)
 					{
 						this.logger.Error("During Save of Task Element, there was a missing task element labor found in the DB that will be deleted with id " + missing.Id);
-						LaborTypeDataModelView toDelete = new LaborTypeDataModelView(missing, new ResourceDTO(), new ResourceDTO(), new PerformingOrgDTO(), 0m, false);
+						LaborTypeDataModelView toDelete = new LaborTypeDataModelView(missing, new ResourceDTO(), new ResourceDTO(), new PerformingOrgDTO(), 0m, false, ws.DecimalPrecision);
 						toDelete.Deleted = true;
 						modelView.LaborTypesData.Add(toDelete);
 					}
@@ -1682,6 +1683,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			ICollection<ResourceSpreadDto> spreadDtos = SpreadCurve.CalculateLaborSpreadsBasedOnCurve(request, precision);
 
+			decimal sumUCOT = 0m;
+			
 			// Convert dto to mv
 			foreach (ResourceSpreadDto dto in spreadDtos)
 			{
@@ -1693,11 +1696,27 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				if (calculateUCOT && dto.LaborSpreadDate >= Utilities.OneLmxStartDate)
 				{
+					decimal nonPrecisionUCOT = dto.LaborSpreadValue * ucotFactor / 100.0m;
+					sumUCOT += nonPrecisionUCOT;
+					decimal precisionUCOT = Utilities.AdjustPrecision(nonPrecisionUCOT, precision);
+				
 					ucotSpreadsToReturn.Add(new LaborSpreadDataModelView()
 					{
 						LaborSpreadDate = dto.LaborSpreadDate.ToMonthString(),
-						LaborSpreadValue = dto.LaborSpreadValue * ucotFactor / 100.0m
+						LaborSpreadValue = precisionUCOT
 					});
+				}
+			}
+
+			if (calculateUCOT && ucotSpreadsToReturn.Any())
+			{
+				decimal totalUCOTPrecision = Utilities.AdjustPrecision(sumUCOT, precision);
+				decimal[] ucotSpreadValues = SpreadCurve.Smooth(totalUCOTPrecision, ucotSpreadsToReturn.Select(s => s.LaborSpreadValue ?? 0m).ToArray(), 0, ucotSpreadsToReturn.Count, precision);
+
+				// Reset the values to the Smooth'ed array to guarantee precision and no loss of rounding values
+				for (int i = 0; i < ucotSpreadsToReturn.Count; i++)
+				{
+					ucotSpreadsToReturn[i].LaborSpreadValue = ucotSpreadValues[i];
 				}
 			}
 
@@ -1928,7 +1947,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					perfOrg = performingOrgsFromDb.First(x => x.Id == labor.PerformingOrgID.Value);
 				}
 
-				LaborTypeDataModelView laborToAdd = new LaborTypeDataModelView(labor, resource, businessResourceCode, perfOrg, ws.UCOTFactor, calculateUCOT && businessResourceCode.ElementOfCost == ElementOfCostType.LMLabor && businessResourceCode.RateType == RateType.Hours);
+				LaborTypeDataModelView laborToAdd = new LaborTypeDataModelView(labor, resource, businessResourceCode, perfOrg, ws.UCOTFactor, calculateUCOT && businessResourceCode.ElementOfCost == ElementOfCostType.LMLabor && businessResourceCode.RateType == RateType.Hours, ws.DecimalPrecision);
 
 				ICollection<CustomFieldSelectionModelView> laborCustomFieldSelection = new Collection<CustomFieldSelectionModelView>();
 				ICollection<CustomFieldValueContainer> laborCustomFieldValues = labor.CustomFieldValueContainers;

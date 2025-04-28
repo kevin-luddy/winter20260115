@@ -551,6 +551,12 @@
                                     <tr>
                                         <td colspan="{{model.SpreadDatesFull.length}}" style="border: 0;">&nbsp;</td>
                                     </tr>
+                                    <tr data-ng-if="showUCOT">
+                                        <td colspan="{{model.SpreadDatesFull.length}}" style="border: 0;">&nbsp;</td>
+                                    </tr>
+                                    <tr data-ng-if="showUCOT">
+                                        <td colspan="{{model.SpreadDatesFull.length}}" style="border: 0;">&nbsp;</td>
+                                    </tr>
                                     <tr>
                                         <td colspan="{{model.SpreadDatesFull.length}}" style="border: 0; padding-bottom: 3px;">&nbsp;</td>
                                     </tr>

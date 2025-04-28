@@ -452,16 +452,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 throw new ArgumentNullException(nameof(workspace));
             }
 
-			// If UCOT is enabled then sent decimal precision to be 3 if it is set to be less than 3.
-			if (Utilities.IsUCOTEnabled)
-			{
-				this.WorkspaceDecimalPrecision = Math.Max(3, workspace.DecimalPrecision);
-			}
-			else
-			{
-				this.WorkspaceDecimalPrecision = workspace.DecimalPrecision;
-			}
-
+			this.WorkspaceDecimalPrecision = workspace.DecimalPrecision;
 			this.DefaultHoursFormat = Utilities.PrecisionFormattingString(this.WorkspaceDecimalPrecision);
 			this.exportConverter.SetWorkspacePrecisionVariables(workspace);
         }
