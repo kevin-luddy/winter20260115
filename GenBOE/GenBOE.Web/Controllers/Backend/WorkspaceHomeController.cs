@@ -173,7 +173,7 @@ namespace GenBOE.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown error occured returning Workspace Grid Data: {ex.Message}");
+				result.Messages.Add($"Unknown error occurred returning Workspace Grid Data: {ex.Message}");
 			}
 
 			return result;

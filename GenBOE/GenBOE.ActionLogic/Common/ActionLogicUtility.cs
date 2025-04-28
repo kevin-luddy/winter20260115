@@ -118,8 +118,6 @@ namespace GenBOE.ActionLogic.Common
 																			.Where(x => x.Included && x.BOESkillMix.HasValue && x.BOESkillMix.Value <= 0).ToList();
 			IList<CommonDisclosureModelView> commonDisclosureIncludedHasTrueValue = commonDisclosures.Where(x => x.Included).ToList();
 			decimal totalCommonDisclosureRowsBOESkillMix = commonDisclosures.Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
-			IList<CommonDisclosureModelView> commonDisclosureHasBRC = commonDisclosures
-																			.Where(x => string.IsNullOrEmpty(x.BusinessResourceID)).ToList();
 
 			foreach (string skillMixResourceID in commonDisclosureRowsExceedChars.Select(x => x.ResourceID))
 			{
@@ -144,11 +142,6 @@ namespace GenBOE.ActionLogic.Common
 			if (!totalCommonDisclosureRowsBOESkillMix.EqualsEpsilon(100) && !totalCommonDisclosureRowsBOESkillMix.EqualsEpsilon(0))
 			{
 				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: BOE Skill Mix total must be either 0% or 100%"));
-			}
-
-			foreach (string commonDisclosureRow in commonDisclosureHasBRC.Select(x => x.ResourceID).Distinct())
-			{
-				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: BRC must be selected for each occurrence of Resource {0}.", commonDisclosureRow));
 			}
 
 			ValidateResourceAndBRCCombos(commonDisclosures, errorMessages);

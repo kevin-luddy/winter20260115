@@ -967,7 +967,7 @@ namespace GenBOE.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown Error occured returning Material PBoe Data for given Workspace with tracking number: {trackingNumber}: {ex.Message}");
+				result.Messages.Add($"Error occurred returning Material PBoe Data for given Workspace with tracking number: {trackingNumber}: {ex.Message}");
 			}
 
 			return result;
@@ -1110,7 +1110,7 @@ namespace GenBOE.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown Error occured returning PBOE Data for given Workspace with tracking number: {trackingNumber}: {ex.Message}");
+				result.Messages.Add($"Error occurred returning PBOE Data for given Workspace with tracking number: {trackingNumber}: {ex.Message}");
 			}
 
 			return result;
@@ -1172,7 +1172,7 @@ namespace GenBOE.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown Error occured returning IBOE Data for given Workspace with tracking number: {trackingNumber}: {ex.Message}");
+				result.Messages.Add($"Error occurred returning IBOE Data for given Workspace with tracking number: {trackingNumber}: {ex.Message}");
 			}
 
 			return result;
@@ -1250,7 +1250,7 @@ namespace GenBOE.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown Error occured returning PBoe Data for given Workspace with tracking number: {trackingNumber} and PBOE ID: {pboeID}: {ex.Message}");
+				result.Messages.Add($"Error occurred returning PBoe Data for given Workspace with tracking number: {trackingNumber} and PBOE ID: {pboeID}: {ex.Message}");
 			}
 
 			return result;
@@ -1300,7 +1300,7 @@ namespace GenBOE.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown Error occured returning PBOE Totals : {ex.Message}");
+				result.Messages.Add($"Error occurred returning PBOE Totals : {ex.Message}");
 			}
 
 			return result;
@@ -1353,7 +1353,7 @@ namespace GenBOE.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown Error occured returning IBOE Totals : {ex.Message}");
+				result.Messages.Add($"Error occurred returning IBOE Totals : {ex.Message}");
 			}
 
 			return result;
@@ -1448,7 +1448,7 @@ namespace GenBOE.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown Error occured returning PBOE CLIN Data: {ex.Message}");
+				result.Messages.Add($"Error occurred returning PBOE CLIN Data: {ex.Message}");
 			}
 			return result;
 		}
@@ -1548,7 +1548,7 @@ namespace GenBOE.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown Error occured returning IBOE CLIN Data: {ex.Message}");
+				result.Messages.Add($"Error occurred returning IBOE CLIN Data: {ex.Message}");
 			}
 			return result;
 		}
@@ -1597,7 +1597,7 @@ namespace GenBOE.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown Error occured returning in-use {elementOfCost.GetDescription()} Resources for given Workspaces with tracking number: {trackingNumber}: {ex.Message}");
+				result.Messages.Add($"Error occurred returning in-use {elementOfCost.GetDescription()} Resources for given Workspaces with tracking number: {trackingNumber}: {ex.Message}");
 			}
 
 			return result;
