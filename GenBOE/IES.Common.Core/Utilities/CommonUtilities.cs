@@ -1048,8 +1048,9 @@ namespace IES.Common.Core.Utilities
 		/// </summary>
 		/// <param name="workspaceCreationDate">Workspace creation date.</param>
 		/// <param name="hasTMRates">Is the task using T&M rates</param>
+		/// <param name="moqType">MOQ Type.</param>
 		/// <returns>Option to show skill mix for task.</returns>
-		public static bool ShowSkillMixForTask(DateTime? workspaceCreationDate, bool hasTMRates)
+		public static bool ShowSkillMixForTask(DateTime? workspaceCreationDate, bool hasTMRates, string moqType)
 		{
 			bool showSkillMixRationale = false;
 
@@ -1058,9 +1059,16 @@ namespace IES.Common.Core.Utilities
 				showSkillMixRationale = ShowSkillMixForWorkspace(workspaceCreationDate);
 			}
 			// For space only: Shows Skill Mix Rationale section when the workspace is NOT using T&M.
-			else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 			{
-				showSkillMixRationale = ShowSkillMixForWorkspace(workspaceCreationDate) && !hasTMRates;
+				bool isValidMoqTypes = moqType == MOQType.Historical.GetDescription() ||
+									  moqType == MOQType.Comparative.GetDescription() ||
+									  moqType == MOQType.AnalogousRelationships.GetDescription();
+
+				// Note: You still need to implement the logic to check for the SAP/WEBI repository
+				// This might involve passing additional data to this method or using a different approach
+				bool hasSapWebiRepository = true; // Replace with actual logic
+
+				showSkillMixRationale = ShowSkillMixForWorkspace(workspaceCreationDate) && !hasTMRates && isValidMoqTypes && hasSapWebiRepository;
 			}
 
 			return showSkillMixRationale;

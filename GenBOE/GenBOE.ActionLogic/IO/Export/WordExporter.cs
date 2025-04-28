@@ -589,7 +589,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.FieldName_HistoricalRefExp);
 					}
 
-					if (moqType.SelectedMOQType != MOQType.NonLabor && !Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, false))
+					if (moqType.SelectedMOQType != MOQType.NonLabor && !Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, false, moqType.GetDescription()))
 					{
 						WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SkillMix),
 							moqType.SkillMixRationale, ref counters, true);
@@ -840,7 +840,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			if (skillMixTablesContainer != null)
 			{
 				if ((selectedComponents.Contains(BoeCustomReportComponent.SkillMixTables) || !selectedComponents.Any())
-					&& Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, task)))
+					&& Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, task), task.MOQType.GetDescription()))
 				{
 					// populate Current/Legacy Skill Mix Table
 					SdtElement currentTableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_CurrentSkillMix);

@@ -938,7 +938,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 			#endregion
 			
-			if (Utilities.ShowSkillMixForTask(ws.CreationDate, CheckTMRates(ws, modelView.LaborTypesData)))
+			if (Utilities.ShowSkillMixForTask(ws.CreationDate, CheckTMRates(ws, modelView.LaborTypesData), taskElement.MOQType.GetDescription()))
 			{
 				decimal historicalHoursTotals = 0;
 				// determine if SkillMix is manual or automatic
@@ -1560,7 +1560,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			this.ValidateLaborTypeDates(laborTaskData, inValidationErrors);
 			this.ValidateLaborTypeCustomFields(laborTaskData, ws, taskElement, inValidationErrors);
 			this.ValidateTaskCustomFields(laborTaskData, ws, inValidationErrors);
-			this.ValidateMoqTypes(ws, laborTaskData, inValidationErrors, moqEquationTotal);
+			this.ValidateMoqTypes(ws, laborTaskData, inValidationErrors, taskElement.MOQType.GetDescription(), moqEquationTotal);
 			this.ValidateMoqTypeTableCustomFields(laborTaskData, ws, inValidationErrors);
 		}
 
@@ -1998,7 +1998,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			toReturn.WorkspaceVariableIDs = modelview.TaskElementData.WorkspaceVariableIDs;
 			toReturn.TaskElementType = TaskElementType.Labor;
 			toReturn.BOETaskElementOrder = modelview.TaskElementData.BOETaskElementOrder;
-			if (Utilities.ShowSkillMixForTask(ws.CreationDate, modelview.IsUsingTMRatesInTask))
+			if (Utilities.ShowSkillMixForTask(ws.CreationDate, modelview.IsUsingTMRatesInTask, toReturn.MOQType.GetDescription()))
 			{
 				toReturn.MOQTotalRelevantHours += modelview.MOQTypes?.Sum(t => t.TableData?.Sum(td => td.TotalRelevantHours) ?? 0) ?? 0;
 				toReturn.SkillMixTable = modelview.SkillMixData;
@@ -4478,12 +4478,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="ws">Full WS</param>
 		/// <param name="taskData">Task Data</param>
 		/// <param name="errors">Validation Errors</param>		
+		/// <param name="moqType">MOQ Type</param>
 		/// <param name="moqEquationTotal"> Moq equation total</param>
-		private void ValidateMoqTypes(FullWorkspace ws, LaborTaskDataModelView taskData, ICollection<ValidationMessage> errors, decimal? moqEquationTotal = null)
+		private void ValidateMoqTypes(FullWorkspace ws, LaborTaskDataModelView taskData, ICollection<ValidationMessage> errors, string moqType, decimal? moqEquationTotal = null)
 		{
 			if (ws.UsingTemplateBOE)
 			{
-				bool showSkillMixTable = Utilities.ShowSkillMixForTask(ws.CreationDate, taskData.IsUsingTMRatesInTask);
+				bool showSkillMixTable = Utilities.ShowSkillMixForTask(ws.CreationDate, taskData.IsUsingTMRatesInTask, moqType);
 				ICollection<string> taskErrors = this.validateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws, false, moqEquationTotal, showSkillMixTable);
 				errors.AddRange(taskErrors.Select(error => new ValidationMessage(error)));
 			}

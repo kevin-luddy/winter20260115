@@ -2019,7 +2019,6 @@
         $scope.setDirty();
     };
 
-    // TODO Thomas: Look into this for story.
     $scope.showSkillMix = function () {
         if ($scope.IsSkillMixEnabled && $scope.IsUsingTMRatesInTask === false) {
             if ($scope.ManageTaskModel.IsSpace) {
