@@ -577,6 +577,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.FieldName_HistoricalRefExp);
 					}
 
+					// TODO Thomas: Look into this for show?
 					if (moqType.SelectedMOQType != MOQType.NonLabor && !CommonUtilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, false))
 					{
 						WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SkillMix),

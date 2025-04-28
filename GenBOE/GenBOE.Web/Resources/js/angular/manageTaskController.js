@@ -2038,8 +2038,8 @@
                 // Show Skill Mix if both conditions are met with space
                 return hasBigThreeMoqType && hasSapWebiRepository;
             } else {
-                // For RMS show Skill Mix if it's not manual
-                return !$scope.isSkillMixManualPerMOQ();
+                // For RMS show Skill Mix if it's enabled
+                return $scope.IsSkillMixEnabled;
             }
         } else {
             // If the feature flag is disabled hide always
