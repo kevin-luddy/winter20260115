@@ -21,7 +21,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
     using GenBOE.Dtos;
     using GenBOE.Objects;
     using IES.Common;
-    using IES.Common.OfficeUtilities;
+	using IES.Common.classes;
+	using IES.Common.OfficeUtilities;
 
     /// <summary>
     /// Converts FullWorkspace into ModelViews for export
@@ -447,7 +448,10 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                 boeExportTaskElement.BOETaskElementOrder = boeTaskElement.BOETaskElementOrder;
                 boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
 
-				if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, boeTaskElement), boeExportTaskElement.MOQType))
+				bool hasSapWebi = boeExportTaskElement.MOQTypes.Any(x => x.TableData.Any(y => y.RepositoryName == RepositoryName.SapWebi.GetDescription()))
+					|| SystemConfiguration.Instance().CompanyMode != CompanyConfiguration.SpaceSystems;
+
+				if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, boeTaskElement), boeExportTaskElement.MOQType) && hasSapWebi)
 				{
 					boeExportTaskElement.SkillMixTable = boeTaskElement.SkillMixTable;
 					boeExportTaskElement.CommonDisclosureTable = boeTaskElement.CommonDisclosureTable;

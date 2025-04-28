@@ -829,8 +829,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			SdtElement skillMixTablesContainer = WordUtilities.GetTaggedChildElement(taskContainer, BOEExporterConstants.Container_SkillMixTables);
 			if (skillMixTablesContainer != null)
 			{
+				bool hasSapWebi = laborTaskElement.MOQTypes.Any(x => x.TableData.Any(y => y.RepositoryName == RepositoryName.SapWebi.GetDescription()))
+					|| SystemConfiguration.Instance().CompanyMode != CompanyConfiguration.SpaceSystems;
+
 				if ((selectedComponents.Contains(BoeCustomReportComponent.SkillMixTables) || !selectedComponents.Any())
-					&& CommonUtilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, laborTaskElement.HasTMRates, laborTaskElement.MOQType))
+					&& CommonUtilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, laborTaskElement.HasTMRates, laborTaskElement.MOQType) && hasSapWebi)
 				{
 					// populate Current/Legacy Skill Mix Table
 					SdtElement currentTableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_CurrentSkillMix);

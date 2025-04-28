@@ -22,6 +22,7 @@ namespace GenBOE.ActionLogic.IO.Export
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.IO.Export.BOE;
+	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.DataBridge.Common;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
@@ -4574,7 +4575,11 @@ namespace GenBOE.ActionLogic.IO.Export
 				if (exportInputs.Workspace.UsingTemplateBOE)
                 {
                     boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
-					skillMixEnabled = Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, boeTaskElement), boeExportTaskElement.MOQType);
+					
+					bool hasSapWebi = boeExportTaskElement.MOQTypes.Any(x => x.TableData.Any(y => y.RepositoryName == RepositoryName.SapWebi.GetDescription()))
+						|| SystemConfiguration.Instance().CompanyMode != CompanyConfiguration.SpaceSystems;
+					
+					skillMixEnabled = Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, boeTaskElement), boeExportTaskElement.MOQType) && hasSapWebi;
 					if (skillMixEnabled)
 					{
 						boeExportTaskElement.SkillMixTable = boeTaskElement.SkillMixTable;

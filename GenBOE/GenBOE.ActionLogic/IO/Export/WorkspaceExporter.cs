@@ -39,7 +39,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		protected string sNo { get { return "No"; } }
 		protected string sEmpty { get { return string.Empty; } }
 		protected string sMultiple { get { return "Multiple"; } }
-		
+
 		/// <summary>
 		/// Skill Mix Table's Sheet Name
 		/// </summary>
@@ -304,7 +304,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					ExcelUtilities.RemoveColumn(document, "BOE & Resource Combo", "BOE Custom Field");
 					ExcelUtilities.RemoveColumn(document, "BOEs", "BOE Custom Field");
 				}
-			
+
 				if (taskCustomFieldNames.Any())
 				{
 					ExcelUtilities.DuplicateColumn(document, "BOE & Resource Combo", "Task Custom Field", taskCustomFieldNames.ToArray());
@@ -315,7 +315,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					ExcelUtilities.RemoveColumn(document, "BOE & Resource Combo", "Task Custom Field");
 					ExcelUtilities.RemoveColumn(document, "BOEs", "Task Custom Field");
 				}
-			
+
 				if (resourceCustomFieldNames.Any())
 				{
 					ExcelUtilities.DuplicateColumn(document, "BOE & Resource Combo", "Resource Custom Field", resourceCustomFieldNames.ToArray());
@@ -326,7 +326,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					ExcelUtilities.RemoveColumn(document, "BOE & Resource Combo", "Resource Custom Field");
 					ExcelUtilities.RemoveColumn(document, "BOEs", "Resource Custom Field");
 				}
-			
+
 				if (moqTableCustomFieldNames.Any())
 				{
 					ExcelUtilities.DuplicateColumn(document, "MOQ Table Data", "MOQ Table Custom Field", moqTableCustomFieldNames.ToArray());
@@ -425,10 +425,13 @@ namespace GenBOE.ActionLogic.IO.Export
 			{
 				foreach (BoeTaskElementDTO task in exportInputs.TaskElements.Where(x => x.BoeID == boe.Id))
 				{
-					if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, task), task.MOQType.GetDescription()))
+					ICollection<MoqTypeSelection> moqTypesForTask = exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).ToList();
+
+					bool hasSapWebi = moqTypesForTask.Any(x => x.TableData.Any(y => y.RepositoryName == RepositoryName.SapWebi.GetDescription()))
+						|| SystemConfiguration.Instance().CompanyMode != CompanyConfiguration.SpaceSystems;
+
+					if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, task), task.MOQType.GetDescription()) && hasSapWebi)
 					{
-						ICollection<MoqTypeSelection> moqTypesForTask = exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).ToList();
-						
 						if (moqTypesForTask.Count == 1)
 						{
 							string selectedMOQTypeText = moqTypesForTask.First().SelectedMOQTypeText;
@@ -510,12 +513,15 @@ namespace GenBOE.ActionLogic.IO.Export
 		private ExcelExportWorksheet GetCommonDisclosureSkillMixTableData(BOEExportInputs exportInputs)
 		{
 			ExcelExportWorksheet toReturn = new ExcelExportWorksheet(CommonDisclosureSheetName);
+			
+			bool hasSapWebi = exportInputs.MOQTypes.Any(x => x.TableData.Any(y => y.RepositoryName == RepositoryName.SapWebi.GetDescription()))
+				|| SystemConfiguration.Instance().CompanyMode != CompanyConfiguration.SpaceSystems;
 
 			foreach (BoeDTO boe in exportInputs.Boes)
 			{
 				foreach (BoeTaskElementDTO task in exportInputs.TaskElements.Where(x => x.BoeID == boe.Id))
 				{
-					if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, task), task.MOQType.GetDescription()))
+					if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, task), task.MOQType.GetDescription()) && hasSapWebi)
 					{
 						ICollection<MoqTypeSelection> moqTypesForTask = exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).ToList();
 
@@ -837,7 +843,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						{
 							ICollection<CustomFieldValueDTO> customFieldValues = workspaceCustomFieldValues.Where(i => i.CustomFieldID == resourceCustomField.Id).ToCollection<CustomFieldValueDTO>();
 							CustomFieldValueDTO customFieldValueForResource = customFieldValues.FirstOrDefault(c => resourceType.CustomFieldValueContainers.Select(r => r.CustomFieldValueID).Contains(c.CustomFieldValueID));
-							row.Add(customFieldValueForResource != null ? customFieldValueForResource.CustomFieldValueName.RemoveIllegalExcelCharacters() : this.sEmpty); 
+							row.Add(customFieldValueForResource != null ? customFieldValueForResource.CustomFieldValueName.RemoveIllegalExcelCharacters() : this.sEmpty);
 							row.Add(customFieldValueForResource != null ? customFieldValueForResource.CustomFieldValueDescription.RemoveIllegalExcelCharacters() : this.sEmpty);
 						}
 
@@ -1826,7 +1832,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				if (resourceUsesCostValues)
 				{
 					row.Add(string.Empty);  // Hours column is empty
-					row.Add(string.Empty);	// UCOT Hours column is empty
+					row.Add(string.Empty);  // UCOT Hours column is empty
 
 					if (spread == null)
 					{
@@ -1856,7 +1862,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					}
 					else
 					{
-						row.Add(string.Empty);	// Empty UCOT Factor if UCOT Factor is not enabled
+						row.Add(string.Empty);  // Empty UCOT Factor if UCOT Factor is not enabled
 					}
 
 					row.Add(string.Empty);  // Cost column is empty

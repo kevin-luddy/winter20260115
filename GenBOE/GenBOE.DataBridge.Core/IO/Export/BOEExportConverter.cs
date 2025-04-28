@@ -455,7 +455,10 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				boeExportTaskElement.BOETaskElementOrder = boeTaskElement.BOETaskElementOrder;
 				boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
 
-				if (CommonUtilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, boeTaskElement.HasTMRates, boeExportTaskElement.MOQType))
+				bool hasSapWebi = boeExportTaskElement.MOQTypes.Any(x => x.TableData.Any(y => y.RepositoryName == RepositoryName.SapWebi.GetDescription()))
+					|| SystemConfiguration.Instance().CompanyMode != CompanyConfiguration.SpaceSystems;
+
+				if (CommonUtilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, boeTaskElement.HasTMRates, boeExportTaskElement.MOQType) && hasSapWebi)
 				{
 					boeExportTaskElement.SkillMixTable = boeTaskElement.SkillMixTable;
 					boeExportTaskElement.CommonDisclosureTable = boeTaskElement.CommonDisclosureTable;

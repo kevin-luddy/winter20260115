@@ -4569,7 +4569,10 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				if (exportInputs.Workspace.UsingTemplateBOE)
 				{
 					boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
-					skillMixEnabled = CommonUtilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, boeTaskElement.HasTMRates, boeExportTaskElement.MOQType);
+					bool hasSapWebi = boeExportTaskElement.MOQTypes.Any(x => x.TableData.Any(y => y.RepositoryName == RepositoryName.SapWebi.GetDescription()))
+						|| SystemConfiguration.Instance().CompanyMode != CompanyConfiguration.SpaceSystems;
+
+					skillMixEnabled = CommonUtilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, boeTaskElement.HasTMRates, boeExportTaskElement.MOQType) && hasSapWebi;
 					if (skillMixEnabled)
 					{
 						boeExportTaskElement.SkillMixTable = boeTaskElement.SkillMixTable;

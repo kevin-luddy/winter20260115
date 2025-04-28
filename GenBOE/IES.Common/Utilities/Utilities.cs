@@ -1133,11 +1133,7 @@ namespace IES.Common
 									  moqType == MOQType.Comparative.GetDescription() ||
 									  moqType == MOQType.AnalogousRelationships.GetDescription();
 
-				// Note: You still need to implement the logic to check for the SAP/WEBI repository
-				// This might involve passing additional data to this method or using a different approach
-				bool hasSapWebiRepository = true; // Replace with actual logic
-
-				showSkillMixRationale = ShowSkillMixForWorkspace(workspaceCreationDate) && !hasTMRates && isValidMoqTypes && hasSapWebiRepository;
+				showSkillMixRationale = ShowSkillMixForWorkspace(workspaceCreationDate) && !hasTMRates && isValidMoqTypes
 			}
 
 			return showSkillMixRationale;

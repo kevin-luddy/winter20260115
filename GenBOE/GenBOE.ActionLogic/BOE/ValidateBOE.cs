@@ -240,7 +240,10 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 			inBOE.TaskElements.ForEach(task =>
 			{
-				if (Utilities.ShowSkillMixForTask(ws.CreationDate, BOETaskUtility.IsUsingTMRates(ws, task), task.MOQType.GetDescription()))
+				bool hasSapWebi = inBOE.MoqTypeSelections.Any(x => x.TableData.Any(y => y.RepositoryName == RepositoryName.SapWebi.GetDescription()))
+				|| SystemConfiguration.Instance().CompanyMode != CompanyConfiguration.SpaceSystems;
+
+				if (Utilities.ShowSkillMixForTask(ws.CreationDate, BOETaskUtility.IsUsingTMRates(ws, task), task.MOQType.GetDescription()) && hasSapWebi)
 				{
 					ICollection<string> errorMessages = new List<string>();
 					errorMessages = ActionLogicUtility.ValidateSkillMixTable(task.SkillMixTable);
@@ -707,7 +710,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 							// Only Validate if the SkillMix Rationale field is showing in the MOQ Types Section
 							if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST || !showSkillMixTable)
 							{
-								ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages); 
+								ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
 							}
 							break;
 						case MOQType.Comparative:
@@ -854,7 +857,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
 						default:
 							errorMessages.Add("Invalid MOQ Type selected");
 							break;
-					};
+					}
+					;
 				});
 			}
 

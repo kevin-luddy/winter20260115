@@ -589,7 +589,10 @@ namespace GenBOE.ActionLogic.IO.Export
 						WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.FieldName_HistoricalRefExp);
 					}
 
-					if (moqType.SelectedMOQType != MOQType.NonLabor && !Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, false, moqType.GetDescription()))
+					bool hasSapWebi = laborTaskElement.MOQTypes.Any(x => x.TableData.Any(y => y.RepositoryName == RepositoryName.SapWebi.GetDescription()))
+						|| SystemConfiguration.Instance().CompanyMode != CompanyConfiguration.SpaceSystems;
+
+					if (moqType.SelectedMOQType != MOQType.NonLabor && !Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, false, moqType.GetDescription()) && hasSapWebi)
 					{
 						WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SkillMix),
 							moqType.SkillMixRationale, ref counters, true);
@@ -839,8 +842,11 @@ namespace GenBOE.ActionLogic.IO.Export
 			SdtElement skillMixTablesContainer = WordUtilities.GetTaggedChildElement(taskContainer, BOEExporterConstants.Container_SkillMixTables);
 			if (skillMixTablesContainer != null)
 			{
+				bool hasSapWebi = laborTaskElement.MOQTypes.Any(x => x.TableData.Any(y => y.RepositoryName == RepositoryName.SapWebi.GetDescription()))
+					|| SystemConfiguration.Instance().CompanyMode != CompanyConfiguration.SpaceSystems;
+
 				if ((selectedComponents.Contains(BoeCustomReportComponent.SkillMixTables) || !selectedComponents.Any())
-					&& Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, task), task.MOQType.GetDescription()))
+					&& Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, task), task.MOQType.GetDescription()) && hasSapWebi)
 				{
 					// populate Current/Legacy Skill Mix Table
 					SdtElement currentTableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_CurrentSkillMix);
