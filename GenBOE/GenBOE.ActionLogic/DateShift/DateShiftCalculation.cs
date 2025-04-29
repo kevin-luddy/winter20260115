@@ -158,10 +158,15 @@ namespace GenBOE.ActionLogic.DateShift
 				// Check if we have Skill Mix enabled to adjust Skill Mix table data as needed
 				if (Utilities.ShowSkillMixForWorkspace(fullWorkspace?.CreationDate))
 				{
+
 					// Iterate through each task and check for Skill Mix
 					foreach (BoeTaskElementDTO task in fullWorkspace?.TaskElements)
 					{
-						if (Utilities.ShowSkillMixForTask(fullWorkspace?.CreationDate, BOETaskUtility.IsUsingTMRates(fullWorkspace, task), task.MOQType.GetDescription()))
+						FullBoe fullBoe = this.factory.CreateFullBoe(task.BoeID);
+
+						ICollection<MoqTypeSelection> moqTypesForTask = fullBoe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList();
+
+						if (BOETaskUtility.ShowSkillMixForTask(fullWorkspace?.CreationDate, BOETaskUtility.IsUsingTMRates(fullWorkspace, task), moqTypesForTask))
 						{
 							bool isBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspaceShortname);
 
@@ -170,8 +175,6 @@ namespace GenBOE.ActionLogic.DateShift
 								.SelectMany(moqType => moqType.TableData)
 								.SelectMany(tableData => tableData.ResourceHours)
 								.ToList();
-
-							FullBoe fullBoe = this.factory.CreateFullBoe(task.BoeID);
 
 							LaborTaskDataModelView laborTasks = this.boeLaborControllerLogic.ConvertDtoToModelView(fullWorkspace, fullBoe, task);
 

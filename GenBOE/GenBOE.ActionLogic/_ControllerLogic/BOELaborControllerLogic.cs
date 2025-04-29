@@ -938,10 +938,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 			#endregion
 
-			bool hasSapWebi = modelView.MOQTypes.Any(x => x.TableData.Any(y => y.RepositoryName == RepositoryName.SapWebi.GetDescription()))
-				|| SystemConfiguration.Instance().CompanyMode != IES.Common.CompanyConfiguration.SpaceSystems;
-
-			if (Utilities.ShowSkillMixForTask(ws.CreationDate, CheckTMRates(ws, modelView.LaborTypesData), taskElement.MOQType.GetDescription()) && hasSapWebi)
+			if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, CheckTMRates(ws, modelView.LaborTypesData), modelView.MOQTypes))
 			{
 				decimal historicalHoursTotals = 0;
 				// determine if SkillMix is manual or automatic
@@ -1563,7 +1560,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			this.ValidateLaborTypeDates(laborTaskData, inValidationErrors);
 			this.ValidateLaborTypeCustomFields(laborTaskData, ws, taskElement, inValidationErrors);
 			this.ValidateTaskCustomFields(laborTaskData, ws, inValidationErrors);
-			this.ValidateMoqTypes(ws, laborTaskData, inValidationErrors, taskElement.MOQType.GetDescription(), moqEquationTotal);
+			this.ValidateMoqTypes(ws, laborTaskData, inValidationErrors, moqEquationTotal);
 			this.ValidateMoqTypeTableCustomFields(laborTaskData, ws, inValidationErrors);
 		}
 
@@ -2002,10 +1999,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			toReturn.TaskElementType = TaskElementType.Labor;
 			toReturn.BOETaskElementOrder = modelview.TaskElementData.BOETaskElementOrder;
 
-			bool hasSapWebi = modelview.MOQTypes.Any(x => x.TableData.Any(y => y.RepositoryName == RepositoryName.SapWebi.GetDescription()))
-				|| SystemConfiguration.Instance().CompanyMode != IES.Common.CompanyConfiguration.SpaceSystems;
-
-			if (Utilities.ShowSkillMixForTask(ws.CreationDate, modelview.IsUsingTMRatesInTask, toReturn.MOQType.GetDescription()) && hasSapWebi)
+			if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, modelview.IsUsingTMRatesInTask, modelview.MOQTypes))
 			{
 				toReturn.MOQTotalRelevantHours += modelview.MOQTypes?.Sum(t => t.TableData?.Sum(td => td.TotalRelevantHours) ?? 0) ?? 0;
 				toReturn.SkillMixTable = modelview.SkillMixData;
@@ -4487,14 +4481,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="errors">Validation Errors</param>		
 		/// <param name="moqType">MOQ Type</param>
 		/// <param name="moqEquationTotal"> Moq equation total</param>
-		private void ValidateMoqTypes(FullWorkspace ws, LaborTaskDataModelView taskData, ICollection<ValidationMessage> errors, string moqType, decimal? moqEquationTotal = null)
+		private void ValidateMoqTypes(FullWorkspace ws, LaborTaskDataModelView taskData, ICollection<ValidationMessage> errors, decimal? moqEquationTotal = null)
 		{
 			if (ws.UsingTemplateBOE)
 			{
-				bool hasSapWebi = taskData.MOQTypes.Any(x => x.TableData.Any(y => y.RepositoryName == RepositoryName.SapWebi.GetDescription()))
-					|| SystemConfiguration.Instance().CompanyMode != IES.Common.CompanyConfiguration.SpaceSystems;
-
-				bool showSkillMixTable = Utilities.ShowSkillMixForTask(ws.CreationDate, taskData.IsUsingTMRatesInTask, moqType) && hasSapWebi;
+				bool showSkillMixTable = BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, taskData.IsUsingTMRatesInTask, taskData.MOQTypes);
 				ICollection<string> taskErrors = this.validateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws, false, moqEquationTotal, showSkillMixTable);
 				errors.AddRange(taskErrors.Select(error => new ValidationMessage(error)));
 			}

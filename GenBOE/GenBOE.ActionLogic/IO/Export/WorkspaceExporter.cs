@@ -427,10 +427,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				{
 					ICollection<MoqTypeSelection> moqTypesForTask = exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).ToList();
 
-					bool hasSapWebi = moqTypesForTask.Any(x => x.TableData.Any(y => y.RepositoryName == RepositoryName.SapWebi.GetDescription()))
-						|| SystemConfiguration.Instance().CompanyMode != CompanyConfiguration.SpaceSystems;
-
-					if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, task), task.MOQType.GetDescription()) && hasSapWebi)
+					if (BOETaskUtility.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, task), moqTypesForTask.ToList()))
 					{
 						if (moqTypesForTask.Count == 1)
 						{
@@ -513,18 +510,15 @@ namespace GenBOE.ActionLogic.IO.Export
 		private ExcelExportWorksheet GetCommonDisclosureSkillMixTableData(BOEExportInputs exportInputs)
 		{
 			ExcelExportWorksheet toReturn = new ExcelExportWorksheet(CommonDisclosureSheetName);
-			
-			bool hasSapWebi = exportInputs.MOQTypes.Any(x => x.TableData.Any(y => y.RepositoryName == RepositoryName.SapWebi.GetDescription()))
-				|| SystemConfiguration.Instance().CompanyMode != CompanyConfiguration.SpaceSystems;
 
 			foreach (BoeDTO boe in exportInputs.Boes)
 			{
 				foreach (BoeTaskElementDTO task in exportInputs.TaskElements.Where(x => x.BoeID == boe.Id))
 				{
-					if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, task), task.MOQType.GetDescription()) && hasSapWebi)
-					{
-						ICollection<MoqTypeSelection> moqTypesForTask = exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).ToList();
+					ICollection<MoqTypeSelection> moqTypesForTask = exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).ToList();
 
+					if (BOETaskUtility.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, task), moqTypesForTask))
+					{
 						if (moqTypesForTask.Count == 1)
 						{
 							string selectedMOQTypeText = moqTypesForTask.First().SelectedMOQTypeText;
