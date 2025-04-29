@@ -36,12 +36,12 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
         /// <summary>
         /// nested wbs utilities
         /// </summary>
-		private NestedWBSUtilities _nestedWbsUtilities = null;
+		private NestedWBSUtilities nestedWbsUtilities = null;
 
 		public WorkspaceAdminControllerLogic(ICommonDataLoader commonDataLoader, NestedWBSUtilities nestedWbsUtilities, IWbsDTODataLoader wbsLoader)
 		{
 			this.commonDataLoader = commonDataLoader;
-			_nestedWbsUtilities = nestedWbsUtilities;
+			this.nestedWbsUtilities = nestedWbsUtilities;
 			this.wbsLoader = wbsLoader;
 		}
 
@@ -78,7 +78,7 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 
 			Collection<ManageWBSModelView> result = new Collection<ManageWBSModelView>();
 
-			_nestedWbsUtilities.AdjustLevels(wbsDTOs);
+			nestedWbsUtilities.AdjustLevels(wbsDTOs);
 
 			Collection<int> wbsids = GetWBSUsedByWorkspaceVariables(workspace);
 			ICollection<int> wbsInBoes = GetWbsUsedInBoes(workspace);
@@ -158,7 +158,7 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 		/// <returns>True if parent WBS has a BOE, otherwise false</returns>
 		private bool ParentOrChildHasBoe(WbsDTO wbs, FullWorkspace ws)
 		{
-			ICollection<string> parentWbs = _nestedWbsUtilities.GetParentsWBSNumByChildWBS(wbs);
+			ICollection<string> parentWbs = nestedWbsUtilities.GetParentsWBSNumByChildWBS(wbs);
 			foreach (string parentNumber in parentWbs)
 			{
 				WbsDTO parentDto = ws.WbsElements.FirstOrDefault(x => x.WbsNumber == parentNumber);
