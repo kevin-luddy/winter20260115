@@ -17,6 +17,7 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 	using IES.Common;
 	using IES.Common.PickList;
 	using IES.Common.Exceptions;
+	using System;
 
 	/// <summary>
 	/// Workspace Admin Controller Logic
@@ -70,7 +71,7 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 		{
 			if(workspace == null)
 			{
-				throw new GeneralAppException("workspace cannot be null");
+				throw new ArgumentNullException(nameof(workspace));
 			}
 
 			// convert the collection of WBS DTO to a collection of ManageWBSModelView

@@ -93,12 +93,12 @@ namespace GenBOE.Web.Controllers.Backend
 			return result;
 		}
 
-		/// <summary>
-		/// Get CLINS for Workspace in Manage CLINS page
-		/// </summary>
-		/// <param name="workspaceShortName"></param>
-		/// <returns></returns>
-		[HttpGet]
+        /// <summary>
+        /// Get WBSs for Workspace in Manage WBS page
+        /// </summary>
+        /// <param name="workspaceShortName"> the workspace shortname</param>
+        /// <returns>The MV for the Manage WBS grid</returns>
+        [HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<ManageWBSGridModelView> GetManageWBS(string workspaceShortName)
 		{
