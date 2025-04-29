@@ -311,7 +311,7 @@ namespace GenBOE.Web.Controllers
 					}
 
 					//get the potential multiboes
-					Collection<FullBoe> MultiBOEs = ws.Boes.Where(x => x.IsMultiClinWbs == true).ToCollection();
+					Collection<FullBoe> MultiBOEs = ws.Boes.Where(x => x.IsMultiClinWbs).ToCollection();
 
 					//find any boes that have resources using the clin
 					Collection<FullBoe> boesUsingClin = (from b in MultiBOEs
