@@ -68,15 +68,17 @@ namespace GenBOE.Web.Controllers.Backend
 				throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
 			}
 
+			// Variables for Import Process and Return
 			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
 			ICollection<SavePermissionModelView> permissions = new List<SavePermissionModelView>();
+			
+			// Variables for Processing Request Data
 			ImportViewModel importViewModel = new ImportViewModel();
 			Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
+			ICollection<string> filePaths = new List<string>();
 
 			// Perform Action
 			string errorMessage = string.Empty;
-			string filePath = string.Empty;
-
 			try
 			{
 				string root = HttpContext.Current.Server.MapPath("~/App_Data");
@@ -86,31 +88,20 @@ namespace GenBOE.Web.Controllers.Backend
 				// Provider has the content with the files being part of FileData
 				// We parse out FileData and Content individually to reduce complexity
 				// Parse out the HTTP Content that is the object: ImportViewModel
-				foreach (HttpContent content in provider.Contents.Where(x => x.Headers.ContentDisposition.Name != "\"files\"").ToList())
-				{
-					// We want to get the Values Passed in the body as Dictionary items so further reduce complexity
-					string key = content.Headers.ContentDisposition.Name.Replace("\"", "");
-					string value = content.ReadAsStringAsync().Result;
-					keyValuePairs.Add(key, value);
-				}
+				Utilities.GetModelValuesFromContent(provider.Contents.Where(x => x.Headers.ContentDisposition.Name != "\"files\"").ToList(), keyValuePairs);
 
 				// Now that the dictionary has been populated, lets populate our model
-				//importViewModel.GetType().GetProperties().ForEach(p => {
-				//	//Type propType = p.GetType().GetProperty(p.Name).PropertyType;
-				//	TypeConverter converter = TypeDescriptor.GetConverter(p.PropertyType);
-				//	Object convertedObject = converter.ConvertFromString(keyValuePairs[p.Name]);
-				//	p.SetValue(importViewModel, convertedObject, null);
-				//});
 				Utilities.PopulateModel<ImportViewModel>(importViewModel, keyValuePairs);
 
 				// Parse out the File data
 				foreach (MultipartFileData file in provider.FileData)
 				{
 					// Set the filePath here because we will dispose of it in the Finally block
-					filePath = file.LocalFileName;
+					filePaths.Add(file.LocalFileName);
 
 					Stream stream = new FileStream(file.LocalFileName, FileMode.Open);
 					permissions.AddRange(PermissionsImporter.ImportFromExcelFile(stream));
+					stream.Dispose();
 				}
 
 				if (permissions.Count == 0)
@@ -157,9 +148,15 @@ namespace GenBOE.Web.Controllers.Backend
 			}
 			finally
 			{
-				if (!filePath.Equals(string.Empty))
+				if (filePaths.Any())
 				{
-					File.Delete(filePath);
+					filePaths.ForEach(path =>
+					{
+						if (File.Exists(path))
+						{
+							File.Delete(path);
+						}
+					});
 				}
 			}
 
