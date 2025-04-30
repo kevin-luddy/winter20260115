@@ -1,4 +1,4 @@
-﻿angular.module('genboe').controller('ManageTaskController', ['$scope', '$http', '$timeout', 'ManageTaskModel', 'utilityService', function ($scope, $http, $timeout, ManageTaskModel, utilityService) {
+﻿angular.module('genboe').controller('ManageTaskController', ['$scope', '$http', '$timeout', '$window', 'ManageTaskModel', 'utilityService', function ($scope, $http, $timeout, $window, ManageTaskModel, utilityService) {
     $scope.ManageTaskModel = ManageTaskModel;
     $scope.TaskCustomFields = [];
     $scope.LaborCustomFields = [];
@@ -100,6 +100,27 @@
         }).length > 1;
     };
 
+    $scope.openHelp = function (tableName) {
+        var url = "";
+        switch (tableName) {
+            case "RMSCurrentSkillMixTable":
+                url = $scope.ManageTaskModel.SkillMixTableHelpUrls.RMSCurrentSkillMixTableHelpUrl
+                break;
+            case "RMSLMEnterpriseSkillMixTable":
+                url = $scope.ManageTaskModel.SkillMixTableHelpUrls.RMSLMEnterpriseSkillMixTableHelpUrl
+                break;
+            case "SpaceLegacySkillMixTable":
+                url = $scope.ManageTaskModel.SkillMixTableHelpUrls.SpaceLegacySkillMixTableHelpUrl
+                break;
+            case "SpaceLMEnterpriseSkillMixTable":
+                url = $scope.ManageTaskModel.SkillMixTableHelpUrls.SpaceLMEnterpriseSkillMixTableHelpUrl
+                break;
+        }
+        if (url != "") {
+            $window.open(url, '_blank');
+        }
+    };
+
     $scope.checkEmptyString = function (value) {
         return value === undefined || value === '';
     };
@@ -116,7 +137,7 @@
         });
 
         $scope.skillMixRationaleLaborTypeSelections = $scope.skillMixRationaleLaborTypeSelections.filter((option, index, self) =>
-            index === self.findIndex((t) => (t === option)) && index === self.findLastIndex((t) => (t === option))
+            index === self.findLastIndex((t) => (t === option))
         );
     };
 

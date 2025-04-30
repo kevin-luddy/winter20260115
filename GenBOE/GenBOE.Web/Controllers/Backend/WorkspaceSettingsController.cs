@@ -98,7 +98,7 @@ namespace GenBOE.Web.Controllers.Backend
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown error occured returning Line of Business data: {ex.Message}");
+				result.Messages.Add($"Unknown error occurred returning Line of Business data: {ex.Message}");
 			}
 
 			return result;
@@ -122,7 +122,7 @@ namespace GenBOE.Web.Controllers.Backend
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown error occured returning Line of Business data: {ex.Message}");
+				result.Messages.Add($"Unknown error occurred returning Line of Business data: {ex.Message}");
 			}
 
 			return result;
@@ -146,7 +146,7 @@ namespace GenBOE.Web.Controllers.Backend
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown error occured returning list of Contract Types: {ex.Message}");
+				result.Messages.Add($"Unknown error occurred returning list of Contract Types: {ex.Message}");
 			}
 
 			return result;
@@ -172,7 +172,7 @@ namespace GenBOE.Web.Controllers.Backend
 				catch (Exception ex)
 				{
 					logger.Error(ex);
-					result.Messages.Add($"Unknown error occured returning list of Tracking Numbers: {ex.Message}");
+					result.Messages.Add($"Unknown error occurred returning list of Tracking Numbers: {ex.Message}");
 				}
 			}
 			return result;
@@ -198,7 +198,7 @@ namespace GenBOE.Web.Controllers.Backend
 				catch (Exception ex)
 				{
 					logger.Error(ex);
-					result.Messages.Add($"Unknown error occured GetNextTrackingNumberRevision: {ex.Message}");
+					result.Messages.Add($"Unknown error occurred GetNextTrackingNumberRevision: {ex.Message}");
 				}
 			}
 			return result;

@@ -591,11 +591,13 @@
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                             {  %>
                                     Legacy Skill Mix Table
-                        <% } %>
+                                    <div class="help-icon" data-ng-click="openHelp('SpaceLegacySkillMixTable');"></div>
+                        <%  }  %>
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
                             {  %>
                                     Current Skill Mix Table
-                        <%  } %>
+                                    <div class="help-icon" data-ng-click="openHelp('RMSCurrentSkillMixTable');"></div>
+                        <%  }  %>
                     </div>
                     <div class="SkillMixTable skillMixTable">
                         <table name="currentSkillMix" class="grid editable">
@@ -640,6 +642,14 @@
                     <!-- Common Disclosure Skill Mix Table -->
                     <div class="form-label" data-ng-show="IsBRCEnabled">
                         LM Enterprise Skill Mix Table
+                        <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+                            {  %>
+                                    <div class="help-icon" data-ng-click="openHelp('SpaceLMEnterpriseSkillMixTable');"></div>
+                        <%  }  %>
+                        <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+                            {  %>
+                                    <div class="help-icon" data-ng-click="openHelp('RMSLMEnterpriseSkillMixTable');"></div>
+                        <%  }  %>
                     </div>
                     <div class="SkillMixTable skillMixTable" data-ng-show="IsBRCEnabled">
                         <table name="currentSkillMix" class="grid editable">

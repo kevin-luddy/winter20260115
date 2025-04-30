@@ -401,7 +401,7 @@
                 <span data-ng-if="ActualReadOnly()" data-ng-bind-html="moqType.Rationale"></span>
             </div>
         </div>
-        <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType != <%:(int)MOQType.NonLabor%>">
+        <div class="form-row" data-ng-show="!moqType.collapsed && !showSkillMix()" data-ng-if="moqType.SelectedMOQType != <%:(int)MOQType.NonLabor%>">
             <div class="form-label">
                 <span>Skill Mix Rationale: *</span>
                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.HistoricalSkillMixSuffix);"></div>

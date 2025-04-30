@@ -20,9 +20,9 @@ namespace GenBOE.DataBridge.DTO.Request
 		CalculateActuals = 1,
 
 		/// <summary>
-		/// Export BOE
+		/// Export Actuals
 		/// </summary>
-		[Description("Export BOE")]
-		ExportBOE = 2,
+		[Description("Export Actuals")]
+		ExportActuals = 2,
 	}
 }

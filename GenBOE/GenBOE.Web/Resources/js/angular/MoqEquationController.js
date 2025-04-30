@@ -1166,7 +1166,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 						});
 					}
 				} else {
-					RaiseNotification('Error talking to backend to Calculate Actuals');
+					RaiseNotification(response.data.errorMessage ? response.data.errorMessage : 'Error talking to backend to Calculate Actuals');
 				}
 
 				$(document).trigger("HIDE_LOADING_BOX");
@@ -1253,7 +1253,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 						});
 					}
 				} else {
-					RaiseNotification('Error talking to backend to Calculate Actuals');
+					RaiseNotification(response.data.errorMessage ? response.data.errorMessage : 'Error talking to backend to Calculate Actuals');
 				}
 
 				$(document).trigger("HIDE_LOADING_BOX");
@@ -1357,7 +1357,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 							$scope.refreshDisableSave();
 						} else {
-							RaiseNotification('Error talking to backend to Calculate All Actuals');
+							RaiseNotification(response.data.errorMessage ? response.data.errorMessage : 'Error talking to backend to Calculate All Actuals');
 						}
 
 						$(document).trigger("HIDE_LOADING_BOX");
@@ -1469,7 +1469,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 							$scope.refreshDisableSave();
 						} else {
-							RaiseNotification('Error talking to backend to Calculate All Actuals');
+							RaiseNotification(response.data.errorMessage ? response.data.errorMessage : 'Error talking to backend to Calculate All Actuals');
 						}
 
 						$(document).trigger("HIDE_LOADING_BOX");
@@ -1542,7 +1542,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				if (response.data.Messages && response.data.Messages.length > 0) {
 					$scope.setActualsErrors(tableData.Id, response.data.Messages);
 				} else {
-					$scope.setActualsErrors(tableData.Id, [{ ValidationIssue: 'Error talking to backend to Export Actuals' }]);
+					RaiseNotification(response.data.errorMessage ? response.data.errorMessage : 'Error talking to backend to Export Actuals');
 				}
 			}
 			else {

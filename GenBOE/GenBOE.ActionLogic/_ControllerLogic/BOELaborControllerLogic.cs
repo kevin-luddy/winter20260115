@@ -954,38 +954,23 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				{
 					string sapRepo = RepositoryName.SapWebi.GetDescription();
 
-					// RMS checks that the totals of both tables combines equals MOQ Hours
-					// Space checks that the totals of each table equals MOQ Hours
-					if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)
-					{
-						if (taskElement.SkillMixTable != null && Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
-						{
-							// add the Common Disclosure table totals to historical totals
-							historicalHoursTotals += taskElement.CommonDisclosureTable.Sum(c => c.HistoricalHours);
-						}
-
-						if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
-						{
-							validationErrors.Add(new ValidationMessage(string.Format("Skill Mix Total Historical Hours do not match the sum of the Total Relevant Hours.")));
-						}
-					}
-					// we need to do a check for Space to make sure all the Repository for the MOQ Tables are set to SAP/Webi
-					else if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems && 
+					 if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST || 
 						moqTypes.All(x => x.TableData != null && x.TableData.Any() && x.TableData.All(t => t.RepositoryName == sapRepo)))
 					{
 						if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
 						{
-							validationErrors.Add(new ValidationMessage(string.Format("Skill Mix Total Historical Hours in Legacy Skill Mix Table do not match the sum of the Total Relevant Hours.")));
+							string skillMixTableName = SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST ? "Current" : "Legacy";
+							validationErrors.Add(new ValidationMessage(string.Format("Total Historical Hours in {0} Skill Mix Table do not match the sum of the Total Relevant Hours.", skillMixTableName)));
 						}
 
-						if (taskElement.SkillMixTable != null && Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
+						if (taskElement.CommonDisclosureTable != null && Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
 						{
 							// add the Common Disclosure table totals to historical totals
 							historicalHoursTotals = taskElement.CommonDisclosureTable.Sum(c => c.HistoricalHours);
 
-							if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
+							if (!historicalHoursTotals.EqualsEpsilon(taskElement.MOQTotalRelevantHours, Convert.ToDecimal(Math.Pow(10, -1.0 * Convert.ToDouble(ws.DecimalPrecision)))))
 							{
-								validationErrors.Add(new ValidationMessage(string.Format("Skill Mix Total Historical Hours in LM Enterprise Skill Mix Table do not match the sum of the Total Relevant Hours.")));
+								validationErrors.Add(new ValidationMessage(string.Format("Total Historical Hours in LM Enterprise Skill Mix Table do not match the sum of the Total Relevant Hours.")));
 							}
 						}
 					}
@@ -3573,14 +3558,16 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		{
 			IESResponse<byte> response = new IESResponse<byte>();
 			UserDTO currentUser = this.UserLoader.GetUserForActiveUser();
+			RequestType requestType = RequestType.ExportActuals;
+			int? requestId = null;
 
 			try
 			{
 				//insert to request table
-				int? requestId = requestDataLoader.Insert(RequestType.ExportBOE, currentUser.NTID);
+				requestId = requestDataLoader.Insert(requestType, currentUser.NTID);
 				if (!requestId.HasValue || requestId < 1)
 				{
-					throw new GeneralAppException("There is already a current Request to calculate all Actuals, please wait until that request is complete");
+					throw new GeneralAppException("There is already a current Request to Export Actuals, please wait until that request is complete");
 				}
 
 				// Get Token
@@ -3608,16 +3595,23 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				response.IsSuccessful = result.IsSuccessful;
 				response.Data = result.Data.Data;
 			}
+			catch (GeneralAppException ex)
+			{
+				logger.Error(ex, $"ex.Message: Request Type : {requestType}, NTID: {currentUser.NTID}");
+				throw;
+			}
 			catch (Exception ex)
 			{
 				// gracefully handle error
 				logger.Error(ex, "Error calling SAP API to Export Actuals.");
-				response.Messages.Add("Error calling SAP API to Export Actuals");
-				response.IsSuccessful = false;
+				throw new GeneralAppException("Error talking to backend to Export Actuals");
 			}
 			finally
 			{
-				requestDataLoader.Delete(RequestType.CalculateActuals, currentUser.NTID);
+				if (requestId.HasValue && requestId > 0)
+				{
+					requestDataLoader.Delete(requestType, currentUser.NTID);
+				}
 			}
 
 			return response;
@@ -3632,9 +3626,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		{
 			ICollection<IESResponse<CalculateActualsViewModel>> response = new List<IESResponse<CalculateActualsViewModel>>();
 			UserDTO currentUser = this.UserLoader.GetUserForActiveUser();
+			RequestType requestType = RequestType.CalculateActuals;
+			int? requestId = null;
+
 			try
 			{
-				int? requestId = requestDataLoader.Insert(RequestType.CalculateActuals, currentUser.NTID);
+				requestId = requestDataLoader.Insert(requestType, currentUser.NTID);
 				if (!requestId.HasValue || requestId < 1)
 				{
 					throw new GeneralAppException("There is already a current Request to Calculate Actuals, please wait until that request is complete");
@@ -3671,15 +3668,22 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}).ToList();
 
 			}
+			catch (GeneralAppException ex)
+			{
+				logger.Error(ex, $"ex.Message: Request Type : {requestType}, NTID: {currentUser.NTID}");
+				throw;
+			}
 			catch (Exception ex)
 			{
-				// throw error and let UI handle it
 				logger.Error(ex, "Error calling SAP API to Calculate All Actuals");
-				throw new GeneralAppException("Error calling SAP API to Calculate All Actuals");
+				throw new GeneralAppException("Error talking to backend to Calculate All Actuals");
 			}
 			finally
 			{
-				requestDataLoader.Delete(RequestType.CalculateActuals, currentUser.NTID);
+				if (requestId.HasValue && requestId > 0)
+				{
+					requestDataLoader.Delete(requestType, currentUser.NTID);
+				}
 			}
 
 			return response;
@@ -3989,14 +3993,16 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		{
 			ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>> response = new List<IESResponse<CalculateActualsWithSkillMixViewModel>>();
 			UserDTO currentUser = this.UserLoader.GetUserForActiveUser();
+			RequestType requestType = RequestType.CalculateActuals;
+			int? requestId = null;
 
 			try
 			{
 				//insert to request table
-				int? requestId = requestDataLoader.Insert(RequestType.CalculateActuals, currentUser.NTID);
+				requestId = requestDataLoader.Insert(requestType, currentUser.NTID);
 				if (!requestId.HasValue || requestId < 1)
 				{
-					throw new GeneralAppException("There is already a current Request to calculate all Actuals, please wait until that request is complete");
+					throw new GeneralAppException("There is already a current Request to Calculate Actuals, please wait until that request is complete");
 				}
 
 				// Get Token
@@ -4030,15 +4036,23 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}).ToList();
 
 			}
+			catch (GeneralAppException ex)
+			{
+				logger.Error(ex, $"ex.Message: Request Type : {requestType}, NTID: {currentUser.NTID}");
+				throw;
+			}
 			catch (Exception ex)
 			{
 				// throw error and let UI handle it
 				logger.Error(ex, "Error calling SAP API to Calculate All Actuals");
-				throw new GeneralAppException("Error calling SAP API to Calculate All Actuals");
+				throw new GeneralAppException("Error talking to backend to Calculate All Actuals");
 			}
 			finally
 			{
-				requestDataLoader.Delete(RequestType.CalculateActuals, currentUser.NTID);
+				if (requestId.HasValue && requestId > 0)
+				{
+					requestDataLoader.Delete(requestType, currentUser.NTID);
+				}
 			}
 
 			return response;
@@ -4454,7 +4468,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		{
 			if (ws.UsingTemplateBOE)
 			{
-				ICollection<string> taskErrors = this.validateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws, false, moqEquationTotal);
+				bool showSkillMixTable = Utilities.ShowSkillMixForTask(ws.CreationDate, taskData.IsUsingTMRatesInTask);
+				ICollection<string> taskErrors = this.validateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws, false, moqEquationTotal, showSkillMixTable);
 				errors.AddRange(taskErrors.Select(error => new ValidationMessage(error)));
 			}
 		}
@@ -4487,7 +4502,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			foreach (string resourceName in resourceNames)
 			{
 				ICollection<LaborTypeDataModelView> resourceLaborTypes = laborTypes.Where(l => l.ResourceName == resourceName).ToList();
-				
+
+				decimal totalHoursBRCs = resourceLaborTypes.SelectMany(x => x.Spreads).Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) >= Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
+
 				foreach (CommonDisclosureModelView refreshedRow in refreshedModel.CommonDisclosureRows.Where(r => r.ResourceID == resourceName))
 				{
 					ICollection<LaborTypeDataModelView> laborTypeDataModelViews = resourceLaborTypes.Where(l => l.BusinessResourceCodeName.NullEmptyEquals(refreshedRow.BusinessResourceID)).ToList();
@@ -4500,15 +4517,18 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					}
 
 					refreshedRow.ProposedHours = laborTypeDataModelViews.SelectMany(x => x.Spreads).Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) >= Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
-					if (!isManual && refreshedRow.ProposedHours != 0m)
+					// If this is not a Manual Skill Mix and the BRC is set, then the historical hours is a percentage of the real Historical Hours
+					// Percentage is calculated based off the % calculated by BRC Sum / total BRCs Sum for this Resource
+					if (!isManual && !string.IsNullOrWhiteSpace(refreshedRow.BusinessResourceID))
 					{
-						// for Automated SkillMix, the Historical Hours is supposed to be a fraction of the real Historical Hours.
-						// That fraction is the % that the Proposed Hours are of the Total Hours for this Resource
-						// RMS is special in that we need to find the linked legacy Resource IDs in SkillMix table, then use that to pull historical hours from SAP Actuals
 						ICollection<string> legacyLinkedResourceIds = refreshedModel.SkillMixRows.Where(r => r.ResourceNew == resourceName && r.Included).Select(l => l.ResourceOld).ToList();
-						decimal totalLaborHours = laborTypeDataModelViews.Sum(x => x.HourSpread ?? 0m);
 						decimal realHistoricalHours = resourceHours.Where(r => legacyLinkedResourceIds.Contains(r.ResourceName)).Sum(l => l.TotalHours);
-						refreshedRow.HistoricalHours = totalLaborHours == 0m ? 0m : (refreshedRow.ProposedHours / totalLaborHours) * realHistoricalHours;
+						decimal brcHistoricalHours = 0m;
+						if (totalHoursBRCs != 0)
+						{
+							brcHistoricalHours = refreshedRow.ProposedHours / totalHoursBRCs;
+						}
+						refreshedRow.HistoricalHours = realHistoricalHours * brcHistoricalHours;
 					}
 
 					if (currentCommonDisclosureData != null)
@@ -4559,8 +4579,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			if (currentSkillMixData != null && currentSkillMixData.Any())
 			{
-				bool emptyRowInCDTable = false;
-
 				foreach (SkillMixModelView refreshedRow in refreshedModel.SkillMixRows.ToList())
 				{
 					// Find the matching current rows
@@ -4608,13 +4626,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 								// Find the Proposed Hours for this Resource
 								currentRow.ProposedHours = laborTypeDataModelViews.SelectMany(x => x.Spreads).Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) < Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
 
-								if (!isManual && currentRow.ProposedHours != 0m)
+								if (!isManual)
 								{
-									// for Automated SkillMix, the Historical Hours is supposed to be a fraction of the real Historical Hours.
-									// That fraction is the % that the Proposed Hours are of the Total Hours for this Resource
-									decimal totalLaborHours = laborTypeDataModelViews.Sum(x => x.HourSpread ?? 0m);
 									decimal realHistoricalHours = resourceHours.Where(r => r.ResourceName == currentRow.ResourceOld).Sum(l => l.TotalHours);
-									currentRow.HistoricalHours = totalLaborHours == 0m ? 0m : (currentRow.ProposedHours / totalLaborHours) * realHistoricalHours;
+									currentRow.HistoricalHours = realHistoricalHours;
 								}
 							}
 							else
@@ -4645,19 +4660,18 @@ namespace GenBOE.ActionLogic.ControllerLogic
 										}
 									}
 								}
-								else if (!emptyRowInCDTable && string.IsNullOrWhiteSpace(currentRow.ResourceNew) && currentRow.Included)
+								else if (string.IsNullOrWhiteSpace(currentRow.ResourceNew) && !string.IsNullOrWhiteSpace(currentRow.ResourceOld))
 								{
 									// create a Not included row
 									refreshedModel.CommonDisclosureRows.Add(
 											new CommonDisclosureModelView
 											{
-												ResourceID = currentRow.ResourceNew,
+												ResourceID = currentRow.ResourceOld, // Set the ID to the Historical Resource ID
 												BusinessResourceID = string.Empty,
-												Included = false
+												Included = false,
+												HistoricalHours = currentRow.HistoricalHours
 											}
 										);
-
-									emptyRowInCDTable = true;
 								}
 							}
 						}
