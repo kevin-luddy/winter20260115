@@ -7,6 +7,7 @@
 namespace GenBOE.Web.Controllers
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Linq;
 	using System.Web.Http;
 	using GenBOE.ActionLogic;
@@ -32,14 +33,17 @@ namespace GenBOE.Web.Controllers
 		/// Logger
 		/// </summary>
 		private Logger logger = new Logger("ManagePermissionsController");
+		private IActiveDirectoryUtilities _ADUtils = null;
 
 		/// <summary>
 		/// ctor
 		/// </summary>
-		public ManagePermissionsController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, PermissionControllerLogic PermissionControllerLogic)
+		public ManagePermissionsController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, PermissionControllerLogic PermissionControllerLogic
+			,IActiveDirectoryUtilities inADUtils)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.PermissionControllerLogic = PermissionControllerLogic;
+			_ADUtils = inADUtils;
 		}
 
 		/// <summary>
@@ -93,6 +97,34 @@ namespace GenBOE.Web.Controllers
 			{
 				logger.Error(ex);
 				result.Messages.Add(ex.Message);
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Gets Members of Group
+		/// </summary>
+		/// <returns>Group Members</returns>
+		[HttpGet]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		public IESSingleResponse<ICollection<UserData>> GetGroupMembers(string groupName)
+		{
+			IESSingleResponse<ICollection<UserData>> result = new IESSingleResponse<ICollection<UserData>>();
+
+			try
+			{
+				ICollection<UserData> members = _ADUtils.GetAdGroupUsers(groupName);
+				ICollection<UserData> orderedMembers = members.OrderBy(m => m.DisplayName).ToList();
+
+				result.Data = orderedMembers;
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occured: {ex.Message}");
 			}
 
 			return result;
