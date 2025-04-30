@@ -10,10 +10,12 @@ namespace IES.Common
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.ComponentModel;
 	using System.DirectoryServices;
 	using System.IO;
 	using System.Linq;
 	using System.Net.Http;
+	using System.Reflection;
 	using System.Text.RegularExpressions;
 	using System.Threading;
 	using System.Web.Mvc;
@@ -1268,6 +1270,17 @@ namespace IES.Common
 				}
 				log.Debug("End Configuration Manager App Settings");
 			}
+		}
+
+		public static void PopulateModel<T>(T model, Dictionary<string, string> valuesForModel)
+		{
+			model.GetType().GetProperties().ToList().ForEach(p =>
+			{
+				//Type propType = p.GetType().GetProperty(p.Name).PropertyType;
+				TypeConverter converter = TypeDescriptor.GetConverter(p.PropertyType);
+				Object convertedObject = converter.ConvertFromString(valuesForModel[p.Name]);
+				p.SetValue(model, convertedObject, null);
+			});
 		}
 	}
 }

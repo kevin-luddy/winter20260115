@@ -9,8 +9,12 @@ namespace GenBOE.ActionLogic
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.Diagnostics;
 	using System.Linq;
 	using System.Transactions;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.IO.Import;
+	using System.Web.Mvc;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.Backend;
 	using GenBOE.ActionLogic.Permissions;
@@ -20,6 +24,9 @@ namespace GenBOE.ActionLogic
 	using GenBOE.Objects;
 	using IES.Common;
 	using IES.Common.Exceptions;
+	using IES.Common.OfficeUtilities;
+	using System.Data;
+	using System.IO;
 
 	public class PermissionControllerLogic
 	{
@@ -116,7 +123,7 @@ namespace GenBOE.ActionLogic
 			ICollection<PermissionsDTO> currentWorkspacePermissions = this.permissionLoader.GetWorkspacePermissions(ws.Id);
 			ICollection<PermissionsDTO> currentBoePermissions = this.permissionLoader.GetBOEPotentialPermissionsForWorkspace(ws.Id);
 
-			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
 			{
 				foreach (SavePermissionModelView inPermission in inPermissions)
 				{
@@ -469,5 +476,134 @@ namespace GenBOE.ActionLogic
 				}
 			}
 		}
+
+		//public void ImportPermissions(string workspace, byte[] file, IESSingleResponse<bool> result)
+		//{
+		//	_ = result ?? new ArgumentNullException(nameof(result));
+		//	// Perform Action
+		//	string errorMessage = string.Empty;
+
+		//	try
+		//	{
+		//		// Call the business layer to parse the uploaded file
+		//		// If the file was successfully parsed, add the results to the genBOE database
+		//		ICollection<SavePermissionModelView> permissionsFromImportFile = PermissionsImporter.ImportFromExcelFile(new MemoryStream(file));
+
+		//		if (permissionsFromImportFile.Any())
+		//		{
+		//			SaveNewPermissions(workspace, permissionsFromImportFile);
+		//			result.Data = true;
+		//		}
+		//		else
+		//		{
+		//			// Return a success message
+		//			errorMessage = "No Permissions Were Imported.";
+		//		}
+		//	}
+
+		//	// Catch custom exceptions from ExcelImporter and ResourcesImporter and generate friendly
+		//	// exception messages to display for the user
+		//	catch (NotExcelFileException)
+		//	{
+		//		errorMessage = "File is an invalid format. File must be in a MS Excel format (.xlsx or .xls).";
+		//	}
+		//	catch (ColumnMissingException ex2)
+		//	{
+		//		errorMessage = string.Format("File does not contain all of the required columns. File must contain 'NtId', 'Role' columns. The following columns are missing: {0}.", ex2.Message);
+		//	}
+		//	catch (CellValueMissingException ex3)
+		//	{
+		//		errorMessage = string.Format("A row in the file does not contain a value for NtId and Role. Every filled row must have a value for each. Check the following column: {0}.", ex3.Message);
+		//	}
+		//	catch (DuplicateValuesException ex4)
+		//	{
+		//		errorMessage = string.Format("Values must be unique. The following are not unique: {0}", ex4.Message);
+		//	}
+		//	catch (EntityCommandExecutionException)
+		//	{
+		//		errorMessage = "The Permissions were recently updated by another user. Please refresh the page to review these latest changes. Once the page is refreshed, you can try your import operation again.";
+		//	}
+		//	catch (GenValidationException)
+		//	{
+		//		throw;
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		_log.Error(ex, "Unknown Import Permissions Error.");
+		//		errorMessage = "A general error occurred. Please ensure that your import file follows the format of the import template and retry the import.";
+
+		//	}
+
+		//	// Add error messages so that it boils back to controller and to UI
+		//	result.Messages.Add(errorMessage);
+		//}
+
+		//public PermissionViewModel GetPermissionViewModel(string workspace, ICollection<SavePermissionModelView> permissions, IESSingleResponse<bool> result)
+		//{
+		//	_ = result ?? throw new ArgumentNullException(nameof(result));
+		//	FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+		//	// Perform Action
+		//	string errorMessage = string.Empty;
+
+		//	try
+		//	{
+		//		// Call the business layer to parse the uploaded file
+		//		// If the file was successfully parsed, add the results to the genBOE database
+		//		ICollection<SavePermissionModelView> permissionsFromImportFile = permissions;
+
+		//		if (permissionsFromImportFile.Any())
+		//		{
+		//			SaveNewPermissions(workspace, permissionsFromImportFile);
+		//		}
+		//		else
+		//		{
+		//			// Return a success message
+		//			errorMessage = "No Permissions Were Imported.";
+
+		//		}
+		//	}
+
+		//	// Catch custom exceptions from ExcelImporter and ResourcesImporter and generate friendly
+		//	// exception messages to display for the user
+		//	catch (NotExcelFileException)
+		//	{
+		//		errorMessage = "File is an invalid format. File must be in a MS Excel format (.xlsx or .xls).";
+		//	}
+		//	catch (ColumnMissingException ex2)
+		//	{
+		//		errorMessage = string.Format("File does not contain all of the required columns. File must contain 'NtId', 'Role' columns. The following columns are missing: {0}.", ex2.Message);
+		//	}
+		//	catch (CellValueMissingException ex3)
+		//	{
+		//		errorMessage = string.Format("A row in the file does not contain a value for NtId and Role. Every filled row must have a value for each. Check the following column: {0}.", ex3.Message);
+		//	}
+		//	catch (DuplicateValuesException ex4)
+		//	{
+		//		errorMessage = string.Format("Values must be unique. The following are not unique: {0}", ex4.Message);
+		//	}
+		//	catch (EntityCommandExecutionException)
+		//	{
+		//		errorMessage = "The Permissions were recently updated by another user. Please refresh the page to review these latest changes. Once the page is refreshed, you can try your import operation again.";
+		//	}
+		//	catch (GenValidationException)
+		//	{
+		//		throw;
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		_log.Error(ex, "Unknown Import Permissions Error.");
+		//		errorMessage = "A general error occurred. Please ensure that your import file follows the format of the import template and retry the import.";
+				
+		//	}
+
+		//	// Add error messages so that it boils back to controller and to UI
+		//	result.Messages.Add(errorMessage);
+
+		//	// if we're here, everything was successful.  Return the new data.
+		//	PermissionViewModel viewModel = _GetPermissionsGrid(ws);
+
+		//	return viewModel;
+		//}
 	}
 }
