@@ -2065,11 +2065,23 @@
     };
 
     $scope.isSkillMixDisabled = function () {
-        // Set if Skill Mix is Automatic, but one of the following occurs:
-        // 1) No MOQ Tables
-        // 2) Any MOQ Table is missing SAP Resource Hours
+        // Check if Skill Mix is Automatic
+        let isAutomatic = !$scope.isSkillMixManual();
 
-        return !$scope.isSkillMixManual() && (($scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0) || !$scope.SelectedMoqTypes.every(x => x.TableData !== undefined && x.TableData.length > 0 && x.TableData.every(y => y.ResourceHours !== undefined)));
+        // Check if there are no MOQ Tables
+        let noMoqTables = $scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0;
+
+        // Check if any MOQ Table is missing SAP Resource Hours
+        let hasMissingResourceHours = !$scope.SelectedMoqTypes.every(x =>
+            x.TableData !== undefined &&
+            x.TableData.length > 0 &&
+            x.TableData.every(y => y.RepositoryName !== $scope.ManageTaskModel.SapWebiRepository || (y.ResourceHours !== undefined && y.ResourceHours.length > 0))
+        );
+
+        let toReturn = isAutomatic && (noMoqTables || hasMissingResourceHours);
+
+        // Return true if Skill Mix is Automatic and either of the conditions occur
+        return toReturn;
     }
 
     $scope.perfOrgSelected = function (item, model) {
