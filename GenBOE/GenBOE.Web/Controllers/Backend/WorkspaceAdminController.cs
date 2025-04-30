@@ -92,5 +92,35 @@ namespace GenBOE.Web.Controllers.Backend
 
 			return result;
 		}
+
+        /// <summary>
+        /// Get WBSs for Workspace in Manage WBS page
+        /// </summary>
+        /// <param name="workspaceShortName"> the workspace shortname</param>
+        /// <returns>The MV for the Manage WBS grid</returns>
+        [HttpGet]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<ManageWBSGridModelView> GetManageWBS(string workspaceShortName)
+		{
+			IESSingleResponse<ManageWBSGridModelView> result = new IESSingleResponse<ManageWBSGridModelView>();
+
+			try
+			{
+				ManageWBSGridModelView theModelView = new ManageWBSGridModelView();
+				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortName);
+				theModelView.ContainsOCI = ws.ContainsOCI;
+				theModelView.AvailableClins = ws.ClinsNoMultiClin.OrderBy(x => x.ClinNumber).Select(c => new ManageCLINModelView(c, string.Empty)).ToList();
+				theModelView.WbsResults = workspaceAdminControllerLogic.GetManageWBSModel(ws);
+				result.Data = theModelView;
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occurred returning WBS data: {ex.Message}");
+			}
+
+			return result;
+		}
 	}
 }
