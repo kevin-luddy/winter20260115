@@ -2069,7 +2069,7 @@
         // 1) No MOQ Tables
         // 2) Any MOQ Table is missing SAP Resource Hours
 
-        return !$scope.isSkillMixManual() && (($scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0) || !$scope.SelectedMoqTypes.every(x => x.TableData !== undefined && x.TableData.length > 0 && x.TableData.every(y => y.ResourceHours !== undefined && y.ResourceHours.length > 0)));
+        return !$scope.isSkillMixManual() && (($scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0) || !$scope.SelectedMoqTypes.every(x => x.TableData !== undefined && x.TableData.length > 0 && x.TableData.every(y => y.ResourceHours !== undefined)));
     }
 
     $scope.perfOrgSelected = function (item, model) {
