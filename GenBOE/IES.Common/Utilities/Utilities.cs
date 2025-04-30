@@ -1286,7 +1286,6 @@ namespace IES.Common
 			// Hence after the .GetProperties() we have to add the .ToList() before the .ForEach()
 			model.GetType().GetProperties().ToList().ForEach(p =>
 			{
-				//Type propType = p.GetType().GetProperty(p.Name).PropertyType;
 				TypeConverter converter = TypeDescriptor.GetConverter(p.PropertyType);
 				Object convertedObject = converter.ConvertFromString(valuesForModel[p.Name]);
 				p.SetValue(model, convertedObject, null);
