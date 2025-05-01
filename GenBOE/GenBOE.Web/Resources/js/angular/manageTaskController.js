@@ -2021,28 +2021,27 @@
 
     $scope.showSkillMix = function () {
         if ($scope.IsSkillMixEnabled && $scope.IsUsingTMRatesInTask === false) {
-            if ($scope.ManageTaskModel.IsSpace) {
-                // Check if at least one MOQ type is one of the big three (Comparative, Historical, Analagous)
-                let hasBigThreeMoqType = $scope.SelectedMoqTypes.some(function (item) {
-                    return [5001, 5002, 5005].includes(item.SelectedMOQType);
-                });
+            // Check if there is exactly one MOQ Type selected
+            if ($scope.SelectedMoqTypes.length === 1) {
+                // Space
+                if ($scope.ManageTaskModel.IsSpace) {
+                    // Check if the single MOQ type is one of the big three (Comparative, Historical, Analagous)
+                    let hasBigThreeMoqType = [5001, 5002, 5005].includes($scope.SelectedMoqTypes[0].SelectedMOQType);
 
-                // Check if at least one MOQ table has a SAP/WEBI repository
-                let hasSapWebiRepository = $scope.SelectedMoqTypes.some(function (item) {
-                    return item.TableData !== undefined && item.TableData.some(function (table) {
+                    // Check if the single MOQ table has a SAP/WEBI repository
+                    let hasSapWebiRepository = $scope.SelectedMoqTypes[0].TableData !== undefined && $scope.SelectedMoqTypes[0].TableData.some(function (table) {
                         return table.RepositoryName === $scope.ManageTaskModel.SapWebiRepository;
                     });
-                });
 
-                // Show Skill Mix if both conditions are met with space
-                return hasBigThreeMoqType && hasSapWebiRepository;
+                    return hasBigThreeMoqType && hasSapWebiRepository;
+                    // RMS
+                } else {
+                    return $scope.IsSkillMixEnabled;
+                }
             } else {
-                // For RMS show Skill Mix if it's enabled
-                return $scope.IsSkillMixEnabled;
+                // If there is not exactly one MOQ Type selected, hide Skill Mix
+                return false;
             }
-        } else {
-            // If the feature flag is disabled hide always
-            return false;
         }
     };
 
