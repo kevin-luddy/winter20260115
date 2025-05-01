@@ -263,7 +263,7 @@ namespace GenBOE.Web.Controllers
 			Collection<ValidationMessage> ValidationErrors = new Collection<ValidationMessage>();
 
 			// only validate data if it exists
-			if (inUpdatedClin.ClinID > 0 || (inUpdatedClin.ClinID < 0 && inUpdatedClin.Deleted == false))
+			if (inUpdatedClin.ClinID > 0 || (inUpdatedClin.ClinID < 0 && !inUpdatedClin.Deleted))
 			{
 				if (this.ModelState.IsValid)
 				{
@@ -417,12 +417,12 @@ namespace GenBOE.Web.Controllers
 
 					// Send emails and change BOE statuses for In Use CLINs
 					// This is purposely outside the transaction so that if the email fails to send then the transaction does not fail
-					if (inUpdatedClin.ClinID > 0 && inUpdatedClin.Deleted == false)
+					if (inUpdatedClin.ClinID > 0 && !inUpdatedClin.Deleted)
 					{
 						this.ProcessInUseUpdatedCLIN(ws, oldClin, this.Factory.CreateFullClin(inUpdatedClin.ClinID));
 					}
 
-					if (inUpdatedClin.ClinID > 0 && inUpdatedClin.Deleted == false)
+					if (inUpdatedClin.ClinID > 0 && !inUpdatedClin.Deleted)
 					{
 						// just make sure we have the latest version of the DTO. (the returned DTO has the updated ID, but not the updated UpdateDate)
 						FullClin modifiedClin = this.Factory.CreateFullClin(updatedClin.Id);

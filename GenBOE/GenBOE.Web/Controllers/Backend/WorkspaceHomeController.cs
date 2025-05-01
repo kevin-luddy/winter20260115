@@ -9,11 +9,8 @@ namespace GenBOE.Web.Controllers
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
-	using System.Diagnostics;
 	using System.Linq;
-	using System.Transactions;
 	using System.Web.Http;
-	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ControllerLogic;
 	using GenBOE.ActionLogic.ControllerLogic.Backend;
 	using GenBOE.ActionLogic.Metrics;
@@ -27,8 +24,6 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.Web.ModelView;
 	using IES.Common;
 	using IES.Common.Exceptions;
-	using IES.Common.PickList;
-	using Microsoft.VisualBasic.Logging;
 
 	/// <summary>
 	/// Workspace Home Controller for getting workspace home data.
