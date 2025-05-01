@@ -289,7 +289,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			SME = 5008,
 			NonLabor = 5009
 		*/
-        if ($scope.model.IsRMS) {
+		if ($scope.model.IsRMS) {
 			switch (field) {
 				case 'Rationale':
 					switch (parseInt(selectedMOQType)) {
@@ -303,14 +303,14 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 							return `If CERs is not submitted in advance to USG, provide a complete explanation of how the model works, the historical or other data sources used, and how any model output was used to calculate proposed hours. Proposal teams cannot claim the model is Lockheed Martin Proprietary Information and not provide.
 									Unless all statistical analysis data is submitted with the proposal, DO NOT state that estimates are based on a CER.  Include CER in proposal.
 									Refer to training, BOE Gold Card and 23 Question Checklist and other guidance on All Things BOE website (https://rmsestimationcompliance.us.lmco.com/all-things-boe/)`;
-						case 5004:
+						case 5004: 
 							return `If parametric estimating model is not submitted in advance to USG, provide a complete explanation of how the model works, the historical or other data sources used, and how any model output was used to calculate proposed hours.  Proposal teams cannot claim the model is Lockheed Martin Proprietary Information and not provide.
 									Unless all statistical analysis data is submitted with the proposal, DO NOT state that estimates are based on a CER.  Include CER in proposal.
 									Refer to training, BOE Gold Card and 23 Question Checklist and other guidance on All Things BOE website (https://rmsestimationcompliance.us.lmco.com/all-things-boe/)`;
-						case 5005:
+						case 5005: 
 							return `If AR is not submitted in advance to USG, provide a complete explanation of how the model works, the historical or other data sources used, and how any model output was used to calculate proposed hours.  Proposal teams cannot claim the model is Lockheed Martin Proprietary Information and not provide.
-									Unless all statistical analysis data is submitted with the proposal, DO NOT state that estimates are based on a CER.Include CER in proposal.
-									Refer to training, BOE Gold Card and 23 Question Checklist and other guidance on All Things BOE website(https://rmsestimationcompliance.us.lmco.com/all-things-boe/)`;
+									Unless all statistical analysis data is submitted with the proposal, DO NOT state that estimates are based on a CER.  Include CER in proposal.
+									Refer to training, BOE Gold Card and 23 Question Checklist and other guidance on All Things BOE website (https://rmsestimationcompliance.us.lmco.com/all-things-boe/)`;
 						case 5006:
 							return `Show the math and appropriate SOW reference for rationale:  Example: Per SOW para x.xx:   2 meeting / month x 1 hr / meeting x 24 months = 48 hours 
 									Refer to training, BOE Gold Card and 23 Question Checklist and other guidance on All Things BOE website (https://rmsestimationcompliance.us.lmco.com/all-things-boe/)`;
@@ -318,9 +318,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 							return `Show the math and appropriate SOW reference for rationale:  Per SOW para x.xx:   1 Program Management Head x 157* hours/month x 24 months = 3768 hours
 									RMS Cost Estimating Guidebook (CAPTURE-G-001) Section 2.6.1 defines the LOE hours associated with 1 full time equivalent 
 									Refer to training, BOE Gold Card and 23 Question Checklist and other guidance on All Things BOE website (https://rmsestimationcompliance.us.lmco.com/all-things-boe/)`;
-						case 5008:
-							return `For each task please provide task name, a description of the task and the number of hours.  In the SME judgment estimate please break estimated tasks into small enough chunks that customer can fully understand what is being estimated.
-									Refer to and use 8/7/23 SME Judgement BOE Compliance Corner with SME Judgement Model and other guidance on All Things BOE website (https://rmsestimationcompliance.us.lmco.com/all-things-boe/)`;
 						case 5009:
 							return `Document any Non-Labor values used & why.
 									Include which section in common cost volume that the artifacts/documentation can be found to support the Non-Labor costs.`;
@@ -357,31 +354,28 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 							BOE author must provide detailed rationale to explain why a historical reference (i.e. Contract/WBS, POP, timeframe) was selected in the BOE. Explain WHY the historical references is (1) the same effort as or (2) similar to. 
 							As a reminder, no other BOE rationale belongs in this field. 
 							Please refer to the following Compliance Corner articles: 4/8/24 Same vs. Similar Rationale as well as, training, BOE Gold Card, 23 Question Checklist and other guidance on All Things BOE website (https://rmsestimationcompliance.us.lmco.com/all-things-boe/)`;
-					break;
 				case 'Hours Required and Location':
-					return 'Statement of Work (SOW) must be clearly directed by the RFP language. Input RFP section and RFP language.';
-					break;
-				case 'Description of Hours':
-					return 'Level of Effort (LOE) must be clearly directed by the RFP language. Input RFP section and verbiage.';
+					switch (parseInt(selectedMOQType)) {
+						case 5006:
+							return 'Statement of Work (SOW) must be clearly directed by the RFP language. Input RFP section and RFP language.';
+						case 5007:
+							return 'Level of Effort (LOE) must be clearly directed by the RFP language. Input RFP section and verbiage.';
+					}
 					break;
 
 				// SME Placeholders
 				case 'Expert Judgment reasons':
 					return `Describe in detail why SME judgement was chosen as the last resort.  Have you truly looked at historical or comparative actual (even at a higher level)?  Do not use verbiage such as “actuals are not found at a lower or more granular level” or “I have been a SME for 30 years.”
 							Refer to and use 8/7/23 SME Judgement BOE Compliance Corner with SME Judgement Model and other guidance on All Things BOE website (https://rmsestimationcompliance.us.lmco.com/all-things-boe/)`;
-					break;
 				case 'Logic and Assumptions Hours Estimate':
 					return `Include tasks with clear, detailed rationale and logic with related estimated hours.  Estimate should be at a level of detail so it can be deemed reasonable.
 							Refer to and use 8/7/23 SME Judgement BOE Compliance Corner with SME Judgement Model and other guidance on All Things BOE website (https://rmsestimationcompliance.us.lmco.com/all-things-boe/)`;
-					break;
 				case 'Logic and Assumptions Duration Estimate':
 					return `Describe and detail the period of performance for this BOE (broken down by task if possible)
 							Refer to and use 8/7/23 SME Judgement BOE Compliance Corner with SME Judgement Model and other guidance on All Things BOE website (https://rmsestimationcompliance.us.lmco.com/all-things-boe/)`;
-					break;
 				case 'Task Estimates':
 					return `For each task please provide task name, a description of the task and the number of hours.  In the SME judgment estimate please break estimated tasks into small enough chunks that customer can fully understand what is being estimated.
 							Refer to and use 8/7/23 SME Judgement BOE Compliance Corner with SME Judgement Model and other guidance on All Things BOE website (https://rmsestimationcompliance.us.lmco.com/all-things-boe/)`;
-					break;
 			}
 		}
 
@@ -648,10 +642,24 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	}
 
 	$scope.convertMoqType = function (moqType, convertToType) {
-		var convertToMoq = $scope.model.MOQTypes.find(x => x.SelectedMOQType == convertToType);
+		let convertToMoq = $scope.model.MOQTypes.find(x => x.SelectedMOQType == convertToType);
+		let originalMoq = $scope.model.MOQTypes.find(x => x.SelectedMOQType == moqType.SelectedMOQType);
 
+		let originalType = moqType.SelectedMOQType;
+		let originalText = moqType.SelectedMOQTypeText;
+
+		// convert both the MOQ section and the element in the MOQ types list
 		moqType.SelectedMOQType = convertToMoq.SelectedMOQType;
 		moqType.SelectedMOQTypeText = convertToMoq.SelectedMOQTypeText;
+		originalMoq.SelectedMOQType = convertToMoq.SelectedMOQType;
+		originalMoq.SelectedMOQTypeText = convertToMoq.SelectedMOQTypeText;
+
+		// also convert the convertToType to keep it in the list and prevent duplicates
+		convertToMoq.SelectedMOQType = originalType;
+		convertToMoq.SelectedMOQTypeText = originalText;
+
+		// sort by SelectedMOQType to keep the list in the same order
+		$scope.model.MOQTypes = $scope.model.MOQTypes.sort((a, b) => (a.SelectedMOQType < b.SelectedMOQType) ? -1 : 1);
 
 		MOQEquationFieldWidget.setDirty();
 	}
