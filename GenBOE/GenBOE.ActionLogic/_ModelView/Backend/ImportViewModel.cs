@@ -6,11 +6,14 @@
 
 namespace GenBOE.ActionLogic._ModelView.Backend
 {
-	using System;
-	using System.Collections.Generic;
-
+	/// <summary>
+	/// View Model for Import
+	/// </summary>
 	public class ImportViewModel
 	{
+		/// <summary>
+		/// Workspace Shortname
+		/// </summary>
 		public string Workspace { get; set; }
 	}
 }
