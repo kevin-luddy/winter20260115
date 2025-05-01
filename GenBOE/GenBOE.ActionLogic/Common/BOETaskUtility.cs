@@ -77,7 +77,7 @@ namespace GenBOE.ActionLogic.Common
 			bool showSkillMixRationale = false;
 
 			// Skill mix will be disabled if there is not exactly one MOQ Type selected.
-			if (moqTypeSelections.Count() == 1)
+			if (moqTypeSelections != null && moqTypeSelections.Count() == 1)
 			{
 				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
 				{

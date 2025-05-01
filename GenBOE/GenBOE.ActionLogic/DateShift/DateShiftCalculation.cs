@@ -162,9 +162,9 @@ namespace GenBOE.ActionLogic.DateShift
 					// Iterate through each task and check for Skill Mix
 					foreach (BoeTaskElementDTO task in fullWorkspace?.TaskElements)
 					{
-						FullBoe fullBoe = this.factory.CreateFullBoe(task.BoeID);
+                        FullBoe fullBoe = fullWorkspace.Boes.FirstOrDefault(b => b.Id == task.BoeID);
 
-						ICollection<MoqTypeSelection> moqTypesForTask = fullBoe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList();
+                        ICollection<MoqTypeSelection> moqTypesForTask = fullBoe?.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList();
 
 						if (BOETaskUtility.ShowSkillMixForTask(fullWorkspace?.CreationDate, BOETaskUtility.IsUsingTMRates(fullWorkspace, task), moqTypesForTask))
 						{
