@@ -908,12 +908,7 @@
                                             <td colspan="{{model.SpreadDatesFull.length}}" style="border: 0;padding: 2px">&nbsp;</td>
                                         </tr>
                                         <tr data-ng-if="showUCOT && item.UcotHours > 0" data-ng-repeat="item in tableData | filter: { Deleted: false, NewLaborType: false, RateType: ManageTaskModel.RateTypeHours } track by item.BOELaborTypeID">
-                                            <!--<td data-ng-repeat="dt in model.SpreadDatesFull" date="{{dt}}" data-ng-class="{inputError: item.SpreadDataInvalid[$index]}">{{ isInRange = isMonthInRange(dt.toDate(), item.StartDate.toDate(), item.EndDate.toDate()); "" }}
-                                                <input class="LSDateinput" data-ng-show="isInRange" type="text" data-ng-model="item.UcotSpreadData[$index]" disabled="disabled"
-                                                     />
-                                                <input class="LSDateinput" data-ng-hide="isInRange" type="text" disabled="disabled" />
-                                            </td>-->
-                                            <td data-ng-repeat="dt in model.SpreadDatesFull" date="{{dt}}">{{getUcotSpreadMonthText(item, dt)}}</td>
+                                           <td data-ng-repeat="dt in model.SpreadDatesFull" date="{{dt}}">{{getUcotSpreadMonthText(item, dt)}}</td>
                                         </tr>
                                         <tr id="LaborSpreadDataDividerRow">
                                             <td colspan="{{model.SpreadDatesFull.length}}" class="subheader" style="background-color: #EBEBEB; line-height: 2px; padding: 0px;">&nbsp;</td>
@@ -928,6 +923,12 @@
                                             <td data-ng-repeat="dt in model.SpreadDatesFull" date="{{dt}}"><span class="labor-spread-currency">$</span>{{getCostTotals(dt)}}</td>
                                         </tr>
                                         <tr>
+                                            <td colspan="{{model.SpreadDatesFull.length}}" style="border: 0;">&nbsp;</td>
+                                        </tr>
+                                        <tr data-ng-if="showUCOT">
+                                            <td colspan="{{model.SpreadDatesFull.length}}" style="border: 0;">&nbsp;</td>
+                                        </tr>
+                                        <tr data-ng-if="showUCOT">
                                             <td colspan="{{model.SpreadDatesFull.length}}" style="border: 0;">&nbsp;</td>
                                         </tr>
                                         <tr>
