@@ -33,7 +33,11 @@ namespace GenBOE.Web.Controllers
 		/// Logger
 		/// </summary>
 		private Logger logger = new Logger("ManagePermissionsController");
-		private IActiveDirectoryUtilities _ADUtils = null;
+
+        /// <summary>
+        /// The ad utilities class
+        /// </summary>
+        private IActiveDirectoryUtilities ADUtils = null;
 
 		/// <summary>
 		/// ctor
@@ -43,7 +47,7 @@ namespace GenBOE.Web.Controllers
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.PermissionControllerLogic = PermissionControllerLogic;
-			_ADUtils = inADUtils;
+			ADUtils = inADUtils;
 		}
 
 		/// <summary>
@@ -102,11 +106,12 @@ namespace GenBOE.Web.Controllers
 			return result;
 		}
 
-		/// <summary>
-		/// Gets Members of Group
-		/// </summary>
-		/// <returns>Group Members</returns>
-		[HttpGet]
+        /// <summary>
+        /// Gets Members of Group
+        /// </summary>
+        ///<param name="groupName">The AD group name.</param>
+        /// <returns>Group Members</returns>
+        [HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public IESSingleResponse<ICollection<UserData>> GetGroupMembers(string groupName)
@@ -115,7 +120,7 @@ namespace GenBOE.Web.Controllers
 
 			try
 			{
-				ICollection<UserData> members = _ADUtils.GetAdGroupUsers(groupName);
+				ICollection<UserData> members = ADUtils.GetAdGroupUsers(groupName);
 				ICollection<UserData> orderedMembers = members.OrderBy(m => m.DisplayName).ToList();
 
 				result.Data = orderedMembers;
