@@ -11,6 +11,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
+	using System.Threading.Tasks;
 	using Common;
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.IO.Import;
@@ -654,9 +655,11 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 				foreach (BoeTaskElementDTO task in boe.TaskElements)
 				{
+					ICollection<MoqTypeSelection> moqTypesForTask = boe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList();
+
 					// Variables for Validation of Skill Mix Rationale Field
 					bool isUsingTMRatesInTask = BOETaskUtility.IsUsingTMRates(ws, task);
-					bool showSkillMixTable = BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, isUsingTMRatesInTask, boe.MoqTypeSelections.ToList());
+					bool showSkillMixTable = BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, isUsingTMRatesInTask, moqTypesForTask);
 					errorMessages = ValidateTemplateMoqForTask(boe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList(), ws, true, null, showSkillMixTable);
 
 					if (errorMessages.Any())
