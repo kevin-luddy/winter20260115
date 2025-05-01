@@ -32,20 +32,23 @@ namespace GenBOE.DataBridge.Core.Common
 		{
 			bool showSkillMixRationale = false;
 
-			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+			// Skill mix will be disabled if there is not exactly one MOQ Type selected.
+			if (moqTypeSelections.Count() == 1)
 			{
-				showSkillMixRationale = CommonUtilities.ShowSkillMixForWorkspace(workspaceCreationDate);
-			}
-			else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-			{
-				bool hasSapWebi = moqTypeSelections.Any(x => x.TableData.Any(y => y.RepositoryName == RepositoryName.SapWebi.GetDescription()));
+				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+				{
+					showSkillMixRationale = CommonUtilities.ShowSkillMixForWorkspace(workspaceCreationDate);
+				}
+				else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+				{
+					bool hasSapWebi = moqTypeSelections.Any(x => x.TableData.Any(y => y.RepositoryName == RepositoryName.SapWebi.GetDescription()));
 
-				bool isComparativeHistoricalAnalogous = moqTypeSelections.Any(x =>
-				x.SelectedMOQType == MOQType.Comparative ||
-				x.SelectedMOQType == MOQType.Historical ||
-				x.SelectedMOQType == MOQType.AnalogousRelationships);
+					showSkillMixRationale = CommonUtilities.ShowSkillMixForWorkspace(workspaceCreationDate) && !hasTMRates && hasSapWebi &&
+						(moqTypeSelections.First().SelectedMOQType == MOQType.Comparative ||
+						moqTypeSelections.First().SelectedMOQType == MOQType.Historical ||
+						moqTypeSelections.First().SelectedMOQType == MOQType.AnalogousRelationships);
 
-				showSkillMixRationale = CommonUtilities.ShowSkillMixForWorkspace(workspaceCreationDate) && !hasTMRates && hasSapWebi && isComparativeHistoricalAnalogous;
+				}
 			}
 
 			return showSkillMixRationale;
