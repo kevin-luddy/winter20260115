@@ -2026,7 +2026,7 @@
                 // Space
                 if ($scope.ManageTaskModel.IsSpace) {
                     // Check if the single MOQ type is one of the big three (Comparative, Historical, Analagous)
-                    let hasBigThreeMoqType = [5001, 5002, 5005].includes($scope.SelectedMoqTypes[0].SelectedMOQType);
+                    let hasBigThreeMoqType = [5001, 5002, 5005, '5001', '5002', '5005'].includes($scope.SelectedMoqTypes[0].SelectedMOQType);
 
                     // Check if the single MOQ table has a SAP/WEBI repository
                     let hasSapWebiRepository = $scope.SelectedMoqTypes[0].TableData !== undefined && $scope.SelectedMoqTypes[0].TableData.some(function (table) {
