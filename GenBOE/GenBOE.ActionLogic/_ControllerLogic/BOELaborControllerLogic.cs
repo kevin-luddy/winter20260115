@@ -16,6 +16,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using System.Web;
 	using System.Web.Configuration;
 	using System.Web.Mvc;
+	using DocumentFormat.OpenXml.Drawing.Charts;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
@@ -536,7 +537,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					foreach (ResourceTypeDto missing in missingLabors)
 					{
 						this.logger.Error("During Save of Task Element, there was a missing task element labor found in the DB that will be deleted with id " + missing.Id);
-						LaborTypeDataModelView toDelete = new LaborTypeDataModelView(missing, new ResourceDTO(), new ResourceDTO(), new PerformingOrgDTO(), 0m, false);
+						LaborTypeDataModelView toDelete = new LaborTypeDataModelView(missing, new ResourceDTO(), new ResourceDTO(), new PerformingOrgDTO(), 0m, false, ws.DecimalPrecision);
 						toDelete.Deleted = true;
 						modelView.LaborTypesData.Add(toDelete);
 					}
@@ -974,17 +975,18 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					{
 						if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
 						{
-							validationErrors.Add(new ValidationMessage(string.Format("Skill Mix Total Historical Hours in Legacy Skill Mix Table do not match the sum of the Total Relevant Hours.")));
+							string skillMixTableName = SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST ? "Current" : "Legacy";
+							validationErrors.Add(new ValidationMessage(string.Format("Total Historical Hours in {0} Skill Mix Table do not match the sum of the Total Relevant Hours.", skillMixTableName)));
 						}
 
-						if (taskElement.SkillMixTable != null && Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
+						if (taskElement.CommonDisclosureTable != null && Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
 						{
 							// add the Common Disclosure table totals to historical totals
 							historicalHoursTotals = taskElement.CommonDisclosureTable.Sum(c => c.HistoricalHours);
 
-							if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
+							if (!historicalHoursTotals.EqualsEpsilon(taskElement.MOQTotalRelevantHours, Convert.ToDecimal(Math.Pow(10, -1.0 * Convert.ToDouble(ws.DecimalPrecision)))))
 							{
-								validationErrors.Add(new ValidationMessage(string.Format("Skill Mix Total Historical Hours in LM Enterprise Skill Mix Table do not match the sum of the Total Relevant Hours.")));
+								validationErrors.Add(new ValidationMessage(string.Format("Total Historical Hours in LM Enterprise Skill Mix Table do not match the sum of the Total Relevant Hours.")));
 							}
 						}
 					}
@@ -1681,6 +1683,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			ICollection<ResourceSpreadDto> spreadDtos = SpreadCurve.CalculateLaborSpreadsBasedOnCurve(request, precision);
 
+			decimal sumUCOT = 0m;
+			
 			// Convert dto to mv
 			foreach (ResourceSpreadDto dto in spreadDtos)
 			{
@@ -1692,11 +1696,27 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				if (calculateUCOT && dto.LaborSpreadDate >= Utilities.OneLmxStartDate)
 				{
+					decimal nonPrecisionUCOT = dto.LaborSpreadValue * ucotFactor / 100.0m;
+					sumUCOT += nonPrecisionUCOT;
+					decimal precisionUCOT = Utilities.AdjustPrecision(nonPrecisionUCOT, precision);
+				
 					ucotSpreadsToReturn.Add(new LaborSpreadDataModelView()
 					{
 						LaborSpreadDate = dto.LaborSpreadDate.ToMonthString(),
-						LaborSpreadValue = dto.LaborSpreadValue * ucotFactor / 100.0m
+						LaborSpreadValue = precisionUCOT
 					});
+				}
+			}
+
+			if (calculateUCOT && ucotSpreadsToReturn.Any())
+			{
+				decimal totalUCOTPrecision = Utilities.AdjustPrecision(sumUCOT, precision);
+				decimal[] ucotSpreadValues = SpreadCurve.Smooth(totalUCOTPrecision, ucotSpreadsToReturn.Select(s => s.LaborSpreadValue ?? 0m).ToArray(), 0, ucotSpreadsToReturn.Count, precision);
+
+				// Reset the values to the Smooth'ed array to guarantee precision and no loss of rounding values
+				for (int i = 0; i < ucotSpreadsToReturn.Count; i++)
+				{
+					ucotSpreadsToReturn[i].LaborSpreadValue = ucotSpreadValues[i];
 				}
 			}
 
@@ -1927,7 +1947,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					perfOrg = performingOrgsFromDb.First(x => x.Id == labor.PerformingOrgID.Value);
 				}
 
-				LaborTypeDataModelView laborToAdd = new LaborTypeDataModelView(labor, resource, businessResourceCode, perfOrg, ws.UCOTFactor, calculateUCOT && businessResourceCode.ElementOfCost == ElementOfCostType.LMLabor && businessResourceCode.RateType == RateType.Hours);
+				LaborTypeDataModelView laborToAdd = new LaborTypeDataModelView(labor, resource, businessResourceCode, perfOrg, ws.UCOTFactor, calculateUCOT && businessResourceCode.ElementOfCost == ElementOfCostType.LMLabor && businessResourceCode.RateType == RateType.Hours, ws.DecimalPrecision);
 
 				ICollection<CustomFieldSelectionModelView> laborCustomFieldSelection = new Collection<CustomFieldSelectionModelView>();
 				ICollection<CustomFieldValueContainer> laborCustomFieldValues = labor.CustomFieldValueContainers;
@@ -4528,6 +4548,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			{
 				ICollection<LaborTypeDataModelView> resourceLaborTypes = laborTypes.Where(l => l.ResourceName == resourceName).ToList();
 
+				decimal totalHoursBRCs = resourceLaborTypes.SelectMany(x => x.Spreads).Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) >= Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
+
 				foreach (CommonDisclosureModelView refreshedRow in refreshedModel.CommonDisclosureRows.Where(r => r.ResourceID == resourceName))
 				{
 					ICollection<LaborTypeDataModelView> laborTypeDataModelViews = resourceLaborTypes.Where(l => l.BusinessResourceCodeName.NullEmptyEquals(refreshedRow.BusinessResourceID)).ToList();
@@ -4540,15 +4562,18 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					}
 
 					refreshedRow.ProposedHours = laborTypeDataModelViews.SelectMany(x => x.Spreads).Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) >= Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
-					if (!isManual && refreshedRow.ProposedHours != 0m)
+					// If this is not a Manual Skill Mix and the BRC is set, then the historical hours is a percentage of the real Historical Hours
+					// Percentage is calculated based off the % calculated by BRC Sum / total BRCs Sum for this Resource
+					if (!isManual && !string.IsNullOrWhiteSpace(refreshedRow.BusinessResourceID))
 					{
-						// for Automated SkillMix, the Historical Hours is supposed to be a fraction of the real Historical Hours.
-						// That fraction is the % that the Proposed Hours are of the Total Hours for this Resource
-						// RMS is special in that we need to find the linked legacy Resource IDs in SkillMix table, then use that to pull historical hours from SAP Actuals
 						ICollection<string> legacyLinkedResourceIds = refreshedModel.SkillMixRows.Where(r => r.ResourceNew == resourceName && r.Included).Select(l => l.ResourceOld).ToList();
-						decimal totalLaborHours = laborTypeDataModelViews.Sum(x => x.HourSpread ?? 0m);
 						decimal realHistoricalHours = resourceHours.Where(r => legacyLinkedResourceIds.Contains(r.ResourceName)).Sum(l => l.TotalHours);
-						refreshedRow.HistoricalHours = totalLaborHours == 0m ? 0m : (refreshedRow.ProposedHours / totalLaborHours) * realHistoricalHours;
+						decimal brcHistoricalHours = 0m;
+						if (totalHoursBRCs != 0)
+						{
+							brcHistoricalHours = refreshedRow.ProposedHours / totalHoursBRCs;
+						}
+						refreshedRow.HistoricalHours = realHistoricalHours * brcHistoricalHours;
 					}
 
 					if (currentCommonDisclosureData != null)
@@ -4599,8 +4624,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			if (currentSkillMixData != null && currentSkillMixData.Any())
 			{
-				bool emptyRowInCDTable = false;
-
 				foreach (SkillMixModelView refreshedRow in refreshedModel.SkillMixRows.ToList())
 				{
 					// Find the matching current rows
@@ -4648,13 +4671,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 								// Find the Proposed Hours for this Resource
 								currentRow.ProposedHours = laborTypeDataModelViews.SelectMany(x => x.Spreads).Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) < Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
 
-								if (!isManual && currentRow.ProposedHours != 0m)
+								if (!isManual)
 								{
-									// for Automated SkillMix, the Historical Hours is supposed to be a fraction of the real Historical Hours.
-									// That fraction is the % that the Proposed Hours are of the Total Hours for this Resource
-									decimal totalLaborHours = laborTypeDataModelViews.Sum(x => x.HourSpread ?? 0m);
 									decimal realHistoricalHours = resourceHours.Where(r => r.ResourceName == currentRow.ResourceOld).Sum(l => l.TotalHours);
-									currentRow.HistoricalHours = totalLaborHours == 0m ? 0m : (currentRow.ProposedHours / totalLaborHours) * realHistoricalHours;
+									currentRow.HistoricalHours = realHistoricalHours;
 								}
 							}
 							else
@@ -4685,19 +4705,18 @@ namespace GenBOE.ActionLogic.ControllerLogic
 										}
 									}
 								}
-								else if (!emptyRowInCDTable && string.IsNullOrWhiteSpace(currentRow.ResourceNew) && currentRow.Included)
+								else if (string.IsNullOrWhiteSpace(currentRow.ResourceNew) && !string.IsNullOrWhiteSpace(currentRow.ResourceOld))
 								{
 									// create a Not included row
 									refreshedModel.CommonDisclosureRows.Add(
 											new CommonDisclosureModelView
 											{
-												ResourceID = currentRow.ResourceNew,
+												ResourceID = currentRow.ResourceOld, // Set the ID to the Historical Resource ID
 												BusinessResourceID = string.Empty,
-												Included = false
+												Included = false,
+												HistoricalHours = currentRow.HistoricalHours
 											}
 										);
-
-									emptyRowInCDTable = true;
 								}
 							}
 						}

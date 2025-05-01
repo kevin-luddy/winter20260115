@@ -1847,7 +1847,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					{
 						if (Utilities.OneLmxStartDate <= spread?.LaborSpreadDate)
 						{
-							row.Add((exportInputs.Workspace.UCOTFactor / 100m * ((spread == null) ? 0 : spread.LaborSpreadValue)).ToString());
+							row.Add((exportInputs.Workspace.UCOTFactor / 100m * ((spread == null) ? 0 : spread.LaborSpreadValue)).ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
 						}
 						else // Before 1LMX cutoff
 						{

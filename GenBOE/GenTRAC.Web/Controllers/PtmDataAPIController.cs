@@ -242,7 +242,7 @@ namespace GenTRAC.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown error occured returning PBOE data: {ex.Message}");
+				result.Messages.Add($"Unknown error occurred returning PBOE data: {ex.Message}");
 				result.IsSuccessful = false;
 			}
 
@@ -270,7 +270,7 @@ namespace GenTRAC.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown error occured returning Proposal Permissions: {ex.Message}");
+				result.Messages.Add($"Unknown error occurred returning Proposal Permissions: {ex.Message}");
 				result.IsSuccessful = false;
 			}
 

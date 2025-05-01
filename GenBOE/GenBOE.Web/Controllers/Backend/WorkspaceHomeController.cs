@@ -164,16 +164,16 @@ namespace GenBOE.Web.Controllers
 						model.isReadOnly = false;
 					}
 					model.canCreateWS = CheckPermission(SecurityPage.CreateWorkspacePermissions, null) == SecurityAuthorization.CreateReadUpdateDelete;
-
-					model.workspaceGridRows = workspaceHomeControllerLogic.GetHomepageGrid(model.isSysAdmin, currentUser, UserLoader, PermissionsLoader);
-
-					result.Data = model;
 				}
+				
+				model.workspaceGridRows = workspaceHomeControllerLogic.GetHomepageGrid(model.isSysAdmin, currentUser, UserLoader, PermissionsLoader);
+				result.Data = model;
+				
 			}
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown error occured returning Workspace Grid Data: {ex.Message}");
+				result.Messages.Add($"Unknown error occurred returning Workspace Grid Data: {ex.Message}");
 			}
 
 			return result;

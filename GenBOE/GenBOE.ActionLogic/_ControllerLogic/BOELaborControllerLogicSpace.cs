@@ -245,7 +245,6 @@ namespace GenBOE.ActionLogic
 
 						if (!isManual && historicalSkillMix.ProposedHours != 0m)
 						{
-							// Space wants ALL of the hours to be shown in both Skill Mix Tables...not a fraction of the real Historical Hours like RMS
 							decimal realHistoricalHours = resourceHours.Where(r => r.ResourceName == historicalSkillMix.ResourceOld).Sum(l => l.TotalHours);
 							historicalSkillMix.HistoricalHours = realHistoricalHours;
 						}

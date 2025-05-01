@@ -435,7 +435,7 @@ namespace GenBOE.ActionLogic.IO.Import
                     fare == currentTrip.Fare &&
                     rtMiles == currentTrip.RTMiles)
                 {
-                    // no updates occured.
+                    // no updates occurred.
                     return null;
                 }
                 
@@ -579,7 +579,7 @@ namespace GenBOE.ActionLogic.IO.Import
 
                 if (existingPerDiem != null)
                 {
-                    // determine if an edit has occured
+                    // determine if an edit has occurred
                     if (existingPerDiem.HotelRate != hotel || existingPerDiem.MIERate != mieRate || existingPerDiem.PerDiemNotes != perDiemNotes)
                     {
                         existingPerDiem.HotelRate = hotel;

@@ -137,7 +137,7 @@
         });
 
         $scope.skillMixRationaleLaborTypeSelections = $scope.skillMixRationaleLaborTypeSelections.filter((option, index, self) =>
-            index === self.findIndex((t) => (t === option)) && index === self.findLastIndex((t) => (t === option))
+            index === self.findLastIndex((t) => (t === option))
         );
     };
 

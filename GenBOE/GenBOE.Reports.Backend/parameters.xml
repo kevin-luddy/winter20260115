@@ -12,6 +12,10 @@
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_AllowedOrigins_">
 		</parameterentry>
 	</parameter>
+	<parameter name="ShowEquivalentPersonsOption" description="doesn't matter" defaultvalue="__ShowEquivalentPersonsOption__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_ShowEquivalentPersonsOption_">
+		</parameterentry>
+	</parameter>
 	<parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_allowedRoles_">
 		</parameterentry>
