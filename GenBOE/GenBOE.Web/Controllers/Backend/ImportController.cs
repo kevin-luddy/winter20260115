@@ -31,6 +31,8 @@ namespace GenBOE.Web.Controllers.Backend
 
 	public class ImportController : BoeDataBaseAPIController
 	{
+		#region Properties & Ctor
+
 		/// <summary>
 		/// Logger
 		/// </summary>
@@ -41,6 +43,14 @@ namespace GenBOE.Web.Controllers.Backend
 		/// </summary>
 		private PermissionControllerLogic PermissionControllerLogic { get; set; }
 
+		/// <summary>
+		/// Constructor for the Import Controller
+		/// </summary>
+		/// <param name="securityAccess">Security Access</param>
+		/// <param name="factory">Full object factory</param>
+		/// <param name="userLoader">User loader</param>
+		/// <param name="permissionsLoader">Permission loader</param>
+		/// <param name="PermissionControllerLogic">Permissions Controller Logic</param>
 		public ImportController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader,
 			PermissionControllerLogic PermissionControllerLogic
 			) : base(securityAccess, factory, userLoader, permissionsLoader)
@@ -48,10 +58,11 @@ namespace GenBOE.Web.Controllers.Backend
 			this.PermissionControllerLogic = PermissionControllerLogic;
 		}
 
+		#endregion Properties & Ctor
+
 		/// <summary>
 		/// Import File
 		/// </summary>
-		///<param name="importViewModel">View model that contains Import information.</param>
 		/// <returns>True/False to indicate if operation is successfull</returns>
 		[HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
