@@ -286,7 +286,6 @@
     <Compile Include="_ControllerLogic\Backend\WorkspaceSettingsControllerLogic.cs" />
     <Compile Include="_ControllerLogic\Backend\WorkspaceHomeControllerLogic.cs" />
     <Compile Include="_ModelView\Backend\BOEConfigurationViewModel.cs" />
-    <Compile Include="_ModelView\Backend\ImportViewModel.cs" />
     <Compile Include="_ModelView\Backend\PermissionRoleViewModel.cs" />
     <Compile Include="_ModelView\Backend\PermissionsGridViewModel.cs" />
     <Compile Include="_ModelView\Backend\PermissionUserViewModel.cs" />

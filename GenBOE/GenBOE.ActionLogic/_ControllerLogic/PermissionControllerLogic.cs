@@ -9,6 +9,7 @@ namespace GenBOE.ActionLogic
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.Data;
 	using System.Linq;
 	using System.Transactions;
 	using GenBOE.ActionLogic.ModelView;
@@ -20,7 +21,6 @@ namespace GenBOE.ActionLogic
 	using GenBOE.Objects;
 	using IES.Common;
 	using IES.Common.Exceptions;
-	using System.Data;
 
 	public class PermissionControllerLogic
 	{

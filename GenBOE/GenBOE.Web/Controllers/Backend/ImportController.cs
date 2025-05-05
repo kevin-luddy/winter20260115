@@ -111,10 +111,10 @@ namespace GenBOE.Web.Controllers.Backend
 					stream.Dispose();
 				}
 
-				if (permissions.Count == 0)
+				if (permissions.Count > 0)
 				{
 					this.PermissionControllerLogic.SaveNewPermissions(importViewModel.Workspace, permissions);
-					errorMessage = "";
+					errorMessage = string.Empty;
 				}
 				else
 				{
