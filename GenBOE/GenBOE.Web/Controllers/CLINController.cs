@@ -15,6 +15,7 @@ namespace GenBOE.Web.Controllers
 	using System.Transactions;
 	using System.Web.Mvc;
 	using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic._ControllerLogic.Backend;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
 	using GenBOE.ActionLogic.Common;
@@ -47,17 +48,13 @@ namespace GenBOE.Web.Controllers
 
 		private IBoeEmailer _Emailer;
 		private IBOEStateMachine _BOEStateMachine;
-		private IVariableSelectBOEtoSumCalculation _variableSelectBOEtoSumCalculation;
-		private IBoeTaskElementRecalculation _BoeTaskElementRecalculation;
-		private IWorkspaceVariableDTODataLoader _workspaceVariableLoader;
 		private ICLINImporter _ClinImporter;
 		private ICLINExporter _ClinExporter;
-		private IBoeTaskElementMediator _BoeTaskElementMediator;
 		private IBoeMediator _BoeMediator;
-		private IValidationHelper _validationHelper;
 		private IClinDTODataLoader clinLoader;
 		private ICommonDataLoader _CommonDataLoader;
 		private ContractTypeLoader contractTypeLoader;
+		private CLINControllerLogic _clinControllerLogic;
 
 		/// <summary>
 		/// The constructor
@@ -67,14 +64,9 @@ namespace GenBOE.Web.Controllers
 			SiteMasterUtilities inSiteMasterUtilities,
 			IBoeEmailer inEmailer,
 			IBOEStateMachine inBOEStateMachine,
-			IVariableSelectBOEtoSumCalculation inVarSelectBoeToSumCalculation,
-			IBoeTaskElementRecalculation inBoeTaskElementRecalculation,
-			IWorkspaceVariableDTODataLoader inWorkspaceVarLoader,
 			ICLINImporter inClinImporter,
 			ICLINExporter inClinExporter,
-			IBoeTaskElementMediator inBoeTaskElementMediator,
 			IBoeMediator inBoeMediator,
-			IValidationHelper inValidationHelper,
 			SystemMetrics inSystemMetrics,
 			IFullObjectFactory factory,
 			IClinDTODataLoader clinLoader,
@@ -82,23 +74,20 @@ namespace GenBOE.Web.Controllers
 			IPermissionsDTODataLoader permissionLoader,
 			IGenBOEControllerLogic inControllerLogic,
 			ICommonDataLoader inCommonDataLoader,
-			ContractTypeLoader contractTypeLoader
+			ContractTypeLoader contractTypeLoader,
+			CLINControllerLogic clinControllerLogic
 			)
 			: base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, userLoader, permissionLoader, inControllerLogic)
 		{
 			this._Emailer = inEmailer;
 			this._BOEStateMachine = inBOEStateMachine;
-			this._variableSelectBOEtoSumCalculation = inVarSelectBoeToSumCalculation;
-			this._BoeTaskElementRecalculation = inBoeTaskElementRecalculation;
-			this._workspaceVariableLoader = inWorkspaceVarLoader;
 			this._ClinImporter = inClinImporter;
 			this._ClinExporter = inClinExporter;
-			this._BoeTaskElementMediator = inBoeTaskElementMediator;
 			this._BoeMediator = inBoeMediator;
-			this._validationHelper = inValidationHelper;
 			this.clinLoader = clinLoader;
 			this._CommonDataLoader = inCommonDataLoader;
 			this.contractTypeLoader = contractTypeLoader;
+			this._clinControllerLogic = clinControllerLogic;
 		}
 
 		/// <summary>
@@ -245,12 +234,6 @@ namespace GenBOE.Web.Controllers
 			// Initialize Action
 			Stopwatch sw = this.InitializeAction(this._log, "SaveClin", SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
-			// Dictionary to keep track of task variable IDs that need to be updated and their old variable total
-			Dictionary<int, decimal> WorkspaceVarOldValueD = new Dictionary<int, decimal>();
-
-			// BOE's Labor Spread values that need to be recalculated because of any changes made during this save
-			List<BoeTaskElementDTO> boeTaskElementsToRecalculate = new List<BoeTaskElementDTO>();
-
 			// Perform Action
 			// check if the input is null
 			if (inUpdatedClin == null)
@@ -258,179 +241,15 @@ namespace GenBOE.Web.Controllers
 				throw new ArgumentNullException(nameof(inUpdatedClin));
 			}
 
-			JsonResult toReturn = this.Json(new { Status = true });
-
-			Collection<ValidationMessage> ValidationErrors = new Collection<ValidationMessage>();
+			JsonResult toReturn;
 
 			// only validate data if it exists
 			if (inUpdatedClin.ClinID > 0 || (inUpdatedClin.ClinID < 0 && !inUpdatedClin.Deleted))
 			{
 				if (this.ModelState.IsValid)
 				{
-					// Project updatedClin to be DTO
-					FullClin updatedClin = inUpdatedClin.ClinID > 0 ? this.Factory.CreateFullClin(inUpdatedClin.ClinID) : this.Factory.CreateFullClin();
-					updatedClin.ClinNumber = inUpdatedClin.ClinNumber;
-					updatedClin.ClinTitle = inUpdatedClin.ClinTitle;
-					updatedClin.Updateable = inUpdatedClin.Deleted ? UpdateType.Deleted : UpdateType.Upsert;
-					updatedClin.UpdateDate = inUpdatedClin.UpdateDate;
-					updatedClin.WorkspaceID = ws.Id;
-					updatedClin.ContractType = inUpdatedClin.ContractType;
-
-					// only apply dates if the CLIN is new or not in use
-					if (updatedClin.Id < 0 || !updatedClin.InUse)
-					{
-						updatedClin.StartDate = string.IsNullOrEmpty(inUpdatedClin.StartDate) ? (DateTime?)null : inUpdatedClin.StartDate.ToDateTimeMidMonth();
-						updatedClin.EndDate = string.IsNullOrEmpty(inUpdatedClin.EndDate) ? (DateTime?)null : inUpdatedClin.EndDate.ToDateTimeMidMonth();
-					}
-
-					// Don't bother validating deletions
-					if (updatedClin.Updateable != UpdateType.Deleted)
-					{
-						// Validate CLIN
-						CLINValidator validator = new CLINValidator(this.Factory);
-						Collection<string> validationerrors = validator.validation(updatedClin, (Collection<Dictionary<string, string>>)null);
-
-						if (validationerrors.Count > 0)
-						{
-							foreach (string message in validationerrors)
-							{
-								ValidationErrors.Add(new ValidationMessage("Clin", message));
-							}
-						}
-
-						// validate dates if its a new clin
-						if (updatedClin.Id < 0)
-						{
-							string startEndDateValidation = this._validationHelper.StartEndDateValidation(updatedClin.StartDate, updatedClin.EndDate);
-
-							if (startEndDateValidation != null)
-							{
-								ValidationErrors.Add(new ValidationMessage("Clin", startEndDateValidation));
-							}
-						}
-					}
-
-					//get the potential multiboes
-					Collection<FullBoe> MultiBOEs = ws.Boes.Where(x => x.IsMultiClinWbs).ToCollection();
-
-					//find any boes that have resources using the clin
-					Collection<FullBoe> boesUsingClin = (from b in MultiBOEs
-														 from l in b.TaskElements
-														 from x in l.taskElementLabors
-														 where x.CLINID.HasValue && x.CLINID == updatedClin.Id
-														 select b)
-														.ToCollection<FullBoe>();
-					//if there are duplicates lets filter those out.
-					boesUsingClin = boesUsingClin.Distinct().ToCollection<FullBoe>();
-
-					//if we have any boes and the clin is being deleted stop the process
-					if (boesUsingClin.Any() && updatedClin.Updateable == UpdateType.Deleted)
-					{
-						ValidationErrors.Add(new ValidationMessage("Clin", "'" + updatedClin.ClinString + "' cannot be deleted because it is being used by a Resource Type in a BOE that has Resource Level WBS/CLIN selected."));
-					}
-
-					if (ValidationErrors.Count > 0)
-					{
-						throw new GenValidationException(ValidationErrors);
-					}
-
-					ClinDTO oldClin = this.Factory.CreateFullClin(inUpdatedClin.ClinID);
-
-					// Save the CLINs
-					using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
-					{
-						ICollection<WorkspaceVariableDTO> workspaceVariablesOld = new Collection<WorkspaceVariableDTO>();
-						if (updatedClin.Updateable == UpdateType.Deleted)
-						{
-							if (updatedClin.WorkspaceVariableIds.Any())
-							{
-								workspaceVariablesOld = ws.WorkspaceVariables.Where(i => updatedClin.WorkspaceVariableIds.Contains(i.Id)).ToCollection<WorkspaceVariableDTO>();
-								foreach (WorkspaceVariableDTO workspaceVar in workspaceVariablesOld)
-								{
-									DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
-									data.FillData(null, new List<WorkspaceVariableDTO>() { workspaceVar }, ws);
-
-									decimal oldTotalValue = this._variableSelectBOEtoSumCalculation.GetWorkspaceVarLabelTotal(workspaceVar, data);
-									WorkspaceVarOldValueD.Add(workspaceVar.Id, oldTotalValue);
-								}
-							}
-
-							boeTaskElementsToRecalculate.AddRange(this._BoeTaskElementRecalculation.RecalculateLaborWithClin(updatedClin, VariableType.Task, ws));
-							boeTaskElementsToRecalculate.AddRange(this._BoeTaskElementRecalculation.RecalculateLaborWithClin(updatedClin, VariableType.Workspace, ws));
-
-							// save all the task elements that were effected by a CLIN deletion
-							this._BoeTaskElementMediator.MediatedSaveTaskElements(new Collection<BoeTaskElementDTO>(boeTaskElementsToRecalculate), ws);
-						}
-
-						// get the unique BOE IDs from boeTaskElementsToRecalculate so we can set their state back to Draft
-						Collection<int> BoeIDsToCheck = new Collection<int>(boeTaskElementsToRecalculate.Where(x => x.BoeID > 0).Select(x => x.BoeID).ToList());
-
-						ICollection<FullBoe> boesToCheck = this.Factory.CreateFullBoes(BoeIDsToCheck);
-						//add on the boes with the multiboes
-						boesToCheck = boesToCheck.Concat(boesUsingClin).ToCollection<FullBoe>();
-
-
-						foreach (FullBoe boe in boesToCheck)
-						{
-							bool StateChange = false;
-							BOEState oldBOEState = boe.State;
-							BOEState newBOEState = BOEState.Draft;
-							if (boe.State == BOEState.Approved || boe.State == BOEState.AwaitingApproval || boe.State == BOEState.DraftLocked)
-							{
-								// Validate the Awaiting Approval or Approved to Draft state transition
-								string validationMessage = string.Empty;
-								if (!this._BOEStateMachine.PerformStateTransitionValidation(this.Factory.CreateFullBoe(boe), ws, oldBOEState, newBOEState, out validationMessage))
-								{
-									throw new ValidationException(validationMessage);
-								}
-
-								// If the transition is valid, set the BOE to Draft and save it
-								boe.State = newBOEState;
-								StateChange = true;
-							}
-
-							if (StateChange)
-							{
-								boe.Updateable = UpdateType.Upsert;
-								this._BoeMediator.MediatedSave(ws, boe);
-								this._BOEStateMachine.PerformStateTransitionAction(this.Factory.CreateFullBoe(boe), ws, oldBOEState, boe.State);
-							}
-						}
-
-						this.clinLoader.Save(updatedClin);
-
-						if (WorkspaceVarOldValueD.Any())
-						{
-							foreach (WorkspaceVariableDTO workspaceVar in workspaceVariablesOld)
-							{
-								DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
-								data.FillData(null, new List<WorkspaceVariableDTO>() { workspaceVar }, ws);
-
-								workspaceVar.WorkspaceVariableValue = this._variableSelectBOEtoSumCalculation.GetWorkspaceVarLabelTotal(workspaceVar, data);
-								workspaceVar.Updateable = UpdateType.Upsert;
-								this._workspaceVariableLoader.SaveWorkspaceVariables(new Collection<WorkspaceVariableDTO> { workspaceVar });
-							}
-						}
-
-						scope.Complete();
-					}
-
-					// Send emails and change BOE statuses for In Use CLINs
-					// This is purposely outside the transaction so that if the email fails to send then the transaction does not fail
-					if (inUpdatedClin.ClinID > 0 && !inUpdatedClin.Deleted)
-					{
-						this.ProcessInUseUpdatedCLIN(ws, oldClin, this.Factory.CreateFullClin(inUpdatedClin.ClinID));
-					}
-
-					if (inUpdatedClin.ClinID > 0 && !inUpdatedClin.Deleted)
-					{
-						// just make sure we have the latest version of the DTO. (the returned DTO has the updated ID, but not the updated UpdateDate)
-						FullClin modifiedClin = this.Factory.CreateFullClin(updatedClin.Id);
-						ICollection<PickListDto> contractTypes = this.contractTypeLoader.GetPickListValues();
-						string contract = Utilities.GetPickListText(modifiedClin.ContractType, contractTypes, Constants.CONTRACT_TYPE_NOT_SET_STRING);
-
-						toReturn = this.Json(new ManageCLINModelView(modifiedClin, contract));
-					}
+					ManageCLINModelView modifiedClin = this._clinControllerLogic.SaveCLIN(ws, inUpdatedClin);
+					toReturn = this.Json(modifiedClin);
 				}
 				else
 				{
