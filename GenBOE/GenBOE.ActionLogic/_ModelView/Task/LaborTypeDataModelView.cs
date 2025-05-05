@@ -67,7 +67,8 @@ namespace GenBOE.ActionLogic.ModelView
 		/// <param name="perfOrg">The <see cref="PerformingOrgDTO" /> object used to populate properties.</param>
 		/// <param name="calculateUCOT">Whether to calculate UCOT</param>
 		/// <param name="ucotFactor">The UCOT Factor</param>
-		public LaborTypeDataModelView(ResourceTypeDto inBoeLaborType, ResourceDTO inResource, ResourceDTO inBusinessResourceCode, PerformingOrgDTO perfOrg, decimal ucotFactor, bool calculateUCOT)
+		/// <param name="precision">The workspace hours precision</param>
+		public LaborTypeDataModelView(ResourceTypeDto inBoeLaborType, ResourceDTO inResource, ResourceDTO inBusinessResourceCode, PerformingOrgDTO perfOrg, decimal ucotFactor, bool calculateUCOT, int precision)
 			: this()
 		{
 			if (inBoeLaborType == null) { throw new ArgumentNullException(nameof(inBoeLaborType)); }
@@ -138,14 +139,38 @@ namespace GenBOE.ActionLogic.ModelView
 
 				if (calculateUCOT)
 				{
-					this.UcotSpreads = inBoeLaborType.LaborSpreads.Select(ls => new LaborSpreadDataModelView
+					this.UcotSpreads = new List<LaborSpreadDataModelView>();
+
+					foreach (ResourceSpreadDto dto in inBoeLaborType.LaborSpreads)
 					{
-						LaborSpreadDate = ls.LaborSpreadDate.ToMonthString(),
-						LaborSpreadValue = ls.LaborSpreadDate >= Utilities.OneLmxStartDate ? ls.LaborSpreadValue * ucotFactor / 100.0m : 0.0m,
-						UpdateDate = ls.UpdateDate,
-						UpdateDateLong = ls.UpdateDateLong
-					}).ToList();
-					this.UcotHours = this.UcotSpreads.Sum(s => s.LaborSpreadValue);
+						if (dto.LaborSpreadDate >= Utilities.OneLmxStartDate)
+						{
+							decimal nonPrecisionUCOT = dto.LaborSpreadValue * ucotFactor / 100.0m;
+							decimal precisionUCOT = Utilities.AdjustPrecision(nonPrecisionUCOT, precision);
+
+							this.UcotSpreads.Add(new LaborSpreadDataModelView()
+							{
+								LaborSpreadDate = dto.LaborSpreadDate.ToMonthString(),
+								LaborSpreadValue = precisionUCOT,
+								UpdateDate = dto.UpdateDate,
+								UpdateDateLong = dto.UpdateDateLong
+							});
+						}
+					}
+					
+					this.UcotHours = Utilities.AdjustPrecision(this.UcotSpreads.Sum(s => s.LaborSpreadValue ?? 0m), precision);
+
+					// Now smooth the UCOT Hours
+					if (this.UcotSpreads.Any())
+					{
+						decimal[] ucotSpreadValues = SpreadCurve.Smooth(this.UcotHours ?? 0m, this.UcotSpreads.Select(s => s.LaborSpreadValue ?? 0m).ToArray(), 0, this.UcotSpreads.Count, precision);
+
+						// Reset the values to the Smooth'ed array to guarantee precision and no loss of rounding values
+						for (int i = 0; i < this.UcotSpreads.Count; i++)
+						{
+							this.UcotSpreads.ElementAt(i).LaborSpreadValue = ucotSpreadValues[i];
+						}
+					}
 				}
 				else
 				{

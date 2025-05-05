@@ -10,6 +10,7 @@ namespace IES.Common
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.ComponentModel;
 	using System.DirectoryServices;
 	using System.IO;
 	using System.Linq;
@@ -1267,6 +1268,46 @@ namespace IES.Common
 					log.Debug(configSettingKey + " - " + ConfigurationUtilities.GetAppSetting(configSettingKey));
 				}
 				log.Debug("End Configuration Manager App Settings");
+			}
+		}
+
+		/// <summary>
+		/// Method to Populate Model from Dictionary of <Property, Value> Pair
+		/// </summary>
+		/// <typeparam name="T">Type of Model being passed in</typeparam>
+		/// <param name="model">Model to Populate</param>
+		/// <param name="valuesForModel">Values to populate the Model with</param>
+		public static void PopulateModel<T>(T model, Dictionary<string, string> valuesForModel)
+		{
+			_ = valuesForModel ?? throw new ArgumentNullException(nameof(valuesForModel));
+
+			// Iterate through the Model Properties
+			// Since this is static method, we only get access to the Array.ForEach
+			// Hence after the .GetProperties() we have to add the .ToList() before the .ForEach()
+			model.GetType().GetProperties().ToList().ForEach(p =>
+			{
+				TypeConverter converter = TypeDescriptor.GetConverter(p.PropertyType);
+				Object convertedObject = converter.ConvertFromString(valuesForModel[p.Name]);
+				p.SetValue(model, convertedObject, null);
+			});
+		}
+
+		/// <summary>
+		/// Method to populate values passed HTTP Content to a Dictionary
+		/// </summary>
+		/// <param name="contents">List of HTTP Content</param>
+		/// <param name="valuesToPopulate">List that will be populated with <key, value> Pair from content values</param>
+		public static void GetModelValuesFromContent(IEnumerable<HttpContent> contents, Dictionary<string, string> valuesToPopulate)
+		{
+			_ = contents ?? throw new ArgumentNullException(nameof(contents));
+			_ = valuesToPopulate ?? throw new ArgumentNullException(nameof(valuesToPopulate));
+
+			foreach (HttpContent content in contents)
+			{
+				// We want to get the Values Passed in the body as Dictionary items so further reduce complexity
+				string key = content.Headers.ContentDisposition.Name.Replace("\"", "");
+				string value = content.ReadAsStringAsync().Result;
+				valuesToPopulate.Add(key, value);
 			}
 		}
 	}

@@ -159,11 +159,11 @@ namespace GenBOE.Web.Controllers
 						model.isReadOnly = false;
 					}
 					model.canCreateWS = CheckPermission(SecurityPage.CreateWorkspacePermissions, null) == SecurityAuthorization.CreateReadUpdateDelete;
-
-					model.workspaceGridRows = workspaceHomeControllerLogic.GetHomepageGrid(model.isSysAdmin, currentUser, UserLoader, PermissionsLoader);
-
-					result.Data = model;
 				}
+				
+				model.workspaceGridRows = workspaceHomeControllerLogic.GetHomepageGrid(model.isSysAdmin, currentUser, UserLoader, PermissionsLoader);
+				result.Data = model;
+				
 			}
 			catch (Exception ex)
 			{
