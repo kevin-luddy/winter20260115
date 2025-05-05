@@ -8,6 +8,7 @@ namespace GenBOE.Web.Controllers
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
 	using System.Linq;
 	using System.Web.Http;
 	using IES.Common;
@@ -17,7 +18,6 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
-	using System.Diagnostics;
 
 	/// <summary>
 	/// Base BOE Api data controller
@@ -100,7 +100,9 @@ namespace GenBOE.Web.Controllers
             {
                 if (workspace == null) { throw new ArgumentNullException(nameof(workspace), "If BOEId is specified, workspace must be specified as well"); }
                 if (!this.Factory.BoeLoader.DoesWorkspaceContainBoe(workspace.Id, inBOEId.Value))
-                { throw new InvalidDataRelationException("The requested BOE: " + inBOEId.Value + " does not belong to the current workspace: " + workspace.Id + "."); }
+                { 
+					throw new InvalidDataRelationException("The requested BOE: " + inBOEId.Value + " does not belong to the current workspace: " + workspace.Id + "."); 
+				}
             }
 
             Dictionary<SecurityPage, SecurityAuthorization> securityDictionary = new Dictionary<SecurityPage, SecurityAuthorization>();
@@ -147,7 +149,6 @@ namespace GenBOE.Web.Controllers
         /// <param name="workspace">The workspace shortname</param>
         /// <param name="boeID">The current BOE ID if one exists</param>
         /// <returns>A stopwatch to track the action start</returns>
-       // [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "We do not want to cause issues if the boe metrics user update fails.")]
         protected Stopwatch InitializeAction(Logger logger, string functionName, SecurityPage page, SecurityAuthorization authorizationRequired, ICollection<WorkspaceDTO>  workspaces, int? boeID)
         {
 			if (logger == null)
@@ -155,26 +156,19 @@ namespace GenBOE.Web.Controllers
 				throw new ArgumentNullException(nameof(logger));
 			}
 
-			Stopwatch sw = new Stopwatch();
-			sw.Start();
-
 			if (workspaces == null)
 			{
 				throw new ArgumentNullException(nameof(workspaces));
 			}
 
+			Stopwatch sw = new Stopwatch();
+			sw.Start();
+
 			foreach (WorkspaceDTO ws in workspaces)
 			{
-				bool authorizationFound = false;
-
 				SecurityAuthorization authorization = this.CheckPermission(page, ws, boeID);
 
-				if (authorization >= authorizationRequired)
-				{
-					authorizationFound = true;
-				}
-
-				if (!authorizationFound)
+				if (authorization < authorizationRequired)
 				{
 					throw new AuthorizationException(functionName + " was not authorized");
 				}
