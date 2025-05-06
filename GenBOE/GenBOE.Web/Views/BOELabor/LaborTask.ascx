@@ -985,13 +985,13 @@
                         <table name="currentSkillMix" class="grid editable" style="width: 100%;">
                             <thead>
                                 <tr>
-                                    <th style="width: 95px;">Resource</th>
-                                    <th data-ng-if="!ManageTaskModel.IsSpace" style="width: 130px;">Current Resource</th>
-                                    <th style="width: 100px;">Historical Hours</th>
-                                    <th style="width: 90px;">Labor Skill Mix</th>
-                                    <th style="width: 55px">Included</th>
-                                    <th style="width: 90px;">BOE Skill Mix</th>
-                                    <th style="width: 95px;">Proposed Hours</th>
+                                    <th style="width: 70px;">Resource</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" style="width: 86px;">Current Resource</th>
+                                    <th style="width: 77px;">Historical Hours</th>
+                                    <th style="width: 70px;">Labor Skill Mix</th>
+                                    <th style="width: 40px">Included</th>
+                                    <th style="width: 65px;">BOE Skill Mix</th>
+                                    <th style="width: 78px;">Proposed Hours</th>
                                     <th>Rationale**</th>
                                     <th data-ng-if="!ManageTaskModel.IsSpace" style="width: 38px;"></th>
                                 </tr>
@@ -1057,17 +1057,17 @@
                         <table name="currentSkillMix" class="grid editable" style="width: 100%;">
                             <thead>
                                 <tr>
-                                    <th style="width: 95px;">Resource</th>
-                                    <th style="width: 130px;">Business Resource Code</th>
-                                    <th style="width: 100px;">Historical Hours</th>
-                                    <th style="width: 90px;">Labor Skill Mix</th>
-                                    <th style="width: 55px">Included</th>
-                                    <th style="width: 90px;">BOE Skill Mix</th>
-                                    <th style="width: 95px;">Proposed Hours</th>
+                                    <th style="width: 70px;">Resource</th>
+                                    <th style="width: 77px; text-wrap: wrap;">Business Resource Code</th>
+                                    <th style="width: 77px;">Historical Hours</th>
+                                    <th style="width: 70px;">Labor Skill Mix</th>
+                                    <th style="width: 40px">Included</th>
+                                    <th style="width: 65px;">BOE Skill Mix</th>
+                                    <th style="width: 78px;">Proposed Hours</th>
                                     <!-- UCOT Hours is Space only -->
                                     <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                                     {  %>
-                                        <th style="width: 90px;">UCOT Hours</th>
+                                        <th style="width: 62px;">UCOT Hours</th>
                                     <% } %>
                                     <th>Rationale**</th>
                                 </tr>
