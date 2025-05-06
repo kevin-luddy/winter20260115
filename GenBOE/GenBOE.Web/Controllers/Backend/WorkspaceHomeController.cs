@@ -160,10 +160,10 @@ namespace GenBOE.Web.Controllers
 					}
 					model.canCreateWS = CheckPermission(SecurityPage.CreateWorkspacePermissions, null) == SecurityAuthorization.CreateReadUpdateDelete;
 				}
-				
+
 				model.workspaceGridRows = workspaceHomeControllerLogic.GetHomepageGrid(model.isSysAdmin, currentUser, UserLoader, PermissionsLoader);
 				result.Data = model;
-				
+
 			}
 			catch (Exception ex)
 			{
@@ -182,7 +182,7 @@ namespace GenBOE.Web.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESSingleResponse<bool> UpdateFavorite([FromBody]FavoriteModelView favoriteModelView)
+		public IESSingleResponse<bool> UpdateFavorite([FromBody] FavoriteModelView favoriteModelView)
 		{
 			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
 
@@ -222,7 +222,7 @@ namespace GenBOE.Web.Controllers
 
 			try
 			{
-				result.Data = workspaceHomeControllerLogic.DeleteWorkspaces(toBeDeleted); 
+				result.Data = workspaceHomeControllerLogic.DeleteWorkspaces(toBeDeleted);
 				result.IsSuccessful = true;
 			}
 			catch (Exception ex)
