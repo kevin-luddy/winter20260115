@@ -424,6 +424,7 @@
     <Content Include="Content\ui-grid.svg" />
     <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="Resources\css\images\homepage\LM-logo-White.png" />
+    <Content Include="Resources\css\laborTask.css" />
     <Content Include="Resources\DateShiftStep5.html" />
     <Content Include="Resources\DateShiftStep3.html" />
     <Content Include="Resources\DateShiftStep4.html" />

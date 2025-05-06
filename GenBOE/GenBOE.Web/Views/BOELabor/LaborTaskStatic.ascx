@@ -2,6 +2,7 @@
 <%@ Import Namespace="System.Web.Script.Serialization" %>
 <%@ Import Namespace="GenBOE.ActionLogic.ModelView" %>
 <%@ Import Namespace="GenBOE.Dtos" %>
+<%@ Import namespace="System.Web.Optimization" %>
 <% 
     var serializer = new JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };
     string asterisk = "*";
@@ -9,6 +10,7 @@
     bool showDescQuestions = Model.DescriptionTemplateAnswers.Any();
     int numberDescQuestions = showDescQuestions ? Model.DescriptionTemplateAnswers.Count : 1;
 %>
+<%: Styles.Render("~/Content/laborTaskCss") %>
 <script type="text/javascript">
     var debugOutputEnabled = false;
     var isSaveButtonHidden = '<%: ViewData["READONLY"] %>'.isTrue();
@@ -609,13 +611,13 @@
                         <table name="currentSkillMix" class="grid editable">
                             <thead>
                                 <tr>
-                                    <th style="width: 70px;">Resource</th>
-                                    <th data-ng-if="!ManageTaskModel.IsSpace" style="width: 86px;">Current Resource</th>
-                                    <th style="width: 77px;">Historical Hours</th>
-                                    <th style="width: 70px;">Labor Skill Mix</th>
-                                    <th style="width: 40px">Included</th>
-                                    <th style="width: 65px;">BOE Skill Mix</th>
-                                    <th style="width: 78px;">Proposed Hours</th>
+                                    <th class="resourceCol">Resource</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="currentResourceCol">Current Resource</th>
+                                    <th class="historicalHoursCol">Historical Hours</th>
+                                    <th class="laborSkillMixCol">Labor Skill Mix</th>
+                                    <th class="includedCol">Included</th>
+                                    <th class="boeSkillMixCol">BOE Skill Mix</th>
+                                    <th class="proposedHoursCol">Proposed Hours</th>
                                     <th>Rationale**</th>
                                 </tr>
                             </thead>
@@ -661,16 +663,16 @@
                         <table name="currentSkillMix" class="grid editable">
                             <thead>
                                 <tr>
-                                    <th style="width: 70px;">Resource</th>
-                                    <th style="width: 77px; text-wrap: wrap;">Business Resource Code</th>
-                                    <th style="width: 77px;">Historical Hours</th>
-                                    <th style="width: 70px;">Labor Skill Mix</th>
-                                    <th style="width: 40px">Included</th>
-                                    <th style="width: 65px;">BOE Skill Mix</th>
-                                    <th style="width: 78px;">Proposed Hours</th>
+                                    <th class="resourceCol">Resource</th>
+                                    <th class="brcCol">Business Resource Code</th>
+                                    <th class="historicalHoursCol">Historical Hours</th>
+                                    <th class="laborSkillMixCol">Labor Skill Mix</th>
+                                    <th class="includedCol">Included</th>
+                                    <th class="boeSkillMixCol">BOE Skill Mix</th>
+                                    <th class="proposedHoursCol">Proposed Hours</th>
                                     <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                                         {  %>
-                                        <th style="width: 62px;">UCOT Hours</th>
+                                        <th class="ucotCol">UCOT Hours</th>
                                     <% } %>
                                     <th>Rationale**</th>
                                 </tr>
