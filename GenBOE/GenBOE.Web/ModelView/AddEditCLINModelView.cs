@@ -9,17 +9,25 @@ namespace GenBOE.Web.ModelView
 	using GenBOE.ActionLogic.ModelView.Clin;
 
 	/// <summary>
-	/// Pyaload model for Add/Edit CLIN POST request
+	/// Payload model for Add/Edit CLIN POST request
 	/// </summary>
 	[Serializable]
 	public class AddEditCLINModelView
 	{
-		public AddEditCLINModelView() 
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		public AddEditCLINModelView()
 		{
 			this.workspaceShortName = String.Empty;
 			this.clin = null;
 		}
 
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		/// <param name="workspaceShortName"></param>
+		/// <param name="clin"></param>
 		public AddEditCLINModelView(string workspaceShortName, ManageCLINModelView clin)
 		{
 			this.workspaceShortName = workspaceShortName;

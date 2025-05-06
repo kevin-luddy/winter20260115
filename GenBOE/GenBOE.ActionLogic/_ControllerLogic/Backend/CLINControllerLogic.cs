@@ -110,12 +110,9 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 		/// <summary>
 		/// Save CLIN
 		/// </summary>
-		/// <param name="ws"></param>
-		/// <param name="inUpdatedClin"></param>
-		/// <returns></returns>
-		/// <exception cref="ArgumentNullException"></exception>
-		/// <exception cref="GenValidationException"></exception>
-		/// <exception cref="ValidationException"></exception>
+		/// <param name="ws">Full Workspace</param>
+		/// <param name="inUpdatedClin">Clin to be upserted</param>
+		/// <returns>The newly upserted CLIN</returns>
 		public ManageCLINModelView SaveCLIN(FullWorkspace ws, ManageCLINModelView inUpdatedClin)
 		{
 			ManageCLINModelView toReturn = new ManageCLINModelView();

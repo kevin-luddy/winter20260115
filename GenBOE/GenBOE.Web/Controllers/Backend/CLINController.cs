@@ -42,9 +42,9 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <summary>
 		/// Save CLIN
 		/// </summary>
-		/// <param name="workspace"></param>
-		/// <param name="inUpdatedClin"></param>
-		/// <returns></returns>
+		/// <param name="workspace">workspaceShortName</param>
+		/// <param name="inUpdatedClin">CLIN model</param>
+		/// <returns>Newly upserted CLIN</returns>
 		[HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 
