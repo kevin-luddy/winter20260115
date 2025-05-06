@@ -2077,10 +2077,10 @@
             x.TableData.every(y => y.RepositoryName !== $scope.ManageTaskModel.SapWebiRepository || (y.ResourceHours !== undefined && y.ResourceHours.length > 0))
         );
 
-        let toReturn = isAutomatic && (noMoqTables || hasMissingResourceHours);
+        let disabledSkillMix = isAutomatic && (noMoqTables || hasMissingResourceHours);
 
         // Return true if Skill Mix is Automatic and either of the conditions occur
-        return toReturn;
+        return disabledSkillMix;
     }
 
     $scope.perfOrgSelected = function (item, model) {

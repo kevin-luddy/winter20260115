@@ -4507,7 +4507,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="ws">Full WS</param>
 		/// <param name="taskData">Task Data</param>
 		/// <param name="errors">Validation Errors</param>		
-		/// <param name="moqType">MOQ Type</param>
 		/// <param name="moqEquationTotal"> Moq equation total</param>
 		private void ValidateMoqTypes(FullWorkspace ws, LaborTaskDataModelView taskData, ICollection<ValidationMessage> errors, decimal? moqEquationTotal = null)
 		{
