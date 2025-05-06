@@ -3,6 +3,7 @@
 <%@ Import Namespace="System.Web.Script.Serialization" %>
 <%@ Import Namespace="GenBOE.ActionLogic.ModelView" %>
 <%@ Import Namespace="GenBOE.Dtos" %>
+<%@ Import namespace="System.Web.Optimization" %>
 <% 
     var serializer = new JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };
     string asterisk = "*";
@@ -10,6 +11,7 @@
     bool showDescQuestions = Model.DescriptionTemplateAnswers.Any();
     int numberDescQuestions = showDescQuestions ? Model.DescriptionTemplateAnswers.Count : 1;
 %>
+<%: Styles.Render("~/Content/laborTaskCss") %>
 <script type="text/javascript">
     // Checks to see if the container is visible. This is needed for the custom field validation on page load
     function checkContainer() {
@@ -985,15 +987,14 @@
                         <table name="currentSkillMix" class="grid editable" style="width: 100%;">
                             <thead>
                                 <tr>
-                                    <th style="width: 95px;">Resource</th>
-                                    <th data-ng-if="!ManageTaskModel.IsSpace" style="width: 130px;">Current Resource</th>
-                                    <th style="width: 100px;">Historical Hours</th>
-                                    <th style="width: 90px;">Labor Skill Mix</th>
-                                    <th style="width: 55px">Included</th>
-                                    <th style="width: 90px;">BOE Skill Mix</th>
-                                    <th style="width: 95px;">Proposed Hours</th>
+                                    <th class="resourceCol">Resource</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="currentResourceCol">Current Resource</th>
+                                    <th class="historicalHoursCol">Historical Hours</th>
+                                    <th class="laborSkillMixCol">Labor Skill Mix</th>
+                                    <th class="includedCol">Included</th>
+                                    <th class="boeSkillMixCol">BOE Skill Mix</th>
+                                    <th class="proposedHoursCol">Proposed Hours</th>
                                     <th>Rationale**</th>
-                                    <th data-ng-if="!ManageTaskModel.IsSpace" style="width: 38px;"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1057,17 +1058,17 @@
                         <table name="currentSkillMix" class="grid editable" style="width: 100%;">
                             <thead>
                                 <tr>
-                                    <th style="width: 95px;">Resource</th>
-                                    <th style="width: 130px;">Business Resource Code</th>
-                                    <th style="width: 100px;">Historical Hours</th>
-                                    <th style="width: 90px;">Labor Skill Mix</th>
-                                    <th style="width: 55px">Included</th>
-                                    <th style="width: 90px;">BOE Skill Mix</th>
-                                    <th style="width: 95px;">Proposed Hours</th>
+                                    <th class="resourceCol">Resource</th>
+                                    <th class="brcCol">Business Resource Code</th>
+                                    <th class="historicalHoursCol">Historical Hours</th>
+                                    <th class="laborSkillMixCol">Labor Skill Mix</th>
+                                    <th class="includedCol">Included</th>
+                                    <th class="boeSkillMixCol">BOE Skill Mix</th>
+                                    <th class="proposedHoursCol">Proposed Hours</th>
                                     <!-- UCOT Hours is Space only -->
                                     <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                                     {  %>
-                                        <th style="width: 90px;">UCOT Hours</th>
+                                        <th class="ucotCol">UCOT Hours</th>
                                     <% } %>
                                     <th>Rationale**</th>
                                 </tr>
