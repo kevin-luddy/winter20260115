@@ -9,6 +9,7 @@ namespace GenBOE.ActionLogic
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.Data;
 	using System.Linq;
 	using System.Transactions;
 	using GenBOE.ActionLogic.ModelView;
@@ -116,7 +117,7 @@ namespace GenBOE.ActionLogic
 			ICollection<PermissionsDTO> currentWorkspacePermissions = this.permissionLoader.GetWorkspacePermissions(ws.Id);
 			ICollection<PermissionsDTO> currentBoePermissions = this.permissionLoader.GetBOEPotentialPermissionsForWorkspace(ws.Id);
 
-			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
 			{
 				foreach (SavePermissionModelView inPermission in inPermissions)
 				{
@@ -446,12 +447,12 @@ namespace GenBOE.ActionLogic
 		/// <exception cref="GenValidationException">If invalid, the method throws a validation exception.</exception>
 		public void ValidateWsAdminMustHaveCreateWsPermission(string ntid, ICollection<Role> Roles)
 		{
-			if(Roles.Any(x => x == Role.WorkspaceAdmin))
+			if (Roles.Any(x => x == Role.WorkspaceAdmin))
 			{
 				// need to figure out if the ntid belongs to a group.. if yes, then break it up into users and run it through.
 				// else, just check the user
 
-				if(this.ADUtils.IsGroup(ntid))
+				if (this.ADUtils.IsGroup(ntid))
 				{
 					List<string> ntidsInGroup = this.ADUtils.GetAdGroupUsers(ntid).Select(x => x.Ntid).ToList();
 					ntidsInGroup.ForEach(NTID => this.ValidateWsAdminMustHaveCreateWsPermission(NTID, Roles));
