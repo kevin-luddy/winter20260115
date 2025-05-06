@@ -73,7 +73,7 @@ namespace GenBOE.Web.Controllers.Backend
 				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortName);
 
 				// Initialize Action
-				Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_GET_MANAGE_CLIN_MODEL, SecurityPage.ManageWBS, SecurityAuthorization.Read, new Collection<WorkspaceDTO>() { ws }, null);
+				Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_GET_MANAGE_CLIN_MODEL, SecurityPage.ManageCLINs, SecurityAuthorization.Read, new Collection<WorkspaceDTO>() { ws }, null);
 
 				ManageCLINGridModelView theModelView = new ManageCLINGridModelView();
 				theModelView.HideContractType = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST;
