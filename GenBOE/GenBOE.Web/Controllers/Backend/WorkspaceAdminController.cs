@@ -7,12 +7,16 @@ namespace GenBOE.Web.Controllers.Backend
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Diagnostics;
 	using System.Linq;
 	using System.Web.Http;
+	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ControllerLogic.Backend;
 	using GenBOE.ActionLogic.ModelView.Clin;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using GenBOE.Web.ModelView;
 	using IES.Common;
@@ -68,6 +72,9 @@ namespace GenBOE.Web.Controllers.Backend
 			{
 				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortName);
 
+				// Initialize Action
+				Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_GET_MANAGE_CLIN_MODEL, SecurityPage.ManageCLINs, SecurityAuthorization.Read, new Collection<WorkspaceDTO>() { ws }, null);
+
 				ManageCLINGridModelView theModelView = new ManageCLINGridModelView();
 				theModelView.HideContractType = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST;
 				theModelView.ContractTypeList = this.workspaceAdminControllerLogic.BuildContractTypeDropdownOptions(ws.Id);
@@ -83,6 +90,9 @@ namespace GenBOE.Web.Controllers.Backend
 
 				result.Data = theModelView;
 				result.IsSuccessful = true;
+
+				// Finalize Action
+				FinalizeAction(logger, WebConstants.ACTION_GET_MANAGE_CLIN_MODEL, sw);
 			}
 			catch (Exception ex)
 			{
@@ -108,11 +118,18 @@ namespace GenBOE.Web.Controllers.Backend
 			{
 				ManageWBSGridModelView theModelView = new ManageWBSGridModelView();
 				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortName);
+
+				// Initialize Action
+				Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_GET_MANAGE_WBS_MODEL, SecurityPage.ManageWBS, SecurityAuthorization.Read, new Collection<WorkspaceDTO>() { ws }, null);
+
 				theModelView.ContainsOCI = ws.ContainsOCI;
 				theModelView.AvailableClins = ws.ClinsNoMultiClin.OrderBy(x => x.ClinNumber).Select(c => new ManageCLINModelView(c, string.Empty)).ToList();
 				theModelView.WbsResults = workspaceAdminControllerLogic.GetManageWBSModel(ws);
 				result.Data = theModelView;
 				result.IsSuccessful = true;
+
+				// Finalize Action
+				FinalizeAction(logger, WebConstants.ACTION_GET_MANAGE_WBS_MODEL, sw);
 			}
 			catch (Exception ex)
 			{
