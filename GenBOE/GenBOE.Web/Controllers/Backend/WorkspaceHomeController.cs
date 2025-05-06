@@ -11,7 +11,6 @@ namespace GenBOE.Web.Controllers
 	using System.Collections.ObjectModel;
 	using System.Diagnostics;
 	using System.Linq;
-	using System.Transactions;
 	using System.Web.Http;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ControllerLogic;
@@ -27,8 +26,6 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.Web.ModelView;
 	using IES.Common;
 	using IES.Common.Exceptions;
-	using IES.Common.PickList;
-	using Microsoft.VisualBasic.Logging;
 
 	/// <summary>
 	/// Workspace Home Controller for getting workspace home data.
@@ -165,10 +162,10 @@ namespace GenBOE.Web.Controllers
 					}
 					model.canCreateWS = CheckPermission(SecurityPage.CreateWorkspacePermissions, null) == SecurityAuthorization.CreateReadUpdateDelete;
 				}
-				
+
 				model.workspaceGridRows = workspaceHomeControllerLogic.GetHomepageGrid(model.isSysAdmin, currentUser, UserLoader, PermissionsLoader);
 				result.Data = model;
-				
+
 			}
 			catch (Exception ex)
 			{
@@ -187,7 +184,7 @@ namespace GenBOE.Web.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESSingleResponse<bool> UpdateFavorite([FromBody]FavoriteModelView favoriteModelView)
+		public IESSingleResponse<bool> UpdateFavorite([FromBody] FavoriteModelView favoriteModelView)
 		{
 			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
 
