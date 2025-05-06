@@ -7,14 +7,18 @@ namespace GenBOE.Web.Controllers.Backend
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Diagnostics;
 	using System.Linq;
 	using System.Web.Http;
 	using System.Web.Mvc;
 	using GenBOE.ActionLogic._ControllerLogic.Backend;
+	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.Workspace;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using GenBOE.Web.ModelView;
 	using IES.Common;
@@ -66,10 +70,16 @@ namespace GenBOE.Web.Controllers.Backend
 			try
 			{
 				FullWorkspace ws = Factory.CreateFullWorkspace(workspaceShortName);
+
+				// Initialize Action
+				Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_DISPLAY_WORKSPACE_IDENTIFICATION, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, new Collection<WorkspaceDTO>() { ws }, null);
+				
 				IWorkspaceIdentificationModelView workspaceIdentificationModelView = workspaceSettingsControllerLogic.GetWorkspaceIdentification(ws);
 				result.Data = workspaceIdentificationModelView;
 				result.IsSuccessful = true;
 
+				// Finalize Action
+				FinalizeAction(logger, WebConstants.ACTION_DISPLAY_WORKSPACE_IDENTIFICATION, sw);
 			}
 			catch (Exception ex)
 			{
@@ -218,8 +228,16 @@ namespace GenBOE.Web.Controllers.Backend
 
 			IESSingleResponse<ActionResult> result = new IESSingleResponse<ActionResult>();
 
+			FullWorkspace ws = Factory.CreateFullWorkspace(workspaceIdentificationModelView.ShortName);
+
+			// Initialize Action
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_SAVE_WORKSPACE_IDENTIFICATION, SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, new Collection<WorkspaceDTO>() { ws }, null);
+			
 			ActionResult data = this.workspaceController.SaveWorkspaceIdentification(workspaceIdentificationModelView.ShortName, workspaceIdentificationModelView);
 			result.Data = data;
+
+			// Finalize Action
+			FinalizeAction(logger, WebConstants.ACTION_SAVE_WORKSPACE_IDENTIFICATION, sw);
 
 			return result;
 		}
@@ -238,8 +256,16 @@ namespace GenBOE.Web.Controllers.Backend
 
 			IESSingleResponse<ActionResult> result = new IESSingleResponse<ActionResult>();
 
+			FullWorkspace ws = Factory.CreateFullWorkspace(workspaceIdentificationModelView.ShortName);
+
+			// Initialize Action
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_SAVE_WORKSPACE_IDENTIFICATION, SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, new Collection<WorkspaceDTO>() { ws }, null);
+			
 			ActionResult data = this.workspaceController.SaveWorkspaceIdentification(workspaceIdentificationModelView.ShortName, workspaceIdentificationModelView);
 			result.Data = data;
+
+			// Finalize Action
+			FinalizeAction(logger, WebConstants.ACTION_SAVE_WORKSPACE_IDENTIFICATION, sw);
 
 			return result;
 		}
