@@ -2071,14 +2071,29 @@
         let noMoqTables = $scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0;
 
         // Check if any MOQ Table is missing SAP Resource Hours
-        let hasMissingSAPResourceHours = !$scope.SelectedMoqTypes.every(x =>
-            x.TableData !== undefined &&
-            x.TableData.length > 0 &&
-            x.TableData.every(y =>
-                (y.RepositoryName !== $scope.ManageTaskModel.SapWebiRepository || $scope.ManageTaskModel.IsSpace) ||
-                (y.ResourceHours !== undefined && y.ResourceHours.length > 0 && !$scope.ManageTaskModel.IsSpace)
-            )
-        );
+
+        let hasMissingSAPResourceHours = false;
+
+        if ($scope.ManageTaskModel.IsSpace) {
+            // Space
+            hasMissingSAPResourceHours = !$scope.SelectedMoqTypes.every(x =>
+                x.TableData !== undefined &&
+                x.TableData.length > 0 &&
+                x.TableData.some(y =>
+                    y.RepositoryName === $scope.ManageTaskModel.SapWebiRepository
+                )
+            );
+        }
+        else {
+            // RMS
+            hasMissingSAPResourceHours = !$scope.SelectedMoqTypes.every(x =>
+                x.TableData !== undefined &&
+                x.TableData.length > 0 &&
+                x.TableData.every(y =>
+                    (y.ResourceHours !== undefined && y.ResourceHours.length > 0)
+                )
+            );
+        }
 
         let disabledSkillMix = isAutomatic && (noMoqTables || hasMissingSAPResourceHours);
 
