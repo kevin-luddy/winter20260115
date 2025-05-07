@@ -2075,7 +2075,7 @@
             x.TableData !== undefined &&
             x.TableData.length > 0 &&
             x.TableData.every(y =>
-                (y.RepositoryName !== $scope.ManageTaskModel.SapWebiRepository) ||
+                (y.RepositoryName !== $scope.ManageTaskModel.SapWebiRepository || $scope.ManageTaskModel.IsSpace) ||
                 (y.ResourceHours !== undefined && y.ResourceHours.length > 0 && !$scope.ManageTaskModel.IsSpace)
             )
         );
