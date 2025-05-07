@@ -2036,7 +2036,8 @@
                     return hasBigThreeMoqType && hasSapWebiRepository;
                     // RMS
                 } else {
-                    return $scope.IsSkillMixEnabled;
+                    let hasProperMoqTypes = [5001, 5002, '5001', '5002'].includes($scope.SelectedMoqTypes[0].SelectedMOQType);
+                    return $scope.IsSkillMixEnabled && hasProperMoqTypes;
                 }
             } else {
                 // If there is not exactly one MOQ Type selected, hide Skill Mix
