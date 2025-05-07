@@ -70,8 +70,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	$scope.refreshDisableSave = function () {
 		// only check for disabling save if SAP is enabled
 		if ($scope.model.SAPEnabled) {
-			// only look at historical and comparative moq
-			let moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType || x.SelectedMOQType == $scope.model.ArMoqType);
+			// only look at historical, comparative, and AR (space only) moq
+			let moqTypes = $scope.GetMoqTableTypes();
 
 			// Only continue if in RMS or there is a repository set to SAP/WEBI for SSC
 			if ($scope.IsSapSetAsAnyRepository(moqTypes)) {
