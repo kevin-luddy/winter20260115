@@ -17,6 +17,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 	using DocumentFormat.OpenXml;
 	using DocumentFormat.OpenXml.Packaging;
 	using DocumentFormat.OpenXml.Wordprocessing;
+	using GenBOE.DataBridge.Core.Common;
 	using GenBOE.DataBridge.Core.DTO;
 	using GenBOE.DataBridge.Core.DTO.Export.BOE;
 	using GenBOE.DataBridge.Core.IO.Export;
@@ -577,7 +578,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.FieldName_HistoricalRefExp);
 					}
 
-					if (moqType.SelectedMOQType != MOQType.NonLabor && !CommonUtilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, false))
+					if (moqType.SelectedMOQType != MOQType.NonLabor && !BOETaskUtility.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, false, laborTaskElement.MOQTypes))
 					{
 						WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SkillMix),
 							moqType.SkillMixRationale, ref counters, true);
@@ -829,7 +830,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			if (skillMixTablesContainer != null)
 			{
 				if ((selectedComponents.Contains(BoeCustomReportComponent.SkillMixTables) || !selectedComponents.Any())
-					&& CommonUtilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, laborTaskElement.HasTMRates))
+					&& BOETaskUtility.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, laborTaskElement.HasTMRates, laborTaskElement.MOQTypes))
 				{
 					// populate Current/Legacy Skill Mix Table
 					SdtElement currentTableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_CurrentSkillMix);

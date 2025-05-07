@@ -9,19 +9,22 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Diagnostics.CodeAnalysis;
+	using System.Diagnostics;
+	using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
     using System.Text;
     using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.Common.Calculations;
-    using GenBOE.DataBridge.Common;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
     using IES.Common;
-    using IES.Common.OfficeUtilities;
+	using IES.Common.classes;
+	using IES.Common.OfficeUtilities;
 
     /// <summary>
     /// Converts FullWorkspace into ModelViews for export
@@ -447,7 +450,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                 boeExportTaskElement.BOETaskElementOrder = boeTaskElement.BOETaskElementOrder;
                 boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
 
-				if (Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, boeTaskElement)))
+				if (BOETaskUtility.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, boeTaskElement), boeExportTaskElement.MOQTypes))
 				{
 					boeExportTaskElement.SkillMixTable = boeTaskElement.SkillMixTable;
 					boeExportTaskElement.CommonDisclosureTable = boeTaskElement.CommonDisclosureTable;

@@ -11,6 +11,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
+	using System.Threading.Tasks;
 	using Common;
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.IO.Import;
@@ -240,7 +241,9 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 			inBOE.TaskElements.ForEach(task =>
 			{
-				if (Utilities.ShowSkillMixForTask(ws.CreationDate, BOETaskUtility.IsUsingTMRates(ws, task)))
+				ICollection<MoqTypeSelection> moqTypesForTask = inBOE.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList();
+
+				if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, BOETaskUtility.IsUsingTMRates(ws, task), moqTypesForTask))
 				{
 					ICollection<string> errorMessages = new List<string>();
 					errorMessages = ActionLogicUtility.ValidateSkillMixTable(task.SkillMixTable);
@@ -652,9 +655,11 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 				foreach (BoeTaskElementDTO task in boe.TaskElements)
 				{
+					ICollection<MoqTypeSelection> moqTypesForTask = boe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList();
+
 					// Variables for Validation of Skill Mix Rationale Field
 					bool isUsingTMRatesInTask = BOETaskUtility.IsUsingTMRates(ws, task);
-					bool showSkillMixTable = Utilities.ShowSkillMixForTask(ws.CreationDate, isUsingTMRatesInTask);
+					bool showSkillMixTable = BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, isUsingTMRatesInTask, moqTypesForTask);
 					errorMessages = ValidateTemplateMoqForTask(boe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList(), ws, true, null, showSkillMixTable);
 
 					if (errorMessages.Any())
@@ -707,7 +712,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 							// Only Validate if the SkillMix Rationale field is showing in the MOQ Types Section
 							if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST || !showSkillMixTable)
 							{
-								ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages); 
+								ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
 							}
 							break;
 						case MOQType.Comparative:
@@ -854,7 +859,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
 						default:
 							errorMessages.Add("Invalid MOQ Type selected");
 							break;
-					};
+					}
+					;
 				});
 			}
 

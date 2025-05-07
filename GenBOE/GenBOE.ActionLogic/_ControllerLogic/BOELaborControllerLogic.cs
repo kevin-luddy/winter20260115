@@ -938,8 +938,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}
 			}
 			#endregion
-			
-			if (Utilities.ShowSkillMixForTask(ws.CreationDate, CheckTMRates(ws, modelView.LaborTypesData)))
+
+			if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, CheckTMRates(ws, modelView.LaborTypesData), modelView.MOQTypes))
 			{
 				decimal historicalHoursTotals = 0;
 				// determine if SkillMix is manual or automatic
@@ -955,8 +955,23 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				{
 					string sapRepo = RepositoryName.SapWebi.GetDescription();
 
-					 if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST || 
-						moqTypes.All(x => x.TableData != null && x.TableData.Any() && x.TableData.All(t => t.RepositoryName == sapRepo)))
+					// RMS checks that the totals of both tables combines equals MOQ Hours
+					if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)
+					{
+						if (taskElement.SkillMixTable != null && Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
+						{
+							// add the Common Disclosure table totals to historical totals
+							historicalHoursTotals += taskElement.CommonDisclosureTable.Sum(c => c.HistoricalHours);
+						}
+
+						if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
+						{
+							validationErrors.Add(new ValidationMessage(string.Format("Skill Mix Total Historical Hours do not match the sum of the Total Relevant Hours.")));
+						}
+					}
+					// Space checks that the totals of each table equals MOQ Hours for any table data where the repo is SAP WEBI
+					else if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems &&
+						moqTypes.Any(x => x.TableData != null && x.TableData.Any(t => t.RepositoryName == sapRepo)))
 					{
 						if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
 						{
@@ -976,7 +991,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						}
 					}
 				}
-			
+
 				if (taskElement.SkillMixTable != null && taskElement.SkillMixTable.Any())
 				{
 					validationErrors.AddRange(ActionLogicUtility.ValidateSkillMixTable(taskElement.SkillMixTable).Select(x => new ValidationMessage(x)));
@@ -2002,9 +2017,19 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			toReturn.WorkspaceVariableIDs = modelview.TaskElementData.WorkspaceVariableIDs;
 			toReturn.TaskElementType = TaskElementType.Labor;
 			toReturn.BOETaskElementOrder = modelview.TaskElementData.BOETaskElementOrder;
-			if (Utilities.ShowSkillMixForTask(ws.CreationDate, modelview.IsUsingTMRatesInTask))
+
+			if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, modelview.IsUsingTMRatesInTask, modelview.MOQTypes))
 			{
-				toReturn.MOQTotalRelevantHours += modelview.MOQTypes?.Sum(t => t.TableData?.Sum(td => td.TotalRelevantHours) ?? 0) ?? 0;
+				// Space will get the total moq total relevant hours if it is from a Sap Webi moq table data.
+				if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
+				{
+					toReturn.MOQTotalRelevantHours += modelview.MOQTypes?.Sum(t => t.TableData?.Where(td => td.RepositoryName == RepositoryName.SapWebi.GetDescription()).Sum(td => td.TotalRelevantHours) ?? 0) ?? 0;
+				}
+				else
+				{
+					toReturn.MOQTotalRelevantHours += modelview.MOQTypes?.Sum(t => t.TableData?.Sum(td => td.TotalRelevantHours) ?? 0) ?? 0;
+				}
+
 				toReturn.SkillMixTable = modelview.SkillMixData;
 				toReturn.CommonDisclosureTable = modelview.CommonDisclosureSkillMixData;
 			}
@@ -3815,7 +3840,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			if (isSpace || resourceHours.Any())
 			{
 				bool addBlankRow = !isSpace;
-				
+
 				// filter out bad data in currentSkillMixData
 				FilterBadData(laborTypes, currentSkillMixData, currentCommonDisclosureData, isManual, isSpace);
 
@@ -3932,7 +3957,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="currentCommonDisclosureData">Current Common Disclosure data</param>
 		/// <param name="isManual">If the Historical Resource/Hours are Manually input or not</param>
 		/// <param name="isSpace">Whether this is Space or not</param>
-		private void FilterBadData(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, 
+		private void FilterBadData(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData,
 			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isManual, bool isSpace)
 		{
 			if (laborTypes.Any())
@@ -4487,7 +4512,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		{
 			if (ws.UsingTemplateBOE)
 			{
-				bool showSkillMixTable = Utilities.ShowSkillMixForTask(ws.CreationDate, taskData.IsUsingTMRatesInTask);
+				bool showSkillMixTable = BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, taskData.IsUsingTMRatesInTask, taskData.MOQTypes);
 				ICollection<string> taskErrors = this.validateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws, false, moqEquationTotal, showSkillMixTable);
 				errors.AddRange(taskErrors.Select(error => new ValidationMessage(error)));
 			}
@@ -4502,8 +4527,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="refreshedModel">The Refreshed Skill Mix Model</param>
 		/// <param name="ucotFactor">The UCOT Factor for the workspace</param>
 		/// <param name="isManual">Is this Manual or Automated SkillMix</param>
-		protected virtual void CreateCommonDisclosureRows(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, 
-			ICollection<LaborTypeDataModelView> laborTypes, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, 
+		protected virtual void CreateCommonDisclosureRows(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
+			ICollection<LaborTypeDataModelView> laborTypes, ICollection<CommonDisclosureModelView> currentCommonDisclosureData,
 			RefreshSkillMixModelView refreshedModel, decimal ucotFactor, bool isManual)
 		{
 			if (laborTypes == null)
@@ -4515,7 +4540,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			{
 				throw new ArgumentNullException(nameof(refreshedModel));
 			}
-			
+
 			// Create Common Disclosure Rows by taking the list of Resources assigned in Skill Mix table, then finding the BRCs assigned to those Resources in LaborTypes data
 			ICollection<string> resourceNames = refreshedModel.SkillMixRows.Where(s => !string.IsNullOrWhiteSpace(s.ResourceNew) && s.Included).Select(r => r.ResourceNew).Distinct().ToList();
 			foreach (string resourceName in resourceNames)
@@ -4582,8 +4607,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="refreshedModel">The Refreshed SKill Mix Model</param>
 		/// <param name="isBRCEnabled">Is BRC Enabled for this workspace</param>
 		/// <param name="isManual">Is this a manual SkillMix</param>
-		protected virtual void CopyMatchingSkillMixRowData(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, 
-			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, 
+		protected virtual void CopyMatchingSkillMixRowData(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
+			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData,
 			RefreshSkillMixModelView refreshedModel, bool isBRCEnabled, bool isManual)
 		{
 			if (laborTypes == null)
