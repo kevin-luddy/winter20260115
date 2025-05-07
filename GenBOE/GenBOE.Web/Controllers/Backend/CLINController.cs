@@ -8,6 +8,7 @@
 namespace GenBOE.Web.Controllers.Backend
 {
 	using System;
+	using System.Linq;
 	using System.Web.Http;
 	using GenBOE.ActionLogic._ControllerLogic.Backend;
 	using GenBOE.ActionLogic.ModelView.Clin;
@@ -16,6 +17,7 @@ namespace GenBOE.Web.Controllers.Backend
 	using GenBOE.Objects;
 	using GenBOE.Web.ModelView;
 	using IES.Common;
+	using IES.Common.Exceptions;
 
 	/// <summary>
 	/// CLIN Controller for Manage CLIN Page
@@ -60,6 +62,11 @@ namespace GenBOE.Web.Controllers.Backend
 					result.Data = this._clinControllerLogic.SaveCLIN(ws, addEditCLINModelView.clin);
 					result.IsSuccessful = true;
 				}
+			}
+			catch (GenValidationException ex)
+			{
+				logger.Error(ex);
+				result.Messages = ex.ValidationList.Select(x => x.ValidationIssue).ToList();
 			}
 			catch (Exception ex)
 			{
