@@ -31,7 +31,10 @@ namespace GenBOE.Web
             bundles.Add(new StyleBundle("~/Content/genCss").Include(
                 "~/Resources/css/gen2.0.css"));
 
-            bundles.Add(new StyleBundle("~/Content/homeCss").Include(
+			bundles.Add(new StyleBundle("~/Content/laborTaskCss").Include(
+				"~/Resources/css/laborTask.css"));
+
+			bundles.Add(new StyleBundle("~/Content/homeCss").Include(
                 "~/Content/bootstrap.css",
                 "~/Resources/css/generation.css",
                 "~/Content/jquery-ui.css"));  // jquery ui
