@@ -263,6 +263,7 @@
     <Compile Include="Common\DebugModelBinder.cs" />
     <Compile Include="Common\HtmlHelperExtensions.cs" />
     <Compile Include="Common\IdListModelBinder.cs" />
+    <Compile Include="Common\ImportViewModel.cs" />
     <Compile Include="Common\LongModelBinder.cs" />
     <Compile Include="Common\ProPricerExportAccessAttribute.cs" />
     <Compile Include="Common\TitleModelBinder.cs" />
@@ -276,6 +277,8 @@
     <Compile Include="Common\StringNonPrintableCharRemovalModelBinder.cs" />
     <Compile Include="Common\WorkspaceIdentificationModelBinder.cs" />
     <Compile Include="Controllers\Backend\BOEConfigurationController.cs" />
+    <Compile Include="Controllers\Backend\CLINController.cs" />
+    <Compile Include="Controllers\Backend\ImportController.cs" />
     <Compile Include="Controllers\Backend\ManagePermissionsController.cs" />
     <Compile Include="Controllers\Backend\WorkspaceAdminController.cs" />
     <Compile Include="Controllers\Backend\WorkspaceHomeController.cs" />
@@ -289,6 +292,7 @@
     <Compile Include="Controllers\BoeDataAPIController.cs" />
     <Compile Include="Controllers\RTETemplatesController.cs" />
     <Compile Include="Controllers\DateShiftController.cs" />
+    <Compile Include="ModelView\AddEditCLINModelView.cs" />
     <Compile Include="ModelView\BOEFormMasterModelView.cs" />
     <Compile Include="ModelView\ConfidenceReportItem.cs" />
     <Compile Include="ModelView\ConfidenceReportModelView.cs" />
@@ -422,6 +426,7 @@
     <Content Include="Content\ui-grid.svg" />
     <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="Resources\css\images\homepage\LM-logo-White.png" />
+    <Content Include="Resources\css\laborTask.css" />
     <Content Include="Resources\DateShiftStep5.html" />
     <Content Include="Resources\DateShiftStep3.html" />
     <Content Include="Resources\DateShiftStep4.html" />

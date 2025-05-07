@@ -170,16 +170,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				throw new ArgumentNullException(nameof(ws));
 			}
 
-			// If UCOT is enabled then sent decimal precision to be 3 if it is set to be less than 3.
-			if (CommonUtilities.IsUCOTEnabled)
-			{
-				this.WorkspaceDecimalPrecision = Math.Max(3, ws.DecimalPrecision);
-			}
-			else
-			{
-				this.WorkspaceDecimalPrecision = ws.DecimalPrecision;
-			}
-
+			this.WorkspaceDecimalPrecision = ws.DecimalPrecision;
 			this.DefaultHoursFormat = CommonUtilities.PrecisionFormattingString(this.WorkspaceDecimalPrecision);
 		}
 
@@ -4569,7 +4560,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				if (exportInputs.Workspace.UsingTemplateBOE)
 				{
 					boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
-					skillMixEnabled = CommonUtilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, boeTaskElement.HasTMRates);
+
+					skillMixEnabled = BOETaskUtility.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, boeTaskElement.HasTMRates, boeExportTaskElement.MOQTypes);
 					if (skillMixEnabled)
 					{
 						boeExportTaskElement.SkillMixTable = boeTaskElement.SkillMixTable;

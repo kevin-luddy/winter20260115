@@ -16,6 +16,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using System.Web;
 	using System.Web.Configuration;
 	using System.Web.Mvc;
+	using DocumentFormat.OpenXml.Drawing.Charts;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
@@ -536,7 +537,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					foreach (ResourceTypeDto missing in missingLabors)
 					{
 						this.logger.Error("During Save of Task Element, there was a missing task element labor found in the DB that will be deleted with id " + missing.Id);
-						LaborTypeDataModelView toDelete = new LaborTypeDataModelView(missing, new ResourceDTO(), new ResourceDTO(), new PerformingOrgDTO(), 0m, false);
+						LaborTypeDataModelView toDelete = new LaborTypeDataModelView(missing, new ResourceDTO(), new ResourceDTO(), new PerformingOrgDTO(), 0m, false, ws.DecimalPrecision);
 						toDelete.Deleted = true;
 						modelView.LaborTypesData.Add(toDelete);
 					}
@@ -938,7 +939,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 			#endregion
 
-			if (Utilities.ShowSkillMixForTask(ws.CreationDate, CheckTMRates(ws, modelView.LaborTypesData)))
+			if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, CheckTMRates(ws, modelView.LaborTypesData), modelView.MOQTypes))
 			{
 				decimal historicalHoursTotals = 0;
 				// determine if SkillMix is manual or automatic
@@ -953,8 +954,23 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				{
 					string sapRepo = RepositoryName.SapWebi.GetDescription();
 
-					if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST ||
-					   moqTypes.All(x => x.TableData != null && x.TableData.Any() && x.TableData.All(t => t.RepositoryName == sapRepo)))
+					// RMS checks that the totals of both tables combines equals MOQ Hours
+					if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)
+					{
+						if (taskElement.SkillMixTable != null && Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
+						{
+							// add the Common Disclosure table totals to historical totals
+							historicalHoursTotals += taskElement.CommonDisclosureTable.Sum(c => c.HistoricalHours);
+						}
+
+						if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
+						{
+							validationErrors.Add(new ValidationMessage(string.Format("Skill Mix Total Historical Hours do not match the sum of the Total Relevant Hours.")));
+						}
+					}
+					// Space checks that the totals of each table equals MOQ Hours for any table data where the repo is SAP WEBI
+					else if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems &&
+						moqTypes.Any(x => x.TableData != null && x.TableData.Any(t => t.RepositoryName == sapRepo)))
 					{
 						if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
 						{
@@ -1666,6 +1682,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			ICollection<ResourceSpreadDto> spreadDtos = SpreadCurve.CalculateLaborSpreadsBasedOnCurve(request, precision);
 
+			decimal sumUCOT = 0m;
+			
 			// Convert dto to mv
 			foreach (ResourceSpreadDto dto in spreadDtos)
 			{
@@ -1677,11 +1695,27 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				if (calculateUCOT && dto.LaborSpreadDate >= Utilities.OneLmxStartDate)
 				{
+					decimal nonPrecisionUCOT = dto.LaborSpreadValue * ucotFactor / 100.0m;
+					sumUCOT += nonPrecisionUCOT;
+					decimal precisionUCOT = Utilities.AdjustPrecision(nonPrecisionUCOT, precision);
+				
 					ucotSpreadsToReturn.Add(new LaborSpreadDataModelView()
 					{
 						LaborSpreadDate = dto.LaborSpreadDate.ToMonthString(),
-						LaborSpreadValue = dto.LaborSpreadValue * ucotFactor / 100.0m
+						LaborSpreadValue = precisionUCOT
 					});
+				}
+			}
+
+			if (calculateUCOT && ucotSpreadsToReturn.Any())
+			{
+				decimal totalUCOTPrecision = Utilities.AdjustPrecision(sumUCOT, precision);
+				decimal[] ucotSpreadValues = SpreadCurve.Smooth(totalUCOTPrecision, ucotSpreadsToReturn.Select(s => s.LaborSpreadValue ?? 0m).ToArray(), 0, ucotSpreadsToReturn.Count, precision);
+
+				// Reset the values to the Smooth'ed array to guarantee precision and no loss of rounding values
+				for (int i = 0; i < ucotSpreadsToReturn.Count; i++)
+				{
+					ucotSpreadsToReturn[i].LaborSpreadValue = ucotSpreadValues[i];
 				}
 			}
 
@@ -1914,7 +1948,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					perfOrg = performingOrgsFromDb.First(x => x.Id == labor.PerformingOrgID.Value);
 				}
 
-				LaborTypeDataModelView laborToAdd = new LaborTypeDataModelView(labor, resource, businessResourceCode, perfOrg, ws.UCOTFactor, calculateUCOT && businessResourceCode.ElementOfCost == ElementOfCostType.LMLabor && businessResourceCode.RateType == RateType.Hours);
+				LaborTypeDataModelView laborToAdd = new LaborTypeDataModelView(labor, resource, businessResourceCode, perfOrg, ws.UCOTFactor, calculateUCOT && businessResourceCode.ElementOfCost == ElementOfCostType.LMLabor && businessResourceCode.RateType == RateType.Hours, ws.DecimalPrecision);
 
 				ICollection<CustomFieldSelectionModelView> laborCustomFieldSelection = new Collection<CustomFieldSelectionModelView>();
 				ICollection<CustomFieldValueContainer> laborCustomFieldValues = labor.CustomFieldValueContainers;
@@ -1984,9 +2018,19 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			toReturn.WorkspaceVariableIDs = modelview.TaskElementData.WorkspaceVariableIDs;
 			toReturn.TaskElementType = TaskElementType.Labor;
 			toReturn.BOETaskElementOrder = modelview.TaskElementData.BOETaskElementOrder;
-			if (Utilities.ShowSkillMixForTask(ws.CreationDate, modelview.IsUsingTMRatesInTask))
+
+			if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, modelview.IsUsingTMRatesInTask, modelview.MOQTypes))
 			{
-				toReturn.MOQTotalRelevantHours += modelview.MOQTypes?.Sum(t => t.TableData?.Sum(td => td.TotalRelevantHours) ?? 0) ?? 0;
+				// Space will get the total moq total relevant hours if it is from a Sap Webi moq table data.
+				if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
+				{
+					toReturn.MOQTotalRelevantHours += modelview.MOQTypes?.Sum(t => t.TableData?.Where(td => td.RepositoryName == RepositoryName.SapWebi.GetDescription()).Sum(td => td.TotalRelevantHours) ?? 0) ?? 0;
+				}
+				else
+				{
+					toReturn.MOQTotalRelevantHours += modelview.MOQTypes?.Sum(t => t.TableData?.Sum(td => td.TotalRelevantHours) ?? 0) ?? 0;
+				}
+
 				toReturn.SkillMixTable = modelview.SkillMixData;
 				toReturn.CommonDisclosureTable = modelview.CommonDisclosureSkillMixData;
 			}
@@ -4480,7 +4524,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		{
 			if (ws.UsingTemplateBOE)
 			{
-				bool showSkillMixTable = Utilities.ShowSkillMixForTask(ws.CreationDate, taskData.IsUsingTMRatesInTask);
+				bool showSkillMixTable = BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, taskData.IsUsingTMRatesInTask, taskData.MOQTypes);
 				ICollection<string> taskErrors = this.validateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws, false, moqEquationTotal, showSkillMixTable);
 				errors.AddRange(taskErrors.Select(error => new ValidationMessage(error)));
 			}

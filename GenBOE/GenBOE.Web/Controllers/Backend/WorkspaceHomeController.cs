@@ -11,7 +11,6 @@ namespace GenBOE.Web.Controllers
 	using System.Collections.ObjectModel;
 	using System.Diagnostics;
 	using System.Linq;
-	using System.Transactions;
 	using System.Web.Http;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ControllerLogic;
@@ -27,8 +26,6 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.Web.ModelView;
 	using IES.Common;
 	using IES.Common.Exceptions;
-	using IES.Common.PickList;
-	using Microsoft.VisualBasic.Logging;
 
 	/// <summary>
 	/// Workspace Home Controller for getting workspace home data.
@@ -164,11 +161,11 @@ namespace GenBOE.Web.Controllers
 						model.isReadOnly = false;
 					}
 					model.canCreateWS = CheckPermission(SecurityPage.CreateWorkspacePermissions, null) == SecurityAuthorization.CreateReadUpdateDelete;
-
-					model.workspaceGridRows = workspaceHomeControllerLogic.GetHomepageGrid(model.isSysAdmin, currentUser, UserLoader, PermissionsLoader);
-
-					result.Data = model;
 				}
+
+				model.workspaceGridRows = workspaceHomeControllerLogic.GetHomepageGrid(model.isSysAdmin, currentUser, UserLoader, PermissionsLoader);
+				result.Data = model;
+
 			}
 			catch (Exception ex)
 			{
@@ -187,7 +184,7 @@ namespace GenBOE.Web.Controllers
 		/// <returns></returns>
 		[HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESSingleResponse<bool> UpdateFavorite([FromBody]FavoriteModelView favoriteModelView)
+		public IESSingleResponse<bool> UpdateFavorite([FromBody] FavoriteModelView favoriteModelView)
 		{
 			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
 
@@ -224,13 +221,18 @@ namespace GenBOE.Web.Controllers
 			{
 				throw new ArgumentNullException(nameof(toBeDeleted));
 			}
-
 			try
 			{
-				result.Data = workspaceHomeControllerLogic.DeleteWorkspaces(toBeDeleted); 
+				// Initialize Action
+				Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_HOME_DELETE_WORKSPACES, SecurityPage.WorkspaceDelete, SecurityAuthorization.CreateReadUpdateDelete, GetFullWorkspaces(toBeDeleted), null);
+
+                result.Data = workspaceHomeControllerLogic.DeleteWorkspaces(toBeDeleted); 
 				result.IsSuccessful = true;
-			}
-			catch (Exception ex)
+
+				// Finalize Action
+				FinalizeAction(logger, WebConstants.ACTION_HOME_DELETE_WORKSPACES, sw);
+            }
+            catch (Exception ex)
 			{
 				logger.Error(ex);
 				result.Messages.Add(ex.Message);
@@ -257,8 +259,14 @@ namespace GenBOE.Web.Controllers
 
 			try
 			{
+				// Initialize Action
+				Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_HOME_RESTORE_PTM_WORKSPACE, SecurityPage.WorkspaceRestore, SecurityAuthorization.CreateReadUpdateDelete, GetFullWorkspaces(new[] { toBeRestored }), null);
+				
 				result.Data = workspaceHomeControllerLogic.RestorePtmWorkspace(toBeRestored);
 				result.IsSuccessful = true;
+
+				// Finalize Action
+				FinalizeAction(logger, WebConstants.ACTION_HOME_RESTORE_PTM_WORKSPACE, sw);
 			}
 			catch (Exception ex)
 			{
@@ -287,8 +295,14 @@ namespace GenBOE.Web.Controllers
 
 			try
 			{
+				// Initialize Action
+				Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_HOME_RESTORE_WORKSPACE, SecurityPage.WorkspaceRestore, SecurityAuthorization.CreateReadUpdateDelete, GetFullWorkspaces(new[] { toBeRestored }), null);
+				
 				result.Data = workspaceHomeControllerLogic.RestoreWorkspace(toBeRestored);
-				result.IsSuccessful = true;
+				result.IsSuccessful = true;             
+				
+				// Finalize Action
+				FinalizeAction(logger, WebConstants.ACTION_HOME_RESTORE_WORKSPACE, sw);
 			}
 			catch (Exception ex)
 			{
@@ -297,6 +311,20 @@ namespace GenBOE.Web.Controllers
 			}
 
 			return result;
+		}
+
+		/// <summary>
+		/// Gets full workspaces from list of workspace view model
+		/// </summary>
+		/// <param name="workspaces">array of workspace view model</param>
+		private ICollection<WorkspaceDTO> GetFullWorkspaces(GenBOEHomepageWorkspaceRowModelView[] workspaces)
+		{
+			Collection<WorkspaceDTO> fullWorkspaces = new Collection<WorkspaceDTO>();
+			foreach (GenBOEHomepageWorkspaceRowModelView workspace in workspaces)
+			{
+				fullWorkspaces.Add(this.Factory.CreateFullWorkspace(workspace.WorkspaceShortName));
+			}
+			return fullWorkspaces;
 		}
 	}
 }
