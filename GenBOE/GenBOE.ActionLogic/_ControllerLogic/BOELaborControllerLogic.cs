@@ -945,7 +945,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				// determine if SkillMix is manual or automatic
 				bool isManual = moqTypes == null || moqTypes.None() || !ws.EnableSAPConnection || !moqTypes.All(x => x.SelectedMOQType == MOQType.Historical || x.SelectedMOQType == MOQType.Comparative);
 
-
 				foreach (SkillMixModelView row in taskElement.SkillMixTable)
 				{
 					historicalHoursTotals += row.HistoricalHours;
@@ -1926,7 +1925,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			HashSet<ResourceDTO> resourcesFromDb = new HashSet<ResourceDTO>(this._ResourceLoader.GetByIds(dto.taskElementLabors.Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value).Union(dto.taskElementLabors.Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value)).Distinct().ToList()));
 			HashSet<PerformingOrgDTO> performingOrgsFromDb = new HashSet<PerformingOrgDTO>(this.PerfOrgLoader.GetByIds(dto.taskElementLabors.Where(x => x.PerformingOrgID.HasValue).Select(x => x.PerformingOrgID.Value).Distinct().ToList()));
-			bool calculateUCOT = Utilities.IsUCOTEnabled && toReturn.MOQTypes != null && toReturn.MOQTypes.Count == 1 && toReturn.MOQTypes.All(m => m.SelectedMOQType == MOQType.Comparative || m.SelectedMOQType == MOQType.Historical || m.SelectedMOQType == MOQType.AnalogousRelationships);
+			bool calculateUCOT = Utilities.IsUCOTEnabled && toReturn.MOQTypes != null && toReturn.MOQTypes.Count == 1
+				&& toReturn.MOQTypes.All(m => m.SelectedMOQType == MOQType.Comparative || m.SelectedMOQType == MOQType.Historical || (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems && m.SelectedMOQType == MOQType.AnalogousRelationships));
+
 			foreach (ResourceTypeDto labor in dto.taskElementLabors)
 			{
 				ResourceDTO resource = new ResourceDTO();
@@ -3307,7 +3308,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		public virtual MoqTypeHelpUrls GetMoqTypeHelpUrls()
 		{
 			MoqTypeHelpUrls toReturn = new MoqTypeHelpUrls();
-
 			// Historical
 			toReturn.TableNameHistoricalSuffix = "Table Name - Actual Program or Task Cost Data (Historical).docx";
 			toReturn.RepositoryNameHistoricalSuffix = "Repository Name - Actual Program or Task Cost Data (Historical).docx";
@@ -3335,6 +3335,18 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			toReturn.TotalRelevantHoursComparativeSuffix = "Total Relevant Hours - Comparative Analysis.docx";
 			toReturn.ComparativeRationaleSuffix = "Rationale - Comparative Analysis.docx";
 			toReturn.ComparativeSkillMixSuffix = "Skill Mix Rationale - Comparative Analysis.docx";
+
+			// AR MOQ Table
+			toReturn.TableNameAnalogousSuffix = "Table Name - Analogous Relationships.docx";
+			toReturn.RepositoryNameAnalogousSuffix = "Repository Name - Analogous Relationships.docx";
+			toReturn.QueryTypeAnalogousSuffix = "Query Type - Analogous Relationships.docx";
+			toReturn.DateOfReportAnalogousSuffix = "Date of Report - Analogous Relationships.docx";
+			toReturn.HistoricalProgramNameAnalogousSuffix = "Historical Program Name - Analogous Relationships.docx";
+			toReturn.WBSElementAnalogousSuffix = "WBS-WBS Element - Analogous Relationships.docx";
+			toReturn.PoPStartAnalogousSuffix = "Period of Performance - Start Date - Analogous Relationships.docx";
+			toReturn.PoPEndAnalogousSuffix = "Period of Performance - End Date - Analogous Relationships.docx";
+			toReturn.AdditionalQueryFiltersAnalogousSuffix = "Employee ID Filter - Analogous Relationships.docx";
+			toReturn.TotalRelevantHoursAnalogousSuffix = "Total Relevant Hours - Analogous Relationships.docx";
 
 			// CER/PE/AR
 			toReturn.CERNameSuffix = "CER Name.docx";

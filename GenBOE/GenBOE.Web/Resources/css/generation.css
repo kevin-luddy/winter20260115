@@ -8604,7 +8604,11 @@ textarea.ng-invalid {
 }
 
 .comparativeLabel {
-    width: 571px !important;
+	width: 571px !important;
+}
+
+.arLabel {
+	width: 744px !important;
 }
 
 .nonPrintableLabel {
