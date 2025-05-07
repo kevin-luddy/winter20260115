@@ -386,7 +386,7 @@
                 <span data-ng-if="ActualReadOnly()" data-ng-bind-html="moqType.SmeTaskEstimates"></span>
             </div>
         </div>
-        <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="model.HistoricalReferenceExplanationIsRequired && (moqType.SelectedMOQType == <%:(int)MOQType.Historical%> || moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>)"> AR?
+        <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="model.HistoricalReferenceExplanationIsRequired && (moqType.SelectedMOQType == <%:(int)MOQType.Historical%> || moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>)">
 	        <div class="form-label">
 		        <span>Provide an explanation of Why the Historical Reference was Selected: *</span>
 	        </div>
