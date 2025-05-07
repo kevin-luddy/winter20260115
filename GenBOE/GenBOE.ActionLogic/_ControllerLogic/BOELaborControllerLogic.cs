@@ -937,13 +937,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}
 			}
 			#endregion
-			
+
 			if (Utilities.ShowSkillMixForTask(ws.CreationDate, CheckTMRates(ws, modelView.LaborTypesData)))
 			{
 				decimal historicalHoursTotals = 0;
 				// determine if SkillMix is manual or automatic
 				bool isManual = moqTypes == null || moqTypes.None() || !ws.EnableSAPConnection || !moqTypes.All(x => x.SelectedMOQType == MOQType.Historical || x.SelectedMOQType == MOQType.Comparative);
-
 
 				foreach (SkillMixModelView row in taskElement.SkillMixTable)
 				{
@@ -954,8 +953,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				{
 					string sapRepo = RepositoryName.SapWebi.GetDescription();
 
-					 if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST || 
-						moqTypes.All(x => x.TableData != null && x.TableData.Any() && x.TableData.All(t => t.RepositoryName == sapRepo)))
+					if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST ||
+					   moqTypes.All(x => x.TableData != null && x.TableData.Any() && x.TableData.All(t => t.RepositoryName == sapRepo)))
 					{
 						if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
 						{
@@ -975,7 +974,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						}
 					}
 				}
-			
+
 				if (taskElement.SkillMixTable != null && taskElement.SkillMixTable.Any())
 				{
 					validationErrors.AddRange(ActionLogicUtility.ValidateSkillMixTable(taskElement.SkillMixTable).Select(x => new ValidationMessage(x)));
@@ -1892,7 +1891,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			HashSet<ResourceDTO> resourcesFromDb = new HashSet<ResourceDTO>(this._ResourceLoader.GetByIds(dto.taskElementLabors.Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value).Union(dto.taskElementLabors.Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value)).Distinct().ToList()));
 			HashSet<PerformingOrgDTO> performingOrgsFromDb = new HashSet<PerformingOrgDTO>(this.PerfOrgLoader.GetByIds(dto.taskElementLabors.Where(x => x.PerformingOrgID.HasValue).Select(x => x.PerformingOrgID.Value).Distinct().ToList()));
-			bool calculateUCOT = Utilities.IsUCOTEnabled && toReturn.MOQTypes != null && toReturn.MOQTypes.Count == 1 && toReturn.MOQTypes.All(m => m.SelectedMOQType == MOQType.Comparative || m.SelectedMOQType == MOQType.Historical || m.SelectedMOQType == MOQType.AnalogousRelationships);
+			bool calculateUCOT = Utilities.IsUCOTEnabled && toReturn.MOQTypes != null && toReturn.MOQTypes.Count == 1
+				&& toReturn.MOQTypes.All(m => m.SelectedMOQType == MOQType.Comparative || m.SelectedMOQType == MOQType.Historical || (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems && m.SelectedMOQType == MOQType.AnalogousRelationships));
+
 			foreach (ResourceTypeDto labor in dto.taskElementLabors)
 			{
 				ResourceDTO resource = new ResourceDTO();
@@ -3263,7 +3264,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		public virtual MoqTypeHelpUrls GetMoqTypeHelpUrls()
 		{
 			MoqTypeHelpUrls toReturn = new MoqTypeHelpUrls();
-
 			// Historical
 			toReturn.TableNameHistoricalSuffix = "Table Name - Actual Program or Task Cost Data (Historical).docx";
 			toReturn.RepositoryNameHistoricalSuffix = "Repository Name - Actual Program or Task Cost Data (Historical).docx";
@@ -3291,6 +3291,18 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			toReturn.TotalRelevantHoursComparativeSuffix = "Total Relevant Hours - Comparative Analysis.docx";
 			toReturn.ComparativeRationaleSuffix = "Rationale - Comparative Analysis.docx";
 			toReturn.ComparativeSkillMixSuffix = "Skill Mix Rationale - Comparative Analysis.docx";
+
+			// AR MOQ Table
+			toReturn.TableNameAnalogousSuffix = "Table Name - Analogous Relationships.docx";
+			toReturn.RepositoryNameAnalogousSuffix = "Repository Name - Analogous Relationships.docx";
+			toReturn.QueryTypeAnalogousSuffix = "Query Type - Analogous Relationships.docx";
+			toReturn.DateOfReportAnalogousSuffix = "Date of Report - Analogous Relationships.docx";
+			toReturn.HistoricalProgramNameAnalogousSuffix = "Historical Program Name - Analogous Relationships.docx";
+			toReturn.WBSElementAnalogousSuffix = "WBS-WBS Element - Analogous Relationships.docx";
+			toReturn.PoPStartAnalogousSuffix = "Period of Performance - Start Date - Analogous Relationships.docx";
+			toReturn.PoPEndAnalogousSuffix = "Period of Performance - End Date - Analogous Relationships.docx";
+			toReturn.AdditionalQueryFiltersAnalogousSuffix = "Employee ID Filter - Analogous Relationships.docx";
+			toReturn.TotalRelevantHoursAnalogousSuffix = "Total Relevant Hours - Analogous Relationships.docx";
 
 			// CER/PE/AR
 			toReturn.CERNameSuffix = "CER Name.docx";
@@ -3796,7 +3808,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			if (isSpace || resourceHours.Any())
 			{
 				bool addBlankRow = !isSpace;
-				
+
 				// filter out bad data in currentSkillMixData
 				FilterBadData(laborTypes, currentSkillMixData, currentCommonDisclosureData, isManual, isSpace);
 
@@ -3913,7 +3925,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="currentCommonDisclosureData">Current Common Disclosure data</param>
 		/// <param name="isManual">If the Historical Resource/Hours are Manually input or not</param>
 		/// <param name="isSpace">Whether this is Space or not</param>
-		private void FilterBadData(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, 
+		private void FilterBadData(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData,
 			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isManual, bool isSpace)
 		{
 			if (laborTypes.Any())
@@ -4483,8 +4495,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="refreshedModel">The Refreshed Skill Mix Model</param>
 		/// <param name="ucotFactor">The UCOT Factor for the workspace</param>
 		/// <param name="isManual">Is this Manual or Automated SkillMix</param>
-		protected virtual void CreateCommonDisclosureRows(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, 
-			ICollection<LaborTypeDataModelView> laborTypes, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, 
+		protected virtual void CreateCommonDisclosureRows(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
+			ICollection<LaborTypeDataModelView> laborTypes, ICollection<CommonDisclosureModelView> currentCommonDisclosureData,
 			RefreshSkillMixModelView refreshedModel, decimal ucotFactor, bool isManual)
 		{
 			if (laborTypes == null)
@@ -4496,7 +4508,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			{
 				throw new ArgumentNullException(nameof(refreshedModel));
 			}
-			
+
 			// Create Common Disclosure Rows by taking the list of Resources assigned in Skill Mix table, then finding the BRCs assigned to those Resources in LaborTypes data
 			ICollection<string> resourceNames = refreshedModel.SkillMixRows.Where(s => !string.IsNullOrWhiteSpace(s.ResourceNew) && s.Included).Select(r => r.ResourceNew).Distinct().ToList();
 			foreach (string resourceName in resourceNames)
@@ -4563,8 +4575,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="refreshedModel">The Refreshed SKill Mix Model</param>
 		/// <param name="isBRCEnabled">Is BRC Enabled for this workspace</param>
 		/// <param name="isManual">Is this a manual SkillMix</param>
-		protected virtual void CopyMatchingSkillMixRowData(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, 
-			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, 
+		protected virtual void CopyMatchingSkillMixRowData(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
+			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData,
 			RefreshSkillMixModelView refreshedModel, bool isBRCEnabled, bool isManual)
 		{
 			if (laborTypes == null)

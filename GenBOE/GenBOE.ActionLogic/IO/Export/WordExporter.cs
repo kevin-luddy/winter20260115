@@ -413,6 +413,8 @@ namespace GenBOE.ActionLogic.IO.Export
 
 			if (moqTypeContainerTemplate != null)
 			{
+				bool isSpace = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems;
+
 				// create/clone template of MOQ Type fields
 				SdtElement moqTypeContainer = null;
 				OpenXmlElement lastElement = moqTypeContainerTemplate;
@@ -461,18 +463,17 @@ namespace GenBOE.ActionLogic.IO.Export
 							break;
 						case MOQType.CostEstimatingRelationships:
 						case MOQType.ParametricEstimates:
-						case MOQType.AnalogousRelationships:
 							if (customExport)
 							{
-								this.RemoveElement(sowLoeContainer);
-								this.RemoveElement(smeContainer);
-								this.RemoveElement(moqTypeTableContainer);
+								RemoveElement(sowLoeContainer);
+								RemoveElement(smeContainer);
+								RemoveElement(moqTypeTableContainer);
 							}
 							else
 							{
-								this.RemoveSoeLowRows(moqTypeContainer);
-								this.RemoveSMERows(moqTypeContainer);
-								this.RemoveMoqTableRow(moqTypeContainer);
+								RemoveSoeLowRows(moqTypeContainer);
+								RemoveSMERows(moqTypeContainer);
+								RemoveMoqTableRow(moqTypeContainer);
 							}
 
 							string labelPrefix;
@@ -480,16 +481,40 @@ namespace GenBOE.ActionLogic.IO.Export
 							{
 								labelPrefix = "CER";
 							}
-							else if (moqType.SelectedMOQType == MOQType.ParametricEstimates)
+							else
 							{
 								labelPrefix = "Parametric model or tool";
 							}
-							else
-							{
-								labelPrefix = "Analogous relationship";
-							}
 
 							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArNameLabel), labelPrefix + " name");
+							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArName), moqType.CerName);
+							break;
+						case MOQType.AnalogousRelationships:
+							if (customExport)
+							{
+								RemoveElement(sowLoeContainer);
+								RemoveElement(smeContainer);
+								if (!isSpace)
+								{
+									RemoveElement(moqTypeTableContainer);
+								}
+							}
+							else
+							{
+								RemoveSoeLowRows(moqTypeContainer);
+								RemoveSMERows(moqTypeContainer);
+								if (!isSpace)
+								{
+									RemoveMoqTableRow(moqTypeContainer);
+								}
+							}
+
+							if (isSpace)
+							{
+								PopulateMOQTableData(moqType, selectedComponents, moqTypeTableContainer, exportInputs);
+							}
+
+							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArNameLabel), "Analogous relationship name");
 							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArName), moqType.CerName);
 							break;
 						case MOQType.SOW:

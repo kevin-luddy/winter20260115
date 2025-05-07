@@ -39,7 +39,8 @@
         ShouldMoqReadOnlyBeReversed: '<%:ViewData["ShouldMoqReadOnlyBeReversed"]%>'.isTrue(),
         IsRMS: '<%:Model.Company == CompanyConfiguration.MST%>'.isTrue(),
         HistoricalMoqType: <%:(int)MOQType.Historical%>,
-        ComparativeMoqType: <%:(int)MOQType.Comparative%>,
+		ComparativeMoqType: <%:(int)MOQType.Comparative%>,
+		ArMoqType: <%:(int)MOQType.AnalogousRelationships%>,
         SAPEnabled: '<%:(bool)ViewData["EnableSAP"]%>'.isTrue(),
         SAPWorkspaceBeforeCutoff: '<%:(bool)ViewData["SAPWorkspaceBeforeCutoff"]%>'.isTrue(),
         SapWebiRepository: '<%=RepositoryName.SapWebi.GetDescription()%>',
@@ -137,7 +138,7 @@
     </div>
     <div id="moqTypes" data-ng-if="model.UsingTemplateBOE" class="form-element moqRteFieldContainer moqContainerClass" data-ng-repeat="moqType in model.SelectedMoqTypes | orderBy: 'Order'">
         <div class="form-row" data-ng-class="{'collapsedBorder': moqType.collapsed}">
-            <div class="form-label"  data-ng-class="{'comparativeLabel':  moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>, 'historicalLabel': moqType.SelectedMOQType == <%:(int)MOQType.Historical%>}">
+            <div class="form-label"  data-ng-class="{'comparativeLabel':  moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>, 'historicalLabel': moqType.SelectedMOQType == <%:(int)MOQType.Historical%>, 'arLabel': moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>}">
                 <a data-nodrag="" data-ng-click="toggle(moqType)">
                     <div class="moqTypeHeader" data-ng-class="{'collapsed': moqType.collapsed, 'expanded': !moqType.collapsed}"></div>
                 </a>
@@ -146,8 +147,8 @@
             <div class="btn-group">
                 <button data-ng-if="!ActualReadOnly() && moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-disabled="disableHistoricalComparativeConvertButtons()" data-ng-click="convertMoqType(moqType, <%:(int)MOQType.Historical%>)" class="ies moqTypesButton" type="button">Convert to Historical</button>
                 <button data-ng-if="!ActualReadOnly() && moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-disabled="disableHistoricalComparativeConvertButtons()" data-ng-click="convertMoqType(moqType, <%:(int)MOQType.Comparative%>)" class="ies moqTypesButton" type="button">Convert to Comparative</button>
-                <button data-ng-if="!ActualReadOnly() && (moqType.SelectedMOQType == <%:(int)MOQType.Comparative%> || moqType.SelectedMOQType == <%:(int)MOQType.Historical%>)" data-ng-disabled="isDirty()" data-ng-class="{disabled: isDirty()}" data-ng-click="openImportMoqTables(moqType)" class="ies-action moqTypesButton" type="button">Import</button>
-                <button data-ng-if="!ActualReadOnly() && (moqType.SelectedMOQType == <%:(int)MOQType.Comparative%> || moqType.SelectedMOQType == <%:(int)MOQType.Historical%>)" data-ng-disabled="isDirty() || isExporting" data-ng-class="{disabled: isDirty() || isExporting}" data-ng-click="exportMoqTables(moqType)" class="ies-action moqTypesButton" type="button">Export</button>
+                <button data-ng-if="!ActualReadOnly() && DisplayMoqTables(moqType.SelectedMOQType)" data-ng-disabled="isDirty()" data-ng-class="{disabled: isDirty()}" data-ng-click="openImportMoqTables(moqType)" class="ies-action moqTypesButton" type="button">Import</button>
+                <button data-ng-if="!ActualReadOnly() && DisplayMoqTables(moqType.SelectedMOQType)" data-ng-disabled="isDirty() || isExporting" data-ng-class="{disabled: isDirty() || isExporting}" data-ng-click="exportMoqTables(moqType)" class="ies-action moqTypesButton" type="button">Export</button>
                 <button data-ng-if="!ActualReadOnly()" data-ng-click="RemoveMoqType(moqType)" class="ies-danger moqTypesButton" type="button">Delete MOQ Type</button>
             </div>
         </div>
@@ -162,7 +163,7 @@
             <span data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SME%>">{{PortionOfTask()}} Subject Matter Expert (SME) Judgment.</span>
             <span data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.NonLabor%>">This task is Non-Labor:</span>
         </div>
-		<div data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%> || moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>">
+		<div data-ng-show="!moqType.collapsed" data-ng-if="DisplayMoqTables(moqType.SelectedMOQType)">
 			<div class="tableDataParent" data-ng-repeat="tableData in moqType.TableData | orderBy: 'Order'">
                <gen-validation data-ng-if="actualsValidation.errors.get(tableData.Id)" data-errors="actualsValidation.errors.get(tableData.Id)"></gen-validation>
 				<div class="tableData">
@@ -173,6 +174,7 @@
                                 {{model.MoqTypeTableDataLabels.TableName}} * 
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.TableNameHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.TableNameComparativeSuffix);"></div>
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.TableNameAnalogousSuffix);"></div>
                             </td>
                             <td><input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="text" required data-ng-model="tableData.TableName" /></td>
                         </tr>
@@ -180,6 +182,7 @@
                             <td class="form-label">{{model.MoqTypeTableDataLabels.RepositoryName}} * 
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.RepositoryNameHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.RepositoryNameComparativeSuffix);"></div>
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.RepositoryNameAnalogousSuffix);"></div>
                             </td>
                             <td>
                                 <select data-ng-if="model.SAPEnabled" data-ng-disabled="ActualReadOnly()" class="skip-read-only" required data-ng-model="tableData.RepositoryNameSelection" data-ng-change="UpdateRepository(tableData, moqType)">
@@ -195,6 +198,7 @@
                             <td class="form-label">{{model.MoqTypeTableDataLabels.QueryType}} * 
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.QueryTypeHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.QueryTypeComparativeSuffix);"></div>
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.QueryTypeAnalogousSuffix);"></div>
                             <td>
                                 <select data-ng-disabled="ActualReadOnly()" class="skip-read-only" required data-ng-model="tableData.QueryType" data-ng-change="clearPoPDates(tableData);">
                                     <option value=""></option>
@@ -208,6 +212,7 @@
                             <td class="form-label">{{model.MoqTypeTableDataLabels.HistoricalProgramName}} * 
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.HistoricalProgramNameHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.HistoricalProgramNameComparativeSuffix);"></div>
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.HistoricalProgramNameAnalogousSuffix);"></div>
                             </td>
                             <td><input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="text" required data-ng-model="tableData.HistoricalProgramName" /></td>
                         </tr>
@@ -215,6 +220,7 @@
                             <td class="form-label">{{model.MoqTypeTableDataLabels.WbsElement}} * 
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.WBSElementHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.WBSElementComparativeSuffix);"></div>
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.WBSElementAnalogousSuffix);"></div>
                                 <div data-ng-if="!model.IsRMS"><br /><strong>Note:</strong> genBOE uses the <strong>"Starts With"</strong> condition to pull actuals beginning with the <strong>first 12 characters</strong> of the charge #'s entered. Click the "?" for additional information. </div>
                             </td>
                             <td><textarea data-ng-readonly="ActualReadOnly()" class="skip-read-only" cols="20" placeholder="If entering multiple WBS Elements, please separate them with a comma ',' or a semicolon ';'" required data-ng-model="tableData.WbsElement" data-ng-change="SetTableDirty(tableData)" /></td>
@@ -223,6 +229,7 @@
                             <td class="form-label">{{model.MoqTypeTableDataLabels.PoPStart}} * 
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPStartHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPStartComparativeSuffix);"></div>
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPStartAnalogousSuffix);"></div>
                             </td>
                             <td>
                                 <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="date"  data-ng-if="model.IsRMS" required data-ng-model="tableData.PoPStart" data-ng-class="{'ng-invalid': ValidatePopStart(tableData.PoPStart) }" data-ng-change="DateChanged(tableData, false)" />
@@ -241,6 +248,7 @@
                             <td class="form-label">{{model.MoqTypeTableDataLabels.PoPEnd}} *                                
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPEndHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPEndComparativeSuffix);"></div>
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPEndAnalogousSuffix);"></div>
                             </td>
                             <td>
                                 <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="date"  data-ng-if="model.IsRMS" required data-ng-model="tableData.PoPEnd" data-ng-class="{'ng-invalid': ValidatePopEnd(tableData.PoPEnd) }" data-ng-change="DateChanged(tableData, false)" />
@@ -270,6 +278,7 @@
                             <td class="form-label">{{model.MoqTypeTableDataLabels.DateOfReport}} * 
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.DateOfReportHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.DateOfReportComparativeSuffix);"></div>
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.DateOfReportAnalogousSuffix);"></div>
                             </td>
                             <td><input data-ng-readonly="ActualReadOnly() || IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" class="skip-read-only" type="date" required data-ng-model="tableData.DateOfReport" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
@@ -288,6 +297,7 @@
                                 <span data-ng-if="!IsSapEnabledAndSetAsRepository(tableData.RepositoryName)">*</span>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.AdditionalQueryFiltersHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.AdditionalQueryFiltersComparativeSuffix);"></div>
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.AdditionalQueryFiltersAnalogousSuffix);"></div>
                                 <button data-ng-if="!ActualReadOnly() && IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="ShowFilterDialog(tableData)">Update Filters</button>
                             </td>
                             <td><textarea data-ng-readonly="ActualReadOnly()" class="skip-read-only" cols="20" data-ng-model="tableData.AdditionalQueryFilters" data-ng-change="ParseSemiColons(tableData)" /></td>
@@ -295,7 +305,8 @@
                         <tr data-ng-show="!tableData.collapsed">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.TotalRelevantHours}} * 
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.TotalRelevantHoursHistoricalSuffix);"></div>
-                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.TotalRelevantHoursComparativeSuffix);"></div></td>
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.TotalRelevantHoursComparativeSuffix);"></div>
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.TotalRelevantHoursAnalogousSuffix);"></div></td>
                             <td><input data-ng-readonly="ActualReadOnly() || IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" class="skip-read-only" type="number" required min="0" data-ng-model="tableData.TotalRelevantHours" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
                    </table>
@@ -375,7 +386,7 @@
                 <span data-ng-if="ActualReadOnly()" data-ng-bind-html="moqType.SmeTaskEstimates"></span>
             </div>
         </div>
-        <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="model.HistoricalReferenceExplanationIsRequired && (moqType.SelectedMOQType == <%:(int)MOQType.Historical%> || moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>)">
+        <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="model.HistoricalReferenceExplanationIsRequired && (moqType.SelectedMOQType == <%:(int)MOQType.Historical%> || moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>)"> AR?
 	        <div class="form-label">
 		        <span>Provide an explanation of Why the Historical Reference was Selected: *</span>
 	        </div>

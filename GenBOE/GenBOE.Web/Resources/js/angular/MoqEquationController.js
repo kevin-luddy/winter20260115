@@ -71,7 +71,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		// only check for disabling save if SAP is enabled
 		if ($scope.model.SAPEnabled) {
 			// only look at historical and comparative moq
-			let moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
+			let moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType || x.SelectedMOQType == $scope.model.ArMoqType);
 
 			// Only continue if in RMS or there is a repository set to SAP/WEBI for SSC
 			if ($scope.IsSapSetAsAnyRepository(moqTypes)) {
@@ -166,7 +166,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 	// Adds MOQ Type to Selected MOQ Types (and removes it from the dropdown of available types)
 	$scope.AddMoqType = function () {
-		var selectedItem = $scope.model.selectedMOQType;
+		let selectedItem = $scope.model.selectedMOQType;
 		selectedItem.Order = 2000;
 
 		$scope.model.SelectedMoqTypes.push(selectedItem);
@@ -182,7 +182,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 
 		selectedItem.TableData = [];
-		if (selectedItem.SelectedMOQType == $scope.model.HistoricalMoqType || selectedItem.SelectedMOQType == $scope.model.ComparativeMoqType) {
+
+		if ($scope.DisplayMoqTables(selectedItem.SelectedMOQType)) {
 			$scope.CreateNewTable(selectedItem.TableData);
 		}
 
@@ -240,6 +241,22 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	$scope.ActualReadOnly = function () {
 		return isSaveButtonHidden;
 	};
+
+	// MOQ Tables are displayed for Historical and Comparative types and AR in Space only
+	$scope.DisplayMoqTables = function (moqType) {
+		return moqType == $scope.model.HistoricalMoqType || moqType == $scope.model.ComparativeMoqType || (!$scope.IsRMS && moqType == $scope.model.ArMoqType);
+	};
+
+	$scope.GetMoqTableTypes = function () {
+		return $scope.model.SelectedMoqTypes.filter(x => {
+			let tableTypes = [$scope.model.ComparativeMoqType, $scope.model.HistoricalMoqType];
+			if (!$scope.model.IsRMS) {
+				tableTypes.push($scope.model.ArMoqType);
+			}
+
+			return tableTypes.includes(x.SelectedMOQType);
+		});
+	}
 
 	// Create New Table Data for the MOQ Type
 	$scope.CreateNewTable = function (tableDataArray) {
@@ -1274,7 +1291,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 					tableData: []
 				};
 
-				const moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
+				const moqTypes = $scope.GetMoqTableTypes();
 				if (moqTypes) {
 					moqTypes.forEach(moq => {
 						if (moq.TableData) {
@@ -1330,7 +1347,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 									if (result.Messages && result.Messages.length > 0) {
 										$scope.setActualsErrors(res.TableId, result.Messages);
 									} else {
-										const moqTypes2 = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
+										const moqTypes2 = $scope.GetMoqTableTypes();
 										moqTypes2.forEach(moq => {
 											const tableData = moq.TableData.find(t => t.Id == res.TableId);
 											if (tableData) {
@@ -1382,7 +1399,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 					tableData: []
 				};
 
-				const moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
+				const moqTypes = $scope.GetMoqTableTypes();
 				if (moqTypes) {
 					moqTypes.forEach(moq => {
 						if (moq.TableData) {
@@ -1432,7 +1449,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 							// the response is wrapped inside response.data.data array
 							if (response.data.data && Array.isArray(response.data.data)) {
 
-								const moqTypes2 = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
+								const moqTypes2 = $scope.GetMoqTableTypes();
 								// find the moq table data and update the data with calculated values
 								response.data.data.forEach(result => {
 									const res = result.Data[0];
@@ -1697,7 +1714,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 	$scope.IsSapSetAndAnyTableSapRepository = function () {
 		$scope.calculateAllDisabled = true;
-		let moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
+		let moqTypes = $scope.GetMoqTableTypes();
 
 		if ($scope.IsSapSetAsAnyRepository(moqTypes)) {
 			$scope.calculateAllDisabled = false;

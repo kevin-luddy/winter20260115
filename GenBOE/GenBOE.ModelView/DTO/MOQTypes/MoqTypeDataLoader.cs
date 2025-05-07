@@ -10,11 +10,11 @@ namespace GenBOE.DataBridge.DTO
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
-	using System.Web.UI.WebControls;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.Dtos;
 	using GenBOE.Models;
 	using IES.Common;
+	using IES.Common.classes;
 
 	/// <summary>
 	/// Loader for MOQ Type Selection and MOQ Table Data
@@ -373,7 +373,9 @@ namespace GenBOE.DataBridge.DTO
 			{
 				selection.TableData.AddRange(allTableData.Where(x => x.MOQTypeSelectionId == selection.Id));
 
-				if ((selection.SelectedMOQType == MOQType.Historical || selection.SelectedMOQType == MOQType.Comparative) && selection.TableData.None())
+				if ((selection.SelectedMOQType == MOQType.Historical || selection.SelectedMOQType == MOQType.Comparative 
+					|| (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems && selection.SelectedMOQType == MOQType.AnalogousRelationships)) 
+					&& selection.TableData.None())
 				{
 					selection.TableData.Add(new MoqTableData());
 				}
