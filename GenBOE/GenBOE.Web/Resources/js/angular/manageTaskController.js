@@ -2052,12 +2052,12 @@
     };
 
     $scope.isSkillMixManualPerMOQ = function () {
-        let isSkillMixManual = ($scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0 || !ManageTaskModel.SapConnectionEnabled || !$scope.SelectedMoqTypes.every(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002'));
+        let isSkillMixManual = ($scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0 || !$scope.ManageTaskModel.SapConnectionEnabled || !$scope.SelectedMoqTypes.every(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002'));
         if (!isSkillMixManual && $scope.ManageTaskModel.IsSpace) {
             angular.forEach($scope.SelectedMoqTypes, function (item, key) {
                 if (item.TableData === undefined || item.TableData.length === 0 || !item.TableData.every(y => y.RepositoryName == $scope.ManageTaskModel.SapWebiRepository)) {
                     isSkillMixManual = true;
-                } 
+                }
             });
         }
         return isSkillMixManual;
@@ -2074,13 +2074,6 @@
         let hasMissingSAPResourceHours = !$scope.SelectedMoqTypes.every(x =>
             x.TableData !== undefined &&
             x.TableData.length > 0 &&
-            x.TableData.every(y => y.RepositoryName !== $scope.ManageTaskModel.SapWebiRepository || (y.ResourceHours !== undefined && y.ResourceHours.length > 0))
-        );
-
-        // Check if any MOQ Table is missing SAP Resource Hours
-        let hasMissingSAPResourceHours = !$scope.SelectedMoqTypes.every(x =>
-            x.TableData !== undefined &&
-            x.TableData.length > 0 &&
             x.TableData.every(y =>
                 (y.RepositoryName !== $scope.ManageTaskModel.SapWebiRepository) ||
                 (y.ResourceHours !== undefined && y.ResourceHours.length > 0 && !$scope.ManageTaskModel.IsSpace)
@@ -2091,7 +2084,7 @@
 
         // Return true if Skill Mix is Automatic and either of the conditions occur
         return disabledSkillMix;
-    }
+    };
 
     $scope.perfOrgSelected = function (item, model) {
         $scope.setDirty();
