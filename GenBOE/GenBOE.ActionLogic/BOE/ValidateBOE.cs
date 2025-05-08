@@ -243,11 +243,11 @@ namespace GenBOE.ActionLogic.WBS.BOE
 				if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, BOETaskUtility.IsUsingTMRates(ws, task), moqTypesForTask))
 				{
 					ICollection<string> errorMessages = new List<string>();
-					errorMessages = ActionLogicUtility.ValidateSkillMixTable(task.SkillMixTable);
+					errorMessages = ActionLogicUtility.ValidateSkillMixTable(task.SkillMixTable, true);
 
 					if (Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
 					{
-						errorMessages.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(task.CommonDisclosureTable));
+						errorMessages.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(task.CommonDisclosureTable, true));
 					}
 
 					if (errorMessages.Any())
