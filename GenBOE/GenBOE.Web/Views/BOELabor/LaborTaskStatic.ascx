@@ -614,9 +614,11 @@
                                     <th class="resourceCol">Resource</th>
                                     <th data-ng-if="!ManageTaskModel.IsSpace" class="currentResourceCol">Current Resource</th>
                                     <th class="historicalHoursCol">Historical Hours</th>
-                                    <th class="laborSkillMixCol">Labor Skill Mix</th>
-                                    <th class="includedCol">Included</th>
-                                    <th class="boeSkillMixCol">BOE Skill Mix</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="laborSkillMixCol">Labor Skill Mix</th>
+                                    <th data-ng-if="ManageTaskModel.IsSpace" class="laborSkillMixCol">Historical Skill Mix</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="includedCol">Included</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="boeSkillMixCol">BOE Skill Mix</th>
+                                    <th data-ng-if="ManageTaskModel.IsSpace" class="boeSkillMixCol">Proposed Skill Mix</th>
                                     <th class="proposedHoursCol">Proposed Hours</th>
                                     <th>Rationale**</th>
                                 </tr>
@@ -666,9 +668,11 @@
                                     <th class="resourceCol">Resource</th>
                                     <th class="brcCol">Business Resource Code</th>
                                     <th class="historicalHoursCol">Historical Hours</th>
-                                    <th class="laborSkillMixCol">Labor Skill Mix</th>
-                                    <th class="includedCol">Included</th>
-                                    <th class="boeSkillMixCol">BOE Skill Mix</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="laborSkillMixCol">Labor Skill Mix</th>
+                                    <th data-ng-if="ManageTaskModel.IsSpace" class="laborSkillMixCol">Historical Skill Mix</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="includedCol">Included</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="boeSkillMixCol">BOE Skill Mix</th>
+                                    <th data-ng-if="ManageTaskModel.IsSpace" class="boeSkillMixCol">Proposed Skill Mix</th>
                                     <th class="proposedHoursCol">Proposed Hours</th>
                                     <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                                         {  %>
