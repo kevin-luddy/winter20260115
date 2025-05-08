@@ -4130,6 +4130,79 @@ namespace GenBOE.Tests.ActionLogic
 		}
 
 		/// <summary>
+		/// Test ValidateTemplateMoqForTask does not run MOQ Table Validation for Analogous Relationships for RMS
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_ARMoqTable_RmsMode()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
+			Utilities.IsSAPEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+			Utilities.IsSAPEnabledForSystem = true;
+
+			// Create a valid MOQ Table
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.AnalogousRelationships,
+				TableData = new Collection<MoqTableData>()
+					{
+						// blank table so we know it would be invalid if checked
+						new MoqTableData() { }
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
+				CerName = "AR Name"
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			// RMS does not have tables for AR, so table validation should not run and 0 errors should be returned
+			Assert.IsFalse(result.Any());
+		}
+
+		/// <summary>
+		/// Test ValidateTemplateMoqForTask does run MOQ Table Validation for Analogous Relationships for Space
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_ARMoqTable_SscMode()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+			Utilities.IsSAPEnabledForSystem = true;
+
+			// Create a valid MOQ Table
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.AnalogousRelationships,
+				TableData = new Collection<MoqTableData>()
+					{
+						// blank table so we know it would be invalid if checked
+						new MoqTableData() { }
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
+				CerName = "AR Name"
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			// The specifics of MOQ Table validation are checked in other tests, this test just wants to make sure the validation is run in space for AR
+			// With a blank table, we expect 10 errors - one for each field
+			Assert.IsTrue(result.Any());
+			Assert.AreEqual(10, result.Count);
+			Assert.IsTrue(result.All(x => x.StartsWith(MOQType.AnalogousRelationships.GetDescription())));
+		}
+
+		/// <summary>
 		/// Test Rationale Length
 		/// </summary>
 		[TestMethod]
