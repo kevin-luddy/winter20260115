@@ -945,7 +945,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 									if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 									{
 										commonDisclosureRow.UCOTHours = commonDisclosureRow.ProposedHours * exportInputs.Workspace.UCOTFactor / 100m;
+										commonDisclosureRow.GrandTotalHours = commonDisclosureRow.ProposedHours + commonDisclosureRow.UCOTHours;
 										WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_UCOTHours), commonDisclosureRow.UCOTHours.ToString(CommonUtilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
+										WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_GrandTotalHours), commonDisclosureRow.GrandTotalHours.ToString(CommonUtilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
 									}
 
 									// Add the row to the table
@@ -967,6 +969,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 								string boeSkillMixTotal = (laborTaskElement.CommonDisclosureTable.Where(x => x.Included).Sum(x => x.BOESkillMix ?? 0.0m) / 100m).ToString("P1");
 								string proposedHoursTotal = laborTaskElement.CommonDisclosureTable.Where(x => x.Included).Sum(x => x.ProposedHours).ToString(CommonUtilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision));
 								string ucotHoursTotal = laborTaskElement.CommonDisclosureTable.Sum(x => x.UCOTHours).ToString(CommonUtilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision));
+								string grandHoursTotal = laborTaskElement.CommonDisclosureTable.Sum(x => x.UCOTHours + x.ProposedHours).ToString(CommonUtilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision));
 
 								// populate totals
 								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_HistoricalHours), historicalHoursTotal);
@@ -978,6 +981,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 								if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 								{
 									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_UCOTHoursTotal), ucotHoursTotal);
+									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_GrandTotalHoursTotal), grandHoursTotal);
 								}
 							}
 						}

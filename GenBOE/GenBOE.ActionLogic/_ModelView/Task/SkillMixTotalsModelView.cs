@@ -26,8 +26,13 @@
 		public decimal ProposedHours { get; set; }
 
 		/// <summary>
-		/// UCOT Hours Totals
+		/// UCOT Hours Totals, Space only
 		/// </summary>
 		public decimal UCOTHours { get; set; }
+
+		/// <summary>
+		/// Grand Total Hours (Sum UCOT + Proposed Hours), Space only
+		/// </summary>
+		public decimal GrandTotalHours { get; set; }
 	}
 }
