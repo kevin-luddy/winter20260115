@@ -2019,10 +2019,31 @@
         $scope.setDirty();
     };
 
-	$scope.showSkillMix = function () {
-		// Show Skill Mix if Feature Flag enabled and no T&M rates are in the task
-        return $scope.IsSkillMixEnabled && $scope.IsUsingTMRatesInTask === false &&
-            (!$scope.ManageTaskModel.IsSpace || !$scope.isSkillMixManualPerMOQ());
+    $scope.showSkillMix = function () {
+        if ($scope.IsSkillMixEnabled && $scope.IsUsingTMRatesInTask === false) {
+            // Check if there is exactly one MOQ Type selected
+            if ($scope.SelectedMoqTypes.length === 1) {
+                // Space
+                if ($scope.ManageTaskModel.IsSpace) {
+                    // Check if the single MOQ type is one of the big three (Comparative, Historical, Analagous)
+                    let hasBigThreeMoqType = [5001, 5002, 5005, '5001', '5002', '5005'].includes($scope.SelectedMoqTypes[0].SelectedMOQType);
+
+                    // Check if the single MOQ table has a SAP/WEBI repository
+                    let hasSapWebiRepository = $scope.SelectedMoqTypes[0].TableData !== undefined && $scope.SelectedMoqTypes[0].TableData.some(function (table) {
+                        return table.RepositoryName === $scope.ManageTaskModel.SapWebiRepository;
+                    });
+
+                    return hasBigThreeMoqType && hasSapWebiRepository;
+                    // RMS
+                } else {
+                    let hasProperMoqTypes = [5001, 5002, '5001', '5002'].includes($scope.SelectedMoqTypes[0].SelectedMOQType);
+                    return $scope.IsSkillMixEnabled && hasProperMoqTypes;
+                }
+            } else {
+                // If there is not exactly one MOQ Type selected, hide Skill Mix
+                return false;
+            }
+        }
     };
 
     $scope.isSkillMixManual = function () {
@@ -2032,24 +2053,54 @@
     };
 
     $scope.isSkillMixManualPerMOQ = function () {
-        let isSkillMixManual = ($scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0 || !ManageTaskModel.SapConnectionEnabled || !$scope.SelectedMoqTypes.every(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002'));
+        let isSkillMixManual = ($scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0 || !$scope.ManageTaskModel.SapConnectionEnabled || !$scope.SelectedMoqTypes.every(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002'));
         if (!isSkillMixManual && $scope.ManageTaskModel.IsSpace) {
             angular.forEach($scope.SelectedMoqTypes, function (item, key) {
                 if (item.TableData === undefined || item.TableData.length === 0 || !item.TableData.every(y => y.RepositoryName == $scope.ManageTaskModel.SapWebiRepository)) {
                     isSkillMixManual = true;
-                } 
+                }
             });
         }
         return isSkillMixManual;
     };
 
     $scope.isSkillMixDisabled = function () {
-        // Set if Skill Mix is Automatic, but one of the following occurs:
-        // 1) No MOQ Tables
-        // 2) Any MOQ Table is missing SAP Resource Hours
+        // Check if Skill Mix is Automatic
+        let isAutomatic = !$scope.isSkillMixManual();
 
-        return !$scope.isSkillMixManual() && (($scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0) || !$scope.SelectedMoqTypes.every(x => x.TableData !== undefined && x.TableData.length > 0 && x.TableData.every(y => y.ResourceHours !== undefined && y.ResourceHours.length > 0)));
-    }
+        // Check if there are no MOQ Tables
+        let noMoqTables = $scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0;
+
+        // Check if any MOQ Table is missing SAP Resource Hours
+
+        let hasMissingSAPResourceHours = false;
+
+        if ($scope.ManageTaskModel.IsSpace) {
+            // Space
+            hasMissingSAPResourceHours = !$scope.SelectedMoqTypes.every(x =>
+                x.TableData !== undefined &&
+                x.TableData.length > 0 &&
+                x.TableData.some(y =>
+                    y.RepositoryName === $scope.ManageTaskModel.SapWebiRepository
+                )
+            );
+        }
+        else {
+            // RMS
+            hasMissingSAPResourceHours = !$scope.SelectedMoqTypes.every(x =>
+                x.TableData !== undefined &&
+                x.TableData.length > 0 &&
+                x.TableData.every(y =>
+                    (y.ResourceHours !== undefined && y.ResourceHours.length > 0)
+                )
+            );
+        }
+
+        let disabledSkillMix = isAutomatic && (noMoqTables || hasMissingSAPResourceHours);
+
+        // Return true if Skill Mix is Automatic and either of the conditions occur
+        return disabledSkillMix;
+    };
 
     $scope.perfOrgSelected = function (item, model) {
         $scope.setDirty();

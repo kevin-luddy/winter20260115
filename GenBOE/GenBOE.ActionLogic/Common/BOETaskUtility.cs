@@ -6,9 +6,12 @@
 
 namespace GenBOE.ActionLogic.Common
 {
+	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
+	using IES.Common;
+	using IES.Common.classes;
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
@@ -60,6 +63,40 @@ namespace GenBOE.ActionLogic.Common
 				.ToList();
 
 			return CompareResources(ws.TMResourceRatesForWorkspace, resources);
+		}
+
+		/// <summary>
+		/// Helper method to decide if Skill Mix should be shown for a task.
+		/// </summary>
+		/// <param name="workspaceCreationDate">Workspace creation date.</param>
+		/// <param name="hasTMRates">If the task contains any used T&M rates.</param>
+		/// <param name="moqTypeSelections">Moq type selections.</param>
+		/// <returns>To show skill mix for a task.</returns>
+		public static bool ShowSkillMixForTask(DateTime? workspaceCreationDate, bool hasTMRates, ICollection<MoqTypeSelection> moqTypeSelections)
+		{
+			bool showSkillMixRationale = false;
+
+			// Skill mix will be disabled if there is not exactly one MOQ Type selected.
+			if (moqTypeSelections != null && moqTypeSelections.Count() == 1)
+			{
+				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+				{
+					showSkillMixRationale = Utilities.ShowSkillMixForWorkspace(workspaceCreationDate) &&
+						(moqTypeSelections.First().SelectedMOQType == MOQType.Comparative || moqTypeSelections.First().SelectedMOQType == MOQType.Historical);
+				}
+				else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+				{
+					bool hasSapWebi = moqTypeSelections.Any(x => x.TableData.Any(y => y.RepositoryName == RepositoryName.SapWebi.GetDescription()));
+
+					showSkillMixRationale = Utilities.ShowSkillMixForWorkspace(workspaceCreationDate) && !hasTMRates && hasSapWebi &&
+						(moqTypeSelections.First().SelectedMOQType == MOQType.Comparative ||
+						moqTypeSelections.First().SelectedMOQType == MOQType.Historical ||
+						moqTypeSelections.First().SelectedMOQType == MOQType.AnalogousRelationships);
+
+				}
+			}
+
+			return showSkillMixRationale;
 		}
 
 		/// <summary>

@@ -11,6 +11,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
+	using System.Threading.Tasks;
 	using Common;
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.IO.Import;
@@ -90,9 +91,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
 			#region Register Variables
 			// the validation BOE to populate while traversing through the entire BOE
 			ValidationBOEModelView ValidationBOE = new ValidationBOEModelView();
-
-			// the BOE validation to return
-			ValidationBOEModelView toReturn = null;
 
 			// the boe task validation class
 			ValidationBOETasks boeTasks = new ValidationBOETasks();
@@ -240,14 +238,16 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 			inBOE.TaskElements.ForEach(task =>
 			{
-				if (Utilities.ShowSkillMixForTask(ws.CreationDate, BOETaskUtility.IsUsingTMRates(ws, task)))
+				ICollection<MoqTypeSelection> moqTypesForTask = inBOE.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList();
+
+				if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, BOETaskUtility.IsUsingTMRates(ws, task), moqTypesForTask))
 				{
 					ICollection<string> errorMessages = new List<string>();
-					errorMessages = ActionLogicUtility.ValidateSkillMixTable(task.SkillMixTable);
+					errorMessages = ActionLogicUtility.ValidateSkillMixTable(task.SkillMixTable, true);
 
 					if (Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
 					{
-						errorMessages.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(task.CommonDisclosureTable));
+						errorMessages.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(task.CommonDisclosureTable, true));
 					}
 
 					if (errorMessages.Any())
@@ -255,11 +255,25 @@ namespace GenBOE.ActionLogic.WBS.BOE
 						ValidationBOETasks taskValidation = ValidationBOE.Tasks.FirstOrDefault(x => x.TaskId == task.Id);
 						if (taskValidation == null)
 						{
-							taskValidation = new ValidationBOETasks() { TaskId = task.Id, TaskMessage = $"Task: {task.Id} {task.TaskTitle}", TaskElementDetails = new ValidationBOETaskElementDetails() { TaskElementDetailsHeader = "Task Element Details" } };
-						}
+							// If this task doesn't currently have validation, add it
+							taskValidation = new ValidationBOETasks() 
+							{
+								TaskId = task.Id,
+								TaskMessage = $"Task: {task.Id} {task.TaskTitle}",
+								TaskElementDetails = new ValidationBOETaskElementDetails() 
+								{
+									TaskElementDetailsHeader = "Task Element Details",
+									TaskElementDetailValidationMessages = errorMessages.ToCollection()
+								}
+							};
 
-						taskValidation.TaskElementDetails.TaskElementDetailValidationMessages.AddRange(errorMessages);
-						ValidationBOE.Tasks.Add(taskValidation);
+							ValidationBOE.Tasks.Add(taskValidation);
+						}
+						else
+						{
+							// If this task already has validation, add the errors to it
+							taskValidation.TaskElementDetails.TaskElementDetailValidationMessages.AddRange(errorMessages);
+						}
 					}
 				}
 			});
@@ -269,8 +283,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 			// sets the boe ID - this is used on the validate all so we can link the boe's back to the users.
 			ValidationBOE.BOEID = inBOE.Id;
 
-			toReturn = ValidationBOE;
-			return toReturn;
+			return ValidationBOE;
 		}
 
 		/// <summary>
@@ -652,9 +665,11 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 				foreach (BoeTaskElementDTO task in boe.TaskElements)
 				{
+					ICollection<MoqTypeSelection> moqTypesForTask = boe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList();
+
 					// Variables for Validation of Skill Mix Rationale Field
 					bool isUsingTMRatesInTask = BOETaskUtility.IsUsingTMRates(ws, task);
-					bool showSkillMixTable = Utilities.ShowSkillMixForTask(ws.CreationDate, isUsingTMRatesInTask);
+					bool showSkillMixTable = BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, isUsingTMRatesInTask, moqTypesForTask);
 					errorMessages = ValidateTemplateMoqForTask(boe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList(), ws, true, null, showSkillMixTable);
 
 					if (errorMessages.Any())
@@ -701,111 +716,23 @@ namespace GenBOE.ActionLogic.WBS.BOE
 					switch (moqType.SelectedMOQType)
 					{
 						case MOQType.AnalogousRelationships:
+							if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+							{
+								ValidateMoqTable(moqType, ws, onButtonPress, labels, errorMessages);
+							}
+
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.CerName, "Analogous relationship name", Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
 
 							// Only Validate if the SkillMix Rationale field is showing in the MOQ Types Section
 							if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST || !showSkillMixTable)
 							{
-								ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages); 
+								ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
 							}
 							break;
 						case MOQType.Comparative:
 						case MOQType.Historical:
-							if (moqType.TableData.None()) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: Table data is required."); }
-							moqType.TableData.ForEach(row =>
-							{
-								ValidateRequiredField(moqType.SelectedMOQType, row.TableName, labels.TableName, Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
-
-								if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-								{
-									ValidateRequiredField(moqType.SelectedMOQType, row.RepositoryName, labels.RepositoryName, Constants.MOQ_REPOSITORY_NAME_FIELD_LENGTH, errorMessages);
-									ValidateRequiredField(moqType.SelectedMOQType, row.QueryType, labels.QueryType, Constants.MOQ_QUERY_TYPE_FIELD_LENGTH, errorMessages);
-								}
-								else
-								{
-									ValidateRequiredField(moqType.SelectedMOQType, row.ContractNumber, labels.ContractNumber, Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
-									if (!Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate))
-									{
-										if (row.TotalWbsHours <= 0 || Math.Round(row.TotalWbsHours, 2) >= 1000000000) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalWbsHours} must be a number greater than 0 and less than 1,000,000,000."); }
-									}
-								}
-
-								if (row.DateOfReport.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} is required."); }
-								if (row.DateOfReport.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} must be on or before today's date."); }
-
-								ValidateRequiredField(moqType.SelectedMOQType, row.HistoricalProgramName, labels.HistoricalProgramName, Constants.MOQ_HISTORICAL_PROG_NAME_FIELD_LENGTH, errorMessages);
-
-								if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && (!Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate)))
-								{
-									ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, Constants.MOQ_WBS_ELEMENT_RMS_SAP_DISABLED_FIELD_LENGTH, errorMessages);
-								}
-								else
-								{
-									ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, Constants.MOQ_WBS_ELEMENT_FIELD_LENGTH, errorMessages);
-								}
-
-								if (!row.PoPStart.HasValue || row.PoPStart?.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} is required."); }
-								if (row.PoPStart?.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before today's date."); }
-								if (!row.PoPEnd.HasValue || row.PoPEnd?.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} is required."); }
-								if (row.PoPEnd?.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} must be on or before today's date."); }
-
-								if (row.PoPEnd?.Date < row.PoPStart?.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before {labels.PoPEnd}."); }
-
-								if (Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate) && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-								{
-									if (row.PoPStart?.Year > 1 && row.PoPStart?.DayOfWeek != DayOfWeek.Monday)
-									{
-										errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on a Monday.");
-									}
-
-									if (row.PoPEnd?.Year > 1 && row.PoPEnd?.DayOfWeek != DayOfWeek.Sunday)
-									{
-										errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} must be on a Sunday.");
-									}
-								}
-								// Only have Datepicker restriction for RMS Workspace that has SAP integration enabled
-								if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && ws.EnableSAPConnection && row.PoPStart?.Date < Utilities.DatepickerRestrictionRMS)
-								{
-									errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be after {Utilities.DatepickerRestrictionRMS.ToShortDateString()}.");
-								}
-
-								// check PopStart/End for Space Fiscal Weekly DateTime
-								if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems &&
-									!Utilities.IsWorkspaceBeforeSAPCutoff(ws.CreationDate) &&
-									Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate) &&
-									row.RepositoryName == RepositoryName.SapWebi.GetDescription() &&
-									row.QueryType == MoqTableData.WEEKLY)
-								{
-									// SAP is enabled, only allow sundays to be selected
-									if (row.PoPStart?.Year > 1 && row.PoPStart?.DayOfWeek != DayOfWeek.Sunday)
-									{
-										errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on a Sunday.");
-									}
-
-									if (row.PoPEnd?.Year > 1 && row.PoPEnd?.DayOfWeek != DayOfWeek.Sunday)
-									{
-										errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} must be on a Sunday.");
-									}
-								}
-
-								// "Additional Query Fields" is required ONLY when SAP is disabled OR (Company mode == space && repository name != SAP / Webi) OR (Company mode == RMS && SAP Connection is disabled for the ws)
-								if ((!Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate) ||
-										(SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && row.RepositoryName != RepositoryName.SapWebi.GetDescription()) ||
-										SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && !ws.EnableSAPConnection)
-									&& string.IsNullOrEmpty(row.AdditionalQueryFilters))
-								{
-									errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.AdditionalQueryFilters} is required, otherwise indicate N/A.");
-								}
-
-								if (row.TotalRelevantHours <= 0 || Math.Round(row.TotalRelevantHours, 2) >= 1000000000) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalRelevantHours} must be a number greater than 0 and less than 1,000,000,000."); }
-
-								if (onButtonPress)
-								{
-									// only run this as part of the Validate BOE button validation as it relies on using already saved data - save validation of custom fields is handled elsewhere
-									errorMessages.AddRange(this.ValidateCustomFields(ws, CustomFieldType.MoqTypeTableDataDisplay, ws.MoqTypeTableMappingWithCustomFieldsValuesAndContainerIds, row.Id));
-								}
-							});
+							ValidateMoqTable(moqType, ws, onButtonPress, labels, errorMessages);
 
 							ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
 
@@ -854,7 +781,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
 						default:
 							errorMessages.Add("Invalid MOQ Type selected");
 							break;
-					};
+					}
+					;
 				});
 			}
 
@@ -877,6 +805,112 @@ namespace GenBOE.ActionLogic.WBS.BOE
 			}
 
 			ValidateFieldLength(maxFieldLength, field, label, errorMessages);
+		}
+
+		/// <summary>
+		/// Validates MOQ Tables for an MOQ Type
+		/// </summary>
+		/// <param name="moqType">MOQ Type containing table</param>
+		/// <param name="ws">Workspace</param>
+		/// <param name="onButtonPress">True if this validation is being performed as part of the Validate BOE button</param>
+		/// <param name="labels">Moq Type Table Data Labels</param>
+		/// <param name="errorMessages">Error Messages</param>
+		private void ValidateMoqTable(MoqTypeSelection moqType, FullWorkspace ws, bool onButtonPress, MoqTypeTableDataLabels labels, Collection<string> errorMessages)
+		{
+			if (moqType.TableData.None()) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: Table data is required."); }
+			moqType.TableData.ForEach(row =>
+			{
+				ValidateRequiredField(moqType.SelectedMOQType, row.TableName, labels.TableName, Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
+
+				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+				{
+					ValidateRequiredField(moqType.SelectedMOQType, row.RepositoryName, labels.RepositoryName, Constants.MOQ_REPOSITORY_NAME_FIELD_LENGTH, errorMessages);
+					ValidateRequiredField(moqType.SelectedMOQType, row.QueryType, labels.QueryType, Constants.MOQ_QUERY_TYPE_FIELD_LENGTH, errorMessages);
+				}
+				else
+				{
+					ValidateRequiredField(moqType.SelectedMOQType, row.ContractNumber, labels.ContractNumber, Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
+					if (!Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate))
+					{
+						if (row.TotalWbsHours <= 0 || Math.Round(row.TotalWbsHours, 2) >= 1000000000) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalWbsHours} must be a number greater than 0 and less than 1,000,000,000."); }
+					}
+				}
+
+				if (row.DateOfReport.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} is required."); }
+				if (row.DateOfReport.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} must be on or before today's date."); }
+
+				ValidateRequiredField(moqType.SelectedMOQType, row.HistoricalProgramName, labels.HistoricalProgramName, Constants.MOQ_HISTORICAL_PROG_NAME_FIELD_LENGTH, errorMessages);
+
+				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && (!Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate)))
+				{
+					ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, Constants.MOQ_WBS_ELEMENT_RMS_SAP_DISABLED_FIELD_LENGTH, errorMessages);
+				}
+				else
+				{
+					ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, Constants.MOQ_WBS_ELEMENT_FIELD_LENGTH, errorMessages);
+				}
+
+				if (!row.PoPStart.HasValue || row.PoPStart?.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} is required."); }
+				if (row.PoPStart?.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before today's date."); }
+				if (!row.PoPEnd.HasValue || row.PoPEnd?.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} is required."); }
+				if (row.PoPEnd?.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} must be on or before today's date."); }
+
+				if (row.PoPEnd?.Date < row.PoPStart?.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before {labels.PoPEnd}."); }
+
+				if (Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate) && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+				{
+					if (row.PoPStart?.Year > 1 && row.PoPStart?.DayOfWeek != DayOfWeek.Monday)
+					{
+						errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on a Monday.");
+					}
+
+					if (row.PoPEnd?.Year > 1 && row.PoPEnd?.DayOfWeek != DayOfWeek.Sunday)
+					{
+						errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} must be on a Sunday.");
+					}
+				}
+				// Only have Datepicker restriction for RMS Workspace that has SAP integration enabled
+				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && ws.EnableSAPConnection && row.PoPStart?.Date < Utilities.DatepickerRestrictionRMS)
+				{
+					errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be after {Utilities.DatepickerRestrictionRMS.ToShortDateString()}.");
+				}
+
+				// check PopStart/End for Space Fiscal Weekly DateTime
+				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems &&
+								!Utilities.IsWorkspaceBeforeSAPCutoff(ws.CreationDate) &&
+								Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate) &&
+								row.RepositoryName == RepositoryName.SapWebi.GetDescription() &&
+								row.QueryType == MoqTableData.WEEKLY)
+				{
+					// SAP is enabled, only allow sundays to be selected
+					if (row.PoPStart?.Year > 1 && row.PoPStart?.DayOfWeek != DayOfWeek.Sunday)
+					{
+						errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on a Sunday.");
+					}
+
+					if (row.PoPEnd?.Year > 1 && row.PoPEnd?.DayOfWeek != DayOfWeek.Sunday)
+					{
+						errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} must be on a Sunday.");
+					}
+				}
+
+				// "Additional Query Fields" is required ONLY when SAP is disabled OR (Company mode == space && repository name != SAP / Webi) OR (Company mode == RMS && SAP Connection is disabled for the ws)
+				if ((!Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate) ||
+									(SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && row.RepositoryName != RepositoryName.SapWebi.GetDescription()) ||
+									SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && !ws.EnableSAPConnection)
+								&& string.IsNullOrEmpty(row.AdditionalQueryFilters))
+				{
+					errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.AdditionalQueryFilters} is required, otherwise indicate N/A.");
+				}
+
+				if (row.TotalRelevantHours <= 0 || Math.Round(row.TotalRelevantHours, 2) >= 1000000000) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalRelevantHours} must be a number greater than 0 and less than 1,000,000,000."); }
+
+				if (onButtonPress)
+				{
+					// only run this as part of the Validate BOE button validation as it relies on using already saved data - save validation of custom fields is handled elsewhere
+					errorMessages.AddRange(ValidateCustomFields(ws, CustomFieldType.MoqTypeTableDataDisplay, ws.MoqTypeTableMappingWithCustomFieldsValuesAndContainerIds, row.Id));
+				}
+			});
 		}
 
 		/// <summary>

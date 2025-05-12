@@ -1044,29 +1044,6 @@ namespace IES.Common.Core.Utilities
 		}
 
 		/// <summary>
-		/// Is Skill Mix connection shown to the user for this task
-		/// </summary>
-		/// <param name="workspaceCreationDate">Workspace creation date.</param>
-		/// <param name="hasTMRates">Is the task using T&M rates</param>
-		/// <returns>Option to show skill mix for task.</returns>
-		public static bool ShowSkillMixForTask(DateTime? workspaceCreationDate, bool hasTMRates)
-		{
-			bool showSkillMixRationale = false;
-
-			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-			{
-				showSkillMixRationale = ShowSkillMixForWorkspace(workspaceCreationDate);
-			}
-			// For space only: Shows Skill Mix Rationale section when the workspace is NOT using T&M.
-			else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-			{
-				showSkillMixRationale = ShowSkillMixForWorkspace(workspaceCreationDate) && !hasTMRates;
-			}
-
-			return showSkillMixRationale;
-		}
-
-		/// <summary>
 		/// Returns true/false indicating whether the external help links should be shut off. This is used for classified installations, 
 		/// to not point at unclassified locations that are not accessible.
 		/// </summary>

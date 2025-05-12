@@ -1810,7 +1810,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			List<MoqTypeSelection> moqTypesToSave = new List<MoqTypeSelection>();
 			foreach (MoqTypeSelection moqType in ws.MoqTypeSelections)
 			{
-				if ((moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative) &&
+				if ((moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative
+					|| (!isRMS && moqType.SelectedMOQType == MOQType.AnalogousRelationships)) &&
 					moqType.TableData != null && moqType.TableData.Any())
 				{
 					moqTypesToSave.Add(moqType);

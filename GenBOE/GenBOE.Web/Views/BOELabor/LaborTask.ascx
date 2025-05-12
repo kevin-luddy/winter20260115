@@ -997,6 +997,7 @@
                                     <th data-ng-if="ManageTaskModel.IsSpace" class="boeSkillMixCol">Proposed Skill Mix</th>
                                     <th class="proposedHoursCol">Proposed Hours</th>
                                     <th>Rationale**</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="rmsButtonCol"></th>
                                 </tr>
                             </thead>
                             <tbody>
