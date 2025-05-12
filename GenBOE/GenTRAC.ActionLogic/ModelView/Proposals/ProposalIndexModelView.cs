@@ -95,7 +95,7 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         }
 
         /// <summary>
-        /// Determines wheter the logged in user is a US user.
+        /// Determines whether the logged in user is a US user.
         /// </summary>
         public bool IsUsUser { get; set; }
 

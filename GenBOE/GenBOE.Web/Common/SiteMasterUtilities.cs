@@ -16,9 +16,6 @@ namespace GenBOE.Web.Common
 	using IES.Common;
 	using GenBOE.Objects;
 	using IES.Common.classes;
-	using System.Collections.Generic;
-	using GenBOE.Dtos;
-	using System.Linq;
 
 	[ExcludeFromCodeCoverage]
 	sealed public class SiteMasterUtilities
@@ -375,6 +372,16 @@ namespace GenBOE.Web.Common
 			{
 				return ConfigurationUtilities.GetAppSetting("UnclassifiedBannerText");
 			}
+		}
+
+		/// <summary>
+		/// Gets Banner Text from Web Config
+		/// </summary>
+		/// <param name="containsOCI">Does the Data Contain OCI Data?</param>
+		/// <returns>Text for Banner</returns>
+		public static string GetBannerText(bool containsOCI = false)
+		{
+			return containsOCI ? ConfigurationUtilities.GetAppSetting("BannerTextWithoutOCI") : ConfigurationUtilities.GetAppSetting("BannerTextWithOCI");
 		}
 	}
 }

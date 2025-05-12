@@ -211,8 +211,8 @@ namespace GenBOE.ActionLogic
         /// <param name="ws">Workspace containing BOEs</param>
         /// <param name="templateFileName">file name of the template used for export</param>
         /// <param name="blankTemplate">Bool to determine if template should be blank or contain all BOEs</param>
-        /// <returns>exprted file name and formatted filename in an array</returns>
-        string[] ExportManageBOE(FullWorkspace ws, string templateFileName, bool blankTemplate);
+        /// <returns>exported file name and formatted filename in an array</returns>
+        Task<string[]> ExportManageBOE(FullWorkspace ws, string templateFileName, bool blankTemplate);
 
         /// <summary>
         /// Performs actions to start import of BOEs on the Manage BOEs page
@@ -220,8 +220,8 @@ namespace GenBOE.ActionLogic
         /// <param name="ws">Workspace containing BOEs</param>
         /// <param name="Request">current HTTP request</param>
         /// <param name="dataToSave">(output) Data to be saved by import</param>
-        /// <param name="errorsOccurred">(output) bool noting if any errors occured</param>
-        /// <param name="exception">(output) Exception if any occured</param>
+        /// <param name="errorsOccurred">(output) bool noting if any errors occurred</param>
+        /// <param name="exception">(output) Exception if any occurred</param>
         /// <returns>Modelview of the import results</returns>
         Collection<ImportBoeResultsModelView> ImportManageBOE(FullWorkspace ws, HttpRequestBase Request, out ICollection<ImportBoeResultsModelView> dataToSave, out bool errorsOccurred, out Exception exception);
 

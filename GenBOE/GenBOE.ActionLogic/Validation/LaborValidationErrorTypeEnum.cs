@@ -7,7 +7,7 @@
 namespace GenBOE.ActionLogic.Validation
 {
     /// <summary>
-    /// Enum used for validation of Tasks, to keep track of the level at which the error has occured
+    /// Enum used for validation of Tasks, to keep track of the level at which the error has occurred
     /// </summary>
     public enum LaborValidationErrorTypeEnum
     {

@@ -1521,6 +1521,10 @@ namespace GenBOE.ActionLogic.IO.Export
 							string workspaceUrl = ConfigurationUtilities.GetAppSetting("ServerURL") + "/" + workspaceShortname;
 							newResourceRow.Append(DOUBLE_QUOTE).Append(workspaceUrl.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
 							break;
+						case ProPricerField_Resources.MOQType:
+							newResourceRow.Append(DOUBLE_QUOTE).Append(GetTaskMoqType(wsLevelData, boeTask)).Append(DOUBLE_QUOTE).Append(END_FIELD);
+							break;
+
 					}
 
 					if (taskField.CustomFieldID.HasValue)

@@ -53,11 +53,11 @@ namespace GenBOE.Reports.Backend.Controllers
 		/// </summary>
 		/// <param name="workspace">The current workspace</param>
 		/// <param name="selectedComponents">List of BOEs to be included in the report; if null, then include ALL</param>
-		/// <param name="isCustomExport">Flag indicating wheter the export is a custom export</param>
+		/// <param name="isCustomExport">Flag indicating whether the export is a custom export</param>
 		/// <param name="wsExportFormatDTO">the Workspace Format DTO</param>
 		/// <param name="exportInputs">the export inputs</param>
 		/// <param name="boeExportModelViews">the boe export model views</param>
-		/// <param name="boeSummaryGridModelViews">the boe summary grid model veiws</param>
+		/// <param name="boeSummaryGridModelViews">the boe summary grid model views</param>
 		/// <param name="segmentedOutput">Should the output be broken into segments and zipped</param>
 		[HttpPost("[action]")]
 		public async Task<IESResponse<byte[]>> ExportBoeToWord(ExportBoeWordRequestViewModel requestModel)
@@ -98,7 +98,6 @@ namespace GenBOE.Reports.Backend.Controllers
 				this.log.LogError(e, "Unknown Exception.");
 
 				string supportLink = CommonUtilities.ServiceCentralLink();
-
 				response.Messages.Add($"An error has occurred.  This might be the result of invalid data.  If the data is valid, and the error persists, please create a ticket with IES Helpdesk at {supportLink}.");
 			}
 			finally
@@ -120,37 +119,44 @@ namespace GenBOE.Reports.Backend.Controllers
 		}
 
 		/// <summary>
-		/// Exports BOE to Excel
+		/// Exports Manage BOEs to Excel
 		/// </summary>
 		/// <param name="requestModel"></param>
 		/// <returns></returns>
 		[HttpPost("[action]")]
-		public async Task<IActionResult> ExportBoeToExcel(BOEExcelExportInputs requestModel)
+		public async Task<IESResponse<byte[]>> ExportManageBoesToExcel(BOEExcelExportInputs requestModel)
 		{
+			IESResponse<byte[]> response = new();
 			string tempFileLocation = string.Empty;
-			string exportedFileName = string.Empty;
 			try
 			{
-				FileStream fs;
-				tempFileLocation = this.boeExportService.ExportBoeToExcel(requestModel);
+				tempFileLocation = this.boeExportService.ExportManageBoesToExcel(requestModel);
+				response.Data = System.IO.File.ReadAllBytes(tempFileLocation);
 
-				fs = new(tempFileLocation, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
-				exportedFileName = string.Format("genBOEExcelExport-{0}.zip", requestModel.WorkspaceName).Replace(",", string.Empty);
-				
-
-				// Generate a custom ActionResult to cause a file download to the client
-				fs.Seek(0, SeekOrigin.Begin);
-
-				return this.File(
-					fileStream: fs,
-					contentType: ExportFileDownloadBase.ContentType_XLSX,
-					fileDownloadName: exportedFileName);
+				response.IsSuccessful = true;
 			}
 			catch (Exception e)
 			{
 				this.log.LogError(e, "Unknown Exception.");
-				return await this.CreateTextFileWithErrorMessage(e.Message);
+				string supportLink = CommonUtilities.ServiceCentralLink();
+				response.Messages.Add($"An error has occurred.  This might be the result of invalid data.  If the data is valid, and the error persists, please create a ticket with IES Helpdesk at {supportLink}.");
 			}
+			finally
+			{
+				if (!string.IsNullOrWhiteSpace(tempFileLocation) && System.IO.File.Exists(tempFileLocation))
+				{
+					try
+					{
+						System.IO.File.Delete(tempFileLocation);
+					}
+					catch
+					{
+						// if it errored out, that is ok
+					}
+				}
+			}
+
+			return response;
 		}
 
 		[HttpGet("[action]")]

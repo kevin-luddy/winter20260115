@@ -401,9 +401,9 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 .Returns(new Collection<PerformingOrgDTO>() {perfOrg1, perfOrg2});
             retriever.Setup(x => x.GetPerformingOrgsByIds(It.IsAny<ICollection<int>>()))
                 .Returns(new Collection<PerformingOrgDTO>() {perfOrg1, perfOrg2});
-            retriever.Setup(x => x.GetOdcCollectionByBoeIds(It.IsAny<ICollection<int>>(), It.IsAny<bool>()))
+            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>()))
                 .Returns(new Collection<OtherDirectCostDTO>());
-            retriever.Setup(x => x.GetMaterialsByBoeIds(It.IsAny<Collection<int>>(), It.IsAny<bool>()))
+            retriever.Setup(x => x.GetMaterialsByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>()))
                 .Returns(new Collection<MaterialDTO>());
             retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>()))
                 .Returns(new Collection<ResourceDTO>() {resource1, resource2, subresource1, subresource2 });

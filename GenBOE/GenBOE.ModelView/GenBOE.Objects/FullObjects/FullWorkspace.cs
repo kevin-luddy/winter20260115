@@ -970,12 +970,12 @@ namespace GenBOE.Objects
 		{
 			get
 			{
-				if (this.materials == null)
+				if (materials == null)
 				{
-					this.materials = this.retriever.GetMaterialsByBoeIds(this.Boes.Select(x => x.Id).ToCollection(), false).ToList().AsReadOnly();
+					this.materials = retriever.GetMaterialsByWorkspaceId(Id, false).ToList().AsReadOnly();
 				}
 
-				return this.materials;
+				return materials;
 			}
 		}
 
@@ -984,15 +984,15 @@ namespace GenBOE.Objects
 		/// </summary>
 		public void LoadMaterialsRTEData()
 		{
-			if (this.materials == null)
+			if (materials == null)
 			{
 				// Data has not been pulled yet, so we can do a full retrieval, including the RTE data
-				this.materials = this.retriever.GetMaterialsByBoeIds(this.Boes.Select(x => x.Id).ToCollection(), true).ToList().AsReadOnly();
+				materials = retriever.GetMaterialsByWorkspaceId(Id, true).ToList().AsReadOnly();
 			}
 			else
 			{
 				// Data was already retrieved, so we are only missing the RTE data, which we'll now load
-				this.retriever.PopulateRTEData(this.materials);
+				retriever.PopulateRTEData(materials);
 			}
 		}
 
@@ -1003,12 +1003,12 @@ namespace GenBOE.Objects
 		{
 			get
 			{
-				if (this.odcs == null)
+				if (odcs == null)
 				{
-					this.odcs = this.retriever.GetOdcCollectionByBoeIds(this.Boes.Select(x => x.Id).ToList(), false).ToList().AsReadOnly();
+					odcs = retriever.GetOdcCollectionByWorkspaceId(Id, false).ToList().AsReadOnly();
 				}
 
-				return this.odcs;
+				return odcs;
 			}
 		}
 
@@ -1017,15 +1017,15 @@ namespace GenBOE.Objects
 		/// </summary>
 		public void LoadODCsRTEData()
 		{
-			if (this.odcs == null)
+			if (odcs == null)
 			{
 				// Data has not been pulled yet, so we can do a full retrieval, including the RTE data
-				this.odcs = this.retriever.GetOdcCollectionByBoeIds(this.Boes.Select(x => x.Id).ToList(), true).ToList().AsReadOnly();
+				odcs = retriever.GetOdcCollectionByWorkspaceId(Id, true).ToList().AsReadOnly();
 			}
 			else
 			{
 				// Data was already retrieved, so we are only missing the RTE data, which we'll now load
-				this.retriever.PopulateRTEData(this.odcs);
+				this.retriever.PopulateRTEData(odcs);
 			}
 		}
 

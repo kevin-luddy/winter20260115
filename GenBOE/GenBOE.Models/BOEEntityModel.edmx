@@ -69,7 +69,7 @@
           <Property Name="ChangedByETIUserID" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'genBOEMST_DEV.dbo.BOECopyMetric' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_DEV.dbo.BOECopyMetric' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="BOECopyMetric">
           <Key>
             <PropertyRef Name="CreateDate" />
@@ -79,7 +79,7 @@ warning 6002: The table/view 'genBOEMST_DEV.dbo.BOECopyMetric' does not have a p
           <Property Name="CreateDate" Type="datetime2" Precision="7" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'genBOEMST_DEV.dbo.BOECopySource' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_DEV.dbo.BOECopySource' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="BOECopySource">
           <Key>
             <PropertyRef Name="BOEID" />
@@ -110,7 +110,7 @@ warning 6002: The table/view 'genBOEMST_DEV.dbo.BOECopySource' does not have a p
           <Property Name="CreateDate" Type="datetime2" Precision="7" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'genBOEMST_DEV.dbo.BOECopyTarget' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_DEV.dbo.BOECopyTarget' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="BOECopyTarget">
           <Key>
             <PropertyRef Name="BOEID" />
@@ -179,7 +179,7 @@ warning 6002: The table/view 'genBOEMST_DEV.dbo.BOECopyTarget' does not have a p
           <Property Name="FormVersion" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'genBOEMST_DEV.dbo.BOEFormIBOECLINsXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_DEV.dbo.BOEFormIBOECLINsXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="BOEFormIBOECLINsXREF">
           <Key>
             <PropertyRef Name="IBOEFormID" />
@@ -191,7 +191,7 @@ warning 6002: The table/view 'genBOEMST_DEV.dbo.BOEFormIBOECLINsXREF' does not h
           <Property Name="ContractType" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'genBOEMST_DEV.dbo.BOEFormIBOEResourcesXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_DEV.dbo.BOEFormIBOEResourcesXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="BOEFormIBOEResourcesXREF">
           <Key>
             <PropertyRef Name="IBOEFormID" />
@@ -293,7 +293,7 @@ warning 6002: The table/view 'genBOEMST_DEV.dbo.BOEFormIBOEResourcesXREF' does n
           <Property Name="SupplierProposedValue" Type="decimal" Precision="13" Scale="2" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'genBOEMST_DEV.dbo.BOEFormPBOECLINsXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_DEV.dbo.BOEFormPBOECLINsXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="BOEFormPBOECLINsXREF">
           <Key>
             <PropertyRef Name="PBOEFormID" />
@@ -305,7 +305,7 @@ warning 6002: The table/view 'genBOEMST_DEV.dbo.BOEFormPBOECLINsXREF' does not h
           <Property Name="ContractType" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'genBOEMST_DEV.dbo.BOEFormPBOEResourcesXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_DEV.dbo.BOEFormPBOEResourcesXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="BOEFormPBOEResourcesXREF">
           <Key>
             <PropertyRef Name="PBOEFormID" />
@@ -493,6 +493,15 @@ warning 6002: The table/view 'genBOEMST_DEV.dbo.BOEFormPBOEResourcesXREF' does n
           <Property Name="CostElementID" Type="int" Nullable="false" />
           <Property Name="CostElement" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
+        <EntityType Name="CurrentRequest">
+          <Key>
+            <PropertyRef Name="CurrentRequestID" />
+          </Key>
+          <Property Name="CurrentRequestID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Ntid" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="RequestTypeID" Type="int" Nullable="false" />
+          <Property Name="UpdateDT" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="CustomField">
           <Key>
             <PropertyRef Name="CustomFieldID" />
@@ -660,7 +669,7 @@ warning 6002: The table/view 'genBOEMST_DEV.dbo.BOEFormPBOEResourcesXREF' does n
           <Property Name="DateOfReport" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="HistoricalProgramName" Type="varchar" MaxLength="125" Nullable="false" />
           <Property Name="ContractNumber" Type="varchar" MaxLength="255" />
-          <Property Name="WbsElement" Type="varchar" MaxLength="2500" Nullable="false" />
+          <Property Name="WbsElement" Type="varchar" MaxLength="8000" />
           <Property Name="PeriodOfPerformanceStartDate" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="PeriodOfPerformanceEndDate" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="TotalWbsHours" Type="decimal" Precision="11" Scale="2" Nullable="false" />
@@ -1025,6 +1034,13 @@ warning 6002: The table/view 'genBOEMST_DEV.dbo.BOEFormPBOEResourcesXREF' does n
           <Property Name="ReportName" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="500" />
         </EntityType>
+        <EntityType Name="RequestTypeLU">
+          <Key>
+            <PropertyRef Name="RequestTypeID" />
+          </Key>
+          <Property Name="RequestTypeID" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="20" Nullable="false" />
+        </EntityType>
         <EntityType Name="Resource">
           <Key>
             <PropertyRef Name="ResourceID" />
@@ -1363,7 +1379,7 @@ warning 6002: The table/view 'genBOEMST_DEV.dbo.BOEFormPBOEResourcesXREF' does n
           <Property Name="DestinationLocationCode" Type="varchar" MaxLength="10" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'genBOEMST_DEV.dbo.UserAccessReport' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_DEV.dbo.UserAccessReport' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="UserAccessReport">
           <Key>
             <PropertyRef Name="LogInUpdateDT" />
@@ -1373,7 +1389,7 @@ warning 6002: The table/view 'genBOEMST_DEV.dbo.UserAccessReport' does not have 
           <Property Name="NTID" Type="varchar" MaxLength="1000" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'genBOEMST_DEV.dbo.UserLog' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_DEV.dbo.UserLog' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="UserLog">
           <Key>
             <PropertyRef Name="LogInUpdateDT" />
@@ -1474,7 +1490,7 @@ warning 6002: The table/view 'genBOEMST_DEV.dbo.UserLog' does not have a primary
           <Property Name="ContractTypeID" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'genBOEMST_DEV.dbo.WorkspaceCopyMetric' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_DEV.dbo.WorkspaceCopyMetric' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="WorkspaceCopyMetric">
           <Key>
             <PropertyRef Name="CreateDate" />
@@ -1697,7 +1713,7 @@ warning 6002: The table/view 'genBOEMST_DEV.dbo.WorkspaceCopyMetric' does not ha
           <Property Name="WorkspaceID" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'genBOEMST_DEV.version.BOE' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_DEV.version.BOE' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="BOE1">
           <Key>
             <PropertyRef Name="BOEID" />
@@ -1728,7 +1744,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.BOE' does not have a primary
           <Property Name="IsMultiClinWbs" Type="bit" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'genBOEMST_DEV.version.CLIN' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_DEV.version.CLIN' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="CLIN1">
           <Key>
             <PropertyRef Name="CLINID" />
@@ -1748,7 +1764,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.CLIN' does not have a primar
           <Property Name="ContractTypeID" Type="int" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'genBOEMST_DEV.version.WBS_CLIN_BOE_XREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_DEV.version.WBS_CLIN_BOE_XREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="WBS_CLIN_BOE_XREF1">
           <Key>
             <PropertyRef Name="WCBID" />
@@ -1761,7 +1777,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WBS_CLIN_BOE_XREF' does not 
           <Property Name="VersionID" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="WorkBreakdownStructure1">
           <Key>
             <PropertyRef Name="WBSID" />
@@ -1777,7 +1793,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
           <Property Name="VersionID" Type="int" Nullable="false" />
           <Property Name="WorkspaceDTCElementID" Type="int" />
         </EntityType>
-        <Association Name="FK__MOQTypeSe__MOQTy__5EF51AE8">
+        <Association Name="FK__MOQTypeSe__MOQTy__2B0636C1">
           <End Role="MOQTypeLU" Type="Self.MOQTypeLU" Multiplicity="1" />
           <End Role="MOQTypeSelection" Type="Self.MOQTypeSelection" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1789,7 +1805,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__MOQTypeSe__MOQTy__63B9D005">
+        <Association Name="FK__MOQTypeSe__MOQTy__2FCAEBDE">
           <End Role="MOQTypeSelection" Type="Self.MOQTypeSelection" Multiplicity="1" />
           <End Role="MOQTypeSelectionTableData" Type="Self.MOQTypeSelectionTableData" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1801,7 +1817,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__MOQTypeSe__TaskI__5E00F6AF">
+        <Association Name="FK__MOQTypeSe__TaskI__2A121288">
           <End Role="BOETaskElement" Type="Self.BOETaskElement" Multiplicity="1" />
           <End Role="MOQTypeSelection" Type="Self.MOQTypeSelection" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1813,7 +1829,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__MoqTypeTa__Custo__5190FE29">
+        <Association Name="FK__MoqTypeTa__Custo__503886C7">
           <End Role="CustomFieldValue" Type="Self.CustomFieldValue" Multiplicity="1" />
           <End Role="MoqTypeTableCustomFieldValueXREF" Type="Self.MoqTypeTableCustomFieldValueXREF" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1825,7 +1841,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__MoqTypeTa__MoqTy__509CD9F0">
+        <Association Name="FK__MoqTypeTa__MoqTy__4F44628E">
           <End Role="MOQTypeSelectionTableData" Type="Self.MOQTypeSelectionTableData" Multiplicity="1" />
           <End Role="MoqTypeTableCustomFieldValueXREF" Type="Self.MoqTypeTableCustomFieldValueXREF" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1837,7 +1853,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__MSTTravel__ModeI__32063FC9">
+        <Association Name="FK__MSTTravel__ModeI__355CA394">
           <End Role="MSTTravelModeLU" Type="Self.MSTTravelModeLU" Multiplicity="1" />
           <End Role="MSTTravelNonzoneFeesAndCosts" Type="Self.MSTTravelNonzoneFeesAndCosts" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1849,7 +1865,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__MSTZoneTr__Origi__2A2526DF">
+        <Association Name="FK__MSTZoneTr__Origi__53021514">
           <End Role="MSTZoneTravelOrigin" Type="Self.MSTZoneTravelOrigin" Multiplicity="1" />
           <End Role="MSTZoneTravelResource" Type="Self.MSTZoneTravelResource" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1861,7 +1877,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__ProjectMa__Legac__3B13B472">
+        <Association Name="FK__ProjectMa__Legac__3AD8B324">
           <End Role="SikorskyLegacyResource" Type="Self.SikorskyLegacyResource" Multiplicity="0..1" />
           <End Role="ProjectMap" Type="Self.ProjectMap" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1873,7 +1889,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__ProjectMa__Proje__248EAB1F">
+        <Association Name="FK__ProjectMa__Proje__6AB11821">
           <End Role="ProjectMap" Type="Self.ProjectMap" Multiplicity="1" />
           <End Role="ProjectMapSpread" Type="Self.ProjectMapSpread" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1885,7 +1901,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__TMResourc__TMRes__13E276B3">
+        <Association Name="FK__TMResourc__TMRes__2C7E1027">
           <End Role="Resource" Type="Self.Resource" Multiplicity="1" />
           <End Role="TMResourceRate" Type="Self.TMResourceRate" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1897,7 +1913,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__TMResourc__Works__12EE527A">
+        <Association Name="FK__TMResourc__Works__2B89EBEE">
           <End Role="Workspace" Type="Self.Workspace" Multiplicity="1" />
           <End Role="TMResourceRate" Type="Self.TMResourceRate" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1909,7 +1925,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Workspace__ModeI__37BF191F">
+        <Association Name="FK__Workspace__ModeI__3B157CEA">
           <End Role="MSTTravelModeLU" Type="Self.MSTTravelModeLU" Multiplicity="1" />
           <End Role="WorkspaceRMSTravelNonzoneFeesAndCosts" Type="Self.WorkspaceRMSTravelNonzoneFeesAndCosts" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1921,7 +1937,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Workspace__Proje__0F1DC196">
+        <Association Name="FK__Workspace__Proje__27B95B0A">
           <End Role="ProjectMapTypeLU" Type="Self.ProjectMapTypeLU" Multiplicity="1" />
           <End Role="Workspace" Type="Self.Workspace" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1933,7 +1949,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Workspace__Works__06887B95">
+        <Association Name="FK__Workspace__Works__1F241509">
           <End Role="Workspace" Type="Self.Workspace" Multiplicity="1" />
           <End Role="WorkspaceOffloadRate" Type="Self.WorkspaceOffloadRate" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1945,7 +1961,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Workspace__Works__38B33D58">
+        <Association Name="FK__Workspace__Works__3C09A123">
           <End Role="Workspace" Type="Self.Workspace" Multiplicity="1" />
           <End Role="WorkspaceRMSTravelNonzoneFeesAndCosts" Type="Self.WorkspaceRMSTravelNonzoneFeesAndCosts" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1957,7 +1973,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Workspace__Works__3C83CE3C">
+        <Association Name="FK__Workspace__Works__3FDA3207">
           <End Role="Workspace" Type="Self.Workspace" Multiplicity="1" />
           <End Role="WorkspaceRMSTravelEscalationRate" Type="Self.WorkspaceRMSTravelEscalationRate" Multiplicity="*" />
           <ReferentialConstraint>
@@ -2662,6 +2678,18 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
             </Principal>
             <Dependent Role="CommonDisclosureSkillMix">
               <PropertyRef Name="BOETaskElementID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CurrentRequest_RequestTypeLU">
+          <End Role="RequestTypeLU" Type="Self.RequestTypeLU" Multiplicity="1" />
+          <End Role="CurrentRequest" Type="Self.CurrentRequest" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RequestTypeLU">
+              <PropertyRef Name="RequestTypeID" />
+            </Principal>
+            <Dependent Role="CurrentRequest">
+              <PropertyRef Name="RequestTypeID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -4343,6 +4371,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
         <Function Name="deleteAllMSTTravelTripTaskElements" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="BoeId" Type="int" Mode="In" />
         </Function>
+        <Function Name="deleteAllRequests" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="deleteAllTravelTripTaskElements" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="BoeId" Type="int" Mode="In" />
         </Function>
@@ -4503,6 +4532,10 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
         <Function Name="deleteProPricerExportTasks" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProPricerExportID" Type="int" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
+        </Function>
+        <Function Name="deleteRequest" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="RequestTypeID" Type="int" Mode="In" />
+          <Parameter Name="Ntid" Type="varchar" Mode="In" />
         </Function>
         <Function Name="deleteResourceList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ResourceListID" Type="int" Mode="In" />
@@ -4786,6 +4819,11 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
         <Function Name="insertReportXml" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Nonce" Type="varchar" Mode="In" />
           <Parameter Name="xml" Type="varchar(max)" Mode="In" />
+        </Function>
+        <Function Name="insertRequest" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="RequestTypeID" Type="int" Mode="In" />
+          <Parameter Name="Ntid" Type="varchar" Mode="In" />
+          <Parameter Name="NewRequestID" Type="int" Mode="InOut" />
         </Function>
         <Function Name="insertSkillMixviaTableParameter" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="insertSumOfBOE_OrdinaryVariable" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
@@ -5627,6 +5665,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
           <EntitySet Name="CommonDisclosureSkillMix" EntityType="Self.CommonDisclosureSkillMix" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ContractTypeLU" EntityType="Self.ContractTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CostElementLU" EntityType="Self.CostElementLU" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CurrentRequest" EntityType="Self.CurrentRequest" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CustomField" EntityType="Self.CustomField" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CustomFieldDisplayLU" EntityType="Self.CustomFieldDisplayLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CustomFieldValue" EntityType="Self.CustomFieldValue" Schema="dbo" store:Type="Tables" />
@@ -5675,6 +5714,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
           <EntitySet Name="ProPricerTypeLU" EntityType="Self.ProPricerTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RateTypeLU" EntityType="Self.RateTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ReportLU" EntityType="Self.ReportLU" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RequestTypeLU" EntityType="Self.RequestTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Resource" EntityType="Self.Resource" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ResourceList" EntityType="Self.ResourceList" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RoleLU" EntityType="Self.RoleLU" Schema="dbo" store:Type="Tables" />
@@ -5874,67 +5914,67 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
     [WorkBreakdownStructure1].[WorkspaceDTCElementID] AS [WorkspaceDTCElementID]
     FROM [version].[WorkBreakdownStructure] AS [WorkBreakdownStructure1]</DefiningQuery>
           </EntitySet>
-          <AssociationSet Name="FK__MOQTypeSe__MOQTy__5EF51AE8" Association="Self.FK__MOQTypeSe__MOQTy__5EF51AE8">
+          <AssociationSet Name="FK__MOQTypeSe__MOQTy__2B0636C1" Association="Self.FK__MOQTypeSe__MOQTy__2B0636C1">
             <End Role="MOQTypeLU" EntitySet="MOQTypeLU" />
             <End Role="MOQTypeSelection" EntitySet="MOQTypeSelection" />
           </AssociationSet>
-          <AssociationSet Name="FK__MOQTypeSe__MOQTy__63B9D005" Association="Self.FK__MOQTypeSe__MOQTy__63B9D005">
+          <AssociationSet Name="FK__MOQTypeSe__MOQTy__2FCAEBDE" Association="Self.FK__MOQTypeSe__MOQTy__2FCAEBDE">
             <End Role="MOQTypeSelection" EntitySet="MOQTypeSelection" />
             <End Role="MOQTypeSelectionTableData" EntitySet="MOQTypeSelectionTableData" />
           </AssociationSet>
-          <AssociationSet Name="FK__MOQTypeSe__TaskI__5E00F6AF" Association="Self.FK__MOQTypeSe__TaskI__5E00F6AF">
+          <AssociationSet Name="FK__MOQTypeSe__TaskI__2A121288" Association="Self.FK__MOQTypeSe__TaskI__2A121288">
             <End Role="BOETaskElement" EntitySet="BOETaskElement" />
             <End Role="MOQTypeSelection" EntitySet="MOQTypeSelection" />
           </AssociationSet>
-          <AssociationSet Name="FK__MoqTypeTa__Custo__5190FE29" Association="Self.FK__MoqTypeTa__Custo__5190FE29">
+          <AssociationSet Name="FK__MoqTypeTa__Custo__503886C7" Association="Self.FK__MoqTypeTa__Custo__503886C7">
             <End Role="CustomFieldValue" EntitySet="CustomFieldValue" />
             <End Role="MoqTypeTableCustomFieldValueXREF" EntitySet="MoqTypeTableCustomFieldValueXREF" />
           </AssociationSet>
-          <AssociationSet Name="FK__MoqTypeTa__MoqTy__509CD9F0" Association="Self.FK__MoqTypeTa__MoqTy__509CD9F0">
+          <AssociationSet Name="FK__MoqTypeTa__MoqTy__4F44628E" Association="Self.FK__MoqTypeTa__MoqTy__4F44628E">
             <End Role="MOQTypeSelectionTableData" EntitySet="MOQTypeSelectionTableData" />
             <End Role="MoqTypeTableCustomFieldValueXREF" EntitySet="MoqTypeTableCustomFieldValueXREF" />
           </AssociationSet>
-          <AssociationSet Name="FK__MSTTravel__ModeI__32063FC9" Association="Self.FK__MSTTravel__ModeI__32063FC9">
+          <AssociationSet Name="FK__MSTTravel__ModeI__355CA394" Association="Self.FK__MSTTravel__ModeI__355CA394">
             <End Role="MSTTravelModeLU" EntitySet="MSTTravelModeLU" />
             <End Role="MSTTravelNonzoneFeesAndCosts" EntitySet="MSTTravelNonzoneFeesAndCosts" />
           </AssociationSet>
-          <AssociationSet Name="FK__MSTZoneTr__Origi__2A2526DF" Association="Self.FK__MSTZoneTr__Origi__2A2526DF">
+          <AssociationSet Name="FK__MSTZoneTr__Origi__53021514" Association="Self.FK__MSTZoneTr__Origi__53021514">
             <End Role="MSTZoneTravelOrigin" EntitySet="MSTZoneTravelOrigin" />
             <End Role="MSTZoneTravelResource" EntitySet="MSTZoneTravelResource" />
           </AssociationSet>
-          <AssociationSet Name="FK__ProjectMa__Legac__3B13B472" Association="Self.FK__ProjectMa__Legac__3B13B472">
+          <AssociationSet Name="FK__ProjectMa__Legac__3AD8B324" Association="Self.FK__ProjectMa__Legac__3AD8B324">
             <End Role="SikorskyLegacyResource" EntitySet="SikorskyLegacyResource" />
             <End Role="ProjectMap" EntitySet="ProjectMap" />
           </AssociationSet>
-          <AssociationSet Name="FK__ProjectMa__Proje__248EAB1F" Association="Self.FK__ProjectMa__Proje__248EAB1F">
+          <AssociationSet Name="FK__ProjectMa__Proje__6AB11821" Association="Self.FK__ProjectMa__Proje__6AB11821">
             <End Role="ProjectMap" EntitySet="ProjectMap" />
             <End Role="ProjectMapSpread" EntitySet="ProjectMapSpread" />
           </AssociationSet>
-          <AssociationSet Name="FK__TMResourc__TMRes__13E276B3" Association="Self.FK__TMResourc__TMRes__13E276B3">
+          <AssociationSet Name="FK__TMResourc__TMRes__2C7E1027" Association="Self.FK__TMResourc__TMRes__2C7E1027">
             <End Role="Resource" EntitySet="Resource" />
             <End Role="TMResourceRate" EntitySet="TMResourceRate" />
           </AssociationSet>
-          <AssociationSet Name="FK__TMResourc__Works__12EE527A" Association="Self.FK__TMResourc__Works__12EE527A">
+          <AssociationSet Name="FK__TMResourc__Works__2B89EBEE" Association="Self.FK__TMResourc__Works__2B89EBEE">
             <End Role="Workspace" EntitySet="Workspace" />
             <End Role="TMResourceRate" EntitySet="TMResourceRate" />
           </AssociationSet>
-          <AssociationSet Name="FK__Workspace__ModeI__37BF191F" Association="Self.FK__Workspace__ModeI__37BF191F">
+          <AssociationSet Name="FK__Workspace__ModeI__3B157CEA" Association="Self.FK__Workspace__ModeI__3B157CEA">
             <End Role="MSTTravelModeLU" EntitySet="MSTTravelModeLU" />
             <End Role="WorkspaceRMSTravelNonzoneFeesAndCosts" EntitySet="WorkspaceRMSTravelNonzoneFeesAndCosts" />
           </AssociationSet>
-          <AssociationSet Name="FK__Workspace__Proje__0F1DC196" Association="Self.FK__Workspace__Proje__0F1DC196">
+          <AssociationSet Name="FK__Workspace__Proje__27B95B0A" Association="Self.FK__Workspace__Proje__27B95B0A">
             <End Role="ProjectMapTypeLU" EntitySet="ProjectMapTypeLU" />
             <End Role="Workspace" EntitySet="Workspace" />
           </AssociationSet>
-          <AssociationSet Name="FK__Workspace__Works__06887B95" Association="Self.FK__Workspace__Works__06887B95">
+          <AssociationSet Name="FK__Workspace__Works__1F241509" Association="Self.FK__Workspace__Works__1F241509">
             <End Role="Workspace" EntitySet="Workspace" />
             <End Role="WorkspaceOffloadRate" EntitySet="WorkspaceOffloadRate" />
           </AssociationSet>
-          <AssociationSet Name="FK__Workspace__Works__38B33D58" Association="Self.FK__Workspace__Works__38B33D58">
+          <AssociationSet Name="FK__Workspace__Works__3C09A123" Association="Self.FK__Workspace__Works__3C09A123">
             <End Role="Workspace" EntitySet="Workspace" />
             <End Role="WorkspaceRMSTravelNonzoneFeesAndCosts" EntitySet="WorkspaceRMSTravelNonzoneFeesAndCosts" />
           </AssociationSet>
-          <AssociationSet Name="FK__Workspace__Works__3C83CE3C" Association="Self.FK__Workspace__Works__3C83CE3C">
+          <AssociationSet Name="FK__Workspace__Works__3FDA3207" Association="Self.FK__Workspace__Works__3FDA3207">
             <End Role="Workspace" EntitySet="Workspace" />
             <End Role="WorkspaceRMSTravelEscalationRate" EntitySet="WorkspaceRMSTravelEscalationRate" />
           </AssociationSet>
@@ -6169,6 +6209,10 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
           <AssociationSet Name="FK_CommonDisclosureSkillMix_BOETaskElement" Association="Self.FK_CommonDisclosureSkillMix_BOETaskElement">
             <End Role="BOETaskElement" EntitySet="BOETaskElement" />
             <End Role="CommonDisclosureSkillMix" EntitySet="CommonDisclosureSkillMix" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CurrentRequest_RequestTypeLU" Association="Self.FK_CurrentRequest_RequestTypeLU">
+            <End Role="RequestTypeLU" EntitySet="RequestTypeLU" />
+            <End Role="CurrentRequest" EntitySet="CurrentRequest" />
           </AssociationSet>
           <AssociationSet Name="FK_CustomField_CustomFieldDisplayLU" Association="Self.FK_CustomField_CustomFieldDisplayLU">
             <End Role="CustomFieldDisplayLU" EntitySet="CustomFieldDisplayLU" />
@@ -11746,6 +11790,22 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
             <End Role="ETIuser" EntitySet="ETIusers" />
             <End Role="BOETaskElement" EntitySet="BOETaskElements" />
           </AssociationSet>
+          <EntitySet Name="CurrentRequest" EntityType="GenBOE.Models.CurrentRequest" />
+          <EntitySet Name="RequestTypeLU" EntityType="GenBOE.Models.RequestTypeLU" />
+          <AssociationSet Name="FK_CurrentRequest_RequestTypeLU" Association="GenBOE.Models.FK_CurrentRequest_RequestTypeLU">
+            <End Role="RequestTypeLU" EntitySet="RequestTypeLU" />
+            <End Role="CurrentRequest" EntitySet="CurrentRequest" />
+          </AssociationSet>
+          <FunctionImport Name="deleteAllRequests" />
+          <FunctionImport Name="deleteRequest">
+            <Parameter Name="RequestTypeID" Mode="In" Type="Int32" />
+            <Parameter Name="Ntid" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="insertRequest">
+            <Parameter Name="RequestTypeID" Mode="In" Type="Int32" />
+            <Parameter Name="Ntid" Mode="In" Type="String" />
+            <Parameter Name="NewRequestID" Mode="InOut" Type="Int32" />
+          </FunctionImport>
           </EntityContainer>
 		<ComplexType Name="getBOEForFindReplace_Result">
 		  <Property Type="Int32" Name="BOEID" Nullable="true" />
@@ -12877,7 +12937,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
 		  <Property Name="DateOfReport" Type="DateTime" Nullable="false" Precision="7" />
 		  <Property Name="HistoricalProgramName" Type="String" Nullable="false" MaxLength="125" FixedLength="false" Unicode="false" />
 		  <Property Name="ContractNumber" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-		  <Property Name="WbsElement" Type="String" MaxLength="2500" FixedLength="false" Unicode="false" Nullable="false" />
+		  <Property Name="WbsElement" Type="String" MaxLength="8000" FixedLength="false" Unicode="false" />
 		  <Property Name="PeriodOfPerformanceStartDate" Type="DateTime" Nullable="false" Precision="7" />
 		  <Property Name="PeriodOfPerformanceEndDate" Type="DateTime" Nullable="false" Precision="7" />
 		  <Property Name="TotalWbsHours" Type="Decimal" Nullable="false" Precision="11" Scale="2" />
@@ -13756,6 +13816,36 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
             </Principal>
             <Dependent Role="BOETaskElement">
               <PropertyRef Name="AuthorUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="CurrentRequest">
+          <Key>
+            <PropertyRef Name="CurrentRequestID" />
+          </Key>
+          <Property Name="CurrentRequestID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Ntid" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="RequestTypeID" Type="Int32" Nullable="false" />
+          <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="RequestTypeLU" Relationship="GenBOE.Models.FK_CurrentRequest_RequestTypeLU" FromRole="CurrentRequest" ToRole="RequestTypeLU" />
+        </EntityType>
+        <EntityType Name="RequestTypeLU">
+          <Key>
+            <PropertyRef Name="RequestTypeID" />
+          </Key>
+          <Property Name="RequestTypeID" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="CurrentRequest" Relationship="GenBOE.Models.FK_CurrentRequest_RequestTypeLU" FromRole="RequestTypeLU" ToRole="CurrentRequest" />
+        </EntityType>
+        <Association Name="FK_CurrentRequest_RequestTypeLU">
+          <End Type="GenBOE.Models.RequestTypeLU" Role="RequestTypeLU" Multiplicity="1" />
+          <End Type="GenBOE.Models.CurrentRequest" Role="CurrentRequest" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RequestTypeLU">
+              <PropertyRef Name="RequestTypeID" />
+            </Principal>
+            <Dependent Role="CurrentRequest">
+              <PropertyRef Name="RequestTypeID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -15863,6 +15953,27 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
           </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="insertCommonDisclosureSkillMixviaTableParameter" FunctionName="GenBOE.Models.Store.insertCommonDisclosureSkillMixviaTableParameter" />
           <FunctionImportMapping FunctionImportName="insertSkillMixviaTableParameter" FunctionName="GenBOE.Models.Store.insertSkillMixviaTableParameter" />
+          <EntitySetMapping Name="CurrentRequest">
+            <EntityTypeMapping TypeName="GenBOE.Models.CurrentRequest">
+              <MappingFragment StoreEntitySet="CurrentRequest">
+                <ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
+                <ScalarProperty Name="RequestTypeID" ColumnName="RequestTypeID" />
+                <ScalarProperty Name="Ntid" ColumnName="Ntid" />
+                <ScalarProperty Name="CurrentRequestID" ColumnName="CurrentRequestID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RequestTypeLU">
+            <EntityTypeMapping TypeName="GenBOE.Models.RequestTypeLU">
+              <MappingFragment StoreEntitySet="RequestTypeLU">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="RequestTypeID" ColumnName="RequestTypeID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="deleteAllRequests" FunctionName="GenBOE.Models.Store.deleteAllRequests" />
+          <FunctionImportMapping FunctionImportName="deleteRequest" FunctionName="GenBOE.Models.Store.deleteRequest" />
+          <FunctionImportMapping FunctionImportName="insertRequest" FunctionName="GenBOE.Models.Store.insertRequest" />
 		</EntityContainerMapping>
 	  </Mapping>
 	</edmx:Mappings>
@@ -15877,7 +15988,7 @@ warning 6002: The table/view 'genBOEMST_DEV.version.WorkBreakdownStructure' does
 	<Options>
 	  <DesignerInfoPropertySet>
 		<DesignerProperty Name="ValidateOnBuild" Value="true" />
-		<DesignerProperty Name="EnablePluralization" Value="true" />
+		<DesignerProperty Name="EnablePluralization" Value="False" />
 		<DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
 		<DesignerProperty Name="UseLegacyProvider" Value="false" />
 		<DesignerProperty Name="CodeGenerationStrategy" Value="None" />

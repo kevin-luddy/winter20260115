@@ -27,6 +27,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 	using GenBOE.ActionLogic.WBS.BOE;
 	using GenBOE.DataBridge.Common;
 	using GenBOE.DataBridge.DTO;
+	using GenBOE.DataBridge.DTO.Request;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using IES.Common;
@@ -61,6 +62,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		private Mock<IRteTemplateDataLoader> rteTemplateDataLoader = null;
 		private Mock<IMoqTypeDataLoader> moqTypeDataLoader = null;
 		private Mock<ITMResourceRateDTODataLoader> tmResourceRateDTODataLoader = null;
+		private Mock<IRequestDataLoader> requestDataLoader = null;
 		private Mock<IValidateBOE> validateBOE = null;
 		private Mock<IMoqTableExporter> moqTableExporter = null;
 		private Mock<IMoqTableImporter> moqTableImporter = null;
@@ -119,6 +121,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				   this.rteTemplateDataLoader.Object,
 				   this.moqTypeDataLoader.Object,
 				   this.tmResourceRateDTODataLoader.Object,
+				   this.requestDataLoader.Object,
 				   this.validateBOE.Object,
 				   this.moqTableExporter.Object,
 				   this.moqTableImporter.Object,
@@ -154,6 +157,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				   rteTemplateDataLoader.Object,
 				   this.moqTypeDataLoader.Object,
 				   this.tmResourceRateDTODataLoader.Object,
+				   this.requestDataLoader.Object,
 				   this.validateBOE.Object,
 				   this.moqTableExporter.Object,
 				   this.moqTableImporter.Object,
@@ -189,6 +193,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				   rteTemplateDataLoader.Object,
 				   this.moqTypeDataLoader.Object,
 				   this.tmResourceRateDTODataLoader.Object,
+				   this.requestDataLoader.Object,
 				   this.validateBOE.Object,
 				   this.moqTableExporter.Object,
 				   this.moqTableImporter.Object,
@@ -229,6 +234,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			this.moqTableImporter = new Mock<IMoqTableImporter>();
 			this.tmResourceRateDTODataLoader = new Mock<ITMResourceRateDTODataLoader>();
 			this.tmResourceRateDTODataLoader.Setup(x => x.GetByWorkspaceId(It.IsAny<int>())).Returns(new List<TMResourceRateDTO>());
+			requestDataLoader = new Mock<IRequestDataLoader>();
 
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
@@ -700,7 +706,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), _ResourceLoader.Object);
 
 			sut.ValidateMOQEquation(boe.Id, task, validations, ws);
-			Assert.IsTrue(validations.Count == 0, "validation errors occured");
+			Assert.IsTrue(validations.Count == 0, "validation errors occurred");
 		}
 
 		/// <summary>
@@ -736,7 +742,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Collection<ValidationMessage> validations = new Collection<ValidationMessage>();
 
 			sut.ValidateMOQEquation(boe.Id, task, validations, ws);
-			Assert.IsTrue(validations.Count == 1, " no validation errors occured");
+			Assert.IsTrue(validations.Count == 1, " no validation errors occurred");
 		}
 
 		[TestMethod]
@@ -789,7 +795,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			FullWorkspace ws = new FullWorkspace(workspace);
 
 			sut.ValidateMOQEquation(boe.Id, task2, validations, ws);
-			Assert.IsTrue(validations.Count == 0, "validation errors occured");
+			Assert.IsTrue(validations.Count == 0, "validation errors occurred");
 		}
 
 
@@ -3220,7 +3226,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				string value = property.GetValue(helpUrls).ToString();
 				Assert.IsNotNull(value);
 
-				if (property.Name == "RepositoryNameHistoricalSuffix" || property.Name == "RepositoryNameComparativeSuffix" || property.Name == "QueryTypeHistoricalSuffix" || property.Name == "QueryTypeComparativeSuffix")
+				if (property.Name == "RepositoryNameHistoricalSuffix" || property.Name == "RepositoryNameComparativeSuffix" 
+					|| property.Name == "QueryTypeHistoricalSuffix" || property.Name == "QueryTypeComparativeSuffix"
+					|| property.Name.EndsWith("AnalogousSuffix"))
 				{
 					// These fields aren't used in RMS
 					Assert.IsTrue(string.IsNullOrEmpty(value));

@@ -100,6 +100,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
@@ -254,6 +255,7 @@
     <Compile Include="DateShift\SpreadHandling.cs" />
     <Compile Include="DateShift\Operation.cs" />
     <Compile Include="IO\Export\BOEConfidenceReportExporter.cs" />
+    <Compile Include="IO\Export\BOE\BOEExcelExportInputs.cs" />
     <Compile Include="IO\Export\BOE\BOEExportConverter.cs" />
     <Compile Include="IO\Export\BOE\BOEExportInputs.cs" />
     <Compile Include="IO\Export\BOE\BOEExportConverterRMS.cs" />
@@ -280,9 +282,15 @@
     <Compile Include="Reporting\ConfidenceReportConstants.cs" />
     <Compile Include="Reporting\IBOEConfidenceReport.cs" />
     <Compile Include="_ControllerLogic\Backend\BOEConfigurationControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\Backend\CLINControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\Backend\WorkspaceAdminControllerLogic.cs" />
     <Compile Include="_ControllerLogic\Backend\WorkspaceSettingsControllerLogic.cs" />
     <Compile Include="_ControllerLogic\Backend\WorkspaceHomeControllerLogic.cs" />
     <Compile Include="_ModelView\Backend\BOEConfigurationViewModel.cs" />
+    <Compile Include="_ModelView\Backend\PermissionRoleViewModel.cs" />
+    <Compile Include="_ModelView\Backend\PermissionsGridViewModel.cs" />
+    <Compile Include="_ModelView\Backend\PermissionUserViewModel.cs" />
+    <Compile Include="_ModelView\Backend\PermissionViewModel.cs" />
     <Compile Include="_ModelView\Backend\WorkspaceSettingsViewModel.cs" />
     <Compile Include="_ModelView\BOECustomFieldsInUseGridModelView.cs" />
     <Compile Include="_ModelView\ConfidenceReportItem.cs" />

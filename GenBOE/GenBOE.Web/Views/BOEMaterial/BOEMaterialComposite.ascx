@@ -79,11 +79,13 @@
         });
 
         //Change the OCI note based off the workspace
-        if (MaterialElementsComposite_ContainsOCI == true){
-           $('#OCINote').html('Must not contain any classified, export controlled or third party proprietary information.');
+		if (MaterialElementsComposite_ContainsOCI == true) {
+			var text = '<%: SiteMasterUtilities.GetBannerText(true) %>';
+           $('#OCINote').html(text);
         }
-        else {
-           $('#OCINote').html('Must not contain any OCI, classified, export controlled or third party proprietary information.');
+		else {
+			var text = '<%: SiteMasterUtilities.GetBannerText() %>';
+           $('#OCINote').html(text);
         }
 
         MaterialElementsComposite.registerForLiveEvent('click',  "#Save-BOEMaterialUpdates:not(.disabled)", MaterialElementsComposite.SaveBOEMaterialUpdates);

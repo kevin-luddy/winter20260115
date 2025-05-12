@@ -12,8 +12,20 @@
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_AllowedOrigins_">
 		</parameterentry>
 	</parameter>
+	<parameter name="ShowEquivalentPersonsOption" description="doesn't matter" defaultvalue="__ShowEquivalentPersonsOption__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_ShowEquivalentPersonsOption_">
+		</parameterentry>
+	</parameter>
+	<parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_allowedRoles_">
+		</parameterentry>
+	</parameter>
 	<parameter name="PortionMarkingAPI" description="doesn't matter" defaultvalue="__PortionMarkingAPI__" tags="">
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_PortionMarkingAPI_">
+		</parameterentry>
+	</parameter>
+	<parameter name="CompanyConfiguration" description="doesn't matter" defaultvalue="__CompanyConfiguration__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_COMPANY_CONFIGURATION_">
 		</parameterentry>
 	</parameter>
 	<parameter name="_APPLICATION_VERSION" description="doesn't matter" defaultvalue="__APPLICATION_VERSION__" tags="">
@@ -23,6 +35,11 @@
 	<parameter name="IESDatabase" description="doesn't matter" defaultvalue="__IES_DATABASE__" tags="">
 		<parameterValidation kind="AllowEmpty" />
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_IES_DATABASE_">
+		</parameterentry>
+	</parameter>
+	<parameter name="BOE_DATABASE" description="doesn't matter" defaultvalue="__BOE_DATABASE__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_BOE_DATABASE_">
 		</parameterentry>
 	</parameter>
 	<parameter name="SplunkHost" description="doesn't matter" defaultvalue="__Splunk_Host__" tags="">
@@ -35,6 +52,10 @@
 	</parameter>
 	<parameter name="SplunkToken" description="doesn't matter" defaultvalue="__Splunk_Token__" tags="">
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SPLUNK_TOKEN_">
+		</parameterentry>
+	</parameter>
+	<parameter name="EnableUCOT" description="doesn't matter" defaultvalue="__EnableUCOT__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_EnableUCOT_">
 		</parameterentry>
 	</parameter>
 	
@@ -51,6 +72,10 @@
 	</parameter>
 	<parameter name="IESEntities" description="doesn't matter" defaultvalue="__IESEntities__" tags="">
 		<parameterentry kind="XmlFile" scope="\\GenBOE.Reports.Backend.dll.config$" match="/configuration/connectionStrings/add[@name='IESEntities']/@connectionString">
+		</parameterentry>
+	</parameter>
+	<parameter name="GenBoeEntities" description="doesn't matter" defaultvalue="__GenBoeEntities__" tags="">
+		<parameterentry kind="XmlFile" scope="\\GenBOE.Reports.Backend.dll.config$" match="/configuration/connectionStrings/add[@name='GenBoeEntities']/@connectionString">
 		</parameterentry>
 	</parameter>
 

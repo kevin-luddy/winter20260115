@@ -170,8 +170,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				throw new ArgumentNullException(nameof(ws));
 			}
 
-			WorkspaceDecimalPrecision = ws.DecimalPrecision;
-			DefaultHoursFormat = CommonUtilities.PrecisionFormattingString(WorkspaceDecimalPrecision);
+			this.WorkspaceDecimalPrecision = ws.DecimalPrecision;
+			this.DefaultHoursFormat = CommonUtilities.PrecisionFormattingString(this.WorkspaceDecimalPrecision);
 		}
 
 		/// <summary>
@@ -4560,7 +4560,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				if (exportInputs.Workspace.UsingTemplateBOE)
 				{
 					boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
-					skillMixEnabled = CommonUtilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, boeTaskElement.HasTMRates);
+
+					skillMixEnabled = BOETaskUtility.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, boeTaskElement.HasTMRates, boeExportTaskElement.MOQTypes);
 					if (skillMixEnabled)
 					{
 						boeExportTaskElement.SkillMixTable = boeTaskElement.SkillMixTable;

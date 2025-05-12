@@ -43,8 +43,9 @@ namespace GenBOE.ActionLogic.Common
 		/// Validate the Skill Mix Table for any errors
 		/// </summary>
 		/// <param name="skillMixModels">SkillMix Models</param>
+		/// <param name="onButtonPress">True if this validation is being performed as part of the Validate BOE button</param>
 		/// <returns>A collection of any validation errors/messages</returns>
-		public static ICollection<string> ValidateSkillMixTable(ICollection<SkillMixModelView> skillMixModels)
+		public static ICollection<string> ValidateSkillMixTable(ICollection<SkillMixModelView> skillMixModels, bool onButtonPress)
 		{
 			ICollection<string> errorMessages = new Collection<string>();
 
@@ -96,7 +97,15 @@ namespace GenBOE.ActionLogic.Common
 			{
 				errorMessages.Add($"{skillMixTableName}: The maximum length of the Historical Resource field for {skillMixResourceOld} is 20 characters.");
 			}
-			
+
+			if (onButtonPress)
+			{
+				IList<SkillMixModelView> skillMixRowsMissingRationale = skillMixModels.Where(x => string.IsNullOrEmpty(x.Rationale)).ToList();
+				foreach (string skillMixResourceOld in skillMixRowsMissingRationale.Select(x => x.ResourceOld))
+				{
+					errorMessages.Add($"{skillMixTableName}: The Rationale field for {skillMixResourceOld} is required.");
+				}
+			}
 
 			return errorMessages;
 		}
@@ -105,8 +114,9 @@ namespace GenBOE.ActionLogic.Common
 		/// Validate the Common Disclosure Skill Mix Table for any errors
 		/// </summary>
 		/// <param name="commonDisclosures">Common Disclosures</param>
+		/// <param name="onButtonPress">True if this validation is being performed as part of the Validate BOE button</param>
 		/// <returns>A collection of validation errors/messages</returns>
-		public static ICollection<string> ValidateCommonDisclosureSkillMixTable(ICollection<CommonDisclosureModelView> commonDisclosures)
+		public static ICollection<string> ValidateCommonDisclosureSkillMixTable(ICollection<CommonDisclosureModelView> commonDisclosures, bool onButtonPress)
 		{
 			ICollection<string> errorMessages = new Collection<string>();
 
@@ -118,8 +128,6 @@ namespace GenBOE.ActionLogic.Common
 																			.Where(x => x.Included && x.BOESkillMix.HasValue && x.BOESkillMix.Value <= 0).ToList();
 			IList<CommonDisclosureModelView> commonDisclosureIncludedHasTrueValue = commonDisclosures.Where(x => x.Included).ToList();
 			decimal totalCommonDisclosureRowsBOESkillMix = commonDisclosures.Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
-			IList<CommonDisclosureModelView> commonDisclosureHasBRC = commonDisclosures
-																			.Where(x => string.IsNullOrEmpty(x.BusinessResourceID)).ToList();
 
 			foreach (string skillMixResourceID in commonDisclosureRowsExceedChars.Select(x => x.ResourceID))
 			{
@@ -146,12 +154,16 @@ namespace GenBOE.ActionLogic.Common
 				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: BOE Skill Mix total must be either 0% or 100%"));
 			}
 
-			foreach (string commonDisclosureRow in commonDisclosureHasBRC.Select(x => x.ResourceID).Distinct())
-			{
-				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: BRC must be selected for each occurrence of Resource {0}.", commonDisclosureRow));
-			}
-
 			ValidateResourceAndBRCCombos(commonDisclosures, errorMessages);
+
+			if (onButtonPress)
+			{
+				IList<CommonDisclosureModelView> commonDisclosureRowsMissingRationale = commonDisclosures.Where(x => string.IsNullOrEmpty(x.Rationale)).ToList();
+				foreach (string skillMixResourceID in commonDisclosureRowsMissingRationale.Select(x => x.ResourceID))
+				{
+					errorMessages.Add($"LM Enterprise Skill Mix Table: The Rationale field for {skillMixResourceID} is required.");
+				}
+			}
 
 			return errorMessages;
 		}

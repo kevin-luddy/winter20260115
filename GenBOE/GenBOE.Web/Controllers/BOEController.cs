@@ -33,6 +33,7 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.DataBridge.Common;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
+	using GenBOE.DataBridge.DTO.SkillMix;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using GenBOE.Web.Common;
@@ -40,6 +41,7 @@ namespace GenBOE.Web.Controllers
 	using IES.Common.classes;
 	using IES.Common.Exceptions;
 	using IES.Common.OfficeUtilities;
+	using Microsoft.VisualBasic.Logging;
 
 	public class BOEController : GenBOEController
 	{
@@ -155,6 +157,7 @@ namespace GenBOE.Web.Controllers
 			this.ViewBag.RteFieldSize = ws.RteSizeLimit ?? Constants.MAX_RTE_LENGTH;
 			this.ViewData["BOEID"] = boeID;
 			ViewData["UcotFactor"] = ws.UCOTFactor / 100.0m;
+			ViewData["SkillMixTableHelpUrls"] = new SkillMixTableHelpUrls();
 			this.ViewData["ElementsOfCost"] = this._CommonDataMapper.GetElementOfCostTypes().Where(
 				x => x.ElementOfCostId == (int)ElementOfCostType.LMLabor ||
 					x.ElementOfCostId == (int)ElementOfCostType.IWTA ||
@@ -275,6 +278,8 @@ namespace GenBOE.Web.Controllers
 			ViewData["BOEID"] = boeID;
 			TaskElementDuplicateFormCollection theModelView = _ControllerLogic.GetDuplicateTaskModelView(boeObject, taskType);
 
+			theModelView.ContainsOCI = ws.ContainsOCI;
+
 			// Perform Action
 			ViewResult toReturn = View(WebConstants.VIEW_DUPLICATE_TASK_DIALOG, theModelView);
 
@@ -307,7 +312,7 @@ namespace GenBOE.Web.Controllers
 			GenericTaskElementGridModelView theModelView = _ControllerLogic.GetTaskGridModelView(boe, workspaceObject);
 
 			theModelView.TaskElements = theModelView.TaskElements.OrderBy(teOrder => teOrder.BOETaskElementOrder).ThenBy(teOrder => teOrder.TaskElementDetailID).ToCollection();
-
+			theModelView.ContainsOCI = workspaceObject.ContainsOCI;
 
 			ViewData["DISABLE_ALLOCATED_LABOR"] = false;
 
@@ -2448,28 +2453,43 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace containing BOEs</param>
 		/// <returns></returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-		public ActionResult ExportManageBOE(string workspace)
+		public async Task<ActionResult> ExportManageBOE(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-
+			ActionResult result;
 			// Initialize Action
 			Stopwatch sw = InitializeAction(_log, "ExportManageBOE", SecurityPage.ManageBOEs, SecurityAuthorization.Read, ws, null);
 
-			// Get BOEs template file name
-			string templateFileName = Server.MapPath("~/Templates/Export/BOEs.xlsm");
+			try
+			{
+				// Get BOEs template file name
+				string templateFileName = Server.MapPath("~/Templates/Export/BOEs.xlsm");
 
-			string[] fileNames = _ControllerLogic.ExportManageBOE(ws, templateFileName, false);
+				string[] fileNames = await _ControllerLogic.ExportManageBOE(ws, templateFileName, false);
 
-			// Generate a custom ActionResult to cause a file download to the client
-			FileStream fs = new FileStream(fileNames[0], FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+				// Generate a custom ActionResult to cause a file download to the client
+				FileStream fs = new FileStream(fileNames[0], FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
-			// Finalize Action
-			FinalizeAction(_log, "ExportManageBOE", sw);
+				// Finalize Action
+				FinalizeAction(_log, "ExportManageBOE", sw);
 
-			return File(
-				fileStream: fs,
-				contentType: ExportFileDownloadBase.GetContentType(fileNames[1]),
-				fileDownloadName: fileNames[1]);
+				result = File(
+					fileStream: fs,
+					contentType: ExportFileDownloadBase.GetContentType(fileNames[1]),
+					fileDownloadName: fileNames[1]);
+			}
+			catch (GenValidationException ex)
+			{
+				result = this.CreateTextFileWithErrorMessage(ex.Message);
+			}
+			catch (Exception e)
+			{
+				this._log.Error(e);
+
+				result = this.CreateTextFileWithErrorMessage(e);
+			}
+
+			return result;
 		}
 
 		/// <summary>
@@ -2478,29 +2498,45 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace containing BOEs</param>
 		/// <returns></returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-		public ActionResult ExportManageBOETemplate(string workspace)
+		public async Task<ActionResult> ExportManageBOETemplate(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
 			Stopwatch sw = InitializeAction(_log, "ExportManageBOETemplate", SecurityPage.ManageBOEs, SecurityAuthorization.Read, ws, null);
+			ActionResult result;
 
-			// Get Performing Orgs template file name
-			string templateFileName = Server.MapPath("~/Templates/Export/BOEs.xlsm");
+			try
+			{
+				// Get Performing Orgs template file name
+				string templateFileName = Server.MapPath("~/Templates/Export/BOEs.xlsm");
 
-			//code used was the same as ExportManageBOE, so can use the same method
-			string[] fileNames = _ControllerLogic.ExportManageBOE(ws, templateFileName, true);
+				//code used was the same as ExportManageBOE, so can use the same method
+				string[] fileNames = await _ControllerLogic.ExportManageBOE(ws, templateFileName, true);
 
-			// Generate a custom ActionResult to cause a file download to the client
-			FileStream fs = new FileStream(fileNames[0], FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+				// Generate a custom ActionResult to cause a file download to the client
+				FileStream fs = new FileStream(fileNames[0], FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
-			// Finalize Action
-			FinalizeAction(_log, "ExportManageBOETemplate", sw);
+				// Finalize Action
+				FinalizeAction(_log, "ExportManageBOETemplate", sw);
 
-			return File(
-				fileStream: fs,
-				contentType: ExportFileDownloadBase.GetContentType(fileNames[1]),
-				fileDownloadName: fileNames[1]);
+				result = File(
+					fileStream: fs,
+					contentType: ExportFileDownloadBase.GetContentType(fileNames[1]),
+					fileDownloadName: fileNames[1]);
+			}
+			catch (GenValidationException ex)
+			{
+				result = this.CreateTextFileWithErrorMessage(ex.Message);
+			}
+			catch (Exception e)
+			{
+				this._log.Error(e);
+
+				result = this.CreateTextFileWithErrorMessage(e);
+			}
+
+			return result;
 		}
 
 		/// <summary>

@@ -2,6 +2,7 @@
 <%@ Import Namespace="System.Web.Script.Serialization" %>
 <%@ Import Namespace="GenBOE.ActionLogic.ModelView" %>
 <%@ Import Namespace="GenBOE.Dtos" %>
+<%@ Import namespace="System.Web.Optimization" %>
 <% 
     var serializer = new JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };
     string asterisk = "*";
@@ -9,6 +10,7 @@
     bool showDescQuestions = Model.DescriptionTemplateAnswers.Any();
     int numberDescQuestions = showDescQuestions ? Model.DescriptionTemplateAnswers.Count : 1;
 %>
+<%: Styles.Render("~/Content/laborTaskCss") %>
 <script type="text/javascript">
     var debugOutputEnabled = false;
     var isSaveButtonHidden = '<%: ViewData["READONLY"] %>'.isTrue();
@@ -135,11 +137,13 @@
         $("#Cancel-BOEUpdates").click(TaskElementDetailsWidget.CancelToMainGrid);
 
         //Change the OCI note based off the workspace
-        if (ManageWBS_ContainsOCI == true) {
-            $('#Task-OCINote').html('Must not contain any classified, export controlled or third party proprietary information.');
+		if (ManageWBS_ContainsOCI == true) {
+			var text = '<%: SiteMasterUtilities.GetBannerText(true) %>';
+            $('#Task-OCINote').html(text);
         }
-        else {
-            $('#Task-OCINote').html('Must not contain any OCI, classified, export controlled or third party proprietary information.');
+		else {
+			var text = '<%: SiteMasterUtilities.GetBannerText() %>';
+            $('#Task-OCINote').html(text);
         }
 
         $(document).one("MOQWidgetLoaded", function () {
@@ -549,6 +553,12 @@
                                     <tr>
                                         <td colspan="{{model.SpreadDatesFull.length}}" style="border: 0;">&nbsp;</td>
                                     </tr>
+                                    <tr data-ng-if="showUCOT">
+                                        <td colspan="{{model.SpreadDatesFull.length}}" style="border: 0;">&nbsp;</td>
+                                    </tr>
+                                    <tr data-ng-if="showUCOT">
+                                        <td colspan="{{model.SpreadDatesFull.length}}" style="border: 0;">&nbsp;</td>
+                                    </tr>
                                     <tr>
                                         <td colspan="{{model.SpreadDatesFull.length}}" style="border: 0; padding-bottom: 3px;">&nbsp;</td>
                                     </tr>
@@ -566,7 +576,18 @@
     <div id="SkillMixPlaceholder" data-ng-show="showSkillMix()">
         <div class="skill-mix-tables module collapsed" id="SkillMixRationaleContainer">
             <div class="module-header-data">
-                Skill Mix Rationale
+                <div class="float-left">Skill Mix Rationale</div>
+                <div data-ng-show="showSkillMix()" class="float-right right-header">
+                    <div id="SkillMixDeltaLabel" class="skillmix-label">Delta <%: Model.HoursLabel%></div>
+                    <div id="SkillMixDelta" class="skillmix"><span data-ng-if="!invalidSpreads">{{deltaSkillMixHours}}</span><span data-ng-if="invalidSpreads">#ERR</span></div>
+                    <div class="skill-mix-spacer">&nbsp;</div>
+                    <div class="float-right skillmix-calc-container">
+                        <div class="module-header-data-first-row">
+                            <div id="SkillMixTotalLabel" class="skillmix-label">Total <%: Model.HoursLabel%> </div>
+                            <div id="SkillMixTotal" class="skillmix float-right"><span data-ng-if="invalidSpreads">#ERR</span><span data-ng-if="!invalidSpreads">{{totalSkillMixHours}}</span></div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="module-content-data expanded-content">
                 <div class="form-element" data-ng-if="isSkillMixDisabled()">
@@ -578,23 +599,25 @@
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                             {  %>
                                     Legacy Skill Mix Table
-                        <% } %>
+                                    <div class="help-icon" data-ng-click="openHelp('SpaceLegacySkillMixTable');"></div>
+                        <%  }  %>
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
                             {  %>
                                     Current Skill Mix Table
-                        <%  } %>
+                                    <div class="help-icon" data-ng-click="openHelp('RMSCurrentSkillMixTable');"></div>
+                        <%  }  %>
                     </div>
                     <div class="SkillMixTable skillMixTable">
                         <table name="currentSkillMix" class="grid editable">
                             <thead>
                                 <tr>
-                                    <th style="width: 95px;">Resource</th>
-                                    <th data-ng-if="!ManageTaskModel.IsSpace" style="width: 130px;">Current Resource</th>
-                                    <th style="width: 100px;">Historical Hours</th>
-                                    <th style="width: 90px;">Labor Skill Mix</th>
-                                    <th style="width: 55px">Included</th>
-                                    <th style="width: 90px;">BOE Skill Mix</th>
-                                    <th style="width: 95px;">Proposed Hours</th>
+                                    <th class="resourceCol">Resource</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="currentResourceCol">Current Resource</th>
+                                    <th class="historicalHoursCol">Historical Hours</th>
+                                    <th class="laborSkillMixCol">Labor Skill Mix</th>
+                                    <th class="includedCol">Included</th>
+                                    <th class="boeSkillMixCol">BOE Skill Mix</th>
+                                    <th class="proposedHoursCol">Proposed Hours</th>
                                     <th>Rationale**</th>
                                 </tr>
                             </thead>
@@ -627,21 +650,29 @@
                     <!-- Common Disclosure Skill Mix Table -->
                     <div class="form-label" data-ng-show="IsBRCEnabled">
                         LM Enterprise Skill Mix Table
+                        <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+                            {  %>
+                                    <div class="help-icon" data-ng-click="openHelp('SpaceLMEnterpriseSkillMixTable');"></div>
+                        <%  }  %>
+                        <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+                            {  %>
+                                    <div class="help-icon" data-ng-click="openHelp('RMSLMEnterpriseSkillMixTable');"></div>
+                        <%  }  %>
                     </div>
                     <div class="SkillMixTable skillMixTable" data-ng-show="IsBRCEnabled">
                         <table name="currentSkillMix" class="grid editable">
                             <thead>
                                 <tr>
-                                    <th style="width: 95px;">Resource</th>
-                                    <th style="width: 130px;">Business Resource Code</th>
-                                    <th style="width: 100px;">Historical Hours</th>
-                                    <th style="width: 90px;">Labor Skill Mix</th>
-                                    <th style="width: 55px">Included</th>
-                                    <th style="width: 90px;">BOE Skill Mix</th>
-                                    <th style="width: 95px;">Proposed Hours</th>
+                                    <th class="resourceCol">Resource</th>
+                                    <th class="brcCol">Business Resource Code</th>
+                                    <th class="historicalHoursCol">Historical Hours</th>
+                                    <th class="laborSkillMixCol">Labor Skill Mix</th>
+                                    <th class="includedCol">Included</th>
+                                    <th class="boeSkillMixCol">BOE Skill Mix</th>
+                                    <th class="proposedHoursCol">Proposed Hours</th>
                                     <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                                         {  %>
-                                        <th style="width: 90px;">UCOT Hours</th>
+                                        <th class="ucotCol">UCOT Hours</th>
                                     <% } %>
                                     <th>Rationale**</th>
                                 </tr>

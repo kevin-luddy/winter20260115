@@ -37,6 +37,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// </summary>
 		/// <param name="boe">The boe.</param>
 		/// <param name="workspace">The workspace.</param>
+		/// <param name="moqTypes">The moq types selected</param>
+		/// <param name="rteTemplatesOverrides">The RTE Template overrides</param>
 		/// <exception cref="System.ArgumentNullException">workspace</exception>
 		public BOEExportInputs(FullBoe boe, FullWorkspace workspace, ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesOverrides = null,
 			ICollection<MoqTypeSelection> moqTypes = null)
@@ -51,7 +53,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				throw new ArgumentNullException(nameof(boe));
 			}
 
-			this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - begin");
+			this.logger.Debug("Exporting - BOEExportInputs - Initializing Inputs - begin");
 			this.SetRteTemplateOverrides(rteTemplatesOverrides);
 			this.SetMoqTypes(moqTypes);
 			this.Boes = new List<BoeDTO> { boe.ToDTO() }.AsReadOnly();
@@ -62,7 +64,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 			this.ResourcesUsedInWsBoes = workspace.ResourcesUsedInWsBoes;
 			this.PerformingOrgsUsedInBoes = workspace.PerformingOrgsUsedInBoes;
 			this.FullWorkspace = workspace;
-			this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - end");
+			this.logger.Debug("Exporting - BOEExportInputs - Initializing Inputs - end");
 		}
 
 		/// <summary>
@@ -75,10 +77,11 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// <param name="rteTemplatesOverrides">RTE Template Overrides</param>
 		/// <param name="moqTypes">MOQ Types</param>
 		/// <param name="processLaborTypesForBrc">Should Labor Types be processed for BRCs?</param>
+		/// <param name="processLaborTypesForUCOT">Should Labor Types be processed for UCOT?</param>
 		/// <exception cref="ArgumentNullException">workspace</exception>
 		public BOEExportInputs(ICollection<FullBoe> boesToExport, ICollection<FullBoe> allWorkspaceBoes, ICollection<BoeTaskElementDTO> taskElements,
 			FullWorkspace workspace, ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesOverrides = null,
-			ICollection<MoqTypeSelection> moqTypes = null, bool processLaborTypesForBrc = false)
+			ICollection<MoqTypeSelection> moqTypes = null, bool processLaborTypesForBrc = false, bool processLaborTypesForUCOT = false)
 		{
 			_ = taskElements ?? throw new ArgumentNullException(nameof(taskElements));
 			if (ReferenceEquals(workspace, null))
@@ -105,7 +108,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 						.Union(workspace.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value))
 						.Distinct().ToList();
 
-			if (Utilities.IsUCOTEnabled)
+			if (Utilities.IsUCOTEnabled && processLaborTypesForUCOT)
 			{
 				// Setup the ucot performing orgs.
 				PerformingOrgDTO ucotPerformingOrg = new PerformingOrgDTO
@@ -134,7 +137,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				}
 			}
 
-			if (Utilities.IsUCOTEnabled)
+			if (Utilities.IsUCOTEnabled && processLaborTypesForUCOT)
 			{
 				// Get labors, filter by element of cost
 				List<ResourceTypeDto> taskElementLabors = taskElements

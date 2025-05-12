@@ -1,4 +1,4 @@
-﻿angular.module('genboe').controller('ManageTaskController', ['$scope', '$http', '$timeout', 'ManageTaskModel', 'utilityService', function ($scope, $http, $timeout, ManageTaskModel, utilityService) {
+﻿angular.module('genboe').controller('ManageTaskController', ['$scope', '$http', '$timeout', '$window', 'ManageTaskModel', 'utilityService', function ($scope, $http, $timeout, $window, ManageTaskModel, utilityService) {
     $scope.ManageTaskModel = ManageTaskModel;
     $scope.TaskCustomFields = [];
     $scope.LaborCustomFields = [];
@@ -10,7 +10,9 @@
     $scope.model = {};
     $scope.tableData = []; // cloned copy of model (data) that is connected to labor table, useful for determining deltas
     $scope.deltaHours = '0';
+    $scope.deltaSkillMixHours = '0';
     $scope.totalHours = '0';
+    $scope.totalSkillMixHours = '0';
     $scope.totalCost = '0';
     $scope.totalUcotHours = '0';
     $scope.grandTotalHours = '0';
@@ -52,12 +54,18 @@
         $scope.refreshSkillMixTables();
     });
 
-    $scope.updateShowUcot = function () {
-        $scope.showUCOT = $scope.ManageTaskModel.IsUcotEnabled &&
-            $scope.IsBRCEnabled && 
-            $scope.SelectedMoqTypes &&
-            $scope.SelectedMoqTypes.length === 1 && 
-            $scope.SelectedMoqTypes.every(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002' || x.SelectedMOQType == '5005')
+	$scope.updateShowUcot = function () {
+		let originalShowUCOT = $scope.showUCOT;
+
+		$scope.showUCOT = $scope.ManageTaskModel.IsUcotEnabled &&
+			$scope.IsBRCEnabled &&
+			$scope.SelectedMoqTypes &&
+			$scope.SelectedMoqTypes.length === 1 &&
+			$scope.SelectedMoqTypes.every(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002' || x.SelectedMOQType == '5005');
+
+		if (originalShowUCOT != $scope.showUCOT) {
+			recalculateAllSpreadsAndTotals();
+		}
     };
         
     $scope.addSkillMixRow = function (currentIndex) {
@@ -92,6 +100,27 @@
         }).length > 1;
     };
 
+    $scope.openHelp = function (tableName) {
+        var url = "";
+        switch (tableName) {
+            case "RMSCurrentSkillMixTable":
+                url = $scope.ManageTaskModel.SkillMixTableHelpUrls.RMSCurrentSkillMixTableHelpUrl
+                break;
+            case "RMSLMEnterpriseSkillMixTable":
+                url = $scope.ManageTaskModel.SkillMixTableHelpUrls.RMSLMEnterpriseSkillMixTableHelpUrl
+                break;
+            case "SpaceLegacySkillMixTable":
+                url = $scope.ManageTaskModel.SkillMixTableHelpUrls.SpaceLegacySkillMixTableHelpUrl
+                break;
+            case "SpaceLMEnterpriseSkillMixTable":
+                url = $scope.ManageTaskModel.SkillMixTableHelpUrls.SpaceLMEnterpriseSkillMixTableHelpUrl
+                break;
+        }
+        if (url != "") {
+            $window.open(url, '_blank');
+        }
+    };
+
     $scope.checkEmptyString = function (value) {
         return value === undefined || value === '';
     };
@@ -108,7 +137,7 @@
         });
 
         $scope.skillMixRationaleLaborTypeSelections = $scope.skillMixRationaleLaborTypeSelections.filter((option, index, self) =>
-            index === self.findIndex((t) => (t === option)) && index === self.findLastIndex((t) => (t === option))
+            index === self.findLastIndex((t) => (t === option))
         );
     };
 
@@ -145,6 +174,7 @@
                 $scope.model.CommonDisclosureSkillMixData = $scope.skillMixRationale.data.CommonDisclosureRows;
 
                 // Set ManuallySetIncluded (flag to show dropdown) to true for rows where Included is false and ResourceNew is false.
+                let sumHours = 0;
                 $scope.skillMixRationale.data.SkillMixRows.forEach(function (row) {
                     if (row.Included === false || row.ResourceNew === '') {
                         row.metadata = {
@@ -154,6 +184,7 @@
                         row.metadata = {
                             ManuallySetIncluded: false
                         };
+                        sumHours += row.ProposedHours;
                     }
                 });
 
@@ -166,9 +197,12 @@
                         row.metadata = {
                             ManuallySetIncluded: false
                         };
+                        sumHours += row.ProposedHours;
                     }
                 });
 
+                $scope.totalSkillMixHours = sumHours;
+                $scope.deltaSkillMixHours = $scope.getMOQTotal().minus($scope.totalSkillMixHours).toString();
                 $scope.updateDropdowns();
 
                 $scope.isLoading = false;
@@ -184,6 +218,8 @@
             $scope.skillMixRationale = [];
             $scope.model.SkillMixData = [];
             $scope.model.CommonDisclosureSkillMixData = [];
+            $scope.totalSkillMixHours = 0;
+            $scope.deltaSkillMixHours = 0;
         }
     }
 
@@ -1213,7 +1249,7 @@
         });
     };
     var loadData = function (callback) {
-        $(document).trigger("SHOW_LOADING_BOX");
+		$(document).trigger("SHOW_LOADING_BOX");
         $scope.isLoading = true;
         $scope.dataLoaded = false;
         $scope.TaskCustomFields = [];
@@ -1983,10 +2019,31 @@
         $scope.setDirty();
     };
 
-	$scope.showSkillMix = function () {
-		// Show Skill Mix if Feature Flag enabled and no T&M rates are in the task
-        return $scope.IsSkillMixEnabled && $scope.IsUsingTMRatesInTask === false &&
-            (!$scope.ManageTaskModel.IsSpace || !$scope.isSkillMixManualPerMOQ());
+    $scope.showSkillMix = function () {
+        if ($scope.IsSkillMixEnabled && $scope.IsUsingTMRatesInTask === false) {
+            // Check if there is exactly one MOQ Type selected
+            if ($scope.SelectedMoqTypes.length === 1) {
+                // Space
+                if ($scope.ManageTaskModel.IsSpace) {
+                    // Check if the single MOQ type is one of the big three (Comparative, Historical, Analagous)
+                    let hasBigThreeMoqType = [5001, 5002, 5005, '5001', '5002', '5005'].includes($scope.SelectedMoqTypes[0].SelectedMOQType);
+
+                    // Check if the single MOQ table has a SAP/WEBI repository
+                    let hasSapWebiRepository = $scope.SelectedMoqTypes[0].TableData !== undefined && $scope.SelectedMoqTypes[0].TableData.some(function (table) {
+                        return table.RepositoryName === $scope.ManageTaskModel.SapWebiRepository;
+                    });
+
+                    return hasBigThreeMoqType && hasSapWebiRepository;
+                    // RMS
+                } else {
+                    let hasProperMoqTypes = [5001, 5002, '5001', '5002'].includes($scope.SelectedMoqTypes[0].SelectedMOQType);
+                    return $scope.IsSkillMixEnabled && hasProperMoqTypes;
+                }
+            } else {
+                // If there is not exactly one MOQ Type selected, hide Skill Mix
+                return false;
+            }
+        }
     };
 
     $scope.isSkillMixManual = function () {
@@ -1996,24 +2053,54 @@
     };
 
     $scope.isSkillMixManualPerMOQ = function () {
-        let isSkillMixManual = ($scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0 || !ManageTaskModel.SapConnectionEnabled || !$scope.SelectedMoqTypes.every(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002'));
+        let isSkillMixManual = ($scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0 || !$scope.ManageTaskModel.SapConnectionEnabled || !$scope.SelectedMoqTypes.every(x => x.SelectedMOQType == '5001' || x.SelectedMOQType == '5002'));
         if (!isSkillMixManual && $scope.ManageTaskModel.IsSpace) {
             angular.forEach($scope.SelectedMoqTypes, function (item, key) {
                 if (item.TableData === undefined || item.TableData.length === 0 || !item.TableData.every(y => y.RepositoryName == $scope.ManageTaskModel.SapWebiRepository)) {
                     isSkillMixManual = true;
-                } 
+                }
             });
         }
         return isSkillMixManual;
     };
 
     $scope.isSkillMixDisabled = function () {
-        // Set if Skill Mix is Automatic, but one of the following occurs:
-        // 1) No MOQ Tables
-        // 2) Any MOQ Table is missing SAP Resource Hours
+        // Check if Skill Mix is Automatic
+        let isAutomatic = !$scope.isSkillMixManual();
 
-        return !$scope.isSkillMixManual() && (($scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0) || !$scope.SelectedMoqTypes.every(x => x.TableData !== undefined && x.TableData.length > 0 && x.TableData.every(y => y.ResourceHours !== undefined && y.ResourceHours.length > 0)));
-    }
+        // Check if there are no MOQ Tables
+        let noMoqTables = $scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0;
+
+        // Check if any MOQ Table is missing SAP Resource Hours
+
+        let hasMissingSAPResourceHours = false;
+
+        if ($scope.ManageTaskModel.IsSpace) {
+            // Space
+            hasMissingSAPResourceHours = !$scope.SelectedMoqTypes.every(x =>
+                x.TableData !== undefined &&
+                x.TableData.length > 0 &&
+                x.TableData.some(y =>
+                    y.RepositoryName === $scope.ManageTaskModel.SapWebiRepository
+                )
+            );
+        }
+        else {
+            // RMS
+            hasMissingSAPResourceHours = !$scope.SelectedMoqTypes.every(x =>
+                x.TableData !== undefined &&
+                x.TableData.length > 0 &&
+                x.TableData.every(y =>
+                    (y.ResourceHours !== undefined && y.ResourceHours.length > 0)
+                )
+            );
+        }
+
+        let disabledSkillMix = isAutomatic && (noMoqTables || hasMissingSAPResourceHours);
+
+        // Return true if Skill Mix is Automatic and either of the conditions occur
+        return disabledSkillMix;
+    };
 
     $scope.perfOrgSelected = function (item, model) {
         $scope.setDirty();
