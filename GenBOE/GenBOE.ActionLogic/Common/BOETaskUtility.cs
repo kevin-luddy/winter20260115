@@ -81,7 +81,8 @@ namespace GenBOE.ActionLogic.Common
 			{
 				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
 				{
-					showSkillMixRationale = Utilities.ShowSkillMixForWorkspace(workspaceCreationDate);
+					showSkillMixRationale = Utilities.ShowSkillMixForWorkspace(workspaceCreationDate) &&
+						(moqTypeSelections.First().SelectedMOQType == MOQType.Comparative || moqTypeSelections.First().SelectedMOQType == MOQType.Historical);
 				}
 				else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 				{
