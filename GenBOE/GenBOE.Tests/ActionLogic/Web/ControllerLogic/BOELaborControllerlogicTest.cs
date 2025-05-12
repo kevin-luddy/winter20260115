@@ -234,6 +234,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			this.moqTableImporter = new Mock<IMoqTableImporter>();
 			this.tmResourceRateDTODataLoader = new Mock<ITMResourceRateDTODataLoader>();
 			this.tmResourceRateDTODataLoader.Setup(x => x.GetByWorkspaceId(It.IsAny<int>())).Returns(new List<TMResourceRateDTO>());
+			requestDataLoader = new Mock<IRequestDataLoader>();
 
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
@@ -3225,7 +3226,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				string value = property.GetValue(helpUrls).ToString();
 				Assert.IsNotNull(value);
 
-				if (property.Name == "RepositoryNameHistoricalSuffix" || property.Name == "RepositoryNameComparativeSuffix" || property.Name == "QueryTypeHistoricalSuffix" || property.Name == "QueryTypeComparativeSuffix")
+				if (property.Name == "RepositoryNameHistoricalSuffix" || property.Name == "RepositoryNameComparativeSuffix" 
+					|| property.Name == "QueryTypeHistoricalSuffix" || property.Name == "QueryTypeComparativeSuffix"
+					|| property.Name.EndsWith("AnalogousSuffix"))
 				{
 					// These fields aren't used in RMS
 					Assert.IsTrue(string.IsNullOrEmpty(value));

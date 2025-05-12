@@ -6,30 +6,30 @@
 
 namespace GenBOE.ActionLogic.ModelView
 {
-    using IES.Common;
+	using IES.Common;
 
-    /// <summary>
-    /// Class for MOQ Help URLs
-    /// </summary>
-    public class MoqTypeHelpUrls
-    {
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        public MoqTypeHelpUrls()
-        {
-            this.BaseUrl = ConfigurationUtilities.GetAppSetting("MOQHelpBaseUrl");
-        }
+	/// <summary>
+	/// Class for MOQ Help URLs
+	/// </summary>
+	public class MoqTypeHelpUrls
+	{
+		/// <summary>
+		/// Default constructor
+		/// </summary>
+		public MoqTypeHelpUrls()
+		{
+			this.BaseUrl = ConfigurationUtilities.GetAppSetting("MOQHelpBaseUrl");
+		}
 
-        /// <summary>
-        /// Base URL from web.config
-        /// </summary>
-        public string BaseUrl { get; set; }
+		/// <summary>
+		/// Base URL from web.config
+		/// </summary>
+		public string BaseUrl { get; set; }
 
-        /// <summary>
-        /// URL Suffix for Table Name for Historical
-        /// </summary>
-        public string TableNameHistoricalSuffix { get; set; }
+		/// <summary>
+		/// URL Suffix for Table Name for Historical
+		/// </summary>
+		public string TableNameHistoricalSuffix { get; set; }
 
 		/// <summary>
 		/// URL Suffix for Table Name for Comparative
@@ -39,7 +39,7 @@ namespace GenBOE.ActionLogic.ModelView
 		/// <summary>
 		/// URL Suffix for Table Name for Analogous
 		/// </summary>
-		public string TableNameAnalogousSuffix { get; set; }
+		public string TableNameAnalogousSuffix { get; set; } = string.Empty;
 
 		/// <summary>
 		/// URL Suffix for Repository Name for Historical
@@ -54,7 +54,7 @@ namespace GenBOE.ActionLogic.ModelView
 		/// <summary>
 		/// URL Suffix for Repository Name for Analogous
 		/// </summary>
-		public string RepositoryNameAnalogousSuffix { get; set; }
+		public string RepositoryNameAnalogousSuffix { get; set; } = string.Empty;
 
 		/// <summary>
 		/// URL Suffix for Query Type for Historical
@@ -69,7 +69,7 @@ namespace GenBOE.ActionLogic.ModelView
 		/// <summary>
 		/// URL Suffix for Query Type for Analogous
 		/// </summary>
-		public string QueryTypeAnalogousSuffix { get; set; }
+		public string QueryTypeAnalogousSuffix { get; set; } = string.Empty;
 
 		/// <summary>
 		/// URL Suffix for Date of Report for Historical
@@ -84,7 +84,7 @@ namespace GenBOE.ActionLogic.ModelView
 		/// <summary>
 		/// URL Suffix for Date of Report for Analogous
 		/// </summary>
-		public string DateOfReportAnalogousSuffix { get; set; }
+		public string DateOfReportAnalogousSuffix { get; set; } = string.Empty;
 
 		/// <summary>
 		/// URL Suffix for Historical Program Name for Historical
@@ -99,17 +99,17 @@ namespace GenBOE.ActionLogic.ModelView
 		/// <summary>
 		/// URL Suffix for Historical Program Name for Analogous
 		/// </summary>
-		public string HistoricalProgramNameAnalogousSuffix { get; set; }
+		public string HistoricalProgramNameAnalogousSuffix { get; set; } = string.Empty;
 
 		/// <summary>
 		/// URL Suffix for Contract Number
 		/// </summary>
 		public string ContractNumberSuffix { get; set; }
 
-        /// <summary>
-        /// URL Suffix for WBS/WBS Element for Historical
-        /// </summary>
-        public string WBSElementHistoricalSuffix { get; set; }
+		/// <summary>
+		/// URL Suffix for WBS/WBS Element for Historical
+		/// </summary>
+		public string WBSElementHistoricalSuffix { get; set; }
 
 		/// <summary>
 		/// URL Suffix for WBS/WBS Element for Comparative
@@ -119,7 +119,7 @@ namespace GenBOE.ActionLogic.ModelView
 		/// <summary>
 		/// URL Suffix for WBS/WBS Element for Analogous
 		/// </summary>
-		public string WBSElementAnalogousSuffix { get; set; }
+		public string WBSElementAnalogousSuffix { get; set; } = string.Empty;
 
 		/// <summary>
 		/// URL Suffix for PoP Start Date for Historical
@@ -134,13 +134,13 @@ namespace GenBOE.ActionLogic.ModelView
 		/// <summary>
 		/// URL Suffix for PoP Start Date for Analogous
 		/// </summary>
-		public string PoPStartAnalogousSuffix { get; set; }
+		public string PoPStartAnalogousSuffix { get; set; } = string.Empty;
 
 		/// <summary>
 		/// URL Suffix for PoP End Date for Historical
 		/// </summary>
 		public string PoPEndHistoricalSuffix { get; set; }
-		
+
 		/// <summary>
 		/// URL Suffix for PoP End Date for Comparative
 		/// </summary>
@@ -149,17 +149,17 @@ namespace GenBOE.ActionLogic.ModelView
 		/// <summary>
 		/// URL Suffix for PoP End Date for Analogous
 		/// </summary>
-		public string PoPEndAnalogousSuffix { get; set; }
+		public string PoPEndAnalogousSuffix { get; set; } = string.Empty;
 
 		/// <summary>
 		/// URL Suffix for Total WBS hours for Historical
 		/// </summary>
 		public string TotalWBSHoursSuffix { get; set; }
 
-        /// <summary>
-        /// URL Suffix for Additional Query Filters for Historical
-        /// </summary>
-        public string AdditionalQueryFiltersHistoricalSuffix { get; set; }
+		/// <summary>
+		/// URL Suffix for Additional Query Filters for Historical
+		/// </summary>
+		public string AdditionalQueryFiltersHistoricalSuffix { get; set; }
 
 		/// <summary>
 		/// URL Suffix for Additional Query Filters for Comparative
@@ -169,7 +169,7 @@ namespace GenBOE.ActionLogic.ModelView
 		/// <summary>
 		/// URL Suffix for Additional Query Filters for Analogous
 		/// </summary>
-		public string AdditionalQueryFiltersAnalogousSuffix { get; set; }
+		public string AdditionalQueryFiltersAnalogousSuffix { get; set; } = string.Empty;
 
 		/// <summary>
 		/// URL Suffix for Total Relevant Hours for Historical
@@ -184,131 +184,131 @@ namespace GenBOE.ActionLogic.ModelView
 		/// <summary>
 		/// URL Suffix for Total Relevant Hours for Analogous
 		/// </summary>
-		public string TotalRelevantHoursAnalogousSuffix { get; set; }
+		public string TotalRelevantHoursAnalogousSuffix { get; set; } = string.Empty;
 
 		/// <summary>
 		/// URL Suffix for Historical Rationale
 		/// </summary>
 		public string HistoricalRationaleSuffix { get; set; }
 
-        /// <summary>
-        /// URL Suffix for Comparative Rationale
-        /// </summary>
-        public string ComparativeRationaleSuffix { get; set; }
+		/// <summary>
+		/// URL Suffix for Comparative Rationale
+		/// </summary>
+		public string ComparativeRationaleSuffix { get; set; }
 
-        /// <summary>
-        /// URL Suffix for CER Rationale
-        /// </summary>
-        public string CerRationaleSuffix { get; set; }
+		/// <summary>
+		/// URL Suffix for CER Rationale
+		/// </summary>
+		public string CerRationaleSuffix { get; set; }
 
-        /// <summary>
-        /// URL Suffix for PE Rationale
-        /// </summary>
-        public string PeRationaleSuffix { get; set; }
+		/// <summary>
+		/// URL Suffix for PE Rationale
+		/// </summary>
+		public string PeRationaleSuffix { get; set; }
 
-        /// <summary>
-        /// URL Suffix for AR Rationale
-        /// </summary>
-        public string ArRationaleSuffix { get; set; }
+		/// <summary>
+		/// URL Suffix for AR Rationale
+		/// </summary>
+		public string ArRationaleSuffix { get; set; }
 
-        /// <summary>
-        /// URL Suffix for SOW Rationale
-        /// </summary>
-        public string SowRationaleSuffix { get; set; }
+		/// <summary>
+		/// URL Suffix for SOW Rationale
+		/// </summary>
+		public string SowRationaleSuffix { get; set; }
 
-        /// <summary>
-        /// URL Suffix for LOE Rationale
-        /// </summary>
-        public string LoeRationaleSuffix { get; set; }
+		/// <summary>
+		/// URL Suffix for LOE Rationale
+		/// </summary>
+		public string LoeRationaleSuffix { get; set; }
 
-        /// <summary>
-        /// URL Suffix for Non-Labor Rationale
-        /// </summary>
-        public string NonLaborRationaleSuffix { get; set; }
+		/// <summary>
+		/// URL Suffix for Non-Labor Rationale
+		/// </summary>
+		public string NonLaborRationaleSuffix { get; set; }
 
-        /// <summary>
-        /// URL Suffix for Historical Skill Mix Rationale
-        /// </summary>
-        public string HistoricalSkillMixSuffix { get; set; }
+		/// <summary>
+		/// URL Suffix for Historical Skill Mix Rationale
+		/// </summary>
+		public string HistoricalSkillMixSuffix { get; set; }
 
-        /// <summary>
-        /// URL Suffix for Comparative Skill Mix Rationale
-        /// </summary>
-        public string ComparativeSkillMixSuffix { get; set; }
+		/// <summary>
+		/// URL Suffix for Comparative Skill Mix Rationale
+		/// </summary>
+		public string ComparativeSkillMixSuffix { get; set; }
 
-        /// <summary>
-        /// URL Suffix for CER Skill Mix Rationale
-        /// </summary>
-        public string CerSkillMixSuffix { get; set; }
+		/// <summary>
+		/// URL Suffix for CER Skill Mix Rationale
+		/// </summary>
+		public string CerSkillMixSuffix { get; set; }
 
-        /// <summary>
-        /// URL Suffix for PE Skill Mix Rationale
-        /// </summary>
-        public string PeSkillMixSuffix { get; set; }
+		/// <summary>
+		/// URL Suffix for PE Skill Mix Rationale
+		/// </summary>
+		public string PeSkillMixSuffix { get; set; }
 
-        /// <summary>
-        /// URL Suffix for AR Skill Mix Rationale
-        /// </summary>
-        public string ArSkillMixSuffix { get; set; }
+		/// <summary>
+		/// URL Suffix for AR Skill Mix Rationale
+		/// </summary>
+		public string ArSkillMixSuffix { get; set; }
 
-        /// <summary>
-        /// URL Suffix for SOW Skill Mix Rationale
-        /// </summary>
-        public string SowSkillMixSuffix { get; set; }
+		/// <summary>
+		/// URL Suffix for SOW Skill Mix Rationale
+		/// </summary>
+		public string SowSkillMixSuffix { get; set; }
 
-        /// <summary>
-        /// URL Suffix for LOE Skill Mix Rationale
-        /// </summary>
-        public string LoeSkillMixSuffix { get; set; }
+		/// <summary>
+		/// URL Suffix for LOE Skill Mix Rationale
+		/// </summary>
+		public string LoeSkillMixSuffix { get; set; }
 
-        /// <summary>
-        /// URL Suffix for SME Skill Mix Rationale
-        /// </summary>
-        public string SmeSkillMixSuffix { get; set; }
+		/// <summary>
+		/// URL Suffix for SME Skill Mix Rationale
+		/// </summary>
+		public string SmeSkillMixSuffix { get; set; }
 
-        /// <summary>
-        /// URL Suffix for CER Name
-        /// </summary>
-        public string CERNameSuffix { get; set; }
-        
-        /// <summary>
-        /// URL Suffix for PE Name
-        /// </summary>
-        public string PENameSuffix { get; set; }
-        
-        /// <summary>
-        /// URL Suffix for AR Name
-        /// </summary>
-        public string ARNameSuffix { get; set; }
-        
-        /// <summary>
-        /// URL Suffix for SOW/LOE Description
-        /// </summary>
-        public string SOWDescriptionSuffix { get; set; }
+		/// <summary>
+		/// URL Suffix for CER Name
+		/// </summary>
+		public string CERNameSuffix { get; set; }
 
-        /// <summary>
-        /// URL Suffix for LOE Description
-        /// </summary>
-        public string LOEDescriptionSuffix { get; set; }
+		/// <summary>
+		/// URL Suffix for PE Name
+		/// </summary>
+		public string PENameSuffix { get; set; }
 
-        /// <summary>
-        /// URL Suffix for SME Reasons
-        /// </summary>
-        public string SMEReasonsSuffix { get; set; }
+		/// <summary>
+		/// URL Suffix for AR Name
+		/// </summary>
+		public string ARNameSuffix { get; set; }
 
-        /// <summary>
-        /// URL Suffix for SME Hours Logic
-        /// </summary>
-        public string SMEHoursLogicSuffix { get; set; }
+		/// <summary>
+		/// URL Suffix for SOW/LOE Description
+		/// </summary>
+		public string SOWDescriptionSuffix { get; set; }
 
-        /// <summary>
-        /// URL Suffix for SME Duration Logic
-        /// </summary>
-        public string SMEDurationLogicSuffix { get; set; }
+		/// <summary>
+		/// URL Suffix for LOE Description
+		/// </summary>
+		public string LOEDescriptionSuffix { get; set; }
 
-        /// <summary>
-        /// URL Suffix for SME Tasks
-        /// </summary>
-        public string SMETasksSuffix { get; set; }
-    }
+		/// <summary>
+		/// URL Suffix for SME Reasons
+		/// </summary>
+		public string SMEReasonsSuffix { get; set; }
+
+		/// <summary>
+		/// URL Suffix for SME Hours Logic
+		/// </summary>
+		public string SMEHoursLogicSuffix { get; set; }
+
+		/// <summary>
+		/// URL Suffix for SME Duration Logic
+		/// </summary>
+		public string SMEDurationLogicSuffix { get; set; }
+
+		/// <summary>
+		/// URL Suffix for SME Tasks
+		/// </summary>
+		public string SMETasksSuffix { get; set; }
+	}
 }
