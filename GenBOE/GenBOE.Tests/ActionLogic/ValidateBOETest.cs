@@ -6,47 +6,47 @@
 
 namespace GenBOE.Tests.ActionLogic
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Linq;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.Common.Calculations;
-    using GenBOE.ActionLogic.ModelView;
-    using GenBOE.ActionLogic.NewValidation;
-    using GenBOE.ActionLogic.Validation;
-    using GenBOE.ActionLogic.WBS.BOE;
-    using GenBOE.DataBridge.Common;
-    using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
-    using GenBOE.Objects;
-    using IES.Common;
-    using IES.Common.classes;
-    using IES.Common.Exceptions;
-    using Microsoft.Practices.Unity;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Moq;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.ActionLogic.NewValidation;
+	using GenBOE.ActionLogic.Validation;
+	using GenBOE.ActionLogic.WBS.BOE;
+	using GenBOE.DataBridge.Common;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
+	using IES.Common;
+	using IES.Common.classes;
+	using IES.Common.Exceptions;
+	using Microsoft.Practices.Unity;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using Moq;
 
 	/// <summary>
 	/// ValidateBOE Tests
 	/// </summary>
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), TestClass]
-    public class ValidateBOETest : MOQObject
-    {
-        private Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
-        private Mock<IRetriever> retriever = new Mock<IRetriever>();
-        private bool _SpaceEnabled = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems;
-        private Mock<ICommonDataMapper> _CommonDataMapper = new Mock<ICommonDataMapper>();
+	public class ValidateBOETest : MOQObject
+	{
+		private Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
+		private Mock<IRetriever> retriever = new Mock<IRetriever>();
+		private bool _SpaceEnabled = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems;
+		private Mock<ICommonDataMapper> _CommonDataMapper = new Mock<ICommonDataMapper>();
 		private Mock<IPermissionsDTODataLoader> _permissions = new Mock<IPermissionsDTODataLoader>();
-        private Mock<IMSTZoneTravelValidator> mstZoneTravelValidator = new Mock<IMSTZoneTravelValidator>();
+		private Mock<IMSTZoneTravelValidator> mstZoneTravelValidator = new Mock<IMSTZoneTravelValidator>();
 		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
-        private Mock<IOffloadRatesDTOLoader> offloadRatesLoader = new Mock<IOffloadRatesDTOLoader>();
-        private Mock<IRteTemplateDataLoader> rteTemplateLoader = new Mock<IRteTemplateDataLoader>();
+		private Mock<IOffloadRatesDTOLoader> offloadRatesLoader = new Mock<IOffloadRatesDTOLoader>();
+		private Mock<IRteTemplateDataLoader> rteTemplateLoader = new Mock<IRteTemplateDataLoader>();
 
-        [TestInitialize]
-        public override void Setup()
-        {
-            base.Setup();
+		[TestInitialize]
+		public override void Setup()
+		{
+			base.Setup();
 			retriever.Setup(x => x.GetTMResourceRates(It.IsAny<int>())).Returns(new List<TMResourceRateDTO>());
 
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
@@ -54,3189 +54,3189 @@ namespace GenBOE.Tests.ActionLogic
 
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IMSTZoneTravelValidator), mstZoneTravelValidator.Object);
 
-            this.offloadRatesLoader = new Mock<IOffloadRatesDTOLoader>();
+			this.offloadRatesLoader = new Mock<IOffloadRatesDTOLoader>();
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IOffloadRatesDTOLoader), offloadRatesLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IOffloadRatesDTOLoader), offloadRatesLoader.Object);
 
-            this.offloadRatesLoader.Setup(x => x.GetByWorkspaceId(It.IsAny<int>())).Returns(new Collection<OffloadRatesDTO>()
-            {
-                new OffloadRatesDTO()
-                {
-                    HourlyRate = 35.00m,
-                    Percent = 0.5m,
-                    PerformingOrg = "P",
-                    SubResource = "S",
-                    Resource = "R",
-                    Year = 2017
-                },
-                new OffloadRatesDTO()
-                {
-                    HourlyRate = 25.00m,
-                    Percent = 0.15m,
-                    PerformingOrg = "P2",
-                    SubResource = "S",
-                    Resource = "R",
-                    Year = 2017
-                },new OffloadRatesDTO()
-                {
-                    HourlyRate = 135.00m,
-                    Percent = 0.4m,
-                    PerformingOrg = "P",
-                    SubResource = "S",
-                    Resource = "R2",
-                    Year = 2017
-                },new OffloadRatesDTO()
-                {
-                    HourlyRate = 20.00m,
-                    Percent = 0.5m,
-                    PerformingOrg = "P",
-                    SubResource = "S",
-                    Resource = "R",
-                    Year = 2018
-                }
-            });
+			this.offloadRatesLoader.Setup(x => x.GetByWorkspaceId(It.IsAny<int>())).Returns(new Collection<OffloadRatesDTO>()
+			{
+				new OffloadRatesDTO()
+				{
+					HourlyRate = 35.00m,
+					Percent = 0.5m,
+					PerformingOrg = "P",
+					SubResource = "S",
+					Resource = "R",
+					Year = 2017
+				},
+				new OffloadRatesDTO()
+				{
+					HourlyRate = 25.00m,
+					Percent = 0.15m,
+					PerformingOrg = "P2",
+					SubResource = "S",
+					Resource = "R",
+					Year = 2017
+				},new OffloadRatesDTO()
+				{
+					HourlyRate = 135.00m,
+					Percent = 0.4m,
+					PerformingOrg = "P",
+					SubResource = "S",
+					Resource = "R2",
+					Year = 2017
+				},new OffloadRatesDTO()
+				{
+					HourlyRate = 20.00m,
+					Percent = 0.5m,
+					PerformingOrg = "P",
+					SubResource = "S",
+					Resource = "R",
+					Year = 2018
+				}
+			});
 
-            this.rteTemplateLoader.Setup(x => x.GetByBoeId(It.IsAny<int>(), It.IsAny<int>())).Returns(new List<RTECustomTemplateQuestionAnswerModelView>());
-            this.rteTemplateLoader.Setup(x => x.GetByBoeIdAndTaskId(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new List<RTECustomTemplateQuestionAnswerModelView>());
-        }
+			this.rteTemplateLoader.Setup(x => x.GetByBoeId(It.IsAny<int>(), It.IsAny<int>())).Returns(new List<RTECustomTemplateQuestionAnswerModelView>());
+			this.rteTemplateLoader.Setup(x => x.GetByBoeIdAndTaskId(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new List<RTECustomTemplateQuestionAnswerModelView>());
+		}
 
-        /// <summary>
-        /// Create ValidateBOE sut
-        /// </summary>
-        /// <returns>sut</returns>
-        private ValidateBOE CreateSystem()
-        {
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+		/// <summary>
+		/// Create ValidateBOE sut
+		/// </summary>
+		/// <returns>sut</returns>
+		private ValidateBOE CreateSystem()
+		{
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            Mock<IPermissionsDTODataLoader> permloader = new Mock<IPermissionsDTODataLoader>();
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permloader.Object);
+			Mock<IPermissionsDTODataLoader> permloader = new Mock<IPermissionsDTODataLoader>();
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permloader.Object);
 
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
-			
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+
 			return sut;
-        }
+		}
 
-        /// <summary>
-        /// This is a basic test using the global boe to validate
-        /// </summary>
-        [TestMethod]
-        public void BL_ValidateBOE()
-        {
-            // Set up
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+		/// <summary>
+		/// This is a basic test using the global boe to validate
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateBOE()
+		{
+			// Set up
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
 
-            Mock<IResourceDTODataLoader> ResourceLoader = new Mock<IResourceDTODataLoader>();
+			Mock<IResourceDTODataLoader> ResourceLoader = new Mock<IResourceDTODataLoader>();
 
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
 
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName };
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName };
 
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, WasDescriptionSet = true, WasDataSourceSet = true };
-            FullBoe boeObject = new FullBoe(boe);
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO>());
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissions.Object);
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, WasDescriptionSet = true, WasDataSourceSet = true };
+			FullBoe boeObject = new FullBoe(boe);
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO>());
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissions.Object);
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
 
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            ResourceLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>());
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			ResourceLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>());
 
-            //setup custom fields to be false, we'll check them in another test
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.BoeDisplay, CustomFieldRequired = false };
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			//setup custom fields to be false, we'll check them in another test
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.BoeDisplay, CustomFieldRequired = false };
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
-            //Assert
-            Assert.IsNotNull(validationBOE, "The BOE to validate was null");
+			//Assert
+			Assert.IsNotNull(validationBOE, "The BOE to validate was null");
 
-            //Act
-            boeObject.Description = null;
-            boeObject.DataSource = null;
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+			//Act
+			boeObject.Description = null;
+			boeObject.DataSource = null;
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
-            //Assert
-            Assert.IsNotNull(validationBOE, "The BOE to validate was null");
-        }
+			//Assert
+			Assert.IsNotNull(validationBOE, "The BOE to validate was null");
+		}
 
-        /// <summary>
-        /// This test case will ensure that a BOE is created with lots of missing fields
-        /// so we can be sure that each required message needed is populated
-        /// </summary>
-        [TestMethod]
-        public void BL_MoreInvalidBOEsToValidate()
-        {
-            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+		/// <summary>
+		/// This test case will ensure that a BOE is created with lots of missing fields
+		/// so we can be sure that each required message needed is populated
+		/// </summary>
+		[TestMethod]
+		public void BL_MoreInvalidBOEsToValidate()
+		{
+			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
 
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
 
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, UsingTemplateBOE = false };
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, UsingTemplateBOE = false };
 
-            //setup custom fields
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
+			//setup custom fields
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
-            //setup a BOE
-            ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 20 };
-            ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
-            BoeTaskElementDTO boeTE = new BoeTaskElementDTO
-            {
-                Id = 1,
-                BoeID = 4,
-                BOETaskID = "T56",
-                Description = "validate data",
-                StartDate = Convert.ToDateTime("02/01/2011"),
-                EndDate = Convert.ToDateTime("06/01/2011"),
-                taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
-                TaskTitle = "Validate Task",
-                TotalHours = 100,
-                WorkspaceVariableIDs = new Collection<int> { 2 },
-                TaskElementType = TaskElementType.Labor,
-                WasDescriptionSet = true,
-                WasMoqTextSet = true
-            };
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			//setup a BOE
+			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 20 };
+			ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
+			BoeTaskElementDTO boeTE = new BoeTaskElementDTO
+			{
+				Id = 1,
+				BoeID = 4,
+				BOETaskID = "T56",
+				Description = "validate data",
+				StartDate = Convert.ToDateTime("02/01/2011"),
+				EndDate = Convert.ToDateTime("06/01/2011"),
+				taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
+				TaskTitle = "Validate Task",
+				TotalHours = 100,
+				WorkspaceVariableIDs = new Collection<int> { 2 },
+				TaskElementType = TaskElementType.Labor,
+				WasDescriptionSet = true,
+				WasMoqTextSet = true
+			};
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
 
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("12/01/2011"), WorkspaceID = workspace.Id, HistoricMetricDisclosureChecked = false, WasDescriptionSet = true, WasDataSourceSet = true };
-            FullBoe boeObject = new FullBoe(boe);
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("12/01/2011"), WorkspaceID = workspace.Id, HistoricMetricDisclosureChecked = false, WasDescriptionSet = true, WasDataSourceSet = true };
+			FullBoe boeObject = new FullBoe(boe);
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>() { boeTE });
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO>());
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissions.Object);
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>() { boeTE });
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO>());
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissions.Object);
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
 
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
 
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
 
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>());
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>());
 
-			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> {  });
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { });
 
 
 			ICollection<int> ids = new Collection<int>();
-            ids.Add(boeTE.Id);
+			ids.Add(boeTE.Id);
 
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
 
-            IValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+			IValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
-            // Assert
-            Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
-            toAssertTasks = validationBOE.Tasks;
+			// Assert
+			Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
+			toAssertTasks = validationBOE.Tasks;
 
-            // check that the boe description was missing
+			// check that the boe description was missing
 
-            Assert.IsTrue(validationBOE.BOEHeaderMsgs.Contains(BoeDTO.BOE_DESC_REQUIRED), "The BOE Header was  empty");
+			Assert.IsTrue(validationBOE.BOEHeaderMsgs.Contains(BoeDTO.BOE_DESC_REQUIRED), "The BOE Header was  empty");
 
-            // verify task error messages
-            foreach (ValidationBOETasks x in toAssertTasks)
-            {
-                Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(BoeDTO.MOQ_EQ_REQUIRED));
-                Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(String.Format(BoeDTO.MOQ_TEXT_REQUIRED, CommonConstants.BOE_MOQ_TEXT_LABEL)));
-                Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(BoeDTO.TOTAL_LABOR_SPREAD_INVALID));
+			// verify task error messages
+			foreach (ValidationBOETasks x in toAssertTasks)
+			{
+				Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(BoeDTO.MOQ_EQ_REQUIRED));
+				Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(String.Format(BoeDTO.MOQ_TEXT_REQUIRED, CommonConstants.BOE_MOQ_TEXT_LABEL)));
+				Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(BoeDTO.TOTAL_LABOR_SPREAD_INVALID));
 
-                // verify labor error messages 
-                foreach (ValidationBOELaborType y in x.LaborTypes)
-                {
-                    Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 2, "There weren't 2 labor type messages");
-                }
-            }
+				// verify labor error messages 
+				foreach (ValidationBOELaborType y in x.LaborTypes)
+				{
+					Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 2, "There weren't 2 labor type messages");
+				}
+			}
 
-            //now test it in Space Systems mode
-            sut = new ValidateBOESpaceSystems(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+			//now test it in Space Systems mode
+			sut = new ValidateBOESpaceSystems(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
-            // Assert
-            toAssertTasks = new Collection<ValidationBOETasks>();
-            toAssertTasks = validationBOE.Tasks;
+			// Assert
+			toAssertTasks = new Collection<ValidationBOETasks>();
+			toAssertTasks = validationBOE.Tasks;
 
-            // verify task error messages - in space sytems we only need to verify the MOQ Text difference
-            foreach (ValidationBOETasks x in toAssertTasks)
-            {
-                Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(String.Format(BoeDTO.MOQ_TEXT_REQUIRED, CommonConstants.BOE_MOQ_TEXT_LABEL_SPACE_SYSTEMS)));
-            }
-        }
+			// verify task error messages - in space sytems we only need to verify the MOQ Text difference
+			foreach (ValidationBOETasks x in toAssertTasks)
+			{
+				Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(String.Format(BoeDTO.MOQ_TEXT_REQUIRED, CommonConstants.BOE_MOQ_TEXT_LABEL_SPACE_SYSTEMS)));
+			}
+		}
 
-        [TestMethod]
-        public void BL_ValidateBOE_GoodMOQ_Eq()
-        {
-            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+		[TestMethod]
+		public void BL_ValidateBOE_GoodMOQ_Eq()
+		{
+			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
 
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, UsingTemplateBOE = false };
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, UsingTemplateBOE = false };
 
-            // set up resource
-            ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
-            resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
-            resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
+			// set up resource
+			ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
+			resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
+			resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
 
-            //setup custom fields to be false, we'll check them in another test
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
+			//setup custom fields to be false, we'll check them in another test
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
-            //setup a BOE
-            ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
-            ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
-            BoeTaskElementDTO boeTE = new BoeTaskElementDTO
-            {
-                Id = 1,
-                BoeID = 4,
-                BOETaskID = "T56",
-                Description = "validate data",
-                StartDate = Convert.ToDateTime("02/01/2011"),
-                EndDate = Convert.ToDateTime("06/01/2011"),
-                MOQHoursEquation = "100",
-                MOQText = "validate moq",
-                MOQType = MOQType.Comparison,
-                MOQTypeName = "validate",
-                taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
-                TaskTitle = "Validate Task",
-                TotalHours = 100,
-                WorkspaceVariableIDs = new Collection<int> { 2 },
-                TaskElementType = TaskElementType.Labor
-            };
+			//setup a BOE
+			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
+			ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
+			BoeTaskElementDTO boeTE = new BoeTaskElementDTO
+			{
+				Id = 1,
+				BoeID = 4,
+				BOETaskID = "T56",
+				Description = "validate data",
+				StartDate = Convert.ToDateTime("02/01/2011"),
+				EndDate = Convert.ToDateTime("06/01/2011"),
+				MOQHoursEquation = "100",
+				MOQText = "validate moq",
+				MOQType = MOQType.Comparison,
+				MOQTypeName = "validate",
+				taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
+				TaskTitle = "Validate Task",
+				TotalHours = 100,
+				WorkspaceVariableIDs = new Collection<int> { 2 },
+				TaskElementType = TaskElementType.Labor
+			};
 
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, DataSource = "validate data" };
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, DataSource = "validate data" };
 
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
-            FullBoe boeObject = new FullBoe(boe);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			FullBoe boeObject = new FullBoe(boe);
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
 
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
 
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
-            this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
+			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
+			this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { });
 
 			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
-            // Assert
-            Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
-            toAssertTasks = validationBOE.Tasks;
-            Collection<ValidationBOELaborType> toAssertLabors = new Collection<ValidationBOELaborType>();
+			// Assert
+			Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
+			toAssertTasks = validationBOE.Tasks;
+			Collection<ValidationBOELaborType> toAssertLabors = new Collection<ValidationBOELaborType>();
 
-            Assert.IsTrue(validationBOE.BOEHeaderMsgs.Count == 0, string.Empty, "The BOE Header was not empty");
-            Assert.IsTrue(toAssertTasks.Count == 0, "Task messages were not empty");
-            Assert.IsTrue(toAssertLabors.Count == 0, "Task labor messages were not empty");
-        }
+			Assert.IsTrue(validationBOE.BOEHeaderMsgs.Count == 0, string.Empty, "The BOE Header was not empty");
+			Assert.IsTrue(toAssertTasks.Count == 0, "Task messages were not empty");
+			Assert.IsTrue(toAssertLabors.Count == 0, "Task labor messages were not empty");
+		}
 
-        // This test case will test that if a BOE and CLIN don't have a start/end date, the contract start/end date are used
-        public void BL_ValidateLaborTypeContractDates()
-        {
-            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+		// This test case will test that if a BOE and CLIN don't have a start/end date, the contract start/end date are used
+		public void BL_ValidateLaborTypeContractDates()
+		{
+			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
-
-
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
-
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ContractStartDate = Convert.ToDateTime("03/01/2010"), ContractEndDate = Convert.ToDateTime("03/01/2014"), ResourceListID = 2 };
-
-            // set up resource
-            ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
-            resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
-            resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
-
-            //setup clin
-            ClinDTO clin = new ClinDTO { Id = 8, WorkspaceID = 1, StartDate = null, EndDate = null };
-
-            //setup custom fields to be false, we'll check them in another test
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-
-            //setup a BOE
-            ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
-            ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
-            BoeTaskElementDTO boeTE = new BoeTaskElementDTO
-            {
-                Id = 1,
-                BoeID = 4,
-                BOETaskID = "T56",
-                Description = "validate data",
-                StartDate = Convert.ToDateTime("02/01/2011"),
-                EndDate = Convert.ToDateTime("06/01/2011"),
-                MOQHoursEquation = "100",
-                MOQText = "validate moq",
-                MOQType = MOQType.Comparison,
-                MOQTypeName = "validate",
-                //ResourceName = resource.ResourceName,
-                taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
-                TaskTitle = "Validate Task",
-                TotalHours = 100,
-                WorkspaceVariableIDs = new Collection<int> { 2 },
-                TaskElementType = TaskElementType.Labor
-            };
-
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", WorkspaceID = 1, CLINID = 8, DataSource = "validate data", StartDate = Convert.ToDateTime("03/01/2010"), EndDate = Convert.ToDateTime("03/01/2014") };
-
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
-            FullBoe boeObject = new FullBoe(boe);
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetClinById(boe.CLINID.Value)).Returns(clin);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullClin(clin.Id)).Returns(new FullClin(clin));
-            factory.Setup(x => x.CreateFullClin(clin)).Returns(new FullClin(clin));
-            this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
-            this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ContractStartDate = Convert.ToDateTime("03/01/2010"), ContractEndDate = Convert.ToDateTime("03/01/2014"), ResourceListID = 2 };
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+			// set up resource
+			ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
+			resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
+			resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
 
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
+			//setup clin
+			ClinDTO clin = new ClinDTO { Id = 8, WorkspaceID = 1, StartDate = null, EndDate = null };
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+			//setup custom fields to be false, we'll check them in another test
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
 
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+			//setup a BOE
+			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
+			ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
+			BoeTaskElementDTO boeTE = new BoeTaskElementDTO
+			{
+				Id = 1,
+				BoeID = 4,
+				BOETaskID = "T56",
+				Description = "validate data",
+				StartDate = Convert.ToDateTime("02/01/2011"),
+				EndDate = Convert.ToDateTime("06/01/2011"),
+				MOQHoursEquation = "100",
+				MOQText = "validate moq",
+				MOQType = MOQType.Comparison,
+				MOQTypeName = "validate",
+				//ResourceName = resource.ResourceName,
+				taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
+				TaskTitle = "Validate Task",
+				TotalHours = 100,
+				WorkspaceVariableIDs = new Collection<int> { 2 },
+				TaskElementType = TaskElementType.Labor
+			};
 
-            // Assert
-            Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
-            toAssertTasks = validationBOE.Tasks;
-            Collection<ValidationBOELaborType> toAssertLabors = new Collection<ValidationBOELaborType>();
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", WorkspaceID = 1, CLINID = 8, DataSource = "validate data", StartDate = Convert.ToDateTime("03/01/2010"), EndDate = Convert.ToDateTime("03/01/2014") };
 
-            Assert.IsTrue(validationBOE.BOEHeaderMsgs.Count == 0, string.Empty, "The BOE Header was not empty");
-            Assert.IsTrue(toAssertTasks.Count == 0, "Task messages were not empty");
-            Assert.IsTrue(toAssertLabors.Count == 0, "Task labor messages were not empty");
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
+			FullBoe boeObject = new FullBoe(boe);
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
 
-        }
-
-        // This test case will test that if a BOE and CLIN don't have a start/end date, the contract start/end date are used
-        [TestMethod]
-        public void BL_ValidateLaborTypeBadContractDates()
-        {
-            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
-
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
 
 
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetClinById(boe.CLINID.Value)).Returns(clin);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullClin(clin.Id)).Returns(new FullClin(clin));
+			factory.Setup(x => x.CreateFullClin(clin)).Returns(new FullClin(clin));
+			this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ContractEndDate = Convert.ToDateTime("01/01/2011"), ContractStartDate = Convert.ToDateTime("04/01/2011"), ResourceListID = 1 };
+			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
+			this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
-            // set up resource
-            ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
-            resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
-            resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
+
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+
+			// Assert
+			Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
+			toAssertTasks = validationBOE.Tasks;
+			Collection<ValidationBOELaborType> toAssertLabors = new Collection<ValidationBOELaborType>();
+
+			Assert.IsTrue(validationBOE.BOEHeaderMsgs.Count == 0, string.Empty, "The BOE Header was not empty");
+			Assert.IsTrue(toAssertTasks.Count == 0, "Task messages were not empty");
+			Assert.IsTrue(toAssertLabors.Count == 0, "Task labor messages were not empty");
+
+		}
+
+		// This test case will test that if a BOE and CLIN don't have a start/end date, the contract start/end date are used
+		[TestMethod]
+		public void BL_ValidateLaborTypeBadContractDates()
+		{
+			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
+
+
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ContractEndDate = Convert.ToDateTime("01/01/2011"), ContractStartDate = Convert.ToDateTime("04/01/2011"), ResourceListID = 1 };
+
+			// set up resource
+			ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
+			resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
+			resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
 			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
 			//setup clin
 			ClinDTO clin = new ClinDTO { Id = 8, WorkspaceID = 1, StartDate = null, EndDate = null };
 
-            //setup custom fields to be false, we'll check them in another test
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
+			//setup custom fields to be false, we'll check them in another test
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
-            //setup a BOE
-            ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
-            ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
-            BoeTaskElementDTO boeTE = new BoeTaskElementDTO
-            {
-                Id = 1,
-                BoeID = 4,
-                BOETaskID = "T56",
-                Description = "validate data",
-                StartDate = Convert.ToDateTime("02/01/2011"),
-                EndDate = Convert.ToDateTime("06/01/2011"),
-                MOQHoursEquation = "100",
-                MOQText = "validate moq",
-                MOQType = MOQType.Comparison,
-                MOQTypeName = "validate",
-                taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
-                TaskTitle = "Validate Task",
-                TotalHours = 100,
-                WorkspaceVariableIDs = new Collection<int> { 2 },
-                TaskElementType = TaskElementType.Labor
-            };
+			//setup a BOE
+			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
+			ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
+			BoeTaskElementDTO boeTE = new BoeTaskElementDTO
+			{
+				Id = 1,
+				BoeID = 4,
+				BOETaskID = "T56",
+				Description = "validate data",
+				StartDate = Convert.ToDateTime("02/01/2011"),
+				EndDate = Convert.ToDateTime("06/01/2011"),
+				MOQHoursEquation = "100",
+				MOQText = "validate moq",
+				MOQType = MOQType.Comparison,
+				MOQTypeName = "validate",
+				taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
+				TaskTitle = "Validate Task",
+				TotalHours = 100,
+				WorkspaceVariableIDs = new Collection<int> { 2 },
+				TaskElementType = TaskElementType.Labor
+			};
 
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", WorkspaceID = 1, CLINID = 8, DataSource = "validate data", StartDate = Convert.ToDateTime("01/01/2011"), EndDate = Convert.ToDateTime("04/01/2011") };
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", WorkspaceID = 1, CLINID = 8, DataSource = "validate data", StartDate = Convert.ToDateTime("01/01/2011"), EndDate = Convert.ToDateTime("04/01/2011") };
 
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
-            FullBoe boeObject = new FullBoe(boe);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
+			FullBoe boeObject = new FullBoe(boe);
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
 
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetClinById(boe.CLINID.Value)).Returns(clin);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullClin(clin.Id)).Returns(new FullClin(clin));
-            factory.Setup(x => x.CreateFullClin(clin)).Returns(new FullClin(clin));
-            this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetClinById(boe.CLINID.Value)).Returns(clin);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullClin(clin.Id)).Returns(new FullClin(clin));
+			factory.Setup(x => x.CreateFullClin(clin)).Returns(new FullClin(clin));
+			this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
 
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title",
-                ODCTypes = new Collection<OtherDirectCostType> {
-                    new OtherDirectCostType { ODCTypeID = 1,
-                                                BoeID = boe.Id,
-                                                PerformingOrgID = this.Perforg.Id,
-                                                ResourceID = this.Resource.Id,
-                                                StartDate = Convert.ToDateTime("02/01/2011"),
-                                                EndDate = Convert.ToDateTime("06/01/2011")
-                    } } } });
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title",
+				ODCTypes = new Collection<OtherDirectCostType> {
+					new OtherDirectCostType { ODCTypeID = 1,
+												BoeID = boe.Id,
+												PerformingOrgID = this.Perforg.Id,
+												ResourceID = this.Resource.Id,
+												StartDate = Convert.ToDateTime("02/01/2011"),
+												EndDate = Convert.ToDateTime("06/01/2011")
+					} } } });
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
-            this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
-
-
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
-
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
-
-            // Assert
-            Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
-            Collection<ValidationBOETasks> toAssertCosts = new Collection<ValidationBOETasks>();
-            toAssertTasks = validationBOE.Tasks;
-            toAssertCosts = validationBOE.Costs;
-
-            // want to extract the validation contract message
-            foreach (ValidationBOETasks x in toAssertTasks)
-            {
-                // verify labor error messages 
-                foreach (ValidationBOELaborType y in x.LaborTypes)
-                {
-                    Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 2, "Labor type messages did not return 2 msgs");
-                    Assert.IsTrue(y.LaborTypeValidationMsgs[0].Contains("Start Date must be on or after"), "The validation msg was correct");
-                    Assert.IsTrue(y.LaborTypeValidationMsgs[1].Contains("End Date must be on or before"), "The validation msg was correct");
-
-                }
-            }
-
-            foreach (ValidationBOETasks x in toAssertCosts)
-            {
-                // very ODC error message
-                foreach (ValidationBOELaborType y in x.LaborTypes)
-                {
-                    Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 3, "ODC type messages did not return 3 messages");
-                    Assert.IsTrue(y.LaborTypeValidationMsgs[0].Contains("Start Date must be on or after"), "The validation msg was correct");
-                    Assert.IsTrue(y.LaborTypeValidationMsgs[1].Contains("End Date must be on or before"), "The validation msg was correct");
-                }
-            }
-        }
-
-        [TestMethod]
-        public void BL_ValidateBadBOEContractDates()
-        {
-            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
-
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
+			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
+			this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
 
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ContractEndDate = Convert.ToDateTime("01/01/2011"), ContractStartDate = Convert.ToDateTime("04/01/2011"), ResourceListID = 1 };
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
-            // set up resource
-            ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
-            resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
-            resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
+			// Assert
+			Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
+			Collection<ValidationBOETasks> toAssertCosts = new Collection<ValidationBOETasks>();
+			toAssertTasks = validationBOE.Tasks;
+			toAssertCosts = validationBOE.Costs;
 
-            //setup clin
-            ClinDTO clin = new ClinDTO { Id = 8, WorkspaceID = 1, StartDate = null, EndDate = null };
+			// want to extract the validation contract message
+			foreach (ValidationBOETasks x in toAssertTasks)
+			{
+				// verify labor error messages 
+				foreach (ValidationBOELaborType y in x.LaborTypes)
+				{
+					Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 2, "Labor type messages did not return 2 msgs");
+					Assert.IsTrue(y.LaborTypeValidationMsgs[0].Contains("Start Date must be on or after"), "The validation msg was correct");
+					Assert.IsTrue(y.LaborTypeValidationMsgs[1].Contains("End Date must be on or before"), "The validation msg was correct");
 
-            //setup custom fields to be false, we'll check them in another test
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
+				}
+			}
 
-            //setup a BOE
-            ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
-            ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
-            BoeTaskElementDTO boeTE = new BoeTaskElementDTO
-            {
-                Id = 1,
-                BoeID = 4,
-                BOETaskID = "T56",
-                Description = "validate data",
-                StartDate = Convert.ToDateTime("02/01/2011"),
-                EndDate = Convert.ToDateTime("06/01/2011"),
-                MOQHoursEquation = "100",
-                MOQText = "validate moq",
-                MOQType = MOQType.Comparison,
-                MOQTypeName = "validate",
-                taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
-                TaskTitle = "Validate Task",
-                TotalHours = 100,
-                WorkspaceVariableIDs = new Collection<int> { 2 },
-                TaskElementType = TaskElementType.Labor
-            };
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", WorkspaceID = 1, CLINID = 8, DataSource = "validate data", StartDate = Convert.ToDateTime("01/01/2011"), EndDate = Convert.ToDateTime("04/01/2011") };
+			foreach (ValidationBOETasks x in toAssertCosts)
+			{
+				// very ODC error message
+				foreach (ValidationBOELaborType y in x.LaborTypes)
+				{
+					Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 3, "ODC type messages did not return 3 messages");
+					Assert.IsTrue(y.LaborTypeValidationMsgs[0].Contains("Start Date must be on or after"), "The validation msg was correct");
+					Assert.IsTrue(y.LaborTypeValidationMsgs[1].Contains("End Date must be on or before"), "The validation msg was correct");
+				}
+			}
+		}
 
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
-            FullBoe boeObject = new FullBoe(boe);
+		[TestMethod]
+		public void BL_ValidateBadBOEContractDates()
+		{
+			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
 
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetClinById(boe.CLINID.Value)).Returns(clin);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullClin(clin.Id)).Returns(new FullClin(clin));
-            factory.Setup(x => x.CreateFullClin(clin)).Returns(new FullClin(clin));
-            this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ContractEndDate = Convert.ToDateTime("01/01/2011"), ContractStartDate = Convert.ToDateTime("04/01/2011"), ResourceListID = 1 };
 
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title",
-                ODCTypes = new Collection<OtherDirectCostType> {
-                    new OtherDirectCostType { ODCTypeID = 1,
-                                                BoeID = boe.Id,
-                                                PerformingOrgID = this.Perforg.Id,
-                                                ResourceID = this.Resource.Id,
-                                                StartDate = Convert.ToDateTime("02/01/2011"),
-                                                EndDate = Convert.ToDateTime("06/01/2011")
-                    } } } });
+			// set up resource
+			ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
+			resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
+			resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
-            this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
+			//setup clin
+			ClinDTO clin = new ClinDTO { Id = 8, WorkspaceID = 1, StartDate = null, EndDate = null };
+
+			//setup custom fields to be false, we'll check them in another test
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
+
+			//setup a BOE
+			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
+			ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
+			BoeTaskElementDTO boeTE = new BoeTaskElementDTO
+			{
+				Id = 1,
+				BoeID = 4,
+				BOETaskID = "T56",
+				Description = "validate data",
+				StartDate = Convert.ToDateTime("02/01/2011"),
+				EndDate = Convert.ToDateTime("06/01/2011"),
+				MOQHoursEquation = "100",
+				MOQText = "validate moq",
+				MOQType = MOQType.Comparison,
+				MOQTypeName = "validate",
+				taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
+				TaskTitle = "Validate Task",
+				TotalHours = 100,
+				WorkspaceVariableIDs = new Collection<int> { 2 },
+				TaskElementType = TaskElementType.Labor
+			};
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", WorkspaceID = 1, CLINID = 8, DataSource = "validate data", StartDate = Convert.ToDateTime("01/01/2011"), EndDate = Convert.ToDateTime("04/01/2011") };
+
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
+			FullBoe boeObject = new FullBoe(boe);
+
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetClinById(boe.CLINID.Value)).Returns(clin);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullClin(clin.Id)).Returns(new FullClin(clin));
+			factory.Setup(x => x.CreateFullClin(clin)).Returns(new FullClin(clin));
+			this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
+
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
+
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title",
+				ODCTypes = new Collection<OtherDirectCostType> {
+					new OtherDirectCostType { ODCTypeID = 1,
+												BoeID = boe.Id,
+												PerformingOrgID = this.Perforg.Id,
+												ResourceID = this.Resource.Id,
+												StartDate = Convert.ToDateTime("02/01/2011"),
+												EndDate = Convert.ToDateTime("06/01/2011")
+					} } } });
+
+			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
+			this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { });
 
 			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
-            Assert.IsTrue(validationBOE.BOEHeaderMsgs.Count == 2, "BOE Header messages did not return 2 msgs");
-            Assert.IsTrue(validationBOE.BOEHeaderMsgs[0].Contains("Start Date must be on or after the Contract start date (04/2011)"), "The validation msg was correct");
-            Assert.IsTrue(validationBOE.BOEHeaderMsgs[1].Contains("End Date must be on or before the Contract end date (01/2011)"), "The validation msg was correct");
-        }
+			Assert.IsTrue(validationBOE.BOEHeaderMsgs.Count == 2, "BOE Header messages did not return 2 msgs");
+			Assert.IsTrue(validationBOE.BOEHeaderMsgs[0].Contains("Start Date must be on or after the Contract start date (04/2011)"), "The validation msg was correct");
+			Assert.IsTrue(validationBOE.BOEHeaderMsgs[1].Contains("End Date must be on or before the Contract end date (01/2011)"), "The validation msg was correct");
+		}
 
-        // This test case will test that if a BOE doesn't have a start/end date, the clin start/end date are used
-        [TestMethod]
-        public void BL_ValidateLaborTypeClinDates()
-        {
-            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+		// This test case will test that if a BOE doesn't have a start/end date, the clin start/end date are used
+		[TestMethod]
+		public void BL_ValidateLaborTypeClinDates()
+		{
+			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
 
-            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
 
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ContractStartDate = Convert.ToDateTime("03/01/2010"), ContractEndDate = Convert.ToDateTime("03/01/2014"), ResourceListID = 3, UsingTemplateBOE = false };
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ContractStartDate = Convert.ToDateTime("03/01/2010"), ContractEndDate = Convert.ToDateTime("03/01/2014"), ResourceListID = 3, UsingTemplateBOE = false };
 
-            // set up resource
-            ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
-            resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
-            resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
+			// set up resource
+			ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
+			resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
+			resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
 			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
 			//setup custom fields to be false, we'll check them in another test
 			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
-            //setup a BOE
-            ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
-            ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
-            BoeTaskElementDTO boeTE = new BoeTaskElementDTO
-            {
-                Id = 1,
-                BoeID = 4,
-                BOETaskID = "T56",
-                Description = "validate data",
-                StartDate = Convert.ToDateTime("02/01/2011"),
-                EndDate = Convert.ToDateTime("06/01/2011"),
-                MOQHoursEquation = "100",
-                MOQText = "validate moq",
-                MOQType = MOQType.Comparison,
-                MOQTypeName = "validate",
-                //ResourceName = resource.ResourceName,
-                taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
-                TaskTitle = "Validate Task",
-                TotalHours = 100,
-                WorkspaceVariableIDs = new Collection<int> { 2 },
-                TaskElementType = TaskElementType.Labor
-            };
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", WorkspaceID = 1, CLINID = 8, DataSource = "validate data", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("06/01/2011") };
+			//setup a BOE
+			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
+			ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
+			BoeTaskElementDTO boeTE = new BoeTaskElementDTO
+			{
+				Id = 1,
+				BoeID = 4,
+				BOETaskID = "T56",
+				Description = "validate data",
+				StartDate = Convert.ToDateTime("02/01/2011"),
+				EndDate = Convert.ToDateTime("06/01/2011"),
+				MOQHoursEquation = "100",
+				MOQText = "validate moq",
+				MOQType = MOQType.Comparison,
+				MOQTypeName = "validate",
+				//ResourceName = resource.ResourceName,
+				taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
+				TaskTitle = "Validate Task",
+				TotalHours = 100,
+				WorkspaceVariableIDs = new Collection<int> { 2 },
+				TaskElementType = TaskElementType.Labor
+			};
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", WorkspaceID = 1, CLINID = 8, DataSource = "validate data", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("06/01/2011") };
 
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
-            FullBoe boeObject = new FullBoe(boe);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
+			FullBoe boeObject = new FullBoe(boe);
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
 
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
-            this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
+			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
+			this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
 
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
-            #region Setup Unity references
+			#region Setup Unity references
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
 
-            #endregion
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			#endregion
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
 
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
-            // Assert
-            Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
-            toAssertTasks = validationBOE.Tasks;
-            Collection<ValidationBOELaborType> toAssertLabors = new Collection<ValidationBOELaborType>();
+			// Assert
+			Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
+			toAssertTasks = validationBOE.Tasks;
+			Collection<ValidationBOELaborType> toAssertLabors = new Collection<ValidationBOELaborType>();
 
-            Assert.IsTrue(validationBOE.BOEHeaderMsgs.Count == 0, "The BOE Header was not empty");
-            Assert.IsTrue(toAssertTasks.Count == 0, "Task messages were not empty");
-            Assert.IsTrue(toAssertLabors.Count == 0, "Task labor messages were not empty");
+			Assert.IsTrue(validationBOE.BOEHeaderMsgs.Count == 0, "The BOE Header was not empty");
+			Assert.IsTrue(toAssertTasks.Count == 0, "Task messages were not empty");
+			Assert.IsTrue(toAssertLabors.Count == 0, "Task labor messages were not empty");
 
-        }
+		}
 
-        // This test case will test that if a BOE doesn't have a start/end date, the clin start/end date are used
-        [TestMethod]
-        public void BL_ValidateLaborTypeBadClinDates()
-        {
-            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+		// This test case will test that if a BOE doesn't have a start/end date, the clin start/end date are used
+		[TestMethod]
+		public void BL_ValidateLaborTypeBadClinDates()
+		{
+			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
 
-            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
 
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 2 };
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 2 };
 
-            // set up resource
-            ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
-            resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
-            resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
+			// set up resource
+			ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
+			resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
+			resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
 			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
 			//setup clin
 			ClinDTO clin = new ClinDTO { Id = 8, WorkspaceID = 1, StartDate = Convert.ToDateTime("04/01/2011"), EndDate = Convert.ToDateTime("02/01/2011") };
 
-            //setup custom fields to be false, we'll check them in another test
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
+			//setup custom fields to be false, we'll check them in another test
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
-            //setup a BOE
-            ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
-            ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
-            BoeTaskElementDTO boeTE = new BoeTaskElementDTO
-            {
-                Id = 1,
-                BoeID = 4,
-                BOETaskID = "T56",
-                Description = "validate data",
-                StartDate = Convert.ToDateTime("02/01/2011"),
-                EndDate = Convert.ToDateTime("06/01/2011"),
-                MOQHoursEquation = "100",
-                MOQText = "validate moq",
-                MOQType = MOQType.Comparison,
-                MOQTypeName = "validate",
-                //ResourceName = resource.ResourceName,
-                taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
-                TaskTitle = "Validate Task",
-                TotalHours = 100,
-                WorkspaceVariableIDs = new Collection<int> { 2 },
-                TaskElementType = TaskElementType.Labor
-            };
-            BoeDTO boe = new BoeDTO
-            {
-                Id = 4,
-                Title = "My BOE Title",
-                Description = "Validate BOE",
-                WorkspaceID = 1,
-                CLINID = 8,
-                DataSource = "validate data",
-                StartDate = Convert.ToDateTime("02/01/2011"),
-                EndDate = Convert.ToDateTime("06/01/2011")
-            };
+			//setup a BOE
+			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
+			ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
+			BoeTaskElementDTO boeTE = new BoeTaskElementDTO
+			{
+				Id = 1,
+				BoeID = 4,
+				BOETaskID = "T56",
+				Description = "validate data",
+				StartDate = Convert.ToDateTime("02/01/2011"),
+				EndDate = Convert.ToDateTime("06/01/2011"),
+				MOQHoursEquation = "100",
+				MOQText = "validate moq",
+				MOQType = MOQType.Comparison,
+				MOQTypeName = "validate",
+				//ResourceName = resource.ResourceName,
+				taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
+				TaskTitle = "Validate Task",
+				TotalHours = 100,
+				WorkspaceVariableIDs = new Collection<int> { 2 },
+				TaskElementType = TaskElementType.Labor
+			};
+			BoeDTO boe = new BoeDTO
+			{
+				Id = 4,
+				Title = "My BOE Title",
+				Description = "Validate BOE",
+				WorkspaceID = 1,
+				CLINID = 8,
+				DataSource = "validate data",
+				StartDate = Convert.ToDateTime("02/01/2011"),
+				EndDate = Convert.ToDateTime("06/01/2011")
+			};
 
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
-            FullBoe boeObject = new FullBoe(boe);
-
-
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetClinById(boe.CLINID.Value)).Returns(clin);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullClin(clin.Id)).Returns(new FullClin(clin));
-            factory.Setup(x => x.CreateFullClin(clin)).Returns(new FullClin(clin));
-            this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
-
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
-            this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
+			FullBoe boeObject = new FullBoe(boe);
 
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
 
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetClinById(boe.CLINID.Value)).Returns(clin);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullClin(clin.Id)).Returns(new FullClin(clin));
+			factory.Setup(x => x.CreateFullClin(clin)).Returns(new FullClin(clin));
+			this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
-
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
-
-            // Assert
-            Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
-            toAssertTasks = validationBOE.Tasks;
-
-            Assert.IsTrue(validationBOE.BOEHeaderMsgs.Count == 2, "The BOE Header was  empty");
-            Assert.IsTrue(validationBOE.BOEHeaderMsgs.Contains(String.Format(BoeDTO.BOE_START_DATE_INVALID, "CLIN", clin.StartDate.Value.ToString("MM/yyyy"))), "BOE start date was valid");
-            Assert.IsTrue(validationBOE.BOEHeaderMsgs.Contains(String.Format(BoeDTO.BOE_END_DATE_INVALID, "CLIN", clin.EndDate.Value.ToString("MM/yyyy"))), "BOE end date was valid");
-
-            // want to extract the validation contract message
-            foreach (ValidationBOETasks x in toAssertTasks)
-            {
-                // verify labor error messages 
-                foreach (ValidationBOELaborType y in x.LaborTypes)
-                {
-                    Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 2, "There weren't 2 labor type messages");
-                    Assert.IsTrue(y.LaborTypeValidationMsgs[1].Contains("End Date must be on or before"), "The validation msg was correct");
-                    Assert.IsTrue(y.LaborTypeValidationMsgs[0].Contains("Start Date must be on or after"), "The validation msg was correct");
-
-                }
-            }
-        }
-
-        [TestMethod]
-        // This test case will test the BOE Start/End Date against the Labor Type Start/End Date
-        public void BL_ValidateLaborTypeBOEDates()
-        {
-            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
-
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-
-            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
+			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
+			this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
 
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
 
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ContractStartDate = Convert.ToDateTime("03/01/2010"), ContractEndDate = Convert.ToDateTime("03/01/2014"), ResourceListID = 1, UsingTemplateBOE = false };
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            // set up resource
-            ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
-            resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
-            resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
+
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+
+			// Assert
+			Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
+			toAssertTasks = validationBOE.Tasks;
+
+			Assert.IsTrue(validationBOE.BOEHeaderMsgs.Count == 2, "The BOE Header was  empty");
+			Assert.IsTrue(validationBOE.BOEHeaderMsgs.Contains(String.Format(BoeDTO.BOE_START_DATE_INVALID, "CLIN", clin.StartDate.Value.ToString("MM/yyyy"))), "BOE start date was valid");
+			Assert.IsTrue(validationBOE.BOEHeaderMsgs.Contains(String.Format(BoeDTO.BOE_END_DATE_INVALID, "CLIN", clin.EndDate.Value.ToString("MM/yyyy"))), "BOE end date was valid");
+
+			// want to extract the validation contract message
+			foreach (ValidationBOETasks x in toAssertTasks)
+			{
+				// verify labor error messages 
+				foreach (ValidationBOELaborType y in x.LaborTypes)
+				{
+					Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 2, "There weren't 2 labor type messages");
+					Assert.IsTrue(y.LaborTypeValidationMsgs[1].Contains("End Date must be on or before"), "The validation msg was correct");
+					Assert.IsTrue(y.LaborTypeValidationMsgs[0].Contains("Start Date must be on or after"), "The validation msg was correct");
+
+				}
+			}
+		}
+
+		[TestMethod]
+		// This test case will test the BOE Start/End Date against the Labor Type Start/End Date
+		public void BL_ValidateLaborTypeBOEDates()
+		{
+			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
+
+
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ContractStartDate = Convert.ToDateTime("03/01/2010"), ContractEndDate = Convert.ToDateTime("03/01/2014"), ResourceListID = 1, UsingTemplateBOE = false };
+
+			// set up resource
+			ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
+			resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
+			resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
 			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
 			//setup custom fields to be false, we'll check them in another test
 			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
-            //setup a BOE
-            ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
-            ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
-            BoeTaskElementDTO boeTE = new BoeTaskElementDTO
-            {
-                Id = 1,
-                BoeID = 4,
-                BOETaskID = "T56",
-                Description = "validate data",
-                StartDate = Convert.ToDateTime("02/01/2011"),
-                EndDate = Convert.ToDateTime("06/01/2011"),
-                MOQHoursEquation = "100",
-                MOQText = "validate moq",
-                MOQType = MOQType.Comparison,
-                MOQTypeName = "validate",
-                //ResourceName = resource.ResourceName,
-                taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
-                TaskTitle = "Validate Task",
-                TotalHours = 100,
-                WorkspaceVariableIDs = new Collection<int> { 2 },
-                TaskElementType = TaskElementType.Labor
-            };
+			//setup a BOE
+			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
+			ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
+			BoeTaskElementDTO boeTE = new BoeTaskElementDTO
+			{
+				Id = 1,
+				BoeID = 4,
+				BOETaskID = "T56",
+				Description = "validate data",
+				StartDate = Convert.ToDateTime("02/01/2011"),
+				EndDate = Convert.ToDateTime("06/01/2011"),
+				MOQHoursEquation = "100",
+				MOQText = "validate moq",
+				MOQType = MOQType.Comparison,
+				MOQTypeName = "validate",
+				//ResourceName = resource.ResourceName,
+				taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
+				TaskTitle = "Validate Task",
+				TotalHours = 100,
+				WorkspaceVariableIDs = new Collection<int> { 2 },
+				TaskElementType = TaskElementType.Labor
+			};
 
-            // the BOE End date is past the CLIN end date so this should fail validation
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", WorkspaceID = 1, CLINID = 8, StartDate = Convert.ToDateTime("01/10/2011"), EndDate = Convert.ToDateTime("02/03/2012"), DataSource = "validate data" };
+			// the BOE End date is past the CLIN end date so this should fail validation
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", WorkspaceID = 1, CLINID = 8, StartDate = Convert.ToDateTime("01/10/2011"), EndDate = Convert.ToDateTime("02/03/2012"), DataSource = "validate data" };
 
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
-            FullBoe boeObject = new FullBoe(boe);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
+			FullBoe boeObject = new FullBoe(boe);
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
-            this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
+			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
+			this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
 
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
 
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
-            // Assert
-            Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
-            toAssertTasks = validationBOE.Tasks;
-            Collection<ValidationBOELaborType> toAssertLabors = new Collection<ValidationBOELaborType>();
+			// Assert
+			Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
+			toAssertTasks = validationBOE.Tasks;
+			Collection<ValidationBOELaborType> toAssertLabors = new Collection<ValidationBOELaborType>();
 
-            Assert.IsTrue(validationBOE.BOEHeaderMsgs.Count == 0, "The BOE Header was empty");
-            Assert.IsTrue(toAssertTasks.Count == 0, "Task messages were not empty");
-            Assert.IsTrue(toAssertLabors.Count == 0, "Task labor messages were not empty");
-        }
+			Assert.IsTrue(validationBOE.BOEHeaderMsgs.Count == 0, "The BOE Header was empty");
+			Assert.IsTrue(toAssertTasks.Count == 0, "Task messages were not empty");
+			Assert.IsTrue(toAssertLabors.Count == 0, "Task labor messages were not empty");
+		}
 
-        // This test case will test that if a BOE doesn't have a start/end date, the clin start/end date are used
-        [TestMethod]
-        // This test case will test the BOE Start/End Date against the Labor Type Start/End Date
-        public void BL_ValidateLaborTypeBadBOEDates()
-        {
-            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+		// This test case will test that if a BOE doesn't have a start/end date, the clin start/end date are used
+		[TestMethod]
+		// This test case will test the BOE Start/End Date against the Labor Type Start/End Date
+		public void BL_ValidateLaborTypeBadBOEDates()
+		{
+			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
 
-            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
 
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 3 };
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 3 };
 
-            // set up resource
-            ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
-            resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
-            resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
+			// set up resource
+			ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
+			resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
+			resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
 			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
 			//setup custom fields to be false, we'll check them in another test
 			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
-            //setup a BOE
-            ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
-            ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
-            BoeTaskElementDTO boeTE = new BoeTaskElementDTO
-            {
-                Id = 1,
-                BoeID = 4,
-                BOETaskID = "T56",
-                Description = "validate data",
-                StartDate = Convert.ToDateTime("02/01/2011"),
-                EndDate = Convert.ToDateTime("06/01/2011"),
-                MOQHoursEquation = "100",
-                MOQText = "validate moq",
-                MOQType = MOQType.Comparison,
-                MOQTypeName = "validate",
-                taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
-                TaskTitle = "Validate Task",
-                TotalHours = 100,
-                WorkspaceVariableIDs = new Collection<int> { 2 },
-                TaskElementType = TaskElementType.Labor
-            };
+			//setup a BOE
+			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
+			ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
+			BoeTaskElementDTO boeTE = new BoeTaskElementDTO
+			{
+				Id = 1,
+				BoeID = 4,
+				BOETaskID = "T56",
+				Description = "validate data",
+				StartDate = Convert.ToDateTime("02/01/2011"),
+				EndDate = Convert.ToDateTime("06/01/2011"),
+				MOQHoursEquation = "100",
+				MOQText = "validate moq",
+				MOQType = MOQType.Comparison,
+				MOQTypeName = "validate",
+				taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
+				TaskTitle = "Validate Task",
+				TotalHours = 100,
+				WorkspaceVariableIDs = new Collection<int> { 2 },
+				TaskElementType = TaskElementType.Labor
+			};
 
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", WorkspaceID = 1, CLINID = 8, StartDate = Convert.ToDateTime("05/01/2011"), EndDate = Convert.ToDateTime("01/01/2011"), DataSource = "validate data" };
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", WorkspaceID = 1, CLINID = 8, StartDate = Convert.ToDateTime("05/01/2011"), EndDate = Convert.ToDateTime("01/01/2011"), DataSource = "validate data" };
 
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
 
-            FullBoe boeObject = new FullBoe(boe);
+			FullBoe boeObject = new FullBoe(boe);
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
-            this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
+			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
+			this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
 
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
-            #region Setup Unity references
+			#region Setup Unity references
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
 
-            #endregion
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+			#endregion
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
-            // Assert
-            Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
-            toAssertTasks = validationBOE.Tasks;
+			// Assert
+			Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
+			toAssertTasks = validationBOE.Tasks;
 
-            Assert.IsTrue(validationBOE.BOEHeaderMsgs.Count == 0, "The BOE Header was not empty");
+			Assert.IsTrue(validationBOE.BOEHeaderMsgs.Count == 0, "The BOE Header was not empty");
 
-            // want to extract the validation contract message
-            foreach (ValidationBOETasks x in toAssertTasks)
-            {
+			// want to extract the validation contract message
+			foreach (ValidationBOETasks x in toAssertTasks)
+			{
 
-                // verify labor error messages 
-                foreach (ValidationBOELaborType y in x.LaborTypes)
-                {
-                    Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 2, "There weren't 2 labor type messages");
-                    Assert.IsTrue(y.LaborTypeValidationMsgs[1].Contains("End Date must be on or before"), "The validation msg was correct");
-                    Assert.IsTrue(y.LaborTypeValidationMsgs[0].Contains("Start Date must be on or after"), "The validation msg was correct");
-                }
-            }
-        }
+				// verify labor error messages 
+				foreach (ValidationBOELaborType y in x.LaborTypes)
+				{
+					Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 2, "There weren't 2 labor type messages");
+					Assert.IsTrue(y.LaborTypeValidationMsgs[1].Contains("End Date must be on or before"), "The validation msg was correct");
+					Assert.IsTrue(y.LaborTypeValidationMsgs[0].Contains("Start Date must be on or after"), "The validation msg was correct");
+				}
+			}
+		}
 
-        [TestMethod]
-        public void BL_ValidateTaskCustomFields()
-        {
-            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+		[TestMethod]
+		public void BL_ValidateTaskCustomFields()
+		{
+			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
 
-            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
 
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 1, UsingTemplateBOE = false };
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 1, UsingTemplateBOE = false };
 
-            // set up resource
-            ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
-            resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
-            resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
+			// set up resource
+			ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
+			resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
+			resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
 			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
 			//setup a BOE
 			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
-            ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
-            BoeTaskElementDTO boeTE = new BoeTaskElementDTO
-            {
-                Id = 1,
-                BoeID = 4,
-                BOETaskID = "T56",
-                Description = "validate data",
-                StartDate = Convert.ToDateTime("02/01/2011"),
-                EndDate = Convert.ToDateTime("06/01/2011"),
-                MOQHoursEquation = "100",
-                MOQText = "validate moq",
-                MOQType = MOQType.Comparison,
-                MOQTypeName = "validate",
-                //ResourceName = resource.ResourceName,
-                taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
-                TaskTitle = "Validate Task",
-                TotalHours = 100,
-                WorkspaceVariableIDs = new Collection<int> { 2 },
-                TaskElementType = TaskElementType.Labor,
-                CustomFieldValueContainers = new Collection<CustomFieldValueContainer>() { new CustomFieldValueContainer { CustomFieldID = 2, IsOpenEnded = true, OpenEndedValue = "Test Value" } }
-            };
+			ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
+			BoeTaskElementDTO boeTE = new BoeTaskElementDTO
+			{
+				Id = 1,
+				BoeID = 4,
+				BOETaskID = "T56",
+				Description = "validate data",
+				StartDate = Convert.ToDateTime("02/01/2011"),
+				EndDate = Convert.ToDateTime("06/01/2011"),
+				MOQHoursEquation = "100",
+				MOQText = "validate moq",
+				MOQType = MOQType.Comparison,
+				MOQTypeName = "validate",
+				//ResourceName = resource.ResourceName,
+				taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
+				TaskTitle = "Validate Task",
+				TotalHours = 100,
+				WorkspaceVariableIDs = new Collection<int> { 2 },
+				TaskElementType = TaskElementType.Labor,
+				CustomFieldValueContainers = new Collection<CustomFieldValueContainer>() { new CustomFieldValueContainer { CustomFieldID = 2, IsOpenEnded = true, OpenEndedValue = "Test Value" } }
+			};
 
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, DataSource = "validate data" };
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, DataSource = "validate data" };
 
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
-            FullBoe boeObject = new FullBoe(boe);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
+			FullBoe boeObject = new FullBoe(boe);
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+			retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
-            this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
+			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
+			this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
 
-            //setup custom fields to be false, we'll check them in another test
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.TaskDisplay, CustomFieldRequired = true, IsOpenEnded = false };
-            CustomFieldValueDTO customValue = new CustomFieldValueDTO { CustomFieldID = 1, CustomFieldValueID = 1, CustomFieldValueInUseFlag = true, Id = 1 };
+			//setup custom fields to be false, we'll check them in another test
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.TaskDisplay, CustomFieldRequired = true, IsOpenEnded = false };
+			CustomFieldValueDTO customValue = new CustomFieldValueDTO { CustomFieldID = 1, CustomFieldValueID = 1, CustomFieldValueInUseFlag = true, Id = 1 };
 
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
-            retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByTaskElementIds(It.IsAny<Collection<int>>())).Returns(new Dictionary<int, ICollection<KeyValuePair<int, int>>>() { });
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByTaskElementIds(It.IsAny<Collection<int>>())).Returns(new Dictionary<int, ICollection<KeyValuePair<int, int>>>() { });
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            _TripDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<TripDTO>());
-            _MiscTravelRateDTOLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<MiscTravelRateDTO>());
-            _LocationDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<LocationDTO>());
+			_TripDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<TripDTO>());
+			_MiscTravelRateDTOLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<MiscTravelRateDTO>());
+			_LocationDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<LocationDTO>());
 
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { customValue });
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { customValue });
 
-            Dictionary<int, ICollection<KeyValuePair<int, int>>> toReturn = new Dictionary<int, ICollection<KeyValuePair<int, int>>>();
-            toReturn[boeTE.Id] = new Collection<KeyValuePair<int, int>> { new KeyValuePair<int, int>(customField.Id, customValue.Id) };
-            retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByTaskElementIds(It.IsAny<Collection<int>>())).Returns(toReturn);
-
-
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
-
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
-
-            // Assert
-            Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
-            toAssertTasks = validationBOE.Tasks;
-
-            // want to extract the validation contract message
-            foreach (ValidationBOETasks x in toAssertTasks)
-            {
-                ValidationBOETaskElementDetails taskElementDetails = x.TaskElementDetails;
-
-                Assert.IsTrue(taskElementDetails.TaskElementDetailValidationMessages.Count == 0, "Validation Msgs exist");
-            }
-
-            // Set up to test open ended custom field validation
-            CustomFieldDTO customField_OpenEnded = new CustomFieldDTO { Id = 2, CustomFieldName = "BABBA", CustomFieldDisplayID = CustomFieldType.TaskDisplay, CustomFieldRequired = true, IsOpenEnded = true };
-            customFields = new Collection<CustomFieldDTO>() { customField_OpenEnded };
-            customValue.CustomFieldID = 2;
-            toReturn[boeTE.Id] = new Collection<KeyValuePair<int, int>> { new KeyValuePair<int, int>(customField_OpenEnded.Id, customValue.Id) };
-            retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByTaskElementIds(It.IsAny<Collection<int>>())).Returns(toReturn);
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { customValue });
-            workspaceObject = new FullWorkspace(workspace);
-
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
-
-            toAssertTasks = validationBOE.Tasks;
-
-            foreach (ValidationBOETasks x in toAssertTasks)
-            {
-                ValidationBOETaskElementDetails taskElementDetails = x.TaskElementDetails;
-
-                Assert.IsTrue(taskElementDetails.TaskElementDetailValidationMessages.Count == 0, "Validation Msgs exist");
-            }
-        }
-
-        [TestMethod]
-        public void BL_ValidateTaskCustomFields_Invalid()
-        {
-            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
-
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-
-            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
+			Dictionary<int, ICollection<KeyValuePair<int, int>>> toReturn = new Dictionary<int, ICollection<KeyValuePair<int, int>>>();
+			toReturn[boeTE.Id] = new Collection<KeyValuePair<int, int>> { new KeyValuePair<int, int>(customField.Id, customValue.Id) };
+			retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByTaskElementIds(It.IsAny<Collection<int>>())).Returns(toReturn);
 
 
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 4, UsingTemplateBOE = false };
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
-            // set up resource
-            ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
-            resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
-            resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
+			// Assert
+			Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
+			toAssertTasks = validationBOE.Tasks;
+
+			// want to extract the validation contract message
+			foreach (ValidationBOETasks x in toAssertTasks)
+			{
+				ValidationBOETaskElementDetails taskElementDetails = x.TaskElementDetails;
+
+				Assert.IsTrue(taskElementDetails.TaskElementDetailValidationMessages.Count == 0, "Validation Msgs exist");
+			}
+
+			// Set up to test open ended custom field validation
+			CustomFieldDTO customField_OpenEnded = new CustomFieldDTO { Id = 2, CustomFieldName = "BABBA", CustomFieldDisplayID = CustomFieldType.TaskDisplay, CustomFieldRequired = true, IsOpenEnded = true };
+			customFields = new Collection<CustomFieldDTO>() { customField_OpenEnded };
+			customValue.CustomFieldID = 2;
+			toReturn[boeTE.Id] = new Collection<KeyValuePair<int, int>> { new KeyValuePair<int, int>(customField_OpenEnded.Id, customValue.Id) };
+			retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByTaskElementIds(It.IsAny<Collection<int>>())).Returns(toReturn);
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { customValue });
+			workspaceObject = new FullWorkspace(workspace);
+
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+
+			toAssertTasks = validationBOE.Tasks;
+
+			foreach (ValidationBOETasks x in toAssertTasks)
+			{
+				ValidationBOETaskElementDetails taskElementDetails = x.TaskElementDetails;
+
+				Assert.IsTrue(taskElementDetails.TaskElementDetailValidationMessages.Count == 0, "Validation Msgs exist");
+			}
+		}
+
+		[TestMethod]
+		public void BL_ValidateTaskCustomFields_Invalid()
+		{
+			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
+
+
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 4, UsingTemplateBOE = false };
+
+			// set up resource
+			ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
+			resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
+			resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
 			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
 			//setup a BOE
 			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
-            ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
-            BoeTaskElementDTO boeTE = new BoeTaskElementDTO
-            {
-                Id = 1,
-                BoeID = 4,
-                BOETaskID = "T56",
-                Description = "validate data",
-                StartDate = Convert.ToDateTime("02/01/2011"),
-                EndDate = Convert.ToDateTime("06/01/2011"),
-                MOQHoursEquation = "100",
-                MOQText = "validate moq",
-                MOQType = MOQType.Comparison,
-                MOQTypeName = "validate",
-                //ResourceName = resource.ResourceName,
-                taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
-                TaskTitle = "Validate Task",
-                TotalHours = 100,
-                WorkspaceVariableIDs = new Collection<int> { 2 },
-                TaskElementType = TaskElementType.Labor,
-                CustomFieldValueContainers = new Collection<CustomFieldValueContainer>() { new CustomFieldValueContainer { CustomFieldID = 2, IsOpenEnded = true, OpenEndedValue = string.Empty } }
-            };
+			ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
+			BoeTaskElementDTO boeTE = new BoeTaskElementDTO
+			{
+				Id = 1,
+				BoeID = 4,
+				BOETaskID = "T56",
+				Description = "validate data",
+				StartDate = Convert.ToDateTime("02/01/2011"),
+				EndDate = Convert.ToDateTime("06/01/2011"),
+				MOQHoursEquation = "100",
+				MOQText = "validate moq",
+				MOQType = MOQType.Comparison,
+				MOQTypeName = "validate",
+				//ResourceName = resource.ResourceName,
+				taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
+				TaskTitle = "Validate Task",
+				TotalHours = 100,
+				WorkspaceVariableIDs = new Collection<int> { 2 },
+				TaskElementType = TaskElementType.Labor,
+				CustomFieldValueContainers = new Collection<CustomFieldValueContainer>() { new CustomFieldValueContainer { CustomFieldID = 2, IsOpenEnded = true, OpenEndedValue = string.Empty } }
+			};
 
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, DataSource = "validate data" };
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, DataSource = "validate data" };
 
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
-            FullBoe boeObject = new FullBoe(boe);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
+			FullBoe boeObject = new FullBoe(boe);
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+			retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
-            this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
+			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
+			this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
 
-            //setup custom fields to be false, we'll check them in another test
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.TaskDisplay, CustomFieldRequired = true, CustomFieldName = "BABBA" };
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
+			//setup custom fields to be false, we'll check them in another test
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.TaskDisplay, CustomFieldRequired = true, CustomFieldName = "BABBA" };
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            _TripDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<TripDTO>());
-            _MiscTravelRateDTOLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<MiscTravelRateDTO>());
-            _LocationDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<LocationDTO>());
+			_TripDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<TripDTO>());
+			_MiscTravelRateDTOLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<MiscTravelRateDTO>());
+			_LocationDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<LocationDTO>());
 
-            CustomFieldValueDTO customFieldValue = new CustomFieldValueDTO { Id = 1, CustomFieldID = 1, CustomFieldValueID = 1, CustomFieldValueDescription = "TestDesc", CustomFieldValueName = "TestName" };
-            retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { customFieldValue });
-            resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
-            retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByTaskElementIds(It.IsAny<Collection<int>>())).Returns(new Dictionary<int, ICollection<KeyValuePair<int, int>>>() { });
+			CustomFieldValueDTO customFieldValue = new CustomFieldValueDTO { Id = 1, CustomFieldID = 1, CustomFieldValueID = 1, CustomFieldValueDescription = "TestDesc", CustomFieldValueName = "TestName" };
+			retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { customFieldValue });
+			resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
+			retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByTaskElementIds(It.IsAny<Collection<int>>())).Returns(new Dictionary<int, ICollection<KeyValuePair<int, int>>>() { });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
-            // Assert
-            Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
-            toAssertTasks = validationBOE.Tasks;
+			// Assert
+			Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
+			toAssertTasks = validationBOE.Tasks;
 
 
-            // want to extract the validation contract message
-            foreach (ValidationBOETasks x in toAssertTasks)
-            {
-                ValidationBOETaskElementDetails taskElementDetails = x.TaskElementDetails;
+			// want to extract the validation contract message
+			foreach (ValidationBOETasks x in toAssertTasks)
+			{
+				ValidationBOETaskElementDetails taskElementDetails = x.TaskElementDetails;
 
-                Assert.IsTrue(taskElementDetails.TaskElementDetailValidationMessages.Count == 1, "Validation Msgs did not equal 1");
-                Assert.IsTrue(taskElementDetails.TaskElementDetailValidationMessages.Contains("Custom Field BABBA is required."), "The validation msg was correct");
-            }
+				Assert.IsTrue(taskElementDetails.TaskElementDetailValidationMessages.Count == 1, "Validation Msgs did not equal 1");
+				Assert.IsTrue(taskElementDetails.TaskElementDetailValidationMessages.Contains("Custom Field BABBA is required."), "The validation msg was correct");
+			}
 
-            // Set up to test open ended custom field validation
-            CustomFieldDTO customField_OpenEnded = new CustomFieldDTO { Id = 2, CustomFieldName = "BABBA", CustomFieldDisplayID = CustomFieldType.TaskDisplay, CustomFieldRequired = true };
-            customFields = new Collection<CustomFieldDTO>() { customField_OpenEnded };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { });
-            workspaceObject = new FullWorkspace(workspace);
+			// Set up to test open ended custom field validation
+			CustomFieldDTO customField_OpenEnded = new CustomFieldDTO { Id = 2, CustomFieldName = "BABBA", CustomFieldDisplayID = CustomFieldType.TaskDisplay, CustomFieldRequired = true };
+			customFields = new Collection<CustomFieldDTO>() { customField_OpenEnded };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { });
+			workspaceObject = new FullWorkspace(workspace);
 
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
-            toAssertTasks = validationBOE.Tasks;
+			toAssertTasks = validationBOE.Tasks;
 
-            // want to extract the validation contract message
-            foreach (ValidationBOETasks x in toAssertTasks)
-            {
-                ValidationBOETaskElementDetails taskElementDetails = x.TaskElementDetails;
+			// want to extract the validation contract message
+			foreach (ValidationBOETasks x in toAssertTasks)
+			{
+				ValidationBOETaskElementDetails taskElementDetails = x.TaskElementDetails;
 
-                Assert.IsTrue(taskElementDetails.TaskElementDetailValidationMessages.Count == 1, "Validation Msgs did not equal 1");
-                Assert.IsTrue(taskElementDetails.TaskElementDetailValidationMessages.Contains("Custom Field BABBA is required."), "The validation msg was correct");
-            }
-        }
+				Assert.IsTrue(taskElementDetails.TaskElementDetailValidationMessages.Count == 1, "Validation Msgs did not equal 1");
+				Assert.IsTrue(taskElementDetails.TaskElementDetailValidationMessages.Contains("Custom Field BABBA is required."), "The validation msg was correct");
+			}
+		}
 
-        /// <summary>
-        /// Validate MOQ Type Table Custom Fields - both valid and invalid
-        /// </summary>
-        [TestMethod]
-        public void BL_ValidateMoqTypeTableCustomFields()
-        {
-            Utilities.IsSAPEnabledForSystem = false;
+		/// <summary>
+		/// Validate MOQ Type Table Custom Fields - both valid and invalid
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateMoqTypeTableCustomFields()
+		{
+			Utilities.IsSAPEnabledForSystem = false;
 
-            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
-            Mock<IMoqTypeDataLoader> moqTypeLoader = new Mock<IMoqTypeDataLoader>();
-            Mock<IMoqTypeTableCustomFieldValueXREFLoader> moqTypeTableCustomFieldXrefLoader = new Mock<IMoqTypeTableCustomFieldValueXREFLoader>();
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IMoqTypeDataLoader> moqTypeLoader = new Mock<IMoqTypeDataLoader>();
+			Mock<IMoqTypeTableCustomFieldValueXREFLoader> moqTypeTableCustomFieldXrefLoader = new Mock<IMoqTypeTableCustomFieldValueXREFLoader>();
 
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
 
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 1, UsingTemplateBOE = true };
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 1, UsingTemplateBOE = true };
 
-            // set up resource
-            ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
-            resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
-            resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
+			// set up resource
+			ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
+			resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
+			resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
 			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
 			//setup a BOE
 			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
-            ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
-            BoeTaskElementDTO boeTE = new BoeTaskElementDTO
-            {
-                Id = 1,
-                BoeID = 4,
-                BOETaskID = "T56",
-                Description = "validate data",
-                StartDate = Convert.ToDateTime("02/01/2011"),
-                EndDate = Convert.ToDateTime("06/01/2011"),
-                MOQHoursEquation = "100",
-                MOQText = "validate moq",
-                MOQType = MOQType.Comparison,
-                MOQTypeName = "validate",
-                taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
-                TaskTitle = "Validate Task",
-                TotalHours = 100,
-                WorkspaceVariableIDs = new Collection<int> { 2 },
-                TaskElementType = TaskElementType.Labor
-            };
+			ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
+			BoeTaskElementDTO boeTE = new BoeTaskElementDTO
+			{
+				Id = 1,
+				BoeID = 4,
+				BOETaskID = "T56",
+				Description = "validate data",
+				StartDate = Convert.ToDateTime("02/01/2011"),
+				EndDate = Convert.ToDateTime("06/01/2011"),
+				MOQHoursEquation = "100",
+				MOQText = "validate moq",
+				MOQType = MOQType.Comparison,
+				MOQTypeName = "validate",
+				taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
+				TaskTitle = "Validate Task",
+				TotalHours = 100,
+				WorkspaceVariableIDs = new Collection<int> { 2 },
+				TaskElementType = TaskElementType.Labor
+			};
 
-            MoqTableData moqTableData = new MoqTableData()
-            {
-                Id = 1,
-                TableName = "test table",
-                RepositoryName = "test repo",
-                QueryType = "query type",
-                DateOfReport = DateTime.Now.AddDays(-1),
-                HistoricalProgramName = "test name",
-                ContractNumber = "test contract",
-                WbsElement = "test wbs",
-                PoPStart = DateTime.Now.AddDays(-2),
-                PoPEnd = DateTime.Now,
-                TotalWbsHours = 100,
-                AdditionalQueryFilters = "test filters",
-                TotalRelevantHours = 50,
-                CustomFieldValueContainers = new Collection<CustomFieldValueContainer>()
-                {
-                    new CustomFieldValueContainer()
-                        {
-                            CustomFieldID = 1,
-                            IsOpenEnded = true,
-                            OpenEndedValue = "TEST"
-                        }
-                }
-            };
+			MoqTableData moqTableData = new MoqTableData()
+			{
+				Id = 1,
+				TableName = "test table",
+				RepositoryName = "test repo",
+				QueryType = "query type",
+				DateOfReport = DateTime.Now.AddDays(-1),
+				HistoricalProgramName = "test name",
+				ContractNumber = "test contract",
+				WbsElement = "test wbs",
+				PoPStart = DateTime.Now.AddDays(-2),
+				PoPEnd = DateTime.Now,
+				TotalWbsHours = 100,
+				AdditionalQueryFilters = "test filters",
+				TotalRelevantHours = 50,
+				CustomFieldValueContainers = new Collection<CustomFieldValueContainer>()
+				{
+					new CustomFieldValueContainer()
+						{
+							CustomFieldID = 1,
+							IsOpenEnded = true,
+							OpenEndedValue = "TEST"
+						}
+				}
+			};
 
-            MoqTypeSelection moqTypeSelection = new MoqTypeSelection()
-            {
-                Id = 1,
-                TaskId = 1,
-                SelectedMOQType = MOQType.Historical,
-                CerName = "test name",
-                DescriptionHoursRequired = "test desc",
-                SmeReason = "test reason",
-                SmeHoursLogic = "test hours logic",
-                SmeDurationLogic = "test duration logic",
-                SmeTaskEstimates = "test task estimates",
-                Rationale = "test rationale",
-                SkillMixRationale = "test skill mix",
+			MoqTypeSelection moqTypeSelection = new MoqTypeSelection()
+			{
+				Id = 1,
+				TaskId = 1,
+				SelectedMOQType = MOQType.Historical,
+				CerName = "test name",
+				DescriptionHoursRequired = "test desc",
+				SmeReason = "test reason",
+				SmeHoursLogic = "test hours logic",
+				SmeDurationLogic = "test duration logic",
+				SmeTaskEstimates = "test task estimates",
+				Rationale = "test rationale",
+				SkillMixRationale = "test skill mix",
 				HistoricalReferenceExplanation = "test historical reference explanation",
 				BoeId = 4,
-                TableData = new Collection<MoqTableData>()
-                {
-                    moqTableData
-                }
-            };
+				TableData = new Collection<MoqTableData>()
+				{
+					moqTableData
+				}
+			};
 
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, DataSource = "validate data" };
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, DataSource = "validate data" };
 
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
-            FullBoe boeObject = new FullBoe(boe);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
+			FullBoe boeObject = new FullBoe(boe);
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { moqTypeSelection });
-            retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { moqTypeSelection });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+			retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { moqTypeSelection });
+			retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { moqTypeSelection });
 
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
-            this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
+			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
+			this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
 
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldName = "TEST", CustomFieldDisplayID = CustomFieldType.MoqTypeTableDataDisplay, CustomFieldRequired = true, IsOpenEnded = true };
-            CustomFieldValueDTO customValue = new CustomFieldValueDTO { CustomFieldID = 1, CustomFieldValueID = 1, CustomFieldValueInUseFlag = true, Id = 1 };
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldName = "TEST", CustomFieldDisplayID = CustomFieldType.MoqTypeTableDataDisplay, CustomFieldRequired = true, IsOpenEnded = true };
+			CustomFieldValueDTO customValue = new CustomFieldValueDTO { CustomFieldID = 1, CustomFieldValueID = 1, CustomFieldValueInUseFlag = true, Id = 1 };
 
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
 
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
-            _TripDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<TripDTO>());
-            _MiscTravelRateDTOLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<MiscTravelRateDTO>());
-            _LocationDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<LocationDTO>());
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
+			_TripDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<TripDTO>());
+			_MiscTravelRateDTOLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<MiscTravelRateDTO>());
+			_LocationDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<LocationDTO>());
 
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { customValue });
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { customValue });
 
-            Dictionary<int, ICollection<KeyValuePair<int, int>>> toReturn = new Dictionary<int, ICollection<KeyValuePair<int, int>>>();
-            toReturn[boeTE.Id] = new Collection<KeyValuePair<int, int>> { new KeyValuePair<int, int>(customField.Id, customValue.Id) };
-            retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByMoqTypeTableIds(It.IsAny<Collection<int>>())).Returns(toReturn);
-            retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByTaskElementIds(It.IsAny<Collection<int>>())).Returns(new Dictionary<int, ICollection<KeyValuePair<int, int>>>() { });
+			Dictionary<int, ICollection<KeyValuePair<int, int>>> toReturn = new Dictionary<int, ICollection<KeyValuePair<int, int>>>();
+			toReturn[boeTE.Id] = new Collection<KeyValuePair<int, int>> { new KeyValuePair<int, int>(customField.Id, customValue.Id) };
+			retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByMoqTypeTableIds(It.IsAny<Collection<int>>())).Returns(toReturn);
+			retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByTaskElementIds(It.IsAny<Collection<int>>())).Returns(new Dictionary<int, ICollection<KeyValuePair<int, int>>>() { });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
-            // Assert
-            Collection<ValidationBOETasks> toAssertTasks = validationBOE.Tasks;
+			// Assert
+			Collection<ValidationBOETasks> toAssertTasks = validationBOE.Tasks;
 
-            foreach (ValidationBOETasks x in toAssertTasks)
-            {
-                ValidationBOETaskElementDetails taskElementDetails = x.TaskElementDetails;
+			foreach (ValidationBOETasks x in toAssertTasks)
+			{
+				ValidationBOETaskElementDetails taskElementDetails = x.TaskElementDetails;
 
-                Assert.IsTrue(taskElementDetails.TaskElementDetailValidationMessages.Count == 0, "Validation Msgs exist");
-            }
+				Assert.IsTrue(taskElementDetails.TaskElementDetailValidationMessages.Count == 0, "Validation Msgs exist");
+			}
 
-            // Now test for invalid
-            moqTypeSelection.TableData.First().CustomFieldValueContainers.First().OpenEndedValue = string.Empty;
-            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { moqTypeSelection });
-            retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { moqTypeSelection });
+			// Now test for invalid
+			moqTypeSelection.TableData.First().CustomFieldValueContainers.First().OpenEndedValue = string.Empty;
+			retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { moqTypeSelection });
+			retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { moqTypeSelection });
 
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
-            // Assert
-            toAssertTasks = validationBOE.Tasks;
+			// Assert
+			toAssertTasks = validationBOE.Tasks;
 
-            foreach (ValidationBOETasks x in toAssertTasks)
-            {
-                ValidationBOETaskElementDetails taskElementDetails = x.TaskElementDetails;
+			foreach (ValidationBOETasks x in toAssertTasks)
+			{
+				ValidationBOETaskElementDetails taskElementDetails = x.TaskElementDetails;
 
-                Assert.IsTrue(taskElementDetails.TaskElementDetailValidationMessages.Count == 1, "Validation Msgs did not equal 1");
-                Assert.IsTrue(taskElementDetails.TaskElementDetailValidationMessages.Contains("Custom Field TEST is required."), "The validation msg was correct");
-            }
-        }
+				Assert.IsTrue(taskElementDetails.TaskElementDetailValidationMessages.Count == 1, "Validation Msgs did not equal 1");
+				Assert.IsTrue(taskElementDetails.TaskElementDetailValidationMessages.Contains("Custom Field TEST is required."), "The validation msg was correct");
+			}
+		}
 
-        [TestMethod]
-        public void BL_ValidateLaborTypeCustomFields()
-        {
-            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+		[TestMethod]
+		public void BL_ValidateLaborTypeCustomFields()
+		{
+			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
 
-            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
 
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 3, UsingTemplateBOE = false };
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 3, UsingTemplateBOE = false };
 
-            // set up resource
-            ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
-            resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
-            resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
+			// set up resource
+			ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
+			resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
+			resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
 			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
 			//setup a BOE
 			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
-            ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours, CustomFieldValueContainers = new Collection<CustomFieldValueContainer>() { new CustomFieldValueContainer { CustomFieldID = 2, IsOpenEnded = true, OpenEndedValue = "Test Value" } } };
-            BoeTaskElementDTO boeTE = new BoeTaskElementDTO
-            {
-                Id = 1,
-                BoeID = 4,
-                BOETaskID = "T56",
-                Description = "validate data",
-                StartDate = Convert.ToDateTime("02/01/2011"),
-                EndDate = Convert.ToDateTime("06/01/2011"),
-                MOQHoursEquation = "100",
-                MOQText = "validate moq",
-                MOQType = MOQType.Comparison,
-                MOQTypeName = "validate",
-                //ResourceName = resource.ResourceName,
-                taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
-                TaskTitle = "Validate Task",
-                TotalHours = 100,
-                WorkspaceVariableIDs = new Collection<int> { 2 },
-                TaskElementType = TaskElementType.Labor
-            };
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, DataSource = "validate data" };
+			ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours, CustomFieldValueContainers = new Collection<CustomFieldValueContainer>() { new CustomFieldValueContainer { CustomFieldID = 2, IsOpenEnded = true, OpenEndedValue = "Test Value" } } };
+			BoeTaskElementDTO boeTE = new BoeTaskElementDTO
+			{
+				Id = 1,
+				BoeID = 4,
+				BOETaskID = "T56",
+				Description = "validate data",
+				StartDate = Convert.ToDateTime("02/01/2011"),
+				EndDate = Convert.ToDateTime("06/01/2011"),
+				MOQHoursEquation = "100",
+				MOQText = "validate moq",
+				MOQType = MOQType.Comparison,
+				MOQTypeName = "validate",
+				//ResourceName = resource.ResourceName,
+				taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
+				TaskTitle = "Validate Task",
+				TotalHours = 100,
+				WorkspaceVariableIDs = new Collection<int> { 2 },
+				TaskElementType = TaskElementType.Labor
+			};
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, DataSource = "validate data" };
 
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
-            FullBoe boeObject = new FullBoe(boe);
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
+			FullBoe boeObject = new FullBoe(boe);
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+			retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
-            this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
+			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
+			this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
 
-            //setup custom fields to be false, we'll check them in another test
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = true, IsOpenEnded = false };
-            CustomFieldValueDTO customValue = new CustomFieldValueDTO { CustomFieldID = 1, CustomFieldValueID = 1, CustomFieldValueInUseFlag = true, Id = 1 };
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { customValue });
+			//setup custom fields to be false, we'll check them in another test
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = true, IsOpenEnded = false };
+			CustomFieldValueDTO customValue = new CustomFieldValueDTO { CustomFieldID = 1, CustomFieldValueID = 1, CustomFieldValueInUseFlag = true, Id = 1 };
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { customValue });
 
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
-            Dictionary<int, ICollection<KeyValuePair<int, int>>> toReturn = new Dictionary<int, ICollection<KeyValuePair<int, int>>>();
-            toReturn[boeLT.Id] = new Collection<KeyValuePair<int, int>> { new KeyValuePair<int, int>(customField.Id, customValue.Id) };
-            retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByLaborTypeIds(It.IsAny<Collection<int>>())).Returns(toReturn);
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
+			Dictionary<int, ICollection<KeyValuePair<int, int>>> toReturn = new Dictionary<int, ICollection<KeyValuePair<int, int>>>();
+			toReturn[boeLT.Id] = new Collection<KeyValuePair<int, int>> { new KeyValuePair<int, int>(customField.Id, customValue.Id) };
+			retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByLaborTypeIds(It.IsAny<Collection<int>>())).Returns(toReturn);
 
-            _TripDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<TripDTO>());
-            _MiscTravelRateDTOLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<MiscTravelRateDTO>());
-            _LocationDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<LocationDTO>());
+			_TripDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<TripDTO>());
+			_MiscTravelRateDTOLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<MiscTravelRateDTO>());
+			_LocationDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<LocationDTO>());
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
-            // Assert
-            // only need to assert if task count = 0, because if there was a labor type validation msg,
-            // it would automatically create a task so the labor type validation msg would be put underneath it
-            Assert.IsTrue(validationBOE.Tasks.Count == 0, "There were task msgs");
+			// Assert
+			// only need to assert if task count = 0, because if there was a labor type validation msg,
+			// it would automatically create a task so the labor type validation msg would be put underneath it
+			Assert.IsTrue(validationBOE.Tasks.Count == 0, "There were task msgs");
 
-            // Set up to test open ended custom field validation
-            CustomFieldDTO customField_OpenEnded = new CustomFieldDTO { Id = 2, CustomFieldName = "BABBA", CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = true, IsOpenEnded = true };
-            customFields = new Collection<CustomFieldDTO>() { customField_OpenEnded };
-            customValue.CustomFieldID = 2;
-            toReturn[boeLT.Id] = new Collection<KeyValuePair<int, int>> { new KeyValuePair<int, int>(customField_OpenEnded.Id, customValue.Id) };
-            retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByTaskElementIds(It.IsAny<Collection<int>>())).Returns(toReturn);
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { customValue });
-            workspaceObject = new FullWorkspace(workspace);
+			// Set up to test open ended custom field validation
+			CustomFieldDTO customField_OpenEnded = new CustomFieldDTO { Id = 2, CustomFieldName = "BABBA", CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = true, IsOpenEnded = true };
+			customFields = new Collection<CustomFieldDTO>() { customField_OpenEnded };
+			customValue.CustomFieldID = 2;
+			toReturn[boeLT.Id] = new Collection<KeyValuePair<int, int>> { new KeyValuePair<int, int>(customField_OpenEnded.Id, customValue.Id) };
+			retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByTaskElementIds(It.IsAny<Collection<int>>())).Returns(toReturn);
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { customValue });
+			workspaceObject = new FullWorkspace(workspace);
 
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
-            Assert.IsTrue(validationBOE.Tasks.Count == 0, "There were task msgs");
-        }
+			Assert.IsTrue(validationBOE.Tasks.Count == 0, "There were task msgs");
+		}
 
-        [TestMethod]
-        public void BL_ValidateLaborTypeCustomFields_Invalid()
-        {
-            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+		[TestMethod]
+		public void BL_ValidateLaborTypeCustomFields_Invalid()
+		{
+			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
 
-            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
 
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 3 };
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 3 };
 
-            // set up resource
-            ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
-            resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
-            resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
+			// set up resource
+			ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
+			resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
+			resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
 			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
 			//setup a BOE
 			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
-            ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours, CustomFieldValueContainers = new Collection<CustomFieldValueContainer>() { new CustomFieldValueContainer { CustomFieldID = 2, IsOpenEnded = true, OpenEndedValue = string.Empty } } };
-            BoeTaskElementDTO boeTE = new BoeTaskElementDTO
-            {
-                Id = 1,
-                BoeID = 4,
-                BOETaskID = "T56",
-                Description = "validate data",
-                StartDate = Convert.ToDateTime("02/01/2011"),
-                EndDate = Convert.ToDateTime("06/01/2011"),
-                MOQHoursEquation = "100",
-                MOQText = "validate moq",
-                MOQType = MOQType.Comparison,
-                MOQTypeName = "validate",
-                //ResourceName = resource.ResourceName,
-                taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
-                TaskTitle = "Validate Task",
-                TotalHours = 100,
-                WorkspaceVariableIDs = new Collection<int> { 2 },
-                TaskElementType = TaskElementType.Labor
-            };
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, DataSource = "validate data" };
+			ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours, CustomFieldValueContainers = new Collection<CustomFieldValueContainer>() { new CustomFieldValueContainer { CustomFieldID = 2, IsOpenEnded = true, OpenEndedValue = string.Empty } } };
+			BoeTaskElementDTO boeTE = new BoeTaskElementDTO
+			{
+				Id = 1,
+				BoeID = 4,
+				BOETaskID = "T56",
+				Description = "validate data",
+				StartDate = Convert.ToDateTime("02/01/2011"),
+				EndDate = Convert.ToDateTime("06/01/2011"),
+				MOQHoursEquation = "100",
+				MOQText = "validate moq",
+				MOQType = MOQType.Comparison,
+				MOQTypeName = "validate",
+				//ResourceName = resource.ResourceName,
+				taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
+				TaskTitle = "Validate Task",
+				TotalHours = 100,
+				WorkspaceVariableIDs = new Collection<int> { 2 },
+				TaskElementType = TaskElementType.Labor
+			};
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, DataSource = "validate data" };
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+			retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
-            FullBoe boeObject = new FullBoe(boe);
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
+			FullBoe boeObject = new FullBoe(boe);
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
-            this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
+			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
+			this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
 
-            //setup custom fields to be false, we'll check them in another test
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = true, CustomFieldName = "BABBA" };
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
+			//setup custom fields to be false, we'll check them in another test
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = true, CustomFieldName = "BABBA" };
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            _TripDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<TripDTO>());
-            _MiscTravelRateDTOLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<MiscTravelRateDTO>());
-            _LocationDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<LocationDTO>());
+			_TripDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<TripDTO>());
+			_MiscTravelRateDTOLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<MiscTravelRateDTO>());
+			_LocationDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<LocationDTO>());
 
-            CustomFieldValueDTO customFieldValue = new CustomFieldValueDTO { Id = 1, CustomFieldID = 1, CustomFieldValueID = 1, CustomFieldValueDescription = "TestDesc", CustomFieldValueName = "TestName" };
-            retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { customFieldValue });
-            resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
-            retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByLaborTypeIds(It.IsAny<Collection<int>>())).Returns(new Dictionary<int, ICollection<KeyValuePair<int, int>>>() { });
+			CustomFieldValueDTO customFieldValue = new CustomFieldValueDTO { Id = 1, CustomFieldID = 1, CustomFieldValueID = 1, CustomFieldValueDescription = "TestDesc", CustomFieldValueName = "TestName" };
+			retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { customFieldValue });
+			resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
+			retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByLaborTypeIds(It.IsAny<Collection<int>>())).Returns(new Dictionary<int, ICollection<KeyValuePair<int, int>>>() { });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
-            // Assert
-            Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
-            toAssertTasks = validationBOE.Tasks;
-
-
-            //want to extract the validation contract message
-            foreach (ValidationBOETasks x in toAssertTasks)
-            {
-                foreach (ValidationBOELaborType y in x.LaborTypes)
-                {
-                    Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 1, "Validation Msgs did not equal 1");
-                    Assert.IsTrue(y.LaborTypeValidationMsgs.Contains("Custom Field BABBA is required."), "The validation msg was correct");
-                }
-            }
-
-            // Set up to test open ended custom field validation
-            CustomFieldDTO customField_OpenEnded = new CustomFieldDTO { Id = 2, CustomFieldName = "BABBA", CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = true };
-            customFields = new Collection<CustomFieldDTO>() { customField_OpenEnded };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { });
-            workspaceObject = new FullWorkspace(workspace);
-
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
-
-            foreach (ValidationBOETasks x in toAssertTasks)
-            {
-                foreach (ValidationBOELaborType y in x.LaborTypes)
-                {
-                    Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 1, "Validation Msgs did not equal 1");
-                    Assert.IsTrue(y.LaborTypeValidationMsgs.Contains("Custom Field BABBA is required."), "The validation msg was correct");
-                }
-            }
-        }
-
-        [TestMethod]
-        public void BL_ValidateBOECustomFields()
-        {
-            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
-
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-
-            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
+			// Assert
+			Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
+			toAssertTasks = validationBOE.Tasks;
 
 
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+			//want to extract the validation contract message
+			foreach (ValidationBOETasks x in toAssertTasks)
+			{
+				foreach (ValidationBOELaborType y in x.LaborTypes)
+				{
+					Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 1, "Validation Msgs did not equal 1");
+					Assert.IsTrue(y.LaborTypeValidationMsgs.Contains("Custom Field BABBA is required."), "The validation msg was correct");
+				}
+			}
 
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 3 };
+			// Set up to test open ended custom field validation
+			CustomFieldDTO customField_OpenEnded = new CustomFieldDTO { Id = 2, CustomFieldName = "BABBA", CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = true };
+			customFields = new Collection<CustomFieldDTO>() { customField_OpenEnded };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { });
+			workspaceObject = new FullWorkspace(workspace);
 
-            // set up resource
-            ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
-            resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
-            resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+
+			foreach (ValidationBOETasks x in toAssertTasks)
+			{
+				foreach (ValidationBOELaborType y in x.LaborTypes)
+				{
+					Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 1, "Validation Msgs did not equal 1");
+					Assert.IsTrue(y.LaborTypeValidationMsgs.Contains("Custom Field BABBA is required."), "The validation msg was correct");
+				}
+			}
+		}
+
+		[TestMethod]
+		public void BL_ValidateBOECustomFields()
+		{
+			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
+
+
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 3 };
+
+			// set up resource
+			ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
+			resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
+			resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
 			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
 			//setup a BOE
 			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
-            ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
-            BoeTaskElementDTO boeTE = new BoeTaskElementDTO
-            {
-                Id = 1,
-                BoeID = 4,
-                BOETaskID = "T56",
-                Description = "validate data",
-                StartDate = Convert.ToDateTime("02/01/2011"),
-                EndDate = Convert.ToDateTime("06/01/2011"),
-                MOQHoursEquation = "100",
-                MOQText = "validate moq",
-                MOQType = MOQType.Comparison,
-                MOQTypeName = "validate",
-                //ResourceName = resource.ResourceName,
-                taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
-                TaskTitle = "Validate Task",
-                TotalHours = 100,
-                WorkspaceVariableIDs = new Collection<int> { 2 },
-                TaskElementType = TaskElementType.Labor
-            };
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, DataSource = "validate data" };
+			ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
+			BoeTaskElementDTO boeTE = new BoeTaskElementDTO
+			{
+				Id = 1,
+				BoeID = 4,
+				BOETaskID = "T56",
+				Description = "validate data",
+				StartDate = Convert.ToDateTime("02/01/2011"),
+				EndDate = Convert.ToDateTime("06/01/2011"),
+				MOQHoursEquation = "100",
+				MOQText = "validate moq",
+				MOQType = MOQType.Comparison,
+				MOQTypeName = "validate",
+				//ResourceName = resource.ResourceName,
+				taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
+				TaskTitle = "Validate Task",
+				TotalHours = 100,
+				WorkspaceVariableIDs = new Collection<int> { 2 },
+				TaskElementType = TaskElementType.Labor
+			};
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, DataSource = "validate data" };
 
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
 
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
-            FullBoe boeObject = new FullBoe(boe);
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			FullBoe boeObject = new FullBoe(boe);
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+			retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
-            this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
+			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
+			this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
 
-            //setup custom fields to be false, we'll check them in another test
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.BoeDisplay, CustomFieldRequired = true };
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            this.retriever.Setup(x => x.CheckIfBoeExistsGivenCustomFieldID(boe.Id, customField.Id)).Returns(true);
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
+			//setup custom fields to be false, we'll check them in another test
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.BoeDisplay, CustomFieldRequired = true };
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			this.retriever.Setup(x => x.CheckIfBoeExistsGivenCustomFieldID(boe.Id, customField.Id)).Returns(true);
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
-            // Assert
-            Assert.IsTrue(validationBOE.BOECustomFieldValidationMessages.Count == 0, "There were BOE Custom msgs");
-        }
+			// Assert
+			Assert.IsTrue(validationBOE.BOECustomFieldValidationMessages.Count == 0, "There were BOE Custom msgs");
+		}
 
-        [TestMethod]
-        public void BL_ValidateBOECustomFields_Invalid()
-        {
-            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+		[TestMethod]
+		public void BL_ValidateBOECustomFields_Invalid()
+		{
+			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
 
-            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
 
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 3 };
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 3 };
 
-            // set up resource
-            ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
-            resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
-            resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
+			// set up resource
+			ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
+			resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
+			resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
 			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
 			//setup a BOE
 			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
-            ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
-            BoeTaskElementDTO boeTE = new BoeTaskElementDTO
-            {
-                Id = 1,
-                BoeID = 4,
-                BOETaskID = "T56",
-                Description = "validate data",
-                StartDate = Convert.ToDateTime("02/01/2011"),
-                EndDate = Convert.ToDateTime("06/01/2011"),
-                MOQHoursEquation = "100",
-                MOQText = "validate moq",
-                MOQType = MOQType.Comparison,
-                MOQTypeName = "validate",
-                //ResourceName = resource.ResourceName,
-                taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
-                TaskTitle = "Validate Task",
-                TotalHours = 100,
-                WorkspaceVariableIDs = new Collection<int> { 2 },
-                TaskElementType = TaskElementType.Labor
-            };
+			ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
+			BoeTaskElementDTO boeTE = new BoeTaskElementDTO
+			{
+				Id = 1,
+				BoeID = 4,
+				BOETaskID = "T56",
+				Description = "validate data",
+				StartDate = Convert.ToDateTime("02/01/2011"),
+				EndDate = Convert.ToDateTime("06/01/2011"),
+				MOQHoursEquation = "100",
+				MOQText = "validate moq",
+				MOQType = MOQType.Comparison,
+				MOQTypeName = "validate",
+				//ResourceName = resource.ResourceName,
+				taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
+				TaskTitle = "Validate Task",
+				TotalHours = 100,
+				WorkspaceVariableIDs = new Collection<int> { 2 },
+				TaskElementType = TaskElementType.Labor
+			};
 
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, DataSource = "validate data" };
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, DataSource = "validate data" };
 
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
-            FullBoe boeObject = new FullBoe(boe);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			FullBoe boeObject = new FullBoe(boe);
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
 
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
-            this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
+			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
+			this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
 
-            //setup custom fields to be false, we'll check them in another test
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.BoeDisplay, CustomFieldRequired = true, CustomFieldName = "BOE Apple" };
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
+			//setup custom fields to be false, we'll check them in another test
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.BoeDisplay, CustomFieldRequired = true, CustomFieldName = "BOE Apple" };
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
-            //Assert
-            Assert.IsTrue(validationBOE.BOECustomFieldValidationMessages.Count == 1, "Validation Msgs did not equal 1");
-            Assert.IsTrue(validationBOE.BOECustomFieldValidationMessages.Contains("Custom Field BOE Apple is required."), "The validation msg was correct");
-        }
+			//Assert
+			Assert.IsTrue(validationBOE.BOECustomFieldValidationMessages.Count == 1, "Validation Msgs did not equal 1");
+			Assert.IsTrue(validationBOE.BOECustomFieldValidationMessages.Contains("Custom Field BOE Apple is required."), "The validation msg was correct");
+		}
 
-        [TestMethod]
-        public void BL_ValidateBOE_MissingHistoricMetrics()
-        {
-            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+		[TestMethod]
+		public void BL_ValidateBOE_MissingHistoricMetrics()
+		{
+			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
 
-            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ContractStartDate = Convert.ToDateTime("03/01/2010"), ContractEndDate = Convert.ToDateTime("03/01/2014"), ResourceListID = 1, UsingTemplateBOE = false };
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ContractStartDate = Convert.ToDateTime("03/01/2010"), ContractEndDate = Convert.ToDateTime("03/01/2014"), ResourceListID = 1, UsingTemplateBOE = false };
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
 
-            // set up resource
-            ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
-            resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
-            resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
+			// set up resource
+			ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
+			resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
+			resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
 
-            //setup custom fields to be false, we'll check them in another test
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
+			//setup custom fields to be false, we'll check them in another test
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
-            //setup a BOE
-            ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
-            ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
-            BoeTaskElementDTO boeTE = new BoeTaskElementDTO
-            {
-                Id = 1,
-                BoeID = 4,
-                BOETaskID = "T56",
-                Description = "validate data",
-                StartDate = Convert.ToDateTime("02/01/2011"),
-                EndDate = Convert.ToDateTime("06/01/2011"),
-                MOQHoursEquation = "100",
-                MOQText = "validate moq",
-                MOQType = MOQType.Comparison,
-                MOQTypeName = "validate",
-                //ResourceName = resource.ResourceName,
-                taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
-                TaskTitle = "Validate Task",
-                TotalHours = 100,
-                WorkspaceVariableIDs = new Collection<int> { 2 },
-                TaskElementType = TaskElementType.Labor
-            };
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", WorkspaceID = 1, CLINID = 8, DataSource = "validate data", HistoricMetricDisclosureChecked = false };
+			//setup a BOE
+			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
+			ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
+			BoeTaskElementDTO boeTE = new BoeTaskElementDTO
+			{
+				Id = 1,
+				BoeID = 4,
+				BOETaskID = "T56",
+				Description = "validate data",
+				StartDate = Convert.ToDateTime("02/01/2011"),
+				EndDate = Convert.ToDateTime("06/01/2011"),
+				MOQHoursEquation = "100",
+				MOQText = "validate moq",
+				MOQType = MOQType.Comparison,
+				MOQTypeName = "validate",
+				//ResourceName = resource.ResourceName,
+				taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
+				TaskTitle = "Validate Task",
+				TotalHours = 100,
+				WorkspaceVariableIDs = new Collection<int> { 2 },
+				TaskElementType = TaskElementType.Labor
+			};
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", WorkspaceID = 1, CLINID = 8, DataSource = "validate data", HistoricMetricDisclosureChecked = false };
 
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
 
-            FullBoe boeObject = new FullBoe(boe);
+			FullBoe boeObject = new FullBoe(boe);
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
 
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
-            this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
+			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
+			this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
 			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { });
 			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
 
-            ICollection<int> ids = new Collection<int>();
-            ids.Add(boeTE.Id);
+			ICollection<int> ids = new Collection<int>();
+			ids.Add(boeTE.Id);
 
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
-            // Assert
-            Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
-            toAssertTasks = validationBOE.Tasks;
-            Collection<ValidationBOELaborType> toAssertLabors = new Collection<ValidationBOELaborType>();
+			// Assert
+			Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
+			toAssertTasks = validationBOE.Tasks;
+			Collection<ValidationBOELaborType> toAssertLabors = new Collection<ValidationBOELaborType>();
 
-            if (_SpaceEnabled)
-            {
-                // Metrics deprecated for SSC, should not contain message
-                Assert.IsFalse(validationBOE.BOEHeaderMsgs.Contains(BoeDTO.HISTORIC_METRIC_DISCLOSURE_REQUIRED), "The Historic Metric was not required");
-            }
+			if (_SpaceEnabled)
+			{
+				// Metrics deprecated for SSC, should not contain message
+				Assert.IsFalse(validationBOE.BOEHeaderMsgs.Contains(BoeDTO.HISTORIC_METRIC_DISCLOSURE_REQUIRED), "The Historic Metric was not required");
+			}
 
-            Assert.IsTrue(toAssertTasks.Count == 0, "Task messages were not empty");
-            Assert.IsTrue(toAssertLabors.Count == 0, "Task labor messages were not empty");
-        }
+			Assert.IsTrue(toAssertTasks.Count == 0, "Task messages were not empty");
+			Assert.IsTrue(toAssertLabors.Count == 0, "Task labor messages were not empty");
+		}
 
-        [TestMethod]
-        public void BL_ValidateBOECustomFields_MissingPerfOrgAndResource()
-        {
-            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+		[TestMethod]
+		public void BL_ValidateBOECustomFields_MissingPerfOrgAndResource()
+		{
+			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
 
-            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ContractStartDate = Convert.ToDateTime("03/01/2010"), ContractEndDate = Convert.ToDateTime("03/01/2014"), ResourceListID = 3 };
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ContractStartDate = Convert.ToDateTime("03/01/2010"), ContractEndDate = Convert.ToDateTime("03/01/2014"), ResourceListID = 3 };
 
-            // set up resource
-            ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
-            resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
-            resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
+			// set up resource
+			ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
+			resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
+			resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
 			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { resource });
 			//setup custom fields to be false, we'll check them in another test
 			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
-            //setup a BOE
-            ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
-            ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = null, PerformingOrgID = null, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
-            BoeTaskElementDTO boeTE = new BoeTaskElementDTO
-            {
-                Id = 1,
-                BoeID = 4,
-                BOETaskID = "T56",
-                Description = "validate data",
-                StartDate = Convert.ToDateTime("02/01/2011"),
-                EndDate = Convert.ToDateTime("06/01/2011"),
-                MOQHoursEquation = "100",
-                MOQText = "validate moq",
-                MOQType = MOQType.Comparison,
-                MOQTypeName = "validate",
-                taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
-                TaskTitle = "Validate Task",
-                TotalHours = 100,
-                WorkspaceVariableIDs = new Collection<int> { 2 },
-                TaskElementType = TaskElementType.Labor
-            };
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", WorkspaceID = 1, CLINID = 8, StartDate = Convert.ToDateTime("01/10/2011"), EndDate = Convert.ToDateTime("02/03/2012"), DataSource = "validate data" };
+			//setup a BOE
+			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
+			ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = null, PerformingOrgID = null, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
+			BoeTaskElementDTO boeTE = new BoeTaskElementDTO
+			{
+				Id = 1,
+				BoeID = 4,
+				BOETaskID = "T56",
+				Description = "validate data",
+				StartDate = Convert.ToDateTime("02/01/2011"),
+				EndDate = Convert.ToDateTime("06/01/2011"),
+				MOQHoursEquation = "100",
+				MOQText = "validate moq",
+				MOQType = MOQType.Comparison,
+				MOQTypeName = "validate",
+				taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
+				TaskTitle = "Validate Task",
+				TotalHours = 100,
+				WorkspaceVariableIDs = new Collection<int> { 2 },
+				TaskElementType = TaskElementType.Labor
+			};
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", WorkspaceID = 1, CLINID = 8, StartDate = Convert.ToDateTime("01/10/2011"), EndDate = Convert.ToDateTime("02/03/2012"), DataSource = "validate data" };
 
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
 
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
-            FullBoe boeObject = new FullBoe(boe);
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			FullBoe boeObject = new FullBoe(boe);
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
 
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
-            this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
-
-
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
-
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
-
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
-
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
-
-            // Assert
-            Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
-            toAssertTasks = validationBOE.Tasks;
+			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
+			this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
 
-            // verify task error messages
-            foreach (ValidationBOETasks x in toAssertTasks)
-            {
-                // verify labor error messages 
-                foreach (ValidationBOELaborType y in x.LaborTypes)
-                {
-                    Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 2, "There weren't 2 labor type messages");
-                    Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(BoeDTO.RESOURCE_CODE_REQUIRED), "The validation msg was correct");
-                    Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(BoeDTO.PERFORM_ORG_REQUIRED), "The validation msg was correct");
-                }
-            }
-        }
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
 
-        [TestMethod]
-        public void BL_ValidateBOE_MissingODCFields()
-        {
-            // Set up
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
-            Mock<IPermissionsDTODataLoader> permloader = new Mock<IPermissionsDTODataLoader>();
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+
+			// Assert
+			Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
+			toAssertTasks = validationBOE.Tasks;
 
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName };
+			// verify task error messages
+			foreach (ValidationBOETasks x in toAssertTasks)
+			{
+				// verify labor error messages 
+				foreach (ValidationBOELaborType y in x.LaborTypes)
+				{
+					Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 2, "There weren't 2 labor type messages");
+					Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(BoeDTO.RESOURCE_CODE_REQUIRED), "The validation msg was correct");
+					Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(BoeDTO.PERFORM_ORG_REQUIRED), "The validation msg was correct");
+				}
+			}
+		}
 
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, WasDescriptionSet = true, WasDataSourceSet = true };
+		[TestMethod]
+		public void BL_ValidateBOE_MissingODCFields()
+		{
+			// Set up
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
 
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permloader.Object);
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
-            FullBoe boeObject = new FullBoe(boe);
-
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { });
-
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { });
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
-
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-
-            //setup custom fields to be false, we'll check them in another test
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.BoeDisplay, CustomFieldRequired = false };
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, EndDate = Convert.ToDateTime("07/01/2011"), StartDate = Convert.ToDateTime("06/01/2011"), PerformingOrgID = null, ResourceID = null } }, WasDescriptionSet = true, WasMoqTextSet = true } });
-
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
-
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
-
-            // Assert
-            Collection<ValidationBOETasks> toAssertCosts = new Collection<ValidationBOETasks>();
-            toAssertCosts = validationBOE.Costs;
+			Mock<IPermissionsDTODataLoader> permloader = new Mock<IPermissionsDTODataLoader>();
 
 
-            // verify task error messages
-            foreach (ValidationBOETasks x in toAssertCosts)
-            {
-                // verify labor error messages 
-                foreach (ValidationBOELaborType y in x.LaborTypes)
-                {
-                    Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 3, "There weren't 3 labor type messages");
-                    Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(OtherDirectCostDTO.RESOURCE_CODE_REQUIRED), "The validation msg was correct");
-                    Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(OtherDirectCostDTO.PERFORM_ORG_REQUIRED), "The validation msg was correct");
-                    Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(OtherDirectCostDTO.SPREAD_REQUIRED), "The valdiating msg was correct");
-                }
-            }
-        }
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName };
 
-        [TestMethod]
-        public void BL_ValidateBOE_MissingTravelFields()
-        {
-            // Set up
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
-            Mock<IResourceDTODataLoader> ResourceLoader = new Mock<IResourceDTODataLoader>();
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, WasDescriptionSet = true, WasDataSourceSet = true };
 
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permloader.Object);
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			FullBoe boeObject = new FullBoe(boe);
+
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { });
+
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { });
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
+
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+
+			//setup custom fields to be false, we'll check them in another test
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.BoeDisplay, CustomFieldRequired = false };
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, EndDate = Convert.ToDateTime("07/01/2011"), StartDate = Convert.ToDateTime("06/01/2011"), PerformingOrgID = null, ResourceID = null } }, WasDescriptionSet = true, WasMoqTextSet = true } });
+
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+
+			// Assert
+			Collection<ValidationBOETasks> toAssertCosts = new Collection<ValidationBOETasks>();
+			toAssertCosts = validationBOE.Costs;
+
+
+			// verify task error messages
+			foreach (ValidationBOETasks x in toAssertCosts)
+			{
+				// verify labor error messages 
+				foreach (ValidationBOELaborType y in x.LaborTypes)
+				{
+					Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 3, "There weren't 3 labor type messages");
+					Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(OtherDirectCostDTO.RESOURCE_CODE_REQUIRED), "The validation msg was correct");
+					Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(OtherDirectCostDTO.PERFORM_ORG_REQUIRED), "The validation msg was correct");
+					Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(OtherDirectCostDTO.SPREAD_REQUIRED), "The valdiating msg was correct");
+				}
+			}
+		}
+
+		[TestMethod]
+		public void BL_ValidateBOE_MissingTravelFields()
+		{
+			// Set up
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+			Mock<IResourceDTODataLoader> ResourceLoader = new Mock<IResourceDTODataLoader>();
+
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
 
 
 
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 1 };
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 1 };
 
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, WasDescriptionSet = true, WasDataSourceSet = true };
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, WasDescriptionSet = true, WasDataSourceSet = true };
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
 
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissions.Object);
-            FullBoe boeObject = new FullBoe(boe);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissions.Object);
+			FullBoe boeObject = new FullBoe(boe);
 
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { });
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
-            //setup custom fields to be false, we'll check them in another test
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.BoeDisplay, CustomFieldRequired = false };
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO>());
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            int idToUse = 1;
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> {
-                new TravelDTO{
-                    Id = 1,
-                    BoeID = boe.Id,
-                                Description = "moq travel1",
-                                TaskID="T01",
-                                TaskTitle="title1",
-                                StartDate = Convert.ToDateTime("01/01/2011"),
-                                EndDate = Convert.ToDateTime("12/01/2011"),
-                                TravelTrips = new Collection<TravelTripType> {
-                                                            new TravelTripType {
-                                                                            BoeID = boe.Id,
-                                                                            TripDate = Convert.ToDateTime("01/01/2030"),
-                                                                            SystemTripID=idToUse,
-                                                                            PerfOrgID = 1}}},
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { });
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			//setup custom fields to be false, we'll check them in another test
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.BoeDisplay, CustomFieldRequired = false };
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO>());
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+			int idToUse = 1;
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> {
+				new TravelDTO{
+					Id = 1,
+					BoeID = boe.Id,
+								Description = "moq travel1",
+								TaskID="T01",
+								TaskTitle="title1",
+								StartDate = Convert.ToDateTime("01/01/2011"),
+								EndDate = Convert.ToDateTime("12/01/2011"),
+								TravelTrips = new Collection<TravelTripType> {
+															new TravelTripType {
+																			BoeID = boe.Id,
+																			TripDate = Convert.ToDateTime("01/01/2030"),
+																			SystemTripID=idToUse,
+																			PerfOrgID = 1}}},
                 // travelDTO with no traveltrips to create 1 error message
                 new TravelDTO{
-                                Id = 2,
-                                BoeID = boe.Id,
-                                Description = "moq travel2",
-                                TaskID="T02",
-                                TaskTitle="title2",
-                                StartDate = Convert.ToDateTime("01/01/2011"),
-                                EndDate = Convert.ToDateTime("12/01/2011"),
+								Id = 2,
+								BoeID = boe.Id,
+								Description = "moq travel2",
+								TaskID="T02",
+								TaskTitle="title2",
+								StartDate = Convert.ToDateTime("01/01/2011"),
+								EndDate = Convert.ToDateTime("12/01/2011"),
 
-                                TravelTrips = new Collection<TravelTripType> {}}});
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> {
-                new TravelDTO{
-                    Id = 1,
-                    BoeID = boe.Id,
-                                Description = "moq travel1",
-                                TaskID="T01",
-                                TaskTitle="title1",
-                                StartDate = Convert.ToDateTime("01/01/2011"),
-                                EndDate = Convert.ToDateTime("12/01/2011"),
-                                TravelTrips = new Collection<TravelTripType> {
-                                                            new TravelTripType {
-                                                                            BoeID = boe.Id,
-                                                                            TripDate = Convert.ToDateTime("01/01/2030"),
-                                                                            SystemTripID=idToUse,
-                                                                            PerfOrgID = 1}}},
+								TravelTrips = new Collection<TravelTripType> {}}});
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> {
+				new TravelDTO{
+					Id = 1,
+					BoeID = boe.Id,
+								Description = "moq travel1",
+								TaskID="T01",
+								TaskTitle="title1",
+								StartDate = Convert.ToDateTime("01/01/2011"),
+								EndDate = Convert.ToDateTime("12/01/2011"),
+								TravelTrips = new Collection<TravelTripType> {
+															new TravelTripType {
+																			BoeID = boe.Id,
+																			TripDate = Convert.ToDateTime("01/01/2030"),
+																			SystemTripID=idToUse,
+																			PerfOrgID = 1}}},
                 // travelDTO with no traveltrips to create 1 error message
                 new TravelDTO{
-                                Id = 2,
-                                BoeID = boe.Id,
-                                Description = "moq travel2",
-                                TaskID="T02",
-                                TaskTitle="title2",
-                                StartDate = Convert.ToDateTime("01/01/2011"),
-                                EndDate = Convert.ToDateTime("12/01/2011"),
-
-                                TravelTrips = new Collection<TravelTripType> {}}});
-
-            _TripDTODataLoader.Setup(x => x.GetByIds(new Collection<int> { idToUse })).Returns(new Collection<TripDTO> { new TripDTO { TripID = idToUse, MiscTravelRateID = idToUse, DepartureLocationID = idToUse, DestinationLocationID = idToUse } });
-            _MiscTravelRateDTOLoader.Setup(x => x.GetByIds(new Collection<int> { idToUse })).Returns(new Collection<MiscTravelRateDTO> { new MiscTravelRateDTO { Id = idToUse, MiscTravelRateMode = "moqmode" } });
-            _LocationDTODataLoader.Setup(x => x.GetByIds(new Collection<int> { idToUse })).Returns(new Collection<LocationDTO> { new LocationDTO { LocationName = "moq location", Id = idToUse } });
-
-            ResourceLoader.Setup(x => x.GetByListIdAndElementOfCost(workspace.ResourceListID, ElementOfCostType.Travel)).Returns(new Collection<ResourceDTO> { new ResourceDTO { Id = 1, ResourceName = "test" } });
-
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
-
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
-
-            // Assert
-            Collection<ValidationBOETasks> toAssertTravels = new Collection<ValidationBOETasks>();
-            toAssertTravels = validationBOE.Travels;
-
-            // verify task error messages
-            Assert.AreEqual(2, toAssertTravels.Count);
-
-            Assert.AreEqual("Trip: 1 moqmode moq location to moq location", toAssertTravels[0].LaborTypes[0].LaborTypeHeader);
-            // since the mock travel task have a start and end date later than the boe date, we are expecting the invalid msgs to show up
-            Assert.IsTrue(toAssertTravels[0].TaskElementDetails.TaskElementDetailValidationMessages.Contains(string.Format(TravelDTO.TRAVEL_TASK_START_DATE_INVALID, boe.StartDate.ToString("MM/yyyy"))), "Travel start task was valid");
-            Assert.IsTrue(toAssertTravels[0].TaskElementDetails.TaskElementDetailValidationMessages.Contains(string.Format(TravelDTO.TRAVEL_TASK_END_DATE_INVALID, boe.EndDate.ToString("MM/yyyy"))), "Travel end task was valid");
-            Assert.AreEqual(toAssertTravels[0].LaborTypes[0].LaborTypeValidationMsgs[0], string.Format(TravelDTO.TRIP_END_DATE_INVALID, "Task", "12/2011")); // the trip dates should be within the travel start/end task
-            Assert.AreEqual("Task: T01 title1", toAssertTravels[0].TaskMessage);
-
-            Assert.AreEqual("Task: T02 title2", toAssertTravels[1].TaskMessage);
-            Assert.IsTrue(toAssertTravels[1].TaskElementDetails.TaskElementDetailValidationMessages.Contains(string.Format(TravelDTO.TRAVEL_TASK_START_DATE_INVALID, boe.StartDate.ToString("MM/yyyy"))), "Travel start task was valid");
-            Assert.IsTrue(toAssertTravels[1].TaskElementDetails.TaskElementDetailValidationMessages.Contains(string.Format(TravelDTO.TRAVEL_TASK_END_DATE_INVALID, boe.EndDate.ToString("MM/yyyy"))), "Travel end task was valid");
-        }
-
-        [TestMethod]
-        public void BL_ValidateBOE_MissingTravelFields_RMS()
-        {
-            // Set up
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-
-            Mock<RMSZoneTravelRatesFeesDataLoader> zoneTravelLoader = new Mock<RMSZoneTravelRatesFeesDataLoader>();
-
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 1 };
-
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, WasDescriptionSet = true, WasDataSourceSet = true };
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
-
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissions.Object);
-            FullBoe boeObject = new FullBoe(boe);
-
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { });
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>() { new CustomFieldDTO() });
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO>());
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            zoneTravelLoader.Setup(x => x.getAllEscalationRatesByWorkspace(workspace.Id)).Returns(new List<WorkspaceRMSEscalationRatesDTO>() { new WorkspaceRMSEscalationRatesDTO() { Year = DateTime.Today.Year - 1 }, new WorkspaceRMSEscalationRatesDTO() { Year = DateTime.Today.Year }, new WorkspaceRMSEscalationRatesDTO() { Year = DateTime.Today.Year + 1 } });
-
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> {
-            new TravelDTO{
-                Id = 1,
-                BoeID = boe.Id,
-                            Description = "moq travel1",
-                            TaskID="T01",
-                            TaskTitle="title1",
-                            StartDate = Convert.ToDateTime("01/01/2011"),
-                            EndDate = Convert.ToDateTime("12/01/2011"),
-                            MSTTravelTrips = new Collection<MSTTravelTripType> {
-                                                        new MSTTravelTripType {
-                                                                        BoeID = boe.Id,
-                                                                        TripDate = Convert.ToDateTime("01/01/2030"),
-                                                                        PerfOrgID = 1,
-                                                                        Id = 1,
-                                                                        ModeID = MSTTravelMode.ZoneNoAirfare,
-                                                                        ZoneOriginName = "Test Origin",
-                                                                        ZoneDestinationName = "Test Destination"}}}});
-
-            ValidateBOE sut = new ValidateBOEMst(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, mstZoneTravelValidator.Object, zoneTravelLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
-            mstZoneTravelValidator.Setup(x => x.ValidateTravelTaskDetails(It.IsAny<TravelDTO>(), It.IsAny<int>())).Returns(new Collection<ValidationMessage>() { new ValidationMessage() { ValidationIssue = "Test Travel Details Issue" } });
-            mstZoneTravelValidator.Setup(x => x.ValidateTravelTrips(It.IsAny<ICollection<MSTTravelTripType>>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<int>(), It.IsAny<ICollection<int>>(), It.IsAny<bool>(), It.IsAny<string>())).Returns(new Collection<ValidationMessage>() { new ValidationMessage() { ValidationIssue = "Test Travel Trip Issue" } });
-
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
-
-            // Assert
-            Collection<ValidationBOETasks> toAssertTravels = new Collection<ValidationBOETasks>();
-            toAssertTravels = validationBOE.Travels;
-
-            // verify task error messages
-            Assert.AreEqual(1, toAssertTravels.Count);
-            Assert.AreEqual("Trip: 1 Domestic – Zone - No Airfare Test Origin to Test Destination", toAssertTravels[0].LaborTypes[0].LaborTypeHeader);
-            Assert.AreEqual("Test Travel Details Issue", toAssertTravels[0].TaskElementDetails.TaskElementDetailValidationMessages[0]);
-            Assert.AreEqual("Test Travel Trip Issue", toAssertTravels[0].LaborTypes[0].LaborTypeValidationMsgs[0]);
-            Assert.AreEqual("Task: T01 title1", toAssertTravels[0].TaskMessage);
-        }
-
-        [TestMethod]
-        public void BL_ValidateTripCustomFields_Invalid()
-        {
-            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
-
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-
-            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
-
-
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
-
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 1 };
-
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, WasDescriptionSet = true, WasDataSourceSet = true };
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
-            int idToUse = 1;
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissions.Object);
-            FullBoe boeObject = new FullBoe(boe);
-
-            Collection<TravelDTO> travelCollection = new Collection<TravelDTO> {
-            new TravelDTO{
-                Id = 1,
-                BoeID = boe.Id,
-                            Description = "moq travel1",
-                            TaskID="T01",
-                            TaskTitle="title1",
-                            StartDate = Convert.ToDateTime("01/01/2011"),
-                            EndDate = Convert.ToDateTime("12/01/2011"),
-                            TravelTrips = new Collection<TravelTripType> {
-                                                        new TravelTripType {
-                                                            Id = 12,
-                                                                        BoeID = boe.Id,
-                                                                        TripDate = Convert.ToDateTime("02/01/2011"),
-                                                                        SystemTripID=idToUse,
-                                                                        Segment = SegmentType.SSC,
-                                                                        PerfOrgID = 1}
-                            }
-            }
-        };
-            _TripDTODataLoader.Setup(x => x.GetByIds(new Collection<int> { idToUse })).Returns(new Collection<TripDTO> { new TripDTO { TripID = idToUse, MiscTravelRateID = idToUse, DepartureLocationID = idToUse, DestinationLocationID = idToUse } });
-            _MiscTravelRateDTOLoader.Setup(x => x.GetByIds(new Collection<int> { idToUse })).Returns(new Collection<MiscTravelRateDTO> { new MiscTravelRateDTO { Id = idToUse, MiscTravelRateMode = "moqmode" } });
-            _LocationDTODataLoader.Setup(x => x.GetByIds(new Collection<int> { idToUse })).Returns(new Collection<LocationDTO> { new LocationDTO { LocationName = "moq location", Id = idToUse } });
-
-            resourceDTOLoader.Setup(x => x.GetByListIdAndElementOfCost(workspace.ResourceListID, ElementOfCostType.Travel)).Returns(new Collection<ResourceDTO> { new ResourceDTO { Id = 1, ResourceName = "test" } });
-
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { });
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
-            //setup custom fields to be false, we'll check them in another test
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO>());
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(travelCollection);
-
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(travelCollection);
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
-
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
-
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
-            this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
-
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
-
-            //setup custom fields to be false, we'll check them in another test
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldName = "LaborCustom", CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = true };
-            CustomFieldValueDTO customValue = new CustomFieldValueDTO { CustomFieldID = 1, CustomFieldValueID = 1, CustomFieldValueInUseFlag = true, Id = 1 };
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { customValue });
-
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
-            Dictionary<int, ICollection<KeyValuePair<int, int>>> toReturn = new Dictionary<int, ICollection<KeyValuePair<int, int>>>();
-            toReturn[12] = new Collection<KeyValuePair<int, int>> { new KeyValuePair<int, int>() };
-            retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByTravelTripsIds(It.IsAny<Collection<int>>())).Returns(toReturn);
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
-
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
-
-            // Assert
-            Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
-            toAssertTasks = validationBOE.Travels;
-
-
-            //want to extract the validation contract message
-            foreach (ValidationBOETasks x in toAssertTasks)
-            {
-                foreach (ValidationBOELaborType y in x.LaborTypes)
-                {
-
-                    Assert.IsTrue(y.LaborTypeValidationMsgs.Contains("Custom Field LaborCustom is required."), "The validation msg was correct");
-                }
-            }
-        }
-
-        [TestMethod]
-        public void BL_ValiateBOE_MissingTasks()
-        {
-            // Set up
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
-
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-
-
-
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName };
-
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, WasDescriptionSet = true, WasDataSourceSet = true };
-
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissions.Object);
-
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
-            FullBoe boeObject = new FullBoe(boe);
-
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
-
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-
-            //setup custom fields to be false, we'll check them in another test
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.BoeDisplay, CustomFieldRequired = false };
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
-
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
-            Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
-            toAssertTasks = validationBOE.Tasks;
-
-
-            // Assert
-            // verify task error messages
-            foreach (ValidationBOETasks x in toAssertTasks)
-            {
-                Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(BoeDTO.ONE_TASK_ELEMENT_REQUIRED), "Task element is required.");
-            }
-        }
-
-        [TestMethod]
-        public void BL_InvalidMaterialBOEsToValidate()
-        {
-            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
-
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-
-            Mock<IPermissionsDTODataLoader> permloader = new Mock<IPermissionsDTODataLoader>();
-
-
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
-
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName };
-
-            // set up resource
-
-            //setup a BOE
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("12/01/2011"), WorkspaceID = workspace.Id, HistoricMetricDisclosureChecked = false, WasDescriptionSet = true, WasDataSourceSet = true };
-            MaterialDTO materialDTO = new MaterialDTO
-            {
-                Id = 1,
-                BoeID = boe.Id
-            };
-
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permloader.Object);
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
-            FullBoe boeObject = new FullBoe(boe);
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { });
-
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { });
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { materialDTO });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
-
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
-
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>());
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
-            resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>());
-
-            IValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
-
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
-
-            // Assert
-            Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
-            toAssertTasks = validationBOE.Materials;
-
-            // verify material error messages
-            foreach (ValidationBOETasks x in toAssertTasks)
-            {
-                Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(String.Format(BoeDTO.MOQ_TEXT_REQUIRED, CommonConstants.BOE_MOQ_TEXT_LABEL)));
-
-                // verify labor error messages 
-                foreach (ValidationBOELaborType y in x.LaborTypes)
-                {
-                    Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 1, "There wasn't 1 labor type messages (resource type required)");
-                }
-            }
-
-            // now test in Space Systems mode - only the MOQ Text difference needs to be verified
-            sut = new ValidateBOESpaceSystems(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
-
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
-
-            // Assert
-            toAssertTasks = new Collection<ValidationBOETasks>();
-            toAssertTasks = validationBOE.Materials;
-
-            // verify task error messages - in space sytems we only need to verify the MOQ Text difference
-            foreach (ValidationBOETasks x in toAssertTasks)
-            {
-                Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(String.Format(BoeDTO.MOQ_TEXT_REQUIRED, CommonConstants.BOE_MOQ_TEXT_LABEL_SPACE_SYSTEMS)));
-            }
-        }
-
-        [TestMethod]
-        public void BL_InvalidMaterialBOEsDateToValidate()
-        {
-            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
-
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-
-            Mock<IPermissionsDTODataLoader> permloader = new Mock<IPermissionsDTODataLoader>();
-
-
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permloader.Object);
-
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
-
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName };
-
-            // set up resource
-
-            //setup a BOE
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("12/01/2011"), WorkspaceID = workspace.Id, HistoricMetricDisclosureChecked = false, WasDescriptionSet = true, WasDataSourceSet = true };
-            MaterialDTO materialDTO = new MaterialDTO
-            {
-                Id = 1,
-                BoeID = boe.Id
-            };
-
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
-            FullBoe boeObject = new FullBoe(boe);
-
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { });
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { });
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { materialDTO });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
-
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-
-            resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>());
-
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
-
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>());
-
-            IValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
-
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
-
-            // Assert
-            Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
-            toAssertTasks = validationBOE.Materials;
-
-            // verify material error messages
-            foreach (ValidationBOETasks x in toAssertTasks)
-            {
-                Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(String.Format(BoeDTO.MOQ_TEXT_REQUIRED, CommonConstants.BOE_MOQ_TEXT_LABEL)));
-
-                // verify labor error messages 
-                foreach (ValidationBOELaborType y in x.LaborTypes)
-                {
-                    Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 1, "There wasn't 1 labor type messages (expend date not in range)");
-                }
-            }
-
-            // now test in Space Systems mode - only the MOQ Text difference needs to be verified
-            sut = new ValidateBOESpaceSystems(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
-
-            //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
-
-            // Assert
-            toAssertTasks = new Collection<ValidationBOETasks>();
-            toAssertTasks = validationBOE.Materials;
-
-            // verify task error messages - in space sytems we only need to verify the MOQ Text difference
-            foreach (ValidationBOETasks x in toAssertTasks)
-            {
-                Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(String.Format(BoeDTO.MOQ_TEXT_REQUIRED, CommonConstants.BOE_MOQ_TEXT_LABEL_SPACE_SYSTEMS)));
-            }
-        }
-
-        [TestMethod]
-        public void BL_ValiateBOE_BoeDatesWithinClinContract()
-        {
-            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
-
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-
-            Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
-
-
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permLoader.Object);
-
-            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
-
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 3, ContractStartDate = Convert.ToDateTime("10/01/2012"), ContractEndDate = Convert.ToDateTime("12/01/2013") };
-
-            // set up resource
-            ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
-            resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
-
-            //setup custom fields to be false, we'll check them in another test
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
-
-            BoeTaskElementDTO boeTE = new BoeTaskElementDTO
-            {
-                Id = 1,
-                BoeID = 4,
-                BOETaskID = string.Empty,
-                Description = "The following hours represent the estimated hours.",
-                StartDate = Convert.ToDateTime("02/01/2011"),
-                EndDate = Convert.ToDateTime("06/01/2011"),
-                MOQText = "Test",
-                MOQType = MOQType.Factor,
-                MOQTypeName = "Test.",
-                TaskTitle = "Labor Task",
-                TotalHours = 4,
-                TaskElementType = TaskElementType.Labor
-            };
-
-            ClinDTO clin = new ClinDTO { Id = 1, ClinTitle = "2", ClinNumber = "2", StartDate = null, EndDate = null };
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "DooDah.", StartDate = Convert.ToDateTime("08/01/2012"), EndDate = Convert.ToDateTime("03/01/2014"), WorkspaceID = workspace.Id, DataSource = "validate data", CLINID = clin.Id };
-            FullWorkspace workspaceObject = new FullWorkspace(workspace);
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            FullBoe boeObject = new FullBoe(boe);
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>() { boeTE });
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>() { boeTE });
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO>() { });
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(boe.WorkspaceID, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boeObject });
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO>() { });
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
-            this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
-
-            #region Setup Unity references
-
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+								Id = 2,
+								BoeID = boe.Id,
+								Description = "moq travel2",
+								TaskID="T02",
+								TaskTitle="title2",
+								StartDate = Convert.ToDateTime("01/01/2011"),
+								EndDate = Convert.ToDateTime("12/01/2011"),
+
+								TravelTrips = new Collection<TravelTripType> {}}});
+
+			_TripDTODataLoader.Setup(x => x.GetByIds(new Collection<int> { idToUse })).Returns(new Collection<TripDTO> { new TripDTO { TripID = idToUse, MiscTravelRateID = idToUse, DepartureLocationID = idToUse, DestinationLocationID = idToUse } });
+			_MiscTravelRateDTOLoader.Setup(x => x.GetByIds(new Collection<int> { idToUse })).Returns(new Collection<MiscTravelRateDTO> { new MiscTravelRateDTO { Id = idToUse, MiscTravelRateMode = "moqmode" } });
+			_LocationDTODataLoader.Setup(x => x.GetByIds(new Collection<int> { idToUse })).Returns(new Collection<LocationDTO> { new LocationDTO { LocationName = "moq location", Id = idToUse } });
+
+			ResourceLoader.Setup(x => x.GetByListIdAndElementOfCost(workspace.ResourceListID, ElementOfCostType.Travel)).Returns(new Collection<ResourceDTO> { new ResourceDTO { Id = 1, ResourceName = "test" } });
+
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+
+			// Assert
+			Collection<ValidationBOETasks> toAssertTravels = new Collection<ValidationBOETasks>();
+			toAssertTravels = validationBOE.Travels;
+
+			// verify task error messages
+			Assert.AreEqual(2, toAssertTravels.Count);
+
+			Assert.AreEqual("Trip: 1 moqmode moq location to moq location", toAssertTravels[0].LaborTypes[0].LaborTypeHeader);
+			// since the mock travel task have a start and end date later than the boe date, we are expecting the invalid msgs to show up
+			Assert.IsTrue(toAssertTravels[0].TaskElementDetails.TaskElementDetailValidationMessages.Contains(string.Format(TravelDTO.TRAVEL_TASK_START_DATE_INVALID, boe.StartDate.ToString("MM/yyyy"))), "Travel start task was valid");
+			Assert.IsTrue(toAssertTravels[0].TaskElementDetails.TaskElementDetailValidationMessages.Contains(string.Format(TravelDTO.TRAVEL_TASK_END_DATE_INVALID, boe.EndDate.ToString("MM/yyyy"))), "Travel end task was valid");
+			Assert.AreEqual(toAssertTravels[0].LaborTypes[0].LaborTypeValidationMsgs[0], string.Format(TravelDTO.TRIP_END_DATE_INVALID, "Task", "12/2011")); // the trip dates should be within the travel start/end task
+			Assert.AreEqual("Task: T01 title1", toAssertTravels[0].TaskMessage);
+
+			Assert.AreEqual("Task: T02 title2", toAssertTravels[1].TaskMessage);
+			Assert.IsTrue(toAssertTravels[1].TaskElementDetails.TaskElementDetailValidationMessages.Contains(string.Format(TravelDTO.TRAVEL_TASK_START_DATE_INVALID, boe.StartDate.ToString("MM/yyyy"))), "Travel start task was valid");
+			Assert.IsTrue(toAssertTravels[1].TaskElementDetails.TaskElementDetailValidationMessages.Contains(string.Format(TravelDTO.TRAVEL_TASK_END_DATE_INVALID, boe.EndDate.ToString("MM/yyyy"))), "Travel end task was valid");
+		}
+
+		[TestMethod]
+		public void BL_ValidateBOE_MissingTravelFields_RMS()
+		{
+			// Set up
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+			Mock<RMSZoneTravelRatesFeesDataLoader> zoneTravelLoader = new Mock<RMSZoneTravelRatesFeesDataLoader>();
+
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 1 };
+
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, WasDescriptionSet = true, WasDataSourceSet = true };
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
+
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissions.Object);
+			FullBoe boeObject = new FullBoe(boe);
+
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { });
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>() { new CustomFieldDTO() });
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO>());
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+			zoneTravelLoader.Setup(x => x.getAllEscalationRatesByWorkspace(workspace.Id)).Returns(new List<WorkspaceRMSEscalationRatesDTO>() { new WorkspaceRMSEscalationRatesDTO() { Year = DateTime.Today.Year - 1 }, new WorkspaceRMSEscalationRatesDTO() { Year = DateTime.Today.Year }, new WorkspaceRMSEscalationRatesDTO() { Year = DateTime.Today.Year + 1 } });
+
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> {
+			new TravelDTO{
+				Id = 1,
+				BoeID = boe.Id,
+							Description = "moq travel1",
+							TaskID="T01",
+							TaskTitle="title1",
+							StartDate = Convert.ToDateTime("01/01/2011"),
+							EndDate = Convert.ToDateTime("12/01/2011"),
+							MSTTravelTrips = new Collection<MSTTravelTripType> {
+														new MSTTravelTripType {
+																		BoeID = boe.Id,
+																		TripDate = Convert.ToDateTime("01/01/2030"),
+																		PerfOrgID = 1,
+																		Id = 1,
+																		ModeID = MSTTravelMode.ZoneNoAirfare,
+																		ZoneOriginName = "Test Origin",
+																		ZoneDestinationName = "Test Destination"}}}});
+
+			ValidateBOE sut = new ValidateBOEMst(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, mstZoneTravelValidator.Object, zoneTravelLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+			mstZoneTravelValidator.Setup(x => x.ValidateTravelTaskDetails(It.IsAny<TravelDTO>(), It.IsAny<int>())).Returns(new Collection<ValidationMessage>() { new ValidationMessage() { ValidationIssue = "Test Travel Details Issue" } });
+			mstZoneTravelValidator.Setup(x => x.ValidateTravelTrips(It.IsAny<ICollection<MSTTravelTripType>>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<int>(), It.IsAny<ICollection<int>>(), It.IsAny<bool>(), It.IsAny<string>())).Returns(new Collection<ValidationMessage>() { new ValidationMessage() { ValidationIssue = "Test Travel Trip Issue" } });
+
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+
+			// Assert
+			Collection<ValidationBOETasks> toAssertTravels = new Collection<ValidationBOETasks>();
+			toAssertTravels = validationBOE.Travels;
+
+			// verify task error messages
+			Assert.AreEqual(1, toAssertTravels.Count);
+			Assert.AreEqual("Trip: 1 Domestic – Zone - No Airfare Test Origin to Test Destination", toAssertTravels[0].LaborTypes[0].LaborTypeHeader);
+			Assert.AreEqual("Test Travel Details Issue", toAssertTravels[0].TaskElementDetails.TaskElementDetailValidationMessages[0]);
+			Assert.AreEqual("Test Travel Trip Issue", toAssertTravels[0].LaborTypes[0].LaborTypeValidationMsgs[0]);
+			Assert.AreEqual("Task: T01 title1", toAssertTravels[0].TaskMessage);
+		}
+
+		[TestMethod]
+		public void BL_ValidateTripCustomFields_Invalid()
+		{
+			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
+
+
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 1 };
+
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, WasDescriptionSet = true, WasDataSourceSet = true };
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
+			int idToUse = 1;
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissions.Object);
+			FullBoe boeObject = new FullBoe(boe);
+
+			Collection<TravelDTO> travelCollection = new Collection<TravelDTO> {
+			new TravelDTO{
+				Id = 1,
+				BoeID = boe.Id,
+							Description = "moq travel1",
+							TaskID="T01",
+							TaskTitle="title1",
+							StartDate = Convert.ToDateTime("01/01/2011"),
+							EndDate = Convert.ToDateTime("12/01/2011"),
+							TravelTrips = new Collection<TravelTripType> {
+														new TravelTripType {
+															Id = 12,
+																		BoeID = boe.Id,
+																		TripDate = Convert.ToDateTime("02/01/2011"),
+																		SystemTripID=idToUse,
+																		Segment = SegmentType.SSC,
+																		PerfOrgID = 1}
+							}
+			}
+		};
+			_TripDTODataLoader.Setup(x => x.GetByIds(new Collection<int> { idToUse })).Returns(new Collection<TripDTO> { new TripDTO { TripID = idToUse, MiscTravelRateID = idToUse, DepartureLocationID = idToUse, DestinationLocationID = idToUse } });
+			_MiscTravelRateDTOLoader.Setup(x => x.GetByIds(new Collection<int> { idToUse })).Returns(new Collection<MiscTravelRateDTO> { new MiscTravelRateDTO { Id = idToUse, MiscTravelRateMode = "moqmode" } });
+			_LocationDTODataLoader.Setup(x => x.GetByIds(new Collection<int> { idToUse })).Returns(new Collection<LocationDTO> { new LocationDTO { LocationName = "moq location", Id = idToUse } });
+
+			resourceDTOLoader.Setup(x => x.GetByListIdAndElementOfCost(workspace.ResourceListID, ElementOfCostType.Travel)).Returns(new Collection<ResourceDTO> { new ResourceDTO { Id = 1, ResourceName = "test" } });
+
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { });
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			//setup custom fields to be false, we'll check them in another test
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO>());
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(travelCollection);
+
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(travelCollection);
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
+
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
+
+			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
+			this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
+
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
+
+			//setup custom fields to be false, we'll check them in another test
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldName = "LaborCustom", CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = true };
+			CustomFieldValueDTO customValue = new CustomFieldValueDTO { CustomFieldID = 1, CustomFieldValueID = 1, CustomFieldValueInUseFlag = true, Id = 1 };
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { customValue });
+
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
+			Dictionary<int, ICollection<KeyValuePair<int, int>>> toReturn = new Dictionary<int, ICollection<KeyValuePair<int, int>>>();
+			toReturn[12] = new Collection<KeyValuePair<int, int>> { new KeyValuePair<int, int>() };
+			retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByTravelTripsIds(It.IsAny<Collection<int>>())).Returns(toReturn);
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+
+			// Assert
+			Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
+			toAssertTasks = validationBOE.Travels;
+
+
+			//want to extract the validation contract message
+			foreach (ValidationBOETasks x in toAssertTasks)
+			{
+				foreach (ValidationBOELaborType y in x.LaborTypes)
+				{
+
+					Assert.IsTrue(y.LaborTypeValidationMsgs.Contains("Custom Field LaborCustom is required."), "The validation msg was correct");
+				}
+			}
+		}
+
+		[TestMethod]
+		public void BL_ValiateBOE_MissingTasks()
+		{
+			// Set up
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+
+
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName };
+
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, WasDescriptionSet = true, WasDataSourceSet = true };
+
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissions.Object);
+
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			FullBoe boeObject = new FullBoe(boe);
+
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
+
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+
+			//setup custom fields to be false, we'll check them in another test
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.BoeDisplay, CustomFieldRequired = false };
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+			Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
+			toAssertTasks = validationBOE.Tasks;
+
+
+			// Assert
+			// verify task error messages
+			foreach (ValidationBOETasks x in toAssertTasks)
+			{
+				Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(BoeDTO.ONE_TASK_ELEMENT_REQUIRED), "Task element is required.");
+			}
+		}
+
+		[TestMethod]
+		public void BL_InvalidMaterialBOEsToValidate()
+		{
+			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+			Mock<IPermissionsDTODataLoader> permloader = new Mock<IPermissionsDTODataLoader>();
+
+
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName };
+
+			// set up resource
+
+			//setup a BOE
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("12/01/2011"), WorkspaceID = workspace.Id, HistoricMetricDisclosureChecked = false, WasDescriptionSet = true, WasDataSourceSet = true };
+			MaterialDTO materialDTO = new MaterialDTO
+			{
+				Id = 1,
+				BoeID = boe.Id
+			};
+
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permloader.Object);
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			FullBoe boeObject = new FullBoe(boe);
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { });
+
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { });
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { materialDTO });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
+
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>());
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
+			resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>());
+
+			IValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+
+			// Assert
+			Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
+			toAssertTasks = validationBOE.Materials;
+
+			// verify material error messages
+			foreach (ValidationBOETasks x in toAssertTasks)
+			{
+				Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(String.Format(BoeDTO.MOQ_TEXT_REQUIRED, CommonConstants.BOE_MOQ_TEXT_LABEL)));
+
+				// verify labor error messages 
+				foreach (ValidationBOELaborType y in x.LaborTypes)
+				{
+					Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 1, "There wasn't 1 labor type messages (resource type required)");
+				}
+			}
+
+			// now test in Space Systems mode - only the MOQ Text difference needs to be verified
+			sut = new ValidateBOESpaceSystems(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+
+			// Assert
+			toAssertTasks = new Collection<ValidationBOETasks>();
+			toAssertTasks = validationBOE.Materials;
+
+			// verify task error messages - in space sytems we only need to verify the MOQ Text difference
+			foreach (ValidationBOETasks x in toAssertTasks)
+			{
+				Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(String.Format(BoeDTO.MOQ_TEXT_REQUIRED, CommonConstants.BOE_MOQ_TEXT_LABEL_SPACE_SYSTEMS)));
+			}
+		}
+
+		[TestMethod]
+		public void BL_InvalidMaterialBOEsDateToValidate()
+		{
+			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+			Mock<IPermissionsDTODataLoader> permloader = new Mock<IPermissionsDTODataLoader>();
+
+
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permloader.Object);
+
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName };
+
+			// set up resource
+
+			//setup a BOE
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("12/01/2011"), WorkspaceID = workspace.Id, HistoricMetricDisclosureChecked = false, WasDescriptionSet = true, WasDataSourceSet = true };
+			MaterialDTO materialDTO = new MaterialDTO
+			{
+				Id = 1,
+				BoeID = boe.Id
+			};
+
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			FullBoe boeObject = new FullBoe(boe);
+
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { });
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { materialDTO });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe> { boeObject });
+
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+
+			resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>());
+
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>());
+
+			IValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+
+			// Assert
+			Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
+			toAssertTasks = validationBOE.Materials;
+
+			// verify material error messages
+			foreach (ValidationBOETasks x in toAssertTasks)
+			{
+				Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(String.Format(BoeDTO.MOQ_TEXT_REQUIRED, CommonConstants.BOE_MOQ_TEXT_LABEL)));
+
+				// verify labor error messages 
+				foreach (ValidationBOELaborType y in x.LaborTypes)
+				{
+					Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 1, "There wasn't 1 labor type messages (expend date not in range)");
+				}
+			}
+
+			// now test in Space Systems mode - only the MOQ Text difference needs to be verified
+			sut = new ValidateBOESpaceSystems(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+
+			// Assert
+			toAssertTasks = new Collection<ValidationBOETasks>();
+			toAssertTasks = validationBOE.Materials;
+
+			// verify task error messages - in space sytems we only need to verify the MOQ Text difference
+			foreach (ValidationBOETasks x in toAssertTasks)
+			{
+				Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(String.Format(BoeDTO.MOQ_TEXT_REQUIRED, CommonConstants.BOE_MOQ_TEXT_LABEL_SPACE_SYSTEMS)));
+			}
+		}
+
+		[TestMethod]
+		public void BL_ValiateBOE_BoeDatesWithinClinContract()
+		{
+			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+			Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
+
+
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permLoader.Object);
+
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 3, ContractStartDate = Convert.ToDateTime("10/01/2012"), ContractEndDate = Convert.ToDateTime("12/01/2013") };
+
+			// set up resource
+			ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
+			resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
+
+			//setup custom fields to be false, we'll check them in another test
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
+
+			BoeTaskElementDTO boeTE = new BoeTaskElementDTO
+			{
+				Id = 1,
+				BoeID = 4,
+				BOETaskID = string.Empty,
+				Description = "The following hours represent the estimated hours.",
+				StartDate = Convert.ToDateTime("02/01/2011"),
+				EndDate = Convert.ToDateTime("06/01/2011"),
+				MOQText = "Test",
+				MOQType = MOQType.Factor,
+				MOQTypeName = "Test.",
+				TaskTitle = "Labor Task",
+				TotalHours = 4,
+				TaskElementType = TaskElementType.Labor
+			};
+
+			ClinDTO clin = new ClinDTO { Id = 1, ClinTitle = "2", ClinNumber = "2", StartDate = null, EndDate = null };
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "DooDah.", StartDate = Convert.ToDateTime("08/01/2012"), EndDate = Convert.ToDateTime("03/01/2014"), WorkspaceID = workspace.Id, DataSource = "validate data", CLINID = clin.Id };
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			FullBoe boeObject = new FullBoe(boe);
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>() { boeTE });
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>() { boeTE });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO>() { });
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(boe.WorkspaceID, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boeObject });
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO>() { });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+			this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
+
+			#region Setup Unity references
+
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
 
 			#endregion
 
@@ -3246,166 +3246,166 @@ namespace GenBOE.Tests.ActionLogic
 			//Act
 			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
-            // Assert
-            Assert.IsTrue(validationBOE.BOEHeaderMsgs.Count == 2, "The BOE Header was empty");
-            Assert.IsTrue(validationBOE.BOEHeaderMsgs.Contains(string.Format(BoeDTO.BOE_START_DATE_INVALID, "Contract", workspace.ContractStartDate.ToString("MM/yyyy"))));
-            Assert.IsTrue(validationBOE.BOEHeaderMsgs.Contains(string.Format(BoeDTO.BOE_END_DATE_INVALID, "Contract", workspace.ContractEndDate.ToString("MM/yyyy"))));
+			// Assert
+			Assert.IsTrue(validationBOE.BOEHeaderMsgs.Count == 2, "The BOE Header was empty");
+			Assert.IsTrue(validationBOE.BOEHeaderMsgs.Contains(string.Format(BoeDTO.BOE_START_DATE_INVALID, "Contract", workspace.ContractStartDate.ToString("MM/yyyy"))));
+			Assert.IsTrue(validationBOE.BOEHeaderMsgs.Contains(string.Format(BoeDTO.BOE_END_DATE_INVALID, "Contract", workspace.ContractEndDate.ToString("MM/yyyy"))));
 
-        }
+		}
 
-        [TestMethod]
-        public void BL_ValidateAllBOEs()
-        {
-            // Set up
-            ValidationAllBOEModelView validationBOE = new ValidationAllBOEModelView();
+		[TestMethod]
+		public void BL_ValidateAllBOEs()
+		{
+			// Set up
+			ValidationAllBOEModelView validationBOE = new ValidationAllBOEModelView();
 
-            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
 
-            Mock<IPermissionsDTODataLoader> permloader = new Mock<IPermissionsDTODataLoader>();
-
-
-            // set up workspace
-            string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName };
-
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, WasDescriptionSet = true, WasDataSourceSet = true };
-            BoeDTO boe2 = new BoeDTO { Id = 5, Title = "BOE Title", Description = "Validate second BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, WasDescriptionSet = true, WasDataSourceSet = true };
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permloader.Object);
-            FullWorkspace ws = new FullWorkspace(workspace);
-            FullBoe boeObject = new FullBoe(boe);
-            FullBoe boeObject2 = new FullBoe(boe2);
-
-            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
-            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
-            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
-            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-
-            //setup custom fields to be false, we'll check them in another test
-            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.BoeDisplay, CustomFieldRequired = false };
-            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
-
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, EndDate = Convert.ToDateTime("07/01/2011"), StartDate = Convert.ToDateTime("06/01/2011"), PerformingOrgID = null, ResourceID = null } }, WasDescriptionSet = true, WasMoqTextSet = true } });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe2.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
-            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe2.Id)).Returns(0);
-            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe2.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe2.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { });
-
-            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { });
-            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
-            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
-
-            Collection<FullBoe> boesToValidate = new Collection<FullBoe>();
-            boesToValidate.Add(boeObject);
-            boesToValidate.Add(boeObject2);
-            retriever.Setup(i => i.GetFullBoesByWorkspaceId(workspace.Id, true, It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boesToValidate);
-
-            //Act
-            validationBOE = sut.ValidateAllBOEs(ws);
+			Mock<IPermissionsDTODataLoader> permloader = new Mock<IPermissionsDTODataLoader>();
 
 
-            // verify that we have mulitple boe errors
-            foreach (ValidationBOEModelView z in validationBOE.AllBOEs)
-            {
-                //check the cost.
-                foreach (ValidationBOETasks x in z.Costs)
-                {
-                    // verify labor error messages 
-                    foreach (ValidationBOELaborType y in x.LaborTypes)
-                    {
-                        Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 3, "There weren't 3 labor type messages");
-                        Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(OtherDirectCostDTO.RESOURCE_CODE_REQUIRED), "The validation msg was correct");
-                        Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(OtherDirectCostDTO.PERFORM_ORG_REQUIRED), "The validation msg was correct");
-                        Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(OtherDirectCostDTO.SPREAD_REQUIRED), "The valdiating msg was correct");
-                    }
-                }
-            }
-        }
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName };
 
-        /// <summary>
-        /// Test ValidateTemplateMoqForTask for validation that PoPStart is on a Monday
-        /// </summary>
-        [TestMethod]
-        public void BL_ValidateTemplateMoqForTask_PoPStartMonday_RmsMode()
-        {
-            SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
-            Utilities.IsSAPEnabledForSystem = true;
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, WasDescriptionSet = true, WasDataSourceSet = true };
+			BoeDTO boe2 = new BoeDTO { Id = 5, Title = "BOE Title", Description = "Validate second BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, WasDescriptionSet = true, WasDataSourceSet = true };
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permloader.Object);
+			FullWorkspace ws = new FullWorkspace(workspace);
+			FullBoe boeObject = new FullBoe(boe);
+			FullBoe boeObject2 = new FullBoe(boe2);
 
-            ValidateBOE sut = CreateSystem();
-            Utilities.IsSAPEnabledForSystem = true;
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
 
-            // Create a valid MOQ Table
-            MoqTypeSelection moqType = new MoqTypeSelection()
-            {
-                SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
-                TableData = new Collection<MoqTableData>()
-                    {
-                        new MoqTableData()
-                        {
-                            TableName = "Test Table",
-                            ContractNumber = "1",
-                            DateOfReport = DateTime.Now,
-                            HistoricalProgramName = "Test Name",
-                            WbsElement = "Test WBS",
-                            PoPStart = new DateTime(2022, 1, 3), // Monday
+			//setup custom fields to be false, we'll check them in another test
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.BoeDisplay, CustomFieldRequired = false };
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, EndDate = Convert.ToDateTime("07/01/2011"), StartDate = Convert.ToDateTime("06/01/2011"), PerformingOrgID = null, ResourceID = null } }, WasDescriptionSet = true, WasMoqTextSet = true } });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe2.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>());
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe2.Id)).Returns(0);
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe2.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe2.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { });
+
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+
+			Collection<FullBoe> boesToValidate = new Collection<FullBoe>();
+			boesToValidate.Add(boeObject);
+			boesToValidate.Add(boeObject2);
+			retriever.Setup(i => i.GetFullBoesByWorkspaceId(workspace.Id, true, It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boesToValidate);
+
+			//Act
+			validationBOE = sut.ValidateAllBOEs(ws);
+
+
+			// verify that we have mulitple boe errors
+			foreach (ValidationBOEModelView z in validationBOE.AllBOEs)
+			{
+				//check the cost.
+				foreach (ValidationBOETasks x in z.Costs)
+				{
+					// verify labor error messages 
+					foreach (ValidationBOELaborType y in x.LaborTypes)
+					{
+						Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 3, "There weren't 3 labor type messages");
+						Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(OtherDirectCostDTO.RESOURCE_CODE_REQUIRED), "The validation msg was correct");
+						Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(OtherDirectCostDTO.PERFORM_ORG_REQUIRED), "The validation msg was correct");
+						Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(OtherDirectCostDTO.SPREAD_REQUIRED), "The valdiating msg was correct");
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Test ValidateTemplateMoqForTask for validation that PoPStart is on a Monday
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_PoPStartMonday_RmsMode()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
+			Utilities.IsSAPEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+			Utilities.IsSAPEnabledForSystem = true;
+
+			// Create a valid MOQ Table
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 3), // Monday
                             PoPEnd = new DateTime(2022, 1, 9), // Sunday
                             AdditionalQueryFilters = "TestFilter",
-                            TotalRelevantHours = 1000,
-                            TotalWbsHours = 2000
-                        }
-                    },
-                Rationale = "Test Rationale",
-                SkillMixRationale = "Test Skill Mix",
+							TotalRelevantHours = 1000,
+							TotalWbsHours = 2000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
 				HistoricalReferenceExplanation = "Test historical reference explanation"
 			};
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
-            FullWorkspace ws = new FullWorkspace(workspace);
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
+			FullWorkspace ws = new FullWorkspace(workspace);
 
-            ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 
-            Assert.IsFalse(result.Any());
+			Assert.IsFalse(result.Any());
 
-            // Add a day so PoP start is no longer on a Monday
-            moqType.TableData.First().PoPStart = new DateTime(2022, 1, 4);
+			// Add a day so PoP start is no longer on a Monday
+			moqType.TableData.First().PoPStart = new DateTime(2022, 1, 4);
 
-            result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 
-            Assert.IsTrue(result.Any());
-            Assert.AreEqual(1, result.Count);
-            Assert.IsTrue(result.First().Contains("Monday"));
+			Assert.IsTrue(result.Any());
+			Assert.AreEqual(1, result.Count);
+			Assert.IsTrue(result.First().Contains("Monday"));
 
-            // Lastly clear the date to make sure we get the required field validation, but not the Monday validation
-            moqType.TableData.First().PoPStart = new DateTime(1, 1, 1);
+			// Lastly clear the date to make sure we get the required field validation, but not the Monday validation
+			moqType.TableData.First().PoPStart = new DateTime(1, 1, 1);
 
-            result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 
-            Assert.IsTrue(result.Any());
-            Assert.IsTrue(result.Any(x => x.Contains("required")));
-            Assert.IsFalse(result.Any(x => x.Contains("Monday")));
-        }
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.Contains("required")));
+			Assert.IsFalse(result.Any(x => x.Contains("Monday")));
+		}
 
 		/// <summary>
 		/// Test ValidateTemplateMoqForTask for validation that PoPStart is on a Sunday for SAP FW; Space Mode with Weekly query type, validation should happen
@@ -3516,63 +3516,63 @@ namespace GenBOE.Tests.ActionLogic
 		/// Test ValidateTemplateMoqForTask for validation that PoPEnd is on a Sunday.. Testing for RMS, validation should happen
 		/// </summary>
 		[TestMethod]
-        public void BL_ValidateTemplateMoqForTask_PoPEndSunday_RmsMode()
-        {
-            SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
-            Utilities.IsSAPEnabledForSystem = true;
+		public void BL_ValidateTemplateMoqForTask_PoPEndSunday_RmsMode()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
+			Utilities.IsSAPEnabledForSystem = true;
 
-            ValidateBOE sut = CreateSystem();
+			ValidateBOE sut = CreateSystem();
 
-            // Create a valid MOQ Table
-            MoqTypeSelection moqType = new MoqTypeSelection()
-            {
-                SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
-                TableData = new Collection<MoqTableData>()
-                    {
-                        new MoqTableData()
-                        {
-                            TableName = "Test Table",
-                            ContractNumber = "1",
-                            DateOfReport = DateTime.Now,
-                            HistoricalProgramName = "Test Name",
-                            WbsElement = "Test WBS",
-                            PoPStart = new DateTime(2022, 1, 3), // Monday
+			// Create a valid MOQ Table
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 3), // Monday
                             PoPEnd = new DateTime(2022, 1, 9), // Sunday
                             AdditionalQueryFilters = "TestFilter",
-                            TotalRelevantHours = 1000,
-                            TotalWbsHours = 2000
-                        }
-                    },
-                Rationale = "Test Rationale",
-                SkillMixRationale = "Test Skill Mix",
+							TotalRelevantHours = 1000,
+							TotalWbsHours = 2000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
 				HistoricalReferenceExplanation = "Test historical reference explanation"
 			};
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
-            FullWorkspace ws = new FullWorkspace(workspace);
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
+			FullWorkspace ws = new FullWorkspace(workspace);
 
-            ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 
-            Assert.IsFalse(result.Any());
+			Assert.IsFalse(result.Any());
 
-            // Add a day so PoP start is no longer on a Sunday
-            moqType.TableData.First().PoPEnd = new DateTime(2022, 1, 10);
+			// Add a day so PoP start is no longer on a Sunday
+			moqType.TableData.First().PoPEnd = new DateTime(2022, 1, 10);
 
-            result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 
-            Assert.IsTrue(result.Any());
-            Assert.AreEqual(1, result.Count);
-            Assert.IsTrue(result.First().Contains("Sunday"));
+			Assert.IsTrue(result.Any());
+			Assert.AreEqual(1, result.Count);
+			Assert.IsTrue(result.First().Contains("Sunday"));
 
-            // Lastly clear the date to make sure we get the required field validation, but not the Monday validation
-            moqType.TableData.First().PoPEnd = new DateTime(1, 1, 1);
+			// Lastly clear the date to make sure we get the required field validation, but not the Monday validation
+			moqType.TableData.First().PoPEnd = new DateTime(1, 1, 1);
 
-            result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 
-            Assert.IsTrue(result.Any());
-            Assert.IsTrue(result.Any(x => x.Contains("required")));
-            Assert.IsFalse(result.Any(x => x.Contains("Sunday")));
-        }
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any(x => x.Contains("required")));
+			Assert.IsFalse(result.Any(x => x.Contains("Sunday")));
+		}
 
 		/// <summary>
 		/// Test ValidateTemplateMoqForTask for validation that PoPEnd is on a Sunday.. Testing for Space with Monthly Weekly Type, validation should happen
@@ -3631,53 +3631,53 @@ namespace GenBOE.Tests.ActionLogic
 		/// Test ValidateTemplateMoqForTask for validation that PoPEnd is on a Sunday.. Testing for Space with Monthly Query Type, no validation should happen
 		/// </summary>
 		[TestMethod]
-        public void BL_ValidateTemplateMoqForTask_PoPEndSunday_SpaceMode_Monthly()
-        {
-            SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
-            Utilities.IsSAPEnabledForSystem = true;
+		public void BL_ValidateTemplateMoqForTask_PoPEndSunday_SpaceMode_Monthly()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
 
-            ValidateBOE sut = CreateSystem();
+			ValidateBOE sut = CreateSystem();
 
-            // Create a valid MOQ Table
-            MoqTypeSelection moqType = new MoqTypeSelection()
-            {
-                SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
-                TableData = new Collection<MoqTableData>()
-                    {
-                        new MoqTableData()
-                        {
-                            TableName = "Test Table",
-                            RepositoryName = RepositoryName.SapWebi.GetDescription(),
-                            QueryType = MoqTableData.MONTHLY,
-                            ContractNumber = "1",
-                            DateOfReport = DateTime.Now,
-                            HistoricalProgramName = "Test Name",
-                            WbsElement = "Test WBS",
-                            PoPStart = new DateTime(2022, 1, 3), // Sunday
+			// Create a valid MOQ Table
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.MONTHLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 3), // Sunday
                             PoPEnd = new DateTime(2022, 1, 9), // Sunday
                             AdditionalQueryFilters = "TestFilter",
-                            TotalRelevantHours = 1000
+							TotalRelevantHours = 1000
 						}
-                    },
-                Rationale = "Test Rationale",
-                SkillMixRationale = "Test Skill Mix",
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
 				HistoricalReferenceExplanation = "Test historical reference explanation"
 			};
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
-            FullWorkspace ws = new FullWorkspace(workspace);
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
+			FullWorkspace ws = new FullWorkspace(workspace);
 
-            ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 
-            Assert.IsFalse(result.Any());
+			Assert.IsFalse(result.Any());
 
-            // Add a day so PoP start is no longer on a Sunday
-            moqType.TableData.First().PoPEnd = new DateTime(2022, 1, 10);
+			// Add a day so PoP start is no longer on a Sunday
+			moqType.TableData.First().PoPEnd = new DateTime(2022, 1, 10);
 
-            result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 
-            Assert.IsFalse(result.Any());
-        }
+			Assert.IsFalse(result.Any());
+		}
 
 		/// <summary>
 		/// Test ValidateTemplateMoqForTask for additional PoP date and Date of Report validation
@@ -3783,38 +3783,38 @@ namespace GenBOE.Tests.ActionLogic
 
 			ValidateBOE sut = CreateSystem();
 
-            // Create a valid MOQ Table
-            MoqTypeSelection moqType = new MoqTypeSelection()
-            {
-                SelectedMOQType = MOQType.Historical,
-                TableData = new Collection<MoqTableData>()
-                    {
-                        new MoqTableData()
-                        {
-                            TableName = "Test Table",
-                            ContractNumber = "1",
-                            DateOfReport = DateTime.Now,
-                            HistoricalProgramName = "Test Name",
-                            WbsElement = "Test WBS",
-                            PoPStart = new DateTime(2022, 1, 3), // Monday
+			// Create a valid MOQ Table
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 3), // Monday
                             PoPEnd = new DateTime(2022, 1, 9), // Sunday
                             AdditionalQueryFilters = "aaa",
-                            TotalWbsHours = 2000,
-                            TotalRelevantHours = 1000
+							TotalWbsHours = 2000,
+							TotalRelevantHours = 1000
 						}
-                    },
-                Rationale = "Test Rationale",
-                SkillMixRationale = "Test Skill Mix",
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
 				HistoricalReferenceExplanation = "Test historical reference explanation"
 			};
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
-            FullWorkspace ws = new FullWorkspace(workspace);
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
+			FullWorkspace ws = new FullWorkspace(workspace);
 
-            ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 
-            // Valid data to start
-            Assert.IsFalse(result.Any());
+			// Valid data to start
+			Assert.IsFalse(result.Any());
 
 			// Make the additional query filters null
 			moqType.TableData.First().AdditionalQueryFilters = null;
@@ -3940,11 +3940,11 @@ namespace GenBOE.Tests.ActionLogic
 			// Valid data to start
 			Assert.IsFalse(result.Any());
 
-            // Relevant Hours less than 0
-            moqType.TableData.First().TotalRelevantHours = -1;
+			// Relevant Hours less than 0
+			moqType.TableData.First().TotalRelevantHours = -1;
 			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 
-            Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.Any());
 
 			// Relevant Hours over 10 digits
 			moqType.TableData.First().TotalRelevantHours = 1000000000;
@@ -4130,6 +4130,106 @@ namespace GenBOE.Tests.ActionLogic
 		}
 
 		/// <summary>
+		/// Test Null Current Resource with included set to 'Yes'
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMix_NullCurrentResource()
+		{
+			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
+			{
+				new SkillMixModelView {
+					ResourceOld = "HISTORICAL_R",
+					HistoricalHours = 100,
+					ResourceNew = null,
+					Included = true,
+					IsUserInput = true,
+					Rationale = "Rationale1",
+					BOESkillMix = 100
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains("Included cannot be set to 'Yes' for an empty/null Current Resource"));
+		}
+
+		/// <summary>
+		/// Test Invalid BOE Skill Mix (null)
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMix_NullBoeSkillMix()
+		{
+			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
+			{
+				new SkillMixModelView {
+					ResourceOld = "HISTORICAL_R",
+					HistoricalHours = 100,
+					ResourceNew = "NEW",
+					Included = true,
+					IsUserInput = true,
+					Rationale = "Rationale1",
+					BOESkillMix = null
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains("BOE Skill Mix is missing"));
+		}
+
+		/// <summary>
+		/// Test Invalid BOE Skill Mix (<=0)
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMix_InvalidBoeSkillMix()
+		{
+			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
+			{
+				new SkillMixModelView {
+					ResourceOld = "HISTORICAL_R",
+					HistoricalHours = 100,
+					ResourceNew = "NEW",
+					Included = true,
+					IsUserInput = true,
+					Rationale = "Rationale1",
+					BOESkillMix = 0
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains("BOE Skill Mix has invalid value"));
+		}
+
+		/// <summary>
+		/// Test Invalid BOE Skill Mix Total
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMix_InvalidSkillMixTotal()
+		{
+			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
+			{
+				new SkillMixModelView {
+					ResourceOld = "HISTORICAL_R",
+					HistoricalHours = 100,
+					ResourceNew = "NEW",
+					Included = true,
+					IsUserInput = true,
+					Rationale = "Rationale1",
+					BOESkillMix = 50
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains("BOE Skill Mix total must be either 0% or 100%"));
+		}
+
+		/// <summary>
 		/// Test ValidateTemplateMoqForTask does not run MOQ Table Validation for Analogous Relationships for RMS
 		/// </summary>
 		[TestMethod]
@@ -4220,7 +4320,7 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix);
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
 			Assert.IsNotNull(messages);
 			Assert.IsTrue(messages.None());
 		}
@@ -4243,10 +4343,81 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix);
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("The maximum length of the Rationale field"));
+		}
+
+		/// <summary>
+		/// Test Historical Resource Length
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMix_HistoricalResourceLength_Bad()
+		{
+			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
+			{
+				new SkillMixModelView {
+					ResourceOld = "HISTORICAL_Res1234567", // 21 characters, max is 20
+					HistoricalHours = 100,
+					ResourceNew = null,
+					Included = false,
+					IsUserInput = true,
+					Rationale = "Rationale1"
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains("The maximum length of the Historical Resource field"));
+		}
+
+		/// <summary>
+		/// Test Rationale being empty on save (valid)
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMix_RationaleEmptyOnSave()
+		{
+			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
+			{
+				new SkillMixModelView {
+					ResourceOld = "HISTORICAL_R",
+					HistoricalHours = 100,
+					ResourceNew = null,
+					Included = false,
+					IsUserInput = true,
+					Rationale = string.Empty
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
+			Assert.IsNotNull(messages);
+			Assert.IsTrue(messages.None());
+		}
+
+		/// <summary>
+		/// Test Rationale being empty on validate button click (invalid)
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMix_RationaleEmptyOnValidate()
+		{
+			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
+			{
+				new SkillMixModelView {
+					ResourceOld = "HISTORICAL_R",
+					HistoricalHours = 100,
+					ResourceNew = null,
+					Included = false,
+					IsUserInput = true,
+					Rationale = string.Empty
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, true);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains("The Rationale field") && messages.First().Contains("required"));
 		}
 
 		/// <summary>
@@ -4267,10 +4438,218 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix);
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("The maximum length of the Historical Resource field"));
+		}
+
+		/// <summary>
+		/// Test Rationale length too long
+		/// </summary>
+		[TestMethod]
+		public void ValidateCommonDisclosureSkillMix_RationaleLength()
+		{
+			List<CommonDisclosureModelView> skillmix = new List<CommonDisclosureModelView>
+			{
+				new CommonDisclosureModelView {
+					ResourceID = "HISTORICAL_R",
+					HistoricalHours = 100,
+					BusinessResourceID = null,
+					Included = true,
+					IsUserInput = true,
+					Rationale = "Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1Rationale1",
+					BOESkillMix = 100
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains("The maximum length of the Rationale field"));
+		}
+
+		/// <summary>
+		/// Test BOE Skill Mix missing
+		/// </summary>
+		[TestMethod]
+		public void ValidateCommonDisclosureSkillMix_BoeSkillMixMissing()
+		{
+			List<CommonDisclosureModelView> skillmix = new List<CommonDisclosureModelView>
+			{
+				new CommonDisclosureModelView {
+					ResourceID = "HISTORICAL_R",
+					HistoricalHours = 100,
+					BusinessResourceID = null,
+					Included = true,
+					IsUserInput = true,
+					Rationale = "Rationale1",
+					BOESkillMix = null
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains("BOE Skill Mix is missing"));
+		}
+
+		/// <summary>
+		/// Test BOE Skill Mix <= 0
+		/// </summary>
+		[TestMethod]
+		public void ValidateCommonDisclosureSkillMix_BoeSkillMixInvalid()
+		{
+			List<CommonDisclosureModelView> skillmix = new List<CommonDisclosureModelView>
+			{
+				new CommonDisclosureModelView {
+					ResourceID = "HISTORICAL_R",
+					HistoricalHours = 100,
+					BusinessResourceID = null,
+					Included = true,
+					IsUserInput = true,
+					Rationale = "Rationale1",
+					BOESkillMix = 0
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains("BOE skill Mix has invalid value"));
+		}
+
+		/// <summary>
+		/// Test at least one resource included
+		/// </summary>
+		[TestMethod]
+		public void ValidateCommonDisclosureSkillMix_MissingResource()
+		{
+			List<CommonDisclosureModelView> skillmix = new List<CommonDisclosureModelView>
+			{
+				new CommonDisclosureModelView {
+					ResourceID = "HISTORICAL_R",
+					HistoricalHours = 100,
+					BusinessResourceID = null,
+					Included = false,
+					IsUserInput = true,
+					Rationale = "Rationale1",
+					BOESkillMix = 0
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains("At least one Resource has to be included"));
+		}
+
+		/// <summary>
+		/// Test Boe Skill Mix total must be 0 or 100
+		/// </summary>
+		[TestMethod]
+		public void ValidateCommonDisclosureSkillMix_BoeSkillMixTotal()
+		{
+			List<CommonDisclosureModelView> skillmix = new List<CommonDisclosureModelView>
+			{
+				new CommonDisclosureModelView {
+					ResourceID = "HISTORICAL_R",
+					HistoricalHours = 100,
+					BusinessResourceID = null,
+					Included = true,
+					IsUserInput = true,
+					Rationale = "Rationale1",
+					BOESkillMix = 50
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains("BOE Skill Mix total must be either 0% or 100%"));
+		}
+
+		/// <summary>
+		/// Test each BRC unique for each resource
+		/// </summary>
+		[TestMethod]
+		public void ValidateCommonDisclosureSkillMix_EachBrcUniqueForResource()
+		{
+			List<CommonDisclosureModelView> skillmix = new List<CommonDisclosureModelView>
+			{
+				new CommonDisclosureModelView {
+					ResourceID = "HISTORICAL_R",
+					HistoricalHours = 100,
+					BusinessResourceID = "NEW",
+					Included = true,
+					IsUserInput = true,
+					Rationale = "Rationale1",
+					BOESkillMix = 50
+				},
+				new CommonDisclosureModelView {
+					ResourceID = "HISTORICAL_R",
+					HistoricalHours = 100,
+					BusinessResourceID = "NEW",
+					Included = true,
+					IsUserInput = true,
+					Rationale = "Rationale2",
+					BOESkillMix = 50
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains("Each BRC must be unique for Resource"));
+		}
+
+		/// <summary>
+		/// Test Rationale being empty on save (valid)
+		/// </summary>
+		[TestMethod]
+		public void ValidateCommonDisclosureSkillMix_RationaleEmptyOnSave()
+		{
+			List<CommonDisclosureModelView> skillmix = new List<CommonDisclosureModelView>
+			{
+				new CommonDisclosureModelView {
+					ResourceID = "HISTORICAL_R",
+					HistoricalHours = 100,
+					BusinessResourceID = null,
+					Included = true,
+					IsUserInput = true,
+					Rationale = string.Empty,
+					BOESkillMix = 100
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, false);
+			Assert.IsNotNull(messages);
+			Assert.IsTrue(messages.None());
+		}
+
+		/// <summary>
+		/// Test Rationale being empty on validate button click (invalid)
+		/// </summary>
+		[TestMethod]
+		public void ValidateCommonDisclosureSkillMix_RationaleEmptyOnValidate()
+		{
+			List<CommonDisclosureModelView> skillmix = new List<CommonDisclosureModelView>
+			{
+				new CommonDisclosureModelView {
+					ResourceID = "HISTORICAL_R",
+					HistoricalHours = 100,
+					BusinessResourceID = null,
+					Included = true,
+					IsUserInput = true,
+					Rationale = string.Empty,
+					BOESkillMix = 100
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains("The Rationale field") && messages.First().Contains("required"));
 		}
 	}
 }

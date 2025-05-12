@@ -993,12 +993,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				if (taskElement.SkillMixTable != null && taskElement.SkillMixTable.Any())
 				{
-					validationErrors.AddRange(ActionLogicUtility.ValidateSkillMixTable(taskElement.SkillMixTable).Select(x => new ValidationMessage(x)));
+					validationErrors.AddRange(ActionLogicUtility.ValidateSkillMixTable(taskElement.SkillMixTable, false).Select(x => new ValidationMessage(x)));
 				}
 
 				if (taskElement.CommonDisclosureTable != null && taskElement.CommonDisclosureTable.Any())
 				{
-					validationErrors.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(taskElement.CommonDisclosureTable).Select(x => new ValidationMessage(x)));
+					validationErrors.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(taskElement.CommonDisclosureTable, false).Select(x => new ValidationMessage(x)));
 				}
 			}
 
