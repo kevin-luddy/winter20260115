@@ -22,7 +22,6 @@ namespace GenBOE.Dtos
 	{
 		private readonly List<IDateShiftable> children = new List<IDateShiftable>();
 		private bool hasSpread;
-		private Level dateShiftLevel;
 		private object originalObject;
 
 		/// <summary>
@@ -53,17 +52,12 @@ namespace GenBOE.Dtos
 		/// <summary>
 		/// Date shift level.
 		/// </summary>
-		public Level DateShiftLevel => dateShiftLevel;
+		public Level DateShiftLevel { get; set; }
 
 		/// <summary>
 		/// Date shift level value due to readonly date shift level on interface.
 		/// </summary>
 		public int Level { get; set; }
-
-		/// <summary>
-		/// Updatable.
-		/// </summary>
-		public UpdateType Updateable { get; set; }
 
 		/// <summary>
 		/// Boe ID.

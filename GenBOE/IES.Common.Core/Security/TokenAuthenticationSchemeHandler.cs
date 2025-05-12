@@ -65,8 +65,7 @@ namespace IES.Common.Core.Security
 		public TokenAuthenticationSchemeHandler(
 			IOptionsMonitor<TokenAuthenticationOptions> options,
 			ILoggerFactory logger,
-			UrlEncoder encoder,
-			ISystemClock clock) : base(options, logger, encoder, clock) 
+			UrlEncoder encoder) : base(options, logger, encoder) 
 		{
 		}
 

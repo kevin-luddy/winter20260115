@@ -20,7 +20,6 @@ namespace GenTRAC.ActionLogic
 	using GenTRAC.ActionLogic.Mediator;
 	using GenTRAC.ActionLogic.ModelView;
 	using GenTRAC.ActionLogic.ModelView.Contracts;
-	using GenTRAC.ActionLogic.ModelView.Proposals;
 	using GenTRAC.DataBridge.Common.Security;
 	using GenTRAC.DataBridge.DTO;
 	using GenTRAC.DataBridge.DTO.Contracts;
