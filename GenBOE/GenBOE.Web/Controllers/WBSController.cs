@@ -606,7 +606,6 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
-		// TODO Thomas: Look into this button
         public JsonResult CompleteImportWBS(string workspace, Collection<ImportWbsResultsModelView> importResults)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
