@@ -11,6 +11,7 @@ namespace GenBOE.Reports.Backend.Services
 	using GenBOE.DataBridge.Core.DTO.Export.BOE;
 	using GenBOE.DataBridge.Core.IO.Export;
 	using IES.Common.Core.Enums;
+	using Microsoft.AspNetCore.Hosting;
 
 	/// <summary>
 	/// Exports a Workspace to Word
@@ -27,10 +28,13 @@ namespace GenBOE.Reports.Backend.Services
 		/// </summary>
 		private readonly IBOECustomExporter boeCustomExporter;
 
-		public BoeExportService(IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter)
+		private readonly IWebHostEnvironment webHostEnvironment;
+
+		public BoeExportService(IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWebHostEnvironment webHostEnvironment)
 		{
 			this.boeExporter = boeExporter;
 			this.boeCustomExporter = boeCustomExporter;
+			this.webHostEnvironment = webHostEnvironment;
 		}
 
 		/// <summary>
@@ -61,6 +65,7 @@ namespace GenBOE.Reports.Backend.Services
 			{
 				this.boeCustomExporter.SetWorkspacePrecisionVariables(exportInputs.Workspace);
 				return this.boeCustomExporter.ExportBOEsToZipFile(
+						webHostEnvironment,
 						exportInputs,
 						boeExportModelViews,
 						boeSummaryGridModelViews,
@@ -71,12 +76,12 @@ namespace GenBOE.Reports.Backend.Services
 			{
 				this.boeExporter.SetWorkspacePrecisionVariables(exportInputs.Workspace);
 				return this.boeExporter.ExportBOEsToZipFile(
+						webHostEnvironment,
 						exportInputs,
 						boeExportModelViews,
 						boeSummaryGridModelViews,
 						exportFormat.FileData,
-						exportFormat.ExportFormat.TemplateType
-					);
+						exportFormat.ExportFormat.TemplateType);
 			}
 		}
 

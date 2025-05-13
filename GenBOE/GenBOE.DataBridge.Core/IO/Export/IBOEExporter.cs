@@ -12,6 +12,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 	using GenBOE.DataBridge.Core.DTO.Export.BOE;
 	using GenBOE.DataBridge.Core.DTO.FullObjects;
 	using IES.Common.Core.Enums;
+	using Microsoft.AspNetCore.Hosting;
 
 	/// <summary>
 	/// Interface for BOE exporters
@@ -56,7 +57,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="fileData">byte[] the template to copy and populate.</param>
 		/// <param name="templateType">Template type</param>
 		/// <exception cref="ArgumentNullException">if response or workspace is null</exception>
-		string ExportBOEsToZipFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
+		string ExportBOEsToZipFile(IWebHostEnvironment webHostEnvironment, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
 			byte[] fileData, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet);
 
 		/// <summary>

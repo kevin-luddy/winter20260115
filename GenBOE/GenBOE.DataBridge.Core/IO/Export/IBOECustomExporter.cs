@@ -12,6 +12,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 	using GenBOE.DataBridge.Core.DTO.Export.BOE;
 	using GenBOE.DataBridge.Core.DTO.FullObjects;
 	using IES.Common.Core.Enums;
+	using Microsoft.AspNetCore.Hosting;
 
 	public interface IBOECustomExporter
 	{
@@ -61,12 +62,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <summary>
 		/// IES-707: Creates individual word documents for each BOE and compresses them into a single zip file.
 		/// </summary>
+		/// <param name="webHostEnvironment">Web host env</param>
 		/// <param name="exportInputs">The export inputs</param>
 		/// <param name="boeExportModelViews">Collection of BOE View Models</param>
 		/// <param name="boeSummaryGridModelViews"></param>
 		/// <param name="selectedComponents">Custom components</param>
 		/// <param name="exportFormat">Export parameters</param>
-		string ExportBOEsToZipFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
+		string ExportBOEsToZipFile(IWebHostEnvironment webHostEnvironment, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
 			ICollection<BoeCustomReportComponent> selectedComponents, WorkspaceExportFormatDTO exportFormat);
 	}
 }

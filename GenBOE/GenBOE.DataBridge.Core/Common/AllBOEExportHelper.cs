@@ -9,12 +9,14 @@ namespace GenBOE.DataBridge.Core.Common
 	using System;
 	using System.Collections.Generic;
 	using System.IO;
+	using System.Web;
 	using System.Reflection;
 	using DocumentFormat.OpenXml.Wordprocessing;
 	using GenBOE.DataBridge.Core.DTO.Export.BOE;
 	using GenBOE.DataBridge.Core.DTO.FullObjects;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.Utilities;
+	using Microsoft.AspNetCore.Hosting;
 
 	/// <summary>
 	/// IES-707: AllBOEs export helper. Uses passed in function to convert the BOE to a Word document stream, then zips them - returning
@@ -28,14 +30,13 @@ namespace GenBOE.DataBridge.Core.Common
 		/// <param name="exportInputs">The export inputs</param>
 		/// <param name="boeExportModelViews">Collection of BOE View Models</param>
 		/// <param name="boeSummaryGridModelViews"></param>
-		/// <param name="workSpace">Full workspace</param>
-		/// <param name="response">What will ultimately be the response to the requester</param>
-		/// <param name="templatePath">Server path to the export template</param>
 		/// <param name="getWordDocStream">Generic function that will convert the BOE data to a Word document</param>
 		/// <param name="templateType">Template type</param>
+		/// <param name="webHostEnvironment">Wen host environment</param>
 		/// <exception cref="ArgumentNullException">if response or workspace is null</exception>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
 		public static string ExportBOEsToZipFile<T>(
+			IWebHostEnvironment webHostEnvironment,
 			BOEExportInputs exportInputs,
 			ICollection<BOEExportModelView> boeExportModelViews,
 			ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
@@ -65,7 +66,7 @@ namespace GenBOE.DataBridge.Core.Common
 			}
 
 			// now, let's zip the files up
-			string savedZipFile = Zip.ZipFiles(zipFiles, Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), ImportExportConstants.EXPORT_PATH));
+			string savedZipFile = Zip.ZipFiles(zipFiles, Path.Combine(webHostEnvironment.ContentRootPath, ImportExportConstants.EXPORT_PATH));
 
 			// dispose the streams
 			foreach (Stream stream in zipFiles.Values)
@@ -82,13 +83,13 @@ namespace GenBOE.DataBridge.Core.Common
 		/// <param name="exportInputs">The export inputs</param>
 		/// <param name="boeExportModelViews">Collection of BOE View Models</param>
 		/// <param name="boeSummaryGridModelViews"></param>
-		/// <param name="workSpace">Full workspace</param>
 		/// <param name="selectedComponents"></param>
 		/// <param name="exportFormat">Export Formatting DTO</param>
 		/// <param name="getWordDocStream">Generic function that will convert the BOE data to a Word document</param>
 		/// <typeparam name="T">Generic representing the return value of the passed in function</typeparam>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
 		public static string ExportCustomComponentBOEsToZipFile<T>(
+			IWebHostEnvironment webHostEnvironment,
 			BOEExportInputs exportInputs,
 			ICollection<BOEExportModelView> boeExportModelViews,
 			ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
@@ -118,7 +119,7 @@ namespace GenBOE.DataBridge.Core.Common
 			}
 
 			// now, let's zip the files up
-			string savedZipFile = Zip.ZipFiles(zipFiles, Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), ImportExportConstants.EXPORT_PATH));
+			string savedZipFile = Zip.ZipFiles(zipFiles, Path.Combine(webHostEnvironment.ContentRootPath, ImportExportConstants.EXPORT_PATH));
 
 			// dispose the streams
 			foreach (Stream stream in zipFiles.Values)
