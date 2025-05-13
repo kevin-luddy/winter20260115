@@ -936,7 +936,6 @@ namespace IES.Common.Core.Enums
 		/// Match entries that contain the designated string.
 		/// </summary>
 		[Description("Contains")]
-
 		Contains
 	}
 
