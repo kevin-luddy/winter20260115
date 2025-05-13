@@ -1070,7 +1070,7 @@
                                     <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                                     {  %>
                                         <th class="ucotCol">UCOT Hours</th>
-                                        <th class="ucotCol">Grand Total Hours</th>
+                                        <th class="ucotGrandTotalCol">Grand Total Hours</th>
                                     <% } %>
                                     <th>Rationale**</th>
                                 </tr>
@@ -1088,8 +1088,8 @@
                                     <td style="text-align: right">{{row.ProposedHours}}</td>
                                     <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                                         {  %>
-                                        <td style="text-align: right">{{row.UCOTHours | number:2}}</td>
-                                        <td style="text-align: right">{{row.GrandTotalHours | number:2}}</td>
+                                        <td style="text-align: right">{{row.UCOTHours}}</td>
+                                        <td style="text-align: right">{{row.GrandTotalHours}}</td>
                                     <% } %>
                                     <td>
                                         <div id="cd-table-rationale">
@@ -1108,8 +1108,8 @@
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.ProposedHours}}</td>
                                     <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                                         {  %>
-                                        <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.UCOTHours | number:2}}</td>
-                                        <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.GrandTotalHours | number:2}}</td>
+                                        <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.UCOTHours }}</td>
+                                        <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.GrandTotalHours}}</td>
                                     <% } %>
                                     <td></td>
                                     <td data-ng-if="!ManageTaskModel.IsSpace"></td>

@@ -1434,7 +1434,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					this.ProcessLaborTaskResources(containerElement, exportInputs, laborTaskElement, allLaborTaskElements, selectedComponents, exportBoe.IsMultiClinWbs);
 
 					ICollection<BoeTaskElementDTO> taskElements = exportInputs.TaskElements.Where(x => x.BoeID == boeExportModelView.BoeID).ToList();
-					this.ProcessSkillMixTable(laborTaskElement, selectedComponents, containerElement, exportInputs, taskElements.FirstOrDefault(x => x.Id == laborTaskElement.BOETaskElementID.Value), ws.UCOTFactor);
+					this.ProcessSkillMixTable(laborTaskElement, selectedComponents, containerElement, exportInputs, taskElements.FirstOrDefault(x => x.Id == laborTaskElement.BOETaskElementID.Value));
 
 					#endregion
 

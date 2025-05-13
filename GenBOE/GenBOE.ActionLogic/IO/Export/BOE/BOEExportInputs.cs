@@ -586,8 +586,18 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 						}
 
 
-						SkillMixUtility.RefreshSkillMixTables(moqResourceHours, laborTypes, task.SkillMixTable, task.CommonDisclosureTable, isBRCEnabled,
-							!ws.EnableSAPConnection, ws.UCOTFactor);
+						RefreshSkillMixModelView refreshedData = SkillMixUtility.RefreshSkillMixTables(moqResourceHours, laborTypes, task.SkillMixTable, task.CommonDisclosureTable, isBRCEnabled,
+							!ws.EnableSAPConnection);
+
+						// Now reset the data
+						task.SkillMixTable = refreshedData.SkillMixRows;
+						task.CommonDisclosureTable = refreshedData.CommonDisclosureRows;
+					}
+					else
+					{
+						// can safely zero out any bad data
+						task.SkillMixTable.Clear();
+						task.CommonDisclosureTable.Clear();
 					}
 				}
 			}

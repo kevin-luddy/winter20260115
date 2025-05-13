@@ -42,3 +42,9 @@
 .ucotCol {
     width: 62px;
 }
+
+/*Space Only*/
+.ucotGrandTotalCol {
+    width: 62px;
+    text-wrap: wrap;
+}

@@ -23,11 +23,10 @@
 		/// <param name="currentSkillMixData">The current skill mix data</param>
 		/// <param name="isBRCEnabled">Is BRC Enabled for CD row check.</param>
 		/// <param name="isManual">If the Historical Resource/Hours are Manually input or not</param>
-		/// <param name="ucotFactor">The UCOT Factor for the workspace</param>
 		/// <returns></returns>
 		public static RefreshSkillMixModelView RefreshSkillMixTables(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
 			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData,
-			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isBRCEnabled, bool isManual, decimal ucotFactor)
+			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isBRCEnabled, bool isManual)
 		{
 			// null checks 
 			if (resourceHours == null)
@@ -122,11 +121,13 @@
 				{
 					if (isSpace)
 					{
-						CreateCommonDisclosureRowsSpace(resourceHours, laborTypes, currentCommonDisclosureData, refreshedModel, ucotFactor);
+						CreateCommonDisclosureRowsSpace(resourceHours, laborTypes, currentCommonDisclosureData, 
+							refreshedModel);
 					}
 					else
 					{
-						CreateCommonDisclosureRowsRMS(resourceHours, laborTypes, currentCommonDisclosureData, refreshedModel, isManual);
+						CreateCommonDisclosureRowsRMS(resourceHours, laborTypes, currentCommonDisclosureData, 
+							refreshedModel, isManual);
 					}
 					}
 				else
@@ -376,7 +377,6 @@
 		/// <param name="laborTypes">The labor type data</param>
 		/// <param name="currentSkillMixData">Current Skill Mix Data</param>
 		/// <param name="refreshedModel">The Refreshed SKill Mix Model</param>
-		/// <param name="isBRCEnabled">Is BRC Enabled for this workspace</param>
 		/// <param name="isManual">Is this a manual SkillMix</param>
 		private static void CopyMatchingSkillMixRowDataSpace(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
 			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData,
@@ -454,10 +454,9 @@
 		/// <param name="laborTypes">labor type data</param>
 		/// <param name="currentCommonDisclosureData">Current Common Disclosure Data</param>
 		/// <param name="refreshedModel">The Refreshed Skill Mix Model</param>
-		/// <param name="ucotFactor">The UCOT Factor for the workspace</param>
 		private static void CreateCommonDisclosureRowsSpace(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
 			ICollection<LaborTypeDataModelView> laborTypes, ICollection<CommonDisclosureModelView> currentCommonDisclosureData,
-			RefreshSkillMixModelView refreshedModel, decimal ucotFactor)
+			RefreshSkillMixModelView refreshedModel)
 		{
 			if (laborTypes == null)
 			{
@@ -505,7 +504,7 @@
 					{
 						// If match, add the labor data
 						historicalSkillMix.ProposedHours += proposedHours;
-						historicalSkillMix.UCOTHours = historicalSkillMix.ProposedHours * ucotFactor / 100m;
+						historicalSkillMix.UCOTHours = labor.UcotSpreads?.Sum(x => x.LaborSpreadValue ?? 0m) ?? 0m; 
 						historicalSkillMix.GrandTotalHours = historicalSkillMix.ProposedHours + historicalSkillMix.UCOTHours;
 						historicalSkillMix.Included = true;
 					}
@@ -519,7 +518,7 @@
 							HistoricalHours = 0m,
 							ProposedHours = proposedHours,
 							Included = true,
-							UCOTHours = proposedHours * ucotFactor / 100m,
+							UCOTHours = labor.UcotSpreads?.Sum(x => x.LaborSpreadValue ?? 0m) ?? 0m
 						};
 
 						newRow.GrandTotalHours = newRow.ProposedHours + newRow.UCOTHours;

@@ -1697,7 +1697,8 @@ namespace GenBOE.Web.Controllers
 				.ToList();
 
 			// Call to Controller Logic
-			RefreshSkillMixModelView response = SkillMixUtility.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData, isBRCEnabled, isManual, ws.UCOTFactor);
+			RefreshSkillMixModelView response = SkillMixUtility.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData, 
+				isBRCEnabled, isManual);
 
 			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });
 
