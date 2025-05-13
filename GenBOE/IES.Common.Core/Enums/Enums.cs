@@ -908,10 +908,12 @@ namespace IES.Common.Core.Enums
 		/// <summary>
 		/// User's last name
 		/// </summary>
+		[Description("Last Name, First MI")]
 		LastName,
 		/// <summary>
 		/// User's account name
 		/// </summary>
+		[Description("User Account")]
 		Account
 	}
 
@@ -923,14 +925,18 @@ namespace IES.Common.Core.Enums
 		/// <summary>
 		/// Match entries that start with the designated string
 		/// </summary>
+		[Description("Begins with")]
 		StartsWith,
 		/// <summary>
 		/// Match entries that exactly match the designated string
 		/// </summary>
+		[Description("Exactly matches")]
 		Exact,
 		/// <summary>
 		/// Match entries that contain the designated string.
 		/// </summary>
+		[Description("Contains")]
+
 		Contains
 	}
 

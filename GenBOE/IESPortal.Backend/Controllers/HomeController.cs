@@ -6,6 +6,7 @@
 
 namespace IESPortal.Backend.Controllers
 {
+	using HtmlAgilityPack;
 	using IES.ActionLogic.Core.Common;
 	using IES.Common.Core;
 	using IES.Common.Core.Enums;
@@ -98,6 +99,49 @@ namespace IESPortal.Backend.Controllers
 				{
 					result.Data = null;
 					result.Messages.Add($"Could not find a user with the NTID: {ntid}.");
+				}
+
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				result.Messages.Add($"Unknown error occurred returning user lookup data: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Gets a user based on FormData provided.
+		/// </summary>
+		/// <param name="searchString">String to search</param>
+		/// <param name="searchBy">Search By</param>
+		/// <param name="matchType">Active Directory Match Type</param>
+		/// <returns>User data found.</returns>
+		[HttpPost("[action]")]
+		public IESResponse<ICollection<UserDataViewModel>> GetUserLookupDataAsPost([FromForm] string searchString, [FromForm] ActiveDirectorySearchBy searchBy, [FromForm] ActiveDirectoryMatchType matchType)
+		{
+			IESResponse<ICollection<UserDataViewModel>> result = new();
+
+			try
+			{
+				ICollection<UserData> matchingUsers = string.IsNullOrEmpty(searchString) ? new List<UserData>() : this.activeDirectoryService.SearchUsers(searchString, ActiveDirectorySearchBy.Account, ActiveDirectoryMatchType.Exact);
+
+				if (matchingUsers.Any())
+				{
+
+					result.Data = matchingUsers.Select(x => new UserDataViewModel
+					{
+						UserAccount = x.Ntid,
+						UserFullName = x.DisplayName,
+						IsGroup = x.IsGroup,
+						WorkPhone = x.Phone
+					}).ToList();
+				}
+				else
+				{
+					result.Data = null;
+					result.Messages.Add($"Could not find a user with the Parameters => Search:  {searchString}, Search By: {searchBy.GetDescription()}, and Match Type: {matchType.GetDescription()} ");
 				}
 
 				result.IsSuccessful = true;
