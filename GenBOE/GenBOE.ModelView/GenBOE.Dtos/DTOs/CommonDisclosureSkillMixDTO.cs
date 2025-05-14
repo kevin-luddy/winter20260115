@@ -22,16 +22,17 @@ namespace GenBOE.Dtos
 			this.CommonDisclosureSkillMixID = -1;
 			this.Rationale = String.Empty;
 			this.Included = false;
-			this.ProposedHours = 0;
-			this.HistoricalHours = 0;
-			this.BOESkillMix = 0;
-			this.LaborSkillMix = 0;
+			this.ProposedHours = 0m;
+			this.HistoricalHours = 0m;
+			this.BOESkillMix = 0m;
+			this.LaborSkillMix = 0m;
 			this.ResourceID = String.Empty;
 			this.BusinessResourceID = String.Empty;
 			this.BOEID = -1;
 			this.BOETaskElementID = -1;
 			this.IsUserInput = false;
-			this.UCOTHours = 0;
+			this.UCOTHours = 0m;
+			this.GrandTotalHours = 0m;
 		}
 
 		/// <summary>
@@ -98,5 +99,10 @@ namespace GenBOE.Dtos
 		/// UCOT Hours, Space only
 		/// </summary>
 		public decimal UCOTHours { get; set; }
+
+		/// <summary>
+		/// Grand Total Hours (proposed + UCOT Hours), Space only
+		/// </summary>
+		public decimal GrandTotalHours { get; set; }
 	}
 }

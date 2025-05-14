@@ -938,8 +938,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}
 			}
 			#endregion
-
-			if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, CheckTMRates(ws, modelView.LaborTypesData), modelView.MOQTypes))
+			
+			if (BOETaskUtility.ShowSkillMixForTask(ws, taskElement))
 			{
 				decimal historicalHoursTotals = 0;
 				// determine if SkillMix is manual or automatic
@@ -2018,8 +2018,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			toReturn.WorkspaceVariableIDs = modelview.TaskElementData.WorkspaceVariableIDs;
 			toReturn.TaskElementType = TaskElementType.Labor;
 			toReturn.BOETaskElementOrder = modelview.TaskElementData.BOETaskElementOrder;
-
-			if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, modelview.IsUsingTMRatesInTask, modelview.MOQTypes))
+			if (BOETaskUtility.ShowSkillMixForTask(ws, toReturn))
 			{
 				// Space will get the total moq total relevant hours if it is from a Sap Webi moq table data.
 				if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
@@ -2030,7 +2029,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				{
 					toReturn.MOQTotalRelevantHours += modelview.MOQTypes?.Sum(t => t.TableData?.Sum(td => td.TotalRelevantHours) ?? 0) ?? 0;
 				}
-
 				toReturn.SkillMixTable = modelview.SkillMixData;
 				toReturn.CommonDisclosureTable = modelview.CommonDisclosureSkillMixData;
 			}
@@ -3806,240 +3804,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			return response;
 		}
-
-		/// <summary>
-		/// Refreshes the Skill Mix Tables with updated resource hours
-		/// </summary>
-		/// <param name="laborTypes">The labor type/spreads data</param>
-		/// <param name="currentCommonDisclosureData">Current Common Disclosure data</param>
-		/// <param name="resourceHours">MOQ Table Resource Hours</param>
-		/// <param name="currentSkillMixData">The current skill mix data</param>
-		/// <param name="isBRCEnabled">Is BRC Enabled for CD row check.</param>
-		/// <param name="isManual">If the Historical Resource/Hours are Manually input or not</param>
-		/// <param name="ucotFactor">The UCOT Factor for the workspace</param>
-		/// <returns></returns>
-		public virtual RefreshSkillMixModelView RefreshSkillMixTables(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
-			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData,
-			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isBRCEnabled, bool isManual, decimal ucotFactor)
-		{
-			// null checks 
-			if (resourceHours == null)
-			{
-				resourceHours = new List<MOQTypeSelectionTableDataResourceHoursDTO>();
-			}
-
-			if (currentSkillMixData == null)
-			{
-				currentSkillMixData = new List<SkillMixModelView>();
-			}
-
-			if (currentCommonDisclosureData == null)
-			{
-				currentCommonDisclosureData = new List<CommonDisclosureModelView>();
-			}
-
-			RefreshSkillMixModelView refreshedModel = new RefreshSkillMixModelView();
-			laborTypes = laborTypes == null ? new List<LaborTypeDataModelView>() : laborTypes.Where(l => l.RateType == RateType.Hours).ToList();
-
-			if (isManual)
-			{
-				// Mock out the Resource Hours from input data
-				resourceHours = MockResourceHours(currentSkillMixData);
-			}
-
-			bool isSpace = SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems;
-
-			if (isSpace || resourceHours.Any())
-			{
-				bool addBlankRow = !isSpace;
-
-				// filter out bad data in currentSkillMixData
-				FilterBadData(laborTypes, currentSkillMixData, currentCommonDisclosureData, isManual, isSpace);
-
-				if (isManual)
-				{
-					refreshedModel.SkillMixRows.AddRange(currentSkillMixData);
-					addBlankRow = !currentSkillMixData.Any(s => string.IsNullOrWhiteSpace(s.ResourceOld));
-				}
-				else
-				{
-					ICollection<IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO>> groupedResourceHours = resourceHours.GroupBy(r => r.ResourceName).OrderBy(t => t.Key).ToList();
-					foreach (IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO> grouping in groupedResourceHours)
-					{
-						decimal totalGroupHours = grouping.Sum(g => g.TotalHours);
-
-						refreshedModel.SkillMixRows.Add(
-							new SkillMixModelView
-							{
-								HistoricalHours = totalGroupHours,
-								ResourceOld = grouping.Key,
-								ResourceNew = string.Empty,
-								Included = false
-							}
-						);
-
-						if (string.IsNullOrWhiteSpace(grouping.Key))
-						{
-							addBlankRow = false;
-						}
-					}
-				}
-
-				if (addBlankRow)
-				{
-					// Always add a row with no historical/legacy resource set
-					// This row is used to add row(s) information about Resources and BRCs that were used but are NOT tied to historical/legacy resources
-					// This can be the case if the MOQ Type was not Historical/Comparitive but user still wanted to use that MOQ Type as a reference
-					refreshedModel.SkillMixRows.Add(
-					new SkillMixModelView
-					{
-						HistoricalHours = 0m,
-						ResourceOld = string.Empty,
-						ResourceNew = string.Empty,
-						LaborSkillMix = 0m,
-						Included = false
-					});
-					addBlankRow = false;
-				}
-
-				CopyMatchingSkillMixRowData(resourceHours, laborTypes, currentSkillMixData, refreshedModel, isBRCEnabled, isManual);
-
-				if (isBRCEnabled)
-				{
-					CreateCommonDisclosureRows(resourceHours, laborTypes, currentCommonDisclosureData, refreshedModel, ucotFactor, isManual);
-				}
-				else
-				{
-					refreshedModel.CommonDisclosureRows?.Clear();
-				}
-			}
-			else
-			{
-				// Add the blank row
-				refreshedModel.SkillMixRows.Add(
-				new SkillMixModelView
-				{
-					HistoricalHours = 0m,
-					ResourceOld = string.Empty,
-					LaborSkillMix = 0m,
-					Included = false
-				});
-			}
-
-			CalculateSkillMixTotals(refreshedModel);
-			CalculateBoeSkillMixPercentage(refreshedModel);
-
-			// reorder the lists
-			refreshedModel.SkillMixRows = refreshedModel.SkillMixRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceOld)).ThenBy(r => r.ResourceOld).ToList();
-			refreshedModel.CommonDisclosureRows = refreshedModel.CommonDisclosureRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceID)).ThenBy(r => r.ResourceID).ThenBy(s => s.BusinessResourceID).ToList();
-
-			return refreshedModel;
-		}
-
-		/// <summary>
-		/// Mock out the Resource Hours from the Current Skill Mix Data
-		/// </summary>
-		/// <param name="currentSkillMixData">Current Skill Mix Data</param>
-		/// <returns>Mocked out resource hours</returns>
-		private ICollection<MOQTypeSelectionTableDataResourceHoursDTO> MockResourceHours(ICollection<SkillMixModelView> currentSkillMixData)
-		{
-			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>(currentSkillMixData.Count);
-			foreach (SkillMixModelView skillMix in currentSkillMixData)
-			{
-				if (!string.IsNullOrWhiteSpace(skillMix.ResourceOld))
-				{
-					hours.Add(new MOQTypeSelectionTableDataResourceHoursDTO
-					{
-						BOEID = skillMix.BOEID,
-						BOETaskElementID = skillMix.BOETaskElementID,
-						ResourceName = skillMix.ResourceOld,
-						TotalHours = skillMix.HistoricalHours,
-						WbsHours = skillMix.HistoricalHours
-					});
-				}
-			}
-
-			return hours;
-		}
-
-		/// <summary>
-		/// Filter out bad data inside the current lists
-		/// </summary>
-		/// <param name="currentSkillMixData">The current skill mix data</param>
-		/// <param name="currentCommonDisclosureData">Current Common Disclosure data</param>
-		/// <param name="isManual">If the Historical Resource/Hours are Manually input or not</param>
-		/// <param name="isSpace">Whether this is Space or not</param>
-		private void FilterBadData(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData,
-			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isManual, bool isSpace)
-		{
-			if (laborTypes.Any())
-			{
-				HashSet<string> resources = laborTypes.Select(l => l.ResourceName).Distinct().ToHashSet();
-				HashSet<string> brcs = laborTypes.Select(l => l.BusinessResourceCodeName).Distinct().ToHashSet();
-
-				foreach (SkillMixModelView skillMixModel in currentSkillMixData)
-				{
-					if (!string.IsNullOrWhiteSpace(skillMixModel.ResourceNew) && !resources.Contains(skillMixModel.ResourceNew))
-					{
-						// this skill mix model is pointing towards a missing Resource, remove the resource name
-						skillMixModel.ResourceNew = string.Empty;
-						skillMixModel.ProposedHours = 0m;
-						skillMixModel.BOESkillMix = 0m;
-						skillMixModel.Included = false;
-					}
-				}
-
-				foreach (CommonDisclosureModelView commonDisclosureModel in currentCommonDisclosureData.ToList())
-				{
-					// Remove bad resources
-					if (!string.IsNullOrWhiteSpace(commonDisclosureModel.ResourceID) && !resources.Contains(commonDisclosureModel.ResourceID))
-					{
-						commonDisclosureModel.ResourceID = string.Empty;
-						commonDisclosureModel.HistoricalHours = 0m;
-						commonDisclosureModel.LaborSkillMix = 0m;
-					}
-
-					if (!isSpace && !string.IsNullOrWhiteSpace(commonDisclosureModel.BusinessResourceID) && !brcs.Contains(commonDisclosureModel.BusinessResourceID))
-					{
-						// this RMS skill mix model is pointing towards a missing Resource, remove the resource name
-						commonDisclosureModel.BusinessResourceID = string.Empty;
-						commonDisclosureModel.ProposedHours = 0m;
-						commonDisclosureModel.BOESkillMix = 0m;
-						commonDisclosureModel.Included = false;
-					}
-
-					// if the row does not have resource or BRC set, then blank it out.
-					if (string.IsNullOrEmpty(commonDisclosureModel.ResourceID) && string.IsNullOrEmpty(commonDisclosureModel.BusinessResourceID))
-					{
-						commonDisclosureModel.HistoricalHours = 0m;
-						commonDisclosureModel.LaborSkillMix = 0m;
-						commonDisclosureModel.ProposedHours = 0m;
-						commonDisclosureModel.BOESkillMix = 0m;
-						commonDisclosureModel.Included = false;
-					}
-				}
-			}
-			else if (isManual)
-			{
-				// these skill mix model are pointing towards missing Resources, remove the resource name
-				foreach (SkillMixModelView skillMixModel in currentSkillMixData)
-				{
-					skillMixModel.ResourceNew = string.Empty;
-					skillMixModel.ProposedHours = 0m;
-					skillMixModel.BOESkillMix = 0m;
-					skillMixModel.Included = false;
-				}
-
-				// Clear out the common disclosure data
-				currentCommonDisclosureData.Clear();
-			}
-			else
-			{
-				currentSkillMixData.Clear();
-				currentCommonDisclosureData.Clear();
-			}
-		}
-
+			
+				
 		/// <summary>
 		/// Validates Actuals data for SAP
 		/// </summary>
@@ -4475,6 +4241,25 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		}
 
 		/// <summary>
+		/// Validates MOQ Types for UI, only fully required fields
+		/// </summary>
+		/// <param name="ws">Full WS</param>
+		/// <param name="taskData">Task Data</param>
+		/// <param name="errors">Validation Errors</param>		
+		/// <param name="moqEquationTotal"> Moq equation total</param>
+		private void ValidateMoqTypes(FullWorkspace ws, LaborTaskDataModelView taskData, ICollection<ValidationMessage> errors, decimal? moqEquationTotal = null)
+		{
+			if (ws.UsingTemplateBOE)
+			{
+				int boeTaskElementId = taskData.TaskElementData.TaskElementDetailID ?? -1;
+				bool showSkillMixTable = BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, ws.UsingTemplateBOE, ws.EnableSAPConnection, taskData.MOQTypes, boeTaskElementId,
+					 taskData.IsUsingTMRatesInTask);
+				ICollection<string> taskErrors = this.validateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws, false, moqEquationTotal, showSkillMixTable);
+				errors.AddRange(taskErrors.Select(error => new ValidationMessage(error)));
+			}
+		}
+
+		/// <summary>
 		/// Validate the MOQ Type Table Custom Fields
 		/// </summary>
 		/// <param name="laborTaskData">Labor Task Data</param>
@@ -4513,291 +4298,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 		}
 
-		/// <summary>
-		/// Validates MOQ Types for UI, only fully required fields
-		/// </summary>
-		/// <param name="ws">Full WS</param>
-		/// <param name="taskData">Task Data</param>
-		/// <param name="errors">Validation Errors</param>		
-		/// <param name="moqEquationTotal"> Moq equation total</param>
-		private void ValidateMoqTypes(FullWorkspace ws, LaborTaskDataModelView taskData, ICollection<ValidationMessage> errors, decimal? moqEquationTotal = null)
-		{
-			if (ws.UsingTemplateBOE)
-			{
-				bool showSkillMixTable = BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, taskData.IsUsingTMRatesInTask, taskData.MOQTypes);
-				ICollection<string> taskErrors = this.validateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws, false, moqEquationTotal, showSkillMixTable);
-				errors.AddRange(taskErrors.Select(error => new ValidationMessage(error)));
-			}
-		}
 
-		/// <summary>
-		/// Create the Common Disclosure Rows from the data
-		/// </summary>
-		/// <param name="resourceHours">The resource hours</param>
-		/// <param name="laborTypes">labor type data</param>
-		/// <param name="currentCommonDisclosureData">Current Common Disclosure Data</param>
-		/// <param name="refreshedModel">The Refreshed Skill Mix Model</param>
-		/// <param name="ucotFactor">The UCOT Factor for the workspace</param>
-		/// <param name="isManual">Is this Manual or Automated SkillMix</param>
-		protected virtual void CreateCommonDisclosureRows(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
-			ICollection<LaborTypeDataModelView> laborTypes, ICollection<CommonDisclosureModelView> currentCommonDisclosureData,
-			RefreshSkillMixModelView refreshedModel, decimal ucotFactor, bool isManual)
-		{
-			if (laborTypes == null)
-			{
-				throw new ArgumentNullException(nameof(laborTypes));
-			}
-
-			if (refreshedModel == null)
-			{
-				throw new ArgumentNullException(nameof(refreshedModel));
-			}
-
-			// Create Common Disclosure Rows by taking the list of Resources assigned in Skill Mix table, then finding the BRCs assigned to those Resources in LaborTypes data
-			ICollection<string> resourceNames = refreshedModel.SkillMixRows.Where(s => !string.IsNullOrWhiteSpace(s.ResourceNew) && s.Included).Select(r => r.ResourceNew).Distinct().ToList();
-			foreach (string resourceName in resourceNames)
-			{
-				ICollection<LaborTypeDataModelView> resourceLaborTypes = laborTypes.Where(l => l.ResourceName == resourceName).ToList();
-
-				decimal totalHoursBRCs = resourceLaborTypes.SelectMany(x => x.Spreads).Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) >= Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
-
-				foreach (CommonDisclosureModelView refreshedRow in refreshedModel.CommonDisclosureRows.Where(r => r.ResourceID == resourceName))
-				{
-					ICollection<LaborTypeDataModelView> laborTypeDataModelViews = resourceLaborTypes.Where(l => l.BusinessResourceCodeName.NullEmptyEquals(refreshedRow.BusinessResourceID)).ToList();
-
-					if (!laborTypeDataModelViews.Any())
-					{
-						// No labor types found that match this Resource/BRC combo, this BRC is invalid so we need to remove the BRC
-						refreshedModel.CommonDisclosureRows.Remove(refreshedRow);
-						continue;
-					}
-
-					refreshedRow.ProposedHours = laborTypeDataModelViews.SelectMany(x => x.Spreads).Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) >= Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
-					// If this is not a Manual Skill Mix and the BRC is set, then the historical hours is a percentage of the real Historical Hours
-					// Percentage is calculated based off the % calculated by BRC Sum / total BRCs Sum for this Resource
-					if (!isManual && !string.IsNullOrWhiteSpace(refreshedRow.BusinessResourceID))
-					{
-						ICollection<string> legacyLinkedResourceIds = refreshedModel.SkillMixRows.Where(r => r.ResourceNew == resourceName && r.Included).Select(l => l.ResourceOld).ToList();
-						decimal realHistoricalHours = resourceHours.Where(r => legacyLinkedResourceIds.Contains(r.ResourceName)).Sum(l => l.TotalHours);
-						decimal brcHistoricalHours = 0m;
-						if (totalHoursBRCs != 0)
-						{
-							brcHistoricalHours = refreshedRow.ProposedHours / totalHoursBRCs;
-						}
-						refreshedRow.HistoricalHours = realHistoricalHours * brcHistoricalHours;
-					}
-
-					if (currentCommonDisclosureData != null)
-					{
-						// Merge any old data into this row (needs to match both ResourceID and BRC ID), special checking if BRC ID is null/empty
-						CommonDisclosureModelView disclosureRow = currentCommonDisclosureData.FirstOrDefault(r => r.ResourceID == refreshedRow.ResourceID &&
-							r.BusinessResourceID.NullEmptyEquals(refreshedRow.BusinessResourceID));
-
-						if (disclosureRow != null)
-						{
-							refreshedRow.BOEID = disclosureRow.BOEID;
-							refreshedRow.Rationale = disclosureRow.Rationale;
-							refreshedRow.Included = disclosureRow.Included;
-							refreshedRow.CommonDisclosureSkillMixID = disclosureRow.CommonDisclosureSkillMixID;
-							refreshedRow.IsUserInput = disclosureRow.IsUserInput;
-							if (isManual)
-							{
-								refreshedRow.HistoricalHours = disclosureRow.HistoricalHours;
-							}
-						}
-					}
-				}
-			}
-		}
-
-		/// <summary>
-		/// Copy Data from Matching Skill Mix Rows
-		/// </summary>
-		/// <param name="resourceHours">The Historical Resource Hours</param>
-		/// <param name="laborTypes">The labor type data</param>
-		/// <param name="currentSkillMixData">Current Skill Mix Data</param>
-		/// <param name="refreshedModel">The Refreshed SKill Mix Model</param>
-		/// <param name="isBRCEnabled">Is BRC Enabled for this workspace</param>
-		/// <param name="isManual">Is this a manual SkillMix</param>
-		protected virtual void CopyMatchingSkillMixRowData(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
-			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData,
-			RefreshSkillMixModelView refreshedModel, bool isBRCEnabled, bool isManual)
-		{
-			if (laborTypes == null)
-			{
-				throw new ArgumentNullException(nameof(laborTypes));
-			}
-
-			if (refreshedModel == null)
-			{
-				throw new ArgumentNullException(nameof(refreshedModel));
-			}
-
-			if (currentSkillMixData != null && currentSkillMixData.Any())
-			{
-				foreach (SkillMixModelView refreshedRow in refreshedModel.SkillMixRows.ToList())
-				{
-					// Find the matching current rows
-					ICollection<SkillMixModelView> currentRows = currentSkillMixData.Where(r => r.ResourceOld.NullEmptyEquals(refreshedRow.ResourceOld)).ToList();
-					if (currentRows.Any())
-					{
-						bool anyValidCurrentRows = false;
-
-						foreach (SkillMixModelView currentRow in currentRows)
-						{
-							// make sure we have a Labor Types match for Resource
-							ICollection<LaborTypeDataModelView> laborTypeDataModelViews = laborTypes.Where(l => !string.IsNullOrWhiteSpace(currentRow.ResourceNew) && l.ResourceName == currentRow.ResourceNew).ToList();
-
-							// is this a user override row?
-							if (string.IsNullOrWhiteSpace(currentRow.ResourceNew) && currentRow.IsUserInput && currentRow.Included)
-							{
-								// leave the row as-is, this row has no ResourceID (ResourceNew), but has been overwritten by the user
-							}
-							else
-							{
-								// Check for an invalid Resource selected, remove the Resource selected
-								if (!laborTypeDataModelViews.Any())
-								{
-									currentRow.ResourceNew = string.Empty;
-									currentRow.Included = false;
-									currentRow.IsUserInput = false;
-								}
-							}
-
-							// Merge the two rows
-							currentRow.HistoricalHours = currentRow.HistoricalHours == 0m ? 0m : currentRow.HistoricalHours;
-							currentRow.ResourceNew = currentRow.ResourceNew ?? string.Empty;
-
-							anyValidCurrentRows = true;
-							if (!isManual)
-							{
-								refreshedModel.SkillMixRows.Add(currentRow);
-							}
-
-							if (!string.IsNullOrWhiteSpace(currentRow.ResourceNew))
-							{
-								// user selected a Resource ID, so Included has to be true
-								currentRow.Included = true;
-
-								// Find the Proposed Hours for this Resource
-								currentRow.ProposedHours = laborTypeDataModelViews.SelectMany(x => x.Spreads).Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) < Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
-
-								if (!isManual)
-								{
-									decimal realHistoricalHours = resourceHours.Where(r => r.ResourceName == currentRow.ResourceOld).Sum(l => l.TotalHours);
-									currentRow.HistoricalHours = realHistoricalHours;
-								}
-							}
-							else
-							{
-								// No resource selected, zero out the proposed hours.  BOE Skill Mix % will be 0% auto-calculated later
-								currentRow.ProposedHours = 0m;
-								currentRow.HistoricalHours = refreshedRow.HistoricalHours;
-							}
-
-							if (isBRCEnabled)
-							{
-								// Create matching rows in Common Disclosures for ResourceNew
-								ICollection<string> brcNames = laborTypeDataModelViews.Where(r => !string.IsNullOrWhiteSpace(r.BusinessResourceCodeName)).Select(l => l.BusinessResourceCodeName).Distinct().ToList();
-								if (brcNames.Any())
-								{
-									foreach (string brcName in brcNames)
-									{
-										if (!refreshedModel.CommonDisclosureRows.Any(c => c.ResourceID == currentRow.ResourceNew && c.BusinessResourceID == brcName))
-										{
-											refreshedModel.CommonDisclosureRows.Add(
-												new CommonDisclosureModelView
-												{
-													ResourceID = currentRow.ResourceNew,
-													BusinessResourceID = brcName,
-													Included = true
-												}
-											);
-										}
-									}
-								}
-								else if (string.IsNullOrWhiteSpace(currentRow.ResourceNew) && !string.IsNullOrWhiteSpace(currentRow.ResourceOld))
-								{
-									// create a Not included row
-									refreshedModel.CommonDisclosureRows.Add(
-											new CommonDisclosureModelView
-											{
-												ResourceID = currentRow.ResourceOld, // Set the ID to the Historical Resource ID
-												BusinessResourceID = string.Empty,
-												Included = false,
-												HistoricalHours = currentRow.HistoricalHours
-											}
-										);
-								}
-							}
-						}
-
-						if (anyValidCurrentRows && !isManual)
-						{
-							// remove the refreshed row to make way for the currentRows
-							refreshedModel.SkillMixRows.Remove(refreshedRow);
-						}
-					}
-				}
-			}
-		}
-
-		/// <summary>
-		/// Calculates the BOESkillMix Percentage
-		/// </summary>
-		/// <param name="refreshedModel"></param>
-		private static void CalculateBoeSkillMixPercentage(RefreshSkillMixModelView refreshedModel)
-		{
-			// Set BOE Skill Mix Percent on Skill Mix table
-			foreach (SkillMixModelView row in refreshedModel.SkillMixRows)
-			{
-				row.LaborSkillMix = refreshedModel.SkillMixTotals.HistoricalHours == 0m ? 0m : row.HistoricalHours * 100.0m / refreshedModel.SkillMixTotals.HistoricalHours;
-				if (row.Included && refreshedModel.SkillMixTotals.ProposedHours != 0.0m)
-				{
-					row.BOESkillMix = row.ProposedHours * 100.0m / refreshedModel.SkillMixTotals.ProposedHours;
-				}
-				else
-				{
-					row.BOESkillMix = 0.0m;
-				}
-			}
-
-			// Set BOE Skill Mix Percent on Common Disclosure table
-			foreach (CommonDisclosureModelView row in refreshedModel.CommonDisclosureRows)
-			{
-				row.LaborSkillMix = refreshedModel.CommonDisclosureTotals.HistoricalHours == 0m ? 0m : row.HistoricalHours * 100.0m / refreshedModel.CommonDisclosureTotals.HistoricalHours;
-				if (row.Included && refreshedModel.CommonDisclosureTotals.ProposedHours != 0.0m)
-				{
-					row.BOESkillMix = row.ProposedHours * 100.0m / refreshedModel.CommonDisclosureTotals.ProposedHours;
-				}
-				else
-				{
-					row.BOESkillMix = 0.0m;
-				}
-			}
-
-			// BoeSkillMix Totals
-			refreshedModel.SkillMixTotals.BoeSkillMix = refreshedModel.SkillMixRows.Where(d => d.Included).Sum(s => s.BOESkillMix ?? 0.0m);
-			refreshedModel.CommonDisclosureTotals.BoeSkillMix = refreshedModel.CommonDisclosureRows.Where(d => d.Included).Sum(s => s.BOESkillMix ?? 0.0m);
-		}
-
-		/// <summary>
-		/// Calculates the SkillMix/CD row Totals
-		/// </summary>
-		/// <param name="refreshedModel">The skill mix model view to calculate on</param>
-		private static void CalculateSkillMixTotals(RefreshSkillMixModelView refreshedModel)
-		{
-			// Skill Mix Totals
-			refreshedModel.SkillMixTotals.HistoricalHours = refreshedModel.SkillMixRows.Sum(s => s.HistoricalHours);
-			refreshedModel.SkillMixTotals.LaborSkillMix = 100.0m;
-			refreshedModel.SkillMixTotals.ProposedHours = refreshedModel.SkillMixRows.Where(d => d.Included).Sum(s => s.ProposedHours);
-
-			// Common Disclosure Totals
-			refreshedModel.CommonDisclosureTotals.HistoricalHours = refreshedModel.CommonDisclosureRows.Sum(s => s.HistoricalHours);
-			refreshedModel.CommonDisclosureTotals.LaborSkillMix = 100.0m;
-			refreshedModel.CommonDisclosureTotals.ProposedHours = refreshedModel.CommonDisclosureRows.Where(d => d.Included).Sum(s => s.ProposedHours);
-			refreshedModel.CommonDisclosureTotals.UCOTHours = refreshedModel.CommonDisclosureRows.Sum(s => s.UCOTHours);
-		}
 
 		#endregion Private Methods
 	}

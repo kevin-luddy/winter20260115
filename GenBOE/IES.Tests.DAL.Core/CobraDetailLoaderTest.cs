@@ -10,6 +10,7 @@ namespace IES.Tests.Core
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
+	using System.Runtime.Versioning;
 	using System.Security.Principal;
 	using System.Transactions;
 	using IES.ActionLogic.Core.Mediator;
@@ -97,10 +98,11 @@ namespace IES.Tests.Core
             }
         }
 
-        /// <summary>
-        /// Test Bulk IO of Cobra Details.
-        /// </summary>
-        [TestMethod]
+		/// <summary>
+		/// Test Bulk IO of Cobra Details.
+		/// </summary>
+		[SupportedOSPlatform("windows")]
+		[TestMethod]
 		[Ignore("Original test already failing. Ignore until this one is fixed.")]
 		public void CobraDetailLoader()
         {

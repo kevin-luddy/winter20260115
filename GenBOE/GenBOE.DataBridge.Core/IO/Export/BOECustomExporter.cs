@@ -4551,19 +4551,19 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				boeExportTaskElement.MOQEquation = boeTaskElement.MOQHoursEquation;
 				boeExportTaskElement.MOQText = BOEExportConverter.GetRteOverride(boeTaskElement.BoeID, boeTaskElement.Id, boeTaskElement.MOQText, RteTemplateSource.TaskMOQ, exportInputs.RTETemplatesOverrides);
 				boeExportTaskElement.MOQType = boeTaskElement.MOQType.GetDescription();
+				boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToList();
 				boeExportTaskElement.OrdinaryVariables = boeTaskElement.OrdinaryVariables;
 				boeExportTaskElement.StartDate = boeTaskElement.StartDate;
 				boeExportTaskElement.TaskTitle = boeTaskElement.TaskTitle;
 				boeExportTaskElement.IMS_ID = boeTaskElement.IMS_ID;
 				boeExportTaskElement.BOETaskElementOrder = boeTaskElement.BOETaskElementOrder;
-				bool skillMixEnabled = false;
-
+				
 				if (exportInputs.Workspace.UsingTemplateBOE)
 				{
 					boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
 
-					skillMixEnabled = BOETaskUtility.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, boeTaskElement.HasTMRates, boeExportTaskElement.MOQTypes);
-					if (skillMixEnabled)
+					if (BOETaskUtility.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, exportInputs.Workspace.UsingTemplateBOE,
+						exportInputs.Workspace.EnableSAPConnection, boeExportTaskElement.MOQTypes, boeTaskElement.Id, boeTaskElement.HasTMRates))
 					{
 						boeExportTaskElement.SkillMixTable = boeTaskElement.SkillMixTable;
 						boeExportTaskElement.CommonDisclosureTable = boeTaskElement.CommonDisclosureTable;

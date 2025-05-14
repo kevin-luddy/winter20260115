@@ -10,6 +10,7 @@ namespace IES.Tests.Core
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
+	using System.Runtime.Versioning;
 	using System.Security.Principal;
 	using System.Threading;
 	using System.Transactions;
@@ -21,7 +22,6 @@ namespace IES.Tests.Core
 	using IES.Common.Core.Loaders;
 	using IES.Common.Core.Models;
 	using IES.DataBridge.ModelViews;
-	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.Logging;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 	using Moq;
@@ -760,17 +760,17 @@ namespace IES.Tests.Core
 
                 // Modify the COBRA mappings
                 ICollection<CobraDetailModelView> cobraDetails = this.CobraDetailLoader.GetCobraDetailsByRevision(revision);
-                CobraDetailModelView cobraDetail2 = cobraDetails.Where(x => x.RateCode.Equals("MockRate2")).First();
+                CobraDetailModelView cobraDetail2 = cobraDetails.First(x => x.RateCode.Equals("MockRate2"));
                 cobraDetail2.RateSet = "MockRateSet2";
                 cobraDetail2.Code1 = Code1.SVCCTR;
                 cobraDetail2.Dirty = true;
 
-                CobraDetailModelView cobraDetail3 = cobraDetails.Where(x => x.RateCode.Equals("MockRate3")).First();
+                CobraDetailModelView cobraDetail3 = cobraDetails.First(x => x.RateCode.Equals("MockRate3"));
                 cobraDetail3.RateSet = "MockRateSet1";
                 cobraDetail3.Code1 = Code1.INDIRECT;
                 cobraDetail3.Dirty = true;
 
-                CobraDetailModelView cobraDetail4 = cobraDetails.Where(x => x.RateCode.Equals("MockRate4")).First();
+                CobraDetailModelView cobraDetail4 = cobraDetails.First(x => x.RateCode.Equals("MockRate4"));
                 cobraDetail4.RateSet = "MockRateSet1";
                 cobraDetail4.Code1 = Code1.INDIRECT;
                 cobraDetail4.Dirty = true;
@@ -980,12 +980,12 @@ namespace IES.Tests.Core
 
                 // Modify the COBRA mappings
                 ICollection<CobraDetailModelView> cobraDetails = this.CobraDetailLoader.GetCobraDetailsByRevision(revision);
-                CobraDetailModelView cobraDetail1 = cobraDetails.Where(x => x.RateCode.Equals("MockRate1")).First();
+                CobraDetailModelView cobraDetail1 = cobraDetails.First(x => x.RateCode.Equals("MockRate1"));
                 cobraDetail1.RateSet = "MockRateSet1";
                 cobraDetail1.Code1 = Code1.SVCCTR;
                 cobraDetail1.Dirty = true;
 
-                CobraDetailModelView cobraDetail5 = cobraDetails.Where(x => x.RateCode.Equals("MockRate5")).First();
+                CobraDetailModelView cobraDetail5 = cobraDetails.First(x => x.RateCode.Equals("MockRate5"));
                 cobraDetail5.RateSet = "MockRateSet1";
                 cobraDetail5.Code1 = Code1.SVCCTR;
                 cobraDetail5.Dirty = true;
@@ -1670,21 +1670,22 @@ namespace IES.Tests.Core
             sectionLoader.UpdateSectionsAndContent(revision, new Collection<SectionModelView> { section0, section1 });
         }
 
-        /// <summary>
-        /// Adds baseline section data and associated rates to the revision.  This is the starting point for several section loader tests.
-        /// Generate nodes to make sections and content like:
-        ///           1                       2
-        ///           |                     /   \
-        ///          1.1                  2.1   2.2
-        ///       /       \
-        ///  1.1.1         1.1.2
-        ///           /    /    \    \
-        ///    1.1.2.1  1.1.2.2 Text  Table
-        /// 
-        /// </summary>
-        /// <param name="revision">Revision</param>
-        /// <returns>The revision</returns>
-        public RevisionModelView AddBaselineSectionsAndRatesData(RevisionModelView revision)
+		/// <summary>
+		/// Adds baseline section data and associated rates to the revision.  This is the starting point for several section loader tests.
+		/// Generate nodes to make sections and content like:
+		///           1                       2
+		///           |                     /   \
+		///          1.1                  2.1   2.2
+		///       /       \
+		///  1.1.1         1.1.2
+		///           /    /    \    \
+		///    1.1.2.1  1.1.2.2 Text  Table
+		/// 
+		/// </summary>
+		/// <param name="revision">Revision</param>
+		/// <returns>The revision</returns>
+		[SupportedOSPlatform("windows")]
+		public RevisionModelView AddBaselineSectionsAndRatesData(RevisionModelView revision)
         {
             if (revision == null)
             {

@@ -238,9 +238,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 			inBOE.TaskElements.ForEach(task =>
 			{
-				ICollection<MoqTypeSelection> moqTypesForTask = inBOE.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList();
-
-				if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, BOETaskUtility.IsUsingTMRates(ws, task), moqTypesForTask))
+				if (BOETaskUtility.ShowSkillMixForTask(ws, task))
 				{
 					ICollection<string> errorMessages = new List<string>();
 					errorMessages = ActionLogicUtility.ValidateSkillMixTable(task.SkillMixTable, true);
@@ -668,9 +666,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
 					ICollection<MoqTypeSelection> moqTypesForTask = boe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList();
 
 					// Variables for Validation of Skill Mix Rationale Field
-					bool isUsingTMRatesInTask = BOETaskUtility.IsUsingTMRates(ws, task);
-					bool showSkillMixTable = BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, isUsingTMRatesInTask, moqTypesForTask);
-					errorMessages = ValidateTemplateMoqForTask(boe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList(), ws, true, null, showSkillMixTable);
+					bool showSkillMixTable = BOETaskUtility.ShowSkillMixForTask(ws, task);
+					errorMessages = ValidateTemplateMoqForTask(moqTypesForTask, ws, true, null, showSkillMixTable);
 
 					if (errorMessages.Any())
 					{

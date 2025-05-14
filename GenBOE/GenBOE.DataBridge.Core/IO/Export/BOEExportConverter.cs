@@ -455,7 +455,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				boeExportTaskElement.BOETaskElementOrder = boeTaskElement.BOETaskElementOrder;
 				boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
 
-				if (BOETaskUtility.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, boeTaskElement.HasTMRates, boeExportTaskElement.MOQTypes))
+				if (BOETaskUtility.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, exportInputs.Workspace.UsingTemplateBOE, exportInputs.Workspace.EnableSAPConnection,
+					boeExportTaskElement.MOQTypes, boeExportTaskElement.BOETaskElementID ?? -1, boeTaskElement.HasTMRates))
 				{
 					boeExportTaskElement.SkillMixTable = boeTaskElement.SkillMixTable;
 					boeExportTaskElement.CommonDisclosureTable = boeTaskElement.CommonDisclosureTable;

@@ -27,12 +27,12 @@ namespace RPM.Web
 		/// <summary>
 		/// The lifetime managers.
 		/// </summary>
-		private List<ContainerControlledLifetimeManager> lifetimeManagers = new List<ContainerControlledLifetimeManager>();
+		private readonly List<ContainerControlledLifetimeManager> lifetimeManagers = new List<ContainerControlledLifetimeManager>();
 
 		/// <summary>
 		/// The logger.
 		/// </summary>
-		private Logger log = new Logger(typeof(MvcApplication));
+		private readonly Logger log = new Logger(typeof(MvcApplication));
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MvcApplication"/> class.

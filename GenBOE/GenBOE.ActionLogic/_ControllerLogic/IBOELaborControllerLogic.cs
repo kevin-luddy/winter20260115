@@ -361,21 +361,6 @@ namespace GenBOE.ActionLogic
         Task<IESResponse<SkillMixConvertedResourceViewModel>> GetSkillMixConvertedResources();
 
 		/// <summary>
-		/// Refreshes the Skill Mix Tables with updated resource hours
-		/// </summary>
-		/// <param name="laborTypes">The labor type/spreads data</param>
-		/// <param name="currentCommonDisclosureData">Current Common Disclosure data</param>
-		/// <param name="resourceHours">MOQ Table Resource Hours</param>
-		/// <param name="currentSkillMixData">The current skill mix data</param>
-		/// <param name="isBRCEnabled">Is BRC Enabled for CD row check.</param>
-		/// <param name="isManual">If the Historical Resource/Hours are Manually input or not</param>
-		/// <param name="ucotFactor">The UCOT Factor for the workspace</param>
-		/// <returns></returns>
-		RefreshSkillMixModelView RefreshSkillMixTables(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
-			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, 
-			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isBRCEnabled, bool isManual, decimal ucotFactor);
-
-		/// <summary>
 		/// Checks the usage of active T&M rates in the task.
 		/// </summary>
 		/// <param name="ws">Workspace.</param>
