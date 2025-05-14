@@ -32,7 +32,7 @@ namespace GenBOE.DataBridge.Core.Common
 		/// <param name="boeSummaryGridModelViews"></param>
 		/// <param name="getWordDocStream">Generic function that will convert the BOE data to a Word document</param>
 		/// <param name="templateType">Template type</param>
-		/// <param name="webHostEnvironment">Wen host environment</param>
+		/// <param name="webHostEnvironment">Web host environment</param>
 		/// <exception cref="ArgumentNullException">if response or workspace is null</exception>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
 		public static string ExportBOEsToZipFile<T>(

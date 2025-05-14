@@ -51,6 +51,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <summary>
 		/// IES-707: Creates individual word documents for each BOE and compresses them into a single zip file.
 		/// </summary>
+		/// <param name="webHostEnvironment">Web host env</param>
 		/// <param name="exportInputs">The export inputs</param>
 		/// <param name="boeExportModelViews">Collection of BOE View Models</param>
 		/// <param name="boeSummaryGridModelViews"></param>

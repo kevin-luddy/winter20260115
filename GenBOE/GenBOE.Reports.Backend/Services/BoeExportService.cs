@@ -30,6 +30,12 @@ namespace GenBOE.Reports.Backend.Services
 
 		private readonly IWebHostEnvironment webHostEnvironment;
 
+		/// <summary>
+		/// ctor
+		/// </summary>
+		/// <param name="boeExporter">Boe Exporter.</param>
+		/// <param name="boeCustomExporter">Boe Custom Exporter.</param>
+		/// <param name="webHostEnvironment">Web Env</param>
 		public BoeExportService(IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWebHostEnvironment webHostEnvironment)
 		{
 			this.boeExporter = boeExporter;
