@@ -38,6 +38,8 @@ namespace GenTRAC.Models
         public Nullable<int> InsuranceType { get; set; }
         public Nullable<long> ProposedInsurance { get; set; }
         public Nullable<long> NegotiatedInsurance { get; set; }
+        public Nullable<System.DateTime> BidEppDate { get; set; }
+        public Nullable<System.DateTime> MissionSegmentEppDate { get; set; }
     
         public virtual EppDelegationAuthorityLU EppDelegationAuthorityLU { get; set; }
         public virtual Proposal Proposal { get; set; }
