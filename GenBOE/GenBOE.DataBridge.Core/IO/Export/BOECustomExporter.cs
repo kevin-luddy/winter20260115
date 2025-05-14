@@ -37,6 +37,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 	using IES.Common.Core.Models;
 	using IES.Common.Core.OfficeUtilities;
 	using IES.Common.Core.Utilities;
+	using Microsoft.AspNetCore.Hosting;
 	using Microsoft.Extensions.Logging;
 
 	/// <summary>
@@ -5871,19 +5872,18 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <summary>
 		/// Export the BOEs as individual files and zip into single download.
 		/// </summary>
+		/// <param name="webHostEnvironment">Web host env</param>
 		/// <param name="exportInputs">The export inputs</param>
 		/// <param name="boeExportModelViews">Collection of BOE View Models</param>
 		/// <param name="boeSummaryGridModelViews"></param>
-		/// <param name="workSpace">Full workspace</param>
 		/// <param name="components">Custom components</param>
-		/// <param name="response">What will ultimately be the response to the requester</param>
-		/// <param name="returnFilename">File name that will be passed to browser (for download)</param>
 		/// <param name="exportFormat">Export format DTO</param>
-		public string ExportBOEsToZipFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, 
+		public string ExportBOEsToZipFile(IWebHostEnvironment webHostEnvironment, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, 
 			ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, ICollection<BoeCustomReportComponent> components, 
 			WorkspaceExportFormatDTO exportFormat)
 		{
 			return AllBOEExportHelper.ExportCustomComponentBOEsToZipFile<bool>(
+				webHostEnvironment,
 				exportInputs,
 				boeExportModelViews,
 				boeSummaryGridModelViews,
