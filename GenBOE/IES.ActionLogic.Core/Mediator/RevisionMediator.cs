@@ -51,15 +51,15 @@ namespace IES.ActionLogic.Core.Mediator
 
 		/// <summary>
 		/// Get the specified revision.
-		/// If Id is null, return current WIP revision.
+		/// If Id is null or less than 0, return current WIP revision.
 		/// </summary>
 		/// <param name="id">Revision ID</param>
-		/// <returns>If Id is null, return current WIP revision; othewise, return specified revision.</returns>
+		/// <returns>If Id is null or less than 0, return current WIP revision; othewise, return specified revision.</returns>
 		public RevisionModelView GetById(int? id)
 		{
 			IList<RevisionModelView> revisions = GetAll();
 
-			RevisionModelView revision = id == null ?
+			RevisionModelView revision = (id == null || id < 0) ?
 						revisions.FirstOrDefault(r => r.DatePublished == null) :
 						revisions.FirstOrDefault(r => r.Id == id.Value);
 
