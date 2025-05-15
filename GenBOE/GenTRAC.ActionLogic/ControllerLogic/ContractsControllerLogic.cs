@@ -243,7 +243,7 @@ namespace GenTRAC.ActionLogic
 			_ = model ?? throw new ArgumentNullException(nameof(model));
 			_ = proposal ?? throw new ArgumentNullException(nameof(proposal));
 			ICollection<string> validationMessages = new Collection<string>();
-			
+
 			DateTime? dateSubmittedToContracts = proposal.ProposalChecklistData?.FirstOrDefault()?.EstimatingSubmitsToContractsDate;
 
 			if (model.CustomerSubmittalDt.HasValue && dateSubmittedToContracts.HasValue
@@ -252,13 +252,15 @@ namespace GenTRAC.ActionLogic
 				validationMessages.Add(Constants.INVALID_PROPOSAL_SUBMITTAL_DATE);
 			}
 
-			if (!proposal.IsRomNte)
-			{
-				if (model.NegotiationsSubmittedDt.HasValue && proposal.AgreementDate.HasValue
+			if (!proposal.IsRomNte && model.NegotiationsSubmittedDt.HasValue && proposal.AgreementDate.HasValue
 					&& model.NegotiationsSubmittedDt < proposal.AgreementDate)
-				{
-					validationMessages.Add(Constants.INVALID_NEGOTIATIONS_SUBMITTED);
-				}
+			{
+				validationMessages.Add(Constants.INVALID_NEGOTIATIONS_SUBMITTED);
+			}
+
+			if (model.EppDelegationAuthority == EppDelegationAuthority.MissionSegment && model.MissionSegmentEppDate is null)
+			{
+				validationMessages.Add(Constants.MISSION_SEGMENT_EPP_DATE_REQUIRED);
 			}
 
 			return validationMessages;
@@ -407,7 +409,9 @@ namespace GenTRAC.ActionLogic
 			dto.NegotiationsSubmitted = model.NegotiationsSubmitted == null ? (DateTime?)null : DateTime.Parse(model.NegotiationsSubmitted);
 			dto.UpdateDateLong = model.LastUpdatedDateLong;
 			dto.EppDelegationAuthority = model.EppDelegationAuthority == null ? (int?)null : (int)model.EppDelegationAuthority;
+			dto.BidEppDate = model.BidEppDate;
 			dto.ProgramEppDate = model.ProgramEppDate;
+			dto.MissionSegmentEppDate = model.MissionSegmentEppDate;
 			dto.LobEppDate = model.LobEppDate;
 			dto.PreSpaceEppDate = model.PreSpaceEppDate;
 			dto.SpaceEppDate = model.SpaceEppDate;
@@ -454,7 +458,9 @@ namespace GenTRAC.ActionLogic
 			model.NegotiationsSubmittedDt = dto.NegotiationsSubmitted;
 			model.LastUpdatedDateLong = dto.UpdateDateLong;
 			model.EppDelegationAuthority = dto.EppDelegationAuthority == null ? (EppDelegationAuthority?)null : (EppDelegationAuthority)dto.EppDelegationAuthority;
+			model.BidEppDate = dto.BidEppDate;
 			model.ProgramEppDate = dto.ProgramEppDate;
+			model.MissionSegmentEppDate = dto.MissionSegmentEppDate;
 			model.LobEppDate = dto.LobEppDate;
 			model.PreSpaceEppDate = dto.PreSpaceEppDate;
 			model.SpaceEppDate = dto.SpaceEppDate;
@@ -820,7 +826,12 @@ namespace GenTRAC.ActionLogic
 				}
 			}
 
-			messages.AddRange(ValidateContractModelView(ConvertContractsDtoToModel(dto), fullProposal));
+			ICollection<string> contractsValidationMessages = ValidateContractModelView(ConvertContractsDtoToModel(dto), fullProposal);
+			if (contractsValidationMessages.Any())
+			{
+				messages.AddRange(contractsValidationMessages);
+				isValid = false;
+			}
 
 			return isValid;
 		}

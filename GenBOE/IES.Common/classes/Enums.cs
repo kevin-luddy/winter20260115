@@ -675,7 +675,9 @@ namespace IES.Common
 		[Description("Space")]
 		Space = 3,
 		[Description("Corporate")]
-		Corporate = 4
+		Corporate = 4,
+		[Description("Mission Segment")]
+		MissionSegment = 5
 	}
 
 	/// <summary>
