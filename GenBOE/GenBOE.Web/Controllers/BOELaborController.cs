@@ -716,7 +716,7 @@ namespace GenBOE.Web.Controllers
 				}
 			}
 
-			this._BoeLaborControllerLogic.RecalculateLaborSpreads(ws, items, moqTotalHours, calculateUCOT && Utilities.IsUCOTEnabled);
+			this._BoeLaborControllerLogic.RecalculateLaborSpreads(ws, items, moqTotalHours, calculateUCOT && Utilities.ShowUCOTForWorkspace(ws.CreationDate));
 
 			return this.Json(items);
 		}
