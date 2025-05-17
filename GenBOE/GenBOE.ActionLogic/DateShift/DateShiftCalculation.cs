@@ -162,11 +162,7 @@ namespace GenBOE.ActionLogic.DateShift
 					// Iterate through each task and check for Skill Mix
 					foreach (BoeTaskElementDTO task in fullWorkspace?.TaskElements)
 					{
-                        FullBoe fullBoe = fullWorkspace.Boes.FirstOrDefault(b => b.Id == task.BoeID);
-
-                        ICollection<MoqTypeSelection> moqTypesForTask = fullBoe?.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList();
-
-						if (BOETaskUtility.ShowSkillMixForTask(fullWorkspace?.CreationDate, BOETaskUtility.IsUsingTMRates(fullWorkspace, task), moqTypesForTask))
+						if (BOETaskUtility.ShowSkillMixForTask(fullWorkspace, task))
 						{
 							bool isBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspaceShortname);
 
@@ -176,14 +172,15 @@ namespace GenBOE.ActionLogic.DateShift
 								.SelectMany(tableData => tableData.ResourceHours)
 								.ToList();
 
+							FullBoe fullBoe = fullWorkspace.Boes.First(b => b.Id == task.BoeID);
 							LaborTaskDataModelView laborTasks = this.boeLaborControllerLogic.ConvertDtoToModelView(fullWorkspace, fullBoe, task);
 
 							bool allAutomaticMOQTypes = fullWorkspace.MoqTypeSelections?.All(m => m.SelectedMOQType == MOQType.Comparative || m.SelectedMOQType == MOQType.Historical) ?? true;
 
 							bool isManual = !fullWorkspace.EnableSAPConnection || !allAutomaticMOQTypes;
 
-							RefreshSkillMixModelView response = this.boeLaborControllerLogic.RefreshSkillMixTables(resourceHours,
-								laborTasks.LaborTypesData, task.SkillMixTable, task.CommonDisclosureTable, isBRCEnabled, isManual, fullWorkspace.UCOTFactor);
+							RefreshSkillMixModelView response = SkillMixUtility.RefreshSkillMixTables(resourceHours,
+								laborTasks.LaborTypesData, task.SkillMixTable, task.CommonDisclosureTable, isBRCEnabled, isManual);
 
 							if (response != null)
 							{

@@ -1,12 +1,12 @@
 ﻿namespace IES.Common.Core.Exceptions
 {
 	using System.Data.Entity.Core;
-	using System.Data.SqlClient;
 	using System.Net;
 	using IES.Common.Core.Utilities;
 	using Microsoft.AspNetCore.Builder;
 	using Microsoft.AspNetCore.Diagnostics;
 	using Microsoft.AspNetCore.Http;
+	using Microsoft.Data.SqlClient;
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.Logging;
 

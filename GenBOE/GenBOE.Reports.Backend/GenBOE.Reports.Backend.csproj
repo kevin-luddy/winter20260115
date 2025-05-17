@@ -5,6 +5,7 @@
     <Nullable>disable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
 	<SatelliteResourceLanguages>en-US</SatelliteResourceLanguages>
+	<UserSecretsId>9412edbb-77bf-4c53-b4c2-44fddd87af28</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,8 +19,7 @@
     <Content Include="app_offlineX.htm" />
     <Content Include="logs\ReadMe.txt" />
     <Content Include="parameters.xml" />
-    <Content Include="Templates\GoldCopy\ReadMe.txt" />
-    <Content Include="Templates\Temp\ReadMe.txt" />
+	<Content Include="Templates\**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
