@@ -49,6 +49,19 @@ SET NOCOUNT ON
 DECLARE @UpdateDT datetime2
 SET @UpdateDT = GETDATE()
 
+/**
+* Date Shift Level Values: 
+*
+*   NotSet = 0,
+*   Workspace = 1,
+*   CLINCollection = 2,     (OBE Not Used)
+*   CLIN = 3,
+*   BOE = 4,
+*   Task = 5,
+*   Travel = 6,             (OBE Not Used)
+*   Labor = 7
+*/
+
 -- Update the Workspace table
 UPDATE w
 SET 
