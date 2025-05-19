@@ -348,7 +348,7 @@
     <Content Include="Release Scripts\Older\Release 2025.01\1 - Release 2025.01 Script.sql" />
     <Content Include="Release Scripts\Older\Release 2025.03\1 - Release 2025.03 Script.sql" />
     <Content Include="Release Scripts\Release 2025.05\1 - Release 2025.05 Script.sql" />
-    <Content Include="Release Scripts\Release 2025.04\1 - Release 2025.04 Script.sql" />
+    <Content Include="Release Scripts\Older\Release 2025.04\1 - Release 2025.04 Script.sql" />
     <Content Include="Release Scripts\Release 2025.06\1 - Release 2025.06 Script.sql" />
     <Content Include="Release Scripts\Release 2025.07\1 - Release 2025.07 Script.sql" />
     <Content Include="Release Scripts\Release 2025.08\1 - Release 2025.08 Script.sql" />
