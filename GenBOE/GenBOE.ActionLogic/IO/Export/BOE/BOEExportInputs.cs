@@ -583,7 +583,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 								perfOrg = this.PerformingOrgsUsedInBoes.First(x => x.Id == labor.PerformingOrgID.Value);
 							}
 
-							LaborTypeDataModelView laborToAdd = new LaborTypeDataModelView(labor, resource, businessResourceCode, perfOrg, ws.UCOTFactor, Utilities.IsUCOTEnabled && businessResourceCode.ElementOfCost == ElementOfCostType.LMLabor && businessResourceCode.RateType == RateType.Hours, ws.DecimalPrecision);
+							LaborTypeDataModelView laborToAdd = new LaborTypeDataModelView(labor, resource, businessResourceCode, perfOrg, ws.UCOTFactor, Utilities.ShowUCOTForWorkspace(ws.CreationDate) && businessResourceCode.ElementOfCost == ElementOfCostType.LMLabor && businessResourceCode.RateType == RateType.Hours, ws.DecimalPrecision);
 
 							laborTypes.Add(laborToAdd);
 						}
