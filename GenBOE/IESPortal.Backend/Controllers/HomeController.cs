@@ -6,7 +6,6 @@
 
 namespace IESPortal.Backend.Controllers
 {
-	using HtmlAgilityPack;
 	using IES.ActionLogic.Core.Common;
 	using IES.Common.Core;
 	using IES.Common.Core.Enums;
