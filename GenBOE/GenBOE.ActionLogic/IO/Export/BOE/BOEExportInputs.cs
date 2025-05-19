@@ -111,7 +111,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 						.Union(workspace.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value))
 						.Distinct().ToList();
 
-			if (Utilities.IsUCOTEnabled && processLaborTypesForUCOT)
+			if (Utilities.ShowUCOTForWorkspace(workspace.CreationDate) && processLaborTypesForUCOT)
 			{
 				// Setup the ucot performing orgs.
 				PerformingOrgDTO ucotPerformingOrg = new PerformingOrgDTO
@@ -143,7 +143,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				}
 			}
 
-			if (Utilities.IsUCOTEnabled && processLaborTypesForUCOT)
+			if (Utilities.ShowUCOTForWorkspace(workspace.CreationDate) && processLaborTypesForUCOT)
 			{
 				// Get labors, filter by element of cost
 				List<ResourceTypeDto> taskElementLabors = taskElements
@@ -160,7 +160,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				}
 
 				// Add UCOT data
-				taskElementLabors = AddUCOT(taskElementLabors, workspace.UCOTFactor, laborToElementOfCost);
+				taskElementLabors = AddUCOT(taskElementLabors, workspace.UCOTFactor, laborToElementOfCost, workspace.CreationDate);
 
 				// Update TaskElements with the new labors
 				foreach (BoeTaskElementDTO taskElement in taskElements)
@@ -452,12 +452,15 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// </summary>
 		/// <param name="taskElementLabors">The task Element labors</param>
 		/// <param name="ucotFactor">The UCOT Factor</param>
+		/// <param name="laborToElementOfCost">Labor to element cost dictionary</param>
+		/// <param name="workspaceCreationDate">Workspace creation date</param>
 		/// <returns>UCOT resources.</returns>
-		private List<ResourceTypeDto> AddUCOT(List<ResourceTypeDto> taskElementLabors, decimal ucotFactor, Dictionary<int, ElementOfCostType> laborToElementOfCost)
+		private List<ResourceTypeDto> AddUCOT(List<ResourceTypeDto> taskElementLabors, decimal ucotFactor, Dictionary<int, ElementOfCostType> laborToElementOfCost,
+			DateTime? workspaceCreationDate)
 		{
 			List<ResourceTypeDto> ucotLabors = taskElementLabors.ToList();
 
-			if (Utilities.IsUCOTEnabled)
+			if (Utilities.ShowUCOTForWorkspace(workspaceCreationDate))
 			{
 				int ucotResourceIndex = Constants.UCOT_RESOURCE_ID;
 
@@ -580,7 +583,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 								perfOrg = this.PerformingOrgsUsedInBoes.First(x => x.Id == labor.PerformingOrgID.Value);
 							}
 
-							LaborTypeDataModelView laborToAdd = new LaborTypeDataModelView(labor, resource, businessResourceCode, perfOrg, ws.UCOTFactor, Utilities.IsUCOTEnabled && businessResourceCode.ElementOfCost == ElementOfCostType.LMLabor && businessResourceCode.RateType == RateType.Hours, ws.DecimalPrecision);
+							LaborTypeDataModelView laborToAdd = new LaborTypeDataModelView(labor, resource, businessResourceCode, perfOrg, ws.UCOTFactor, Utilities.ShowUCOTForWorkspace(ws.CreationDate) && businessResourceCode.ElementOfCost == ElementOfCostType.LMLabor && businessResourceCode.RateType == RateType.Hours, ws.DecimalPrecision);
 
 							laborTypes.Add(laborToAdd);
 						}
