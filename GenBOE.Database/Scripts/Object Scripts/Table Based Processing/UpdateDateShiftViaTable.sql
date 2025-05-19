@@ -31,7 +31,7 @@ AS
 /******************************************************************************
 **		 
 **		Name: [updateDateShiftviaTableParameter]
-**		Desc: Update date shifts for workspace, BOE, BOE task element, and CLIN.
+**		Desc: Update date shifts for workspace, BOE, BOE task element, CLIN, and BOELaborType.
 **			
 **		
 **
@@ -43,6 +43,7 @@ AS
 **		Date:		Author:				Description:
 **		--------	--------			-------------------------------------------
 **		[4/17/25]	[e405721]			Initial creation
+**		[5/19/25]	[e405721]			Added update for BOELaborType (Resource Type) table
 *******************************************************************************/
 SET NOCOUNT ON
 DECLARE @UpdateDT datetime2
@@ -83,6 +84,15 @@ SET
     UpdateDT = @UpdateDT
 FROM [dbo].[CLIN] c
 INNER JOIN @DateShifts ds ON c.CLINID = ds.Id AND ds.[Level] = 3 AND c.UpdateDT = ds.UpdateDate;
+
+-- Update the BOELaborType table (Resource Type)
+UPDATE blt
+SET 
+    BOELaborTypeStartDate = ds.StartDate,
+    BOELaborTypeEndDate = ds.EndDate,
+    UpdateDT = @UpdateDT
+FROM [dbo].[BOELaborType] blt
+INNER JOIN @DateShifts ds ON blt.BOELaborTypeID = ds.Id AND ds.[Level] = 7 AND blt.UpdateDT = ds.UpdateDate;
 
 IF @@ERROR = 0
 	SELECT 
