@@ -394,10 +394,13 @@ namespace GenBOE.ActionLogic.IO.Import
                 // Split the CLIN numbers at the commas and iterate over the results
                 foreach (string clinNumber in row[clinNumberColumn].Split(','))
                 {
-                    // Convert CLIN NUMBER to CLIN ID
-                    int clinID = existingClinsForWorkspace.Where(c => String.Compare(c.ClinNumber, clinNumber, true) == 0).Select(c => c.Id).FirstOrDefault();
+					// Convert CLIN NUMBER to CLIN ID
+					int clinID = existingClinsForWorkspace
+						.Where(c => String.Compare(c.ClinNumber, clinNumber.Trim(), true) == 0)
+						.Select(c => c.Id)
+						.FirstOrDefault();
 
-                    if (clinID > 0)
+					if (clinID > 0)
                     {
                         // add the CLIN ID
                         clinIDs.Add(clinID);

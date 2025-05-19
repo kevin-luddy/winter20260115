@@ -23,7 +23,7 @@ namespace RPM.Web.Controllers
         /// <summary>
         /// The logger.
         /// </summary>
-        private Logger log = new Logger(typeof(HomeController));
+        private readonly Logger log = new Logger(typeof(HomeController));
 
         #region Views 
 

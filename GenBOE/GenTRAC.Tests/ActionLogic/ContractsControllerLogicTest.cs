@@ -726,7 +726,11 @@ namespace GenTRAC.Tests.ActionLogic
                 ProgramEppDate = DateTime.Now.AddHours(-2),
                 CageCode = "ABC123",
                 LobEppDate = DateTime.Now.AddHours(-1),
-                CustomerDueDate = DateTime.Now
+                CustomerDueDate = DateTime.Now,
+				IsInsuranceDirect = TripleBooleanState.Yes,
+				InsuranceType = InsuranceType.Space,
+				ProposedInsurance = 1,
+				NegotiatedInsurance = 1
             };
 
             ProposalDto proposal = new ProposalDto() { AgreementDate = DateTime.Now, IsRomNte = false };
@@ -774,10 +778,14 @@ namespace GenTRAC.Tests.ActionLogic
                 ModCompletedDate = DateTime.Now,
                 NegotiationsSubmitted = DateTime.Now,
                 LmWon = true,
-                CustomerDueDate = DateTime.Now
-            };
+                CustomerDueDate = DateTime.Now,
+				IsInsuranceDirect = TripleBooleanState.Yes,
+				InsuranceType = InsuranceType.Space,
+				ProposedInsurance = 1,
+				NegotiatedInsurance = 1
+			};
 
-            ProposalDto proposal = new ProposalDto() { AgreementDate = DateTime.Now };
+            ProposalDto proposal = new ProposalDto() { AgreementDate = DateTime.Now.AddDays(-1) };
             this.proposalLoader.Setup(x => x.GetById(dto.ProposalId)).Returns(proposal);
             this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(new FullProposal(proposal));
 
@@ -971,5 +979,45 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual(Constants.INVALID_NEGOTIATIONS_SUBMITTED, result.First());
         }
+
+		/// <summary>
+		/// Test ValidateContractModelView for Mission Segment EPP Date being required when EPP Delegation Authority is set to Mission Segment
+		/// </summary>
+		[TestMethod]
+		public void ValidateContractModelView_MissionSegmentEppDateRequired()
+		{
+			ContractsControllerLogic sut = this.CreateSystem();
+
+			// First test that no exception is thrown when Mission Segment EPP date is missing for a non-Mission-Segment EPP Delegation Authority
+			ContractsModelView mv = new ContractsModelView
+			{
+				ProposalId = 1,
+				CustomerSubmittalDt = DateTime.Now.AddDays(1),
+				NegotiationsSubmittedDt = DateTime.Now,
+				EppDelegationAuthority = EppDelegationAuthority.Corporate
+			};
+
+			ProposalDto proposal = new ProposalDto() { AgreementDate = DateTime.Now.AddDays(-1) };
+			this.proposalLoader.Setup(x => x.GetById(mv.ProposalId)).Returns(proposal);
+			this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(new FullProposal(proposal));
+
+			ICollection<string> result = sut.ValidateContractModelView(mv, new FullProposal(proposal));
+
+			Assert.IsFalse(result.Any());
+
+			// Now update EPP Delegation Authority to Mission Segment to ensure it returns a validation message
+			mv.EppDelegationAuthority = EppDelegationAuthority.MissionSegment;
+			result = sut.ValidateContractModelView(mv, new FullProposal(proposal));
+
+			Assert.IsTrue(result.Any());
+			Assert.AreEqual(1, result.Count);
+			Assert.AreEqual(Constants.MISSION_SEGMENT_EPP_DATE_REQUIRED, result.First());
+
+			// Lastly set the Mission Segment EPP Date to ensure it's valid
+			mv.MissionSegmentEppDate = DateTime.Now; 
+			result = sut.ValidateContractModelView(mv, new FullProposal(proposal));
+
+			Assert.IsFalse(result.Any());
+		}
     }
 }

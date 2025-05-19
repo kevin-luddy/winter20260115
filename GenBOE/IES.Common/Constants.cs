@@ -783,6 +783,11 @@ namespace IES.Common
         /// </summary>
         public const string SUBMITTAL_DATE_REQUIRED_FOR_LOST = "The Proposal Submittal Date to Customer is required in order to set the proposal as Not Awarded.";
 
+		/// <summary>
+		/// Valiation that Mission Segment EPP Date is set when EPP Delegation Authority is set to Mission Segment
+		/// </summary>
+		public const string MISSION_SEGMENT_EPP_DATE_REQUIRED = "Mission Segment EPP Date is required when EPP Delegation Authority is set to Mission Segment.";
+
         #endregion
 
         #region Default Address

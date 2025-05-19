@@ -50,3 +50,8 @@ historicalSkillMixCol {
 .proposedSkillMixCol {
     width: 89px;
 }
+
+.ucotGrandTotalCol {
+    width: 62px;
+    text-wrap: wrap;
+}

@@ -98,5 +98,10 @@ namespace GenBOE.DataBridge.Core.DTO
 		/// UCOT Hours, Space only
 		/// </summary>
 		public decimal UCOTHours { get; set; }
+
+		/// <summary>
+		/// Grand Total Hours (UCOT + Proposed), Space only
+		/// </summary>
+		public decimal GrandTotalHours { get; set; }
 	}
 }

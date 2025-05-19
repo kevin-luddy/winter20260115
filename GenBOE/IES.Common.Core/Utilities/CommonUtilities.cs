@@ -55,6 +55,7 @@ namespace IES.Common.Core.Utilities
 		private static readonly object lockObject = new();
 		private static DateTime? sapSpaceStartDate;
 		private static DateTime? skillMixStartDate;
+		private static DateTime? ucotStartDate;
 		private static DateTime? oneLmxStartDate;
 		private static DateTime? datepickerRestrictionRMS;
 		private static DateTime? historicalReferenceExplanationStartDate;
@@ -138,6 +139,29 @@ namespace IES.Common.Core.Utilities
 				}
 
 				return sapSpaceStartDate.Value;
+			}
+		}
+
+		/// <summary>
+		/// Cutoff time for workspaces for UCOT
+		/// </summary>
+		public static DateTime UCOTStartDate
+		{
+			get
+			{
+				if (!ucotStartDate.HasValue)
+				{
+					if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("UCOTStartDate"), out DateTime ucotTime))
+					{
+						ucotStartDate = DateTime.MaxValue;
+					}
+					else
+					{
+						ucotStartDate = ucotTime;
+					}
+				}
+
+				return ucotStartDate.Value;
 			}
 		}
 
@@ -868,7 +892,7 @@ namespace IES.Common.Core.Utilities
 		/// <summary>
 		/// Is UCOT/Uncompensated Overtime enabled?
 		/// </summary>
-		public static bool IsUCOTEnabled
+		private static bool IsUCOTEnabledForSystem
 		{
 			get
 			{
@@ -1036,11 +1060,21 @@ namespace IES.Common.Core.Utilities
 		/// <summary>
 		/// Is Skill Mix connection shown to the user for this workspace
 		/// </summary>
-		/// <param name="workspaceCreationDate"></param>
-		/// <returns></returns>
+		/// <param name="workspaceCreationDate">Workspace creation date</param>
+		/// <returns>True to show skill mix</returns>
 		public static bool ShowSkillMixForWorkspace(DateTime? workspaceCreationDate)
 		{
 			return IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate;
+		}
+
+		/// <summary>
+		/// Is UCOT shown to the user for this workspace
+		/// </summary>
+		/// <param name="workspaceCreationDate">Workspace creation date</param>
+		/// <returns>True to show UCOT</returns>
+		public static bool ShowUCOTForWorkspace(DateTime? workspaceCreationDate)
+		{
+			return IsUCOTEnabledForSystem && workspaceCreationDate >= UCOTStartDate;
 		}
 
 		/// <summary>

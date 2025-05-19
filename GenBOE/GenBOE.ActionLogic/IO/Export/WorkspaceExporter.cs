@@ -425,10 +425,10 @@ namespace GenBOE.ActionLogic.IO.Export
 			{
 				foreach (BoeTaskElementDTO task in exportInputs.TaskElements.Where(x => x.BoeID == boe.Id))
 				{
-					ICollection<MoqTypeSelection> moqTypesForTask = exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).ToList();
-
-					if (BOETaskUtility.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, task), moqTypesForTask.ToList()))
+					if (BOETaskUtility.ShowSkillMixForTask(exportInputs.FullWorkspace, task))
 					{
+						ICollection<MoqTypeSelection> moqTypesForTask = exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).ToList();
+						
 						if (moqTypesForTask.Count == 1)
 						{
 							string selectedMOQTypeText = moqTypesForTask.First().SelectedMOQTypeText;
@@ -515,10 +515,11 @@ namespace GenBOE.ActionLogic.IO.Export
 			{
 				foreach (BoeTaskElementDTO task in exportInputs.TaskElements.Where(x => x.BoeID == boe.Id))
 				{
-					ICollection<MoqTypeSelection> moqTypesForTask = exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).ToList();
-
-					if (BOETaskUtility.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, task), moqTypesForTask))
+					if (BOETaskUtility.ShowSkillMixForTask(exportInputs.FullWorkspace, task))
 					{
+						ICollection<MoqTypeSelection> moqTypesForTask = exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).ToList();
+
+					
 						if (moqTypesForTask.Count == 1)
 						{
 							string selectedMOQTypeText = moqTypesForTask.First().SelectedMOQTypeText;
@@ -1843,7 +1844,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + ((spread == null) ? "0" : spread.LaborSpreadValue.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision))));
 
 					// Add the UCOT Factor, if enabled, and is past 1LMX start date
-					if (Utilities.IsUCOTEnabled)
+					if (Utilities.ShowUCOTForWorkspace(exportInputs.Workspace.CreationDate))
 					{
 						if (Utilities.OneLmxStartDate <= spread?.LaborSpreadDate)
 						{

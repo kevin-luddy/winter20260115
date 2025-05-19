@@ -716,7 +716,7 @@ namespace GenBOE.Web.Controllers
 				}
 			}
 
-			this._BoeLaborControllerLogic.RecalculateLaborSpreads(ws, items, moqTotalHours, calculateUCOT && Utilities.IsUCOTEnabled);
+			this._BoeLaborControllerLogic.RecalculateLaborSpreads(ws, items, moqTotalHours, calculateUCOT && Utilities.ShowUCOTForWorkspace(ws.CreationDate));
 
 			return this.Json(items);
 		}
@@ -1697,7 +1697,8 @@ namespace GenBOE.Web.Controllers
 				.ToList();
 
 			// Call to Controller Logic
-			RefreshSkillMixModelView response = this._BoeLaborControllerLogic.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData, isBRCEnabled, isManual, ws.UCOTFactor);
+			RefreshSkillMixModelView response = SkillMixUtility.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData, 
+				isBRCEnabled, isManual);
 
 			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });
 
