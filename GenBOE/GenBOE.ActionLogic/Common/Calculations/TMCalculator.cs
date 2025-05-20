@@ -20,6 +20,11 @@ namespace GenBOE.ActionLogic.Common.Calculations
 
 	public class TMCalculator
 	{
+		/// <summary>
+		/// logger for TM Calculator
+		/// </summary>
+		private readonly Logger logger = new Logger(typeof(TMCalculator));
+
 		#region Public Methods
 
 		/// <summary>
@@ -45,25 +50,37 @@ namespace GenBOE.ActionLogic.Common.Calculations
 				// Get T&M rates from fullWorkspace for this resourceId.
 				IReadOnlyCollection<TMResourceRateDTO> wsRates = workspace.TMResourceRatesForWorkspace;
 
-				//Left Join (DefaultIfEmpty()) spreads to T&M spreadRates by resourceId & workspaceId, where laborTask date in T&M resource date range.
-				// Missing T&M Rates will throw NullReferenceException.
-				totalCost = (from laborSpread in laborTask.LaborSpreads
-							 join tmResoureRate in wsRates
-							 on new { res = laborTask.ResourceID.Value, ws = workspace.Id } equals
-							 new { res = tmResoureRate.ResourceID, ws = tmResoureRate.WorkspaceID } into hrs
-							 from hr in hrs.Where(tmResoureRate => tmResoureRate.StartDate.Value <= laborSpread.LaborSpreadDate)
-								 .Where(tmResoureRate => tmResoureRate.EndDate.Value >= laborSpread.LaborSpreadDate).DefaultIfEmpty()
-							 select (laborSpread.LaborSpreadValue * hr.ResourceRate.Value)).Sum();
+				// first check to see if there are ANY rates for this workspace, if not then just return the sum of the labor spreads
+				if (wsRates.Any(w => w.ResourceID == laborTask.ResourceID))
+				{
+					//Left Join (DefaultIfEmpty()) spreads to T&M spreadRates by resourceId & workspaceId, where laborTask date in T&M resource date range.
+					// Missing T&M Rates will throw NullReferenceException.
+					totalCost = (from laborSpread in laborTask.LaborSpreads
+								 join tmResoureRate in wsRates
+								 on new { res = laborTask.ResourceID.Value, ws = workspace.Id } equals
+								 new { res = tmResoureRate.ResourceID, ws = tmResoureRate.WorkspaceID } into hrs
+								 from hr in hrs.Where(tmResoureRate => tmResoureRate.StartDate.Value <= laborSpread.LaborSpreadDate)
+									 .Where(tmResoureRate => tmResoureRate.EndDate.Value >= laborSpread.LaborSpreadDate).DefaultIfEmpty()
+								 select (laborSpread.LaborSpreadValue * hr.ResourceRate.Value)).Sum();
+				}
+				else
+				{
+					totalCost = laborTask.LaborSpreads.Sum(s => s.LaborSpreadValue);
+				}
 			}
-			catch (NullReferenceException)
+			catch (NullReferenceException ne)
 			{
 				// try to get Resource Name out of Workspace
 				string resourceName = workspace.ResourcesForWsResourceListId.FirstOrDefault(r => r.Id == laborTask.ResourceID)?.ResourceName ?? "{Unknown Resource Name}";
+				this.logger.Error(ne, $"Null Exception during calculation of Total Cost in TM Calculator, presumably from missing rates for Resource: {resourceName}");
 				throw new GenValidationException($"T&M Rates are missing for Resource: {resourceName}.");
 			}
 			catch (Exception ex)
 			{
-				throw new GenValidationException($"Application encountered an error calculating T&M rates for {laborTask.ToString()}:" + ex.Message);
+				// try to get Resource Name out of Workspace
+				string resourceName = workspace.ResourcesForWsResourceListId.FirstOrDefault(r => r.Id == laborTask.ResourceID)?.ResourceName ?? "{Unknown Resource Name}";
+				this.logger.Error(ex, $"Application encountered an error calculating T&M rates for Resource: {resourceName}");
+				throw new GenValidationException($"Application encountered an error calculating T&M rates for Resource: {resourceName}:" + ex.Message);
 			}
 
 			return totalCost;
