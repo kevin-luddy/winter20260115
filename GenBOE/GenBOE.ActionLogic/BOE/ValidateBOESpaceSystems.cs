@@ -7,16 +7,20 @@
 namespace GenBOE.ActionLogic.WBS.BOE
 {
     using System;
-    using System.Collections.ObjectModel;
-    using GenBOE.ActionLogic.Common.Calculations;
-    using GenBOE.ActionLogic.Validation;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Linq;
+	using GenBOE.ActionLogic.Common.Calculations;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.ActionLogic.Validation;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using IES.Common;
 	using IES.Common.classes;
+	using IES.Common.Exceptions;
 
-    public class ValidateBOESpaceSystems : ValidateBOE
+	public class ValidateBOESpaceSystems : ValidateBOE
     {
         /// <summary>
         /// Default constructor
@@ -51,27 +55,19 @@ namespace GenBOE.ActionLogic.WBS.BOE
                 toReturn.BOEHeaderMsgs.Add(BoeDTO.BOE_TITLE_REQUIRED);
             }
 
-			// UCOT validation (Space only) - if there are multiple MOQ types assigned to a task and one of those MOQ Types is one of the following, add a warning
+			// UCOT validation (Space only) - if there are multiple MOQ types assigned to a task and one of those MOQ Types is Historical/Comparative/Analogous, add a warning
 			if (Utilities.IsUCOTEnabledForSystem && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 			{
-				//IEnumerable<MOQType> selectedMOQTypes = inBOE.MoqTypeSelections.Select(x => x.SelectedMOQType);
-				//if (inBOE.MoqTypeSelections.Count > 1 && (selectedMOQTypes.Any(x => x == MOQType.Historical) || selectedMOQTypes.Any(x => x == MOQType.Comparative)
-				//	|| selectedMOQTypes.Any(x => x == MOQType.AnalogousRelationships)))
-				//{
-				//	toReturn.BOEHeaderMsgs.Add($"UCOT is not calculated for Task -test- because it has multiple MOQ Types.");
-				//}
 				foreach (BoeTaskElementDTO task in inBOE.TaskElements)
 				{
-					if (task != null)
+					ICollection<MoqTypeSelection> moqTypeSelectionsForTask = inBOE.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList();
+					bool doesSpecifiedMoqTypeExist = moqTypeSelectionsForTask.Any(x => x.SelectedMOQType == MOQType.Comparative || x.SelectedMOQType == MOQType.Historical
+						|| x.SelectedMOQType == MOQType.AnalogousRelationships);
+					if (moqTypeSelectionsForTask.Count > 1 && doesSpecifiedMoqTypeExist)
 					{
-						toReturn.BOEHeaderMsgs.Add("");
+						toReturn.BOEHeaderMsgs.Add($"UCOT is not calculated for Task {task.TaskTitle} because it has multiple MOQ Types.");
 					}
 				}
-				// Group tasks by IDs, especially if they have multiple MOQ Types
-				//inBOE.MoqTypeSelections.GroupBy(x => x.SelectedMOQType).Select(x => new BoeTaskElementDTO()
-				//{
-				//	TaskTitle = 
-				//});
 			}
 
 			return toReturn;

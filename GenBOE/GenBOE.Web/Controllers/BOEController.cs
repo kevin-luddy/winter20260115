@@ -941,9 +941,35 @@ namespace GenBOE.Web.Controllers
 			ids.Add(boeId);
 
 			ActionResult result = new EmptyResult();
+			string ucotExceptionString = string.Empty;
+			string commaSeparatedTasks = string.Empty;
 
 			try
 			{
+				// UCOT validation (Space only) - if there are multiple MOQ types assigned to a task and one of those MOQ Types is Historical/Comparative/Analogous, add a warning
+				if (Utilities.IsUCOTEnabledForSystem && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+				{
+					FullBoe fullBoe = this.Factory.CreateFullBoe(boeId);
+
+					foreach (BoeTaskElementDTO task in fullBoe.TaskElements)
+					{
+						ICollection<MoqTypeSelection> moqTypeSelectionsForTask = fullBoe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList();
+						bool doesSpecifiedMoqTypeExist = moqTypeSelectionsForTask.Any(x => x.SelectedMOQType == MOQType.Comparative || x.SelectedMOQType == MOQType.Historical
+							|| x.SelectedMOQType == MOQType.AnalogousRelationships);
+						if (moqTypeSelectionsForTask.Count > 1 && doesSpecifiedMoqTypeExist)
+						{
+							commaSeparatedTasks = string.Join(", ", task.TaskTitle);
+						}
+					}
+
+					if (!string.IsNullOrEmpty(commaSeparatedTasks))
+					{
+						ucotExceptionString = $"UCOT is not calculated because one or more tasks ({commaSeparatedTasks}) has multiple MOQ types.";
+
+						throw new GenValidationException(ucotExceptionString);
+					}
+				}
+
 				bool isCustomExport;
 				WorkspaceExportFormatDTO wsExportFormatDTO;
 				BOEExportInputs exportInputs;
@@ -953,6 +979,12 @@ namespace GenBOE.Web.Controllers
 				this.reportsControllerLogic.PrepareAllBOEsReport(ws, isSubcontractorUser, summarizeByCustomField, ids, ViewData, out isCustomExport, out wsExportFormatDTO,
 					out exportInputs, out boeExportModelViews, out boeSummaryGridModelViews, false);
 				await this.reportsControllerLogic.ExportAllBOEsReport(ws, null, Response, isCustomExport, wsExportFormatDTO, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
+			}
+			catch (GenValidationException ex)
+			{
+				_log.Warn(ex);
+
+				result = this.CreateTextFileWithErrorMessage(ucotExceptionString);
 			}
 			catch (Exception ex)
 			{
