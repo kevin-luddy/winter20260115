@@ -444,7 +444,7 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 		/// Duplicated because of the difference 
 		/// </summary>
 		/// <param name="ws">Full Workspace</param>
-		/// <returns></returns>
+		/// <returns>Excel file as FileStream</returns>
 		/// <exception cref="ArgumentNullException"></exception>
 		public FileStream ExportCLINs(FullWorkspace ws)
 		{
