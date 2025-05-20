@@ -79,7 +79,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 			{
 				// try to get Resource Name out of Workspace
 				string resourceName = workspace.ResourcesForWsResourceListId.FirstOrDefault(r => r.Id == laborTask.ResourceID)?.ResourceName ?? "{Unknown Resource Name}";
-				this.logger.Error(ex, $"Application encountered an error calculating T&M rates for Resource: {resourceName}";
+				this.logger.Error(ex, $"Application encountered an error calculating T&M rates for Resource: {resourceName}");
 				throw new GenValidationException($"Application encountered an error calculating T&M rates for Resource: {resourceName}:" + ex.Message);
 			}
 
