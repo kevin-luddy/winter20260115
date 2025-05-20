@@ -287,6 +287,7 @@
     <Compile Include="Reporting\IBOEConfidenceReport.cs" />
     <Compile Include="_ControllerLogic\Backend\BOEConfigurationControllerLogic.cs" />
     <Compile Include="_ControllerLogic\Backend\CLINControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\Backend\WBSControllerLogic.cs" />
     <Compile Include="_ControllerLogic\Backend\WorkspaceAdminControllerLogic.cs" />
     <Compile Include="_ControllerLogic\Backend\WorkspaceSettingsControllerLogic.cs" />
     <Compile Include="_ControllerLogic\Backend\WorkspaceHomeControllerLogic.cs" />

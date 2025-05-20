@@ -280,6 +280,7 @@
     <Compile Include="Controllers\Backend\CLINController.cs" />
     <Compile Include="Controllers\Backend\ImportController.cs" />
     <Compile Include="Controllers\Backend\ManagePermissionsController.cs" />
+    <Compile Include="Controllers\Backend\WBSController.cs" />
     <Compile Include="Controllers\Backend\WorkspaceAdminController.cs" />
     <Compile Include="Controllers\Backend\WorkspaceHomeController.cs" />
     <Compile Include="Controllers\Backend\WorkspaceSettingsController.cs" />
@@ -292,6 +293,7 @@
     <Compile Include="Controllers\BoeDataAPIController.cs" />
     <Compile Include="Controllers\RTETemplatesController.cs" />
     <Compile Include="Controllers\DateShiftController.cs" />
+    <Compile Include="ModelView\AddEditWBSModelView.cs" />
     <Compile Include="ModelView\AddEditCLINModelView.cs" />
     <Compile Include="ModelView\BOEFormMasterModelView.cs" />
     <Compile Include="ModelView\ConfidenceReportItem.cs" />
