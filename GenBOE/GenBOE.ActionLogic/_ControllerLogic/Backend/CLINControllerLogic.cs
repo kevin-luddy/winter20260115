@@ -24,9 +24,7 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 	using IES.Common;
 	using IES.Common.classes;
 	using IES.Common.Exceptions;
-	using IES.Common.OfficeUtilities;
 	using IES.Common.PickList;
-	using Microsoft.SqlServer.Server;
 
 	/// <summary>
 	/// CLIN Controller Logic
