@@ -82,6 +82,11 @@ namespace GenBOE.Web.Controllers.Backend
 			return result;
 		}
 
+		/// <summary>
+		/// Export CLIN
+		/// </summary>
+		/// <param name="exportCLINModelView"></param>
+		/// <returns>filestream</returns>
 		[System.Web.Http.HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public HttpResponseMessage ExportCLINs([FromBody] ExportCLINModelView exportCLINModelView)
