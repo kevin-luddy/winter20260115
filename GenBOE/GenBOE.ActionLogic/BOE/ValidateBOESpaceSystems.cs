@@ -12,8 +12,9 @@ namespace GenBOE.ActionLogic.WBS.BOE
     using GenBOE.ActionLogic.Validation;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
-    using GenBOE.Objects;
-    using IES.Common.classes;
+	using GenBOE.Objects;
+	using IES.Common;
+	using IES.Common.classes;
 
     public class ValidateBOESpaceSystems : ValidateBOE
     {
@@ -50,7 +51,30 @@ namespace GenBOE.ActionLogic.WBS.BOE
                 toReturn.BOEHeaderMsgs.Add(BoeDTO.BOE_TITLE_REQUIRED);
             }
 
-            return toReturn;
+			// UCOT validation (Space only) - if there are multiple MOQ types assigned to a task and one of those MOQ Types is one of the following, add a warning
+			if (Utilities.IsUCOTEnabledForSystem && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			{
+				//IEnumerable<MOQType> selectedMOQTypes = inBOE.MoqTypeSelections.Select(x => x.SelectedMOQType);
+				//if (inBOE.MoqTypeSelections.Count > 1 && (selectedMOQTypes.Any(x => x == MOQType.Historical) || selectedMOQTypes.Any(x => x == MOQType.Comparative)
+				//	|| selectedMOQTypes.Any(x => x == MOQType.AnalogousRelationships)))
+				//{
+				//	toReturn.BOEHeaderMsgs.Add($"UCOT is not calculated for Task -test- because it has multiple MOQ Types.");
+				//}
+				foreach (BoeTaskElementDTO task in inBOE.TaskElements)
+				{
+					if (task != null)
+					{
+						toReturn.BOEHeaderMsgs.Add("");
+					}
+				}
+				// Group tasks by IDs, especially if they have multiple MOQ Types
+				//inBOE.MoqTypeSelections.GroupBy(x => x.SelectedMOQType).Select(x => new BoeTaskElementDTO()
+				//{
+				//	TaskTitle = 
+				//});
+			}
+
+			return toReturn;
         }
 
         /// <summary>
