@@ -452,7 +452,10 @@ namespace GenBOE.Web.Common
 
 				x.TableData.ForEach(y =>
 				{
-
+					if (y.ResourceHours.Count(z => z.TotalHours == 0) > 0)
+					{
+						helperText = "Actuals need to be recalculated for the MOQType";
+					}
 
 					if (isSpace && y.RepositoryName != RepositoryName.SapWebi.GetDescription())
 					{
