@@ -990,9 +990,11 @@
                                     <th class="resourceCol">Resource</th>
                                     <th data-ng-if="!ManageTaskModel.IsSpace" class="currentResourceCol">Current Resource</th>
                                     <th class="historicalHoursCol">Historical Hours</th>
-                                    <th class="laborSkillMixCol">Labor Skill Mix</th>
-                                    <th class="includedCol">Included</th>
-                                    <th class="boeSkillMixCol">BOE Skill Mix</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="laborSkillMixCol">Labor Skill Mix</th>
+                                    <th data-ng-if="ManageTaskModel.IsSpace" class="historicalSkillMixCol">Historical Skill Mix</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="includedCol">Included</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="boeSkillMixCol">BOE Skill Mix</th>
+                                    <th data-ng-if="ManageTaskModel.IsSpace" class="proposedSkillMixCol">Proposed Skill Mix</th>
                                     <th class="proposedHoursCol">Proposed Hours</th>
                                     <th>Rationale**</th>
                                     <th data-ng-if="!ManageTaskModel.IsSpace" class="rmsButtonCol"></th>
@@ -1014,7 +1016,7 @@
                                     <td data-ng-if="!isSkillMixManual()" style="text-align: right">{{row.HistoricalHours | number:2}}</td>
                                     <td data-ng-if="isSkillMixManual()" style="text-align: right"><input type="number" data-ng-blur="setDirty()" data-ng-model="row.HistoricalHours" step="any" style="width: 100%; height: 14px;" /></td>
                                     <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
-                                    <td>{{row.Included | yesNo}}</td>
+                                    <td data-ng-if="!ManageTaskModel.IsSpace">{{row.Included | yesNo}}</td>
                                     <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{row.ProposedHours}}</td>
                                     <td>
@@ -1034,7 +1036,7 @@
                                     <td data-ng-if="!ManageTaskModel.IsSpace"></td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.LaborSkillMix | number:1}}%</td>
-                                    <td></td>
+                                    <td data-ng-if="!ManageTaskModel.IsSpace"></td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.BoeSkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.ProposedHours}}</td>
                                     <td></td>
@@ -1062,9 +1064,11 @@
                                     <th class="resourceCol">Resource</th>
                                     <th class="brcCol">Business Resource Code</th>
                                     <th class="historicalHoursCol">Historical Hours</th>
-                                    <th class="laborSkillMixCol">Labor Skill Mix</th>
-                                    <th class="includedCol">Included</th>
-                                    <th class="boeSkillMixCol">BOE Skill Mix</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="laborSkillMixCol">Labor Skill Mix</th>
+                                    <th data-ng-if="ManageTaskModel.IsSpace" class="historicalSkillMixCol">Historical Skill Mix</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="includedCol">Included</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="boeSkillMixCol">BOE Skill Mix</th>
+                                    <th data-ng-if="ManageTaskModel.IsSpace" class="proposedSkillMixCol">Proposed Skill Mix</th>
                                     <th class="proposedHoursCol">Proposed Hours</th>
                                     <!-- UCOT Hours is Space only -->
                                     <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
@@ -1083,7 +1087,7 @@
                                     <td data-ng-if="!isSkillMixManual()" style="text-align: right">{{row.HistoricalHours | number:2}}</td>
                                     <td data-ng-if="isSkillMixManual()" style="text-align: right"><input type="number" data-ng-model="row.HistoricalHours" step="any" style="width: 100%; height: 14px;" /></td>
                                     <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
-                                    <td>{{row.Included | yesNo}}</td>
+                                    <td data-ng-if="!ManageTaskModel.IsSpace">{{row.Included | yesNo}}</td>
                                     <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{row.ProposedHours}}</td>
                                     <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
@@ -1103,7 +1107,7 @@
                                     <td></td>
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.LaborSkillMix | number:1}}%</td>
-                                    <td></td>
+                                    <td data-ng-if="!ManageTaskModel.IsSpace"></td>
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.BoeSkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.ProposedHours}}</td>
                                     <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
