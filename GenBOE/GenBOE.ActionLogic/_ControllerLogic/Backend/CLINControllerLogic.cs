@@ -443,7 +443,7 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 		/// Export CLIN logic
 		/// Duplicated because of the difference 
 		/// </summary>
-		/// <param name="ws"></param>
+		/// <param name="ws">Full Workspace</param>
 		/// <returns></returns>
 		/// <exception cref="ArgumentNullException"></exception>
 		public FileStream ExportCLINs(FullWorkspace ws)
