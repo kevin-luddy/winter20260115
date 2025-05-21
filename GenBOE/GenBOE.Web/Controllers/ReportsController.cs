@@ -1861,6 +1861,10 @@ namespace GenBOE.Web.Controllers
 					string lockKey = string.Intern("Export_ProPricer_" + workspace);
 					lock (lockKey)
 					{
+						if (Utilities.IsUCOTEnabledForSystem && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+						{
+						}
+
 						// Get the workspace again in case the user clicked twice
 						ws = this.Factory.CreateFullWorkspace(workspace);
 

@@ -43,6 +43,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
         [TestMethod]
         public void ExportToProPricerFormatvalidationTest()
         {
+			// TODO: Katie???
             //Variable Declarations
             ProPricerDTO value1 = new ProPricerDTO() { Id = 1, WorkspaceID = 2, ExportID = 1, Scope = IES.Common.ProPricerScope.Workspace, FormatName = "Format Name" };
             ProPricerDTO value2 = new ProPricerDTO() { Id = 1, WorkspaceID = 3, ExportID = 1, Scope = IES.Common.ProPricerScope.Workspace, FormatName = "Format Name" };

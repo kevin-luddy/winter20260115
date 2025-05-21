@@ -65,7 +65,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 						|| x.SelectedMOQType == MOQType.AnalogousRelationships);
 					if (moqTypeSelectionsForTask.Count > 1 && doesSpecifiedMoqTypeExist)
 					{
-						toReturn.BOEHeaderMsgs.Add($"UCOT is not calculated for Task {task.TaskTitle} because it has multiple MOQ Types.");
+						toReturn.BOEHeaderMsgs.Add(string.Format(ValidationConstants.TASK_WITH_MULTI_MOQ_TYPES_UCOT, task.TaskTitle));
 					}
 				}
 			}

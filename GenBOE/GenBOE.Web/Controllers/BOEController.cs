@@ -964,7 +964,7 @@ namespace GenBOE.Web.Controllers
 
 					if (!string.IsNullOrEmpty(commaSeparatedTasks))
 					{
-						ucotExceptionString = $"UCOT is not calculated because one or more tasks ({commaSeparatedTasks}) has multiple MOQ types.";
+						ucotExceptionString = string.Format(ValidationConstants.MULTI_TASK_WITH_MULTI_MOQ_TYPES_UCOT, commaSeparatedTasks);
 
 						throw new GenValidationException(ucotExceptionString);
 					}
