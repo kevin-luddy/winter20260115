@@ -8,18 +8,21 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.IO;
 	using System.Linq;
 	using System.Transactions;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.Common.Email;
+	using GenBOE.ActionLogic.IO.Export;
 	using GenBOE.ActionLogic.ModelView.Clin;
 	using GenBOE.ActionLogic.Validation;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using IES.Common;
+	using IES.Common.classes;
 	using IES.Common.Exceptions;
 	using IES.Common.PickList;
 
@@ -85,13 +88,18 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 		private IBoeEmailer _emailer { get; set; }
 
 		/// <summary>
+		/// CLIN Exporter
+		/// </summary>
+		private ICLINExporter _clinExporter { get; set; }
+
+		/// <summary>
 		/// Constructor
 		/// </summary>
-		public CLINControllerLogic(IFullObjectFactory factory, IValidationHelper validationHelper, 
-			IVariableSelectBOEtoSumCalculation variableSelectBOEtoSumCalculation, IBoeTaskElementRecalculation boeTaskElementRecalculation, 
-			IBoeTaskElementMediator boeTaskElementMediator, IBOEStateMachine boeStateMachine, IBoeMediator boeMediator, 
-			IClinDTODataLoader clinDTODataLoader, IWorkspaceVariableDTODataLoader workspaceVariableDTODataLoader, 
-			ContractTypeLoader contractTypeLoader, IBoeEmailer boeEmailer)
+		public CLINControllerLogic(IFullObjectFactory factory, IValidationHelper validationHelper,
+			IVariableSelectBOEtoSumCalculation variableSelectBOEtoSumCalculation, IBoeTaskElementRecalculation boeTaskElementRecalculation,
+			IBoeTaskElementMediator boeTaskElementMediator, IBOEStateMachine boeStateMachine, IBoeMediator boeMediator,
+			IClinDTODataLoader clinDTODataLoader, IWorkspaceVariableDTODataLoader workspaceVariableDTODataLoader,
+			ContractTypeLoader contractTypeLoader, IBoeEmailer boeEmailer, ICLINExporter clinExporter)
 		{
 			this._factory = factory;
 			this._validationHelper = validationHelper;
@@ -104,6 +112,7 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 			this._workspaceVariableLoader = workspaceVariableDTODataLoader;
 			this._contractTypeLoader = contractTypeLoader;
 			this._emailer = boeEmailer;
+			this._clinExporter = clinExporter;
 		}
 		#endregion
 
@@ -428,5 +437,53 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 			}
 		}
 
+		/// <summary>
+		/// Export CLIN logic
+		/// Duplicated because of the difference 
+		/// </summary>
+		/// <param name="ws">Full Workspace</param>
+		/// <returns>Excel file as FileStream</returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		public FileStream ExportCLINs(FullWorkspace ws)
+		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
+
+			FileStream fs = null;
+			//filter out multi boe's to hide from user. 
+			Collection<ClinDTO> clins = ws.ClinsNoMultiClin.OrderBy(c => c.ClinNumber).ToCollection<ClinDTO>();
+
+			// Get the CLIN template file name
+			// Assume that "Templates" is a subdirectory of your application's root directory
+			string templateDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates", "Export");
+
+			// Ensure the template directory exists
+			if (!Directory.Exists(templateDir))
+			{
+				throw new InvalidOperationException($"Template directory '{templateDir}' does not exist.");
+			}
+
+			string templateFileName = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST
+				? Path.Combine(templateDir, "CLINsRMS.xlsx")
+				: Path.Combine(templateDir, "CLINs.xlsx");
+
+			// Check if the template file exists
+			if (!File.Exists(templateFileName))
+			{
+				throw new FileNotFoundException($"Template file '{templateFileName}' does not exist.");
+			}
+
+			ICollection<PickListDto> contractTypes = this._contractTypeLoader.GetPickListValues();
+
+			string exportFile = this._clinExporter.ExportToExcelFile(templateFileName, clins, ws, contractTypes);
+
+			if (exportFile.Length > 0)
+			{
+				fs = new FileStream(exportFile, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+			}
+			return fs;
+		}
 	}
 }

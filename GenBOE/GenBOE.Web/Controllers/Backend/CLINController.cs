@@ -8,8 +8,13 @@
 namespace GenBOE.Web.Controllers.Backend
 {
 	using System;
+	using System.IO;
 	using System.Linq;
+	using System.Net;
+	using System.Net.Http;
+	using System.Net.Http.Headers;
 	using System.Web.Http;
+	using System.Web.Mvc;
 	using GenBOE.ActionLogic._ControllerLogic.Backend;
 	using GenBOE.ActionLogic.ModelView.Clin;
 	using GenBOE.DataBridge.Common.Interfaces;
@@ -47,7 +52,7 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <param name="workspace">workspaceShortName</param>
 		/// <param name="inUpdatedClin">CLIN model</param>
 		/// <returns>Newly upserted CLIN</returns>
-		[HttpPost]
+		[System.Web.Http.HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 
 		public IESSingleResponse<ManageCLINModelView> SaveClin([FromBody] AddEditCLINModelView addEditCLINModelView)
@@ -75,6 +80,48 @@ namespace GenBOE.Web.Controllers.Backend
 			}
 
 			return result;
+		}
+
+		/// <summary>
+		/// Export CLIN
+		/// </summary>
+		/// <param name="exportCLINModelView">ExportCLINModelView (just workspaceShortName)</param>
+		/// <returns>filestream</returns>
+		[System.Web.Http.HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public HttpResponseMessage ExportCLINs([FromBody] ExportCLINModelView exportCLINModelView)
+		{
+			try
+			{
+				if (exportCLINModelView != null)
+				{
+					FullWorkspace ws = this.Factory.CreateFullWorkspace(exportCLINModelView.workspaceShortName);
+					FileStream fs = this._clinControllerLogic.ExportCLINs(ws);
+
+					HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+					response.Content = new StreamContent(fs);
+					response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+					response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
+					response.Content.Headers.ContentDisposition.FileName = "CLINs.xlsx";
+
+					return response;
+				}
+				else
+				{
+					return new HttpResponseMessage(HttpStatusCode.BadRequest)
+					{
+						Content = new StringContent("Invalid request body")
+					};
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				return new HttpResponseMessage(HttpStatusCode.InternalServerError)
+				{
+					Content = new StringContent("Unknown error exporting CLINs")
+				};
+			}
 		}
 	}
 }
