@@ -4,12 +4,6 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-// -----------------------------------------------------------------------
-// <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2025 Lockheed Martin Corporation
-// </copyright>
-// -----------------------------------------------------------------------
-
 namespace GenBOE.Tests.ActionLogic.ControllerLogic
 {
 	using System.IO;
@@ -31,8 +25,10 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 	using IES.Common.classes;
 	using Microsoft.Practices.Unity;
 	using GenBOE.DataBridge.Common;
-	using System.Security;
 
+	/// <summary>
+	/// genBOE Angular CLIN tests
+	/// </summary>
 	[TestClass]
 	public class CLINControllerLogicTests
 	{
@@ -52,7 +48,10 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		Mock<ICommonDataMapper> commonDataMapper = new Mock<ICommonDataMapper>();
 		private Mock<IPermissionsDTODataLoader> _permissions = new Mock<IPermissionsDTODataLoader>();
 
-
+		/// <summary>
+		/// Setup ControllerLogic
+		/// </summary>
+		/// <returns></returns>
 		public CLINControllerLogic CreateSut()
 		{
 			this.fullObjectFactory = new Mock<GenBOE.Objects.IFullObjectFactory>();
@@ -73,8 +72,11 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 				contractTypeLoader.Object, boeEmailer.Object, clinExporter.Object);
 		}
 
+		/// <summary>
+		/// Test the Invalid Exception throw
+		/// </summary>
 		[TestMethod]
-		public void ExportCLINs_ValidWorkspace_ReturnsFileStream()
+		public void ExportCLINs_InvalidException()
 		{
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(GenBOE.Objects.IRetriever), retriever.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissions.Object);
