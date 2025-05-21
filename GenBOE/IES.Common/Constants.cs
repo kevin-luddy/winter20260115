@@ -448,6 +448,11 @@ namespace IES.Common
 																	"MM yy", "MM-yy", "MM/yy",
 																	"M yy", "M-yy", "M/yy" };
 
+		/// <summary>
+		/// Name of the National Security Space Line of Business
+		/// </summary>
+		public const string NSS_LOB_NAME = "National Security Space";
+
 		#region MOQ Type Text Field Lengths
 
 		/// <summary>
@@ -784,18 +789,18 @@ namespace IES.Common
         public const string SUBMITTAL_DATE_REQUIRED_FOR_LOST = "The Proposal Submittal Date to Customer is required in order to set the proposal as Not Awarded.";
 
 		/// <summary>
-		/// Valiation that Mission Segment EPP Date is set when EPP Delegation Authority is set to Mission Segment
+		/// Validation that EPP Delegation Authority is set to a valid value
 		/// </summary>
-		public const string MISSION_SEGMENT_EPP_DATE_REQUIRED = "Mission Segment EPP Date is required when EPP Delegation Authority is set to Mission Segment.";
+		public const string EPP_DELEGATION_AUTHORITY_INVALID = "EPP Delegation Authority is unset or not valid.";
 
-        #endregion
+		#endregion
 
-        #region Default Address
+		#region Default Address
 
-        /// <summary>
-        /// Default Office
-        /// </summary>
-        public const string DEFAULT_ADDRESS_OFFICE = "Contract Administration Office";
+		/// <summary>
+		/// Default Office
+		/// </summary>
+		public const string DEFAULT_ADDRESS_OFFICE = "Contract Administration Office";
 
         /// <summary>
         /// Default Agency

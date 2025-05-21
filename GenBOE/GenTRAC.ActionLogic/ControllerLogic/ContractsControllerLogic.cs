@@ -26,6 +26,7 @@ namespace GenTRAC.ActionLogic
 	using GenTRAC.Objects;
 	using GenTRAC.Objects.FullObject;
 	using IES.Common;
+	using IES.Common.PickList;
 
 	/// <summary>
 	/// Contracts controller logic
@@ -65,6 +66,11 @@ namespace GenTRAC.ActionLogic
 		/// </summary>
 		private readonly ApprovalsControllerLogic approvalsLogic;
 
+		/// <summary>
+		/// Pick List Mapper
+		/// </summary>
+		private readonly IPickListMapper pickListMapper = null;
+
 		#endregion
 
 		/// <summary>
@@ -81,6 +87,7 @@ namespace GenTRAC.ActionLogic
 		/// <param name="contractsLoader">Contracts Loader</param>
 		/// <param name="inEmailer">Emailer</param>
 		/// <param name="inApprovalsLogic">Injected Approvals Logic</param>
+		/// <param name="pickListMapper">Picklist Mapper</param>
 		public ContractsControllerLogic(
 			ISecurityAccess securityAccess,
 			IProposalLoader proposalLoader,
@@ -93,13 +100,15 @@ namespace GenTRAC.ActionLogic
 			IContractsLoader contractsLoader,
 			ICageCodesLoader cageCodesLoader,
 			IPtmEmailer inEmailer,
-			ApprovalsControllerLogic inApprovalsLogic)
+			ApprovalsControllerLogic inApprovalsLogic,
+			IPickListMapper pickListMapper)
 			: base(securityAccess, proposalLoader, userMapper, objectFactory, approvalsLoader, proposalChecklistLoader, checklistMediator, proposalMediator)
 		{
 			this.contractsLoader = contractsLoader;
 			this.cageCodesLoader = cageCodesLoader;
 			this.emailer = inEmailer;
 			this.approvalsLogic = inApprovalsLogic;
+			this.pickListMapper = pickListMapper;
 		}
 
 		/// <summary>
@@ -256,11 +265,6 @@ namespace GenTRAC.ActionLogic
 					&& model.NegotiationsSubmittedDt < proposal.AgreementDate)
 			{
 				validationMessages.Add(Constants.INVALID_NEGOTIATIONS_SUBMITTED);
-			}
-
-			if (model.EppDelegationAuthority == EppDelegationAuthority.MissionSegment && model.MissionSegmentEppDate is null)
-			{
-				validationMessages.Add(Constants.MISSION_SEGMENT_EPP_DATE_REQUIRED);
 			}
 
 			return validationMessages;
@@ -732,7 +736,7 @@ namespace GenTRAC.ActionLogic
 			messages = messages ?? new List<string>();
 
 			bool isValid = true;
-			
+
 			// Customer Due Date required for validation
 			if (dto.CustomerDueDate is null)
 			{
@@ -755,14 +759,21 @@ namespace GenTRAC.ActionLogic
 				case EppDelegationAuthority.LoB:
 				case EppDelegationAuthority.Space:
 				case EppDelegationAuthority.Corporate:
-					if (!edc.AreRequiredDatesPopulated(dto, messages) || !edc.AreEnteredDatesSequential(dto, messages))
+				case EppDelegationAuthority.MissionSegment:
+					// LOBs don't have consistent IDs between dev/uat/prod so we need to get the LOB picklist to get the NSS ID
+					// in order to pass if the proposal has NSS as its LOB to the helper method
+					ICollection<SelectListItem> lobList = pickListMapper.GetSelectListPickList(PickListEnum.LineOfBusiness);
+					SelectListItem nssLob = lobList.FirstOrDefault(x => x.Text == Constants.NSS_LOB_NAME);
+					bool isNss = nssLob != null && fullProposal.LineOfBusinessID.ToString() == nssLob.Value;
+
+					if (!edc.AreRequiredDatesPopulated(dto, messages, isNss) || !edc.AreEnteredDatesSequential(dto, messages))
 					{
 						isValid = false;
 					}
-					break;
 
+					break;
 				default:
-					string msg = $"EPP Delegation Authority is unset or not valid.";
+					string msg = Constants.EPP_DELEGATION_AUTHORITY_INVALID;
 					log.Info(msg + $" ({dto?.EppDelegationAuthority})");
 					messages.Add(msg);
 					isValid = false;
