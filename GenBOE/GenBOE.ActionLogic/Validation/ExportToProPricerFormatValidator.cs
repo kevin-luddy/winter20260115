@@ -64,34 +64,6 @@ namespace GenBOE.ActionLogic.Validation
                 response.Add("The format name must be unique within a Workspace scope.");
             }
 
-			// UCOT - Space Only
-			// If there are multiple MOQ types assigned to a task and one of those MOQ Types is Historical / Comparative / Analogous, add a warning
-			if (Utilities.IsUCOTEnabledForSystem && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-			{
-				foreach (FullBoe boe in workspace.Boes)
-				{
-					FullBoe fullBoe = this._factory.CreateFullBoe(boe.Id);
-
-					string commaSeparatedTasks = string.Empty;
-
-					foreach (BoeTaskElementDTO task in fullBoe.TaskElements)
-					{
-						ICollection<MoqTypeSelection> moqTypeSelectionsForTask = fullBoe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList();
-						bool doesSpecifiedMoqTypeExist = moqTypeSelectionsForTask.Any(x => x.SelectedMOQType == MOQType.Comparative || x.SelectedMOQType == MOQType.Historical
-							|| x.SelectedMOQType == MOQType.AnalogousRelationships);
-						if (moqTypeSelectionsForTask.Count > 1 && doesSpecifiedMoqTypeExist)
-						{
-							commaSeparatedTasks = string.Join(", ", task.TaskTitle);
-						}
-					}
-
-					if (!string.IsNullOrEmpty(commaSeparatedTasks))
-					{
-						response.Add(string.Format(ValidationConstants.MULTI_TASK_WITH_MULTI_MOQ_TYPES_UCOT, commaSeparatedTasks));
-					}
-				}
-			}
-
 			return response;
         }
     }

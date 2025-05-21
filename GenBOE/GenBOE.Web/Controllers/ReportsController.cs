@@ -1861,12 +1861,38 @@ namespace GenBOE.Web.Controllers
 					string lockKey = string.Intern("Export_ProPricer_" + workspace);
 					lock (lockKey)
 					{
-						if (Utilities.IsUCOTEnabledForSystem && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-						{
-						}
-
 						// Get the workspace again in case the user clicked twice
 						ws = this.Factory.CreateFullWorkspace(workspace);
+
+						// Validate for UCOT and multiple MOQ tasks - Space only
+						if (Utilities.IsUCOTEnabledForSystem && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+						{
+							string commaSeparatedTasks = string.Empty;
+							string ucotExceptionString = string.Empty;
+
+							foreach (FullBoe boe in ws.Boes)
+							{
+								FullBoe fullBoe = this.Factory.CreateFullBoe(boe.Id);
+
+								foreach (BoeTaskElementDTO task in fullBoe.TaskElements)
+								{
+									ICollection<MoqTypeSelection> moqTypeSelectionsForTask = fullBoe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList();
+									bool doesSpecifiedMoqTypeExist = moqTypeSelectionsForTask.Any(x => x.SelectedMOQType == MOQType.Comparative || x.SelectedMOQType == MOQType.Historical
+										|| x.SelectedMOQType == MOQType.AnalogousRelationships);
+									if (moqTypeSelectionsForTask.Count > 1 && doesSpecifiedMoqTypeExist)
+									{
+										commaSeparatedTasks = string.Join(", ", task.TaskTitle);
+									}
+								}
+							}
+
+							if (!string.IsNullOrEmpty(commaSeparatedTasks))
+							{
+								ucotExceptionString = string.Format(ValidationConstants.MULTI_TASK_WITH_MULTI_MOQ_TYPES_UCOT, commaSeparatedTasks);
+
+								throw new GenValidationException(ucotExceptionString);
+							}
+						}
 
 						// once the export is complete, increment the total of exports for this workspace for reporting tracking purposes
 						ws.NumberOfTimesExportedToProPricer = ++ws.NumberOfTimesExportedToProPricer;
