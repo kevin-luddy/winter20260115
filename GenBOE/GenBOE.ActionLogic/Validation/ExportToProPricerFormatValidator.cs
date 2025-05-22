@@ -6,17 +6,12 @@
 
 namespace GenBOE.ActionLogic.Validation
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-	using GenBOE.ActionLogic.ModelView;
-	using GenBOE.DataBridge.DTO;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Linq;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
-	using IES.Common;
-	using IES.Common.classes;
-	using IES.Common.Exceptions;
 
 	public class ExportToProPricerFormatValidator : Validator
     {

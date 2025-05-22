@@ -941,9 +941,7 @@ namespace GenBOE.Web.Controllers
 			ids.Add(boeId);
 
 			ActionResult result = new EmptyResult();
-			string ucotExceptionString = string.Empty;
-			string commaSeparatedTasks = string.Empty;
-
+			
 			try
 			{
 				// UCOT validation (Space only) - if there are multiple MOQ types assigned to a task and one of those MOQ types falls under a specified type, throw an exception
@@ -954,8 +952,8 @@ namespace GenBOE.Web.Controllers
 
 					if (multiMoqResult.DoMultiMOQTypesExist)
 					{
-						commaSeparatedTasks = string.Join(", ", multiMoqResult.Tasks);
-						ucotExceptionString = string.Format(ValidationConstants.MULTI_TASK_WITH_MULTI_MOQ_TYPES_UCOT, commaSeparatedTasks);
+						string commaSeparatedTasks = string.Join(", ", multiMoqResult.Tasks);
+						string ucotExceptionString = string.Format(ValidationConstants.MULTI_TASK_WITH_MULTI_MOQ_TYPES_UCOT, commaSeparatedTasks);
 						throw new GenValidationException(ucotExceptionString);
 					}
 				}

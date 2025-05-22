@@ -439,6 +439,7 @@ namespace GenBOE.Tests.ActionLogic
 			Assert.IsTrue(toAssertLabors.Count == 0, "Task labor messages were not empty");
 		}
 
+		[TestMethod]
 		// This test case will test if there's a task with multiple MOQ types
 		public void BL_ValidateForNoUCOT()
 		{

@@ -28,7 +28,7 @@ namespace GenBOE.ActionLogic.Common
 		/// <summary>
 		/// Do multiple MOQ Types exist with the specified types?
 		/// </summary>
-		public bool DoMultiMOQTypesExist { get { return this.Tasks.Any(); } }
+		public bool DoMultiMOQTypesExist { get => this.Tasks.Any(); }
 
 		/// <summary>
 		/// The list of task names/titles that have the offending multiple MOQ Types

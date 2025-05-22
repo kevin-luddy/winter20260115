@@ -1867,8 +1867,6 @@ namespace GenBOE.Web.Controllers
 						// Validate for UCOT and multiple MOQ tasks - Space only
 						if (Utilities.IsUCOTEnabledForSystem && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 						{
-							string commaSeparatedTasks = string.Empty;
-							string ucotExceptionString = string.Empty;
 							IList<MultiMOQTypeResult> multiMoqResults = new List<MultiMOQTypeResult>();
 							IList<string> allTasks = new List<string>();
 
@@ -1885,8 +1883,8 @@ namespace GenBOE.Web.Controllers
 									allTasks.AddRange(result.Tasks);
 								}
 
-								commaSeparatedTasks = string.Join(", ", allTasks);
-								ucotExceptionString = string.Format(ValidationConstants.MULTI_TASK_WITH_MULTI_MOQ_TYPES_UCOT, commaSeparatedTasks);
+								string commaSeparatedTasks = string.Join(", ", allTasks);
+								string ucotExceptionString = string.Format(ValidationConstants.MULTI_TASK_WITH_MULTI_MOQ_TYPES_UCOT, commaSeparatedTasks);
 								throw new GenValidationException(ucotExceptionString);
 							}
 						}

@@ -6,16 +6,14 @@
 
 namespace GenBOE.ActionLogic.Common
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Objects;
 	using IES.Common;
 	using IES.Common.classes;
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Text;
-	using System.Threading.Tasks;
 
 	/// <summary>
 	/// Utility class used for checking whether a workspace or task has multiple MOQ Types (Space only)
