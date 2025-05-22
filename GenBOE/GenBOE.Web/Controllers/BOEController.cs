@@ -946,28 +946,15 @@ namespace GenBOE.Web.Controllers
 
 			try
 			{
-				// UCOT validation (Space only) - if there are multiple MOQ types assigned to a task and one of those MOQ Types is Historical/Comparative/Analogous, add a warning
-				if (Utilities.IsUCOTEnabledForSystem && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+				// UCOT validation (Space only) - if there are multiple MOQ types assigned to a task and one of those MOQ types falls under a specified type, throw an exception
+				FullBoe fullBoe = this.Factory.CreateFullBoe(boeId);
+				MultiMOQTypeResult multiMoqResult = MultiMOQTypeUtility.DoTasksHaveMultipleMOQTypes(fullBoe);
+
+				if (multiMoqResult.DoMultiMOQTypesExist)
 				{
-					FullBoe fullBoe = this.Factory.CreateFullBoe(boeId);
-
-					foreach (BoeTaskElementDTO task in fullBoe.TaskElements)
-					{
-						ICollection<MoqTypeSelection> moqTypeSelectionsForTask = fullBoe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList();
-						bool doesSpecifiedMoqTypeExist = moqTypeSelectionsForTask.Any(x => x.SelectedMOQType == MOQType.Comparative || x.SelectedMOQType == MOQType.Historical
-							|| x.SelectedMOQType == MOQType.AnalogousRelationships);
-						if (moqTypeSelectionsForTask.Count > 1 && doesSpecifiedMoqTypeExist)
-						{
-							commaSeparatedTasks = string.Join(", ", task.TaskTitle);
-						}
-					}
-
-					if (!string.IsNullOrEmpty(commaSeparatedTasks))
-					{
-						ucotExceptionString = string.Format(ValidationConstants.MULTI_TASK_WITH_MULTI_MOQ_TYPES_UCOT, commaSeparatedTasks);
-
-						throw new GenValidationException(ucotExceptionString);
-					}
+					commaSeparatedTasks = string.Join(", ", multiMoqResult.Tasks);
+					ucotExceptionString = string.Format(ValidationConstants.MULTI_TASK_WITH_MULTI_MOQ_TYPES_UCOT, commaSeparatedTasks);
+					throw new GenValidationException(ucotExceptionString);
 				}
 
 				bool isCustomExport;
@@ -984,7 +971,7 @@ namespace GenBOE.Web.Controllers
 			{
 				_log.Warn(ex);
 
-				result = this.CreateTextFileWithErrorMessage(ucotExceptionString);
+				result = this.CreateTextFileWithErrorMessage(ex.Message);
 			}
 			catch (Exception ex)
 			{

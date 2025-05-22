@@ -1869,27 +1869,24 @@ namespace GenBOE.Web.Controllers
 						{
 							string commaSeparatedTasks = string.Empty;
 							string ucotExceptionString = string.Empty;
+							IList<MultiMOQTypeResult> multiMoqResults = new List<MultiMOQTypeResult>();
+							IList<string> allTasks = new List<string>();
 
 							foreach (FullBoe boe in ws.Boes)
 							{
 								FullBoe fullBoe = this.Factory.CreateFullBoe(boe.Id);
-
-								foreach (BoeTaskElementDTO task in fullBoe.TaskElements)
-								{
-									ICollection<MoqTypeSelection> moqTypeSelectionsForTask = fullBoe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList();
-									bool doesSpecifiedMoqTypeExist = moqTypeSelectionsForTask.Any(x => x.SelectedMOQType == MOQType.Comparative || x.SelectedMOQType == MOQType.Historical
-										|| x.SelectedMOQType == MOQType.AnalogousRelationships);
-									if (moqTypeSelectionsForTask.Count > 1 && doesSpecifiedMoqTypeExist)
-									{
-										commaSeparatedTasks = string.Join(", ", task.TaskTitle);
-									}
-								}
+								multiMoqResults.Add(MultiMOQTypeUtility.DoTasksHaveMultipleMOQTypes(fullBoe));
 							}
 
-							if (!string.IsNullOrEmpty(commaSeparatedTasks))
+							if (multiMoqResults.Any() && multiMoqResults.Any(x => x.DoMultiMOQTypesExist))
 							{
-								ucotExceptionString = string.Format(ValidationConstants.MULTI_TASK_WITH_MULTI_MOQ_TYPES_UCOT, commaSeparatedTasks);
+								foreach (MultiMOQTypeResult result in multiMoqResults)
+								{
+									allTasks.AddRange(result.Tasks);
+								}
 
+								commaSeparatedTasks = string.Join(", ", allTasks);
+								ucotExceptionString = string.Format(ValidationConstants.MULTI_TASK_WITH_MULTI_MOQ_TYPES_UCOT, commaSeparatedTasks);
 								throw new GenValidationException(ucotExceptionString);
 							}
 						}

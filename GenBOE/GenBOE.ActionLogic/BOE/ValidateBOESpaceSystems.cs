@@ -10,6 +10,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
+	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.Validation;
@@ -56,17 +57,12 @@ namespace GenBOE.ActionLogic.WBS.BOE
             }
 
 			// UCOT validation (Space only) - if there are multiple MOQ types assigned to a task and one of those MOQ Types is Historical/Comparative/Analogous, add a warning
-			if (Utilities.IsUCOTEnabledForSystem && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			MultiMOQTypeResult multiMoqResult = MultiMOQTypeUtility.DoTasksHaveMultipleMOQTypes(inBOE);
+			if (multiMoqResult.DoMultiMOQTypesExist)
 			{
-				foreach (BoeTaskElementDTO task in inBOE.TaskElements)
+				foreach (string task in multiMoqResult.Tasks)
 				{
-					ICollection<MoqTypeSelection> moqTypeSelectionsForTask = inBOE.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList();
-					bool doesSpecifiedMoqTypeExist = moqTypeSelectionsForTask.Any(x => x.SelectedMOQType == MOQType.Comparative || x.SelectedMOQType == MOQType.Historical
-						|| x.SelectedMOQType == MOQType.AnalogousRelationships);
-					if (moqTypeSelectionsForTask.Count > 1 && doesSpecifiedMoqTypeExist)
-					{
-						toReturn.BOEHeaderMsgs.Add(string.Format(ValidationConstants.TASK_WITH_MULTI_MOQ_TYPES_UCOT, task.TaskTitle));
-					}
+					toReturn.BOEHeaderMsgs.Add(string.Format(ValidationConstants.TASK_WITH_MULTI_MOQ_TYPES_UCOT, task));
 				}
 			}
 
