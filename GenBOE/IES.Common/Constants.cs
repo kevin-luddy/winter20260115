@@ -820,17 +820,17 @@ namespace IES.Common
         /// <summary>
         /// Default Street/Building
         /// </summary>
-        public const string DEFAULT_ADDRESS_STREET = "244 Terminal Road, Building 1040";
+        public const string DEFAULT_ADDRESS_STREET = "37 Grenier Street, Building 1108";
 
         /// <summary>
         /// Default City, ST
         /// </summary>
-        public const string DEFAULT_ADDRESS_CITY_ST = "Greenville, SC 29605";
+        public const string DEFAULT_ADDRESS_CITY_ST = "Hanscom AFB, MA 01731-1600";
 
         /// <summary>
         /// Default Phone
         /// </summary>
-        public const string DEFAULT_ADDRESS_PHONE = "(864) 934-3579";
+        public const string DEFAULT_ADDRESS_PHONE = "(864) 315-0429";
 
         /// <summary>
         /// Default Email
