@@ -42,7 +42,6 @@ namespace GenBOE.ActionLogic.Common
 					if (moqTypeSelectionsForTask.Count > 1 && doesSpecifiedMoqTypeExist)
 					{
 						result.Tasks.Add(task.TaskTitle);
-						result.DoMultiMOQTypesExist = true;
 					}
 				}
 			}

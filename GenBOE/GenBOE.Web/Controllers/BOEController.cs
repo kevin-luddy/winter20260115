@@ -947,14 +947,17 @@ namespace GenBOE.Web.Controllers
 			try
 			{
 				// UCOT validation (Space only) - if there are multiple MOQ types assigned to a task and one of those MOQ types falls under a specified type, throw an exception
-				FullBoe fullBoe = this.Factory.CreateFullBoe(boeId);
-				MultiMOQTypeResult multiMoqResult = MultiMOQTypeUtility.DoTasksHaveMultipleMOQTypes(fullBoe);
-
-				if (multiMoqResult.DoMultiMOQTypesExist)
+				if (Utilities.IsUCOTEnabledForSystem && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 				{
-					commaSeparatedTasks = string.Join(", ", multiMoqResult.Tasks);
-					ucotExceptionString = string.Format(ValidationConstants.MULTI_TASK_WITH_MULTI_MOQ_TYPES_UCOT, commaSeparatedTasks);
-					throw new GenValidationException(ucotExceptionString);
+					FullBoe fullBoe = this.Factory.CreateFullBoe(boeId);
+					MultiMOQTypeResult multiMoqResult = MultiMOQTypeUtility.DoTasksHaveMultipleMOQTypes(fullBoe);
+
+					if (multiMoqResult.DoMultiMOQTypesExist)
+					{
+						commaSeparatedTasks = string.Join(", ", multiMoqResult.Tasks);
+						ucotExceptionString = string.Format(ValidationConstants.MULTI_TASK_WITH_MULTI_MOQ_TYPES_UCOT, commaSeparatedTasks);
+						throw new GenValidationException(ucotExceptionString);
+					}
 				}
 
 				bool isCustomExport;
