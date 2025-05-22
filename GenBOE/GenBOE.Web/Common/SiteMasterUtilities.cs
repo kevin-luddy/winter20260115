@@ -401,17 +401,16 @@ namespace GenBOE.Web.Common
 			FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(GetCurrentWorkspace());
 			ICollection<MoqTypeSelection> moqTypes = fullWorkspace.MoqTypeSelections.ToList();
 			ICollection<MOQType> moqTypeDistinctList = moqTypes.Select(x => x.SelectedMOQType).Distinct().ToList();
-			ICollection<MoqTableData> moqTableData = 
 
 			if (fullWorkspace.CreationDate.Value > Utilities.SkillMixStartDate)
 			{
 				helperText = "Workspace Creation Date is before Skill Mix Go Live Date.";
 			}
 
-			if (!fullWorkspace.MoqTypeSelections)
-			{
-				helperText = "MOQ Templates must be set to Yes in Workspace Identification.";
-			}
+			//if (!fullWorkspace.MoqTypeSelections)
+			//{
+			//	helperText = "MOQ Templates must be set to Yes in Workspace Identification.";
+			//}
 
 			if (isSpace && !fullWorkspace.EnableSAPConnection)
 			{
