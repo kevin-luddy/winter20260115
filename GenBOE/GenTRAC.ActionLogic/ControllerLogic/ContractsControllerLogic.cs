@@ -766,7 +766,12 @@ namespace GenTRAC.ActionLogic
 					SelectListItem nssLob = lobList.FirstOrDefault(x => x.Text == Constants.NSS_LOB_NAME);
 					bool isNss = nssLob != null && fullProposal.LineOfBusinessID.ToString() == nssLob.Value;
 
-					if (!edc.AreRequiredDatesPopulated(dto, messages, isNss) || !edc.AreEnteredDatesSequential(dto, messages))
+					if (!edc.AreRequiredDatesPopulated(dto, messages, isNss))
+					{
+						isValid = false;
+					}
+
+					if (!edc.AreEnteredDatesSequential(dto, messages))
 					{
 						isValid = false;
 					}
