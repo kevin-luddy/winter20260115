@@ -1178,6 +1178,16 @@ namespace GenTRAC.Tests.ActionLogic
 
 			Assert.IsFalse(pass);
 			Assert.IsTrue(errors.First().Contains("Bid EPP Date must be before Program EPP Date"));
+
+			// Test once more with several blank dates between Bid Epp Date and the next entered date
+			dto.ProgramEppDate = null;
+			dto.CorporateEppDate = DateTime.Now;
+			errors.Clear();
+
+			pass = edh.AreEnteredDatesSequential(dto, errors);
+
+			Assert.IsFalse(pass);
+			Assert.IsTrue(errors.First().Contains("Bid EPP Date must be before Corporate EPP Date"));
 		}
 
 		/// <summary>
