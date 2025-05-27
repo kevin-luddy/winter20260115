@@ -60,7 +60,10 @@
 			IsSkillMixEnabled: '<%= (bool)ViewData["IsSkillMixEnabled"] %>'.isTrue(),
 			IsUcotEnabled: '<%= (bool)ViewData["IsUCOTEnabled"] %>'.isTrue(),
 			UcotFactor: <%=ViewData["UcotFactor"]%>,
-            SkillMixTableHelpUrls: <%=serializer.Serialize(ViewData["SkillMixTableHelpUrls"])%>
+			SkillMixTableHelpUrls: <%=serializer.Serialize(ViewData["SkillMixTableHelpUrls"])%>,
+			MOQTypeSelections: <%=serializer.Serialize(ViewData["MOQTypeSelections"]) %>,
+			MOQTypeDistinctList: <%=serializer.Serialize(ViewData["MOQTypeDistinctList"]) %>,
+
 		});
 
 		$(function () {
@@ -77,7 +80,7 @@
 				$("#SubmitForApproval").hide();
 			}
 		});
-    </script>
+	</script>
 
 	<% Html.RenderAction(WebConstants.ACTION_DISPLAY_BOE_HEADER, WebConstants.CONTROLLER_BOE, new { id = ViewData["BOEID"] }); %>
 

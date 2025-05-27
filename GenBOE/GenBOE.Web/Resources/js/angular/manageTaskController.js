@@ -40,6 +40,8 @@
     $scope.loadedMoqData = false;
     $scope.dataLoaded = false;
     $scope.showUCOT = false;
+	$scope.skillMixHelperText = "";
+
 
     // Sets the Selected MOQ Types from the Selected MOQ Types from MoqEuationController.js.
     $scope.$on('MOQ_TYPE_SELECTION_CHANGED', function (event, selectedMoqTypes) {
@@ -47,7 +49,8 @@
         $scope.loadedMoqData = true;
         $scope.updateShowUcot();
 
-        $scope.refreshSkillMixTables();
+		$scope.refreshSkillMixTables();
+		$scope.updateSkillMixHelperText(selectedMoqTypes);
     });
 
     $scope.$on('SAP_HOURS_CHANGED', function (e) {
@@ -221,7 +224,60 @@
             $scope.totalSkillMixHours = 0;
             $scope.deltaSkillMixHours = 0;
         }
-    }
+	}
+
+	$scope.updateSkillMixHelperText = function () {
+		if (!$scope.ManageTaskModel.IsSkillMixEnabled) {
+			$scope.skillMixHelperText = "Workspace Creation Date is before Skill Mix Go Live Date.";
+		}
+
+		if ($scope.ManageTaskModel.IsSpace && !$scope.ManageTaskModel.SapConnectionEnabled) {
+			$scope.skillMixHelperText = "SAP connection must be set to Yes in Workspace Identification.";
+		}
+
+		if ($scope.SelectedMoqTypes.length == 0) {
+			$scope.skillMixHelperText = "There needs to be atleast 1 MOQ Type Selection for the Workspace.";
+		}
+
+		if ($scope.SelectedMoqTypes.length > 1) {
+			$scope.skillMixHelperText = "There can only be 1 MOQ Type Selection for the Workspace.";
+		}
+
+		if ($scope.ManageTaskModel.IsSpace) {
+
+		} else {
+
+		}
+
+		var isSapWebi = false;
+		var needsActualsCalculated = false;
+
+		$scope.SelectedMoqTypes.forEach(function (moqType) {
+			if (moqType.TableData.length == 0) {
+				$scope.skillMixHelperText = "Atleast 1 MOQType needs to have Table Data populated.";
+			}
+
+			moqType.TableData.forEach(function (table) {
+				table.ResourceHours.forEach(function (hours) {
+					if (hours.TotalHours.length == 0) {
+						needsActualsCalculated = true;
+					}
+				});
+
+				if (table.RepositoryName == $scope.ManageTaskModel.SapWebiRepository) {
+					isSapWebi = true;
+				}
+			});
+		});
+
+		if ($scope.ManageTaskModel.IsSpace && !isSapWebi) {
+			$scope.skillMixHelperText = "At least one MOQType Table needs to have SAP/Webi enabled";
+		}
+
+		if (needsActualsCalculated) {
+			helperText = "Actuals need to be recalculated for the MOQTypes.";
+		}
+	}
 
     // The Date split is because from the config the OneLMXCutOffDate comes with Timestamp
     // that the JS .toDate() method cannot handle and defaults the date to Dec 31, 1969

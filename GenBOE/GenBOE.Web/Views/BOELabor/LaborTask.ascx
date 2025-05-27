@@ -58,7 +58,6 @@
     var currentWorkspace = '<%: SiteMasterUtilities.GetCurrentWorkspace() %>';
     var boeLaborController = '<%: WebConstants.CONTROLLER_BOE_LABOR %>';
 	var isBrcEnabled = '<%= Utilities.IsBRCEnabledForWorkspace(SiteMasterUtilities.GetCurrentWorkspace()) %>'.isTrue();
-	var skillMixHelpText = '<%: SiteMasterUtilities.GetSkillMixHelpText() %>';
     var completeImportUrl = CreatePostURL(currentWorkspace, boeLaborController,
                         '<%:WebConstants.ACTION_IMPORT_LABOR_TYPE_AND_SPREAD %>',
         'boe/' + '<%= ViewData["BOEID"] %>' + '/taskelement/' + '<%: ViewData["TASKID"] %>');

@@ -169,6 +169,10 @@ namespace GenBOE.Web.Controllers
 			this.ViewData["IsSkillMixEnabled"] = Utilities.ShowSkillMixForWorkspace(ws.CreationDate);
 			this.ViewData["IsUCOTEnabled"] = Utilities.ShowUCOTForWorkspace(ws.CreationDate);
 
+			// Additional Controls for SkillMixHelperText
+			ViewData["MOQTypeSelections"] = ws.MoqTypeSelections;
+			ViewData["MOQTypeDistinctList"] = ws.MoqTypeSelections.Distinct().ToList();
+
 
 			Collection<SelectListItem> WBSElements = new Collection<SelectListItem>((from x in ws.WbsElementsNoMultiWbs
 											 orderby x.WbsPaddedNumber
