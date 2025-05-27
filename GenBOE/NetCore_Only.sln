@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IESPortal.Backend", "IESPor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IES.ActionLogic.Core", "IES.ActionLogic.Core\IES.ActionLogic.Core.csproj", "{77B14FB9-2F03-425C-8EE3-5FE5EEB9E0B5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenBOE.Reports.Backend", "GenBOE.Reports.Backend\GenBOE.Reports.Backend.csproj", "{42FA2FFD-EE94-4032-BC38-3288AF60AD94}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,10 @@ Global
 		{77B14FB9-2F03-425C-8EE3-5FE5EEB9E0B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{77B14FB9-2F03-425C-8EE3-5FE5EEB9E0B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{77B14FB9-2F03-425C-8EE3-5FE5EEB9E0B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42FA2FFD-EE94-4032-BC38-3288AF60AD94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42FA2FFD-EE94-4032-BC38-3288AF60AD94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42FA2FFD-EE94-4032-BC38-3288AF60AD94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42FA2FFD-EE94-4032-BC38-3288AF60AD94}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
