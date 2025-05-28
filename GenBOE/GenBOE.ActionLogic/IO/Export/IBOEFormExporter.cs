@@ -47,9 +47,14 @@ namespace GenBOE.ActionLogic.IO.Export
 		public string WbsPaddedNumber { get; set; }
 
 		/// <summary>
-		/// The CLIN Name
+		/// The CLIN Name (Number and Title)
 		/// </summary>
 		public string CLIN { get; set; }
+
+		/// <summary>
+		/// The CLIN Number
+		/// </summary>
+		public string ClinNumber { get; set; }
 
 		/// <summary>
 		/// The rolled-up Value for this WBS/CLIN Combo.
@@ -226,6 +231,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			return new IBOETableRow
 			{
 				CLIN = clin == null ? "N/A" : clin.ClinString,
+				ClinNumber = clin == null ? "N/A" : clin.ClinNumber,
 				WBS = wbs == null ? "N/A" : wbs.WbsNumber,
 				WbsPaddedNumber = wbs == null ? "N/A" : wbs.WbsPaddedNumber,
 				ContractType = clin == null ? "N/A" : Utilities.GetPickListText(clin.ContractType, contractTypes, Constants.CONTRACT_TYPE_NOT_SET_STRING),
