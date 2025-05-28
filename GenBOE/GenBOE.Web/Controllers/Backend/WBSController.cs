@@ -182,7 +182,7 @@ namespace GenBOE.Web.Controllers.Backend
 				logger.Error(ex);
 				return new HttpResponseMessage(HttpStatusCode.InternalServerError)
 				{
-					Content = new StringContent("Unknown error exporting WBSs")
+					Content = new StringContent("Unknown error exporting WBS template")
 				};
 			}
 		}
