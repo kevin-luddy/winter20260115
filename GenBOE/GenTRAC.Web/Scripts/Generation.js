@@ -4202,7 +4202,7 @@ function GenDialog(inDialogConfig) {
 * 
 * @constructor
 * @param inFormConfig
-*            The configureation fo the form.
+*            The configuration for the form.
 * @param inFormConfig.ElementID
 *            The Forms ID.
 * @param inFormConfig.Buttons

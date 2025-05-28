@@ -23,8 +23,9 @@ namespace GenBOE.ActionLogic
     using GenBOE.ActionLogic.WBS.BOE;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
-    using GenBOE.Objects;
+	using GenBOE.DataBridge.DTO.Request;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
     using IES.Common;
     using IES.Common.classes;
 
@@ -75,7 +76,8 @@ namespace GenBOE.ActionLogic
             IRteTemplateDataLoader rteTemplateDataLoader,
             IMoqTypeDataLoader moqTypeDataLoader,
 			ITMResourceRateDTODataLoader tmResourceRateDTODataLoader,
-            IValidateBOE validateBOE,
+			IRequestDataLoader requestDataLoader,
+			IValidateBOE validateBOE,
             IMoqTableExporter moqTableExporter,
             IMoqTableImporter moqTableImporter,
             GenBOE.ActionLogic.IESSAPClient.IESSAPClient iesSapClient,
@@ -101,7 +103,8 @@ namespace GenBOE.ActionLogic
                 rteTemplateDataLoader,
                 moqTypeDataLoader,
 				tmResourceRateDTODataLoader,
-                validateBOE,
+				requestDataLoader,
+				validateBOE,
                 moqTableExporter,
                 moqTableImporter,
                 iesSapClient,

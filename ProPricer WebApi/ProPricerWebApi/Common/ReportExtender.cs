@@ -19,27 +19,46 @@ namespace APTSPropricerApi.Common
 	{
 		private readonly Proposal proposal;
 
+		/// <summary>
+		/// Report Extension class
+		/// </summary>
+		/// <param name="proposal"></param>
 		public ReportExtender(Proposal proposal)
 		{
 			this.proposal = proposal;
 		}
 
-
+		/// <summary>
+		/// Asking to Continue dialog
+		/// </summary>
+		/// <param name="message"></param>
 		public void AskToContinue(string message)
 		{
 
 		}
 
+		/// <summary>
+		/// Dialog for current table not used
+		/// </summary>
+		/// <param name="message"></param>
 		public void OnCurrentTableNotUsed(string message)
 		{
 
 		}
 
+		/// <summary>
+		/// Requesting Current Project
+		/// </summary>
+		/// <returns></returns>
 		public Project RequestCurrentProject()
 		{
 			return this.proposal.ParentProject;
 		}
 
+		/// <summary>
+		/// Requesting current proposal
+		/// </summary>
+		/// <returns></returns>
 		public Proposal RequestCurrentProposal()
 		{
 			return this.proposal;

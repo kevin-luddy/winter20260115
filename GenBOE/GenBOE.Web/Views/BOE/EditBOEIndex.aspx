@@ -58,8 +58,9 @@
 			OneLMXCutOffDate: '<%: Utilities.OneLmxStartDate %>',
 			IsBRCEnabled: '<%= Utilities.IsBRCEnabledForWorkspace(SiteMasterUtilities.GetCurrentWorkspace()) %>'.isTrue(),
 			IsSkillMixEnabled: '<%= (bool)ViewData["IsSkillMixEnabled"] %>'.isTrue(),
-			IsUcotEnabled: '<%= Utilities.IsUCOTEnabled %>'.isTrue(),
-			UcotFactor: <%=ViewData["UcotFactor"]%>
+			IsUcotEnabled: '<%= (bool)ViewData["IsUCOTEnabled"] %>'.isTrue(),
+			UcotFactor: <%=ViewData["UcotFactor"]%>,
+            SkillMixTableHelpUrls: <%=serializer.Serialize(ViewData["SkillMixTableHelpUrls"])%>
 		});
 
 		$(function () {
@@ -76,7 +77,7 @@
 				$("#SubmitForApproval").hide();
 			}
 		});
-	</script>
+    </script>
 
 	<% Html.RenderAction(WebConstants.ACTION_DISPLAY_BOE_HEADER, WebConstants.CONTROLLER_BOE, new { id = ViewData["BOEID"] }); %>
 

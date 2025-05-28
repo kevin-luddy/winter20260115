@@ -7,6 +7,7 @@
 namespace GenBOE.DataBridge.Core.IO.Export
 {
 	using System;
+	using System.Collections;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
@@ -436,8 +437,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				throw new ArgumentNullException(nameof(workspace));
 			}
 
-			WorkspaceDecimalPrecision = workspace.DecimalPrecision;
-			DefaultHoursFormat = CommonUtilities.PrecisionFormattingString(WorkspaceDecimalPrecision);
+			this.WorkspaceDecimalPrecision = workspace.DecimalPrecision;
+			this.DefaultHoursFormat = CommonUtilities.PrecisionFormattingString(this.WorkspaceDecimalPrecision);
 			exportConverter.SetWorkspacePrecisionVariables(workspace);
 		}
 
@@ -1490,7 +1491,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		public string ExportToExcelFile(BOEExcelExportInputs exportInputs)
 		{
-			// TODO TIW FUTURE Pt 2
 			if (exportInputs == null) { throw new ArgumentNullException(nameof(exportInputs)); }
 
 			Collection<WbsDTO> allWbs = exportInputs.WbsElements.ToCollection<WbsDTO>();
@@ -1568,14 +1568,14 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			{
 				foreach (BoeDTO boe in exportInputs.Boes)
 				{
-					HashSet<int> boeAuthorIds = new HashSet<int>(exportInputs.BOEPermissions.Where(x => x.Role == Role.Author && x.BOEId == boe.Id).Select(x => x.ETIUserId).ToCollection());
-					Collection<string> authors = exportInputs.BOEUsers.Where(x => boeAuthorIds.Contains(x.UserID)).OrderBy(x => x.DisplayName).Select(x => x.DisplayName).ToCollection();
+					HashSet<int> boeAuthorIds = new HashSet<int>(exportInputs.RolesWithBoes.Where(x => x.Role == Role.Author && x.BOEId == boe.Id).Select(x => x.ETIUserId).ToCollection());
+					Collection<string> authors = exportInputs.AllBOEUsers.Where(x => boeAuthorIds.Contains(x.UserID)).OrderBy(x => x.DisplayName).Select(x => x.DisplayName).ToCollection();
 
-					HashSet<int> boeSubcontractorAuthorIds = new HashSet<int>(exportInputs.BOEPermissions.Where(x => x.Role == Role.SubcontractorAuthor && x.BOEId == boe.Id).Select(x => x.ETIUserId).ToCollection());
-					Collection<string> subcontractorAuthors = exportInputs.BOEUsers.Where(x => boeSubcontractorAuthorIds.Contains(x.UserID)).OrderBy(x => x.DisplayName).Select(x => x.DisplayName).ToCollection();
+					HashSet<int> boeSubcontractorAuthorIds = new HashSet<int>(exportInputs.RolesWithBoes.Where(x => x.Role == Role.SubcontractorAuthor && x.BOEId == boe.Id).Select(x => x.ETIUserId).ToCollection());
+					Collection<string> subcontractorAuthors = exportInputs.AllBOEUsers.Where(x => boeSubcontractorAuthorIds.Contains(x.UserID)).OrderBy(x => x.DisplayName).Select(x => x.DisplayName).ToCollection();
 
-					HashSet<int> boeApproverIds = new HashSet<int>(exportInputs.BOEPermissions.Where(x => x.Role == Role.Approver && x.BOEId == boe.Id).Select(x => x.ETIUserId).ToCollection());
-					Collection<string> approvers = exportInputs.BOEUsers.Where(x => boeApproverIds.Contains(x.UserID)).OrderBy(x => x.DisplayName).Select(x => x.DisplayName).ToCollection();
+					HashSet<int> boeApproverIds = new HashSet<int>(exportInputs.RolesWithBoes.Where(x => x.Role == Role.Approver && x.BOEId == boe.Id).Select(x => x.ETIUserId).ToCollection());
+					Collection<string> approvers = exportInputs.AllBOEUsers.Where(x => boeApproverIds.Contains(x.UserID)).OrderBy(x => x.DisplayName).Select(x => x.DisplayName).ToCollection();
 
 					string authorString = string.Join("\n", authors);
 					string subcontractorAuthorString = string.Join("\n", subcontractorAuthors);
@@ -1605,7 +1605,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				}
 			}
 
-			toReturn = ExcelExporter.ExportToExcelFile(exportInputs.TemplateFileLocation, optionsListWorksheet, firstWorksheet);
+			// Save byte[] to temporary template file
+			string tempFilename = Path.GetTempFileName();
+			File.WriteAllBytes(tempFilename, exportInputs.TemplateFile);
+			
+			toReturn = ExcelExporter.ExportToExcelFile(tempFilename, false, optionsListWorksheet, firstWorksheet);
 
 			// Adjust Defined Names
 			Dictionary<string, int> lengths = new Dictionary<string, int>()
@@ -1623,8 +1627,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			ExcelExporter.AdjustDefinedNames(toReturn, lengths);
 
 			return toReturn;
-			
-			//return string.Empty;
 		}
 
 		#endregion Public Functions

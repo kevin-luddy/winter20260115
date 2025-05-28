@@ -273,7 +273,8 @@ namespace GenBOE.ActionLogic.IO.Export
 				IsUsingTemplateBOE = workspace.UsingTemplateBOE,
 				MoqTypes = workspace.MoqTypeSelections.ToCollection(),
 				OneLmxCustomField = oneLmxCF,
-				UCOTFactor = workspace.UCOTFactor
+				UCOTFactor = workspace.UCOTFactor,
+				CreationDate = workspace.CreationDate
 			};
 
 			if (offloading)
@@ -1521,6 +1522,10 @@ namespace GenBOE.ActionLogic.IO.Export
 							string workspaceUrl = ConfigurationUtilities.GetAppSetting("ServerURL") + "/" + workspaceShortname;
 							newResourceRow.Append(DOUBLE_QUOTE).Append(workspaceUrl.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
 							break;
+						case ProPricerField_Resources.MOQType:
+							newResourceRow.Append(DOUBLE_QUOTE).Append(GetTaskMoqType(wsLevelData, boeTask)).Append(DOUBLE_QUOTE).Append(END_FIELD);
+							break;
+
 					}
 
 					if (taskField.CustomFieldID.HasValue)
@@ -1606,7 +1611,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						{
 							decimal updatedLaborSpreadValue = laborSpread.LaborSpreadValue;
 
-							if (Utilities.IsUCOTEnabled && laborSpread.LaborSpreadDate >= Utilities.OneLmxStartDate && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+							if (Utilities.ShowUCOTForWorkspace(wsLevelData.CreationDate) && laborSpread.LaborSpreadDate >= Utilities.OneLmxStartDate && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 							{
 								updatedLaborSpreadValue = laborSpread.LaborSpreadValue * (1 + (wsLevelData.UCOTFactor / 100m));
 							}
@@ -2677,6 +2682,11 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// The UCOT Factor for the Workspace
 		/// </summary>
 		public decimal UCOTFactor { get; set; }
+
+		/// <summary>
+		/// Workspace Creation Date
+		/// </summary>
+		public DateTime? CreationDate { get; set; }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="WsLevelInputsForExport"/> class.

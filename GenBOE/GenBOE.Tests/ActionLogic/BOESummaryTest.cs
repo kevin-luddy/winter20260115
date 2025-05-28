@@ -63,7 +63,7 @@ namespace GenBOE.Tests.ActionLogic
             ResourceLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { this.Resource });
             retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), false, It.IsAny<int>(), It.IsAny<int>())).Returns(new List<BoeTaskElementDTO>() { task });
             retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boe });
-            retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, false)).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = Perforg.Id, ResourceID = Resource.Id } } } });
+            retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(wsid, false)).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = Perforg.Id, ResourceID = Resource.Id } } } });
             retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
             retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, false)).Returns(new Collection<MaterialDTO> { });
             retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { this.Resource });

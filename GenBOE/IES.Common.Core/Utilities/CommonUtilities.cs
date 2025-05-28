@@ -55,6 +55,7 @@ namespace IES.Common.Core.Utilities
 		private static readonly object lockObject = new();
 		private static DateTime? sapSpaceStartDate;
 		private static DateTime? skillMixStartDate;
+		private static DateTime? ucotStartDate;
 		private static DateTime? oneLmxStartDate;
 		private static DateTime? datepickerRestrictionRMS;
 		private static DateTime? historicalReferenceExplanationStartDate;
@@ -138,6 +139,29 @@ namespace IES.Common.Core.Utilities
 				}
 
 				return sapSpaceStartDate.Value;
+			}
+		}
+
+		/// <summary>
+		/// Cutoff time for workspaces for UCOT
+		/// </summary>
+		public static DateTime UCOTStartDate
+		{
+			get
+			{
+				if (!ucotStartDate.HasValue)
+				{
+					if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("UCOTStartDate"), out DateTime ucotTime))
+					{
+						ucotStartDate = DateTime.MaxValue;
+					}
+					else
+					{
+						ucotStartDate = ucotTime;
+					}
+				}
+
+				return ucotStartDate.Value;
 			}
 		}
 
@@ -861,6 +885,28 @@ namespace IES.Common.Core.Utilities
 		}
 
 		/// <summary>
+		/// Private for Is UCOT Enabled
+		/// </summary>
+		private static bool? isUCOTEnabled;
+
+		/// <summary>
+		/// Is UCOT/Uncompensated Overtime enabled?
+		/// </summary>
+		private static bool IsUCOTEnabledForSystem
+		{
+			get
+			{
+				if (isUCOTEnabled == null)
+				{
+					bool.TryParse(ConfigurationUtilities.GetAppSetting("EnableUCOT"), out bool ucotEnabled);
+					isUCOTEnabled = ucotEnabled;
+				}
+
+				return isUCOTEnabled.Value;
+			}
+		}
+
+		/// <summary>
 		/// Private for Is BRC Enabled, used for unit testing
 		/// </summary>
 		private static bool? isBRCEnabled;
@@ -1014,34 +1060,21 @@ namespace IES.Common.Core.Utilities
 		/// <summary>
 		/// Is Skill Mix connection shown to the user for this workspace
 		/// </summary>
-		/// <param name="workspaceCreationDate"></param>
-		/// <returns></returns>
+		/// <param name="workspaceCreationDate">Workspace creation date</param>
+		/// <returns>True to show skill mix</returns>
 		public static bool ShowSkillMixForWorkspace(DateTime? workspaceCreationDate)
 		{
 			return IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate;
 		}
 
 		/// <summary>
-		/// Is Skill Mix connection shown to the user for this task
+		/// Is UCOT shown to the user for this workspace
 		/// </summary>
-		/// <param name="workspaceCreationDate">Workspace creation date.</param>
-		/// <param name="hasTMRates">Is the task using T&M rates</param>
-		/// <returns>Option to show skill mix for task.</returns>
-		public static bool ShowSkillMixForTask(DateTime? workspaceCreationDate, bool hasTMRates)
+		/// <param name="workspaceCreationDate">Workspace creation date</param>
+		/// <returns>True to show UCOT</returns>
+		public static bool ShowUCOTForWorkspace(DateTime? workspaceCreationDate)
 		{
-			bool showSkillMixRationale = false;
-
-			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-			{
-				showSkillMixRationale = ShowSkillMixForWorkspace(workspaceCreationDate);
-			}
-			// For space only: Shows Skill Mix Rationale section when the workspace is NOT using T&M.
-			else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-			{
-				showSkillMixRationale = ShowSkillMixForWorkspace(workspaceCreationDate) && !hasTMRates;
-			}
-
-			return showSkillMixRationale;
+			return IsUCOTEnabledForSystem && workspaceCreationDate >= UCOTStartDate;
 		}
 
 		/// <summary>

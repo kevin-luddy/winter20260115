@@ -11,7 +11,7 @@
     <%  bool isWorkingState = (((GenBOEMasterModelView)Model).WorkspaceState == "Working" || ((GenBOEMasterModelView)Model).WorkspaceState == "Initialization" || ((GenBOEMasterModelView)Model).WorkspaceState == "Locked");
         var serializer = new System.Web.Script.Serialization.JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };
     %>
-    
+
     <script type="text/javascript">
         var RteWidget = new Widget('RteWidget', false);
         $(function () {
@@ -37,9 +37,9 @@
             searchAction: '<%:WebConstants.ACTION_SEARCH_RTE_TEMPLATES %>',
             copyAction: '<%:WebConstants.ACTION_COPY_RTE_TEMPLATE %>',
             workspaceId: '<%:ViewData["WorkspaceId"]%>',
-            templateSources: <%= serializer.Serialize(ViewData["TemplateSources"])%>
+			templateSources: <%= serializer.Serialize(ViewData["TemplateSources"])%>
         });
-    </script>
+	</script>
 
     <div id="workspace-home" data-ng-controller="RTETemplatesController" data-ng-cloak="">
         <div class="module workspace-home" id="boesmodule">
@@ -237,7 +237,7 @@
                 <div class="form-row last-form-row">
                     <div class="form-element">
                         <div id="OCINote" class="oci-note">
-                            <span><b>Note:</b> Must not contain any OCI, classified, export controlled or third party proprietary information.</span>
+                            <span><b>Note:</b> <%: SiteMasterUtilities.GetBannerText(((GenBOEMasterModelView)Model).ContainsOCI) %></span>
                         </div>
                         <div class="button-container">
                             <div class="buttons">

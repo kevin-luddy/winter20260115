@@ -17,6 +17,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 	using DocumentFormat.OpenXml;
 	using DocumentFormat.OpenXml.Packaging;
 	using DocumentFormat.OpenXml.Wordprocessing;
+	using GenBOE.DataBridge.Core.Common;
 	using GenBOE.DataBridge.Core.DTO;
 	using GenBOE.DataBridge.Core.DTO.Export.BOE;
 	using GenBOE.DataBridge.Core.IO.Export;
@@ -401,6 +402,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			if (moqTypeContainerTemplate != null)
 			{
+				bool isSpace = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems;
+
 				// create/clone template of MOQ Type fields
 				SdtElement moqTypeContainer = null;
 				OpenXmlElement lastElement = moqTypeContainerTemplate;
@@ -449,7 +452,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 							break;
 						case MOQType.CostEstimatingRelationships:
 						case MOQType.ParametricEstimates:
-						case MOQType.AnalogousRelationships:
 							if (customExport)
 							{
 								RemoveElement(sowLoeContainer);
@@ -468,16 +470,40 @@ namespace GenBOE.DataBridge.Core.IO.Export
 							{
 								labelPrefix = "CER";
 							}
-							else if (moqType.SelectedMOQType == MOQType.ParametricEstimates)
+							else
 							{
 								labelPrefix = "Parametric model or tool";
 							}
-							else
-							{
-								labelPrefix = "Analogous relationship";
-							}
 
 							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArNameLabel), labelPrefix + " name");
+							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArName), moqType.CerName);
+							break;
+						case MOQType.AnalogousRelationships:
+							if (customExport)
+							{
+								RemoveElement(sowLoeContainer);
+								RemoveElement(smeContainer);
+								if (!isSpace)
+								{
+									RemoveElement(moqTypeTableContainer);
+								}
+							}
+							else
+							{
+								RemoveSoeLowRows(moqTypeContainer);
+								RemoveSMERows(moqTypeContainer);
+								if(!isSpace)
+								{
+									RemoveMoqTableRow(moqTypeContainer);
+								}
+							}
+
+							if (isSpace)
+							{
+								PopulateMOQTableData(moqType, selectedComponents, moqTypeTableContainer, exportInputs);
+							}
+
+							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArNameLabel), "Analogous relationship name");
 							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArName), moqType.CerName);
 							break;
 						case MOQType.SOW:
@@ -577,7 +603,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.FieldName_HistoricalRefExp);
 					}
 
-					if (moqType.SelectedMOQType != MOQType.NonLabor)
+					if (moqType.SelectedMOQType != MOQType.NonLabor && !BOETaskUtility.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, false, laborTaskElement.MOQTypes))
 					{
 						WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SkillMix),
 							moqType.SkillMixRationale, ref counters, true);
@@ -829,7 +855,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			if (skillMixTablesContainer != null)
 			{
 				if ((selectedComponents.Contains(BoeCustomReportComponent.SkillMixTables) || !selectedComponents.Any())
-					&& CommonUtilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, laborTaskElement.HasTMRates))
+					&& BOETaskUtility.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, laborTaskElement.HasTMRates, laborTaskElement.MOQTypes))
 				{
 					// populate Current/Legacy Skill Mix Table
 					SdtElement currentTableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_CurrentSkillMix);

@@ -4,24 +4,24 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using GenBOE.ActionLogic.ModelView.Clin;
-using IES.Common.PickList;
-
 namespace GenBOE.Web.ModelView
 {
-    public class ManageCLINGridModelView 
-    {
-        public ManageCLINGridModelView()
-            : base()
-        {
-            ClinResults = new Collection<ManageCLINModelView>();
-        }
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using GenBOE.ActionLogic.ModelView.Clin;
+	using IES.Common.PickList;
 
-        public Collection<ManageCLINModelView> ClinResults { get; set; }
-        public bool HideContractType { get; internal set; }
+	public class ManageCLINGridModelView 
+	{
+		public ManageCLINGridModelView()
+			: base()
+		{
+			ClinResults = new Collection<ManageCLINModelView>();
+		}
 
-        public ICollection<PickListDto> ContractTypeList { get; set; }
-    }
+		public Collection<ManageCLINModelView> ClinResults { get; set; }
+		public bool HideContractType { get; internal set; }
+
+		public ICollection<PickListDto> ContractTypeList { get; set; }
+	}
 }

@@ -413,6 +413,8 @@ namespace GenBOE.ActionLogic.IO.Export
 
 			if (moqTypeContainerTemplate != null)
 			{
+				bool isSpace = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems;
+
 				// create/clone template of MOQ Type fields
 				SdtElement moqTypeContainer = null;
 				OpenXmlElement lastElement = moqTypeContainerTemplate;
@@ -461,18 +463,17 @@ namespace GenBOE.ActionLogic.IO.Export
 							break;
 						case MOQType.CostEstimatingRelationships:
 						case MOQType.ParametricEstimates:
-						case MOQType.AnalogousRelationships:
 							if (customExport)
 							{
-								this.RemoveElement(sowLoeContainer);
-								this.RemoveElement(smeContainer);
-								this.RemoveElement(moqTypeTableContainer);
+								RemoveElement(sowLoeContainer);
+								RemoveElement(smeContainer);
+								RemoveElement(moqTypeTableContainer);
 							}
 							else
 							{
-								this.RemoveSoeLowRows(moqTypeContainer);
-								this.RemoveSMERows(moqTypeContainer);
-								this.RemoveMoqTableRow(moqTypeContainer);
+								RemoveSoeLowRows(moqTypeContainer);
+								RemoveSMERows(moqTypeContainer);
+								RemoveMoqTableRow(moqTypeContainer);
 							}
 
 							string labelPrefix;
@@ -480,16 +481,40 @@ namespace GenBOE.ActionLogic.IO.Export
 							{
 								labelPrefix = "CER";
 							}
-							else if (moqType.SelectedMOQType == MOQType.ParametricEstimates)
+							else
 							{
 								labelPrefix = "Parametric model or tool";
 							}
-							else
-							{
-								labelPrefix = "Analogous relationship";
-							}
 
 							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArNameLabel), labelPrefix + " name");
+							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArName), moqType.CerName);
+							break;
+						case MOQType.AnalogousRelationships:
+							if (customExport)
+							{
+								RemoveElement(sowLoeContainer);
+								RemoveElement(smeContainer);
+								if (!isSpace)
+								{
+									RemoveElement(moqTypeTableContainer);
+								}
+							}
+							else
+							{
+								RemoveSoeLowRows(moqTypeContainer);
+								RemoveSMERows(moqTypeContainer);
+								if (!isSpace)
+								{
+									RemoveMoqTableRow(moqTypeContainer);
+								}
+							}
+
+							if (isSpace)
+							{
+								PopulateMOQTableData(moqType, selectedComponents, moqTypeTableContainer, exportInputs);
+							}
+
+							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArNameLabel), "Analogous relationship name");
 							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArName), moqType.CerName);
 							break;
 						case MOQType.SOW:
@@ -589,7 +614,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.FieldName_HistoricalRefExp);
 					}
 
-					if (moqType.SelectedMOQType != MOQType.NonLabor)
+					if (moqType.SelectedMOQType != MOQType.NonLabor && !BOETaskUtility.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, false, laborTaskElement.MOQTypes))
 					{
 						WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SkillMix),
 							moqType.SkillMixRationale, ref counters, true);
@@ -830,6 +855,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="taskContainer">SDT Element container for the MOQ Types</param>
 		/// <param name="exportInputs">Export Inputs</param>
 		/// <param name="ucotFactor">UCOT Factor for the workspace</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		protected void ProcessSkillMixTable(BOEExportTaskElement laborTaskElement, ICollection<BoeCustomReportComponent> selectedComponents, SdtElement taskContainer, BOEExportInputs exportInputs, BoeTaskElementDTO task, decimal ucotFactor)
 		{
 			_ = laborTaskElement ?? throw new ArgumentNullException(nameof(laborTaskElement));
@@ -840,7 +866,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			if (skillMixTablesContainer != null)
 			{
 				if ((selectedComponents.Contains(BoeCustomReportComponent.SkillMixTables) || !selectedComponents.Any())
-					&& Utilities.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, task)))
+					&& BOETaskUtility.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, task), laborTaskElement.MOQTypes))
 				{
 					// populate Current/Legacy Skill Mix Table
 					SdtElement currentTableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_CurrentSkillMix);

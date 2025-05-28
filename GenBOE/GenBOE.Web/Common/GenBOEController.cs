@@ -145,6 +145,8 @@ namespace GenBOE.Web.Common
                 model.WorkspaceState = _CommonDataMapper.getWorkspaceStateName(WorkspaceState.None);
 
                 model.HeaderFooter = "Lockheed Martin Proprietary Information";
+
+				model.ContainsOCI = false;
 			}
             else
             {
@@ -155,6 +157,8 @@ namespace GenBOE.Web.Common
                 model.HeaderFooter = ws.ContainsOCI ?
                     "Organizational Conflict of Interest - Lockheed Martin Proprietary Information" :
                     "Lockheed Martin Proprietary Information";
+
+				model.ContainsOCI = ws.ContainsOCI;
 			}
         }
 
@@ -357,7 +361,7 @@ namespace GenBOE.Web.Common
 			// is the data out-of-date
 			bool isDataOutOfDate = false;
 
-			isDataOutOfDate = Utilities.IsUCOTEnabled && this._ControllerLogic.IsUCOTFactorOutOfDate(ws);
+			isDataOutOfDate = Utilities.ShowUCOTForWorkspace(ws.CreationDate) && this._ControllerLogic.IsUCOTFactorOutOfDate(ws);
 
 			if (isDataOutOfDate)
 			{

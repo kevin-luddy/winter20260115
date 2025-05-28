@@ -10,6 +10,7 @@ namespace IES.Common
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.ComponentModel;
 	using System.DirectoryServices;
 	using System.IO;
 	using System.Linq;
@@ -42,6 +43,7 @@ namespace IES.Common
 		private static object lockObject = new object();
 		private static DateTime? sapSpaceStartDate;
 		private static DateTime? skillMixStartDate;
+		private static DateTime? ucotStartDate;
 		private static DateTime? oneLmxStartDate;
 		private static DateTime? datepickerRestrictionRMS;
 		private static DateTime? historicalReferenceExplanationStartDate;
@@ -161,6 +163,29 @@ namespace IES.Common
 				}
 
 				return sapSpaceStartDate.Value;
+			}
+		}
+
+		/// <summary>
+		/// Cutoff time for workspaces for UCOT
+		/// </summary>
+		public static DateTime UCOTStartDate
+		{
+			get
+			{
+				if (!ucotStartDate.HasValue)
+				{
+					if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("UCOTStartDate"), out DateTime ucotTime))
+					{
+						ucotStartDate = DateTime.MaxValue;
+					}
+					else
+					{
+						ucotStartDate = ucotTime;
+					}
+				}
+
+				return ucotStartDate.Value;
 			}
 		}
 
@@ -906,7 +931,7 @@ namespace IES.Common
 		/// <summary>
 		/// Is UCOT/Uncompensated Overtime enabled?
 		/// </summary>
-		public static bool IsUCOTEnabled
+		public static bool IsUCOTEnabledForSystem
 		{
 			get
 			{
@@ -1113,26 +1138,13 @@ namespace IES.Common
 		}
 
 		/// <summary>
-		/// Is Skill Mix connection shown to the user for this task
+		/// Is UCOT shown to the user for this workspace
 		/// </summary>
-		/// <param name="workspaceCreationDate">Workspace creation date.</param>
-		/// <param name="hasTMRates">Is the task using T&M rates</param>
-		/// <returns>Option to show skill mix for task.</returns>
-		public static bool ShowSkillMixForTask(DateTime? workspaceCreationDate, bool hasTMRates)
+		/// <param name="workspaceCreationDate">Workspace creation date</param>
+		/// <returns>True to show UCOT</returns>
+		public static bool ShowUCOTForWorkspace(DateTime? workspaceCreationDate)
 		{
-			bool showSkillMixRationale = false;
-
-			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-			{
-				showSkillMixRationale = ShowSkillMixForWorkspace(workspaceCreationDate);
-			}
-			// For space only: Shows Skill Mix Rationale section when the workspace is NOT using T&M.
-			else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-			{
-				showSkillMixRationale = ShowSkillMixForWorkspace(workspaceCreationDate) && !hasTMRates;
-			}
-
-			return showSkillMixRationale;
+			return IsUCOTEnabledForSystem && workspaceCreationDate >= UCOTStartDate;
 		}
 
 		/// <summary>
@@ -1267,6 +1279,46 @@ namespace IES.Common
 					log.Debug(configSettingKey + " - " + ConfigurationUtilities.GetAppSetting(configSettingKey));
 				}
 				log.Debug("End Configuration Manager App Settings");
+			}
+		}
+
+		/// <summary>
+		/// Method to Populate Model from Dictionary of <Property, Value> Pair
+		/// </summary>
+		/// <typeparam name="T">Type of Model being passed in</typeparam>
+		/// <param name="model">Model to Populate</param>
+		/// <param name="valuesForModel">Values to populate the Model with</param>
+		public static void PopulateModel<T>(T model, Dictionary<string, string> valuesForModel)
+		{
+			_ = valuesForModel ?? throw new ArgumentNullException(nameof(valuesForModel));
+
+			// Iterate through the Model Properties
+			// Since this is static method, we only get access to the Array.ForEach
+			// Hence after the .GetProperties() we have to add the .ToList() before the .ForEach()
+			model.GetType().GetProperties().ToList().ForEach(p =>
+			{
+				TypeConverter converter = TypeDescriptor.GetConverter(p.PropertyType);
+				Object convertedObject = converter.ConvertFromString(valuesForModel[p.Name]);
+				p.SetValue(model, convertedObject, null);
+			});
+		}
+
+		/// <summary>
+		/// Method to populate values passed HTTP Content to a Dictionary
+		/// </summary>
+		/// <param name="contents">List of HTTP Content</param>
+		/// <param name="valuesToPopulate">List that will be populated with <key, value> Pair from content values</param>
+		public static void GetModelValuesFromContent(IEnumerable<HttpContent> contents, Dictionary<string, string> valuesToPopulate)
+		{
+			_ = contents ?? throw new ArgumentNullException(nameof(contents));
+			_ = valuesToPopulate ?? throw new ArgumentNullException(nameof(valuesToPopulate));
+
+			foreach (HttpContent content in contents)
+			{
+				// We want to get the Values Passed in the body as Dictionary items so further reduce complexity
+				string key = content.Headers.ContentDisposition.Name.Replace("\"", "");
+				string value = content.ReadAsStringAsync().Result;
+				valuesToPopulate.Add(key, value);
 			}
 		}
 	}

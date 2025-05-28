@@ -1,0 +1,44 @@
+﻿/*For LaborTask and LaborTaskStatic pages*/
+
+.resourceCol {
+    width: 70px;
+}
+
+.historicalHoursCol {
+    width: 77px;
+}
+
+.laborSkillMixCol {
+    width: 70px;
+}
+
+.includedCol {
+    width: 40px;
+}
+
+.boeSkillMixCol {
+    width: 65px;
+}
+
+.proposedHoursCol {
+    width: 78px;
+}
+
+.brcCol {
+    width: 77px;
+    text-wrap: wrap;
+}
+
+/*RMS Only*/
+.currentResourceCol {
+    width: 86px;
+}
+
+.rmsButtonCol {
+    width: 38px;
+}
+
+/*Space Only*/
+.ucotCol {
+    width: 62px;
+}

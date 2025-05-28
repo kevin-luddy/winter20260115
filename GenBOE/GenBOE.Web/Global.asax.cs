@@ -41,6 +41,7 @@ namespace GenBOE
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.Common.security;
 	using GenBOE.DataBridge.DTO;
+	using GenBOE.DataBridge.DTO.Request;
 	using GenBOE.DataBridge.Reference;
 	using GenBOE.Objects;
 	using GenBOE.Web;
@@ -306,6 +307,17 @@ namespace GenBOE
 
 			try
 			{
+				IRequestDataLoader requestDataLoader = GenBOEUnityContainer.Container.Resolve<IRequestDataLoader>();
+				requestDataLoader.DeleteAll();
+			}
+			catch (Exception ex)
+			{
+				_log.Error(ex, "Error deleting all request");
+				throw;
+			}
+
+			try
+			{
 				// jim 5/14/2011 - this is kind of a workaround to get the Instance property in
 				// the validation factory valued since this is a special class that doesn't fit into
 				// the 'normal' Dependency Injection model [ask adam about this]
@@ -382,6 +394,7 @@ namespace GenBOE
 			GenBOEUnityContainer.Container.RegisterType(typeof(IPermissionsDTODataLoader), typeof(PermissionsDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IPermissionsDTODataLoader>(new InterfaceInterceptor());
 			GenBOEUnityContainer.Container.RegisterType(typeof(IBoeDTODataLoader), typeof(BoeDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
 			GenBOEUnityContainer.Container.RegisterType(typeof(IClinDTODataLoader), typeof(ClinDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
+			GenBOEUnityContainer.Container.RegisterType(typeof(IDateShiftDTODataLoader), typeof(DateShiftDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
 			GenBOEUnityContainer.Container.RegisterType(typeof(IUserDTODataLoader), typeof(UserDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
 			GenBOEUnityContainer.Container.RegisterType(typeof(IWorkspaceExportFormatDTODataLoader), typeof(WorkspaceExportFormatDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
 			GenBOEUnityContainer.Container.RegisterType(typeof(IWbsDTODataLoader), typeof(WbsDTODataLoader), GetLifetimeManager(), new InjectionConstructor()).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
@@ -416,7 +429,9 @@ namespace GenBOE
 			GenBOEUnityContainer.Container.RegisterType(typeof(IProjectMapSpreadLoader), typeof(ProjectMapSpreadLoader), GetLifetimeManager(), new InjectionMember[] { });
 			GenBOEUnityContainer.Container.RegisterType(typeof(IProjectMapDataLoader), typeof(ProjectMapDataLoader), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IProjectMapSpreadLoader))));
 			GenBOEUnityContainer.Container.RegisterType(typeof(GenTRAC.DataBridge.DTO.IProposalLoader), typeof(GenTRAC.DataBridge.DTO.ProposalLoader), this.GetLifetimeManager(), new InjectionConstructor()).Configure<Interception>().SetInterceptorFor<GenTRAC.DataBridge.DTO.IProposalLoader>(new InterfaceInterceptor());
-			
+			GenBOEUnityContainer.Container.RegisterType(typeof(IRequestDataLoader), typeof(RequestDataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IRequestDataLoader>(new InterfaceInterceptor());
+
+
 			GenBOEUnityContainer.Container.RegisterType(typeof(IBoeTaskElementDTODataLoader), typeof(BoeTaskElementDTODataLoader), GetLifetimeManager(),
 				new InjectionConstructor(
 					new ResolvedParameter(typeof(IResourceTypeLoader)),
@@ -510,6 +525,7 @@ namespace GenBOE
 						new ResolvedParameter(typeof(IRteTemplateDataLoader)),
 						new ResolvedParameter(typeof(IMoqTypeDataLoader)),
 						new ResolvedParameter(typeof(ITMResourceRateDTODataLoader)),
+						new ResolvedParameter(typeof(IRequestDataLoader)),
 						new ResolvedParameter(typeof(IValidateBOE)),
 						new ResolvedParameter(typeof(IMoqTableExporter)),
 						new ResolvedParameter(typeof(IMoqTableImporter)),
@@ -581,6 +597,7 @@ namespace GenBOE
 						new ResolvedParameter(typeof(IRteTemplateDataLoader)),
 						new ResolvedParameter(typeof(IMoqTypeDataLoader)),
 						new ResolvedParameter(typeof(ITMResourceRateDTODataLoader)),
+						new ResolvedParameter(typeof(IRequestDataLoader)),
 						new ResolvedParameter(typeof(IValidateBOE)),
 						new ResolvedParameter(typeof(IMoqTableExporter)),
 						new ResolvedParameter(typeof(IMoqTableImporter)),
@@ -811,8 +828,10 @@ namespace GenBOE
 																														 new ResolvedParameter(typeof(IUserDTODataLoader)),
 																														 new ResolvedParameter(typeof(IActiveDirectoryUtilities)),
 																														 new ResolvedParameter(typeof(ISecurityInformation)),
-																														 new ResolvedParameter(typeof(IFullObjectFactory))
+																														 new ResolvedParameter(typeof(IFullObjectFactory)),
+																														 new ResolvedParameter(typeof(ICommonDataMapper))
 																														));
+
 			GenBOEUnityContainer.Container.RegisterType(typeof(BOECommentsControllerLogic), typeof(BOECommentsControllerLogic), GetLifetimeManager(), new InjectionConstructor(
 																														  new ResolvedParameter(typeof(BOECommentDTODataLoader)),
 																														  new ResolvedParameter(typeof(UserDTODataLoader)),

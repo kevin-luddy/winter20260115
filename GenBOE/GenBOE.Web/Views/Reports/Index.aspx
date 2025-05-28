@@ -68,7 +68,7 @@
                                 a.click();
                             }
                         } else {
-                            RaiseNotification('An error occured during generation of Report');
+                            RaiseNotification('An error occurred during generation of Report');
                         }
                     } 
                 };
@@ -225,7 +225,7 @@
                     },
                     error: function (response) {
                         $('#PageLoading').addClass('display-none');
-                        RaiseNotification('An error occured during generation of Report');
+                        RaiseNotification('An error occurred during generation of Report');
                     }
                 });
 

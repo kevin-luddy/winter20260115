@@ -16,7 +16,7 @@ namespace GenBOE.ActionLogic.ModelView
     {
         public string DisplayEvent { get; set; }
         public string DeleteAction { get; set; }
-
+		public bool ContainsOCI { get; set; }
         public Collection<GenericTaskElementGridRow> TaskElements { get; set; }
     }
 

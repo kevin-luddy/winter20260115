@@ -2187,6 +2187,28 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 								}
 						}
 					}
+				},
+				new MoqTypeSelection()
+				{
+					BoeId = boe1.Id,
+					TaskId = task1.Id,
+					Id = 3,
+					SelectedMOQType = MOQType.AnalogousRelationships,
+					TableData = new List<MoqTableData>
+					{
+						new MoqTableData()
+						{
+							TableName = "Fifth table",
+							Id = 5,
+							DateOfReport = DateTime.Today.AddDays(-1),
+							TotalRelevantHours = 20,
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							ResourceHours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
+								{
+									new MOQTypeSelectionTableDataResourceHoursDTO { ResourceName = "dd", BRCName = "de", MOQTypeSelectionTableDataId = 1, TotalHours = 20 }
+								}
+						}
+					}
 				}
 			};
 
@@ -2253,6 +2275,21 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 						}
 					}
 				},
+				new IESResponse<IESSAPClient.CalculateActualsWithSkillMixViewModel>
+				{
+					IsSuccessful = true,
+					Data = new List<IESSAPClient.CalculateActualsWithSkillMixViewModel> ()
+					{
+						new IESSAPClient.CalculateActualsWithSkillMixViewModel()
+						{
+							TableId = 5,
+							SkillMixDataTable = new List<IESSAPClient.SkillMixResourceViewModel>
+							{
+								new IESSAPClient.SkillMixResourceViewModel { ResourceID = "dd", TotalHours = 50 }
+							}
+						}
+					}
+				},
 			};
 
 			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(ws.Id, false, ws.DecimalPrecision, ws.CostDecimalPrecision)).Returns(tasks);
@@ -2269,11 +2306,12 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			ICollection<WorkspaceCalculateActualsModelView> models = await sut.RecalculateActuals(ws);
 
 			Assert.IsNotNull(models);
-			Assert.AreEqual(3, models.Count); // only getting 3 models because one had same hours as previous
+			Assert.AreEqual(4, models.Count); // only getting 4 models because one had same hours as previous
 
 			WorkspaceCalculateActualsModelView first = models.First();
-			WorkspaceCalculateActualsModelView second = models.Skip(1).First();
+			WorkspaceCalculateActualsModelView second = models.ElementAt(1);
 			WorkspaceCalculateActualsModelView fourth = models.Last(); // the fourth table
+			WorkspaceCalculateActualsModelView fifth = models.ElementAt(2); // the fifth table
 
 			Assert.IsTrue(first.IsSuccessful);
 			Assert.IsFalse(second.IsSuccessful);
@@ -2284,11 +2322,13 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual(10, first.TotalRelevantHoursPrevious);
 			Assert.AreEqual(50, fourth.TotalRelevantHours);
 			Assert.AreEqual(25, fourth.TotalRelevantHoursPrevious);
+			Assert.AreEqual(50, fifth.TotalRelevantHours);
+			Assert.AreEqual(20, fifth.TotalRelevantHoursPrevious);
 			Assert.AreEqual(BOEState.Draft, boe1.State);
 			Assert.AreEqual(BOEState.Draft, boe2.State);
 
 			// This is needed since there is no feasible way to override a member of the class with MOQ and use the original code :(
-			BOELaborControllerLogic boeLaborControllerLogic = new BOELaborControllerLogic(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+			BOELaborControllerLogic boeLaborControllerLogic = new BOELaborControllerLogic(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 		}
 
 		/// <summary>

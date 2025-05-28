@@ -12,5 +12,6 @@
         public string ProposalName { get; set; }
         public string WorkspaceState { get; set; }
         public string HeaderFooter { get; set; }
+		public bool ContainsOCI { get; set; }
     }
 }
