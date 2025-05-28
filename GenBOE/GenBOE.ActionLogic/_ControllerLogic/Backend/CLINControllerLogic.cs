@@ -11,11 +11,13 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 	using System.IO;
 	using System.Linq;
 	using System.Transactions;
+	using System.Web.Mvc;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.Common.Email;
 	using GenBOE.ActionLogic.IO.Export;
+	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.ModelView.Clin;
 	using GenBOE.ActionLogic.Validation;
 	using GenBOE.DataBridge.DTO;
@@ -24,6 +26,7 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 	using IES.Common;
 	using IES.Common.classes;
 	using IES.Common.Exceptions;
+	using IES.Common.OfficeUtilities;
 	using IES.Common.PickList;
 
 	/// <summary>
@@ -93,13 +96,18 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 		private ICLINExporter _clinExporter { get; set; }
 
 		/// <summary>
+		/// CLIN Importer
+		/// </summary>
+		private ICLINImporter _clinImporter { get; set; }
+
+		/// <summary>
 		/// Constructor
 		/// </summary>
 		public CLINControllerLogic(IFullObjectFactory factory, IValidationHelper validationHelper,
 			IVariableSelectBOEtoSumCalculation variableSelectBOEtoSumCalculation, IBoeTaskElementRecalculation boeTaskElementRecalculation,
 			IBoeTaskElementMediator boeTaskElementMediator, IBOEStateMachine boeStateMachine, IBoeMediator boeMediator,
 			IClinDTODataLoader clinDTODataLoader, IWorkspaceVariableDTODataLoader workspaceVariableDTODataLoader,
-			ContractTypeLoader contractTypeLoader, IBoeEmailer boeEmailer, ICLINExporter clinExporter)
+			ContractTypeLoader contractTypeLoader, IBoeEmailer boeEmailer, ICLINExporter clinExporter, ICLINImporter clinImporter)
 		{
 			this._factory = factory;
 			this._validationHelper = validationHelper;
@@ -113,6 +121,7 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 			this._contractTypeLoader = contractTypeLoader;
 			this._emailer = boeEmailer;
 			this._clinExporter = clinExporter;
+			this._clinImporter = clinImporter;
 		}
 		#endregion
 
@@ -484,6 +493,19 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 				fs = new FileStream(exportFile, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 			}
 			return fs;
+		}
+
+		/// <summary>
+		/// Import CLIN logic
+		/// </summary>
+		/// <param name="ws"></param>
+		/// <param name="inputStream"></param>
+		/// <returns></returns>
+		public ICollection<ImportedClin> ImportCLINs(FullWorkspace ws, Stream inputStream)
+		{
+			ICollection<PickListDto> contractTypes = _contractTypeLoader.GetPickListValues();
+			Collection<ImportedClin> results = this._clinImporter.ImportClinsFromExcelFile(inputStream, ws, contractTypes);
+			return results;
 		}
 	}
 }
