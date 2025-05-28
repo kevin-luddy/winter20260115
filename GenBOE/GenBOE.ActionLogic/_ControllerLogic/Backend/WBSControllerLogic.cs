@@ -22,6 +22,8 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 	using System.Linq;
 	using GenBOE.Dtos;
 	using GenBOE.ActionLogic.Common;
+	using System.IO;
+	using GenBOE.ActionLogic.IO.Export;
 
 	/// <summary>
 	/// WBS Controller Logic
@@ -85,13 +87,18 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 		private IBoeEmailer emailer { get; set; }
 
 		/// <summary>
+		/// WBS Exporter
+		/// </summary>
+		private WbsExporter wbsExporter { get; set; }
+
+		/// <summary>
 		/// Constructor
 		/// </summary>
 		public WBSControllerLogic(IFullObjectFactory factory, IValidationHelper validationHelper,
 			IVariableSelectBOEtoSumCalculation variableSelectBOEtoSumCalculation, IBoeTaskElementRecalculation boeTaskElementRecalculation,
 			IBoeTaskElementMediator boeTaskElementMediator, IBOEStateMachine boeStateMachine, IBoeMediator boeMediator,
 			IWbsDTODataLoader wbsDTODataLoader, IWorkspaceVariableDTODataLoader workspaceVariableDTODataLoader,
-			IBoeDTODataLoader boeLoader, IBoeEmailer boeEmailer)
+			IBoeDTODataLoader boeLoader, WbsExporter wbsExporter, IBoeEmailer boeEmailer)
 		{
 			this.factory = factory;
 			this.validationHelper = validationHelper;
@@ -103,9 +110,88 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 			this.wbsLoader = wbsDTODataLoader;
 			this.workspaceVariableLoader = workspaceVariableDTODataLoader;
 			this.boeLoader = boeLoader;
+			this.wbsExporter = wbsExporter;
 			this.emailer = boeEmailer;
 		}
 		#endregion
+
+		/// <summary>
+		/// Export WBS logic
+		/// </summary>
+		/// <param name="ws">Full Workspace</param>
+		/// <returns>Excel file as FileStream</returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		public FileStream ExportWBSs(FullWorkspace ws)
+		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
+
+			FileStream fs = null;
+			// Perform Action
+			// Get Default Performing Orgs Data
+			ICollection<FullWbs> WbsDTOs = ws.WbsElementsNoMultiWbs.ToCollection();
+
+			Dictionary<int, string> clinStrings = new Dictionary<int, string>();
+
+			foreach (FullWbs wbs in WbsDTOs)
+			{
+				ICollection<ClinDTO> clins = ws.Clins.Where(x => wbs.ClinIDs.Contains(x.Id)).ToList<ClinDTO>();
+
+				string clinString = string.Join(", ", clins.Select(w => w.ClinNumber));
+				clinStrings.Add(wbs.Id, clinString);
+			}
+
+			// Get the WBS template file name
+			// Assume that "Templates" is a subdirectory of your application's root directory
+			string templateDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates", "Export");
+
+			// Ensure the template directory exists
+			if (!Directory.Exists(templateDir))
+			{
+				throw new InvalidOperationException($"Template directory '{templateDir}' does not exist.");
+			}
+
+			// Get WBS template file name
+			string templateFileName = Path.Combine(templateDir, "WBSs.xlsx");
+
+			// Call the export function in the business layer and get back the file name of the populated template.
+			string exportedFileName = wbsExporter.ExportToExcelFile(templateFileName, WbsDTOs.ToCollection<WbsDTO>(), clinStrings);
+
+			fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+			return fs;
+		}
+
+		/// <summary>
+		/// Export WBS template logic
+		/// </summary>
+		/// <returns>Excel file as FileStream</returns>
+		public FileStream ExportWBSTemplate()
+		{
+			Collection<WbsDTO> WbsDTOs = new Collection<WbsDTO>();
+
+			Dictionary<int, string> clinStrings = new Dictionary<int, string>();
+
+			// Get the WBS template file name
+			// Assume that "Templates" is a subdirectory of your application's root directory
+			string templateDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates", "Export");
+
+			// Ensure the template directory exists
+			if (!Directory.Exists(templateDir))
+			{
+				throw new InvalidOperationException($"Template directory '{templateDir}' does not exist.");
+			}
+
+			// Get WBS template file name
+			string templateFileName = Path.Combine(templateDir, "WBSs.xlsx");
+
+			// Call the export function in the business layer and get back the file name of the populated template.
+			string exportedFileName = wbsExporter.ExportToExcelFile(templateFileName, WbsDTOs.ToCollection<WbsDTO>(), clinStrings);
+
+			FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+			return fs;
+		}
 
 		/// <summary>
 		/// Save WBS
