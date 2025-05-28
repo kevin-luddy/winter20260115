@@ -31,23 +31,26 @@ namespace GenTRAC.ActionLogic.GeneralHelper
         public EppDelegationDatesHelper()
         {
             // Property-Enum mapping
-            Add(EppDelegationAuthority.Corporate, "CorporateEppDate");
-            Add(EppDelegationAuthority.Corporate, "PreCorporateEppDate");
-            Add(EppDelegationAuthority.Space, "SpaceEppDate");
-            Add(EppDelegationAuthority.Space, "PreSpaceEppDate");
-            Add(EppDelegationAuthority.LoB, "LobEppDate");
-            Add(EppDelegationAuthority.Program, "ProgramEppDate");
+            Add(EppDelegationAuthority.Corporate, nameof(ContractsDto.CorporateEppDate));
+            Add(EppDelegationAuthority.Corporate, nameof(ContractsDto.PreCorporateEppDate));
+            Add(EppDelegationAuthority.Space, nameof(ContractsDto.SpaceEppDate));
+            Add(EppDelegationAuthority.Space, nameof(ContractsDto.PreSpaceEppDate));
+            Add(EppDelegationAuthority.LoB, nameof(ContractsDto.LobEppDate));
+			Add(EppDelegationAuthority.MissionSegment, nameof(ContractsDto.MissionSegmentEppDate));
+            Add(EppDelegationAuthority.Program, nameof(ContractsDto.ProgramEppDate));
 
-            // Property-Friendly name mapping
-            EppDateNames = new Dictionary<string, string>
+			// Property-Friendly name mapping
+			EppDateNames = new Dictionary<string, string>
             {
-                { "CorporateEppDate", "Corporate EPP Date" },
-                { "PreCorporateEppDate", "Pre-Corporate EPP Date" },
-                { "SpaceEppDate", "Space EPP Date" },
-                { "PreSpaceEppDate", "Pre-Space EPP Date" },
-                { "LobEppDate", "Line of Business EPP Date" },
-                { "ProgramEppDate", "Program EPP Date" }
-            };
+                { nameof(ContractsDto.CorporateEppDate), "Corporate EPP Date" },
+                { nameof(ContractsDto.PreCorporateEppDate), "Pre-Corporate EPP Date" },
+                { nameof(ContractsDto.SpaceEppDate), "Space EPP Date" },
+                { nameof(ContractsDto.PreSpaceEppDate), "Pre-Space EPP Date" },
+                { nameof(ContractsDto.LobEppDate), "Line of Business EPP Date" },
+				{ nameof(ContractsDto.MissionSegmentEppDate), "Mission Segment EPP Date" },
+                { nameof(ContractsDto.ProgramEppDate), "Program EPP Date" },
+				{ nameof(ContractsDto.BidEppDate), "Bid EPP Date" }
+			};
         }
 
         /// <summary>
@@ -89,50 +92,6 @@ namespace GenTRAC.ActionLogic.GeneralHelper
         }
 
         /// <summary>
-        /// Tests the required dates for the assigned EPP Delegation level to ensure that required steps are equal or greater in value.
-        /// </summary>
-        /// <param name="dto">Contracts DTO</param>
-        /// <param name="errMessages">List to which encountered errors will be added.</param>
-        /// <returns>True if all the required data are available and they are in sequential order (or equal to each other)</returns>
-        /// <exception cref="ArgumentNullException">If DTO is null</exception>
-        public bool AreRequiredDatesSequential(ContractsDto dto, List<string> errMessages)
-        {
-            _ = dto ?? throw new ArgumentNullException(nameof(dto));
-            errMessages = errMessages ?? new List<string>();
-
-            bool isValid = true;
-            
-            List<string> requiredDates = this.GetRequiredEppDatesForDelegation((EppDelegationAuthority?)dto?.EppDelegationAuthority);
-            requiredDates.Reverse();
-
-            for (int i = 1; i < requiredDates.Count; i++)
-            {
-                DateTime? thisDate = (DateTime?)dto.GetType().GetProperty(requiredDates[i]).GetValue(dto, null);
-                DateTime? lastDate = (DateTime?)dto.GetType().GetProperty(requiredDates[i - 1]).GetValue(dto, null);
-
-                if(thisDate == null)
-                {
-                    errMessages.Add($"{EppDateNames[requiredDates[i]]} is required.");
-                    isValid = false;
-                }
-
-                if(lastDate == null)
-                {
-                    errMessages.Add($"{EppDateNames[requiredDates[i - 1]]} is required.");
-                    isValid = false;
-                }
-
-                if (thisDate != null && lastDate != null && lastDate > thisDate)
-                {
-                    isValid = false;
-                    errMessages.Add($"{EppDateNames[requiredDates[i - 1]]} must be before {EppDateNames[requiredDates[i]]}");
-                }
-            }
-
-            return isValid;
-        }
-
-        /// <summary>
         /// Tests the dates that have been provided to ensure that subsequent steps are equal or greater in value.
         /// </summary>
         /// <param name="dto">Contracts DTO</param>
@@ -148,6 +107,10 @@ namespace GenTRAC.ActionLogic.GeneralHelper
 
             // get a list of all possible date names
             List<string> requiredDates = this.GetRequiredEppDatesForDelegation(EppDelegationAuthority.Corporate);
+
+			// Bid EPP date is never required, but if it is entered then it must be sequential so it's added here
+			requiredDates.Add(nameof(ContractsDto.BidEppDate));
+
             // now get a list of the date names that have actually been provided
             List<string> givenDates = requiredDates.Where(x => dto.GetType().GetProperty(x).GetValue(dto, null) != null).ToList();
             givenDates.Reverse();
@@ -168,14 +131,15 @@ namespace GenTRAC.ActionLogic.GeneralHelper
             return isValid;
         }
 
-        /// <summary>
-        /// Tests the list of dates required for the supplied contract to see if any are missing.
-        /// </summary>
-        /// <param name="dto">Contracts DTO</param>
-        /// <param name="errMessages">List to which encountered errors will be added.</param>
-        /// <returns>True if all the required data are available and they are in sequential order (or equal to each other)</returns>
-        /// <exception cref="ArgumentNullException">If DTO is null</exception>
-        public bool AreRequiredDatesPopulated(ContractsDto dto, List<string> errMessages)
+		/// <summary>
+		/// Tests the list of dates required for the supplied contract to see if any are missing.
+		/// </summary>
+		/// <param name="dto">Contracts DTO</param>
+		/// <param name="errMessages">List to which encountered errors will be added.</param>
+		/// <param name="isNss">Is the LOB set to National Security Space</param>
+		/// <returns>True if all the required data are available and they are in sequential order (or equal to each other)</returns>
+		/// <exception cref="ArgumentNullException">If DTO is null</exception>
+		public bool AreRequiredDatesPopulated(ContractsDto dto, List<string> errMessages, bool isNss = false)
         {
             _ = dto ?? throw new ArgumentNullException(nameof(dto));
             errMessages = errMessages ?? new List<string>();
@@ -184,7 +148,13 @@ namespace GenTRAC.ActionLogic.GeneralHelper
             
             List<string> requiredDates = this.GetRequiredEppDatesForDelegation((EppDelegationAuthority?)dto?.EppDelegationAuthority);
 
-            if (requiredDates.Where(x => dto.GetType().GetProperty(x).GetValue(dto, null) == null).Any())
+			if (!isNss && requiredDates.Contains(nameof(ContractsDto.MissionSegmentEppDate)))
+			{
+				// Mission Segment EPP Date is only required if the Proposal's LOB is National Security Space
+				requiredDates.Remove(nameof(ContractsDto.MissionSegmentEppDate));
+			}
+
+            if (requiredDates.Any(x => dto.GetType().GetProperty(x).GetValue(dto, null) == null))
             {
                 // convert the property names to friendly names
                 string[] missingDates = requiredDates.Where(x => dto.GetType().GetProperty(x).GetValue(dto, null) == null).ToArray();

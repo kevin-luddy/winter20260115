@@ -240,6 +240,8 @@
     <Compile Include="Common\MOQ\MOQParsing.cs" />
     <Compile Include="Common\MOQ\MOQParsingExceptions.cs" />
     <Compile Include="Common\MOQ\MOQVariable.cs" />
+    <Compile Include="Common\MultiMOQTypeResult.cs" />
+    <Compile Include="Common\MultiMOQTypeUtility.cs" />
     <Compile Include="Common\Offload\OffloadLaborRates.cs" />
     <Compile Include="Common\Offload\OffloadLaborRatesValidationResults.cs" />
     <Compile Include="Common\Offload\OffloadLaborRatesResults.cs" />

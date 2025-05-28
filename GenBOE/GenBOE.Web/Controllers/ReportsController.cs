@@ -1864,6 +1864,31 @@ namespace GenBOE.Web.Controllers
 						// Get the workspace again in case the user clicked twice
 						ws = this.Factory.CreateFullWorkspace(workspace);
 
+						// Validate for UCOT and multiple MOQ tasks - Space only
+						if (Utilities.IsUCOTEnabledForSystem && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+						{
+							IList<MultiMOQTypeResult> multiMoqResults = new List<MultiMOQTypeResult>();
+							IList<string> allTasks = new List<string>();
+
+							foreach (FullBoe boe in ws.Boes)
+							{
+								boe.SetTaskElements(ws.TaskElements.Where(x => x.BoeID == boe.Id));
+								multiMoqResults.Add(MultiMOQTypeUtility.DoTasksHaveMultipleMOQTypes(boe));
+							}
+
+							if (multiMoqResults.Any() && multiMoqResults.Any(x => x.DoMultiMOQTypesExist))
+							{
+								foreach (MultiMOQTypeResult result in multiMoqResults)
+								{
+									allTasks.AddRange(result.Tasks);
+								}
+
+								string commaSeparatedTasks = string.Join(", ", allTasks);
+								string ucotExceptionString = string.Format(ValidationConstants.MULTI_TASK_WITH_MULTI_MOQ_TYPES_UCOT, commaSeparatedTasks);
+								throw new GenValidationException(ucotExceptionString);
+							}
+						}
+
 						// once the export is complete, increment the total of exports for this workspace for reporting tracking purposes
 						ws.NumberOfTimesExportedToProPricer = ++ws.NumberOfTimesExportedToProPricer;
 
