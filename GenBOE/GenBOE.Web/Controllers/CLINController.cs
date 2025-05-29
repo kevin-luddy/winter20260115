@@ -14,21 +14,16 @@ namespace GenBOE.Web.Controllers
 	using System.Linq;
 	using System.Transactions;
 	using System.Web.Mvc;
-	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic._ControllerLogic.Backend;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
 	using GenBOE.ActionLogic.Common;
-	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.Common.Email;
 	using GenBOE.ActionLogic.ControllerLogic;
 	using GenBOE.ActionLogic.IO.Export;
 	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.Metrics;
-	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.Clin;
-	using GenBOE.ActionLogic.ModelView.Workspace;
-	using GenBOE.ActionLogic.Validation;
 	using GenBOE.DataBridge.Common;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
@@ -48,7 +43,6 @@ namespace GenBOE.Web.Controllers
 
 		private IBoeEmailer _Emailer;
 		private IBOEStateMachine _BOEStateMachine;
-		private ICLINImporter _ClinImporter;
 		private ICLINExporter _ClinExporter;
 		private IBoeMediator _BoeMediator;
 		private IClinDTODataLoader clinLoader;
@@ -64,7 +58,6 @@ namespace GenBOE.Web.Controllers
 			SiteMasterUtilities inSiteMasterUtilities,
 			IBoeEmailer inEmailer,
 			IBOEStateMachine inBOEStateMachine,
-			ICLINImporter inClinImporter,
 			ICLINExporter inClinExporter,
 			IBoeMediator inBoeMediator,
 			SystemMetrics inSystemMetrics,
@@ -81,7 +74,6 @@ namespace GenBOE.Web.Controllers
 		{
 			this._Emailer = inEmailer;
 			this._BOEStateMachine = inBOEStateMachine;
-			this._ClinImporter = inClinImporter;
 			this._ClinExporter = inClinExporter;
 			this._BoeMediator = inBoeMediator;
 			this.clinLoader = clinLoader;
@@ -288,8 +280,7 @@ namespace GenBOE.Web.Controllers
 			{
 				try
 				{
-					ICollection<PickListDto> contractTypes = this.contractTypeLoader.GetPickListValues();
-					Collection<ImportedClin> results = this._ClinImporter.ImportClinsFromExcelFile(this.Request.Files[0].InputStream, ws, contractTypes);
+					ICollection<ImportedClin> results = this._clinControllerLogic.ImportCLINs(ws, this.Request.Files[0].InputStream);
 
 					toReturn = this.GenerateJsonUploadResponse(true, results, this.Request.Files[0].FileName);
 				}

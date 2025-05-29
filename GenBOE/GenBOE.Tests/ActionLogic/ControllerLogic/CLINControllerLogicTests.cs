@@ -25,6 +25,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 	using IES.Common.classes;
 	using Microsoft.Practices.Unity;
 	using GenBOE.DataBridge.Common;
+	using GenBOE.ActionLogic.IO.Import;
 
 	/// <summary>
 	/// genBOE Angular CLIN tests
@@ -44,6 +45,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		Mock<ContractTypeLoader> contractTypeLoader;
 		Mock<IBoeEmailer> boeEmailer;
 		Mock<ICLINExporter> clinExporter;
+		Mock<ICLINImporter> clinImporter;
 		Mock<GenBOE.Objects.IRetriever> retriever = new Mock<GenBOE.Objects.IRetriever>();
 		Mock<ICommonDataMapper> commonDataMapper = new Mock<ICommonDataMapper>();
 		private Mock<IPermissionsDTODataLoader> _permissions = new Mock<IPermissionsDTODataLoader>();
@@ -66,10 +68,12 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 			this.contractTypeLoader = new Mock<ContractTypeLoader>();
 			this.boeEmailer = new Mock<IBoeEmailer>();
 			this.clinExporter = new Mock<ICLINExporter>();
+			this.clinImporter = new Mock<ICLINImporter>();
+
 
 			return new CLINControllerLogic(fullObjectFactory.Object, validationHelper.Object, variableSelectBOEtoSumCalculation.Object, boeTaskElementRecalculation.Object,
 				boeTaskElementMediator.Object, boeStateMachine.Object, boeMediator.Object, clinDTODataLoader.Object, workspaceVariableDTODataLoader.Object,
-				contractTypeLoader.Object, boeEmailer.Object, clinExporter.Object);
+				contractTypeLoader.Object, boeEmailer.Object, clinExporter.Object, clinImporter.Object);
 		}
 
 		/// <summary>

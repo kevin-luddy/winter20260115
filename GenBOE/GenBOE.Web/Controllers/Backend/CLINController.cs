@@ -13,9 +13,11 @@ namespace GenBOE.Web.Controllers.Backend
 	using System.Net;
 	using System.Net.Http;
 	using System.Net.Http.Headers;
+	using System.Web;
 	using System.Web.Http;
 	using System.Web.Mvc;
 	using GenBOE.ActionLogic._ControllerLogic.Backend;
+	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.ModelView.Clin;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
@@ -122,6 +124,35 @@ namespace GenBOE.Web.Controllers.Backend
 					Content = new StringContent("Unknown error exporting CLINs")
 				};
 			}
+		}
+
+		/// <summary>
+		/// Import CLIN to get confirmation response
+		/// </summary>
+		/// <returns>List of CLINs with types</returns>
+		[System.Web.Http.HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESResponse<ImportedClin> ImportCLINs()
+		{
+			IESResponse<ImportedClin> result = new IESResponse<ImportedClin>();
+
+			try
+			{
+				string workspaceShortName = HttpContext.Current.Request.Form["workspaceShortName"];
+				Stream importFile = HttpContext.Current.Request.Files[0].InputStream;
+
+				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortName);
+
+				result.Data = _clinControllerLogic.ImportCLINs(ws, importFile);
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occurred importing CLIN data: {ex.Message}");
+			}
+
+			return result;
 		}
 	}
 }
