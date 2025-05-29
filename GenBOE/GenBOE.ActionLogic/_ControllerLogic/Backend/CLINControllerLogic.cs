@@ -26,7 +26,6 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 	using IES.Common;
 	using IES.Common.classes;
 	using IES.Common.Exceptions;
-	using IES.Common.OfficeUtilities;
 	using IES.Common.PickList;
 
 	/// <summary>
@@ -498,9 +497,9 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 		/// <summary>
 		/// Import CLIN logic
 		/// </summary>
-		/// <param name="ws"></param>
-		/// <param name="inputStream"></param>
-		/// <returns></returns>
+		/// <param name="ws">Full Workspace</param>
+		/// <param name="inputStream">File Stream</param>
+		/// <returns>Imported CLINs</returns>
 		public ICollection<ImportedClin> ImportCLINs(FullWorkspace ws, Stream inputStream)
 		{
 			ICollection<PickListDto> contractTypes = _contractTypeLoader.GetPickListValues();

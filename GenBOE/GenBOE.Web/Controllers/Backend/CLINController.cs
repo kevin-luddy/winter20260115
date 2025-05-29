@@ -129,7 +129,7 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <summary>
 		/// Import CLIN to get confirmation response
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>List of CLINs with types</returns>
 		[System.Web.Http.HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESResponse<ImportedClin> ImportCLINs()
