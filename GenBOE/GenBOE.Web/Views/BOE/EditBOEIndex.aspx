@@ -61,8 +61,6 @@
 			IsUcotEnabled: '<%= (bool)ViewData["IsUCOTEnabled"] %>'.isTrue(),
 			UcotFactor: <%=ViewData["UcotFactor"]%>,
 			SkillMixTableHelpUrls: <%=serializer.Serialize(ViewData["SkillMixTableHelpUrls"])%>,
-			MOQTypeSelections: <%=serializer.Serialize(ViewData["MOQTypeSelections"]) %>,
-			MOQTypeDistinctList: <%=serializer.Serialize(ViewData["MOQTypeDistinctList"]) %>,
 			UsingTemplateBOE: '<%=serializer.Serialize(ViewData["UsingTemplateBOE"]) %>'.isTrue()
 		});
 
