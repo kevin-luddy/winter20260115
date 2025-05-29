@@ -1010,10 +1010,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// </summary>
 		/// <param name="ws">Workspace</param>
 		/// <param name="dtoToSave">Task DTO</param>
-		/// <param name="metricIds">Metric IDs</param>
 		/// <param name="answers">RTE Template Answers</param>
 		/// <param name="moqTypes">MOQ Types for the task</param>
-		public void SaveLaborTaskData(FullWorkspace ws, BoeTaskElementDTO dtoToSave, ICollection<int> metricIds, ICollection<RTECustomTemplateQuestionAnswerModelView> answers, ICollection<MoqTypeSelection> moqTypes)
+		public void SaveLaborTaskData(FullWorkspace ws, BoeTaskElementDTO dtoToSave, ICollection<RTECustomTemplateQuestionAnswerModelView> answers, ICollection<MoqTypeSelection> moqTypes)
 		{
 			if (ws == null)
 			{
@@ -1774,32 +1773,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		}
 
 		/// <summary>
-		/// Populates the passed in <see cref="LaborTaskModelView"/> with metric search dialog parameters.
-		/// </summary>
-		/// <param name="model">The <see cref="LaborTaskModelView"/> that will be populated.</param>
-		public virtual void GetMetricSearchDialogParameters(LaborTaskModelView model)
-		{
-			if (model == null)
-			{
-				throw new ArgumentNullException(nameof(model));
-			}
-			model.MetricsSearchDialogParameters = new MetricsSearchDialogParametersModelView();
-		}
-
-		/// <summary>
-		/// Gets a <see cref="System.Web.Mvc.ViewResult"/> with historic metrics.
-		/// </summary>
-		/// <param name="validatedOption">?</param>
-		/// <param name="searchTerm">The criteria used to find metrics</param>
-		/// <returns>The <see cref="System.Web.Mvc.ViewResult"/> with historic metrics</returns>
-		public virtual ViewResultData GetHistoricalMetricsResults(int validatedOption, string searchTerm)
-		{
-			// This code should be refactored  to remove the ViewResult as a return after the metric model views for IS&GS and Space Systems are refactored to use an interface
-			// 28181
-			return new ViewResultData();
-		}
-
-		/// <summary>
 		/// Gets an <see cref="MOQEquationModelView"/> for IS&amp;GS
 		/// </summary>
 		/// <param name="taskElement">A <see cref="BoeTaskElementDTO"/>Task element used in the model view.</param>
@@ -1819,29 +1792,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			MOQEquationModelView toReturn = new MOQEquationModelView(taskElement, this.VariableSelectBOEtoSumCalculation, workspace);
 			toReturn.MoqTemplateAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(workspace.Id, taskElement.BoeID, taskElement.Id).Where(t => t.SourceId == (int)RteTemplateSource.TaskMOQ).ToList();
-			this.SetShowMetricLink(toReturn);
+			
 			return toReturn;
-		}
-
-		/// <summary>
-		/// Sets the show metrics link.
-		/// </summary>
-		/// <returns>The <see cref="MOQEquationModelView"/> populated with the correct company specific value for ShowSearchMetricsLink.</returns>
-		public virtual void SetShowMetricLink(MOQEquationModelView model)
-		{
-			if (model == null) { throw new ArgumentNullException(nameof(model)); }
-			model.ShowSearchMetricsLink = false;
-		}
-
-		/// <summary>
-		/// Gets historical metric type ahead terms matching the <paramref name="searchTerm"/>
-		/// </summary>
-		/// <param name="searchTerm">The criteria used to find metrics</param>
-		/// <returns>The terms found</returns>
-		public virtual ICollection<string> GetTypeAheadTerms(string searchTerm)
-		{
-			// SSC historical metrics have been deprecated.
-			return new Collection<string>();
 		}
 
 		/// <summary>

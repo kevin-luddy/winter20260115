@@ -538,44 +538,6 @@ namespace IES.Common
 	}
 
 	/// <summary>
-	/// Status for Historical Metric
-	/// </summary>
-	public enum HistoricalMetricsStatus
-	{
-		[Description("None")]
-		None = 0,
-		[Description("Not Validated")]
-		Not_Validated = 1,
-		[Description("Validated")]
-		Validated = 2
-	}
-
-	/// <summary>
-	/// Usage of Historical Metric
-	/// </summary>
-	public enum HistoricalMetricsUsage
-	{
-		None = 0,
-		Expansion = 1,
-		LaborRatio = 2,
-		ProductivityRate = 3,
-		Sizing = 4,
-		Hours = 5
-	}
-
-	/// <summary>
-	/// Sources for Historical Metric
-	/// </summary>
-	public enum HistoricalMetricsSource
-	{
-		None = 0,
-		LMOnly = 1,
-		SubOnly = 2,
-		LMAndSub = 3,
-		IndustryData = 4
-	}
-
-	/// <summary>
 	///  ProPricer Scope
 	/// </summary>
 	public enum ProPricerScope

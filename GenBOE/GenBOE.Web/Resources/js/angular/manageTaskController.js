@@ -1702,12 +1702,6 @@
                     }
                 });
 
-                postedData.TaskElementData.MetricIds = [];
-
-                $('tr[name=historicalMetric]').each(function () {
-                    postedData.TaskElementData.MetricIds.push($(this).attr('historicalMetricID'));
-                });
-
                 // there seems to be an issue with the jquery serializer when dealing with rich text pasted from excel so we need to get these field contents again
                 postedData.TaskElementData.RteTemplateAnswers = [];
                 GetRteTemplateJson(TaskElementDetailsWidget.TaskDescription, 'TaskDescription', postedData.TaskElementData);

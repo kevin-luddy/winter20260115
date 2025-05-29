@@ -244,7 +244,11 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 			_BoeTaskElementRecalculation = new Mock<BoeTaskElementRecalculation>(_VariableSelectBoeToSum.Object, factory.Object);
 			this.rteTemplateDataLoader.Setup(x => x.GetByBoeIdAndTaskId(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int?>())).Returns(new List<RTECustomTemplateQuestionAnswerModelView>());
-			this.retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
+			this.retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() }); 
+			retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<MoqTypeSelection>());
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(It.IsAny<int>(), false)).Returns(new Collection<OtherDirectCostDTO>());
+			retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<ResourceDTO>());
+			retriever.Setup(x => x.GetTMResourceRates(It.IsAny<int>())).Returns(new Collection<TMResourceRateDTO>());
 		}
 
 		/// <summary>
@@ -287,8 +291,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				TaskOrdinaryVariables = new Collection<BoeTaskOrdinaryVariableModelView> { taskVar },
 				StartDate = "12/2012",
 				EndDate = "12/2012",
-				CustomFieldValues = new Collection<CustomFieldSelectionModelView> { taskCustomFieldSelection },
-				MetricIds = new Collection<int>() { 1 }
+				CustomFieldValues = new Collection<CustomFieldSelectionModelView> { taskCustomFieldSelection }
 			};
 
 			CustomFieldSelectionModelView laborCustomFieldSelection = new CustomFieldSelectionModelView { CustomFieldValueID = laborCustomField.Id, SelectionID = laborCustomFieldValue_Blue.CustomFieldID };
@@ -2113,10 +2116,10 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			LaborTaskDataModelView taskMV = CreateModelView(boe, ws);
 			BoeTaskElementDTO task = CreateDto(boe, ws, sut);
 			_BoeTaskElementMediator.Setup(x => x.MediatedBulkSaveTaskElements(new Collection<BoeTaskElementDTO>() { task }, ws)).Returns(new Dictionary<int, int>() { { task.Id, task.Id } });
-
+			
 			// pass over code that does OtherBOERecalculationsNeeded
 			task.TotalHours = null;
-			sut.SaveLaborTaskData(ws, task, taskMV.TaskElementData.MetricIds, null, new Collection<MoqTypeSelection>());
+			sut.SaveLaborTaskData(ws, task, null, new Collection<MoqTypeSelection>());
 
 			_BoeTaskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(new Collection<BoeTaskElementDTO>() { task }, ws), Times.Once());
 			_VariableSelectBoeToSum.Verify(x => x.GetWorkspaceVarLabelTotal(It.IsAny<WorkspaceVariableDTO>(), It.IsAny<DataClassForSumOfBOEsCalculation>()), Times.Never());
@@ -2144,7 +2147,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			_BoeTaskElementMediator.Setup(x => x.MediatedBulkSaveTaskElements(new Collection<BoeTaskElementDTO>() { task }, ws)).Returns(new Dictionary<int, int>() { { task.Id, 1 } });
 			_BoeTaskElementRecalculation.Setup(x => x.RecalculateLaborWithBoe(It.IsAny<FullBoe>(), It.IsAny<VariableType>(), It.IsAny<FullWorkspace>(), It.IsAny<Collection<BoeTaskElementDTO>>(), It.IsAny<Collection<WorkspaceVariableDTO>>())).Returns(new Collection<BoeTaskElementDTO>());
 
-			sut.SaveLaborTaskData(ws, task, taskMV.TaskElementData.MetricIds, null, new Collection<MoqTypeSelection>());
+			sut.SaveLaborTaskData(ws, task, null, new Collection<MoqTypeSelection>());
 
 			_BoeTaskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(new Collection<BoeTaskElementDTO>() { task }, ws), Times.Once());
 			_VariableSelectBoeToSum.Verify(x => x.GetWorkspaceVarLabelTotal(It.IsAny<WorkspaceVariableDTO>(), It.IsAny<DataClassForSumOfBOEsCalculation>()), Times.Never());
@@ -2160,7 +2163,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		public void Test_SaveLaborTaskData_EX()
 		{
 			BOELaborControllerLogic sut = CreateSystem();
-			sut.SaveLaborTaskData(null, new BoeTaskElementDTO(), new Collection<int>(), null, new Collection<MoqTypeSelection>());
+			sut.SaveLaborTaskData(null, new BoeTaskElementDTO(), null, new Collection<MoqTypeSelection>());
 		}
 
 		/// <summary>
@@ -2170,7 +2173,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		public void Test_SaveLaborTaskData_EX2()
 		{
 			BOELaborControllerLogic sut = CreateSystem();
-			sut.SaveLaborTaskData(new FullWorkspace(), new BoeTaskElementDTO(), new Collection<int>(), null, null);
+			sut.SaveLaborTaskData(new FullWorkspace(), new BoeTaskElementDTO(), null, null);
 		}
 
 
@@ -2277,7 +2280,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 			// pass over code that does OtherBOERecalculationsNeeded
 			task.TotalHours = null;
-			sut.SaveLaborTaskData(ws, task, taskMV.TaskElementData.MetricIds, null, taskMV.MOQTypes);
+			sut.SaveLaborTaskData(ws, task, null, taskMV.MOQTypes);
 
 			_BoeTaskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(new Collection<BoeTaskElementDTO>() { task }, ws), Times.Once());
 			_VariableSelectBoeToSum.Verify(x => x.GetWorkspaceVarLabelTotal(It.IsAny<WorkspaceVariableDTO>(), It.IsAny<DataClassForSumOfBOEsCalculation>()), Times.Never());
@@ -2503,37 +2506,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			BOELaborControllerLogic sut = CreateSystemMST();
 			String result = sut.GetMOQTextLabel();
 			Assert.AreEqual(CommonConstants.BOE_MOQ_TEXT_LABEL_SPACE_SYSTEMS, result, "The MOQ text label for MST is incorrect.");
-		}
-		#endregion
-
-		/// <summary>
-		/// Test to get metric search dialog parameters for IS&GS.
-		/// </summary>
-		[TestMethod]
-		public void GetMetricSearchDialogParameters()
-		{
-			BOELaborControllerLogic sut = CreateSystem();
-			LaborTaskModelView modelView = new LaborTaskModelView();
-			sut.GetMetricSearchDialogParameters(modelView);
-			Assert.AreEqual(modelView.MetricsSearchDialogParameters.DialogTitle, string.Empty, "The Metric Search Dialog title is incorrect for IS&GS.");
-			Assert.AreEqual(modelView.MetricsSearchDialogParameters.SearchMetricsDialogIdSuffix, null, "The Metric dialog suffix Id is incorrect for IS&GS.");
-			Assert.AreEqual(modelView.MetricsPagingActionName, string.Empty, "The Metric dialog paging action name is incorrect for IS&GS.");
-		}
-
-		#region GetMOQEquationModelView Tests
-		[TestMethod]
-		public void GetMOQEquationModelView()
-		{
-			BOELaborControllerLogic sut = CreateSystem();
-			BoeTaskElementDTO te = new BoeTaskElementDTO();
-			te.Id = 1;
-			te.TaskTitle = "My Task Title";
-			te.WasMoqTextSet = true; te.WasDescriptionSet = true;
-
-			FullWorkspace workspace = new FullWorkspace(new WorkspaceDTO());
-
-			MOQEquationModelView result = sut.GetMOQModelView(te, workspace);
-			Assert.IsFalse(result.ShowSearchMetricsLink);
 		}
 		#endregion
 

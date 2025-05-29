@@ -28,7 +28,6 @@
         MOQType: '<%=Model.MOQType%>',
         TaskElementId: <%=Model.TaskElementId > 0 ? Model.TaskElementId : -1%>,
         RteFieldSize: rteFieldSize,
-        ShowSearchMetricsLink: '<%=Model.ShowSearchMetricsLink%>'.isTrue(),
         UsingTemplateBOE: '<%=Model.UsingTemplateBOE%>'.isTrue(),
         IsReadOnly: MOQEquationFieldWidget_ReadOnly,
         WorkspaceVariables: workspaceVariables,
@@ -95,7 +94,6 @@
                 <div id="dropdown-magnifier" uib-dropdown-toggle class="magnifier-button"></div>
                 <ul class="uib-dropdown-menu dropdown-menu" role="menu" aria-labelledby="dropdown-magnifier">
                     <li><a id="InsertWorkspaceVariableLink" data-ng-click="InsertWorkspaceVariableClicked()">Insert Workspace Variable</a></li>
-                    <li data-ng-if="model.ShowSearchMetricsLink"><a id="SearchEstimatingCatalogLink" data-ng-click="SearchEstimatingCatalogClicked()">Search Estimating Catalog</a></li>
                     <!-- Hiding for BOEJ-4829. Will have to be unhidden, or removed in the future (2020.6.x) -->
                     <li data-ng-if="false"><a id="CopyMoqFromBoeLink" data-ng-click="CopyMoqFromBoeClicked()">Copy MOQ from BOE</a></li>
                 </ul>
@@ -467,69 +465,6 @@
         <div data-ng-if="!model.UsingTemplateBOE || '<%:Model.MoqTemplateAnswers.Any()%>'.isTrue()" class="form-element moq-text-area"><% Html.RenderPartial(WebConstants.VIEW_RTE_TEMPLATE, new GenBOE.Web.ModelView.RteTemplateModelView(Model.MoqTemplateAnswers, "MOQText", Model.MOQText));  %></div>
     </div>
 
-    <div id="UsedHistoricalMetrics" class="form-row display-none">
-        <div class="form-label">
-            <%if (Model.Company == CompanyConfiguration.MST)
-                {%>
-            Historical Measures<br />Used
-            <div class="help-icon" style="margin-top:1px;" onclick="MOQEquationFieldWidget.ToggleHelp(this);"></div>
-            <div class="help-dialog" style="max-width: 275px;">
-                <div class="help-dialog-text">The historical measures used to estimate the labor for this task.  If the historical measure is no longer used, it should be deleted.</div>
-            </div>
-            <%}
-                else
-                { %>
-            <span>Historical Metrics
-                <br />
-                Used</span>
-            <div class="help-icon" style="margin-top:1px;" onclick="MOQEquationFieldWidget.ToggleHelp(this);"></div>
-            <div class="help-dialog" style="max-width: 275px;">
-                <div class="help-dialog-text">The historical metrics used to estimate the labor for this task.  If the historical metric is no longer used, it should be deleted.</div>
-            </div>
-            <%} %>
-        </div>
-        <div id="addMetricToList" class="form-element">
-            <button id="HMUDeleteButton" class="ies" name="delete-button" type="button" onclick="TaskElementDetailsWidget.deleteAllSelected()">Delete</button>
-            <table id="HistoricalMetricsUsedGrid" class="manage-historical-metrics-used-grid grid readonly">
-                <thead>
-                    <% if (Model.Company == CompanyConfiguration.MST)
-                        { %>
-                    <tr>
-                        <th class="delete-checkbox"><input type="checkbox" id="Checkbox1" onclick="TaskElementDetailsWidget.deleteAllToggle(this)" /></th>    
-                        <th class="metric-title"><b>Measure Name</b></th>
-                        <th class="status"><b>Program Name</b></th>
-                        <th class="moq"><b>Date Applied to BOE</b></th>
-                    </tr>
-                    <% } %>
-                    <% else
-                        { %>
-                    <tr>
-                        <th class="delete-checkbox"><input type="checkbox" id="Checkbox1" onclick="TaskElementDetailsWidget.deleteAllToggle(this)" /></th>    
-                        <th class="metric-title"><b>Metric Title</b></th>
-                        <th class="status"><b>Status</b></th>
-                        <th class="moq"><b>MOQ Equation</b></th>
-                        <th class="moq-type"><b>MOQ Type</b></th>
-                    </tr>
-                    <% } %>
-                </thead>
-                <tbody id="HistoricalMetricsBody">
-                    <%if (Model.Company == CompanyConfiguration.MST)
-                        { %>
-                        <% foreach (MSTMetricDetailsDTO historicalMetric in Model.PMMetricsUsed)
-                            { %>
-                            <tr name="historicalMetric" id="HMURow" historicalMetricID="<%:historicalMetric.Id%>"><td class="delete-checkbox" id="DeleteCheckboxId"><input type="checkbox" name="DeleteResource" id="DeleteThisResource" onclick="TaskElementDetailsWidget.deleteToggled(this)"/>
-                                <td class="metric-id display-none"> <a name="MetricID" class="edit-resource-link"></a> </td>               
-                                <td> <a class="edit-resource-link" onclick="TaskElementDetailsWidget.DisplayMetricSelected(null, {metricId :<%:historicalMetric.Id%>, getFromSource : false}, true)" style="white-space:normal; width:100px;" title="<%:historicalMetric.MeasureName%>"><%:historicalMetric.MeasureName%></a> </td>
-                                <td> <a class="edit-resource-link" onclick="TaskElementDetailsWidget.DisplayMetricSelected(null, {metricId :<%:historicalMetric.Id%>, getFromSource : false}, true)" style="white-space:normal; width:100px;" title="<%:historicalMetric.ProgramName %>"><%:historicalMetric.ProgramName %></a> </td>
-                                <td> <a class="edit-resource-link" onclick="TaskElementDetailsWidget.DisplayMetricSelected(null, {metricId :<%:historicalMetric.Id%>, getFromSource : false}, true)" style="white-space:normal; width:100px;" title="<%:historicalMetric.DateAddedToTaskElement != null ? historicalMetric.DateAddedToTaskElement.Value.ToString("MM/dd/yyyy") : "N/A"%>"><%:historicalMetric.DateAddedToTaskElement != null ? historicalMetric.DateAddedToTaskElement.Value.ToString("MM/dd/yyyy") : "N/A"%></a> </td>
-                                <br id="HistoricalEndRow"/>
-                            </tr>
-                        <%}%>
-                    <% }%>
-                </tbody>
-            </table>
-        </div>
-    </div>
 	<div id="ReOrderMoqTypesDialog" class="reorder-moq-types-dialog" style="display: none;">
         <div class="container">
             <div class="form-row">

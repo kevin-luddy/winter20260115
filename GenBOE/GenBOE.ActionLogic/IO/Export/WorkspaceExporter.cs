@@ -106,9 +106,8 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// </summary>
 		/// <param name="inTemplateFileLocation">Location of the excel template file.</param>
 		/// <param name="exportInputs">The export inputs.</param>
-		/// <param name="metricNameTaskElementMappingDTO">Mapping of task element to historical metric names.</param>
 		/// <returns>Name of the generated report file.</returns>
-		public string ExportToExcelFile(string inTemplateFileLocation, BOEExportInputs exportInputs, MetricNameTaskElementMappingDTO metricNameTaskElementMappingDTO, ICollection<PickListDto> contractTypes)
+		public string ExportToExcelFile(string inTemplateFileLocation, BOEExportInputs exportInputs, ICollection<PickListDto> contractTypes)
 		{
 			if (exportInputs == null)
 			{
@@ -147,7 +146,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				}
 			}
 
-			ICollection<ExcelExportWorksheet> sheets = this.GatherWorkspaceExportData(exportInputs, metricNameTaskElementMappingDTO, contractTypes);
+			ICollection<ExcelExportWorksheet> sheets = this.GatherWorkspaceExportData(exportInputs, contractTypes);
 
 			// Pass the rows to the generic Excel exporter
 			toReturn = ExcelExporter.ExportToExcelFile(toReturn, false, sheets,
@@ -359,18 +358,17 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// Gets all workspace data required for the export.
 		/// </summary>
 		/// <param name="exportInputs">The export inputs.</param>
-		/// <param name="metricNameTaskElementMappingDTO">Mapping of task element to historical metric name.</param>
 		/// <returns>
 		/// Excel workspace data.
 		/// </returns>
-		private ICollection<ExcelExportWorksheet> GatherWorkspaceExportData(BOEExportInputs exportInputs, MetricNameTaskElementMappingDTO metricNameTaskElementMappingDTO, ICollection<PickListDto> contractTypes)
+		private ICollection<ExcelExportWorksheet> GatherWorkspaceExportData(BOEExportInputs exportInputs, ICollection<PickListDto> contractTypes)
 		{
 			List<ExcelExportWorksheet> toReturn = new List<ExcelExportWorksheet>();
 
 			if (exportInputs.Workspace.Id > 0)
 			{
-				toReturn.Add(this.GetBOEResourceComboSheetExportData(exportInputs, metricNameTaskElementMappingDTO));
-				toReturn.Add(this.GetBOESheetExportData(exportInputs, metricNameTaskElementMappingDTO));
+				toReturn.Add(this.GetBOEResourceComboSheetExportData(exportInputs));
+				toReturn.Add(this.GetBOESheetExportData(exportInputs));
 				toReturn.Add(this.GetBOEStatusSheetExportData(exportInputs));
 				toReturn.Add(this.GetResourceSpreadsSheetExportData(exportInputs));
 
@@ -565,12 +563,11 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// Gets all worksheet data for the BOE data sheet.
 		/// </summary>
 		/// <param name="exportInputs">The export inputs.</param>
-		/// <param name="metricNameTaskElementMappingDTO">Task element to historical metric mapping.</param>
 		/// <returns>
 		/// BOE Worksheet data.
 		/// </returns>
 		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals")]
-		private ExcelExportWorksheet GetBOESheetExportData(BOEExportInputs exportInputs, MetricNameTaskElementMappingDTO metricNameTaskElementMappingDTO)
+		private ExcelExportWorksheet GetBOESheetExportData(BOEExportInputs exportInputs)
 		{
 			ExcelExportWorksheet toReturn = new ExcelExportWorksheet("BOEs");
 
@@ -670,8 +667,6 @@ namespace GenBOE.ActionLogic.IO.Export
 					// Get the task ID
 					string taskID = task.BOETaskID;
 
-					string historicalMetricString = metricNameTaskElementMappingDTO.GetMetricNamesByTaskElementId(task.Id);
-
 					row.AddRange(
 						new string[] {
 							boe.Id.ToString(),
@@ -713,7 +708,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					}.Concat(exportInputs.Workspace.UsingTemplateBOE ? new string[0] : new string[] { taskMOQText }).ToArray()
 					.Concat(new string[]
 					{
-						historicalMetricString,
+						this.sEmpty, // Historical Metric (obsolete)
 						task.StartDate.HasValue ? task.StartDate.Value.ToString("MM/yyyy") : this.sEmpty,
 						task.EndDate.HasValue ? task.EndDate.Value.ToString("MM/yyyy") : this.sEmpty
 					}).ToArray();
@@ -1537,9 +1532,8 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// Gets the boe resource combo sheet export data.
 		/// </summary>
 		/// <param name="exportInputs">The export inputs.</param>
-		/// <param name="metricNameTaskElementMappingDTO">The metric name task element mapping dto.</param>
 		/// <returns>Worksheet with data for BOE & Resource Combo tab of the Workspace Data Report</returns>
-		private ExcelExportWorksheet GetBOEResourceComboSheetExportData(BOEExportInputs exportInputs, MetricNameTaskElementMappingDTO metricNameTaskElementMappingDTO)
+		private ExcelExportWorksheet GetBOEResourceComboSheetExportData(BOEExportInputs exportInputs)
 		{
 			ExcelExportWorksheet toReturn = new ExcelExportWorksheet("BOE & Resource Combo");
 
@@ -1562,7 +1556,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			IDictionary<int, SpreadCurveModelView> allSpreadCurves = this.CommonDataMapper.getSpreadCurveDictionary();
 			IDictionary<int, OtherDirectCostSpreadCurveModelView> allOdcSpreadCurves = this.CommonDataMapper.getOdcSpreadCurveDictionary();
 
-			toReturn = this.GetBOEDataforBOEResourceCombo(exportInputs, toReturn, boes, allTaskElements, allOdcs, allWbs, allClins, workspace_customFields, workspaceCustomFieldValues, metricNameTaskElementMappingDTO, workspaceResources, allSpreadCurves, allOdcSpreadCurves, perfOrgsFromDb);
+			toReturn = this.GetBOEDataforBOEResourceCombo(exportInputs, toReturn, boes, allTaskElements, allOdcs, allWbs, allClins, workspace_customFields, workspaceCustomFieldValues, workspaceResources, allSpreadCurves, allOdcSpreadCurves, perfOrgsFromDb);
 
 			return toReturn;
 		}
@@ -1580,7 +1574,6 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="allClins">All CLINs</param>
 		/// <param name="workspace_customFields">Workspace Custom Fields</param>
 		/// <param name="workspaceCustomFieldValues">Workspace Custom Field Values</param>
-		/// <param name="metricNameTaskElementMappingDTO">Task element to historical metric mapping.</param>
 		/// <param name="workspaceResources">Workspace Resources</param>
 		/// <param name="allSpreadCurves">All Labor Spread Curves</param>
 		/// <param name="allOdcSpreadCurves">All ODC Spread Curves</param>
@@ -1588,7 +1581,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <returns>
 		/// Excel Export Worksheet with BOE data
 		/// </returns>
-		private ExcelExportWorksheet GetBOEDataforBOEResourceCombo(BOEExportInputs exportInputs, ExcelExportWorksheet toReturn, IReadOnlyCollection<BoeDTO> boes, HashSet<BoeTaskElementDTO> allTaskElements, HashSet<OtherDirectCostDTO> allOdcs, HashSet<WbsDTO> allWbs, HashSet<ClinDTO> allClins, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, MetricNameTaskElementMappingDTO metricNameTaskElementMappingDTO, IReadOnlyCollection<ResourceDTO> workspaceResources, IDictionary<int, SpreadCurveModelView> allSpreadCurves, IDictionary<int, OtherDirectCostSpreadCurveModelView> allOdcSpreadCurves, HashSet<PerformingOrgDTO> perfOrgsFromDb)
+		private ExcelExportWorksheet GetBOEDataforBOEResourceCombo(BOEExportInputs exportInputs, ExcelExportWorksheet toReturn, IReadOnlyCollection<BoeDTO> boes, HashSet<BoeTaskElementDTO> allTaskElements, HashSet<OtherDirectCostDTO> allOdcs, HashSet<WbsDTO> allWbs, HashSet<ClinDTO> allClins, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, IReadOnlyCollection<ResourceDTO> workspaceResources, IDictionary<int, SpreadCurveModelView> allSpreadCurves, IDictionary<int, OtherDirectCostSpreadCurveModelView> allOdcSpreadCurves, HashSet<PerformingOrgDTO> perfOrgsFromDb)
 		{
 			foreach (BoeDTO boe in boes)
 			{
@@ -1627,7 +1620,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				toReturn.Add(row);
 
 				// Labor Tasks
-				toReturn = this.GetLaborTaskDataforBOEResourceCombo(exportInputs, toReturn, boe, laborTasks, workspace_customFields, workspaceCustomFieldValues, metricNameTaskElementMappingDTO, allWbs, allClins, workspaceResources, allSpreadCurves, perfOrgsFromDb);
+				toReturn = this.GetLaborTaskDataforBOEResourceCombo(exportInputs, toReturn, boe, laborTasks, workspace_customFields, workspaceCustomFieldValues, allWbs, allClins, workspaceResources, allSpreadCurves, perfOrgsFromDb);
 
 				// ODC Tasks
 				toReturn = this.GetODCTaskDataforBOEResourceCombo(exportInputs, toReturn, boe, ODCs, allWbs, allClins, workspace_customFields, allOdcSpreadCurves);
@@ -1646,7 +1639,6 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="laborTasks">Labor Tasks</param>
 		/// <param name="workspace_customFields">Workspace Custom Fields</param>
 		/// <param name="workspaceCustomFieldValues">Workspace Custom Field Values</param>
-		/// <param name="metricNameTaskElementMappingDTO">Task element to historical metric mapping.</param>
 		/// <param name="allWbs">All WBSs</param>
 		/// <param name="allClins">All CLINs</param>
 		/// <param name="workspaceResources">Workspace Resources</param>
@@ -1655,7 +1647,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <returns>
 		/// Excel Export Worksheet with Labor Task data
 		/// </returns>
-		private ExcelExportWorksheet GetLaborTaskDataforBOEResourceCombo(BOEExportInputs exportInputs, ExcelExportWorksheet toReturn, BoeDTO boe, ICollection<BoeTaskElementDTO> laborTasks, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, MetricNameTaskElementMappingDTO metricNameTaskElementMappingDTO, HashSet<WbsDTO> allWbs, HashSet<ClinDTO> allClins, IReadOnlyCollection<ResourceDTO> workspaceResources, IDictionary<int, SpreadCurveModelView> allSpreadCurves, HashSet<PerformingOrgDTO> perfOrgsFromDb)
+		private ExcelExportWorksheet GetLaborTaskDataforBOEResourceCombo(BOEExportInputs exportInputs, ExcelExportWorksheet toReturn, BoeDTO boe, ICollection<BoeTaskElementDTO> laborTasks, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, HashSet<WbsDTO> allWbs, HashSet<ClinDTO> allClins, IReadOnlyCollection<ResourceDTO> workspaceResources, IDictionary<int, SpreadCurveModelView> allSpreadCurves, HashSet<PerformingOrgDTO> perfOrgsFromDb)
 		{
 			foreach (BoeTaskElementDTO task in laborTasks)
 			{
@@ -1676,7 +1668,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				// Add blanks for BOE-level CFs
 				this.AddBlankCustomFieldCells(row, workspace_customFields, CustomFieldType.BoeDisplay);
 
-				string[] taskFields2 = this.GetTaskDescriptionMetricsAndDateFields(boe, task, metricNameTaskElementMappingDTO, exportInputs);
+				string[] taskFields2 = this.GetTaskDescriptionMetricsAndDateFields(boe, task, exportInputs);
 				row.AddRange(taskFields2);
 
 				this.GetTaskCustomFields(row, task, workspace_customFields, workspaceCustomFieldValues);
@@ -2304,13 +2296,10 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// </summary>
 		/// <param name="boe">BOE</param>
 		/// <param name="task">Task</param>
-		/// <param name="metricNameTaskElementMappingDTO">Metric Name Task Element Mapping DTO</param>
 		/// <returns>strings for the Task description, metrics, and date fields</returns>
-		private string[] GetTaskDescriptionMetricsAndDateFields(BoeDTO boe, BoeTaskElementDTO task, MetricNameTaskElementMappingDTO metricNameTaskElementMappingDTO, BOEExportInputs exportInputs)
+		private string[] GetTaskDescriptionMetricsAndDateFields(BoeDTO boe, BoeTaskElementDTO task, BOEExportInputs exportInputs)
 		{
 			string taskDescription = RTEUtilities.TurnHTMLIntoPlainText(BOEExportConverter.GetRteOverride(boe.Id, task.Id, task.Description, RteTemplateSource.TaskDescription, exportInputs.RTETemplatesOverrides));
-
-			string historicalMetricString = metricNameTaskElementMappingDTO.GetMetricNamesByTaskElementId(task.Id);
 
 			return new string[]
 				{
@@ -2318,7 +2307,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         this.sEmpty, // Total BOE Cost
                         boe.isMaterial ? this.sYes : this.sNo,
 						taskDescription,
-						historicalMetricString,
+						this.sEmpty, // Historical Metric (obsolete)
 						task.StartDate.HasValue ? task.StartDate.Value.ToString("MM/yyyy") : this.sEmpty,
 						task.EndDate.HasValue ? task.EndDate.Value.ToString("MM/yyyy") : this.sEmpty
 				};

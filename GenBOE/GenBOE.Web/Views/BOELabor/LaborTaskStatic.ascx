@@ -86,43 +86,20 @@
             action: '<%: WebConstants.ACTION_MARK_WARNING_AS_CONFIRMED%>',
             boe: '<%: Model.BoeId %>'
         });
-        var searchHistoricalMetricsMSTUrl = GenSession.CreateUrl({
-            workspace: currentWorkspace,
-            controller: boeLaborController,
-            action: '<%: WebConstants.ACTION_SEARCH_HISTORICAL_METRICS_IN_MST %>'
-        });
-        var historicalMetricsDetailsUrl = GenSession.CreateUrl({
-            workspace: currentWorkspace,
-            controller: boeLaborController,
-            action: '<%: WebConstants.ACTION_GET_HISTORICAL_METRIC_DETAILS %>'
-        });
-        var pagingMetricsUrl = GenSession.CreateUrl({
-            workspace: currentWorkspace,
-            controller: boeLaborController,
-            action: '<%: Model.MetricsPagingActionName %>'
-        });
-        var searchTypeAheadUrl = CreatePostURL(currentWorkspace, boeLaborController, '<%: WebConstants.ACTION_GET_SEARCH_TYPE_AHEAD %>', '');
         var recalculateAndRefreshPageUrl = CreatePostURL(currentWorkspace,
             boeLaborController,
             'DoFullRecalculationWithPageRefresh',
             'boe/' + boeId + '/taskelement/' + taskElementId);
 
-        TaskElementDetailsWidget = InitializeTaskElementDetailsWidget("<%:Model.MetricsSearchDialogParameters.DialogTitle%>",
-            '<%:Model.MetricsSearchDialogParameters.SearchMetricsDialogIdSuffix%>',
-            <%: ViewData["READONLY"] %>,
+        TaskElementDetailsWidget = InitializeTaskElementDetailsWidget(<%: ViewData["READONLY"] %>,
             '<%: ViewData["WorkspaceState"] %>',
             boeId,
             taskElementId,
             <%: Model.LaborTypeWarning.ToString().ToLower() %>,
             loadMOQEquationUrl,
             confirmWarningUrl,
-            searchHistoricalMetricsMSTUrl,
-            historicalMetricsDetailsUrl,
-            pagingMetricsUrl,
             '<%:Model.BOEState%>' != '<%:(int)BOEState.Draft%>',
             '<%:Model.BOEState%>' == '<%:(int)BOEState.Draft%>' || '<%:Model.BOEState%>' == '<%:(int)BOEState.DraftLocked%>',
-            '<%:Model.MetricsSearchDialogParameters.MetricStoreConnected%>'.toLowerCase(),
-            searchTypeAheadUrl,
             '<%:Model.AllowDateShift%>'.toLowerCase(),
             recalculateAndRefreshPageUrl,
             '#', // dateshift url not needed for static page

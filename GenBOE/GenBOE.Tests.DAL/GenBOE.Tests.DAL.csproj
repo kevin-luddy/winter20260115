@@ -219,10 +219,6 @@
       <Project>{F909CD46-E2D7-4D57-B647-6D93F9DD9618}</Project>
       <Name>GenBOE.DataBridge</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GenBOE.MSTMetricModel\GenBOE.MSTMetricModel.csproj">
-      <Project>{d9645139-bd1d-474b-8960-ed105bb1a4dc}</Project>
-      <Name>GenBOE.MSTMetricModel</Name>
-    </ProjectReference>
     <ProjectReference Include="..\GenBOE.Tests\GenBOE.Tests.csproj">
       <Project>{AA84EB3D-E855-41E8-85BD-E98DBAAB0CA0}</Project>
       <Name>GenBOE.Tests</Name>
