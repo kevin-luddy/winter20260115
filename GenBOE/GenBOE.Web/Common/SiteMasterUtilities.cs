@@ -16,11 +16,6 @@ namespace GenBOE.Web.Common
 	using IES.Common;
 	using GenBOE.Objects;
 	using IES.Common.classes;
-	using System.Linq;
-	using System.Collections;
-	using GenBOE.ActionLogic.ModelView;
-	using System.Collections.Generic;
-	using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
 
 	[ExcludeFromCodeCoverage]
 	sealed public class SiteMasterUtilities
@@ -388,87 +383,5 @@ namespace GenBOE.Web.Common
 		{
 			return containsOCI ? ConfigurationUtilities.GetAppSetting("BannerTextWithoutOCI") : ConfigurationUtilities.GetAppSetting("BannerTextWithOCI");
 		}
-
-		/// <summary>
-		/// Method to get the Helper Text for Skill Mix Rationale to show to user as to why Skill Mix is not shown
-		/// </summary>
-		/// <returns>Text as to why Skill Mix Rationale is not shown</returns>
-		//public static string GetSkillMixHelpText(FullWorkspace fullWorkspace)
-		//{
-		//	string helperText = string.Empty;
-		//	bool isSpace = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems;
-
-		//	ICollection<MoqTypeSelection> moqTypes = fullWorkspace.MoqTypeSelections.ToList();
-		//	ICollection<MOQType> moqTypeDistinctList = moqTypes.Select(x => x.SelectedMOQType).Distinct().ToList();
-
-
-		//	// This is taken care of by IsSkillMixEnabled //DONE
-		//	if (fullWorkspace.CreationDate.Value > Utilities.SkillMixStartDate)
-		//	{
-		//		helperText = "Workspace Creation Date is before Skill Mix Go Live Date.";
-		//	}
-
-		//	//if (!fullWorkspace.MoqTypeSelections)
-		//	//{
-		//	//	helperText = "MOQ Templates must be set to Yes in Workspace Identification.";
-		//	//}
-
-		//	// This is taken care of by EnableSAP //DONE
-		//	if (isSpace && !fullWorkspace.EnableSAPConnection)
-		//	{
-		//		helperText = "SAP connection must be set to Yes in Workspace Identification.";
-		//	}
-
-		//	// This is taken care of by MOQTypeSelections //DONE
-		//	if (!moqTypes.Any())
-		//	{
-		//		helperText = "There needs to be atleast 1 MOQ Type Selection for the Workspace.";
-		//	}
-
-		//	// This is taken care of by MOQTypeDistinctList //DONE
-		//	if (moqTypeDistinctList.Count > 1)
-		//	{
-		//		helperText = "There can only be 1 MOQ Type Selection for the Workspace.";
-		//	}
-
-		//	if (isSpace)
-		//	{
-		//		// Needs further logic in JS maybe?
-		//		if (moqTypeDistinctList.Except(new List<MOQType> { MOQType.Historical, MOQType.Comparative, MOQType.AnalogousRelationships }).Any())
-		//		{
-		//			helperText = "MOQType Selection can only be of Type \"Historical\", \"Comparative\", or \"Analogous\".";
-		//		}
-		//	}
-		//	else
-		//	{
-		//		if (moqTypeDistinctList.Except(new List<MOQType> { MOQType.Historical, MOQType.Comparative }).Any())
-		//		{
-		//			helperText = "MOQType Selection can only be of Type \"Historical\" or \"Comparative\".";
-		//		}
-		//	}
-
-		//	moqTypes.ForEach(x =>
-		//	{
-		//		if (!x.TableData.Any())
-		//		{
-		//			helperText = "The MOQType needs to have Table Data populated.";
-		//		}
-
-		//		x.TableData.ForEach(y =>
-		//		{
-		//			if (y.ResourceHours.Count(z => z.TotalHours == 0) > 0)
-		//			{
-		//				helperText = "Actuals need to be recalculated for the MOQType";
-		//			}
-
-		//			if (isSpace && y.RepositoryName != RepositoryName.SapWebi.GetDescription())
-		//			{
-		//				helperText = "At least one MOQType Table needs to have SAP/Webi enabled";
-		//			}
-		//		});
-		//	});
-
-		//	return helperText;
-		//}
 	}
 }
