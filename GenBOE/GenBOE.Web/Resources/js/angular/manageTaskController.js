@@ -42,7 +42,6 @@
     $scope.showUCOT = false;
 	$scope.skillMixHelperText = "";
 
-
     // Sets the Selected MOQ Types from the Selected MOQ Types from MoqEuationController.js.
     $scope.$on('MOQ_TYPE_SELECTION_CHANGED', function (event, selectedMoqTypes) {
         $scope.SelectedMoqTypes = selectedMoqTypes;
@@ -227,55 +226,65 @@
 	}
 
 	$scope.updateSkillMixHelperText = function () {
+		$scope.skillMixHelperText = "";
+
 		if (!$scope.ManageTaskModel.IsSkillMixEnabled) {
-			$scope.skillMixHelperText = "Workspace Creation Date is before Skill Mix Go Live Date.";
-		}
-
-		if ($scope.ManageTaskModel.IsSpace && !$scope.ManageTaskModel.SapConnectionEnabled) {
-			$scope.skillMixHelperText = "SAP connection must be set to Yes in Workspace Identification.";
-		}
-
-		if ($scope.SelectedMoqTypes.length == 0) {
-			$scope.skillMixHelperText = "There needs to be atleast 1 MOQ Type Selection for the Workspace.";
-		}
-
-		if ($scope.SelectedMoqTypes.length > 1) {
-			$scope.skillMixHelperText = "There can only be 1 MOQ Type Selection for the Workspace.";
-		}
-
-		if ($scope.ManageTaskModel.IsSpace) {
-
+			$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because Workspace Creation Date is before Skill Mix Go Live Date.";
+		} else if (!$scope.ManageTaskModel.UsingTemplateBOE) {
+			$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because Workspace is not setup to use MOQ Templates.";
 		} else {
 
-		}
+			let items = $scope.ManageTaskModel.MOQTypeSelections;
 
-		var isSapWebi = false;
-		var needsActualsCalculated = false;
+			if ($scope.ManageTaskModel.IsSpace && !$scope.ManageTaskModel.SapConnectionEnabled) {
+				$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because SAP connection must be set to Yes in Workspace Identification.";
+			} else if ($scope.SelectedMoqTypes.length == 0) {
+				$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because there needs to be atleast 1 MOQ Type Selection for the Workspace.";
+			} else if ($scope.SelectedMoqTypes.length > 1) {
+				$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because there can only be 1 MOQ Type Selection for the Workspace.";
+			} else {
+				var isSapWebi = false;
+				var needsActualsCalculated = false;
 
-		$scope.SelectedMoqTypes.forEach(function (moqType) {
-			if (moqType.TableData.length == 0) {
-				$scope.skillMixHelperText = "Atleast 1 MOQType needs to have Table Data populated.";
-			}
+				// Doing this IF check here reduce timing
+				if ($scope.skillMixHelperText.length == 0) {
+					if ($scope.SelectedMoqTypes.some(moqType => moqType.TableData.length == 0)) {
+						$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because atleast 1 MOQType needs to have Table Data populated.";
+					} else if ($scope.ManageTaskModel.IsSpace && $scope.SelectedMoqTypes.some(moqType => moqType.SelectedMOQType != 5001 && moqType.SelectedMOQType != 5002 && moqType.SelectedMOQType != 5005)) {
+						$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because MOQType Selection can only be of Type \"Historical\", \"Comparative\", or \"Analogous\".";
+					} else if (!$scope.ManageTaskModel.IsSpace && $scope.SelectedMoqTypes.some(moqType => moqType.SelectedMOQType != 5001 && moqType.SelectedMOQType != 5002)) {
+						$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because MOQType Selection can only be of Type \"Historical\" or \"Comparative\".";
+					} else {
+						$scope.SelectedMoqTypes.forEach(function (moqType) {
 
-			moqType.TableData.forEach(function (table) {
-				table.ResourceHours.forEach(function (hours) {
-					if (hours.TotalHours.length == 0) {
-						needsActualsCalculated = true;
+							// Doing IF Check here to reduce complexity
+							if ($scope.skillMixHelperText.length == 0) {
+								moqType.TableData.forEach(function (table) {
+									if (table.ResourceHours !== undefined) {
+										table.ResourceHours.forEach(function (hours) {
+											if (hours.TotalHours.length == 0) {
+												needsActualsCalculated = true;
+											}
+										});
+									}
+
+									if (table.RepositoryName == $scope.ManageTaskModel.SapWebiRepository) {
+										isSapWebi = true;
+									}
+								});
+							}
+						});
 					}
-				});
-
-				if (table.RepositoryName == $scope.ManageTaskModel.SapWebiRepository) {
-					isSapWebi = true;
 				}
-			});
-		});
 
-		if ($scope.ManageTaskModel.IsSpace && !isSapWebi) {
-			$scope.skillMixHelperText = "At least one MOQType Table needs to have SAP/Webi enabled";
-		}
-
-		if (needsActualsCalculated) {
-			helperText = "Actuals need to be recalculated for the MOQTypes.";
+				if ($scope.skillMixHelperText.length == 0) {
+					if ($scope.ManageTaskModel.IsSpace && !isSapWebi) {
+						$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because at least one MOQType Table needs to have SAP/Webi enabled.";
+					}else if (needsActualsCalculated) {
+						$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because Actuals need to be recalculated for the MOQTypes.";
+					}
+				} 
+			}
 		}
 	}
 

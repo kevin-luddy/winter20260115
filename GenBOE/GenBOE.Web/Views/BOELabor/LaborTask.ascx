@@ -969,7 +969,7 @@
                 <div class="form-element" data-ng-if="isSkillMixDisabled()">
                     <div class="form-label"><p>The SAP MOQ Actuals have not been calculated.  Please ensure all MOQ Tables are updated to enable Skill Mix.</p><br />&nbsp;</div>
                 </div>
-                <div class="form-element" data-ng-if="!isSkillMixDisabled()">
+                <div class="form-element" data-ng-if="!isSkillMixDisabled() && skillMixHelperText.length === 0">
                     <!-- Skill Mix Table -->
                     <div class="form-label">
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
@@ -984,7 +984,7 @@
                         <%  }  %>
                     </div>
                     <div class="SkillMixTable skillMixTable">
-                        <table name="currentSkillMix" class="grid editable" style="width: 100%;">
+						<table name="currentSkillMix" class="grid editable" style="width: 100%;">
                             <thead>
                                 <tr>
                                     <th class="resourceCol">Resource</th>
@@ -1043,11 +1043,12 @@
                             </tbody>
                         </table>
                     </div>
+					
                     <!-- Common Disclosure Skill Mix Table -->
                     <div class="form-label" data-ng-show="IsBRCEnabled">
                         LM Enterprise Skill Mix Table
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-                            {  %>
+							{  %>
                                     <div class="help-icon" data-ng-click="openHelp('SpaceLMEnterpriseSkillMixTable');"></div>
                         <%  }  %>
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
@@ -1118,6 +1119,7 @@
                         </table>
                     </div>
                 </div>
+				<div class="disable-save-text" data-ng-show="skillMixHelperText.length > 0">{{skillMixHelperText}}</div>
             </div>
         </div>
     </div>
@@ -1131,6 +1133,7 @@
         </div>
         <div class="oci-note"><b>Note: </b><span id="Task-OCINote"></span></div>
         <div class="disable-save-text" data-ng-show="ManageTaskModel.DisableSave">{{ManageTaskModel.DisableSaveText}}</div>
+		<div class="disable-save-text" data-ng-show="!showSkillMix() && skillMixHelperText.length > 0">{{skillMixHelperText}}</div>
 
         <button data-ng-if="taskElementId" data-ng-hide="isSaving || ManageTaskModel.DisableSave" data-ng-click="saveAndContinue()" id="Save-BOEUpdatesAndContinue" class="ies-action stateful_button" name="save-button" type="button">Save & Continue</button>
         <button id="Save-BOEUpdatesAndClose" data-ng-hide="isSaving || ManageTaskModel.DisableSave" data-ng-click="saveAndClose()" class="ies-action stateful_button" name="save-button" type="button">Save & Close</button>
