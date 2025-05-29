@@ -49,7 +49,7 @@
         $scope.updateShowUcot();
 
 		$scope.refreshSkillMixTables();
-		$scope.updateSkillMixHelperText(selectedMoqTypes);
+		$scope.updateSkillMixHelperText();
     });
 
     $scope.$on('SAP_HOURS_CHANGED', function (e) {
