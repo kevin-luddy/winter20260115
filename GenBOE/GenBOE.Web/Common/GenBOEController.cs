@@ -361,7 +361,7 @@ namespace GenBOE.Web.Common
 			// is the data out-of-date
 			bool isDataOutOfDate = false;
 
-			isDataOutOfDate = Utilities.ShowUCOTForWorkspace(ws.CreationDate) && this._ControllerLogic.IsUCOTFactorOutOfDate(ws);
+			isDataOutOfDate = Utilities.ShowUCOTForWorkspace(ws.CreationDate) && this._ControllerLogic.IsUCOTFactorOutOfDate(ws, ws.TrackingNumber);
 
 			if (isDataOutOfDate)
 			{

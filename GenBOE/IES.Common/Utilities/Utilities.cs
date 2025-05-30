@@ -1141,10 +1141,19 @@ namespace IES.Common
 		/// Is UCOT shown to the user for this workspace
 		/// </summary>
 		/// <param name="workspaceCreationDate">Workspace creation date</param>
+		/// <param name="ptmTrackingNumber">PTM tracking number that's checked that is excluded from UCOT.</param>
 		/// <returns>True to show UCOT</returns>
-		public static bool ShowUCOTForWorkspace(DateTime? workspaceCreationDate)
+		public static bool ShowUCOTForWorkspace(DateTime? workspaceCreationDate, string ptmTrackingNumber)
 		{
-			return IsUCOTEnabledForSystem && workspaceCreationDate >= UCOTStartDate;
+			// Exclude UCOT showing for specific PTM tracking numbers.
+			if (Constants.EXCLUDED_PTM_TRACKING_NUMBERS_FROM_UCOT.Contains(ptmTrackingNumber))
+			{
+				return false;
+			}
+			else
+			{
+				return IsUCOTEnabledForSystem && workspaceCreationDate >= UCOTStartDate;
+			}
 		}
 
 		/// <summary>

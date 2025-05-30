@@ -7,11 +7,12 @@
 namespace IES.Common
 {
     using System;
+	using System.Collections.Generic;
 
-    /// <summary>
-    /// The constants class, containing shared constants to be used across the entire solution.
-    /// </summary>
-    public static class Constants
+	/// <summary>
+	/// The constants class, containing shared constants to be used across the entire solution.
+	/// </summary>
+	public static class Constants
     {
         /// <summary>
         /// The maximum length of an RTE field
@@ -402,10 +403,15 @@ namespace IES.Common
 		/// </summary>
 		public const string UCOT_LABEL = "UCOT";
 
-        /// <summary>
-        /// The read only roles for RDSB.
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
+		/// <summary>
+		/// Excluded PTM tracking numbers from UCOT.
+		/// </summary>
+		public static readonly List<string> EXCLUDED_PTM_TRACKING_NUMBERS_FROM_UCOT = new List<string>() { "22-00011_01 _tw" };
+
+		/// <summary>
+		/// The read only roles for RDSB.
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
         public static readonly PtmRole[] READ_ONLY_ROLES = { PtmRole.PeerReviewer, PtmRole.CoverSheetApprover, PtmRole.LOBEstLead, PtmRole.PricingVerification };
 
         /// <summary>
