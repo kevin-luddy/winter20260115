@@ -239,7 +239,7 @@
 			if ($scope.ManageTaskModel.IsSpace && !$scope.ManageTaskModel.SapConnectionEnabled) {
 				$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because SAP connection must be set to Yes in Workspace Identification.";
 			} else if ($scope.SelectedMoqTypes.length == 0) {
-				$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because there needs to be atleast 1 MOQ Type Selection for the Workspace.";
+				$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because there needs to be 1 MOQ Type Selection for the Workspace.";
 			} else if ($scope.SelectedMoqTypes.length > 1) {
 				$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because there can only be 1 MOQ Type Selection for the Workspace.";
 			} else {
@@ -249,7 +249,7 @@
 				// Doing this IF check here reduce timing
 				if ($scope.skillMixHelperText.length == 0) {
 					if ($scope.SelectedMoqTypes.some(moqType => moqType.TableData.length == 0)) {
-						$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because atleast 1 MOQType needs to have Table Data populated.";
+						$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because MOQType needs to have Table Data populated.";
 					} else if ($scope.ManageTaskModel.IsSpace && $scope.SelectedMoqTypes.some(moqType => moqType.SelectedMOQType != 5001 && moqType.SelectedMOQType != 5002 && moqType.SelectedMOQType != 5005)) {
 						$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because MOQType Selection can only be of Type \"Historical\", \"Comparative\", or \"Analogous\".";
 					} else if (!$scope.ManageTaskModel.IsSpace && $scope.SelectedMoqTypes.some(moqType => moqType.SelectedMOQType != 5001 && moqType.SelectedMOQType != 5002)) {
