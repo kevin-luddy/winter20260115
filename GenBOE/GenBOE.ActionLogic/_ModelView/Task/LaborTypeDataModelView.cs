@@ -159,7 +159,6 @@ namespace GenBOE.ActionLogic.ModelView
 						}
 					}
 
-					//this.UcotHours = Utilities.AdjustPrecision(this.UcotSpreads.Sum(s => s.LaborSpreadValue ?? 0m), precision);
 					this.UcotHours = Utilities.AdjustPrecision(sumUCOT, precision);
 
 					// Now smooth the UCOT Hours
