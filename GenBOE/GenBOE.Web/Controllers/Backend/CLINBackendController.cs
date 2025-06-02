@@ -158,6 +158,11 @@ namespace GenBOE.Web.Controllers.Backend
 			return result;
 		}
 
+		/// <summary>
+		/// Complete Import CLIN after user has verified data
+		/// </summary>
+		/// <param name="importCLINModelView">POST body with workspace shortname and ImportedCLINs</param>
+		/// <returns>boolean</returns>
 		[System.Web.Http.HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<bool> CompleteImportCLINs([FromBody] ImportCLINModelView importCLINModelView)
@@ -167,12 +172,9 @@ namespace GenBOE.Web.Controllers.Backend
 			{
 				if (importCLINModelView != null)
 				{
-					Collection<ImportedClin> importedClinCollection = new Collection<ImportedClin>();
-					foreach (ImportedClin item in importCLINModelView.importedCLINs)
-					{
-						importedClinCollection.Add(item);
-					}
-					_clinController.CompleteImportCLINs(importCLINModelView.workspaceShortName, importedClinCollection);
+					FullWorkspace ws = this.Factory.CreateFullWorkspace(importCLINModelView.workspaceShortName);
+
+					_clinControllerLogic.CompleteImportCLIN(ws, importCLINModelView.importedCLINs);
 					result.IsSuccessful = true;
 					result.Data = true;
 				}
