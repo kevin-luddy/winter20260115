@@ -8,6 +8,7 @@
 namespace GenBOE.Web.Controllers.Backend
 {
 	using System;
+	using System.Collections.ObjectModel;
 	using System.IO;
 	using System.Linq;
 	using System.Net;
@@ -15,7 +16,6 @@ namespace GenBOE.Web.Controllers.Backend
 	using System.Net.Http.Headers;
 	using System.Web;
 	using System.Web.Http;
-	using System.Web.Mvc;
 	using GenBOE.ActionLogic._ControllerLogic.Backend;
 	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.ModelView.Clin;
@@ -29,7 +29,7 @@ namespace GenBOE.Web.Controllers.Backend
 	/// <summary>
 	/// CLIN Controller for Manage CLIN Page
 	/// </summary>
-	public class CLINController : BoeDataBaseAPIController
+	public class CLINBackendController : BoeDataBaseAPIController
 	{
 		/// <summary>
 		/// Logger
@@ -41,11 +41,14 @@ namespace GenBOE.Web.Controllers.Backend
 		/// </summary>
 		private CLINControllerLogic _clinControllerLogic { get; set; }
 
-		public CLINController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader,
-			IPermissionsDTODataLoader permissionsLoader, CLINControllerLogic clinControllerLogic)
+		private CLINController _clinController { get; set; }
+
+		public CLINBackendController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader,
+			IPermissionsDTODataLoader permissionsLoader, CLINControllerLogic clinControllerLogic, CLINController clinController)
 		: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this._clinControllerLogic = clinControllerLogic;
+			this._clinController = clinController;
 		}
 
 		/// <summary>
@@ -150,6 +153,34 @@ namespace GenBOE.Web.Controllers.Backend
 			{
 				logger.Error(ex);
 				result.Messages.Add($"Unknown error occurred importing CLIN data: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		[System.Web.Http.HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<bool> CompleteImportCLINs([FromBody] ImportCLINModelView importCLINModelView)
+		{
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+			try
+			{
+				if (importCLINModelView != null)
+				{
+					Collection<ImportedClin> importedClinCollection = new Collection<ImportedClin>();
+					foreach (ImportedClin item in importCLINModelView.importedCLINs)
+					{
+						importedClinCollection.Add(item);
+					}
+					_clinController.CompleteImportCLINs(importCLINModelView.workspaceShortName, importedClinCollection);
+					result.IsSuccessful = true;
+					result.Data = true;
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occured completing import for CLIN data: {ex.Message}");
 			}
 
 			return result;
