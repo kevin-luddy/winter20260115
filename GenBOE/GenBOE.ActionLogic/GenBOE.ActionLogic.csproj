@@ -477,7 +477,6 @@
     <Compile Include="_ModelView\GenBOEMasterMenuItemModelView.cs" />
     <Compile Include="_ModelView\GenBOEMetricsModelView.cs" />
     <Compile Include="_ModelView\GenericTaskElementGridModelView.cs" />
-    <Compile Include="_ModelView\HistoricalMetricsFromMSTModelView.cs" />
     <Compile Include="_ModelView\ImportBoeResultsModelView.cs" />
     <Compile Include="_ModelView\IValidateForSave.cs" />
     <Compile Include="_ModelView\ManageBOEModelView.cs" />
@@ -489,7 +488,6 @@
     <Compile Include="_ModelView\SearchResultsModelView.cs" />
     <Compile Include="_ModelView\SpreadValueTableChanges.cs" />
     <Compile Include="_ModelView\TaskElementDependencyData.cs" />
-    <Compile Include="_ModelView\MetricsSearchDialogParametersModelView.cs" />
     <Compile Include="_ModelView\Task\LaborSpreadDataModelView.cs" />
     <Compile Include="_ModelView\Task\LaborTypeDataModelView.cs" />
     <Compile Include="_ModelView\Task\LaborTypeOrder.cs" />

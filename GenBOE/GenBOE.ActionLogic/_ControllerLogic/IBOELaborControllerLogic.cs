@@ -41,13 +41,7 @@ namespace GenBOE.ActionLogic
         /// <param name="inBoe">boe</param>
         /// <param name="inNextSetToCheck">next task elements to check</param>
         void CheckIfLaborRecalculationIsNeededBasedOnSumToBOEVariable(FullWorkspace fullWorkspace, Collection<ValidationMessage> inValidationErrors, Collection<BoeTaskElementDTO> inOtherBoeTaskElementToSave, FullBoe inBoe, Collection<BoeTaskElementDTO> inNextSetToCheck, Collection<BoeTaskElementDTO> incomingBoeTaskElements = null, Collection<WorkspaceVariableDTO> incomingWorkspaceVariables = null, Dictionary<int, decimal> valueMapping = null);
-
-        /// <summary>
-        /// Populates the passed in <see cref="LaborTaskModelView"/> with metric search dialog parameters.
-        /// </summary>
-        /// <param name="model">The <see cref="LaborTaskModelView"/> that will be populated.</param>
-        void GetMetricSearchDialogParameters(LaborTaskModelView model);
-        
+		        
         /// <summary>
         /// Convert Collection of BoeTaskOrdinaryVariable to Collection of BoeTaskOrdinaryVariable
         /// This is used in the saving of a task element 
@@ -123,32 +117,11 @@ namespace GenBOE.ActionLogic
         string GetMOQTextLabel();
 
         /// <summary>
-        /// Gets a <see cref="ViewResultData"/> with historic metrics.
+        /// Gets an <see cref="MOQEquationModelView"/> 
         /// </summary>
-        /// <param name="validatedOption">?</param>
-        /// <param name="searchTerm">The criteria used to find metrics</param>
-        /// <returns>The <see cref="ViewResultData"/> with historic metrics.</returns>
-        ViewResultData GetHistoricalMetricsResults(int validatedOption, string searchTerm);
-
-        /// <summary>
-        /// Gets an <see cref="MOQEquationModelView"/> populated with historical or internal metrics
-        /// </summary>
-        /// <param name="taskElement">A <see cref="BoeTaskElementDTO"/> for which metrics will be retrieved</param>
-        /// <returns>The <see cref="MOQEquationModelView"/> populated with historical or internal metrics</returns>
+        /// <param name="taskElement">A <see cref="BoeTaskElementDTO"/></param>
+        /// <returns>The <see cref="MOQEquationModelView"/></returns>
         MOQEquationModelView GetMOQModelView(BoeTaskElementDTO taskElement, FullWorkspace workspace);
-
-        /// <summary>
-        /// Sets the show metrics link.
-        /// </summary>
-        /// <returns>The <see cref="MOQEquationModelView"/> populated with the correct company specific value for ShowSearchMetricsLink.</returns>
-        void SetShowMetricLink(MOQEquationModelView model);
-
-        /// <summary>
-        /// Gets historical metric type ahead terms matching the <paramref name="searchTerm"/>
-        /// </summary>
-        /// <param name="searchTerm">The criteria used to find metrics</param>
-        /// <returns>The terms found</returns>
-        ICollection<string> GetTypeAheadTerms(string searchTerm);
 
         /// <summary>
         /// Returns a <see cref="bool"/> indicating if the read only flag should be overridden
@@ -229,10 +202,9 @@ namespace GenBOE.ActionLogic
         /// </summary>
         /// <param name="ws">Workspace</param>
         /// <param name="dtoToSave">Task DTO</param>
-        /// <param name="metricIds">Metric IDs</param>
         /// <param name="answers">RTE Template Answers</param>
         /// <param name="moqTypes">MOQ Types for the task</param>
-        void SaveLaborTaskData(FullWorkspace ws, BoeTaskElementDTO dtoToSave, ICollection<int> metricIds, ICollection<RTECustomTemplateQuestionAnswerModelView> answers, ICollection<MoqTypeSelection> moqTypes);
+        void SaveLaborTaskData(FullWorkspace ws, BoeTaskElementDTO dtoToSave, ICollection<RTECustomTemplateQuestionAnswerModelView> answers, ICollection<MoqTypeSelection> moqTypes);
 
         /// <summary>
         /// Converts Labor Task Data Model View to BOE Task Element DTO 

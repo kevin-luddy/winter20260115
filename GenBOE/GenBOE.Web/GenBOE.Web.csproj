@@ -922,11 +922,9 @@
     <Content Include="Views\BOEForm\Index.aspx" />
     <Content Include="Views\BOEForm\ManageBOEForms.ascx" />
     <Content Include="Views\BOEForm\ManageBOEFormsGrid.ascx" />
-    <Content Include="Views\BOELabor\AddHistoricalMetricToBOEMst.ascx" />
     <Content Include="Views\BOELabor\DisplayPerfOrgs.aspx" />
     <Content Include="Views\BOELabor\DisplayBusinessResourceCodes.aspx" />
     <Content Include="Views\BOELabor\DisplayResources.aspx" />
-    <Content Include="Views\BOELabor\HistoricalMetricsSearchResultsMST.ascx" />
     <Content Include="Views\BOELabor\LaborTask.ascx" />
     <Content Include="Views\BOELabor\MOQEquationField.ascx" />
     <Content Include="Views\BOELabor\LaborTaskStatic.ascx" />
@@ -1088,7 +1086,6 @@
     <Content Include="Templates\Export\IMS_MSProject.xlsx" />
     <Content Include="Templates\Export\DesignToCost.xlsx" />
     <Content Include="Templates\Export\BOEActivityReport.xlsx" />
-    <Content Include="Templates\Export\Historical Metrics.xlsx" />
     <Content Include="Templates\Export\BOEStatusByBOE.xlsx" />
     <Content Include="Templates\Export\BOEStatusByCLIN.xlsx" />
     <Content Include="Templates\Export\BOEStatusByWBS.xlsx" />

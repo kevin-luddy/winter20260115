@@ -796,7 +796,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="originalWorkspaceName">Original Workspace name</param>
 		/// <param name="versionId">Version ID</param>
 		/// <returns>File location of Workspace Data Report for the previous version</returns>
-		public string CreateWorkspaceDataReportForVersion(FullWorkspace ws, string templateFileLocation, MetricNameTaskElementMappingDTO metricTaskElementMappings, string originalWorkspaceName, int versionId)
+		public string CreateWorkspaceDataReportForVersion(FullWorkspace ws, string templateFileLocation, string originalWorkspaceName, int versionId)
 		{
 			if (ws == null)
 			{
@@ -827,7 +827,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			exportInputs.ContractTypes = this.contractTypeLoader.GetPickListValues();
 			ICollection<PickListDto> contractTypes = this.contractTypeLoader.GetPickListValues();
 
-			return this.workspaceExporter.ExportToExcelFile(templateFileLocation, exportInputs, metricTaskElementMappings, contractTypes);
+			return this.workspaceExporter.ExportToExcelFile(templateFileLocation, exportInputs, contractTypes);
 		}
 
 		#endregion
