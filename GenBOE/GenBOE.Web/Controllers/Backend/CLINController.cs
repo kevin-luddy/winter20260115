@@ -8,6 +8,8 @@
 namespace GenBOE.Web.Controllers.Backend
 {
 	using System;
+	using System.Collections;
+	using System.Collections.ObjectModel;
 	using System.IO;
 	using System.Linq;
 	using System.Net;
@@ -150,6 +152,46 @@ namespace GenBOE.Web.Controllers.Backend
 			{
 				logger.Error(ex);
 				result.Messages.Add($"Unknown error occurred importing CLIN data: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Deletes a group of CLINs.
+		/// </summary>
+		/// <param name="clinsToDelete">Collection of the CLINs to be deleted</param>
+		/// <returns>If successfull,empty string is return. Otherwise, exception error text to be handled in the post:error </returns>
+		[System.Web.Http.HttpDelete]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<bool> DeleteCLINs(ManageCLINModelView[] clinsToDelete)
+		{
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+
+			try
+			{
+				if (clinsToDelete != null && clinsToDelete.Any())
+				{
+					FullWorkspace ws = this.Factory.CreateFullWorkspace(clinsToDelete[0].WorkSpaceID);
+
+					foreach (ManageCLINModelView clin in clinsToDelete)
+					{
+						// Only delete CLINs that have positive IDs
+						if (clin.ClinID > 0 && clin.Deleted == true)
+						{
+							this._clinControllerLogic.SaveCLIN(ws, clin);
+						}
+					}
+				}
+
+				result.Data = true;
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Data = false;
+				result.Messages.Add($"Unknown error occurred deleting CLIN data: {ex.Message}");
 			}
 
 			return result;
