@@ -708,7 +708,6 @@ namespace GenBOE.ActionLogic.IO.Export
 					}.Concat(exportInputs.Workspace.UsingTemplateBOE ? new string[0] : new string[] { taskMOQText }).ToArray()
 					.Concat(new string[]
 					{
-						this.sEmpty, // Historical Metric (obsolete)
 						task.StartDate.HasValue ? task.StartDate.Value.ToString("MM/yyyy") : this.sEmpty,
 						task.EndDate.HasValue ? task.EndDate.Value.ToString("MM/yyyy") : this.sEmpty
 					}).ToArray();
@@ -2307,7 +2306,6 @@ namespace GenBOE.ActionLogic.IO.Export
                         this.sEmpty, // Total BOE Cost
                         boe.isMaterial ? this.sYes : this.sNo,
 						taskDescription,
-						this.sEmpty, // Historical Metric (obsolete)
 						task.StartDate.HasValue ? task.StartDate.Value.ToString("MM/yyyy") : this.sEmpty,
 						task.EndDate.HasValue ? task.EndDate.Value.ToString("MM/yyyy") : this.sEmpty
 				};
