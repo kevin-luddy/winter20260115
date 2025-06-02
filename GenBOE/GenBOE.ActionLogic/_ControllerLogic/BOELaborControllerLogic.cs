@@ -1685,7 +1685,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			decimal sumUCOT = 0m;
 			
 			// Convert dto to mv
-			foreach (ResourceSpreadDto dto in spreadDtos)
+			foreach (ResourceSpreadDto dto in spreadDtos.OrderBy(s => s.LaborSpreadDate))
 			{
 				toReturn.Add(new LaborSpreadDataModelView()
 				{
@@ -1702,7 +1702,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					ucotSpreadsToReturn.Add(new LaborSpreadDataModelView()
 					{
 						LaborSpreadDate = dto.LaborSpreadDate.ToMonthString(),
-						LaborSpreadValue = precisionUCOT
+						LaborSpreadValue = precisionUCOT,
+						UpdateDate = dto.UpdateDate,
+						UpdateDateLong = dto.UpdateDateLong
 					});
 				}
 			}

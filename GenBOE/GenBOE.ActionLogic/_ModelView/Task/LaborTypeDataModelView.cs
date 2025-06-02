@@ -140,12 +140,13 @@ namespace GenBOE.ActionLogic.ModelView
 				if (calculateUCOT)
 				{
 					this.UcotSpreads = new List<LaborSpreadDataModelView>();
-
-					foreach (ResourceSpreadDto dto in inBoeLaborType.LaborSpreads)
+					decimal sumUCOT = 0m;
+					foreach (ResourceSpreadDto dto in inBoeLaborType.LaborSpreads.OrderBy(l => l.LaborSpreadDate))
 					{
 						if (dto.LaborSpreadDate >= Utilities.OneLmxStartDate)
 						{
 							decimal nonPrecisionUCOT = dto.LaborSpreadValue * ucotFactor / 100.0m;
+							sumUCOT += nonPrecisionUCOT;
 							decimal precisionUCOT = Utilities.AdjustPrecision(nonPrecisionUCOT, precision);
 
 							this.UcotSpreads.Add(new LaborSpreadDataModelView()
@@ -157,8 +158,8 @@ namespace GenBOE.ActionLogic.ModelView
 							});
 						}
 					}
-					
-					this.UcotHours = Utilities.AdjustPrecision(this.UcotSpreads.Sum(s => s.LaborSpreadValue ?? 0m), precision);
+
+					this.UcotHours = Utilities.AdjustPrecision(sumUCOT, precision);
 
 					// Now smooth the UCOT Hours
 					if (this.UcotSpreads.Any())
