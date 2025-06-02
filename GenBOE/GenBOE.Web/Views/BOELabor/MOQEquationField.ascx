@@ -4,6 +4,7 @@
 <%@ Import Namespace="GenBOE.Dtos" %>
 <%@ Import Namespace="GenBOE.ActionLogic.ModelView.BOE" %>
 <%@ Import Namespace="GenBOE.ActionLogic.ModelView" %>
+<%@ Import Namespace="System.Text.Json" %>
 
 <% 
     IEnumerable<WorkspaceVariableModelView> workspaceVariables = (IEnumerable<WorkspaceVariableModelView>)ViewData["WorkspaceVariables"];
@@ -34,7 +35,7 @@
         WorkspaceVariables: workspaceVariables,
         MOQTypes: <%=serializer.Serialize(Model.MOQTypes.Select(x => new { SelectedMOQType = x.Value, SelectedMOQTypeText = x.Text }))%>,
         MoqTypeTableDataLabels:<%=serializer.Serialize(Model.MoqTypeTableDataLabels)%>,
-        MoqTypeHelpUrls:<%=serializer.Serialize(Model.MoqTypeHelpUrls)%>,
+        MoqTypeHelpUrls:<%=JsonSerializer.Serialize<MoqTypeHelpUrls>(Model.MoqTypeHelpUrls)%>,
         SelectedMoqTypes:<%=Regex.Replace(serializer.Serialize(Model.SelectedMoqTypes), dateFixRegexSearch, dateFixRegexReplace)%>,
         ShouldMoqReadOnlyBeReversed: '<%:ViewData["ShouldMoqReadOnlyBeReversed"]%>'.isTrue(),
         IsRMS: '<%:Model.Company == CompanyConfiguration.MST%>'.isTrue(),
