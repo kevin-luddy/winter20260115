@@ -8,6 +8,7 @@ namespace GenBOE.Web.Controllers.Backend
 {
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ControllerLogic.Backend;
+	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
@@ -24,6 +25,8 @@ namespace GenBOE.Web.Controllers.Backend
 	using System.Net.Http;
 	using System.Net;
 	using System.Web.Http;
+	using System.Web;
+	using ImportWbsResultsModelView = ActionLogic._ModelView.ImportWbsResultsModelView;
 
 	/// <summary>
 	/// WBS Controller for Manage WBS Page
@@ -185,6 +188,138 @@ namespace GenBOE.Web.Controllers.Backend
 					Content = new StringContent("Unknown error exporting WBS template")
 				};
 			}
+		}
+
+
+		/// <summary>
+		/// Import WBS
+		/// </summary>
+		/// <returns>filestream</returns>
+		[System.Web.Http.HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		public IESSingleResponse<Collection<ImportWbsResultsModelView>> ImportWBS()
+		{
+			IESSingleResponse<Collection<ImportWbsResultsModelView>> response = new IESSingleResponse<Collection<ImportWbsResultsModelView>>();
+			string workspaceShortName = HttpContext.Current.Request.Form["workspaceShortName"];
+			int importType = int.Parse(HttpContext.Current.Request.Form["importType"]);
+			HttpPostedFile importFile = HttpContext.Current.Request.Files[0];
+
+			if (string.IsNullOrWhiteSpace(workspaceShortName))
+			{
+				throw new InvalidOperationException("Missing workspaceShortName in form data.");
+			}
+
+			if (importFile == null)
+			{
+				throw new InvalidOperationException("No file was uploaded.");
+			}
+
+			string fileName = HttpContext.Current.Request.Files[0].FileName;
+			if (string.IsNullOrEmpty(fileName) || (!fileName.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase) && !fileName.EndsWith(".xlsm", StringComparison.OrdinalIgnoreCase)))
+			{
+				throw new InvalidOperationException($"Unsupported file type.");
+			}
+
+			try
+			{
+				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortName);
+
+				// Initialize Action
+				Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_IMPORT_WBS, SecurityPage.ManageWBS, SecurityAuthorization.CreateReadUpdateDelete, new Collection<WorkspaceDTO>() { ws }, null);
+				Collection<ImportedWbs> importResults = this.wbsControllerLogic.ImportWBS(ws, importFile.InputStream);
+				Collection<ImportWbsResultsModelView> importModel = new Collection<ImportWbsResultsModelView>();
+				foreach (ImportedWbs importResult in importResults)
+				{
+					foreach (WbsImportResult resultType in importResult.ImportTypes)
+					{
+						importModel.Add(new ImportWbsResultsModelView()
+						{
+							ImportType = (int)resultType,
+							WbsID = importResult.Id,
+							WbsNumber = importResult.WbsNumber,
+							WbsTitle = importResult.WbsTitle,
+							ClinID = importResult.ClinID,
+							ClinIDs = importResult.ClinIDs,
+							ClinNumber = importResult.ClinNumber,
+							ClinTitle = importResult.ClinTitle
+						});
+					}
+				}
+
+				// Find out what the user deleted from the Excel spreadsheet that is now going to be imported.
+				if (importType == (int)WbsImportType.Existng)
+				{
+					this.wbsControllerLogic.FindWBSsToBeDeleted(ws, importFile.InputStream, importModel);
+				}
+
+				response.Data = importModel;
+				response.IsSuccessful = true;
+
+				// Finalize Action
+				FinalizeAction(logger, WebConstants.ACTION_IMPORT_WBS, sw);
+
+				return response;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				response.IsSuccessful = false;
+				response.Messages.Add("An unexpected error occurred while processing the file.");
+				return response;
+			}
+		}
+
+		/// <summary>
+		/// Save WBS updates
+		/// </summary>
+		/// <param name="addEditWBSModelView">wbs data to be saved</param>
+		/// <returns>success indicator</returns>
+		[System.Web.Http.HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<bool> CompleteImportWBS([FromBody] CompleteWBSImportModelView completeWbsImport)
+		{
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+			result.Data = true;
+			result.IsSuccessful = true;
+
+			if (completeWbsImport == null)
+			{
+				throw new ArgumentNullException(nameof(completeWbsImport));
+			}
+
+			if (completeWbsImport.dataToSave.Any())
+			{
+				try
+				{
+
+					FullWorkspace ws = this.Factory.CreateFullWorkspace(completeWbsImport.workspaceShortName);
+
+					// Initialize Action
+					Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_COMPLETE_IMPORT_WBS, SecurityPage.ManageWBS, SecurityAuthorization.CreateReadUpdateDelete, new Collection<WorkspaceDTO>() { ws }, null);
+
+					this.wbsControllerLogic.CompleteImportWBS(ws, completeWbsImport.dataToSave);
+
+					// Finalize Action
+					FinalizeAction(logger, WebConstants.ACTION_COMPLETE_IMPORT_WBS, sw);
+				}
+				catch (GenValidationException ex)
+				{
+					result.Data = false;
+					result.IsSuccessful = false;
+					logger.Error(ex);
+					result.Messages = ex.ValidationList.Select(x => x.ValidationIssue).ToList();
+				}
+				catch (Exception ex)
+				{
+					result.Data = false;
+					result.IsSuccessful = false;
+					logger.Error(ex);
+					result.Messages.Add($"Unknown error completing WBS import: {ex.Message}");
+				}
+			}
+
+			return result;
 		}
 	}
 }

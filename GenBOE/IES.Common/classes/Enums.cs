@@ -1480,6 +1480,16 @@ namespace IES.Common
 		InvalidPopEndSunday = 21
 	}
 
+
+	/// <summary>
+	/// Wbs import types
+	/// </summary>
+	public enum WbsImportType
+	{
+		New = 0,
+		Existng = 1
+	}
+
 	/// <summary>
 	/// Selectable options for Repository Name
 	/// </summary>
