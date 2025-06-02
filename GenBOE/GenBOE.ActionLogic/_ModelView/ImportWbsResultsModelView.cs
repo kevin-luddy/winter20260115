@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace GenBOE.ActionLogic._ModelView
+namespace GenBOE.ActionLogic.ModelView
 {
 	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.DataBridge.DTO;

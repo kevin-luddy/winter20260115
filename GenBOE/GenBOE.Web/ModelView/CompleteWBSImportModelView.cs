@@ -14,7 +14,7 @@ namespace GenBOE.Web.ModelView
 	[Serializable]
 	public class CompleteWBSImportModelView
 	{
-		private ICollection<ActionLogic._ModelView.ImportWbsResultsModelView> wbs1;
+		private ICollection<ActionLogic.ModelView.ImportWbsResultsModelView> wbs;
 
 		/// <summary>
 		/// Ctor
@@ -22,7 +22,7 @@ namespace GenBOE.Web.ModelView
 		public CompleteWBSImportModelView()
 		{
 			this.workspaceShortName = String.Empty;
-			this.dataToSave = new List<ActionLogic._ModelView.ImportWbsResultsModelView>();
+			this.dataToSave = new List<ActionLogic.ModelView.ImportWbsResultsModelView>();
 		}
 
 		/// <summary>
@@ -30,7 +30,7 @@ namespace GenBOE.Web.ModelView
 		/// </summary>
 		/// <param name="workspaceShortName"></param>
 		/// <param name="dataToSave"></param>
-		public CompleteWBSImportModelView(string workspaceShortName, List<ActionLogic._ModelView.ImportWbsResultsModelView> dataToSave)
+		public CompleteWBSImportModelView(string workspaceShortName, List<ActionLogic.ModelView.ImportWbsResultsModelView> dataToSave)
 		{
 			this.workspaceShortName = workspaceShortName;
 			this.dataToSave = dataToSave;
@@ -44,6 +44,6 @@ namespace GenBOE.Web.ModelView
 		/// <summary>
 		/// The WBS to import
 		/// </summary>
-		public ICollection<ActionLogic._ModelView.ImportWbsResultsModelView> dataToSave { get => wbs1; set => wbs1 = value; }
+		public ICollection<ActionLogic.ModelView.ImportWbsResultsModelView> dataToSave { get => wbs; set => wbs = value; }
 	}
 }

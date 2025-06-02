@@ -12,7 +12,6 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 	using GenBOE.ActionLogic.Common.Email;
 	using GenBOE.ActionLogic.IO.Export;
 	using GenBOE.ActionLogic.IO.Import;
-	using GenBOE.ActionLogic._ModelView;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.Validation;
 	using GenBOE.DataBridge.DTO;
@@ -103,6 +102,9 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 		/// </summary>
 		private VariableCircularReferenceChecker variableCircularReferenceChecker { get; set; }
 
+		/// <summary>
+		/// WBS ID Column label
+		/// </summary>
 		private const string wbsIDColumn = "genBOE WBS ID";
 
 		/// <summary>

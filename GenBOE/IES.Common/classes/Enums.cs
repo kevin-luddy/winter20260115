@@ -1487,7 +1487,7 @@ namespace IES.Common
 	public enum WbsImportType
 	{
 		New = 0,
-		Existng = 1
+		Existing = 1
 	}
 
 	/// <summary>

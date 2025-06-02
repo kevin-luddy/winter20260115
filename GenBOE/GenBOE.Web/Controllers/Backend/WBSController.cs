@@ -26,7 +26,7 @@ namespace GenBOE.Web.Controllers.Backend
 	using System.Net;
 	using System.Web.Http;
 	using System.Web;
-	using ImportWbsResultsModelView = ActionLogic._ModelView.ImportWbsResultsModelView;
+	using ImportWbsResultsModelView = ActionLogic.ModelView.ImportWbsResultsModelView;
 
 	/// <summary>
 	/// WBS Controller for Manage WBS Page
@@ -190,7 +190,6 @@ namespace GenBOE.Web.Controllers.Backend
 			}
 		}
 
-
 		/// <summary>
 		/// Import WBS
 		/// </summary>
@@ -248,7 +247,7 @@ namespace GenBOE.Web.Controllers.Backend
 				}
 
 				// Find out what the user deleted from the Excel spreadsheet that is now going to be imported.
-				if (importType == (int)WbsImportType.Existng)
+				if (importType == (int)WbsImportType.Existing)
 				{
 					this.wbsControllerLogic.FindWBSsToBeDeleted(ws, importFile.InputStream, importModel);
 				}
