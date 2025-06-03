@@ -8,6 +8,7 @@
 namespace GenBOE.Web.Controllers.Backend
 {
 	using System;
+	using System.Collections.ObjectModel;
 	using System.IO;
 	using System.Linq;
 	using System.Net;
@@ -15,7 +16,6 @@ namespace GenBOE.Web.Controllers.Backend
 	using System.Net.Http.Headers;
 	using System.Web;
 	using System.Web.Http;
-	using System.Web.Mvc;
 	using GenBOE.ActionLogic._ControllerLogic.Backend;
 	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.ModelView.Clin;
@@ -29,7 +29,7 @@ namespace GenBOE.Web.Controllers.Backend
 	/// <summary>
 	/// CLIN Controller for Manage CLIN Page
 	/// </summary>
-	public class CLINController : BoeDataBaseAPIController
+	public class CLINBackendController : BoeDataBaseAPIController
 	{
 		/// <summary>
 		/// Logger
@@ -41,7 +41,16 @@ namespace GenBOE.Web.Controllers.Backend
 		/// </summary>
 		private CLINControllerLogic _clinControllerLogic { get; set; }
 
-		public CLINController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader,
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		/// <param name="securityAccess"></param>
+		/// <param name="factory"></param>
+		/// <param name="userLoader"></param>
+		/// <param name="permissionsLoader"></param>
+		/// <param name="clinControllerLogic"></param>
+		/// <param name="clinController"></param>
+		public CLINBackendController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader,
 			IPermissionsDTODataLoader permissionsLoader, CLINControllerLogic clinControllerLogic)
 		: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
@@ -150,6 +159,36 @@ namespace GenBOE.Web.Controllers.Backend
 			{
 				logger.Error(ex);
 				result.Messages.Add($"Unknown error occurred importing CLIN data: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Complete Import CLIN after user has verified data
+		/// </summary>
+		/// <param name="importCLINModelView">POST body with workspace shortname and ImportedCLINs</param>
+		/// <returns>boolean</returns>
+		[System.Web.Http.HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<bool> CompleteImportCLINs([FromBody] ImportCLINModelView importCLINModelView)
+		{
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+			try
+			{
+				if (importCLINModelView != null)
+				{
+					FullWorkspace ws = this.Factory.CreateFullWorkspace(importCLINModelView.workspaceShortName);
+
+					_clinControllerLogic.CompleteImportCLIN(ws, importCLINModelView.importedCLINs);
+					result.IsSuccessful = true;
+					result.Data = true;
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occured completing import for CLIN data: {ex.Message}");
 			}
 
 			return result;
