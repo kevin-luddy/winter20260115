@@ -8,6 +8,7 @@
 namespace GenBOE.Web.Controllers.Backend
 {
 	using System;
+	using System.Collections;
 	using System.Collections.ObjectModel;
 	using System.IO;
 	using System.Linq;
@@ -165,30 +166,40 @@ namespace GenBOE.Web.Controllers.Backend
 		}
 
 		/// <summary>
-		/// Complete Import CLIN after user has verified data
+		/// Deletes a group of CLINs.
 		/// </summary>
-		/// <param name="importCLINModelView">POST body with workspace shortname and ImportedCLINs</param>
-		/// <returns>boolean</returns>
-		[System.Web.Http.HttpPost]
+		/// <param name="clinsToDelete">Collection of the CLINs to be deleted</param>
+		/// <returns>IES Result whether or not deletion was successful</returns>
+		[System.Web.Http.HttpDelete]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESSingleResponse<bool> CompleteImportCLINs([FromBody] ImportCLINModelView importCLINModelView)
+		public IESSingleResponse<bool> DeleteCLINs(ManageCLINModelView[] clinsToDelete)
 		{
 			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+
 			try
 			{
-				if (importCLINModelView != null)
+				if (clinsToDelete != null && clinsToDelete.Any())
 				{
-					FullWorkspace ws = this.Factory.CreateFullWorkspace(importCLINModelView.workspaceShortName);
+					FullWorkspace ws = this.Factory.CreateFullWorkspace(clinsToDelete[0].WorkSpaceID);
 
-					_clinControllerLogic.CompleteImportCLIN(ws, importCLINModelView.importedCLINs);
-					result.IsSuccessful = true;
-					result.Data = true;
+					foreach (ManageCLINModelView clin in clinsToDelete)
+					{
+						// Only delete CLINs that have positive IDs
+						if (clin.ClinID > 0 && clin.Deleted == true)
+						{
+							this._clinControllerLogic.SaveCLIN(ws, clin);
+						}
+					}
 				}
+
+				result.Data = true;
+				result.IsSuccessful = true;
 			}
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown error occured completing import for CLIN data: {ex.Message}");
+				result.Data = false;
+				result.Messages.Add($"Unknown error occurred deleting CLIN data: {ex.Message}");
 			}
 
 			return result;
