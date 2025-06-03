@@ -14,10 +14,7 @@ namespace GenBOE.Web.Controllers
 	using System.Linq;
 	using System.Web.Mvc;
 	using GenBOE.ActionLogic._ControllerLogic.Backend;
-	using GenBOE.ActionLogic.BLL;
-	using GenBOE.ActionLogic.BOETransitions;
 	using GenBOE.ActionLogic.Common;
-	using GenBOE.ActionLogic.Common.Email;
 	using GenBOE.ActionLogic.ControllerLogic;
 	using GenBOE.ActionLogic.IO.Export;
 	using GenBOE.ActionLogic.IO.Import;
@@ -53,7 +50,6 @@ namespace GenBOE.Web.Controllers
 			ICommonDataMapper inCommonDataMapper,
 			SiteMasterUtilities inSiteMasterUtilities,
 			ICLINExporter inClinExporter,
-			IBoeMediator inBoeMediator,
 			SystemMetrics inSystemMetrics,
 			IFullObjectFactory factory,
 			IClinDTODataLoader clinLoader,
