@@ -51,11 +51,10 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <param name="clinControllerLogic"></param>
 		/// <param name="clinController"></param>
 		public CLINBackendController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader,
-			IPermissionsDTODataLoader permissionsLoader, CLINControllerLogic clinControllerLogic, CLINController clinController)
+			IPermissionsDTODataLoader permissionsLoader, CLINControllerLogic clinControllerLogic)
 		: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this._clinControllerLogic = clinControllerLogic;
-			this._clinController = clinController;
 		}
 
 		/// <summary>
