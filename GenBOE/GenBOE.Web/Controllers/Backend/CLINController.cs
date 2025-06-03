@@ -161,7 +161,7 @@ namespace GenBOE.Web.Controllers.Backend
 		/// Deletes a group of CLINs.
 		/// </summary>
 		/// <param name="clinsToDelete">Collection of the CLINs to be deleted</param>
-		/// <returns>If successfull,empty string is return. Otherwise, exception error text to be handled in the post:error </returns>
+		/// <returns>IES Result whether or not deletion was successful</returns>
 		[System.Web.Http.HttpDelete]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<bool> DeleteCLINs(ManageCLINModelView[] clinsToDelete)
