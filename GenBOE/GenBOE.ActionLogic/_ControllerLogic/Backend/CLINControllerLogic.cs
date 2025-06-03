@@ -11,7 +11,6 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 	using System.IO;
 	using System.Linq;
 	using System.Transactions;
-	using System.Web.Mvc;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
 	using GenBOE.ActionLogic.Common.Calculations;
@@ -331,6 +330,161 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 		}
 
 		/// <summary>
+		/// Export CLIN logic
+		/// Duplicated because of the difference 
+		/// </summary>
+		/// <param name="ws">Full Workspace</param>
+		/// <returns>Excel file as FileStream</returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		public FileStream ExportCLINs(FullWorkspace ws)
+		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
+
+			FileStream fs = null;
+			//filter out multi boe's to hide from user. 
+			Collection<ClinDTO> clins = ws.ClinsNoMultiClin.OrderBy(c => c.ClinNumber).ToCollection<ClinDTO>();
+
+			// Get the CLIN template file name
+			// Assume that "Templates" is a subdirectory of your application's root directory
+			string templateDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates", "Export");
+
+			// Ensure the template directory exists
+			if (!Directory.Exists(templateDir))
+			{
+				throw new InvalidOperationException($"Template directory '{templateDir}' does not exist.");
+			}
+
+			string templateFileName = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST
+				? Path.Combine(templateDir, "CLINsRMS.xlsx")
+				: Path.Combine(templateDir, "CLINs.xlsx");
+
+			// Check if the template file exists
+			if (!File.Exists(templateFileName))
+			{
+				throw new FileNotFoundException($"Template file '{templateFileName}' does not exist.");
+			}
+
+			ICollection<PickListDto> contractTypes = this._contractTypeLoader.GetPickListValues();
+
+			string exportFile = this._clinExporter.ExportToExcelFile(templateFileName, clins, ws, contractTypes);
+
+			if (exportFile.Length > 0)
+			{
+				fs = new FileStream(exportFile, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+			}
+			return fs;
+		}
+
+		/// <summary>
+		/// Import CLIN logic
+		/// </summary>
+		/// <param name="ws">Full Workspace</param>
+		/// <param name="inputStream">File Stream</param>
+		/// <returns>Imported CLINs</returns>
+		public ICollection<ImportedClin> ImportCLINs(FullWorkspace ws, Stream inputStream)
+		{
+			ICollection<PickListDto> contractTypes = _contractTypeLoader.GetPickListValues();
+			Collection<ImportedClin> results = this._clinImporter.ImportClinsFromExcelFile(inputStream, ws, contractTypes);
+			return results;
+		}
+
+		/// <summary>
+		/// Controller Logic to Complete Import
+		/// </summary>
+		/// <param name="ws">Full Workspace</param>
+		/// <param name="importResults">ImportedCLIN</param>
+		public void CompleteImportCLIN(FullWorkspace ws, ICollection<ImportedClin> importResults)
+		{
+			if (importResults != null)
+			{
+				// Get NEW CLINs from the imported data
+				IEnumerable<ImportedClin> newClinResults = from x in importResults
+														   where x.ImportTypes.Contains(ClinImportResult.CreateClin)
+														   select x;
+
+				// Get EXISTING UPDATED CLINs from the imported data
+				List<ImportedClin> updatedClinResults = (from x in importResults
+														 where x.ImportTypes.Contains(ClinImportResult.UpdateClin)
+														 select x).ToList();
+
+				// Initialize the collection to hold CLINs that will be saved.
+				Collection<ClinDTO> clinToSave = new Collection<ClinDTO>();
+
+				// Start the collection off with all of the new CLINs from the imported data
+				foreach (ImportedClin newClin in newClinResults)
+				{
+					// Call Long Tick Properties with their own values to force DateTimes to be set properly
+					newClin.StartDateLong = newClin.StartDateLong;
+					newClin.EndDateLong = newClin.EndDateLong;
+
+					// the Json import results converts & to &amp which needs to be returned back to &
+					newClin.ClinNumber = newClin.ClinNumber.Contains("&amp;") ? newClin.ClinNumber.Replace("&amp;", "&") : newClin.ClinNumber;
+					newClin.ClinTitle = newClin.ClinTitle.Contains("&amp;") ? newClin.ClinTitle.Replace("&amp;", "&") : newClin.ClinTitle;
+
+					clinToSave.Add(newClin);
+				}
+
+				// Create a dictionary to hold all of the updated CLINs before they are updated in the DB
+				Dictionary<int, ClinDTO> oldClinForEmailDict = new Dictionary<int, ClinDTO>();
+
+				foreach (ImportedClin updatedClin in updatedClinResults)
+				{
+					FullClin oldClin = _factory.CreateFullClin(updatedClin.Id);
+
+					// Stash 'old' CLIN away before changes are applied to the DB
+					oldClinForEmailDict.Add(oldClin.Id, oldClin);
+
+					// the Json import results converts & to &amp which needs to be returned back to &
+					oldClin.ClinNumber = updatedClin.ClinNumber.Contains("&amp") ? updatedClin.ClinNumber.Replace("&amp;", "&") : updatedClin.ClinNumber;
+					oldClin.ClinTitle = updatedClin.ClinTitle.Contains("&amp") ? updatedClin.ClinTitle.Replace("&amp;", "&") : updatedClin.ClinTitle;
+
+
+					// If there are any date errors, we'll leave the dates alone and use old values
+					if (!(updatedClin.ImportTypes.Contains(ClinImportResult.NoDatesOrBothDatesRequired) ||
+						  updatedClin.ImportTypes.Contains(ClinImportResult.StartDateMustBeBeforeEndDate) ||
+						  updatedClin.ImportTypes.Contains(ClinImportResult.InvalidStartDateFormat) ||
+						  updatedClin.ImportTypes.Contains(ClinImportResult.StartDateTooEarly) ||
+						  updatedClin.ImportTypes.Contains(ClinImportResult.InvalidEndDateFormat) ||
+						  updatedClin.ImportTypes.Contains(ClinImportResult.EndDateTooLate)))
+					{
+						oldClin.StartDate = updatedClin.StartDateLong.HasValue ? new DateTime(updatedClin.StartDateLong.Value) : (DateTime?)null;
+						oldClin.EndDate = updatedClin.EndDateLong.HasValue ? new DateTime(updatedClin.EndDateLong.Value) : (DateTime?)null;
+					}
+
+					oldClin.ContractType = updatedClin.ContractType;
+
+					oldClin.Updateable = UpdateType.Upsert;
+
+					// Do not set the update date, use the one from the database so that it will always be the newest version.
+					// We do not want optimistic locking during the import, as directed by the SE.
+					clinToSave.Add(oldClin);
+				}
+
+				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+				{
+					// Save the CLINs
+					_clinLoader.Save(clinToSave);
+
+					// at this point all commits have taken place and were succesful (or an exception would have been thrown)
+					// so let's fire off emails, if applicable
+					foreach (ImportedClin updatedClin in updatedClinResults)
+					{
+						// look at the BOEs related to the CLIN
+						// if the CLIN was in use and the BOE is in DRAFT state, send the email
+
+						// Send emails and change BOE statuses for In Use CLINs
+						this.ProcessInUseUpdatedCLIN(ws, oldClinForEmailDict[updatedClin.Id], _factory.CreateFullClin(updatedClin));
+					}
+
+					scope.Complete();
+				}
+			}
+		}
+
+		/// <summary>
 		/// Checks an in use CLIN that was updated for changes. If there were changes, then authors and approvers of
 		/// the CLIN's BOEs are notified accordingly. Awaiting Approval/Approved BOEs are moved back to draft
 		/// </summary>
@@ -443,68 +597,6 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 					}
 				}
 			}
-		}
-
-		/// <summary>
-		/// Export CLIN logic
-		/// Duplicated because of the difference 
-		/// </summary>
-		/// <param name="ws">Full Workspace</param>
-		/// <returns>Excel file as FileStream</returns>
-		/// <exception cref="ArgumentNullException"></exception>
-		public FileStream ExportCLINs(FullWorkspace ws)
-		{
-			if (ws == null)
-			{
-				throw new ArgumentNullException(nameof(ws));
-			}
-
-			FileStream fs = null;
-			//filter out multi boe's to hide from user. 
-			Collection<ClinDTO> clins = ws.ClinsNoMultiClin.OrderBy(c => c.ClinNumber).ToCollection<ClinDTO>();
-
-			// Get the CLIN template file name
-			// Assume that "Templates" is a subdirectory of your application's root directory
-			string templateDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates", "Export");
-
-			// Ensure the template directory exists
-			if (!Directory.Exists(templateDir))
-			{
-				throw new InvalidOperationException($"Template directory '{templateDir}' does not exist.");
-			}
-
-			string templateFileName = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST
-				? Path.Combine(templateDir, "CLINsRMS.xlsx")
-				: Path.Combine(templateDir, "CLINs.xlsx");
-
-			// Check if the template file exists
-			if (!File.Exists(templateFileName))
-			{
-				throw new FileNotFoundException($"Template file '{templateFileName}' does not exist.");
-			}
-
-			ICollection<PickListDto> contractTypes = this._contractTypeLoader.GetPickListValues();
-
-			string exportFile = this._clinExporter.ExportToExcelFile(templateFileName, clins, ws, contractTypes);
-
-			if (exportFile.Length > 0)
-			{
-				fs = new FileStream(exportFile, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
-			}
-			return fs;
-		}
-
-		/// <summary>
-		/// Import CLIN logic
-		/// </summary>
-		/// <param name="ws">Full Workspace</param>
-		/// <param name="inputStream">File Stream</param>
-		/// <returns>Imported CLINs</returns>
-		public ICollection<ImportedClin> ImportCLINs(FullWorkspace ws, Stream inputStream)
-		{
-			ICollection<PickListDto> contractTypes = _contractTypeLoader.GetPickListValues();
-			Collection<ImportedClin> results = this._clinImporter.ImportClinsFromExcelFile(inputStream, ws, contractTypes);
-			return results;
 		}
 	}
 }

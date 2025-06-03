@@ -17,7 +17,6 @@ namespace GenBOE.Web.Controllers.Backend
 	using System.Net.Http.Headers;
 	using System.Web;
 	using System.Web.Http;
-	using System.Web.Mvc;
 	using GenBOE.ActionLogic._ControllerLogic.Backend;
 	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.ModelView.Clin;
@@ -31,7 +30,7 @@ namespace GenBOE.Web.Controllers.Backend
 	/// <summary>
 	/// CLIN Controller for Manage CLIN Page
 	/// </summary>
-	public class CLINController : BoeDataBaseAPIController
+	public class CLINBackendController : BoeDataBaseAPIController
 	{
 		/// <summary>
 		/// Logger
@@ -43,7 +42,16 @@ namespace GenBOE.Web.Controllers.Backend
 		/// </summary>
 		private CLINControllerLogic _clinControllerLogic { get; set; }
 
-		public CLINController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader,
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		/// <param name="securityAccess"></param>
+		/// <param name="factory"></param>
+		/// <param name="userLoader"></param>
+		/// <param name="permissionsLoader"></param>
+		/// <param name="clinControllerLogic"></param>
+		/// <param name="clinController"></param>
+		public CLINBackendController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader,
 			IPermissionsDTODataLoader permissionsLoader, CLINControllerLogic clinControllerLogic)
 		: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
