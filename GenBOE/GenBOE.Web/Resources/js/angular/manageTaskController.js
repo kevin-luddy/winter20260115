@@ -1026,7 +1026,6 @@
                 var error = "The value '" + spreadValueString + "' is not the correct Precision for Labor Spread Value";
                 $scope.laborSpreadErrors.push({ ValidationIssue: error });
             } else {
-
                 item.SpreadDataInvalid[index] = false;
                 // search to see if there are any invalid spreads anymore
                 if (previousInvalid) {
@@ -1063,16 +1062,17 @@
                 $scope.calculatePercentSpread(item, $scope.getMOQTotal());
             }
 
-            if ($scope.IsUcot(item)) {
+			if ($scope.IsUcot(item) && dt.toDate() >= $scope.oneLmxCutOff) {
                 var ucotSpread = item.UcotSpreads.find(function (spreadItem) {
                     return spreadItem.LaborSpreadDate === dt;
                 });
 
-                var ucotSpreadValue = spreadValue.multipliedBy($scope.ManageTaskModel.UcotFactor);
+				var precision = $scope.getPrecision(item);
+				var ucotSpreadValue = spreadValue.multipliedBy($scope.ManageTaskModel.UcotFactor).decimalPlaces(precision);
 
                 // set the Ucot spread value in original array from the copy array
-                if (ucotSpread !== undefined && ucotSpread.LaborSpreadValue !== undefined) {
-                    delta = ucotSpreadValue.minus(ucotSpread.LaborSpreadValue);
+				if (ucotSpread !== undefined && ucotSpread.LaborSpreadValue !== undefined) {
+					delta = ucotSpreadValue.minus(ucotSpread.LaborSpreadValue);
                     ucotSpread.LaborSpreadValue = ucotSpreadValue;
                 } else {
                     // this is a new value for the Ucot Spreads table
@@ -1083,13 +1083,12 @@
                 }
 
                 // add delta to labor type object Ucot Hours
-                var ucotHourSpread = delta.plus(item.UcotHours);
-                item.UcotHours = ucotHourSpread.toString();
+				var ucotHourSpread = delta.plus(item.UcotHours);
+				item.UcotHours = ucotHourSpread.toString();
             }
 
-
             // re-calculate totals
-            $scope.recalculateTotals();
+			$scope.recalculateTotals();
         }
     };
 
@@ -1189,7 +1188,7 @@
         var items = [];
         var dataArray = [];
 
-        angular.forEach($scope.tableData, function (item, key) {
+		angular.forEach($scope.tableData, function (item, key) {
             if ($scope.validateDates(item, false) && item.SpreadCurveID !== "-1" && (item.ResourceID !== undefined || item.BusinessResourceCodeID !== undefined) && !item.Deleted) {
                 // now check hours or cost depending on resource type
                 var spreadValueString;
@@ -1218,7 +1217,7 @@
                     }
                 }
             }
-        });
+		});
 
         if (items.length === 0) {
             // remake the spread array
@@ -2354,7 +2353,7 @@
                     newUcotSpreads.push(spread);
                     ucotTotal = ucotTotal.plus(spread.LaborSpreadValue);
                 }
-            });
+			});
 
             item.UcotHours = ucotTotal;
             item.UcotSpreads = newUcotSpreads;
@@ -2367,7 +2366,7 @@
     };
 
     $scope.IsUcot = function (item) {
-        // ElementOfCost Enum value 1 is LM Labor
+		// ElementOfCost Enum value 1 is LM Labor
         return $scope.showUCOT && item.ElementOfCost === 1 && item.BusinessResourceCodeName && item.RateType === ManageTaskModel.RateTypeHours;
     };
 
