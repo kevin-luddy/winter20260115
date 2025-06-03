@@ -459,7 +459,7 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 					oldClin.Updateable = UpdateType.Upsert;
 
 					// Do not set the update date, use the one from the database so that it will always be the newest version.
-					// We do not want optomistic locking during the import, as directed by the SE.
+					// We do not want optimistic locking during the import, as directed by the SE.
 					clinToSave.Add(oldClin);
 				}
 
