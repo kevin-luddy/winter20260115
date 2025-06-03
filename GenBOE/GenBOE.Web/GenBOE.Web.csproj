@@ -277,7 +277,7 @@
     <Compile Include="Common\StringNonPrintableCharRemovalModelBinder.cs" />
     <Compile Include="Common\WorkspaceIdentificationModelBinder.cs" />
     <Compile Include="Controllers\Backend\BOEConfigurationController.cs" />
-    <Compile Include="Controllers\Backend\CLINBackendController.cs" />
+    <Compile Include="Controllers\Backend\CLINController.cs" />
     <Compile Include="Controllers\Backend\ImportController.cs" />
     <Compile Include="Controllers\Backend\ManagePermissionsController.cs" />
     <Compile Include="Controllers\Backend\WBSController.cs" />

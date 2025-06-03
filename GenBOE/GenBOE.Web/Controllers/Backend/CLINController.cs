@@ -8,8 +8,6 @@
 namespace GenBOE.Web.Controllers.Backend
 {
 	using System;
-	using System.Collections;
-	using System.Collections.ObjectModel;
 	using System.IO;
 	using System.Linq;
 	using System.Net;
@@ -30,7 +28,7 @@ namespace GenBOE.Web.Controllers.Backend
 	/// <summary>
 	/// CLIN Controller for Manage CLIN Page
 	/// </summary>
-	public class CLINBackendController : BoeDataBaseAPIController
+	public class CLINController : BoeDataBaseAPIController
 	{
 		/// <summary>
 		/// Logger
@@ -51,7 +49,7 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <param name="permissionsLoader"></param>
 		/// <param name="clinControllerLogic"></param>
 		/// <param name="clinController"></param>
-		public CLINBackendController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader,
+		public CLINController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader,
 			IPermissionsDTODataLoader permissionsLoader, CLINControllerLogic clinControllerLogic)
 		: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
@@ -166,6 +164,36 @@ namespace GenBOE.Web.Controllers.Backend
 		}
 
 		/// <summary>
+		/// Complete Import CLIN after user has verified data
+		/// </summary>
+		/// <param name="importCLINModelView">POST body with workspace shortname and ImportedCLINs</param>
+		/// <returns>boolean</returns>
+		[System.Web.Http.HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<bool> CompleteImportCLINs([FromBody] ImportCLINModelView importCLINModelView)
+		{
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+			try
+			{
+				if (importCLINModelView != null)
+				{
+					FullWorkspace ws = this.Factory.CreateFullWorkspace(importCLINModelView.workspaceShortName);
+
+					_clinControllerLogic.CompleteImportCLIN(ws, importCLINModelView.importedCLINs);
+					result.IsSuccessful = true;
+					result.Data = true;
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occured completing import for CLIN data: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Deletes a group of CLINs.
 		/// </summary>
 		/// <param name="clinsToDelete">Collection of the CLINs to be deleted</param>
@@ -185,7 +213,7 @@ namespace GenBOE.Web.Controllers.Backend
 					foreach (ManageCLINModelView clin in clinsToDelete)
 					{
 						// Only delete CLINs that have positive IDs
-						if (clin.ClinID > 0 && clin.Deleted == true)
+						if (clin.ClinID > 0 && clin.Deleted)
 						{
 							this._clinControllerLogic.SaveCLIN(ws, clin);
 						}
