@@ -12,7 +12,6 @@ namespace GenBOE.Web.Controllers
 	using System.Diagnostics;
 	using System.IO;
 	using System.Linq;
-	using System.Transactions;
 	using System.Web.Mvc;
 	using GenBOE.ActionLogic._ControllerLogic.Backend;
 	using GenBOE.ActionLogic.BLL;
@@ -41,10 +40,7 @@ namespace GenBOE.Web.Controllers
 	{
 		private Logger _log = new Logger(typeof(CLINController));
 
-		private IBoeEmailer _Emailer;
-		private IBOEStateMachine _BOEStateMachine;
 		private ICLINExporter _ClinExporter;
-		private IBoeMediator _BoeMediator;
 		private IClinDTODataLoader clinLoader;
 		private ICommonDataLoader _CommonDataLoader;
 		private ContractTypeLoader contractTypeLoader;
@@ -56,8 +52,6 @@ namespace GenBOE.Web.Controllers
 		public CLINController(ISecurityAccess inSecurityAccess,
 			ICommonDataMapper inCommonDataMapper,
 			SiteMasterUtilities inSiteMasterUtilities,
-			IBoeEmailer inEmailer,
-			IBOEStateMachine inBOEStateMachine,
 			ICLINExporter inClinExporter,
 			IBoeMediator inBoeMediator,
 			SystemMetrics inSystemMetrics,
@@ -72,10 +66,7 @@ namespace GenBOE.Web.Controllers
 			)
 			: base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, userLoader, permissionLoader, inControllerLogic)
 		{
-			this._Emailer = inEmailer;
-			this._BOEStateMachine = inBOEStateMachine;
 			this._ClinExporter = inClinExporter;
-			this._BoeMediator = inBoeMediator;
 			this.clinLoader = clinLoader;
 			this._CommonDataLoader = inCommonDataLoader;
 			this.contractTypeLoader = contractTypeLoader;

@@ -41,8 +41,15 @@ namespace GenBOE.Web.Controllers.Backend
 		/// </summary>
 		private CLINControllerLogic _clinControllerLogic { get; set; }
 
-		private CLINController _clinController { get; set; }
-
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		/// <param name="securityAccess"></param>
+		/// <param name="factory"></param>
+		/// <param name="userLoader"></param>
+		/// <param name="permissionsLoader"></param>
+		/// <param name="clinControllerLogic"></param>
+		/// <param name="clinController"></param>
 		public CLINBackendController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader,
 			IPermissionsDTODataLoader permissionsLoader, CLINControllerLogic clinControllerLogic, CLINController clinController)
 		: base(securityAccess, factory, userLoader, permissionsLoader)
