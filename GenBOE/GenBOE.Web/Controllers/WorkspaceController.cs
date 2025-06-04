@@ -20,6 +20,7 @@ namespace GenBOE.Web.Controllers
 	using System.Web.Mvc;
 	using System.Web.Script.Serialization;
 	using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic._ControllerLogic.Backend;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
 	using GenBOE.ActionLogic.Common;
@@ -130,6 +131,11 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		private IFullWorkspaceRecalculation FullWsRecalc { get; set; }
 
+		/// <summary>
+		/// Angular rewrite Workspace settings controller Logic
+		/// </summary>
+		private WorkspaceSettingsControllerLogic _workspaceSettingsControllerLogic { get; set; }
+
 		private const int SYSTEM_PERF_ORG_LIST_ID = 1;
 
 		private const string WORKSPACE_COPY_ERROR = "The workspace has been successfully copied, but may contain errors due to missing data in the original workspace.  Please run the \"Validate All BOEs\" report to find any errors.";
@@ -199,7 +205,8 @@ namespace GenBOE.Web.Controllers
 			IBOEExporter boeExporter,
 			IBOECustomExporter boeCustomExporter,
 			CommentsAndResponsesExporter commentsAndResponsesExporter,
-			BOECommentsControllerLogic boeCommentsControllerLogic)
+			BOECommentsControllerLogic boeCommentsControllerLogic,
+			WorkspaceSettingsControllerLogic workspaceSettingsControllerLogic)
 			: base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inUserDTODataLoader, inPermissionsDTOLoader, inControllerLogic)
 		{
 			_WorkspaceStateMachine = inWorkspaceStateMachine;
@@ -252,6 +259,7 @@ namespace GenBOE.Web.Controllers
 			this.boeCustomExporter = boeCustomExporter;
 			_commentsAndResponsesExporter = commentsAndResponsesExporter;
 			_boeCommentsControllerLogic = boeCommentsControllerLogic;
+			_workspaceSettingsControllerLogic = workspaceSettingsControllerLogic;
 		}
 
 		#region Public Methods
@@ -2949,238 +2957,21 @@ namespace GenBOE.Web.Controllers
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
 			Stopwatch sw = InitializeAction(_log, "SaveWorkspaceIdentification", SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
+			string returnMessage = string.Empty;
+
 			if (ModelState.IsValid)
 			{
-				bool decimalPrecisionChanged = ws.DecimalPrecision != (workspaceDetails.ResourceDecimalPrecision ?? 0);
-				bool costDecimalPrecisionChanged = ws.CostDecimalPrecision != workspaceDetails.CostDecimalPrecision;
-
-				IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(this._securityInformation.ActiveUserNTID);
-				bool isAdmin = permissions.Any(p => p.AuthorizedRole == Role.SystemAdmin);
-
-				bool ptmTrackingNumberNotRequired = string.IsNullOrEmpty(ConfigurationUtilities.GetAppSetting("CanCreateWorkspaceWithoutPtmTrackingNumber")) ?
-									false : _securityInformation.IsMemberOfADGroupInAppSettingsList(this._securityInformation.ActiveUserNTID, "CanCreateWorkspaceWithoutPtmTrackingNumber");
-
-				ICollection<ValidationMessage> ValidationErrors = _ControllerLogic.SaveWorkspaceIdentificationValidation(ws, workspaceDetails, isAdmin, ptmTrackingNumberNotRequired);
-				if (ValidationErrors.Any())
-				{
-					throw new GenValidationException(ValidationErrors);
-				}
-
-				#region Setup all the data needed for the save, to minimize the time inside of a transaction
-
-				// Workspace Identification
-				UserDTO costVolumeLeadDTO = null;
-				PermissionsDTO workspaceAdmin = null;
-
-				// Get the user who is saving the BOE(s)
-				int currentUserID = ws.CurrentActiveUser.UserID;
-				bool templateBoeUsageChanged = ws.UsingTemplateBOE != workspaceDetails.UsingTemplateBoe;
-
-				// Create DTO and populate the common properties
-				ws.ContainsOCI = workspaceDetails.ContainsOCI;
-				ws.Description = workspaceDetails.Description;
-				ws.ProposalSubmittalDate = workspaceDetails.ProposalSubmittalDate != null ? (DateTime?)Convert.ToDateTime(workspaceDetails.ProposalSubmittalDate) : null;
-				ws.LineOfBusiness = new PickListDto() { Id = workspaceDetails.LineOfBusinessTypeID };
-				ws.RFPNumber = workspaceDetails.RFPNumber;
-				ws.UpdateDate = workspaceDetails.UpdateDate;
-				ws.WorkspaceName = workspaceDetails.WorkspaceName;
-				ws.ProposalStatus = workspaceDetails.ProposalStatus;
-				ws.StatusComment = workspaceDetails.StatusComments;
-				ws.ResourceDecimalPrecision = workspaceDetails.ResourceDecimalPrecision;
-				ws.CostDecimalPrecision = workspaceDetails.CostDecimalPrecision;
-				ws.CustomFieldSorting = workspaceDetails.CustomFieldSorting;
-				ws.ResourceSorting = workspaceDetails.ResourceSorting;
-				ws.PerfOrgSorting = workspaceDetails.PerfOrgSorting;
-				ws.RteSizeLimit = workspaceDetails.RteSizeLimit;
-				ws.UsingTemplateBOE = workspaceDetails.UsingTemplateBoe;
-				ws.EnableSAPConnection = workspaceDetails.EnableSAPConnection;
-				ws.CurrentPTMWorkspace = workspaceDetails.CurrentPTMWorkspace;
-
-				// Keep track of the previous value of Enable Assign Task Author
-				bool previousValueEnableAssignTaskAuthor = ws.EnableAssignTaskAuthor;
-				ws.EnableAssignTaskAuthor = workspaceDetails.EnableAssignTaskAuthor;
-
-				// Populate the company specific properties
-				_ControllerLogic.PopulateCompanySpecificWorkspaceProperties(workspaceDetails, ws);
-
-				// we only need to do the code below if the pricer/cost volume lead has changed..
-				costVolumeLeadDTO = this.UserLoader.GetByIds(new List<int>() { ws.CostVolumeLeadPricerUserID }).FirstOrDefault();
-
-				if (costVolumeLeadDTO == null || costVolumeLeadDTO.NTID != workspaceDetails.CostVolumeLeadPricerNTID)
-				{
-					// New CostVolumeLead
-					UserData costVolumeLeadData = _ADUtils.GetUserByQualifiedAccount(workspaceDetails.CostVolumeLeadPricerNTID, false);
-
-					costVolumeLeadDTO = this.UserLoader.GetOrCreateUserByNtid(costVolumeLeadData.Ntid);
-				}
-
-				HashSet<PermissionsDTO> wsPermissions = new HashSet<PermissionsDTO>(this.PermissionsLoader.GetWorkspacePermissions(ws.Id));
-
-				#endregion
-
-				WorkspaceState originalWsState = ws.WorkspaceState;
-
-				try
-				{
-					// Setup hashsets to keep track of data from recalculation; this will need to be saved in the transaction
-					HashSet<BoeTaskElementDTO> tasksToSave = new HashSet<BoeTaskElementDTO>();
-					HashSet<WorkspaceVariableDTO> workspaceVariablesToSave = new HashSet<WorkspaceVariableDTO>();
-					HashSet<FullBoe> boesToTransition = new HashSet<FullBoe>();
-					HashSet<BoeDTO> originalWsBoes = new HashSet<BoeDTO>(ws.Boes.ToList<BoeDTO>().DeepClone());
-
-					#region Setup things needed for recalculation and execute it; Do not save any data though, that will be done in the transaction
-
-					TimeSpan timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT));
-
-
-					if (decimalPrecisionChanged || costDecimalPrecisionChanged)
-					{
-						this._ControllerLogic.ChangeTheWorkspaceStateDuringRecalculation(ws, currentUserID, WorkspaceState.Initialization, DateTime.Now);
-
-						// The timeout for the transaction needs to be longer, since the recalculation will save a lot more data..
-						timeout = new TimeSpan(0, 10, 0);
-
-						this._ControllerLogic.WsRecalculationStep1(ws, ref tasksToSave, ref workspaceVariablesToSave, ref boesToTransition, originalWsBoes, decimalPrecisionChanged, costDecimalPrecisionChanged, workspaceDetails.CostDecimalPrecision);
-					}
-
-					#endregion
-
-					#region Save data in the DB, in a transaction
-
-					ICollection<MoqTypeSelection> moqTypes = templateBoeUsageChanged ? this._ControllerLogic.GetMoqTypesDataForBoeTemplateSettingChange(ws) : new List<MoqTypeSelection>();
-
-					using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = timeout }))
-					{
-						// Give CostVolumeLead Workspace Admin permissions
-						Collection<PermissionsDTO> workspacePermissions = wsPermissions.Where(p => p.Role == Role.WorkspaceAdmin && p.ETIUserId == costVolumeLeadDTO.UserID).ToCollection();
-
-						// if no results
-						if (!workspacePermissions.Any())
-						{
-							workspaceAdmin = new PermissionsDTO();
-							workspaceAdmin.WorkspaceId = ws.Id;
-							workspaceAdmin.Role = Role.WorkspaceAdmin;
-							workspaceAdmin.ETIUserId = costVolumeLeadDTO.UserID;
-							workspaceAdmin.Updateable = UpdateType.Upsert;
-
-							// Save permissions, if needed
-							this.PermissionsLoader.SavePermission(workspaceAdmin);
-						}
-
-						ws.CostVolumeLeadPricerUserID = costVolumeLeadDTO.UserID;
-
-						// Save the workspace
-						this.workspaceLoader.SaveWorkspaceSettings(currentUserID, ws);
-
-						this._ControllerLogic.SaveMoqTypes(moqTypes);
-
-						if (!ws.IsProjectMapWorkspace)
-						{
-							if (decimalPrecisionChanged || costDecimalPrecisionChanged) // need to save the recalculations that we ran earlier
-							{
-								this.FullWsRecalc.SaveDataEffectedByRecalculation(ws, tasksToSave, workspaceVariablesToSave, boesToTransition);
-							}
-
-							// If we recalculated, we need to carry out the actions based on the state transition of Boes
-							if (decimalPrecisionChanged)
-							{
-								this.FullWsRecalc.PerformStateTransitionActionsForBoesEffectedByRecalculation(ws, boesToTransition, originalWsBoes);
-							}
-
-							// If Template Boe usage changed, we need to reset all BOEs back to draft
-							if (templateBoeUsageChanged)
-							{
-								ws.RefreshBoes();
-
-								foreach (FullBoe boe in ws.Boes)
-								{
-									// apply the actual state-value update
-									boe.State = BOEState.Draft;
-									boe.Updateable = UpdateType.Upsert;
-
-									_BoeMediator.MediatedSave(ws, boe);
-									_BOEStateMachine.PerformStateTransitionAction(boe, ws, boe.State, BOEState.Draft);
-								}
-							}
-						}
-
-						// If Authors Assignable at Task Level is set to false and it was previously set to true,
-						// change all of the BOEs to Draft and clear all authors from tasks
-						if (Utilities.IsAssignTaskAuthorEnabledForSystem && !ws.EnableAssignTaskAuthor && previousValueEnableAssignTaskAuthor)
-						{
-							ws.RefreshBoes();
-
-							foreach (FullBoe boe in ws.Boes)
-							{
-								boe.State = BOEState.Draft;
-								boe.Updateable = UpdateType.Upsert;
-
-								// Get the task and remove the author
-								ICollection<BoeTaskElementDTO> editableTasks = (ICollection<BoeTaskElementDTO>)boe.TaskElements;
-								foreach (BoeTaskElementDTO task in editableTasks)
-								{
-									task.AuthorUserId = null;
-									task.Updateable = UpdateType.Upsert;
-								}
-
-								_BoeTaskElementMediator.MediatedBulkSaveTaskElements(editableTasks, ws);
-								_BoeMediator.MediatedSave(ws, boe);
-								_BOEStateMachine.PerformStateTransitionAction(boe, ws, boe.State, BOEState.Draft);
-							}
-						}
-
-						scope.Complete();
-					}
-
-					#endregion
-				}
-				finally
-				{
-					if (decimalPrecisionChanged || costDecimalPrecisionChanged) // if precision changed, we locked the WS at the beginning so we need to unlock..
-					{
-						this._ControllerLogic.ChangeTheWorkspaceStateDuringRecalculation(ws, currentUserID, originalWsState, null);
-					}
-				}
-
-				// This checks to see if there are any task elements that contain discrete spreads which now have a delta other than 0
-				if (decimalPrecisionChanged && !ws.IsProjectMapWorkspace)
-				{
-					string message = this.FullWsRecalc.GenerateMsgIfWsContainsTaskElementsWithNonZeroDeltaLabor(ws);
-
-					if (!string.IsNullOrEmpty(message))
-					{
-						// this causes the cache to fully blow out
-						this.Factory.ClearWorkspaceCache(workspace);
-
-						return Json(new { Status = true, Message = message });
-					}
-				}
+				returnMessage = _workspaceSettingsControllerLogic.SaveWorkspaceIdentification(Factory, ws, workspaceDetails);
 			}
 			else
 			{
 				throw new GenValidationException(Utilities.CreateModelStateValidationErrorList(ModelState));
 			}
 
-			// this causes the cache to fully blow out
-			this.Factory.ClearWorkspaceCache(workspace);
-
-			// This will check to see if any items are failing the new RTE length
-			if (ws.RteSizeLimit.HasValue)
-			{
-				ICollection<RTEValidationMV> issues = this.workspaceLoader.GetRteFieldsExceedingLimit(ws.Id);
-
-				if (issues.Any())
-				{
-					string warning = "<b>Your last action was successful.</b><br />The RTE limit is exceeded in at least one instance, please ask the authors to review the data.";
-
-					return Json(new { Status = true, Message = warning });
-				}
-			}
-
 			// Finalize Action
 			FinalizeAction(_log, "SaveWorkspaceIdentification", sw);
 
-			return Json(new { Status = true });
+			return Json(new { Status = true, Message = returnMessage });
 		}
 
 		/// <summary>

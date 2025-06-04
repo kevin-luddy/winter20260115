@@ -37,8 +37,6 @@ namespace GenBOE.Web.Controllers.Backend
 		/// </summary>
 		private WorkspaceSettingsControllerLogic workspaceSettingsControllerLogic { get; set; }
 
-		private WorkspaceController workspaceController { get; set; }
-
 		/// <summary>
 		/// Logger
 		/// </summary>
@@ -48,11 +46,10 @@ namespace GenBOE.Web.Controllers.Backend
 		/// ctor
 		/// </summary>
 		public WorkspaceSettingsController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader,
-			WorkspaceSettingsControllerLogic workspaceSettingsControllerLogic, WorkspaceController workspaceController)
+			WorkspaceSettingsControllerLogic workspaceSettingsControllerLogic)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.workspaceSettingsControllerLogic = workspaceSettingsControllerLogic;
-			this.workspaceController = workspaceController;
 		}
 		#endregion
 
@@ -73,7 +70,7 @@ namespace GenBOE.Web.Controllers.Backend
 
 				// Initialize Action
 				Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_DISPLAY_WORKSPACE_IDENTIFICATION, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, new Collection<WorkspaceDTO>() { ws }, null);
-				
+
 				IWorkspaceIdentificationModelView workspaceIdentificationModelView = workspaceSettingsControllerLogic.GetWorkspaceIdentification(ws);
 				result.Data = workspaceIdentificationModelView;
 				result.IsSuccessful = true;
@@ -232,9 +229,21 @@ namespace GenBOE.Web.Controllers.Backend
 
 			// Initialize Action
 			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_SAVE_WORKSPACE_IDENTIFICATION, SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, new Collection<WorkspaceDTO>() { ws }, null);
-			
-			ActionResult data = this.workspaceController.SaveWorkspaceIdentification(workspaceIdentificationModelView.ShortName, workspaceIdentificationModelView);
-			result.Data = data;
+
+			string returnMessage = string.Empty;
+
+			try
+			{
+				returnMessage = this.workspaceSettingsControllerLogic.SaveWorkspaceIdentification(Factory, ws, workspaceIdentificationModelView);
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occurred SaveWorkspaceIdentificationSpace: {ex.Message}");
+			}
+
+			result.IsSuccessful = true;
+			result.Messages.Add(returnMessage);
 
 			// Finalize Action
 			FinalizeAction(logger, WebConstants.ACTION_SAVE_WORKSPACE_IDENTIFICATION, sw);
@@ -260,9 +269,21 @@ namespace GenBOE.Web.Controllers.Backend
 
 			// Initialize Action
 			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_SAVE_WORKSPACE_IDENTIFICATION, SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, new Collection<WorkspaceDTO>() { ws }, null);
-			
-			ActionResult data = this.workspaceController.SaveWorkspaceIdentification(workspaceIdentificationModelView.ShortName, workspaceIdentificationModelView);
-			result.Data = data;
+
+			string returnMessage = string.Empty;
+
+			try
+			{
+				returnMessage = this.workspaceSettingsControllerLogic.SaveWorkspaceIdentification(Factory, ws, workspaceIdentificationModelView);
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occurred SaveWorkspaceIdentificationSpace: {ex.Message}");
+			}
+
+			result.IsSuccessful = true;
+			result.Messages.Add(returnMessage);
 
 			// Finalize Action
 			FinalizeAction(logger, WebConstants.ACTION_SAVE_WORKSPACE_IDENTIFICATION, sw);
