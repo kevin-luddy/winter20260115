@@ -213,6 +213,7 @@ namespace GenBOE.Web.Controllers.Backend
 
 		/// <summary>
 		/// Save the Workspace Identification (Space)
+		/// A separate Space API is needed because IWorkspaceIdentificationModelView is not compatible
 		/// </summary>
 		/// <param name="workspaceIdentificationModelView"></param>
 		/// <returns></returns>
@@ -253,6 +254,7 @@ namespace GenBOE.Web.Controllers.Backend
 
 		/// <summary>
 		/// Save the Workspace Identification (MST)
+		/// A separate RMS API is needed because IWorkspaceIdentificationModelView is not compatible
 		/// </summary>
 		/// <param name="workspaceIdentificationModelView"></param>
 		/// <returns></returns>
