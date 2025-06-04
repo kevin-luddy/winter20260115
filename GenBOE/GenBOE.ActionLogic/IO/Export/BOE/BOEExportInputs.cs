@@ -149,14 +149,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 					if (taskMOQs.Count == 1)
 					{
 						MoqTypeSelection moqType = taskMOQs.First();
-						if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && 
-							(moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative))
-						{
-							taskElementLabors.AddRange(boeTaskElement.taskElementLabors);
-							updatedTaskIds.Add(boeTaskElement.Id);
-						}
-						// else this is space
-						else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems &&
+						if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems &&
 							(moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative || moqType.SelectedMOQType == MOQType.AnalogousRelationships))
 						{
 							taskElementLabors.AddRange(boeTaskElement.taskElementLabors);
