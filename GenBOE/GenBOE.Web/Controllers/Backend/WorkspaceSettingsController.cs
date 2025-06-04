@@ -281,7 +281,7 @@ namespace GenBOE.Web.Controllers.Backend
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown error occurred SaveWorkspaceIdentificationSpace: {ex.Message}");
+				result.Messages.Add($"Unknown error occurred SaveWorkspaceIdentificationMST: {ex.Message}");
 			}
 
 			result.IsSuccessful = true;
