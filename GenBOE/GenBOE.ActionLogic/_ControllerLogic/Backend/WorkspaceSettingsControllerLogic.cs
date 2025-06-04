@@ -284,6 +284,15 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 			return response;
 		}
 
+		/// <summary>
+		/// Save Workspace Identification logic
+		/// </summary>
+		/// <param name="factory">Factory</param>
+		/// <param name="ws">Full Workspace</param>
+		/// <param name="workspaceDetails">Workspace details being saved</param>
+		/// <returns>Warning/Error messages if any</returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <exception cref="GenValidationException"></exception>
 		public string SaveWorkspaceIdentification(IFullObjectFactory factory, FullWorkspace ws, IWorkspaceIdentificationModelView workspaceDetails)
 		{
 			if (factory == null)
