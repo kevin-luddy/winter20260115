@@ -38,7 +38,7 @@ namespace GenBOE.Web.Controllers
     using IES.Common;
     using IES.Common.Exceptions;
     using IES.Common.OfficeUtilities;
-	using ImportWbsResultsModelView = ActionLogic.ModelView.ImportWbsResultsModelView;
+	using ImportWbsResultsModelView = ModelView.ImportWbsResultsModelView;
 
 	public class WBSController : GenBOEController
     {
