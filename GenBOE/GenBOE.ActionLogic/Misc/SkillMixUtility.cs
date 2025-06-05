@@ -587,7 +587,7 @@
 
 				foreach (SkillMixModelView skillMixModel in currentSkillMixData)
 				{
-					if (!string.IsNullOrWhiteSpace(skillMixModel.ResourceNew) && !resources.Contains(skillMixModel.ResourceNew))
+					if (!string.IsNullOrWhiteSpace(skillMixModel.ResourceNew) && !resources.Contains(skillMixModel.ResourceNew) && !historicalResources.Contains(skillMixModel.ResourceOld))
 					{
 						// this skill mix model is pointing towards a missing Resource, remove the resource name
 						skillMixModel.ResourceNew = string.Empty;
