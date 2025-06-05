@@ -9,6 +9,7 @@ namespace GenBOE.Web.Controllers.Backend
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ControllerLogic.Backend;
 	using GenBOE.ActionLogic.IO.Import;
+	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
@@ -68,7 +69,7 @@ namespace GenBOE.Web.Controllers.Backend
 					FullWorkspace ws = this.Factory.CreateFullWorkspace(addEditWBSModelView.workspaceShortName);
 
 					// Initialize Action
-					Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_SAVE_MANAGE_WBS_UPDATES, SecurityPage.ManageWBS, SecurityAuthorization.Read, new Collection<WorkspaceDTO>() { ws }, null);
+					Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_SAVE_MANAGE_WBS_UPDATES, SecurityPage.ManageWBS, SecurityAuthorization.CreateReadUpdateDelete, new Collection<WorkspaceDTO>() { ws }, null);
 
 					this.wbsControllerLogic.SaveWBS(ws, addEditWBSModelView.wbs);
 					result.IsSuccessful = true;
@@ -87,6 +88,57 @@ namespace GenBOE.Web.Controllers.Backend
 			{
 				logger.Error(ex);
 				result.Messages.Add($"Unknown error saving WBS: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Deletes a group of WBSs.
+		/// </summary>
+		/// <param name="deleteWBSModelView">Model containing workspace short name and WBSs to delete</param>
+		/// <returns>IES Result whether or not deletion was successful</returns>
+		[System.Web.Http.HttpDelete]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<bool> DeleteWBS([FromBody] DeleteWBSModelView deleteWBSModelView)
+		{
+			if (deleteWBSModelView == null)
+			{
+				throw new ArgumentNullException(nameof(deleteWBSModelView));
+			}
+
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+
+			try
+			{
+				if (deleteWBSModelView.Wbs.Any())
+				{
+					FullWorkspace ws = this.Factory.CreateFullWorkspace(deleteWBSModelView.WorkspaceShortName);
+
+					// Initialize Action
+					Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_SAVE_MANAGE_WBS_UPDATES, SecurityPage.ManageWBS, SecurityAuthorization.CreateReadUpdateDelete, new Collection<WorkspaceDTO>() { ws }, null);
+
+					foreach (ManageWBSModelView wbs in deleteWBSModelView.Wbs)
+					{
+						// Only delete WBS that have positive IDs
+						if (wbs.WbsID > 0 && wbs.Deleted)
+						{
+							this.wbsControllerLogic.SaveWBS(ws, wbs);
+						}
+					}
+
+					// Finalize Action
+					FinalizeAction(logger, WebConstants.ACTION_SAVE_MANAGE_WBS_UPDATES, sw);
+				}
+
+				result.Data = true;
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Data = false;
+				result.Messages.Add($"Unknown error occurred deleting WBS data: {ex.Message}");
 			}
 
 			return result;
