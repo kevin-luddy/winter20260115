@@ -111,14 +111,14 @@ namespace GenBOE.Web.Controllers.Backend
 
 			try
 			{
-				if (deleteWBSModelView.wbs.Any())
+				if (deleteWBSModelView.Wbs.Any())
 				{
-					FullWorkspace ws = this.Factory.CreateFullWorkspace(deleteWBSModelView.workspaceShortName);
+					FullWorkspace ws = this.Factory.CreateFullWorkspace(deleteWBSModelView.WorkspaceShortName);
 
 					// Initialize Action
 					Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_SAVE_MANAGE_WBS_UPDATES, SecurityPage.ManageWBS, SecurityAuthorization.CreateReadUpdateDelete, new Collection<WorkspaceDTO>() { ws }, null);
 
-					foreach (ManageWBSModelView wbs in deleteWBSModelView.wbs)
+					foreach (ManageWBSModelView wbs in deleteWBSModelView.Wbs)
 					{
 						// Only delete WBS that have positive IDs
 						if (wbs.WbsID > 0 && wbs.Deleted)

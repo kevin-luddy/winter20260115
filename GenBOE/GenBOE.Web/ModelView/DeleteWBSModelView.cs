@@ -20,30 +20,30 @@ namespace GenBOE.Web.ModelView
 		/// </summary>
 		public DeleteWBSModelView()
 		{
-			this.workspaceShortName = String.Empty;
-			this.wbs = new List<ManageWBSModelView>();
+			this.WorkspaceShortName = String.Empty;
+			this.Wbs = new List<ManageWBSModelView>();
 		}
 
 		/// <summary>
 		/// Ctor
 		/// </summary>
-		/// <param name="workspaceShortName"></param>
-		/// <param name="clin"></param>
-		public DeleteWBSModelView(string workspaceShortName, List<ManageWBSModelView> wbs)
+		/// <param name="WorkspaceShortName"></param>
+		/// <param name="Wbs"></param>
+		public DeleteWBSModelView(string WorkspaceShortName, List<ManageWBSModelView> Wbs)
 		{
-			this.workspaceShortName = workspaceShortName;
-			this.wbs = wbs;
+			this.WorkspaceShortName = WorkspaceShortName;
+			this.Wbs = Wbs;
 		}
 
 		/// <summary>
 		/// workspace shortname
 		/// </summary>
-		public string workspaceShortName { get; set; }
+		public string WorkspaceShortName { get; set; }
 
 		/// <summary>
 		/// The WBS to delete
 		/// </summary>
-		public List<ManageWBSModelView> wbs { get; set; }
+		public List<ManageWBSModelView> Wbs { get; set; }
 
 	}
 }
