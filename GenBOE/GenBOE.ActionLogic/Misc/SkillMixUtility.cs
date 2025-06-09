@@ -60,7 +60,7 @@
 				bool addBlankRow = !isSpace;
 
 				// filter out bad data in currentSkillMixData
-				FilterBadData(laborTypes, currentSkillMixData, currentCommonDisclosureData, isManual, isSpace);
+				FilterBadData(laborTypes, currentSkillMixData, currentCommonDisclosureData, resourceHours, isManual, isSpace);
 
 				if (isManual)
 				{
@@ -181,18 +181,21 @@
 			}
 
 			// Create Common Disclosure Rows by taking the list of Resources assigned in Skill Mix table, then finding the BRCs assigned to those Resources in LaborTypes data
-			ICollection<string> resourceNames = refreshedModel.SkillMixRows.Where(s => !string.IsNullOrWhiteSpace(s.ResourceNew) && s.Included).Select(r => r.ResourceNew).Distinct().ToList();
-			foreach (string resourceName in resourceNames)
+			List<string> resourceNames = refreshedModel.SkillMixRows.Where(s => !string.IsNullOrWhiteSpace(s.ResourceNew) && s.Included).Select(r => r.ResourceNew).Distinct().ToList();
+			ICollection<string> historicalResourceNames = refreshedModel.SkillMixRows.Where(s => string.IsNullOrWhiteSpace(s.ResourceNew)).Select(r => r.ResourceOld).Distinct().ToList();
+			resourceNames.AddRange(historicalResourceNames);
+
+			foreach (string resourceName in resourceNames.Distinct())
 			{
 				ICollection<LaborTypeDataModelView> resourceLaborTypes = laborTypes.Where(l => l.ResourceName == resourceName).ToList();
 
 				decimal totalHoursBRCs = resourceLaborTypes.SelectMany(x => x.Spreads).Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) >= Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
 
-				foreach (CommonDisclosureModelView refreshedRow in refreshedModel.CommonDisclosureRows.Where(r => r.ResourceID == resourceName))
+				foreach (CommonDisclosureModelView refreshedRow in refreshedModel.CommonDisclosureRows.Where(r => r.ResourceID == resourceName).ToList())
 				{
 					ICollection<LaborTypeDataModelView> laborTypeDataModelViews = resourceLaborTypes.Where(l => l.BusinessResourceCodeName.NullEmptyEquals(refreshedRow.BusinessResourceID)).ToList();
 
-					if (!laborTypeDataModelViews.Any())
+					if (!string.IsNullOrEmpty(refreshedRow.BusinessResourceID) && !laborTypeDataModelViews.Any())
 					{
 						// No labor types found that match this Resource/BRC combo, this BRC is invalid so we need to remove the BRC
 						refreshedModel.CommonDisclosureRows.Remove(refreshedRow);
@@ -570,19 +573,21 @@
 		/// </summary>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
 		/// <param name="currentCommonDisclosureData">Current Common Disclosure data</param>
+		/// <param name="resourceHours">The Resource Hours</param>
 		/// <param name="isManual">If the Historical Resource/Hours are Manually input or not</param>
 		/// <param name="isSpace">Whether this is Space or not</param>
 		private static void FilterBadData(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData,
-			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isManual, bool isSpace)
+			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, bool isManual, bool isSpace)
 		{
 			if (laborTypes.Any())
 			{
 				HashSet<string> resources = laborTypes.Select(l => l.ResourceName).Distinct().ToHashSet();
 				HashSet<string> brcs = laborTypes.Select(l => l.BusinessResourceCodeName).Distinct().ToHashSet();
+				HashSet<string> historicalResources = resourceHours.Select(r => r.ResourceName).Distinct().ToHashSet();
 
 				foreach (SkillMixModelView skillMixModel in currentSkillMixData)
 				{
-					if (!string.IsNullOrWhiteSpace(skillMixModel.ResourceNew) && !resources.Contains(skillMixModel.ResourceNew))
+					if (!string.IsNullOrWhiteSpace(skillMixModel.ResourceNew) && !resources.Contains(skillMixModel.ResourceNew) && !historicalResources.Contains(skillMixModel.ResourceOld))
 					{
 						// this skill mix model is pointing towards a missing Resource, remove the resource name
 						skillMixModel.ResourceNew = string.Empty;
@@ -595,7 +600,7 @@
 				foreach (CommonDisclosureModelView commonDisclosureModel in currentCommonDisclosureData.ToList())
 				{
 					// Remove bad resources
-					if (!string.IsNullOrWhiteSpace(commonDisclosureModel.ResourceID) && !resources.Contains(commonDisclosureModel.ResourceID))
+					if (!string.IsNullOrWhiteSpace(commonDisclosureModel.ResourceID) && !resources.Contains(commonDisclosureModel.ResourceID) && !historicalResources.Contains(commonDisclosureModel.ResourceID))
 					{
 						commonDisclosureModel.ResourceID = string.Empty;
 						commonDisclosureModel.HistoricalHours = 0m;

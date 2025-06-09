@@ -57,7 +57,7 @@
     var ManageWBS_ContainsOCI = <%= Model.ContainsOci.ToString().ToLower() %>;
     var currentWorkspace = '<%: SiteMasterUtilities.GetCurrentWorkspace() %>';
     var boeLaborController = '<%: WebConstants.CONTROLLER_BOE_LABOR %>';
-    var isBrcEnabled = '<%= Utilities.IsBRCEnabledForWorkspace(SiteMasterUtilities.GetCurrentWorkspace()) %>'.isTrue();
+	var isBrcEnabled = '<%= Utilities.IsBRCEnabledForWorkspace(SiteMasterUtilities.GetCurrentWorkspace()) %>'.isTrue();
     var completeImportUrl = CreatePostURL(currentWorkspace, boeLaborController,
                         '<%:WebConstants.ACTION_IMPORT_LABOR_TYPE_AND_SPREAD %>',
         'boe/' + '<%= ViewData["BOEID"] %>' + '/taskelement/' + '<%: ViewData["TASKID"] %>');
@@ -362,22 +362,6 @@
             action: '<%: WebConstants.ACTION_MARK_WARNING_AS_CONFIRMED%>',
             boe: '<%: Model.BoeId %>'
         });
-        var searchHistoricalMetricsMSTUrl = GenSession.CreateUrl({
-            workspace: currentWorkspace,
-            controller: boeLaborController,
-            action: '<%: WebConstants.ACTION_SEARCH_HISTORICAL_METRICS_IN_MST %>'
-        });
-        var historicalMetricsDetailsUrl = GenSession.CreateUrl({
-            workspace: currentWorkspace,
-            controller: boeLaborController,
-            action: '<%: WebConstants.ACTION_GET_HISTORICAL_METRIC_DETAILS %>'
-        });
-        var pagingMetricsUrl = GenSession.CreateUrl({
-            workspace: currentWorkspace,
-            controller: boeLaborController,
-            action: '<%: Model.MetricsPagingActionName %>'
-        });
-        var searchTypeAheadUrl = CreatePostURL(currentWorkspace, boeLaborController, '<%: WebConstants.ACTION_GET_SEARCH_TYPE_AHEAD %>', '');
         var recalculateAndRefreshPageUrl = CreatePostURL(currentWorkspace,
             boeLaborController,
             'DoFullRecalculationWithPageRefresh',
@@ -393,22 +377,15 @@
             '<%: WebConstants.ACTION_SAVE_REORDER_LABOR_TYPES %>',
             'boe/' + boeId + '/taskelement/' + taskElementId);
 
-        TaskElementDetailsWidget = InitializeTaskElementDetailsWidget("<%:Model.MetricsSearchDialogParameters.DialogTitle%>",
-            '<%:Model.MetricsSearchDialogParameters.SearchMetricsDialogIdSuffix%>',
-            <%: ViewData["READONLY"] %>,
+        TaskElementDetailsWidget = InitializeTaskElementDetailsWidget(<%: ViewData["READONLY"] %>,
             '<%: ViewData["WorkspaceState"] %>',
             boeId,
             taskElementId,
             <%: Model.LaborTypeWarning.ToString().ToLower() %>,
             loadMOQEquationUrl,
             confirmWarningUrl,
-            searchHistoricalMetricsMSTUrl,
-            historicalMetricsDetailsUrl,
-            pagingMetricsUrl,
             '<%:Model.BOEState%>' != '<%:(int)BOEState.Draft%>',
             '<%:Model.BOEState%>' == '<%:(int)BOEState.Draft%>' || '<%:Model.BOEState%>' == '<%:(int)BOEState.DraftLocked%>',
-            '<%:Model.MetricsSearchDialogParameters.MetricStoreConnected%>'.toLowerCase(),
-            searchTypeAheadUrl,
             '<%:Model.AllowDateShift%>'.toLowerCase(),
             recalculateAndRefreshPageUrl,
             dateShiftUrl,
@@ -969,7 +946,7 @@
                 <div class="form-element" data-ng-if="isSkillMixDisabled()">
                     <div class="form-label"><p>The SAP MOQ Actuals have not been calculated.  Please ensure all MOQ Tables are updated to enable Skill Mix.</p><br />&nbsp;</div>
                 </div>
-                <div class="form-element" data-ng-if="!isSkillMixDisabled()">
+                <div class="form-element" data-ng-if="!isSkillMixDisabled() && skillMixHelperText.length === 0">
                     <!-- Skill Mix Table -->
                     <div class="form-label">
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
@@ -984,7 +961,7 @@
                         <%  }  %>
                     </div>
                     <div class="SkillMixTable skillMixTable">
-                        <table name="currentSkillMix" class="grid editable" style="width: 100%;">
+						<table name="currentSkillMix" class="grid editable" style="width: 100%;">
                             <thead>
                                 <tr>
                                     <th class="resourceCol">Resource</th>
@@ -1045,11 +1022,12 @@
                             </tbody>
                         </table>
                     </div>
+					
                     <!-- Common Disclosure Skill Mix Table -->
                     <div class="form-label" data-ng-show="IsBRCEnabled">
                         LM Enterprise Skill Mix Table
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-                            {  %>
+							{  %>
                                     <div class="help-icon" data-ng-click="openHelp('SpaceLMEnterpriseSkillMixTable');"></div>
                         <%  }  %>
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
@@ -1122,6 +1100,7 @@
                         </table>
                     </div>
                 </div>
+				<div class="disable-save-text" data-ng-show="skillMixHelperText.length > 0">{{skillMixHelperText}}</div>
             </div>
         </div>
     </div>
@@ -1135,6 +1114,7 @@
         </div>
         <div class="oci-note"><b>Note: </b><span id="Task-OCINote"></span></div>
         <div class="disable-save-text" data-ng-show="ManageTaskModel.DisableSave">{{ManageTaskModel.DisableSaveText}}</div>
+		<div class="disable-save-text" data-ng-show="!showSkillMix() && skillMixHelperText.length > 0">{{skillMixHelperText}}</div>
 
         <button data-ng-if="taskElementId" data-ng-hide="isSaving || ManageTaskModel.DisableSave" data-ng-click="saveAndContinue()" id="Save-BOEUpdatesAndContinue" class="ies-action stateful_button" name="save-button" type="button">Save & Continue</button>
         <button id="Save-BOEUpdatesAndClose" data-ng-hide="isSaving || ManageTaskModel.DisableSave" data-ng-click="saveAndClose()" class="ies-action stateful_button" name="save-button" type="button">Save & Close</button>
@@ -1146,158 +1126,6 @@
         <button id="Previous-Task" data-ng-disabled="isPreviousTaskDisabled()" data-ng-click="navigateToPrevious()" class="ies" name="previous-task-button" type="button">Previous Task</button>
     </div>
     <div class="buttons-right" data-ng-hide="isLoading"></div>
-
-    <div id="MOQEquation-SearchEstimatingCatalogDialogCommon" style="display: none; height: 400px; overflow: visible;">
-        <div>
-            <br />
-            <br />
-            <form id="SearchEstimatingCatalogDialogFormCommon">
-                <div style="float: left; display: inline-block; margin-top: 3px;">Search For:</div>
-                <div id="MOQEquationSearch-Help" class="help-icon" style="margin-left: 0px;"></div>
-                <!-- This comment is needed for the jquery animation to work in IE8... -->
-                <div id="MOQEquationSearch-HelpDialog" class="help-dialog" style="width: 275px;">
-                    <div class="help-dialog-text">
-                        Search for validated, not validated or all historical metrics. Validated metrics
-                    have backup data to support the metric and it is auditable.<br />
-                        <br />
-                        The following fields for a historical metric will be searched for the word or phrase
-                    entered:<br />
-                        <ul>
-                            <li>ID</li>
-                            <li>Metric Title</li>
-                            <li>Discipline</li>
-                            <li>Source Program Long Name</li>
-                            <li>Source Program Short Name</li>
-                            <li>Major Component Characteristics</li>
-                            <li>Program Milestone</li>
-                            <li>Usage</li>
-                            <li>Labor Source</li>
-                            <li>MOQ Equation</li>
-                            <li>MOQ Type</li>
-                            <li>MOQ Text</li>
-                            <li>Owner</li>
-                            <li>Mined By</li>
-                            <li>Data Source Location</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="form-element">
-                    <select id="SearchEstimatingCatalog-Status" name="SearchEstimatingCatalog-Status">
-                        <option value="3">All Historical Metrics</option>
-                        <option value="2">Validated Metrics</option>
-                        <option value="1">Not Validated Metrics</option>
-                    </select>
-                </div>
-                <div class="form-element">
-                    <input id="MetricsSeachText" type="text" maxlength="100" style="width: 300px;" value="" />
-                </div>
-                <div class="form-row">
-                    <div class="form-element">
-                        <div class="buttons" style="padding-left: 0px; border-left-width: 0px; margin-left: 87px; margin-top: 8px;">
-                            <button id="SearchEstimatingCatalog-SearchButtonCommon" class="ies-action" type="button">Search</button>
-                            <div id="SearchEstimatingCatalog-LoaderCommon" class="loader display-none"></div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-
-        </div>
-    </div>
-    <div id="MOQEquation-SearchEstimatingCatalogDialogMST">
-        <div>
-            <form id="SearchEstimatingCatalogDialogFormMST">
-                <div class="form-row">
-                    <div class="form-element"><a id="MeasureSearch-HelpLink" class="info-link" title="Learn more about searching Historical Measures" href="<%:Model.MetricsSearchDialogParameters.MSTSearchHelpLink%>" target="_blank"></a>Search for Measures to include in the current Task Element using one or more search fields below.</div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-label">
-                        Filter By:
-                    </div>
-                </div>
-                <div class="metric-filter">
-                    <div class="form-row">
-                        <div class="form-label">
-                            Program/Project Name:
-                        </div>
-                        <div class="form-element">
-                            <%: Html.DropDownListFor(m => Model.MetricsSearchDialogParameters.ProgramNameFilter.FirstOrDefault().Text , (IEnumerable<SelectListItem>)Model.MetricsSearchDialogParameters.ProgramNameFilter, new{@id="FilterProgram"}) %>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-label">
-                            Measure Name:
-                        </div>
-                        <div class="form-element">
-                            <%: Html.DropDownListFor(m => Model.MetricsSearchDialogParameters.MeasureNameFilter.FirstOrDefault().Text , (IEnumerable<SelectListItem>)Model.MetricsSearchDialogParameters.MeasureNameFilter, new{@id="FilterName"})%>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-label">
-                            Measure Function:
-                        </div>
-                        <div class="form-element">
-                            <%: Html.DropDownListFor(m => Model.MetricsSearchDialogParameters.MeasureFunctionFilter.FirstOrDefault().Text , (IEnumerable<SelectListItem>)Model.MetricsSearchDialogParameters.MeasureFunctionFilter, new{@id="FilterFunction"})%>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-label">
-                            Measure Qualifier:
-                        </div>
-                        <div class="form-element">
-                            <%: Html.DropDownListFor(m => Model.MetricsSearchDialogParameters.MeasureQualifierFilter.FirstOrDefault().Text , (IEnumerable<SelectListItem>)Model.MetricsSearchDialogParameters.MeasureQualifierFilter, new{@id="FilterQualifier"})%>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-label">
-                            Data Source:
-                        </div>
-                        <div class="form-element">
-                            <%: Html.DropDownListFor(m => Model.MetricsSearchDialogParameters.DataSourceFilter.FirstOrDefault().Text , (IEnumerable<SelectListItem>)Model.MetricsSearchDialogParameters.DataSourceFilter, new{@id="FilterSource"})%>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-label">
-                            Text:    
-                    <div id="MeasureSearch-Help" class="help-icon" style="margin-left: 0px;"></div>
-                            <!-- This comment is needed for the jquery animation to work in IE8... -->
-                            <div id="MeasureSearch-HelpDialog" class="help-dialog" style="width: 250px;">
-                                <div class="help-dialog-text">
-                                    Search for a Measurement using a word or phrase. The following fields will be searched:<br />
-                                    <br />
-                                    <ul>
-                                        <li>Comment</li>
-                                        <li>Measure Description</li>
-                                        <li>Measure Qualifier</li>
-                                        <li>Program Description</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-element">
-                            <input id="SearchForTextMST" type="text" maxlength="200" value="" />
-
-                        </div>
-                    </div>
-                </div>
-                <div class="form-row" style="text-align: center; margin-top: 8px; display: block;">
-                    <div class="form-element">
-                        <div class="buttons" style="width: 500px;">
-                            <button id="SearchEstimatingCatalog-SearchButtonMST" class="ies-action" type="button">Search</button>
-                            <div id="SearchEstimatingCatalog-LoaderMST" class="loader display-none"></div>
-                            <button id="SearchEstimatingCatalog-CancelButtonMST" class="ies" name="cancel-button" type="button">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            </form>
-
-        </div>
-    </div>
-
-    <div id="MetricSearchResultsContainter" style="display: none; width: auto;">
-        <div id="MetricSearchResults" class="display-none;min-width:845px;max-width:1078px;width:auto;"></div>
-        <div id="MetricDetails" class="display-none;width:1078px;"></div>
-    </div>
 
     <div id="importLaborTypesDialog" class="import-labor-types dialog form" style="display: none;">
         <div id="ImportInstructions">

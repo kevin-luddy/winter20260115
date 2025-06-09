@@ -86,43 +86,20 @@
             action: '<%: WebConstants.ACTION_MARK_WARNING_AS_CONFIRMED%>',
             boe: '<%: Model.BoeId %>'
         });
-        var searchHistoricalMetricsMSTUrl = GenSession.CreateUrl({
-            workspace: currentWorkspace,
-            controller: boeLaborController,
-            action: '<%: WebConstants.ACTION_SEARCH_HISTORICAL_METRICS_IN_MST %>'
-        });
-        var historicalMetricsDetailsUrl = GenSession.CreateUrl({
-            workspace: currentWorkspace,
-            controller: boeLaborController,
-            action: '<%: WebConstants.ACTION_GET_HISTORICAL_METRIC_DETAILS %>'
-        });
-        var pagingMetricsUrl = GenSession.CreateUrl({
-            workspace: currentWorkspace,
-            controller: boeLaborController,
-            action: '<%: Model.MetricsPagingActionName %>'
-        });
-        var searchTypeAheadUrl = CreatePostURL(currentWorkspace, boeLaborController, '<%: WebConstants.ACTION_GET_SEARCH_TYPE_AHEAD %>', '');
         var recalculateAndRefreshPageUrl = CreatePostURL(currentWorkspace,
             boeLaborController,
             'DoFullRecalculationWithPageRefresh',
             'boe/' + boeId + '/taskelement/' + taskElementId);
 
-        TaskElementDetailsWidget = InitializeTaskElementDetailsWidget("<%:Model.MetricsSearchDialogParameters.DialogTitle%>",
-            '<%:Model.MetricsSearchDialogParameters.SearchMetricsDialogIdSuffix%>',
-            <%: ViewData["READONLY"] %>,
+        TaskElementDetailsWidget = InitializeTaskElementDetailsWidget(<%: ViewData["READONLY"] %>,
             '<%: ViewData["WorkspaceState"] %>',
             boeId,
             taskElementId,
             <%: Model.LaborTypeWarning.ToString().ToLower() %>,
             loadMOQEquationUrl,
             confirmWarningUrl,
-            searchHistoricalMetricsMSTUrl,
-            historicalMetricsDetailsUrl,
-            pagingMetricsUrl,
             '<%:Model.BOEState%>' != '<%:(int)BOEState.Draft%>',
             '<%:Model.BOEState%>' == '<%:(int)BOEState.Draft%>' || '<%:Model.BOEState%>' == '<%:(int)BOEState.DraftLocked%>',
-            '<%:Model.MetricsSearchDialogParameters.MetricStoreConnected%>'.toLowerCase(),
-            searchTypeAheadUrl,
             '<%:Model.AllowDateShift%>'.toLowerCase(),
             recalculateAndRefreshPageUrl,
             '#', // dateshift url not needed for static page
@@ -593,7 +570,7 @@
                 <div class="form-element" data-ng-if="isSkillMixDisabled()">
                     <div class="form-label"><p>The SAP MOQ Actuals have not been calculated.  Please ensure all MOQ Tables are updated to enable Skill Mix.</p><br />&nbsp;</div>
                 </div>
-                <div class="form-element" data-ng-if="!isSkillMixDisabled()">
+                <div class="form-element" data-ng-if="!isSkillMixDisabled() && skillMixHelperText.length === 0">
                     <!-- Skill Mix Table -->
                     <div class="form-label">
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
@@ -649,6 +626,7 @@
                             </tbody>
                         </table>
                     </div>
+
                     <!-- Common Disclosure Skill Mix Table -->
                     <div class="form-label" data-ng-show="IsBRCEnabled">
                         LM Enterprise Skill Mix Table
@@ -719,6 +697,7 @@
                         </table>
                     </div>
                 </div>
+				<div class="disable-save-text" data-ng-show="skillMixHelperText.length > 0">{{skillMixHelperText}}</div>
             </div>
         </div>
         <% } %>
@@ -730,6 +709,8 @@
                 <div>** required for validating and submitting for approval</div>
             </div>
             <div class="oci-note"><b>Note: </b><span id="Task-OCINote"></span></div>
+			<div class="disable-save-text" data-ng-show="!showSkillMix() && skillMixHelperText.length > 0">{{skillMixHelperText}}</div>
+
             <button id="Save-BOEUpdatesAndClose" data-ng-hide="isSaving" data-ng-click="saveAndClose(true)" class="ies-action stateful_button" name="save-button" type="button">Save & Close</button>
             <div id="Loader-BOEUpdates" class="loader" data-ng-show="isSaving"></div>
             <button id="Cancel-BOEUpdates" class="ies" name="cancel-button" type="button">Cancel</button>

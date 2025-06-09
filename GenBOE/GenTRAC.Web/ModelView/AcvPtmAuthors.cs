@@ -7,7 +7,7 @@
 namespace GenTRAC.Web.ModelView
 {
 	/// <summary>
-	/// Lead Estimator and Backup Estimator for ACV (data returned from PTM)
+	/// Lead/Backup Estimator and Cost Volume Lead for ACV (data returned from PTM)
 	/// </summary>
 	public class AcvPtmAuthors
 	{
@@ -20,5 +20,10 @@ namespace GenTRAC.Web.ModelView
 		/// Backup Estimator's NTID
 		/// </summary>
 		public string BackupEstimator { get; set; }
+
+		/// <summary>
+		/// Cost Volume Lead's NTID
+		/// </summary>
+		public string CostVolumeLead { get; set; }
 	}
 }

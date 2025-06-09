@@ -550,11 +550,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
 					}
 				}
 
-				// validate if historic metric disclosure checkbox was checked or not
-				// based on if a historic meric is being used
-				ICollection<int> boeTaskIds = new Collection<int>();
-				boeTaskIds.Add(boeTask.Id);
-
 				// Need to determine if there are any required Task custom fields
 				switch (boeTask.TaskElementType)
 				{

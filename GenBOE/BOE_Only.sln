@@ -1,15 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35728.132 d17.12
+VisualStudioVersion = 17.12.35728.132
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IES.Common", "IES.Common\IES.Common.csproj", "{FADFE985-0AA1-41AF-B7CB-A740673FC0D7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenBOE.Models", "GenBOE.Models\GenBOE.Models.csproj", "{5E73D211-CFD8-49AC-B164-3ECDDEA9B443}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenBOE.ActionLogic", "GenBOE.ActionLogic\GenBOE.ActionLogic.csproj", "{8B23113C-48A0-4F65-8ED5-0F725AC170E7}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenBOE.MSTMetricModel", "GenBOE.MSTMetricModel\GenBOE.MSTMetricModel.csproj", "{D9645139-BD1D-474B-8960-ED105BB1A4DC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenBOE.Tests", "GenBOE.Tests\GenBOE.Tests.csproj", "{AA84EB3D-E855-41E8-85BD-E98DBAAB0CA0}"
 EndProject
@@ -55,14 +53,6 @@ Global
 		{8B23113C-48A0-4F65-8ED5-0F725AC170E7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8B23113C-48A0-4F65-8ED5-0F725AC170E7}.ReleaseTFSCore|Any CPU.ActiveCfg = ReleaseTFSCore|Any CPU
 		{8B23113C-48A0-4F65-8ED5-0F725AC170E7}.ReleaseTFSCore|Any CPU.Build.0 = ReleaseTFSCore|Any CPU
-		{D9645139-BD1D-474B-8960-ED105BB1A4DC}.ConsoleRelease|Any CPU.ActiveCfg = ConsoleRelease|Any CPU
-		{D9645139-BD1D-474B-8960-ED105BB1A4DC}.ConsoleRelease|Any CPU.Build.0 = ConsoleRelease|Any CPU
-		{D9645139-BD1D-474B-8960-ED105BB1A4DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D9645139-BD1D-474B-8960-ED105BB1A4DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D9645139-BD1D-474B-8960-ED105BB1A4DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D9645139-BD1D-474B-8960-ED105BB1A4DC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D9645139-BD1D-474B-8960-ED105BB1A4DC}.ReleaseTFSCore|Any CPU.ActiveCfg = ReleaseTFSCore|Any CPU
-		{D9645139-BD1D-474B-8960-ED105BB1A4DC}.ReleaseTFSCore|Any CPU.Build.0 = ReleaseTFSCore|Any CPU
 		{AA84EB3D-E855-41E8-85BD-E98DBAAB0CA0}.ConsoleRelease|Any CPU.ActiveCfg = ConsoleRelease|Any CPU
 		{AA84EB3D-E855-41E8-85BD-E98DBAAB0CA0}.ConsoleRelease|Any CPU.Build.0 = ConsoleRelease|Any CPU
 		{AA84EB3D-E855-41E8-85BD-E98DBAAB0CA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

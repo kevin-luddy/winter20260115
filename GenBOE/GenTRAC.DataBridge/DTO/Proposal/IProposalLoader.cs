@@ -234,9 +234,9 @@ namespace GenTRAC.DataBridge.DTO
 		ICollection<ProposalRoleDto> GetProposalRolesForNlfByNtid(string ntid, string ptmTrackingNumber);
 
 		/// <summary>
-		/// Get Lead Estimator and Backup Estimator names for a tracking number
+		/// Get Lead/Backup Estimator and Cost Volume Lead names for a tracking number
 		/// </summary>
 		/// <param name="ptmTrackingNumber">PTM tracking number</param>
-		ICollection<ProposalRoleDto> GetEstimatorNames(string ptmTrackingNumber);
+		ICollection<ProposalRoleDto> GetAuthorNames(string ptmTrackingNumber);
 	}
 }

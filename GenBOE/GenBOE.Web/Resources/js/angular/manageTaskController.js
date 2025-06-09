@@ -40,6 +40,7 @@
     $scope.loadedMoqData = false;
     $scope.dataLoaded = false;
     $scope.showUCOT = false;
+	$scope.skillMixHelperText = "";
 
     // Sets the Selected MOQ Types from the Selected MOQ Types from MoqEuationController.js.
     $scope.$on('MOQ_TYPE_SELECTION_CHANGED', function (event, selectedMoqTypes) {
@@ -47,7 +48,8 @@
         $scope.loadedMoqData = true;
         $scope.updateShowUcot();
 
-        $scope.refreshSkillMixTables();
+		$scope.refreshSkillMixTables();
+		$scope.updateSkillMixHelperText();
     });
 
     $scope.$on('SAP_HOURS_CHANGED', function (e) {
@@ -221,7 +223,70 @@
             $scope.totalSkillMixHours = 0;
             $scope.deltaSkillMixHours = 0;
         }
-    }
+	}
+
+	$scope.updateSkillMixHelperText = function () {
+		$scope.skillMixHelperText = "";
+
+		if (!$scope.ManageTaskModel.IsSkillMixEnabled) {
+			$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because Workspace Creation Date is before Skill Mix Go Live Date.";
+		} else if (!$scope.ManageTaskModel.UsingTemplateBOE) {
+			$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because Workspace is not setup to use MOQ Templates.";
+		} else {
+
+			let items = $scope.ManageTaskModel.MOQTypeSelections;
+
+			if ($scope.ManageTaskModel.IsSpace && !$scope.ManageTaskModel.SapConnectionEnabled) {
+				$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because SAP connection must be set to Yes in Workspace Identification.";
+			} else if ($scope.SelectedMoqTypes.length == 0) {
+				$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because there needs to be 1 MOQ Type Selection for the Workspace.";
+			} else if ($scope.SelectedMoqTypes.length > 1) {
+				$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because there can only be 1 MOQ Type Selection for the Workspace.";
+			} else {
+				var isSapWebi = false;
+				var needsActualsCalculated = false;
+
+				// Doing this IF check here reduce timing
+				if ($scope.skillMixHelperText.length == 0) {
+					if ($scope.SelectedMoqTypes.some(moqType => moqType.TableData.length == 0)) {
+						$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because MOQType needs to have Table Data populated.";
+					} else if ($scope.ManageTaskModel.IsSpace && $scope.SelectedMoqTypes.some(moqType => moqType.SelectedMOQType != 5001 && moqType.SelectedMOQType != 5002 && moqType.SelectedMOQType != 5005)) {
+						$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because MOQType Selection can only be of Type \"Historical\", \"Comparative\", or \"Analogous\".";
+					} else if (!$scope.ManageTaskModel.IsSpace && $scope.SelectedMoqTypes.some(moqType => moqType.SelectedMOQType != 5001 && moqType.SelectedMOQType != 5002)) {
+						$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because MOQType Selection can only be of Type \"Historical\" or \"Comparative\".";
+					} else {
+						$scope.SelectedMoqTypes.forEach(function (moqType) {
+
+							// Doing IF Check here to reduce complexity
+							if ($scope.skillMixHelperText.length == 0) {
+								moqType.TableData.forEach(function (table) {
+									if (table.ResourceHours !== undefined) {
+										table.ResourceHours.forEach(function (hours) {
+											if (hours.TotalHours.length == 0) {
+												needsActualsCalculated = true;
+											}
+										});
+									}
+
+									if (table.RepositoryName == $scope.ManageTaskModel.SapWebiRepository) {
+										isSapWebi = true;
+									}
+								});
+							}
+						});
+					}
+				}
+
+				if ($scope.skillMixHelperText.length == 0) {
+					if ($scope.ManageTaskModel.IsSpace && !isSapWebi) {
+						$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because at least one MOQType Table needs to have SAP/Webi enabled.";
+					}else if (needsActualsCalculated) {
+						$scope.skillMixHelperText = "Skill Mix Section/Tables not showing because Actuals need to be recalculated for the MOQTypes.";
+					}
+				} 
+			}
+		}
+	}
 
     // The Date split is because from the config the OneLMXCutOffDate comes with Timestamp
     // that the JS .toDate() method cannot handle and defaults the date to Dec 31, 1969
@@ -961,7 +1026,6 @@
                 var error = "The value '" + spreadValueString + "' is not the correct Precision for Labor Spread Value";
                 $scope.laborSpreadErrors.push({ ValidationIssue: error });
             } else {
-
                 item.SpreadDataInvalid[index] = false;
                 // search to see if there are any invalid spreads anymore
                 if (previousInvalid) {
@@ -998,16 +1062,17 @@
                 $scope.calculatePercentSpread(item, $scope.getMOQTotal());
             }
 
-            if ($scope.IsUcot(item)) {
+			if ($scope.IsUcot(item) && dt.toDate() >= $scope.oneLmxCutOff) {
                 var ucotSpread = item.UcotSpreads.find(function (spreadItem) {
                     return spreadItem.LaborSpreadDate === dt;
                 });
 
-                var ucotSpreadValue = spreadValue.multipliedBy($scope.ManageTaskModel.UcotFactor);
+				var precision = $scope.getPrecision(item);
+				var ucotSpreadValue = spreadValue.multipliedBy($scope.ManageTaskModel.UcotFactor).decimalPlaces(precision);
 
                 // set the Ucot spread value in original array from the copy array
-                if (ucotSpread !== undefined && ucotSpread.LaborSpreadValue !== undefined) {
-                    delta = ucotSpreadValue.minus(ucotSpread.LaborSpreadValue);
+				if (ucotSpread !== undefined && ucotSpread.LaborSpreadValue !== undefined) {
+					delta = ucotSpreadValue.minus(ucotSpread.LaborSpreadValue);
                     ucotSpread.LaborSpreadValue = ucotSpreadValue;
                 } else {
                     // this is a new value for the Ucot Spreads table
@@ -1018,13 +1083,12 @@
                 }
 
                 // add delta to labor type object Ucot Hours
-                var ucotHourSpread = delta.plus(item.UcotHours);
-                item.UcotHours = ucotHourSpread.toString();
+				var ucotHourSpread = delta.plus(item.UcotHours);
+				item.UcotHours = ucotHourSpread.toString();
             }
 
-
             // re-calculate totals
-            $scope.recalculateTotals();
+			$scope.recalculateTotals();
         }
     };
 
@@ -1124,7 +1188,7 @@
         var items = [];
         var dataArray = [];
 
-        angular.forEach($scope.tableData, function (item, key) {
+		angular.forEach($scope.tableData, function (item, key) {
             if ($scope.validateDates(item, false) && item.SpreadCurveID !== "-1" && (item.ResourceID !== undefined || item.BusinessResourceCodeID !== undefined) && !item.Deleted) {
                 // now check hours or cost depending on resource type
                 var spreadValueString;
@@ -1153,7 +1217,7 @@
                     }
                 }
             }
-        });
+		});
 
         if (items.length === 0) {
             // remake the spread array
@@ -1700,12 +1764,6 @@
                             postedData.TaskElementData.CustomFieldValues.push({ CustomFieldValueID: eleValue });
                         } //else is no change
                     }
-                });
-
-                postedData.TaskElementData.MetricIds = [];
-
-                $('tr[name=historicalMetric]').each(function () {
-                    postedData.TaskElementData.MetricIds.push($(this).attr('historicalMetricID'));
                 });
 
                 // there seems to be an issue with the jquery serializer when dealing with rich text pasted from excel so we need to get these field contents again
@@ -2295,7 +2353,7 @@
                     newUcotSpreads.push(spread);
                     ucotTotal = ucotTotal.plus(spread.LaborSpreadValue);
                 }
-            });
+			});
 
             item.UcotHours = ucotTotal;
             item.UcotSpreads = newUcotSpreads;
@@ -2308,7 +2366,7 @@
     };
 
     $scope.IsUcot = function (item) {
-        // ElementOfCost Enum value 1 is LM Labor
+		// ElementOfCost Enum value 1 is LM Labor
         return $scope.showUCOT && item.ElementOfCost === 1 && item.BusinessResourceCodeName && item.RateType === ManageTaskModel.RateTypeHours;
     };
 

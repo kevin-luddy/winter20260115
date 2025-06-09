@@ -15,7 +15,6 @@ namespace GenBOE.Web.Controllers.Backend
 	using System.Net.Http.Headers;
 	using System.Web;
 	using System.Web.Http;
-	using System.Web.Mvc;
 	using GenBOE.ActionLogic._ControllerLogic.Backend;
 	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.ModelView.Clin;
@@ -41,6 +40,15 @@ namespace GenBOE.Web.Controllers.Backend
 		/// </summary>
 		private CLINControllerLogic _clinControllerLogic { get; set; }
 
+		/// <summary>
+		/// Ctor
+		/// </summary>
+		/// <param name="securityAccess"></param>
+		/// <param name="factory"></param>
+		/// <param name="userLoader"></param>
+		/// <param name="permissionsLoader"></param>
+		/// <param name="clinControllerLogic"></param>
+		/// <param name="clinController"></param>
 		public CLINController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader,
 			IPermissionsDTODataLoader permissionsLoader, CLINControllerLogic clinControllerLogic)
 		: base(securityAccess, factory, userLoader, permissionsLoader)
@@ -150,6 +158,76 @@ namespace GenBOE.Web.Controllers.Backend
 			{
 				logger.Error(ex);
 				result.Messages.Add($"Unknown error occurred importing CLIN data: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Complete Import CLIN after user has verified data
+		/// </summary>
+		/// <param name="importCLINModelView">POST body with workspace shortname and ImportedCLINs</param>
+		/// <returns>boolean</returns>
+		[System.Web.Http.HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<bool> CompleteImportCLINs([FromBody] ImportCLINModelView importCLINModelView)
+		{
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+			try
+			{
+				if (importCLINModelView != null)
+				{
+					FullWorkspace ws = this.Factory.CreateFullWorkspace(importCLINModelView.workspaceShortName);
+
+					_clinControllerLogic.CompleteImportCLIN(ws, importCLINModelView.importedCLINs);
+					result.IsSuccessful = true;
+					result.Data = true;
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occured completing import for CLIN data: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Deletes a group of CLINs.
+		/// </summary>
+		/// <param name="clinsToDelete">Collection of the CLINs to be deleted</param>
+		/// <returns>IES Result whether or not deletion was successful</returns>
+		[System.Web.Http.HttpDelete]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<bool> DeleteCLINs(ManageCLINModelView[] clinsToDelete)
+		{
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+
+			try
+			{
+				if (clinsToDelete != null && clinsToDelete.Any())
+				{
+					FullWorkspace ws = this.Factory.CreateFullWorkspace(clinsToDelete[0].WorkSpaceID);
+
+					foreach (ManageCLINModelView clin in clinsToDelete)
+					{
+						// Only delete CLINs that have positive IDs
+						if (clin.ClinID > 0 && clin.Deleted)
+						{
+							this._clinControllerLogic.SaveCLIN(ws, clin);
+						}
+					}
+				}
+
+				result.Data = true;
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Data = false;
+				result.Messages.Add($"Unknown error occurred deleting CLIN data: {ex.Message}");
 			}
 
 			return result;
