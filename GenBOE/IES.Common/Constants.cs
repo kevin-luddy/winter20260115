@@ -8,6 +8,7 @@ namespace IES.Common
 {
     using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 
 	/// <summary>
 	/// The constants class, containing shared constants to be used across the entire solution.
@@ -406,7 +407,8 @@ namespace IES.Common
 		/// <summary>
 		/// Excluded PTM tracking numbers from UCOT.
 		/// </summary>
-		//public static readonly string[] EXCLUDED_PTM_TRACKING_NUMBERS_FROM_UCOT = { "23-00192" };
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:Do not declare read-only mutable reference types")]
+		public static readonly IReadOnlyList<string> EXCLUDED_PTM_TRACKING_NUMBERS_FROM_UCOT = new List<string> { "23-00192", "22-00011", "23-00194" }.AsReadOnly();
 
 		/// <summary>
 		/// The read only roles for RDSB.

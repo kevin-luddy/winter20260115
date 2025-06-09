@@ -1146,7 +1146,7 @@ namespace IES.Common
 		public static bool ShowUCOTForWorkspace(DateTime? workspaceCreationDate, string ptmTrackingNumber)
 		{
 			// Exclude UCOT showing for specific PTM tracking numbers.
-			if (ptmTrackingNumber == "23-00192")
+			if (Constants.EXCLUDED_PTM_TRACKING_NUMBERS_FROM_UCOT.Contains(ptmTrackingNumber))
 			{
 				return false;
 			}
@@ -1154,15 +1154,6 @@ namespace IES.Common
 			{
 				return IsUCOTEnabledForSystem && workspaceCreationDate >= UCOTStartDate;
 			}
-
-			//if (Constants.EXCLUDED_PTM_TRACKING_NUMBERS_FROM_UCOT.Contains(ptmTrackingNumber))
-			//{
-			//	return false;
-			//}
-			//else
-			//{
-			//	return IsUCOTEnabledForSystem && workspaceCreationDate >= UCOTStartDate;
-			//}
 		}
 
 		/// <summary>
