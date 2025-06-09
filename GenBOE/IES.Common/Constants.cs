@@ -406,7 +406,7 @@ namespace IES.Common
 		/// <summary>
 		/// Excluded PTM tracking numbers from UCOT.
 		/// </summary>
-		public static readonly List<string> EXCLUDED_PTM_TRACKING_NUMBERS_FROM_UCOT = new List<string>() { "22-00011_01 _tw" };
+		//public static readonly string[] EXCLUDED_PTM_TRACKING_NUMBERS_FROM_UCOT = { "23-00192" };
 
 		/// <summary>
 		/// The read only roles for RDSB.

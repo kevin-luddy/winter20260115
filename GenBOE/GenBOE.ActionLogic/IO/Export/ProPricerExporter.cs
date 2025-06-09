@@ -1611,7 +1611,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						{
 							decimal updatedLaborSpreadValue = laborSpread.LaborSpreadValue;
 
-							if (Utilities.ShowUCOTForWorkspace(wsLevelData.CreationDate) && laborSpread.LaborSpreadDate >= Utilities.OneLmxStartDate && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+							if (Utilities.ShowUCOTForWorkspace(wsLevelData.CreationDate, workspace) && laborSpread.LaborSpreadDate >= Utilities.OneLmxStartDate && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 							{
 								updatedLaborSpreadValue = laborSpread.LaborSpreadValue * (1 + (wsLevelData.UCOTFactor / 100m));
 							}
