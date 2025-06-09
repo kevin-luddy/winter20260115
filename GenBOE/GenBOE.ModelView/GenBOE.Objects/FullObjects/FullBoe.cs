@@ -301,6 +301,7 @@ namespace GenBOE.Objects
         /// </summary>
         public IReadOnlyCollection<BoeTaskElementDTO> TaskElements
         {
+			// TODO Thomas: Task elements are being gotten here by the retriever.
             get
             {
                 if (this.taskElements == null)
@@ -450,6 +451,7 @@ namespace GenBOE.Objects
         }
 
         /// <summary>
+		/// TODO Thomas: Look at how they're getting the children data.
         /// Gets the children that can be shifted.
         /// </summary>
         public ICollection<IDateShiftable> Children

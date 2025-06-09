@@ -40,6 +40,11 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         private IBoeTaskElementDTODataLoader taskLoader;
 
+		/// <summary>
+		/// Date shift dto data loader.
+		/// </summary>
+		private IDateShiftDTODataLoader dateShiftDTODataLoader;
+
         /// <summary>
         /// The logger
         /// </summary>
@@ -65,16 +70,19 @@ namespace GenBOE.Web.Controllers
             IPermissionsDTODataLoader permissionsLoader,
             IGenBOEControllerLogic controllerLogic,
             DateShiftCalculation dateShiftCalculation,
-            IBoeTaskElementDTODataLoader taskLoader)
+            IBoeTaskElementDTODataLoader taskLoader,
+			IDateShiftDTODataLoader dateShiftDTODataLoader)
             : base(securityAccess, commonDataMapper, siteMasterUtilities, systemMetrics, factory, userLoader,
                  permissionsLoader, controllerLogic)
         {
             this.dateShiftCalculation = dateShiftCalculation;
             this.taskLoader = taskLoader;
+			this.dateShiftDTODataLoader = dateShiftDTODataLoader;
 		}
 
         /// <summary>
         /// Applies a date shift to a specific object (and optionally children).
+		/// TODO Thomas: Start here for logic.
         /// </summary>
         /// <param name="id">The id of the parent object to dateshift</param>
         /// <param name="dateShiftLevel">The level of the parent object to dateshift.</param>
@@ -148,9 +156,12 @@ namespace GenBOE.Web.Controllers
 							parentLevel = Level.CLIN;
 						}
 
+
+
+						// TODO Thomas: Do we need RTE data?
 						// preload data
-						boe.LoadTaskElementRTEData();
-						boe.LoadTravelRTEData();
+						//boe.LoadTaskElementRTEData();
+						//boe.LoadTravelRTEData();
 
 						break;
 					case Level.CLIN:
@@ -162,8 +173,9 @@ namespace GenBOE.Web.Controllers
 						IReadOnlyCollection<FullBoe> boes = clin.Boes;
 						foreach (FullBoe clinboe in boes)
 						{
-							clinboe.LoadTravelRTEData();
-							clinboe.LoadTaskElementRTEData();
+							// TODO Thomas: Do we need RTE data?
+							//clinboe.LoadTravelRTEData();
+							//clinboe.LoadTaskElementRTEData();
 						}
 
 						if (!clin.StartDate.HasValue || !clin.EndDate.HasValue)

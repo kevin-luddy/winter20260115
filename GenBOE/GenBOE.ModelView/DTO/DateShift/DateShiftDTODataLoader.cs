@@ -7,12 +7,15 @@
 namespace GenBOE.DataBridge.DTO
 {
 	using GenBOE.Dtos;
+	using GenBOE.Models;
+	using GenBOE.Objects;
 	using IES.Common;
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Data;
 	using System.Data.Entity;
+	using System.Data.SqlClient;
 	using System.Linq;
 
 	/// <summary>
@@ -210,6 +213,52 @@ namespace GenBOE.DataBridge.DTO
 			}
 
 			return dateShiftDTOs;
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="level"></param>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		/// <exception cref="NotSupportedException"></exception>
+		public IDateShiftable GetDateShiftableById(Level level, int id)
+		{
+			switch (level)
+			{
+				case Level.BOE:
+					// Retrieve only the necessary properties for a BOE
+					return GetBoeById(id);
+				default:
+					throw new NotSupportedException($"Unsupported level: {level}");
+			}
+		}
+
+		/// <summary>
+		/// Gets the required boe data by id.
+		/// </summary>
+		/// <param name="id">id</param>
+		/// <returns>Boe data.</returns>
+		public FullBoe GetBoeById(int id)
+		{
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
+
+				// get the basic BOE data from the sprocResults
+				BoeDTO boe = (from b in gbe.BOEs
+							  where b.BOEID == id
+							  select new BoeDTO
+							  {
+								  Id = b.BOEID,
+								  State = (BOEState)b.BOEStateID,
+								  StartDate = b.BOEStartDate,
+								  EndDate = b.BOEEndDate,
+								  UpdateDate = b.UpdateDT,
+							  }).FirstOrDefault();
+
+				return new FullBoe(boe);
+			}
 		}
 	}
 }
