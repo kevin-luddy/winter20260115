@@ -392,17 +392,17 @@ namespace GenBOE.ActionLogic.IO.Export
 			DetermineStartAndEndDates(boeLevelExportData, taskElements, materialElements, travelElements, odcElements);
 
 			this.ProcessTaskElements(wsDataForExport, boeLevelExportData, boeLevelExportData.LaborElements,
-				ElementOfCostType.LMLabor, laborResourceIDs, isUsingEP, offloading, has1LMXResources, workspace.Shortname);
+				ElementOfCostType.LMLabor, laborResourceIDs, isUsingEP, offloading, has1LMXResources, workspace.Shortname, workspace.TrackingNumber);
 			this.ProcessTaskElements(wsDataForExport, boeLevelExportData, boeLevelExportData.IWTAElements,
-				ElementOfCostType.IWTA, iwtaResourceIDs, isUsingEP, offloading, has1LMXResources, workspace.Shortname);
+				ElementOfCostType.IWTA, iwtaResourceIDs, isUsingEP, offloading, has1LMXResources, workspace.Shortname, workspace.TrackingNumber);
 			this.ProcessTaskElements(wsDataForExport, boeLevelExportData, boeLevelExportData.SubcontractorElements,
-				ElementOfCostType.Sub, subContractorResourceIDs, isUsingEP, offloading, has1LMXResources, workspace.Shortname);
+				ElementOfCostType.Sub, subContractorResourceIDs, isUsingEP, offloading, has1LMXResources, workspace.Shortname, workspace.TrackingNumber);
 			this.ProcessTaskElements(wsDataForExport, boeLevelExportData, boeLevelExportData.MaterialLaborElements,
-				ElementOfCostType.Materials, materialResourceIDs, isUsingEP, offloading, has1LMXResources, workspace.Shortname);
+				ElementOfCostType.Materials, materialResourceIDs, isUsingEP, offloading, has1LMXResources, workspace.Shortname, workspace.TrackingNumber);
 			this.ProcessTaskElements(wsDataForExport, boeLevelExportData, boeLevelExportData.TravelLaborElements,
-				ElementOfCostType.Travel, travelResourceIDs, isUsingEP, offloading, has1LMXResources, workspace.Shortname);
+				ElementOfCostType.Travel, travelResourceIDs, isUsingEP, offloading, has1LMXResources, workspace.Shortname, workspace.TrackingNumber);
 			this.ProcessTaskElements(wsDataForExport, boeLevelExportData, boeLevelExportData.ODCLaborElements,
-				ElementOfCostType.ODC, odcResourceIDs, isUsingEP, offloading, has1LMXResources, workspace.Shortname);
+				ElementOfCostType.ODC, odcResourceIDs, isUsingEP, offloading, has1LMXResources, workspace.Shortname, workspace.TrackingNumber);
 			this.ProcessOdcElements(wsDataForExport, boeLevelExportData, odcElements, odcResourceIDs);
 			this.ProcessTravelElements(workspace, wsDataForExport, boeLevelExportData, travelElements, travelResources);
 			this.ProcessRMSTravelElements(wsDataForExport, boeLevelExportData, travelElements, workspace);
@@ -420,8 +420,9 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="offloading">if set to <c>true</c> [offloading].</param>
 		/// <param name="has1LMXResources">if set to <c>true</c>, we need to account for splitting labor type for 1LMX</param>
 		/// <param name="workspaceShortname">Workspace shortname</param>
+		/// <param name="ptmTrackingNumber">Tracking number</param>
 		private void ProcessTaskElements(WsLevelInputsForExport wsLevelData, BoeLevelExportData inputsForExport, Collection<BoeTaskElementDTO> taskElements,
-			ElementOfCostType elementOfCost, Collection<int> resourceIDs, bool isUsingEquivalentPerson, bool offloading, bool has1LMXResources, string workspaceShortname)
+			ElementOfCostType elementOfCost, Collection<int> resourceIDs, bool isUsingEquivalentPerson, bool offloading, bool has1LMXResources, string workspaceShortname, string ptmTrackingNumber)
 		{
 			if (!taskElements.Any()) { return; }
 
@@ -464,7 +465,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						foreach (ResourceTypeDto labor in resourcesSplitforBrc)
 						{
 							this.GenerateResourceRow(wsLevelData, inputsForExport, inputsForExport.Clin, inputsForExport.Wbs, resourceIDs, boeTask,
-								laborTypeIdToProPricerIdMappings, labor, isUsingEquivalentPerson, labor.IsOffloaded, workspaceShortname);
+								laborTypeIdToProPricerIdMappings, labor, isUsingEquivalentPerson, labor.IsOffloaded, workspaceShortname, ptmTrackingNumber);
 						}
 					}
 				}
@@ -519,7 +520,7 @@ namespace GenBOE.ActionLogic.IO.Export
 							WbsDTO resourceWbs = wsLevelData.Wbses.FirstOrDefault(i => i.Id == labor.WBSID.GetValueOrDefault(-1));
 
 							this.GenerateResourceRow(wsLevelData, inputsForExport, resourceClin, resourceWbs, resourceIDs,
-								boeTask, laborTypeIdToProPricerIdMappings, labor, isUsingEquivalentPerson, labor.IsOffloaded, workspaceShortname);
+								boeTask, laborTypeIdToProPricerIdMappings, labor, isUsingEquivalentPerson, labor.IsOffloaded, workspaceShortname, ptmTrackingNumber);
 						}
 					}
 				}
@@ -1404,7 +1405,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		private void GenerateResourceRow(WsLevelInputsForExport wsLevelData, BoeLevelExportData inputsForExport, ClinDTO clin, WbsDTO wbs,
 			Collection<int> inResourceIDs, BoeTaskElementDTO boeTask,
-			IDictionary<int, string> laborTypeIdToProPricerIdMappings, ResourceTypeDto labor, bool isUsingEquivalentPerson, bool isResourceOffloaded, string workspaceShortname)
+			IDictionary<int, string> laborTypeIdToProPricerIdMappings, ResourceTypeDto labor, bool isUsingEquivalentPerson, bool isResourceOffloaded, string workspaceShortname, string ptmTrackingNumber)
 		{
 			// only want to export the resource associated with correct list of Resource IDs. 
 			// For ex, if the labor contained 3 labors: 1 Labor, 1 IWTA, and 1 SubContractor. We only want to export the row that matched the current element of cost
@@ -1611,7 +1612,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						{
 							decimal updatedLaborSpreadValue = laborSpread.LaborSpreadValue;
 
-							if (Utilities.ShowUCOTForWorkspace(wsLevelData.CreationDate) && laborSpread.LaborSpreadDate >= Utilities.OneLmxStartDate && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+							if (Utilities.ShowUCOTForWorkspace(wsLevelData.CreationDate, ptmTrackingNumber) && laborSpread.LaborSpreadDate >= Utilities.OneLmxStartDate && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 							{
 								updatedLaborSpreadValue = laborSpread.LaborSpreadValue * (1 + (wsLevelData.UCOTFactor / 100m));
 							}

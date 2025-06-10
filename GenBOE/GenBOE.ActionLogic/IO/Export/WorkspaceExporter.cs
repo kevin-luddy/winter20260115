@@ -1835,7 +1835,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + ((spread == null) ? "0" : spread.LaborSpreadValue.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision))));
 
 					// Add the UCOT Factor, if enabled, and is past 1LMX start date
-					if (Utilities.ShowUCOTForWorkspace(exportInputs.Workspace.CreationDate))
+					if (Utilities.ShowUCOTForWorkspace(exportInputs.Workspace.CreationDate, exportInputs.Workspace.TrackingNumber))
 					{
 						if (Utilities.OneLmxStartDate <= spread?.LaborSpreadDate)
 						{
