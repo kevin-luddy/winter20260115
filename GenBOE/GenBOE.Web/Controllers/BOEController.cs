@@ -167,7 +167,7 @@ namespace GenBOE.Web.Controllers
 					x.ElementOfCostId == (int)ElementOfCostType.Travel).ToList();
 			ViewData["EnableSAP"] = Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate);
 			this.ViewData["IsSkillMixEnabled"] = Utilities.ShowSkillMixForWorkspace(ws.CreationDate);
-			this.ViewData["IsUCOTEnabled"] = Utilities.ShowUCOTForWorkspace(ws.CreationDate);
+			this.ViewData["IsUCOTEnabled"] = Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.TrackingNumber);
 
 			// Additional Controls for SkillMixHelperText
 			ViewData["UsingTemplateBOE"] = ws.UsingTemplateBOE;
@@ -947,7 +947,7 @@ namespace GenBOE.Web.Controllers
 			try
 			{
 				// UCOT validation (Space only) - if there are multiple MOQ types assigned to a task and one of those MOQ types falls under a specified type, throw an exception
-				if (Utilities.IsUCOTEnabledForSystem && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+				if (Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.TrackingNumber) && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 				{
 					FullBoe fullBoe = this.Factory.CreateFullBoe(boeId);
 					MultiMOQTypeResult multiMoqResult = MultiMOQTypeUtility.DoTasksHaveMultipleMOQTypes(fullBoe);

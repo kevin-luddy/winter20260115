@@ -938,8 +938,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}
 			}
 			#endregion
-			
-			if (BOETaskUtility.ShowSkillMixForTask(ws, taskElement))
+
+			if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, ws.UsingTemplateBOE, ws.EnableSAPConnection, moqTypes, taskElement.Id, modelView.IsUsingTMRatesInTask))
 			{
 				decimal historicalHoursTotals = 0;
 				// determine if SkillMix is manual or automatic
@@ -998,7 +998,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				if (taskElement.CommonDisclosureTable != null && taskElement.CommonDisclosureTable.Any())
 				{
-					validationErrors.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(taskElement.CommonDisclosureTable, false).Select(x => new ValidationMessage(x)));
+					validationErrors.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(taskElement.CommonDisclosureTable, false, 
+						taskElement.taskElementLabors.Any(x => x.Updateable != UpdateType.Deleted)).Select(x => new ValidationMessage(x)));
 				}
 			}
 
@@ -1879,7 +1880,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			HashSet<ResourceDTO> resourcesFromDb = new HashSet<ResourceDTO>(this._ResourceLoader.GetByIds(dto.taskElementLabors.Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value).Union(dto.taskElementLabors.Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value)).Distinct().ToList()));
 			HashSet<PerformingOrgDTO> performingOrgsFromDb = new HashSet<PerformingOrgDTO>(this.PerfOrgLoader.GetByIds(dto.taskElementLabors.Where(x => x.PerformingOrgID.HasValue).Select(x => x.PerformingOrgID.Value).Distinct().ToList()));
-			bool calculateUCOT = Utilities.ShowUCOTForWorkspace(ws.CreationDate) && toReturn.MOQTypes != null && toReturn.MOQTypes.Count == 1
+			bool calculateUCOT = Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.TrackingNumber) && toReturn.MOQTypes != null && toReturn.MOQTypes.Count == 1
 				&& toReturn.MOQTypes.All(m => m.SelectedMOQType == MOQType.Comparative || m.SelectedMOQType == MOQType.Historical || (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems && m.SelectedMOQType == MOQType.AnalogousRelationships));
 
 			foreach (ResourceTypeDto labor in dto.taskElementLabors)
@@ -1972,7 +1973,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			toReturn.WorkspaceVariableIDs = modelview.TaskElementData.WorkspaceVariableIDs;
 			toReturn.TaskElementType = TaskElementType.Labor;
 			toReturn.BOETaskElementOrder = modelview.TaskElementData.BOETaskElementOrder;
-			if (BOETaskUtility.ShowSkillMixForTask(ws, toReturn))
+
+			if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, ws.UsingTemplateBOE, ws.EnableSAPConnection, modelview.MOQTypes, toReturn.Id, modelview.IsUsingTMRatesInTask))
 			{
 				// Space will get the total moq total relevant hours if it is from a Sap Webi moq table data.
 				if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
@@ -1983,6 +1985,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				{
 					toReturn.MOQTotalRelevantHours += modelview.MOQTypes?.Sum(t => t.TableData?.Sum(td => td.TotalRelevantHours) ?? 0) ?? 0;
 				}
+
 				toReturn.SkillMixTable = modelview.SkillMixData;
 				toReturn.CommonDisclosureTable = modelview.CommonDisclosureSkillMixData;
 			}
@@ -1992,6 +1995,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			{
 				toReturn.BOETaskElementOrder = 2000;
 			}
+
 			// Get Workspace variables being used by this task element
 			List<WorkspaceVariableDTO> inUseWorkspaceVariables = ws.WorkspaceVariables.Where(i => toReturn.WorkspaceVariableIDs.Contains(i.Id)).ToList();
 
