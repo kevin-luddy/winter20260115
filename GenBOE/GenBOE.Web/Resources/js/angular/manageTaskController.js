@@ -2129,30 +2129,18 @@
         // Check if there are no MOQ Tables
         let noMoqTables = $scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0;
 
-        // Check if any MOQ Table is missing SAP Resource Hours
-
-        let hasMissingSAPResourceHours = false;
-
-        if ($scope.ManageTaskModel.IsSpace) {
-            // Space
-            hasMissingSAPResourceHours = !$scope.SelectedMoqTypes.every(x =>
-                x.TableData !== undefined &&
-                x.TableData.length > 0 &&
-                x.TableData.some(y =>
-                    y.RepositoryName === $scope.ManageTaskModel.SapWebiRepository
-                )
-            );
-        }
-        else {
-            // RMS
-            hasMissingSAPResourceHours = !$scope.SelectedMoqTypes.every(x =>
-                x.TableData !== undefined &&
-                x.TableData.length > 0 &&
-                x.TableData.every(y =>
-                    (y.ResourceHours !== undefined && y.ResourceHours.length > 0)
-                )
-            );
-        }
+		// Check if any MOQ Table is missing SAP Resource Hours
+		let hasMissingSAPResourceHours = !$scope.SelectedMoqTypes.every(x =>
+			x.TableData !== undefined &&
+			x.TableData.length > 0 &&
+			x.TableData.some(y =>
+				// Space Requires at lease 1 table using SAP/WEBI Repository
+				y.RepositoryName === $scope.ManageTaskModel.SapWebiRepository || !$scope.ManageTaskModel.IsSpace
+			) &&
+			x.TableData.every(y =>
+				(y.ResourceHours !== undefined && y.ResourceHours.length > 0)
+			)
+		);
 
         let disabledSkillMix = isAutomatic && (noMoqTables || hasMissingSAPResourceHours);
 
