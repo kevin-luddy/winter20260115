@@ -1578,11 +1578,21 @@ namespace GenBOE.Web.Controllers
 
 				ICollection<WorkspaceDTO> workspaces = loader.GetWorkspacesByTrackingNumber(trackingNumber).Where(x => x.CurrentPTMWorkspace).ToCollection();
 
-				foreach (int wsResourceListId in workspaces.Select(x => x.ResourceListID))
+				foreach (WorkspaceDTO workspace in workspaces)
 				{
-					HashSet<int> inUseIds = inUseDataLoader.GetWorkspaceResourceIDsInUseByListID(wsResourceListId);
-					ICollection<ResourceDTO> inUseResources = resourceLoader.GetByListId(wsResourceListId)
+					// Hide the resources if there are no T&M rates for that workspace
+					ICollection<TMResourceRateDTO> workspaceTMResourceRates = tmResourceRateLoader.GetByWorkspaceId(workspace.Id);
+					if (workspaceTMResourceRates != null || workspaceTMResourceRates.Any())
+					{
+						continue;
+					}
+
+					HashSet<int> inUseIds = inUseDataLoader.GetWorkspaceResourceIDsInUseByListID(workspace.ResourceListID);
+					ICollection<ResourceDTO> inUseResources = resourceLoader.GetByListId(workspace.ResourceListID)
 						.Where(x => x.ElementOfCost == elementOfCost && inUseIds.Contains(x.Id) && !result.Data.Any(y => y.ResourceName == x.ResourceName)).ToCollection();
+
+					// Remove Hour-type resources
+					inUseResources = inUseResources.Where(x => x.RateType != RateType.Hours).ToCollection();
 
 					result.Data.AddRange(inUseResources.Select(x => new NlfResourceData()
 					{
