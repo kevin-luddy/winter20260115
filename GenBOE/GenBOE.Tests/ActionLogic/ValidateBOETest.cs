@@ -4583,7 +4583,7 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, true);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("The maximum length of the Rationale field"));
@@ -4608,7 +4608,7 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, true);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("BOE Skill Mix is missing"));
@@ -4633,7 +4633,7 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, true);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("BOE skill Mix has invalid value"));
@@ -4658,10 +4658,34 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, true);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("At least one Resource has to be included"));
+		}
+
+		/// <summary>
+		/// Test at least one resource included not validated with no resources
+		/// </summary>
+		[TestMethod]
+		public void ValidateCommonDisclosureSkillMix_MissingResourceNoResources()
+		{
+			List<CommonDisclosureModelView> skillmix = new List<CommonDisclosureModelView>
+			{
+				new CommonDisclosureModelView {
+					ResourceID = "HISTORICAL_R",
+					HistoricalHours = 100,
+					BusinessResourceID = null,
+					Included = false,
+					IsUserInput = true,
+					Rationale = "Rationale1",
+					BOESkillMix = 0
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, false);
+			Assert.IsNotNull(messages);
+			Assert.IsFalse(messages.Any());
 		}
 
 		/// <summary>
@@ -4683,7 +4707,7 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, true);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("BOE Skill Mix total must be either 0% or 100%"));
@@ -4717,7 +4741,7 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, true);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("Each BRC must be unique for Resource"));
@@ -4742,7 +4766,7 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, false);
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, false, true);
 			Assert.IsNotNull(messages);
 			Assert.IsTrue(messages.None());
 		}
@@ -4766,7 +4790,7 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, true);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("The Rationale field") && messages.First().Contains("required"));
