@@ -408,7 +408,7 @@ namespace IES.Common
 		/// Excluded PTM tracking numbers from UCOT.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:Do not declare read-only mutable reference types")]
-		public static readonly IReadOnlyList<string> EXCLUDED_PTM_TRACKING_NUMBERS_FROM_UCOT = new List<string> { "23-00192", "22-00011", "23-00194" }.AsReadOnly();
+		public static readonly IReadOnlyList<string> EXCLUDED_PTM_TRACKING_NUMBERS_FROM_UCOT = new List<string> { "24-00863" }.AsReadOnly();
 
 		/// <summary>
 		/// The read only roles for RDSB.
