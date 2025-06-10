@@ -23,6 +23,7 @@ namespace GenBOE.ActionLogic.Common
 	{
 		/// <summary>
 		/// Whether to show Skill Mix for a Specific Task
+		/// Note: Should only be used when working with existing data
 		/// </summary>
 		/// <param name="ws">Workspace</param>
 		/// <param name="task">Task</param>
