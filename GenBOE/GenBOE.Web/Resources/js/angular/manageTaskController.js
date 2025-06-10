@@ -2134,7 +2134,7 @@
 			x.TableData !== undefined &&
 			x.TableData.length > 0 &&
 			x.TableData.some(y =>
-				// Space Requires at lease 1 table using SAP/WEBI Repository
+				// Space requires at least 1 table using SAP/WEBI Repository
 				y.RepositoryName === $scope.ManageTaskModel.SapWebiRepository || !$scope.ManageTaskModel.IsSpace
 			) &&
 			x.TableData.every(y =>
