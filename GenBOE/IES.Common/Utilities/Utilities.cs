@@ -1149,7 +1149,7 @@ namespace IES.Common
 			string excludedTrackingNumbers = ConfigurationUtilities.GetAppSetting("UcotExcludedPTMTrackingNumbers");
 			string[] excludedTrackingNumbersArray = excludedTrackingNumbers?.Split(',').Select(s => s.Trim()).ToArray();
 
-			if (excludedTrackingNumbersArray.Any() && excludedTrackingNumbersArray.Contains(ptmTrackingNumber))
+			if (excludedTrackingNumbersArray != null && excludedTrackingNumbersArray.Any() && excludedTrackingNumbersArray.Contains(ptmTrackingNumber))
 			{
 				return false;
 			}
