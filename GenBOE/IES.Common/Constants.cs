@@ -405,12 +405,6 @@ namespace IES.Common
 		public const string UCOT_LABEL = "UCOT";
 
 		/// <summary>
-		/// Excluded PTM tracking numbers from UCOT.
-		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:Do not declare read-only mutable reference types")]
-		public static readonly IReadOnlyList<string> EXCLUDED_PTM_TRACKING_NUMBERS_FROM_UCOT = new List<string> { "24-00863" }.AsReadOnly();
-
-		/// <summary>
 		/// The read only roles for RDSB.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]

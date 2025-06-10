@@ -1146,7 +1146,10 @@ namespace IES.Common
 		public static bool ShowUCOTForWorkspace(DateTime? workspaceCreationDate, string ptmTrackingNumber)
 		{
 			// Exclude UCOT showing for specific PTM tracking numbers.
-			if (Constants.EXCLUDED_PTM_TRACKING_NUMBERS_FROM_UCOT.Contains(ptmTrackingNumber))
+			string excludedTrackingNumbers = ConfigurationUtilities.GetAppSetting("UcotExcludedPTMTrackingNumbers");
+			string[] excludedTrackingNumbersArray = excludedTrackingNumbers?.Split(',').Select(s => s.Trim()).ToArray();
+
+			if (excludedTrackingNumbersArray.Any() && excludedTrackingNumbersArray.Contains(ptmTrackingNumber))
 			{
 				return false;
 			}
