@@ -1865,7 +1865,7 @@ namespace GenBOE.Web.Controllers
 						ws = this.Factory.CreateFullWorkspace(workspace);
 
 						// Validate for UCOT and multiple MOQ tasks - Space only
-						if (Utilities.IsUCOTEnabledForSystem && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+						if (Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.TrackingNumber) && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 						{
 							IList<MultiMOQTypeResult> multiMoqResults = new List<MultiMOQTypeResult>();
 							IList<string> allTasks = new List<string>();
