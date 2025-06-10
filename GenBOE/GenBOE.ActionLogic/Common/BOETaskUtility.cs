@@ -6,15 +6,15 @@
 
 namespace GenBOE.ActionLogic.Common
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using IES.Common;
 	using IES.Common.classes;
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
 
 	/// <summary>
 	/// Class utilized to run some general validation on a BOE task.
@@ -42,7 +42,6 @@ namespace GenBOE.ActionLogic.Common
 			return BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, ws.UsingTemplateBOE, ws.EnableSAPConnection, task, ws.MoqTypeSelections,
 				ws.ResourcesUsedInWsBoes, ws.TMResourceRatesForWorkspace);
 		}
-
 
 		/// <summary>
 		/// Is Skill Mix connection shown to the user for this task
@@ -84,7 +83,7 @@ namespace GenBOE.ActionLogic.Common
 				ICollection<MoqTypeSelection> moqTypes = moqTypeSelections.Where(m => m.TaskId == boeTaskElementId).ToList();
 				// Only show SkillMix if there is 1 and only 1 MOQ Type
 				// And using Template BOE
-				if (moqTypes != null && moqTypes.Count == 1 && workspaceUsingTemplateBOE)
+				if (moqTypes.Count == 1 && workspaceUsingTemplateBOE)
 				{
 					MoqTypeSelection moqType = moqTypes.First();
 					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
@@ -94,20 +93,17 @@ namespace GenBOE.ActionLogic.Common
 							showSkillMixRationale = true;
 						}
 					}
-					// For space only: Shows Skill Mix Rationale section when the workspace is NOT using T&M.
 					else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 					{
 						// Space requires SAP Connection
-						if (workspaceEnableSAPConnection)
+						// Comparative, Historical, or AR MOQ Type
+						// And at least one MOQ Table needs to be connected to SAP Webi for a task
+						if (workspaceEnableSAPConnection
+							&& (moqType.SelectedMOQType == MOQType.Comparative || moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.AnalogousRelationships) 
+							&& moqType.TableData != null && moqType.TableData.Any(t => t.RepositoryName == RepositoryName.SapWebi.GetDescription()))
 						{
-							if (moqType.SelectedMOQType == MOQType.Comparative || moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.AnalogousRelationships)
-							{
-								// At least one MOQ Table needs to be connected to SAP Webi for a task
-								if (moqType.TableData != null && moqType.TableData.Any(t => t.RepositoryName == RepositoryName.SapWebi.GetDescription()))
-								{
-									showSkillMixRationale = !hasTMRates;
-								}
-							}
+							// For space only: Shows Skill Mix Rationale section when the workspace is NOT using T&M.
+							showSkillMixRationale = !hasTMRates;
 						}
 					}
 				}
@@ -115,7 +111,6 @@ namespace GenBOE.ActionLogic.Common
 
 			return showSkillMixRationale;
 		}
-
 
 		/// <summary>
 		/// Checks the usage of active T&M rates in the task.

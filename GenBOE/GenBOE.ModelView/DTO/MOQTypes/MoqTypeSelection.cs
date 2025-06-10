@@ -22,6 +22,7 @@ namespace GenBOE.ActionLogic.ModelView
 		public MoqTypeSelection()
 		{
 			Id = -1;
+			TaskId = -1;
 			Order = 2000;
 		}
 
