@@ -135,7 +135,8 @@ namespace GenTRAC.DataBridge.Common.Security
             this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Approvals },
                 new PtmRole[] { PtmRole.Pricer, PtmRole.CoverSheetApprover, PtmRole.PricingVerification, PtmRole.PeerReviewer, PtmRole.LOBEstLead }, SecurityAuthorization.ReadUpdate);
 
-            this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Approvals }, new PtmRole[] { PtmRole.Admin, PtmRole.Viewer, PtmRole.ContractsPOC, PtmRole.BackupContractsPOC }, SecurityAuthorization.Read);
+            this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Approvals }, 
+				new PtmRole[] { PtmRole.Admin, PtmRole.Viewer, PtmRole.ContractsPOC, PtmRole.BackupContractsPOC, PtmRole.BackupPricer }, SecurityAuthorization.Read);
 
             // Post Submittal Attachments
             this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.PostSubmittalAttachments },
