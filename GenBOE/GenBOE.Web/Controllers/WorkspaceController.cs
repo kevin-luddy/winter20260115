@@ -1044,7 +1044,7 @@ namespace GenBOE.Web.Controllers
 			#region Decide if UCOT Factor Dialog should be displayed
 
 			// Space ONLY
-			if (Utilities.ShowUCOTForWorkspace(ws.CreationDate) && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			if (Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.Shortname) && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 			{
 				bool userHasCookie = false;
 				HttpCookie cookie = null;

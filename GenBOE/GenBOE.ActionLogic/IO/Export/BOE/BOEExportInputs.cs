@@ -108,7 +108,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 						.Union(workspace.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value))
 						.Distinct().ToList();
 
-			if (Utilities.ShowUCOTForWorkspace(workspace.CreationDate) && processLaborTypesForUCOT)
+			if (Utilities.ShowUCOTForWorkspace(workspace.CreationDate, workspace.Shortname) && processLaborTypesForUCOT)
 			{
 				// Setup the ucot performing orgs.
 				PerformingOrgDTO ucotPerformingOrg = new PerformingOrgDTO
@@ -137,7 +137,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				}
 			}
 
-			if (Utilities.ShowUCOTForWorkspace(workspace.CreationDate) && processLaborTypesForUCOT)
+			if (Utilities.ShowUCOTForWorkspace(workspace.CreationDate, workspace.Shortname) && processLaborTypesForUCOT)
 			{
 				List<ResourceTypeDto> taskElementLabors = new List<ResourceTypeDto>();
 				HashSet<int> updatedTaskIds = new HashSet<int>();
