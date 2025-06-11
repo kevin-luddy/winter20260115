@@ -2029,6 +2029,8 @@ namespace GenBOE.Web.Controllers
 
 			this._ControllerLogic.CopySystemUCOTFactor(ws);
 
+			this.Factory.ClearWorkspaceCache(workspace);
+
 			// user synced their rates, so we can remove the cookie now for this workspace
 			HttpCookie cookie = System.Web.HttpContext.Current.Request.Cookies[WebConstants.UPDATE_WORKSPACE_UCOT_FACTOR] ?? new HttpCookie(WebConstants.UPDATE_WORKSPACE_UCOT_FACTOR);
 			cookie.Expires = DateTime.Now.AddDays(-1D);
