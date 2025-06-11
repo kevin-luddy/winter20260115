@@ -3800,6 +3800,55 @@ namespace GenBOE.Tests.ActionLogic
 		}
 
 		/// <summary>
+		/// Test ValidateTemplateMoqForTask for validation PoP Dates are valid when in the current month when using Monthly Query Type
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_PoPCurrentMonth_SpaceMode_Monthly()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+
+			// Create a valid MOQ Table
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.MONTHLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = DateTime.Today,
+                            PoPEnd = DateTime.Today,
+                            AdditionalQueryFilters = "TestFilter",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test historical reference explanation"
+			};
+
+			// Adjust dates to mid-month as they would be while using the application
+			moqType.TableData.First().PoPStart = moqType.TableData.First().PoPStartString.ToDateTimeMidMonth();
+			moqType.TableData.First().PoPEnd = moqType.TableData.First().PoPEndString.ToDateTimeMidMonth();
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsFalse(result.Any());
+		}
+
+		/// <summary>
 		/// Test ValidateTemplateMoqForTask for additional PoP date and Date of Report validation
 		/// </summary>
 		[TestMethod]
