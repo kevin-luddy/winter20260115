@@ -111,7 +111,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			taskElementLabors.RemoveAll(x => laborsToRemove.Contains(x.Id));
 
 			// Add UCOT data
-			taskElementLabors = AddUCOT(taskElementLabors, workspace.UCOTFactor, laborToElementOfCost, workspace.CreationDate);
+			taskElementLabors = AddUCOT(taskElementLabors, workspace.UCOTFactor, laborToElementOfCost, workspace.CreationDate, workspace.Shortname);
 
 			// Populate CLIN and WBS IDs for non-multi-clin-wbs
 			foreach (ResourceTypeDto labor in taskElementLabors)
@@ -140,11 +140,11 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="workspaceCreationDate">Workspace creation date</param>
 		/// <returns></returns>
 		private List<ResourceTypeDto> AddUCOT(List<ResourceTypeDto> taskElementLabors, decimal ucotFactor, Dictionary<int, ElementOfCostType> laborToElementOfCost,
-			DateTime? workspaceCreationDate)
+			DateTime? workspaceCreationDate, string shortname)
 		{
 			List<ResourceTypeDto> ucotLabors = taskElementLabors;
 
-			if (Utilities.ShowUCOTForWorkspace(workspaceCreationDate))
+			if (Utilities.ShowUCOTForWorkspace(workspaceCreationDate, shortname))
 			{
 				// First we clone so that we do not touch any Task Element Labor that may be attached to a Cached Property in the Cached FullWorkspace
 				ucotLabors = taskElementLabors.DeepClone();

@@ -1141,10 +1141,22 @@ namespace IES.Common
 		/// Is UCOT shown to the user for this workspace
 		/// </summary>
 		/// <param name="workspaceCreationDate">Workspace creation date</param>
+		/// <param name="shortname">Workspace shortname.</param>
 		/// <returns>True to show UCOT</returns>
-		public static bool ShowUCOTForWorkspace(DateTime? workspaceCreationDate)
+		public static bool ShowUCOTForWorkspace(DateTime? workspaceCreationDate, string shortname)
 		{
-			return IsUCOTEnabledForSystem && workspaceCreationDate >= UCOTStartDate;
+			// Exclude UCOT showing for specific PTM tracking numbers.
+			string excludedShortspaces = ConfigurationUtilities.GetAppSetting("UcotExcludedWorkspaces");
+			string[] excludedShortspacesArray = excludedShortspaces?.Split(',').Select(s => s.Trim()).ToArray();
+
+			if (excludedShortspacesArray != null && excludedShortspacesArray.Any() && excludedShortspacesArray.Contains(shortname))
+			{
+				return false;
+			}
+			else
+			{
+				return IsUCOTEnabledForSystem && workspaceCreationDate >= UCOTStartDate;
+			}
 		}
 
 		/// <summary>
