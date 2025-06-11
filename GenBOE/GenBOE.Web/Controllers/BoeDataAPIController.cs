@@ -1580,19 +1580,15 @@ namespace GenBOE.Web.Controllers
 
 				foreach (WorkspaceDTO workspace in workspaces)
 				{
-					// Hide the resources if there are no T&M rates for that workspace
 					ICollection<TMResourceRateDTO> workspaceTMResourceRates = tmResourceRateLoader.GetByWorkspaceId(workspace.Id);
-					if (workspaceTMResourceRates != null || workspaceTMResourceRates.Any())
-					{
-						continue;
-					}
+					IList<string> distinctTMRateResourceNames = workspaceTMResourceRates.Select(x => x.ResourceName).Distinct().ToList();
 
 					HashSet<int> inUseIds = inUseDataLoader.GetWorkspaceResourceIDsInUseByListID(workspace.ResourceListID);
 					ICollection<ResourceDTO> inUseResources = resourceLoader.GetByListId(workspace.ResourceListID)
 						.Where(x => x.ElementOfCost == elementOfCost && inUseIds.Contains(x.Id) && !result.Data.Any(y => y.ResourceName == x.ResourceName)).ToCollection();
 
-					// Remove Hour-type resources
-					inUseResources = inUseResources.Where(x => x.RateType != RateType.Hours).ToCollection();
+					// Remove Hour-type resources and if there are no T&M rates
+					inUseResources = inUseResources.Where(x => x.RateType != RateType.Hours || distinctTMRateResourceNames.Contains(x.ResourceName)).ToCollection();
 
 					result.Data.AddRange(inUseResources.Select(x => new NlfResourceData()
 					{
