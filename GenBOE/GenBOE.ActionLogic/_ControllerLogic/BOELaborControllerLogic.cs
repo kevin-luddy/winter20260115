@@ -941,52 +941,24 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, ws.UsingTemplateBOE, ws.EnableSAPConnection, moqTypes, taskElement.Id, modelView.IsUsingTMRatesInTask))
 			{
-				decimal historicalHoursTotals = 0;
-				// determine if SkillMix is manual or automatic
-				bool isManual = moqTypes == null || moqTypes.None() || !ws.EnableSAPConnection || !moqTypes.All(x => x.SelectedMOQType == MOQType.Historical || x.SelectedMOQType == MOQType.Comparative);
-
-				foreach (SkillMixModelView row in taskElement.SkillMixTable)
+				if (ws.EnableSAPConnection && (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST 
+					|| moqTypes.Any(x => x.TableData != null && x.TableData.Any(t => t.RepositoryName == RepositoryName.SapWebi.GetDescription()))))
 				{
-					historicalHoursTotals += row.HistoricalHours;
-				}
-
-				if (!isManual)
-				{
-					string sapRepo = RepositoryName.SapWebi.GetDescription();
-
-					// RMS checks that the totals of both tables combines equals MOQ Hours
-					if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)
+					decimal historicalHoursTotals = taskElement.SkillMixTable.Sum(x => x.HistoricalHours);
+					if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
 					{
-						if (taskElement.SkillMixTable != null && Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
-						{
-							// add the Common Disclosure table totals to historical totals
-							historicalHoursTotals += taskElement.CommonDisclosureTable.Sum(c => c.HistoricalHours);
-						}
-
-						if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
-						{
-							validationErrors.Add(new ValidationMessage(string.Format("Skill Mix Total Historical Hours do not match the sum of the Total Relevant Hours.")));
-						}
+						string skillMixTableName = SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST ? "Current" : "Legacy";
+						validationErrors.Add(new ValidationMessage(string.Format("Total Historical Hours in {0} Skill Mix Table do not match the sum of the Total Relevant Hours.", skillMixTableName)));
 					}
-					// Space checks that the totals of each table equals MOQ Hours for any table data where the repo is SAP WEBI
-					else if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems &&
-						moqTypes.Any(x => x.TableData != null && x.TableData.Any(t => t.RepositoryName == sapRepo)))
+
+					if (taskElement.CommonDisclosureTable != null && Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
 					{
-						if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
-						{
-							string skillMixTableName = SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST ? "Current" : "Legacy";
-							validationErrors.Add(new ValidationMessage(string.Format("Total Historical Hours in {0} Skill Mix Table do not match the sum of the Total Relevant Hours.", skillMixTableName)));
-						}
+						// Check the Common Disclosure table totals
+						historicalHoursTotals = taskElement.CommonDisclosureTable.Sum(c => c.HistoricalHours);
 
-						if (taskElement.CommonDisclosureTable != null && Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
+						if (!historicalHoursTotals.EqualsEpsilon(taskElement.MOQTotalRelevantHours, Convert.ToDecimal(Math.Pow(10, -1.0 * Convert.ToDouble(ws.DecimalPrecision)))))
 						{
-							// add the Common Disclosure table totals to historical totals
-							historicalHoursTotals = taskElement.CommonDisclosureTable.Sum(c => c.HistoricalHours);
-
-							if (!historicalHoursTotals.EqualsEpsilon(taskElement.MOQTotalRelevantHours, Convert.ToDecimal(Math.Pow(10, -1.0 * Convert.ToDouble(ws.DecimalPrecision)))))
-							{
-								validationErrors.Add(new ValidationMessage(string.Format("Total Historical Hours in LM Enterprise Skill Mix Table do not match the sum of the Total Relevant Hours.")));
-							}
+							validationErrors.Add(new ValidationMessage("Total Historical Hours in LM Enterprise Skill Mix Table do not match the sum of the Total Relevant Hours."));
 						}
 					}
 				}
@@ -4209,7 +4181,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		{
 			if (ws.UsingTemplateBOE)
 			{
+				// Set MOQ Type Task Ids to ensure they are properly found in ShowSkillMixForTask
 				int boeTaskElementId = taskData.TaskElementData.TaskElementDetailID ?? -1;
+				foreach (MoqTypeSelection moqType in taskData.MOQTypes)
+				{
+					moqType.TaskId = boeTaskElementId;
+				}
+
 				bool showSkillMixTable = BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, ws.UsingTemplateBOE, ws.EnableSAPConnection, taskData.MOQTypes, boeTaskElementId,
 					 taskData.IsUsingTMRatesInTask);
 				ICollection<string> taskErrors = this.validateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws, false, moqEquationTotal, showSkillMixTable);
