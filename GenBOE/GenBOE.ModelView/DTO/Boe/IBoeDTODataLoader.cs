@@ -95,5 +95,13 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <param name="dtos">DTOs that whose RTE fields will be loaded, if they are null</param>
         void LoadRTEFields(ICollection<BoeDTO> dtos);
-    }
+
+		/// <summary>
+		/// Get MultiClin BOE based on matchin Clin
+		/// </summary>
+		/// <param name="clinId"></param>
+		/// <returns>BOEIds that are found</returns>
+		ICollection<int> GetMultiClinBOEIdsByClins(int clinId);
+
+	}
 }
