@@ -22,8 +22,8 @@ namespace GenBOE.Web.Controllers
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.Email;
     using GenBOE.ActionLogic.ControllerLogic;
-    using GenBOE.ActionLogic.IO.Export;
-    using GenBOE.ActionLogic.IO.Import;
+	using GenBOE.ActionLogic.IO.Export;
+	using GenBOE.ActionLogic.IO.Import;
     using GenBOE.ActionLogic.Metrics;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.Validation;
@@ -39,6 +39,7 @@ namespace GenBOE.Web.Controllers
     using IES.Common.Exceptions;
     using IES.Common.OfficeUtilities;
 	using ImportWbsResultsModelView = ModelView.ImportWbsResultsModelView;
+	using WBSControllerLogic = ActionLogic.ControllerLogic.Backend.WBSControllerLogic;
 
 	public class WBSController : GenBOEController
     {
@@ -57,10 +58,15 @@ namespace GenBOE.Web.Controllers
         private const string wbsIDColumn = "genBOE WBS ID";
         private IWBSControllerLogic _WbsControllerLogic = null;
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public WBSController(ISecurityAccess inSecurityAccess,
+		/// <summary>
+		/// Backend WBS Controller Logic
+		/// </summary>
+		private WBSControllerLogic wbsControllerLogic { get; set; }
+
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		public WBSController(ISecurityAccess inSecurityAccess,
             CommonDataMapper inCommonDataMapper,
             SiteMasterUtilities inSiteMasterUtilities,
             NestedWBSUtilities inNestedWBSUtilities,
@@ -79,7 +85,8 @@ namespace GenBOE.Web.Controllers
             IPermissionsDTODataLoader permissionLoader,
             IGenBOEControllerLogic inControllerLogic,
             IWBSControllerLogic inWBSControllerLogic
-            )
+			,WBSControllerLogic wbsControllerLogic
+			)
             : base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, userLoader, permissionLoader, inControllerLogic)
         {
             _BOEStateMachine = inBOEStateMachine;
@@ -92,8 +99,9 @@ namespace GenBOE.Web.Controllers
             _ValidationHelper = inValidationHelper;
             this.boeLoader = boeLoader;
             this.wbsLoader = wbsLoader;
-            this._WbsControllerLogic = inWBSControllerLogic;
-        }
+			this._WbsControllerLogic = inWBSControllerLogic;
+			this.wbsControllerLogic = wbsControllerLogic;
+		}
 
         /// <summary>
         /// Returns the ManageWBSs view
@@ -350,71 +358,7 @@ namespace GenBOE.Web.Controllers
                 throw new ArgumentNullException(nameof(selectedWbsIDs));
             }
 
-            Collection<BoeDTO> newBOEs = new Collection<BoeDTO>();
-            int seedNewBoeID = -1;
-
-            Collection<KeyValuePair<int, int>> wbsAndBoesToRemap = new Collection<KeyValuePair<int, int>>();
-
-            foreach (int selectedWbs in selectedWbsIDs)
-            {
-                FullWbs wbs = ws.WbsElements.First(x => x.Id == selectedWbs);
-
-                if (wbs.ClinIDs.Count > 0)
-                {
-                    foreach (int selectedClinID in wbs.ClinIDs)
-                    {
-                        ClinDTO selectedClin = wbs.Clins.First(x => x.Id == selectedClinID);
-                        DataRelationshipVerifier.VerifyDataRelation(selectedClin, ws.Id);
-
-                        int xrefID = this.boeLoader.GetWbsClinBoeXrefId(selectedWbs, selectedClin.Id, null);
-                        if (xrefID > 0)
-                        {
-                            BoeDTO newBOE = new BoeDTO();
-                            newBOE.Id = seedNewBoeID--;
-                            newBOE.CLINID = selectedClin.Id;
-                            newBOE.WBSID = wbs.Id;
-                            newBOE.WorkspaceID = ws.Id;
-                            newBOE.Updateable = UpdateType.Upsert;
-                            newBOE.WCBID = xrefID;
-                            newBOE.StartDate = selectedClin.StartDate.HasValue ? selectedClin.StartDate.Value : ws.ContractStartDate;
-                            newBOE.EndDate = selectedClin.EndDate.HasValue ? selectedClin.EndDate.Value : ws.ContractEndDate;
-
-                            newBOEs.Add(newBOE);
-                        }                        
-                    }
-                }
-                else if (this.boeLoader.GetWbsClinBoeXrefId(selectedWbs, null, null) < 1)
-                {
-                    BoeDTO newBOE = new BoeDTO()
-                    {
-                        Id = seedNewBoeID--,
-                        WBSID = wbs.Id,
-                        WorkspaceID = ws.Id,
-                        CLINID = null,
-                        StartDate = ws.ContractStartDate,
-                        EndDate = ws.ContractEndDate,
-                        Updateable = UpdateType.Upsert
-                    };
-
-                    newBOEs.Add(newBOE);
-
-                    wbsAndBoesToRemap.Add(new KeyValuePair<int, int>(selectedWbs, newBOE.Id));
-                }
-            }
-
-            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
-            {
-                IDictionary<int, int> BoeIdMappingDictionary = _BoeMediator.MediatedSaveBOEs(ws, newBOEs);
-
-                // Now we need to see if the Wbs had a variable mapped to it.. if it did, remap to BOEs created for it
-                foreach (KeyValuePair<int, int> keyPair in wbsAndBoesToRemap)
-                {
-                    int boeId = BoeIdMappingDictionary[keyPair.Value];
-                    this.wbsLoader.RemapTaskAndWorkspaceVariablesFromWbsToBoe(keyPair.Key, boeId);
-                }
-
-                scope.Complete();
-            }
+			wbsControllerLogic.CreateBOEs(ws, selectedWbsIDs.ToList());
 
             JsonResult toReturn = Json(new { Status = true });
 
