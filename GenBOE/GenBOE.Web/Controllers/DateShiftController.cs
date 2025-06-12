@@ -18,6 +18,7 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.Common.Interfaces;
     using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
 	using GenBOE.Objects;
     using GenBOE.Web.Common;
     using GenBOE.Web.ModelView;
@@ -142,66 +143,48 @@ namespace GenBOE.Web.Controllers
                     }
                 }
 
-				// create the IDateShiftable based on Level and Id 
+				DateShiftDTO dateShift = new DateShiftDTO();
+
 				switch (dateShiftLevel)
 				{
 					case Level.BOE:
-						FullBoe boe = this.Factory.CreateFullBoe(id);
 						sw = this.InitializeAction(this.logger, WebConstants.ACTION_APPLY_DATE_SHIFT, SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, id);
-						dateShiftable = boe;
-						if (boe.CLINID.HasValue && boe.Clin.StartDate.HasValue && boe.Clin.EndDate.HasValue)
+
+						dateShift = dateShiftDTODataLoader.GetDateShiftObject(Level.BOE, id);
+						dateShiftable = dateShift;
+
+						// Set the parent level and values.
+						if (dateShift.Parent != null && dateShift.Parent.StartDate != null && dateShift.Parent.EndDate != null)
 						{
-							parentStart = boe.Clin.StartDate;
-							parentEnd = boe.Clin.EndDate;
+							parentStart = dateShift.Parent.StartDate;
+							parentEnd = dateShift.Parent.EndDate;
 							parentLevel = Level.CLIN;
 						}
 
-
-
-						// TODO Thomas: Do we need RTE data?
-						// preload data
-						//boe.LoadTaskElementRTEData();
-						//boe.LoadTravelRTEData();
-
 						break;
 					case Level.CLIN:
-						FullClin clin = this.Factory.CreateFullClin(id);
-						sw = this.InitializeAction(this.logger, WebConstants.ACTION_APPLY_DATE_SHIFT, SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
-						dateShiftable = clin;
+						sw = this.InitializeAction(this.logger, WebConstants.ACTION_APPLY_DATE_SHIFT, SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, id);
 
-						// preload data
-						IReadOnlyCollection<FullBoe> boes = clin.Boes;
-						foreach (FullBoe clinboe in boes)
-						{
-							// TODO Thomas: Do we need RTE data?
-							//clinboe.LoadTravelRTEData();
-							//clinboe.LoadTaskElementRTEData();
-						}
+						dateShift = dateShiftDTODataLoader.GetDateShiftObject(Level.CLIN, id);
+						dateShiftable = dateShift;
 
-						if (!clin.StartDate.HasValue || !clin.EndDate.HasValue)
+						if (!dateShift.StartDate.HasValue || !dateShift.EndDate.HasValue)
 						{
-							clin.StartDate = ws.StartDate;
-							clin.EndDate = ws.EndDate;
+							dateShift.StartDate = ws.StartDate;
+							dateShift.EndDate = ws.EndDate;
 						}
 
 						break;
 					case Level.Task:
-						BoeTaskElementDTO taskElement = this.Factory.CreateTaskElement(id, ws.DecimalPrecision, ws.CostDecimalPrecision);
-						sw = this.InitializeAction(this.logger, WebConstants.ACTION_APPLY_DATE_SHIFT, SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, taskElement.BoeID);
-						dateShiftable = taskElement;
-						FullBoe taskBoe = this.Factory.CreateFullBoe(taskElement.BoeID);
-						parentStart = taskBoe.StartDate;
-						parentEnd = taskBoe.EndDate;
+						dateShift = dateShiftDTODataLoader.GetDateShiftObject(Level.Task, id);
+						dateShiftable = dateShift;
+
+						sw = this.InitializeAction(this.logger, WebConstants.ACTION_APPLY_DATE_SHIFT, SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, dateShift.BoeId);
+
+						parentStart = dateShift.Parent.StartDate;
+						parentEnd = dateShift.Parent.EndDate;
 						parentLevel = Level.BOE;
-						break;
-					case Level.Travel:
-						TravelDTO travel = this.Factory.CreateTravel(id);
-						sw = this.InitializeAction(this.logger, WebConstants.ACTION_APPLY_DATE_SHIFT, SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, travel.BoeID);
-						dateShiftable = travel;
-						FullBoe travelBoe = this.Factory.CreateFullBoe(travel.BoeID);
-						parentStart = travelBoe.StartDate;
-						parentEnd = travelBoe.EndDate;
-						parentLevel = Level.BOE;
+
 						break;
 					case Level.Workspace:
 						sw = this.InitializeAction(this.logger, WebConstants.ACTION_APPLY_DATE_SHIFT, SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);

@@ -216,22 +216,36 @@ namespace GenBOE.DataBridge.DTO
 		}
 
 		/// <summary>
-		/// 
+		/// Gets the Date Shift object by level and ID.
 		/// </summary>
-		/// <param name="level"></param>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		/// <exception cref="NotSupportedException"></exception>
-		public IDateShiftable GetDateShiftableById(Level level, int id)
+		/// <param name="level">Level.</param>
+		/// <param name="id">Id.</param>
+		/// <returns>Date Shift object</returns>
+		public DateShiftDTO GetDateShiftObject(Level level, int id)
 		{
+			DateShiftDTO dateShift = null;
+
 			switch (level)
 			{
 				case Level.BOE:
-					// Retrieve only the necessary properties for a BOE
-					return GetBoeById(id);
+					dateShift = DateShiftDTO.FromIDateShiftable(GetBoeById(id), true);
+					dateShift.Parent = DateShiftDTO.FromIDateShiftable(GetClinById(dateShift.ParentId.Value), true);
+					break;
+				case Level.CLIN:
+					dateShift = DateShiftDTO.FromIDateShiftable(GetClinById(id), true);
+					break;
+				case Level.Task:
+					dateShift = DateShiftDTO.FromIDateShiftable(GetBoeTaskElementById(id), true);
+					dateShift.Parent = DateShiftDTO.FromIDateShiftable(GetBoeById(dateShift.BoeId), true);
+					break;
+				case Level.Workspace:
+
+					break;
 				default:
 					throw new NotSupportedException($"Unsupported level: {level}");
 			}
+
+			return dateShift;
 		}
 
 		/// <summary>
@@ -248,6 +262,8 @@ namespace GenBOE.DataBridge.DTO
 				// get the basic BOE data from the sprocResults
 				BoeDTO boe = (from b in gbe.BOEs
 							  where b.BOEID == id
+							  join xRef in gbe.WBS_CLIN_BOE_XREF.Where(x => x.BOEID.HasValue) on b.BOEID equals xRef.BOEID into temp
+							  from xRef in temp.DefaultIfEmpty() // left outer joins for above..
 							  select new BoeDTO
 							  {
 								  Id = b.BOEID,
@@ -255,10 +271,67 @@ namespace GenBOE.DataBridge.DTO
 								  StartDate = b.BOEStartDate,
 								  EndDate = b.BOEEndDate,
 								  UpdateDate = b.UpdateDT,
+								  CLINID = xRef == null ? null : xRef.CLINID,
 							  }).FirstOrDefault();
 
 				return new FullBoe(boe);
 			}
 		}
+
+		/// <summary>
+		/// Gets the required clin data by id.
+		/// </summary>
+		/// <param name="id">id</param>
+		/// <returns>Clin data.</returns>
+		public FullClin GetClinById(int id)
+		{
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
+
+				// get the basic CLIN data from the sprocResults
+				ClinDTO clin = (from c in gbe.CLINs
+								where c.CLINID == id
+								select new ClinDTO
+								{
+									Id = c.CLINID,
+									StartDate = c.CLINStartDate,
+									EndDate = c.CLINEndDate,
+									UpdateDate = c.UpdateDT,
+								}).FirstOrDefault();
+
+				return new FullClin(clin);
+			}
+		}
+
+		/// <summary>
+		/// Get BOE Task Element by Id.
+		/// </summary>
+		/// <param name="id">Boe Task Element Id</param>
+		/// <returns>Boe Task Element.</returns>
+		public BoeTaskElementDTO GetBoeTaskElementById(int id)
+		{
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
+
+				// get the basic BOE Task Element data from the sprocResults
+				BoeTaskElementDTO boeTaskElement = (from bT in gbe.BOETaskElements
+													where bT.BOETaskElementID == id
+													select new BoeTaskElementDTO
+													{
+														Id = bT.BOETaskElementID,
+														BOETaskID = bT.TaskID,
+														TaskTitle = bT.TaskTitle,
+														StartDate = bT.TaskStartDate,
+														EndDate = bT.TaskEndDate,
+														UpdateDate = bT.UpdateDT,
+														BoeID = bT.BOEID,
+													}).FirstOrDefault();
+
+				return boeTaskElement;
+			}
+		}
+
 	}
 }

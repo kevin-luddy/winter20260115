@@ -904,8 +904,17 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <param name="dateShiftModel">The model view.</param>
 		private void TransitionBOEs(IDateShiftable dateShiftable, DateShiftModelView dateShiftModel)
 		{
+			// TODO Thomas: Look at removing the Full Boe here.
 			// get all the affected BOEs that are not in Draft
-			ICollection<FullBoe> boesBackToDraft = this.GetAffectedBOEs(dateShiftable, dateShiftModel).Where(b => b.State != BOEState.Draft && b.State != BOEState.DraftLocked && b.State != BOEState.DateShiftDraft).ToList();
+			ICollection<FullBoe> affectedBOEs = this.GetAffectedBOEs(dateShiftable, dateShiftModel);
+
+			IList<FullBoe> boesToChangeState = affectedBOEs.Where(b =>
+				b.State != BOEState.Draft &&
+				b.State != BOEState.DraftLocked &&
+				b.State != BOEState.DateShiftDraft
+			).ToList();
+
+			ICollection<FullBoe> boesBackToDraft = boesToChangeState.ToList();
 
 			if (boesBackToDraft.Any())
 			{
@@ -1186,32 +1195,7 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <returns>The boe id if found.</returns>
 		private static int? GetAttachedBoeId(IDateShiftable dateShiftable)
 		{
-			int? boeId = null;
-			if (dateShiftable is DateShiftable)
-			{
-				boeId = ((DateShiftable)dateShiftable).BoeId;
-			}
-			else
-			{
-				switch (dateShiftable.DateShiftLevel)
-				{
-					case Level.BOE:
-						FullBoe boe = dateShiftable as FullBoe;
-						boeId = boe.Id;
-						break;
-					case Level.Task:
-						BoeTaskElementDTO task = dateShiftable as BoeTaskElementDTO;
-						boeId = task.BoeID;
-						break;
-					case Level.Travel:
-						TravelDTO travel = dateShiftable as TravelDTO;
-						boeId = travel.BoeID;
-						break;
-					default:
-						// no boe attached (clin/workspace/labor)
-						break;
-				}
-			}
+			int? boeId = ((DateShiftDTO)dateShiftable).BoeId;
 			return boeId;
 		}
 

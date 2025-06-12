@@ -16,6 +16,14 @@ namespace GenBOE.DataBridge.DTO
 	public interface IDateShiftDTODataLoader : IDataLoader<DateShiftDTO>
 	{
 		/// <summary>
+		/// Gets the Date Shift object by level and ID.
+		/// </summary>
+		/// <param name="level">Level.</param>
+		/// <param name="id">Id.</param>
+		/// <returns>Date Shift object</returns>
+		DateShiftDTO GetDateShiftObject(Level level, int id);
+
+		/// <summary>
 		/// Update the respective levels in the database with the Date Shift data.
 		/// </summary>
 		/// <param name="dateShiftDTOs">Collection of Date Shift dates for updating.</param>

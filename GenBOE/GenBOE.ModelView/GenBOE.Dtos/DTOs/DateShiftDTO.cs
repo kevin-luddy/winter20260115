@@ -7,6 +7,7 @@
 namespace GenBOE.Dtos
 {
 	using GenBOE.DataBridge.DTO;
+	using GenBOE.Objects;
 	using IES.Common;
 	using System;
 	using System.Collections.Generic;
@@ -38,6 +39,16 @@ namespace GenBOE.Dtos
 		/// Child date shift objects.
 		/// </summary>
 		ICollection<IDateShiftable> IDateShiftable.Children => children;
+
+		/// <summary>
+		/// Parent of the date shift object.
+		/// </summary>
+		public IDateShiftable Parent { get; set; }
+
+		/// <summary>
+		/// Parent id of the date shift object.
+		/// </summary>
+		public int? ParentId { get; set; }
 
 		/// <summary>
 		/// Has spread?
@@ -117,14 +128,14 @@ namespace GenBOE.Dtos
 		/// <summary>
 		/// Conversion for incoming inherit classes.
 		/// </summary>
-		public static DateShiftDTO FromIDateShiftable(IDateShiftable dateShiftable)
+		public static DateShiftDTO FromIDateShiftable(IDateShiftable dateShiftable, bool isLoading = false)
 		{
 			if (dateShiftable == null)
 			{
 				throw new ArgumentNullException(nameof(dateShiftable));
 			}
 
-			if (dateShiftable.Updateable != UpdateType.Upsert)
+			if (dateShiftable.Updateable != UpdateType.Upsert && !isLoading)
 			{
 				return null;
 			}
@@ -134,6 +145,7 @@ namespace GenBOE.Dtos
 			dateShiftDTO.StartDate = dateShiftable.StartDate;
 			dateShiftDTO.EndDate = dateShiftable.EndDate;
 			dateShiftDTO.Level = (int)dateShiftable.DateShiftLevel;
+			dateShiftDTO.DateShiftLevel = dateShiftable.DateShiftLevel;
 			dateShiftDTO.HasSpreadValue = dateShiftable.HasSpread;
 			dateShiftDTO.Updateable = dateShiftable.Updateable;
 
@@ -143,9 +155,10 @@ namespace GenBOE.Dtos
 				dateShiftDTO.UpdateDate = updateableDTO.UpdateDate;
 			}
 
-			if (dateShiftable is BoeDTO boeDTO)
+			if (dateShiftable is FullBoe boeDTO)
 			{
 				dateShiftDTO.BOEStateID = (int)boeDTO.State;
+				dateShiftDTO.ParentId = boeDTO.CLINID;
 			}
 
 			if (dateShiftable is BoeTaskElementDTO boeTaskElementDTO)
@@ -155,6 +168,7 @@ namespace GenBOE.Dtos
 				dateShiftDTO.CommonDisclosureTable = boeTaskElementDTO.CommonDisclosureTable;
 				dateShiftDTO.SkillMixTable = boeTaskElementDTO.SkillMixTable;
 				dateShiftDTO.TaskElementLabors = boeTaskElementDTO.taskElementLabors;
+				dateShiftDTO.ParentId = boeTaskElementDTO.BoeID;
 			}
 
 			if (dateShiftable is ResourceTypeDto resourceTypeDto && (resourceTypeDto.SpreadCurveID == SpreadCurves.DiscreteCost || resourceTypeDto.SpreadCurveID == SpreadCurves.DiscreteHours))
