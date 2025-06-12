@@ -252,7 +252,9 @@
 
 			if (!isSapWebi) {
 				$scope.skillMixHelperText = "Skill Mix Tables are not showing because at least one MOQ Type Table needs to have a Repository Name of SAP/WEBI.";
-			} 
+			} else if ($scope.IsUsingTMRatesInTask) {
+				$scope.skillMixHelperText = "Skill Mix Tables are not showing because T&M Rates are currently being used in this task.";
+			}
 		}
 	}
 
@@ -1403,6 +1405,8 @@
 			// Refreshing the tables to calculate the totals rows for the UI, do not set dirty because there "should" be no changes from rows in DB
 			$scope.refreshSkillMixTables(false);
 
+			$scope.updateSkillMixHelperText();
+
 			$scope.isLoading = false;
 			$(document).trigger("HIDE_LOADING_BOX");
 
@@ -2031,6 +2035,7 @@
 			url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.CheckTMRatesAction, '')
 		}).then(function (response) {
 			$scope.IsUsingTMRatesInTask = response.data.data;
+			$scope.updateSkillMixHelperText();
 		}, function errorCallback(response) {
 			if (response.data && response.data.MessageList) {
 				$scope.errors = response.data.MessageList;
