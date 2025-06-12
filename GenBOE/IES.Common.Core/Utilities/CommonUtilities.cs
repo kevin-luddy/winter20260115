@@ -16,7 +16,6 @@ namespace IES.Common.Core.Utilities
 	using System.Net.Http;
 	using System.Text;
 	using System.Text.RegularExpressions;
-	using DocumentFormat.OpenXml.InkML;
 	using IES.Common.Core;
 	using IES.Common.Core.Configuration;
 	using IES.Common.Core.Constants;

@@ -15,9 +15,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 	using System.Linq;
 	using System.Text;
 	using System.Text.RegularExpressions;
-	using DocumentFormat.OpenXml;
-	using DocumentFormat.OpenXml.Packaging;
-	using DocumentFormat.OpenXml.Wordprocessing;
+	using System.Xml.Linq;
+	using Aspose.Words;
+	using Aspose.Words.Markup;
+	using Aspose.Words.Settings;
+	using Aspose.Words.Tables;
 	using GenBOE.DataBridge.Core;
 	using GenBOE.DataBridge.Core.Common;
 	using GenBOE.DataBridge.Core.Common.Calculations;
@@ -359,7 +361,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="boeSummaryGridModelViews">The boe summary grid model views.</param>
 		/// <param name="selectedComponents">The selected components.</param>
 		/// <param name="counters">The counters.</param>
-		private void PopulateDataExportBOE(BOEExportInputs exportInputs, WordprocessingDocument document, ICollection<BOEExportModelView> boeExportModelViews, 
+		private void PopulateDataExportBOE(BOEExportInputs exportInputs, Document document, ICollection<BOEExportModelView> boeExportModelViews, 
 			ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, ICollection<BoeCustomReportComponent> selectedComponents, ref ChunkCounter counters)
 		{
 			/*
@@ -386,8 +388,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			}
 
 			// Check the file for both the portrait and landscape special boe table elements
-			SdtElement boeContainerTemplate = WordUtilities.GetTaggedElement(document, BOEExporterConstants.Container_BOE);
-			SdtElement boeSummaryContainerTemplate = WordUtilities.GetTaggedElement(document, BOEExporterConstants.Container_BOE_SUMMARY);
+			StructuredDocumentTag boeContainerTemplate = WordUtilities.GetTaggedElement(document, BOEExporterConstants.Container_BOE);
+			StructuredDocumentTag boeSummaryContainerTemplate = WordUtilities.GetTaggedElement(document, BOEExporterConstants.Container_BOE_SUMMARY);
 
 			if (boeContainerTemplate == null)
 			{
@@ -402,15 +404,14 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						WordUtilities.GetTaggedElement(document, BOEExporterConstants.FieldName_WBSNumberInTask) != null
 						|| WordUtilities.GetTaggedElement(document, BOEExporterConstants.FieldName_BOETitleInTask) != null;
 
-			SdtElement boeContainer = null;
-			OpenXmlElement lastElement = boeContainerTemplate;
+			StructuredDocumentTag boeContainer = null;
+			Node lastElement = boeContainerTemplate;
 
 			if (boeExportModelViews.Any() || boeSummaryGridModelViews.Any())
 			{
 				// Populate the workspace-level content in the template
-				SetProprietaryLabels(document, boeExportModelViews.First());
+				SetProprietaryLabelsAndPrintDate(document, boeExportModelViews.First());
 				this.SetWorkspaceFields(document, exportInputs.Workspace);
-				SetPrintDate(document);
 
 				#region Resource data
 
@@ -449,13 +450,17 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					// (insert before this BOE if it is not the first)
 					if (pageBreakAfterBoe && boeContainer != null)
 					{
-						lastElement = lastElement.InsertAfterSelf(new Paragraph(new Run(new Break() { Type = BreakValues.Page })));
+						Paragraph para = new Paragraph(document);
+						Run run = new Run(document);
+						para.AppendChild(run);
+						run.Text = ControlChar.PageBreak;
+						lastElement = lastElement.ParentNode.InsertAfter(para, lastElement);
 					}
 
 					// create container for this BOE
 					// (clone the template, insert after the last BOE container or page break)
-					boeContainer = boeContainerTemplate.CloneNode(true) as SdtElement;
-					lastElement = lastElement.InsertAfterSelf(boeContainer);
+					boeContainer = boeContainerTemplate.Clone(true) as StructuredDocumentTag;
+					lastElement = lastElement.ParentNode.InsertAfter(boeContainer, lastElement);
 
 					#endregion
 
@@ -529,10 +534,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				exportInputs.ClearRteOverrides();
 
 				// remove page break on last BOE
-				if (boeContainer != null && string.IsNullOrEmpty(boeContainer.LastChild.LastChild.InnerText) &&
-					boeContainer.LastChild.LastChild.GetType() == typeof(Paragraph))
+				if (boeContainer != null && boeContainer.LastChild is CompositeNode composite 
+					&& string.IsNullOrEmpty(composite.LastChild.GetText()) &&
+					composite.LastChild is Paragraph)
 				{
-					boeContainer.LastChild.LastChild.Remove();
+					composite.LastChild.Remove();
 				}
 			}
 
@@ -552,20 +558,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region Set "View" to "Print Layout"
 
-			if (document.MainDocumentPart.DocumentSettingsPart == null)
-			{
-				document.MainDocumentPart.AddNewPart<DocumentSettingsPart>();
-			}
-			if (document.MainDocumentPart.DocumentSettingsPart.Settings == null)
-			{
-				document.MainDocumentPart.DocumentSettingsPart.Settings = new Settings();
-			}
-			if (document.MainDocumentPart.DocumentSettingsPart.Settings.View == null)
-			{
-				document.MainDocumentPart.DocumentSettingsPart.Settings.View = new View();
-			}
-			document.MainDocumentPart.DocumentSettingsPart.Settings.View.Val = ViewValues.Print;
-
+			document.ViewOptions.ViewType = ViewType.PageLayout;
+			
 			#endregion
 
 			// remove content controls
@@ -600,14 +594,14 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="boeExportModelView">Modelview for the BOE</param>
 		/// <param name="selectedComponents">Template components selected for the export</param>
 		/// <param name="counters"></param>
-		private void ProcessBOEHeader(WordprocessingDocument document, SdtElement boeContainer, BOEExportModelView boeExportModelView, ICollection<BoeCustomReportComponent> selectedComponents, ref ChunkCounter counters)
+		private void ProcessBOEHeader(Document document, StructuredDocumentTag boeContainer, BOEExportModelView boeExportModelView, ICollection<BoeCustomReportComponent> selectedComponents, ref ChunkCounter counters)
 		{
 			if (selectedComponents == null)
 			{
 				throw new ArgumentNullException(nameof(selectedComponents));
 			}
 
-			SdtElement boeHeaderElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Container_BOEHeader);
+			StructuredDocumentTag boeHeaderElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Container_BOEHeader);
 			if (boeHeaderElement != null)
 			{
 
@@ -729,11 +723,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 				foreach (KeyValuePair<string, string> entry in boeHeaderDataValueMappings)
 				{
-					SdtElement dataElement = WordUtilities.GetTaggedChildElement(boeHeaderElement, entry.Key);
+					StructuredDocumentTag dataElement = WordUtilities.GetTaggedChildElement(boeHeaderElement, entry.Key);
 
 					if (entry.Key == BOEExporterConstants.FieldName_BOEDescription)
 					{
-						WordUtilities.SetElementTextWithHTML(document.MainDocumentPart, dataElement, entry.Value, ref counters);
+						WordUtilities.SetElementTextWithHTML(document, dataElement, entry.Value, ref counters);
 					}
 					else
 					{
@@ -751,7 +745,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="selectedComponents">The selected components.</param>
 		/// <param name="exportInputs">The export inputs.</param>
 		/// <exception cref="ArgumentNullException">selectedComponents</exception>
-		private void ProcessBOECustomFields(SdtElement boeContainer, BOEExportModelView boeExportModelView, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs)
+		private void ProcessBOECustomFields(StructuredDocumentTag boeContainer, BOEExportModelView boeExportModelView, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs)
 		{
 			if (selectedComponents == null)
 			{
@@ -760,7 +754,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region Custom Fields (BOE-level)
 
-			SdtElement boeCustomFieldsContainerElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.CustomFields_BOEContainer);
+			StructuredDocumentTag boeCustomFieldsContainerElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.CustomFields_BOEContainer);
 
 			#region Component selection filtering
 
@@ -797,7 +791,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="selectedComponents">The selected components.</param>
 		/// <exception cref="ArgumentNullException">
 		/// selectedComponents or boeExportModelView</exception>
-		protected virtual void ProcessBOEHoursSummaryTable(SdtElement boeContainer, BOEExportModelView boeExportModelView, ICollection<BoeCustomReportComponent> selectedComponents)
+		protected virtual void ProcessBOEHoursSummaryTable(StructuredDocumentTag boeContainer, BOEExportModelView boeExportModelView, ICollection<BoeCustomReportComponent> selectedComponents)
 		{
 			if (selectedComponents == null)
 			{
@@ -810,7 +804,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region BOE Hours Summary Table
 
-			SdtElement boeHoursSummaryTableElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_BOEHoursSummary);
+			StructuredDocumentTag boeHoursSummaryTableElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_BOEHoursSummary);
 
 			if (boeHoursSummaryTableElement == null)
 			{
@@ -833,7 +827,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="selectedComponents">The selected components.</param>
 		/// <exception cref="ArgumentNullException">
 		/// selectedComponents or boeExportModelView</exception>
-		protected virtual void ProcessBOECostSummaryTable(SdtElement boeContainer, WorkspaceDTO workspaceData, Collection<ResourceDTO> travelResources, BOEExportModelView boeExportModelView, ICollection<BoeCustomReportComponent> selectedComponents)
+		protected virtual void ProcessBOECostSummaryTable(StructuredDocumentTag boeContainer, WorkspaceDTO workspaceData, Collection<ResourceDTO> travelResources, BOEExportModelView boeExportModelView, ICollection<BoeCustomReportComponent> selectedComponents)
 		{
 			if (selectedComponents == null)
 			{
@@ -846,7 +840,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region BOE Cost Summary Table
 
-			SdtElement boeCostSummaryTableElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_BOECostSummary);
+			StructuredDocumentTag boeCostSummaryTableElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_BOECostSummary);
 
 			if (boeCostSummaryTableElement == null)
 			{
@@ -869,7 +863,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="selectedComponents">The selected components.</param>
 		/// <param name="counters">The counters.</param>
 		/// <exception cref="ArgumentNullException">selectedComponents</exception>
-		private void ProcessBOESourcesOfData(WordprocessingDocument document, SdtElement boeContainer, BOEExportModelView boeExportModelView,
+		private void ProcessBOESourcesOfData(Document document, StructuredDocumentTag boeContainer, BOEExportModelView boeExportModelView,
 			ICollection<BoeCustomReportComponent> selectedComponents, ref ChunkCounter counters)
 		{
 			if (selectedComponents == null)
@@ -880,10 +874,10 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			// Set the BOE Sources of Data text if the field was selected, the tag exists in the template, and the BOE is set to show the Sources of Data field.
 			if (selectedComponents.Contains(BoeCustomReportComponent.BOESourcesofData))
 			{
-				SdtElement sourcesOfDataElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.FieldName_BOESourcesOfData);
+				StructuredDocumentTag sourcesOfDataElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.FieldName_BOESourcesOfData);
 				if (sourcesOfDataElement != null)
 				{
-					WordUtilities.SetElementTextWithHTML(document.MainDocumentPart, sourcesOfDataElement, boeExportModelView.DataSource, ref counters);
+					WordUtilities.SetElementTextWithHTML(document, sourcesOfDataElement, boeExportModelView.DataSource, ref counters);
 				}
 			}
 			// If Sources of Data was not selected or if the BOE is set to not show it, remove its container from the output.
@@ -900,7 +894,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="boeExportModelView">The boe export model view.</param>
 		/// <param name="selectedComponents">The selected components.</param>
 		/// <exception cref="ArgumentNullException">selectedComponents</exception>
-		private void ProcessBOESignaturesAndDatePrepared(SdtElement boeContainer, BOEExportModelView boeExportModelView, ICollection<BoeCustomReportComponent> selectedComponents)
+		private void ProcessBOESignaturesAndDatePrepared(StructuredDocumentTag boeContainer, BOEExportModelView boeExportModelView, ICollection<BoeCustomReportComponent> selectedComponents)
 		{
 			if (selectedComponents == null)
 			{
@@ -909,7 +903,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region BOE Signatures and Date Prepared
 
-			SdtElement boeSignaturesTableElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Container_BOESignatures);
+			StructuredDocumentTag boeSignaturesTableElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Container_BOESignatures);
 
 			if (boeSignaturesTableElement == null)
 			{
@@ -951,27 +945,27 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// </summary>
 		/// <param name="boeContainer">The boe container</param>
 		/// <param name="boeExportModelView">The boe export modelview</param>
-		private void ProcessTaskSummaryTable(SdtElement boeContainer, BOEExportModelView boeExportModelView)
+		private void ProcessTaskSummaryTable(StructuredDocumentTag boeContainer, BOEExportModelView boeExportModelView)
 		{
-			SdtElement taskSummaryTableElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_TaskSummary);
+			StructuredDocumentTag taskSummaryTableElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_TaskSummary);
 
 			if (taskSummaryTableElement != null)
 			{
 				// Get row markers and template rows
-				SdtElement dataRowMarkerTag = WordUtilities.GetTaggedChildElement(taskSummaryTableElement, BOEExporterConstants.Marker_DataRow);
-				TableRow templateDataRow = dataRowMarkerTag.Ancestors<TableRow>().FirstOrDefault();
+				StructuredDocumentTag dataRowMarkerTag = WordUtilities.GetTaggedChildElement(taskSummaryTableElement, BOEExporterConstants.Marker_DataRow);
+				Row templateDataRow = dataRowMarkerTag.GetAncestor(NodeType.Row) as Row;
 				this.SetCantSplit(templateDataRow);
 
-				SdtElement subtotalRowMarkerTag = WordUtilities.GetTaggedChildElement(taskSummaryTableElement, BOEExporterConstants.Marker_SubTotalsRow);
-				TableRow templateSubtotalRow = subtotalRowMarkerTag.Ancestors<TableRow>().FirstOrDefault();
+				StructuredDocumentTag subtotalRowMarkerTag = WordUtilities.GetTaggedChildElement(taskSummaryTableElement, BOEExporterConstants.Marker_SubTotalsRow);
+				Row templateSubtotalRow = subtotalRowMarkerTag.GetAncestor(NodeType.Row) as Row;
 				this.SetCantSplit(templateSubtotalRow);
 
-				SdtElement totalRowMarkerTag = WordUtilities.GetTaggedChildElement(taskSummaryTableElement, BOEExporterConstants.Marker_TotalsRow);
-				TableRow templateTotalRow = totalRowMarkerTag.Ancestors<TableRow>().FirstOrDefault();
+				StructuredDocumentTag totalRowMarkerTag = WordUtilities.GetTaggedChildElement(taskSummaryTableElement, BOEExporterConstants.Marker_TotalsRow);
+				Row templateTotalRow = totalRowMarkerTag.GetAncestor(NodeType.Row) as Row;
 				this.SetCantSplit(templateTotalRow);
 
 				// initialize insertion row
-				TableRow currentInsertionRow = templateDataRow;
+				Row currentInsertionRow = templateDataRow;
 
 				if (boeExportModelView.IsMultiClinWbs)
 				{
@@ -991,7 +985,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="templateDataRow">template for the data row</param>
 		/// <param name="templateTotalRow">template for the total row</param>
 		/// <param name="currentInsertionRow">the current insertion row</param>
-		private void PopulateTaskSummaryTable(BOEExportModelView boeExportModelView, TableRow templateDataRow, TableRow templateSubtotalRow, TableRow templateTotalRow, TableRow currentInsertionRow)
+		private void PopulateTaskSummaryTable(BOEExportModelView boeExportModelView, Row templateDataRow, Row templateSubtotalRow, Row templateTotalRow, Row currentInsertionRow)
 		{
 			// There will only be one WBS, so no need for a subtotal
 			this.RemoveElement(templateSubtotalRow);
@@ -1002,11 +996,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			foreach (BOEExportTaskElement task in boeExportModelView.TaskElements.OrderBy(x => x.BOETaskElementOrder))
 			{
 				// Create a new row
-				TableRow tableRow = this.CloneMarkedTemplateRow(templateDataRow);
+				Row tableRow = this.CloneMarkedTemplateRow(templateDataRow);
 
 				// Populate the row
-				SdtElement wbsNumberElement = WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_WBSNumber);
-				SdtElement wbsTitleElement = WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_WBSTitle);
+				StructuredDocumentTag wbsNumberElement = WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_WBSNumber);
+				StructuredDocumentTag wbsTitleElement = WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_WBSTitle);
 
 				// Only print the WBS Number and Title on the first row
 				if (firstRow)
@@ -1021,7 +1015,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					this.RemoveElement(wbsTitleElement);
 				}
 
-				SdtElement taskIdElement = WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_TaskElementID);
+				StructuredDocumentTag taskIdElement = WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_TaskElementID);
 				if (!string.IsNullOrEmpty(task.BOETaskID))
 				{
 					WordUtilities.SetElementText(taskIdElement, "Task " + task.BOETaskID + ":");
@@ -1038,16 +1032,16 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Hours), hours.ToString(DefaultHoursFormat));
 
 				// Add the row to the table
-				currentInsertionRow.InsertAfterSelf(tableRow);
+				currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
 				currentInsertionRow = tableRow;
 			}
 
 			// populate the total row
-			TableRow totalRow = this.CloneMarkedTemplateRow(templateTotalRow);
+			Row totalRow = this.CloneMarkedTemplateRow(templateTotalRow);
 			WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_Total), grandTotal.ToString(DefaultHoursFormat));
 
 			// add it to the table
-			currentInsertionRow.InsertAfterSelf(totalRow);
+			currentInsertionRow.ParentNode.InsertAfter(totalRow, currentInsertionRow);
 
 			// remove template rows
 			this.RemoveElement(templateDataRow);
@@ -1062,7 +1056,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="templateSubtotalRow">template for the subtotal row</param>
 		/// <param name="templateTotalRow">template for the total row</param>
 		/// <param name="currentInsertionRow">the current insertion row</param>
-		private void PopulateTaskSummaryTable_MultiWBS(BOEExportModelView boeExportModelView, TableRow templateDataRow, TableRow templateSubtotalRow, TableRow templateTotalRow, TableRow currentInsertionRow)
+		private void PopulateTaskSummaryTable_MultiWBS(BOEExportModelView boeExportModelView, Row templateDataRow, Row templateSubtotalRow, Row templateTotalRow, Row currentInsertionRow)
 		{
 			ICollection<string> distinctWbs = boeExportModelView.TaskElements.SelectMany(x => x.taskElementLabors).Select(y => y.ExportFields[BOEExporterConstants.FieldName_WBSNumber]).Distinct().OrderBy(z => z).ToCollection();
 			decimal grandTotal = 0m;
@@ -1077,11 +1071,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				foreach (IGrouping<string, BOEExportTaskElementLabor> laborGroup in laborsGroupedByTask)
 				{
 					// Create a new row
-					TableRow tableRow = this.CloneMarkedTemplateRow(templateDataRow);
+					Row tableRow = this.CloneMarkedTemplateRow(templateDataRow);
 
 					// Populate the row
-					SdtElement wbsNumberElement = WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_WBSNumber);
-					SdtElement wbsTitleElement = WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_WBSTitle);
+					StructuredDocumentTag wbsNumberElement = WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_WBSNumber);
+					StructuredDocumentTag wbsTitleElement = WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_WBSTitle);
 
 					// Only print the WBS Number and Title on the first row
 					if (firstRow)
@@ -1102,7 +1096,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					string taskTitle = task != null ? task.TaskTitle : string.Empty;
 					decimal taskHours = laborGroup.Sum(x => x.Hours ?? 0);
 
-					SdtElement taskIdElement = WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_TaskElementID);
+					StructuredDocumentTag taskIdElement = WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_TaskElementID);
 					if (!string.IsNullOrEmpty(taskId))
 					{
 						WordUtilities.SetElementText(taskIdElement, "Task " + taskId + ":");
@@ -1118,28 +1112,28 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					subTotal += taskHours;
 
 					// add the row to the table
-					currentInsertionRow.InsertAfterSelf(tableRow);
+					currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
 					currentInsertionRow = tableRow;
 				}
 
 				// populate the subtotal for the WBS
-				TableRow subtotalRow = this.CloneMarkedTemplateRow(templateSubtotalRow);
+				Row subtotalRow = this.CloneMarkedTemplateRow(templateSubtotalRow);
 				WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(subtotalRow, BOEExporterConstants.FieldName_WBSNumber), string.IsNullOrEmpty(wbs) ? "No WBS" : "WBS " + wbs);
 				WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(subtotalRow, BOEExporterConstants.FieldName_SubTotal), subTotal.ToString(DefaultHoursFormat));
 
 				grandTotal += subTotal;
 
 				// add the row to the table
-				currentInsertionRow.InsertAfterSelf(subtotalRow);
+				currentInsertionRow.ParentNode.InsertAfter(subtotalRow, currentInsertionRow);
 				currentInsertionRow = subtotalRow;
 			}
 
 			// populate the total row
-			TableRow totalRow = this.CloneMarkedTemplateRow(templateTotalRow);
+			Row totalRow = this.CloneMarkedTemplateRow(templateTotalRow);
 			WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_Total), grandTotal.ToString(DefaultHoursFormat));
 
 			// add it to the table
-			currentInsertionRow.InsertAfterSelf(totalRow);
+			currentInsertionRow.ParentNode.InsertAfter(totalRow, currentInsertionRow);
 
 			// remove template rows
 			this.RemoveElement(templateDataRow);
@@ -1160,14 +1154,14 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="selectedComponents">The selected components.</param>
 		/// <param name="exportInputs">The export inputs.</param>
 		/// <exception cref="ArgumentNullException">selectedComponents</exception>
-		private void ProcessLaborTaskCustomFields(SdtElement containerElement, BOEExportTaskElement laborTaskElement, IReadOnlyCollection<CustomFieldDTO> allWorkspaceCustomFields, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs)
+		private void ProcessLaborTaskCustomFields(StructuredDocumentTag containerElement, BOEExportTaskElement laborTaskElement, IReadOnlyCollection<CustomFieldDTO> allWorkspaceCustomFields, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs)
 		{
 			if (selectedComponents == null)
 			{
 				throw new ArgumentNullException(nameof(selectedComponents));
 			}
 
-			SdtElement laborCustomFieldsContainerElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.CustomFields_LaborContainer);
+			StructuredDocumentTag laborCustomFieldsContainerElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.CustomFields_LaborContainer);
 
 			if (laborCustomFieldsContainerElement == null) { }
 			else if (selectedComponents.Contains(BoeCustomReportComponent.TaskCustomFields) && laborTaskElement.BOETaskElementID.HasValue)
@@ -1193,12 +1187,12 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="ResourceElement">resource element that contains the custom fields</param>
 		/// <param name="allWorkspaceCustomFields">all custom fields in the workspace</param>
 		/// <param name="exportInputs">The export inputs.</param>
-		protected void ProcessResourceCustomFields(SdtElement containerElement, BOEExportTaskElementLabor ResourceElement, IReadOnlyCollection<CustomFieldDTO> allWorkspaceCustomFields, BOEExportInputs exportInputs)
+		protected void ProcessResourceCustomFields(StructuredDocumentTag containerElement, BOEExportTaskElementLabor ResourceElement, IReadOnlyCollection<CustomFieldDTO> allWorkspaceCustomFields, BOEExportInputs exportInputs)
 		{
 			if (ResourceElement == null) { throw new ArgumentNullException(nameof(ResourceElement)); }
 			if (exportInputs == null) { throw new ArgumentNullException(nameof(exportInputs)); }
 
-			SdtElement resourceCustomFieldsContainerElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.CustomFields_ResourceContainer);
+			StructuredDocumentTag resourceCustomFieldsContainerElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.CustomFields_ResourceContainer);
 
 			if (resourceCustomFieldsContainerElement != null)
 			{
@@ -1225,9 +1219,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// </summary>
 		/// <param name="document">Main Document</param>
 		/// <param name="workspace">Full Workspace</param>
-		private void SetWorkspaceFields(WordprocessingDocument document, WorkspaceDTO workspace)
+		private void SetWorkspaceFields(Document document, WorkspaceDTO workspace)
 		{
-			SdtElement dataElement = WordUtilities.GetTaggedElement(document, BOEExporterConstants.FieldName_ProgramNameHeader);
+			StructuredDocumentTag dataElement = WordUtilities.GetTaggedElement(document, BOEExporterConstants.FieldName_ProgramNameHeader);
 
 			if (dataElement != null)
 			{
@@ -1335,7 +1329,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="containsBoeHeaderInTask">if set to <c>true</c> [contains boe header in task].</param>
 		/// <param name="counters">The counters.</param>
 		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-		private void ProcessAllTaskElements(WordprocessingDocument document, SdtElement boeContainer, ICollection<BoeTaskElementDTO> taskElementCollection, BoeDTO exportBoe, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView,
+		private void ProcessAllTaskElements(Document document, StructuredDocumentTag boeContainer, ICollection<BoeTaskElementDTO> taskElementCollection, BoeDTO exportBoe, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView,
 			IDictionary<ElementOfCostType, Collection<ResourceDTO>> resourcesByElementOfCost, ICollection<BoeCustomReportComponent> selectedComponents, bool containsBoeHeaderInTask, ref ChunkCounter counters)
 		{
 			Collection<ResourceDTO> travelResources = resourcesByElementOfCost[ElementOfCostType.Travel];
@@ -1351,11 +1345,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region Locate all task containers (in the template)
 
-			IDictionary<BOEExportTaskElementType, SdtElement> taskContainerTemplateElements = new Dictionary<BOEExportTaskElementType, SdtElement>();
+			IDictionary<BOEExportTaskElementType, StructuredDocumentTag> taskContainerTemplateElements = new Dictionary<BOEExportTaskElementType, StructuredDocumentTag>();
 			foreach (BOEExportTaskElementType taskElementType in Enum.GetValues(typeof(BOEExportTaskElementType)).Cast<BOEExportTaskElementType>())
 			{
 				string taskContainerTag = BOEExporterConstants.TaskContainerPrefix + taskElementType.GetName();
-				SdtElement taskContainerTemplateElement = WordUtilities.GetTaggedChildElement(boeContainer, taskContainerTag);
+				StructuredDocumentTag taskContainerTemplateElement = WordUtilities.GetTaggedChildElement(boeContainer, taskContainerTag);
 				taskContainerTemplateElements.Add(taskElementType, taskContainerTemplateElement);
 			}
 
@@ -1363,14 +1357,14 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region Task section container element references
 
-			SdtElement laborSectionTitleElement = WordUtilities.GetTaggedChildElement(boeContainer, string.Format("{0}Labor", BOEExporterConstants.SectionTitlePrefix));
-			SdtElement travelSectionTitleElement = WordUtilities.GetTaggedChildElement(boeContainer, string.Format("{0}Travel", BOEExporterConstants.SectionTitlePrefix));
-			SdtElement odcSectionTitleElement = WordUtilities.GetTaggedChildElement(boeContainer, string.Format("{0}ODC", BOEExporterConstants.SectionTitlePrefix));
-			SdtElement materialSectionTitleElement = WordUtilities.GetTaggedChildElement(boeContainer, string.Format("{0}Material", BOEExporterConstants.SectionTitlePrefix));
-			SdtElement laborTaskContainerTemplateElement = taskContainerTemplateElements[BOEExportTaskElementType.Labor];
-			SdtElement travelTaskContainerTemplateElement = taskContainerTemplateElements[BOEExportTaskElementType.Travel];
-			SdtElement odcTaskContainerTemplateElement = taskContainerTemplateElements[BOEExportTaskElementType.ODC];
-			SdtElement materialTaskContainerTemplateElement = taskContainerTemplateElements[BOEExportTaskElementType.Material];
+			StructuredDocumentTag laborSectionTitleElement = WordUtilities.GetTaggedChildElement(boeContainer, string.Format("{0}Labor", BOEExporterConstants.SectionTitlePrefix));
+			StructuredDocumentTag travelSectionTitleElement = WordUtilities.GetTaggedChildElement(boeContainer, string.Format("{0}Travel", BOEExporterConstants.SectionTitlePrefix));
+			StructuredDocumentTag odcSectionTitleElement = WordUtilities.GetTaggedChildElement(boeContainer, string.Format("{0}ODC", BOEExporterConstants.SectionTitlePrefix));
+			StructuredDocumentTag materialSectionTitleElement = WordUtilities.GetTaggedChildElement(boeContainer, string.Format("{0}Material", BOEExporterConstants.SectionTitlePrefix));
+			StructuredDocumentTag laborTaskContainerTemplateElement = taskContainerTemplateElements[BOEExportTaskElementType.Labor];
+			StructuredDocumentTag travelTaskContainerTemplateElement = taskContainerTemplateElements[BOEExportTaskElementType.Travel];
+			StructuredDocumentTag odcTaskContainerTemplateElement = taskContainerTemplateElements[BOEExportTaskElementType.ODC];
+			StructuredDocumentTag materialTaskContainerTemplateElement = taskContainerTemplateElements[BOEExportTaskElementType.Material];
 
 			#endregion
 
@@ -1406,14 +1400,14 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				//Remove columns not needed in the Resource Types Table for this BOE
 				RemoveUnusedFieldsFromResourceTypesTable(exportInputs, boeExportModelView, laborTaskContainerTemplateElement);
 
-				SdtElement currentLaborTaskContainerInsertionPoint = laborTaskContainerTemplateElement;
+				StructuredDocumentTag currentLaborTaskContainerInsertionPoint = laborTaskContainerTemplateElement;
 
 				//order the elements by order id then the creation date.
 				allLaborTaskElementsFull = allLaborTaskElementsFull.OrderBy(x => x.BOETaskElementOrder).ThenBy(y => y.BOETaskElementID).ToList();
 				foreach (BOEExportTaskElement laborTaskElement in allLaborTaskElementsFull)
 				{
 					//  create (clone) a new container for this task
-					SdtElement containerElement = CloneContainerTemplate(laborTaskContainerTemplateElement);
+					StructuredDocumentTag containerElement = CloneContainerTemplate(laborTaskContainerTemplateElement);
 
 					#region Process the data (IS&GS)
 					if (containsBoeHeaderInTask)
@@ -1432,7 +1426,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					#endregion
 
 					// add cloned container
-					currentLaborTaskContainerInsertionPoint.InsertAfterSelf(containerElement);
+					currentLaborTaskContainerInsertionPoint.ParentNode.InsertAfter(containerElement, currentLaborTaskContainerInsertionPoint);
 					currentLaborTaskContainerInsertionPoint = containerElement;
 				}
 
@@ -1459,13 +1453,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				//Process the Travel Tasks if travel is included in the output format template
 				if (travelTaskContainerTemplateElement != null)
 				{
-					SdtElement currentTravelTaskContainerInsertionPoint = travelTaskContainerTemplateElement;
+					StructuredDocumentTag currentTravelTaskContainerInsertionPoint = travelTaskContainerTemplateElement;
 					//order the elements by order id
 					allTravelTaskElementsFull = allTravelTaskElementsFull.OrderBy(x => x.BOETaskElementOrder).ToList();
 					foreach (BOEExportTaskElement travelTaskElement in allTravelTaskElementsFull)
 					{
 						//  create (clone) a new container for this task
-						SdtElement containerElement = CloneContainerTemplate(travelTaskContainerTemplateElement);
+						StructuredDocumentTag containerElement = CloneContainerTemplate(travelTaskContainerTemplateElement);
 
 						#region Process the data (IS&GS)
 
@@ -1477,7 +1471,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						#endregion
 
 						// add cloned container
-						currentTravelTaskContainerInsertionPoint.InsertAfterSelf(containerElement);
+						currentTravelTaskContainerInsertionPoint.ParentNode.InsertAfter(containerElement, currentTravelTaskContainerInsertionPoint);
 						currentTravelTaskContainerInsertionPoint = containerElement;
 					}
 
@@ -1505,13 +1499,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				//Process the ODC Tasks if ODC is included in the output format template
 				if (odcTaskContainerTemplateElement != null)
 				{
-					SdtElement currentODCTaskContainerInsertionPoint = odcTaskContainerTemplateElement;
+					StructuredDocumentTag currentODCTaskContainerInsertionPoint = odcTaskContainerTemplateElement;
 					//order the elements by order id
 					allODCTaskElementsFull = allODCTaskElementsFull.OrderBy(x => x.BOETaskElementOrder).ToList();
 					foreach (BOEExportTaskElement odcTaskElement in allODCTaskElementsFull)
 					{
 						//  create (clone) a new container for this task
-						SdtElement containerElement = CloneContainerTemplate(odcTaskContainerTemplateElement);
+						StructuredDocumentTag containerElement = CloneContainerTemplate(odcTaskContainerTemplateElement);
 
 						#region Process the data (IS&GS)
 
@@ -1524,7 +1518,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						#endregion
 
 						// add cloned container
-						currentODCTaskContainerInsertionPoint.InsertAfterSelf(containerElement);
+						currentODCTaskContainerInsertionPoint.ParentNode.InsertAfter(containerElement, currentODCTaskContainerInsertionPoint);
 						currentODCTaskContainerInsertionPoint = containerElement;
 					}
 
@@ -1551,12 +1545,12 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				//Process the Material Tasks if material is included in the output format template
 				if (materialTaskContainerTemplateElement != null)
 				{
-					SdtElement currentMaterialTaskContainerInsertionPoint = materialTaskContainerTemplateElement;
+					StructuredDocumentTag currentMaterialTaskContainerInsertionPoint = materialTaskContainerTemplateElement;
 
 					foreach (BOEExportTaskElement materialTaskElement in allMaterialTaskElementsFull)
 					{
 						//  create (clone) a new container for this task
-						SdtElement containerElement = CloneContainerTemplate(materialTaskContainerTemplateElement);
+						StructuredDocumentTag containerElement = CloneContainerTemplate(materialTaskContainerTemplateElement);
 
 						#region Process the data (IS&GS)
 
@@ -1568,7 +1562,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						#endregion
 
 						// add cloned container
-						currentMaterialTaskContainerInsertionPoint.InsertAfterSelf(containerElement);
+						currentMaterialTaskContainerInsertionPoint.ParentNode.InsertAfter(containerElement, currentMaterialTaskContainerInsertionPoint);
 						currentMaterialTaskContainerInsertionPoint = containerElement;
 					}
 
@@ -1605,16 +1599,16 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="exportInputs">The export inputs.</param>
 		/// <param name="boeExportModelView">The boe export model view.</param>
 		/// <param name="laborTaskContainerTemplateElement">The labor task container template element.</param>
-		private static void RemoveUnusedFieldsFromResourceTypesTable(BOEExportInputs exportInputs, BOEExportModelView boeExportModelView, SdtElement laborTaskContainerTemplateElement)
+		private static void RemoveUnusedFieldsFromResourceTypesTable(BOEExportInputs exportInputs, BOEExportModelView boeExportModelView, StructuredDocumentTag laborTaskContainerTemplateElement)
 		{
-			SdtElement resourceTypesTableElement = WordUtilities.GetTaggedChildElement(laborTaskContainerTemplateElement, BOEExporterConstants.Table_ResourceTypes);
+			StructuredDocumentTag resourceTypesTableElement = WordUtilities.GetTaggedChildElement(laborTaskContainerTemplateElement, BOEExporterConstants.Table_ResourceTypes);
 
 			if (resourceTypesTableElement != null)
 			{
 				//If there are no Resource Types level Custom Fields, delete column from table
 				if (!exportInputs.CustomFields.Any(x => x.CustomFieldDisplayID == CustomFieldType.LaborTypeDisplay))
 				{
-					SdtElement customFieldDescriptionBlock = WordUtilities.GetTaggedChildElement(resourceTypesTableElement, BOEExporterConstants.FieldName_CustomFieldDescription);
+					StructuredDocumentTag customFieldDescriptionBlock = WordUtilities.GetTaggedChildElement(resourceTypesTableElement, BOEExporterConstants.FieldName_CustomFieldDescription);
 					if (customFieldDescriptionBlock != null)
 					{
 						WordUtilities.removeColumnFromTable(customFieldDescriptionBlock);
@@ -1623,8 +1617,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				//Delete WBS/CLIN columns if BOE is not Multi
 				if (!boeExportModelView.IsMultiClinWbs)
 				{
-					SdtElement resourceWbsBlock = WordUtilities.GetTaggedChildElement(laborTaskContainerTemplateElement, BOEExporterConstants.FieldName_ResourceWBS);
-					SdtElement resourceClinBlock = WordUtilities.GetTaggedChildElement(laborTaskContainerTemplateElement, BOEExporterConstants.FieldName_ResourceCLIN);
+					StructuredDocumentTag resourceWbsBlock = WordUtilities.GetTaggedChildElement(laborTaskContainerTemplateElement, BOEExporterConstants.FieldName_ResourceWBS);
+					StructuredDocumentTag resourceClinBlock = WordUtilities.GetTaggedChildElement(laborTaskContainerTemplateElement, BOEExporterConstants.FieldName_ResourceCLIN);
 					if (resourceWbsBlock != null)
 					{
 						WordUtilities.removeColumnFromTable(resourceWbsBlock);
@@ -1636,7 +1630,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				}
 
 				//Delete the Reference column if BOE is not a Summary BOE
-				SdtElement referenceBlock = WordUtilities.GetTaggedChildElement(resourceTypesTableElement, BOEExporterConstants.FieldName_SummaryReference);
+				StructuredDocumentTag referenceBlock = WordUtilities.GetTaggedChildElement(resourceTypesTableElement, BOEExporterConstants.FieldName_SummaryReference);
 				if (referenceBlock != null)
 				{
 					WordUtilities.removeColumnFromTable(referenceBlock);
@@ -1650,7 +1644,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// </summary>
 		/// <param name="wsHasMoqRteTemplate">Whether Worksace has RTE Templates for MOQ Rationale</param>
 		/// <param name="containerElement">The container template</param>
-		protected virtual void RemoveNonTemplateBoeContainers(bool wsHasMoqRteTemplate, SdtElement containerElement)
+		protected virtual void RemoveNonTemplateBoeContainers(bool wsHasMoqRteTemplate, StructuredDocumentTag containerElement)
 		{
 			WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQTypeContainer);
 
@@ -1664,7 +1658,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 		#region Resource summary tables
 
-		private void ProcessResourceSummaryByResourceTypeTable(SdtElement boeContainer, ICollection<BOESummaryGridModelView> boeSummaryGridModelView, ICollection<BoeCustomReportComponent> selectedComponents)
+		private void ProcessResourceSummaryByResourceTypeTable(StructuredDocumentTag boeContainer, ICollection<BOESummaryGridModelView> boeSummaryGridModelView, ICollection<BoeCustomReportComponent> selectedComponents)
 		{
 			if (selectedComponents == null)
 			{
@@ -1673,7 +1667,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region Resource Summary By Resource Type Table
 
-			SdtElement resourceSummaryByResourceTypeTableElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_ResourceSummaryByResourceType);
+			StructuredDocumentTag resourceSummaryByResourceTypeTableElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_ResourceSummaryByResourceType);
 
 			#region Component selection filtering
 
@@ -1694,7 +1688,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			#endregion
 		}
 
-		private void ProcessResourceSummaryByElementOfCostTable(SdtElement boeContainer, BOEExportModelView boeExportModelView, ICollection<BOESummaryGridModelView> boeSummaryGridModelView, ICollection<BoeCustomReportComponent> selectedComponents)
+		private void ProcessResourceSummaryByElementOfCostTable(StructuredDocumentTag boeContainer, BOEExportModelView boeExportModelView, ICollection<BOESummaryGridModelView> boeSummaryGridModelView, ICollection<BoeCustomReportComponent> selectedComponents)
 		{
 			if (selectedComponents == null)
 			{
@@ -1703,7 +1697,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region Resource Summary By Element Of Cost Table
 
-			SdtElement resourceSummaryByElementOfCostTableElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_ResourceSummaryByElementOfCost);
+			StructuredDocumentTag resourceSummaryByElementOfCostTableElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_ResourceSummaryByElementOfCost);
 
 			#region Component selection filtering
 
@@ -1730,7 +1724,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="boeContainer">container for the BOE</param>
 		/// <param name="boeExportModelView">Model View for the BOE Export</param>
 		/// <param name="selectedComponents">selected components for the export</param>
-		private void ProcessResourceSummaryByResourceIDTable(SdtElement boeContainer, BOEExportModelView boeExportModelView, ICollection<BoeCustomReportComponent> selectedComponents)
+		private void ProcessResourceSummaryByResourceIDTable(StructuredDocumentTag boeContainer, BOEExportModelView boeExportModelView, ICollection<BoeCustomReportComponent> selectedComponents)
 		{
 			if (selectedComponents == null)
 			{
@@ -1739,7 +1733,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region Resource Summary By Resource ID Table
 
-			SdtElement resourceSummaryByResourceIDTableElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_ResourceSummaryByResourceID);
+			StructuredDocumentTag resourceSummaryByResourceIDTableElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_ResourceSummaryByResourceID);
 
 			if (resourceSummaryByResourceIDTableElement != null)
 			{
@@ -1774,15 +1768,15 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="isUsingEquivalentPerson">True if using EP, false if using Hours for spreads.</param>
 		/// <param name="summarizeByCustomField">Name of custom field to group by when running All BOEs report with special format template.</param>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		protected virtual void ProcessLaborHoursSummaryByCustomFieldTable(SdtElement boeContainer, BOEExportModelView boeExportModelView, IReadOnlyCollection<CustomFieldDTO> allWorkspaceCustomFields, ICollection<BoeTaskElementDTO> taskElementCollection, BOEExportInputs exportInputs, bool isUsingEquivalentPerson, string summarizeByCustomField)
+		protected virtual void ProcessLaborHoursSummaryByCustomFieldTable(StructuredDocumentTag boeContainer, BOEExportModelView boeExportModelView, IReadOnlyCollection<CustomFieldDTO> allWorkspaceCustomFields, ICollection<BoeTaskElementDTO> taskElementCollection, BOEExportInputs exportInputs, bool isUsingEquivalentPerson, string summarizeByCustomField)
 		{
-			SdtElement laborHoursSummaryByCustomFieldTableElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_LaborHoursSummaryByCustomField);
+			StructuredDocumentTag laborHoursSummaryByCustomFieldTableElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_LaborHoursSummaryByCustomField);
 
 			if (laborHoursSummaryByCustomFieldTableElement != null)
 			{
 				if (!string.IsNullOrEmpty(summarizeByCustomField) && !summarizeByCustomField.Equals(BOEExporterConstants.SUMMARIZE_BY_NONE) && taskElementCollection.Any())
 				{
-					SdtElement insertAfterElement = laborHoursSummaryByCustomFieldTableElement;
+					StructuredDocumentTag insertAfterElement = laborHoursSummaryByCustomFieldTableElement;
 
 					// group the task labors by custom field value
 					SortedDictionary<string, LaborResourceTypesTableData> laborSummaryData = GroupByCustomFieldValue(boeExportModelView, allWorkspaceCustomFields, taskElementCollection, exportInputs, summarizeByCustomField);
@@ -1795,8 +1789,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						if (tableData.ResourcesData != null && tableData.ResourcesData.Any())
 						{
 							//  create (clone) a new container for this entry
-							SdtElement containerElement = laborHoursSummaryByCustomFieldTableElement.CloneNode(true) as SdtElement;
-							insertAfterElement.InsertAfterSelf(containerElement);
+							StructuredDocumentTag containerElement = laborHoursSummaryByCustomFieldTableElement.Clone(true) as StructuredDocumentTag;
+							insertAfterElement.ParentNode.InsertAfter(containerElement, insertAfterElement);
 							insertAfterElement = containerElement;
 
 							PopulateLaborHoursSummaryByCustomFieldTable(containerElement, taskElementCollection, summarizeByCustomField, customFieldValue, tableData);
@@ -1882,7 +1876,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="isUsingEquivalentPerson">True if using EP, false if using Hours for spreads.</param>
 		/// <param name="useGfy">use government fiscal year?</param>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		protected virtual void ProcessLaborHoursSummaryTable(SdtElement boeContainer, ICollection<BoeTaskElementDTO> taskElementCollection, IDictionary<ElementOfCostType, Collection<ResourceDTO>> resourcesByElementOfCost, ICollection<BoeCustomReportComponent> selectedComponents, bool isUsingEquivalentPerson, bool useGfy)
+		protected virtual void ProcessLaborHoursSummaryTable(StructuredDocumentTag boeContainer, ICollection<BoeTaskElementDTO> taskElementCollection, IDictionary<ElementOfCostType, Collection<ResourceDTO>> resourcesByElementOfCost, ICollection<BoeCustomReportComponent> selectedComponents, bool isUsingEquivalentPerson, bool useGfy)
 		{
 			if (selectedComponents == null)
 			{
@@ -1891,7 +1885,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region Labor Hours Summary By Date Table
 
-			SdtElement laborHoursSummaryByDateTableElement = WordUtilities.GetTaggedChildElement(boeContainer,
+			StructuredDocumentTag laborHoursSummaryByDateTableElement = WordUtilities.GetTaggedChildElement(boeContainer,
 				useGfy ? BOEExporterConstants.Table_GfyLaborHoursSummaryByDate : BOEExporterConstants.Table_LaborHoursSummaryByDate);
 
 			bool byQuarter = false;
@@ -1937,7 +1931,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <exception cref="ArgumentNullException">
 		/// selectedComponents or boe or exportInputs</exception>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		protected virtual List<LaborRollupByDateNew> ProcessLaborCostSummaryTable(SdtElement boeContainer, BOEExportInputs exportInputs, BoeDTO boe, ICollection<BoeTaskElementDTO> taskElementDtos, IDictionary<ElementOfCostType, Collection<ResourceDTO>> resourcesByElementOfCost, ICollection<BoeCustomReportComponent> selectedComponents, bool useGfy)
+		protected virtual List<LaborRollupByDateNew> ProcessLaborCostSummaryTable(StructuredDocumentTag boeContainer, BOEExportInputs exportInputs, BoeDTO boe, ICollection<BoeTaskElementDTO> taskElementDtos, IDictionary<ElementOfCostType, Collection<ResourceDTO>> resourcesByElementOfCost, ICollection<BoeCustomReportComponent> selectedComponents, bool useGfy)
 		{
 			if (selectedComponents == null)
 			{
@@ -1957,7 +1951,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			#region Labor Cost Summary By Date Table
 			List<LaborRollupByDateNew> laborTasksRollupCostData = null;
 
-			SdtElement laborCostSummaryByDateTableElement = WordUtilities.GetTaggedChildElement(boeContainer,
+			StructuredDocumentTag laborCostSummaryByDateTableElement = WordUtilities.GetTaggedChildElement(boeContainer,
 				useGfy ? BOEExporterConstants.Table_GfyLaborCostSummaryByDate : BOEExporterConstants.Table_LaborCostSummaryByDate);
 
 			bool byQuarter = false;
@@ -1985,7 +1979,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			#endregion
 		}
 
-		private List<LaborRollupByDateNew> ProcessNonLaborCostSummaryTable(BoeDTO boe, SdtElement boeContainer, BOEExportModelView boeExportModelView, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs)
+		private List<LaborRollupByDateNew> ProcessNonLaborCostSummaryTable(BoeDTO boe, StructuredDocumentTag boeContainer, BOEExportModelView boeExportModelView, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs)
 		{
 			if (selectedComponents == null)
 			{
@@ -1994,7 +1988,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region Non-Labor Cost Summary By Date Table
 
-			SdtElement nonLaborCostSummaryByDateTableElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_NonLaborCostSummaryByDate);
+			StructuredDocumentTag nonLaborCostSummaryByDateTableElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_NonLaborCostSummaryByDate);
 
 			List<LaborRollupByDateNew> nonLaborRollupCostData = null;
 
@@ -2035,7 +2029,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			#endregion
 		}
 
-		private void ProcessLaborAndNonLaborCostSummaryTable(SdtElement boeContainer, List<LaborRollupByDateNew> laborTasksRollupCostData, List<LaborRollupByDateNew> nonLaborRollupCostData, ICollection<BoeCustomReportComponent> selectedComponents)
+		private void ProcessLaborAndNonLaborCostSummaryTable(StructuredDocumentTag boeContainer, List<LaborRollupByDateNew> laborTasksRollupCostData, List<LaborRollupByDateNew> nonLaborRollupCostData, ICollection<BoeCustomReportComponent> selectedComponents)
 		{
 			if (selectedComponents == null)
 			{
@@ -2044,7 +2038,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region Labor And Non Labor Cost Summary By Date Table
 
-			SdtElement laborAndNonLaborCostSummaryByDateTableElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_LaborAndNonLaborCostSummaryByDate);
+			StructuredDocumentTag laborAndNonLaborCostSummaryByDateTableElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_LaborAndNonLaborCostSummaryByDate);
 
 			if (laborAndNonLaborCostSummaryByDateTableElement == null)
 			{
@@ -2081,14 +2075,14 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="exportInputs">The export inputs.</param>
 		/// <param name="boeExportModelView">The boe export model view.</param>
 		/// <exception cref="ArgumentNullException">selectedComponents</exception>
-		protected virtual void ProcessLaborTaskHoursRollupTable(SdtElement containerElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView)
+		protected virtual void ProcessLaborTaskHoursRollupTable(StructuredDocumentTag containerElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView)
 		{
 			if (selectedComponents == null)
 			{
 				throw new ArgumentNullException(nameof(selectedComponents));
 			}
 
-			SdtElement laborHoursRollupTableTemplateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_LaborHoursRollup);
+			StructuredDocumentTag laborHoursRollupTableTemplateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_LaborHoursRollup);
 
 			if (laborHoursRollupTableTemplateElement != null)
 			{
@@ -2113,13 +2107,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="boeExportModelView">The boe export model view.</param>
 		/// <param name="useGfy">Should Government Fiscal Years be used</param>
 		/// <param name="byQuarter">If table uses quarters instead of months</param>
-		protected virtual void PrepareLaborTaskHoursRollupTableData(SdtElement templateElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, BOEExportModelView boeExportModelView, bool useGfy, bool byQuarter)
+		protected virtual void PrepareLaborTaskHoursRollupTableData(StructuredDocumentTag templateElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, BOEExportModelView boeExportModelView, bool useGfy, bool byQuarter)
 		{
 			BoeTaskElementDTO currentLaborTaskElement = allLaborTaskElements.FirstOrDefault(x => x.Id == laborTaskElement.BOETaskElementID.Value);
 
 			// if description is present, then it should be used instead of resource id.
 			bool useDescriptionInsteadOfName = WordUtilities.GetTaggedChildElement(WordUtilities.GetTaggedChildElement(templateElement, BOEExporterConstants.Marker_DataRow)
-																	.Ancestors<TableRow>().FirstOrDefault(), BOEExporterConstants.FieldName_ResourceDescription)
+																	.GetAncestor(NodeType.Row), BOEExporterConstants.FieldName_ResourceDescription)
 																	!= null;
 
 			Dictionary<int, List<LaborRollupByDateNew>> currentLaborTaskRollupData = this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useDescriptionInsteadOfName, useGfy, null, RateType.Hours);
@@ -2138,7 +2132,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="allLaborTaskElements">All task elements for the BOE</param>
 		/// <param name="selectedComponents">Components selected for the output</param>
 		/// <param name="useGfy">Should Government Fiscal Years be used</param>
-		protected virtual void ProcessLaborTaskCostSpreadRollupTable(SdtElement containerElement, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents, bool useGfy)
+		protected virtual void ProcessLaborTaskCostSpreadRollupTable(StructuredDocumentTag containerElement, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents, bool useGfy)
 		{
 			//Nothing to do in ISGS mode
 			return;
@@ -2266,7 +2260,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="containerElement">Task Container</param>
 		/// <param name="selectedComponents">BOE Custom Report Selected Components</param>
 		/// <param name="boeExportModelView">BOE Export Model View</param>
-		private void ProcessTaskHeaderWithBoeData(SdtElement containerElement,
+		private void ProcessTaskHeaderWithBoeData(StructuredDocumentTag containerElement,
 			ICollection<BoeCustomReportComponent> selectedComponents, BOEExportModelView boeExportModelView)
 		{
 			if (selectedComponents == null)
@@ -2293,7 +2287,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			//Populate Fields
 			foreach (KeyValuePair<string, string> entry in taskHeaderBoeDataValueMappings)
 			{
-				SdtElement headerDataElement = WordUtilities.GetTaggedChildElement(containerElement, entry.Key);
+				StructuredDocumentTag headerDataElement = WordUtilities.GetTaggedChildElement(containerElement, entry.Key);
 
 				WordUtilities.SetElementText(headerDataElement, entry.Value);
 
@@ -2312,7 +2306,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="ws">Full WS</param>
 		/// <param name="counters">The counters.</param>
 		/// <exception cref="ArgumentNullException">selectedComponents</exception>
-		private void ProcessLaborTaskHeader(WordprocessingDocument document, SdtElement containerElement, BOEExportTaskElement laborTaskElement,
+		private void ProcessLaborTaskHeader(Document document, StructuredDocumentTag containerElement, BOEExportTaskElement laborTaskElement,
 			ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, ref ChunkCounter counters)
 		{
 			if (selectedComponents == null)
@@ -2397,8 +2391,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 				if (selectedComponents.Contains(BoeCustomReportComponent.TaskMOQType))
 				{
-					SdtElement templateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Container_MOQSelection);
-					this.PopulateMOQTypeData(laborTaskElement, selectedComponents, document.MainDocumentPart, templateElement, true, exportInputs, ref counters);
+					StructuredDocumentTag templateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Container_MOQSelection);
+					this.PopulateMOQTypeData(laborTaskElement, selectedComponents, document, templateElement, true, exportInputs, ref counters);
 
 					// if using RTE Template for MOQ Types, populate the fields
 					if (wsHasMoqRteTemplate)
@@ -2480,15 +2474,15 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			foreach (KeyValuePair<string, string> entry in laborTaskHeaderDataValueMappings)
 			{
-				SdtElement headerDataElement = WordUtilities.GetTaggedChildElement(containerElement, entry.Key);
+				StructuredDocumentTag headerDataElement = WordUtilities.GetTaggedChildElement(containerElement, entry.Key);
 
 				if (entry.Key == BOEExporterConstants.FieldName_TaskDescription || entry.Key == BOEExporterConstants.FieldName_MethodOfQuoting)
 				{
-					WordUtilities.SetElementTextWithHTML(document.MainDocumentPart, headerDataElement, entry.Value, ref counters, false);
+					WordUtilities.SetElementTextWithHTML(document, headerDataElement, entry.Value, ref counters, false);
 				}
 				else if (entry.Key == BOEExporterConstants.FieldName_TaskDescription_NoSpacing || entry.Key == BOEExporterConstants.FieldName_MethodOfQuoting_NoSpacing)
 				{
-					WordUtilities.SetElementTextWithHTML(document.MainDocumentPart, headerDataElement, entry.Value, ref counters, true);
+					WordUtilities.SetElementTextWithHTML(document, headerDataElement, entry.Value, ref counters, true);
 				}
 				else
 				{
@@ -2508,7 +2502,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="containerElement">Container element for the Travel Task Header</param>
 		/// <param name="travelTaskElement">Task element for the Travel task</param>
 		/// <param name="selectedComponents">Selected components for the export</param>
-		private void ProcessTravelTaskHeader(WordprocessingDocument document, SdtElement containerElement, BOEExportTaskElement travelTaskElement,
+		private void ProcessTravelTaskHeader(Document document, StructuredDocumentTag containerElement, BOEExportTaskElement travelTaskElement,
 			ICollection<BoeCustomReportComponent> selectedComponents, ref ChunkCounter counters)
 		{
 			if (selectedComponents == null)
@@ -2546,13 +2540,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			foreach (KeyValuePair<string, string> entry in travelTaskHeaderDataValueMappings)
 			{
-				SdtElement headerDataElement = WordUtilities.GetTaggedChildElement(containerElement, entry.Key);
+				StructuredDocumentTag headerDataElement = WordUtilities.GetTaggedChildElement(containerElement, entry.Key);
 
 				if (headerDataElement != null)
 				{
 					if (entry.Key == BOEExporterConstants.FieldName_TaskDescription)
 					{
-						WordUtilities.SetElementTextWithHTML(document.MainDocumentPart, headerDataElement, entry.Value, ref counters);
+						WordUtilities.SetElementTextWithHTML(document, headerDataElement, entry.Value, ref counters);
 					}
 					else
 					{
@@ -2571,7 +2565,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="containerElement">Container element for the ODC Task Header</param>
 		/// <param name="odcTaskElement">Task element for the ODC task</param>
 		/// <param name="selectedComponents">Selected components for the export</param>
-		private void ProcessODCTaskHeader(WordprocessingDocument document, SdtElement containerElement, BOEExportTaskElement odcTaskElement,
+		private void ProcessODCTaskHeader(Document document, StructuredDocumentTag containerElement, BOEExportTaskElement odcTaskElement,
 			ICollection<BoeCustomReportComponent> selectedComponents, ref ChunkCounter counters)
 		{
 			if (selectedComponents == null)
@@ -2641,14 +2635,14 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			foreach (KeyValuePair<string, string> entry in odcTaskHeaderDataValueMappings)
 			{
-				SdtElement headerDataElement = WordUtilities.GetTaggedChildElement(containerElement, entry.Key);
+				StructuredDocumentTag headerDataElement = WordUtilities.GetTaggedChildElement(containerElement, entry.Key);
 
 				if (headerDataElement != null)
 				{
 					if (entry.Key == BOEExporterConstants.FieldName_TaskDescription ||
 						entry.Key == BOEExporterConstants.FieldName_MethodOfQuoting)
 					{
-						WordUtilities.SetElementTextWithHTML(document.MainDocumentPart, headerDataElement, entry.Value, ref counters);
+						WordUtilities.SetElementTextWithHTML(document, headerDataElement, entry.Value, ref counters);
 					}
 					else
 					{
@@ -2667,7 +2661,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="containerElement">Container element for the Material Task Header</param>
 		/// <param name="materialTaskElement">Task element for the Material task</param>
 		/// <param name="selectedComponents">Selected components for the export</param>
-		private void ProcessMaterialTaskHeader(WordprocessingDocument document, SdtElement containerElement, BOEExportTaskElement materialTaskElement,
+		private void ProcessMaterialTaskHeader(Document document, StructuredDocumentTag containerElement, BOEExportTaskElement materialTaskElement,
 			ICollection<BoeCustomReportComponent> selectedComponents, ref ChunkCounter counters)
 		{
 			if (selectedComponents == null)
@@ -2719,14 +2713,14 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			foreach (KeyValuePair<string, string> entry in materialTaskHeaderDataValueMappings)
 			{
-				SdtElement headerDataElement = WordUtilities.GetTaggedChildElement(containerElement, entry.Key);
+				StructuredDocumentTag headerDataElement = WordUtilities.GetTaggedChildElement(containerElement, entry.Key);
 
 				if (headerDataElement != null)
 				{
 					if (entry.Key == BOEExporterConstants.FieldName_TaskDescription ||
 						entry.Key == BOEExporterConstants.FieldName_MethodOfQuoting)
 					{
-						WordUtilities.SetElementTextWithHTML(document.MainDocumentPart, headerDataElement, entry.Value, ref counters);
+						WordUtilities.SetElementTextWithHTML(document, headerDataElement, entry.Value, ref counters);
 					}
 					else
 					{
@@ -2836,7 +2830,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="allWorkspaceCustomFields">All custom fields in the current workspace</param>
 		/// <param name="selectedComponents">Components selected for the output</param>
 		/// <param name="exportInputs">The export inputs.</param>
-		private void ProcessLaborTaskResourceTable(SdtElement containerElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements,
+		private void ProcessLaborTaskResourceTable(StructuredDocumentTag containerElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements,
 			IReadOnlyCollection<CustomFieldDTO> allWorkspaceCustomFields, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs)
 		{
 			if (selectedComponents == null)
@@ -2851,7 +2845,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region Resource Types Table
 
-			SdtElement resourceTypesTableElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_ResourceTypes);
+			StructuredDocumentTag resourceTypesTableElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_ResourceTypes);
 
 			if (resourceTypesTableElement == null)
 			{
@@ -2873,13 +2867,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <summary>
 		/// Prepare data for the Labor Task Resource Table before populating it
 		/// </summary>
-		/// <param name="tableElement">SdtElement for the Labor Task Resource Table</param>
+		/// <param name="tableElement">StructuredDocumentTag for the Labor Task Resource Table</param>
 		/// <param name="laborTaskElement">Element for the labor task</param>
 		/// <param name="allLaborTaskElements">All task elements for the BOE</param>
 		/// <param name="allWorkspaceCustomFields">All custom fields in the current workspace</param>
 		/// <param name="exportInputs">The export inputs.</param>
 		/// <exception cref="ArgumentNullException">laborTaskElement</exception>
-		protected virtual void PrepareLaborTaskResourceTableData(SdtElement tableElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, IReadOnlyCollection<CustomFieldDTO> allWorkspaceCustomFields, BOEExportInputs exportInputs)
+		protected virtual void PrepareLaborTaskResourceTableData(StructuredDocumentTag tableElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, IReadOnlyCollection<CustomFieldDTO> allWorkspaceCustomFields, BOEExportInputs exportInputs)
 		{
 			if (laborTaskElement == null)
 			{
@@ -2903,14 +2897,14 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="containerElement">Container element for the table</param>
 		/// <param name="travelTaskElement">BOE Export Task Element for the Travel Task</param>
 		/// <param name="selectedComponents">Selected components for the custom export</param>
-		protected virtual void ProcessTravelTaskResourceTable(SdtElement containerElement, BOEExportTaskElement travelTaskElement, ICollection<BoeCustomReportComponent> selectedComponents)
+		protected virtual void ProcessTravelTaskResourceTable(StructuredDocumentTag containerElement, BOEExportTaskElement travelTaskElement, ICollection<BoeCustomReportComponent> selectedComponents)
 		{
 			if (travelTaskElement == null) { throw new ArgumentNullException(nameof(travelTaskElement)); }
 			if (selectedComponents == null) { throw new ArgumentNullException(nameof(selectedComponents)); }
 
 			#region Resource Types Table
 
-			SdtElement resourceTypesTableElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_ResourceTypes);
+			StructuredDocumentTag resourceTypesTableElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_ResourceTypes);
 
 			if (selectedComponents.Contains(BoeCustomReportComponent.TaskResourceTypesSummaryTable) && resourceTypesTableElement != null)
 			{
@@ -2925,7 +2919,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			#endregion
 		}
 
-		private void ProcessODCTaskResourceTable(SdtElement containerElement, BOEExportTaskElement odcTaskElement, ICollection<BoeCustomReportComponent> selectedComponents)
+		private void ProcessODCTaskResourceTable(StructuredDocumentTag containerElement, BOEExportTaskElement odcTaskElement, ICollection<BoeCustomReportComponent> selectedComponents)
 		{
 			if (selectedComponents == null)
 			{
@@ -2934,7 +2928,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region Resource Types Table
 
-			SdtElement resourceTypesTableElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_ResourceTypes);
+			StructuredDocumentTag resourceTypesTableElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_ResourceTypes);
 
 			if (resourceTypesTableElement == null)
 			{
@@ -2952,7 +2946,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			#endregion
 		}
 
-		private void ProcessMaterialTaskResourceTable(SdtElement containerElement, BOEExportTaskElement materialTaskElement, ICollection<BoeCustomReportComponent> selectedComponents)
+		private void ProcessMaterialTaskResourceTable(StructuredDocumentTag containerElement, BOEExportTaskElement materialTaskElement, ICollection<BoeCustomReportComponent> selectedComponents)
 		{
 			if (selectedComponents == null)
 			{
@@ -2961,7 +2955,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region Resource Types Table
 
-			SdtElement resourceTypesTableElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_ResourceTypes);
+			StructuredDocumentTag resourceTypesTableElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_ResourceTypes);
 
 			if (resourceTypesTableElement == null)
 			{
@@ -2992,7 +2986,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="allLaborTaskElements">All labor task elements.</param>
 		/// <param name="selectedComponents">The selected components.</param>
 		/// <param name="multiBoe">if set to <c>true</c> [multi boe].</param>
-		protected virtual void ProcessLaborTaskResources(SdtElement containerElement, BOEExportInputs exportInputs, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents, bool multiBoe)
+		protected virtual void ProcessLaborTaskResources(StructuredDocumentTag containerElement, BOEExportInputs exportInputs, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents, bool multiBoe)
 		{
 			//nothing to do in ISGS mode
 			return;
@@ -3005,7 +2999,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="exportInputs">The export inputs.</param>
 		/// <param name="odcTaskElement">The odc task element.</param>
 		/// <param name="selectedComponents">The selected components.</param>
-		protected virtual void ProcessODCTaskResources(SdtElement containerElement, BOEExportInputs exportInputs, BOEExportTaskElement odcTaskElement, ICollection<BoeCustomReportComponent> selectedComponents)
+		protected virtual void ProcessODCTaskResources(StructuredDocumentTag containerElement, BOEExportInputs exportInputs, BOEExportTaskElement odcTaskElement, ICollection<BoeCustomReportComponent> selectedComponents)
 		{
 			//nothing to do in ISGS mode
 			return;
@@ -3017,14 +3011,14 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="containerElement">Container elment for the resource</param>
 		/// <param name="odcTaskElement">Element for the ODC task containing the resource</param>
 		/// <param name="ODCType">ODC task data, including spreads</param>
-		protected void ProcessODCResourceCostRollupTable(SdtElement containerElement, BOEExportTaskElement odcTaskElement, OtherDirectCostType ODCType)
+		protected void ProcessODCResourceCostRollupTable(StructuredDocumentTag containerElement, BOEExportTaskElement odcTaskElement, OtherDirectCostType ODCType)
 		{
 			if (odcTaskElement == null)
 			{
 				throw new ArgumentNullException(nameof(odcTaskElement));
 			}
 
-			SdtElement resourceTableElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_ResourceCostRollup);
+			StructuredDocumentTag resourceTableElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_ResourceCostRollup);
 
 			if (resourceTableElement != null)
 			{
@@ -3199,7 +3193,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// or
 		/// exportInputs
 		/// </exception>
-		protected virtual void ProcessTravelTaskDirectCostRollupTable(SdtElement containerElement, BOEExportTaskElement travelTaskElement, Collection<ResourceDTO> travelResources,
+		protected virtual void ProcessTravelTaskDirectCostRollupTable(StructuredDocumentTag containerElement, BOEExportTaskElement travelTaskElement, Collection<ResourceDTO> travelResources,
 			ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, bool useGfy)
 		{
 			if (selectedComponents == null)
@@ -3214,7 +3208,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region Travel Direct Cost Rollup Table
 
-			SdtElement travelCostRollupTableElement = WordUtilities.GetTaggedChildElement(containerElement,
+			StructuredDocumentTag travelCostRollupTableElement = WordUtilities.GetTaggedChildElement(containerElement,
 				useGfy ? BOEExporterConstants.Table_GfyDirectCostRollup : BOEExporterConstants.Table_DirectCostRollup);
 
 			if (travelCostRollupTableElement != null && selectedComponents.Contains(BoeCustomReportComponent.TaskSpreadTables))
@@ -3244,7 +3238,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// or
 		/// exportInputs
 		/// </exception>
-		protected virtual void ProcessODCTaskDirectCostRollupTable(SdtElement containerElement, BOEExportTaskElement odcTaskElement, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, bool useGfy)
+		protected virtual void ProcessODCTaskDirectCostRollupTable(StructuredDocumentTag containerElement, BOEExportTaskElement odcTaskElement, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, bool useGfy)
 		{
 			if (selectedComponents == null)
 			{
@@ -3258,7 +3252,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region ODC Direct Cost Rollup Table
 
-			SdtElement odcCostRollupTableElement = WordUtilities.GetTaggedChildElement(containerElement,
+			StructuredDocumentTag odcCostRollupTableElement = WordUtilities.GetTaggedChildElement(containerElement,
 				useGfy ? BOEExporterConstants.Table_GfyDirectCostRollup : BOEExporterConstants.Table_DirectCostRollup);
 
 			if (odcCostRollupTableElement == null)
@@ -3292,7 +3286,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// or
 		/// exportInputs
 		/// </exception>
-		protected virtual void ProcessMaterialTaskDirectCostRollupTable(SdtElement containerElement, BOEExportTaskElement materialTaskElement, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, bool useGfy)
+		protected virtual void ProcessMaterialTaskDirectCostRollupTable(StructuredDocumentTag containerElement, BOEExportTaskElement materialTaskElement, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, bool useGfy)
 		{
 			if (selectedComponents == null)
 			{
@@ -3306,7 +3300,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region Material Direct Cost Rollup Table
 
-			SdtElement materialCostRollupTableElement = WordUtilities.GetTaggedChildElement(containerElement,
+			StructuredDocumentTag materialCostRollupTableElement = WordUtilities.GetTaggedChildElement(containerElement,
 				useGfy ? BOEExporterConstants.Table_GfyDirectCostRollup : BOEExporterConstants.Table_DirectCostRollup);
 
 			bool byQuarter = false;
@@ -3434,7 +3428,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// </summary>
 		/// <param name="containerElement">table container element</param>
 		/// <param name="tableTitle">title to name the table</param>
-		protected void SetTableTitle(SdtElement containerElement, string tableTitle)
+		protected void SetTableTitle(StructuredDocumentTag containerElement, string tableTitle)
 		{
 			/*
              * 
@@ -3466,15 +3460,16 @@ namespace GenBOE.DataBridge.Core.IO.Export
              */
 
 			// locate the corresponding table element (and the parent that contains it)
-			OpenXmlElement tableContainerElement = containerElement;
+			CompositeNode tableContainerElement = containerElement;
 			Table tableElement = null;
-			while (tableContainerElement != null && (tableElement = tableContainerElement.Descendants<Table>().FirstOrDefault()) == null)
+			// TODO TIW check while loop
+			while (tableContainerElement != null && (tableElement = tableContainerElement.GetChild(NodeType.Table, 0, true) as Table) == null)
 			{
-				tableContainerElement = tableContainerElement.Parent;
+				tableContainerElement = tableContainerElement.ParentNode;
 			}
 
 			// locate the table-title container element
-			SdtElement tableTitleContainerElement;
+			StructuredDocumentTag tableTitleContainerElement;
 			if ((tableTitleContainerElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.FieldName_TableTitle)) == null)
 			{
 				tableTitleContainerElement = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.FieldName_TableTitle);
@@ -3489,7 +3484,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			// then move it to just before the table itself
 			if (tableElement != null && tableTitleContainerElement != null)
 			{
-				OpenXmlElement tableTitleContainerParentElement = tableTitleContainerElement.Parent;
+				CompositeNode tableTitleContainerParentElement = tableTitleContainerElement.ParentNode;
 
 				if (tableTitleContainerElement is SdtRun && tableTitleContainerParentElement is Paragraph)
 				{
@@ -3498,14 +3493,14 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				else
 				{
 					tableTitleContainerParentElement.RemoveChild(tableTitleContainerElement);
-					OpenXmlElement previousSibling;
-					if ((previousSibling = tableElement.PreviousSibling()) != null)
+					Node previousSibling;
+					if ((previousSibling = tableElement.PreviousSibling) != null)
 					{
-						previousSibling.InsertAfterSelf(tableTitleContainerElement);
+						previousSibling.ParentNode.InsertAfter(tableTitleContainerElement, previousSibling);
 					}
 					else
 					{
-						tableElement.Parent.AppendChild(tableTitleContainerElement);
+						tableElement.ParentNode.AppendChild(tableTitleContainerElement);
 					}
 				}
 			}
@@ -3520,26 +3515,19 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// </summary>
 		/// <param name="containerElement">container element to be cloned</param>
 		/// <returns></returns>
-		protected SdtElement CloneContainerTemplate(SdtElement containerElement)
+		protected StructuredDocumentTag CloneContainerTemplate(StructuredDocumentTag containerElement)
 		{
 			if (containerElement == null)
 			{
 				throw new ArgumentNullException(nameof(containerElement));
 			}
 
-			SdtElement clonedContainerElement = containerElement.CloneNode(true) as SdtElement;
+			StructuredDocumentTag clonedContainerElement = containerElement.Clone(true) as StructuredDocumentTag;
 
 			#region Delete IDs to avoid conflict with existing elements
-
-			foreach (SdtId id in clonedContainerElement.Descendants<SdtId>())
-			{
-				id.Remove();
-			}
-
-			foreach (SdtPlaceholder placeholder in clonedContainerElement.Descendants<SdtPlaceholder>())
-			{
-				placeholder.Remove();
-			}
+			// TIW TODO 
+			// clonedContainerElement.Id = 0;
+			clonedContainerElement.Placeholder.Remove();
 
 			#endregion
 
@@ -3552,7 +3540,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="tableRow">The table row.</param>
 		/// <param name="monthlyValues">The monthly values.</param>
 		/// <param name="numericFormat">The numeric format.</param>
-		private void PopulateTableRowWithMonthlyData(TableRow tableRow, ValuesByMonth<decimal> monthlyValues, string numericFormat)
+		private void PopulateTableRowWithMonthlyData(Row tableRow, ValuesByMonth<decimal> monthlyValues, string numericFormat)
 		{
 			WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Jan), numericFormat == null ? monthlyValues.January.ToString() : monthlyValues.January.ToString(numericFormat));
 			WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Feb), numericFormat == null ? monthlyValues.February.ToString() : monthlyValues.February.ToString(numericFormat));
@@ -3575,7 +3563,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="monthlyValues">Values for each month</param>
 		/// <param name="numericFormat">format for numbers</param>
 		/// <param name="useGfy">if using Government Fiscal Year</param>
-		private void PopulateTableRowWithQuarterlyData(TableRow tableRow, ValuesByMonth<decimal> monthlyValues, string numericFormat, bool useGfy)
+		private void PopulateTableRowWithQuarterlyData(Row tableRow, ValuesByMonth<decimal> monthlyValues, string numericFormat, bool useGfy)
 		{
 			//get quarter values by adding up monthly values
 			decimal Q1 = monthlyValues.January + monthlyValues.February + monthlyValues.March;
@@ -3617,7 +3605,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// BOEHoursSummaryTable
 		/// BOECostSummaryTable
 		/// </remarks>
-		protected bool PopulateRollupSummaryByGroupByYearTable(SdtElement tableContainerElement, string tableTitle, RollupSummaryByGroupByYearTableData data, string numericFormat, bool byQuarter, bool useGfy = false)
+		protected bool PopulateRollupSummaryByGroupByYearTable(StructuredDocumentTag tableContainerElement, string tableTitle, RollupSummaryByGroupByYearTableData data, string numericFormat, bool byQuarter, bool useGfy = false)
 		{
 			if (data == null)
 			{
@@ -3632,7 +3620,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
                  * SdtBlock (tag = "BOECostSummaryTable")
                  *     SdtContentBlock
                  *         Table
-                 *             TableRow - Resource, Year, Jan ... Total
+                 *             Row - Resource, Year, Jan ... Total
                  *             TableRow
                  *                 TableCell
                  *                     Paragraph
@@ -3656,37 +3644,37 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				SetTableTitle(tableContainerElement, tableTitle);
 
 				// locate the table markers
-				SdtElement dataRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_DataRow);
-				TableRow templateDataRow = dataRowMarkerTag.Ancestors<TableRow>().FirstOrDefault();
+				StructuredDocumentTag dataRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_DataRow);
+				Row templateDataRow = dataRowMarkerTag.GetAncestor(NodeType.Row) as Row;
 				this.SetCantSplit(templateDataRow);
 
-				SdtElement dataTotalsRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_TotalsRow);
-				TableRow templateTotalsRow = dataTotalsRowMarkerTag.Ancestors<TableRow>().FirstOrDefault();
+				StructuredDocumentTag dataTotalsRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_TotalsRow);
+				Row templateTotalsRow = dataTotalsRowMarkerTag.GetAncestor(NodeType.Row) as Row;
 				this.SetCantSplit(templateTotalsRow);
 
-				SdtElement summaryDataRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_SummaryDataRow);
-				TableRow templateSummaryDataRow = summaryDataRowMarkerTag.Ancestors<TableRow>().FirstOrDefault();
+				StructuredDocumentTag summaryDataRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_SummaryDataRow);
+				Row templateSummaryDataRow = summaryDataRowMarkerTag.GetAncestor(NodeType.Row) as Row;
 				this.SetCantSplit(templateSummaryDataRow);
 
-				SdtElement summaryTotalsRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_SummaryTotalsRow);
-				TableRow templateSummaryTotalsRow = summaryTotalsRowMarkerTag.Ancestors<TableRow>().FirstOrDefault();
+				StructuredDocumentTag summaryTotalsRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_SummaryTotalsRow);
+				Row templateSummaryTotalsRow = summaryTotalsRowMarkerTag.GetAncestor(NodeType.Row) as Row;
 				this.SetCantSplit(templateSummaryTotalsRow);
 
 				// initialize the "insertion" row
-				TableRow currentInsertionRow = templateDataRow;
+				Row currentInsertionRow = templateDataRow;
 
 				foreach (RollupSummaryByGroupByYearTableGroupData group in data.GroupData)
 				{
 					currentInsertionRow = SummaryRowHelper(numericFormat, byQuarter, templateDataRow, currentInsertionRow, group.YearlyData, group.GroupName, useGfy);
 
 					// create a new total row for this group
-					TableRow totalRow = this.CloneMarkedTemplateRow(templateTotalsRow);
+					Row totalRow = this.CloneMarkedTemplateRow(templateTotalsRow);
 
 					// populate the sub-total (for the group)
 					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_Total), numericFormat == null ? group.GroupSubTotal.ToString() : group.GroupSubTotal.ToString(numericFormat));
 
 					// add the row to the table
-					currentInsertionRow.InsertAfterSelf(totalRow);
+					currentInsertionRow.ParentNode.InsertAfter(totalRow, currentInsertionRow);
 					currentInsertionRow = totalRow;
 				}
 
@@ -3697,7 +3685,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					++rowNumber;
 
 					// create a new summary data row in the table
-					TableRow tableRow = this.CloneMarkedTemplateRow(templateSummaryDataRow);
+					Row tableRow = this.CloneMarkedTemplateRow(templateSummaryDataRow);
 
 					// populate the row
 					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Year), rowData.Year);
@@ -3726,30 +3714,30 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						//                     Tag = Marker
 
 						// remove the "Summary" label
-						SdtElement currRowSummaryDataTag = WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.Marker_SummaryDataRow);
-						Paragraph paragraphElement = currRowSummaryDataTag.Ancestors<Paragraph>().First();
-						ICollection<OpenXmlElement> childRunElements = paragraphElement.ChildElements.Where(c => c.GetType() == typeof(Run)).ToList();
-						foreach (OpenXmlElement childRun in childRunElements)
+						StructuredDocumentTag currRowSummaryDataTag = WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.Marker_SummaryDataRow);
+						Paragraph paragraphElement = currRowSummaryDataTag.GetAncestor(NodeType.Paragraph) as Paragraph;
+						ICollection<Run> childRunElements = paragraphElement.Runs.ToArray();
+						foreach (Node childRun in childRunElements)
 						{
 							this.RemoveElement(childRun);
 						}
 
 						// remove the top border if it exists
-						TableCell firstCell = currRowSummaryDataTag.Ancestors<TableCell>().First();
-						TopBorder topBorder = firstCell.Descendants<TopBorder>().FirstOrDefault();
-						if (topBorder != null)
+						Cell firstCell = currRowSummaryDataTag.GetAncestor(NodeType.Cell) as Cell;
+						Border top = firstCell.CellFormat?.Borders?.Top;
+						if (top != null)
 						{
-							topBorder.Val = new EnumValue<BorderValues>(BorderValues.Nil);
+							top.LineStyle = LineStyle.None;
 						}
 					}
 
 					// add the row to the table
-					currentInsertionRow.InsertAfterSelf(tableRow);
+					currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
 					currentInsertionRow = tableRow;
 				}
 
 				// create a new summary total row
-				TableRow summaryTotalRow = this.CloneMarkedTemplateRow(templateSummaryTotalsRow);
+				Row summaryTotalRow = this.CloneMarkedTemplateRow(templateSummaryTotalsRow);
 
 				// populate the summary total
 				if (byQuarter)
@@ -3763,7 +3751,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(summaryTotalRow, BOEExporterConstants.FieldName_Total), numericFormat == null ? data.SummaryTotalComplete.ToString() : data.SummaryTotalComplete.ToString(numericFormat));
 
 				// add the row to the table
-				currentInsertionRow.InsertAfterSelf(summaryTotalRow);
+				currentInsertionRow.ParentNode.InsertAfter(summaryTotalRow, currentInsertionRow);
 
 				// remove template rows
 				this.RemoveElement(templateDataRow);
@@ -3794,12 +3782,12 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="resource">resource</param>
 		/// <param name="useGfy">if using Government Fiscal Year</param>
 		/// <returns>the current insertion row</returns>
-		private TableRow SummaryRowHelper(string numericFormat, bool byQuarter, TableRow templateDataRow, TableRow currentInsertionRow, ICollection<RollupSummaryByYearTableRowData> data, string resource = null, bool useGfy = false)
+		private Row SummaryRowHelper(string numericFormat, bool byQuarter, Row templateDataRow, Row currentInsertionRow, ICollection<RollupSummaryByYearTableRowData> data, string resource = null, bool useGfy = false)
 		{
 			foreach (RollupSummaryByYearTableRowData rowData in data)
 			{
 				// create a new data row in the table
-				TableRow tableRow = this.CloneMarkedTemplateRow(templateDataRow);
+				Row tableRow = this.CloneMarkedTemplateRow(templateDataRow);
 
 				// populate the row
 				WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Resource), resource ?? string.Empty);
@@ -3817,7 +3805,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Total), numericFormat == null ? rowData.YearTotal.ToString() : rowData.YearTotal.ToString(numericFormat));
 
 				// add the row to the table
-				currentInsertionRow.InsertAfterSelf(tableRow);
+				currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
 				currentInsertionRow = tableRow;
 			}
 
@@ -3832,7 +3820,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="data">The data.</param>
 		/// <param name="numericFormat">The numeric format.</param>
 		/// <param name="byQuarter">if set to <c>true</c> [by quarter].</param>
-		/// <param name="useGfy">if using Goverment Fiscal Year for the table</param>
+		/// <param name="useGfy">if using Government Fiscal Year for the table</param>
 		/// <returns></returns>
 		/// <exception cref="ArgumentNullException">data</exception>
 		/// <remarks>
@@ -3843,7 +3831,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// LaborAndNonLaborCostSummaryByDateTable
 		/// LaborHoursSummaryByCustomFieldTable
 		/// </remarks>
-		protected virtual bool PopulateRollupSummaryByYearTable(SdtElement tableContainerElement, string tableTitle, RollupSummaryByYearTableData data, string numericFormat, bool byQuarter, bool useGfy = false)
+		protected virtual bool PopulateRollupSummaryByYearTable(StructuredDocumentTag tableContainerElement, string tableTitle, RollupSummaryByYearTableData data, string numericFormat, bool byQuarter, bool useGfy = false)
 		{
 			if (data == null)
 			{
@@ -3859,28 +3847,24 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				// one row for each year (monthly values and total for year), plus one overall total row
 
 				// populate the overall total - can just use the existing total row (it does not need to be cloned)
-				SdtElement dataTotalsRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_TotalsRow);
+				StructuredDocumentTag dataTotalsRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_TotalsRow);
 				if (dataTotalsRowMarkerTag != null)
 				{
-					TableRow overallTotalRow = dataTotalsRowMarkerTag.Ancestors<TableRow>().FirstOrDefault();
+					Row overallTotalRow = dataTotalsRowMarkerTag.GetAncestor(NodeType.Row) as Row;
 					this.SetCantSplit(overallTotalRow);
-					SdtElement overallTotalCellRun = WordUtilities.GetTaggedChildElement(overallTotalRow, BOEExporterConstants.FieldName_Total);
+					StructuredDocumentTag overallTotalCellRun = WordUtilities.GetTaggedChildElement(overallTotalRow, BOEExporterConstants.FieldName_Total);
 					WordUtilities.SetElementText(overallTotalCellRun, numericFormat == null ? data.SummaryTotalComplete.ToString() : data.SummaryTotalComplete.ToString(numericFormat));
 					// remove placeholder (band-aid)
-					SdtPlaceholder placeholder = overallTotalCellRun.Descendants<SdtProperties>().First().Descendants<SdtPlaceholder>().FirstOrDefault();
-					if (placeholder != null)
-					{
-						placeholder.Remove();
-					}
+					overallTotalCellRun.Placeholder.Remove();
 				}
 
 				// locate the table markers
-				SdtElement dataRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_DataRow);
+				StructuredDocumentTag dataRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_DataRow);
 
 				// initialize the "insertion" row
-				TableRow templateDataRow = dataRowMarkerTag.Ancestors<TableRow>().FirstOrDefault();
+				Row templateDataRow = dataRowMarkerTag.GetAncestor(NodeType.Row) as Row;
 				this.SetCantSplit(templateDataRow);
-				TableRow currentInsertionRow = templateDataRow;
+				Row currentInsertionRow = templateDataRow;
 
 				currentInsertionRow = SummaryRowHelper(numericFormat, byQuarter, templateDataRow, currentInsertionRow, data.YearlyData, null, useGfy);
 
@@ -3908,7 +3892,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <remarks>
 		/// ResourceTypesTable
 		/// </remarks>
-		private void PopulateResourceTypesTable<T>(SdtElement tableContainerElement, ICollection<T> resourcesData, Action<TableRow, T> populateDataRow)
+		private void PopulateResourceTypesTable<T>(StructuredDocumentTag tableContainerElement, ICollection<T> resourcesData, Action<Row, T> populateDataRow)
 			where T : ResourceTypesTableRowData
 		{
 			if (resourcesData.Any())
@@ -3916,17 +3900,17 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				// different columns for both data and totals rows - logic will check for existence of tags to determine how to populate
 
 				// locate the table markers
-				SdtElement dataRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_DataRow);
+				StructuredDocumentTag dataRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_DataRow);
 
 				// initialize the "insertion" row
-				TableRow templateDataRow = dataRowMarkerTag.Ancestors<TableRow>().FirstOrDefault();
+				Row templateDataRow = dataRowMarkerTag.GetAncestor(NodeType.Row) as Row;
 				this.SetCantSplit(templateDataRow);
-				TableRow currentInsertionRow = templateDataRow;
+				Row currentInsertionRow = templateDataRow;
 
 				foreach (T rowData in resourcesData)
 				{
 					// create a new data row in the table
-					TableRow tableRow = this.CloneMarkedTemplateRow(templateDataRow);
+					Row tableRow = this.CloneMarkedTemplateRow(templateDataRow);
 
 					// populate the row with the "base" row data
 					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_PerformingOrgID), rowData.PerformingOrgID);
@@ -3944,7 +3928,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					populateDataRow(tableRow, rowData);
 
 					// add the row to the table
-					currentInsertionRow.InsertAfterSelf(tableRow);
+					currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
 					currentInsertionRow = tableRow;
 				}
 
@@ -3957,7 +3941,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			}
 		}
 
-		private void PopulateLaborHoursSummaryByCustomFieldTable(SdtElement tableContainerElement, ICollection<BoeTaskElementDTO> taskElementCollection, string summarizeByCustomField, string customFieldValue, LaborResourceTypesTableData tableData)
+		private void PopulateLaborHoursSummaryByCustomFieldTable(StructuredDocumentTag tableContainerElement, ICollection<BoeTaskElementDTO> taskElementCollection, string summarizeByCustomField, string customFieldValue, LaborResourceTypesTableData tableData)
 		{
 			if (tableContainerElement != null && tableData != null && tableData.ResourcesData.Any())
 			{
@@ -3978,15 +3962,15 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			}
 		}
 
-		private void PopulateResourceTypesTable(SdtElement tableContainerElement, LaborResourceTypesTableData data)
+		private void PopulateResourceTypesTable(StructuredDocumentTag tableContainerElement, LaborResourceTypesTableData data)
 		{
 			if (data.ResourcesData.Any())
 			{
 				PopulateResourceTypesTable(tableContainerElement, data.ResourcesData, PopulateLaborResourceTypesTableRow);
 
 				// can just use the existing total row (it does not need to be cloned)
-				SdtElement dataTotalsRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_TotalsRow);
-				TableRow totalsRow = dataTotalsRowMarkerTag.Ancestors<TableRow>().FirstOrDefault();
+				StructuredDocumentTag dataTotalsRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_TotalsRow);
+				Row totalsRow = dataTotalsRowMarkerTag.GetAncestor(NodeType.Row) as Row;
 
 				WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalsRow, BOEExporterConstants.FieldName_CostTotal), data.CostTotalComplete.ToString(DefaultCurrencyFormat));
 				WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalsRow, BOEExporterConstants.FieldName_HoursTotal), data.HoursTotalComplete.ToString(DefaultHoursFormat));
@@ -3995,10 +3979,10 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				//if there is no cost, remove notice saying costs are rounded since it is not needed
 				if (nonzero == null)
 				{
-					SdtElement roundingNotice = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.FieldName_RoundingNotice);
+					StructuredDocumentTag roundingNotice = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.FieldName_RoundingNotice);
 					this.RemoveElement(roundingNotice); //no need to check null since RemoveElement already does this
 
-					SdtElement roundingNoticeAsterisk = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.FieldName_RoundingNoticeAsterisk);
+					StructuredDocumentTag roundingNoticeAsterisk = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.FieldName_RoundingNoticeAsterisk);
 					this.RemoveElement(roundingNoticeAsterisk);
 				}
 			}
@@ -4008,7 +3992,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			}
 		}
 
-		private void PopulateLaborResourceTypesTableRow(TableRow tableRow, LaborResourceTypesTableRowData rowData)
+		private void PopulateLaborResourceTypesTableRow(Row tableRow, LaborResourceTypesTableRowData rowData)
 		{
 			#region Custom Fields
 
@@ -4034,13 +4018,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
              *                                     Text
              */
 
-			SdtElement customFieldDescriptionBlock = WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_CustomFieldDescription);
+			StructuredDocumentTag customFieldDescriptionBlock = WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_CustomFieldDescription);
 
 			//The column may have been deleted if there are no custom fields at the resource level
 			if (customFieldDescriptionBlock != null)
 			{
 				SdtContentBlock contentBlock = customFieldDescriptionBlock.GetFirstChild<SdtContentBlock>();
-				RemoveAllButOneElement<Paragraph>(contentBlock);
+				RemoveAllButOneElement(contentBlock, NodeType.Paragraph);
 				Paragraph paragraphTemplate = contentBlock.GetFirstChild<Paragraph>();
 
 				if (rowData.CustomFields.Any())
@@ -4049,9 +4033,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 					foreach (ExportCustomField customField in rowData.CustomFields)
 					{
-						Paragraph nextCustomFieldElement = paragraphTemplate.Clone() as Paragraph;
+						Paragraph nextCustomFieldElement = paragraphTemplate.Clone(true) as Paragraph;
 
-						currentInsertionElement.InsertAfterSelf(nextCustomFieldElement);
+						currentInsertionElement.ParentNode.InsertAfter(nextCustomFieldElement, currentInsertionElement);
 						currentInsertionElement = nextCustomFieldElement;
 
 						string customFieldString = customField.IsOpenEnded ?
@@ -4081,15 +4065,15 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_SummaryReference), rowData.SummaryReference);
 		}
 
-		private void PopulateResourceTypesTable(SdtElement tableContainerElement, ODCResourceTypesTableData data)
+		private void PopulateResourceTypesTable(StructuredDocumentTag tableContainerElement, ODCResourceTypesTableData data)
 		{
 			if (data.ResourcesData.Any())
 			{
 				PopulateResourceTypesTable(tableContainerElement, data.ResourcesData, PopulateODCResourceTypesTableRow);
 
 				// can just use the existing total row (it does not need to be cloned)
-				SdtElement dataTotalsRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_TotalsRow);
-				TableRow totalsRow = dataTotalsRowMarkerTag.Ancestors<TableRow>().FirstOrDefault();
+				StructuredDocumentTag dataTotalsRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_TotalsRow);
+				Row totalsRow = dataTotalsRowMarkerTag.GetAncestor(NodeType.Row) as Row;
 				this.SetCantSplit(totalsRow);
 
 				WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalsRow, BOEExporterConstants.FieldName_CostTotal), data.CostTotalComplete.ToString(DefaultCurrencyFormat));
@@ -4100,20 +4084,20 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			}
 		}
 
-		private void PopulateODCResourceTypesTableRow(TableRow tableRow, ODCResourceTypesTableRowData rowData)
+		private void PopulateODCResourceTypesTableRow(Row tableRow, ODCResourceTypesTableRowData rowData)
 		{
 			WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_ElementOfCost), rowData.ElementOfCost);
 		}
 
-		private void PopulateResourceTypesTable(SdtElement tableContainerElement, TravelResourceTypesTableData data)
+		private void PopulateResourceTypesTable(StructuredDocumentTag tableContainerElement, TravelResourceTypesTableData data)
 		{
 			if (data.ResourcesData.Any())
 			{
 				PopulateResourceTypesTable(tableContainerElement, data.ResourcesData, PopulateTravelResourceTypesTableRow);
 
 				// can just use the existing total row (it does not need to be cloned)
-				SdtElement dataTotalsRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_TotalsRow);
-				TableRow totalsRow = dataTotalsRowMarkerTag.Ancestors<TableRow>().FirstOrDefault();
+				StructuredDocumentTag dataTotalsRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_TotalsRow);
+				Row totalsRow = dataTotalsRowMarkerTag.GetAncestor(NodeType.Row) as Row;
 				this.SetCantSplit(totalsRow);
 
 				WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalsRow, BOEExporterConstants.FieldName_CostTotal), data.CostTotalComplete.ToString(DefaultCurrencyFormat));
@@ -4124,7 +4108,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			}
 		}
 
-		private void PopulateTravelResourceTypesTableRow(TableRow tableRow, TravelResourceTypesTableRowData rowData)
+		private void PopulateTravelResourceTypesTableRow(Row tableRow, TravelResourceTypesTableRowData rowData)
 		{
 			WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Mode), rowData.Mode);
 			WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Departure), rowData.Departure);
@@ -4137,15 +4121,15 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Date), rowData.Date.ToString(BOEExporterConstants.DATE_FORMAT_MONTH_YEAR));
 		}
 
-		private void PopulateResourceTypesTable(SdtElement tableContainerElement, MaterialResourceTypesTableData data)
+		private void PopulateResourceTypesTable(StructuredDocumentTag tableContainerElement, MaterialResourceTypesTableData data)
 		{
 			if (data.ResourcesData.Any())
 			{
 				PopulateResourceTypesTable(tableContainerElement, data.ResourcesData, PopulateMaterialResourceTypesTableRow);
 
 				// can just use the existing total row (it does not need to be cloned)
-				SdtElement dataTotalsRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_TotalsRow);
-				TableRow totalsRow = dataTotalsRowMarkerTag.Ancestors<TableRow>().FirstOrDefault();
+				StructuredDocumentTag dataTotalsRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_TotalsRow);
+				Row totalsRow = dataTotalsRowMarkerTag.GetAncestor(NodeType.Row) as Row;
 				this.SetCantSplit(totalsRow);
 
 				WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalsRow, BOEExporterConstants.FieldName_CostTotal), data.CostTotalComplete.ToString(DefaultCurrencyFormat));
@@ -4156,7 +4140,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			}
 		}
 
-		private void PopulateMaterialResourceTypesTableRow(TableRow tableRow, MaterialResourceTypesTableRowData rowData)
+		private void PopulateMaterialResourceTypesTableRow(Row tableRow, MaterialResourceTypesTableRowData rowData)
 		{
 			WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_ElementOfCost), ElementOfCostType.Materials.GetDescription());
 			WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_EndDate), rowData.ExpendDate.ToString());
@@ -4166,7 +4150,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 		#region Resource Summary tables
 
-		protected virtual void PopulateResourceSummaryByElementOfCostTable(SdtElement tableContainerElement, BOEExportModelView boeExportModelView, ICollection<BOESummaryGridModelView> data)
+		protected virtual void PopulateResourceSummaryByElementOfCostTable(StructuredDocumentTag tableContainerElement, BOEExportModelView boeExportModelView, ICollection<BOESummaryGridModelView> data)
 		{
 			if (data.Any())
 			{
@@ -4192,7 +4176,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			}
 		}
 
-		private void PopulateResourceSummaryByResourceTypeTable(SdtElement tableContainerElement, ICollection<BOESummaryGridModelView> data)
+		private void PopulateResourceSummaryByResourceTypeTable(StructuredDocumentTag tableContainerElement, ICollection<BOESummaryGridModelView> data)
 		{
 			if (data.Any())
 			{
@@ -4223,7 +4207,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// </summary>
 		/// <param name="tableContainerElement">container element for the table</param>
 		/// <param name="boeExportModelView">Model View for the BOE Export with the resources to use</param>
-		protected virtual void PopulateResourceSummaryByResourceIDTable(SdtElement tableContainerElement, BOEExportModelView boeExportModelView)
+		protected virtual void PopulateResourceSummaryByResourceIDTable(StructuredDocumentTag tableContainerElement, BOEExportModelView boeExportModelView)
 		{
 			if (boeExportModelView != null)
 			{
@@ -4260,18 +4244,18 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// </summary>
 		/// <param name="tableContainerElement">container element for the table</param>
 		/// <param name="rollupData">rollup data to be displayed in the table</param>
-		protected virtual void PopulateResourceSummaryTable(SdtElement tableContainerElement, ICollection<ResourceSummaryRowData> rollupData)
+		protected virtual void PopulateResourceSummaryTable(StructuredDocumentTag tableContainerElement, ICollection<ResourceSummaryRowData> rollupData)
 		{
 			if (rollupData != null && rollupData.Any())
 			{
 				// locate the table markers
-				SdtElement dataRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_DataRow);
-				SdtElement dataTotalsRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_TotalsRow);
+				StructuredDocumentTag dataRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_DataRow);
+				StructuredDocumentTag dataTotalsRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_TotalsRow);
 
 				// initialize the "insertion" row
-				TableRow templateDataRow = dataRowMarkerTag.Ancestors<TableRow>().FirstOrDefault();
+				Row templateDataRow = dataRowMarkerTag.GetAncestor(NodeType.Row) as Row;
 				this.SetCantSplit(templateDataRow);
-				TableRow currentInsertionRow = templateDataRow;
+				Row currentInsertionRow = templateDataRow;
 
 
 				// accumulate totals
@@ -4283,7 +4267,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				foreach (ResourceSummaryRowData rollupRowData in rollupData)
 				{
 					// create a new summary data row in the table
-					TableRow tableRow = this.CloneMarkedTemplateRow(templateDataRow);
+					Row tableRow = this.CloneMarkedTemplateRow(templateDataRow);
 
 					decimal cost = rollupRowData.CostTotal.HasValue ? rollupRowData.CostTotal.Value : 0m;
 					decimal hours = rollupRowData.HoursTotal.HasValue ? rollupRowData.HoursTotal.Value : 0m;
@@ -4297,7 +4281,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					hoursTotal += hours;
 
 					// populate the row
-					SdtElement resourceTypeElement = WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_ResourceType);
+					StructuredDocumentTag resourceTypeElement = WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_ResourceType);
 					string resourceTypeValue = rollupRowData.ResourceType;
 					ElementOfCostType elementOfCostEnumValue = resourceTypeValue.GetEnumeratedValue<ElementOfCostType>(ElementOfCostType.NotSet);
 					if (elementOfCostEnumValue != ElementOfCostType.NotSet)
@@ -4313,12 +4297,12 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Hours), hours.ToString(DefaultHoursFormat));
 
 					// add the row to the table
-					currentInsertionRow.InsertAfterSelf(tableRow);
+					currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
 					currentInsertionRow = tableRow;
 				}
 
 				// can just use the existing total row (it does not need to be cloned)
-				TableRow totalsRow = dataTotalsRowMarkerTag.Ancestors<TableRow>().FirstOrDefault();
+				Row totalsRow = dataTotalsRowMarkerTag.GetAncestor(NodeType.Row) as Row;
 				this.SetCantSplit(totalsRow);
 
 				// populate the overall totals
@@ -4328,10 +4312,10 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				//if there is no cost, remove notice saying costs are rounded since it is not needed
 				if (!hasCost)
 				{
-					SdtElement roundingNotice = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.FieldName_RoundingNotice);
+					StructuredDocumentTag roundingNotice = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.FieldName_RoundingNotice);
 					this.RemoveElement(roundingNotice); //no need to check null since RemoveElement already does this
 
-					SdtElement roundingNoticeAsterisk = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.FieldName_RoundingNoticeAsterisk);
+					StructuredDocumentTag roundingNoticeAsterisk = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.FieldName_RoundingNoticeAsterisk);
 					this.RemoveElement(roundingNoticeAsterisk);
 				}
 
@@ -4351,9 +4335,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <summary>
 		/// Populates the template with Custom Field Values for a BOE, tasks, or resources
 		/// </summary>
-		/// <param name="customFieldsContainerElement">The sdtelement for the custom field data</param>
+		/// <param name="customFieldsContainerElement">The StructuredDocumentTag for the custom field data</param>
 		/// <param name="customFieldValues">dictionaries of the custom fields and their values in a dictionary with each key representing the BOE, Task, or Resource the fields are in</param>
-		private void PopulateCustomFields(SdtElement customFieldsContainerElement, IDictionary<int, IDictionary<CustomFieldValueDTO, CustomFieldDTO>> customFieldValues)
+		private void PopulateCustomFields(StructuredDocumentTag customFieldsContainerElement, IDictionary<int, IDictionary<CustomFieldValueDTO, CustomFieldDTO>> customFieldValues)
 		{
 			if (customFieldValues.Any())
 			{
@@ -4380,23 +4364,23 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				{
 					foreach (KeyValuePair<CustomFieldValueDTO, CustomFieldDTO> customField in customFieldMappings.Value)
 					{
-						SdtBlock contentBlock = contentBlockTemplate.CloneNode(true) as SdtBlock;
+						SdtBlock contentBlock = contentBlockTemplate.Clone(true) as SdtBlock;
 
 						CustomFieldValueDTO fieldValue = customField.Key;
 						CustomFieldDTO field = customField.Value;
 
-						SdtElement customFieldLabelElement = WordUtilities.GetTaggedChildElement(contentBlock, BOEExporterConstants.FieldName_CustomFieldLabel);
-						SdtElement customFieldIdElement = WordUtilities.GetTaggedChildElement(contentBlock, BOEExporterConstants.FieldName_CustomFieldID);
-						SdtElement customFieldDescriptionElement = WordUtilities.GetTaggedChildElement(contentBlock, BOEExporterConstants.FieldName_CustomFieldDescription);
+						StructuredDocumentTag customFieldLabelElement = WordUtilities.GetTaggedChildElement(contentBlock, BOEExporterConstants.FieldName_CustomFieldLabel);
+						StructuredDocumentTag customFieldIdElement = WordUtilities.GetTaggedChildElement(contentBlock, BOEExporterConstants.FieldName_CustomFieldID);
+						StructuredDocumentTag customFieldDescriptionElement = WordUtilities.GetTaggedChildElement(contentBlock, BOEExporterConstants.FieldName_CustomFieldDescription);
 
 						// Note: The template has an indeterminate number of [multiple] Run elements containing "pieces" of the full text.
 						// Delete all but the first Run.
-						RemoveAllButOneElement<Run>(customFieldLabelElement.GetFirstChild<SdtContentRun>());
+						RemoveAllButOneElement(customFieldLabelElement.GetFirstChild<SdtContentRun>(), NodeType.Run);
 						if (customFieldIdElement != null)
 						{
-							RemoveAllButOneElement<Run>(customFieldIdElement.GetFirstChild<SdtContentRun>());
+							RemoveAllButOneElement(customFieldIdElement.GetFirstChild<SdtContentRun>(), NodeType.Run);
 						}
-						RemoveAllButOneElement<Run>(customFieldDescriptionElement.GetFirstChild<SdtContentRun>());
+						RemoveAllButOneElement(customFieldDescriptionElement.GetFirstChild<SdtContentRun>(), NodeType.Run);
 
 						// set values
 						WordUtilities.SetElementText(customFieldLabelElement, field.CustomFieldName);
@@ -4418,7 +4402,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						}
 
 						// add the row to the table
-						currentInsertionBlock.InsertAfterSelf(contentBlock);
+						currentInsertionBlock.ParentNode.InsertAfter(contentBlock, currentInsertionBlock);
 						currentInsertionBlock = contentBlock;
 					}
 				}
@@ -4431,32 +4415,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			}
 		}
 
-		private void RemoveAllButOneElement<T>(OpenXmlElement element, bool removeElementTypeOnly = true) where T : OpenXmlElement
-		{
-			bool found = false;
-
-			OpenXmlElement[] allChildElements = (removeElementTypeOnly ? element.Descendants<T>() : element.Descendants()).ToArray();
-
-			foreach (OpenXmlElement childElement in allChildElements)
-			{
-				if (childElement is T)
-				{
-					if (!found)
-					{
-						found = true;
-					}
-					else
-					{
-						this.RemoveElement(childElement);
-					}
-				}
-				else if (!removeElementTypeOnly)
-				{
-					this.RemoveElement(childElement);
-				}
-			}
-		}
-
 		#endregion
 
 		#endregion
@@ -4465,51 +4423,54 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 		/// <summary>
 		/// Populates the proprietary label in the footer.
+		/// Populates the Date label in the footer with the date of printing.
 		/// </summary>
 		/// <param name="document">The Word document to populate</param>
 		/// <param name="boeExportModelView">Object to hold most of the BOE's data</param>
-		private void SetProprietaryLabels(
-			WordprocessingDocument document,
+		private void SetProprietaryLabelsAndPrintDate(
+			Document document,
 			BOEExportModelView boeExportModelView)
 		{
-			// Get the proprietary alias in Footer
-			SdtAlias alias = (from footerPart in document.MainDocumentPart.FooterParts
-							  from sdtElement in footerPart.Footer.Descendants<SdtAlias>()
-							  select sdtElement).FirstOrDefault(x => x.Val.Value == BOEExporterConstants.FieldName_HeaderFooter);
-
-			if (alias != null)
+			// Get all of the footers
+			foreach (Section section in document)
 			{
-				// Get the Element that encapsulates the current alias
-				SdtElement element = alias.Ancestors<SdtElement>().FirstOrDefault();
-
-				// If the current element is not null, populate it with the appropriate data
-				if (element != null)
-				{
-					WordUtilities.SetElementText(element, boeExportModelView.ContainsOCI ? BOEExporterConstants.LMPI_OCI_LABEL_TEXT : BOEExporterConstants.LMPI_LABEL_TEXT);
-					alias.Remove();
-				}
+				// Up to three different footers are possible in a section (for first, even and odd pages)
+				// we check and update all of them.
+				HeaderFooter footer = section.HeadersFooters[HeaderFooterType.FooterFirst];
+				SetProprietaryLabelsAndPrintDate(footer, boeExportModelView);
+				footer = section.HeadersFooters[HeaderFooterType.FooterPrimary];
+				SetProprietaryLabelsAndPrintDate(footer, boeExportModelView);
+				footer = section.HeadersFooters[HeaderFooterType.FooterEven];
+				SetProprietaryLabelsAndPrintDate(footer, boeExportModelView);
 			}
 		}
 
 		/// <summary>
-		/// Populates the Date label in the footer with the date of printing
+		/// Populates the proprietary label in the footer.
+		/// Populates the Date label in the footer with the date of printing.
 		/// </summary>
-		/// <param name="document">The Word document to populate</param>
-		private void SetPrintDate(
-			WordprocessingDocument document)
+		/// <param name="footer">The footer to populate</param>
+		/// <param name="boeExportModelView">Object to hold most of the BOE's data</param>
+		private void SetProprietaryLabelsAndPrintDate(
+			HeaderFooter footer,
+			BOEExportModelView boeExportModelView)
 		{
-			SdtAlias alias = (from footerPart in document.MainDocumentPart.FooterParts
-							  from sdtElement in footerPart.Footer.Descendants<SdtAlias>()
-							  select sdtElement).FirstOrDefault(x => x.Val.Value == BOEExporterConstants.FieldName_Date);
-
-			if (alias != null)
+			if (footer != null)
 			{
-				SdtElement element = alias.Ancestors<SdtElement>().FirstOrDefault();
-
-				if (element != null)
+				StructuredDocumentTag sdt = footer.Range.StructuredDocumentTags.GetByTitle(BOEExporterConstants.FieldName_HeaderFooter) as StructuredDocumentTag;
+				if (sdt != null)
 				{
-					WordUtilities.SetElementText(element, DateTime.Today.ToShortDateString());
-					alias.RemoveIt();
+					WordUtilities.SetElementText(sdt, boeExportModelView.ContainsOCI ? BOEExporterConstants.LMPI_OCI_LABEL_TEXT : BOEExporterConstants.LMPI_LABEL_TEXT);
+					sdt.Title = string.Empty;
+					// alias.Remove();  OpenXML SdtAlias is Title on IStructuredDocumentTag
+				}
+
+				sdt = footer.Range.StructuredDocumentTags.GetByTitle(BOEExporterConstants.FieldName_Date) as StructuredDocumentTag;
+				if (sdt != null)
+				{
+					WordUtilities.SetElementText(sdt, DateTime.Today.ToShortDateString());
+					sdt.Title = string.Empty;
+					// alias.Remove();  OpenXML SdtAlias is Title on IStructuredDocumentTag
 				}
 			}
 		}

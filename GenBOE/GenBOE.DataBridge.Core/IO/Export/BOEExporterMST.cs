@@ -12,8 +12,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 	using System.Diagnostics.CodeAnalysis;
 	using System.Globalization;
 	using System.Linq;
-	using DocumentFormat.OpenXml;
-	using DocumentFormat.OpenXml.Wordprocessing;
+	using Aspose.Words;
+	using Aspose.Words.Markup;
+	using Aspose.Words.Tables;
 	using GenBOE.DataBridge.Core.Common;
 	using GenBOE.DataBridge.Core.Common.Calculations;
 	using GenBOE.DataBridge.Core.DTO;
@@ -67,7 +68,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="tag">Content control tag name</param>
 		/// <param name="numberAlignment">Not used in MST - required for override - defaults to Right</param>
 		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals")]
-		protected override void PopulateBoeYearSummaryRollup(SdtElement element, Collection<LaborRollupByDate> laborRollup, string Format, 
+		protected override void PopulateBoeYearSummaryRollup(StructuredDocumentTag element, Collection<LaborRollupByDate> laborRollup, string Format, 
 			NumberFormatInfo NumberFormatter, string Font, string FontSize, string headerFontSize, string tag, 
 			JustificationValues numberAlignment)
 		{
@@ -94,7 +95,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				bool addShading = tag.Contains("NoShading") ? false : true;
 
 				//Create the table
-				Table table = CreateRollupTable();
+				Table table = CreateRollupTable(element.Document);
 
 				ParagraphProperties leftPP = new ParagraphProperties(new Justification() { Val = JustificationValues.Left }, new SpacingBetweenLines() { After = "0" });
 				ParagraphProperties rightPP = new ParagraphProperties(new Justification() { Val = JustificationValues.Right }, new SpacingBetweenLines() { After = "0" });
@@ -103,7 +104,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 				if (tag.Contains("TopTotal")) //if total goes on top of table, add now
 				{
-					TableRow tr = new TableRow();
+					Row tr = new Row(table.Document);
 
 					TableCellProperties labelTCP = new TableCellProperties(new TableCellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new TableCellWidth() { Type = TableWidthUnitValues.Pct },
 						new TableCellBorders(new BottomBorder() { Val = BorderValues.Nil }), new TableCellBorders(new LeftBorder() { Val = BorderValues.Nil }), new GridSpan() { Val = 2 });
@@ -139,13 +140,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 				// Create the header row
 				List<string> Headers = new List<string>() { "Year", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-				table.Append(CreateRollupHeaderRow(Headers, Font, headerFontSize));
+				table.Append(CreateRollupHeaderRow(element.Document, Headers, Font, headerFontSize));
 
 				bool evenRow = false;
 
 				foreach (LaborRollupByDate item in laborRollup)
 				{
-					TableRow tr2 = new TableRow();
+					Row tr2 = new Row(table.Document);
 
 					//so rows won't be split across pages
 					TableRowProperties trp = new TableRowProperties();
@@ -184,12 +185,12 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					{
 						evenRow = !evenRow;
 					}
-					table.Append(tr2);
+					table.AppendChild(tr2);
 				}
 
 				if (!tag.Contains("TopTotal"))
 				{
-					TableRow tr3 = new TableRow();
+					Row tr3 = new Row(table.Document);
 
 					TableCellProperties labelTCP = new TableCellProperties(new TableCellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new TableCellWidth() { Type = TableWidthUnitValues.Pct },
 						new TableCellBorders(new BottomBorder() { Val = BorderValues.Nil }), new TableCellBorders(new LeftBorder() { Val = BorderValues.Nil }));
@@ -206,9 +207,10 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						NumberFormatter.CurrencySymbol = string.Empty;
 					}
 
-					table.Append(tr3);
+					table.AppendChild(tr3);
 				}
-				element.Append(table);
+
+				element.AppendChild(table);
 			}
 			else
 			{
@@ -220,9 +222,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// Create table for rollup
 		/// </summary>
 		/// <returns>returns rollup table</returns>
-		protected override Table CreateRollupTable()
+		protected override Table CreateRollupTable(DocumentBase document)
 		{
-			Table table = new Table();
+			Table table = new Table(document);
 			TableProperties props = new TableProperties(
 				new TableBorders(
 					new TopBorder
@@ -269,10 +271,10 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="inFontSize">font size to use</param>
 		/// <param name="noAfterSpacing">Not used in MST - required for override - defaults to false</param>
 		/// <returns>returns table header row</returns>
-		protected override TableRow CreateRollupHeaderRow(List<string> Headers, string inFont, string inFontSize, bool noAfterSpacing = false)
+		protected override Row CreateRollupHeaderRow(DocumentBase document, List<string> Headers, string inFont, string inFontSize, bool noAfterSpacing = false)
 		{
 			TableRowProperties trp = new TableRowProperties(new TableHeader(), new CantSplit());
-			TableRow tr = new TableRow();
+			Row tr = new Row(document);
 			tr.Append(trp);
 			if (Headers != null)
 			{

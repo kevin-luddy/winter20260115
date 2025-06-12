@@ -6,12 +6,13 @@
 
 namespace IES.Common.Core.OfficeUtilities
 {
+	using Aspose.Words;
 	using System;
 	using System.IO;
 	using System.Linq;
-	using DocumentFormat.OpenXml.Packaging;
 	using IES.Common.Core.Constants;
 	using IES.Common.Core.Models;
+	using SkiaSharp;
 
 	public class PackageUtilities
 	{
@@ -26,26 +27,9 @@ namespace IES.Common.Core.OfficeUtilities
 			{
 				throw new ArgumentNullException(nameof(stream));
 			}
-			int? parentTemplateId = null;
-			string versionString;
-			lock (CacheConstants.OPEN_XML_LOCK)
-			{
-				using (WordprocessingDocument document =
-					WordprocessingDocument.Open(stream, false))
-				{
-					versionString = document.PackageProperties.Version;
-				}
-			}
-			if (!string.IsNullOrEmpty(versionString))
-			{
-				bool parsed = Int32.TryParse(versionString, out int tempId);
-				if (parsed)
-				{
-					parentTemplateId = tempId;
-				}
-			}
-
-			return parentTemplateId;
+			
+			Document document = new Document(stream);
+			return document.BuiltInDocumentProperties?.Version;
 		}
 
 		/// <summary>
@@ -84,11 +68,13 @@ namespace IES.Common.Core.OfficeUtilities
 				{
 					int parentTemplateId = exportFormat.ParentTemplateId ?? exportFormat.TemplateId;
 
-					using (WordprocessingDocument document =
-						WordprocessingDocument.Open(mem, true))
-					{
-						document.PackageProperties.Version = parentTemplateId.ToString();
-					}
+					Document document = new Document(mem);
+					document.BuiltInDocumentProperties.Version = parentTemplateId;
+					// TODO TIW check if you can save back to the original memory stream or not
+					mem.Dispose();
+					mem = new MemoryStream(docBytes.Length);
+					document.Save(mem, SaveFormat.Docx);
+					mem.Position = 0;
 				}
 			}
 			return mem;

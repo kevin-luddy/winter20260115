@@ -3,7 +3,6 @@
 	using System;
 	using System.Diagnostics;
 	using System.Security.Principal;
-	using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 	using HealthChecks.UI.Client;
 	using IES.Common.Core.Authorization;
 	using IES.Common.Core.Constants;

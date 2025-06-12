@@ -4,6 +4,9 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Diagnostics.CodeAnalysis;
+using Aspose.Words;
+
 namespace GenBOE.DataBridge.Core.IO.Export
 {
 	using System;
@@ -13,10 +16,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
 	using System.Linq;
+	using System.Runtime.Intrinsics.X86;
 	using System.Text.RegularExpressions;
-	using DocumentFormat.OpenXml;
-	using DocumentFormat.OpenXml.Packaging;
-	using DocumentFormat.OpenXml.Wordprocessing;
+	using Aspose.Words;
+	using Aspose.Words.Markup;
+	using Aspose.Words.Tables;
 	using GenBOE.DataBridge.Core.Common;
 	using GenBOE.DataBridge.Core.DTO;
 	using GenBOE.DataBridge.Core.DTO.Export.BOE;
@@ -47,7 +51,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="templateFilePathFull">Full path to the Word template file</param>
 		/// <param name="populateData">(Optional) parameters and data to be passed back into the <code>PopulateData</code> method</param>
 		/// <param name="stream">Stream into which to write the exported Word document.</param>
-		protected void Export(string templateFilePathFull, Action<WordprocessingDocument> populateData, Stream stream)
+		protected void Export(string templateFilePathFull, Action<Document> populateData, Stream stream)
 		{
 			// open a copy of the Excel template file into memory
 			byte[] byteArray = File.ReadAllBytes(templateFilePathFull);
@@ -63,7 +67,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="populateData">(Optional) parameters and data to be passed back into the <code>PopulateData</code> method</param>
 		/// <param name="stream">Stream into which to write the exported Word document.</param>
 		[SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "This is not an issue with MemoryStream, it allows multiple disposals")]
-		protected void Export(byte[] byteArray, Action<WordprocessingDocument> populateData, Stream stream)
+		protected void Export(byte[] byteArray, Action<Document> populateData, Stream stream)
 		{
 			if (byteArray == null)
 			{
@@ -81,38 +85,15 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			{
 				documentStream.Write(byteArray, 0, byteArray.Length);
 
-				// synchronize write-access to avoid deadlocks in the IsolatedStorageFile class
-				lock (CacheConstants.OPEN_XML_LOCK)
-				{
-					// Create the document object in memory
-					using (WordprocessingDocument document = WordprocessingDocument.Open(documentStream, true))
-					{
-						// Call the worker method to load-in the data
-						populateData(document);
+				// Create the document object in memory
+				Document document = new Document(documentStream);
+				
+				// Call the worker method to load-in the data
+				populateData(document);
 
-						// Save all the changes
-						SaveDocument(document);
-					}
-
-					// write the document from the file into the caller's stream
-					documentStream.Seek(0, SeekOrigin.Begin);
-					documentStream.CopyTo(stream);
-				}
+				// write the document from the file into the caller's stream
+				document.Save(stream, SaveFormat.Docx);
 			}
-		}
-
-		/// <summary>
-		/// Save the document.
-		/// </summary>
-		/// <param name="document">The OpenXml Word document object</param>
-		protected void SaveDocument(WordprocessingDocument document)
-		{
-			if (document == null)
-			{
-				throw new ArgumentNullException(nameof(document));
-			}
-
-			document.MainDocumentPart.Document.Save();
 		}
 
 		#endregion
@@ -121,9 +102,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 	[ExcludeFromCodeCoverage]
 	public static class OpenXmlExtensions
 	{
-		public static void RemoveIt(this OpenXmlElement element)
+		public static void RemoveIt(this Node element)
 		{
-			if (element != null && element.Parent != null)
+			if (element != null && element.ParentNode != null)
 			{
 				element.Remove();
 			}
@@ -276,25 +257,28 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// </summary>
 		/// <param name="row">The row</param>
 		[SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Cant")]
-		protected void SetCantSplit(TableRow row)
+		protected void SetCantSplit(Row row)
 		{
-			if (row == null)
-			{
-				throw new ArgumentNullException(nameof(row));
-			}
+			//if (row == null)
+			//{
+			//	throw new ArgumentNullException(nameof(row));
+			//}
 
-			TableRowProperties tableRowProperties;
-			if ((tableRowProperties = row.TableRowProperties) == null)
-			{
-				tableRowProperties = new TableRowProperties();
-				row.Append(tableRowProperties);
-			}
+			//TableRowProperties tableRowProperties;
+			//if ((tableRowProperties = row.TableRowProperties) == null)
+			//{
+			//	tableRowProperties = new TableRowProperties();
+			//	row.Append(tableRowProperties);
+			//}
 
-			if (!tableRowProperties.Descendants<CantSplit>().Any())
-			{
-				CantSplit cantSplit = new CantSplit();
-				tableRowProperties.Append(cantSplit);
-			}
+			//if (!tableRowProperties.Descendants<CantSplit>().Any())
+			//{
+			//	CantSplit cantSplit = new CantSplit();
+			//	tableRowProperties.Append(cantSplit);
+			//}
+
+			// See RowFormat.AllowBreakAcrossPages and ParagraphFormat.KeepWithNext.
+			// Please read following documentation link. https://docs.aspose.com/words/net/working-with-columns-and-rows/
 		}
 
 		/// <summary>
@@ -302,25 +286,22 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// </summary>
 		/// <param name="markedRow">Table row to clone</param>
 		/// <returns>Cloned copy of the table row</returns>
-		protected TableRow CloneMarkedTemplateRow(TableRow markedRow)
+		protected Row CloneMarkedTemplateRow(Row markedRow)
 		{
 			if (markedRow == null)
 			{
 				throw new ArgumentNullException(nameof(markedRow));
 			}
 
-			TableRow clonedRow = markedRow.CloneNode(true) as TableRow;
+			Row clonedRow = markedRow.Clone(true) as Row;
 
 			#region Delete IDs to avoid conflict with existing elements
 
-			foreach (SdtId id in clonedRow.Descendants<SdtId>())
+			// TODO TIW Id
+			foreach (StructuredDocumentTag sdt in clonedRow.GetChildNodes(NodeType.StructuredDocumentTag, true))
 			{
-				id.Remove();
-			}
-
-			foreach (SdtPlaceholder placeholder in clonedRow.Descendants<SdtPlaceholder>())
-			{
-				placeholder.Remove();
+				sdt.Id = 0;
+				sdt.Placeholder.Remove();
 			}
 
 			#endregion
@@ -332,30 +313,30 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// Remove an element from the document (DOM)
 		/// </summary>
 		/// <param name="element">Element to remove</param>
-		protected void RemoveElement(OpenXmlElement element)
+		protected void RemoveElement(Node element)
 		{
 			if (element == null)
 			{
 				return;
 			}
 
-			OpenXmlElement parentElement = element.Parent;
+			Node parentElement = element.ParentNode;
 
 			if (parentElement != null)  // was the element already removed?
 			{
 				element.Remove();
 
 				// enforce well-formedness of table cell XML (i.e. must contain a paragraph)
-				if (parentElement is TableCell && !parentElement.Descendants<Paragraph>().Any())
+				if (parentElement is Cell cell && cell.FirstParagraph is null)
 				{
-					TableRow row = parentElement.Parent as TableRow;
-					if (row != null && row.Descendants<TableCell>().Count() == 1)
+					Row row = parentElement.ParentNode as Row;
+					if (row != null && row.GetChildNodes(NodeType.Cell, false).Count == 1)
 					{
 						row.Remove();  // if this is the only cell, then (because it is empty) just remove the entire row
 					}
 					else
 					{
-						parentElement.AppendChild(new Paragraph());
+						cell.AppendChild(new Paragraph(cell.Document));
 					}
 				}
 			}
@@ -366,18 +347,19 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// If no row, just remove the element
 		/// </summary>
 		/// <param name="element">Sdt Element in the row to remove</param>
-		protected void RemoveElementRow(SdtElement element)
+		protected void RemoveElementRow(StructuredDocumentTag element)
 		{
 			if (element != null)
 			{
-				TableRow row = element.Ancestors<TableRow>().FirstOrDefault();
+				Row row = element.GetAncestor(NodeType.Row) as Row;
 				if (row != null)
 				{
 					row.RemoveIt();
 				}
 				else
 				{
-					row.Parent.RemoveIt();
+					// TODO TIW this looks very dubious
+					row.ParentNode.RemoveIt();
 				}
 			}
 		}
@@ -394,7 +376,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="counters">counters</param>
 		[SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "6#")]
 		protected void PopulateMOQTypeData(BOEExportTaskElement laborTaskElement, ICollection<BoeCustomReportComponent> selectedComponents,
-			MainDocumentPart mainDocumentPart, SdtElement moqTypeContainerTemplate, bool customExport, BOEExportInputs exportInputs, ref ChunkCounter counters)
+			Document mainDocumentPart, StructuredDocumentTag moqTypeContainerTemplate, bool customExport, BOEExportInputs exportInputs, ref ChunkCounter counters)
 		{
 			_ = laborTaskElement ?? throw new ArgumentNullException(nameof(laborTaskElement));
 			_ = selectedComponents ?? throw new ArgumentNullException(nameof(selectedComponents));
@@ -405,23 +387,23 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				bool isSpace = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems;
 
 				// create/clone template of MOQ Type fields
-				SdtElement moqTypeContainer = null;
-				OpenXmlElement lastElement = moqTypeContainerTemplate;
+				StructuredDocumentTag moqTypeContainer = null;
+				Node lastElement = moqTypeContainerTemplate;
 
 				foreach (MoqTypeSelection moqType in laborTaskElement.MOQTypes)
 				{
-					moqTypeContainer = moqTypeContainerTemplate.CloneNode(true) as SdtElement;
-					lastElement = lastElement.InsertAfterSelf(moqTypeContainer);
+					moqTypeContainer = moqTypeContainerTemplate.Clone(true) as StructuredDocumentTag;
+					lastElement = lastElement.ParentNode.InsertAfter(moqTypeContainer, lastElement);
 
 					#region container elements
 
-					SdtElement cerPmArContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_CerPmAr);
-					SdtElement sowLoeContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_SowLoe);
-					SdtElement smeContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_SME);
-					SdtElement moqTypeTableContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Table_MOQType);
-					SdtElement rationaleContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_MOQTypeRationale);
-					SdtElement skillMixContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_SkillMix);
-					SdtElement historicalRefExpContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_HistoricalRefExp);
+					StructuredDocumentTag cerPmArContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_CerPmAr);
+					StructuredDocumentTag sowLoeContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_SowLoe);
+					StructuredDocumentTag smeContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_SME);
+					StructuredDocumentTag moqTypeTableContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Table_MOQType);
+					StructuredDocumentTag rationaleContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_MOQTypeRationale);
+					StructuredDocumentTag skillMixContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_SkillMix);
+					StructuredDocumentTag historicalRefExpContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Container_HistoricalRefExp);
 
 					#endregion
 
@@ -696,19 +678,19 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="selectedComponents">selected components for the export</param>
 		/// <param name="moqTypeTableTemplate">template element for the MOQ Type table</param>
 		/// <param name="exportInputs">export inputs</param>
-		private void PopulateMOQTableData(MoqTypeSelection moqType, ICollection<BoeCustomReportComponent> selectedComponents, SdtElement moqTypeTableTemplate, BOEExportInputs exportInputs)
+		private void PopulateMOQTableData(MoqTypeSelection moqType, ICollection<BoeCustomReportComponent> selectedComponents, StructuredDocumentTag moqTypeTableTemplate, BOEExportInputs exportInputs)
 		{
 			if (moqTypeTableTemplate != null)
 			{
 				// create/clone template of MOQ Type table
-				SdtElement moqTypeTableContainer = null;
-				OpenXmlElement lastElement = moqTypeTableTemplate;
+				StructuredDocumentTag moqTypeTableContainer = null;
+				Node lastElement = moqTypeTableTemplate;
 				int? lastTableId = moqType.TableData.LastOrDefault()?.Id;
 
 				foreach (MoqTableData table in moqType.TableData)
 				{
-					moqTypeTableContainer = moqTypeTableTemplate.CloneNode(true) as SdtElement;
-					lastElement = lastElement.InsertAfterSelf(moqTypeTableContainer);
+					moqTypeTableContainer = moqTypeTableTemplate.Clone(true) as StructuredDocumentTag;
+					lastElement = lastElement.ParentNode.InsertAfter(moqTypeTableContainer, lastElement);
 
 					// Populate any custom fields
 					PopulateMOQTableCustomFields(table, moqTypeTableContainer, exportInputs);
@@ -780,27 +762,27 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="table">The MOQ table</param>
 		/// <param name="moqTypeTableContainer">The container for the MOQ Table</param>
 		/// <param name="exportInputs">Export inputs</param>
-		private void PopulateMOQTableCustomFields(MoqTableData table, SdtElement moqTypeTableContainer, BOEExportInputs exportInputs)
+		private void PopulateMOQTableCustomFields(MoqTableData table, StructuredDocumentTag moqTypeTableContainer, BOEExportInputs exportInputs)
 		{
 			if (table.CustomFieldValueContainers.Any())
 			{
-				Table tableElement = moqTypeTableContainer.Descendants<Table>().FirstOrDefault();
+				Table tableElement = moqTypeTableContainer.GetChild(NodeType.Table, 0, true) as Table;
 				if (tableElement != null)
 				{
 					// clone the row before Additional Query Filters to use it as a template for adding new rows
-					TableRow rowToClone = WordUtilities.GetTaggedChildElement(moqTypeTableContainer,
-						SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST ? BOEExporterConstants.FieldName_TotalWBSHours : BOEExporterConstants.FieldName_PoPEndDate).Ancestors<TableRow>().First();
-					TableRow cfTemplateRow = (TableRow)rowToClone.CloneNode(true);
+					Row rowToClone = WordUtilities.GetTaggedChildElement(moqTypeTableContainer,
+						SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST ? BOEExporterConstants.FieldName_TotalWBSHours : BOEExporterConstants.FieldName_PoPEndDate).GetAncestor(NodeType.Row) as Row;
+					Row cfTemplateRow = (Row)rowToClone.Clone(true);
 
 					foreach (CustomFieldValueContainer customFieldValue in table.CustomFieldValueContainers.Reverse())
 					{
 						// clone the template row
-						TableRow cfRow = (TableRow)cfTemplateRow.CloneNode(true);
-						ICollection<TableCell> cfRowCells = cfRow.Descendants<TableCell>().ToCollection();
+						Row cfRow = (Row)cfTemplateRow.Clone(true);
+						ICollection<Cell> cfRowCells = cfRow.Cells.ToArray();
 
 						// First cell is label
-						TableCell labelCell = cfRowCells.ElementAt(0);
-						IList<Run> labelRuns = labelCell.Descendants<Run>().ToList();
+						Cell labelCell = cfRowCells.ElementAt(0);
+						IList<Run> labelRuns = labelCell.GetChildNodes(NodeType.Run, true).Cast<Run>().ToList();
 						for (int i = 0; i < labelRuns.Count(); i++)
 						{
 							if (i == 0)
@@ -816,8 +798,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						}
 
 						// Second cell is value
-						TableCell valueCell = cfRowCells.ElementAt(1);
-						IList<Run> valueRuns = valueCell.Descendants<Run>().ToList();
+						Cell valueCell = cfRowCells.ElementAt(1);
+						IList<Run> valueRuns = valueCell.GetChildNodes(NodeType.Run, true).Cast<Run>().ToList();
 						for (int i = 0; i < valueRuns.Count(); i++)
 						{
 							if (i == 0)
@@ -832,7 +814,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						}
 
 						// Add row to the table after the cloned row
-						rowToClone.InsertAfterSelf(cfRow);
+						rowToClone.ParentNode.InsertAfter(cfRow, rowToClone);
 					}
 				}
 			}
@@ -846,13 +828,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="skillMixTablesContainer">SDT Element Container for the Skill Mix tables</param>
 		/// <param name="taskContainer">SDT Element container for the MOQ Types</param>
 		/// <param name="exportInputs">Export Inputs</param>
-		protected void ProcessSkillMixTable(BOEExportTaskElement laborTaskElement, ICollection<BoeCustomReportComponent> selectedComponents, SdtElement taskContainer, BOEExportInputs exportInputs)
+		protected void ProcessSkillMixTable(BOEExportTaskElement laborTaskElement, ICollection<BoeCustomReportComponent> selectedComponents, StructuredDocumentTag taskContainer, BOEExportInputs exportInputs)
 		{
 			_ = laborTaskElement ?? throw new ArgumentNullException(nameof(laborTaskElement));
 			_ = selectedComponents ?? throw new ArgumentNullException(nameof(selectedComponents));
 			_ = exportInputs ?? throw new ArgumentNullException(nameof(exportInputs));
 
-			SdtElement skillMixTablesContainer = WordUtilities.GetTaggedChildElement(taskContainer, BOEExporterConstants.Container_SkillMixTables);
+			StructuredDocumentTag skillMixTablesContainer = WordUtilities.GetTaggedChildElement(taskContainer, BOEExporterConstants.Container_SkillMixTables);
 			if (skillMixTablesContainer != null)
 			{
 				if ((selectedComponents.Contains(BoeCustomReportComponent.SkillMixTables) || !selectedComponents.Any())
@@ -860,22 +842,22 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					laborTaskElement.MOQTypes, laborTaskElement.BOETaskElementID ?? -1, laborTaskElement.HasTMRates))
 				{
 					// populate Current/Legacy Skill Mix Table
-					SdtElement currentTableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_CurrentSkillMix);
+					StructuredDocumentTag currentTableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_CurrentSkillMix);
 
 					if (currentTableElement != null)
 					{
 						// get template row
-						TableRow templateDataRow = WordUtilities.GetTaggedChildElement(currentTableElement, BOEExporterConstants.Marker_DataRow).Ancestors<TableRow>().FirstOrDefault();
+						Row templateDataRow = WordUtilities.GetTaggedChildElement(currentTableElement, BOEExporterConstants.Marker_DataRow).GetAncestor(NodeType.Row) as Row;
 
 						if (templateDataRow != null)
 						{
 							// initialize insertion row
-							TableRow currentInsertionRow = templateDataRow;
+							Row currentInsertionRow = templateDataRow;
 
 							foreach (SkillMixModelView skillMixRow in laborTaskElement.SkillMixTable)
 							{
 								// Create a new row
-								TableRow dataRow = CloneMarkedTemplateRow(templateDataRow);
+								Row dataRow = CloneMarkedTemplateRow(templateDataRow);
 
 								// Populate the row
 								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Resource), skillMixRow.ResourceOld);
@@ -888,7 +870,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Rationale), skillMixRow.Rationale);
 
 								// Add the row to the table
-								currentInsertionRow.InsertAfterSelf(dataRow);
+								currentInsertionRow.ParentNode.InsertAfter(dataRow, currentInsertionRow);
 								currentInsertionRow = dataRow;
 							}
 
@@ -897,7 +879,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						}
 
 						// get total row
-						TableRow totalRow = WordUtilities.GetTaggedChildElement(currentTableElement, BOEExporterConstants.Marker_TotalsRow).Ancestors<TableRow>().FirstOrDefault();
+						Row totalRow = WordUtilities.GetTaggedChildElement(currentTableElement, BOEExporterConstants.Marker_TotalsRow).GetAncestor(NodeType.Row) as Row;
 
 						if (totalRow != null)
 						{
@@ -917,21 +899,21 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					// If BRC is enabled and Task end date is after 1LMX start, populate the LM Enterprise Skill Mix Table, otherwise remove it
 					if (CommonUtilities.IsBRCEnabledForWorkspace(exportInputs.Workspace.Shortname) && laborTaskElement.EndDate >= CommonUtilities.OneLmxStartDate)
 					{
-						SdtElement commonDisclosureTableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_LmEnterpriseSkillMix);
+						StructuredDocumentTag commonDisclosureTableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_LmEnterpriseSkillMix);
 						if (commonDisclosureTableElement != null)
 						{
 							// get template row
-							TableRow templateDataRow = WordUtilities.GetTaggedChildElement(commonDisclosureTableElement, BOEExporterConstants.Marker_DataRow).Ancestors<TableRow>().FirstOrDefault();
+							Row templateDataRow = WordUtilities.GetTaggedChildElement(commonDisclosureTableElement, BOEExporterConstants.Marker_DataRow).GetAncestor(NodeType.Row) as Row;
 
 							if (templateDataRow != null)
 							{
 								// initialize insertion row
-								TableRow currentInsertionRow = templateDataRow;
+								Row currentInsertionRow = templateDataRow;
 
 								foreach (CommonDisclosureModelView commonDisclosureRow in laborTaskElement.CommonDisclosureTable)
 								{
 									// Create a new row
-									TableRow dataRow = CloneMarkedTemplateRow(templateDataRow);
+									Row dataRow = CloneMarkedTemplateRow(templateDataRow);
 
 									// Populate the row
 									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Resource), commonDisclosureRow.ResourceID);
@@ -951,7 +933,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 									}
 
 									// Add the row to the table
-									currentInsertionRow.InsertAfterSelf(dataRow);
+									currentInsertionRow.ParentNode.InsertAfter(dataRow, currentInsertionRow);
 									currentInsertionRow = dataRow;
 								}
 
@@ -960,7 +942,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 							}
 
 							// get total row
-							TableRow totalRow = WordUtilities.GetTaggedChildElement(commonDisclosureTableElement, BOEExporterConstants.Marker_TotalsRow).Ancestors<TableRow>().FirstOrDefault();
+							Row totalRow = WordUtilities.GetTaggedChildElement(commonDisclosureTableElement, BOEExporterConstants.Marker_TotalsRow).GetAncestor(NodeType.Row) as Row;
 
 							if (totalRow != null)
 							{
@@ -999,10 +981,46 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		}
 
 		/// <summary>
+		/// Removes all but one element of the Node Type
+		/// </summary>
+		/// <param name="element"></param>
+		/// <param name="nodeType"></param>
+		/// <param name="removeElementTypeOnly"></param>
+		protected void RemoveAllButOneElement(Node element, NodeType nodeType, bool removeElementTypeOnly = true)
+		{
+			bool found = false;
+
+			if (element.IsComposite)
+			{
+				CompositeNode compositeNode = element as CompositeNode;
+				Node[] allChildElements = (removeElementTypeOnly ? compositeNode.GetChildNodes(nodeType, true) : compositeNode.GetChildNodes(NodeType.Any, true)).ToArray();
+
+				foreach (Node childElement in allChildElements)
+				{
+					if (childElement.NodeType == nodeType)
+					{
+						if (!found)
+						{
+							found = true;
+						}
+						else
+						{
+							this.RemoveElement(childElement);
+						}
+					}
+					else if (!removeElementTypeOnly)
+					{
+						this.RemoveElement(childElement);
+					}
+				}
+			}
+		}
+
+		/// <summary>
 		/// Removes the row with the MOQ Type table
 		/// </summary>
 		/// <param name="moqTypeContainer">MOQ Type Container</param>
-		private void RemoveMoqTableRow(SdtElement moqTypeContainer)
+		private void RemoveMoqTableRow(StructuredDocumentTag moqTypeContainer)
 		{
 			WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.Table_MOQType);
 		}
@@ -1096,7 +1114,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// Remove the rows with CER/PR/AR elements
 		/// </summary>
 		/// <param name="moqTypeContainer">MOQ Type Container</param>
-		private void RemoveCerPrArRows(SdtElement moqTypeContainer)
+		private void RemoveCerPrArRows(StructuredDocumentTag moqTypeContainer)
 		{
 			WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArName);
 		}
@@ -1105,7 +1123,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// Remove the row with SOE/LOW Elements
 		/// </summary>
 		/// <param name="moqTypeContainer">MOQ Type Container</param>
-		private void RemoveSoeLowRows(SdtElement moqTypeContainer)
+		private void RemoveSoeLowRows(StructuredDocumentTag moqTypeContainer)
 		{
 			WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.FieldName_HoursDescription);
 		}
@@ -1114,7 +1132,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// Remove the rows with SME Elements
 		/// </summary>
 		/// <param name="moqTypeContainer">MOQ Type Container</param>
-		private void RemoveSMERows(SdtElement moqTypeContainer)
+		private void RemoveSMERows(StructuredDocumentTag moqTypeContainer)
 		{
 			WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.FieldName_SMEReasons);
 			WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.FieldName_SMETasksBelowLabel);

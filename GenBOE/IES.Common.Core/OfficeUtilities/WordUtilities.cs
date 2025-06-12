@@ -12,9 +12,10 @@ namespace IES.Common.Core.OfficeUtilities
 	using System.IO;
 	using System.Linq;
 	using System.Text;
+	using Aspose.Words;
+	using Aspose.Words.Markup;
+	using Aspose.Words.Tables;
 	using DocumentFormat.OpenXml;
-	using DocumentFormat.OpenXml.Packaging;
-	using DocumentFormat.OpenXml.Wordprocessing;
 
 	[ExcludeFromCodeCoverage]
 	public static class WordUtilities
@@ -29,30 +30,21 @@ namespace IES.Common.Core.OfficeUtilities
 
 		#region Find items
 
-		internal static Tag GetTag(ICollection<Tag> tags, string tag)
-		{
-			return tags.LastOrDefault(s => s.Val.Value.Equals(tag, StringComparison.CurrentCultureIgnoreCase));
-		}
-
-		internal static Tag GetTag(OpenXmlElement element, string tag)
-		{
-			return GetTag(element.Descendants<Tag>().ToList(), tag);
-		}
-
 		/// <summary>
 		/// Finds a special element in the landscape template that is used to mark the location just before the
 		/// repeatable BOE details table.
 		/// </summary>
 		/// <param name="document">The Word document to search</param>
 		/// <returns>Table element representing the spot just before the repeatable BOE details table row</returns>
-		public static SdtElement GetTaggedElement(WordprocessingDocument document, string tag)
+		public static StructuredDocumentTag GetTaggedElement(Document document, string tag)
 		{
 			if (document == null)
 			{
 				throw new ArgumentNullException(nameof(document));
 			}
 
-			return document.MainDocumentPart.Document.Descendants<SdtElement>().FirstOrDefault(s => s.Descendants<Tag>().FirstOrDefault()?.Val.Value == tag);
+			//TODO TIW does this work since it returns IStructuredDocumentTag
+			return document.Range.StructuredDocumentTags.GetByTag(tag) as StructuredDocumentTag;
 		}
 
 		/// <summary>
@@ -61,29 +53,37 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <param name="element">Parent element</param>
 		/// <param name="tag">Child element's tag</param>
 		/// <returns>Child element</returns>
-		public static SdtElement GetTaggedChildElement(OpenXmlElement element, string tag)
+		public static StructuredDocumentTag GetTaggedChildElement(Node element, string tag)
 		{
 			if (element == null) { throw new ArgumentNullException(nameof(element)); }
 
-			return element.Descendants<SdtElement>().FirstOrDefault(s => s.Descendants<Tag>().FirstOrDefault()?.Val.Value == tag);
+			return element.Range.StructuredDocumentTags.GetByTag(tag) as StructuredDocumentTag; // document.GetChildNodes(NodeType.StructuredDocumentTag, true).FirstOrDefault(s => ((StructuredDocumentTag)s).Tag == tag);
 		}
 
 		#endregion
 
 		#region Remove items
 
-		public static void RemoveTaggedElement(OpenXmlElement element, string tag)
+		public static void RemoveTaggedElement(Node element, string tag)
 		{
-			RemoveTaggedElementAncestor<SdtElement>(element, tag);
+			RemoveTaggedElementAncestor(element, tag, NodeType.StructuredDocumentTag);
 		}
 
-		internal static void RemoveTaggedElementAncestor<T>(OpenXmlElement element, string tag) where T : OpenXmlElement
+		internal static void RemoveTaggedElementAncestor(Node element, string tag, NodeType nodeType)
 		{
-			Tag tagObj = GetTag(element, tag);
-
+			StructuredDocumentTag tagObj = element.Range.StructuredDocumentTags.GetByTag(tag) as StructuredDocumentTag;
+			
 			if (tagObj != null)
 			{
-				T ancestorElement = tagObj.Ancestors<T>().FirstOrDefault();
+				CompositeNode ancestorElement;
+				if (nodeType == NodeType.StructuredDocumentTag)
+				{
+					ancestorElement = tagObj;
+				}
+				else
+				{
+					ancestorElement = tagObj.GetAncestor(nodeType);
+				}
 
 				if (ancestorElement != null)
 				{
@@ -93,9 +93,9 @@ namespace IES.Common.Core.OfficeUtilities
 			}
 		}
 
-		public static void RemoveTableRowWithTaggedElement(OpenXmlElement element, string tag)
+		public static void RemoveTableRowWithTaggedElement(Node element, string tag)
 		{
-			RemoveTaggedElementAncestor<TableRow>(element, tag);
+			RemoveTaggedElementAncestor(element, tag, NodeType.Row);
 		}
 
 		/// <summary>
@@ -103,25 +103,18 @@ namespace IES.Common.Core.OfficeUtilities
 		/// </summary>
 		/// <param name="element">The element to be searched.</param>
 		/// <param name="tag">The tag of the element which should have its label removed.</param>
-		internal static void RemoveTableCellLabelWithTaggedElement(OpenXmlElement element, string tag)
+		internal static void RemoveCellLabelWithTaggedElement(Node element, string tag)
 		{
-			Tag tagObj = GetTag(element, tag);
-
-			if (tagObj != null)
+			StructuredDocumentTag sdt = GetTaggedChildElement(element, tag);
+			
+			if (sdt != null)
 			{
-				TableRow row = tagObj.Ancestors<TableRow>().FirstOrDefault();
-
+				Paragraph pg = sdt.GetAncestor(typeof(Paragraph)) as Paragraph;
+				// only remove children of paragraph if it has an ancestor that is a table row
+				CompositeNode row = pg.GetAncestor(typeof(Row));
 				if (row != null)
 				{
-					foreach (Paragraph pg in row.Descendants<Paragraph>())
-					{
-						// If we find the matching tag as a descendant then we have the correct object, so remove the paragraph/label.
-						if (GetTag(pg.Descendants<Tag>().ToList<Tag>(), tag) != null)
-						{
-							pg.RemoveAllChildren<Run>();
-							break;
-						}
-					}
+					pg.Runs.Clear();
 				}
 			}
 		}
@@ -131,20 +124,20 @@ namespace IES.Common.Core.OfficeUtilities
 		/// </summary>
 		/// <param name="elementInColumnToRemove">Element contained in the table column that should be removed.</param>
 		/// <param name="resizeTable">True to resize the width of the table to 100% of the page after deleting the column. False to leave the width as is.</param>
-		public static void removeColumnFromTable(SdtElement elementInColumnToRemove, bool resizeTable = true)
+		public static void removeColumnFromTable(StructuredDocumentTag elementInColumnToRemove, bool resizeTable = true)
 		{
 			if (elementInColumnToRemove == null)
 			{
 				throw new ArgumentNullException(nameof(elementInColumnToRemove));
 			}
-			//Find the cell and row containing the SdtElement whose column should be removed 
-			TableCell cell = elementInColumnToRemove.Ancestors<TableCell>().First();
-			TableRow row = cell.Ancestors<TableRow>().First();
+			//Find the cell and row containing the StructuredDocumentTag whose column should be removed 
+			Cell cell = elementInColumnToRemove.GetAncestor(NodeType.Cell) as Cell;
+			Row row = cell.ParentRow;
 			int columnToDelete = -1;
 			int index = 0;
 
 			//Determine which column number needs to be deleted
-			foreach (TableCell column in row.Elements<TableCell>())
+			foreach (Cell column in row.Cells)
 			{
 				if (column == cell)
 				{
@@ -153,22 +146,25 @@ namespace IES.Common.Core.OfficeUtilities
 				}
 				index++;
 			}
-
+			
 			//Cycle through each row in table and delete the appropriate cell number
 			//Note that this assumes every row has the same number of cells.
 			if (columnToDelete >= 0)
 			{
-				Table tableElement = row.Ancestors<Table>().First();
-				ICollection<TableRow> tableRows = tableElement.Elements<TableRow>().ToList();
-				foreach (TableRow currentRow in tableRows.Where(x => x.Elements<TableCell>().Count() >= columnToDelete + 1))
+				Table table = row.ParentTable;
+				
+				foreach (Row currentRow in table.Rows)
 				{
-					TableCell cellToDelete = currentRow.Elements<TableCell>().ElementAt(columnToDelete);
-					currentRow.RemoveChild(cellToDelete);
+					if (currentRow.Cells.Count >= columnToDelete + 1)
+					{
+						Cell cellToDelete = currentRow.Cells[columnToDelete];
+						currentRow.RemoveChild(cellToDelete);
+					}
 				}
 
 				if (resizeTable)
 				{
-					ResetTableWidthPercentage(tableElement, 100);
+					ResetTableWidthPercentage(table, 100);
 				}
 			}
 		}
@@ -204,9 +200,14 @@ namespace IES.Common.Core.OfficeUtilities
 		/// </summary>
 		/// <param name="inElement">The element to set text on</param>
 		/// <param name="inValue">The value to set</param>
-		public static void SetElementText(SdtElement inElement, int inValue)
+		public static void SetElementText(StructuredDocumentTag inElement, int inValue)
 		{
 			SetElementText(inElement, inValue.ToString());
+		}
+
+		public static void SetElementText(Run run, string inText)
+		{
+			SetElementText(new Run[] { run }, inText);
 		}
 
 		/// <summary>
@@ -214,11 +215,11 @@ namespace IES.Common.Core.OfficeUtilities
 		/// </summary>
 		/// <param name="inElement">The element to set text on</param>
 		/// <param name="inText">The text to set</param>
-		public static void SetElementText(SdtElement inElement, params string[] inText)
+		public static void SetElementText(StructuredDocumentTag inElement, params string[] inText)
 		{
 			if (inElement != null)
 			{
-				SetElementText(inElement.Descendants<Run>().ToList(), inText);
+				SetElementText(inElement.GetChildNodes(NodeType.Run, true).Cast<Run>(), inText);
 			}
 		}
 
@@ -227,18 +228,11 @@ namespace IES.Common.Core.OfficeUtilities
 		/// </summary>
 		/// <param name="inElement">The element to set text on</param>
 		/// <param name="inText">The text to set</param>
-		public static void SetElementText(OpenXmlElement inElement, params string[] inText)
+		public static void SetElementText(CompositeNode inElement, params string[] inText)
 		{
 			if (inElement != null)
 			{
-				if (inElement is Run)
-				{
-					SetElementText(new List<Run> { inElement as Run }, inText);
-				}
-				else
-				{
-					SetElementText(inElement.Descendants<Run>().ToList(), inText);
-				}
+				SetElementText(inElement.GetChildNodes(NodeType.Run, true).Cast<Run>(), inText);
 			}
 		}
 
@@ -247,7 +241,7 @@ namespace IES.Common.Core.OfficeUtilities
 		/// </summary>
 		/// <param name="runElements">Set of runs elements to set text on</param>
 		/// <param name="inText">The text to set</param>
-		internal static void SetElementText(ICollection<Run> runElements, params string[] inText)
+		internal static void SetElementText(IEnumerable<Run> runElements, params string[] inText)
 		{
 			if (inText == null || inText.Length == 0)
 			{
@@ -284,29 +278,7 @@ namespace IES.Common.Core.OfficeUtilities
 			// If a text run was found
 			if (textRun != null)
 			{
-				Text textElement = textRun.Descendants<Text>().FirstOrDefault();
-
-				if (textElement != null)
-				{
-					// Iterate through the given text values and append each one as a text Run
-					for (int ndx = 0; ndx < inText.Length; ndx++)
-					{
-
-						// Get the text within the Run
-						textElement.Text = inText[ndx];
-
-						// If this is not the last Run, add a break to the Run
-						if (ndx < inText.Length - 1)
-						{
-							Break newlineElement = new();
-							textElement.InsertAfterSelf<Break>(newlineElement);
-
-							Text nextTextElement = textElement.CloneNode(true) as Text;
-							newlineElement.InsertAfterSelf<Text>(nextTextElement);
-							textElement = nextTextElement;
-						}
-					}
-				}
+				textRun.Text = string.Join(ControlChar.LineBreak, inText);
 			}
 		}
 
@@ -314,7 +286,7 @@ namespace IES.Common.Core.OfficeUtilities
 		/// Updates the Hours labels to EPs if needed.
 		/// </summary>
 		/// <param name="document"></param>
-		public static void UpdateHoursLabel(WordprocessingDocument document)
+		public static void UpdateHoursLabel(Document document)
 		{
 			if (document == null)
 			{
@@ -322,15 +294,7 @@ namespace IES.Common.Core.OfficeUtilities
 			}
 
 			// Change all the text that has Hours to EPs (Equivalent Persons)
-			Body body = document.MainDocumentPart.Document.Body;
-			IEnumerable<Text> texts = body.Descendants<Text>();
-			foreach (Text text in texts)
-			{
-				if (text.Text.Contains("Hours"))
-				{
-					text.Text = text.Text.Replace("Hours", "EPs");
-				}
-			}
+			document.Range.Replace("Hours", "EPs");
 		}
 
 		/// <summary>
@@ -340,10 +304,7 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <param name="percent">Percentage of the page width (0-100). Defaults to 100%</param>
 		private static void ResetTableWidthPercentage(Table tableElement, int percent = 100)
 		{
-			percent = 50 * percent; //Width setting uses width in fiftieths of a percent
-			TableWidth width = tableElement.Descendants<TableWidth>().First();
-			width.Width = percent.ToString();
-			width.Type = TableWidthUnitValues.Pct;
+			tableElement.PreferredWidth = PreferredWidth.FromPercent(percent);
 		}
 
 		#endregion
@@ -361,12 +322,12 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <param name="applyInternalSectionFormatting">bool to note if internal section formatting should be applied - for use with PPRD export, false by default</param>
 		[SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "3#")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
-		public static void SetElementTextWithHTML(MainDocumentPart mainPart, OpenXmlElement element, string htmlFormattedText, ref ChunkCounter counters, bool removeSpacing = false, bool applyInternalSectionFormatting = false)
+		public static void SetElementTextWithHTML(Document document, StructuredDocumentTag element, string htmlFormattedText, ref ChunkCounter counters, bool removeSpacing = false, bool applyInternalSectionFormatting = false)
 		{
 			if (element != null)
 			{
-				// the idea for altchunks was based on http://yeshagupta.blogspot.com/2010/06/downloading-ms-word-2007-files-for-html.html
-				// it's been heavily modified & adjusted beyond what it started it..
+				//	// the idea for altchunks was based on http://yeshagupta.blogspot.com/2010/06/downloading-ms-word-2007-files-for-html.html
+				//	// it's been heavily modified & adjusted beyond what it started it..
 
 				// Clears out the original text
 				SetElementText(element, null);
@@ -378,76 +339,80 @@ namespace IES.Common.Core.OfficeUtilities
 					// do some initial prep
 					htmlFormattedText = RTEUtilities.PrepareHtmlForWordExport(htmlFormattedText, removeSpacing, ref skipCleanup);
 
-					// Get font information for the field/element into which we are inserting the HTML.
-					decimal? fontSize = RTEUtilities.GetFontSizeBasedOnWordElementXml(element);
-					ICollection<string> fontFamilies = RTEUtilities.GetFontFamiliesBasedOnElementXml(element);
-					SpacingDetailsForRTEWordExports paragraphSizing = RTEUtilities.GetSpacingFromXml(element);
+					DocumentBuilder builder = new DocumentBuilder(document);
+					builder.MoveToStructuredDocumentTag(element, 0);
+					builder.InsertHtml(htmlFormattedText, HtmlInsertOptions.RemoveLastEmptyParagraph);
 
-					#region Cleanup the Element, if needed
+					//// Get font information for the field/element into which we are inserting the HTML.
+					//decimal? fontSize = RTEUtilities.GetFontSizeBasedOnWordElementXml(element);
+					//ICollection<string> fontFamilies = RTEUtilities.GetFontFamiliesBasedOnElementXml(element);
+					//SpacingDetailsForRTEWordExports paragraphSizing = RTEUtilities.GetSpacingFromXml(element);
 
-					if (!skipCleanup)
-					{
-						// This is done in order to deal with how strangly the MHTML can be inserted into the document
-						// Issues this will help correct/prevent are strange spacings before/after items, styles bleeding through from the HTML into the labels and such
-						// It needs to be done in three ways, because some fields are contained inside of a paragraph, others inside of Runs, and yet others of Runs inside of StdContentRuns
+					//#region Cleanup the Element, if needed
 
-						// we are attaching properties to an existing Run/Paragraph, in order to make sure that it basically goes "invisible", as there's no fool proof way to replace it w/ the chunk
+					//if (!skipCleanup)
+					//{
+					//	// This is done in order to deal with how strangely the MHTML can be inserted into the document
+					//	// Issues this will help correct/prevent are strange spacings before/after items, styles bleeding through from the HTML into the labels and such
+					//	// It needs to be done in three ways, because some fields are contained inside of a paragraph, others inside of Runs, and yet others of Runs inside of StdContentRuns
 
-						// 2 half points -> font size of 1, to make it as invisible as possible
-						FontSize size = new() { Val = "2" };
+					//	// we are attaching properties to an existing Run/Paragraph, in order to make sure that it basically goes "invisible", as there's no fool proof way to replace it w/ the chunk
 
-						// clear out any weird spacing
-						SpacingBetweenLines spacing = new() { Before = "0", After = "0", Line = "0", AfterLines = 0, BeforeLines = 0 };
+					//	// 2 half points -> font size of 1, to make it as invisible as possible
+					//	FontSize size = new() { Val = "2" };
 
-						// create a run properties object, for modifying runs
-						RunProperties runProp = new();
-						runProp.Append(size);
-						runProp.Append(spacing);
+					//	// clear out any weird spacing
+					//	SpacingBetweenLines spacing = new() { Before = "0", After = "0", Line = "0", AfterLines = 0, BeforeLines = 0 };
 
-						if (element.GetFirstChild<Run>() != null)
-						// if the element contains the Run directly, adjust it
-						{
-							element.GetFirstChild<Run>().PrependChild<RunProperties>(runProp);
-						}
-						else if (element.GetFirstChild<SdtContentRun>() != null && element.GetFirstChild<SdtContentRun>().GetFirstChild<Run>() != null)
-						// at times the runs are inside of a Standard Content Run, in which case we need to then go one level deeper
-						{
-							element.GetFirstChild<SdtContentRun>().GetFirstChild<Run>().PrependChild<RunProperties>(runProp);
-						}
-						else if (element.GetFirstChild<Paragraph>() != null)
-						{
-							// finally, if no runs exist, it's likely that a paragraph is in place, so we have to create paragraph properties instead & use those
-							// we need to clone because the original nodes are already a part of the RunProperties..
-							ParagraphProperties parProperties = new();
-							parProperties.Append(size.CloneNode(true));
-							parProperties.Append(spacing.CloneNode(true));
+					//	// create a run properties object, for modifying runs
+					//	RunProperties runProp = new();
+					//	runProp.Append(size);
+					//	runProp.Append(spacing);
 
-							element.RemoveAllChildren<Paragraph>(); // in weird cases this may cause formatting issues, especially w/ html containing lists; so we remove it
-							element.Append(new Paragraph()); // and replace the original one w/ a new, clean one
-							element.GetFirstChild<Paragraph>().PrependChild<ParagraphProperties>(parProperties); // to which we will then append the new styles
-						}
-					}
+					//	if (element.GetFirstChild<Run>() != null)
+					//	// if the element contains the Run directly, adjust it
+					//	{
+					//		element.GetFirstChild<Run>().PrependChild<RunProperties>(runProp);
+					//	}
+					//	else if (element.GetFirstChild<SdtContentRun>() != null && element.GetFirstChild<SdtContentRun>().GetFirstChild<Run>() != null)
+					//	// at times the runs are inside of a Standard Content Run, in which case we need to then go one level deeper
+					//	{
+					//		element.GetFirstChild<SdtContentRun>().GetFirstChild<Run>().PrependChild<RunProperties>(runProp);
+					//	}
+					//	else if (element.GetFirstChild<Paragraph>() != null)
+					//	{
+					//		// finally, if no runs exist, it's likely that a paragraph is in place, so we have to create paragraph properties instead & use those
+					//		// we need to clone because the original nodes are already a part of the RunProperties..
+					//		ParagraphProperties parProperties = new();
+					//		parProperties.Append(size.CloneNode(true));
+					//		parProperties.Append(spacing.CloneNode(true));
 
-					#endregion
+					//		element.RemoveAllChildren<Paragraph>(); // in weird cases this may cause formatting issues, especially w/ html containing lists; so we remove it
+					//		element.Append(new Paragraph()); // and replace the original one w/ a new, clean one
+					//		element.GetFirstChild<Paragraph>().PrependChild<ParagraphProperties>(parProperties); // to which we will then append the new styles
+					//	}
+					//}
 
-					// Need this in order to be able to insert the object into Word and uniquely be able to reference it
-					if (counters == null) { throw new ArgumentNullException(nameof(counters)); }
-					string altChunkId = String.Format("AltChunkId{0}", counters.AltChunkCounter);
+					//#endregion
 
-					// Add the mhtml as a Mht(ml) special part, associated w/ the id
-					if (mainPart == null) { throw new ArgumentNullException(nameof(mainPart)); }
-					AlternativeFormatImportPart chunk = mainPart.AddAlternativeFormatImportPart(AlternativeFormatImportPartType.Mht, altChunkId);
+					//// Need this in order to be able to insert the object into Word and uniquely be able to reference it
+					//if (counters == null) { throw new ArgumentNullException(nameof(counters)); }
+					//string altChunkId = String.Format("AltChunkId{0}", counters.AltChunkCounter);
 
-					// Write the mhtml into this newly associated AlternativeFormatImportPart
-					using (Stream chunkStream = chunk.GetStream(FileMode.Create, FileAccess.Write))
-					{
-						using (StreamWriter writer = new(chunkStream, Encoding.UTF8)) //Encoding.UTF8 removes special characters
-						{
-							RTEUtilities.ConvertHtmlToMhtml(writer, htmlFormattedText, fontSize, fontFamilies, paragraphSizing, applyInternalSectionFormatting);
-						}
-					}
+					//// Add the mhtml as a Mht(ml) special part, associated w/ the id
+					//if (mainPart == null) { throw new ArgumentNullException(nameof(mainPart)); }
+					//AlternativeFormatImportPart chunk = mainPart.AddAlternativeFormatImportPart(AlternativeFormatImportPartType.Mht, altChunkId);
 
-					element.Append(new AltChunk() { Id = altChunkId });
+					//// Write the mhtml into this newly associated AlternativeFormatImportPart
+					//using (Stream chunkStream = chunk.GetStream(FileMode.Create, FileAccess.Write))
+					//{
+					//	using (StreamWriter writer = new(chunkStream, Encoding.UTF8)) //Encoding.UTF8 removes special characters
+					//	{
+					//		RTEUtilities.ConvertHtmlToMhtml(writer, htmlFormattedText, fontSize, fontFamilies, paragraphSizing, applyInternalSectionFormatting);
+					//	}
+					//}
+
+					//element.Append(new AltChunk() { Id = altChunkId });
 				}
 			}
 		}
@@ -461,8 +426,8 @@ namespace IES.Common.Core.OfficeUtilities
 		#region Notes
 
 		/*
-         * Note:  ONLY SdtBlock and SdtRun are of type SdtElement.  ONLY SdtElement items are "taggable".
-         *        All others (including SdtContentBlock, SdtContentRun, SdtProperties) are of type OpenXmlElement.
+         * Note:  ONLY SdtBlock and SdtRun are of type StructuredDocumentTag.  ONLY StructuredDocumentTag items are "taggable".
+         *        All others (including SdtContentBlock, SdtContentRun, SdtProperties) are of type Node.
          * 
          * SdtBlock                                                         [tagged: BOEContainer]
          *     SdtProperties
@@ -477,8 +442,8 @@ namespace IES.Common.Core.OfficeUtilities
          *                         Tag = LaborHoursRollupTable
          *                     SdtContentBlock
          *                         Table
-         *                             TableRow
-         *                                 TableCell
+         *                             Row
+         *                                 Cell
          *                                     Paragraph
          *                                         SdtRun                   [tagged: Resource]
          *                                             SdtProperties
@@ -510,32 +475,24 @@ namespace IES.Common.Core.OfficeUtilities
 		/// Traverse the Word document XML tree and remove any content controls encountered
 		/// </summary>
 		/// <param name="wordDocument">The Word document</param>
-		public static void RemoveContentControls(WordprocessingDocument wordDocument)
+		public static void RemoveContentControls(Document wordDocument)
 		{
 			if (wordDocument == null) { throw new ArgumentNullException(nameof(wordDocument)); }
 
-			RemoveContentControls(wordDocument.MainDocumentPart.Document.ChildElements);
+			RemoveContentControls(wordDocument.GetChildNodes(NodeType.StructuredDocumentTag, true));
 		}
 
 		/// <summary>
 		/// Check elements for the presence of content controls and remove any encountered
 		/// </summary>
 		/// <param name="elementsList">List of elements to be checked for the presence of content controls</param>
-		private static void RemoveContentControls(OpenXmlElementList elementsList)
+		private static void RemoveContentControls(NodeCollection elementsList)
 		{
-			OpenXmlElement[] elements = elementsList.ToArray();
-			int totalElements = elements.Length;
-
-			for (int i = 0; i < totalElements; i++)
+			foreach (StructuredDocumentTag node in elementsList)
 			{
-				OpenXmlElement element = elements[i];
-
-				// process children first (depth-first)
-				RemoveContentControls(element.ChildElements);
-
-				RemoveContentControls(element);
+				RemoveContentControls(node);
 			}
-
+			
 			return;
 		}
 
@@ -543,62 +500,65 @@ namespace IES.Common.Core.OfficeUtilities
 		/// Check element for the presence of content controls and remove any encountered
 		/// </summary>
 		/// <param name="element">Element to be checked for the presence of content controls</param>
-		private static void RemoveContentControls(OpenXmlElement element)
+		private static void RemoveContentControls(StructuredDocumentTag element)
 		{
-			// only SdtElement items need to be "cleaned"
-			if (element is SdtElement)  // SdtBlock, SdtRun, SdtCell, SdtRow, SdtRunRuby
+			// only StructuredDocumentTag items need to be "cleaned"
+			if (element is StructuredDocumentTag)  // SdtBlock, SdtRun, SdtCell, SdtRow, SdtRunRuby
 			{
 				#region If element has children
-				if (element.HasChildren)
+				if (element.HasChildNodes)
 				{
-					OpenXmlElement insertionPoint = element;
+					Node insertionPoint = element;
 
-					OpenXmlElement[] childElements = element.ChildElements.ToArray();
+					Node[] childElements = element.GetChildNodes(NodeType.Any, false).ToArray();
 					int totalChildElements = childElements.Length;
 
 					for (int i = 0; i < totalChildElements; i++)
 					{
-						OpenXmlElement child = childElements[i];
+						Node child = childElements[i];
 						bool removeChild = true;
 
-						if (child is SdtContentBlock or SdtContentRun or SdtContentCell or SdtContentRow)
+						if (child is Cell or Row) // TODO TIW check for SdtContentBlock or Run
 						{
-							insertionPoint = MoveChildrenAfterInsertionPoint(child, insertionPoint);
+							insertionPoint = MoveChildrenAfterInsertionPoint(child as CompositeNode, insertionPoint);
 						}
-						else if (child is SdtProperties or SdtEndCharProperties)
-						{
-							// skip
-							removeChild = false;
-						}
+						//else if (child is SdtProperties or SdtEndCharProperties)
+						//{
+						//	// skip
+						//	removeChild = false;
+						//}
 						else
 						{
 							PreCheckValidationResult xmlValidationResult = PreCheckInvalidXmlCondition(child, insertionPoint);
 
-							if (xmlValidationResult == PreCheckValidationResult.MoveContentOnly)
-							{
-								/*
-                                 * Move the child element's CONTENTS (but NOT the element itself)
-                                 * ---------------------------------
-                                 * 
-                                 * Example:
-                                 * 
-                                 *                      Paragraph1
-                                 *      [element]           SdtBlock                [insertionPoint]
-                                 *      [child]                Paragraph2
-                                 *                          <------ Run
-                                 *                          <------ Run
-                                 *                          <------ Run
-                                 * 
-                                 *      If the child (Paragraph2) were moved after the proposed insertion point, it would become
-                                 *      a child node of Paragraph1, which is NOT valid XML.
-                                 *      
-                                 *      Instead, move the CONTENTS of Paragraph2 WITHIN Paragraph1.
-                                 *      
-                                 */
+							// TODO TIW this whole section is never used because PreCheckInvalidXmlCondition never returns MoveContentOnly
+							//if (xmlValidationResult == PreCheckValidationResult.MoveContentOnly)
+							//{
+							//	/*
+       //                          * Move the child element's CONTENTS (but NOT the element itself)
+       //                          * ---------------------------------
+       //                          * 
+       //                          * Example:
+       //                          * 
+       //                          *                      Paragraph1
+       //                          *      [element]           SdtBlock                [insertionPoint]
+       //                          *      [child]                Paragraph2
+       //                          *                          <------ Run
+       //                          *                          <------ Run
+       //                          *                          <------ Run
+       //                          * 
+       //                          *      If the child (Paragraph2) were moved after the proposed insertion point, it would become
+       //                          *      a child node of Paragraph1, which is NOT valid XML.
+       //                          *      
+       //                          *      Instead, move the CONTENTS of Paragraph2 WITHIN Paragraph1.
+       //                          *      
+       //                          */
 
-								insertionPoint = MoveChildrenAfterInsertionPoint(child, insertionPoint);
-							}
-							else if (xmlValidationResult == PreCheckValidationResult.MoveEntireElement)
+							//	insertionPoint = MoveChildrenAfterInsertionPoint(child as CompositeNode, insertionPoint);
+							//}
+							//else
+							
+							if (xmlValidationResult == PreCheckValidationResult.MoveEntireElement)
 							{
 								/*
                                  * Move the entire child element
@@ -609,13 +569,13 @@ namespace IES.Common.Core.OfficeUtilities
                                  *                      Paragraph                   [insertionPoint #2]
                                  *      [element]           SdtBlock                [insertionPoint #1]
                                  *      [child]         <------ Table
-                                 *                          <------ TableRow
-                                 *                          <------ TableRow
-                                 *                          <------ TableRow
+                                 *                          <------ Row
+                                 *                          <------ Row
+                                 *                          <------ Row
                                  *                      <------ Table
-                                 *                          <------ TableRow
-                                 *                          <------ TableRow
-                                 *                          <------ TableRow
+                                 *                          <------ Row
+                                 *                          <------ Row
+                                 *                          <------ Row
                                  * 
                                  *      If the child (Table) were moved after the proposed insertion point (#1), it would become
                                  *      a child node of the Paragraph, which is NOT valid XML.
@@ -628,12 +588,12 @@ namespace IES.Common.Core.OfficeUtilities
                                  * 
                                  */
 
-								insertionPoint = insertionPoint.Parent;
+								insertionPoint = insertionPoint.ParentNode;
 
 								for (int j = i; j < totalChildElements; j++)  // child and every subsequent sibling element
 								{
 									child = childElements[j];
-									insertionPoint = insertionPoint.InsertAfterSelf(child.CloneNode(true));
+									insertionPoint = insertionPoint.ParentNode.InsertAfter(child.Clone(true), insertionPoint);
 									child.Remove();
 								}
 
@@ -642,7 +602,7 @@ namespace IES.Common.Core.OfficeUtilities
 							}
 							else // Valid
 							{
-								insertionPoint = insertionPoint.InsertAfterSelf(child.CloneNode(true));
+								insertionPoint = insertionPoint.ParentNode.InsertAfter(child.Clone(true), insertionPoint.ParentNode);
 							}
 						}
 
@@ -656,7 +616,7 @@ namespace IES.Common.Core.OfficeUtilities
 
 				#region Remove the (content control) element itself
 
-				OpenXmlElement parent = element.Parent;
+				CompositeNode parent = element.ParentNode;
 				if (parent != null)
 				{
 					element.Remove();  // remove the (content control) element
@@ -666,17 +626,19 @@ namespace IES.Common.Core.OfficeUtilities
                      * This was specifically added to eliminate extraneous line-breaks, but it removes unused nodes in general.
                      * 
                      */
-					if (parent.HasChildren)
+					if (parent.HasChildNodes)
 					{
-						if (parent.ChildElements.Any(child => (child is not ParagraphProperties and
-							not RunProperties and
-							not SdtProperties and
-							not SdtEndCharProperties and
-							not TableCellProperties and
-							not TableProperties and
-							not TableRowProperties and
-							not TableStyleProperties and
-							not CustomXmlProperties)))
+						// TODO TIW Properties are not Nodes in Aspose
+						if (parent.GetChildNodes(NodeType.Any, false).Any()) 
+							//child => (child is not ParagraphProperties and
+							//not RunProperties and
+							//not SdtProperties and
+							//not SdtEndCharProperties and
+							//not CellProperties and
+							//not TableProperties and
+							//not RowProperties and
+							//not TableStyleProperties and
+							//not CustomXmlProperties)))
 						{
 							// this child is valid content - need parent
 						}
@@ -707,12 +669,12 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <param name="child">THe child element being moved</param>
 		/// <param name="insertionPoint">The (proposed) destination of the move</param>
 		/// <returns>Either valid, or an indication of how to avoid invalid XML</returns>
-		private static PreCheckValidationResult PreCheckInvalidXmlCondition(OpenXmlElement child, OpenXmlElement insertionPoint)
+		private static PreCheckValidationResult PreCheckInvalidXmlCondition(Node child, Node insertionPoint)
 		{
 			PreCheckValidationResult result = PreCheckValidationResult.Valid;
 
-			if ((child is Paragraph && insertionPoint.Parent != null && insertionPoint.Parent is Paragraph) ||  // avoid paragraph within a paragraph (invalid XML)
-				(child is Table && insertionPoint.Parent != null && insertionPoint.Parent is Paragraph))        // avoid table within a paragraph (invalid XML)
+			if ((child is Paragraph paragraph && paragraph.ParentNode != null && insertionPoint.ParentNode is Paragraph) ||  // avoid paragraph within a paragraph (invalid XML)
+				(child is Table table && insertionPoint.ParentNode != null && insertionPoint.ParentNode is Paragraph))        // avoid table within a paragraph (invalid XML)
 			{
 				result = PreCheckValidationResult.MoveEntireElement;
 			}
@@ -724,18 +686,17 @@ namespace IES.Common.Core.OfficeUtilities
 		/// Enforce valid XML formats by adding and/or removing elements
 		/// </summary>
 		/// <param name="wordDocument">Document</param>
-		public static void CleanupDocumentXml(WordprocessingDocument wordDocument)
+		public static void CleanupDocumentXml(Document wordDocument)
 		{
 			if (wordDocument == null) { throw new ArgumentNullException(nameof(wordDocument)); }
-			Document xmlDocument = wordDocument.MainDocumentPart.Document;
 
 			// make sure all table cells have a Paragraph as their last child
-			ICollection<TableCell> allTableCells = xmlDocument.Descendants<TableCell>().ToList();
-			foreach (TableCell tableCell in allTableCells)
+			ICollection<Node> allCells = wordDocument.GetChildNodes(NodeType.Cell, true).ToList();
+			foreach (Cell Cell in allCells)
 			{
-				if (tableCell.LastChild is not Paragraph)
+				if (Cell.LastChild is not Paragraph)
 				{
-					tableCell.AppendChild<Paragraph>(new Paragraph());
+					Cell.AppendChild<Paragraph>(new Paragraph(wordDocument));
 				}
 			}
 		}
@@ -746,7 +707,7 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <param name="parent">Parent element</param>
 		/// <param name="insertionPoint">The insertion point</param>
 		/// <returns>The (resulting) point at which to continue subsequent element insertion</returns>
-		private static OpenXmlElement MoveChildrenAfterInsertionPoint(OpenXmlElement parent, OpenXmlElement insertionPoint)
+		private static Node MoveChildrenAfterInsertionPoint(CompositeNode parent, Node insertionPoint)
 		{
 			if (insertionPoint == null)
 			{
@@ -754,32 +715,32 @@ namespace IES.Common.Core.OfficeUtilities
 			}
 
 			// Note: This can be resolved once/up-front because insertion points are always sibling nodes
-			bool isEventualParentParagraph = (insertionPoint.Parent is not null and Paragraph);
+			bool isEventualParentParagraph = (insertionPoint.ParentNode is not null and Paragraph);
 
-			OpenXmlElement[] childElements = parent.ChildElements.ToArray();
+			Node[] childElements = parent.GetChildNodes(NodeType.Any, false).ToArray();
 			int totalChildElements = childElements.Length;
 
 			for (int i = 0; i < totalChildElements; i++)
 			{
-				OpenXmlElement childElement = childElements[i];
+				Node childElement = childElements[i];
 
 				if ((childElement is Paragraph && isEventualParentParagraph) ||  // avoid paragraph within a paragraph (invalid XML)
 					(childElement is Table && isEventualParentParagraph))        // avoid table within a paragraph (invalid XML)
 				{
 					// move the table (and every subsequent sibling node) to FOLLOW the paragraph node
-					insertionPoint = insertionPoint.Parent;
+					insertionPoint = insertionPoint.ParentNode;
 
 					for (int j = i; j < totalChildElements; j++)
 					{
 						childElement = childElements[j];
-						insertionPoint = insertionPoint.InsertAfterSelf(childElement.CloneNode(true));
+						insertionPoint = insertionPoint.ParentNode.InsertAfter(childElement.Clone(true), insertionPoint);
 					}
 
 					i = totalChildElements;  // avoid re-processing the subsequent children
 				}
 				else
 				{
-					insertionPoint = insertionPoint.InsertAfterSelf(childElement.CloneNode(true));
+					insertionPoint = insertionPoint.ParentNode.InsertAfter(childElement.Clone(true), insertionPoint);
 				}
 			}
 

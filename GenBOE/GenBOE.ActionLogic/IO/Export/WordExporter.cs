@@ -388,6 +388,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				}
 				else
 				{
+					// TODO TIW this looks very dubious
 					row.Parent.RemoveIt();
 				}
 			}
