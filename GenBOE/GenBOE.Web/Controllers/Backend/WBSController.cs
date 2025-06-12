@@ -93,6 +93,51 @@ namespace GenBOE.Web.Controllers.Backend
 			return result;
 		}
 
+
+		/// <summary>
+		/// Create BOEs
+		/// </summary>
+		/// <param name="workspaceShortName">The workspace short name</param>
+		/// <param name="selectedWbsIDs">Collection of the WBS IDs to create BOE for</param>
+		/// <returns>IES Result whether or not operation was successful</returns>
+		[System.Web.Http.HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<bool> CreateBOEs([FromBody] CreateBOEModelView createBOEModelView)
+		{
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+
+			if (createBOEModelView == null)
+			{
+				throw new ArgumentNullException(nameof(createBOEModelView));
+			}
+
+			try
+			{
+				FullWorkspace ws = this.Factory.CreateFullWorkspace(createBOEModelView.WorkspaceShortName);
+
+				// Initialize Action
+				Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_CREATE_BOES, SecurityPage.ManageWBS, SecurityAuthorization.CreateReadUpdateDelete, new Collection<WorkspaceDTO>() { ws }, null);
+
+				this.wbsControllerLogic.CreateBOEs(ws, createBOEModelView.WbsIDs);
+
+
+				result.Data = true;
+				result.IsSuccessful = true;
+
+				// Finalize Action
+				FinalizeAction(logger, WebConstants.ACTION_CREATE_BOES, sw);
+
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Data = false;
+				result.Messages.Add($"Unknown error occurred creating BOEs: {ex.Message}");
+			}
+
+			return result;
+		}
+
 		/// <summary>
 		/// Deletes a group of WBSs.
 		/// </summary>
