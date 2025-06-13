@@ -1874,6 +1874,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			workspace.UCOTFactor = systemUCOTFactor;
 
 			this.WorkspaceLoader.SaveIdentificationAndExportFormat(workspace.CurrentActiveUser.UserID, workspace);
+			
+			// Clear the cache after the save of the workspace
+			this.factory.ClearWorkspaceCache(workspace.Shortname);
 		}
 
 		/// <summary>
