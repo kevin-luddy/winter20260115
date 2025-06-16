@@ -1083,7 +1083,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
 
 				// save the BOE early to get the BOEID so we have it available (we'll save again)
 				int boeToUse = gbe.upsertBOE(-1, NewBOE.BOEID, wbsID, clinID, NewBOE.BOEStateID,
-                    NewBOE.BOEStartDate, NewBOE.BOEEndDate, null, workspaceID, NewBOE.UpdateDT, NewBOE.BOEDescription, "Data Source", _GlobalETIUserID, NewBOE.MetricDisclosureAcknowledge, NewBOE.NumAuthorReassigned, false, NewBOE.BOETitle,"", null,false).FirstOrDefault().Value;
+                    NewBOE.BOEStartDate, NewBOE.BOEEndDate, null, workspaceID, NewBOE.UpdateDT, NewBOE.BOEDescription, "Data Source", _GlobalETIUserID, NewBOE.MetricDisclosureAcknowledge, NewBOE.NumAuthorReassigned, false, NewBOE.BOETitle,"", null, NewBOE.IsMultiClinWbs).FirstOrDefault().Value;
 
                 // create users to be used for author and approver
                 // TBD: If we want to associate roles, we will have to add it here 
@@ -1539,7 +1539,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             createLaborType.CanOffload = true;
             createLaborType.TieredPercentage = 1.2m;
             createLaborType.AddOrDelete = "A";
-			createLaborType.CLINID = GlobalTestCaseSetup.CreateCLIN();
+			createLaborType.CLINID = GlobalTestCaseSetup.GlobalClinID;
 
             // Act
 
