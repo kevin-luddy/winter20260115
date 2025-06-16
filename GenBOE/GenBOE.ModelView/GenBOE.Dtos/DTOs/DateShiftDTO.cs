@@ -76,6 +76,16 @@ namespace GenBOE.Dtos
 		public int BoeId { get; set; }
 
 		/// <summary>
+		/// WBS id.
+		/// </summary>
+		public int? WbsId { get; set; }
+
+		/// <summary>
+		/// Clin Id.
+		/// </summary>
+		public int? ClinId { get; set; }
+
+		/// <summary>
 		/// Boe task element Id if date shiftable is a task.
 		/// </summary>
 		public int? BOETaskElementId { get; set; }
@@ -128,17 +138,17 @@ namespace GenBOE.Dtos
 		/// <summary>
 		/// Conversion for incoming inherit classes.
 		/// </summary>
-		public static DateShiftDTO FromIDateShiftable(IDateShiftable dateShiftable, bool isLoading = false)
+		public static DateShiftDTO FromIDateShiftable(IDateShiftable dateShiftable)
 		{
 			if (dateShiftable == null)
 			{
 				throw new ArgumentNullException(nameof(dateShiftable));
 			}
 
-			if (dateShiftable.Updateable != UpdateType.Upsert && !isLoading)
-			{
-				return null;
-			}
+			//if (dateShiftable.Updateable != UpdateType.Upsert && !isLoading)
+			//{
+			//	return null;
+			//}
 
 			DateShiftDTO dateShiftDTO = new DateShiftDTO();
 			dateShiftDTO.OriginalObject = dateShiftable;
@@ -159,6 +169,8 @@ namespace GenBOE.Dtos
 			{
 				dateShiftDTO.BOEStateID = (int)boeDTO.State;
 				dateShiftDTO.ParentId = boeDTO.CLINID;
+				dateShiftDTO.ClinId = boeDTO.CLINID;
+				dateShiftDTO.WbsId = boeDTO.WBSID;
 			}
 
 			if (dateShiftable is BoeTaskElementDTO boeTaskElementDTO)

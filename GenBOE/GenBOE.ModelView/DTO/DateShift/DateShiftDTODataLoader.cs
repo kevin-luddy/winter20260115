@@ -228,15 +228,15 @@ namespace GenBOE.DataBridge.DTO
 			switch (level)
 			{
 				case Level.BOE:
-					dateShift = DateShiftDTO.FromIDateShiftable(GetBoeById(id), true);
-					dateShift.Parent = DateShiftDTO.FromIDateShiftable(GetClinById(dateShift.ParentId.Value), true);
+					dateShift = DateShiftDTO.FromIDateShiftable(GetBoeById(id));
+					dateShift.Parent = DateShiftDTO.FromIDateShiftable(GetClinById(dateShift.ParentId.Value));
 					break;
 				case Level.CLIN:
-					dateShift = DateShiftDTO.FromIDateShiftable(GetClinById(id), true);
+					dateShift = DateShiftDTO.FromIDateShiftable(GetClinById(id));
 					break;
 				case Level.Task:
-					dateShift = DateShiftDTO.FromIDateShiftable(GetBoeTaskElementById(id), true);
-					dateShift.Parent = DateShiftDTO.FromIDateShiftable(GetBoeById(dateShift.BoeId), true);
+					dateShift = DateShiftDTO.FromIDateShiftable(GetBoeTaskElementById(id));
+					dateShift.Parent = DateShiftDTO.FromIDateShiftable(GetBoeById(dateShift.BoeId));
 					break;
 				case Level.Workspace:
 
@@ -272,6 +272,7 @@ namespace GenBOE.DataBridge.DTO
 								  EndDate = b.BOEEndDate,
 								  UpdateDate = b.UpdateDT,
 								  CLINID = xRef == null ? null : xRef.CLINID,
+								  WBSID = xRef == null ? null : xRef.WBSID
 							  }).FirstOrDefault();
 
 				return new FullBoe(boe);
