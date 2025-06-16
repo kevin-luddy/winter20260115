@@ -773,14 +773,14 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="clinId"></param>
 		/// <returns>BOEIds that are found</returns>
 		[DbQuery]
-		virtual public ICollection<int> GetMultiClinBOEIdsByClins(int clinId)
+		virtual public ICollection<int> GetMultiClinBOEIdsByClins(int clinId, ICollection<int> boeIds)
 		{
 			ICollection<int> result;
 			using (GenBoeEntities gbe = new GenBoeEntities())
 			{
 				result = (
 					from b in gbe.BOEs
-					where b.IsMultiClinWbs
+					where b.IsMultiClinWbs && boeIds.Contains(b.BOEID)
 					from l in b.BOETaskElements
 					from x in l.BOELaborTypes
 					where x.CLINID.HasValue && x.CLINID.Value == clinId

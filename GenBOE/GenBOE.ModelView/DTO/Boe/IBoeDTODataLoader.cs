@@ -101,7 +101,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="clinId"></param>
 		/// <returns>BOEIds that are found</returns>
-		ICollection<int> GetMultiClinBOEIdsByClins(int clinId);
+		ICollection<int> GetMultiClinBOEIdsByClins(int clinId, ICollection<int> boeIds);
 
 	}
 }

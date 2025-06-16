@@ -505,10 +505,11 @@ namespace GenBOE.Tests.DAL.DataLoaders
 			GlobalTestCaseSetup.CreateTaskElementCustomFieldValueXref();
 			GlobalTestCaseSetup.CreateLaborTypeCustomFieldValueXref();
 
-			ICollection<BoeDTO> boes = loader.GetByIds(new List<int>() { boeId });
+			ICollection<int> checkIds = new List<int>() { boeId };
+			ICollection<BoeDTO> boes = loader.GetByIds(checkIds);
 			BoeDTO boe = boes.Single();
 
-			ICollection<int> ids = loader.GetMultiClinBOEIdsByClins(GlobalTestCaseSetup.GlobalClinID);
+			ICollection<int> ids = loader.GetMultiClinBOEIdsByClins(GlobalTestCaseSetup.GlobalClinID, checkIds);
 			Assert.IsTrue(ids.Count > 0, "No MultiCLIN with BOE Labor Type");
 			Assert.AreEqual(boeId, ids.Single());
 		}

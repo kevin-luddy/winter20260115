@@ -207,8 +207,9 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 
 				// get the potential multiboes
 				Collection<FullBoe> multiBOEs = ws.Boes.Where(x => x.IsMultiClinWbs).ToCollection();
+				ICollection<int> checkIds = multiBOEs.Select(x => x.Id).Distinct().ToList();
 				// find any boes that have resources using the clin
-				ICollection<int> multiCLINBOEIds = _boeLoader.GetMultiClinBOEIdsByClins(updatedClin.Id);
+				ICollection<int> multiCLINBOEIds = _boeLoader.GetMultiClinBOEIdsByClins(updatedClin.Id, checkIds);
 				// Return list of ids in MultiBOEs found in multiCLINBOEIds
 				Collection<FullBoe> boesUsingClin = multiBOEs.Where(x => multiCLINBOEIds.Contains(x.Id)).ToCollection();
 
