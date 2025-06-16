@@ -1094,7 +1094,6 @@
                                         <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.GrandTotalHours}}</td>
                                     <% } %>
                                     <td></td>
-                                    <td data-ng-if="!ManageTaskModel.IsSpace"></td>
                                 </tr>
                             </tbody>
                         </table>

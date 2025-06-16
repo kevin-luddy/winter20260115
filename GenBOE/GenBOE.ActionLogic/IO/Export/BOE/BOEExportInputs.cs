@@ -111,7 +111,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 						.Union(workspace.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value))
 						.Distinct().ToList();
 
-			if (Utilities.ShowUCOTForWorkspace(workspace.CreationDate) && processLaborTypesForUCOT)
+			if (Utilities.ShowUCOTForWorkspace(workspace.CreationDate, workspace.TrackingNumber) && processLaborTypesForUCOT)
 			{
 				// Setup the ucot performing orgs.
 				PerformingOrgDTO ucotPerformingOrg = new PerformingOrgDTO
@@ -143,7 +143,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				}
 			}
 
-			if (Utilities.ShowUCOTForWorkspace(workspace.CreationDate) && processLaborTypesForUCOT)
+			if (Utilities.ShowUCOTForWorkspace(workspace.CreationDate, workspace.TrackingNumber) && processLaborTypesForUCOT)
 			{
 				List<ResourceTypeDto> taskElementLabors = new List<ResourceTypeDto>();
 				HashSet<int> updatedTaskIds = new HashSet<int>();
@@ -595,7 +595,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 								perfOrg = this.PerformingOrgsUsedInBoes.First(x => x.Id == labor.PerformingOrgID.Value);
 							}
 
-							LaborTypeDataModelView laborToAdd = new LaborTypeDataModelView(labor, resource, businessResourceCode, perfOrg, ws.UCOTFactor, Utilities.ShowUCOTForWorkspace(ws.CreationDate) && businessResourceCode.ElementOfCost == ElementOfCostType.LMLabor && businessResourceCode.RateType == RateType.Hours, ws.DecimalPrecision);
+							LaborTypeDataModelView laborToAdd = new LaborTypeDataModelView(labor, resource, businessResourceCode, perfOrg, ws.UCOTFactor, Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.TrackingNumber) && businessResourceCode.ElementOfCost == ElementOfCostType.LMLabor && businessResourceCode.RateType == RateType.Hours, ws.DecimalPrecision);
 
 							laborTypes.Add(laborToAdd);
 						}

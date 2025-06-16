@@ -3800,6 +3800,55 @@ namespace GenBOE.Tests.ActionLogic
 		}
 
 		/// <summary>
+		/// Test ValidateTemplateMoqForTask for validation PoP Dates are valid when in the current month when using Monthly Query Type
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_PoPCurrentMonth_SpaceMode_Monthly()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+
+			// Create a valid MOQ Table
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.MONTHLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = DateTime.Today,
+                            PoPEnd = DateTime.Today,
+                            AdditionalQueryFilters = "TestFilter",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test historical reference explanation"
+			};
+
+			// Adjust dates to mid-month as they would be while using the application
+			moqType.TableData.First().PoPStart = moqType.TableData.First().PoPStartString.ToDateTimeMidMonth();
+			moqType.TableData.First().PoPEnd = moqType.TableData.First().PoPEndString.ToDateTimeMidMonth();
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsFalse(result.Any());
+		}
+
+		/// <summary>
 		/// Test ValidateTemplateMoqForTask for additional PoP date and Date of Report validation
 		/// </summary>
 		[TestMethod]
@@ -4583,7 +4632,7 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, true);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("The maximum length of the Rationale field"));
@@ -4608,7 +4657,7 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, true);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("BOE Skill Mix is missing"));
@@ -4633,7 +4682,7 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, true);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("BOE skill Mix has invalid value"));
@@ -4658,10 +4707,34 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, true);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("At least one Resource has to be included"));
+		}
+
+		/// <summary>
+		/// Test at least one resource included not validated with no resources
+		/// </summary>
+		[TestMethod]
+		public void ValidateCommonDisclosureSkillMix_MissingResourceNoResources()
+		{
+			List<CommonDisclosureModelView> skillmix = new List<CommonDisclosureModelView>
+			{
+				new CommonDisclosureModelView {
+					ResourceID = "HISTORICAL_R",
+					HistoricalHours = 100,
+					BusinessResourceID = null,
+					Included = false,
+					IsUserInput = true,
+					Rationale = "Rationale1",
+					BOESkillMix = 0
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, false);
+			Assert.IsNotNull(messages);
+			Assert.IsFalse(messages.Any());
 		}
 
 		/// <summary>
@@ -4683,7 +4756,7 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, true);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("BOE Skill Mix total must be either 0% or 100%"));
@@ -4717,7 +4790,7 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, true);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("Each BRC must be unique for Resource"));
@@ -4742,7 +4815,7 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, false);
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, false, true);
 			Assert.IsNotNull(messages);
 			Assert.IsTrue(messages.None());
 		}
@@ -4766,7 +4839,7 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, true);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("The Rationale field") && messages.First().Contains("required"));
