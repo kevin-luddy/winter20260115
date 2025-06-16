@@ -629,14 +629,13 @@ namespace GenBOE.ActionLogic.DateShift
 		{
 			if (detail.ChildModificationType != ChildModificationType.NoChange)
 			{
-				ResourceTypeDto labor = parentTask as ResourceTypeDto;
-				if (labor == null)
+				if (parentTask.DateShiftLevel != Level.Labor)
 				{
 					throw new NotSupportedException("The parentTask is set to Level.Labor but is not a Resource Labor Type.");
 				}
 
 				// move the spreads
-				PerformSpreadsShift(labor, detail, modelView);
+				PerformSpreadsShift(parentTask as DateShiftDTO, detail, modelView);
 			}
 		}
 
@@ -646,7 +645,7 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <param name="labor">The Resource Labor.</param>
 		/// <param name="detail">The details for the DateShift.</param>
 		/// <param name="modelView">The model view.</param>
-		internal static void PerformSpreadsShift(ResourceTypeDto labor, DateShiftDetailModelView detail, DateShiftModelView modelView)
+		internal static void PerformSpreadsShift(DateShiftDTO labor, DateShiftDetailModelView detail, DateShiftModelView modelView)
 		{
 			if (labor.SpreadCurveID.HasValue)
 			{
@@ -698,7 +697,7 @@ namespace GenBOE.ActionLogic.DateShift
 								DateTime laborSpreadRequestedDate = spread.LaborSpreadDate.AddMonths(startDateDiff);
 								spread.LaborSpreadDate = GenBOEUtilities.AdjustDateTimePrecision(laborSpreadRequestedDate, DateTimePrecision.Month);
 
-								if (spread.LaborSpreadDate.CompareTo(labor.EndDateValue) > 0 && (detail.SpreadHandling == SpreadHandling.DiscreteToFirst || detail.SpreadHandling == SpreadHandling.DiscreteToLast))
+								if (spread.LaborSpreadDate.CompareTo(labor.EndDate) > 0 && (detail.SpreadHandling == SpreadHandling.DiscreteToFirst || detail.SpreadHandling == SpreadHandling.DiscreteToLast))
 								{
 									tempTotal += spread.LaborSpreadValue;
 								}
@@ -710,8 +709,8 @@ namespace GenBOE.ActionLogic.DateShift
 							{
 								CurveID = labor.SpreadCurveID,
 								HourSpread = 0,
-								StartDate = labor.StartDateValue,
-								EndDate = labor.EndDateValue
+								StartDate = labor.StartDate.Value,
+								EndDate = labor.EndDate.Value
 							};
 							int decimalPrecision = labor.SpreadType == SpreadType.Cost ? modelView.Workspace.CostDecimalPrecision : modelView.Workspace.DecimalPrecision;
 							labor.LaborSpreads = SpreadCurve.CalculateLaborSpreadsBasedOnCurve(spreadRequest, decimalPrecision);
@@ -731,7 +730,7 @@ namespace GenBOE.ActionLogic.DateShift
 								{
 									DateTime spreadDate = GenBOEUtilities.AdjustDateTimePrecision(spread.LaborSpreadDate, DateTimePrecision.Month);
 
-									if (spreadDate.CompareTo(labor.StartDateValue) == 0)
+									if (spreadDate.CompareTo(labor.StartDate) == 0)
 									{
 										spread.LaborSpreadValue += tempTotal;
 									}
@@ -740,14 +739,14 @@ namespace GenBOE.ActionLogic.DateShift
 								{
 									DateTime spreadDate = GenBOEUtilities.AdjustDateTimePrecision(spread.LaborSpreadDate, DateTimePrecision.Month);
 
-									if (spreadDate.CompareTo(labor.EndDateValue) == 0)
+									if (spreadDate.CompareTo(labor.EndDate) == 0)
 									{
 										spread.LaborSpreadValue += tempTotal;
 									}
 								}
 
 								spread.Updateable = UpdateType.Upsert;
-								spread.BoeID = labor.BoeID;
+								spread.BoeID = labor.BoeId;
 								spread.LaborTypeId = labor.Id;
 							}
 
