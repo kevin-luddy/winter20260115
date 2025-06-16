@@ -2064,8 +2064,9 @@
 						return table.RepositoryName === $scope.ManageTaskModel.SapWebiRepository;
 					});
 
-					return hasBigThreeMoqType && hasSapWebiRepository;
-					// RMS
+ 					// Lastly, check that SAP is enabled
+					return hasBigThreeMoqType && hasSapWebiRepository && $scope.ManageTaskModel.SapConnectionEnabled;
+				// RMS
 				} else {
 					let hasProperMoqTypes = [5001, 5002, '5001', '5002'].includes($scope.SelectedMoqTypes[0].SelectedMOQType);
 					return $scope.IsSkillMixEnabled && hasProperMoqTypes;
