@@ -613,10 +613,10 @@ namespace GenBOE.Tests.DAL.DataLoaders
         /// Check to see if ID is zero, create otherwise
         /// </summary>
         public static int CreateBOE(int workspaceID, int clinID = 0, int wbsID = 0, int inNumberOfAuthors = 1, int inNumberOfApprovers = 3, int inNumberOfReviewers = 0,
-                                       int inNumberOfSysAdmins = 1, int inNumberOfWorkspaceAdmins = 1, int inNumberOfMetricAdmins=1)
+                                       int inNumberOfSysAdmins = 1, int inNumberOfWorkspaceAdmins = 1, int inNumberOfMetricAdmins=1, bool isMultiClinWbs=false)
         {
             return _CreateBOE(workspaceID, clinID, wbsID,
-                inNumberOfAuthors, inNumberOfApprovers, inNumberOfReviewers, inNumberOfSysAdmins, inNumberOfWorkspaceAdmins, inNumberOfMetricAdmins);
+                inNumberOfAuthors, inNumberOfApprovers, inNumberOfReviewers, inNumberOfSysAdmins, inNumberOfWorkspaceAdmins, inNumberOfMetricAdmins, isMultiClinWbs);
         }
 
         /// <summary>
@@ -1022,7 +1022,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults", MessageId = "GenBOE.DataBridge.DTO.ClinDTODataLoader"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         private static int _CreateBOE(int workspaceID = 0, int clinID = 0, int wbsID = 0,
             int inNumberOfAuthors = 1, int inNumberOfApprovers = 3, int inNumberOfReviewers = 3,
-            int inNumberOfSysAdmins = 1, int inNumberOfWorkspaceAdmins = 1, int inNumberOfMetricAdmins = 1)
+            int inNumberOfSysAdmins = 1, int inNumberOfWorkspaceAdmins = 1, int inNumberOfMetricAdmins = 1, bool multiClinWbs = false)
         {
             // clean up any global IDs underneath BOE
             _GlobalTaskElementID = 0;
@@ -1078,10 +1078,11 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 NewBOE.BOEDescription = "New Global BOE";
                 NewBOE.UpdateDT = DateTime.Now;
                 NewBOE.MetricDisclosureAcknowledge = false;
-                // NewBOE.WorkspaceID = GlobalWorkspaceID;
+				NewBOE.IsMultiClinWbs = multiClinWbs;
+				// NewBOE.WorkspaceID = GlobalWorkspaceID;
 
-                // save the BOE early to get the BOEID so we have it available (we'll save again)
-                int boeToUse = gbe.upsertBOE(-1, NewBOE.BOEID, wbsID, clinID, NewBOE.BOEStateID,
+				// save the BOE early to get the BOEID so we have it available (we'll save again)
+				int boeToUse = gbe.upsertBOE(-1, NewBOE.BOEID, wbsID, clinID, NewBOE.BOEStateID,
                     NewBOE.BOEStartDate, NewBOE.BOEEndDate, null, workspaceID, NewBOE.UpdateDT, NewBOE.BOEDescription, "Data Source", _GlobalETIUserID, NewBOE.MetricDisclosureAcknowledge, NewBOE.NumAuthorReassigned, false, NewBOE.BOETitle,"", null,false).FirstOrDefault().Value;
 
                 // create users to be used for author and approver
@@ -1538,6 +1539,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             createLaborType.CanOffload = true;
             createLaborType.TieredPercentage = 1.2m;
             createLaborType.AddOrDelete = "A";
+			createLaborType.CLINID = GlobalTestCaseSetup.CreateCLIN();
 
             // Act
 

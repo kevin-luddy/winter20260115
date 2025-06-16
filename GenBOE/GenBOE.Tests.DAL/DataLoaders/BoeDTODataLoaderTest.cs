@@ -488,6 +488,23 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.AreEqual(BOEState.None, state);
         }
 
+		/// <summary>
+		/// Test GetMultiClinBOEIdsByClins
+		/// </summary>
+		[TestMethod]
+        public void L_GetMultiClinBOEIdsByClins()
+        {
+			BoeDTODataLoader loader = this.CreateTestLoader();
+
+			GlobalTestCaseSetup.CreateBOE(GlobalTestCaseSetup.GlobalWorkspaceID, isMultiClinWbs: true);
+
+			ICollection<BoeDTO> boes = loader.GetByIds(new List<int>() { GlobalTestCaseSetup.GlobalBOEID });
+			BoeDTO boe = boes.Single();
+
+			GlobalTestCaseSetup.CreateGlobalBOELaborTypeID();
+			ICollection<int> ids = loader.GetMultiClinBOEIdsByClins(123);
+		}
+
         /// <summary>
         /// Tests that RTE loading works as expected
         /// </summary>
