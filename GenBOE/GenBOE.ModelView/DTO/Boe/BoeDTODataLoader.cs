@@ -768,7 +768,7 @@ namespace GenBOE.DataBridge.DTO
 		}
 
 		/// <summary>
-		/// Get MultiClin BOE based on matchin Clin
+		/// Get MultiClin BOE based on matching Clin
 		/// </summary>
 		/// <param name="clinId"></param>
 		/// <returns>BOEIds that are found</returns>
