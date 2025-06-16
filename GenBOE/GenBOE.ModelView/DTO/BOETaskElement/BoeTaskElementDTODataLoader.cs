@@ -1023,7 +1023,7 @@ namespace GenBOE.DataBridge.DTO
 					this.SaveOrdinaryVariables(inTaskDetail.OrdinaryVariables);
 				}
 
-				if (true)
+				if (Utilities.IsSkillMixEnabledForSystem)
 				{
 					// Save the Skill Mix tables
 					if (inTaskDetail.SkillMixTable != null && inTaskDetail.SkillMixTable.Any())
