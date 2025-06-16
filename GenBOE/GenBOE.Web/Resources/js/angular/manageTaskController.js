@@ -1747,6 +1747,9 @@
 				// Filter out the blank row before save
 				postedData.LaborTypesData = postedData.LaborTypesData.filter(function (d) { return d.NewLaborType === false });
 
+				// Ensure IsUsingTMRatesInTask is set
+				postedData.IsUsingTMRatesInTask = $scope.IsUsingTMRatesInTask;
+
 				var data = { modelView: postedData };
 
 				var saveAction = wsLocked ? "SaveLockedTaskDataModel" : ManageTaskModel.saveAction;
