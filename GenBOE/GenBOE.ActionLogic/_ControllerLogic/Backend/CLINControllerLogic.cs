@@ -210,7 +210,7 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 				// find any boes that have resources using the clin
 				ICollection<int> multiCLINBOEIds = _boeLoader.GetMultiClinBOEIdsByClins(updatedClin.Id);
 				// Return list of ids in MultiBOEs found in multiCLINBOEIds
-				Collection<int> boesUsingClin = multiBOEs.Where(x => multiCLINBOEIds.Contains(x.Id)).Select(x => x.Id).ToCollection();
+				Collection<FullBoe> boesUsingClin = multiBOEs.Where(x => multiCLINBOEIds.Contains(x.Id)).ToCollection();
 
 				//if we have any boes and the clin is being deleted stop the process
 				if (boesUsingClin.Any() && updatedClin.Updateable == UpdateType.Deleted)
