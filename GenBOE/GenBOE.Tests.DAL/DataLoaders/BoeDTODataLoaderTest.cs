@@ -510,6 +510,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
 
 			ICollection<int> ids = loader.GetMultiClinBOEIdsByClins(GlobalTestCaseSetup.GlobalClinID);
 			Assert.IsTrue(ids.Count > 0, "No MultiCLIN with BOE Labor Type");
+			Assert.AreEqual(boeId, ids.Single());
 		}
 
         /// <summary>
