@@ -1072,10 +1072,12 @@
 
 	$scope.deleteAllRecords = function () {
 		angular.forEach($scope.tableData, function (item, key) {
-			item.Deleted = true;
+			if (!item.NewLaborType) {
+				item.Deleted = true;
+			}
 		});
 
-		angular.forEach($scope.model, function (item, key) {
+		angular.forEach($scope.model, function (item, key) {			
 			if (!item.Deleted) {
 				item.Deleted = true;
 			}
