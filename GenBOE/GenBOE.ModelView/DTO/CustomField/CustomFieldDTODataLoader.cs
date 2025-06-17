@@ -39,7 +39,8 @@ namespace GenBOE.DataBridge.DTO
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
                     toReturn = (from c in gbe.CustomFields.Where(c => ids.Contains(c.CustomFieldID))
-                                select new CustomFieldDTO
+								orderby c.CustomFieldName ascending
+								select new CustomFieldDTO
                                 {
                                     Id = c.CustomFieldID,
                                     CustomFieldName = c.CustomFieldName,
