@@ -69,19 +69,20 @@ namespace GenBOE.DataBridge.DTO
 
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    toReturn = (from c in gbe.CustomFields
-                                where c.WorkspaceID == inWorkspaceID
-                                select new CustomFieldDTO
-                                {
-                                    Id = c.CustomFieldID,
-                                    CustomFieldName = c.CustomFieldName,
-                                    CustomFieldDisplayID = (CustomFieldType)c.CustomFieldDisplayID,
-                                    CustomFieldRequired = c.CustomFieldRequired,
-                                    WorkspaceID = c.WorkspaceID,
-                                    UpdateDate = c.UpdateDT,
-                                    IsOpenEnded = c.IsOpenEnded
-                                }).ToCollection<CustomFieldDTO>();
-                }
+					toReturn = (from c in gbe.CustomFields
+								where c.WorkspaceID == inWorkspaceID
+								orderby c.CustomFieldName ascending
+								select new CustomFieldDTO
+								{
+									Id = c.CustomFieldID,
+									CustomFieldName = c.CustomFieldName,
+									CustomFieldDisplayID = (CustomFieldType)c.CustomFieldDisplayID,
+									CustomFieldRequired = c.CustomFieldRequired,
+									WorkspaceID = c.WorkspaceID,
+									UpdateDate = c.UpdateDT,
+									IsOpenEnded = c.IsOpenEnded
+								}).ToCollection<CustomFieldDTO>();
+				}
 
                 return toReturn;
             }
