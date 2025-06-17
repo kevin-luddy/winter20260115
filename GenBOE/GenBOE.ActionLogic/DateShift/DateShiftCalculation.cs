@@ -103,7 +103,7 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <summary>
 		/// Performs the date shift.
 		/// </summary>
-		/// <param name="dateShiftable">The date shiftable object.</param>
+		/// <param name="dateShiftDTO">The date shiftable object.</param>
 		/// <param name="dateShiftModel">The dateshift model.</param>
 		/// <param name="parentStart">The parent start.</param>
 		/// <param name="parentEnd">The parent end.</param>
@@ -112,12 +112,12 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <param name="workspaceShortname">Workspace ShortName</param>
 		/// <param name="fullWorkspace">The full workspace</param>
 		/// <exception cref="ArgumentNullException">dateShiftable or details</exception>
-		public void PerformDateShift(DateShiftDTO dateShiftable, DateShiftModelView dateShiftModel, DateTime? parentStart, DateTime? parentEnd,
+		public void PerformDateShift(DateShiftDTO dateShiftDTO, DateShiftModelView dateShiftModel, DateTime? parentStart, DateTime? parentEnd,
 			bool validateOnly, Level parentLevel, string workspaceShortname, FullWorkspace fullWorkspace)
 		{
-			if (dateShiftable == null)
+			if (dateShiftDTO == null)
 			{
-				throw new ArgumentNullException(nameof(dateShiftable));
+				throw new ArgumentNullException(nameof(dateShiftDTO));
 			}
 
 			if (dateShiftModel == null)
@@ -135,13 +135,13 @@ namespace GenBOE.ActionLogic.DateShift
 				throw new ArgumentException("Details for a dateshift cannot be null or empty", nameof(dateShiftModel));
 			}
 
-			if (!dateShiftable.StartDate.HasValue || !dateShiftable.EndDate.HasValue)
+			if (!dateShiftDTO.StartDate.HasValue || !dateShiftDTO.EndDate.HasValue)
 			{
 				throw new ArgumentException("Object to DateShift does not have a valid start or end time.");
 			}
 
 			// Perform Shifts
-			PerformShifts(dateShiftable, dateShiftModel, parentStart, parentEnd, null, parentLevel, workspaceShortname);
+			PerformShifts(dateShiftDTO, dateShiftModel, parentStart, parentEnd, null, parentLevel, workspaceShortname);
 
 			// Error handling - only need to throw the errors for the last detail (duration change) in case there are both a shift and duration change
 			if (dateShiftModel.Details.Last().Errors.Messages.Any())
@@ -152,7 +152,7 @@ namespace GenBOE.ActionLogic.DateShift
 			if (!validateOnly)
 			{
 				// Pre-load emails (to get original start/end dates)
-				this.GenerateEmails(dateShiftable, dateShiftModel);
+				this.GenerateEmails(dateShiftDTO, dateShiftModel);
 
 
 				// Check if we have Skill Mix enabled to adjust Skill Mix table data as needed
@@ -193,7 +193,7 @@ namespace GenBOE.ActionLogic.DateShift
 				}
 
 				// Save
-				this.Save(dateShiftable, dateShiftModel);
+				this.Save(dateShiftDTO, dateShiftModel);
 
 				// Send emails
 				this.SendEmails(dateShiftModel);
