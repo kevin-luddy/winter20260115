@@ -36,7 +36,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         [TestInitialize]
         public void InitializeTestMethod()
         {
-            fullObjectFactory = new FullObjectFactory(null, null, null, null, null, null, null, null, null, null, null, null);
+            fullObjectFactory = new FullObjectFactory(null, null, null, null, null, null, null, null, null, null, null);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), fullObjectFactory);
 
             retriever = new Mock<IRetriever>();
