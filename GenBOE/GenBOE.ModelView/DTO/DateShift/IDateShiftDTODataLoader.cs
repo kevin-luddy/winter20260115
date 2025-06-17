@@ -28,7 +28,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="workspaceShortName">Ws shortname.</param>
 		/// <returns>Date shifto bject.</returns>
-		DateShiftDTO GetWorkspaceDateShiftObject(string workspaceShortName);
+		DateShiftDTO GetWorkspaceDateShiftDataObject(string workspaceShortName);
 
 		/// <summary>
 		/// Update the respective levels in the database with the Date Shift data.

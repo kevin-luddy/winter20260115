@@ -15,7 +15,6 @@ namespace GenBOE.DataBridge.DTO
 	using System.Collections.ObjectModel;
 	using System.Data;
 	using System.Data.Entity;
-	using System.Data.SqlClient;
 	using System.Linq;
 
 	/// <summary>
@@ -228,18 +227,18 @@ namespace GenBOE.DataBridge.DTO
 			switch (level)
 			{
 				case Level.BOE:
-					dateShift = DateShiftDTO.FromIDateShiftable(GetBoeById(id));
-					dateShift.Parent = DateShiftDTO.FromIDateShiftable(GetClinById(dateShift.ParentId.Value));
+					dateShift = DateShiftDTO.FromIDateShiftable(GetBoeDateShiftDataById(id));
+					dateShift.Parent = DateShiftDTO.FromIDateShiftable(GetClinDateShiftDataById(dateShift.ParentId.Value));
 					break;
 				case Level.CLIN:
-					dateShift = DateShiftDTO.FromIDateShiftable(GetClinById(id));
+					dateShift = DateShiftDTO.FromIDateShiftable(GetClinDateShiftDataById(id));
 					break;
 				case Level.Task:
-					dateShift = DateShiftDTO.FromIDateShiftable(GetBoeTaskElementById(id));
-					dateShift.Parent = DateShiftDTO.FromIDateShiftable(GetBoeById(dateShift.BoeId));
+					dateShift = DateShiftDTO.FromIDateShiftable(GetBoeTaskElementDateShiftDataById(id));
+					dateShift.Parent = DateShiftDTO.FromIDateShiftable(GetBoeDateShiftDataById(dateShift.BoeId));
 					break;
 				case Level.Workspace:
-					dateShift = DateShiftDTO.FromIDateShiftable(GetWorkspaceById(id));
+					dateShift = DateShiftDTO.FromIDateShiftable(GetWorkspaceDateShiftDataById(id));
 					break;
 				default:
 					throw new NotSupportedException($"Unsupported level: {level}");
@@ -252,10 +251,10 @@ namespace GenBOE.DataBridge.DTO
 		/// Gets workspace by short name.
 		/// </summary>
 		/// <param name="workspaceShortName">Ws shortname.</param>
-		/// <returns>Date shifto bject.</returns>
-		public DateShiftDTO GetWorkspaceDateShiftObject(string workspaceShortName)
+		/// <returns>Date shift object.</returns>
+		public DateShiftDTO GetWorkspaceDateShiftDataObject(string workspaceShortName)
 		{
-			return DateShiftDTO.FromIDateShiftable(GetWorkspaceByShortname(workspaceShortName));
+			return DateShiftDTO.FromIDateShiftable(GetWorkspaceDateShiftDataByShortname(workspaceShortName));
 		}
 
 		/// <summary>
@@ -263,7 +262,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="id">id</param>
 		/// <returns>Boe data.</returns>
-		public FullBoe GetBoeById(int id)
+		public FullBoe GetBoeDateShiftDataById(int id)
 		{
 			using (GenBoeEntities gbe = new GenBoeEntities())
 			{
@@ -293,7 +292,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="id">id</param>
 		/// <returns>Clin data.</returns>
-		public FullClin GetClinById(int id)
+		public FullClin GetClinDateShiftDataById(int id)
 		{
 			using (GenBoeEntities gbe = new GenBoeEntities())
 			{
@@ -318,7 +317,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="id">Boe Task Element Id</param>
 		/// <returns>Boe Task Element.</returns>
-		public BoeTaskElementDTO GetBoeTaskElementById(int id)
+		public BoeTaskElementDTO GetBoeTaskElementDateShiftDataById(int id)
 		{
 			using (GenBoeEntities gbe = new GenBoeEntities())
 			{
@@ -346,7 +345,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="id">id</param>
 		/// <returns>Workspace data.</returns>
-		public FullWorkspace GetWorkspaceById(int id)
+		public FullWorkspace GetWorkspaceDateShiftDataById(int id)
 		{
 			using (GenBoeEntities gbe = new GenBoeEntities())
 			{
@@ -371,7 +370,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="id">id</param>
 		/// <returns>Workspace data.</returns>
-		public FullWorkspace GetWorkspaceByShortname(string workspaceShortName)
+		public FullWorkspace GetWorkspaceDateShiftDataByShortname(string workspaceShortName)
 		{
 			using (GenBoeEntities gbe = new GenBoeEntities())
 			{

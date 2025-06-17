@@ -900,7 +900,6 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <param name="dateShiftModel">The model view.</param>
 		private void TransitionBOEs(IDateShiftable dateShiftable, DateShiftModelView dateShiftModel)
 		{
-			// TODO Thomas: Look at removing the Full Boe here.
 			// get all the affected BOEs that are not in Draft
 			ICollection<DateShiftDTO> affectedBOEs = this.GetAffectedBOEs(dateShiftable, dateShiftModel);
 
