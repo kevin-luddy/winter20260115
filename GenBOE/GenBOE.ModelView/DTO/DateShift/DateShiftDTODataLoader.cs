@@ -7,6 +7,8 @@
 namespace GenBOE.DataBridge.DTO
 {
 	using GenBOE.Dtos;
+	using GenBOE.Models;
+	using GenBOE.Objects;
 	using IES.Common;
 	using System;
 	using System.Collections.Generic;
@@ -61,7 +63,7 @@ namespace GenBOE.DataBridge.DTO
 
 			foreach (DateShiftDTO dateShiftDTO in dateShiftDTOs)
 			{
-				dateShiftDTOsToUpdate.AddRange(RecursivelyGetDateShiftDTOs(dateShiftDTO.OriginalObject as IDateShiftable));
+				dateShiftDTOsToUpdate.AddRange(RecursivelyGetDateShiftDTOs(dateShiftDTO));
 			}
 
 			foreach (DateShiftDTO dateShiftDTOtoUpdate in dateShiftDTOsToUpdate)
@@ -210,6 +212,182 @@ namespace GenBOE.DataBridge.DTO
 			}
 
 			return dateShiftDTOs;
+		}
+
+		/// <summary>
+		/// Gets the Date Shift object by level and ID.
+		/// </summary>
+		/// <param name="level">Level.</param>
+		/// <param name="id">Id.</param>
+		/// <returns>Date Shift object</returns>
+		public DateShiftDTO GetDateShiftObject(Level level, int id)
+		{
+			DateShiftDTO dateShift = null;
+
+			switch (level)
+			{
+				case Level.BOE:
+					dateShift = DateShiftDTO.FromIDateShiftable(GetBoeDateShiftDataById(id));
+					dateShift.Parent = DateShiftDTO.FromIDateShiftable(GetClinDateShiftDataById(dateShift.ParentId.Value));
+					break;
+				case Level.CLIN:
+					dateShift = DateShiftDTO.FromIDateShiftable(GetClinDateShiftDataById(id));
+					break;
+				case Level.Task:
+					dateShift = DateShiftDTO.FromIDateShiftable(GetBoeTaskElementDateShiftDataById(id));
+					dateShift.Parent = DateShiftDTO.FromIDateShiftable(GetBoeDateShiftDataById(dateShift.BoeId));
+					break;
+				case Level.Workspace:
+					dateShift = DateShiftDTO.FromIDateShiftable(GetWorkspaceDateShiftDataById(id));
+					break;
+				default:
+					throw new NotSupportedException($"Unsupported level: {level}");
+			}
+
+			return dateShift;
+		}
+
+		/// <summary>
+		/// Gets workspace by short name.
+		/// </summary>
+		/// <param name="workspaceShortName">Ws shortname.</param>
+		/// <returns>Date shift object.</returns>
+		public DateShiftDTO GetWorkspaceDateShiftDataObject(string workspaceShortName)
+		{
+			return DateShiftDTO.FromIDateShiftable(GetWorkspaceDateShiftDataByShortname(workspaceShortName));
+		}
+
+		/// <summary>
+		/// Gets the required boe data by id.
+		/// </summary>
+		/// <param name="id">id</param>
+		/// <returns>Boe data.</returns>
+		public FullBoe GetBoeDateShiftDataById(int id)
+		{
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
+
+				BoeDTO boe = (from b in gbe.BOEs
+							  where b.BOEID == id
+							  join xRef in gbe.WBS_CLIN_BOE_XREF.Where(x => x.BOEID.HasValue) on b.BOEID equals xRef.BOEID into temp
+							  from xRef in temp.DefaultIfEmpty() // left outer joins for above..
+							  select new BoeDTO
+							  {
+								  Id = b.BOEID,
+								  State = (BOEState)b.BOEStateID,
+								  StartDate = b.BOEStartDate,
+								  EndDate = b.BOEEndDate,
+								  UpdateDate = b.UpdateDT,
+								  CLINID = xRef == null ? null : xRef.CLINID,
+								  WBSID = xRef == null ? null : xRef.WBSID
+							  }).FirstOrDefault();
+
+				return new FullBoe(boe);
+			}
+		}
+
+		/// <summary>
+		/// Gets the required clin data by id.
+		/// </summary>
+		/// <param name="id">id</param>
+		/// <returns>Clin data.</returns>
+		public FullClin GetClinDateShiftDataById(int id)
+		{
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
+
+				ClinDTO clin = (from c in gbe.CLINs
+								where c.CLINID == id
+								select new ClinDTO
+								{
+									Id = c.CLINID,
+									StartDate = c.CLINStartDate,
+									EndDate = c.CLINEndDate,
+									UpdateDate = c.UpdateDT,
+								}).FirstOrDefault();
+
+				return new FullClin(clin);
+			}
+		}
+
+		/// <summary>
+		/// Get BOE Task Element by Id.
+		/// </summary>
+		/// <param name="id">Boe Task Element Id</param>
+		/// <returns>Boe Task Element.</returns>
+		public BoeTaskElementDTO GetBoeTaskElementDateShiftDataById(int id)
+		{
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
+
+				BoeTaskElementDTO boeTaskElement = (from bT in gbe.BOETaskElements
+													where bT.BOETaskElementID == id
+													select new BoeTaskElementDTO
+													{
+														Id = bT.BOETaskElementID,
+														BOETaskID = bT.TaskID,
+														TaskTitle = bT.TaskTitle,
+														StartDate = bT.TaskStartDate,
+														EndDate = bT.TaskEndDate,
+														UpdateDate = bT.UpdateDT,
+														BoeID = bT.BOEID,
+													}).FirstOrDefault();
+
+				return boeTaskElement;
+			}
+		}
+
+		/// <summary>
+		/// Gets the required workspace data by id.
+		/// </summary>
+		/// <param name="id">id</param>
+		/// <returns>Workspace data.</returns>
+		public FullWorkspace GetWorkspaceDateShiftDataById(int id)
+		{
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
+
+				FullWorkspace workspace = (from w in gbe.Workspaces
+										  where w.WorkspaceID == id
+										  select new FullWorkspace
+										  {
+											  Id = w.WorkspaceID,
+											  ContractStartDate = w.ContractStartDate,
+											  ContractEndDate = w.ContractEndDate,
+											  UpdateDate = w.UpdateDT,
+										  }).FirstOrDefault();
+
+				return workspace;
+			}
+		}
+
+		/// <summary>
+		/// Gets the required workspace data by workspaceShortName.
+		/// </summary>
+		/// <param name="workspaceShortName">workspace Short Name</param>
+		/// <returns>Workspace data.</returns>
+		public FullWorkspace GetWorkspaceDateShiftDataByShortname(string workspaceShortName)
+		{
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
+
+				FullWorkspace workspace = (from w in gbe.Workspaces
+										   where w.WorkspaceShortName == workspaceShortName
+										   select new FullWorkspace
+										   {
+											   Id = w.WorkspaceID,
+											   ContractStartDate = w.ContractStartDate,
+											   ContractEndDate = w.ContractEndDate,
+											   UpdateDate = w.UpdateDT,
+										   }).FirstOrDefault();
+
+				return workspace;
+			}
 		}
 	}
 }
