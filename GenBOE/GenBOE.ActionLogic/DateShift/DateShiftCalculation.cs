@@ -112,7 +112,7 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <param name="workspaceShortname">Workspace ShortName</param>
 		/// <param name="fullWorkspace">The full workspace</param>
 		/// <exception cref="ArgumentNullException">dateShiftable or details</exception>
-		public void PerformDateShift(IDateShiftable dateShiftable, DateShiftModelView dateShiftModel, DateTime? parentStart, DateTime? parentEnd,
+		public void PerformDateShift(DateShiftDTO dateShiftable, DateShiftModelView dateShiftModel, DateTime? parentStart, DateTime? parentEnd,
 			bool validateOnly, Level parentLevel, string workspaceShortname, FullWorkspace fullWorkspace)
 		{
 			if (dateShiftable == null)
@@ -841,19 +841,16 @@ namespace GenBOE.ActionLogic.DateShift
 		/// </summary>
 		/// <param name="dateShiftable">The date shiftable parent object.</param>
 		/// <param name="dateShiftModel">The model view.</param>
-		/// 
-		private void Save(IDateShiftable dateShiftable, DateShiftModelView dateShiftModel)
+		private void Save(DateShiftDTO dateShiftable, DateShiftModelView dateShiftModel)
 		{
-			DateShiftDTO dateShiftDTO = DateShiftDTO.FromIDateShiftable(dateShiftable);
 			if (dateShiftable.DateShiftLevel == Level.Workspace)
 			{
 				// separate transaction for backup
 				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("CopyWorkspaceTransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
 				{
-					FullWorkspace workspace = dateShiftable as FullWorkspace;
 					// make a backup first
 					string versionName = "SYSTEM: DATE SHIFT " + DateTime.Now.ToString();
-					IReadOnlyCollection<WorkspaceVersionMetaDataDTO> workspaceVersions = workspace.WorkspaceVersionMetaData;
+					ICollection<WorkspaceVersionMetaDataDTO> workspaceVersions = dateShiftable.WorkspaceVersionMetaData;
 
 					foreach (WorkspaceVersionMetaDataDTO versionToCheck in workspaceVersions)
 					{
@@ -872,11 +869,11 @@ namespace GenBOE.ActionLogic.DateShift
 							Updateable = UpdateType.Upsert,
 							CreatedByID = 0, // genBOE System 
                             DateCreated = new DateTime(),
-							VersionState = workspace.WorkspaceState
+							VersionState = dateShiftable.WorkspaceState
 						}
 					};
 
-					this.workspaceVersionMetaDataDTODataLoader.Save(toSave, workspace.Id);
+					this.workspaceVersionMetaDataDTODataLoader.Save(toSave, dateShiftable.Id);
 
 					scope.Complete();
 				}
@@ -885,7 +882,7 @@ namespace GenBOE.ActionLogic.DateShift
 			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("CopyWorkspaceTransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
 			{
 
-				ICollection<DateShiftDTO> dateShiftedItems = new List<DateShiftDTO> { dateShiftDTO };
+				ICollection<DateShiftDTO> dateShiftedItems = new List<DateShiftDTO> { dateShiftable };
 
 				this.dateShiftLoader.Update(dateShiftedItems);
 

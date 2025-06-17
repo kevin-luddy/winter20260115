@@ -64,7 +64,7 @@ namespace GenBOE.DataBridge.DTO
 
 			foreach (DateShiftDTO dateShiftDTO in dateShiftDTOs)
 			{
-				dateShiftDTOsToUpdate.AddRange(RecursivelyGetDateShiftDTOs(dateShiftDTO.OriginalObject as IDateShiftable));
+				dateShiftDTOsToUpdate.AddRange(RecursivelyGetDateShiftDTOs(dateShiftDTO));
 			}
 
 			foreach (DateShiftDTO dateShiftDTOtoUpdate in dateShiftDTOsToUpdate)
@@ -239,13 +239,23 @@ namespace GenBOE.DataBridge.DTO
 					dateShift.Parent = DateShiftDTO.FromIDateShiftable(GetBoeById(dateShift.BoeId));
 					break;
 				case Level.Workspace:
-
+					dateShift = DateShiftDTO.FromIDateShiftable(GetWorkspaceById(id));
 					break;
 				default:
 					throw new NotSupportedException($"Unsupported level: {level}");
 			}
 
 			return dateShift;
+		}
+
+		/// <summary>
+		/// Gets workspace by short name.
+		/// </summary>
+		/// <param name="workspaceShortName">Ws shortname.</param>
+		/// <returns>Date shifto bject.</returns>
+		public DateShiftDTO GetWorkspaceDateShiftObject(string workspaceShortName)
+		{
+			return DateShiftDTO.FromIDateShiftable(GetWorkspaceByShortname(workspaceShortName));
 		}
 
 		/// <summary>
@@ -259,7 +269,6 @@ namespace GenBOE.DataBridge.DTO
 			{
 				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
 
-				// get the basic BOE data from the sprocResults
 				BoeDTO boe = (from b in gbe.BOEs
 							  where b.BOEID == id
 							  join xRef in gbe.WBS_CLIN_BOE_XREF.Where(x => x.BOEID.HasValue) on b.BOEID equals xRef.BOEID into temp
@@ -290,7 +299,6 @@ namespace GenBOE.DataBridge.DTO
 			{
 				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
 
-				// get the basic CLIN data from the sprocResults
 				ClinDTO clin = (from c in gbe.CLINs
 								where c.CLINID == id
 								select new ClinDTO
@@ -316,7 +324,6 @@ namespace GenBOE.DataBridge.DTO
 			{
 				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
 
-				// get the basic BOE Task Element data from the sprocResults
 				BoeTaskElementDTO boeTaskElement = (from bT in gbe.BOETaskElements
 													where bT.BOETaskElementID == id
 													select new BoeTaskElementDTO
@@ -334,5 +341,54 @@ namespace GenBOE.DataBridge.DTO
 			}
 		}
 
+		/// <summary>
+		/// Gets the required workspace data by id.
+		/// </summary>
+		/// <param name="id">id</param>
+		/// <returns>Workspace data.</returns>
+		public FullWorkspace GetWorkspaceById(int id)
+		{
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
+
+				FullWorkspace workspace = (from w in gbe.Workspaces
+										  where w.WorkspaceID == id
+										  select new FullWorkspace
+										  {
+											  Id = w.WorkspaceID,
+											  ContractStartDate = w.ContractStartDate,
+											  ContractEndDate = w.ContractEndDate,
+											  UpdateDate = w.UpdateDT,
+										  }).FirstOrDefault();
+
+				return workspace;
+			}
+		}
+
+		/// <summary>
+		/// Gets the required workspace data by id.
+		/// </summary>
+		/// <param name="id">id</param>
+		/// <returns>Workspace data.</returns>
+		public FullWorkspace GetWorkspaceByShortname(string workspaceShortName)
+		{
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
+
+				FullWorkspace workspace = (from w in gbe.Workspaces
+										   where w.WorkspaceShortName == workspaceShortName
+										   select new FullWorkspace
+										   {
+											   Id = w.WorkspaceID,
+											   ContractStartDate = w.ContractStartDate,
+											   ContractEndDate = w.ContractEndDate,
+											   UpdateDate = w.UpdateDT,
+										   }).FirstOrDefault();
+
+				return workspace;
+			}
+		}
 	}
 }

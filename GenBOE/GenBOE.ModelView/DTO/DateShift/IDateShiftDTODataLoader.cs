@@ -24,6 +24,13 @@ namespace GenBOE.DataBridge.DTO
 		DateShiftDTO GetDateShiftObject(Level level, int id);
 
 		/// <summary>
+		/// Gets workspace by short name.
+		/// </summary>
+		/// <param name="workspaceShortName">Ws shortname.</param>
+		/// <returns>Date shifto bject.</returns>
+		DateShiftDTO GetWorkspaceDateShiftObject(string workspaceShortName);
+
+		/// <summary>
 		/// Update the respective levels in the database with the Date Shift data.
 		/// </summary>
 		/// <param name="dateShiftDTOs">Collection of Date Shift dates for updating.</param>

@@ -13,6 +13,7 @@ namespace GenBOE.Dtos
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Linq;
 
 	/// <summary>
 	/// DTO that will contain Date Shifts.
@@ -131,6 +132,16 @@ namespace GenBOE.Dtos
 		public decimal? ValueSpread { get; set; }
 
 		/// <summary>
+		/// Workspace version meta data.
+		/// </summary>
+		public ICollection<WorkspaceVersionMetaDataDTO> WorkspaceVersionMetaData { get; set; } = new List<WorkspaceVersionMetaDataDTO>();
+
+		/// <summary>
+		/// Workspace state.
+		/// </summary>
+		public WorkspaceState WorkspaceState { get; set; }
+
+		/// <summary>
 		/// Original object data.
 		/// </summary>
 		public object OriginalObject { get => this.originalObject; set => this.originalObject = value; }
@@ -144,11 +155,6 @@ namespace GenBOE.Dtos
 			{
 				throw new ArgumentNullException(nameof(dateShiftable));
 			}
-
-			//if (dateShiftable.Updateable != UpdateType.Upsert && !isLoading)
-			//{
-			//	return null;
-			//}
 
 			DateShiftDTO dateShiftDTO = new DateShiftDTO();
 			dateShiftDTO.OriginalObject = dateShiftable;
@@ -187,6 +193,12 @@ namespace GenBOE.Dtos
 			{
 				// Check if Labor Spreads is not null and if not null then save them later.
 				dateShiftDTO.LaborSpreads = resourceTypeDto.LaborSpreads;
+			}
+
+			if (dateShiftable is FullWorkspace fullWorkspace)
+			{
+				dateShiftDTO.WorkspaceVersionMetaData = fullWorkspace.WorkspaceVersionMetaData.ToList();
+				dateShiftDTO.WorkspaceState = fullWorkspace.WorkspaceState;
 			}
 
 			foreach (IDateShiftable child in dateShiftable.Children)
