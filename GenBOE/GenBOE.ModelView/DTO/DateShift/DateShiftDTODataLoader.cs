@@ -366,9 +366,9 @@ namespace GenBOE.DataBridge.DTO
 		}
 
 		/// <summary>
-		/// Gets the required workspace data by id.
+		/// Gets the required workspace data by workspaceShortName.
 		/// </summary>
-		/// <param name="id">id</param>
+		/// <param name="workspaceShortName">workspace Short Name</param>
 		/// <returns>Workspace data.</returns>
 		public FullWorkspace GetWorkspaceDateShiftDataByShortname(string workspaceShortName)
 		{
