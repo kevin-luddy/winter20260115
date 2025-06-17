@@ -107,7 +107,8 @@ namespace GenBOE.DataBridge.DTO
                      join V in db.CustomFieldValues on X.CustomFieldValueID equals V.CustomFieldValueID
                      join F in db.CustomFields on V.CustomFieldID equals F.CustomFieldID
                      where boeIds.Contains(B.BOEID)
-                     select new
+					 orderby F.CustomFieldName ascending
+					 select new
                      {
                          BOEID = B.BOEID,
                          WorkspaceID = B.WorkspaceID,
