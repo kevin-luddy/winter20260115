@@ -48,6 +48,43 @@ namespace IES.Common.Core.OfficeUtilities
 		}
 
 		/// <summary>
+		/// Override to convert from NodeType to real class Type
+		/// </summary>
+		/// <typeparam name="T">The Class Type</typeparam>
+		/// <param name="compositeNode">The node ancestor to search inside</param>
+		/// <param name="nodeType">The node type to find</param>
+		/// <param name="isDeep">Do we search children's children recursively?</param>
+		/// <returns>Hashset of the found Nodes</returns>
+		/// <exception cref="ArgumentException">Thrown if the NodeType does not match Type T</exception>
+		public static HashSet<T> GetChildNodes<T>(this CompositeNode compositeNode, NodeType nodeType, bool isDeep) where T : Node
+		{
+			HashSet<T> result = new HashSet<T>();
+
+			NodeCollection coll = compositeNode.GetChildNodes(nodeType, isDeep);
+			foreach (Node node in coll)
+			{
+				if (node is T)
+				{
+					result.Add((T)node);
+				}
+				else
+				{
+					throw new ArgumentException("NodeType does not match T");
+				}
+			}
+
+			return result;
+		}
+
+		public static StructuredDocumentTag GetLastMatchingChildSDT(this CompositeNode compositeNode, string match, StringComparison comparison)
+		{
+			NodeCollection collection = compositeNode.GetChildNodes(NodeType.StructuredDocumentTag, true);
+			StructuredDocumentTag found = collection.LastOrDefault(compositeNode => compositeNode is StructuredDocumentTag sdt && match.Equals(sdt.Title, comparison)) as StructuredDocumentTag;
+
+			return found;
+		}
+
+		/// <summary>
 		/// Get a child element (of the given element) that has the designated tag
 		/// </summary>
 		/// <param name="element">Parent element</param>
