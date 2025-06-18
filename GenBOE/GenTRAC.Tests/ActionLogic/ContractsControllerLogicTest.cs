@@ -1219,5 +1219,50 @@ namespace GenTRAC.Tests.ActionLogic
 			Assert.IsFalse(pass);
 			Assert.IsTrue(errors.First().Contains("Mission Segment EPP Date must be before Line of Business EPP Date"));
 		}
+
+		/// <summary>
+		/// Test ContractDataValidForCompleteProposalSave for validation of the proposed and negotiatied insurances
+		/// </summary>
+		[TestMethod]
+		public void ContractDataValidForCompleteProposalSave_IsInsuranceDirectValidation()
+		{
+			ContractsControllerLogic sut = this.CreateSystem();
+			
+			// Initial test - Proposed and Negotiated insurance required when IsInsuranceDirect is Yes
+			ContractsDto dto = new ContractsDto
+			{
+				IsInsuranceDirect = TripleBooleanState.Yes,
+			};
+
+			ProposalDto proposalDto = new ProposalDto();
+			FullProposal proposal = new FullProposal(proposalDto);
+			List<string> messages = new List<string>();
+
+			bool result = sut.ContractDataValidForCompleteProposalSave(dto, proposal, messages);
+
+			Assert.IsFalse(result);
+			Assert.IsTrue(messages.Contains(Constants.INVALID_PROPOSED_INSURANCE));
+			Assert.IsTrue(messages.Contains(Constants.INVALID_NEGOTIATED_INSURANCE));
+
+			// Proposed and Negotiated insurance should be "blank" when IsInsuranceDirect is NA
+			messages.Clear();
+			dto.IsInsuranceDirect = TripleBooleanState.NA;
+			dto.ProposedInsurance = 1;
+			dto.NegotiatedInsurance = 1;
+			result = sut.ContractDataValidForCompleteProposalSave(dto, proposal, messages);
+
+			Assert.IsFalse(result);
+			Assert.IsTrue(messages.Contains(Constants.INVALID_PROPOSED_INSURANCE_BLANK));
+			Assert.IsTrue(messages.Contains(Constants.INVALID_NEGOTIATED_INSURANCE_BLANK));
+
+			// Proposed and Negotiated insurance should be "blank" when IsInsuranceDirect is No
+			messages.Clear();
+			dto.IsInsuranceDirect = TripleBooleanState.No;
+			result = sut.ContractDataValidForCompleteProposalSave(dto, proposal, messages);
+
+			Assert.IsFalse(result);
+			Assert.IsTrue(messages.Contains(Constants.INVALID_PROPOSED_INSURANCE_BLANK));
+			Assert.IsTrue(messages.Contains(Constants.INVALID_NEGOTIATED_INSURANCE_BLANK));
+		}
 	}
 }

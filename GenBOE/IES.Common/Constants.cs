@@ -711,6 +711,16 @@ namespace IES.Common
 		public const string INVALID_INSURANCE_TYPE = "Insurance Type is required.";
 
 		/// <summary>
+		/// Validation failed for Proposed Insurance value - Must be blank
+		/// </summary>
+		public const string INVALID_PROPOSED_INSURANCE_BLANK = "Proposed Insurance must be blank when 'Has Insurance been proposed direct' is N/A or No.";
+
+		/// <summary>
+		/// Validation failed for Negotiated Insurance value - Must be blank
+		/// </summary>
+		public const string INVALID_NEGOTIATED_INSURANCE_BLANK = "Negotiated Insurance must be blank when 'Has Insurance been proposed direct' is N/A or No.";
+
+		/// <summary>
 		/// Validation failed for Proposed Insurance value
 		/// </summary>
 		public const string INVALID_PROPOSED_INSURANCE = "Proposed Insurance is required.";
@@ -718,7 +728,7 @@ namespace IES.Common
 		/// <summary>
 		/// Validation failed for Negotiated Insurance value
 		/// </summary>
-		public const string INVALID_NEGOTIATED_INSURANCE = "Negotiated Insurance required."; 
+		public const string INVALID_NEGOTIATED_INSURANCE = "Negotiated Insurance is required.";
 
 		/// <summary>
 		/// Validation failed for Customer Due Date
