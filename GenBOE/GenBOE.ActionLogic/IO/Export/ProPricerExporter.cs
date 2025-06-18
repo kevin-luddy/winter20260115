@@ -1689,7 +1689,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					}
 
 					// Get smoothed curve values
-					decimal[] smoothedSpreadValues = SpreadCurve.Smooth(ucotTotal, ucotSpreads.Select(x => x.Value).ToArray(), 0, ucotSpreads.Count, wsLevelData.ResourceDecimalPrecision);
+					decimal[] smoothedSpreadValues = SpreadCurve.Smooth(ucotTotal, ucotSpreads.OrderBy(x => x.Key).Select(x => x.Value).ToArray(), 0, ucotSpreads.Count, wsLevelData.ResourceDecimalPrecision);
 
 					// Add the smoothed values to the dictionary to apply to spreads later
 					for (int i = 0; i < ucotSpreads.Count; i++)
