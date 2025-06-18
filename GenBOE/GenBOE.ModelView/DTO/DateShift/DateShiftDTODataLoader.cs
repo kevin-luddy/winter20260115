@@ -228,7 +228,11 @@ namespace GenBOE.DataBridge.DTO
 			{
 				case Level.BOE:
 					dateShift = DateShiftDTO.FromIDateShiftable(GetBoeDateShiftDataById(id));
-					dateShift.Parent = DateShiftDTO.FromIDateShiftable(GetClinDateShiftDataById(dateShift.ParentId.Value));
+					// Account for No CLINs.
+					if (dateShift.ParentId != null)
+					{
+						dateShift.Parent = DateShiftDTO.FromIDateShiftable(GetClinDateShiftDataById(dateShift.ParentId.Value));
+					}
 					break;
 				case Level.CLIN:
 					dateShift = DateShiftDTO.FromIDateShiftable(GetClinDateShiftDataById(id));
@@ -335,6 +339,22 @@ namespace GenBOE.DataBridge.DTO
 														UpdateDate = bT.UpdateDT,
 														BoeID = bT.BOEID,
 													}).FirstOrDefault();
+				// Get resource types for task element labors.
+				if (boeTaskElement != null)
+				{
+					boeTaskElement.taskElementLabors = (from lT in gbe.BOELaborTypes
+														where lT.BOETaskElementID == id
+														select new ResourceTypeDto
+														{
+															Id = lT.BOELaborTypeID,
+															TaskElementId = lT.BOETaskElementID,
+															ResourceID = lT.ResourceID,
+															StartDateValue = lT.BOELaborTypeStartDate,
+															EndDateValue = lT.BOELaborTypeEndDate,
+															SpreadType = lT.SpreadTypeID.HasValue ? (SpreadType)lT.SpreadTypeID.Value : SpreadType.NotSet,
+															UpdateDate = lT.UpdateDT,
+														}).ToCollection();
+				}
 
 				return boeTaskElement;
 			}
