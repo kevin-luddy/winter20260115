@@ -186,7 +186,7 @@ namespace GenBOE.Dtos
 			if (dateShiftable is FullBoe boeDTO && boeDTO != null)
 			{
 				dateShiftDTO.BOEStateID = (int)boeDTO.State;
-				dateShiftDTO.ParentId = boeDTO.CLINID;
+				dateShiftDTO.ParentId = boeDTO.CLINID ?? boeDTO.WorkspaceID;
 				dateShiftDTO.ClinId = boeDTO.CLINID;
 				dateShiftDTO.WbsId = boeDTO.WBSID;
 				dateShiftDTO.WorkspaceId = boeDTO.WorkspaceID;
