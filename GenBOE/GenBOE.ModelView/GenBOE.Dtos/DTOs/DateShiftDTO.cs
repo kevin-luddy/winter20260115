@@ -72,6 +72,11 @@ namespace GenBOE.Dtos
 		public int Level { get; set; }
 
 		/// <summary>
+		/// Workspace Id (highest parent level for any date shift).
+		/// </summary>
+		public int WorkspaceId { get; set; }
+
+		/// <summary>
 		/// Boe ID.
 		/// </summary>
 		public int BoeId { get; set; }
@@ -171,12 +176,20 @@ namespace GenBOE.Dtos
 				dateShiftDTO.UpdateDate = updateableDTO.UpdateDate;
 			}
 
+			if (dateShiftable is FullClin clinDTO)
+			{
+				dateShiftDTO.ClinId = clinDTO.Id;
+				dateShiftDTO.WorkspaceId = clinDTO.WorkspaceID;
+				dateShiftDTO.ParentId = clinDTO.WorkspaceID;
+			}
+
 			if (dateShiftable is FullBoe boeDTO)
 			{
 				dateShiftDTO.BOEStateID = (int)boeDTO.State;
 				dateShiftDTO.ParentId = boeDTO.CLINID;
 				dateShiftDTO.ClinId = boeDTO.CLINID;
 				dateShiftDTO.WbsId = boeDTO.WBSID;
+				dateShiftDTO.WorkspaceId = boeDTO.WorkspaceID;
 			}
 
 			if (dateShiftable is BoeTaskElementDTO boeTaskElementDTO)

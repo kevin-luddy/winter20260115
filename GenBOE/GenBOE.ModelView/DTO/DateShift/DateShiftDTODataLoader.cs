@@ -229,13 +229,18 @@ namespace GenBOE.DataBridge.DTO
 				case Level.BOE:
 					dateShift = DateShiftDTO.FromIDateShiftable(GetBoeDateShiftDataById(id));
 					// Account for No CLINs.
-					if (dateShift.ParentId != null)
+					if (dateShift.ClinId != null)
 					{
 						dateShift.Parent = DateShiftDTO.FromIDateShiftable(GetClinDateShiftDataById(dateShift.ParentId.Value));
+					}
+					else
+					{
+						dateShift.Parent = DateShiftDTO.FromIDateShiftable(GetWorkspaceDateShiftDataById(dateShift.WorkspaceId));
 					}
 					break;
 				case Level.CLIN:
 					dateShift = DateShiftDTO.FromIDateShiftable(GetClinDateShiftDataById(id));
+					dateShift.Parent = DateShiftDTO.FromIDateShiftable(GetWorkspaceDateShiftDataById(dateShift.WorkspaceId));
 					break;
 				case Level.Task:
 					dateShift = DateShiftDTO.FromIDateShiftable(GetBoeTaskElementDateShiftDataById(id));
@@ -283,8 +288,9 @@ namespace GenBOE.DataBridge.DTO
 								  StartDate = b.BOEStartDate,
 								  EndDate = b.BOEEndDate,
 								  UpdateDate = b.UpdateDT,
+								  WorkspaceID = b.WorkspaceID,
 								  CLINID = xRef == null ? null : xRef.CLINID,
-								  WBSID = xRef == null ? null : xRef.WBSID
+								  WBSID = xRef == null ? null : xRef.WBSID,
 							  }).FirstOrDefault();
 
 				return new FullBoe(boe);
@@ -310,6 +316,7 @@ namespace GenBOE.DataBridge.DTO
 									StartDate = c.CLINStartDate,
 									EndDate = c.CLINEndDate,
 									UpdateDate = c.UpdateDT,
+									WorkspaceID= c.WorkspaceID,
 								}).FirstOrDefault();
 
 				return new FullClin(clin);
