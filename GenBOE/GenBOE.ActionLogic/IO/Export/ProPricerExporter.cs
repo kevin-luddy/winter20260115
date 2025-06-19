@@ -1683,13 +1683,13 @@ namespace GenBOE.ActionLogic.IO.Export
 
 					// Calculate UCOT values for spreads
 					IDictionary<DateTime, decimal> ucotSpreads = new Dictionary<DateTime, decimal>();
-					foreach (KeyValuePair<DateTime, decimal> spread in spreadsToApplyUcot)
+					foreach (KeyValuePair<DateTime, decimal> spread in spreadsToApplyUcot.OrderBy(x => x.Key))
 					{
-						ucotSpreads.Add(spread.Key, spread.Value * wsLevelData.UCOTFactor / 100m);
+						ucotSpreads.Add(spread.Key, Utilities.AdjustPrecision(spread.Value * wsLevelData.UCOTFactor / 100m, wsLevelData.ResourceDecimalPrecision));
 					}
 
 					// Get smoothed curve values
-					decimal[] smoothedSpreadValues = SpreadCurve.Smooth(ucotTotal, ucotSpreads.OrderBy(x => x.Key).Select(x => x.Value).ToArray(), 0, ucotSpreads.Count, wsLevelData.ResourceDecimalPrecision);
+					decimal[] smoothedSpreadValues = SpreadCurve.Smooth(ucotTotal, ucotSpreads.Select(x => x.Value).ToArray(), 0, ucotSpreads.Count, wsLevelData.ResourceDecimalPrecision);
 
 					// Add the smoothed values to the dictionary to apply to spreads later
 					for (int i = 0; i < ucotSpreads.Count; i++)
