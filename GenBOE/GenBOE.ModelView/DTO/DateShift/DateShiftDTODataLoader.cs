@@ -228,10 +228,19 @@ namespace GenBOE.DataBridge.DTO
 			{
 				case Level.BOE:
 					dateShift = DateShiftDTO.FromIDateShiftable(GetBoeDateShiftDataById(id));
-					dateShift.Parent = DateShiftDTO.FromIDateShiftable(GetClinDateShiftDataById(dateShift.ParentId.Value));
+					// Account for No CLINs.
+					if (dateShift.ClinId != null)
+					{
+						dateShift.Parent = DateShiftDTO.FromIDateShiftable(GetClinDateShiftDataById(dateShift.ParentId.Value));
+					}
+					else
+					{
+						dateShift.Parent = DateShiftDTO.FromIDateShiftable(GetWorkspaceDateShiftDataById(dateShift.WorkspaceId));
+					}
 					break;
 				case Level.CLIN:
 					dateShift = DateShiftDTO.FromIDateShiftable(GetClinDateShiftDataById(id));
+					dateShift.Parent = DateShiftDTO.FromIDateShiftable(GetWorkspaceDateShiftDataById(dateShift.WorkspaceId));
 					break;
 				case Level.Task:
 					dateShift = DateShiftDTO.FromIDateShiftable(GetBoeTaskElementDateShiftDataById(id));
@@ -279,8 +288,9 @@ namespace GenBOE.DataBridge.DTO
 								  StartDate = b.BOEStartDate,
 								  EndDate = b.BOEEndDate,
 								  UpdateDate = b.UpdateDT,
+								  WorkspaceID = b.WorkspaceID,
 								  CLINID = xRef == null ? null : xRef.CLINID,
-								  WBSID = xRef == null ? null : xRef.WBSID
+								  WBSID = xRef == null ? null : xRef.WBSID,
 							  }).FirstOrDefault();
 
 				return new FullBoe(boe);
@@ -306,6 +316,7 @@ namespace GenBOE.DataBridge.DTO
 									StartDate = c.CLINStartDate,
 									EndDate = c.CLINEndDate,
 									UpdateDate = c.UpdateDT,
+									WorkspaceID= c.WorkspaceID,
 								}).FirstOrDefault();
 
 				return new FullClin(clin);
@@ -335,6 +346,22 @@ namespace GenBOE.DataBridge.DTO
 														UpdateDate = bT.UpdateDT,
 														BoeID = bT.BOEID,
 													}).FirstOrDefault();
+				// Get resource types for task element labors.
+				if (boeTaskElement != null)
+				{
+					boeTaskElement.taskElementLabors = (from lT in gbe.BOELaborTypes
+														where lT.BOETaskElementID == id
+														select new ResourceTypeDto
+														{
+															Id = lT.BOELaborTypeID,
+															TaskElementId = lT.BOETaskElementID,
+															ResourceID = lT.ResourceID,
+															StartDateValue = lT.BOELaborTypeStartDate,
+															EndDateValue = lT.BOELaborTypeEndDate,
+															SpreadType = lT.SpreadTypeID.HasValue ? (SpreadType)lT.SpreadTypeID.Value : SpreadType.NotSet,
+															UpdateDate = lT.UpdateDT,
+														}).ToCollection();
+				}
 
 				return boeTaskElement;
 			}

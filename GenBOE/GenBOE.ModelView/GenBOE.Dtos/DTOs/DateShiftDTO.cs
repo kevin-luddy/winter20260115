@@ -72,6 +72,11 @@ namespace GenBOE.Dtos
 		public int Level { get; set; }
 
 		/// <summary>
+		/// Workspace Id (highest parent level for any date shift).
+		/// </summary>
+		public int WorkspaceId { get; set; }
+
+		/// <summary>
 		/// Boe ID.
 		/// </summary>
 		public int BoeId { get; set; }
@@ -171,15 +176,23 @@ namespace GenBOE.Dtos
 				dateShiftDTO.UpdateDate = updateableDTO.UpdateDate;
 			}
 
-			if (dateShiftable is FullBoe boeDTO)
+			if (dateShiftable is FullClin clinDTO && clinDTO != null)
 			{
-				dateShiftDTO.BOEStateID = (int)boeDTO.State;
-				dateShiftDTO.ParentId = boeDTO.CLINID;
-				dateShiftDTO.ClinId = boeDTO.CLINID;
-				dateShiftDTO.WbsId = boeDTO.WBSID;
+				dateShiftDTO.ClinId = clinDTO.Id;
+				dateShiftDTO.WorkspaceId = clinDTO.WorkspaceID;
+				dateShiftDTO.ParentId = clinDTO.WorkspaceID;
 			}
 
-			if (dateShiftable is BoeTaskElementDTO boeTaskElementDTO)
+			if (dateShiftable is FullBoe boeDTO && boeDTO != null)
+			{
+				dateShiftDTO.BOEStateID = (int)boeDTO.State;
+				dateShiftDTO.ParentId = boeDTO.CLINID ?? boeDTO.WorkspaceID;
+				dateShiftDTO.ClinId = boeDTO.CLINID;
+				dateShiftDTO.WbsId = boeDTO.WBSID;
+				dateShiftDTO.WorkspaceId = boeDTO.WorkspaceID;
+			}
+
+			if (dateShiftable is BoeTaskElementDTO boeTaskElementDTO && boeTaskElementDTO != null)
 			{
 				dateShiftDTO.BoeId = boeTaskElementDTO.BoeID;
 				dateShiftDTO.BOETaskElementId = boeTaskElementDTO.Id;
@@ -189,13 +202,13 @@ namespace GenBOE.Dtos
 				dateShiftDTO.ParentId = boeTaskElementDTO.BoeID;
 			}
 
-			if (dateShiftable is ResourceTypeDto resourceTypeDto && (resourceTypeDto.SpreadCurveID == SpreadCurves.DiscreteCost || resourceTypeDto.SpreadCurveID == SpreadCurves.DiscreteHours))
+			if (dateShiftable is ResourceTypeDto resourceTypeDto && resourceTypeDto != null && (resourceTypeDto.SpreadCurveID == SpreadCurves.DiscreteCost || resourceTypeDto.SpreadCurveID == SpreadCurves.DiscreteHours))
 			{
 				// Check if Labor Spreads is not null and if not null then save them later.
 				dateShiftDTO.LaborSpreads = resourceTypeDto.LaborSpreads;
 			}
 
-			if (dateShiftable is FullWorkspace fullWorkspace)
+			if (dateShiftable is FullWorkspace fullWorkspace && fullWorkspace != null)
 			{
 				dateShiftDTO.WorkspaceVersionMetaData = fullWorkspace.WorkspaceVersionMetaData.ToList();
 				dateShiftDTO.WorkspaceState = fullWorkspace.WorkspaceState;
