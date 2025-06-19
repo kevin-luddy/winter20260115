@@ -22,7 +22,6 @@ namespace GenBOE.ActionLogic.IO.Export
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using IES.Common;
-	using IES.Common.classes;
 	using IES.Common.Compression;
 	using IES.Common.Exceptions;
 
@@ -293,7 +292,8 @@ namespace GenBOE.ActionLogic.IO.Export
 						.Distinct().ToList();
 
 				wsDataForExport.Resources = this.retriever.GetResourcesByIds(resourceIds).ToList().AsReadOnly();
-			}else if (Utilities.IsBRCEnabledForWorkspace(workspace.Shortname))
+			}
+			else if (Utilities.IsBRCEnabledForWorkspace(workspace.Shortname))
 			{
 				ICollection<int> resourceIds = wsDataForExport.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value)
 						.Union(workspace.Odcs.SelectMany(x => x.ODCTypes).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value))
@@ -464,7 +464,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						foreach (ResourceTypeDto labor in resourcesSplitforBrc)
 						{
 							this.GenerateResourceRow(wsLevelData, inputsForExport, inputsForExport.Clin, inputsForExport.Wbs, resourceIDs, boeTask,
-								laborTypeIdToProPricerIdMappings, labor, isUsingEquivalentPerson, labor.IsOffloaded, workspaceShortname);
+								laborTypeIdToProPricerIdMappings, labor, isUsingEquivalentPerson, labor.IsOffloaded, workspaceShortname, elementOfCost);
 						}
 					}
 				}
@@ -481,8 +481,8 @@ namespace GenBOE.ActionLogic.IO.Export
 					if (!Utilities.IsBRCEnabledForWorkspace(workspaceShortname) && has1LMXResources)
 					{
 						resourcesSplitforBrc = SplitTaskResourcesFor1LMX(taskResourcesEntriesForElementOfCost, resourceIDs, wsLevelData);
-					} 
-					else if(Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
+					}
+					else if (Utilities.IsBRCEnabledForWorkspace(workspaceShortname))
 					{
 						//clone resources with brc
 						//maintain original ID for pro pricer ID mapping in generate resource row
@@ -519,7 +519,7 @@ namespace GenBOE.ActionLogic.IO.Export
 							WbsDTO resourceWbs = wsLevelData.Wbses.FirstOrDefault(i => i.Id == labor.WBSID.GetValueOrDefault(-1));
 
 							this.GenerateResourceRow(wsLevelData, inputsForExport, resourceClin, resourceWbs, resourceIDs,
-								boeTask, laborTypeIdToProPricerIdMappings, labor, isUsingEquivalentPerson, labor.IsOffloaded, workspaceShortname);
+								boeTask, laborTypeIdToProPricerIdMappings, labor, isUsingEquivalentPerson, labor.IsOffloaded, workspaceShortname, elementOfCost);
 						}
 					}
 				}
@@ -537,7 +537,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			List<ResourceTypeDto> splitResources = new List<ResourceTypeDto>();
 			foreach (ResourceTypeDto taskResource in taskResources)
 			{
-				
+
 				if (wsLevelData.OneLmxCustomField != null && taskResource.EndDate > Utilities.OneLmxStartDate)
 				{
 					// Find the 1LMX Custom Field linkage
@@ -774,8 +774,8 @@ namespace GenBOE.ActionLogic.IO.Export
 					{
 						// get the field associated with this list order
 						ProPricerTasks taskField = (from t in wsLevelData.PPInputsToExport.ProPricerTasks
-										 where t.ListOrder == x
-										 select t).FirstOrDefault();
+													where t.ListOrder == x
+													select t).FirstOrDefault();
 
 						if (taskField == null)
 						{
@@ -880,8 +880,8 @@ namespace GenBOE.ActionLogic.IO.Export
 					{
 						// get the field associated with this list order
 						ProPricerResources taskField = (from t in wsLevelData.PPInputsToExport.ProPricerResources
-										 where t.ListOrder == x
-										 select t).FirstOrDefault();
+														where t.ListOrder == x
+														select t).FirstOrDefault();
 
 						if (taskField == null)
 						{
@@ -993,9 +993,9 @@ namespace GenBOE.ActionLogic.IO.Export
 					while (CurrentDate <= odcType.EndDate.Value)
 					{
 						OtherDirectCostSpread odcSpread = (from s in odcType.ODCSpreads
-										 where s.ODCSpreadDate.Value.Month == CurrentDate.Month &&
-										  s.ODCSpreadDate.Value.Year == CurrentDate.Year
-										 select s).FirstOrDefault();
+														   where s.ODCSpreadDate.Value.Month == CurrentDate.Month &&
+															s.ODCSpreadDate.Value.Year == CurrentDate.Year
+														   select s).FirstOrDefault();
 
 						// discrete odc spreads aren't stored in the db so if the matching month/year isn't found then export a 0
 						if (odcSpread != null)
@@ -1400,12 +1400,25 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <summary>
 		/// Creates the resource row for output format. 
 		/// </summary>
+		/// <param name="wsLevelData">Workspace level data</param>
+		/// <param name="inputsForExport">BOE Level export data</param>
+		/// <param name="clin">CLIN DTO</param>
+		/// <param name="wbs">WBS DTO</param>
+		/// <param name="inResourceIDs">Resouce IDs</param>
+		/// <param name="boeTask">BOE Task Element DTO</param>
+		/// <param name="laborTypeIdToProPricerIdMappings">Labor Type ID to ProPricer mappings</param>
+		/// <param name="labor">Labor/Resource Type DTO</param>
+		/// <param name="isUsingEquivalentPerson">If using Equivalent Person</param>
 		/// <param name="isResourceOffloaded">if set to <c>true</c> then the Task Element is offloaded.</param>
+		/// <param name="workspaceShortname">Workspace Shortnate</param>
+		/// <param name="elementOfCost">Resource Type Element of Cost</param>
 		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		private void GenerateResourceRow(WsLevelInputsForExport wsLevelData, BoeLevelExportData inputsForExport, ClinDTO clin, WbsDTO wbs,
-			Collection<int> inResourceIDs, BoeTaskElementDTO boeTask,
-			IDictionary<int, string> laborTypeIdToProPricerIdMappings, ResourceTypeDto labor, bool isUsingEquivalentPerson, bool isResourceOffloaded, string workspaceShortname)
+			Collection<int> inResourceIDs, BoeTaskElementDTO boeTask, IDictionary<int, string> laborTypeIdToProPricerIdMappings, ResourceTypeDto labor,
+			bool isUsingEquivalentPerson, bool isResourceOffloaded, string workspaceShortname, ElementOfCostType elementOfCost)
 		{
+			string taskMoqType = GetTaskMoqType(wsLevelData, boeTask);
+
 			// only want to export the resource associated with correct list of Resource IDs. 
 			// For ex, if the labor contained 3 labors: 1 Labor, 1 IWTA, and 1 SubContractor. We only want to export the row that matched the current element of cost
 			// we're searching for. Without this check, all 3 labors would be exported with labor, and then again with iwta elements, and lastly with subcontractors
@@ -1458,7 +1471,7 @@ namespace GenBOE.ActionLogic.IO.Export
 							break;
 						case ProPricerField_Resources.ResourceID:
 						case ProPricerField_Resources.ProjMapInitialResoure:
-							ResourceDTO resource = wsLevelData.Resources.First(z => z.Id == labor.ResourceID.Value); 
+							ResourceDTO resource = wsLevelData.Resources.First(z => z.Id == labor.ResourceID.Value);
 							newResourceRow.Append(DOUBLE_QUOTE).Append(resource.ResourceName.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
 							break;
 						case ProPricerField_Resources.StartDate:
@@ -1523,7 +1536,7 @@ namespace GenBOE.ActionLogic.IO.Export
 							newResourceRow.Append(DOUBLE_QUOTE).Append(workspaceUrl.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
 							break;
 						case ProPricerField_Resources.MOQType:
-							newResourceRow.Append(DOUBLE_QUOTE).Append(GetTaskMoqType(wsLevelData, boeTask)).Append(DOUBLE_QUOTE).Append(END_FIELD);
+							newResourceRow.Append(DOUBLE_QUOTE).Append(taskMoqType).Append(DOUBLE_QUOTE).Append(END_FIELD);
 							break;
 
 					}
@@ -1594,6 +1607,9 @@ namespace GenBOE.ActionLogic.IO.Export
 					}
 				}
 
+				// Get UCOT Spreads if applicable
+				IDictionary<DateTime, decimal> ucotSpreads = GetUcotSpreads(wsLevelData, labor, workspaceShortname, elementOfCost, taskMoqType);
+
 				// Now get all the labor spreads
 				// Discrete spreads are only stored in the DB when a value for the month has been entered so to account for 0 months, add 0
 				// if the month is missing in the start/end date range
@@ -1609,12 +1625,10 @@ namespace GenBOE.ActionLogic.IO.Export
 					{
 						if (labor.SpreadType.Equals(SpreadType.Hours))
 						{
-							decimal updatedLaborSpreadValue = laborSpread.LaborSpreadValue;
-
-							if (Utilities.ShowUCOTForWorkspace(wsLevelData.CreationDate, workspaceShortname) && laborSpread.LaborSpreadDate >= Utilities.OneLmxStartDate && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-							{
-								updatedLaborSpreadValue = laborSpread.LaborSpreadValue * (1 + (wsLevelData.UCOTFactor / 100m));
-							}
+							// Add UCOT Value to the spread value if there is one, otherwise just the spread value
+							decimal updatedLaborSpreadValue = ucotSpreads.Any() && ucotSpreads.ContainsKey(laborSpread.LaborSpreadDate)
+								? laborSpread.LaborSpreadValue + ucotSpreads[laborSpread.LaborSpreadDate]
+								: laborSpread.LaborSpreadValue;
 
 							newResourceRow.Append(Utilities.FormatStringWithPrecisionNoComma(updatedLaborSpreadValue, wsLevelData.ResourceDecimalPrecision)).Append(END_FIELD);
 						}
@@ -1640,6 +1654,52 @@ namespace GenBOE.ActionLogic.IO.Export
 					wsLevelData.PpDataToBeExported.ResourceData.Add(newResourceRow.ToString());
 				}
 			}
+		}
+
+		/// <summary>
+		/// Get the UCOT spreads for the given Labor Spreads
+		/// </summary>
+		/// <param name="wsLevelData">Workspace level input data</param>
+		/// <param name="labor">Labor/Resource Type containing the spreads</param>
+		/// <param name="workspaceShortname">Workspace Shortname</param>
+		/// <param name="elementOfCost">Element of Cost for the Labor</param>
+		/// <param name="taskMoqType">MOQ Type for the task</param>
+		/// <returns>Smoothed UCOT spreads for the Labor</returns>
+		private static IDictionary<DateTime, decimal> GetUcotSpreads(WsLevelInputsForExport wsLevelData, ResourceTypeDto labor, string workspaceShortname, ElementOfCostType elementOfCost, string taskMoqType)
+		{
+			IDictionary<DateTime, decimal> smoothedUcotSpreads = new Dictionary<DateTime, decimal>();
+			if (Utilities.ShowUCOTForWorkspace(wsLevelData.CreationDate, workspaceShortname) && elementOfCost == ElementOfCostType.LMLabor
+				&& (taskMoqType == MOQType.Historical.GetDescription() || taskMoqType == MOQType.Comparative.GetDescription() || taskMoqType == MOQType.AnalogousRelationships.GetDescription()))
+			{
+				// Get spreads on/after 1LMX start to see if UCOT needs to be applied
+				IDictionary<DateTime, decimal> spreadsToApplyUcot = labor.LaborSpreads.Where(x => x.LaborSpreadDate >= Utilities.OneLmxStartDate)
+					.ToDictionary(x => x.LaborSpreadDate, x => x.LaborSpreadValue);
+
+				if (spreadsToApplyUcot.Any())
+				{
+					// Get UCOT Total
+					decimal ucotTotal = spreadsToApplyUcot.Sum(x => x.Value) * (wsLevelData.UCOTFactor / 100m);
+					ucotTotal = Utilities.AdjustPrecision(ucotTotal, wsLevelData.ResourceDecimalPrecision);
+
+					// Calculate UCOT values for spreads
+					IDictionary<DateTime, decimal> ucotSpreads = new Dictionary<DateTime, decimal>();
+					foreach (KeyValuePair<DateTime, decimal> spread in spreadsToApplyUcot)
+					{
+						ucotSpreads.Add(spread.Key, spread.Value * wsLevelData.UCOTFactor / 100m);
+					}
+
+					// Get smoothed curve values
+					decimal[] smoothedSpreadValues = SpreadCurve.Smooth(ucotTotal, ucotSpreads.OrderBy(x => x.Key).Select(x => x.Value).ToArray(), 0, ucotSpreads.Count, wsLevelData.ResourceDecimalPrecision);
+
+					// Add the smoothed values to the dictionary to apply to spreads later
+					for (int i = 0; i < ucotSpreads.Count; i++)
+					{
+						smoothedUcotSpreads.Add(ucotSpreads.ElementAt(i).Key, smoothedSpreadValues[i]);
+					}
+				}
+			}
+
+			return smoothedUcotSpreads;
 		}
 
 		/// <summary>
@@ -1790,8 +1850,8 @@ namespace GenBOE.ActionLogic.IO.Export
 			{
 				// get the field associated with this list order
 				ProPricerTasks taskField = (from t in wsLevelData.PPInputsToExport.ProPricerTasks
-								 where t.ListOrder == x
-								 select t).FirstOrDefault();
+											where t.ListOrder == x
+											select t).FirstOrDefault();
 
 				if (taskField == null)
 				{
@@ -2103,8 +2163,8 @@ namespace GenBOE.ActionLogic.IO.Export
 			{
 				// get the field associated with this list order
 				ProPricerTasks taskField = (from t in wsLevelData.PPInputsToExport.ProPricerTasks
-								 where t.ListOrder == x
-								 select t).FirstOrDefault();
+											where t.ListOrder == x
+											select t).FirstOrDefault();
 
 				if (taskField == null)
 				{
