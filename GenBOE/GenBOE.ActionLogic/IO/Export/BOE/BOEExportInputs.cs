@@ -139,7 +139,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
 			if (Utilities.ShowUCOTForWorkspace(workspace.CreationDate, workspace.Shortname) && processLaborTypesForUCOT)
 			{
-				// TODO - update .Core version too
 				List<ResourceTypeDto> taskElementLabors = new List<ResourceTypeDto>();
 				HashSet<int> updatedTaskIds = new HashSet<int>();
 				// Need to make sure we are only adding UCOT to tasks that qualify
