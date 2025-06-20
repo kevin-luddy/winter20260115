@@ -1044,7 +1044,7 @@ namespace GenBOE.Web.Controllers
 			#region Decide if UCOT Factor Dialog should be displayed
 
 			// Space ONLY
-			if (Utilities.ShowUCOTForWorkspace(ws.CreationDate) && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			if (Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.Shortname) && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 			{
 				bool userHasCookie = false;
 				HttpCookie cookie = null;
@@ -2028,6 +2028,8 @@ namespace GenBOE.Web.Controllers
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_UPDATE_UCOT_FACTOR, SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			this._ControllerLogic.CopySystemUCOTFactor(ws);
+
+			this.Factory.ClearWorkspaceCache(workspace);
 
 			// user synced their rates, so we can remove the cookie now for this workspace
 			HttpCookie cookie = System.Web.HttpContext.Current.Request.Cookies[WebConstants.UPDATE_WORKSPACE_UCOT_FACTOR] ?? new HttpCookie(WebConstants.UPDATE_WORKSPACE_UCOT_FACTOR);

@@ -1685,7 +1685,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			decimal sumUCOT = 0m;
 			
 			// Convert dto to mv
-			foreach (ResourceSpreadDto dto in spreadDtos)
+			foreach (ResourceSpreadDto dto in spreadDtos.OrderBy(s => s.LaborSpreadDate))
 			{
 				toReturn.Add(new LaborSpreadDataModelView()
 				{
@@ -1702,7 +1702,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					ucotSpreadsToReturn.Add(new LaborSpreadDataModelView()
 					{
 						LaborSpreadDate = dto.LaborSpreadDate.ToMonthString(),
-						LaborSpreadValue = precisionUCOT
+						LaborSpreadValue = precisionUCOT,
+						UpdateDate = dto.UpdateDate,
+						UpdateDateLong = dto.UpdateDateLong
 					});
 				}
 			}
@@ -1925,7 +1927,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			HashSet<ResourceDTO> resourcesFromDb = new HashSet<ResourceDTO>(this._ResourceLoader.GetByIds(dto.taskElementLabors.Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value).Union(dto.taskElementLabors.Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value)).Distinct().ToList()));
 			HashSet<PerformingOrgDTO> performingOrgsFromDb = new HashSet<PerformingOrgDTO>(this.PerfOrgLoader.GetByIds(dto.taskElementLabors.Where(x => x.PerformingOrgID.HasValue).Select(x => x.PerformingOrgID.Value).Distinct().ToList()));
-			bool calculateUCOT = Utilities.ShowUCOTForWorkspace(ws.CreationDate) && toReturn.MOQTypes != null && toReturn.MOQTypes.Count == 1
+			bool calculateUCOT = Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.Shortname) && toReturn.MOQTypes != null && toReturn.MOQTypes.Count == 1
 				&& toReturn.MOQTypes.All(m => m.SelectedMOQType == MOQType.Comparative || m.SelectedMOQType == MOQType.Historical || (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems && m.SelectedMOQType == MOQType.AnalogousRelationships));
 
 			foreach (ResourceTypeDto labor in dto.taskElementLabors)
