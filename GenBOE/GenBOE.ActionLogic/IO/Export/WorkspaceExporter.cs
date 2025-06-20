@@ -1750,8 +1750,28 @@ namespace GenBOE.ActionLogic.IO.Export
 
 				toReturn.Add(row);
 
+				bool addUCOT = false;
+				// UCOT is only applicable if ResourceTypeDto is Hours and LMLabor Element of Cost, and Spread is past 1LMX date
+				if (Utilities.ShowUCOTForWorkspace(exportInputs.Workspace.CreationDate, exportInputs.Workspace.Shortname) &&
+					resourceType.SpreadType == SpreadType.Hours &&
+					((aResource != null && aResource.ElementOfCost == ElementOfCostType.LMLabor) || (brcResource != null && brcResource.ElementOfCost == ElementOfCostType.LMLabor)) &&
+					resourceType.LaborSpreads != null && resourceType.LaborSpreads.Any())
+				{
+					// Get the MOQ Types for this task
+					ICollection<MoqTypeSelection> taskMOQs = exportInputs.MOQTypes.Where(m => m.TaskId == task.Id).ToList();
+					if (taskMOQs.Count == 1)
+					{
+						MoqTypeSelection moqType = taskMOQs.First();
+						if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems &&
+							(moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative || moqType.SelectedMOQType == MOQType.AnalogousRelationships))
+						{
+							addUCOT = true;
+						}
+					}
+				}
+
 				// Labor Resource Spreads
-				toReturn = this.GetLaborSpreadDataforBOEResourceCombo(exportInputs, toReturn, boe, resourceType, taskFields1, taskFields2, resFields1, resFields2, currentDate, workspace_customFields, workspaceCustomFieldValues, resourceUsesCostValues);
+				toReturn = this.GetLaborSpreadDataforBOEResourceCombo(exportInputs, toReturn, boe, resourceType, taskFields1, taskFields2, resFields1, resFields2, currentDate, workspace_customFields, workspaceCustomFieldValues, resourceUsesCostValues, addUCOT);
 
 			}
 
@@ -1773,10 +1793,11 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="workspace_customFields">Workspace Custom Fields</param>
 		/// <param name="workspaceCustomFieldValues">Workspace Custom Field Values</param>
 		/// <param name="resourceUsesCostValues">Bool noting if Resource Type uses a Cost Spread</param>
+		/// <param name="addUCOT">Whether to add UCOT</param>
 		/// <returns>
 		/// Excel Export Worksheet with Labor Task data
 		/// </returns>
-		private ExcelExportWorksheet GetLaborSpreadDataforBOEResourceCombo(BOEExportInputs exportInputs, ExcelExportWorksheet toReturn, BoeDTO boe, ResourceTypeDto resourceType, string[] taskFields1, string[] taskFields2, string[] resFields1, List<string> resFields2, DateTime currentDate, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, bool resourceUsesCostValues)
+		private ExcelExportWorksheet GetLaborSpreadDataforBOEResourceCombo(BOEExportInputs exportInputs, ExcelExportWorksheet toReturn, BoeDTO boe, ResourceTypeDto resourceType, string[] taskFields1, string[] taskFields2, string[] resFields1, List<string> resFields2, DateTime currentDate, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, bool resourceUsesCostValues, bool addUCOT)
 		{
 			while (currentDate <= resourceType.EndDate.Value)
 			{
@@ -1843,7 +1864,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + ((spread == null) ? "0" : spread.LaborSpreadValue.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision))));
 
 					// Add the UCOT Factor, if enabled, and is past 1LMX start date
-					if (Utilities.ShowUCOTForWorkspace(exportInputs.Workspace.CreationDate, exportInputs.Workspace.Shortname))
+					if (addUCOT)
 					{
 						if (Utilities.OneLmxStartDate <= spread?.LaborSpreadDate)
 						{
