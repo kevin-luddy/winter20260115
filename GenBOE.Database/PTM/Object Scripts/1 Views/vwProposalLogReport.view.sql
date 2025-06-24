@@ -31,6 +31,7 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 **      11/20/24	twilson3			proph-2357 Add Insurance fields
 **		12/3/24		twilson3			proph-2544 Add SetupComments, Backup Estimator Name
 **		02/27/25	Carlos				PROPH-2642 Add checklist question 11 to log report
+**		05/13/25	ranzalon			PROPH-3038 Added Bid and Mission Segment EPP Dates
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
@@ -194,6 +195,8 @@ SELECT
 		ELSE NULL
 	END AS ContractsLmWon,
 	pCD.ModCompletedDate AS ContractsModCompletedDate,
+	pCD.BidEppDate AS ContractsBidEppDate,
+	pCD.MissionSegmentEppDate AS ContractsMissionSegmentEppDate,
 	-- end of Proposal Contract Data
 	pCD.CageCode,
 	CASE

@@ -41,12 +41,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="boeSummary"></param>
         /// <param name="boeCustomExporter"></param>
         /// <param name="workspaceExportFormatDTOLoader"></param>
-        /// <param name="metricLoader"></param>
         /// <param name="boeDiscrepancyReport"></param>
         /// <param name="commonDataMapper"></param>
         /// <param name="proposalLoader">Proposal Loader</param>
         /// <param name="workspaceControllerLogic">Workspace Controller logic</param>
-        /// <param name="rteTemplateDataLoader">RTE Template data loader</param>
         /// <param name="travelTripCostCalculator">Travel Trip Cost Calculator</param>
         public ReportsControllerLogicMST(
             IBOEExporter boeExporter,

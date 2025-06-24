@@ -37,7 +37,6 @@ namespace GenBOE.ActionLogic.ModelView
             this.Deleted = false;
             this.CustomFieldValues = new Collection<CustomFieldSelectionModelView>();
             this.LaborTypeWarning = false;
-            this.MetricIds = new Collection<int>();
             this.RteTemplateAnswers = new List<RTECustomTemplateQuestionAnswerModelView>();
         }
 
@@ -116,13 +115,6 @@ namespace GenBOE.ActionLogic.ModelView
         public Collection<BoeTaskOrdinaryVariableModelView> TaskOrdinaryVariables { get; set; }
 
         public Collection<int> WorkspaceVariableIDs { get; set; }
-
-        /// <summary>
-        /// Metrics used for MST.
-        /// </summary>
-        public ICollection<MSTMetricDetailsDTO> PMMMetricsUsed { get; set; }
-
-        public Collection<int> MetricIds { get; set; }
 
         public Collection<CustomFieldSelectionModelView> CustomFieldValues { get; set; }
 

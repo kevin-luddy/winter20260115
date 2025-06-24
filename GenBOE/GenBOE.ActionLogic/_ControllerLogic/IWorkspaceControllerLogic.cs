@@ -131,7 +131,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="originalWorkspaceName">Original Workspace name</param>
 		/// <param name="versionId">Version ID</param>
 		/// <returns>File location of Workspace Data Report for the previous version</returns>
-		string CreateWorkspaceDataReportForVersion(FullWorkspace ws, string templateFileLocation, MetricNameTaskElementMappingDTO metricTaskElementMappings, string originalWorkspaceName, int versionId);
+		string CreateWorkspaceDataReportForVersion(FullWorkspace ws, string templateFileLocation, string originalWorkspaceName, int versionId);
 
 		/// <summary>
 		/// Populates properties with company specific data

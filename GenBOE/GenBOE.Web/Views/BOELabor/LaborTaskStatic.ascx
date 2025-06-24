@@ -86,43 +86,20 @@
             action: '<%: WebConstants.ACTION_MARK_WARNING_AS_CONFIRMED%>',
             boe: '<%: Model.BoeId %>'
         });
-        var searchHistoricalMetricsMSTUrl = GenSession.CreateUrl({
-            workspace: currentWorkspace,
-            controller: boeLaborController,
-            action: '<%: WebConstants.ACTION_SEARCH_HISTORICAL_METRICS_IN_MST %>'
-        });
-        var historicalMetricsDetailsUrl = GenSession.CreateUrl({
-            workspace: currentWorkspace,
-            controller: boeLaborController,
-            action: '<%: WebConstants.ACTION_GET_HISTORICAL_METRIC_DETAILS %>'
-        });
-        var pagingMetricsUrl = GenSession.CreateUrl({
-            workspace: currentWorkspace,
-            controller: boeLaborController,
-            action: '<%: Model.MetricsPagingActionName %>'
-        });
-        var searchTypeAheadUrl = CreatePostURL(currentWorkspace, boeLaborController, '<%: WebConstants.ACTION_GET_SEARCH_TYPE_AHEAD %>', '');
         var recalculateAndRefreshPageUrl = CreatePostURL(currentWorkspace,
             boeLaborController,
             'DoFullRecalculationWithPageRefresh',
             'boe/' + boeId + '/taskelement/' + taskElementId);
 
-        TaskElementDetailsWidget = InitializeTaskElementDetailsWidget("<%:Model.MetricsSearchDialogParameters.DialogTitle%>",
-            '<%:Model.MetricsSearchDialogParameters.SearchMetricsDialogIdSuffix%>',
-            <%: ViewData["READONLY"] %>,
+        TaskElementDetailsWidget = InitializeTaskElementDetailsWidget(<%: ViewData["READONLY"] %>,
             '<%: ViewData["WorkspaceState"] %>',
             boeId,
             taskElementId,
             <%: Model.LaborTypeWarning.ToString().ToLower() %>,
             loadMOQEquationUrl,
             confirmWarningUrl,
-            searchHistoricalMetricsMSTUrl,
-            historicalMetricsDetailsUrl,
-            pagingMetricsUrl,
             '<%:Model.BOEState%>' != '<%:(int)BOEState.Draft%>',
             '<%:Model.BOEState%>' == '<%:(int)BOEState.Draft%>' || '<%:Model.BOEState%>' == '<%:(int)BOEState.DraftLocked%>',
-            '<%:Model.MetricsSearchDialogParameters.MetricStoreConnected%>'.toLowerCase(),
-            searchTypeAheadUrl,
             '<%:Model.AllowDateShift%>'.toLowerCase(),
             recalculateAndRefreshPageUrl,
             '#', // dateshift url not needed for static page
@@ -593,7 +570,7 @@
                 <div class="form-element" data-ng-if="isSkillMixDisabled()">
                     <div class="form-label"><p>The SAP MOQ Actuals have not been calculated.  Please ensure all MOQ Tables are updated to enable Skill Mix.</p><br />&nbsp;</div>
                 </div>
-                <div class="form-element" data-ng-if="!isSkillMixDisabled()">
+                <div class="form-element" data-ng-if="!isSkillMixDisabled() && skillMixHelperText.length === 0">
                     <!-- Skill Mix Table -->
                     <div class="form-label">
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
@@ -614,9 +591,11 @@
                                     <th class="resourceCol">Resource</th>
                                     <th data-ng-if="!ManageTaskModel.IsSpace" class="currentResourceCol">Current Resource</th>
                                     <th class="historicalHoursCol">Historical Hours</th>
-                                    <th class="laborSkillMixCol">Labor Skill Mix</th>
-                                    <th class="includedCol">Included</th>
-                                    <th class="boeSkillMixCol">BOE Skill Mix</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="laborSkillMixCol">Labor Skill Mix</th>
+                                    <th data-ng-if="ManageTaskModel.IsSpace" class="historicalSkillMixCol">Historical Skill Mix</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="includedCol">Included</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="boeSkillMixCol">BOE Skill Mix</th>
+                                    <th data-ng-if="ManageTaskModel.IsSpace" class="proposedSkillMixCol">Proposed Skill Mix</th>
                                     <th class="proposedHoursCol">Proposed Hours</th>
                                     <th>Rationale**</th>
                                 </tr>
@@ -628,7 +607,7 @@
                                     <td data-ng-if="!ManageTaskModel.IsSpace">{{row.ResourceNew}}</td>
                                     <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
-                                    <td>{{row.Included | yesNo}}</td>
+                                    <td data-ng-if="!ManageTaskModel.IsSpace">{{row.Included | yesNo}}</td>
                                     <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{row.ProposedHours}}</td>
                                     <td>{{row.Rationale}}</td>
@@ -639,7 +618,7 @@
                                     <td data-ng-if="!ManageTaskModel.IsSpace"></td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.LaborSkillMix | number:1}}%</td>
-                                    <td></td>
+                                    <td data-ng-if="!ManageTaskModel.IsSpace"></td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.BoeSkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.ProposedHours}}</td>
                                     <td></td>
@@ -647,6 +626,7 @@
                             </tbody>
                         </table>
                     </div>
+
                     <!-- Common Disclosure Skill Mix Table -->
                     <div class="form-label" data-ng-show="IsBRCEnabled">
                         LM Enterprise Skill Mix Table
@@ -666,13 +646,16 @@
                                     <th class="resourceCol">Resource</th>
                                     <th class="brcCol">Business Resource Code</th>
                                     <th class="historicalHoursCol">Historical Hours</th>
-                                    <th class="laborSkillMixCol">Labor Skill Mix</th>
-                                    <th class="includedCol">Included</th>
-                                    <th class="boeSkillMixCol">BOE Skill Mix</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="laborSkillMixCol">Labor Skill Mix</th>
+                                    <th data-ng-if="ManageTaskModel.IsSpace" class="historicalSkillMixCol">Historical Skill Mix</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="includedCol">Included</th>
+                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="boeSkillMixCol">BOE Skill Mix</th>
+                                    <th data-ng-if="ManageTaskModel.IsSpace" class="proposedSkillMixCol">Proposed Skill Mix</th>
                                     <th class="proposedHoursCol">Proposed Hours</th>
                                     <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                                         {  %>
                                         <th class="ucotCol">UCOT Hours</th>
+                                        <th class="ucotGrandTotalCol">Grand Total Hours</th>
                                     <% } %>
                                     <th>Rationale**</th>
                                 </tr>
@@ -684,12 +667,13 @@
                                     <td>{{row.BusinessResourceID}}</td>
                                     <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
-                                    <td>{{row.Included | yesNo}}</td>
+                                    <td data-ng-if="!ManageTaskModel.IsSpace">{{row.Included | yesNo}}</td>
                                     <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{row.ProposedHours}}</td>
                                     <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                                     {  %>
-                                        <td style="text-align: right">{{row.UCOTHours | number:2}}</td>
+                                        <td style="text-align: right">{{row.UCOTHours}}</td>
+                                        <td style="text-align: right">{{row.GrandTotalHours}}</td>
                                     <% } %>
                                     <td>{{row.Rationale}}</td>
                                 </tr>
@@ -699,12 +683,13 @@
                                     <td></td>
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.LaborSkillMix | number:1}}%</td>
-                                    <td></td>
+                                    <td data-ng-if="!ManageTaskModel.IsSpace"></td>
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.BoeSkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.ProposedHours}}</td>
                                     <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                                         {  %>
-                                        <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.UCOTHours | number:2}}</td>
+                                        <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.UCOTHours}}</td>
+                                        <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.GrandTotalHours}}</td>
                                     <% } %>
                                     <td></td>
                                 </tr>
@@ -712,6 +697,7 @@
                         </table>
                     </div>
                 </div>
+				<div class="disable-save-text" data-ng-show="skillMixHelperText.length > 0">{{skillMixHelperText}}</div>
             </div>
         </div>
         <% } %>
@@ -723,6 +709,8 @@
                 <div>** required for validating and submitting for approval</div>
             </div>
             <div class="oci-note"><b>Note: </b><span id="Task-OCINote"></span></div>
+			<div class="disable-save-text" data-ng-show="!showSkillMix() && skillMixHelperText.length > 0">{{skillMixHelperText}}</div>
+
             <button id="Save-BOEUpdatesAndClose" data-ng-hide="isSaving" data-ng-click="saveAndClose(true)" class="ies-action stateful_button" name="save-button" type="button">Save & Close</button>
             <div id="Loader-BOEUpdates" class="loader" data-ng-show="isSaving"></div>
             <button id="Cancel-BOEUpdates" class="ies" name="cancel-button" type="button">Cancel</button>

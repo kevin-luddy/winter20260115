@@ -56,11 +56,13 @@
 			SscSapDisabledSource: '<%=RepositoryName.ConnectionDisabledSapWebi.GetDescription()%>',
 			PoPMonthsDivisor: '<%: Constants.POP_MONTHS_DIVISOR %>',
 			OneLMXCutOffDate: '<%: Utilities.OneLmxStartDate %>',
+			SkillMixStartDate: '<%: Utilities.SkillMixStartDate %>',
 			IsBRCEnabled: '<%= Utilities.IsBRCEnabledForWorkspace(SiteMasterUtilities.GetCurrentWorkspace()) %>'.isTrue(),
 			IsSkillMixEnabled: '<%= (bool)ViewData["IsSkillMixEnabled"] %>'.isTrue(),
 			IsUcotEnabled: '<%= (bool)ViewData["IsUCOTEnabled"] %>'.isTrue(),
 			UcotFactor: <%=ViewData["UcotFactor"]%>,
-            SkillMixTableHelpUrls: <%=serializer.Serialize(ViewData["SkillMixTableHelpUrls"])%>
+			SkillMixTableHelpUrls: <%=serializer.Serialize(ViewData["SkillMixTableHelpUrls"])%>,
+			UsingTemplateBOE: '<%=serializer.Serialize(ViewData["UsingTemplateBOE"]) %>'.isTrue()
 		});
 
 		$(function () {
@@ -77,7 +79,7 @@
 				$("#SubmitForApproval").hide();
 			}
 		});
-    </script>
+	</script>
 
 	<% Html.RenderAction(WebConstants.ACTION_DISPLAY_BOE_HEADER, WebConstants.CONTROLLER_BOE, new { id = ViewData["BOEID"] }); %>
 

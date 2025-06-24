@@ -20,13 +20,13 @@ namespace GenTRAC.ActionLogic
 	using GenTRAC.ActionLogic.Mediator;
 	using GenTRAC.ActionLogic.ModelView;
 	using GenTRAC.ActionLogic.ModelView.Contracts;
-	using GenTRAC.ActionLogic.ModelView.Proposals;
 	using GenTRAC.DataBridge.Common.Security;
 	using GenTRAC.DataBridge.DTO;
 	using GenTRAC.DataBridge.DTO.Contracts;
 	using GenTRAC.Objects;
 	using GenTRAC.Objects.FullObject;
 	using IES.Common;
+	using IES.Common.PickList;
 
 	/// <summary>
 	/// Contracts controller logic
@@ -66,6 +66,11 @@ namespace GenTRAC.ActionLogic
 		/// </summary>
 		private readonly ApprovalsControllerLogic approvalsLogic;
 
+		/// <summary>
+		/// Pick List Mapper
+		/// </summary>
+		private readonly IPickListMapper pickListMapper = null;
+
 		#endregion
 
 		/// <summary>
@@ -82,6 +87,7 @@ namespace GenTRAC.ActionLogic
 		/// <param name="contractsLoader">Contracts Loader</param>
 		/// <param name="inEmailer">Emailer</param>
 		/// <param name="inApprovalsLogic">Injected Approvals Logic</param>
+		/// <param name="pickListMapper">Picklist Mapper</param>
 		public ContractsControllerLogic(
 			ISecurityAccess securityAccess,
 			IProposalLoader proposalLoader,
@@ -94,13 +100,15 @@ namespace GenTRAC.ActionLogic
 			IContractsLoader contractsLoader,
 			ICageCodesLoader cageCodesLoader,
 			IPtmEmailer inEmailer,
-			ApprovalsControllerLogic inApprovalsLogic)
+			ApprovalsControllerLogic inApprovalsLogic,
+			IPickListMapper pickListMapper)
 			: base(securityAccess, proposalLoader, userMapper, objectFactory, approvalsLoader, proposalChecklistLoader, checklistMediator, proposalMediator)
 		{
 			this.contractsLoader = contractsLoader;
 			this.cageCodesLoader = cageCodesLoader;
 			this.emailer = inEmailer;
 			this.approvalsLogic = inApprovalsLogic;
+			this.pickListMapper = pickListMapper;
 		}
 
 		/// <summary>
@@ -244,7 +252,7 @@ namespace GenTRAC.ActionLogic
 			_ = model ?? throw new ArgumentNullException(nameof(model));
 			_ = proposal ?? throw new ArgumentNullException(nameof(proposal));
 			ICollection<string> validationMessages = new Collection<string>();
-			
+
 			DateTime? dateSubmittedToContracts = proposal.ProposalChecklistData?.FirstOrDefault()?.EstimatingSubmitsToContractsDate;
 
 			if (model.CustomerSubmittalDt.HasValue && dateSubmittedToContracts.HasValue
@@ -253,13 +261,10 @@ namespace GenTRAC.ActionLogic
 				validationMessages.Add(Constants.INVALID_PROPOSAL_SUBMITTAL_DATE);
 			}
 
-			if (!proposal.IsRomNte)
-			{
-				if (model.NegotiationsSubmittedDt.HasValue && proposal.AgreementDate.HasValue
+			if (!proposal.IsRomNte && model.NegotiationsSubmittedDt.HasValue && proposal.AgreementDate.HasValue
 					&& model.NegotiationsSubmittedDt < proposal.AgreementDate)
-				{
-					validationMessages.Add(Constants.INVALID_NEGOTIATIONS_SUBMITTED);
-				}
+			{
+				validationMessages.Add(Constants.INVALID_NEGOTIATIONS_SUBMITTED);
 			}
 
 			return validationMessages;
@@ -408,7 +413,9 @@ namespace GenTRAC.ActionLogic
 			dto.NegotiationsSubmitted = model.NegotiationsSubmitted == null ? (DateTime?)null : DateTime.Parse(model.NegotiationsSubmitted);
 			dto.UpdateDateLong = model.LastUpdatedDateLong;
 			dto.EppDelegationAuthority = model.EppDelegationAuthority == null ? (int?)null : (int)model.EppDelegationAuthority;
+			dto.BidEppDate = model.BidEppDate;
 			dto.ProgramEppDate = model.ProgramEppDate;
+			dto.MissionSegmentEppDate = model.MissionSegmentEppDate;
 			dto.LobEppDate = model.LobEppDate;
 			dto.PreSpaceEppDate = model.PreSpaceEppDate;
 			dto.SpaceEppDate = model.SpaceEppDate;
@@ -455,7 +462,9 @@ namespace GenTRAC.ActionLogic
 			model.NegotiationsSubmittedDt = dto.NegotiationsSubmitted;
 			model.LastUpdatedDateLong = dto.UpdateDateLong;
 			model.EppDelegationAuthority = dto.EppDelegationAuthority == null ? (EppDelegationAuthority?)null : (EppDelegationAuthority)dto.EppDelegationAuthority;
+			model.BidEppDate = dto.BidEppDate;
 			model.ProgramEppDate = dto.ProgramEppDate;
+			model.MissionSegmentEppDate = dto.MissionSegmentEppDate;
 			model.LobEppDate = dto.LobEppDate;
 			model.PreSpaceEppDate = dto.PreSpaceEppDate;
 			model.SpaceEppDate = dto.SpaceEppDate;
@@ -727,7 +736,7 @@ namespace GenTRAC.ActionLogic
 			messages = messages ?? new List<string>();
 
 			bool isValid = true;
-			
+
 			// Customer Due Date required for validation
 			if (dto.CustomerDueDate is null)
 			{
@@ -750,14 +759,26 @@ namespace GenTRAC.ActionLogic
 				case EppDelegationAuthority.LoB:
 				case EppDelegationAuthority.Space:
 				case EppDelegationAuthority.Corporate:
-					if (!edc.AreRequiredDatesPopulated(dto, messages) || !edc.AreEnteredDatesSequential(dto, messages))
+				case EppDelegationAuthority.MissionSegment:
+					// LOBs don't have consistent IDs between dev/uat/prod so we need to get the LOB picklist to get the NSS ID
+					// in order to pass if the proposal has NSS as its LOB to the helper method
+					ICollection<SelectListItem> lobList = pickListMapper.GetSelectListPickList(PickListEnum.LineOfBusiness);
+					SelectListItem nssLob = lobList.FirstOrDefault(x => x.Text == Constants.NSS_LOB_NAME);
+					bool isNss = nssLob != null && fullProposal.LineOfBusinessID.ToString() == nssLob.Value;
+
+					if (!edc.AreRequiredDatesPopulated(dto, messages, isNss))
 					{
 						isValid = false;
 					}
-					break;
 
+					if (!edc.AreEnteredDatesSequential(dto, messages))
+					{
+						isValid = false;
+					}
+
+					break;
 				default:
-					string msg = $"EPP Delegation Authority is unset or not valid.";
+					string msg = Constants.EPP_DELEGATION_AUTHORITY_INVALID;
 					log.Info(msg + $" ({dto?.EppDelegationAuthority})");
 					messages.Add(msg);
 					isValid = false;
@@ -808,20 +829,37 @@ namespace GenTRAC.ActionLogic
 					messages.Add(Constants.INVALID_INSURANCE_TYPE);
 				}
 
-				if (dto.ProposedInsurance is null)
+				if (dto.ProposedInsurance != null && (dto.IsInsuranceDirect == TripleBooleanState.NA || dto.IsInsuranceDirect == TripleBooleanState.No))
+				{
+					isValid = false;
+					messages.Add(Constants.INVALID_PROPOSED_INSURANCE_BLANK);
+				}
+
+				if (dto.NegotiatedInsurance != null && (dto.IsInsuranceDirect == TripleBooleanState.NA || dto.IsInsuranceDirect == TripleBooleanState.No))
+				{
+					isValid = false;
+					messages.Add(Constants.INVALID_NEGOTIATED_INSURANCE_BLANK);
+				}
+
+				if (dto.ProposedInsurance is null && dto.IsInsuranceDirect == TripleBooleanState.Yes)
 				{
 					isValid = false;
 					messages.Add(Constants.INVALID_PROPOSED_INSURANCE);
 				}
 
-				if (dto.NegotiatedInsurance is null)
+				if (dto.NegotiatedInsurance is null && dto.IsInsuranceDirect == TripleBooleanState.Yes)
 				{
 					isValid = false;
 					messages.Add(Constants.INVALID_NEGOTIATED_INSURANCE);
 				}
 			}
 
-			messages.AddRange(ValidateContractModelView(ConvertContractsDtoToModel(dto), fullProposal));
+			ICollection<string> contractsValidationMessages = ValidateContractModelView(ConvertContractsDtoToModel(dto), fullProposal);
+			if (contractsValidationMessages.Any())
+			{
+				messages.AddRange(contractsValidationMessages);
+				isValid = false;
+			}
 
 			return isValid;
 		}

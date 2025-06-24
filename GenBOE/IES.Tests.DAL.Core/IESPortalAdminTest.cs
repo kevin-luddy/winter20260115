@@ -36,17 +36,17 @@ namespace IES.Tests.Core
         /// <summary>
         /// Pick List Mapper
         /// </summary>
-        private Mock<PtmPickListMapper> ptmPickListMapper = null;
+        private Mock<PtmPickListMapper> ptmPickListMapper;
 
-        /// <summary>
-        /// Pick List Mapper
-        /// </summary>
-        private Mock<BoePickListMapper> boePickListMapper = null;
+		/// <summary>
+		/// Pick List Mapper
+		/// </summary>
+		private Mock<BoePickListMapper> boePickListMapper;
 
-        /// <summary>
-        /// Offline Application Loader
-        /// </summary>
-        private Mock<IOfflineApplicationLoader> offlineApplicationLoader;
+		/// <summary>
+		/// Offline Application Loader
+		/// </summary>
+		private Mock<IOfflineApplicationLoader> offlineApplicationLoader;
 
         /// <summary>
         /// Performs setup initialization for the tests.
@@ -945,7 +945,7 @@ namespace IES.Tests.Core
         /// </summary>
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void SaveOfflineApplicationDataTest_Ex()
+        public void SaveOfflineApplicationDataTest_Exception()
         {
             IESPortalAdminControllerLogic sut = CreateSystem();
             sut.SaveOfflineApplicationData(null);

@@ -1041,9 +1041,9 @@ namespace GenBOE.DataBridge.Common
 
             List<SecurityPermissionsResponse> userRoles = rolesForUser.ToList();
 
-            // If you aren't allowed to have a WS Admin permission (controlled via Create WS Permissions), you shouldn't have it. 
+            // If you aren't allowed to have a WS Admin permission (controlled via Create WS/System Admin Permissions), you shouldn't have it. 
             // This is horrid, but it's necessary because you can assign a role to an AD group, hence the secondary check being necessary
-            if (!userRoles.Any(x => x.AuthorizedRole == Role.CreateWorkspacePermissions))
+            if (!userRoles.Any(x => x.AuthorizedRole == Role.CreateWorkspacePermissions || x.AuthorizedRole == Role.SystemAdmin))
             {
                 userRoles = userRoles.Where(x => x.AuthorizedRole != Role.WorkspaceAdmin).ToList();
             }

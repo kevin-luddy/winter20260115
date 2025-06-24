@@ -39,7 +39,8 @@ namespace GenBOE.DataBridge.DTO
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
                     toReturn = (from c in gbe.CustomFields.Where(c => ids.Contains(c.CustomFieldID))
-                                select new CustomFieldDTO
+								orderby c.CustomFieldName ascending
+								select new CustomFieldDTO
                                 {
                                     Id = c.CustomFieldID,
                                     CustomFieldName = c.CustomFieldName,
@@ -69,19 +70,20 @@ namespace GenBOE.DataBridge.DTO
 
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    toReturn = (from c in gbe.CustomFields
-                                where c.WorkspaceID == inWorkspaceID
-                                select new CustomFieldDTO
-                                {
-                                    Id = c.CustomFieldID,
-                                    CustomFieldName = c.CustomFieldName,
-                                    CustomFieldDisplayID = (CustomFieldType)c.CustomFieldDisplayID,
-                                    CustomFieldRequired = c.CustomFieldRequired,
-                                    WorkspaceID = c.WorkspaceID,
-                                    UpdateDate = c.UpdateDT,
-                                    IsOpenEnded = c.IsOpenEnded
-                                }).ToCollection<CustomFieldDTO>();
-                }
+					toReturn = (from c in gbe.CustomFields
+								where c.WorkspaceID == inWorkspaceID
+								orderby c.CustomFieldName ascending
+								select new CustomFieldDTO
+								{
+									Id = c.CustomFieldID,
+									CustomFieldName = c.CustomFieldName,
+									CustomFieldDisplayID = (CustomFieldType)c.CustomFieldDisplayID,
+									CustomFieldRequired = c.CustomFieldRequired,
+									WorkspaceID = c.WorkspaceID,
+									UpdateDate = c.UpdateDT,
+									IsOpenEnded = c.IsOpenEnded
+								}).ToCollection<CustomFieldDTO>();
+				}
 
                 return toReturn;
             }
@@ -105,7 +107,8 @@ namespace GenBOE.DataBridge.DTO
                      join V in db.CustomFieldValues on X.CustomFieldValueID equals V.CustomFieldValueID
                      join F in db.CustomFields on V.CustomFieldID equals F.CustomFieldID
                      where boeIds.Contains(B.BOEID)
-                     select new
+					 orderby F.CustomFieldName ascending
+					 select new
                      {
                          BOEID = B.BOEID,
                          WorkspaceID = B.WorkspaceID,

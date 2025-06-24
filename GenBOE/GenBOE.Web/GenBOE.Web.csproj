@@ -155,8 +155,8 @@
       <Private>True</Private>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.1.2\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Security.Cryptography.Algorithms, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.1\lib\net463\System.Security.Cryptography.Algorithms.dll</HintPath>
@@ -280,6 +280,7 @@
     <Compile Include="Controllers\Backend\CLINController.cs" />
     <Compile Include="Controllers\Backend\ImportController.cs" />
     <Compile Include="Controllers\Backend\ManagePermissionsController.cs" />
+    <Compile Include="Controllers\Backend\WBSController.cs" />
     <Compile Include="Controllers\Backend\WorkspaceAdminController.cs" />
     <Compile Include="Controllers\Backend\WorkspaceHomeController.cs" />
     <Compile Include="Controllers\Backend\WorkspaceSettingsController.cs" />
@@ -292,16 +293,23 @@
     <Compile Include="Controllers\BoeDataAPIController.cs" />
     <Compile Include="Controllers\RTETemplatesController.cs" />
     <Compile Include="Controllers\DateShiftController.cs" />
+    <Compile Include="ModelView\AddEditWBSModelView.cs" />
     <Compile Include="ModelView\AddEditCLINModelView.cs" />
     <Compile Include="ModelView\BOEFormMasterModelView.cs" />
+    <Compile Include="ModelView\CompleteWBSImportModelView.cs" />
     <Compile Include="ModelView\ConfidenceReportItem.cs" />
     <Compile Include="ModelView\ConfidenceReportModelView.cs" />
+    <Compile Include="ModelView\CreateBOEModelView.cs" />
     <Compile Include="ModelView\CustomFieldImportModelView.cs" />
     <Compile Include="ModelView\DateShiftIndexModelView.cs" />
     <Compile Include="ModelView\BOEBulkSubmitModelView.cs" />
+    <Compile Include="ModelView\DeleteWBSModelView.cs" />
     <Compile Include="ModelView\ErrorModelView.cs" />
+    <Compile Include="ModelView\ExportWBSModelView.cs" />
+    <Compile Include="ModelView\ExportCLINModelView.cs" />
     <Compile Include="ModelView\FavoriteModelView.cs" />
     <Compile Include="ModelView\IBOEData.cs" />
+    <Compile Include="ModelView\ImportCLINModelView.cs" />
     <Compile Include="ModelView\ImportLaborSpreadModelView.cs" />
     <Compile Include="ModelView\ManageOffloadRatesGridModelView.cs" />
     <Compile Include="ModelView\MPBoeData.cs" />
@@ -918,11 +926,9 @@
     <Content Include="Views\BOEForm\Index.aspx" />
     <Content Include="Views\BOEForm\ManageBOEForms.ascx" />
     <Content Include="Views\BOEForm\ManageBOEFormsGrid.ascx" />
-    <Content Include="Views\BOELabor\AddHistoricalMetricToBOEMst.ascx" />
     <Content Include="Views\BOELabor\DisplayPerfOrgs.aspx" />
     <Content Include="Views\BOELabor\DisplayBusinessResourceCodes.aspx" />
     <Content Include="Views\BOELabor\DisplayResources.aspx" />
-    <Content Include="Views\BOELabor\HistoricalMetricsSearchResultsMST.ascx" />
     <Content Include="Views\BOELabor\LaborTask.ascx" />
     <Content Include="Views\BOELabor\MOQEquationField.ascx" />
     <Content Include="Views\BOELabor\LaborTaskStatic.ascx" />
@@ -1084,7 +1090,6 @@
     <Content Include="Templates\Export\IMS_MSProject.xlsx" />
     <Content Include="Templates\Export\DesignToCost.xlsx" />
     <Content Include="Templates\Export\BOEActivityReport.xlsx" />
-    <Content Include="Templates\Export\Historical Metrics.xlsx" />
     <Content Include="Templates\Export\BOEStatusByBOE.xlsx" />
     <Content Include="Templates\Export\BOEStatusByCLIN.xlsx" />
     <Content Include="Templates\Export\BOEStatusByWBS.xlsx" />

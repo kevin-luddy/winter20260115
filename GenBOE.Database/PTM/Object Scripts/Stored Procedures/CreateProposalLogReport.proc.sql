@@ -48,6 +48,7 @@ AS
 **		8/19/24		Dusan				PROPH-2080: Added IsSupportDefinitizingUCA field
 **		11/21/24	twilson3			proph-2357 Add Insurance fields
 **		02/27/25	Carlos				PROPH-2642 Added SupplierMilestoneDatesResponse field
+**		05/13/25	ranzalon			PROPH-3038 Added Bid and Mission Segment EPP Dates
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -334,6 +335,8 @@ SELECT V.[ProposalID]
 	 ,V.ContractsEppRosDelegationNotes
 	 ,V.ContractsLmWon
 	 ,V.ContractsModCompletedDate
+	 ,V.ContractsBidEppDate
+	 ,V.ContractsMissionSegmentEppDate
 	 -- end of Proposal Contract Data
 	 ,V.CageCode
 	 ,V.ContractActionType
