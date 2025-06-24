@@ -1279,7 +1279,7 @@ namespace GenBOE.Web.Controllers
 				foreach (WorkspaceDTO ws in workspaces)
 				{
 					// Get Prerequisite Data
-					FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(ws);
+					FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(ws.Id);
 					ICollection<ResourceDTO> workspaceResources = this.resourceLoader.GetByListId(ws.ResourceListID);
 					tmCalculator.GetBOETotals<PBOERow>(postModel, result, iboeDtos, pboeDtos, fullWorkspace, workspaceResources, resourceLoader, tmResourceRateLoader);
 				}
@@ -1331,7 +1331,7 @@ namespace GenBOE.Web.Controllers
 					if (ws.IsUsingTM)
 					{
 						// Get Prerequisite Data
-						FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(ws);
+						FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(ws.Id);
 						ICollection<ResourceDTO> workspaceResources = this.resourceLoader.GetByListId(ws.ResourceListID);
 						tmCalculator.GetBOETotals<IBOERow>(postModel, result, iboeDtos, pboeDtos, fullWorkspace, workspaceResources, resourceLoader, tmResourceRateLoader);
 					}
@@ -1395,7 +1395,7 @@ namespace GenBOE.Web.Controllers
 					foreach (WorkspaceDTO workspace in workspaces)
 					{
 						// Get Prerequisite Data
-						FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(workspace);
+						FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(workspace.Id);
 						//transform PBOEViewModel into BOEFormPBOEDTO
 						//put it in the exporter because it is PBOE specific
 						BOEFormPBOEDTO pboeForm = exporter.transformPBOEViewToFormDTO(pboe);
@@ -1494,7 +1494,7 @@ namespace GenBOE.Web.Controllers
 					foreach (WorkspaceDTO workspace in workspaces)
 					{
 						// Get Prerequisite Data
-						FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(workspace);
+						FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(workspace.Id);
 						// transform IBOEViewModel into BOEFormIBOEDTO
 						// put it in the exporter because it is IBOE specific
 						BOEFormIBOEDTO iboeForm = exporter.TransformIBOEViewToFormDTO(iboe);
