@@ -347,7 +347,7 @@
 										}
 									}
 								}
-								else if (string.IsNullOrWhiteSpace(currentRow.ResourceNew) && !string.IsNullOrWhiteSpace(currentRow.ResourceOld))
+								else if (string.IsNullOrWhiteSpace(currentRow.ResourceNew))
 								{
 									// create a Not included row
 									refreshedModel.CommonDisclosureRows.Add(
