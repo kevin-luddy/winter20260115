@@ -109,6 +109,11 @@ namespace GenBOE.Web.Controllers
 		private readonly ContractTypeLoader contractTypeLoader;
 
 		/// <summary>
+		/// TM Resource Rate Loader
+		/// </summary>
+		private readonly ITMResourceRateDTODataLoader tmResourceRateLoader;
+
+		/// <summary>
 		/// Resource Loader
 		/// </summary>
 		private readonly IResourceDTODataLoader resourceLoader;
@@ -149,7 +154,8 @@ namespace GenBOE.Web.Controllers
 		/// <param name="traceTableExporter">Trace Table data exporter</param>
 		/// <param name="boeFormControllerLogic">BOE Form Controller logic</param>
 		/// <param name="contractTypeLoader">Pick List loader for Contract Types</param>
-		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, IBOEFormIBOEDTODataLoader boeFormIBOEDTODataLoader, IActiveDirectoryUtilities activeDirectoryUtilities, IUserDTODataLoader userDataLoader, ContractTypeLoader contractTypeLoader, IResourceDTODataLoader resourceLoader, TMCalculator tmCalculator, IInUseDataLoader inUseDataLoader)
+		/// <param name="tmResourceRateLoader">TM Resource Loader</param>
+		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, IBOEFormIBOEDTODataLoader boeFormIBOEDTODataLoader, IActiveDirectoryUtilities activeDirectoryUtilities, IUserDTODataLoader userDataLoader, ContractTypeLoader contractTypeLoader, IResourceDTODataLoader resourceLoader, TMCalculator tmCalculator, IInUseDataLoader inUseDataLoader, ITMResourceRateDTODataLoader tmResourceRateLoader)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.loader = loader;
@@ -168,6 +174,7 @@ namespace GenBOE.Web.Controllers
 			this.resourceLoader = resourceLoader;
 			this.tmCalculator = tmCalculator;
 			this.inUseDataLoader = inUseDataLoader;
+			this.tmResourceRateLoader = tmResourceRateLoader;
 		}
 		#endregion
 
