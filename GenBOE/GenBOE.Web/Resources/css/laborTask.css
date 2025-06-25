@@ -8,6 +8,16 @@
     width: 77px;
 }
 
+.proposedHoursCol {
+    width: 78px;
+}
+
+.brcCol {
+    width: 77px;
+    text-wrap: wrap;
+}
+
+/*RMS Only*/
 .laborSkillMixCol {
     width: 70px;
 }
@@ -20,16 +30,6 @@
     width: 65px;
 }
 
-.proposedHoursCol {
-    width: 78px;
-}
-
-.brcCol {
-    width: 77px;
-    text-wrap: wrap;
-}
-
-/*RMS Only*/
 .currentResourceCol {
     width: 86px;
 }
@@ -41,4 +41,17 @@
 /*Space Only*/
 .ucotCol {
     width: 62px;
+}
+
+.historicalSkillMixCol {
+    width: 87px;
+}
+
+.proposedSkillMixCol {
+    width: 89px;
+}
+
+.ucotGrandTotalCol {
+    width: 62px;
+    text-wrap: wrap;
 }

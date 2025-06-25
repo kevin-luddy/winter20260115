@@ -178,14 +178,10 @@
     <Compile Include="GenBOE.Dtos\DTOs\GenBOEMetricsDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\GenBOEUsersOnlineDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\LocationDTO.cs" />
-    <Compile Include="GenBOE.Dtos\DTOs\MetricNameTaskElementMappingDto.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MileReimbursementRateDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MiscTravelRateDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MOQTypeSelectionTableDataResourceHoursDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MPBoeDataDTO.cs" />
-    <Compile Include="GenBOE.Dtos\DTOs\MSTMetricDetailsDTO.cs" />
-    <Compile Include="GenBOE.Dtos\DTOs\MSTMetricSearchCriteriaDTO.cs" />
-    <Compile Include="GenBOE.Dtos\DTOs\MSTMetricSearchDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MSTTravelNonzoneFeesAndCostsDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MSTTravelTripType.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\MSTZoneTravelDestinationDTO.cs" />
@@ -467,10 +463,6 @@
     <ProjectReference Include="..\GenBOE.Models\GenBOE.Models.csproj">
       <Project>{5E73D211-CFD8-49AC-B164-3ECDDEA9B443}</Project>
       <Name>GenBOE.Models</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GenBOE.MSTMetricModel\GenBOE.MSTMetricModel.csproj">
-      <Project>{d9645139-bd1d-474b-8960-ed105bb1a4dc}</Project>
-      <Name>GenBOE.MSTMetricModel</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

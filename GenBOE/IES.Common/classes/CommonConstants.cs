@@ -56,26 +56,6 @@ namespace IES.Common.classes
         /// </summary>
         readonly static public string MANAGE_BOE_HEADER_ISGS = "Note:  If there are multiple functional estimates in one BOE, a unique functional approver must be assigned to approve each functional estimate (i.e. a BOE with estimates for PM, Finance & Contracts requires 3 functional approvers).";
 
-        /// <summary>
-        /// Suffix for the UI Id used to identify the search metrics dialog for MST.
-        /// </summary>
-        readonly static public string MSTMetricsDialogSuffix = "MST";
-
-        /// <summary>
-        /// Suffix for the UI Id used to identify the search metrics dialog for SpaceSystems and IS&GS.
-        /// </summary>
-        readonly static public string CommonMetricsDialogSuffix = "Common";
-
-        /// <summary>
-        /// Metric Search dialog title for SpaceSystems.
-        /// </summary>
-        readonly static public string CommonDialogTitle = "Historical Metrics Search";
-
-        /// <summary>
-        /// Metric Search dialog title for MST.
-        /// </summary>
-        readonly static public string MSTDialogTitle = "Historical Measures: Search";
-
         readonly static public string Unassigned_CLIN_Display_Text = "NO CLIN";
         readonly static public string Unassigned_WBS_Display_Text = "NO WBS";
 

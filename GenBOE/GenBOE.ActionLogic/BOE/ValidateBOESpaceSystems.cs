@@ -7,15 +7,21 @@
 namespace GenBOE.ActionLogic.WBS.BOE
 {
     using System;
-    using System.Collections.ObjectModel;
-    using GenBOE.ActionLogic.Common.Calculations;
-    using GenBOE.ActionLogic.Validation;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Linq;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.Common.Calculations;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.ActionLogic.Validation;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
-    using GenBOE.Objects;
-    using IES.Common.classes;
+	using GenBOE.Objects;
+	using IES.Common;
+	using IES.Common.classes;
+	using IES.Common.Exceptions;
 
-    public class ValidateBOESpaceSystems : ValidateBOE
+	public class ValidateBOESpaceSystems : ValidateBOE
     {
         /// <summary>
         /// Default constructor
@@ -50,7 +56,17 @@ namespace GenBOE.ActionLogic.WBS.BOE
                 toReturn.BOEHeaderMsgs.Add(BoeDTO.BOE_TITLE_REQUIRED);
             }
 
-            return toReturn;
+			// UCOT validation (Space only) - if there are multiple MOQ types assigned to a task and one of those MOQ Types is Historical/Comparative/Analogous, add a warning
+			MultiMOQTypeResult multiMoqResult = MultiMOQTypeUtility.DoTasksHaveMultipleMOQTypes(inBOE);
+			if (multiMoqResult.DoMultiMOQTypesExist)
+			{
+				foreach (string task in multiMoqResult.Tasks)
+				{
+					toReturn.BOEHeaderMsgs.Add(string.Format(ValidationConstants.TASK_WITH_MULTI_MOQ_TYPES_UCOT, task));
+				}
+			}
+
+			return toReturn;
         }
 
         /// <summary>

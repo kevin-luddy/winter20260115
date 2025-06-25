@@ -19,7 +19,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
     using GenBOE.Objects;
     using GenBOE.Tests.ActionLogic;
     using GenBOE.Tests.DAL.DataLoaders;
-	using GenBOE.Web.ModelView;
 	using IES.Common;
     using IES.Common.classes;
     using IES.Common.Exceptions;

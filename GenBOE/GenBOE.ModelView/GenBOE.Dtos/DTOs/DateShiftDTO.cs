@@ -7,11 +7,13 @@
 namespace GenBOE.Dtos
 {
 	using GenBOE.DataBridge.DTO;
+	using GenBOE.Objects;
 	using IES.Common;
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Linq;
 
 	/// <summary>
 	/// DTO that will contain Date Shifts.
@@ -22,7 +24,6 @@ namespace GenBOE.Dtos
 	{
 		private readonly List<IDateShiftable> children = new List<IDateShiftable>();
 		private bool hasSpread;
-		private Level dateShiftLevel;
 		private object originalObject;
 
 		/// <summary>
@@ -41,6 +42,16 @@ namespace GenBOE.Dtos
 		ICollection<IDateShiftable> IDateShiftable.Children => children;
 
 		/// <summary>
+		/// Parent of the date shift object.
+		/// </summary>
+		public IDateShiftable Parent { get; set; }
+
+		/// <summary>
+		/// Parent id of the date shift object.
+		/// </summary>
+		public int? ParentId { get; set; }
+
+		/// <summary>
 		/// Has spread?
 		/// </summary>
 		bool IDateShiftable.HasSpread => hasSpread;
@@ -53,7 +64,7 @@ namespace GenBOE.Dtos
 		/// <summary>
 		/// Date shift level.
 		/// </summary>
-		public Level DateShiftLevel => dateShiftLevel;
+		public Level DateShiftLevel { get; set; }
 
 		/// <summary>
 		/// Date shift level value due to readonly date shift level on interface.
@@ -61,14 +72,24 @@ namespace GenBOE.Dtos
 		public int Level { get; set; }
 
 		/// <summary>
-		/// Updatable.
+		/// Workspace Id (highest parent level for any date shift).
 		/// </summary>
-		public UpdateType Updateable { get; set; }
+		public int WorkspaceId { get; set; }
 
 		/// <summary>
 		/// Boe ID.
 		/// </summary>
 		public int BoeId { get; set; }
+
+		/// <summary>
+		/// WBS id.
+		/// </summary>
+		public int? WbsId { get; set; }
+
+		/// <summary>
+		/// Clin Id.
+		/// </summary>
+		public int? ClinId { get; set; }
 
 		/// <summary>
 		/// Boe task element Id if date shiftable is a task.
@@ -116,6 +137,16 @@ namespace GenBOE.Dtos
 		public decimal? ValueSpread { get; set; }
 
 		/// <summary>
+		/// Workspace version meta data.
+		/// </summary>
+		public ICollection<WorkspaceVersionMetaDataDTO> WorkspaceVersionMetaData { get; set; } = new List<WorkspaceVersionMetaDataDTO>();
+
+		/// <summary>
+		/// Workspace state.
+		/// </summary>
+		public WorkspaceState WorkspaceState { get; set; }
+
+		/// <summary>
 		/// Original object data.
 		/// </summary>
 		public object OriginalObject { get => this.originalObject; set => this.originalObject = value; }
@@ -130,16 +161,12 @@ namespace GenBOE.Dtos
 				throw new ArgumentNullException(nameof(dateShiftable));
 			}
 
-			if (dateShiftable.Updateable != UpdateType.Upsert)
-			{
-				return null;
-			}
-
 			DateShiftDTO dateShiftDTO = new DateShiftDTO();
 			dateShiftDTO.OriginalObject = dateShiftable;
 			dateShiftDTO.StartDate = dateShiftable.StartDate;
 			dateShiftDTO.EndDate = dateShiftable.EndDate;
 			dateShiftDTO.Level = (int)dateShiftable.DateShiftLevel;
+			dateShiftDTO.DateShiftLevel = dateShiftable.DateShiftLevel;
 			dateShiftDTO.HasSpreadValue = dateShiftable.HasSpread;
 			dateShiftDTO.Updateable = dateShiftable.Updateable;
 
@@ -149,24 +176,42 @@ namespace GenBOE.Dtos
 				dateShiftDTO.UpdateDate = updateableDTO.UpdateDate;
 			}
 
-			if (dateShiftable is BoeDTO boeDTO)
+			if (dateShiftable is FullClin clinDTO && clinDTO != null)
 			{
-				dateShiftDTO.BOEStateID = (int)boeDTO.State;
+				dateShiftDTO.ClinId = clinDTO.Id;
+				dateShiftDTO.WorkspaceId = clinDTO.WorkspaceID;
+				dateShiftDTO.ParentId = clinDTO.WorkspaceID;
 			}
 
-			if (dateShiftable is BoeTaskElementDTO boeTaskElementDTO)
+			if (dateShiftable is FullBoe boeDTO && boeDTO != null)
+			{
+				dateShiftDTO.BOEStateID = (int)boeDTO.State;
+				dateShiftDTO.ParentId = boeDTO.CLINID ?? boeDTO.WorkspaceID;
+				dateShiftDTO.ClinId = boeDTO.CLINID;
+				dateShiftDTO.WbsId = boeDTO.WBSID;
+				dateShiftDTO.WorkspaceId = boeDTO.WorkspaceID;
+			}
+
+			if (dateShiftable is BoeTaskElementDTO boeTaskElementDTO && boeTaskElementDTO != null)
 			{
 				dateShiftDTO.BoeId = boeTaskElementDTO.BoeID;
 				dateShiftDTO.BOETaskElementId = boeTaskElementDTO.Id;
 				dateShiftDTO.CommonDisclosureTable = boeTaskElementDTO.CommonDisclosureTable;
 				dateShiftDTO.SkillMixTable = boeTaskElementDTO.SkillMixTable;
 				dateShiftDTO.TaskElementLabors = boeTaskElementDTO.taskElementLabors;
+				dateShiftDTO.ParentId = boeTaskElementDTO.BoeID;
 			}
 
-			if (dateShiftable is ResourceTypeDto resourceTypeDto && (resourceTypeDto.SpreadCurveID == SpreadCurves.DiscreteCost || resourceTypeDto.SpreadCurveID == SpreadCurves.DiscreteHours))
+			if (dateShiftable is ResourceTypeDto resourceTypeDto && resourceTypeDto != null && (resourceTypeDto.SpreadCurveID == SpreadCurves.DiscreteCost || resourceTypeDto.SpreadCurveID == SpreadCurves.DiscreteHours))
 			{
 				// Check if Labor Spreads is not null and if not null then save them later.
 				dateShiftDTO.LaborSpreads = resourceTypeDto.LaborSpreads;
+			}
+
+			if (dateShiftable is FullWorkspace fullWorkspace && fullWorkspace != null)
+			{
+				dateShiftDTO.WorkspaceVersionMetaData = fullWorkspace.WorkspaceVersionMetaData.ToList();
+				dateShiftDTO.WorkspaceState = fullWorkspace.WorkspaceState;
 			}
 
 			foreach (IDateShiftable child in dateShiftable.Children)

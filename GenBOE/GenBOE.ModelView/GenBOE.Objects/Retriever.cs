@@ -6,7 +6,6 @@
 
 namespace GenBOE.Objects
 {
-	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
@@ -20,38 +19,38 @@ namespace GenBOE.Objects
 	{
 		#region Fields and Constructors
 
-		private IClinDTODataLoader clinLoader;
-		private IWbsDTODataLoader wbsLoader;
-		private IWorkspaceDTODataLoader workspaceLoader;
-		private IBoeDTODataLoader boeLoader;
-		private IWorkspaceVariableDTODataLoader workspaceVariableLoader;
-		private IBOECommentDTODataLoader boeCommentLoader;
-		private IWorkspaceHistoryDTODataLoader workspaceHistoryLoader;
-		private IMaterialDTODataLoader materialLoader;
-		private IResourceTypeLoader resourceTypeLoader;
-		private IBoeTaskElementDTODataLoader taskElementLoader;
-		private IOtherDirectCostDTODataLoader otherDirectCostLoader;
-		private IResourceDTODataLoader ResourceLoader;
-		private ITravelDTODataLoader travelLoader;
-		private IBoeApproverResponseDTODataLoader approverResponseLoader;
-		private IWorkspaceExportFormatDTODataLoader workspaceExportFormatLoader;
-		private ICustomFieldDTODataLoader customFieldLoader;
-		private IWorkspaceVersionMetaDataDTODataLoader workspaceVersionMetaDataLoader;
-		private IProPricerDTODataLoader proPricerLoader;
-		private IPerformingOrgDTODataLoader perfOrgLoader;
-		private IPerformingOrgListDTODataLoader performingOrgListLoader;
-		private IEscalationRatesDTOLoader escalationRateLoader;
-		private ITripDTODataLoader tripDataLoader;
-		private IPerDiemDTODataLoader perDiemLoader;
-		private IMiscTravelRateDTOLoader miscTravelRateLoader;
-		private IUserDTODataLoader userDataLoader;
-		private ILocationDTODataLoader locationLoader;
-		private ICustomFieldValueDTODataLoader customFieldValueLoader;
-		private IBOEHistoryDTODataLoader boeHistoryLoader;
-		private ITMResourceRateDTODataLoader tmResourceRateLoader;
-		private IProjectMapDataLoader projectMapDataLoader;
-		private IRteTemplateDataLoader rteTemplateDataLoader;
-		private IMoqTypeDataLoader moqTypeDataLoader;
+		private readonly IClinDTODataLoader clinLoader;
+		private readonly IWbsDTODataLoader wbsLoader;
+		private readonly IWorkspaceDTODataLoader workspaceLoader;
+		private readonly IBoeDTODataLoader boeLoader;
+		private readonly IWorkspaceVariableDTODataLoader workspaceVariableLoader;
+		private readonly IBOECommentDTODataLoader boeCommentLoader;
+		private readonly IWorkspaceHistoryDTODataLoader workspaceHistoryLoader;
+		private readonly IMaterialDTODataLoader materialLoader;
+		private readonly IResourceTypeLoader resourceTypeLoader;
+		private readonly IBoeTaskElementDTODataLoader taskElementLoader;
+		private readonly IOtherDirectCostDTODataLoader otherDirectCostLoader;
+		private	readonly IResourceDTODataLoader ResourceLoader;
+		private readonly ITravelDTODataLoader travelLoader;
+		private readonly IBoeApproverResponseDTODataLoader approverResponseLoader;
+		private readonly IWorkspaceExportFormatDTODataLoader workspaceExportFormatLoader;
+		private readonly ICustomFieldDTODataLoader customFieldLoader;
+		private readonly IWorkspaceVersionMetaDataDTODataLoader workspaceVersionMetaDataLoader;
+		private readonly IProPricerDTODataLoader proPricerLoader;
+		private readonly IPerformingOrgDTODataLoader perfOrgLoader;
+		private readonly IPerformingOrgListDTODataLoader performingOrgListLoader;
+		private readonly IEscalationRatesDTOLoader escalationRateLoader;
+		private readonly ITripDTODataLoader tripDataLoader;
+		private readonly IPerDiemDTODataLoader perDiemLoader;
+		private readonly IMiscTravelRateDTOLoader miscTravelRateLoader;
+		private readonly IUserDTODataLoader userDataLoader;
+		private readonly ILocationDTODataLoader locationLoader;
+		private readonly ICustomFieldValueDTODataLoader customFieldValueLoader;
+		private readonly IBOEHistoryDTODataLoader boeHistoryLoader;
+		private readonly ITMResourceRateDTODataLoader tmResourceRateLoader;
+		private readonly IProjectMapDataLoader projectMapDataLoader;
+		private readonly IRteTemplateDataLoader rteTemplateDataLoader;
+		private readonly IMoqTypeDataLoader moqTypeDataLoader;
 
 		/// <summary>
 		/// Constructor
@@ -60,7 +59,6 @@ namespace GenBOE.Objects
 		/// <param name="wbsLoader">Wbs Loader</param>
 		/// <param name="workspaceLoader">Workspace Loader</param>
 		/// <param name="boeLoader">Boe Loader</param>
-		/// <param name="systemResourceRateLoader">The system resource rate loader.</param>
 		/// <param name="workspaceVariableLoader">Workspace Variable Loader.</param>
 		/// <param name="workspaceHistoryDTODataLoader">Workspace History Loader</param>
 		/// <param name="materialLoader">Material Loader</param>
@@ -68,7 +66,6 @@ namespace GenBOE.Objects
 		/// <param name="resourceTypeLoader">Resource Loader</param>
 		/// <param name="taskElementLoader">Task Element Loader</param>
 		/// <param name="otherDirectCostLoader">Other Direct Cost Loader</param>
-		/// <param name="ResourceLoader">Resource loader.</param>
 		/// <param name="travelLoader">Travel Element loader.</param>
 		/// <param name="approverResponseLoader">Boe Approver Response loader.</param>
 		/// <param name="workspaceExportFormatLoader">The workspace export format loader.</param>

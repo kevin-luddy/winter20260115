@@ -238,16 +238,14 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 			inBOE.TaskElements.ForEach(task =>
 			{
-				ICollection<MoqTypeSelection> moqTypesForTask = inBOE.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList();
-
-				if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, BOETaskUtility.IsUsingTMRates(ws, task), moqTypesForTask))
+				if (BOETaskUtility.ShowSkillMixForTask(ws, task))
 				{
 					ICollection<string> errorMessages = new List<string>();
 					errorMessages = ActionLogicUtility.ValidateSkillMixTable(task.SkillMixTable, true);
 
 					if (Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
 					{
-						errorMessages.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(task.CommonDisclosureTable, true));
+						errorMessages.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(task.CommonDisclosureTable, true, task.taskElementLabors.Any()));
 					}
 
 					if (errorMessages.Any())
@@ -552,11 +550,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
 					}
 				}
 
-				// validate if historic metric disclosure checkbox was checked or not
-				// based on if a historic meric is being used
-				ICollection<int> boeTaskIds = new Collection<int>();
-				boeTaskIds.Add(boeTask.Id);
-
 				// Need to determine if there are any required Task custom fields
 				switch (boeTask.TaskElementType)
 				{
@@ -668,9 +661,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
 					ICollection<MoqTypeSelection> moqTypesForTask = boe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList();
 
 					// Variables for Validation of Skill Mix Rationale Field
-					bool isUsingTMRatesInTask = BOETaskUtility.IsUsingTMRates(ws, task);
-					bool showSkillMixTable = BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, isUsingTMRatesInTask, moqTypesForTask);
-					errorMessages = ValidateTemplateMoqForTask(boe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList(), ws, true, null, showSkillMixTable);
+					bool showSkillMixTable = BOETaskUtility.ShowSkillMixForTask(ws, task);
+					errorMessages = ValidateTemplateMoqForTask(moqTypesForTask, ws, true, null, showSkillMixTable);
 
 					if (errorMessages.Any())
 					{
@@ -850,10 +842,13 @@ namespace GenBOE.ActionLogic.WBS.BOE
 					ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, Constants.MOQ_WBS_ELEMENT_FIELD_LENGTH, errorMessages);
 				}
 
+				// If using Monthly Query Type, must compare dates against a mid-month date to allow using the current month
+				DateTime today = row.QueryType == MoqTableData.MONTHLY ? DateTime.Now.ToString("MM/yyyy").ToDateTimeMidMonth() : DateTime.Now;
+
 				if (!row.PoPStart.HasValue || row.PoPStart?.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} is required."); }
-				if (row.PoPStart?.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before today's date."); }
+				if (row.PoPStart?.Date > today.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before today's date."); }
 				if (!row.PoPEnd.HasValue || row.PoPEnd?.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} is required."); }
-				if (row.PoPEnd?.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} must be on or before today's date."); }
+				if (row.PoPEnd?.Date > today.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} must be on or before today's date."); }
 
 				if (row.PoPEnd?.Date < row.PoPStart?.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before {labels.PoPEnd}."); }
 

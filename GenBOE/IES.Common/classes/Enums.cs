@@ -538,44 +538,6 @@ namespace IES.Common
 	}
 
 	/// <summary>
-	/// Status for Historical Metric
-	/// </summary>
-	public enum HistoricalMetricsStatus
-	{
-		[Description("None")]
-		None = 0,
-		[Description("Not Validated")]
-		Not_Validated = 1,
-		[Description("Validated")]
-		Validated = 2
-	}
-
-	/// <summary>
-	/// Usage of Historical Metric
-	/// </summary>
-	public enum HistoricalMetricsUsage
-	{
-		None = 0,
-		Expansion = 1,
-		LaborRatio = 2,
-		ProductivityRate = 3,
-		Sizing = 4,
-		Hours = 5
-	}
-
-	/// <summary>
-	/// Sources for Historical Metric
-	/// </summary>
-	public enum HistoricalMetricsSource
-	{
-		None = 0,
-		LMOnly = 1,
-		SubOnly = 2,
-		LMAndSub = 3,
-		IndustryData = 4
-	}
-
-	/// <summary>
 	///  ProPricer Scope
 	/// </summary>
 	public enum ProPricerScope
@@ -675,7 +637,9 @@ namespace IES.Common
 		[Description("Space")]
 		Space = 3,
 		[Description("Corporate")]
-		Corporate = 4
+		Corporate = 4,
+		[Description("Mission Segment")]
+		MissionSegment = 5
 	}
 
 	/// <summary>
@@ -1476,6 +1440,16 @@ namespace IES.Common
 		InvalidTotalWbsHours = 19,
 		InvalidPopStartSunday = 20,
 		InvalidPopEndSunday = 21
+	}
+
+
+	/// <summary>
+	/// Wbs import types
+	/// </summary>
+	public enum WbsImportType
+	{
+		New = 0,
+		Existing = 1
 	}
 
 	/// <summary>

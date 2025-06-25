@@ -16,7 +16,6 @@ namespace GenBOE.Web.Controllers
 	using System.Transactions;
 	using System.Web.Mvc;
 	using System.Web.Script.Serialization;
-	using System.Xml.Linq;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.Common.Calculations;
@@ -204,8 +203,6 @@ namespace GenBOE.Web.Controllers
 				SkillMixData = new List<SkillMixModelView>(),
 				CommonDisclosureSkillMixData = new List<CommonDisclosureModelView>()
 			};
-
-			this._BoeLaborControllerLogic.GetMetricSearchDialogParameters(modelView);
 
 			bool missingBRCs = false;
 			if (Utilities.IsBRCEnabledForWorkspace(workspace) && boe.EndDate >= Utilities.OneLmxStartDate)
@@ -396,50 +393,6 @@ namespace GenBOE.Web.Controllers
 
 			// Finalize Action
 			FinalizeAction(_log, "RefreshVariableBOESumByWBS", sw);
-
-			return toReturn;
-		}
-
-		/// <summary>
-		/// Displays the results of the search for historical metrics
-		/// </summary>
-		/// <param name="workspace">Current workspace</param>
-		/// <returns>The view</returns>
-		public ViewResult DisplayHistoricalMetricsResults(int validatedOption, string searchTerm)
-		{
-			Stopwatch sw = InitializeAction(_log, "DisplayHistoricalMetricsResults", SecurityPage.HistoricalMetricSearch, SecurityAuthorization.Read, null, null);
-
-			ViewResultData viewResultData = _BoeLaborControllerLogic.GetHistoricalMetricsResults(validatedOption, searchTerm);
-			ViewResult toReturn = View(viewResultData.ViewName, viewResultData.Model);
-
-			// Finalize Action
-			FinalizeAction(_log, "DisplayHistoricalMetricsResults", sw);
-
-			return toReturn;
-		}
-
-		/// <summary>
-		/// Displays the results of the search for historical metrics from MST PMM database.
-		/// </summary>
-		/// <param name="modelView">MetricsSearchDialogParametersModelView detailing search criteria.</param>
-		/// <returns>The populated view result.</returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults")]
-		public ViewResult DisplayHistoricalMetricsResultsForMST(MetricsSearchDialogParametersModelView modelView)
-		{
-			if (modelView == null)
-			{
-				throw new ArgumentNullException(nameof(modelView));
-			}
-			Stopwatch sw = InitializeAction(_log, "DisplayHistoricalMetricsResultsForMST", SecurityPage.HistoricalMetricSearch, SecurityAuthorization.Read, null, null);
-
-			ICollection<MSTMetricDetailsDTO> results = new Collection<MSTMetricDetailsDTO>();
-
-			HistoricalMetricsFromMSTModelView resultsModelView = new HistoricalMetricsFromMSTModelView(results);
-
-			ViewResult toReturn = View(WebConstants.VIEW_BOE_HISTORICAL_METRICS_SEARCH_RESULTS_MST, resultsModelView);
-
-			// Finalize Action
-			FinalizeAction(_log, "DisplayHistoricalMetricsResultsForMST", sw);
 
 			return toReturn;
 		}
@@ -830,7 +783,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Save
-			this._BoeLaborControllerLogic.SaveLaborTaskData(ws, dto, modelView.TaskElementData.MetricIds, modelView.TaskElementData.RteTemplateAnswers, modelView.MOQTypes);
+			this._BoeLaborControllerLogic.SaveLaborTaskData(ws, dto, modelView.TaskElementData.RteTemplateAnswers, modelView.MOQTypes);
 
 			// Finalize Action
 			this.FinalizeAction(this._log, WebConstants.ACTION_SAVE_TASK_DATA_MODEL, sw);
@@ -889,47 +842,6 @@ namespace GenBOE.Web.Controllers
 			this.FinalizeAction(this._log, "GetTaskDataModel", sw);
 
 			return this.Json(modelView);
-		}
-
-		/// <summary>
-		/// Page historical metrics search results for MST.
-		/// </summary>
-		/// <param name="HistoricalMetricsSearchResults">The Historical metrics results.</param>
-		/// <returns>Paged Results</returns>
-		public ViewResult PageHistoricalMetricsSearchResultsMST(HistoricalMetricsFromMSTModelView historicalMetricsSearchResults)
-		{
-			Stopwatch sw = InitializeAction(_log, "PageHistoricalMetricsSearchResultsMST", SecurityPage.HistoricalMetricSearch, SecurityAuthorization.Read, null, null);
-
-			if (historicalMetricsSearchResults == null)
-			{
-				throw new ArgumentNullException(nameof(historicalMetricsSearchResults));
-			}
-
-			historicalMetricsSearchResults.MetricsSearchResults = new Collection<MSTMetricDetailsDTO>();
-
-			ICollection<int> ids = new Collection<int>();
-
-			for (int i = historicalMetricsSearchResults.StartArrayIndex; i <= historicalMetricsSearchResults.EndArrayIndex; i++)
-			{
-				ids.Add(historicalMetricsSearchResults.PagedIndexes[i]);
-			}
-
-			ViewResult toReturn = View(WebConstants.VIEW_BOE_HISTORICAL_METRICS_SEARCH_RESULTS_MST, historicalMetricsSearchResults);
-
-			FinalizeAction(_log, "PageHistoricalMetricsSearchResultsMST", sw);
-			return toReturn;
-		}
-
-		/// <summary>
-		/// Get search results for type ahead
-		/// </summary>
-		/// <param name="searchTerm">search word to get type ahead</param>
-		/// <returns>type ahead string</returns>
-		virtual public JsonResult GetTypeAheadTerms(string searchTerm)
-		{
-			ICollection<String> typeAheadCollection = _BoeLaborControllerLogic.GetTypeAheadTerms(searchTerm);
-
-			return Json(typeAheadCollection);
 		}
 
 		/// <summary>
@@ -1697,7 +1609,8 @@ namespace GenBOE.Web.Controllers
 				.ToList();
 
 			// Call to Controller Logic
-			RefreshSkillMixModelView response = this._BoeLaborControllerLogic.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData, isBRCEnabled, isManual, ws.UCOTFactor);
+			RefreshSkillMixModelView response = SkillMixUtility.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData, 
+				isBRCEnabled, isManual);
 
 			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });
 
@@ -2481,7 +2394,6 @@ namespace GenBOE.Web.Controllers
 			else
 			{
 				SetMOQEquationViewData(ws, boe.Id, MOQType.None);
-				_BoeLaborControllerLogic.SetShowMetricLink(theModelView);
 				theModelView.MoqTemplateAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(ws.Id, boe.Id, taskElementID).Where(t => t.SourceId == (int)RteTemplateSource.TaskMOQ).ToList();
 			}
 

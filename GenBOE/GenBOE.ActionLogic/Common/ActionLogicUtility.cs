@@ -115,8 +115,9 @@ namespace GenBOE.ActionLogic.Common
 		/// </summary>
 		/// <param name="commonDisclosures">Common Disclosures</param>
 		/// <param name="onButtonPress">True if this validation is being performed as part of the Validate BOE button</param>
+		/// <param name="hasResourceTypes">Does the Task contain resource types?</param>
 		/// <returns>A collection of validation errors/messages</returns>
-		public static ICollection<string> ValidateCommonDisclosureSkillMixTable(ICollection<CommonDisclosureModelView> commonDisclosures, bool onButtonPress)
+		public static ICollection<string> ValidateCommonDisclosureSkillMixTable(ICollection<CommonDisclosureModelView> commonDisclosures, bool onButtonPress, bool hasResourceTypes)
 		{
 			ICollection<string> errorMessages = new Collection<string>();
 
@@ -144,14 +145,16 @@ namespace GenBOE.ActionLogic.Common
 				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: BOE skill Mix has invalid value for {0}.", skillMixResourceID));
 			}
 
-			if (commonDisclosureIncludedHasTrueValue.Count <= 0)
+			// A task is valid for save if it has no Resource Types and a Resource Type is needed to be marked as Included
+			// So only perform this validation if there are Resource Types
+			if (hasResourceTypes && commonDisclosureIncludedHasTrueValue.Count <= 0)
 			{
-				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: At least one Resource has to be included"));
+				errorMessages.Add("LM Enterprise Skill Mix Table: At least one Resource has to be included");
 			}
 
 			if (!totalCommonDisclosureRowsBOESkillMix.EqualsEpsilon(100) && !totalCommonDisclosureRowsBOESkillMix.EqualsEpsilon(0))
 			{
-				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: BOE Skill Mix total must be either 0% or 100%"));
+				errorMessages.Add("LM Enterprise Skill Mix Table: BOE Skill Mix total must be either 0% or 100%");
 			}
 
 			ValidateResourceAndBRCCombos(commonDisclosures, errorMessages);

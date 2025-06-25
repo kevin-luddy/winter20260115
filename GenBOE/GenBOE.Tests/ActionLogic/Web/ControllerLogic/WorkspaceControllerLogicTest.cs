@@ -1732,7 +1732,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             WorkspaceControllerLogic sut = this.CreateSystemSpaceSystems();
 
-            string result = sut.CreateWorkspaceDataReportForVersion(null, string.Empty, null, string.Empty, 1);
+            string result = sut.CreateWorkspaceDataReportForVersion(null, string.Empty, string.Empty, 1);
         }
 
         #endregion

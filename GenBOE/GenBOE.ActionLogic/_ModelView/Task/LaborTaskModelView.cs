@@ -15,7 +15,6 @@ namespace GenBOE.ActionLogic.ModelView
     {
         public LaborTaskModelView()
         {
-            this.MetricsPagingActionName = string.Empty;
             this.DescriptionTemplateAnswers = new List<RTECustomTemplateQuestionAnswerModelView>();
         }
 
@@ -100,17 +99,6 @@ namespace GenBOE.ActionLogic.ModelView
         /// Gets or sets the hours label.
         /// </summary>
         public string HoursLabel { get; set; }
-
-        /// <summary>
-        /// Returns a company specific search parameters for the metrics search dialog. 
-        /// </summary>
-        /// <returns>Search dialog parameters.</returns>
-        public MetricsSearchDialogParametersModelView MetricsSearchDialogParameters { get; set; }
-
-        /// <summary>
-        /// Company specific paging action for paging thru metrics search results.
-        /// </summary>
-        public string MetricsPagingActionName { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [labor type warning].

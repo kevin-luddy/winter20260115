@@ -18,7 +18,9 @@ CREATE PROCEDURE [dbo].[upsertProposalContractsData]
 	@FinalNegotiatedValue [bigint],
 	@FinalNegotiatedDate [date],
 	@EppDelegationAuthority [int],
+	@BidEppDate [date],
 	@ProgramEppDate [date],
+	@MissionSegmentEppDate [date],
 	@LobEppDate [date],
 	@PreSpaceEppDate [date],
 	@SpaceEppDate [date],
@@ -53,6 +55,7 @@ AS
 **		07/18/22	ranzalon			Add CageCode
 **		02/22/23	ranzalon			Add CustomerDueDate
 **		11/12/24	twilson3			Add Insurance fields
+**		05/12/25	ranzalon			Add Bid and Mission Segment EPP Dates
 *******************************************************************************/
 SET NOCOUNT ON
 
@@ -63,12 +66,14 @@ SET NOCOUNT ON
 														ContractsCorrespondLogNumber, FinalNegotiatedValue, FinalNegotiatedDate,
 														EppDelegationAuthority, ProgramEppDate, LobEppDate, PreSpaceEppDate, 
 														SpaceEppDate, PreCorporateEppDate, CorporateEppDate, EppRosDelegationNotes, 
-														LmWon, ModCompletedDate, CageCode, CustomerDueDate, IsInsuranceDirect, InsuranceType, ProposedInsurance, NegotiatedInsurance)
+														LmWon, ModCompletedDate, CageCode, CustomerDueDate, IsInsuranceDirect, 
+														InsuranceType, ProposedInsurance, NegotiatedInsurance, BidEppDate, MissionSegmentEppDate)
 				OUTPUT inserted.ProposalContractsDataId INTO @Inserted
 				VALUES (GETDATE(), @ProposalID, @PreviouslySubmittedROM, @CustomerSubmittalDate, @ContractsCorrespondLogNumber,
 						@FinalNegotiatedValue, @FinalNegotiatedDate, @EppDelegationAuthority, @ProgramEppDate, @LobEppDate, 
 						@PreSpaceEppDate, @SpaceEppDate, @PreCorporateEppDate, @CorporateEppDate, @EppRosDelegationNotes, @LmWon, 
-						@ModCompletedDate, @CageCode, @CustomerDueDate, @IsInsuranceDirect, @InsuranceType, @ProposedInsurance, @NegotiatedInsurance)
+						@ModCompletedDate, @CageCode, @CustomerDueDate, @IsInsuranceDirect, @InsuranceType, @ProposedInsurance, 
+						@NegotiatedInsurance, @BidEppDate, @MissionSegmentEppDate)
 			SELECT @ProposalContractsDataId = Id FROM @Inserted
 		END
 	ELSE -- updating existing
@@ -83,7 +88,9 @@ SET NOCOUNT ON
 						FinalNegotiatedValue = @FinalNegotiatedValue, 
 						FinalNegotiatedDate = @FinalNegotiatedDate,
 						EppDelegationAuthority = @EppDelegationAuthority,
+						BidEppDate = @BidEppDate,
 						ProgramEppDate = @ProgramEppDate,
+						MissionSegmentEppDate = @MissionSegmentEppDate,
 						LobEppDate = @LobEppDate,
 						PreSpaceEppDate = @PreSpaceEppDate,
 						SpaceEppDate = @SpaceEppDate,

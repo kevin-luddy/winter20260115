@@ -488,6 +488,32 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.AreEqual(BOEState.None, state);
         }
 
+		/// <summary>
+		/// Test GetMultiClinBOEIdsByClins
+		/// </summary>
+		[TestMethod]
+        public void L_GetMultiClinBOEIdsByClins()
+        {
+			BoeDTODataLoader loader = this.CreateTestLoader();
+
+			GlobalTestCaseSetup.ResetGlobalWorkspaceID();
+			int boeId = GlobalTestCaseSetup.CreateBOE(GlobalTestCaseSetup.GlobalWorkspaceID, isMultiClinWbs: true);
+			GlobalTestCaseSetup.CreateGlobalTaskElementID();
+			GlobalTestCaseSetup.CreateCustomField(GlobalTestCaseSetup.GlobalWorkspaceID);
+			GlobalTestCaseSetup.CreateCustomFieldValue();
+			GlobalTestCaseSetup.CreateBOECustomFieldValueXref();
+			GlobalTestCaseSetup.CreateTaskElementCustomFieldValueXref();
+			GlobalTestCaseSetup.CreateLaborTypeCustomFieldValueXref();
+
+			ICollection<int> checkIds = new List<int>() { boeId };
+			ICollection<BoeDTO> boes = loader.GetByIds(checkIds);
+			BoeDTO boe = boes.Single();
+
+			ICollection<int> ids = loader.GetMultiClinBOEIdsByClins(GlobalTestCaseSetup.GlobalClinID, checkIds);
+			Assert.IsTrue(ids.Count > 0, "No MultiCLIN with BOE Labor Type");
+			Assert.AreEqual(boeId, ids.Single());
+		}
+
         /// <summary>
         /// Tests that RTE loading works as expected
         /// </summary>

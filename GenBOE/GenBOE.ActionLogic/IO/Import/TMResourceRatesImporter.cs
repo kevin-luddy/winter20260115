@@ -376,7 +376,6 @@ namespace GenBOE.ActionLogic.IO.Import
     public class ImportedTMResourceRate : TMResourceRateDTO, ICloneable
     {
         public Collection<ResourceRatesImportResult> ImportTypes { get; set; }
-        public String ResourceName { get; set; }
         public String StartDateString { get; set; }
         public String EndDateString { get; set; }
         public Boolean inUse { get; set; }
