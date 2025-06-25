@@ -180,7 +180,7 @@
                 <%: Html.RadioButton("WorkspaceStatus", WorkspaceState.Locked, Model.WorkspaceStatus == WorkspaceState.Locked, new { id = "WorkspaceStatus-Locked" })%>
                 <label for="WorkspaceStatus-Locked">Locked - 
                     <% if (!ViewBag.IsProjectMapWs) { %> 
-                    Lock travel rates, Labor rates, and hour and cost estimates in BOEs. Authors will not be able to edit hour and cost estimates but will be able to edit the text for Draft BOEs. Workspace Administrators will not be able to edit T&M Subcontractor or IWTA rates.
+                    Lock all Labor rates, and hour and cost estimates in BOEs. Authors will not be able to edit hour and cost estimates but will be able to edit the text for Draft BOEs. Workspace Administrators will not be able to edit T&M Subcontractor or IWTA rates.
                     <% } else { %>
                     Lock all BOEs. Users will not be able to edit BOEs.
                     <% } %>
@@ -190,13 +190,13 @@
         <div class="form-row">
             <div class="form-element radio">
                 <%: Html.RadioButton("WorkspaceStatus", WorkspaceState.Complete, Model.WorkspaceStatus == WorkspaceState.Complete, new { id = "WorkspaceStatus-Complete" })%>
-                <label for="WorkspaceStatus-Complete">Complete - Lock all <% if (!ViewBag.IsProjectMapWs) { %>travel rates, Labor rates, and <% } %>BOEs. No further work needs to be performed in the Workspace. BOEs are ready to be delivered.</label>
+                <label for="WorkspaceStatus-Complete">Complete - Lock all <% if (!ViewBag.IsProjectMapWs) { %>Labor rates, and <% } %>BOEs. No further work needs to be performed in the Workspace. BOEs are ready to be delivered.</label>
             </div>
         </div>
         <div class="form-row">
             <div class="form-element radio">
                 <%: Html.RadioButton("WorkspaceStatus", WorkspaceState.Closed, Model.WorkspaceStatus == WorkspaceState.Closed, new { id = "WorkspaceStatus-Closed" })%>
-                <label for="WorkspaceStatus-Closed">Closed - Lock all <% if (!ViewBag.IsProjectMapWs) { %>travel rates, Labor rates, and <% } %>BOEs. No further work needs to be performed in the Workspace. BOEs no longer needed for proposal. (i.e. No longer bidding on proposal.)</label>
+                <label for="WorkspaceStatus-Closed">Closed - Lock all <% if (!ViewBag.IsProjectMapWs) { %>Labor rates, and <% } %>BOEs. No further work needs to be performed in the Workspace. BOEs no longer needed for proposal. (i.e. No longer bidding on proposal.)</label>
             </div>
         </div>
         <div class="buttons">

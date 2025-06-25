@@ -111,6 +111,42 @@ namespace IESPortal.Backend.Controllers
 		}
 
 		/// <summary>
+		/// Gets Collection of users based on FormData provided.
+		/// </summary>
+		/// <param name="searchString">String to search</param>
+		/// <param name="searchBy">Active Directory Search By</param>
+		/// <param name="matchType">Active Directory Match Type</param>
+		/// <returns>Collection of User data found.</returns>
+		[HttpPost("[action]")]
+		public IESResponse<ICollection<UserData>> GetUserLookupDataAsPost([FromForm] string searchString, [FromForm] ActiveDirectorySearchBy searchBy, [FromForm] ActiveDirectoryMatchType matchType)
+		{
+			IESResponse<ICollection<UserData>> result = new();
+
+			try
+			{
+				ICollection<UserData> matchingUsers = string.IsNullOrEmpty(searchString) ? [] : this.activeDirectoryService.SearchUsers(searchString, searchBy, matchType);
+
+				if (matchingUsers.Any())
+				{
+					result.Data = matchingUsers;
+				}
+				else
+				{
+					result.Data = null;
+					result.Messages.Add($"Could not find users with the Parameters => Search:  {searchString}, Search By: {searchBy.GetDescription()}, and Match Type: {matchType.GetDescription()} ");
+				}
+
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				result.Messages.Add($"Unknown error occurred returning user lookup data: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Gets the banner for this application.
 		/// </summary>
 		/// <param name="active">Comma-separated list of application names</param>

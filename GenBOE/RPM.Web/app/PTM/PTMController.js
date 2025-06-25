@@ -540,7 +540,7 @@
     /* Method used to filter the PTM Proposals */
     $scope.filterPTMProposals = function (value) {
         // if any of these rows dont match then return false!
-        if ($scope.checkMultiSelectFilter($scope.selectedPTMFilters.year, value.EndDate.getFullYear()) == false) return false;
+        if ($scope.checkMultiSelectFilter($scope.selectedPTMFilters.year, value.endDateAsDate.getFullYear()) == false) return false;
         if ($scope.checkMultiSelectFilter($scope.selectedPTMFilters.status, value.Status) == false) return false;
         if ($scope.checkMultiSelectFilter($scope.selectedPTMFilters.proposalType, value.PropType) == false) return false;
         if ($scope.checkMultiSelectFilter($scope.selectedPTMFilters.pricingTool, value.PricingTool) == false) return false;
@@ -773,11 +773,11 @@
                 }
 
                 if (item.StDate != null) {
-                    item.StDate = new Date(item.StDate);
+                    item.startDateAsDate = new Date(item.StDate);
                 }
 
                 if (item.EndDate != null) {
-                    item.EndDate = new Date(item.EndDate);
+                    item.endDateAsDate = new Date(item.EndDate);
                 }
 
                 // set Duration

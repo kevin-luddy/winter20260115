@@ -278,12 +278,12 @@ namespace GenTRAC.Web.Controllers
 		}
 
 		/// <summary>
-		/// Get the Lead Estimator and Backup Estimator names from PTM given a PTM tracking number
+		/// Get the Lead/Backup Estimator and Cost Volume Lead names from PTM given a PTM tracking number
 		/// </summary>
 		/// <param name="ptmTrackingNumber">PTM tracking number</param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public IESResponse<AcvPtmAuthors> GetEstimatorNamesByTrackingNumber(string ptmTrackingNumber)
+		public IESResponse<AcvPtmAuthors> GetAuthorNamesByTrackingNumber(string ptmTrackingNumber)
 		{
 			IESResponse<AcvPtmAuthors> result = new IESResponse<AcvPtmAuthors>();
 			ICollection<ProposalRoleDto> roles;
@@ -292,7 +292,7 @@ namespace GenTRAC.Web.Controllers
 			{
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-				roles = proposalLoader.GetEstimatorNames(ptmTrackingNumber);
+				roles = proposalLoader.GetAuthorNames(ptmTrackingNumber);
 				if (roles == null)
 				{
 					logger.Warn($"No users found for tracking number");
@@ -303,8 +303,10 @@ namespace GenTRAC.Web.Controllers
 					AcvPtmAuthors author = new AcvPtmAuthors();
 					ProposalRoleDto backupPricer = roles.FirstOrDefault(r => r.Role == PtmRole.BackupPricer);
 					ProposalRoleDto leadEstimator = roles.FirstOrDefault(r => r.Role == PtmRole.Pricer);
+					ProposalRoleDto costVolumeLead = roles.FirstOrDefault(r => r.Role == PtmRole.CostVolumeLead);
 					author.BackupEstimator = backupPricer != null ? backupPricer.NTID : string.Empty;
 					author.LeadEstimator = leadEstimator != null ? leadEstimator.NTID : string.Empty;
+					author.CostVolumeLead = costVolumeLead != null ? costVolumeLead.NTID : string.Empty;
 
 					result.Data.Add(author);
 					result.IsSuccessful = true;
@@ -313,7 +315,7 @@ namespace GenTRAC.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Error occurred attempting to retrieve estimator data by tracking number {ptmTrackingNumber}: {ex.Message}");
+				result.Messages.Add($"Error occurred attempting to retrieve estimator and cost volume lead data by tracking number {ptmTrackingNumber}: {ex.Message}");
 				result.IsSuccessful = false;
 			}
 

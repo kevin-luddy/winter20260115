@@ -12,23 +12,14 @@ namespace GenBOE.Web.Controllers
 	using System.Diagnostics;
 	using System.IO;
 	using System.Linq;
-	using System.Transactions;
 	using System.Web.Mvc;
-	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic._ControllerLogic.Backend;
-	using GenBOE.ActionLogic.BLL;
-	using GenBOE.ActionLogic.BOETransitions;
 	using GenBOE.ActionLogic.Common;
-	using GenBOE.ActionLogic.Common.Calculations;
-	using GenBOE.ActionLogic.Common.Email;
 	using GenBOE.ActionLogic.ControllerLogic;
 	using GenBOE.ActionLogic.IO.Export;
 	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.Metrics;
-	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.Clin;
-	using GenBOE.ActionLogic.ModelView.Workspace;
-	using GenBOE.ActionLogic.Validation;
 	using GenBOE.DataBridge.Common;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
@@ -46,11 +37,7 @@ namespace GenBOE.Web.Controllers
 	{
 		private Logger _log = new Logger(typeof(CLINController));
 
-		private IBoeEmailer _Emailer;
-		private IBOEStateMachine _BOEStateMachine;
-		private ICLINImporter _ClinImporter;
 		private ICLINExporter _ClinExporter;
-		private IBoeMediator _BoeMediator;
 		private IClinDTODataLoader clinLoader;
 		private ICommonDataLoader _CommonDataLoader;
 		private ContractTypeLoader contractTypeLoader;
@@ -62,11 +49,7 @@ namespace GenBOE.Web.Controllers
 		public CLINController(ISecurityAccess inSecurityAccess,
 			ICommonDataMapper inCommonDataMapper,
 			SiteMasterUtilities inSiteMasterUtilities,
-			IBoeEmailer inEmailer,
-			IBOEStateMachine inBOEStateMachine,
-			ICLINImporter inClinImporter,
 			ICLINExporter inClinExporter,
-			IBoeMediator inBoeMediator,
 			SystemMetrics inSystemMetrics,
 			IFullObjectFactory factory,
 			IClinDTODataLoader clinLoader,
@@ -79,11 +62,7 @@ namespace GenBOE.Web.Controllers
 			)
 			: base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, userLoader, permissionLoader, inControllerLogic)
 		{
-			this._Emailer = inEmailer;
-			this._BOEStateMachine = inBOEStateMachine;
-			this._ClinImporter = inClinImporter;
 			this._ClinExporter = inClinExporter;
-			this._BoeMediator = inBoeMediator;
 			this.clinLoader = clinLoader;
 			this._CommonDataLoader = inCommonDataLoader;
 			this.contractTypeLoader = contractTypeLoader;
@@ -288,8 +267,7 @@ namespace GenBOE.Web.Controllers
 			{
 				try
 				{
-					ICollection<PickListDto> contractTypes = this.contractTypeLoader.GetPickListValues();
-					Collection<ImportedClin> results = this._ClinImporter.ImportClinsFromExcelFile(this.Request.Files[0].InputStream, ws, contractTypes);
+					ICollection<ImportedClin> results = this._clinControllerLogic.ImportCLINs(ws, this.Request.Files[0].InputStream);
 
 					toReturn = this.GenerateJsonUploadResponse(true, results, this.Request.Files[0].FileName);
 				}
@@ -336,212 +314,12 @@ namespace GenBOE.Web.Controllers
 
 			JsonResult toReturn = this.Json(new { Status = true });
 
-			if (importResults != null)
-			{
-				// Get NEW CLINs from the imported data
-				IEnumerable<ImportedClin> newClinResults = from x in importResults
-														   where x.ImportTypes.Contains(ClinImportResult.CreateClin)
-														   select x;
-
-				// Get EXISTING UPDATED CLINs from the imported data
-				List<ImportedClin> updatedClinResults = (from x in importResults
-														 where x.ImportTypes.Contains(ClinImportResult.UpdateClin)
-														 select x).ToList();
-
-				// Initialize the collection to hold CLINs that will be saved.
-				Collection<ClinDTO> clinToSave = new Collection<ClinDTO>();
-
-				// Start the collection off with all of the new CLINs from the imported data
-				foreach (ImportedClin newClin in newClinResults)
-				{
-					// Call Long Tick Properties with their own values to force DateTimes to be set properly
-					newClin.StartDateLong = newClin.StartDateLong;
-					newClin.EndDateLong = newClin.EndDateLong;
-
-					// the Json import results converts & to &amp which needs to be returned back to &
-					newClin.ClinNumber = newClin.ClinNumber.Contains("&amp;") ? newClin.ClinNumber.Replace("&amp;", "&") : newClin.ClinNumber;
-					newClin.ClinTitle = newClin.ClinTitle.Contains("&amp;") ? newClin.ClinTitle.Replace("&amp;", "&") : newClin.ClinTitle;
-
-					clinToSave.Add(newClin);
-				}
-
-				// Create a dictionary to hold all of the updated CLINs before they are updated in the DB
-				Dictionary<int, ClinDTO> oldClinForEmailDict = new Dictionary<int, ClinDTO>();
-
-				foreach (ImportedClin updatedClin in updatedClinResults)
-				{
-					FullClin oldClin = this.Factory.CreateFullClin(updatedClin.Id);
-
-					// Stash 'old' CLIN away before changes are applied to the DB
-					oldClinForEmailDict.Add(oldClin.Id, oldClin);
-
-					// the Json import results converts & to &amp which needs to be returned back to &
-					oldClin.ClinNumber = updatedClin.ClinNumber.Contains("&amp") ? updatedClin.ClinNumber.Replace("&amp;", "&") : updatedClin.ClinNumber;
-					oldClin.ClinTitle = updatedClin.ClinTitle.Contains("&amp") ? updatedClin.ClinTitle.Replace("&amp;", "&") : updatedClin.ClinTitle;
-
-
-					// If there are any date errors, we'll leave the dates alone and use old values
-					if (!(updatedClin.ImportTypes.Contains(ClinImportResult.NoDatesOrBothDatesRequired) ||
-						  updatedClin.ImportTypes.Contains(ClinImportResult.StartDateMustBeBeforeEndDate) ||
-						  updatedClin.ImportTypes.Contains(ClinImportResult.InvalidStartDateFormat) ||
-						  updatedClin.ImportTypes.Contains(ClinImportResult.StartDateTooEarly) ||
-						  updatedClin.ImportTypes.Contains(ClinImportResult.InvalidEndDateFormat) ||
-						  updatedClin.ImportTypes.Contains(ClinImportResult.EndDateTooLate)))
-					{
-						oldClin.StartDate = updatedClin.StartDateLong.HasValue ? new DateTime(updatedClin.StartDateLong.Value) : (DateTime?)null;
-						oldClin.EndDate = updatedClin.EndDateLong.HasValue ? new DateTime(updatedClin.EndDateLong.Value) : (DateTime?)null;
-					}
-
-					oldClin.ContractType = updatedClin.ContractType;
-
-					oldClin.Updateable = UpdateType.Upsert;
-
-					// Do not set the update date, use the one from the database so that it will always be the newest version.
-					// We do not want optomistic locking during the import, as directed by the SE.
-					clinToSave.Add(oldClin);
-				}
-
-				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
-				{
-					// Save the CLINs
-					this.clinLoader.Save(clinToSave);
-
-					// at this point all commits have taken place and were succesful (or an exception would have been thrown)
-					// so let's fire off emails, if applicable
-					foreach (ImportedClin updatedClin in updatedClinResults)
-					{
-						// look at the BOEs related to the CLIN
-						// if the CLIN was in use and the BOE is in DRAFT state, send the email
-
-						// Send emails and change BOE statuses for In Use CLINs
-						this.ProcessInUseUpdatedCLIN(ws, oldClinForEmailDict[updatedClin.Id], this.Factory.CreateFullClin(updatedClin));
-					}
-
-					scope.Complete();
-				}
-
-			}
+			this._clinControllerLogic.CompleteImportCLIN(ws, importResults);
 
 			// Finalize Action
 			this.FinalizeAction(this._log, "CompleteImportCLINs", sw);
 
 			return toReturn;
-		}
-
-		/// <summary>
-		/// Checks an in use CLIN that was updated for changes. If there were changes, then authors and approvers of
-		/// the CLIN's BOEs are notified accordingly. Awaiting Approval/Approved BOEs are moved back to draft
-		/// </summary>
-		/// <param name="currentWorkspace">The current workspace</param>
-		/// <param name="oldCLIN">The old CLIN DTO</param>
-		/// <param name="newCLIN">The new CLIN DTO</param>
-		private void ProcessInUseUpdatedCLIN(FullWorkspace currentWorkspace, ClinDTO oldCLIN, FullClin newCLIN)
-		{
-			if (newCLIN.InUse) // check in use
-			{
-				IReadOnlyCollection<FullBoe> boesForUpdatedClin = newCLIN.Boes;
-
-				foreach (FullBoe boeForClin in boesForUpdatedClin)
-				{
-					// check boe state
-					if (boeForClin.State == BOEState.Draft || boeForClin.State == BOEState.DraftLocked || boeForClin.State == BOEState.AwaitingApproval || boeForClin.State == BOEState.Approved)
-					{
-						// CLIN was in use, BOE in draft state ... send the email!
-						bool updateNeeded = false;
-
-						// obtain the changed fields
-						Collection<FieldChanged> changed = new Collection<FieldChanged>();
-						if (oldCLIN.ClinNumber != newCLIN.ClinNumber)
-						{
-							updateNeeded = true;
-							changed.Add(new FieldChanged
-							{
-								Field = "CLIN #",
-								OldValue = oldCLIN.ClinNumber,
-								NewValue = newCLIN.ClinNumber
-							});
-						}
-						if (oldCLIN.ClinTitle != newCLIN.ClinTitle)
-						{
-							updateNeeded = true;
-							changed.Add(new FieldChanged
-							{
-								Field = "CLIN Title",
-								OldValue = oldCLIN.ClinTitle,
-								NewValue = newCLIN.ClinTitle
-							});
-						}
-						if (oldCLIN.StartDate != newCLIN.StartDate)
-						{
-							if (newCLIN.StartDate > boeForClin.StartDate || newCLIN.StartDate > boeForClin.EndDate)
-							{
-								updateNeeded = true;
-							}
-							changed.Add(new FieldChanged
-							{
-								Field = "CLIN Start Date",
-								OldValue = oldCLIN.StartDate.HasValue ? oldCLIN.StartDate.Value.ToString("MM/yyyy") : string.Empty,
-								NewValue = newCLIN.StartDate.HasValue ? newCLIN.StartDate.Value.ToString("MM/yyyy") : string.Empty
-							});
-						}
-						if (oldCLIN.EndDate != newCLIN.EndDate)
-						{
-							if (newCLIN.EndDate < boeForClin.EndDate || newCLIN.EndDate < boeForClin.StartDate)
-							{
-								updateNeeded = true;
-							}
-							changed.Add(new FieldChanged
-							{
-								Field = "CLIN End Date",
-								OldValue = oldCLIN.EndDate.HasValue ? oldCLIN.EndDate.Value.ToString("MM/yyyy") : string.Empty,
-								NewValue = newCLIN.EndDate.HasValue ? newCLIN.EndDate.Value.ToString("MM/yyyy") : string.Empty
-							});
-						}
-						if (oldCLIN.ContractType != newCLIN.ContractType)
-						{
-							updateNeeded = true;
-							changed.Add(new FieldChanged
-							{
-								Field = "Contract Type",
-								OldValue = oldCLIN.ContractType.ToString(),
-								NewValue = newCLIN.ContractType.ToString()
-							});
-						}
-
-						if (boeForClin.State == BOEState.AwaitingApproval || boeForClin.State == BOEState.Approved || boeForClin.State == BOEState.DraftLocked)
-						{
-							BOEState currentState = boeForClin.State;
-							BOEState newBOEState = BOEState.Draft;
-							// move the BOE back to DRAFT
-							boeForClin.State = newBOEState;
-							boeForClin.Updateable = UpdateType.Upsert;
-
-							string errorMessage;
-							if (updateNeeded)
-							{
-								if (this._BOEStateMachine.PerformStateTransitionValidation(this.Factory.CreateFullBoe(boeForClin), currentWorkspace, currentState, boeForClin.State, out errorMessage))
-								{
-									this._BoeMediator.MediatedSave(currentWorkspace, boeForClin);
-
-									// save of BOE worked .. perform transition steps and send email
-									this._BOEStateMachine.PerformStateTransitionAction(this.Factory.CreateFullBoe(boeForClin), currentWorkspace, currentState, boeForClin.State);
-								}
-								else
-								{
-									// we can't move the BOE back to DRAFT for some reason ... abort
-									// pull this error message from the state machine itself
-									throw new ValidationException(errorMessage);
-								}
-							}
-						}
-
-						if (updateNeeded)
-						{
-							this._Emailer.SendCLINUpdatedToAuthorsAndApprovers(this.Factory.CreateFullBoe(boeForClin), changed);
-						}
-					}
-				}
-			}
 		}
 
 		/// <summary>

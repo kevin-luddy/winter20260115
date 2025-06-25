@@ -198,11 +198,23 @@ namespace GenTRAC.ActionLogic.ModelView
         [Display(Name = "EPP Delegation Authority")]
         public EppDelegationAuthority? EppDelegationAuthority { get; set; }
 
+		/// <summary>
+		/// Bid EPP Date
+		/// </summary>
+		[Display(Name = "Bid EPP Date")]
+		public DateTime? BidEppDate { get; set; }
+
         /// <summary>
         /// Program EPP Date
         /// </summary>
         [Display(Name = "Program EPP Date")]
         public DateTime? ProgramEppDate { get; set; }
+
+		/// <summary>
+		/// Mission Segment EPP Date
+		/// </summary>
+		[Display(Name = "Mission Segment EPP Date")]
+		public DateTime? MissionSegmentEppDate { get; set; }
 
         /// <summary>
         /// Line of Business EPP Date

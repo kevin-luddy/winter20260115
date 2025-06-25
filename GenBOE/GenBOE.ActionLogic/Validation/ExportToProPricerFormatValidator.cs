@@ -6,14 +6,14 @@
 
 namespace GenBOE.ActionLogic.Validation
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using GenBOE.Dtos;
-    using GenBOE.Objects;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Linq;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
 
-    public class ExportToProPricerFormatValidator : Validator
+	public class ExportToProPricerFormatValidator : Validator
     {
         private IFullObjectFactory _factory;
 
@@ -59,7 +59,7 @@ namespace GenBOE.ActionLogic.Validation
                 response.Add("The format name must be unique within a Workspace scope.");
             }
 
-            return response;
+			return response;
         }
     }
 

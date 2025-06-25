@@ -116,12 +116,13 @@ namespace GenBOE.ActionLogic
 
 			ICollection<PermissionsDTO> currentWorkspacePermissions = this.permissionLoader.GetWorkspacePermissions(ws.Id);
 			ICollection<PermissionsDTO> currentBoePermissions = this.permissionLoader.GetBOEPotentialPermissionsForWorkspace(ws.Id);
+			List<string> ntIdsToClear = new List<string>();
 
 			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
 			{
 				foreach (SavePermissionModelView inPermission in inPermissions)
 				{
-					// Seperate nt ids
+					// Separate nt ids
 					String[] tempids = inPermission.EntityIds[0].Split(';');
 					if (tempids.Length > 1)
 					{
@@ -187,6 +188,7 @@ namespace GenBOE.ActionLogic
 							{
 								// clear their permissions cache
 								this.Factory.ClearPermissionsCache(userDTO.NTID);
+								ntIdsToClear.Add(userDTO.NTID);
 							}
 						}
 
@@ -242,7 +244,19 @@ namespace GenBOE.ActionLogic
 				} // end foreach permission to insert
 				scope.Complete();
 			} // end transaction scope
+
+			// Need to re-clear the permissions cache because it may have been pulled later in the transaction
+			if (ntIdsToClear.Any())
+			{
+				ntIdsToClear = ntIdsToClear.Distinct().ToList();
+
+				foreach (string ntid in ntIdsToClear)
+				{
+					this.Factory.ClearPermissionsCache(ntid);
+				}
+			}
 		}
+
 		/// <summary>
 		/// Delete all user permissions for a given workspace
 		/// </summary>

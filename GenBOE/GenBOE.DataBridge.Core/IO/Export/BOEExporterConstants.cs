@@ -211,6 +211,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		internal const string FieldName_UCOTHoursCol = "UCOTHoursCol";
 		internal const string FieldName_UCOTHoursContainer = "UCOTHoursContainer";
 		internal const string FieldName_UCOTHoursTotal = "UCOTHoursTotal";
+		internal const string FieldName_GrandTotalHoursTotal = "GrandTotalHoursTotal";
 		internal const string FieldName_UID = "UID";
 		internal const string FieldName_WBSString = "WbsString";
 		internal const string FieldName_WBSEndDate = "WBSEndDate";
@@ -387,6 +388,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		internal const string FieldName_ProposedHours = "ProposedHours";
 		internal const string FieldName_BusinessResourceCode = "BusinessResourceCode";
 		internal const string FieldName_UCOTHours = "UCOTHours";
+		internal const string FieldName_GrandTotalHours = "GrandTotalHours";
 
 		#endregion Skill Mix Table Constants
 

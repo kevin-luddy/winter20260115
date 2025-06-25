@@ -29,7 +29,7 @@ namespace GenTRAC.Web.Controllers
         /// <summary>
         /// Contracts Logic
         /// </summary>
-        private ContractsControllerLogic contractsLogic;
+        private readonly ContractsControllerLogic contractsLogic;
 
         /// <summary>
         /// Constructor

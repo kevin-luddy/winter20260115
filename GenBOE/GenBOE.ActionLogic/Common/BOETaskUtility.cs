@@ -6,15 +6,15 @@
 
 namespace GenBOE.ActionLogic.Common
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using IES.Common;
 	using IES.Common.classes;
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
 
 	/// <summary>
 	/// Class utilized to run some general validation on a BOE task.
@@ -22,21 +22,119 @@ namespace GenBOE.ActionLogic.Common
 	public static class BOETaskUtility
 	{
 		/// <summary>
+		/// Whether to show Skill Mix for a Specific Task
+		/// Note: Should only be used when working with existing data
+		/// </summary>
+		/// <param name="ws">Workspace</param>
+		/// <param name="task">Task</param>
+		/// <returns>Option to show skill mix for task.</returns>
+		public static bool ShowSkillMixForTask(FullWorkspace ws, BoeTaskElementDTO task)
+		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
+
+			if (task == null)
+			{
+				throw new ArgumentNullException(nameof(task));
+			}
+
+			return BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, ws.UsingTemplateBOE, ws.EnableSAPConnection, task, ws.MoqTypeSelections,
+				ws.ResourcesUsedInWsBoes, ws.TMResourceRatesForWorkspace);
+		}
+
+		/// <summary>
+		/// Is Skill Mix connection shown to the user for this task
+		/// </summary>
+		/// <param name="workspaceCreationDate">Workspace creation date</param>
+		/// <param name="workspaceUsingTemplateBOE">Is the Workspace using template BOEs</param>
+		/// <param name="workspaceEnableSAPConnection">Does the workspace have SAP connection enabled</param>
+		/// <param name="moqTypeSelections">Workspace MOQType selections</param>
+		/// <param name="resourcesUsedInBOEs">Resources used in BOEs</param>
+		/// <param name="tmRates">T&amp;M Rates</param>
+		/// <param name="task">The Task</param>
+		/// <returns>Option to show skill mix for task.</returns>
+		public static bool ShowSkillMixForTask(DateTime? workspaceCreationDate, bool workspaceUsingTemplateBOE, bool workspaceEnableSAPConnection, 
+			BoeTaskElementDTO task, IReadOnlyCollection<MoqTypeSelection> moqTypeSelections, IReadOnlyCollection<ResourceDTO> resourcesUsedInBOEs, IReadOnlyCollection<TMResourceRateDTO> tmRates)
+		{
+			bool hasTMRates = BOETaskUtility.IsUsingTMRates(task, resourcesUsedInBOEs, tmRates);
+
+			return ShowSkillMixForTask(workspaceCreationDate, workspaceUsingTemplateBOE, workspaceEnableSAPConnection,
+				moqTypeSelections, task.Id, hasTMRates);
+		}
+
+		/// <summary>
+		/// Is Skill Mix connection shown to the user for this task
+		/// </summary>
+		/// <param name="workspaceCreationDate">Workspace creation date</param>
+		/// <param name="workspaceUsingTemplateBOE">Is the Workspace using template BOEs</param>
+		/// <param name="workspaceEnableSAPConnection">Does the workspace have SAP connection enabled</param>
+		/// <param name="moqTypeSelections">Workspace MOQType selections</param>
+		/// <param name="hasTMRates">Has T&amp;M Rates</param>
+		/// <param name="task">The Task</param>
+		/// <returns>Option to show skill mix for task.</returns>
+		public static bool ShowSkillMixForTask(DateTime? workspaceCreationDate, bool workspaceUsingTemplateBOE, bool workspaceEnableSAPConnection,
+			IEnumerable<MoqTypeSelection> moqTypeSelections, int boeTaskElementId, bool hasTMRates)
+		{
+			bool showSkillMixRationale = false;
+
+			if (Utilities.ShowSkillMixForWorkspace(workspaceCreationDate))
+			{
+				ICollection<MoqTypeSelection> moqTypes = moqTypeSelections.Where(m => m.TaskId == boeTaskElementId).ToList();
+				// Only show SkillMix if there is 1 and only 1 MOQ Type
+				// And using Template BOE
+				if (moqTypes.Count == 1 && workspaceUsingTemplateBOE)
+				{
+					MoqTypeSelection moqType = moqTypes.First();
+					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+					{
+						if (moqType.SelectedMOQType == MOQType.Comparative || moqType.SelectedMOQType == MOQType.Historical)
+						{
+							showSkillMixRationale = true;
+						}
+					}
+					else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+					{
+						// Space requires SAP Connection
+						// Comparative, Historical, or AR MOQ Type
+						// And at least one MOQ Table needs to be connected to SAP Webi for a task
+						if (workspaceEnableSAPConnection
+							&& (moqType.SelectedMOQType == MOQType.Comparative || moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.AnalogousRelationships) 
+							&& moqType.TableData != null && moqType.TableData.Any(t => t.RepositoryName == RepositoryName.SapWebi.GetDescription()))
+						{
+							// For space only: Shows Skill Mix Rationale section when the workspace is NOT using T&M.
+							showSkillMixRationale = !hasTMRates;
+						}
+					}
+				}
+			}
+
+			return showSkillMixRationale;
+		}
+
+		/// <summary>
 		/// Checks the usage of active T&M rates in the task.
 		/// </summary>
 		/// <param name="ws">Full workspace.</param>
 		/// <param name="taskElement">Task element</param>
 		/// <returns>If T&M Rates are being used in the Task.</returns>
-		public static bool IsUsingTMRates(FullWorkspace ws, BoeTaskElementDTO taskElement)
+		public static bool IsUsingTMRates(BoeTaskElementDTO taskElement, IReadOnlyCollection<ResourceDTO> resourcesUsedInBOEs,
+			IReadOnlyCollection<TMResourceRateDTO> tmRates)
 		{
 			if (taskElement == null)
 			{
 				throw new ArgumentNullException(nameof(taskElement));
 			}
 
-			if (ws == null)
+			if (resourcesUsedInBOEs == null)
 			{
-				throw new ArgumentNullException(nameof(ws));
+				throw new ArgumentNullException(nameof(resourcesUsedInBOEs));
+			}
+
+			if (tmRates == null)
+			{
+				throw new ArgumentNullException(nameof(tmRates));
 			}
 
 			List<int> resourceIds = taskElement.taskElementLabors
@@ -58,45 +156,11 @@ namespace GenBOE.ActionLogic.Common
 
 			HashSet<int> allResourceIds = resourceIds.Concat(businessResourceCodeIds).ToHashSet();
 
-			List<ResourceDTO> resources = ws.ResourcesUsedInWsBoes
+			List<ResourceDTO> resources = resourcesUsedInBOEs
 				.Where(r => allResourceIds.Contains(r.Id))
 				.ToList();
 
-			return CompareResources(ws.TMResourceRatesForWorkspace, resources);
-		}
-
-		/// <summary>
-		/// Helper method to decide if Skill Mix should be shown for a task.
-		/// </summary>
-		/// <param name="workspaceCreationDate">Workspace creation date.</param>
-		/// <param name="hasTMRates">If the task contains any used T&M rates.</param>
-		/// <param name="moqTypeSelections">Moq type selections.</param>
-		/// <returns>To show skill mix for a task.</returns>
-		public static bool ShowSkillMixForTask(DateTime? workspaceCreationDate, bool hasTMRates, ICollection<MoqTypeSelection> moqTypeSelections)
-		{
-			bool showSkillMixRationale = false;
-
-			// Skill mix will be disabled if there is not exactly one MOQ Type selected.
-			if (moqTypeSelections != null && moqTypeSelections.Count() == 1)
-			{
-				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-				{
-					showSkillMixRationale = Utilities.ShowSkillMixForWorkspace(workspaceCreationDate) &&
-						(moqTypeSelections.First().SelectedMOQType == MOQType.Comparative || moqTypeSelections.First().SelectedMOQType == MOQType.Historical);
-				}
-				else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-				{
-					bool hasSapWebi = moqTypeSelections.Any(x => x.TableData.Any(y => y.RepositoryName == RepositoryName.SapWebi.GetDescription()));
-
-					showSkillMixRationale = Utilities.ShowSkillMixForWorkspace(workspaceCreationDate) && !hasTMRates && hasSapWebi &&
-						(moqTypeSelections.First().SelectedMOQType == MOQType.Comparative ||
-						moqTypeSelections.First().SelectedMOQType == MOQType.Historical ||
-						moqTypeSelections.First().SelectedMOQType == MOQType.AnalogousRelationships);
-
-				}
-			}
-
-			return showSkillMixRationale;
+			return CompareResources(tmRates, resources);
 		}
 
 		/// <summary>

@@ -185,10 +185,9 @@ function AfterDomLoadImportLaborTypeWidget(ImportLaborType) {
 	ImportLaborType.InitializeDialog(ImportLaborType.ImportLaborTypesResultsDialog);
 }
 
-function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetricsDialogIdSuffix, readOnly, workspaceState, boeId, taskElementId, laborTypeWarning,
-	loadMOQEquationUrl, confirmWarningUrl, searchHistoricalMetricsMSTUrl, historicalMetricsDetailsUrl, pagingMetricsUrl,
-	boeStateNotDraft, boeStateDraftOrDraftLocked, isMetricStoreConnected, searchTypeAheadUrl, allowDateShift, recalculateAndRefreshPageUrl, dateShiftUrl,
-	saveReorderLaborTypesUrl, showDescQuestions, numberDescQuestions, rteFieldSize) {
+function InitializeTaskElementDetailsWidget(readOnly, workspaceState, boeId, taskElementId, laborTypeWarning, loadMOQEquationUrl, confirmWarningUrl,
+	boeStateNotDraft, boeStateDraftOrDraftLocked, allowDateShift, recalculateAndRefreshPageUrl, dateShiftUrl, saveReorderLaborTypesUrl, showDescQuestions,
+	numberDescQuestions, rteFieldSize) {
 	var TaskElementDetailsWidget;
 	var formConfigs = [];
 	formConfigs.push({
@@ -197,48 +196,8 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
 		HideOCI: true,
 	});
 
-	var dialogConfigs = [];
-	//Metrics Search dialog for ISGS and SSC
-	dialogConfigs.push({
-		ElementID: 'MOQEquation-SearchEstimatingCatalogDialogCommon',
-		Params: {
-			width: 556,
-			height: 200,
-			modal: true,
-			resizable: false,
-			draggable: true,
-			title: metricsSearchDialogTitle,
-			close: function () { $(document).trigger('InsertMOQElementDialogClosing'); }
-		}
-	});
-	//Metrics Search dialog for MST
-	dialogConfigs.push({
-		ElementID: 'MOQEquation-SearchEstimatingCatalogDialogMST',
-		Params: {
-			width: 575,
-			modal: true,
-			resizable: false,
-			draggable: true,
-			title: metricsSearchDialogTitle,
-			close: function () { $(document).trigger('InsertMOQElementDialogClosing'); }
-		}
-	});
-
-	dialogConfigs.push({
-		ElementID: 'MetricSearchResultsContainter',
-		Params: {
-			width: "auto",
-			modal: true,
-			resizable: false,
-			draggable: true,
-			title: metricsSearchDialogTitle + ' Results',
-			close: function () { $('#MOQEquation-SearchEstimatingCatalogDialog' + searchMetricsDialogIdSuffix).dialog("option", "title", metricsSearchDialogTitle); }
-		}
-	});
-
 	var widgetConfig = {};
 	widgetConfig.FormConfigs = formConfigs;
-	widgetConfig.DialogConfigs = dialogConfigs;
 	widgetConfig.ContextID = "TaskElementDetailsModule";
 	widgetConfig.isReadOnly = readOnly;
 	widgetConfig.IsModule = true;
@@ -371,211 +330,6 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
 		});
 	};
 
-	/*
-	* Metric search for MST
-	*/
-	TaskElementDetailsWidget.SearchHistoricMetricsMST = function () {
-		$('#SearchEstimatingCatalog-SearchButton' + searchMetricsDialogIdSuffix).addClass('display-none');
-		$('#SearchEstimatingCatalog-Loader' + searchMetricsDialogIdSuffix).removeClass('display-none');
-
-		TaskElementDetailsWidget.clearValidationBox($("#SearchEstimatingCatalogDialogForm" + searchMetricsDialogIdSuffix + " ul.validation-box"));
-		TaskElementDetailsWidget.Search.SearchFor = $('#SearchForTextMST').val();
-		TaskElementDetailsWidget.Search.SelectedDataSourceId = $('#FilterSource').val();
-		TaskElementDetailsWidget.Search.SelectedMeasureFunctionId = $('#FilterFunction').val();
-		TaskElementDetailsWidget.Search.SelectedMeasureNameId = $('#FilterName').val();
-		TaskElementDetailsWidget.Search.SelectedProgramId = $('#FilterProgram').val();
-		TaskElementDetailsWidget.Search.SelectedMeasureQualifierId = $('#FilterQualifier').val();
-
-		var dataToSend = JSON.stringify(TaskElementDetailsWidget.Search);
-
-		TaskElementDetailsWidget.ajaxRequest({
-			url: searchHistoricalMetricsMSTUrl,
-			dataType: 'html',
-			data: dataToSend,
-			success: function (response) {
-				$('#MetricSearchResults').html(response);
-				$('#MetricSearchResults').removeClass('display-none');
-				$('#MetricDetails').addClass('display-none');
-				$('#SearchEstimatingCatalog-Loader' + searchMetricsDialogIdSuffix).addClass('display-none');
-				$('#SearchEstimatingCatalog-SearchButton' + searchMetricsDialogIdSuffix).removeClass('display-none');
-				// close the search dialog so the user doesn't see the title changing
-				TaskElementDetailsWidget.getDialog("MOQEquation-SearchEstimatingCatalogDialog" + searchMetricsDialogIdSuffix).closeDialog();
-				TaskElementDetailsWidget.getDialog('MetricSearchResultsContainter').openDialog();
-				$('#MetricSearchResultsContainter').dialog("option", "title", metricsSearchDialogTitle + " Results");
-			},
-			error: function () {
-				$('#SearchEstimatingCatalog-Loader' + searchMetricsDialogIdSuffix).addClass('display-none');
-				$('#SearchEstimatingCatalog-SearchButton' + searchMetricsDialogIdSuffix).removeClass('display-none');
-			}
-		}, $('#SearchEstimatingCatalog-SearchButton' + searchMetricsDialogIdSuffix));
-	};
-
-	TaskElementDetailsWidget.DisplayMetricSelected = function (event, inID, openDialogFlag) {
-		// Added openDialogFlag for when displaying metric details from the Historical Metrics Used table on the Task Element Details page.       
-		var dataToSend = JSON.stringify(inID);
-		$.ajax({
-			type: 'POST',
-			url: historicalMetricsDetailsUrl,
-			contentType: 'application/json; charset=utf-8',
-			dataType: 'html',
-			data: dataToSend,
-			success: function (response) {
-				$('#MetricDetails').html(response);
-				$('#MetricDetails').removeClass('display-none');
-				$('#MetricSearchResults').addClass('display-none');
-				// If check added for displaying metric details from the Historical Metrics Used table.          
-				if ((openDialogFlag != undefined) && (openDialogFlag == true)) {
-					// close the search dialog so the user doesn't see the title changing
-					TaskElementDetailsWidget.getDialog("MOQEquation-SearchEstimatingCatalogDialog" + searchMetricsDialogIdSuffix).closeDialog();
-					TaskElementDetailsWidget.getDialog('MetricSearchResultsContainter').openDialog();
-					$('#MetricDetailButtons').addClass('display-none');
-					$('#AddDialogDescription').addClass('display-none');
-				}
-
-			},
-			error: function () {
-			}
-		});
-	};
-
-	TaskElementDetailsWidget.PageHistoricalMetricResults = function (event, metricResultsData) {
-		var metricsDataToSend = JSON.stringify(metricResultsData);
-		$.ajax({
-			type: 'POST',
-			url: pagingMetricsUrl,
-			contentType: 'application/json; charset=utf-8',
-			dataType: 'html',
-			data: metricsDataToSend,
-			success: function (response) {
-				var SearchResults = $('#MetricSearchResults');
-				SearchResults.html(response);
-			}
-		});
-	};
-
-	TaskElementDetailsWidget.CancelSearchHistoricMetricsMST = function () {
-		TaskElementDetailsWidget.getDialog('MOQEquation-SearchEstimatingCatalogDialog' + searchMetricsDialogIdSuffix).closeDialog();
-	};
-
-	/*
-	*Adds the selected metric to the task element for SSC
-	*/
-	TaskElementDetailsWidget.AddMetricToBOE = function (event, inData) {
-		var headerDetails = {};
-		headerDetails.DataSourceLocation = inData.DataSourceLocation;
-		headerDetails.SourceProgramLongName = inData.SourceProgramLongName;
-		headerDetails.SourceProgramShortName = inData.SourceProgramShortName;
-		headerDetails.ID = $("#TaskID").val();
-
-		var moqEquationBeforeAppend = $.trim($("#MOQEquation").val());
-		if (moqEquationBeforeAppend.length > 0) {
-			$("#MOQEquation").val(moqEquationBeforeAppend + " " + inData.MOQEquation);
-		} else {
-			$("#MOQEquation").val(inData.MOQEquation);
-		}
-
-		var moqTextBeforeAppend = $.trim(tinyMCE.EditorManager.editors.MOQText_0.getContent());
-		tinyMCE.EditorManager.editors.MOQText_0.setContent(moqTextBeforeAppend + " " + inData.MOQText);
-
-		$("#MOQType").val(inData.MOQTypeValue);
-		$(document).trigger('ADD_METRIC_TO_BOE_HEADER', headerDetails);
-
-		if (!($.inArray(inData.ID, CurrentMetricsUsed) > -1)) {
-			$('#HMUDeleteButton').addClass('disabled');
-			$('#HistoricalMetricsBody').append('<tr name="historicalMetric" id="HMURow" historicalMetricID="' + inData.ID + '"><td class="delete-checkbox" id="DeleteCheckboxId"><input type="checkbox" name="DeleteResource" id="DeleteThisResource" onclick="TaskElementDetailsWidget.deleteToggled(this)"/>' +
-				'<td class="metric-id display-none"> <a name="MetricID" class="edit-resource-link"' + '</a> </td>' +
-				'<td> <a class="edit-resource-link" onclick="TaskElementDetailsWidget.DisplayMetricSelected(' + null + ', {metricId : ' + inData.ID + ', getFromSource : true}, true)" style="white-space:normal; width:100px;" title="' + inData.MetricTitle + '">' + inData.MetricTitle + '</a> </td>' +
-				'<td> <a class="edit-resource-link" onclick="TaskElementDetailsWidget.DisplayMetricSelected(' + null + ', {metricId : ' + inData.ID + ', getFromSource : true}, true)" style="white-space:normal; width:100px;" title="' + inData.MetricStatus + '">' + inData.MetricStatus + '</a> </td>' +
-				'<td> <a class="edit-resource-link" onclick="TaskElementDetailsWidget.DisplayMetricSelected(' + null + ', {metricId : ' + inData.ID + ', getFromSource : true}, true)" style="white-space:normal; width:100px;" title="' + inData.MOQEquation + '">' + inData.MOQEquation + '</a> </td>' +
-				'<td> <a class="edit-resource-link" onclick="TaskElementDetailsWidget.DisplayMetricSelected(' + null + ', {metricId : ' + inData.ID + ', getFromSource : true}, true)" style="white-space:normal; width:100px;" title="' + inData.MOQTypeDescription + '">' + inData.MOQTypeDescription + '</a> </td>' +
-				'<br id="HistoricalEndRow"/>' +
-				'</tr>');
-
-			$('#UsedHistoricalMetrics').removeClass('display-none');
-		}
-
-		var CurrentMetricsUsed = [];
-
-		$('tr[name=historicalMetric]').each(function () {
-			CurrentMetricsUsed.push($(this).attr('historicalMetricID'));
-		});
-
-		TaskElementDetailsWidget.getDialog('MetricSearchResultsContainter').closeDialog();
-		$(document).trigger('ValidateMOQEquation');
-
-		TaskElementDetailsWidget.getDialog('MOQEquation-SearchEstimatingCatalogDialog' + searchMetricsDialogIdSuffix).closeDialog();
-		TaskElementDetailsWidget.refreshModule();
-	};
-
-	/*
-	*Adds the selected metric to the task element for MST
-	*/
-	TaskElementDetailsWidget.AddMetricToBOEMst = function (event, inData) {
-		var headerDetails = {};
-		headerDetails.DataSourceLocation = "";
-		headerDetails.SourceProgramLongName = "";
-		headerDetails.SourceProgramShortName = "";
-
-		$('#MOQType option:contains("Historical Performance")').attr('selected', 'selected');
-
-		var moqTextBeforeAppend = $.trim(tinyMCE.EditorManager.editors.MOQText_0.getContent());
-
-		//Include blank lines before and after table because MCE doesn't let you click out of table 
-		//if that's all that exists in the rich text field
-		var tablePrefix = '<br/><table style="border-collapse: collapse;"><tbody>';
-		var cellPrefix = '<td style="border: 0.5pt solid black; background-color: transparent;">';
-		var cellSuffix = '</td>'
-		var tableSuffix = '</tbody></table><br/>';
-		var tableRows = '';
-
-		for (var key in inData.metricData) {
-			tableRows = tableRows + '<tr>' + cellPrefix + '<b>' + key + '</b>' + cellSuffix + cellPrefix + inData.metricData[key] + cellSuffix + '</tr>'
-
-		}
-
-		var populatedTable = tablePrefix + tableRows + tableSuffix;
-		tinyMCE.EditorManager.editors.MOQText_0.setContent(moqTextBeforeAppend + " " + populatedTable);
-
-		$(document).trigger('ADD_METRIC_TO_BOE_HEADER', headerDetails);
-
-		if (!($.inArray(inData.ID, CurrentMetricsUsed) > -1)) {
-			$('#HMUDeleteButton').addClass('disabled');
-			$('#HistoricalMetricsBody').append('<tr name="historicalMetric" id="HMURow" historicalMetricID="' + inData.ID + '"><td class="delete-checkbox" id="DeleteCheckboxId"><input type="checkbox" name="DeleteResource" id="DeleteThisResource" onclick="TaskElementDetailsWidget.deleteToggled(this)"/>' +
-				'<td class="metric-id display-none"> <a name="MetricID" class="edit-resource-link"' + '</a> </td>' +
-				'<td> <a class="edit-resource-link" onclick="TaskElementDetailsWidget.DisplayMetricSelected(' + null + ', {metricId : ' + inData.ID + ', getFromSource : true}, true)" style="white-space:normal; width:100px;" title="' + inData.MeasureName + '">' + inData.MeasureName + '</a> </td>' +
-				'<td> <a class="edit-resource-link" onclick="TaskElementDetailsWidget.DisplayMetricSelected(' + null + ', {metricId : ' + inData.ID + ', getFromSource : true}, true)" style="white-space:normal; width:100px;" title="' + inData.ProgramName + '">' + inData.ProgramName + '</a> </td>' +
-				'<td> <a class="edit-resource-link" onclick="TaskElementDetailsWidget.DisplayMetricSelected(' + null + ', {metricId : ' + inData.ID + ', getFromSource : true}, true)" style="white-space:normal; width:100px;" title="' + inData.DateApplied + '">' + inData.DateApplied + '</a> </td>' +
-				'<br id="HistoricalEndRow"/>' +
-				'</tr>');
-
-			$('#UsedHistoricalMetrics').removeClass('display-none');
-		}
-
-		var CurrentMetricsUsed = [];
-
-		$('tr[name=historicalMetric]').each(function () {
-			CurrentMetricsUsed.push($(this).attr('historicalMetricID'));
-		});
-
-		TaskElementDetailsWidget.getDialog('MetricSearchResultsContainter').closeDialog();
-
-		TaskElementDetailsWidget.getDialog('MOQEquation-SearchEstimatingCatalogDialog' + searchMetricsDialogIdSuffix).closeDialog();
-		TaskElementDetailsWidget.ResetDialogTitle('Historical Measures: Measure Detail', metricsSearchDialogTitle);
-		TaskElementDetailsWidget.refreshModule();
-	};
-
-	TaskElementDetailsWidget.ReturnToResults = function () {
-		$('#MetricSearchResults').removeClass('display-none');
-		$('#MetricDetails').addClass('display-none');
-	};
-
-	TaskElementDetailsWidget.ReturnToResultsMST = function () {
-		$('#MetricSearchResults').removeClass('display-none');
-		$('#MetricDetails').addClass('display-none');
-		TaskElementDetailsWidget.ResetDialogTitle('Historical Measures: Measure Detail', metricsSearchDialogTitle + 'Results');
-	};
-
-
 	TaskElementDetailsWidget.ResetDialogTitle = function (from, to) {
 		var closeButton = $("button.ui-dialog-titlebar-close");
 		if (closeButton.length > 0) {
@@ -592,53 +346,6 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
 			}
 		}
 	};
-
-	TaskElementDetailsWidget.SearchMetricsAgain = function () {
-		$('#MetricDetails').addClass('display-none');
-		$('#MetricSearchResults').addClass('display-none');
-		TaskElementDetailsWidget.getDialog('MetricSearchResultsContainter').closeDialog();
-		TaskElementDetailsWidget.ResetDialogTitle(metricsSearchDialogTitle + 'Results', metricsSearchDialogTitle);
-		TaskElementDetailsWidget.getDialog('MOQEquation-SearchEstimatingCatalogDialog' + searchMetricsDialogIdSuffix).openDialog();
-	};
-
-	TaskElementDetailsWidget.SearchMetricsAgainMST = function () {
-		$('#MetricDetails').addClass('display-none');
-		$('#MetricSearchResults').addClass('display-none');
-		TaskElementDetailsWidget.getDialog('MetricSearchResultsContainter').closeDialog();
-		TaskElementDetailsWidget.ResetDialogTitle(metricsSearchDialogTitle + 'Results', metricsSearchDialogTitle);
-		TaskElementDetailsWidget.getDialog('MOQEquation-SearchEstimatingCatalogDialog' + searchMetricsDialogIdSuffix).openDialog();
-	};
-
-	TaskElementDetailsWidget.CancelMetricsSearchResults = function () {
-		$('#MetricDetails').addClass('display-none');
-		$('#MetricSearchResults').addClass('display-none');
-		TaskElementDetailsWidget.getDialog('MetricSearchResultsContainter').closeDialog();
-		TaskElementDetailsWidget.ResetDialogTitle(metricsSearchDialogTitle + 'Results', metricsSearchDialogTitle);
-	};
-
-	//Show dialog when external metric source cannot be accessed
-	TaskElementDetailsWidget.ShowNoMetricConnection = function () {
-		var text = 'genBOE is unable to connect to the Estimating Catalog.';
-		var title = 'Connection Failed';
-		Session.alertDialog(title, text);
-	};
-
-	TaskElementDetailsWidget.DeleteMetric = function () {
-		$(this).parent().remove();
-		TaskElementDetailsWidget.CheckToShowMetrics();
-		TaskElementDetailsWidget.refreshModule();
-	};
-
-	TaskElementDetailsWidget.CheckToShowMetrics = function () {
-
-		if ($('tr[name=historicalMetric]').length > 0) {
-			$('#UsedHistoricalMetrics').removeClass('display-none');
-		}
-		else
-			$('#UsedHistoricalMetrics').addClass('display-none');
-	};
-
-	//End metrics Search
 
 	TaskElementDetailsWidget.EnableLockedStateFields = function () {
 		if (TaskElementDetailsWidget.WorkspaceState == "Locked") {
@@ -661,55 +368,9 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
 		TaskElementDetailsWidget.LoadMOQEquationField($('#MOQEquationFieldContent'), taskElementId);
 	}
 
-
-	$("#SearchEstimatingCatalog-SearchButtonCommon").click(TaskElementDetailsWidget.SearchHistoricMetrics);
-	$("#SearchEstimatingCatalog-SearchButtonMST").click(TaskElementDetailsWidget.SearchHistoricMetricsMST);
-	$("#SearchEstimatingCatalog-CancelButtonMST").click(TaskElementDetailsWidget.CancelSearchHistoricMetricsMST);
-
-	TaskElementDetailsWidget.on('METRIC_SELECTED', TaskElementDetailsWidget.DisplayMetricSelected);
-	TaskElementDetailsWidget.on('BACK_TO_RESULTS', TaskElementDetailsWidget.ReturnToResults);
-	TaskElementDetailsWidget.on('BACK_TO_RESULTS_MST', TaskElementDetailsWidget.ReturnToResultsMST);
-	TaskElementDetailsWidget.on('ADD_METRIC_TO_BOE', TaskElementDetailsWidget.AddMetricToBOE);
-	TaskElementDetailsWidget.on('ADD_METRIC_TO_BOE_MST', TaskElementDetailsWidget.AddMetricToBOEMst);
-
-	TaskElementDetailsWidget.on('SEARCH_METRICS', function () {
-		//Display Metric Search dialog if the metrics store is accessible
-		if (isMetricStoreConnected == 'true') {
-			TaskElementDetailsWidget.getDialog('MOQEquation-SearchEstimatingCatalogDialog' + searchMetricsDialogIdSuffix).openDialog();
-		}
-		else {
-			TaskElementDetailsWidget.ShowNoMetricConnection();
-		}
-	});
-	TaskElementDetailsWidget.on('SEARCH_METRICS_AGAIN', TaskElementDetailsWidget.SearchMetricsAgain);
-	TaskElementDetailsWidget.on('SEARCH_METRICS_AGAIN_MST', TaskElementDetailsWidget.SearchMetricsAgainMST);
-	TaskElementDetailsWidget.on('CANCEL_SEARCH_METRICS', TaskElementDetailsWidget.CancelMetricsSearchResults);
 	TaskElementDetailsWidget.on('CLEAN_BOE_DETAILS_DIRTY', function () { TaskElementDetailsWidget.cleanDirty(); });
-	TaskElementDetailsWidget.on('PageHistoricalMetricSearch', TaskElementDetailsWidget.PageHistoricalMetricResults);
-
 
 	TaskElementDetailsWidget.EnableLockedStateFields();
-
-	TaskElementDetailsWidget.CheckToShowMetrics();
-
-	$("#MetricsSeachText").autocomplete({
-
-		source: function (request, add) {
-
-			$.ajax({
-				type: 'POST',
-				url: searchTypeAheadUrl,
-				contentType: 'application/json; charset=utf-8',
-				dataType: 'json',
-				data: JSON.stringify({ searchTerm: request.term }),
-				success: function (returned) {
-					add(returned);
-				}
-			});
-
-		}
-	});
-
 
 	TaskElementDetailsWidget.on('click', '#AdjustTaskDatesLink', function () {
 		window.location = dateShiftUrl;
@@ -918,22 +579,6 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
 			$(document).trigger('hideMOQChangedNotification');
 		}
 	});
-
-	TaskElementDetailsWidget.deleteAllSelected = function () {
-		var table = document.getElementById("HistoricalMetricsUsedGrid");
-		var rowCount = table.rows.length;
-		//Skip the header row by not including the 0th element
-		for (i = 1; i < rowCount; i++) {
-			var row = table.rows[i];
-			var chkbox = row.cells[0].childNodes[0]; //get check box object                 
-
-			if (null != chkbox && true == chkbox.checked) {
-				table.deleteRow(i);
-				rowCount--;
-				i--;
-			}
-		}
-	};
 
 	TaskElementDetailsWidget.deleteToggled = function () {
 		if ($("input[name=DeleteResource]:checked").length > 0) {

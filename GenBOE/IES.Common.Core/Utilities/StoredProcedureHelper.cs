@@ -12,12 +12,12 @@ namespace IES.Common.Core.Utilities
 	using System.Data;
 	using System.Data.Common;
 	using System.Data.Entity;
-	using System.Data.SqlClient;
 	using System.Linq;
 	using System.Reflection;
 	using IES.Common.Core.Configuration;
 	using IES.Common.Core.Constants;
 	using IES.Common.Core.Enums;
+	using Microsoft.Data.SqlClient;
 
 	public static class StoredProcedureHelper
 	{

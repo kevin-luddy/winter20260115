@@ -54,11 +54,63 @@
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SPLUNK_TOKEN_">
 		</parameterentry>
 	</parameter>
+	<parameter name="ServerURL" description="doesn't matter" defaultvalue="__ServerURL__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_ServerURL_">
+		</parameterentry>
+	</parameter>
+	<parameter name="OneLmxStartDate" description="doesn't matter" defaultvalue="__OneLmxStartDate__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_OneLmxStartDate_">
+		</parameterentry>
+	</parameter>
+	<parameter name="HistoricalReferenceExplanationStartDate" description="doesn't matter" defaultvalue="__HistoricalReferenceExplanationStartDate__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_HistoricalReferenceExplanationStartDate_">
+		</parameterentry>
+	</parameter>
+	<parameter name="EnableBRC" description="doesn't matter" defaultvalue="__EnableBRC__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_EnableBRC_">
+		</parameterentry>
+	</parameter>
+	<parameter name="OverrideBRC" description="doesn't matter" defaultvalue="__OverrideBRC__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_OverrideBRC_">
+		</parameterentry>
+	</parameter>
+	<parameter name="RemoveEmptySpans" description="doesn't matter" defaultvalue="__RemoveEmptySpans__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_RemoveEmptySpans_">
+		</parameterentry>
+	</parameter>
 	<parameter name="EnableUCOT" description="doesn't matter" defaultvalue="__EnableUCOT__" tags="">
 		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_EnableUCOT_">
 		</parameterentry>
 	</parameter>
-	
+	<parameter name="UCOTStartDate" description="doesn't matter" defaultvalue="__UCOTStartDate__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_UCOTStartDate_">
+		</parameterentry>
+	</parameter>
+	<parameter name="EnableSkillMix" description="doesn't matter" defaultvalue="__EnableSkillMix__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_EnableSkillMix_">
+		</parameterentry>
+	</parameter>
+	<parameter name="SkillMixStartDate" description="doesn't matter" defaultvalue="__SkillMixStartDate__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SkillMixStartDate_">
+		</parameterentry>
+	</parameter>
+	<parameter name="EnableAssignTaskAuthor" description="doesn't matter" defaultvalue="__EnableAssignTaskAuthor__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_EnableAssignTaskAuthor_">
+		</parameterentry>
+	</parameter>
+	<parameter name="EnableSAP" description="doesn't matter" defaultvalue="__EnableSAP__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_EnableSAP_">
+		</parameterentry>
+	</parameter>
+	<parameter name="SAPSpaceStartDate" description="doesn't matter" defaultvalue="__SAPSpaceStartDate__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_SAPSpaceStartDate_">
+		</parameterentry>
+	</parameter>
+	<parameter name="MoqTemplateStartDate" description="doesn't matter" defaultvalue="__MoqTemplateStartDate__" tags="">
+		<parameterentry kind="TextFile" scope="\\appsettings.json$" match="_MoqTemplateStartDate_">
+		</parameterentry>
+	</parameter>
+
 	<!--system.web-->
 	<parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.web/authorization/allow/@roles">

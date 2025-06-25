@@ -191,7 +191,6 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_GET_ASSIGNED_WORKSPACE_INFO = "GetAssignedWorkspaceInfo";
 		public static readonly string ACTION_CHECK_IS_USER_WILL_LOOSE_THEIR_SYSTEM_ADMIN_ACCESS = "CheckIfUserWillLooseTheirSystemAdminAccess";
 		public static readonly string ACTION_CHECK_IS_USER_WILL_LOSE_THEIR_CREATE_WORKSPACE_PERMISSIONS_ACCESS = "CheckIfUserWillLoseTheirCreateWorkspacePermissionsAccess";
-		public static readonly string ACTION_COMPLETE_HISTORICAL_METRICS_IMPORT = "CompleteHistoricalMetricsImport";
 		public static readonly string ACTION_COMPLETE_TRIPS_IMPORT = "CompleteTripsImport";
 		public static readonly string ACTION_CREATE_EDIT_METRICS_ADMIN_GROUP = "CreateEditMetricAdminGroup";
 		public static readonly string ACTION_DELETE_GROUP_METRICS_PERMISSIONS = "DeleteGroupMetricsPermissions";
@@ -256,10 +255,6 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_DISPLAY_METRICS_ADMIN_JUMP = "DisplayMetricsAdminJump";
 		public static readonly string ACTION_DISPLAY_METRICS_PERMISSIONS = "DisplayMetricsPermissions";
 		public static readonly string ACTION_DISPLAY_METRICS_GROUPS = "DisplayMetricsGroups";
-		public static readonly string ACTION_DISPLAY_HISTORICAL_METRICS = "DisplayHistoricalMetrics";
-		public static readonly string ACTION_DISPLAY_HISTORICAL_METRICS_GRID = "DisplayHistoricalMetricsGrid";
-		public static readonly string ACTION_DELETE_HISTORICAL_METRICS = "DeleteHistroicalMetrics";
-		public static readonly string ACTION_DISPLAY_ADD_HISTORICAL_METRICS = "DisplayAddHistoricalMetrics";
 		public static readonly string ACTION_DISPLAY_SYSTEM_ADMIN_JUMP = "DisplaySystemAdminJump";
 		public static readonly string ACTION_DISPLAY_SYSTEM_PERMISSIONS = "DisplaySystemPermissions";
 		public static readonly string ACTION_DISPLAY_CREATE_WORKSPACE_PERMISSIONS = "DisplayCreateWorkspacePermissions";
@@ -274,14 +269,12 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_GET_WORKSPACES_USING_TEMPLATE = "GetWorkspacesUsingTemplate";
 		public static readonly string ACTION_IMPORT_DEFAULT_PERFORMING_ORGS = "ImportPerformingOrgs";
 		public static readonly string ACTION_IMPORT_DEFAULT_RESOURCES = "ImportResources";
-		public static readonly string ACTION_IMPORT_HISTORICAL_METRICS = "ImportHistoricalMetrics";
 		public static readonly string ACTION_IMPORT_TRIPS = "ImportTrips";
 		public static readonly string ACTION_IMPORT_ORIGINS = "ImportOrigins";
 		public static readonly string ACTION_METRICS_ADMIN = "MetricsAdmin";
 		public static readonly string ACTION_PAGE_PERF_ORGS = "PagePerfOrgs";
 		public static readonly string ACTION_PAGE_OUTPUT_FORMAT = "PageOutputFormat";
 		public static readonly string ACTION_PAGE_RESOURCES = "PageResources";
-		public static readonly string ACTION_PAGE_HISTORICAL_METRICS = "PageHistoricalMetrics";
 		public static readonly string ACTION_PAGE_WORKSPACE_HOME = "PageWorkspaceHome";
 		public static readonly string ACTION_SAVE_DEFAULT_PERF_ORGS = "SavePerfOrgs";
 		public static readonly string ACTION_SAVE_DEFAULT_RESOURCES = "SaveResources";
@@ -295,7 +288,6 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_SAVE_NEW_SYSTEM_PERMISSIONS = "SaveNewSystemPermissions";
 		public static readonly string ACTION_GET_GROUP_MEMBERS = "GetGroupMembers";
 		public static readonly string ACTION_SAVE_NEW_CREATE_WORKSPACE_PERMISSIONS = "SaveNewCreateWorkspacePermissions";
-		public static readonly string ACTION_SAVE_NEW_HISTORICAL_METRICS = "SaveHistoricalMetric";
 		public static readonly string ACTION_SAVE_RESOURCE_LIST = "SaveResourceList";
 		public static readonly string ACTION_SAVE_WORKSPACES_FOR_OUTPUT_TEMPLATES = "SaveExportTemplatesForWorkspaces";
 		public static readonly string ACTION_SEARCH_PERF_ORGS = "SearchPerfOrgs";
@@ -405,10 +397,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_VALIDATE_RESOURCE = "ValidateResource";
 		public static readonly string ACTION_VALIDATE_RESOURCE_BY_ID = "ValidateResourceByID";
 		public static readonly string ACTION_MARK_WARNING_AS_CONFIRMED = "MarkWarningMessageAsConfirmed";
-		public static readonly string ACTION_SEARCH_HISTORICAL_METRICS_IN_MST = "DisplayHistoricalMetricsResultsForMST";
 		public static readonly string ACTION_GET_SEARCH_TYPE_AHEAD = "GetTypeAheadTerms";
-		public static readonly string ACTION_GET_HISTORICAL_METRIC_DETAILS = "DisplayHistoricalMetricsDetails";
-		public static readonly string ACTION_PAGE_HISTORICAL_METRIC_SEARCH_RESULTS_MST = "PageHistoricalMetricsSearchResultsMST";
 		public static readonly string ACTION_SAVE_REORDER_LABOR_TASK_ELEMENTS = "SaveReorderLaborTaskElements";
 		public static readonly string ACTION_SAVE_REORDER_LABOR_TYPES = "SaveReorderLaborTypes";
 		public static readonly string ACTION_LOAD_DUPLICATE_TASK_DIALOG = "LoadDuplicateTaskDialog";
@@ -833,13 +822,6 @@ namespace GenBOE.ActionLogic.Common
 		//these 3 views make up the composite view
 		public static readonly string VIEW_MOQ_EQUATION_FIELD = "MOQEquationField";
 		public static readonly string VIEW_MOQ_TABLE_IMPORT_VERIFICATION = "MoqTableImportVerification";
-
-		public static readonly string VIEW_BOE_HISTORICAL_METRICS_SEARCH_RESULTS_SPACE = "HistoricalMetricsSearchResultsSpace";
-		public static readonly string VIEW_BOE_HISTORICAL_METRICS_SEARCH_RESULTS_MST = "HistoricalMetricsSearchResultsMST";
-		public static readonly string VIEW_BOE_HISTORICAL_METRICS_SEARCH_RESULTS = "HistoricalMetricsSearchResults";
-		public static readonly string VIEW_ADD_HISTORICAL_METRIC_TO_BOE_MST = "AddHistoricalMetricToBOEMST";
-		public static readonly string VIEW_ADD_HISTORICAL_METRIC_TO_BOE_SPACE = "AddHistoricalMetricToBOESpace";
-		public static readonly string VIEW_ADD_HISTORICAL_METRIC_TO_BOE = "AddHistoricalMetricToBOE";
 
 		public static readonly string VIEW_BOE_COMMENTS_GRID = "BOECommentsGrid";
 
