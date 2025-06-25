@@ -109,14 +109,14 @@ namespace GenBOE.Web.Controllers
 		private readonly ContractTypeLoader contractTypeLoader;
 
 		/// <summary>
+		/// TM Resource Rate Loader
+		/// </summary>
+		private readonly ITMResourceRateDTODataLoader tmResourceRateLoader;
+
+		/// <summary>
 		/// Resource Loader
 		/// </summary>
 		private readonly IResourceDTODataLoader resourceLoader;
-
-		/// <summary>
-		/// TM Resource Loader
-		/// </summary>
-		private readonly ITMResourceRateDTODataLoader tmResourceRateLoader;
 
 		/// <summary>
 		/// TM Calculator Utility
@@ -154,7 +154,8 @@ namespace GenBOE.Web.Controllers
 		/// <param name="traceTableExporter">Trace Table data exporter</param>
 		/// <param name="boeFormControllerLogic">BOE Form Controller logic</param>
 		/// <param name="contractTypeLoader">Pick List loader for Contract Types</param>
-		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, IBOEFormIBOEDTODataLoader boeFormIBOEDTODataLoader, IActiveDirectoryUtilities activeDirectoryUtilities, IUserDTODataLoader userDataLoader, ContractTypeLoader contractTypeLoader, IResourceDTODataLoader resourceLoader, ITMResourceRateDTODataLoader tmResourceRateLoader, TMCalculator tmCalculator, IInUseDataLoader inUseDataLoader)
+		/// <param name="tmResourceRateLoader">TM Resource Loader</param>
+		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, IBOEFormIBOEDTODataLoader boeFormIBOEDTODataLoader, IActiveDirectoryUtilities activeDirectoryUtilities, IUserDTODataLoader userDataLoader, ContractTypeLoader contractTypeLoader, IResourceDTODataLoader resourceLoader, TMCalculator tmCalculator, IInUseDataLoader inUseDataLoader, ITMResourceRateDTODataLoader tmResourceRateLoader)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.loader = loader;
@@ -171,9 +172,9 @@ namespace GenBOE.Web.Controllers
 			this.userDataLoader = userDataLoader;
 			this.contractTypeLoader = contractTypeLoader;
 			this.resourceLoader = resourceLoader;
-			this.tmResourceRateLoader = tmResourceRateLoader;
 			this.tmCalculator = tmCalculator;
 			this.inUseDataLoader = inUseDataLoader;
+			this.tmResourceRateLoader = tmResourceRateLoader;
 		}
 		#endregion
 
@@ -1281,7 +1282,7 @@ namespace GenBOE.Web.Controllers
 					// Get Prerequisite Data
 					FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(ws.Id);
 					ICollection<ResourceDTO> workspaceResources = this.resourceLoader.GetByListId(ws.ResourceListID);
-					tmCalculator.GetBOETotals<PBOERow>(postModel, result, iboeDtos, pboeDtos, fullWorkspace, workspaceResources, resourceLoader, tmResourceRateLoader);
+					tmCalculator.GetBOETotals<PBOERow>(postModel, result, iboeDtos, pboeDtos, fullWorkspace, workspaceResources, resourceLoader);
 				}
 
 				result.IsSuccessful = true;
@@ -1333,7 +1334,7 @@ namespace GenBOE.Web.Controllers
 						// Get Prerequisite Data
 						FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(ws.Id);
 						ICollection<ResourceDTO> workspaceResources = this.resourceLoader.GetByListId(ws.ResourceListID);
-						tmCalculator.GetBOETotals<IBOERow>(postModel, result, iboeDtos, pboeDtos, fullWorkspace, workspaceResources, resourceLoader, tmResourceRateLoader);
+						tmCalculator.GetBOETotals<IBOERow>(postModel, result, iboeDtos, pboeDtos, fullWorkspace, workspaceResources, resourceLoader);
 					}
 				}
 
