@@ -213,6 +213,7 @@ namespace GenBOE.Dtos
 				dateShiftDTO.WorkspaceVersionMetaData = fullWorkspace.WorkspaceVersionMetaData.ToList();
 				dateShiftDTO.WorkspaceState = fullWorkspace.WorkspaceState;
 			}
+			HashSet<(int Id, int Level)> uniqueChildren = new HashSet<(int Id, int Level)>();
 
 			foreach (IDateShiftable child in dateShiftable.Children)
 			{
@@ -220,7 +221,10 @@ namespace GenBOE.Dtos
 
 				if (childDTO != null)
 				{
-					dateShiftDTO.children.Add(childDTO);
+					if (uniqueChildren.Add((childDTO.Id, (int)childDTO.DateShiftLevel)))
+					{
+						dateShiftDTO.children.Add(childDTO);
+					}
 				}
 			}
 
