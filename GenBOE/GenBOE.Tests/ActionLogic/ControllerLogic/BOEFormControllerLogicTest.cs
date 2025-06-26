@@ -405,7 +405,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             StubbedData = new Stubs();
 
-            sut = new BOEFormControllerLogic(iboeFormDataLoader.Object, pboeFormDataLoader.Object, resourceDTODataLoader.Object, tmResourceRateDTODataLoader.Object, iboeExporter.Object, pboeExporter.Object, _TMCalculator.Object);
+            sut = new BOEFormControllerLogic(iboeFormDataLoader.Object, pboeFormDataLoader.Object, resourceDTODataLoader.Object, iboeExporter.Object, pboeExporter.Object, _TMCalculator.Object);
         }
 
         #region ExportBOEFormReport Tests

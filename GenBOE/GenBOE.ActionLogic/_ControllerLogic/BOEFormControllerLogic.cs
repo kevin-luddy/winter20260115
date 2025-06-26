@@ -32,7 +32,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private readonly IBOEFormIBOEDTODataLoader iboeFormDataLoader;
         private readonly IBOEFormPBOEDTODataLoader pboeFormDataLoader;
         private readonly IResourceDTODataLoader resourceLoader;
-        private readonly ITMResourceRateDTODataLoader tmResourceRateLoader;
 
         private readonly IBOEFormExporter iboeExporter;
         private readonly PBOEFormExporter pboeExporter;
@@ -42,7 +41,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IBOEFormIBOEDTODataLoader iboeFormDataLoader,
             IBOEFormPBOEDTODataLoader pboeFormDataLoader,
             IResourceDTODataLoader resourceLoader,
-            ITMResourceRateDTODataLoader tmResourceRateLoader,
             IBOEFormExporter iboeExporter,
             PBOEFormExporter pboeExporter,
             TMCalculator tmCalculator)
@@ -50,7 +48,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.iboeFormDataLoader = iboeFormDataLoader;
             this.pboeFormDataLoader = pboeFormDataLoader;
             this.resourceLoader = resourceLoader;
-            this.tmResourceRateLoader = tmResourceRateLoader;
             this.iboeExporter = iboeExporter;
             this.pboeExporter = pboeExporter;
             this.tmCalculator = tmCalculator;
@@ -497,7 +494,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 foreach (int boeFormId in iboeFormIds)
                 {
                     BOEFormIBOEDTO iboe = this.iboeFormDataLoader.GetById(boeFormId);
-                    this.tmCalculator.ValidateBOEFormTMResources(validationErrors, resourceIdsWithValidTMRates, workspace, iboe.ResourceIds, this.tmResourceRateLoader, this.resourceLoader);
+                    this.tmCalculator.ValidateBOEFormTMResources(validationErrors, resourceIdsWithValidTMRates, workspace, iboe.ResourceIds, this.resourceLoader);
                 }
             }
 
@@ -506,7 +503,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 foreach (int boeFormId in pboeFormIds)
                 {
                     BOEFormPBOEDTO pboe = this.pboeFormDataLoader.GetById(boeFormId);
-                    this.tmCalculator.ValidateBOEFormTMResources(validationErrors, resourceIdsWithValidTMRates, workspace, pboe.ResourceIds, this.tmResourceRateLoader, this.resourceLoader);
+                    this.tmCalculator.ValidateBOEFormTMResources(validationErrors, resourceIdsWithValidTMRates, workspace, pboe.ResourceIds, this.resourceLoader);
                 }
             }
         }       
