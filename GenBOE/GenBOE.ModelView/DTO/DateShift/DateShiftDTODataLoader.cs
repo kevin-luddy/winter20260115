@@ -360,8 +360,29 @@ namespace GenBOE.DataBridge.DTO
 															EndDateValue = lT.BOELaborTypeEndDate,
 															SpreadType = lT.SpreadTypeID.HasValue ? (SpreadType)lT.SpreadTypeID.Value : SpreadType.NotSet,
 															UpdateDate = lT.UpdateDT,
+															SpreadCurveIDValue = lT.SpreadCurveID,
+															LaborSpreadsIEnum = lT.BOELaborSpreads
+																.Select(lS => new ResourceSpreadDto
+																{
+																	Id = lS.BOELaborSpreadID,
+																	LaborSpreadDate = lS.LaborSpreadDate,
+																	LaborSpreadValue = lS.LaborSpreadValue ?? 0,
+																	LaborTypeId = lS.BOELaborTypeID
+																}),
+
 														}).ToCollection();
+
+					if (boeTaskElement.taskElementLabors != null)
+					{
+						foreach (ResourceTypeDto resourceType in boeTaskElement.taskElementLabors)
+						{
+							resourceType.LaborSpreads = resourceType.LaborSpreadsIEnum.ToCollection();
+							resourceType.LaborSpreadsIEnum = null;
+						}
+					}
 				}
+
+				
 
 				return boeTaskElement;
 			}

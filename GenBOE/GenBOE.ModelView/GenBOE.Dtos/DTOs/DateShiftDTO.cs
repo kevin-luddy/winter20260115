@@ -206,6 +206,7 @@ namespace GenBOE.Dtos
 			{
 				// Check if Labor Spreads is not null and if not null then save them later.
 				dateShiftDTO.LaborSpreads = resourceTypeDto.LaborSpreads;
+				dateShiftDTO.SpreadCurveID = resourceTypeDto.SpreadCurveID;
 			}
 
 			if (dateShiftable is FullWorkspace fullWorkspace && fullWorkspace != null)
