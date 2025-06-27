@@ -360,8 +360,48 @@ namespace GenBOE.DataBridge.DTO
 															EndDateValue = lT.BOELaborTypeEndDate,
 															SpreadType = lT.SpreadTypeID.HasValue ? (SpreadType)lT.SpreadTypeID.Value : SpreadType.NotSet,
 															UpdateDate = lT.UpdateDT,
+															SpreadCurveIDValue = lT.SpreadTypeID,
+															LaborTypeOrder = lT.LaborSortId,
+															LaborSpreadsIEnum = lT.BOELaborSpreads
+																.Select(lS => new ResourceSpreadDto
+																{
+																	Id = lS.BOELaborSpreadID,
+																	LaborSpreadDate = lS.LaborSpreadDate,
+																	LaborSpreadValue = lS.LaborSpreadValue ?? 0,
+																	LaborTypeId = lS.BOELaborTypeID
+																}),
+															CustomFieldValueContainersIEnum = lT.BOELaborTypeCustomFieldValueXREFs
+																.Select(cf => new CustomFieldValueContainer
+																{
+																	ContainerID = cf.BLTCFVID,
+																	CustomFieldValueID = cf.CustomFieldValueID,
+																	CustomFieldID = cf.CustomFieldValue.CustomFieldID,
+																	UpdateDate = cf.UpdateDT,
+																	IsOpenEnded = cf.CustomFieldValue.CustomField.IsOpenEnded,
+																	OpenEndedValue = cf.CustomFieldValue.CustomFieldValueDescription
+																})
 														}).ToCollection();
 				}
+
+				boeTaskElement.taskElementLabors.ToList().ForEach(labors =>
+				{
+					labors.CustomFieldValueContainers = labors.CustomFieldValueContainersIEnum.ToCollection(); 
+					labors.CustomFieldValueContainersIEnum = null;
+
+					if (labors.SpreadCurveID == SpreadCurves.DiscreteCost || labors.SpreadCurveID == SpreadCurves.DiscreteHours)
+					{
+						labors.LaborSpreads = labors.LaborSpreadsIEnum.ToCollection();
+					}
+
+					// Always clear out the enumeration
+					labors.LaborSpreadsIEnum = null;
+
+					labors.LaborSpreads.ToList().ForEach(spreads =>
+					{
+						spreads.LaborSpreadDate = spreads.LaborSpreadDate.Normalize();
+						spreads.BoeID = boeTaskElement.BoeID;
+					});
+				});
 
 				return boeTaskElement;
 			}
