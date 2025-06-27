@@ -38,11 +38,12 @@ AS
 **		Auth: [e405721]
 **		Date: [4/17/25]
 *******************************************************************************
+**		Change History
+*******************************************************************************
 **		Date:		Author:				Description:
 **		--------	--------			-------------------------------------------
 **		[4/17/25]	[e405721]			Initial creation
 **		[5/19/25]	[e405721]			Added update for BOELaborType (Resource Type) table
-**		[6/1/25]	[e405721]			Added update for BOELaborSpread table
 *******************************************************************************/
 SET NOCOUNT ON
 DECLARE @UpdateDT datetime2
@@ -105,3 +106,11 @@ SET
     UpdateDT = @UpdateDT
 FROM [dbo].[BOELaborType] blt
 INNER JOIN @DateShifts ds ON blt.BOELaborTypeID = ds.Id AND ds.[Level] = 7 AND blt.UpdateDT = ds.UpdateDate;
+
+IF @@ERROR = 0
+	SELECT 
+		T.Id, 
+		@UpdateDT AS UpdateDT 
+	FROM @DateShifts T
+	ORDER BY T.OrderID
+GO
