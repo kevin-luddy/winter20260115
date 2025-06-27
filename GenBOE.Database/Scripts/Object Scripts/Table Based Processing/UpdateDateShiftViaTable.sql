@@ -105,21 +105,3 @@ SET
     UpdateDT = @UpdateDT
 FROM [dbo].[BOELaborType] blt
 INNER JOIN @DateShifts ds ON blt.BOELaborTypeID = ds.Id AND ds.[Level] = 7 AND blt.UpdateDT = ds.UpdateDate;
-
--- Update the BOELaborSpread table
-UPDATE bs
-SET 
-    BOELaborSpreadStartDate = ds.StartDate,
-    BOELaborSpreadEndDate = ds.EndDate,
-    UpdateDT = @UpdateDT
-FROM [dbo].[BOELaborSpread] bs
-INNER JOIN [dbo].[BOELaborType] blt ON bs.BOELaborTypeID = blt.BOELaborTypeID
-INNER JOIN @DateShifts ds ON blt.BOELaborTypeID = ds.Id AND ds.[Level] = 7 AND blt.UpdateDT = ds.UpdateDate;
-
-IF @@ERROR = 0
-	SELECT 
-		T.Id, 
-		@UpdateDT AS UpdateDT 
-	FROM @DateShifts T
-	ORDER BY T.OrderID
-GO

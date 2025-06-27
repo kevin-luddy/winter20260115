@@ -157,13 +157,16 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="dateShifts">Dateshift objects</param>
 		public virtual void UpdateDateShifts(ICollection<DateShiftDTO> dateShifts)
 		{
-			if (dateShifts == null || dateShifts.Count == 0) { throw new ArgumentNullException(nameof(dateShifts)); }
+			if (dateShifts == null || dateShifts.Count == 0)
+			{
+				throw new ArgumentNullException(nameof(dateShifts));
+			}
 
 			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
 			{
 				Collection<string> dateShiftPropertiesToIncludeInTable = new Collection<string>()
 				{
-					"Level", "Id", "StartDate", "EndDate", "UpdateDate"
+					"Level", "Id", "StartDate", "EndDate", "UpdateDate", "OrderID", "LaborSpreads"
 				};
 
 				using (DbContext objectContext = new DbContext(Constants.BOE_DB_CONTEXT_NAME))
