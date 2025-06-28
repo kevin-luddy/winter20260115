@@ -187,25 +187,23 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="dateShiftable">Date shiftable.</param>
 		/// <returns>List of date shift dtos that were in the child property.</returns>
-		private List<DateShiftDTO> RecursivelyGetDateShiftDTOs(IDateShiftable dateShiftable)
+		private List<DateShiftDTO> RecursivelyGetDateShiftDTOs(DateShiftDTO dateShiftDTO)
 		{
-			if (dateShiftable == null)
+			if (dateShiftDTO == null)
 			{
-				throw new ArgumentNullException(nameof(dateShiftable));
+				throw new ArgumentNullException(nameof(dateShiftDTO));
 			}
 
 			List<DateShiftDTO> dateShiftDTOs = new List<DateShiftDTO>();
-
-			DateShiftDTO dateShiftDTO = DateShiftDTO.FromIDateShiftable(dateShiftable);
 
 			if (dateShiftDTO != null)
 			{
 				dateShiftDTOs.Add(dateShiftDTO);
 			}
 
-			if (dateShiftable.Children != null)
+			if (dateShiftDTO.Children != null)
 			{
-				foreach (IDateShiftable child in dateShiftable.Children)
+				foreach (DateShiftDTO child in dateShiftDTO.Children)
 				{
 					dateShiftDTOs.AddRange(RecursivelyGetDateShiftDTOs(child));
 				}
@@ -316,7 +314,7 @@ namespace GenBOE.DataBridge.DTO
 									StartDate = c.CLINStartDate,
 									EndDate = c.CLINEndDate,
 									UpdateDate = c.UpdateDT,
-									WorkspaceID= c.WorkspaceID,
+									WorkspaceID = c.WorkspaceID,
 								}).FirstOrDefault();
 
 				return new FullClin(clin);
@@ -382,7 +380,7 @@ namespace GenBOE.DataBridge.DTO
 					}
 				}
 
-				
+
 
 				return boeTaskElement;
 			}
@@ -400,14 +398,14 @@ namespace GenBOE.DataBridge.DTO
 				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
 
 				FullWorkspace workspace = (from w in gbe.Workspaces
-										  where w.WorkspaceID == id
-										  select new FullWorkspace
-										  {
-											  Id = w.WorkspaceID,
-											  ContractStartDate = w.ContractStartDate,
-											  ContractEndDate = w.ContractEndDate,
-											  UpdateDate = w.UpdateDT,
-										  }).FirstOrDefault();
+										   where w.WorkspaceID == id
+										   select new FullWorkspace
+										   {
+											   Id = w.WorkspaceID,
+											   ContractStartDate = w.ContractStartDate,
+											   ContractEndDate = w.ContractEndDate,
+											   UpdateDate = w.UpdateDT,
+										   }).FirstOrDefault();
 
 				return workspace;
 			}
