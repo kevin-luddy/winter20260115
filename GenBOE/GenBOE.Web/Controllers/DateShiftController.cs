@@ -160,10 +160,9 @@ namespace GenBOE.Web.Controllers
 
 						break;
 					case Level.CLIN:
-						sw = this.InitializeAction(this.logger, WebConstants.ACTION_APPLY_DATE_SHIFT, SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, id);
+						sw = this.InitializeAction(this.logger, WebConstants.ACTION_APPLY_DATE_SHIFT, SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 						dateShiftable = dateShiftDTODataLoader.GetDateShiftObject(Level.CLIN, id);
-
 						if (!dateShiftable.StartDate.HasValue || !dateShiftable.EndDate.HasValue)
 						{
 							dateShiftable.StartDate = parentDateShiftDTO.StartDate;
