@@ -187,25 +187,23 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="dateShiftable">Date shiftable.</param>
 		/// <returns>List of date shift dtos that were in the child property.</returns>
-		private List<DateShiftDTO> RecursivelyGetDateShiftDTOs(IDateShiftable dateShiftable)
+		private List<DateShiftDTO> RecursivelyGetDateShiftDTOs(DateShiftDTO dateShiftDTO)
 		{
-			if (dateShiftable == null)
+			if (dateShiftDTO == null)
 			{
-				throw new ArgumentNullException(nameof(dateShiftable));
+				throw new ArgumentNullException(nameof(dateShiftDTO));
 			}
 
 			List<DateShiftDTO> dateShiftDTOs = new List<DateShiftDTO>();
-
-			DateShiftDTO dateShiftDTO = DateShiftDTO.FromIDateShiftable(dateShiftable);
 
 			if (dateShiftDTO != null)
 			{
 				dateShiftDTOs.Add(dateShiftDTO);
 			}
 
-			if (dateShiftable.Children != null)
+			if (dateShiftDTO.Children != null)
 			{
-				foreach (IDateShiftable child in dateShiftable.Children)
+				foreach (DateShiftDTO child in dateShiftDTO.Children)
 				{
 					dateShiftDTOs.AddRange(RecursivelyGetDateShiftDTOs(child));
 				}
@@ -360,8 +358,29 @@ namespace GenBOE.DataBridge.DTO
 															EndDateValue = lT.BOELaborTypeEndDate,
 															SpreadType = lT.SpreadTypeID.HasValue ? (SpreadType)lT.SpreadTypeID.Value : SpreadType.NotSet,
 															UpdateDate = lT.UpdateDT,
+															SpreadCurveIDValue = lT.SpreadCurveID,
+															LaborSpreadsIEnum = lT.BOELaborSpreads
+																.Select(lS => new ResourceSpreadDto
+																{
+																	Id = lS.BOELaborSpreadID,
+																	LaborSpreadDate = lS.LaborSpreadDate,
+																	LaborSpreadValue = lS.LaborSpreadValue ?? 0,
+																	LaborTypeId = lS.BOELaborTypeID
+																}),
+
 														}).ToCollection();
+
+					if (boeTaskElement.taskElementLabors != null)
+					{
+						foreach (ResourceTypeDto resourceType in boeTaskElement.taskElementLabors)
+						{
+							resourceType.LaborSpreads = resourceType.LaborSpreadsIEnum.ToCollection();
+							resourceType.LaborSpreadsIEnum = null;
+						}
+					}
 				}
+
+
 
 				return boeTaskElement;
 			}

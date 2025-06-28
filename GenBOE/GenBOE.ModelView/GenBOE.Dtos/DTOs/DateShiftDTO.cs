@@ -22,7 +22,6 @@ namespace GenBOE.Dtos
 	[Serializable()]
 	public sealed class DateShiftDTO : UpdateableDTO, IDateShiftable
 	{
-		private readonly List<IDateShiftable> children = new List<IDateShiftable>();
 		private bool hasSpread;
 		private object originalObject;
 
@@ -37,9 +36,14 @@ namespace GenBOE.Dtos
 		public DateTime? EndDate { get; set; }
 
 		/// <summary>
+		/// Children date shift objects.
+		/// </summary>
+		public List<IDateShiftable> Children { get; set; } = new List<IDateShiftable>();
+
+		/// <summary>
 		/// Child date shift objects.
 		/// </summary>
-		ICollection<IDateShiftable> IDateShiftable.Children => children;
+		ICollection<IDateShiftable> IDateShiftable.Children => Children;
 
 		/// <summary>
 		/// Parent of the date shift object.
@@ -206,6 +210,7 @@ namespace GenBOE.Dtos
 			{
 				// Check if Labor Spreads is not null and if not null then save them later.
 				dateShiftDTO.LaborSpreads = resourceTypeDto.LaborSpreads;
+				dateShiftDTO.SpreadCurveID = resourceTypeDto.SpreadCurveID;
 			}
 
 			if (dateShiftable is FullWorkspace fullWorkspace && fullWorkspace != null)
@@ -223,7 +228,7 @@ namespace GenBOE.Dtos
 				{
 					if (uniqueChildren.Add((childDTO.Id, (int)childDTO.DateShiftLevel)))
 					{
-						dateShiftDTO.children.Add(childDTO);
+						dateShiftDTO.Children.Add(childDTO);
 					}
 				}
 			}
