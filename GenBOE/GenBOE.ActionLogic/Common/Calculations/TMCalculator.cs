@@ -50,7 +50,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 				// Get T&M rates from fullWorkspace for this resourceId.
 				IReadOnlyCollection<TMResourceRateDTO> wsRates = workspace.TMResourceRatesForWorkspace;
 
-				// first check to see if there are ANY rates for this workspace, if not then just return the sum of the labor spreads
+				// first check to see if there are ANY rates for this workspace, if none then the totalCost is 0 and the cost gets calculated inside ProPricer
 				if (wsRates.Any(w => w.ResourceID == laborTask.ResourceID))
 				{
 					//Left Join (DefaultIfEmpty()) spreads to T&M spreadRates by resourceId & workspaceId, where laborTask date in T&M resource date range.
@@ -62,10 +62,6 @@ namespace GenBOE.ActionLogic.Common.Calculations
 								 from hr in hrs.Where(tmResoureRate => tmResoureRate.StartDate.Value <= laborSpread.LaborSpreadDate)
 									 .Where(tmResoureRate => tmResoureRate.EndDate.Value >= laborSpread.LaborSpreadDate).DefaultIfEmpty()
 								 select (laborSpread.LaborSpreadValue * hr.ResourceRate.Value)).Sum();
-				}
-				else
-				{
-					totalCost = laborTask.LaborSpreads.Sum(s => s.LaborSpreadValue);
 				}
 			}
 			catch (NullReferenceException ne)
