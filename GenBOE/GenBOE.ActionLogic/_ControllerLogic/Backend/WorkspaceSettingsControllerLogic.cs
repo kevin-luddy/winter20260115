@@ -466,12 +466,12 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 					}
 
 					// If Authors Assignable at Task Level is set to false and it was previously set to true,
-					// change all of the BOEs to Draft and clear all authors from tasks
+					// change all of the BOEs with assigned authors to Draft and clear all authors from tasks
 					if (Utilities.IsAssignTaskAuthorEnabledForSystem && !ws.EnableAssignTaskAuthor && previousValueEnableAssignTaskAuthor)
 					{
 						ws.RefreshBoes();
 
-						foreach (FullBoe boe in ws.Boes)
+						foreach (FullBoe boe in ws.Boes.Where(b => b.TaskElements.Any(t => t.AuthorUserId != null)))
 						{
 							boe.State = BOEState.Draft;
 							boe.Updateable = UpdateType.Upsert;
