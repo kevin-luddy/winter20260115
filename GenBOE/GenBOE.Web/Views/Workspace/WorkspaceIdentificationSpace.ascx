@@ -464,8 +464,6 @@
 	// Show the popup if the load value is set to true, but user changes it to false
 	$('#EnableAssignTaskAuthor').change(function () {
 		var isAuthorsAssignedSetToTrue = $('#EnableAssignTaskAuthor').val() === 'True';
-		console.log(workspaceContainsTaskAuthor);
-		console.log(onLoadAssignAuthorsValue);
 		if (onLoadAssignAuthorsValue === 'True' && !isAuthorsAssignedSetToTrue && workspaceContainsTaskAuthor === 'True') {
 			Session.confirmDialog(
 				'Delete Assigned Task Authors',

@@ -471,7 +471,8 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 					{
 						ws.RefreshBoes();
 
-						foreach (FullBoe boe in ws.Boes.Where(b => b.TaskElements.Any(t => t.AuthorUserId != null)))
+						ICollection<int> boeIdsWithTaskAuthors = ws.TaskElements.Where(x => x.AuthorUserId != null).Select(x => x.BoeID).Distinct().ToCollection();
+						foreach (FullBoe boe in ws.Boes.Where(x => boeIdsWithTaskAuthors.Contains(x.Id)))
 						{
 							boe.State = BOEState.Draft;
 							boe.Updateable = UpdateType.Upsert;
