@@ -17,6 +17,7 @@ namespace GenBOE.ActionLogic.ModelView
         public string DisplayEvent { get; set; }
         public string DeleteAction { get; set; }
 		public bool ContainsOCI { get; set; }
+		public bool IsUCOTEnabledForWorkspace { get; set; }
         public Collection<GenericTaskElementGridRow> TaskElements { get; set; }
     }
 
@@ -74,22 +75,20 @@ namespace GenBOE.ActionLogic.ModelView
 
         public decimal? TotalHours { get; set; }
 
+		public decimal? TotalUCOTHours { get; set; }
+
+		public decimal? TotalHoursWithUCOT { get; set; }
+
         private decimal? _totalCost;
 
         [DisplayFormat(DataFormatString = "{0:N}")]
         public decimal? TotalCost
-        {
-            get
-            {
-                return this._totalCost ?? 0;
-            }
-            set
-            {
-                this._totalCost = value;
-            }
-        }
+		{
+			get => this._totalCost ?? 0; 
+			set => this._totalCost = value;
+		}
 
-        public string TaskID { get; set; }
+		public string TaskID { get; set; }
         public bool Deleted { get; set; }
 
         public TaskElementType TaskType { get; set; }
@@ -103,25 +102,32 @@ namespace GenBOE.ActionLogic.ModelView
         /// Gets Total Hours in the correct format as defined for the workspace.
         /// </summary>
         public string TotalHoursFormatted
-        {
-            get
-            {
-                return Utilities.FormatStringWithPrecision(this.TotalHours.HasValue ? this.TotalHours.Value : 0, this.ResourceDecimalPrecision);
-            }
-        }
+		{
+			get => Utilities.FormatStringWithPrecision(this.TotalHours.HasValue ? this.TotalHours.Value : 0, this.ResourceDecimalPrecision);
+		}
 
-        /// <summary>
-        /// String format used by the UI for decimal precision.
-        /// </summary>
-        public string DecimalPrecisionStringFormat
-        {
-            get
-            {
-                return Utilities.PrecisionFormattingString(this.ResourceDecimalPrecision);
-            }
-        }
+		/// <summary>
+		/// Gets UCOT Hours in the correct format as defined for the workspace
+		/// </summary>
+		public string TotalUCOTHoursFormatted
+		{
+			get => Utilities.FormatStringWithPrecision(this.TotalUCOTHours.HasValue ? this.TotalUCOTHours.Value : 0, this.ResourceDecimalPrecision);
+		}
 
-        public override string ToString()
+		public string TotalHoursWithUCOTFormatted
+		{
+			get => Utilities.FormatStringWithPrecision(this.TotalHoursWithUCOT.HasValue ? this.TotalHoursWithUCOT.Value : 0, this.ResourceDecimalPrecision);
+		}
+
+		/// <summary>
+		/// String format used by the UI for decimal precision.
+		/// </summary>
+		public string DecimalPrecisionStringFormat
+		{
+			get => Utilities.PrecisionFormattingString(this.ResourceDecimalPrecision);
+		}
+
+		public override string ToString()
         {
             return String.Format("TaskElementGridModelView ID {0} TaskElementDetailID {1} Title {2} StartDate {3} EndDate {4} TotalHours {5} TotalCost {6} Deleted {7}", this.TaskID, this.TaskElementDetailID, this.Title, this.StartDate, this.EndDate, this.TotalHours, this.TotalCost, this.Deleted);
         }
