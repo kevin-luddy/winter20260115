@@ -11,6 +11,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 	using System.Collections.Generic;
 	using System.ComponentModel;
 	using System.ComponentModel.DataAnnotations;
+	using System.Linq;
 	using System.Web.Mvc;
 	using GenBOE.ActionLogic.Validation;
 	using GenBOE.Dtos;
@@ -40,6 +41,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 			this.CustomFieldSortingSelect = ExtensionMethods.GetSelectItems<CustomFieldSorting>();
 			this.CurrentPTMWorkspace = false;
 			this.EnableAssignTaskAuthor = false;
+			this.WorkspaceContainsTaskAuthor = false;
 		}
 
 		/// <summary>
@@ -81,6 +83,10 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 				this.EnableSAPConnection = workspaceDTO.EnableSAPConnection;
 				this.EnableAssignTaskAuthor = workspaceDTO.EnableAssignTaskAuthor;
 				this.CurrentPTMWorkspace = workspaceDTO.CurrentPTMWorkspace;
+				if (this.EnableAssignTaskAuthor)
+				{
+					this.WorkspaceContainsTaskAuthor = workspaceDTO.TaskElements.Any(x => x.AuthorUserId != null);
+				}
 			}
 			if (costVolumeLeadDTO != null)
 			{
@@ -255,5 +261,10 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// </summary>
 		[Required(ErrorMessage = "Authors Assignable at Task Level selection is required.")]
 		public bool EnableAssignTaskAuthor { get; set; }
+
+		/// <summary>
+		/// True if at least one Task in the Workspace has an author assigned
+		/// </summary>
+		public bool WorkspaceContainsTaskAuthor { get; set; }
 	}
 }
