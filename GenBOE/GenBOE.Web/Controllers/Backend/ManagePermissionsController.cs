@@ -6,18 +6,19 @@
 
 namespace GenBOE.Web.Controllers
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Web.Http;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.ControllerLogic.Backend;
+	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.Backend;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Objects;
 	using GenBOE.Web.ModelView;
 	using IES.Common;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Web.Http;
 
 	/// <summary>
 	/// Manage Permissions Controller for getting workspace home data.
@@ -34,10 +35,10 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		private Logger logger = new Logger("ManagePermissionsController");
 
-        /// <summary>
-        /// The ad utilities class
-        /// </summary>
-        private IActiveDirectoryUtilities ADUtils = null;
+		/// <summary>
+		/// The ad utilities class
+		/// </summary>
+		private IActiveDirectoryUtilities ADUtils = null;
 
 		/// <summary>
 		/// ctor
@@ -106,12 +107,12 @@ namespace GenBOE.Web.Controllers
 			return result;
 		}
 
-        /// <summary>
-        /// Gets Members of Group
-        /// </summary>
-        ///<param name="groupName">The AD group name.</param>
-        /// <returns>Group Members</returns>
-        [HttpGet]
+		/// <summary>
+		/// Gets Members of Group
+		/// </summary>
+		///<param name="groupName">The AD group name.</param>
+		/// <returns>Group Members</returns>
+		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public IESSingleResponse<ICollection<UserData>> GetGroupMembers(string groupName)
@@ -130,6 +131,39 @@ namespace GenBOE.Web.Controllers
 			{
 				logger.Error(ex);
 				result.Messages.Add($"Unknown error occured: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Save New Permissions
+		/// </summary>
+		/// <param name="saveNewPermissionsModelView"></param>
+		/// <returns>True/False if everything runs</returns>
+		[HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<bool> SaveNewPermissions([FromBody] SaveNewPermissionsModelView saveNewPermissionsModelView)
+		{
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+			try
+			{
+				if (saveNewPermissionsModelView != null)
+				{
+					SavePermissionModelView webPermissionsModelView = new SavePermissionModelView()
+					{
+						EntityIds = { saveNewPermissionsModelView.entityIds },
+						Roles = (System.Collections.ObjectModel.Collection<Role>)saveNewPermissionsModelView.roles,
+					};
+					PermissionControllerLogic.SaveNewPermissions(saveNewPermissionsModelView.workspaceShortName, new SavePermissionModelView[] { webPermissionsModelView });
+					result.Data = true;
+					result.IsSuccessful = true;
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occured saving permissions: {ex.Message}");
 			}
 
 			return result;
