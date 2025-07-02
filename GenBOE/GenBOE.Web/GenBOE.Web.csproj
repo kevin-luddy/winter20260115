@@ -320,6 +320,7 @@
     <Compile Include="ModelView\PagedSystemOffloadRateModelView.cs" />
     <Compile Include="ModelView\PBOEData.cs" />
     <Compile Include="ModelView\RteTemplateModelView.cs" />
+    <Compile Include="ModelView\SaveNewPermissionsModelView.cs" />
     <Compile Include="ModelView\SendToProPricerModelView.cs" />
     <Compile Include="ModelView\BOEFormData.cs" />
     <Compile Include="ModelView\TrackingNumberRevisionModelView.cs" />
