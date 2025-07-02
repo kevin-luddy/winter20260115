@@ -5,7 +5,7 @@
 	using System.Collections.Generic;
 
 	/// <summary>
-	/// Payload model for Save New Permissions POST requst
+	/// Payload model for Save New Permissions POST request
 	/// </summary>
 	[Serializable]
 	public class SaveNewPermissionsModelView

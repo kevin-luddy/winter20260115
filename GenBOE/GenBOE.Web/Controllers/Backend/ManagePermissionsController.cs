@@ -140,7 +140,7 @@ namespace GenBOE.Web.Controllers
 		/// Save New Permissions
 		/// </summary>
 		/// <param name="saveNewPermissionsModelView"></param>
-		/// <returns></returns>
+		/// <returns>True/False if everything runs</returns>
 		[HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<bool> SaveNewPermissions([FromBody] SaveNewPermissionsModelView saveNewPermissionsModelView)
