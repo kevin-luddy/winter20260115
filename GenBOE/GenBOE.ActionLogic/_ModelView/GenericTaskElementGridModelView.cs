@@ -107,13 +107,16 @@ namespace GenBOE.ActionLogic.ModelView
 		}
 
 		/// <summary>
-		/// Gets UCOT Hours in the correct format as defined for the workspace
+		/// Gets UCOT Hours in the correct format as defined for the workspace.
 		/// </summary>
 		public string TotalUCOTHoursFormatted
 		{
 			get => Utilities.FormatStringWithPrecision(this.TotalUCOTHours.HasValue ? this.TotalUCOTHours.Value : 0, this.ResourceDecimalPrecision);
 		}
 
+		/// <summary>
+		/// Gets Total Hours with UCOT in the correct format as defined for the workspace.
+		/// </summary>
 		public string TotalHoursWithUCOTFormatted
 		{
 			get => Utilities.FormatStringWithPrecision(this.TotalHoursWithUCOT.HasValue ? this.TotalHoursWithUCOT.Value : 0, this.ResourceDecimalPrecision);

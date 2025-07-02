@@ -228,14 +228,17 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             GenericTaskElementGridModelView theModelView = new GenericTaskElementGridModelView();
 			theModelView.IsUCOTEnabledForWorkspace = Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.Shortname);
-
             theModelView.DeleteAction = WebConstants.ACTION_DELETE_TASK_ELEMENTS;
             theModelView.DisplayEvent = WebConstants.EVENT_DISPLAY_TASK_ELEMENT_DETAILS;
 
 			// pulling from workspace instead of by BOE since we are already loading the full workspace task elements elsewhere to show the page, and for validation
 			boe.SetTaskElements(ws.TaskElements);
 			IReadOnlyCollection<BoeTaskElementDTO> taskElementCollection = boe.TaskElements;
-			UCOTUtility.SetTaskElementsUCOTData(taskElementCollection, ws.MoqTypeSelections, ws.ResourcesUsedInWsBoes, ws.UCOTFactor, ws.ResourceDecimalPrecision);
+
+			if (theModelView.IsUCOTEnabledForWorkspace)
+			{
+				UCOTUtility.SetTaskElementsUCOTData(taskElementCollection, ws.MoqTypeSelections, ws.ResourcesUsedInWsBoes, ws.UCOTFactor, ws.ResourceDecimalPrecision);
+			}
 
 			if (IsSubContractor)
             {

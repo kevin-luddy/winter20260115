@@ -33,30 +33,35 @@ namespace GenBOE.ActionLogic.Misc
 			// We will only do calculations when in SPACE
 			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 			{
-				IDictionary<int, MoqTypeSelection> moqTypeSelectionDictionary = moqTypeSelections.ToDictionary(m => m.TaskId);
+				Dictionary<int, IGrouping<int, MoqTypeSelection>> moqTypeSelectionDictionary = moqTypeSelections.GroupBy(m => m.TaskId).ToDictionary(d => d.Key);
 				IDictionary<int, ResourceDTO> resourceDictionary = resourcesUsedInWsBoes.ToDictionary(r => r.Id);
 
 				taskElements.ForEach(t =>
 				{
 					decimal ucotTotal = 0m;
-					MoqTypeSelection moqType = moqTypeSelectionDictionary[t.Id];
+					IGrouping<int, MoqTypeSelection> moqGroup = moqTypeSelectionDictionary[t.Id];
 
-					if (moqType.SelectedMOQType == MOQType.AnalogousRelationships || moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative)
+					if (moqGroup.Count() == 1)
 					{
-						t.taskElementLabors.Where(x => x.SpreadType == SpreadType.Hours).ForEach(labor =>
-						{
-							if (labor.ResourceID.HasValue)
-							{
-								ResourceDTO resource = resourceDictionary[labor.ResourceID.Value];
+						MoqTypeSelection moqType = moqGroup.First();
 
-								if (resource != null && resource.ElementOfCost == ElementOfCostType.LMLabor)
+						if (moqType.SelectedMOQType == MOQType.AnalogousRelationships || moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative)
+						{
+							t.taskElementLabors.Where(x => x.SpreadType == SpreadType.Hours).ForEach(labor =>
+							{
+								if (labor.BusinessResourceCodeID.HasValue)
 								{
-									ucotTotal += labor.LaborSpreads
-										.Where(s => s.LaborSpreadDate >= Utilities.OneLmxStartDate)
-										.Sum(spread => spread.LaborSpreadValue);
+									ResourceDTO resource = resourceDictionary[labor.BusinessResourceCodeID.Value];
+
+									if (resource != null && resource.ElementOfCost == ElementOfCostType.LMLabor)
+									{
+										ucotTotal += labor.LaborSpreads
+											.Where(s => s.LaborSpreadDate >= Utilities.OneLmxStartDate)
+											.Sum(spread => spread.LaborSpreadValue);
+									}
 								}
-							}
-						});
+							});
+						}
 					}
 
 					t.UCOTHours = Utilities.AdjustPrecision(ucotTotal * ucotFactor / 100m, resourceDecimalPrecision);
