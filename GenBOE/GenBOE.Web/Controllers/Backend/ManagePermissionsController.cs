@@ -7,7 +7,6 @@
 namespace GenBOE.Web.Controllers
 {
 	using GenBOE.ActionLogic;
-	using GenBOE.ActionLogic.ControllerLogic.Backend;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.Backend;
 	using GenBOE.DataBridge.Common.Interfaces;
@@ -153,8 +152,9 @@ namespace GenBOE.Web.Controllers
 					SavePermissionModelView webPermissionsModelView = new SavePermissionModelView()
 					{
 						EntityIds = { saveNewPermissionsModelView.entityIds },
-						Roles = (System.Collections.ObjectModel.Collection<Role>)saveNewPermissionsModelView.roles,
+						Roles = new System.Collections.ObjectModel.Collection<IES.Common.Role>(saveNewPermissionsModelView.roles.ToList()),
 					};
+
 					PermissionControllerLogic.SaveNewPermissions(saveNewPermissionsModelView.workspaceShortName, new SavePermissionModelView[] { webPermissionsModelView });
 					result.Data = true;
 					result.IsSuccessful = true;
