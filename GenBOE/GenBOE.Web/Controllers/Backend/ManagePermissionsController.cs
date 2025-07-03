@@ -7,7 +7,6 @@
 namespace GenBOE.Web.Controllers
 {
 	using GenBOE.ActionLogic;
-	using GenBOE.ActionLogic.ControllerLogic.Backend;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.Backend;
 	using GenBOE.DataBridge.Common.Interfaces;
@@ -19,7 +18,6 @@ namespace GenBOE.Web.Controllers
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Web.Http;
-	using System.Web.Security;
 
 	/// <summary>
 	/// Manage Permissions Controller for getting workspace home data.
