@@ -43,12 +43,21 @@ namespace IES.Common
 		private static object lockObject = new object();
 		private static DateTime? sapSpaceStartDate;
 		private static DateTime? skillMixStartDate;
-		private static DateTime? ucotStartDate;
 		private static DateTime? oneLmxStartDate;
 		private static DateTime? datepickerRestrictionRMS;
 		private static DateTime? historicalReferenceExplanationStartDate;
 		private static DateTime? showINLCutoffDate;
 		private static readonly IActiveDirectoryUtilities activeDirectoryUtilities = GenBOEUnityContainer.Resolve<IActiveDirectoryUtilities>();
+		
+		/// <summary>
+		/// Private for UCOT Start Date
+		/// </summary>
+		private static DateTime? ucotStartDate;
+
+		/// <summary>
+		/// Private for Is UCOT Enabled
+		/// </summary>
+		private static bool? isUCOTEnabled;
 
 		/// <summary>
 		/// Asserts the equality of decimal values within an epsilon error range.
@@ -163,6 +172,23 @@ namespace IES.Common
 				}
 
 				return sapSpaceStartDate.Value;
+			}
+		}
+
+		/// <summary>
+		/// Is UCOT/Uncompensated Overtime enabled?
+		/// </summary>
+		public static bool IsUCOTEnabledForSystem
+		{
+			get
+			{
+				if (isUCOTEnabled == null)
+				{
+					bool.TryParse(ConfigurationUtilities.GetAppSetting("EnableUCOT"), out bool ucotEnabled);
+					isUCOTEnabled = ucotEnabled;
+				}
+
+				return isUCOTEnabled.Value;
 			}
 		}
 
@@ -924,28 +950,6 @@ namespace IES.Common
 		}
 
 		/// <summary>
-		/// Private for Is UCOT Enabled
-		/// </summary>
-		private static bool? isUCOTEnabled;
-
-		/// <summary>
-		/// Is UCOT/Uncompensated Overtime enabled?
-		/// </summary>
-		public static bool IsUCOTEnabledForSystem
-		{
-			get
-			{
-				if (isUCOTEnabled == null)
-				{
-					bool.TryParse(ConfigurationUtilities.GetAppSetting("EnableUCOT"), out bool ucotEnabled);
-					isUCOTEnabled = ucotEnabled;
-				}
-
-				return isUCOTEnabled.Value;
-			}
-		}
-
-		/// <summary>
 		/// Private for Is BRC Enabled, used for unit testing
 		/// </summary>
 		private static bool? isBRCEnabled;
@@ -1138,34 +1142,6 @@ namespace IES.Common
 		}
 
 		/// <summary>
-		/// Is UCOT shown to the user for this workspace
-		/// </summary>
-		/// <param name="workspaceCreationDate">Workspace creation date</param>
-		/// <param name="shortname">Workspace shortname.</param>
-		/// <returns>True to show UCOT</returns>
-		public static bool ShowUCOTForWorkspace(DateTime? workspaceCreationDate, string shortname)
-		{
-			// UCOT is space only, no need to run logic if it isn't space.
-			if (SystemConfiguration.Instance().CompanyMode != CompanyConfiguration.SpaceSystems)
-			{
-				return false;
-			}
-
-			// Exclude UCOT showing for specific PTM tracking numbers.
-			string excludedShortspaces = ConfigurationUtilities.GetAppSetting("UcotExcludedWorkspaces");
-			string[] excludedShortspacesArray = excludedShortspaces?.Split(',').Select(s => s.Trim()).ToArray();
-
-			if (excludedShortspacesArray != null && excludedShortspacesArray.Any() && excludedShortspacesArray.Contains(shortname))
-			{
-				return false;
-			}
-			else
-			{
-				return IsUCOTEnabledForSystem && workspaceCreationDate >= UCOTStartDate;
-			}
-		}
-
-		/// <summary>
 		/// Returns true/false indicating whether the external help links should be shut off. This is used for classified installations, 
 		/// to not point at unclassified locations that are not accessible.
 		/// </summary>
@@ -1337,6 +1313,34 @@ namespace IES.Common
 				string key = content.Headers.ContentDisposition.Name.Replace("\"", "");
 				string value = content.ReadAsStringAsync().Result;
 				valuesToPopulate.Add(key, value);
+			}
+		}
+
+		/// <summary>
+		/// Is UCOT shown to the user for this workspace
+		/// </summary>
+		/// <param name="workspaceCreationDate">Workspace creation date</param>
+		/// <param name="shortname">Workspace shortname.</param>
+		/// <returns>True to show UCOT</returns>
+		public static bool ShowUCOTForWorkspace(DateTime? workspaceCreationDate, string shortname)
+		{
+			// UCOT is space only, no need to run logic if it isn't space.
+			if (SystemConfiguration.Instance().CompanyMode != CompanyConfiguration.SpaceSystems)
+			{
+				return false;
+			}
+
+			// Exclude UCOT showing for specific PTM tracking numbers.
+			string excludedShortspaces = ConfigurationUtilities.GetAppSetting("UcotExcludedWorkspaces");
+			string[] excludedShortspacesArray = excludedShortspaces?.Split(',').Select(s => s.Trim()).ToArray();
+
+			if (excludedShortspacesArray != null && excludedShortspacesArray.Any() && excludedShortspacesArray.Contains(shortname))
+			{
+				return false;
+			}
+			else
+			{
+				return IsUCOTEnabledForSystem && workspaceCreationDate >= UCOTStartDate;
 			}
 		}
 	}

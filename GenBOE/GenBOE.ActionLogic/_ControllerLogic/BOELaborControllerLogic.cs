@@ -1924,6 +1924,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				throw new ArgumentNullException(nameof(ws));
 			}
 
+			decimal? ucotHours = modelview.LaborTypesData.Sum(x => x.UcotHours);
+
+			if (ucotHours == null)
+			{
+				ucotHours = 0;
+			}
+
 			IDictionary<int, MOQTypeModelView> moqTypes = this.CommonDataMapper.getMOQTypeDictionary();
 
 			BoeTaskElementDTO toReturn = new BoeTaskElementDTO
