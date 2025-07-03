@@ -8,6 +8,12 @@
 
 	<!--appSettings-->
 
+
+	<parameter name="IsPLDIntegrated" description="Feature Flag for PLD Integration" defaultvalue="false">
+		<paremeterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IsPLDIntegrated']/@value">			
+		</paremeterentry>
+	</parameter>
+	
 	<parameter name="RemoveEmptySpans" description="doesn't matter" defaultvalue="__RemoveEmptySpans__" tags="">
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='RemoveEmptySpans']/@value">
 		</parameterentry>
