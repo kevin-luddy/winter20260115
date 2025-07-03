@@ -51,7 +51,7 @@ namespace GenBOE.ActionLogic.Misc
 		}
 
 		/// <summary>
-		/// Set UCOT Hours Total for the Task Element Collection (this method sets it on the each task)
+		/// Set UCOT Hours Total for the Task Element Collection (this method sets it on the individual task)
 		/// </summary>
 		/// <param name="taskElements">Task Elements to ADD the UCOT Hours too</param>
 		/// <param name="moqTypeSelections">Workspace MOQ Type Selections</param>
