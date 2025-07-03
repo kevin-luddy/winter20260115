@@ -19,6 +19,7 @@ namespace GenBOE.Web.Controllers
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Web.Http;
+	using System.Web.Security;
 
 	/// <summary>
 	/// Manage Permissions Controller for getting workspace home data.
@@ -153,8 +154,9 @@ namespace GenBOE.Web.Controllers
 					SavePermissionModelView webPermissionsModelView = new SavePermissionModelView()
 					{
 						EntityIds = { saveNewPermissionsModelView.entityIds },
-						Roles = (System.Collections.ObjectModel.Collection<Role>)saveNewPermissionsModelView.roles,
+						Roles = new System.Collections.ObjectModel.Collection<IES.Common.Role>(saveNewPermissionsModelView.roles.ToList()),
 					};
+
 					PermissionControllerLogic.SaveNewPermissions(saveNewPermissionsModelView.workspaceShortName, new SavePermissionModelView[] { webPermissionsModelView });
 					result.Data = true;
 					result.IsSuccessful = true;
