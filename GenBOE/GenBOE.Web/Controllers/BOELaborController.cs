@@ -675,6 +675,54 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
+		/// Calculates the discrete UCOT spread.
+		/// </summary>
+		/// <param name="items">The items to calculate spread for.</param>
+		/// <param name="calculateUCOT">Whether to calculate UCOT</param>
+		/// <returns></returns>
+		public ActionResult CalculateDiscreteUCOTSpread(string workspace, RecalcSpreadModelView[] items, decimal moqTotalHours, bool calculateUCOT)
+		{
+			if (ReferenceEquals(items, null))
+			{
+				throw new ArgumentNullException(nameof(items));
+			}
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			foreach (RecalcSpreadModelView item in items)
+			{
+				if (item.start == null)
+				{
+					throw new ArgumentException("item's start was null");
+				}
+
+				if (item.end == null)
+				{
+					throw new ArgumentException("Item's end was null");
+				}
+
+				if (item.curve == null)
+				{
+					throw new ArgumentException("Item's curve was null");
+				}
+
+				if (item.value == null)
+				{
+					throw new ArgumentException("Item's spread value was null");
+				}
+
+				if (item.rateType == null)
+				{
+					throw new ArgumentException("Item's rateType was null");
+				}
+			}
+
+			this._BoeLaborControllerLogic.RecalculateDiscreteUCOTSpreads(ws, items, moqTotalHours, calculateUCOT && Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.TrackingNumber));
+
+			return this.Json(items);
+		}
+
+		/// <summary>
 		/// Saves the task data model.
 		/// </summary>
 		/// <param name="workspace">The workspace.</param>

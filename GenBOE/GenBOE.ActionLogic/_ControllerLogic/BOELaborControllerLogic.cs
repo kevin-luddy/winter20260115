@@ -17,6 +17,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using System.Web.Configuration;
 	using System.Web.Mvc;
 	using DocumentFormat.OpenXml.Drawing.Charts;
+	using DocumentFormat.OpenXml.Spreadsheet;
+	using DocumentFormat.OpenXml.Vml;
+	using DocumentFormat.OpenXml.Wordprocessing;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
@@ -269,6 +272,86 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			#endregion
 		}
+
+		/// <summary>
+		/// Ralculates the discrete UCOT spread.
+		/// </summary>
+		/// <param name="workspaceData">The workspace data.</param>
+		/// <param name="laborTabData">The labor tab data.</param>
+		/// <param name="moqTotalHours">The moq total hours.</param>
+		/// <param name="calculateUCOT">Whether to calculate UCOT</param>
+		public void RecalculateDiscreteUCOTSpreads(FullWorkspace workspaceData, RecalcSpreadModelView[] laborTabData, decimal moqTotalHours, bool calculateUCOT)
+		{
+			if (workspaceData == null)
+			{
+				throw new ArgumentNullException(nameof(workspaceData));
+			}
+
+			if (laborTabData == null)
+			{
+				throw new ArgumentNullException(nameof(laborTabData));
+			}
+
+			foreach (RecalcSpreadModelView resourceTypeData in laborTabData)
+			{
+				if (resourceTypeData.IsValid())
+				{
+					int precision = (resourceTypeData.rateType == RateType.Cost) ? workspaceData.CostDecimalPrecision : workspaceData.DecimalPrecision;
+
+					decimal hourSpreadValue = resourceTypeData.value.HasValue ? Utilities.AdjustPrecision(resourceTypeData.value.Value, precision) : 0;
+					bool calculateUCOTForRow = calculateUCOT && resourceTypeData.ElementOfCost == ElementOfCostType.LMLabor && resourceTypeData.rateType == RateType.Hours;
+					//resourceTypeData.spreads = this.CalculateLaborSpreads(hourSpreadValue, resourceTypeData.start.Value, resourceTypeData.end.Value, resourceTypeData.curve.Value, precision, calculateUCOTForRow, workspaceData.UCOTFactor, out ICollection<LaborSpreadDataModelView> ucotSpreads);
+
+					//Basically need to run the labor spreads for discrete hours through this code thats from CalculateLaborSpreads (without running through this method: CalculateLaborSpreadsBasedOnCurve)
+					decimal sumUCOT = 0m;
+
+					// Convert dto to mv
+					foreach (ResourceSpreadDto dto in spreadDtos.OrderBy(s => s.LaborSpreadDate))
+					{
+						toReturn.Add(new LaborSpreadDataModelView()
+						{
+							LaborSpreadDate = dto.LaborSpreadDate.ToMonthString(),
+							LaborSpreadValue = dto.LaborSpreadValue
+						});
+
+						if (calculateUCOT && dto.LaborSpreadDate >= Utilities.OneLmxStartDate)
+						{
+							decimal nonPrecisionUCOT = dto.LaborSpreadValue * ucotFactor / 100.0m;
+							sumUCOT += nonPrecisionUCOT;
+							decimal precisionUCOT = Utilities.AdjustPrecision(nonPrecisionUCOT, precision);
+
+							ucotSpreadsToReturn.Add(new LaborSpreadDataModelView()
+							{
+								LaborSpreadDate = dto.LaborSpreadDate.ToMonthString(),
+								LaborSpreadValue = precisionUCOT,
+								UpdateDate = dto.UpdateDate,
+								UpdateDateLong = dto.UpdateDateLong
+							});
+						}
+					}
+
+					if (calculateUCOT && ucotSpreadsToReturn.Any())
+					{
+						decimal totalUCOTPrecision = Utilities.AdjustPrecision(sumUCOT, precision);
+						decimal[] ucotSpreadValues = SpreadCurve.Smooth(totalUCOTPrecision, ucotSpreadsToReturn.Select(s => s.LaborSpreadValue ?? 0m).ToArray(), 0, ucotSpreadsToReturn.Count, precision);
+
+						// Reset the values to the Smooth'ed array to guarantee precision and no loss of rounding values
+						for (int i = 0; i < ucotSpreadsToReturn.Count; i++)
+						{
+							ucotSpreadsToReturn[i].LaborSpreadValue = ucotSpreadValues[i];
+						}
+					}
+					resourceTypeData.ucotSpreads = ucotSpreads;
+					resourceTypeData.ucotHours = resourceTypeData.ucotSpreads.Sum(x => x.LaborSpreadValue);
+				}
+				else
+				{
+					resourceTypeData.spreads = new List<LaborSpreadDataModelView>();
+					resourceTypeData.ucotSpreads = new List<LaborSpreadDataModelView>();
+				}
+			}
+		}
+
 
 		/// <summary>
 		/// In cases where the total hours DOES NOT divide evenly among the number of percent-locked auto-calculated (non-discrete)

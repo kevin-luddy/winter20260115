@@ -1185,7 +1185,7 @@
 						}
 					} else {
 						// discrete
-						$scope.fixDiscreteSpread(item, true);
+						$scope.calculateDiscreteUCOTSpread(item, spreadValue);
 					}
 				}
 			}
@@ -1284,6 +1284,43 @@
 			$(document).trigger("HIDE_LOADING_BOX");
 		});
 	};
+
+	/* Calculate the discrete UCOT spread for one row */
+	var calculateDiscreteUCOTSpread = function (item, value) {
+		$(document).trigger("SHOW_LOADING_BOX");
+		var precision = ManageTaskModel.DecimalPrecision;
+		var data = { value: value, start: item.StartDate, end: item.EndDate, curve: item.SpreadCurveID, rateType: item.RateType, elementOfCost: item.ElementOfCost, percentLocked: item.PercentSpreadLocked, percentSpread: item.PercentSpread };
+		var dataArray = [];
+		dataArray.push(data);
+		var postedData = {
+			items: dataArray,
+			moqTotalHours: $scope.getMOQTotal().toString(),
+			calculateUCOT: $scope.showUCOT.toString()
+		};
+
+		$http({
+			method: 'POST',
+			data: postedData,
+			url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.calculateDiscreteUCOTSpreadAction, '')
+		}).then(function (response) {
+			var output = response.data[0];
+			item.UcotSpreads = output.ucotSpreads;
+			item.UcotHours = output.ucotHours;
+
+			// remake the spread array
+			$scope.generateSpreadTable();
+			$scope.recalculateTotals();
+
+			$(document).trigger("HIDE_LOADING_BOX");
+		}, function errorCallback(response) {
+			if (response.data && response.data.MessageList) {
+				$scope.errors = response.data.MessageList;
+			}
+
+			$(document).trigger("HIDE_LOADING_BOX");
+		});
+	};
+
 	var loadData = function (callback) {
 		$(document).trigger("SHOW_LOADING_BOX");
 		$scope.isLoading = true;
@@ -2265,7 +2302,7 @@
 					calculateSpread(item, spreadValue);
 				} else {
 					// discrete
-					$scope.fixDiscreteSpread(item, false);
+					$scope.calculateDiscreteUCOTSpread(item, spreadValue);
 				}
 			}
 		} else if (item.SpreadCurveID === "-1") {
