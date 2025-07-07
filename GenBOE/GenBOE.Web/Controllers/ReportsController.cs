@@ -2145,7 +2145,11 @@ namespace GenBOE.Web.Controllers
 					BOEExportInputs exportInputs = this.reportsControllerLogic.GetExportInputsForStatusAndWbsReports(ws);
 					ICollection<BoeWbsReportModelView> reportModelView = this.reportsControllerLogic.GenerateWbsBoeReport(exportInputs);
 
-					string exportedFileName = this.reportsControllerLogic.ExportWbsBoeReport(ws, Server.MapPath("~/Templates/Export/WbsBoeReport.xlsx"), reportModelView, exportInputs);
+					// Check to see if UCOT is enabled for Workspace and pull Template location based on check
+					bool isUCOTEnabledForWorkspace = Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.Shortname);
+					string templatePath = isUCOTEnabledForWorkspace ? Server.MapPath("~/Templates/Export/WbsBoeReportWithUCOT.xlsx") : Server.MapPath("~/Templates/Export/WbsBoeReport.xlsx");
+					
+					string exportedFileName = this.reportsControllerLogic.ExportWbsBoeReport(ws, templatePath, reportModelView, exportInputs);
 
 					string fileName = string.Format("{0}_WbsSummaryReport.xlsx", ws.WorkspaceName);
 					// Generate a custom ActionResult to cause a file download to the client

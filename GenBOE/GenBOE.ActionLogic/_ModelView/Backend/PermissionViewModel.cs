@@ -29,5 +29,10 @@ namespace GenBOE.ActionLogic.ModelView.Backend
 		/// Current User Display Name
 		/// </summary>
 		public string CurrentUserDisplayName { get; set; }
+
+		/// <summary>
+		/// Check to see if this workspace Creation Date > ShowINLCutoffDate
+		/// </summary>
+		public bool? IsPastCutOffDate { get; set; }
 	}
 }
