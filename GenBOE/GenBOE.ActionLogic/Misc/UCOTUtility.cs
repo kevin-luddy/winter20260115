@@ -28,7 +28,7 @@ namespace GenBOE.ActionLogic.Misc
 		/// <param name="resourcesUsedInWsBoes">Resources Used in Workspace BOES</param>
 		/// <param name="ucotFactor">UCOT Factor for the Workspace</param>
 		/// <param name="resourceDecimalPrecision">Resource Decimal Precision</param>
-		public static decimal GetTaskElementsUCOTData(IReadOnlyCollection<BoeTaskElementDTO> taskElements, IReadOnlyCollection<MoqTypeSelection> moqTypeSelections, IReadOnlyCollection<ResourceDTO> resourcesUsedInWsBoes, decimal ucotFactor, int? resourceDecimalPrecision)
+		public static decimal GetTaskElementsUCOTHours(IReadOnlyCollection<BoeTaskElementDTO> taskElements, IReadOnlyCollection<MoqTypeSelection> moqTypeSelections, IReadOnlyCollection<ResourceDTO> resourcesUsedInWsBoes, decimal ucotFactor, int? resourceDecimalPrecision)
 		{
 			decimal ucotHoursTotal = 0m;
 
@@ -38,12 +38,12 @@ namespace GenBOE.ActionLogic.Misc
 				Dictionary<int, IGrouping<int, MoqTypeSelection>> moqTypeSelectionDictionary = moqTypeSelections.GroupBy(m => m.TaskId).ToDictionary(d => d.Key);
 				IDictionary<int, ResourceDTO> resourceDictionary = resourcesUsedInWsBoes.ToDictionary(r => r.Id);
 
-				taskElements.ForEach(t =>
+				taskElements.ForEach(taskElement =>
 				{
-					decimal ucotTotal = TaskUCOTData(t, moqTypeSelectionDictionary, resourceDictionary);
+					decimal ucotTotal = CalculateTaskUCOTHours(taskElement, moqTypeSelectionDictionary, resourceDictionary);
 
-					t.UCOTHours = Utilities.AdjustPrecision(ucotTotal * ucotFactor / 100m, resourceDecimalPrecision);
-					ucotHoursTotal += t.UCOTHours.HasValue ? t.UCOTHours.Value : 0;
+					taskElement.UCOTHours = Utilities.AdjustPrecision(ucotTotal * ucotFactor / 100m, resourceDecimalPrecision);
+					ucotHoursTotal += taskElement.UCOTHours.HasValue ? taskElement.UCOTHours.Value : 0;
 				});
 			}
 
@@ -58,7 +58,7 @@ namespace GenBOE.ActionLogic.Misc
 		/// <param name="resourcesUsedInWsBoes">Resources Used in Workspace BOES</param>
 		/// <param name="ucotFactor">UCOT Factor for the Workspace</param>
 		/// <param name="resourceDecimalPrecision">Resource Decimal Precision</param>
-		public static void SetTaskElementsUCOTData(IReadOnlyCollection<BoeTaskElementDTO> taskElements, IReadOnlyCollection<MoqTypeSelection> moqTypeSelections, IReadOnlyCollection<ResourceDTO> resourcesUsedInWsBoes, decimal ucotFactor, int? resourceDecimalPrecision)
+		public static void SetTaskElementsUCOTHours(IReadOnlyCollection<BoeTaskElementDTO> taskElements, IReadOnlyCollection<MoqTypeSelection> moqTypeSelections, IReadOnlyCollection<ResourceDTO> resourcesUsedInWsBoes, decimal ucotFactor, int? resourceDecimalPrecision)
 		{
 			// We will only do calculations when in SPACE
 			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
@@ -66,12 +66,12 @@ namespace GenBOE.ActionLogic.Misc
 				Dictionary<int, IGrouping<int, MoqTypeSelection>> moqTypeSelectionDictionary = moqTypeSelections.GroupBy(m => m.TaskId).ToDictionary(d => d.Key);
 				IDictionary<int, ResourceDTO> resourceDictionary = resourcesUsedInWsBoes.ToDictionary(r => r.Id);
 
-				taskElements.ForEach(t =>
+				taskElements.ForEach(taskElement =>
 				{
-					decimal ucotTotal = TaskUCOTData(t, moqTypeSelectionDictionary, resourceDictionary);
+					decimal ucotTotal = CalculateTaskUCOTHours(taskElement, moqTypeSelectionDictionary, resourceDictionary);
 
-					t.UCOTHours = Utilities.AdjustPrecision(ucotTotal * ucotFactor / 100m, resourceDecimalPrecision);
-					t.TotalHoursWithUCOT = t.UCOTHours + t.TotalHours;
+					taskElement.UCOTHours = Utilities.AdjustPrecision(ucotTotal * ucotFactor / 100m, resourceDecimalPrecision);
+					taskElement.TotalHoursWithUCOT = taskElement.UCOTHours + taskElement.TotalHours;
 				});
 			}
 		}
@@ -79,14 +79,14 @@ namespace GenBOE.ActionLogic.Misc
 		/// <summary>
 		/// Private Method to calculate individual Task Element UCOT Data
 		/// </summary>
-		/// <param name="t">Task Element DTO</param>
+		/// <param name="taskElement">Task Element DTO</param>
 		/// <param name="moqTypeSelectionDictionary">MOQ Type Selection Dictionary</param>
 		/// <param name="resourceDictionary">Resource Dictionary</param>
 		/// <returns>UCOT Total for the Task</returns>
-		private static decimal TaskUCOTData(BoeTaskElementDTO t, Dictionary<int, IGrouping<int, MoqTypeSelection>> moqTypeSelectionDictionary, IDictionary<int, ResourceDTO> resourceDictionary)
+		private static decimal CalculateTaskUCOTHours(BoeTaskElementDTO taskElement, Dictionary<int, IGrouping<int, MoqTypeSelection>> moqTypeSelectionDictionary, IDictionary<int, ResourceDTO> resourceDictionary)
 		{
 			decimal ucotTotal = 0m;
-			IGrouping<int, MoqTypeSelection> moqGroup = moqTypeSelectionDictionary[t.Id];
+			IGrouping<int, MoqTypeSelection> moqGroup = moqTypeSelectionDictionary[taskElement.Id];
 
 			if (moqGroup.Count() == 1)
 			{
@@ -94,7 +94,7 @@ namespace GenBOE.ActionLogic.Misc
 
 				if (moqType.SelectedMOQType == MOQType.AnalogousRelationships || moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative)
 				{
-					t.taskElementLabors.Where(x => x.SpreadType == SpreadType.Hours).ForEach(labor =>
+					taskElement.taskElementLabors.Where(x => x.SpreadType == SpreadType.Hours).ForEach(labor =>
 					{
 						if (labor.BusinessResourceCodeID.HasValue)
 						{

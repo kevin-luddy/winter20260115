@@ -649,7 +649,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				if (isUCOTEnabledForWorkspace)
 				{
 					FullWorkspace fullWorkspace = exportInputs.FullWorkspace;
-					modelView.TotalUCOTHours = UCOTUtility.GetTaskElementsUCOTData((IReadOnlyCollection<BoeTaskElementDTO>)tasks, fullWorkspace.MoqTypeSelections, fullWorkspace.ResourcesUsedInWsBoes, fullWorkspace.UCOTFactor, fullWorkspace.ResourceDecimalPrecision);
+					modelView.TotalUCOTHours = UCOTUtility.GetTaskElementsUCOTHours((IReadOnlyCollection<BoeTaskElementDTO>)tasks, fullWorkspace.MoqTypeSelections, fullWorkspace.ResourcesUsedInWsBoes, fullWorkspace.UCOTFactor, fullWorkspace.ResourceDecimalPrecision);
 					modelView.TotalHoursWithUCOT = modelView.TotalHours + modelView.TotalUCOTHours;
 				}
 

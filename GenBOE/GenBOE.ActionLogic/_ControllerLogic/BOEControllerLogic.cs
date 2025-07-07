@@ -237,7 +237,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			if (theModelView.IsUCOTEnabledForWorkspace)
 			{
-				UCOTUtility.SetTaskElementsUCOTData(taskElementCollection, ws.MoqTypeSelections, ws.ResourcesUsedInWsBoes, ws.UCOTFactor, ws.ResourceDecimalPrecision);
+				UCOTUtility.SetTaskElementsUCOTHours(taskElementCollection, ws.MoqTypeSelections, ws.ResourcesUsedInWsBoes, ws.UCOTFactor, ws.ResourceDecimalPrecision);
 			}
 
 			if (IsSubContractor)
