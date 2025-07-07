@@ -14,7 +14,8 @@ namespace GenBOE.ActionLogic.Reporting
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.IO.Export.BOE;
-    using GenBOE.DataBridge.Common;
+	using GenBOE.ActionLogic.Misc;
+	using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
@@ -88,7 +89,6 @@ namespace GenBOE.ActionLogic.Reporting
             HashSet<EscalationRatesDTO> allEscalations = new HashSet<EscalationRatesDTO>(exportInputs.EscalationRates);
             HashSet<MiscTravelRateDTO> allMiscTravelRates = new HashSet<MiscTravelRateDTO>(exportInputs.MiscTravelRatesForTravelTrips);
 
-
             // Create a report model view for each BOE
             foreach (BoeDTO boe in allBOEsInWorkspace)
             {
@@ -124,8 +124,13 @@ namespace GenBOE.ActionLogic.Reporting
                                         where laborType.SpreadType == SpreadType.Hours
                                               && laborType.ValueSpread.HasValue
                                         select laborType.ValueSpread.Value).Sum();
+				
+				// UCOT Data 
+				FullWorkspace fullWorkspace = exportInputs.FullWorkspace;
+				modelView.TotalUCOTHours = UCOTUtility.GetTaskElementsUCOTHours((IReadOnlyCollection<BoeTaskElementDTO>)tasks, fullWorkspace.MoqTypeSelections, fullWorkspace.ResourcesUsedInWsBoes, fullWorkspace.UCOTFactor, fullWorkspace.ResourceDecimalPrecision);
+				modelView.TotalHoursWithUCOT = modelView.TotalHours + modelView.TotalUCOTHours;
 
-                decimal taskCost = 0;
+				decimal taskCost = 0;
 
                 // calculate labor cost
                 foreach (ResourceTypeDto boeResource in tasks.SelectMany(x => x.taskElementLabors))

@@ -815,6 +815,9 @@ namespace GenBOE.Web.Controllers
             ViewData["AllCLIN"] = ws.Clins;
             ViewData["HoursLabel"] = FullObjectHelper.HoursLabel(ws);
 
+			// UCOT Variables and Data Manipulation
+			ViewData["IsUCOTEnabledForWorkspace"] = Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.Shortname);
+
             // Call the BL to generate the status report
             // All BOEs for the workspace as a default
             List<FullBoe> boes = ws.Boes.ToList();
@@ -1997,23 +2000,47 @@ namespace GenBOE.Web.Controllers
 					if (theModelViews.Count > 0)
 					{
 						string templateFileName;
-
-						switch (reportID)
+						bool isUCOTEnabledForWorkspace = Utilities.ShowUCOTForWorkspace(exportInputs.FullWorkspace.CreationDate, exportInputs.FullWorkspace.Shortname);
+						
+						if (isUCOTEnabledForWorkspace)
 						{
-							case (int)Reports.BOEStatusByWBS:
-								// Get BOE Status Report template file name
-								templateFileName = Server.MapPath("~/Templates/Export/BOEStatusByWBS.xlsx");
-								break;
+							switch (reportID)
+							{
+								case (int)Reports.BOEStatusByWBS:
+									// Get BOE Status Report template file name
+									templateFileName = Server.MapPath("~/Templates/Export/BOEStatusWithUCOTByWBS.xlsx");
+									break;
 
-							case (int)Reports.BOEStatusByCLIN:
-								// Get BOE Status Report template file name
-								templateFileName = Server.MapPath("~/Templates/Export/BOEStatusByCLIN.xlsx");
-								break;
+								case (int)Reports.BOEStatusByCLIN:
+									// Get BOE Status Report template file name
+									templateFileName = Server.MapPath("~/Templates/Export/BOEStatusWithUCOTByCLIN.xlsx");
+									break;
 
-							default:
-								// Get BOE Status Report template file name
-								templateFileName = Server.MapPath("~/Templates/Export/BOEStatusByBOE.xlsx");
-								break;
+								default:
+									// Get BOE Status Report template file name
+									templateFileName = Server.MapPath("~/Templates/Export/BOEStatusWithUCOTByBOE.xlsx");
+									break;
+							}
+						}
+						else
+						{
+							switch (reportID)
+							{
+								case (int)Reports.BOEStatusByWBS:
+									// Get BOE Status Report template file name
+									templateFileName = Server.MapPath("~/Templates/Export/BOEStatusByWBS.xlsx");
+									break;
+
+								case (int)Reports.BOEStatusByCLIN:
+									// Get BOE Status Report template file name
+									templateFileName = Server.MapPath("~/Templates/Export/BOEStatusByCLIN.xlsx");
+									break;
+
+								default:
+									// Get BOE Status Report template file name
+									templateFileName = Server.MapPath("~/Templates/Export/BOEStatusByBOE.xlsx");
+									break;
+							}
 						}
 
 						// Generate an export file from the data

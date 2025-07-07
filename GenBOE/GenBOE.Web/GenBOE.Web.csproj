@@ -1158,6 +1158,9 @@
     <Content Include="Templates\Export\LaborTypesAndSpread_BRCEnabled.xlsx" />
     <Content Include="Templates\Export\ConfidenceReport.xlsx" />
     <Content Include="Templates\Export\WbsBoeReportWithUCOT.xlsx" />
+    <Content Include="Templates\Export\BOEStatusWithUCOTByBOE.xlsx" />
+    <Content Include="Templates\Export\BOEStatusWithUCOTByCLIN.xlsx" />
+    <Content Include="Templates\Export\BOEStatusWithUCOTByWBS.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

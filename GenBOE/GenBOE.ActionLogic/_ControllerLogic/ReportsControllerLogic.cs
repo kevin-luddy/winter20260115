@@ -273,7 +273,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 			else if (isCustomExport)
 			{
-				
 				if (segmentedOutput)
 				{
 					this.boeCustomExporter.ExportBOEsToZipFile(
@@ -743,7 +742,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			{
 				// Add headers
 				toReturn.Add(ImportExportConstants.WBS_NUMBER_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER,
-					hoursLabel, ImportExportConstants.TOTAL_UCOT_HOURS_COLUMN_HEADER, ImportExportConstants.TOTAL_HOURS_WITH_UCOT_COLUMN_HEADER, ImportExportConstants.TOTAL_COST_COLUMN_HEADER);
+					hoursLabel, ImportExportConstants.TOTAL_UCOT_HOURS_COLUMN_HEADER, ImportExportConstants.GRAND_TOTAL_HOURS_COLUMN_HEADER, ImportExportConstants.TOTAL_COST_COLUMN_HEADER);
 
 				toReturn.AddRange(
 					from mv in reportModelView
