@@ -1157,6 +1157,7 @@
     <Content Include="Templates\Export\PermissionsRMS.xlsx" />
     <Content Include="Templates\Export\LaborTypesAndSpread_BRCEnabled.xlsx" />
     <Content Include="Templates\Export\ConfidenceReport.xlsx" />
+    <Content Include="Templates\Export\WbsBoeReportWithUCOT.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
