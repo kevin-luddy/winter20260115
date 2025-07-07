@@ -432,6 +432,7 @@ namespace GenBOE.ActionLogic
 			toReturn.Permissions = reGrouping;
 			toReturn.CurrentUserId = ws.CurrentActiveUser.UserID;
 			toReturn.CurrentUserDisplayName = ws.CurrentActiveUser.DisplayName;
+			toReturn.IsPastCutOffDate = ws.CreationDate > Utilities.ShowINLCutoffDate;
 
 			return toReturn;
 		}
