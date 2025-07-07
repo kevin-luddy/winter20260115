@@ -1,5 +1,7 @@
 ﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<IEnumerable<GenBOE.Dtos.BOEStatusReportModelView>>" %>
 
+<% bool IsUCOTEnabledForWorkspace = (bool)ViewData["IsUCOTEnabledForWorkspace"]; %>
+
 <table id="BOEStatusReportGrid-BOE"  class="sortable grid readonly">
     <thead>
         <tr>
@@ -9,9 +11,9 @@
             <th class="sort start-date" sortType="date">Start Date</th>
             <th class="sort end-date" sortType="date">End Date</th>
             <th class="sort total-hours" sortType="number">Total <%: ViewData["HoursLabel"]%></th>
-			<% if ((bool)ViewData["IsUCOTEnabledForWorkspace"]) { %>
-			<th class="sort total-hours" sortType="number">Total UCOT Hours</th>
-			<th class="sort total-hours" sortType="number">Grand Total Hours</th>
+			<% if (IsUCOTEnabledForWorkspace) { %>
+				<th class="sort total-hours" sortType="number">Total UCOT Hours</th>
+				<th class="sort total-hours" sortType="number">Grand Total Hours</th>
 			<% } %>
             <th class="sort total-cost" sortType="number">Total Cost</th>
             <th class="sort author">Authors</th>
@@ -28,9 +30,9 @@
             <td><%:Html.DisplayFor(i => item.StartDate) %></td>
             <td><%:Html.DisplayFor(i => item.EndDate) %></td>
             <td title="<%:item.TotalHoursFormatted %>"><%:item.TotalHoursFormatted %></td>
-            <% if ((bool)ViewData["IsUCOTEnabledForWorkspace"]) { %>
-			<td title="<%:item.TotalUCOTHoursFormatted %>"><%:item.TotalUCOTHoursFormatted %></td>
-			<td title="<%:item.TotalHoursWithUCOTFormatted %>"><%:item.TotalHoursWithUCOTFormatted %></td>
+            <% if (IsUCOTEnabledForWorkspace) { %>
+				<td title="<%:item.TotalUCOTHoursFormatted %>"><%:item.TotalUCOTHoursFormatted %></td>
+				<td title="<%:item.TotalHoursWithUCOTFormatted %>"><%:item.TotalHoursWithUCOTFormatted %></td>
 			<% } %>
 			<td title="<%:item.TotalCost%>"><%:item.TotalCost.ToString("#0.00")%></td>
             <%  string authorList = string.Empty;

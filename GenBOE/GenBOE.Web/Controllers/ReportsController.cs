@@ -817,6 +817,8 @@ namespace GenBOE.Web.Controllers
 
 			// UCOT Variables and Data Manipulation
 			ViewData["IsUCOTEnabledForWorkspace"] = Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.Shortname);
+			ViewData["MoqTypeSelections"] = ws.MoqTypeSelections;
+			ViewData[""] = ws.ResourcesUsedInWsBoes;
 
             // Call the BL to generate the status report
             // All BOEs for the workspace as a default
