@@ -75,7 +75,44 @@
     <div class="module-header-data">BOE Status</div>
     <div class="module-content-data">
     
-        <div class="float-left">
+		<div class="boe-status-row">
+			<div class="view-selector-div">
+				<div>
+					View
+					<select id="BOEStatusReportGrid-View">
+						<option value="<%: (int)Reports.BOEStatusByBOE %>" selected="selected">BOEs Only</option>
+						<option value="<%: (int)Reports.BOEStatusByWBS %>">BOEs by WBS</option>
+						<option value="<%: (int)Reports.BOEStatusByCLIN %>">BOEs by CLIN</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="totals-div">
+				<div class="all-hours" style="padding-top: 0px !important;">
+					Total <%: ViewData["HoursLabel"]%> for all BOEs:
+					<%: Model.Sum(m => m.TotalHours).ToString(Model.Any() ? Model.First().DecimalPrecisionStringFormat : "F0") %>
+				</div>
+
+				<div class="all-hours">
+					Total UCOT <%: ViewData["HoursLabel"]%> for all BOEs:
+					<%: Model.Sum(m => m.TotalUCOTHours).ToString(Model.Any() ? Model.First().DecimalPrecisionStringFormat : "F0") %>
+				</div>
+
+				<div class="all-hours" style="padding-bottom: 8px;">
+					Grand Total <%: ViewData["HoursLabel"]%> for all BOEs:
+					<%: Model.Sum(m => m.TotalHoursWithUCOT).ToString(Model.Any() ? Model.First().DecimalPrecisionStringFormat : "F0") %>
+				</div>
+			</div>
+
+			<div class="export-button-div">
+				<div class="buttons boe-status-button">
+					<button id="BOEStatusReportGrid-Export" class="ies" type="button">Export</button>
+				</div>
+			</div>
+		</div>
+        
+		<%-- OLD stuff --%>
+		<%--<div class="float-left">
             View
             <select id="BOEStatusReportGrid-View">
                 <option value="<%: (int)Reports.BOEStatusByBOE %>" selected="selected">BOEs Only</option>
@@ -91,7 +128,7 @@
         <div class="all-hours float-right">
             Total <%: ViewData["HoursLabel"]%> for all BOEs:
             <%: Model.Sum(m => m.TotalHours).ToString(Model.Any() ? Model.First().DecimalPrecisionStringFormat : "F0") %>
-        </div>
+        </div>--%>
 
         <div class="clear"></div>
 

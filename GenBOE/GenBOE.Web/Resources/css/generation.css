@@ -1417,10 +1417,33 @@ div.summary-search-box div.search-magnify-glass-button {
     float: left;
 }
 
-.error
-{
-    color:Red;
-    
+.boe-status-row {
+	display: flex;
+	width: 100%;
+}
+
+.view-selector-div {
+	display: grid;
+	margin-top: auto;
+	margin-bottom: auto;
+}
+
+.totals-div {
+	display: grid;
+	margin-left: auto;
+}
+
+.export-button-div {
+	display: flex;
+}
+
+.boe-status-button {
+	margin-top: auto;
+	margin-bottom: auto;
+}
+
+.error {
+	color: Red;
 }
 .securityerror
 {
