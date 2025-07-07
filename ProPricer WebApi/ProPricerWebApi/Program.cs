@@ -23,6 +23,7 @@ namespace APTSPropricerApi
 		/// </summary>
 		public static void Main(string[] args)
 		{
+			System.IO.Directory.SetCurrentDirectory(System.AppDomain.CurrentDomain.BaseDirectory);
 			CreateHostBuilder(args).Build().Run();
 		}
 
