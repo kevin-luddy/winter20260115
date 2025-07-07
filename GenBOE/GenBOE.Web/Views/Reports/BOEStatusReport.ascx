@@ -110,25 +110,6 @@
 				</div>
 			</div>
 		</div>
-        
-		<%-- OLD stuff --%>
-		<%--<div class="float-left">
-            View
-            <select id="BOEStatusReportGrid-View">
-                <option value="<%: (int)Reports.BOEStatusByBOE %>" selected="selected">BOEs Only</option>
-                <option value="<%: (int)Reports.BOEStatusByWBS %>">BOEs by WBS</option>
-                <option value="<%: (int)Reports.BOEStatusByCLIN %>">BOEs by CLIN</option>
-            </select>
-        </div>
-
-        <div class="buttons float-right">
-            <button id="BOEStatusReportGrid-Export" class="ies" type="button">Export</button>
-        </div>
-
-        <div class="all-hours float-right">
-            Total <%: ViewData["HoursLabel"]%> for all BOEs:
-            <%: Model.Sum(m => m.TotalHours).ToString(Model.Any() ? Model.First().DecimalPrecisionStringFormat : "F0") %>
-        </div>--%>
 
         <div class="clear"></div>
 
