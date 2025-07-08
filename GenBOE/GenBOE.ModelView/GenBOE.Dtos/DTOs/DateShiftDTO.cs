@@ -12,7 +12,6 @@ namespace GenBOE.Dtos
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Linq;
 
 	/// <summary>
 	/// DTO that will contain Date Shifts.
@@ -36,7 +35,7 @@ namespace GenBOE.Dtos
 		/// <summary>
 		/// Children date shift objects.
 		/// </summary>
-		public List<DateShiftDTO> Children { get; private set; } = new List<DateShiftDTO>();
+		public List<DateShiftDTO> Children { get; set; } = new List<DateShiftDTO>();
 
 		/// <summary>
 		/// Parent of the date shift object.
@@ -165,20 +164,5 @@ namespace GenBOE.Dtos
 		/// Workspace state.
 		/// </summary>
 		public WorkspaceState WorkspaceState { get; set; }
-
-		/// <summary>
-		/// Adds date shift children objects.
-		/// </summary>
-		/// <param name="children">Date shift children objects.</param>
-		public void AddChildren(ICollection<DateShiftDTO> children)
-		{
-			foreach (DateShiftDTO child in children)
-			{
-				if (!Children.Any(c => c.Level == child.Level && c.Id == child.Id))
-				{
-					Children.Add(child);
-				}
-			}
-		}
 	}
 }

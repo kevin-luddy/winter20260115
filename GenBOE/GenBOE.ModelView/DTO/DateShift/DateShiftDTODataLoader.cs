@@ -257,7 +257,56 @@ namespace GenBOE.DataBridge.DTO
 					throw new NotSupportedException($"Unsupported level: {level}");
 			}
 
+			MakeChildrenUnique(dateShift);
+
 			return dateShift;
+		}
+
+		/// <summary>
+		/// Make children unique.
+		/// </summary>
+		/// <param name="dateShiftDTO">Date shift DTO.</param>
+		private void MakeChildrenUnique(DateShiftDTO dateShiftDTO)
+		{
+			if (dateShiftDTO == null)
+			{
+				return;
+			}
+
+			HashSet<(int, Level)> seen = new HashSet<(int, Level)>();
+			List<DateShiftDTO> uniqueChildren = new List<DateShiftDTO>();
+
+			if (dateShiftDTO.Children != null)
+			{
+				foreach (DateShiftDTO child in dateShiftDTO.Children)
+				{
+					if (IsUnique(child, seen))
+					{
+						uniqueChildren.Add(child);
+						MakeChildrenUnique(child);
+					}
+				}
+
+				dateShiftDTO.Children = uniqueChildren;
+			}
+		}
+
+		/// <summary>
+		/// Checks if is unique.
+		/// </summary>
+		/// <param name="dateShiftDTO">Date shift DTO.</param>
+		/// <param name="seen">Seen objects</param>
+		/// <returns>Is unique</returns>
+		private bool IsUnique(DateShiftDTO dateShiftDTO, HashSet<(int, Level)> seen)
+		{
+			(int Id, Level DateShiftLevel) key = (dateShiftDTO.Id, dateShiftDTO.DateShiftLevel);
+			if (seen.Contains(key))
+			{
+				return false;
+			}
+
+			seen.Add(key);
+			return true;
 		}
 
 		/// <summary>
@@ -289,7 +338,7 @@ namespace GenBOE.DataBridge.DTO
 										DateShiftLevel = Level.BOE
 									}).FirstOrDefault();
 
-				boe.AddChildren(GetBoeTaskElementDateShiftDataByBoeId(id));
+				boe.Children.AddRange(GetBoeTaskElementDateShiftDataByBoeId(id));
 
 				return boe;
 			}
@@ -321,7 +370,7 @@ namespace GenBOE.DataBridge.DTO
 
 				if (getChildren)
 				{
-					clin.AddChildren(GetBoeDateShiftDataByClinId(clin.Id));
+					clin.Children.AddRange(GetBoeDateShiftDataByClinId(clin.Id));
 				}
 
 				return clin;
@@ -357,7 +406,7 @@ namespace GenBOE.DataBridge.DTO
 
 				foreach (DateShiftDTO boe in boes)
 				{
-					boe.AddChildren(GetBoeTaskElementDateShiftDataByBoeId(boe.Id));
+					boe.Children.AddRange(GetBoeTaskElementDateShiftDataByBoeId(boe.Id));
 				}
 
 				return boes;
@@ -395,28 +444,28 @@ namespace GenBOE.DataBridge.DTO
 				// Get resource types for task element labors.
 				if (boeTaskElement != null)
 				{
-					boeTaskElement.AddChildren((from lT in gbe.BOELaborTypes
-												where lT.BOETaskElementID == id
-												select new DateShiftDTO
-												{
-													Id = lT.BOELaborTypeID,
-													BOETaskElementId = lT.BOETaskElementID,
-													ResourceId = lT.ResourceID.Value,
-													StartDate = lT.BOELaborTypeStartDate,
-													EndDate = lT.BOELaborTypeEndDate,
-													SpreadType = lT.SpreadTypeID.HasValue ? (SpreadType)lT.SpreadTypeID.Value : SpreadType.NotSet,
-													UpdateDate = lT.UpdateDT,
-													SpreadCurveIdValue = lT.SpreadCurveID,
-													LaborSpreadsIEnum = lT.BOELaborSpreads
-														.Select(lS => new ResourceSpreadDto
-														{
-															Id = lS.BOELaborSpreadID,
-															LaborSpreadDate = lS.LaborSpreadDate,
-															LaborSpreadValue = lS.LaborSpreadValue ?? 0,
-															LaborTypeId = lS.BOELaborTypeID
-														}),
-													DateShiftLevel = Level.Labor
-												}).ToList());
+					boeTaskElement.Children = (from lT in gbe.BOELaborTypes
+											   where lT.BOETaskElementID == id
+											   select new DateShiftDTO
+											   {
+												   Id = lT.BOELaborTypeID,
+												   BOETaskElementId = lT.BOETaskElementID,
+												   ResourceId = lT.ResourceID.Value,
+												   StartDate = lT.BOELaborTypeStartDate,
+												   EndDate = lT.BOELaborTypeEndDate,
+												   SpreadType = lT.SpreadTypeID.HasValue ? (SpreadType)lT.SpreadTypeID.Value : SpreadType.NotSet,
+												   UpdateDate = lT.UpdateDT,
+												   SpreadCurveIdValue = lT.SpreadCurveID,
+												   LaborSpreadsIEnum = lT.BOELaborSpreads
+													   .Select(lS => new ResourceSpreadDto
+													   {
+														   Id = lS.BOELaborSpreadID,
+														   LaborSpreadDate = lS.LaborSpreadDate,
+														   LaborSpreadValue = lS.LaborSpreadValue ?? 0,
+														   LaborTypeId = lS.BOELaborTypeID
+													   }),
+												   DateShiftLevel = Level.Labor
+											   }).ToList();
 
 					if (boeTaskElement.Children != null)
 					{
@@ -525,8 +574,8 @@ namespace GenBOE.DataBridge.DTO
 
 				if (getChildren)
 				{
-					workspace.AddChildren(GetClinByWorkspaceId(id));
-					workspace.AddChildren(GetBoeByWorkspaceId(id));
+					workspace.Children.AddRange(GetClinByWorkspaceId(id));
+					workspace.Children.AddRange(GetBoeByWorkspaceId(id));
 				}
 
 				return workspace;
@@ -559,7 +608,7 @@ namespace GenBOE.DataBridge.DTO
 
 				foreach (DateShiftDTO clin in clins)
 				{
-					clin.AddChildren(GetBoeDateShiftDataByClinId(clin.Id));
+					clin.Children.AddRange(GetBoeDateShiftDataByClinId(clin.Id));
 				}
 
 				return clins;
@@ -597,7 +646,7 @@ namespace GenBOE.DataBridge.DTO
 
 				foreach (DateShiftDTO boe in boes)
 				{
-					boe.AddChildren(GetBoeTaskElementDateShiftDataByBoeId(boe.Id));
+					boe.Children.AddRange(GetBoeTaskElementDateShiftDataByBoeId(boe.Id));
 				}
 
 				return boes;

@@ -960,10 +960,7 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <summary>
 		/// Generates and sends an email to notify the boe authors of a date change
 		/// </summary>
-		/// <param name="inputs">The Date Adjust inputs.</param>
 		/// <param name="boeDTO">boe that changed</param>
-		/// <param name="originalStartDate">original start date</param>
-		/// <param name="originalEndDate">original end date</param>
 		/// <param name="dateShiftModel">The date shift model.</param>
 		/// <param name="isError">If this is for a BOE with errors.</param>
 		private void GenerateEmail(DateShiftModelView dateShiftModel, Level level, DateShiftDTO boeDTO, bool isError)
