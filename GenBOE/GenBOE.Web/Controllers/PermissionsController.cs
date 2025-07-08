@@ -37,10 +37,9 @@ namespace GenBOE.Web.Controllers
 
 	public class PermissionsController : GenBOEController
 	{
-		private Logger _log = new Logger(typeof(PermissionsController));
-		private IActiveDirectoryUtilities _ADUtils = null;
-		private ISecurityInformation _SecurityInformation;
-		private PermissionControllerLogic _permissionControllerLogic;
+		private readonly Logger _log = new Logger(typeof(PermissionsController));
+		private readonly IActiveDirectoryUtilities _ADUtils = null;
+		private readonly PermissionControllerLogic _permissionControllerLogic;
 
 		/// <summary>
 		/// Constructor
@@ -52,14 +51,12 @@ namespace GenBOE.Web.Controllers
 			IUserDTODataLoader inuserLoader,
 			IActiveDirectoryUtilities inADUtils,
 			SystemMetrics inSystemMetrics,
-			ISecurityInformation inISecurityInformation,
 			PermissionControllerLogic inPermissionControllerLogic,
 			IFullObjectFactory factory,
 			IGenBOEControllerLogic inControllerLogic)
 			: base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inuserLoader, inPermissionsLoader, inControllerLogic)
 		{
 			_ADUtils = inADUtils;
-			_SecurityInformation = inISecurityInformation;
 			_permissionControllerLogic = inPermissionControllerLogic;
 		}
 

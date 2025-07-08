@@ -18,7 +18,6 @@ namespace GenBOE.Web.Controllers
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Web.Http;
-	using System.Web.Security;
 
 	/// <summary>
 	/// Manage Permissions Controller for getting workspace home data.
@@ -33,12 +32,12 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Logger
 		/// </summary>
-		private Logger logger = new Logger("ManagePermissionsController");
+		private readonly Logger logger = new Logger("ManagePermissionsController");
 
 		/// <summary>
 		/// The ad utilities class
 		/// </summary>
-		private IActiveDirectoryUtilities ADUtils = null;
+		private readonly IActiveDirectoryUtilities ADUtils = null;
 
 		/// <summary>
 		/// ctor

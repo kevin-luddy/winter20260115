@@ -25,14 +25,14 @@ namespace GenBOE.ActionLogic
 
 	public class PermissionControllerLogic
 	{
-		private Logger _log = new Logger(typeof(PermissionControllerLogic));
+		private readonly Logger _log = new Logger(typeof(PermissionControllerLogic));
 
 		protected IFullObjectFactory Factory { get; set; }
-		private IPermissionsDTODataLoader permissionLoader;
-		private IActiveDirectoryUtilities ADUtils;
-		private ISecurityInformation _SecurityInformation;
-		private IUserDTODataLoader _UserDTODataLoader;
-		private ICommonDataMapper _CommonDataMapper;
+		private readonly IPermissionsDTODataLoader permissionLoader;
+		private readonly IActiveDirectoryUtilities ADUtils;
+		private readonly ISecurityInformation _SecurityInformation;
+		private readonly IUserDTODataLoader _UserDTODataLoader;
+		private readonly ICommonDataMapper _CommonDataMapper;
 
 
 		public PermissionControllerLogic(IPermissionsDTODataLoader inPermissionsLoader,
