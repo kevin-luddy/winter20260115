@@ -427,6 +427,7 @@ namespace GenBOE.DataBridge.DTO
 
 							boeTaskElement.Children.Add(new DateShiftDTO()
 							{
+								Id = resourceType.Id,
 								StartDate = resourceType.StartDateValue,
 								EndDate = resourceType.EndDateValue,
 								UpdateDate = resourceType.UpdateDate,
@@ -504,6 +505,7 @@ namespace GenBOE.DataBridge.DTO
 
 							taskElement.Children.Add(new DateShiftDTO()
 							{
+								Id = resourceType.Id,
 								StartDate = resourceType.StartDateValue,
 								EndDate = resourceType.EndDateValue,
 								UpdateDate = resourceType.UpdateDate,
