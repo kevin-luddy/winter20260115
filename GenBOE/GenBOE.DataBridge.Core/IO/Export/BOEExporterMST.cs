@@ -69,8 +69,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="numberAlignment">Not used in MST - required for override - defaults to Right</param>
 		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals")]
 		protected override void PopulateBoeYearSummaryRollup(StructuredDocumentTag element, Collection<LaborRollupByDate> laborRollup, string Format, 
-			NumberFormatInfo NumberFormatter, string Font, string FontSize, string headerFontSize, string tag, 
-			JustificationValues numberAlignment)
+			NumberFormatInfo NumberFormatter, string Font, double FontSize, string headerFontSize, string tag,
+			ParagraphAlignment numberAlignment)
 		{
 			if (element == null)
 			{
@@ -97,8 +97,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				//Create the table
 				Table table = CreateRollupTable(element.Document);
 
-				ParagraphProperties leftPP = new ParagraphProperties(new Justification() { Val = JustificationValues.Left }, new SpacingBetweenLines() { After = "0" });
-				ParagraphProperties rightPP = new ParagraphProperties(new Justification() { Val = JustificationValues.Right }, new SpacingBetweenLines() { After = "0" });
+				ParagraphProperties leftPP = new ParagraphProperties(new Justification() { Val = ParagraphAlignment.Left }, new SpacingBetweenLines() { After = "0" });
+				ParagraphProperties rightPP = new ParagraphProperties(new Justification() { Val = ParagraphAlignment.Right }, new SpacingBetweenLines() { After = "0" });
 
 				RunProperties boldRP = new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
 
@@ -285,11 +285,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					ParagraphProperties pp;
 					if (header == "Year")
 					{
-						pp = new ParagraphProperties(new Justification() { Val = JustificationValues.Left }, new KeepNext() { Val = true }, new SpacingBetweenLines() { After = "0" });
+						pp = new ParagraphProperties(new Justification() { Val = ParagraphAlignment.Left }, new KeepNext() { Val = true }, new SpacingBetweenLines() { After = "0" });
 					}
 					else
 					{
-						pp = new ParagraphProperties(new Justification() { Val = JustificationValues.Right }, new KeepNext() { Val = true }, new SpacingBetweenLines() { After = "0" });
+						pp = new ParagraphProperties(new Justification() { Val = ParagraphAlignment.Right }, new KeepNext() { Val = true }, new SpacingBetweenLines() { After = "0" });
 					}
 					PopulateTableCell(tr, header, inFont, inFontSize, tcp, pp, rp);
 				}

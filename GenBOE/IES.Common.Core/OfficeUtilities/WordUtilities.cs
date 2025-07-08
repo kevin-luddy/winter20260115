@@ -12,6 +12,7 @@ namespace IES.Common.Core.OfficeUtilities
 	using System.IO;
 	using System.Linq;
 	using System.Text;
+	using System.Text.RegularExpressions;
 	using Aspose.Words;
 	using Aspose.Words.Markup;
 	using Aspose.Words.Tables;
@@ -54,7 +55,7 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <param name="compositeNode">The node ancestor to search inside</param>
 		/// <param name="nodeType">The node type to find</param>
 		/// <param name="isDeep">Do we search children's children recursively?</param>
-		/// <returns>Hashset of the found Nodes</returns>
+		/// <returns>Hash Set of the found Nodes</returns>
 		/// <exception cref="ArgumentException">Thrown if the NodeType does not match Type T</exception>
 		public static HashSet<T> GetChildNodes<T>(this CompositeNode compositeNode, NodeType nodeType, bool isDeep) where T : Node
 		{
@@ -76,10 +77,45 @@ namespace IES.Common.Core.OfficeUtilities
 			return result;
 		}
 
-		public static StructuredDocumentTag GetLastMatchingChildSDT(this CompositeNode compositeNode, string match, StringComparison comparison)
+		/// <summary>
+		/// Get Last matching Child by the SDT's Title
+		/// </summary>
+		/// <param name="compositeNode">The node to search</param>
+		/// <param name="match">The Title to match</param>
+		/// <param name="comparison">How will the Comparison work</param>
+		/// <returns></returns>
+		public static StructuredDocumentTag GetLastMatchingChildSDT(this CompositeNode compositeNode, string match, StringComparison comparison = StringComparison.CurrentCulture)
 		{
 			NodeCollection collection = compositeNode.GetChildNodes(NodeType.StructuredDocumentTag, true);
 			StructuredDocumentTag found = collection.LastOrDefault(compositeNode => compositeNode is StructuredDocumentTag sdt && match.Equals(sdt.Title, comparison)) as StructuredDocumentTag;
+
+			return found;
+		}
+
+		/// <summary>
+		/// Returns if there are any matching child by the SDT's Title
+		/// </summary>
+		/// <param name="compositeNode">The node to search</param>
+		/// <param name="match">The Title to match</param>
+		/// <param name="comparison">How will the Comparison work</param>
+		/// <returns></returns>
+		public static bool AnyMatchingChildContainsSDT(this CompositeNode compositeNode, ICollection<string> match, StringComparison comparison = StringComparison.CurrentCulture)
+		{
+			NodeCollection collection = compositeNode.GetChildNodes(NodeType.StructuredDocumentTag, true);
+			return collection.Any(compositeNode => compositeNode is StructuredDocumentTag sdt && match.Any(m => sdt.Title.Contains(m, comparison)));
+		}
+
+		/// <summary>
+		/// Get Last matching Child by the SDT's Title
+		/// </summary>
+		/// <param name="compositeNode">The node to search</param>
+		/// <param name="match">The Title to match</param>
+		/// <param name="comparison">How will the Comparison work</param>
+		/// <returns></returns>
+		public static StructuredDocumentTag GetLastMatchingChildSDT(this CompositeNode compositeNode, ICollection<string> match, StringComparison comparison)
+		{
+			NodeCollection collection = compositeNode.GetChildNodes(NodeType.StructuredDocumentTag, true);
+			StructuredDocumentTag found = collection.LastOrDefault(compositeNode => compositeNode is StructuredDocumentTag sdt && match.Any(m => sdt.Title.Equals(m, comparison))) as StructuredDocumentTag;
 
 			return found;
 		}
@@ -101,11 +137,22 @@ namespace IES.Common.Core.OfficeUtilities
 
 		#region Remove items
 
+		/// <summary>
+		/// Remove SDT Ancestor by Tag
+		/// </summary>
+		/// <param name="element">The element to start the search</param>
+		/// <param name="tag">The matching tag</param>
 		public static void RemoveTaggedElement(Node element, string tag)
 		{
 			RemoveTaggedElementAncestor(element, tag, NodeType.StructuredDocumentTag);
 		}
 
+		/// <summary>
+		/// Remove Tagged Element Ancestor
+		/// </summary>
+		/// <param name="element">The element to start the search</param>
+		/// <param name="tag">The matching tag</param>
+		/// <param name="nodeType">The type of Node to remove</param>
 		internal static void RemoveTaggedElementAncestor(Node element, string tag, NodeType nodeType)
 		{
 			StructuredDocumentTag tagObj = element.Range.StructuredDocumentTags.GetByTag(tag) as StructuredDocumentTag;
@@ -130,6 +177,11 @@ namespace IES.Common.Core.OfficeUtilities
 			}
 		}
 
+		/// <summary>
+		/// Remove Ancestor Table Row that has a child SDT with this Tag, starting the search from element
+		/// </summary>
+		/// <param name="element">The element to start the search</param>
+		/// <param name="tag">The matching tag</param>
 		public static void RemoveTableRowWithTaggedElement(Node element, string tag)
 		{
 			RemoveTaggedElementAncestor(element, tag, NodeType.Row);
@@ -161,7 +213,7 @@ namespace IES.Common.Core.OfficeUtilities
 		/// </summary>
 		/// <param name="elementInColumnToRemove">Element contained in the table column that should be removed.</param>
 		/// <param name="resizeTable">True to resize the width of the table to 100% of the page after deleting the column. False to leave the width as is.</param>
-		public static void removeColumnFromTable(StructuredDocumentTag elementInColumnToRemove, bool resizeTable = true)
+		public static void RemoveColumnFromTable(StructuredDocumentTag elementInColumnToRemove, bool resizeTable = true)
 		{
 			if (elementInColumnToRemove == null)
 			{
@@ -242,23 +294,29 @@ namespace IES.Common.Core.OfficeUtilities
 			SetElementText(inElement, inValue.ToString());
 		}
 
+		/// <summary>
+		/// Sets the text of a run within a Content Element
+		/// </summary>
+		/// <param name="run">The run to set</param>
+		/// <param name="inText">The text to set</param>
 		public static void SetElementText(Run run, string inText)
 		{
 			SetElementText(new Run[] { run }, inText);
 		}
 
-		/// <summary>
-		/// Sets the text of a run within a Content Element
-		/// </summary>
-		/// <param name="inElement">The element to set text on</param>
-		/// <param name="inText">The text to set</param>
-		public static void SetElementText(StructuredDocumentTag inElement, params string[] inText)
-		{
-			if (inElement != null)
-			{
-				SetElementText(inElement.GetChildNodes(NodeType.Run, true).Cast<Run>(), inText);
-			}
-		}
+		// TODO, this may be OBE 
+		///// <summary>
+		///// Sets the text of a run within a Content Element
+		///// </summary>
+		///// <param name="inElement">The element to set text on</param>
+		///// <param name="inText">The text to set</param>
+		//public static void SetElementText(StructuredDocumentTag inElement, params string[] inText)
+		//{
+		//	if (inElement != null)
+		//	{
+		//		SetElementText(inElement.GetChildNodes(NodeType.Run, true).Cast<Run>(), inText);
+		//	}
+		//}
 
 		/// <summary>
 		/// Sets the text of a run within a Content Element
@@ -539,6 +597,10 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <param name="element">Element to be checked for the presence of content controls</param>
 		private static void RemoveContentControls(StructuredDocumentTag element)
 		{
+			// TODO TIW consider // Use the "RemoveSelfOnly" method to remove a structured document tag, while keeping its contents in the document.
+			// element.RemoveSelfOnly();
+
+
 			// only StructuredDocumentTag items need to be "cleaned"
 			if (element is StructuredDocumentTag)  // SdtBlock, SdtRun, SdtCell, SdtRow, SdtRunRuby
 			{

@@ -297,10 +297,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region Delete IDs to avoid conflict with existing elements
 
-			// TODO TIW Id
 			foreach (StructuredDocumentTag sdt in clonedRow.GetChildNodes(NodeType.StructuredDocumentTag, true))
 			{
-				sdt.Id = 0;
+				// TODO TIW Id
+				// sdt.Id = 0;  
+				// Aspose might make these Ids unique??
 				sdt.Placeholder.Remove();
 			}
 
@@ -823,10 +824,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <summary>
 		/// Populate the Skill Mix Tables
 		/// </summary>
-		/// <param name="moqType">MOQ Type Selection</param>
 		/// <param name="selectedComponents">Selected components for a custom export</param>
-		/// <param name="skillMixTablesContainer">SDT Element Container for the Skill Mix tables</param>
-		/// <param name="taskContainer">SDT Element container for the MOQ Types</param>
+		/// <param name="taskContainer">SDT Element container for the Task</param>
 		/// <param name="exportInputs">Export Inputs</param>
 		protected void ProcessSkillMixTable(BOEExportTaskElement laborTaskElement, ICollection<BoeCustomReportComponent> selectedComponents, StructuredDocumentTag taskContainer, BOEExportInputs exportInputs)
 		{

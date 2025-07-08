@@ -1611,7 +1611,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					StructuredDocumentTag customFieldDescriptionBlock = WordUtilities.GetTaggedChildElement(resourceTypesTableElement, BOEExporterConstants.FieldName_CustomFieldDescription);
 					if (customFieldDescriptionBlock != null)
 					{
-						WordUtilities.removeColumnFromTable(customFieldDescriptionBlock);
+						WordUtilities.RemoveColumnFromTable(customFieldDescriptionBlock);
 					}
 				}
 				//Delete WBS/CLIN columns if BOE is not Multi
@@ -1621,11 +1621,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					StructuredDocumentTag resourceClinBlock = WordUtilities.GetTaggedChildElement(laborTaskContainerTemplateElement, BOEExporterConstants.FieldName_ResourceCLIN);
 					if (resourceWbsBlock != null)
 					{
-						WordUtilities.removeColumnFromTable(resourceWbsBlock);
+						WordUtilities.RemoveColumnFromTable(resourceWbsBlock);
 					}
 					if (resourceClinBlock != null)
 					{
-						WordUtilities.removeColumnFromTable(resourceClinBlock);
+						WordUtilities.RemoveColumnFromTable(resourceClinBlock);
 					}
 				}
 
@@ -1633,7 +1633,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				StructuredDocumentTag referenceBlock = WordUtilities.GetTaggedChildElement(resourceTypesTableElement, BOEExporterConstants.FieldName_SummaryReference);
 				if (referenceBlock != null)
 				{
-					WordUtilities.removeColumnFromTable(referenceBlock);
+					WordUtilities.RemoveColumnFromTable(referenceBlock);
 				}
 			}
 		}
