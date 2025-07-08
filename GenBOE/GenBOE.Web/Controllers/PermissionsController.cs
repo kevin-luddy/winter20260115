@@ -713,17 +713,13 @@ namespace GenBOE.Web.Controllers
 		public JsonResult ImportPermissions(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+			Stream importFile = Request.Files[0].InputStream;
+			string errorMessage;
 
 			// Initialize Action
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_IMPORT_PERMISSIONS, SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
-
-			//FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-			Stream importFile = Request.Files[0].InputStream;
-
-
 			// Perform Action
-			string errorMessage;
 			// If a file was uploaded successfully
 			if (importFile != null)
 			{
