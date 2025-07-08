@@ -72,7 +72,11 @@
 
 </script>
 <% bool IsUCOTEnabledForWorkspace = (bool)ViewData["IsUCOTEnabledForWorkspace"]; %>
-
+<% string totalHoursClass = "all-hours";
+	if (IsUCOTEnabledForWorkspace) {
+		totalHoursClass = "all-hours ucot-hours";
+	}
+%>
 <div id="BOEStatusReportGrid" class="home module">
 	<div class="module-header-left"></div>
     <div class="module-header-center boe-status-header">
@@ -95,7 +99,7 @@
 			</div>
 
 			<div class="totals-div">
-				<div class="all-hours" style="padding-top: 0px !important;">
+				<div class="<%: totalHoursClass %>">
 					Total <%: ViewData["HoursLabel"]%> for all BOEs:
 					<%: Model.Sum(m => m.TotalHours).ToString(Model.Any() ? Model.First().DecimalPrecisionStringFormat : "F0") %>
 				</div>

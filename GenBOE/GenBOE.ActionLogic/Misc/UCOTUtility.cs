@@ -86,6 +86,12 @@ namespace GenBOE.ActionLogic.Misc
 		private static decimal CalculateTaskUCOTHours(BoeTaskElementDTO taskElement, Dictionary<int, IGrouping<int, MoqTypeSelection>> moqTypeSelectionDictionary, IDictionary<int, ResourceDTO> resourceDictionary)
 		{
 			decimal ucotTotal = 0m;
+
+			if (!moqTypeSelectionDictionary.ContainsKey(taskElement.Id))
+			{
+				return ucotTotal;
+			}
+
 			IGrouping<int, MoqTypeSelection> moqGroup = moqTypeSelectionDictionary[taskElement.Id];
 
 			if (moqGroup.Count() == 1)

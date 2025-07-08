@@ -681,6 +681,10 @@ div.rottenEgg {
 	margin-left: 3px;
 }
 
+.ucot-hours {
+	padding-top: 0px !important;
+}
+
 .collapsed .module-header-data,
 .expanded .module-header-data
 {
