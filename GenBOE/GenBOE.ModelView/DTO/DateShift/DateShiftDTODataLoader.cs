@@ -431,7 +431,8 @@ namespace GenBOE.DataBridge.DTO
 								EndDate = resourceType.EndDateValue,
 								UpdateDate = resourceType.UpdateDate,
 								DateShiftLevel = Level.Labor,
-								ParentId = resourceType.TaskElementId
+								ParentId = resourceType.TaskElementId,
+								LaborSpreads = resourceType.LaborSpreads
 							});
 						}
 					}
@@ -462,6 +463,7 @@ namespace GenBOE.DataBridge.DTO
 													   StartDate = te.TaskStartDate,
 													   EndDate = te.TaskEndDate,
 													   DateShiftLevel = Level.Task,
+													   UpdateDate = te.UpdateDT,
 													   ParentId = te.BOEID,
 												   }).ToList();
 
@@ -506,7 +508,8 @@ namespace GenBOE.DataBridge.DTO
 								EndDate = resourceType.EndDateValue,
 								UpdateDate = resourceType.UpdateDate,
 								DateShiftLevel = Level.Labor,
-								ParentId = resourceType.TaskElementId
+								ParentId = resourceType.TaskElementId,
+								LaborSpreads = resourceType.LaborSpreads
 							}
 							);
 						}
