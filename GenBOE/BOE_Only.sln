@@ -23,8 +23,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenTRAC.Models", "GenTRAC.M
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenBOE.PLD.Models", "GenBOE.PLD.Models\GenBOE.PLD.Models.csproj", "{F2AB5FFC-459A-4BB1-9CB5-61B4C89C14A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenBOEConsoleApp", "GenBOEConsoleApp\GenBOEConsoleApp.csproj", "{50EED728-23BD-4344-B63D-A76DCB046898}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		ConsoleRelease|Any CPU = ConsoleRelease|Any CPU
@@ -113,14 +111,6 @@ Global
 		{F2AB5FFC-459A-4BB1-9CB5-61B4C89C14A0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F2AB5FFC-459A-4BB1-9CB5-61B4C89C14A0}.ReleaseTFSCore|Any CPU.ActiveCfg = Release|Any CPU
 		{F2AB5FFC-459A-4BB1-9CB5-61B4C89C14A0}.ReleaseTFSCore|Any CPU.Build.0 = Release|Any CPU
-		{50EED728-23BD-4344-B63D-A76DCB046898}.ConsoleRelease|Any CPU.ActiveCfg = Release|Any CPU
-		{50EED728-23BD-4344-B63D-A76DCB046898}.ConsoleRelease|Any CPU.Build.0 = Release|Any CPU
-		{50EED728-23BD-4344-B63D-A76DCB046898}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{50EED728-23BD-4344-B63D-A76DCB046898}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{50EED728-23BD-4344-B63D-A76DCB046898}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{50EED728-23BD-4344-B63D-A76DCB046898}.Release|Any CPU.Build.0 = Release|Any CPU
-		{50EED728-23BD-4344-B63D-A76DCB046898}.ReleaseTFSCore|Any CPU.ActiveCfg = Release|Any CPU
-		{50EED728-23BD-4344-B63D-A76DCB046898}.ReleaseTFSCore|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
