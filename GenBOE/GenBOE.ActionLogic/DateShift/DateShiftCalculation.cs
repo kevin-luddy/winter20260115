@@ -400,15 +400,6 @@ namespace GenBOE.ActionLogic.DateShift
 			bool rerunError2Check = detail.Errors.HasError2 && detail.Error2Handling.HasValue;
 			if (rerunError1Check || rerunError2Check)
 			{
-				//DateShiftable dateShift = new DateShiftable
-				//{
-				//	DateShiftLevel = dateShiftDTO.DateShiftLevel,
-				//	StartDate = dateShiftDTO.StartDate,
-				//	EndDate = dateShiftDTO.EndDate,
-				//	HasSpread = dateShiftDTO.HasSpread,
-				//	BoeId = GetAttachedBoeId(dateShiftDTO) ?? parentBoeId ?? 0
-				//};
-
 				DateShiftDetailModelView secondCheck = detail.Clone();
 				CheckErrors(dateShiftDTO, secondCheck, parentStart, parentEnd, parentBoeId, parentLevel, workspaceShortname);
 
@@ -755,39 +746,6 @@ namespace GenBOE.ActionLogic.DateShift
 				// else do nothing since the spreads are not saved in database
 			}
 		}
-
-		///// <summary>
-		///// Performs the travel spreads/trips shift.
-		///// </summary>
-		///// <param name="dateShiftable">The parent travel dto.</param>
-		///// <param name="detail">The detail.</param>
-		//internal static void PerformTravelSpreadShift(DateShiftDTO parentTravel, DateShiftDetailModelView detail)
-		//{
-		//	if (detail.ChildModificationType != ChildModificationType.NoChange)
-		//	{
-		//		TravelDTO task = parentTravel as TravelDTO;
-		//		if (task == null)
-		//		{
-		//			throw new ArgumentException("The parentTask is set to Level.Travel but is not a Travel object.");
-		//		}
-
-		//		if (task.TravelTrips != null && task.TravelTrips.Any())
-		//		{
-		//			throw new NotSupportedException("Travel Trips are not supported for Date Shift.");
-		//		}
-
-		//		if (task.MSTTravelTrips != null && task.MSTTravelTrips.Any())
-		//		{
-		//			foreach (MSTTravelTripType trip in task.MSTTravelTrips)
-		//			{
-		//				int startDateOffset = detail.Operation == Operation.Shift ? detail.MonthChange : 0;
-		//				trip.TripDate = trip.TripDate.AddMonths(startDateOffset);
-		//				trip.EstimateDate = DateTime.Now;
-		//				trip.Updateable = UpdateType.Upsert;
-		//			}
-		//		}
-		//	}
-		//}
 
 		/// <summary>
 		/// Sends the emails.

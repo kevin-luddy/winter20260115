@@ -121,12 +121,12 @@ namespace GenBOE.Dtos
 		public Collection<ResourceTypeDto> TaskElementLabors { get; set; }
 
 		/// <summary>
-		/// 
+		/// Labor Type Id.
 		/// </summary>
 		public int LaborTypeId { get; set; }
 
 		/// <summary>
-		/// 
+		/// Resource Id.
 		/// </summary>
 		public int ResourceId { get; set; }
 
@@ -141,7 +141,7 @@ namespace GenBOE.Dtos
 		public SpreadCurves? SpreadCurveID { get; set; }
 
 		/// <summary>
-		/// 
+		/// Spread curve id value.
 		/// </summary>
 		public int SpreadCurveIdValue { get; set; }
 

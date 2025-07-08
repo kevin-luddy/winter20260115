@@ -260,16 +260,6 @@ namespace GenBOE.DataBridge.DTO
 			return dateShift;
 		}
 
-		///// <summary>
-		///// Gets workspace by short name.
-		///// </summary>
-		///// <param name="workspaceShortName">Ws shortname.</param>
-		///// <returns>Date shift object.</returns>
-		//public DateShiftDTO GetWorkspaceDateShiftDataObject(string workspaceShortName)
-		//{
-		//	return DateShiftDTO.SetupDateShift(GetWorkspaceDateShiftDataByShortname(workspaceShortName));
-		//}
-
 		/// <summary>
 		/// Gets the required boe data by id.
 		/// </summary>
@@ -542,32 +532,6 @@ namespace GenBOE.DataBridge.DTO
 				return workspace;
 			}
 		}
-
-		///// <summary>
-		///// Gets the required workspace data by workspaceShortName.
-		///// </summary>
-		///// <param name="workspaceShortName">workspace Short Name</param>
-		///// <returns>Workspace data.</returns>
-		//public DateShiftDTO GetWorkspaceDateShiftDataByShortname(string workspaceShortName)
-		//{
-		//	using (GenBoeEntities gbe = new GenBoeEntities())
-		//	{
-		//		gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
-
-		//		DateShiftDTO workspace = (from w in gbe.Workspaces
-		//								  where w.WorkspaceShortName == workspaceShortName
-		//								  select new DateShiftDTO
-		//								  {
-		//									  Id = w.WorkspaceID,
-		//									  StartDate = w.ContractStartDate,
-		//									  EndDate = w.ContractEndDate,
-		//									  UpdateDate = w.UpdateDT,
-		//									  DateShiftLevel = Level.Workspace
-		//								  }).FirstOrDefault();
-
-		//		return workspace;
-		//	}
-		//}
 
 		/// <summary>
 		/// Gets the required clin children data by workspace id.
