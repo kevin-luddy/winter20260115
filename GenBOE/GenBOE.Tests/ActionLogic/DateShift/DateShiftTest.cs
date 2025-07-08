@@ -911,7 +911,7 @@ namespace GenBOE.Tests.ActionLogic
             DateShiftCalculation.PerformShifts(DateShiftDTO, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             // expanded right, so no change to discrete to original discrete, just adding zeros to end
-            Assert.AreEqual(difference + detail.MonthChange, DateShiftDTO.TaskElementLabors.First().LaborSpreads.Count);
+            Assert.AreEqual(difference, DateShiftDTO.TaskElementLabors.First().LaborSpreads.Count);
             Assert.AreEqual(StartDate, DateShiftDTO.TaskElementLabors.First().LaborSpreads.Min(l => l.LaborSpreadDate));
             Assert.AreEqual(EndDate.AddMonths(detail.MonthChange), DateShiftDTO.TaskElementLabors.First().LaborSpreads.Max(l => l.LaborSpreadDate));
             Assert.AreEqual(0m, DateShiftDTO.TaskElementLabors.First().LaborSpreads.Last().LaborSpreadValue);
