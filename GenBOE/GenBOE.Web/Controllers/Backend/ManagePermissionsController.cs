@@ -18,6 +18,7 @@ namespace GenBOE.Web.Controllers
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Web.Http;
+	using System.Web.Security;
 
 	/// <summary>
 	/// Manage Permissions Controller for getting workspace home data.
@@ -164,6 +165,33 @@ namespace GenBOE.Web.Controllers
 			{
 				logger.Error(ex);
 				result.Messages.Add($"Unknown error occured saving permissions: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// POST method to edit permissions
+		/// </summary>
+		/// <param name="saveNewPermissionsModelView"></param>
+		/// <returns></returns>
+		[HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<bool> EditPermissions([FromBody] EditPermissionsModelView editPermissionsModelView)
+		{
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+			try
+			{
+				FullWorkspace ws = this.Factory.CreateFullWorkspace(editPermissionsModelView.workspaceShortName);
+				PermissionControllerLogic.EditPermissions(ws, new System.Collections.ObjectModel.Collection<IES.Common.Role>(editPermissionsModelView.roles.ToList()), editPermissionsModelView.entityType, editPermissionsModelView.entityId);
+				result.Data = true;
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Data = false;
+				result.Messages.Add($"Unknown error occurred editing permissions data: {ex.Message}");
 			}
 
 			return result;

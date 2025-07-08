@@ -12,6 +12,7 @@ namespace GenBOE.ActionLogic
 	using System.Data;
 	using System.Linq;
 	using System.Transactions;
+	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.Backend;
 	using GenBOE.ActionLogic.Permissions;
@@ -334,6 +335,234 @@ namespace GenBOE.ActionLogic
 			return toReturn;
 		}
 
+		/// <summary>
+		/// Edit existing Permissions for groups or single users
+		/// </summary>
+		/// <param name="workspace">Full Workspace</param>
+		/// <param name="inRoles">Roles</param>
+		/// <param name="inType">User or Group</param>
+		/// <param name="inEntityId">User/Group Id</param>
+		/// <param name="url">UrlHelper from Controller</param>
+		/// <exception cref="GenValidationException"></exception>
+		public void EditPermissions(FullWorkspace workspace, Collection<Role> inRoles, EntityType inType, int inEntityId)
+		{
+			if (workspace == null)
+			{
+				throw new ArgumentNullException(nameof(workspace));
+			}
+
+			Collection<ValidationMessage> ValidationErrors = new Collection<ValidationMessage>();
+
+			inRoles = new Collection<Role>(inRoles.Distinct().ToList());
+
+			PermissionDeleteAction action = PermissionDeleteAction.Invalid;
+			Collection<UserDTO> usersToReassign = new Collection<UserDTO>();
+
+			// if this is a group, get the users in the group
+			Collection<UserDTO> usersToAdjust = new Collection<UserDTO>();
+
+			if (inType == EntityType.User)
+			{
+				// Get the roles that this user had previously which are being removed by this edit
+				ICollection<Role> removedRoles = (from permission in this.permissionLoader.GetBOEPotentialPermissionsForWorkspace(workspace.Id)
+												  where permission.ETIUserId == inEntityId &&
+												  (inRoles == null || !inRoles.Contains(permission.Role))
+												  select permission.Role).Distinct().ToList();
+
+				// Get the users current roles
+				ICollection<Role> currentRoles = (from permission in this.permissionLoader.GetWorkspacePermissions(workspace.Id)
+												  where permission.ETIUserId == inEntityId
+												  select permission.Role).Distinct().ToList();
+
+				int workspaceAdmins = (from r in this.permissionLoader.GetWorkspacePermissions(workspace.Id)
+									   where r.Role == Role.WorkspaceAdmin
+									   select r.ETIUserId).Count();
+
+				if (workspaceAdmins <= 1)
+				{
+					if (currentRoles.Contains(Role.WorkspaceAdmin) && !inRoles.Contains(Role.WorkspaceAdmin))
+					{
+						ValidationErrors.Add(new ValidationMessage("WorkspaceAdmin", "The Workspace Administrator cannot be deleted. In order to delete the user, at least one other Workspace Administrator must exist."));
+					}
+				}
+
+				// perform checks for the Subcontractor Author role
+				UserDTO currentUser = this._UserDTODataLoader.GetUserByID(inEntityId);
+				this.Factory.ClearPermissionsCache(currentUser.NTID);
+				bool isSubcontractor = _SecurityInformation.IsSubcontractorUser(currentUser.NTID, currentUser.IsSubcontractor ?? false);
+
+				this.ValidateWsAdminMustHaveCreateWsPermission(currentUser.NTID, inRoles);
+
+				if (isSubcontractor && (!inRoles.Contains(Role.SubcontractorAuthor) || inRoles.Count() > 1))
+				{
+					ValidationErrors.Add(new ValidationMessage("SubcontractorAuthor", "Subcontractor users are only permitted Subcontractor Author permissions"));
+				}
+				if (!isSubcontractor && inRoles.Contains(Role.SubcontractorAuthor))
+				{
+					ValidationErrors.Add(new ValidationMessage("SubcontractorAuthor", "LM Users are not permitted Subcontractor Author permissions"));
+				}
+
+				// perform checks for genBOE access
+				if (currentUser.NTID.Contains('.') && this.ADUtils.IsGroup(currentUser.NTID))
+				{
+					ICollection<UserData> groupMembers = this.ADUtils.GetAdGroupUsers(currentUser.NTID);
+					Dictionary<UserData, bool> groupMemberAccess = this.GetGenBOEAccess(groupMembers);
+
+					if (groupMemberAccess.Any(x => !x.Value))
+					{
+						ValidationErrors.Add(new ValidationMessage("NoGenBoeAccess", string.Format("The following members of group {0} do not have access to genBOE and therefore the group's permissions cannot be changed: <ul><li>{1}</li></ul>Please have the user request access.",
+							currentUser.NTID, string.Join("</li><li>", groupMemberAccess.Where(x => !x.Value).Select(x => x.Key).Select(x => x.DisplayName)))));
+						throw new GenValidationException(ValidationErrors);
+					}
+				}
+				else
+				{
+					Dictionary<UserData, bool> genBoeAccess = this.GetGenBOEAccess(new Collection<UserData>() { new UserData() { Ntid = currentUser.NTID } });
+					if (genBoeAccess.Any(x => !x.Value))
+					{
+						ValidationErrors.Add(new ValidationMessage("NoGenBoeAccess", "The user does not have access to genBOE and their permissions cannot be changed. Please have the user request access."));
+					}
+				}
+
+				// Check the Workspace's BOEs for assignments using one of the roles being removed
+				action = PermissionsDelete.CheckUserAssignments(
+					workspace,
+					inEntityId,
+					removedRoles,
+					this.permissionLoader);
+
+				// If the action requires reassignment, then the user is the sole user to reassign
+				if (action >= PermissionDeleteAction.DeleteRoleRequireReassignment)
+				{
+					usersToReassign = new Collection<UserDTO> { this._UserDTODataLoader.GetUserByID(inEntityId) };
+				}
+
+				usersToAdjust.Add(this._UserDTODataLoader.GetUserByID(inEntityId));
+			}
+			else
+			{
+				ValidationErrors.Add(new ValidationMessage("The account could not be resolved as a user or a group."));
+			}
+
+			// If the action for the group or user requires reassignment, then we'll pass back a failed status
+			// and the list of users that must be reassigned
+			if (action >= PermissionDeleteAction.DeleteRoleRequireReassignment)
+			{
+				ValidationErrors.Add(new ValidationMessage("Delete Failed", String.Format(
+					"The following users are assigned to at least one BOE. BOE(s) must be reassigned through the <a href=\"{0}\">Manage BOEs</a> page before the roles can be removed.<BR/>{1}",
+					$"{WebConstants.ROUTE_WORKSPACE}/{WebConstants.ACTION_INDEX}/{WebConstants.CONTROLLER_BOE}/{workspace.Shortname}",
+					String.Join("<BR/>", usersToReassign.Select(u => u.DisplayName).ToArray()))));
+			}
+			// Otherwise, we can go ahead and edit the roles.
+			else
+			{
+				if (ValidationErrors.Any())
+				{
+					throw new GenValidationException(ValidationErrors);
+				}
+				// perform the actual edit ... we've made our list and checked it twice
+				this._EditPermissions(inRoles, workspace, usersToAdjust);
+			}
+
+			// if I'm trying to delete a WS permission that has BOE level permissions, prevent that..
+			if (ValidationErrors.Any())
+			{
+				throw new GenValidationException(ValidationErrors);
+			}
+		}
+
+		/// <summary>
+		/// Edit permissions
+		/// </summary>
+		/// <param name="inRoles">The roles selected from the UI</param>
+		/// <param name="ws">The workspace</param>
+		/// <param name="usersToAdjust">the users to check permissions for and adjust</param>
+		/// <returns>string.empty if no errors, otherwise errors returned in the string</returns>
+		private void _EditPermissions(Collection<Role> inRoles, FullWorkspace ws, Collection<UserDTO> usersToAdjust)
+		{
+			// by now we've found all roles are ok, none are in use that are attempting to edit.  
+			Collection<PermissionsDTO> toSave = new Collection<PermissionsDTO>();
+
+			foreach (UserDTO user in usersToAdjust)
+			{
+				Collection<Role> newRoles = new Collection<Role>(inRoles.Distinct().ToList());
+				List<PermissionsDTO> permissionsForUser = this.permissionLoader.GetBOEPotentialPermissionsForWorkspace(ws.Id).ToList();
+				permissionsForUser.AddRange(this.permissionLoader.GetWorkspacePermissions(ws.Id));
+
+				// get the workspace level permissions this user has assigned right now (in the database)
+				permissionsForUser =
+							permissionsForUser
+									.Where(x => x.ETIUserId == user.UserID &&
+												x.BOEId == null &&
+												((x.Role >= Role.Author && x.Role <= Role.WorkspaceAdmin) || x.Role == Role.SubcontractorAuthor || x.Role == Role.SubcontractAdmin) &&
+												x.WorkspaceId == ws.Id).Select(x => x).ToList<PermissionsDTO>();
+
+				foreach (PermissionsDTO currentRoll in permissionsForUser)
+				{
+					Boolean delete = true;
+					foreach (Role uiPickedRole in newRoles)
+					{
+						if (currentRoll.Role == uiPickedRole)
+						{
+							delete = false;
+							break;
+						}
+					}
+
+					if (delete)
+					{
+						// insert the new role for all users in the group.. the UI didn't previously have it assigned
+						toSave.Add(new PermissionsDTO
+						{
+							BOEId = null, // no BOE Id b/c this is potential
+							ETIUserId = user.UserID,
+							Role = currentRoll.Role,
+							Updateable = UpdateType.Deleted,
+							UpdateDate = currentRoll.UpdateDate,
+							WorkspaceId = ws.Id
+						});
+					}
+					//removed all handled existing roles (deletes or remain the same)
+					newRoles.Remove(currentRoll.Role);
+				}
+
+				//Add any new roles
+				foreach (Role uiPickedRole in newRoles)
+				{
+					toSave.Add(new PermissionsDTO
+					{
+						BOEId = null, // no BOE Id b/c this is potential
+						ETIUserId = user.UserID,
+						Role = uiPickedRole,
+						Updateable = UpdateType.Upsert,
+						WorkspaceId = ws.Id
+					});
+				}
+			}
+
+			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+			{
+				foreach (PermissionsDTO save in toSave)
+				{
+					try
+					{
+						this.permissionLoader.SavePermission(save);
+					}
+					catch (Exception ex)
+					{
+						if (ex.InnerException != null && ex.InnerException.Message == "You can not add any other roles to a user that has the Subcontractor Author role ")
+						{
+							throw new GenValidationException("You can not add any other roles to a user that has the Subcontractor Author role");
+						}
+						else
+						{
+							throw;
+						}
+					}
+				}
+				scope.Complete();
+			}
+		}
 
 		public PermissionViewModel _GetPermissionsGrid(FullWorkspace ws)
 		{
