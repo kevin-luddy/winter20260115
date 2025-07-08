@@ -182,10 +182,13 @@ namespace GenBOE.Web.Controllers
 			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
 			try
 			{
-				FullWorkspace ws = this.Factory.CreateFullWorkspace(editPermissionsModelView.workspaceShortName);
-				PermissionControllerLogic.EditPermissions(ws, new System.Collections.ObjectModel.Collection<IES.Common.Role>(editPermissionsModelView.roles.ToList()), editPermissionsModelView.entityType, editPermissionsModelView.entityId);
-				result.Data = true;
-				result.IsSuccessful = true;
+				if (editPermissionsModelView != null)
+				{
+					FullWorkspace ws = this.Factory.CreateFullWorkspace(editPermissionsModelView.workspaceShortName);
+					PermissionControllerLogic.EditPermissions(ws, new System.Collections.ObjectModel.Collection<IES.Common.Role>(editPermissionsModelView.roles.ToList()), editPermissionsModelView.entityType, editPermissionsModelView.entityId);
+					result.Data = true;
+					result.IsSuccessful = true;
+				}
 			}
 			catch (Exception ex)
 			{
