@@ -2,7 +2,6 @@
 
 <% 
 	var AllWBS = (IEnumerable<GenBOE.Dtos.WbsDTO>)ViewData["AllWBS"];
-	var fullWorkspace = (GenBOE.Objects.FullWorkspace)ViewData["FullWorkspace"];
 	bool IsUCOTEnabledForWorkspace = (bool)ViewData["IsUCOTEnabledForWorkspace"];
 %>
 
@@ -16,8 +15,8 @@
             <th class="end-date" sortType="date">End Date</th>
             <th class="total-hours" sortType="number">Total <%: ViewData["HoursLabel"]%></th>
 			<% if (IsUCOTEnabledForWorkspace) { %>
-				<th class="sort total-hours" sortType="number">Total UCOT Hours</th>
-				<th class="sort total-hours" sortType="number">Grand Total Hours</th>
+				<th class="sort total-hours" sortType="number">Total UCOT <%: ViewData["HoursLabel"]%></th>
+				<th class="sort total-hours" sortType="number">Grand Total <%: ViewData["HoursLabel"]%></th>
 			<% } %>
             <th class="total-cost" sortType="number">Total Cost</th>
             <th class="author">Authors</th>

@@ -1671,8 +1671,13 @@ function createModule(module) {
 		//header first
 		var headerData = $(module).children('.module-header-data');
 		$(module).children('.module-header-data').remove();
-		$(module).append('<div class="module-header"><div class="module-header-left"></div><div class="module-header-center">' +
-			'</div><div class="module-header-right"></div></div>');
+
+		// Stopping insertion of header divs since this is done manually for this grid to fix sizing
+		if (module.selector != "#BOEStatusReportGrid") {
+			$(module).append('<div class="module-header"><div class="module-header-left"></div><div class="module-header-center">' +
+				'</div><div class="module-header-right"></div></div>');
+		}
+
 		$(module).find('.module-header-center').append(headerData);
 
 
@@ -1688,7 +1693,10 @@ function createModule(module) {
 			$(module).find('#' + elementid + 'ModuleContent' + i + ' .module-content-center').append(contentData[i]);
 		}
 
-		$(module).append('<div class="module-footer"><div class="module-footer-left"></div><div class="module-footer-center"></div><div class="module-footer-right"></div></div>');
+		// No footer is needed for this grid and need to remove to apply sizing fix manually
+		if (module.selector != "#BOEStatusReportGrid") {
+			$(module).append('<div class="module-footer"><div class="module-footer-left"></div><div class="module-footer-center"></div><div class="module-footer-right"></div></div>');
+		}
 	}
 }
 

@@ -47,8 +47,6 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string AUTHORS_COLUMN_HEADER = "Authors";
         public static readonly string APPROVERS_COLUMN_HEADER = "Approvers";
         public static readonly string TOTAL_COST_COLUMN_HEADER = "Total Cost";
-		public static readonly string TOTAL_UCOT_HOURS_COLUMN_HEADER = "Total UCOT Hours";
-		public static readonly string GRAND_TOTAL_HOURS_COLUMN_HEADER = "Grand Total Hours";
 		public static readonly string STATUS_COLUMN_HEADER = "Status";
         public static readonly string MATERIAL_COLUMN_HEADER = "Material";
         public static readonly string MULTI_CLIN_COLUMN_HEADER = "Multi WBS/CLIN";

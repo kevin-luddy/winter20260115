@@ -815,10 +815,10 @@ namespace GenBOE.Web.Controllers
             ViewData["AllCLIN"] = ws.Clins;
             ViewData["HoursLabel"] = FullObjectHelper.HoursLabel(ws);
 
-			// UCOT Variables and Data Manipulation
+			// UCOT check (only need this because the totals are calculated
+			// but the variable for IsUCOTEnabledForWorkspace within the Workspace is not set properly.
+			// Force check here and pass into the Views
 			ViewData["IsUCOTEnabledForWorkspace"] = Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.Shortname);
-			ViewData["MoqTypeSelections"] = ws.MoqTypeSelections;
-			ViewData[""] = ws.ResourcesUsedInWsBoes;
 
             // Call the BL to generate the status report
             // All BOEs for the workspace as a default

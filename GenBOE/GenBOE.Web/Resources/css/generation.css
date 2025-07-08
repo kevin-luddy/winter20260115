@@ -659,6 +659,27 @@ div.rottenEgg {
     height:40px;
 }
 
+/* BOE Status Page specific styling to get grid to be full width */
+.boe-status-header {
+	word-spacing: normal;
+	width: 1386px !important; /* Offset from original 1400px by 7px for left and right corners */
+	max-width: unset;
+}
+
+.boe-status-header-text {
+	padding: 0px 10px;
+	font-weight: bold;
+	font-size: 14px;
+	height: 40px;
+}
+
+.boe-status-content {
+	padding: 5px 15px;
+	border: solid 1px darkgray;
+	max-width: unset;
+	width: 1362px !important;
+	margin-left: 3px;
+}
 
 .collapsed .module-header-data,
 .expanded .module-header-data

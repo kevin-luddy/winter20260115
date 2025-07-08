@@ -736,13 +736,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             string hoursFormatString = Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision);
             string hoursLabel = "Total " + FullObjectHelper.HoursLabel(exportInputs.Workspace);
+			string hoursLabelUCOT = "Total UCOT " + FullObjectHelper.HoursLabel(exportInputs.Workspace);
+			string grandTotalHoursLabel = "Grand Total " + FullObjectHelper.HoursLabel(exportInputs.Workspace);
 			bool isUCOTEnabledForWorkspace = Utilities.ShowUCOTForWorkspace(exportInputs.FullWorkspace.CreationDate, exportInputs.FullWorkspace.Shortname);
             
 			if (isUCOTEnabledForWorkspace)
 			{
 				// Add headers
 				toReturn.Add(ImportExportConstants.WBS_NUMBER_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER,
-					hoursLabel, ImportExportConstants.TOTAL_UCOT_HOURS_COLUMN_HEADER, ImportExportConstants.GRAND_TOTAL_HOURS_COLUMN_HEADER, ImportExportConstants.TOTAL_COST_COLUMN_HEADER);
+					hoursLabel, hoursLabelUCOT, grandTotalHoursLabel, ImportExportConstants.TOTAL_COST_COLUMN_HEADER);
 
 				toReturn.AddRange(
 					from mv in reportModelView

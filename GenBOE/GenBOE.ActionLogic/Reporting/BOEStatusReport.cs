@@ -233,8 +233,6 @@ namespace GenBOE.ActionLogic.Reporting
             return toReturn;
         }
 
-
-
         /// <summary>
         /// Gets the excel export worksheet.
         /// </summary>
@@ -251,14 +249,28 @@ namespace GenBOE.ActionLogic.Reporting
                 throw new ArgumentNullException(nameof(exportInputs));
             }
 
+			// Pull Full Workspace to manipulate Report Data for UCOT
+			FullWorkspace fullWorkspace = exportInputs.FullWorkspace;
+			bool isUCOTEnabledForWorkspace = Utilities.ShowUCOTForWorkspace(fullWorkspace.CreationDate, fullWorkspace.Shortname);
+			string hoursLabelUCOT = "Total UCOT " + FullObjectHelper.HoursLabel(exportInputs.Workspace);
+			string grandTotalHoursLabel = "Grand Total " + FullObjectHelper.HoursLabel(exportInputs.Workspace);
+
 			ExcelExportWorksheet toReturn = new ExcelExportWorksheet();
             string hoursFormatString = Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision);
             string hoursLabel = "Total " + FullObjectHelper.HoursLabel(exportInputs.Workspace);
+
             switch (reportID)
             {
                 case (int)Reports.BOEStatusByWBS:
-                    // Add Headers
-                    toReturn.Add(ImportExportConstants.WBS_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER, ImportExportConstants.CLIN_COLUMN_HEADER, ImportExportConstants.START_DATE_COLUMN_HEADER, ImportExportConstants.END_DATE_COLUMN_HEADER, hoursLabel, ImportExportConstants.TOTAL_COST_COLUMN_HEADER, ImportExportConstants.AUTHORS_COLUMN_HEADER, ImportExportConstants.APPROVERS_COLUMN_HEADER, ImportExportConstants.STATUS_COLUMN_HEADER, ImportExportConstants.MULTI_CLIN_COLUMN_HEADER, ImportExportConstants.MATERIAL_COLUMN_HEADER);
+					// Add Headers
+					if (isUCOTEnabledForWorkspace)
+					{
+						toReturn.Add(ImportExportConstants.WBS_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER, ImportExportConstants.CLIN_COLUMN_HEADER, ImportExportConstants.START_DATE_COLUMN_HEADER, ImportExportConstants.END_DATE_COLUMN_HEADER, hoursLabel, hoursLabelUCOT, grandTotalHoursLabel, ImportExportConstants.TOTAL_COST_COLUMN_HEADER, ImportExportConstants.AUTHORS_COLUMN_HEADER, ImportExportConstants.APPROVERS_COLUMN_HEADER, ImportExportConstants.STATUS_COLUMN_HEADER, ImportExportConstants.MULTI_CLIN_COLUMN_HEADER, ImportExportConstants.MATERIAL_COLUMN_HEADER);
+					}
+					else
+					{
+						toReturn.Add(ImportExportConstants.WBS_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER, ImportExportConstants.CLIN_COLUMN_HEADER, ImportExportConstants.START_DATE_COLUMN_HEADER, ImportExportConstants.END_DATE_COLUMN_HEADER, hoursLabel, ImportExportConstants.TOTAL_COST_COLUMN_HEADER, ImportExportConstants.AUTHORS_COLUMN_HEADER, ImportExportConstants.APPROVERS_COLUMN_HEADER, ImportExportConstants.STATUS_COLUMN_HEADER, ImportExportConstants.MULTI_CLIN_COLUMN_HEADER, ImportExportConstants.MATERIAL_COLUMN_HEADER);
+					}
 
                     if (statusReport.Any())
                     {
@@ -283,110 +295,223 @@ namespace GenBOE.ActionLogic.Reporting
 
                             if (wbs.BOEs.Any())
                             {
-                                toReturn.Add(
-                                    wbs.WBS.WbsString,
-                                    string.Empty,
-                                    string.Empty,
-                                    string.Empty,
-                                    string.Empty,
-                                    CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + this.variableSelectBOEtoSumCalculation.GetTotalBasedOnWBSID(wbs.WBS.Id,
-                                        this.GetResourceTypesToBeSummed(), data).ToString(hoursFormatString));
+								if (isUCOTEnabledForWorkspace)
+								{
+									toReturn.Add(
+										wbs.WBS.WbsString,
+										string.Empty,
+										string.Empty,
+										string.Empty,
+										string.Empty,
+										CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + this.variableSelectBOEtoSumCalculation.GetTotalBasedOnWBSID(wbs.WBS.Id,
+											this.GetResourceTypesToBeSummed(), data).ToString(hoursFormatString),
+										CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + wbs.BOEs.Sum(x => x.TotalUCOTHours).ToString(hoursFormatString),
+										CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + wbs.BOEs.Sum(x => x.TotalHoursWithUCOT).ToString(hoursFormatString));
+								}
+								else
+								{
+									toReturn.Add(
+										wbs.WBS.WbsString,
+										string.Empty,
+										string.Empty,
+										string.Empty,
+										string.Empty,
+										CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + this.variableSelectBOEtoSumCalculation.GetTotalBasedOnWBSID(wbs.WBS.Id,
+											this.GetResourceTypesToBeSummed(), data).ToString(hoursFormatString));
+								}
                             }
 
                             foreach (BOEStatusReportModelView boe in wbs.BOEs)
                             {
-                                toReturn.Add(
-                                    Utilities.FormatNumberTitleString(boe.WBSNumber, boe.WBSTitle, " "),
-                                    boe.BOETitle,
-                                    Utilities.FormatNumberTitleString(boe.CLINNumber, boe.CLINTitle, " "),
-                                    string.Format("{0: MM/yyyy}", boe.StartDate),
-                                    string.Format("{0: MM/yyyy}", boe.EndDate),
-                                    CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + boe.TotalHours.ToString(hoursFormatString),
-                                    CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, boe.TotalCost),
-                                    string.Join("; ", boe.Authors),
-                                    string.Join("; ", boe.Approvers),
-                                    boe.Status,
-                                    boe.IsMultiClinWbs ? "Yes" : "No",
-                                    boe.isMaterial ? "Yes" : "No");
+								if (isUCOTEnabledForWorkspace)
+								{
+									toReturn.Add(
+										Utilities.FormatNumberTitleString(boe.WBSNumber, boe.WBSTitle, " "),
+										boe.BOETitle,
+										Utilities.FormatNumberTitleString(boe.CLINNumber, boe.CLINTitle, " "),
+										string.Format("{0: MM/yyyy}", boe.StartDate),
+										string.Format("{0: MM/yyyy}", boe.EndDate),
+										CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + boe.TotalHours.ToString(hoursFormatString),
+										CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + boe.TotalUCOTHours.ToString(hoursFormatString),
+										CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + boe.TotalHoursWithUCOT.ToString(hoursFormatString),
+										CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, boe.TotalCost),
+										string.Join("; ", boe.Authors),
+										string.Join("; ", boe.Approvers),
+										boe.Status,
+										boe.IsMultiClinWbs ? "Yes" : "No",
+										boe.isMaterial ? "Yes" : "No");
+								}
+								else
+								{
+									toReturn.Add(
+										Utilities.FormatNumberTitleString(boe.WBSNumber, boe.WBSTitle, " "),
+										boe.BOETitle,
+										Utilities.FormatNumberTitleString(boe.CLINNumber, boe.CLINTitle, " "),
+										string.Format("{0: MM/yyyy}", boe.StartDate),
+										string.Format("{0: MM/yyyy}", boe.EndDate),
+										CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + boe.TotalHours.ToString(hoursFormatString),
+										CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, boe.TotalCost),
+										string.Join("; ", boe.Authors),
+										string.Join("; ", boe.Approvers),
+										boe.Status,
+										boe.IsMultiClinWbs ? "Yes" : "No",
+										boe.isMaterial ? "Yes" : "No");
+								}
                             }
                         }
                     }
                     break;
 
                 case (int)Reports.BOEStatusByCLIN:
-                    // Add Headers
-                    toReturn.Add(ImportExportConstants.CLIN_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER, ImportExportConstants.WBS_COLUMN_HEADER, ImportExportConstants.START_DATE_COLUMN_HEADER, ImportExportConstants.END_DATE_COLUMN_HEADER, hoursLabel, ImportExportConstants.TOTAL_COST_COLUMN_HEADER, ImportExportConstants.AUTHORS_COLUMN_HEADER, ImportExportConstants.APPROVERS_COLUMN_HEADER, ImportExportConstants.STATUS_COLUMN_HEADER, ImportExportConstants.MULTI_CLIN_COLUMN_HEADER, ImportExportConstants.MATERIAL_COLUMN_HEADER);
-                    
+					// Add Headers
+					if (isUCOTEnabledForWorkspace)
+					{
+ 						toReturn.Add(ImportExportConstants.CLIN_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER, ImportExportConstants.WBS_COLUMN_HEADER, ImportExportConstants.START_DATE_COLUMN_HEADER, ImportExportConstants.END_DATE_COLUMN_HEADER, hoursLabel, hoursLabelUCOT, grandTotalHoursLabel, ImportExportConstants.TOTAL_COST_COLUMN_HEADER, ImportExportConstants.AUTHORS_COLUMN_HEADER, ImportExportConstants.APPROVERS_COLUMN_HEADER, ImportExportConstants.STATUS_COLUMN_HEADER, ImportExportConstants.MULTI_CLIN_COLUMN_HEADER, ImportExportConstants.MATERIAL_COLUMN_HEADER);
+					}
+					else
+					{
+						toReturn.Add(ImportExportConstants.CLIN_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER, ImportExportConstants.WBS_COLUMN_HEADER, ImportExportConstants.START_DATE_COLUMN_HEADER, ImportExportConstants.END_DATE_COLUMN_HEADER, hoursLabel, ImportExportConstants.TOTAL_COST_COLUMN_HEADER, ImportExportConstants.AUTHORS_COLUMN_HEADER, ImportExportConstants.APPROVERS_COLUMN_HEADER, ImportExportConstants.STATUS_COLUMN_HEADER, ImportExportConstants.MULTI_CLIN_COLUMN_HEADER, ImportExportConstants.MATERIAL_COLUMN_HEADER);
+					}
+
                     if (statusReport.Count > 0)
                     {
 						IReadOnlyCollection<ClinDTO> allClin = exportInputs.Clins;
 
                         var boesGroupedByClin = from c in allClin
-                                                orderby c.ClinPaddedNumber
-                                                select new
-                                                {
-                                                    CLINTitle = c.ClinString,
-                                                    BOEs = from b in statusReport
-                                                           where b.CLINNumber == c.ClinNumber
-                                                           select b
-                                                };
+							orderby c.ClinPaddedNumber
+							select new
+							{
+								CLINTitle = c.ClinString,
+								BOEs = from b in statusReport
+										where b.CLINNumber == c.ClinNumber
+										select b
+							};
 
                         foreach (var clin in boesGroupedByClin)
                         {
                             if (clin.BOEs.Any())
                             {
-                                toReturn.Add(
-                                    clin.CLINTitle,
-                                    string.Empty,
-                                    string.Empty,
-                                    string.Empty,
-                                    string.Empty,
-                                    CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + clin.BOEs.Sum(b => b.TotalHours).ToString(hoursFormatString),
-                                    CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, clin.BOEs.Sum(b => b.TotalCost)));
+								if (isUCOTEnabledForWorkspace)
+								{
+									toReturn.Add(
+										clin.CLINTitle,
+										string.Empty,
+										string.Empty,
+										string.Empty,
+										string.Empty,
+										CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + clin.BOEs.Sum(b => b.TotalHours).ToString(hoursFormatString),
+										CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + clin.BOEs.Sum(b => b.TotalUCOTHours).ToString(hoursFormatString),
+										CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + clin.BOEs.Sum(b => b.TotalHoursWithUCOT).ToString(hoursFormatString),
+										CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, clin.BOEs.Sum(b => b.TotalCost)));
+								}
+								else
+								{
+									toReturn.Add(
+										clin.CLINTitle,
+										string.Empty,
+										string.Empty,
+										string.Empty,
+										string.Empty,
+										CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + clin.BOEs.Sum(b => b.TotalHours).ToString(hoursFormatString),
+										CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, clin.BOEs.Sum(b => b.TotalCost)));
+								}
 
-                                foreach (BOEStatusReportModelView boe in clin.BOEs)
-                                {
-                                    toReturn.Add(
-                                        clin.CLINTitle,
-                                        boe.BOETitle,
-                                        Utilities.FormatNumberTitleString(boe.WBSNumber, boe.WBSTitle, " "),
-                                        string.Format("{0: MM/yyyy}", boe.StartDate),
-                                        string.Format("{0: MM/yyyy}", boe.EndDate),
-                                        CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + boe.TotalHours.ToString(hoursFormatString),
-                                        CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, boe.TotalCost),
-                                        string.Join("; ", boe.Authors),
-                                        string.Join("; ", boe.Approvers),
-                                        boe.Status,
-                                        boe.IsMultiClinWbs ? "Yes" : "No",
-                                        boe.isMaterial ? "Yes" : "No");
-                                }
+								foreach (BOEStatusReportModelView boe in clin.BOEs)
+								{
+									if (isUCOTEnabledForWorkspace)
+									{
+										toReturn.Add(
+											clin.CLINTitle,
+											boe.BOETitle,
+											Utilities.FormatNumberTitleString(boe.WBSNumber, boe.WBSTitle, " "),
+											string.Format("{0: MM/yyyy}", boe.StartDate),
+											string.Format("{0: MM/yyyy}", boe.EndDate),
+											CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + boe.TotalHours.ToString(hoursFormatString),
+											CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + boe.TotalUCOTHours.ToString(hoursFormatString),
+											CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + boe.TotalHoursWithUCOT.ToString(hoursFormatString),
+											CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, boe.TotalCost),
+											string.Join("; ", boe.Authors),
+											string.Join("; ", boe.Approvers),
+											boe.Status,
+											boe.IsMultiClinWbs ? "Yes" : "No",
+											boe.isMaterial ? "Yes" : "No");
+									}
+									else
+									{
+										toReturn.Add(
+											clin.CLINTitle,
+											boe.BOETitle,
+											Utilities.FormatNumberTitleString(boe.WBSNumber, boe.WBSTitle, " "),
+											string.Format("{0: MM/yyyy}", boe.StartDate),
+											string.Format("{0: MM/yyyy}", boe.EndDate),
+											CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + boe.TotalHours.ToString(hoursFormatString),
+											CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, boe.TotalCost),
+											string.Join("; ", boe.Authors),
+											string.Join("; ", boe.Approvers),
+											boe.Status,
+											boe.IsMultiClinWbs ? "Yes" : "No",
+											boe.isMaterial ? "Yes" : "No");
+									}
+								}
                             }
                         }
                     }
                     break;
 
                 default:
-                    // Add Headers
-                    toReturn.Add(ImportExportConstants.WBS_NUMBER_COLUMN_HEADER, ImportExportConstants.WBS_TITLE_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER, ImportExportConstants.CLIN_NUMBER_COLUMN_HEADER, ImportExportConstants.CLIN_TITLE_COLUMN_HEADER, ImportExportConstants.START_DATE_COLUMN_HEADER, ImportExportConstants.END_DATE_COLUMN_HEADER, hoursLabel, ImportExportConstants.TOTAL_COST_COLUMN_HEADER, ImportExportConstants.AUTHORS_COLUMN_HEADER, ImportExportConstants.APPROVERS_COLUMN_HEADER, ImportExportConstants.STATUS_COLUMN_HEADER, ImportExportConstants.MULTI_CLIN_COLUMN_HEADER, ImportExportConstants.MATERIAL_COLUMN_HEADER);
+					if (isUCOTEnabledForWorkspace)
+					{
+						// Add Headers
+						toReturn.Add(ImportExportConstants.WBS_NUMBER_COLUMN_HEADER, ImportExportConstants.WBS_TITLE_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER, ImportExportConstants.CLIN_NUMBER_COLUMN_HEADER, ImportExportConstants.CLIN_TITLE_COLUMN_HEADER, ImportExportConstants.START_DATE_COLUMN_HEADER, ImportExportConstants.END_DATE_COLUMN_HEADER, hoursLabel, hoursLabelUCOT, grandTotalHoursLabel, ImportExportConstants.TOTAL_COST_COLUMN_HEADER, ImportExportConstants.AUTHORS_COLUMN_HEADER, ImportExportConstants.APPROVERS_COLUMN_HEADER, ImportExportConstants.STATUS_COLUMN_HEADER, ImportExportConstants.MULTI_CLIN_COLUMN_HEADER, ImportExportConstants.MATERIAL_COLUMN_HEADER);
 
-                    toReturn.AddRange(from boe in statusReport
-                                      select new Collection<string>
-                                   {
-                                       boe.WBSNumber,
-                                       boe.WBSTitle,
-                                       boe.BOETitle,
-                                       boe.CLINNumber,
-                                       boe.CLINTitle,
-                                       string.Format("{0: MM/yyyy}", boe.StartDate),
-                                       string.Format("{0: MM/yyyy}", boe.EndDate),
-                                       CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + boe.TotalHours.ToString(hoursFormatString),
-                                       CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, boe.TotalCost),
-                                       string.Join("; ", boe.Authors),
-                                       string.Join("; ", boe.Approvers),
-                                       boe.Status,
-                                       boe.IsMultiClinWbs ? "Yes" : "No",
-                                       boe.isMaterial ? "Yes" : "No"
-                                   });
+						toReturn.AddRange(
+						from boe in statusReport
+						select new Collection<string>
+						{
+							boe.WBSNumber,
+							boe.WBSTitle,
+							boe.BOETitle,
+							boe.CLINNumber,
+							boe.CLINTitle,
+							string.Format("{0: MM/yyyy}", boe.StartDate),
+							string.Format("{0: MM/yyyy}", boe.EndDate),
+							CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + boe.TotalHours.ToString(hoursFormatString),
+							CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + boe.TotalUCOTHours.ToString(hoursFormatString),
+							CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + boe.TotalHoursWithUCOT.ToString(hoursFormatString),
+							CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, boe.TotalCost),
+							string.Join("; ", boe.Authors),
+							string.Join("; ", boe.Approvers),
+							boe.Status,
+							boe.IsMultiClinWbs ? "Yes" : "No",
+							boe.isMaterial ? "Yes" : "No"
+						});
+					}
+					else
+					{
+						// Add Headers
+						toReturn.Add(ImportExportConstants.WBS_NUMBER_COLUMN_HEADER, ImportExportConstants.WBS_TITLE_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER, ImportExportConstants.CLIN_NUMBER_COLUMN_HEADER, ImportExportConstants.CLIN_TITLE_COLUMN_HEADER, ImportExportConstants.START_DATE_COLUMN_HEADER, ImportExportConstants.END_DATE_COLUMN_HEADER, hoursLabel, ImportExportConstants.TOTAL_COST_COLUMN_HEADER, ImportExportConstants.AUTHORS_COLUMN_HEADER, ImportExportConstants.APPROVERS_COLUMN_HEADER, ImportExportConstants.STATUS_COLUMN_HEADER, ImportExportConstants.MULTI_CLIN_COLUMN_HEADER, ImportExportConstants.MATERIAL_COLUMN_HEADER);
+
+						toReturn.AddRange(
+						from boe in statusReport
+						select new Collection<string>
+						{
+							boe.WBSNumber,
+							boe.WBSTitle,
+							boe.BOETitle,
+							boe.CLINNumber,
+							boe.CLINTitle,
+							string.Format("{0: MM/yyyy}", boe.StartDate),
+							string.Format("{0: MM/yyyy}", boe.EndDate),
+							CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + boe.TotalHours.ToString(hoursFormatString),
+							CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, boe.TotalCost),
+							string.Join("; ", boe.Authors),
+							string.Join("; ", boe.Approvers),
+							boe.Status,
+							boe.IsMultiClinWbs ? "Yes" : "No",
+							boe.isMaterial ? "Yes" : "No"
+						});
+					}
+                    
                     break;
             }
 

@@ -60,8 +60,8 @@
                     <th class="sort task-end" sorttype="date">Task End</th>
                     <th class="sort total-hours" sorttype="number">Total <%: ViewData["HoursLabel"] %></th>
 				<%if (Model.IsUCOTEnabledForWorkspace) { %>
-					<th class="sort total-hours" sorttype="number">Total UCOT Hours</th>
-					<th class="sort total-hours" sorttype="number">Grand Total Hours</th>
+					<th class="sort total-hours" sorttype="number">Total UCOT <%: ViewData["HoursLabel"] %></th>
+					<th class="sort total-hours" sorttype="number">Grand Total <%: ViewData["HoursLabel"] %></th>
 				<% } %>
                     <th class="sort total-cost" sorttype="number">Total Cost</th>
                     <th class="delete last-child">

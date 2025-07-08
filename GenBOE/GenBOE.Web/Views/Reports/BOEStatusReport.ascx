@@ -71,9 +71,16 @@
 
 
 </script>
-<div id="BOEStatusReportGrid" class="module">
-    <div class="module-header-data">BOE Status</div>
-    <div class="module-content-data">
+<% bool IsUCOTEnabledForWorkspace = (bool)ViewData["IsUCOTEnabledForWorkspace"]; %>
+
+<div id="BOEStatusReportGrid" class="home module">
+	<div class="module-header-left"></div>
+    <div class="module-header-center boe-status-header">
+		<div class="boe-status-header-text">BOE Status</div>
+    </div>
+	<div class="module-header-right"></div>
+
+    <div class="module-content-center boe-status-content">
     
 		<div class="boe-status-row">
 			<div class="view-selector-div">
@@ -93,6 +100,7 @@
 					<%: Model.Sum(m => m.TotalHours).ToString(Model.Any() ? Model.First().DecimalPrecisionStringFormat : "F0") %>
 				</div>
 
+				<% if (IsUCOTEnabledForWorkspace){  %>
 				<div class="all-hours">
 					Total UCOT <%: ViewData["HoursLabel"]%> for all BOEs:
 					<%: Model.Sum(m => m.TotalUCOTHours).ToString(Model.Any() ? Model.First().DecimalPrecisionStringFormat : "F0") %>
@@ -102,6 +110,7 @@
 					Grand Total <%: ViewData["HoursLabel"]%> for all BOEs:
 					<%: Model.Sum(m => m.TotalHoursWithUCOT).ToString(Model.Any() ? Model.First().DecimalPrecisionStringFormat : "F0") %>
 				</div>
+				<% } %>
 			</div>
 
 			<div class="export-button-div">
