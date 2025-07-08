@@ -42,6 +42,11 @@ namespace GenBOE.DataBridge.DTO
 		private readonly IWorkspaceVersionMetaDataDTODataLoader workspaceVersionMetaDataDTODataLoader;
 
 		/// <summary>
+		/// Unique date shift objects.
+		/// </summary>
+		private readonly Dictionary<(int, Level), DateShiftDTO> uniqueDateShiftObjects = new Dictionary<(int, Level), DateShiftDTO>();
+
+		/// <summary>
 		/// Default constructor
 		/// </summary>
 		public DateShiftDTODataLoader(IResourceSpreadLoader resourceSpreadLoader, ISkillMixDTOLoader skillMixLoader, ICommonDisclosureSMDTODataLoader commonDisclosureLoader, IWorkspaceVersionMetaDataDTODataLoader workspaceVersionMetaDataDTODataLoader)
@@ -64,14 +69,15 @@ namespace GenBOE.DataBridge.DTO
 				throw new ArgumentNullException(nameof(dateShiftDTOs));
 			}
 
-			List<DateShiftDTO> dateShiftDTOsToUpdate = new List<DateShiftDTO>();
+			// Clear out before update.
+			uniqueDateShiftObjects.Clear();
 
 			foreach (DateShiftDTO dateShiftDTO in dateShiftDTOs)
 			{
-				dateShiftDTOsToUpdate.AddRange(RecursivelyGetDateShiftDTOs(dateShiftDTO));
+				RecursivelyGetDateShiftDTOs(dateShiftDTO);
 			}
 
-			foreach (DateShiftDTO dateShiftDTOtoUpdate in dateShiftDTOsToUpdate)
+			foreach (DateShiftDTO dateShiftDTOtoUpdate in uniqueDateShiftObjects.Values)
 			{
 				// Update any labor spreads.
 				if (dateShiftDTOtoUpdate.LaborSpreads.Any() && dateShiftDTOtoUpdate.DateShiftLevel == Level.Labor)
@@ -124,7 +130,7 @@ namespace GenBOE.DataBridge.DTO
 			}
 
 			// Update the dates in the database for all shifted items.
-			this.UpdateDateShifts(dateShiftDTOsToUpdate);
+			this.UpdateDateShifts(uniqueDateShiftObjects.Values);
 		}
 
 		#region Inherited
@@ -191,30 +197,25 @@ namespace GenBOE.DataBridge.DTO
 		/// Gets the date shift child DTOs recursively.
 		/// </summary>
 		/// <param name="dateShiftable">Date shiftable.</param>
-		/// <returns>List of date shift dtos that were in the child property.</returns>
-		private List<DateShiftDTO> RecursivelyGetDateShiftDTOs(DateShiftDTO dateShiftDTO)
+		private void RecursivelyGetDateShiftDTOs(DateShiftDTO dateShiftDTO)
 		{
 			if (dateShiftDTO == null)
 			{
 				throw new ArgumentNullException(nameof(dateShiftDTO));
 			}
 
-			List<DateShiftDTO> dateShiftDTOs = new List<DateShiftDTO>();
-
-			if (dateShiftDTO != null)
+			if (!uniqueDateShiftObjects.ContainsKey((dateShiftDTO.Id, dateShiftDTO.DateShiftLevel)))
 			{
-				dateShiftDTOs.Add(dateShiftDTO);
+				uniqueDateShiftObjects.Add((dateShiftDTO.Id, dateShiftDTO.DateShiftLevel), dateShiftDTO);
 			}
 
 			if (dateShiftDTO.Children != null)
 			{
 				foreach (DateShiftDTO child in dateShiftDTO.Children)
 				{
-					dateShiftDTOs.AddRange(RecursivelyGetDateShiftDTOs(child));
+					RecursivelyGetDateShiftDTOs(child);
 				}
 			}
-
-			return dateShiftDTOs;
 		}
 
 		/// <summary>
@@ -257,56 +258,7 @@ namespace GenBOE.DataBridge.DTO
 					throw new NotSupportedException($"Unsupported level: {level}");
 			}
 
-			MakeChildrenUnique(dateShift);
-
 			return dateShift;
-		}
-
-		/// <summary>
-		/// Make children unique.
-		/// </summary>
-		/// <param name="dateShiftDTO">Date shift DTO.</param>
-		private void MakeChildrenUnique(DateShiftDTO dateShiftDTO)
-		{
-			if (dateShiftDTO == null)
-			{
-				return;
-			}
-
-			HashSet<(int, Level)> seen = new HashSet<(int, Level)>();
-			List<DateShiftDTO> uniqueChildren = new List<DateShiftDTO>();
-
-			if (dateShiftDTO.Children != null)
-			{
-				foreach (DateShiftDTO child in dateShiftDTO.Children)
-				{
-					if (IsUnique(child, seen))
-					{
-						uniqueChildren.Add(child);
-						MakeChildrenUnique(child);
-					}
-				}
-
-				dateShiftDTO.Children = uniqueChildren;
-			}
-		}
-
-		/// <summary>
-		/// Checks if is unique.
-		/// </summary>
-		/// <param name="dateShiftDTO">Date shift DTO.</param>
-		/// <param name="seen">Seen objects</param>
-		/// <returns>Is unique</returns>
-		private bool IsUnique(DateShiftDTO dateShiftDTO, HashSet<(int, Level)> seen)
-		{
-			(int Id, Level DateShiftLevel) key = (dateShiftDTO.Id, dateShiftDTO.DateShiftLevel);
-			if (seen.Contains(key))
-			{
-				return false;
-			}
-
-			seen.Add(key);
-			return true;
 		}
 
 		/// <summary>
