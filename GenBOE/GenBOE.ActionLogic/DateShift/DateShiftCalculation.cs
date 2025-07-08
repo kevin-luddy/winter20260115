@@ -1127,10 +1127,10 @@ namespace GenBOE.ActionLogic.DateShift
 					boes = new DateShiftDTO[] { dateShiftDTO };
 					break;
 				case Level.CLIN:
-					boes = dateShiftDTO.Children.Select(clin => DateShiftDTO.SetupDateShift(clin)).Where(d => boeIds.Contains(d.Id)).ToList();
+					boes = dateShiftDTO.Children.Where(clin => boeIds.Contains(clin.Id)).ToList();
 					break;
 				default:
-					boes = dateShiftModel.Workspace.Boes.Select(boe => DateShiftDTO.SetupDateShift(new DateShiftDTO()
+					boes = dateShiftModel.Workspace.Boes.Select(boe => new DateShiftDTO
 					{
 						DateShiftLevel = IES.Common.Level.BOE,
 						BOEStateID = boe.Id,
@@ -1142,7 +1142,7 @@ namespace GenBOE.ActionLogic.DateShift
 						EndDate = boe.EndDate,
 						HasSpread = boe.HasSpread,
 						Updateable = boe.Updateable
-					})).Where(d => boeIds.Contains(d.Id)).ToList();
+					}).Where(d => boeIds.Contains(d.BOEStateID)).ToList();
 					break;
 			}
 
@@ -1179,11 +1179,11 @@ namespace GenBOE.ActionLogic.DateShift
 				case Level.BOE:
 					return new DateShiftDTO[] { dateShiftDTO };
 				case Level.CLIN:
-					ICollection<DateShiftDTO> clinBoes = dateShiftDTO.Children.Select(clin => DateShiftDTO.SetupDateShift(clin)).Where(d => d.Updateable == UpdateType.Upsert).ToList();
+					ICollection<DateShiftDTO> clinBoes = dateShiftDTO.Children.Where(d => d.Updateable == UpdateType.Upsert).ToList();
 					return clinBoes;
 				default:
 					// Default at workspace level.
-					IEnumerable<DateShiftDTO> boesAsDateShiftDTOs = dateShiftModel.Workspace.Boes.Select(b => DateShiftDTO.SetupDateShift(new DateShiftDTO()
+					IEnumerable<DateShiftDTO> boesAsDateShiftDTOs = dateShiftModel.Workspace.Boes.Select(b => new DateShiftDTO
 					{
 						DateShiftLevel = IES.Common.Level.BOE,
 						BOEStateID = b.Id,
@@ -1195,7 +1195,8 @@ namespace GenBOE.ActionLogic.DateShift
 						EndDate = b.EndDate,
 						HasSpread = b.HasSpread,
 						Updateable = b.Updateable
-					}));
+					});
+
 					IEnumerable<DateShiftDTO> upsertBoes = boesAsDateShiftDTOs.Where(d => d.Updateable == UpdateType.Upsert);
 					ICollection<DateShiftDTO> boes = upsertBoes.ToList();
 					return boes;

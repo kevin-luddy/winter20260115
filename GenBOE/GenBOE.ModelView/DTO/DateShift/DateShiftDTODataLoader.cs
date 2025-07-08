@@ -37,14 +37,20 @@ namespace GenBOE.DataBridge.DTO
 		private readonly ICommonDisclosureSMDTODataLoader commonDisclosureLoader;
 
 		/// <summary>
+		/// The workspace version data loader.
+		/// </summary>
+		private readonly IWorkspaceVersionMetaDataDTODataLoader workspaceVersionMetaDataDTODataLoader;
+
+		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public DateShiftDTODataLoader(IResourceSpreadLoader resourceSpreadLoader, ISkillMixDTOLoader skillMixLoader, ICommonDisclosureSMDTODataLoader commonDisclosureLoader)
+		public DateShiftDTODataLoader(IResourceSpreadLoader resourceSpreadLoader, ISkillMixDTOLoader skillMixLoader, ICommonDisclosureSMDTODataLoader commonDisclosureLoader, IWorkspaceVersionMetaDataDTODataLoader workspaceVersionMetaDataDTODataLoader)
 		{
 			this.Log = new Logger(typeof(DateShiftDTODataLoader));
 			this.resourceSpreadLoader = resourceSpreadLoader;
 			this.skillMixLoader = skillMixLoader;
 			this.commonDisclosureLoader = commonDisclosureLoader;
+			this.workspaceVersionMetaDataDTODataLoader = workspaceVersionMetaDataDTODataLoader;
 		}
 
 		/// <summary>
@@ -224,28 +230,28 @@ namespace GenBOE.DataBridge.DTO
 			switch (level)
 			{
 				case Level.Workspace:
-					dateShift = DateShiftDTO.SetupDateShift(GetWorkspaceDateShiftDataById(id, true));
+					dateShift = GetWorkspaceDateShiftDataById(id, true);
 					break;
 				case Level.CLIN:
-					dateShift = DateShiftDTO.SetupDateShift(GetClinDateShiftDataById(id, true));
-					dateShift.Parent = DateShiftDTO.SetupDateShift(GetWorkspaceDateShiftDataById(dateShift.WorkspaceId, false));
+					dateShift = GetClinDateShiftDataById(id, true);
+					dateShift.Parent = GetWorkspaceDateShiftDataById(dateShift.WorkspaceId, false);
 					break;
 				case Level.BOE:
-					dateShift = DateShiftDTO.SetupDateShift(GetBoeDateShiftDataById(id));
+					dateShift = GetBoeDateShiftDataById(id);
 
 					// Sets parent to be CLIN if the BOE uses a clin, otherwise, if NO CLIN then set Workspace as parent.
 					if (dateShift.ClinId != null)
 					{
-						dateShift.Parent = DateShiftDTO.SetupDateShift(GetClinDateShiftDataById(dateShift.ParentId.Value, false));
+						dateShift.Parent = GetClinDateShiftDataById(dateShift.ParentId.Value, false);
 					}
 					else
 					{
-						dateShift.Parent = DateShiftDTO.SetupDateShift(GetWorkspaceDateShiftDataById(dateShift.WorkspaceId, false));
+						dateShift.Parent = GetWorkspaceDateShiftDataById(dateShift.WorkspaceId, false);
 					}
 					break;
 				case Level.Task:
-					dateShift = DateShiftDTO.SetupDateShift(GetBoeTaskElementDateShiftDataById(id));
-					dateShift.Parent = DateShiftDTO.SetupDateShift(GetBoeDateShiftDataById(dateShift.BoeId));
+					dateShift = GetBoeTaskElementDateShiftDataById(id);
+					dateShift.Parent = GetBoeDateShiftDataById(dateShift.BoeId);
 					break;
 				default:
 					throw new NotSupportedException($"Unsupported level: {level}");
@@ -289,6 +295,8 @@ namespace GenBOE.DataBridge.DTO
 										WorkspaceId = b.WorkspaceID,
 										ClinId = xRef == null ? null : xRef.CLINID,
 										WbsId = xRef == null ? null : xRef.WBSID,
+										ParentId = xRef.CLINID ?? b.WorkspaceID,
+										DateShiftLevel = Level.BOE
 									}).FirstOrDefault();
 
 				boe.Children.AddRange(GetBoeTaskElementDateShiftDataByBoeId(id));
@@ -317,6 +325,8 @@ namespace GenBOE.DataBridge.DTO
 										 EndDate = c.CLINEndDate,
 										 UpdateDate = c.UpdateDT,
 										 WorkspaceId = c.WorkspaceID,
+										 ParentId = c.WorkspaceID,
+										 DateShiftLevel = Level.CLIN
 									 }).FirstOrDefault();
 
 				if (getChildren)
@@ -351,9 +361,8 @@ namespace GenBOE.DataBridge.DTO
 											   WorkspaceId = b.WorkspaceID,
 											   ClinId = xRef.CLINID,
 											   WbsId = xRef.WBSID,
-											   Level = (int)Level.BOE,
 											   DateShiftLevel = Level.BOE,
-											   ParentId = id,
+											   ParentId = xRef.CLINID ?? b.WorkspaceID,
 										   }).ToList();
 
 				foreach (DateShiftDTO boe in boes)
@@ -381,12 +390,18 @@ namespace GenBOE.DataBridge.DTO
 											   select new DateShiftDTO
 											   {
 												   Id = bT.BOETaskElementID,
+												   BOETaskElementId = bT.BOETaskElementID,
 												   StartDate = bT.TaskStartDate,
 												   EndDate = bT.TaskEndDate,
 												   UpdateDate = bT.UpdateDT,
 												   BoeId = bT.BOEID,
-												   DateShiftLevel = Level.Task
+												   DateShiftLevel = Level.Task,
+												   ParentId = bT.BOEID
 											   }).FirstOrDefault();
+
+				boeTaskElement.SkillMixTable = skillMixLoader.GetByBOETaskElementID(id).Select(dto => new SkillMixModelView(dto)).ToList();
+				boeTaskElement.CommonDisclosureTable = commonDisclosureLoader.GetByBOETaskElementID(id).Select(dto => new CommonDisclosureModelView(dto)).ToList();
+
 				// Get resource types for task element labors.
 				if (boeTaskElement != null)
 				{
@@ -447,13 +462,15 @@ namespace GenBOE.DataBridge.DTO
 													   BOETaskElementId = te.BOETaskElementID,
 													   StartDate = te.TaskStartDate,
 													   EndDate = te.TaskEndDate,
-													   Level = (int)Level.Task,
 													   DateShiftLevel = Level.Task,
 													   ParentId = te.BOEID,
 												   }).ToList();
 
 				foreach (DateShiftDTO taskElement in taskElements)
 				{
+					taskElement.SkillMixTable = skillMixLoader.GetByBOETaskElementID(taskElement.Id).Select(dto => new SkillMixModelView(dto)).ToList();
+					taskElement.CommonDisclosureTable = commonDisclosureLoader.GetByBOETaskElementID(taskElement.Id).Select(dto => new CommonDisclosureModelView(dto)).ToList();
+
 					// Get resource types for task element labors.
 					taskElement.TaskElementLabors = (from lT in gbe.BOELaborTypes
 													 where lT.BOETaskElementID == taskElement.Id
@@ -475,7 +492,6 @@ namespace GenBOE.DataBridge.DTO
 																 LaborSpreadValue = lS.LaborSpreadValue ?? 0,
 																 LaborTypeId = lS.BOELaborTypeID
 															 }),
-
 													 }).ToCollection();
 
 					if (taskElement.TaskElementLabors != null)
@@ -511,8 +527,11 @@ namespace GenBOE.DataBridge.DTO
 											  StartDate = w.ContractStartDate,
 											  EndDate = w.ContractEndDate,
 											  UpdateDate = w.UpdateDT,
-											  DateShiftLevel = Level.Workspace
+											  DateShiftLevel = Level.Workspace,
+											  WorkspaceState = (WorkspaceState)w.WorkspaceStateID,
 										  }).FirstOrDefault();
+
+				workspace.WorkspaceVersionMetaData = workspaceVersionMetaDataDTODataLoader.GetByWorkspaceID(workspace.WorkspaceId);
 
 				if (getChildren)
 				{
@@ -570,7 +589,6 @@ namespace GenBOE.DataBridge.DTO
 												EndDate = c.CLINEndDate,
 												UpdateDate = c.UpdateDT,
 												WorkspaceId = c.WorkspaceID,
-												Level = (int)Level.CLIN,
 												DateShiftLevel = Level.CLIN,
 												ParentId = workspaceId,
 											}).ToList();
@@ -609,7 +627,6 @@ namespace GenBOE.DataBridge.DTO
 											   WorkspaceId = b.WorkspaceID,
 											   ClinId = xRef == null ? null : xRef.CLINID,
 											   WbsId = xRef == null ? null : xRef.WBSID,
-											   Level = (int)Level.BOE,
 											   DateShiftLevel = Level.BOE,
 											   ParentId = workspaceId,
 										   }).ToList();
