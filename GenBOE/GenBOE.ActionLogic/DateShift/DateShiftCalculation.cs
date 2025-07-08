@@ -1127,21 +1127,21 @@ namespace GenBOE.ActionLogic.DateShift
 					boes = new DateShiftDTO[] { dateShiftDTO };
 					break;
 				case Level.CLIN:
-					boes = dateShiftDTO.Children.Select(c => DateShiftDTO.FromIDateShiftable(c)).Where(d => boeIds.Contains(d.Id)).ToList();
+					boes = dateShiftDTO.Children.Select(clin => DateShiftDTO.SetupDateShift(clin)).Where(d => boeIds.Contains(d.Id)).ToList();
 					break;
 				default:
-					boes = dateShiftModel.Workspace.Boes.Select(b => DateShiftDTO.FromIDateShiftable(new DateShiftDTO()
+					boes = dateShiftModel.Workspace.Boes.Select(boe => DateShiftDTO.SetupDateShift(new DateShiftDTO()
 					{
 						DateShiftLevel = IES.Common.Level.BOE,
-						BOEStateID = b.Id,
-						ParentId = b.CLINID ?? b.WorkspaceID,
-						ClinId = b.CLINID,
-						WbsId = b.WBSID,
-						WorkspaceId = b.WorkspaceID,
-						StartDate = b.StartDate,
-						EndDate = b.EndDate,
-						HasSpread = b.HasSpread,
-						Updateable = b.Updateable
+						BOEStateID = boe.Id,
+						ParentId = boe.CLINID ?? boe.WorkspaceID,
+						ClinId = boe.CLINID,
+						WbsId = boe.WBSID,
+						WorkspaceId = boe.WorkspaceID,
+						StartDate = boe.StartDate,
+						EndDate = boe.EndDate,
+						HasSpread = boe.HasSpread,
+						Updateable = boe.Updateable
 					})).Where(d => boeIds.Contains(d.Id)).ToList();
 					break;
 			}
@@ -1179,12 +1179,11 @@ namespace GenBOE.ActionLogic.DateShift
 				case Level.BOE:
 					return new DateShiftDTO[] { dateShiftDTO };
 				case Level.CLIN:
-					ICollection<DateShiftDTO> clinBoes = dateShiftDTO.Children.Select(c => DateShiftDTO.FromIDateShiftable(c)).Where(d => d.Updateable == UpdateType.Upsert).ToList();
+					ICollection<DateShiftDTO> clinBoes = dateShiftDTO.Children.Select(clin => DateShiftDTO.SetupDateShift(clin)).Where(d => d.Updateable == UpdateType.Upsert).ToList();
 					return clinBoes;
 				default:
-					// TODO Thomas: Need to get these as Date Shift DTOs.
 					// Default at workspace level.
-					IEnumerable<DateShiftDTO> boesAsDateShiftDTOs = dateShiftModel.Workspace.Boes.Select(b => DateShiftDTO.FromIDateShiftable(new DateShiftDTO()
+					IEnumerable<DateShiftDTO> boesAsDateShiftDTOs = dateShiftModel.Workspace.Boes.Select(b => DateShiftDTO.SetupDateShift(new DateShiftDTO()
 					{
 						DateShiftLevel = IES.Common.Level.BOE,
 						BOEStateID = b.Id,
