@@ -24,40 +24,127 @@ namespace GenBOE.Tests.DAL.DataLoaders
 			_dataLoader = new PldDTODataLoader();
 		}
 
+		//[TestMethod]
+		//public void GetByWorkspaceId_ValidWorkspaceId_ReturnsProposalDTOs()
+		//{
+		//	// Arrange
+		//	int workspaceId = 1;
+		//	List<PLDProposal> proposals = new List<PLDProposal>
+		//	{
+		//		new PLDProposal { PA_Number = "PA-1" },
+		//		new PLDProposal { PA_Number = "PA-2" }
+		//	};
+
+		//	Mock<PldDBContext> mockContext = new Mock<PldDBContext>();
+		//	Mock<DbSet<PLDProposal>> mockSet = new Mock<DbSet<PLDProposal>>();
+		//	mockSet.As<IQueryable<PLDProposal>>().Setup(m => m.Provider).Returns(proposals.AsQueryable().Provider);
+		//	mockSet.As<IQueryable<PLDProposal>>().Setup(m => m.Expression).Returns(proposals.AsQueryable().Expression);
+		//	mockSet.As<IQueryable<PLDProposal>>().Setup(m => m.ElementType).Returns(proposals.AsQueryable().ElementType);
+		//	mockSet.As<IQueryable<PLDProposal>>().Setup(m => m.GetEnumerator()).Returns(() => proposals.GetEnumerator());
+
+		//	mockContext.Setup(c => c.Proposals).Returns(mockSet.Object);
+
+		//	PldDTODataLoader dataLoader = new PldDTODataLoader(mockContext.Object);
+
+		//	// Act
+		//	List<Dtos.ProposalDTO> result = dataLoader.GetByWorkspaceId(workspaceId);
+
+		//	// Assert
+		//	Assert.IsNotNull(result);
+		//	Assert.AreEqual(2, result.Count);
+		//	Assert.AreEqual("PA-1", result[0].PA_Number);
+		//	Assert.AreEqual("PA-2", result[1].PA_Number);
+		//}
+
+
 		[TestMethod]
-		public void GetByWorkspaceId_ValidWorkspaceId_ReturnsProposalDTOs()
+		public void GetAllProposals_ReturnsProposals()
 		{
 			// Arrange
-			int workspaceId = 1;
-			List<Proposal> proposals = new List<Proposal>
+			using (PldDBContext context = new PldDBContext())
 			{
-				new Proposal { WorkspaceID = workspaceId, PA_Number = "PA-1" },
-				new Proposal { WorkspaceID = workspaceId, PA_Number = "PA-2" }
-			};
+				PldDTODataLoader sut = new PldDTODataLoader(context);
 
-			Mock<PldDBContext> mockContext = new Mock<PldDBContext>();
-			Mock<DbSet<Proposal>> mockSet = new Mock<DbSet<Proposal>>();
-			mockSet.As<IQueryable<Proposal>>().Setup(m => m.Provider).Returns(proposals.AsQueryable().Provider);
-			mockSet.As<IQueryable<Proposal>>().Setup(m => m.Expression).Returns(proposals.AsQueryable().Expression);
-			mockSet.As<IQueryable<Proposal>>().Setup(m => m.ElementType).Returns(proposals.AsQueryable().ElementType);
-			mockSet.As<IQueryable<Proposal>>().Setup(m => m.GetEnumerator()).Returns(() => proposals.GetEnumerator());
+				// Act
+				ICollection<Dtos.ProposalDTO> proposals = sut.GetAllProposals();
 
-			mockContext.Setup(c => c.Proposals).Returns(mockSet.Object);
-
-			PldDTODataLoader dataLoader = new PldDTODataLoader(mockContext.Object);
-
-			// Act
-			List<Dtos.ProposalDTO> result = dataLoader.GetByWorkspaceId(workspaceId);
-
-			// Assert
-			Assert.IsNotNull(result);
-			Assert.AreEqual(2, result.Count);
-			Assert.AreEqual("PA-1", result[0].PA_Number);
-			Assert.AreEqual("PA-2", result[1].PA_Number);
+				// Assert
+				Assert.IsNotNull(proposals);
+				Assert.IsTrue(proposals.Count > 0);
+			}
 		}
 
+		[TestMethod]
+		public void GetByIds_WithValidPaNumbers_ReturnsProposals()
+		{
+			// Arrange
+			using (PldDBContext context = new PldDBContext())
+			{
+				PldDTODataLoader sut = new PldDTODataLoader(context);
+				string[] paNumbers = new[] { "PA-1", "PA-2" };
 
-	
+				// Act
+				ICollection<Dtos.ProposalDTO> proposals = sut.GetByIds(paNumbers);
+
+				// Assert
+				Assert.IsNotNull(proposals);
+				Assert.IsTrue(proposals.Count > 0);
+			}
+		}
+
+		[TestMethod]
+		public void GetByIds_WithNoPaNumbers_ReturnsEmptyList()
+		{
+			// Arrange
+			using (PldDBContext context = new PldDBContext())
+			{
+				PldDTODataLoader sut = new PldDTODataLoader(context);
+				string[] paNumbers = new string[0];
+
+				// Act
+				ICollection<Dtos.ProposalDTO> proposals = sut.GetByIds(paNumbers);
+
+				// Assert
+				Assert.IsNotNull(proposals);
+				Assert.AreEqual(0, proposals.Count);
+			}
+		}
+
+		
+
+		[TestMethod]
+		public void GetAllActiveProposals_ReturnsActiveProposals()
+		{
+			// Arrange
+			using (PldDBContext context = new PldDBContext())
+			{
+				PldDTODataLoader sut = new PldDTODataLoader(context);
+
+				// Act
+				ICollection<Dtos.ProposalDTO> proposals = sut.GetAllActiveProposals(1);
+
+				// Assert
+				Assert.IsNotNull(proposals);
+				Assert.IsTrue(proposals.Count > 0);
+			}
+		}
+
+		[TestMethod]
+		public void GetAllActiveProposalNames_ReturnsActiveProposalNames()
+		{
+			// Arrange
+			using (PldDBContext context = new PldDBContext())
+			{
+				PldDTODataLoader sut = new PldDTODataLoader(context);
+
+				// Act
+				ICollection<string> proposalNames = sut.GetAllActiveProposalNames(1);
+
+				// Assert
+				Assert.IsNotNull(proposalNames);
+				Assert.IsTrue(proposalNames.Count > 0);
+			}
+		}
 
 
 

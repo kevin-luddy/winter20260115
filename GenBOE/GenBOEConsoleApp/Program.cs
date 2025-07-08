@@ -14,9 +14,9 @@ namespace GenBOEConsoleApp
 		{
 			using (PldDBContext context = new PldDBContext())
 			{
-				List<Proposal> proposals = context.Proposals.Take(10).ToList();
+				List<PLDProposal> proposals = context.Proposals.Take(10).ToList();
 
-				foreach(Proposal proposal in proposals)
+				foreach(PLDProposal proposal in proposals)
 				{
 					Console.WriteLine($"PA:{proposal.PA_Number}");
 				}

@@ -8,7 +8,7 @@ namespace GenBOE.Dtos
 
 	[ExcludeFromCodeCoverage]
 	[Serializable()]
-	public class ProposalDTO : UpdateableDTO, IWorkspaceMembership
+	public class ProposalDTO : UpdateableDTO
 	{
 		
 		public ProposalDTO()
@@ -24,7 +24,7 @@ namespace GenBOE.Dtos
 			RFP_Number = string.Empty;
 			Last_Modified_Date = DateTime.MinValue;
 			Proposal_Status = string.Empty;
-			WorkspaceID = 0;
+			
 
 		}
 
@@ -50,6 +50,6 @@ namespace GenBOE.Dtos
 
 		public string Proposal_Status { get; set; }
 
-		public int WorkspaceID { get; set; }
+		
 	}
 }

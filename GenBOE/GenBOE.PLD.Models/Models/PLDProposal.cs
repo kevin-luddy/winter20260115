@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace GenBOE.PLD.Models.Models
 {
 	[Table("V_PLD_GenBOE", Schema = "dbo")]
-	public class Proposal
+	public class PLDProposal
     {		
 	
 		[Column("PA Number")]
@@ -44,9 +44,7 @@ namespace GenBOE.PLD.Models.Models
 		public DateTime? Last_Modified_Date { get; set; }
 
 		[Column("Proposal Status")]
-		public string Proposal_Status { get; set; }
-
-		public int WorkspaceID { get; set; }
+		public string Proposal_Status { get; set; }	
 
 		
 	}

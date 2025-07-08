@@ -15,7 +15,7 @@ namespace GenBOE.PLD.Models
 		{
 		}
 
-		public virtual DbSet<Proposal> Proposals { get; set; }
+		public virtual DbSet<PLDProposal> Proposals { get; set; }
 
     }
 }

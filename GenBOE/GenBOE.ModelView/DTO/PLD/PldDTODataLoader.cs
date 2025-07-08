@@ -12,7 +12,7 @@ namespace GenBOE.DataBridge.DTO
 	using GenBOE.Models;
 	using GenBOE.PLD.Models;
 
-	public class PldDTODataLoader : DataLoader<ProposalDTO>, IPldDTODataLoader, IDisposable
+	public class PldDTODataLoader : ReadOnlyDataLoader<ProposalDTO>, IPldDTODataLoader, IDisposable
 	{
 		private readonly PldDBContext _context;
 		private bool _disposed;
@@ -22,21 +22,39 @@ namespace GenBOE.DataBridge.DTO
 			_context = context ?? new PldDBContext();
 			this.Log = new Logger(typeof(PldDTODataLoader));
 		}
+
+		/// <summary>
+		///  This Loader only supports PA_Number as a string
+		/// </summary>
+		/// <param name="ids"></param>
+		/// <returns></returns>
+		/// <exception cref="NotSupportedException"></exception>
 		public override ICollection<ProposalDTO> GetByIds(ICollection<int> ids)
 		{
-			throw new NotImplementedException();
+			throw new NotSupportedException("This Loader only supports PA_Number as a string");
 		}
 
-		public List<ProposalDTO> GetByWorkspaceId(int wsId)
+
+		/// <summary>
+		/// Get Proposal by ID   "PA Number" is a string  
+		/// </summary>
+		/// <param name="paNumbers"></param>
+		/// <returns></returns>
+		public ICollection<ProposalDTO> GetByIds(ICollection<string> paNumbers)
 		{
 			List<ProposalDTO> results = new List<ProposalDTO>();
+
+			if(paNumbers == null || paNumbers.Count == 0)
+			{
+				return results;
+			}
 
 			using (StopwatchTimer sw = new StopwatchTimer(Log))
 			{
 				try
 				{
 					results = _context.Proposals
-						.Where(p => p.WorkspaceID == wsId)
+						.Where(p => paNumbers.Contains(p.PA_Number))
 						.Select(p => new ProposalDTO
 						{
 							PA_Number = p.PA_Number,
@@ -52,9 +70,9 @@ namespace GenBOE.DataBridge.DTO
 							Proposal_Status = p.Proposal_Status
 						})
 						.ToList();
-										
+
 				}
-				catch(Exception ex)
+				catch (Exception ex)
 				{
 					Log.Error(ex, "Error getting proposals by Workspace ID");
 					throw;
@@ -64,16 +82,121 @@ namespace GenBOE.DataBridge.DTO
 			return results;
 		}
 
-		protected override int? Delete(ProposalDTO dtoToDelete)
+		/// <summary>
+		/// Get All Proposals from PLD database view
+		/// </summary>
+		/// <returns></returns>
+		public ICollection<ProposalDTO> GetAllProposals()
 		{
-			throw new NotImplementedException();
+			List<ProposalDTO> results = new List<ProposalDTO>();
+			
+			using (StopwatchTimer sw = new StopwatchTimer(Log))
+			{
+				try
+				{
+					results = _context.Proposals						
+						.Select(p => new ProposalDTO
+						{
+							PA_Number = p.PA_Number,
+							PA_Title = p.PA_Title,
+							PA_Description = p.PA_Description,
+							PA_Version = p.PA_Version,
+							Project_Start_Date = p.Project_Start_Date,
+							Project_End_Date = p.Project_End_Date,
+							Last_Modified_Date = p.Last_Modified_Date,
+							Line_of_Business = p.Line_of_Business,
+							Pricing = p.Pricing,
+							RFP_Number = p.RFP_Number,
+							Proposal_Status = p.Proposal_Status
+						})
+						.ToList();
+
+				}
+				catch (Exception ex)
+				{
+					Log.Error(ex, "Error getting proposals by Workspace ID");
+					throw;
+				}
+			}
+
+			return results;
 		}
 
-		protected override int? Upsert(ProposalDTO dtoToUpsert)
+		/// <summary>
+		///   Get All Active Proposals
+		/// </summary>
+		/// <param name="active"></param>
+		/// <returns></returns>
+		public ICollection<ProposalDTO> GetAllActiveProposals(int active)
 		{
-			throw new NotImplementedException();
+			List<ProposalDTO> results = new List<ProposalDTO>();
+			
+			using (StopwatchTimer sw = new StopwatchTimer(Log))
+			{
+				try
+				{
+					string[] activeStatuses = new[] { "Submitted", "Negotiated" };
+
+					results = _context.Proposals
+						.Where(p => activeStatuses.Contains(p.Proposal_Status))
+						.Select(p => new ProposalDTO
+						{
+							PA_Number = p.PA_Number,
+							PA_Title = p.PA_Title,
+							PA_Description = p.PA_Description,
+							PA_Version = p.PA_Version,
+							Project_Start_Date = p.Project_Start_Date,
+							Project_End_Date = p.Project_End_Date,
+							Last_Modified_Date = p.Last_Modified_Date,
+							Line_of_Business = p.Line_of_Business,
+							Pricing = p.Pricing,
+							RFP_Number = p.RFP_Number,
+							Proposal_Status = p.Proposal_Status
+						})
+						.ToList();
+
+				}
+				catch (Exception ex)
+				{
+					Log.Error(ex, "Error getting proposals by Workspace ID");
+					throw;
+				}
+			}
+
+			return results;
 		}
 
+		/// <summary>
+		/// Get All Active Proposals by Name
+		/// </summary>
+		/// <param name="activeNames"></param>
+		/// <returns></returns>
+		public ICollection<string> GetAllActiveProposalNames(int activeNames)
+		{
+			List<string> results = new List<string>();
+			
+			using (StopwatchTimer sw = new StopwatchTimer(Log))
+			{
+				try
+				{
+					string[] activeStatuses = new[] { "Submitted", "Negotiated" };
+
+					results = _context.Proposals
+						.Where(p => activeStatuses.Contains(p.Proposal_Status))
+						.Select(p => p.PA_Title)
+						//.Distinct()
+						.ToList();
+
+				}
+				catch (Exception ex)
+				{
+					Log.Error(ex, "Error getting proposals by Workspace ID");
+					throw;
+				}
+			}
+
+			return results;
+		}
 
 		public void Dispose()
 		{
@@ -98,7 +221,6 @@ namespace GenBOE.DataBridge.DTO
 
 			_disposed = true;
 		}
-
 		~PldDTODataLoader()
 		{
 			Dispose(false);
