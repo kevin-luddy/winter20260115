@@ -185,7 +185,7 @@ namespace GenBOE.Web.Controllers
 				if (editPermissionsModelView != null)
 				{
 					FullWorkspace ws = this.Factory.CreateFullWorkspace(editPermissionsModelView.workspaceShortName);
-					PermissionControllerLogic.EditPermissions(ws, new System.Collections.ObjectModel.Collection<IES.Common.Role>(editPermissionsModelView.roles.ToList()), editPermissionsModelView.entityType, editPermissionsModelView.entityId);
+					PermissionControllerLogic.EditPermissions(ws, new System.Collections.ObjectModel.Collection<IES.Common.Role>(editPermissionsModelView.roles.ToList()), EntityType.User, editPermissionsModelView.entityId);
 					result.Data = true;
 					result.IsSuccessful = true;
 				}

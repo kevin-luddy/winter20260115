@@ -18,7 +18,6 @@
 			this.workspaceShortName = String.Empty;
 			this.entityId = -1;
 			this.roles = null;
-			this.entityType = 0;
 		}
 
 		/// <summary>
@@ -30,11 +29,6 @@
 		/// Roles being assigned
 		/// </summary>
 		public ICollection<Role> roles { get; set; }
-
-		/// <summary>
-		/// Entity Type 
-		/// </summary>
-		public EntityType entityType { get; set; }
 
 		/// <summary>
 		/// Entity Id
