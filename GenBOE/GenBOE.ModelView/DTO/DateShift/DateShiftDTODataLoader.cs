@@ -353,7 +353,7 @@ namespace GenBOE.DataBridge.DTO
 											   ClinId = xRef.CLINID,
 											   WbsId = xRef.WBSID,
 											   DateShiftLevel = Level.BOE,
-											   ParentId = xRef.CLINID ?? b.WorkspaceID,
+											   ParentId = xRef.CLINID,
 										   }).ToList();
 
 				foreach (DateShiftDTO boe in boes)
@@ -396,35 +396,43 @@ namespace GenBOE.DataBridge.DTO
 				// Get resource types for task element labors.
 				if (boeTaskElement != null)
 				{
-					boeTaskElement.Children = (from lT in gbe.BOELaborTypes
-											   where lT.BOETaskElementID == id
-											   select new DateShiftDTO
-											   {
-												   Id = lT.BOELaborTypeID,
-												   BOETaskElementId = lT.BOETaskElementID,
-												   ResourceId = lT.ResourceID.Value,
-												   StartDate = lT.BOELaborTypeStartDate,
-												   EndDate = lT.BOELaborTypeEndDate,
-												   SpreadType = lT.SpreadTypeID.HasValue ? (SpreadType)lT.SpreadTypeID.Value : SpreadType.NotSet,
-												   UpdateDate = lT.UpdateDT,
-												   SpreadCurveIdValue = lT.SpreadCurveID,
-												   LaborSpreadsIEnum = lT.BOELaborSpreads
-													   .Select(lS => new ResourceSpreadDto
-													   {
-														   Id = lS.BOELaborSpreadID,
-														   LaborSpreadDate = lS.LaborSpreadDate,
-														   LaborSpreadValue = lS.LaborSpreadValue ?? 0,
-														   LaborTypeId = lS.BOELaborTypeID
-													   }),
-												   DateShiftLevel = Level.Labor
-											   }).ToList();
+					boeTaskElement.TaskElementLabors = (from lT in gbe.BOELaborTypes
+														where lT.BOETaskElementID == id
+														select new ResourceTypeDto
+														{
+															Id = lT.BOELaborTypeID,
+															TaskElementId = lT.BOETaskElementID,
+															ResourceID = lT.ResourceID,
+															StartDate = lT.BOELaborTypeStartDate,
+															EndDate = lT.BOELaborTypeEndDate,
+															SpreadType = lT.SpreadTypeID.HasValue ? (SpreadType)lT.SpreadTypeID.Value : SpreadType.NotSet,
+															UpdateDate = lT.UpdateDT,
+															SpreadCurveIDValue = lT.SpreadCurveID,
+															LaborSpreadsIEnum = lT.BOELaborSpreads
+																.Select(lS => new ResourceSpreadDto
+																{
+																	Id = lS.BOELaborSpreadID,
+																	LaborSpreadDate = lS.LaborSpreadDate,
+																	LaborSpreadValue = lS.LaborSpreadValue ?? 0,
+																	LaborTypeId = lS.BOELaborTypeID
+																}),
+														}).ToCollection();
 
-					if (boeTaskElement.Children != null)
+					if (boeTaskElement.TaskElementLabors != null)
 					{
-						foreach (DateShiftDTO resourceType in boeTaskElement.Children)
+						foreach (ResourceTypeDto resourceType in boeTaskElement.TaskElementLabors)
 						{
 							resourceType.LaborSpreads = resourceType.LaborSpreadsIEnum.ToCollection();
 							resourceType.LaborSpreadsIEnum = null;
+
+							boeTaskElement.Children.Add(new DateShiftDTO()
+							{
+								StartDate = resourceType.StartDateValue,
+								EndDate = resourceType.EndDateValue,
+								UpdateDate = resourceType.UpdateDate,
+								DateShiftLevel = Level.Labor,
+								ParentId = resourceType.TaskElementId
+							});
 						}
 					}
 				}
@@ -491,6 +499,16 @@ namespace GenBOE.DataBridge.DTO
 						{
 							resourceType.LaborSpreads = resourceType.LaborSpreadsIEnum.ToCollection();
 							resourceType.LaborSpreadsIEnum = null;
+
+							taskElement.Children.Add(new DateShiftDTO()
+							{
+								StartDate = resourceType.StartDateValue,
+								EndDate = resourceType.EndDateValue,
+								UpdateDate = resourceType.UpdateDate,
+								DateShiftLevel = Level.Labor,
+								ParentId = resourceType.TaskElementId
+							}
+							);
 						}
 					}
 				}
@@ -598,10 +616,13 @@ namespace GenBOE.DataBridge.DTO
 
 				foreach (DateShiftDTO boe in boes)
 				{
-					boe.Children.AddRange(GetBoeTaskElementDateShiftDataByBoeId(boe.Id));
+					if (boe.ClinId == null)
+					{
+						boe.Children.AddRange(GetBoeTaskElementDateShiftDataByBoeId(boe.Id));
+					}
 				}
 
-				return boes;
+				return boes.Where(b => b.ClinId == null).ToList();
 			}
 		}
 	}
