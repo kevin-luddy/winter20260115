@@ -248,7 +248,6 @@ namespace GenBOE.ActionLogic.DateShift
 						Validate(dateShiftDTO, detail, parentStart, parentEnd, parentBoeId, Level.Task, workspaceShortname);
 						break;
 					default:
-
 						throw new NotSupportedException(string.Format("Data class setup incorrectly, Class with level {0} has Spreads.", dateShiftDTO.DateShiftLevel.ToString()));
 				}
 			}

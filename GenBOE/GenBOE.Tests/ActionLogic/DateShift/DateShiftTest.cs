@@ -119,8 +119,26 @@ namespace GenBOE.Tests.ActionLogic
                         LaborSpreads = SpreadCurve.CalculateLaborSpreadsBasedOnCurve(new LaborSpreadRequest(SpreadCurves.SpreadCurve3, StartDate, EndDate, DISCRETE_HOURS), 0),
                         ValueSpread = DISCRETE_HOURS
                     }
-                }
+                },
+				HasSpread = false,
+				DateShiftLevel = Level.Task
             };
+
+			foreach (ResourceTypeDto resource in task.TaskElementLabors)
+			{
+				task.Children.Add(new DateShiftDTO()
+				{
+					StartDate = resource.StartDate,
+					EndDate = resource.EndDate,
+					UpdateDate = resource.UpdateDate,
+					Id = resource.Id,
+					DateShiftLevel = Level.Labor,
+					LaborSpreads = resource.LaborSpreads,
+					SpreadCurveID = resource.SpreadCurveID,
+					SpreadType = resource.SpreadType,
+					HasSpread = true
+				});
+			}
 
             return task;
         }
@@ -911,10 +929,10 @@ namespace GenBOE.Tests.ActionLogic
             DateShiftCalculation.PerformShifts(DateShiftDTO, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
             // expanded right, so no change to discrete to original discrete, just adding zeros to end
-            Assert.AreEqual(difference, DateShiftDTO.TaskElementLabors.First().LaborSpreads.Count);
-            Assert.AreEqual(StartDate, DateShiftDTO.TaskElementLabors.First().LaborSpreads.Min(l => l.LaborSpreadDate));
-            Assert.AreEqual(EndDate.AddMonths(detail.MonthChange), DateShiftDTO.TaskElementLabors.First().LaborSpreads.Max(l => l.LaborSpreadDate));
-            Assert.AreEqual(0m, DateShiftDTO.TaskElementLabors.First().LaborSpreads.Last().LaborSpreadValue);
+            Assert.AreEqual(difference + detail.MonthChange, DateShiftDTO.Children.First().LaborSpreads.Count);
+            Assert.AreEqual(StartDate, DateShiftDTO.Children.First().LaborSpreads.Min(l => l.LaborSpreadDate));
+            Assert.AreEqual(EndDate.AddMonths(detail.MonthChange), DateShiftDTO.Children.First().LaborSpreads.Max(l => l.LaborSpreadDate));
+            Assert.AreEqual(0m, DateShiftDTO.Children.First().LaborSpreads.Last().LaborSpreadValue);
         }
 
         /// <summary>
@@ -930,9 +948,9 @@ namespace GenBOE.Tests.ActionLogic
 
             DateShiftCalculation.PerformShifts(DateShiftDTO, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
-            Assert.AreEqual(difference + detail.MonthChange, DateShiftDTO.TaskElementLabors.First().LaborSpreads.Count);
-            Assert.IsTrue(DISCRETE_HOURS > DateShiftDTO.TaskElementLabors.First().ValueSpread);
-            Assert.IsTrue(DISCRETE_HOURS > DateShiftDTO.TaskElementLabors.First().LaborSpreads.Sum(s => s.LaborSpreadValue));
+            Assert.AreEqual(difference + detail.MonthChange, DateShiftDTO.Children.First().LaborSpreads.Count);
+            Assert.IsTrue(DISCRETE_HOURS > DateShiftDTO.Children.First().ValueSpread);
+            Assert.IsTrue(DISCRETE_HOURS > DateShiftDTO.Children.First().LaborSpreads.Sum(s => s.LaborSpreadValue));
         }
 
         /// <summary>
@@ -946,14 +964,14 @@ namespace GenBOE.Tests.ActionLogic
             detail.SpreadHandling = SpreadHandling.DiscreteToFirst;
             int difference = StartDate.MonthDifference(EndDate) + 1;
 
-            decimal value = DateShiftDTO.TaskElementLabors.First().LaborSpreads.First().LaborSpreadValue;
+            decimal value = DateShiftDTO.Children.First().LaborSpreads.First().LaborSpreadValue;
 
             DateShiftCalculation.PerformShifts(DateShiftDTO, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
-            Assert.AreEqual(difference + detail.MonthChange, DateShiftDTO.TaskElementLabors.First().LaborSpreads.Count);
-            Assert.AreEqual(DISCRETE_HOURS, DateShiftDTO.TaskElementLabors.First().ValueSpread);
-            Assert.AreEqual(DISCRETE_HOURS, DateShiftDTO.TaskElementLabors.First().LaborSpreads.Sum(s => s.LaborSpreadValue));
-            Assert.AreNotEqual(value, DateShiftDTO.TaskElementLabors.First().LaborSpreads.First().LaborSpreadValue);
+            Assert.AreEqual(difference + detail.MonthChange, DateShiftDTO.Children.First().LaborSpreads.Count);
+            Assert.AreEqual(DISCRETE_HOURS, DateShiftDTO.Children.First().ValueSpread);
+            Assert.AreEqual(DISCRETE_HOURS, DateShiftDTO.Children.First().LaborSpreads.Sum(s => s.LaborSpreadValue));
+            Assert.AreNotEqual(value, DateShiftDTO.Children.First().LaborSpreads.First().LaborSpreadValue);
         }
 
         /// <summary>
@@ -966,14 +984,14 @@ namespace GenBOE.Tests.ActionLogic
             DateShiftDetailModelView detail = CreateShrinkLeft(ChildModificationType.FlowDown);
             detail.SpreadHandling = SpreadHandling.DiscreteToLast;
             int difference = StartDate.MonthDifference(EndDate) + 1;
-            decimal value = DateShiftDTO.TaskElementLabors.First().LaborSpreads.Last().LaborSpreadValue;
+            decimal value = DateShiftDTO.Children.First().LaborSpreads.Last().LaborSpreadValue;
 
             DateShiftCalculation.PerformShifts(DateShiftDTO, new DateShiftModelView { Details = new DateShiftDetailModelView[] { detail }, Workspace = GetWorkspace() }, null, null, null, Level.Workspace, string.Empty);
 
-            Assert.AreEqual(difference + detail.MonthChange, DateShiftDTO.TaskElementLabors.First().LaborSpreads.Count);
-            Assert.AreEqual(DISCRETE_HOURS, DateShiftDTO.TaskElementLabors.First().ValueSpread);
-            Assert.AreEqual(DISCRETE_HOURS, DateShiftDTO.TaskElementLabors.First().LaborSpreads.Sum(s => s.LaborSpreadValue));
-            Assert.AreNotEqual(value, DateShiftDTO.TaskElementLabors.First().LaborSpreads.Last().LaborSpreadValue);
+            Assert.AreEqual(difference + detail.MonthChange, DateShiftDTO.Children.First().LaborSpreads.Count);
+            Assert.AreEqual(DISCRETE_HOURS, DateShiftDTO.Children.First().ValueSpread);
+            Assert.AreEqual(DISCRETE_HOURS, DateShiftDTO.Children.First().LaborSpreads.Sum(s => s.LaborSpreadValue));
+            Assert.AreNotEqual(value, DateShiftDTO.Children.First().LaborSpreads.Last().LaborSpreadValue);
         }
 
         /// <summary>

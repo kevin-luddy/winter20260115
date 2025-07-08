@@ -433,7 +433,9 @@ namespace GenBOE.DataBridge.DTO
 								UpdateDate = resourceType.UpdateDate,
 								DateShiftLevel = Level.Labor,
 								ParentId = resourceType.TaskElementId,
-								LaborSpreads = resourceType.LaborSpreads
+								LaborSpreads = resourceType.LaborSpreads,
+								SpreadCurveID = resourceType.SpreadCurveID,
+								SpreadType = resourceType.SpreadType
 							});
 						}
 					}
@@ -511,7 +513,9 @@ namespace GenBOE.DataBridge.DTO
 								UpdateDate = resourceType.UpdateDate,
 								DateShiftLevel = Level.Labor,
 								ParentId = resourceType.TaskElementId,
-								LaborSpreads = resourceType.LaborSpreads
+								LaborSpreads = resourceType.LaborSpreads,
+								SpreadCurveID = resourceType.SpreadCurveID,
+								SpreadType = resourceType.SpreadType
 							}
 							);
 						}
