@@ -1,14 +1,10 @@
-﻿using GenBOE.PLD.Models.Models;
-using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GenBOE.PLD.Models
+﻿namespace GenBOE.PLD.Models
 {
-    public class PldDBContext : DbContext
+	using GenBOE.PLD.Models.Models;
+	using System.Data.Entity;
+
+
+	public class PldDBContext : DbContext
     {
 		public PldDBContext() :
 			base("name=PldDBContext")
