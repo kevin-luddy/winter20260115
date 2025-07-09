@@ -305,6 +305,7 @@
     <Compile Include="ModelView\BOEBulkSubmitModelView.cs" />
     <Compile Include="ModelView\DeleteWBSModelView.cs" />
     <Compile Include="ModelView\ErrorModelView.cs" />
+    <Compile Include="ModelView\ExportPermissionModelView.cs" />
     <Compile Include="ModelView\ExportWBSModelView.cs" />
     <Compile Include="ModelView\ExportCLINModelView.cs" />
     <Compile Include="ModelView\FavoriteModelView.cs" />
