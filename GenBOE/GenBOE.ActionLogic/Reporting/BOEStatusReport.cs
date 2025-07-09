@@ -124,11 +124,16 @@ namespace GenBOE.ActionLogic.Reporting
                                         where laborType.SpreadType == SpreadType.Hours
                                               && laborType.ValueSpread.HasValue
                                         select laborType.ValueSpread.Value).Sum();
-				
+
 				// UCOT Data 
 				FullWorkspace fullWorkspace = exportInputs.FullWorkspace;
-				modelView.TotalUCOTHours = UCOTUtility.GetTaskElementsUCOTHours((IReadOnlyCollection<BoeTaskElementDTO>)tasks, fullWorkspace.MoqTypeSelections, fullWorkspace.ResourcesUsedInWsBoes, fullWorkspace.UCOTFactor, fullWorkspace.ResourceDecimalPrecision);
-				modelView.TotalHoursWithUCOT = modelView.TotalHours + modelView.TotalUCOTHours;
+				bool isUCOTEnabledForWorkspace = Utilities.ShowUCOTForWorkspace(fullWorkspace.CreationDate, fullWorkspace.Shortname);
+
+				if (isUCOTEnabledForWorkspace)
+				{
+					modelView.TotalUCOTHours = UCOTUtility.GetTaskElementsUCOTHours((IReadOnlyCollection<BoeTaskElementDTO>)tasks, fullWorkspace.MoqTypeSelections, fullWorkspace.ResourcesUsedInWsBoes, fullWorkspace.UCOTFactor, fullWorkspace.ResourceDecimalPrecision);
+					modelView.TotalHoursWithUCOT = modelView.TotalHours + modelView.TotalUCOTHours;
+				}
 
 				decimal taskCost = 0;
 
