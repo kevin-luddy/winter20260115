@@ -89,7 +89,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
 				PldDTODataLoader sut = new PldDTODataLoader(context);
 
 				// Act
-				ICollection<Dtos.ProposalDTO> proposals = sut.GetAllActiveProposals(1);
+				ICollection<Dtos.ProposalDTO> proposals = sut.GetAllActiveProposals();
 
 				// Assert
 				Assert.IsNotNull(proposals);
@@ -106,7 +106,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
 				PldDTODataLoader sut = new PldDTODataLoader(context);
 
 				// Act
-				ICollection<string> proposalNames = sut.GetAllActiveProposalNames(1);
+				ICollection<string> proposalNames = sut.GetAllActiveProposalNames();
 
 				// Assert
 				Assert.IsNotNull(proposalNames);
