@@ -60,12 +60,6 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\GenBOE.PLD.Models\GenBOE.PLD.Models.csproj">
-      <Project>{f2ab5ffc-459a-4bb1-9cb5-61b4c89c14a0}</Project>
-      <Name>GenBOE.PLD.Models</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
