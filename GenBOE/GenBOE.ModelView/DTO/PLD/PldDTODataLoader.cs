@@ -63,7 +63,7 @@ namespace GenBOE.DataBridge.DTO
 				}
 				catch (Exception ex)
 				{
-					Log.Error(ex, "Error getting proposals by Workspace ID");
+					Log.Error(ex, "Error getting proposals by IDs");
 					throw;
 				}
 			}
@@ -103,7 +103,7 @@ namespace GenBOE.DataBridge.DTO
 				}
 				catch (Exception ex)
 				{
-					Log.Error(ex, "Error getting proposals by Workspace ID");
+					Log.Error(ex, "Error getting all proposals");
 					throw;
 				}
 			}
@@ -147,7 +147,7 @@ namespace GenBOE.DataBridge.DTO
 				}
 				catch (Exception ex)
 				{
-					Log.Error(ex, "Error getting proposals by Workspace ID");
+					Log.Error(ex, "Error getting all active proposals");
 					throw;
 				}
 			}
@@ -179,7 +179,7 @@ namespace GenBOE.DataBridge.DTO
 				}
 				catch (Exception ex)
 				{
-					Log.Error(ex, "Error getting proposals by Workspace ID");
+					Log.Error(ex, "Error getting all active proposals by name");
 					throw;
 				}
 			}

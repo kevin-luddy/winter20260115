@@ -24,38 +24,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
 			_dataLoader = new PldDTODataLoader();
 		}
 
-		//[TestMethod]
-		//public void GetByWorkspaceId_ValidWorkspaceId_ReturnsProposalDTOs()
-		//{
-		//	// Arrange
-		//	int workspaceId = 1;
-		//	List<PLDProposal> proposals = new List<PLDProposal>
-		//	{
-		//		new PLDProposal { PA_Number = "PA-1" },
-		//		new PLDProposal { PA_Number = "PA-2" }
-		//	};
-
-		//	Mock<PldDBContext> mockContext = new Mock<PldDBContext>();
-		//	Mock<DbSet<PLDProposal>> mockSet = new Mock<DbSet<PLDProposal>>();
-		//	mockSet.As<IQueryable<PLDProposal>>().Setup(m => m.Provider).Returns(proposals.AsQueryable().Provider);
-		//	mockSet.As<IQueryable<PLDProposal>>().Setup(m => m.Expression).Returns(proposals.AsQueryable().Expression);
-		//	mockSet.As<IQueryable<PLDProposal>>().Setup(m => m.ElementType).Returns(proposals.AsQueryable().ElementType);
-		//	mockSet.As<IQueryable<PLDProposal>>().Setup(m => m.GetEnumerator()).Returns(() => proposals.GetEnumerator());
-
-		//	mockContext.Setup(c => c.Proposals).Returns(mockSet.Object);
-
-		//	PldDTODataLoader dataLoader = new PldDTODataLoader(mockContext.Object);
-
-		//	// Act
-		//	List<Dtos.ProposalDTO> result = dataLoader.GetByWorkspaceId(workspaceId);
-
-		//	// Assert
-		//	Assert.IsNotNull(result);
-		//	Assert.AreEqual(2, result.Count);
-		//	Assert.AreEqual("PA-1", result[0].PA_Number);
-		//	Assert.AreEqual("PA-2", result[1].PA_Number);
-		//}
-
 
 		[TestMethod]
 		public void GetAllProposals_ReturnsProposals()
