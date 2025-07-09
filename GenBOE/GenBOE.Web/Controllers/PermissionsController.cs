@@ -691,20 +691,9 @@ namespace GenBOE.Web.Controllers
 
 			// Perform Action
 
-			// Get data to export for this Workspace
-			Collection<PermissionsDTO> allPerms = this.PermissionsLoader.GetPermissionsForGridData(ws.Id).Where(p => p.Role != Role.WorkspaceUser).ToCollection();
-
-			// Get export template file name
-			string templateFileName = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST ?
-				Server.MapPath("~/Templates/Export/PermissionsRMS.xlsx") :
-                Server.MapPath("~/Templates/Export/Permissions.xlsx");
-
-			// Call the export function in the business layer and get back the file name of the populated template.
-			string exportedFileName = PermissionsExporter.ExportToExcelFile(templateFileName, allPerms);
-
 			string fileName = string.Format("{0}_Permissions.xlsx", ws.WorkspaceName);
 			// Generate a custom ActionResult to cause a file download to the client
-			FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+			FileStream fs = this._permissionControllerLogic.ExportPermissions(ws);
 
 			// Finalize Action
 			FinalizeAction(_log, WebConstants.ACTION_EXPORT_PERMISSIONS, sw);
@@ -724,63 +713,17 @@ namespace GenBOE.Web.Controllers
 		public JsonResult ImportPermissions(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+			Stream importFile = Request.Files[0].InputStream;
+			string errorMessage;
 
 			// Initialize Action
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_IMPORT_PERMISSIONS, SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			// Perform Action
-			string errorMessage = string.Empty;
-
 			// If a file was uploaded successfully
-			if (Request.Files.Count > 0 && Request.Files[0].FileName.Length > 0)
+			if (importFile != null)
 			{
-				try
-				{
-					// Call the business layer to parse the uploaded file
-					// If the file was successfully parsed, add the results to the genBOE database
-					ICollection<SavePermissionModelView> permissionsFromImportFile = PermissionsImporter.ImportFromExcelFile(Request.Files[0].InputStream);
-
-					if (permissionsFromImportFile.Any())
-					{
-						_permissionControllerLogic.SaveNewPermissions(workspace, permissionsFromImportFile);
-					}
-					else
-					{
-						// Return a success message
-						errorMessage = "No Permissions Were Imported.";
-					}
-				}
-				// Catch custom exceptions from ExcelImporter and ResourcesImporter and generate friendly
-				// exception messages to display for the user
-				catch (NotExcelFileException)
-				{
-					errorMessage = "File is an invalid format. File must be in a MS Excel format (.xlsx or .xls).";
-				}
-				catch (ColumnMissingException ex2)
-				{
-					errorMessage = string.Format("File does not contain all of the required columns. File must contain 'NtId', 'Role' columns. The following columns are missing: {0}.", ex2.Message);
-				}
-				catch (CellValueMissingException ex3)
-				{
-					errorMessage = string.Format("A row in the file does not contain a value for NtId and Role. Every filled row must have a value for each. Check the following column: {0}.", ex3.Message);
-				}
-				catch (DuplicateValuesException ex4)
-				{
-					errorMessage = string.Format("Values must be unique. The following are not unique: {0}", ex4.Message);
-				}
-				catch (EntityCommandExecutionException)
-				{
-					errorMessage = "The Permissions were recently updated by another user. Please refresh the page to review these latest changes. Once the page is refreshed, you can try your import operation again.";
-				}
-				catch (GenValidationException)
-				{
-					throw;
-				}
-				catch (Exception ex)
-				{
-					_log.Error(ex, "Unknown Import Permissions Error.");
-					errorMessage = "A general error occurred. Please ensure that your import file follows the format of the import template and retry the import.";
-				}
+				errorMessage = this._permissionControllerLogic.ImportPermissions(workspace, importFile);
 			}
 			// If no file was uploaded, tell the user about it. Client validation should keep this from being hit.
 			else

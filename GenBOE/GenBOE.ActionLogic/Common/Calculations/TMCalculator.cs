@@ -50,7 +50,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 				// Get T&M rates from fullWorkspace for this resourceId.
 				IReadOnlyCollection<TMResourceRateDTO> wsRates = workspace.TMResourceRatesForWorkspace;
 
-				// first check to see if there are ANY rates for this workspace, if not then just return the sum of the labor spreads
+				// first check to see if there are ANY rates for this workspace, if none then the totalCost is 0 and the cost gets calculated inside ProPricer
 				if (wsRates.Any(w => w.ResourceID == laborTask.ResourceID))
 				{
 					//Left Join (DefaultIfEmpty()) spreads to T&M spreadRates by resourceId & workspaceId, where laborTask date in T&M resource date range.
@@ -62,10 +62,6 @@ namespace GenBOE.ActionLogic.Common.Calculations
 								 from hr in hrs.Where(tmResoureRate => tmResoureRate.StartDate.Value <= laborSpread.LaborSpreadDate)
 									 .Where(tmResoureRate => tmResoureRate.EndDate.Value >= laborSpread.LaborSpreadDate).DefaultIfEmpty()
 								 select (laborSpread.LaborSpreadValue * hr.ResourceRate.Value)).Sum();
-				}
-				else
-				{
-					totalCost = laborTask.LaborSpreads.Sum(s => s.LaborSpreadValue);
 				}
 			}
 			catch (NullReferenceException ne)
@@ -133,16 +129,16 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		/// <param name="workspaceResources">Workspace Resources</param>
 		/// <param name="resourceLoader">Resource Loader</param>
 		/// <param name="tmResourceRateLoader">T&M Resource Loader</param>
-		public void GetBOETotals<T>(BOETotalsPostModel postModel, IESResponse<T> result, ICollection<BOEFormIBOEDTO> iboeDtos, ICollection<BOEFormPBOEDTO> pboeDtos, FullWorkspace fullWorkspace, ICollection<ResourceDTO> workspaceResources, IResourceDTODataLoader resourceLoader, ITMResourceRateDTODataLoader tmResourceRateLoader)
+		public void GetBOETotals<T>(BOETotalsPostModel postModel, IESResponse<T> result, ICollection<BOEFormIBOEDTO> iboeDtos, ICollection<BOEFormPBOEDTO> pboeDtos, FullWorkspace fullWorkspace, ICollection<ResourceDTO> workspaceResources, IResourceDTODataLoader resourceLoader)
 		{
 			Type type = typeof(T);
 			switch (type.Name)
 			{
 				case "PBOERow":
-					GetPBOETotals(postModel, result as IESResponse<PBOERow>, iboeDtos, pboeDtos, fullWorkspace, workspaceResources, resourceLoader, tmResourceRateLoader);
+					GetPBOETotals(postModel, result as IESResponse<PBOERow>, iboeDtos, pboeDtos, fullWorkspace, workspaceResources, resourceLoader);
 					break;
 				case "IBOERow":
-					GetIBOETotals(postModel, result as IESResponse<IBOERow>, iboeDtos, pboeDtos, fullWorkspace, workspaceResources, resourceLoader, tmResourceRateLoader);
+					GetIBOETotals(postModel, result as IESResponse<IBOERow>, iboeDtos, pboeDtos, fullWorkspace, workspaceResources, resourceLoader);
 					break;
 				default:
 					break;
@@ -159,7 +155,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		/// <param name="pboeForms">PBOE forms to validate</param>
 		public void ValidateBOEFormsTMResources(ICollection<ValidationMessage> validationErrors,
 			ICollection<int> resourceIdsWithValidTMRates, FullWorkspace workspace, ICollection<BOEFormIBOEDTO> iboeForms,
-			ICollection<BOEFormPBOEDTO> pboeForms, ITMResourceRateDTODataLoader tmResourceRateLoader, IResourceDTODataLoader resourceLoader)
+			ICollection<BOEFormPBOEDTO> pboeForms, IResourceDTODataLoader resourceLoader)
 		{
 			if (ReferenceEquals(validationErrors, null))
 			{
@@ -181,7 +177,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 			{
 				foreach (BOEFormIBOEDTO iboe in iboeForms)
 				{
-					this.ValidateBOEFormTMResources(validationErrors, resourceIdsWithValidTMRates, workspace, iboe.ResourceIds, tmResourceRateLoader, resourceLoader);
+					this.ValidateBOEFormTMResources(validationErrors, resourceIdsWithValidTMRates, workspace, iboe.ResourceIds, resourceLoader);
 				}
 			}
 
@@ -189,7 +185,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 			{
 				foreach (BOEFormPBOEDTO pboe in pboeForms)
 				{
-					this.ValidateBOEFormTMResources(validationErrors, resourceIdsWithValidTMRates, workspace, pboe.ResourceIds, tmResourceRateLoader, resourceLoader);
+					this.ValidateBOEFormTMResources(validationErrors, resourceIdsWithValidTMRates, workspace, pboe.ResourceIds, resourceLoader);
 				}
 			}
 		}
@@ -202,8 +198,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		/// <param name="workspace">A fullWorkspace to validate boe forms against.</param>
 		/// <param name="resourceIds">IBOE or PBOE Resource Ids</param>
 		/// <param name="resourceLoader">Resource loader</param>
-		/// <param name="tmResourceRateLoader">Resource Rate loader</param>
-		public void ValidateBOEFormTMResources(ICollection<ValidationMessage> validationErrors, ICollection<int> resourceIdsWithValidTMRates, FullWorkspace workspace, ICollection<int> resourceIds, ITMResourceRateDTODataLoader tmResourceRateLoader, IResourceDTODataLoader resourceLoader)
+		public void ValidateBOEFormTMResources(ICollection<ValidationMessage> validationErrors, ICollection<int> resourceIdsWithValidTMRates, FullWorkspace workspace, ICollection<int> resourceIds, IResourceDTODataLoader resourceLoader)
 		{
 			if (ReferenceEquals(validationErrors, null))
 			{
@@ -225,11 +220,6 @@ namespace GenBOE.ActionLogic.Common.Calculations
 				throw new ArgumentNullException(nameof(resourceIds));
 			}
 
-			if (ReferenceEquals(tmResourceRateLoader, null))
-			{
-				throw new ArgumentNullException(nameof(tmResourceRateLoader));
-			}
-
 			if (ReferenceEquals(resourceLoader, null))
 			{
 				throw new ArgumentNullException(nameof(resourceLoader));
@@ -238,57 +228,64 @@ namespace GenBOE.ActionLogic.Common.Calculations
 			if (workspace.IsUsingTM)
 			{
 				// Get list of T&M resources for this fullWorkspace 
-				ICollection<TMResourceRateDTO> workspaceTMResourceRates = tmResourceRateLoader.GetByWorkspaceId(workspace.Id);
+				ICollection<TMResourceRateDTO> workspaceTMResourceRates = workspace.TMResourceRatesForWorkspace.ToList();
 
 				foreach (int resourceId in resourceIds)
 				{
 					int startingErrorCount = validationErrors.Count;
 
 					// Only validate Sub and IWTA resources with RateType = Hours
-					ResourceDTO resource = resourceLoader.GetById(resourceId);
-					if ((resource.ElementOfCost == ElementOfCostType.Sub || resource.ElementOfCost == ElementOfCostType.IWTA) && resource.RateType == RateType.Hours)
+					ResourceDTO resource = workspace.ResourcesForWsResourceListId.FirstOrDefault(r => r.Id == resourceId) ?? resourceLoader.GetById(resourceId);
+					if (resource != null)
 					{
-						// Perform the following validations:
-						// - Make sure we have rates for selected resources   
-						// - Make sure the rates all have start dates, end dates, and rate values        
-						// - Make sure the rate dates cover the period when they are used (BOEJ-2862)
-						// - Make sure the rate dates are sequential, i.e. don't overlap, or contain gaps.
-						IList<TMResourceRateDTO> tmResourceRates = workspaceTMResourceRates.Where(x => x.ResourceID == resourceId).OrderBy(x => x.StartDate).ToList();
-						if (!tmResourceRates.Any())
+						if ((resource.ElementOfCost == ElementOfCostType.Sub || resource.ElementOfCost == ElementOfCostType.IWTA) && resource.RateType == RateType.Hours)
 						{
-							validationErrors.Add(new ValidationMessage(string.Format("There are no T&M rates for resource {0}", resource.ResourceName)));
-						}
-						else if (tmResourceRates.Any(x => !x.StartDate.HasValue || !x.EndDate.HasValue))
-						{
-							validationErrors.Add(new ValidationMessage(string.Format("One or more of the T&M rates for resource {0} are missing a start or end date.", resource.ResourceName)));
-						}
-						else
-						{
-							if (tmResourceRates.Any(x => !x.ResourceRate.HasValue))
+							// Perform the following validations:
+							// - Make sure we have rates for selected resources   
+							// - Make sure the rates all have start dates, end dates, and rate values        
+							// - Make sure the rate dates cover the period when they are used (BOEJ-2862)
+							// - Make sure the rate dates are sequential, i.e. don't overlap, or contain gaps.
+							IList<TMResourceRateDTO> tmResourceRates = workspaceTMResourceRates.Where(x => x.ResourceID == resourceId).OrderBy(x => x.StartDate).ToList();
+							if (!tmResourceRates.Any())
 							{
-								validationErrors.Add(new ValidationMessage(string.Format("One or more of the T&M rates for resource {0} are not populated.", resource.ResourceName)));
+								validationErrors.Add(new ValidationMessage(string.Format("There are no T&M rates for resource {0}", resource.ResourceName)));
 							}
-
-							if (this.StartAndEndDatesAreValid(workspace, tmResourceRates, resource, validationErrors))
+							else if (tmResourceRates.Any(x => !x.StartDate.HasValue || !x.EndDate.HasValue))
 							{
-								bool isSequential = true;
-								DateTime? previousEndDate = null;
-								foreach (TMResourceRateDTO tmResourceRate in tmResourceRates)
+								validationErrors.Add(new ValidationMessage(string.Format("One or more of the T&M rates for resource {0} are missing a start or end date.", resource.ResourceName)));
+							}
+							else
+							{
+								if (tmResourceRates.Any(x => !x.ResourceRate.HasValue))
 								{
-									if (previousEndDate.HasValue && isSequential && tmResourceRate.StartDate.HasValue)
+									validationErrors.Add(new ValidationMessage(string.Format("One or more of the T&M rates for resource {0} are not populated.", resource.ResourceName)));
+								}
+
+								if (this.StartAndEndDatesAreValid(workspace, tmResourceRates, resource, validationErrors))
+								{
+									bool isSequential = true;
+									DateTime? previousEndDate = null;
+									foreach (TMResourceRateDTO tmResourceRate in tmResourceRates)
 									{
-										isSequential = this.CheckConsecutiveMonths(previousEndDate.Value, tmResourceRate.StartDate.Value);
+										if (previousEndDate.HasValue && isSequential && tmResourceRate.StartDate.HasValue)
+										{
+											isSequential = this.CheckConsecutiveMonths(previousEndDate.Value, tmResourceRate.StartDate.Value);
+										}
+										previousEndDate = tmResourceRate.EndDate;
 									}
-									previousEndDate = tmResourceRate.EndDate;
-								}
 
-								if (!isSequential)
-								{
-									validationErrors.Add(new ValidationMessage(string.Format("The T&M rates for resource {0} are not sequential, i.e. there are gaps or overlaps in the date ranges.",
-										resource.ResourceName)));
+									if (!isSequential)
+									{
+										validationErrors.Add(new ValidationMessage(string.Format("The T&M rates for resource {0} are not sequential, i.e. there are gaps or overlaps in the date ranges.",
+											resource.ResourceName)));
+									}
 								}
 							}
 						}
+					}
+					else
+					{
+						this.logger.Warn($"Resource with id {resourceId} not found in workspace {workspace.Shortname}");
 					}
 
 					int endingErrorCount = validationErrors.Count;
@@ -442,7 +439,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		/// </summary>
 		/// <param name="dto">PBOE Form DTO</param>
 		/// <param name="fullWorkspace">Full Workspace</param>
-		/// <param name="resourceLoader">Resouce Loader</param>
+		/// <param name="resourceLoader">Resource Loader</param>
 		/// <param name="resourceIdsWithValidTMRates">List of Resource Id's with Valid TM Rates</param>
 		/// <param name="totalCost">Reference to Total Cost</param>
 		/// <param name="tmTotalCost">Reference to T&M Total Cost</param>
@@ -464,17 +461,24 @@ namespace GenBOE.ActionLogic.Common.Calculations
 					}
 					if (fullWorkspace.IsUsingTM && laborTask.SpreadType == SpreadType.Hours)
 					{
-						ResourceDTO resource = resourceLoader.GetById(laborTask.ResourceID.Value);
 						if (!resourceIdsWithValidTMRates.Contains(laborTask.ResourceID.Value))
 						{
 							hasValidTMRates = false;
 						}
 
-						if (hasValidTMRates && (resource.ElementOfCost == ElementOfCostType.IWTA ||
-							 resource.ElementOfCost == ElementOfCostType.Sub) &&
-							resource.RateType == RateType.Hours)
+						ResourceDTO resource = fullWorkspace.ResourcesForWsResourceListId.FirstOrDefault(r => r.Id == laborTask.ResourceID) ?? resourceLoader.GetById(laborTask.ResourceID.Value);
+						if (resource != null)
 						{
-							tmTotalCost += TotalCostForTaskSpread(fullWorkspace, laborTask);
+							if (hasValidTMRates && (resource.ElementOfCost == ElementOfCostType.IWTA ||
+								 resource.ElementOfCost == ElementOfCostType.Sub) &&
+								resource.RateType == RateType.Hours)
+							{
+								tmTotalCost += TotalCostForTaskSpread(fullWorkspace, laborTask);
+							}
+						}
+						else
+						{
+							this.logger.Warn($"Resource with id {laborTask.ResourceID} not found in workspace {fullWorkspace.Shortname}");
 						}
 					}
 				}
@@ -492,7 +496,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		/// <param name="workspaceResources">List of Resources for the Workspace</param>
 		/// <param name="resourceLoader">Resource Loader</param>
 		/// <param name="tmResourceRateLoader">T&M Resource Loader</param>
-		private void GetPBOETotals(BOETotalsPostModel postModel, IESResponse<PBOERow> result, ICollection<BOEFormIBOEDTO> iboeDtos, ICollection<BOEFormPBOEDTO> pboeDtos, FullWorkspace fullWorkspace, ICollection<ResourceDTO> workspaceResources, IResourceDTODataLoader resourceLoader, ITMResourceRateDTODataLoader tmResourceRateLoader)
+		private void GetPBOETotals(BOETotalsPostModel postModel, IESResponse<PBOERow> result, ICollection<BOEFormIBOEDTO> iboeDtos, ICollection<BOEFormPBOEDTO> pboeDtos, FullWorkspace fullWorkspace, ICollection<ResourceDTO> workspaceResources, IResourceDTODataLoader resourceLoader)
 		{
 			Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
 			Collection<int> resourceIdsWithValidTMRates = new Collection<int>();
@@ -513,7 +517,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 			}
 
 			this.ValidateBOEFormsTMResources(validationErrors, resourceIdsWithValidTMRates, fullWorkspace,
-				iboeDtos, pboeDtos, tmResourceRateLoader, resourceLoader);
+				iboeDtos, pboeDtos, resourceLoader);
 
 			result.Data = this.CalculatePBOETotals(pboeDtos, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates);
 		}
@@ -528,8 +532,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 		/// <param name="fullWorkspace">Full Workspace</param>
 		/// <param name="workspaceResources">List of Resources for the Workspace</param>
 		/// <param name="resourceLoader">Resource Loader</param>
-		/// <param name="tmResourceRateLoader">T&M Resource Loader</param>
-		private void GetIBOETotals(BOETotalsPostModel postModel, IESResponse<IBOERow> result, ICollection<BOEFormIBOEDTO> iboeDtos, ICollection<BOEFormPBOEDTO> pboeDtos, FullWorkspace fullWorkspace, ICollection<ResourceDTO> workspaceResources, IResourceDTODataLoader resourceLoader, ITMResourceRateDTODataLoader tmResourceRateLoader)
+		private void GetIBOETotals(BOETotalsPostModel postModel, IESResponse<IBOERow> result, ICollection<BOEFormIBOEDTO> iboeDtos, ICollection<BOEFormPBOEDTO> pboeDtos, FullWorkspace fullWorkspace, ICollection<ResourceDTO> workspaceResources, IResourceDTODataLoader resourceLoader)
 		{
 			Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
 			Collection<int> resourceIdsWithValidTMRates = new Collection<int>();
@@ -551,7 +554,7 @@ namespace GenBOE.ActionLogic.Common.Calculations
 			}
 
 			this.ValidateBOEFormsTMResources(validationErrors, resourceIdsWithValidTMRates, fullWorkspace,
-				iboeDtos, pboeDtos, tmResourceRateLoader, resourceLoader);
+				iboeDtos, pboeDtos, resourceLoader);
 
 			result.Data = this.CalculateIBOETotals(iboeDtos, fullWorkspace, resourceLoader, resourceIdsWithValidTMRates);
 		}

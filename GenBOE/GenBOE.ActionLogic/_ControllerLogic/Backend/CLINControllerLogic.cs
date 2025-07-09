@@ -69,6 +69,11 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 		private IBoeMediator _boeMediator { get; set; }
 
 		/// <summary>
+		/// BOE DTO Data Loader
+		/// </summary>
+		private IBoeDTODataLoader _boeLoader;
+
+		/// <summary>
 		/// CLIN DTO Data Loader
 		/// </summary>
 		private IClinDTODataLoader _clinLoader { get; set; }
@@ -104,7 +109,7 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 		public CLINControllerLogic(IFullObjectFactory factory, IValidationHelper validationHelper,
 			IVariableSelectBOEtoSumCalculation variableSelectBOEtoSumCalculation, IBoeTaskElementRecalculation boeTaskElementRecalculation,
 			IBoeTaskElementMediator boeTaskElementMediator, IBOEStateMachine boeStateMachine, IBoeMediator boeMediator,
-			IClinDTODataLoader clinDTODataLoader, IWorkspaceVariableDTODataLoader workspaceVariableDTODataLoader,
+			IBoeDTODataLoader boeDTODataLoader, IClinDTODataLoader clinDTODataLoader, IWorkspaceVariableDTODataLoader workspaceVariableDTODataLoader,
 			ContractTypeLoader contractTypeLoader, IBoeEmailer boeEmailer, ICLINExporter clinExporter, ICLINImporter clinImporter)
 		{
 			this._factory = factory;
@@ -114,6 +119,7 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 			this._boeTaskElementMediator = boeTaskElementMediator;
 			this._boeStateMachine = boeStateMachine;
 			this._boeMediator = boeMediator;
+			this._boeLoader = boeDTODataLoader;
 			this._clinLoader = clinDTODataLoader;
 			this._workspaceVariableLoader = workspaceVariableDTODataLoader;
 			this._contractTypeLoader = contractTypeLoader;
@@ -199,18 +205,13 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 					}
 				}
 
-				//get the potential multiboes
-				Collection<FullBoe> MultiBOEs = ws.Boes.Where(x => x.IsMultiClinWbs).ToCollection();
-
-				//find any boes that have resources using the clin
-				Collection<FullBoe> boesUsingClin = (from b in MultiBOEs
-													 from l in b.TaskElements
-													 from x in l.taskElementLabors
-													 where x.CLINID.HasValue && x.CLINID == updatedClin.Id
-													 select b)
-													.ToCollection<FullBoe>();
-				//if there are duplicates lets filter those out.
-				boesUsingClin = boesUsingClin.Distinct().ToCollection<FullBoe>();
+				// get the potential multiboes
+				Collection<FullBoe> multiBOEs = ws.Boes.Where(x => x.IsMultiClinWbs).ToCollection();
+				ICollection<int> checkIds = multiBOEs.Select(x => x.Id).Distinct().ToList();
+				// find any boes that have resources using the clin
+				ICollection<int> multiCLINBOEIds = _boeLoader.GetMultiClinBOEIdsByClins(updatedClin.Id, checkIds);
+				// Return list of ids in MultiBOEs found in multiCLINBOEIds
+				Collection<FullBoe> boesUsingClin = multiBOEs.Where(x => multiCLINBOEIds.Contains(x.Id)).ToCollection();
 
 				//if we have any boes and the clin is being deleted stop the process
 				if (boesUsingClin.Any() && updatedClin.Updateable == UpdateType.Deleted)

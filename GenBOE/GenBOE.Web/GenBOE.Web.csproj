@@ -305,6 +305,7 @@
     <Compile Include="ModelView\BOEBulkSubmitModelView.cs" />
     <Compile Include="ModelView\DeleteWBSModelView.cs" />
     <Compile Include="ModelView\ErrorModelView.cs" />
+    <Compile Include="ModelView\ExportPermissionModelView.cs" />
     <Compile Include="ModelView\ExportWBSModelView.cs" />
     <Compile Include="ModelView\ExportCLINModelView.cs" />
     <Compile Include="ModelView\FavoriteModelView.cs" />
@@ -320,6 +321,7 @@
     <Compile Include="ModelView\PagedSystemOffloadRateModelView.cs" />
     <Compile Include="ModelView\PBOEData.cs" />
     <Compile Include="ModelView\RteTemplateModelView.cs" />
+    <Compile Include="ModelView\SaveNewPermissionsModelView.cs" />
     <Compile Include="ModelView\SendToProPricerModelView.cs" />
     <Compile Include="ModelView\BOEFormData.cs" />
     <Compile Include="ModelView\TrackingNumberRevisionModelView.cs" />
@@ -1156,6 +1158,7 @@
     <Content Include="Templates\Export\PermissionsRMS.xlsx" />
     <Content Include="Templates\Export\LaborTypesAndSpread_BRCEnabled.xlsx" />
     <Content Include="Templates\Export\ConfidenceReport.xlsx" />
+    <Content Include="Templates\Export\WbsBoeReportWithUCOT.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

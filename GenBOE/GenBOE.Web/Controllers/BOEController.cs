@@ -167,7 +167,7 @@ namespace GenBOE.Web.Controllers
 					x.ElementOfCostId == (int)ElementOfCostType.Travel).ToList();
 			ViewData["EnableSAP"] = Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate);
 			this.ViewData["IsSkillMixEnabled"] = Utilities.ShowSkillMixForWorkspace(ws.CreationDate);
-			this.ViewData["IsUCOTEnabled"] = Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.TrackingNumber);
+			this.ViewData["IsUCOTEnabled"] = Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.Shortname);
 
 			// Additional Controls for SkillMixHelperText
 			ViewData["UsingTemplateBOE"] = ws.UsingTemplateBOE;

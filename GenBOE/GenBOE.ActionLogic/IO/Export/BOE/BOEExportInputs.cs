@@ -111,7 +111,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 						.Union(workspace.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.BusinessResourceCodeID.HasValue).Select(x => x.BusinessResourceCodeID.Value))
 						.Distinct().ToList();
 
-			if (Utilities.ShowUCOTForWorkspace(workspace.CreationDate, workspace.TrackingNumber) && processLaborTypesForUCOT)
+			if (Utilities.ShowUCOTForWorkspace(workspace.CreationDate, workspace.Shortname) && processLaborTypesForUCOT)
 			{
 				// Setup the ucot performing orgs.
 				PerformingOrgDTO ucotPerformingOrg = new PerformingOrgDTO
@@ -143,7 +143,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				}
 			}
 
-			if (Utilities.ShowUCOTForWorkspace(workspace.CreationDate, workspace.TrackingNumber) && processLaborTypesForUCOT)
+			if (Utilities.ShowUCOTForWorkspace(workspace.CreationDate, workspace.Shortname) && processLaborTypesForUCOT)
 			{
 				List<ResourceTypeDto> taskElementLabors = new List<ResourceTypeDto>();
 				HashSet<int> updatedTaskIds = new HashSet<int>();
@@ -174,7 +174,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				}
 
 				// Add UCOT data
-				taskElementLabors = AddUCOT(taskElementLabors, workspace.UCOTFactor, laborToElementOfCost);
+				taskElementLabors = AddUCOT(taskElementLabors, workspace.UCOTFactor, laborToElementOfCost, workspace.ResourceDecimalPrecision ?? 0);
 
 				// Update TaskElements with the new labors
 				foreach (BoeTaskElementDTO taskElement in taskElements)
@@ -470,8 +470,9 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// <param name="taskElementLabors">The task Element labors</param>
 		/// <param name="ucotFactor">The UCOT Factor</param>
 		/// <param name="laborToElementOfCost">Labor to element cost dictionary</param>
+		/// <param name="decimalPrecision">Workspace resource decimal precision</param>
 		/// <returns>UCOT resources.</returns>
-		private List<ResourceTypeDto> AddUCOT(List<ResourceTypeDto> taskElementLabors, decimal ucotFactor, Dictionary<int, ElementOfCostType> laborToElementOfCost)
+		private List<ResourceTypeDto> AddUCOT(List<ResourceTypeDto> taskElementLabors, decimal ucotFactor, Dictionary<int, ElementOfCostType> laborToElementOfCost, int decimalPrecision)
 		{
 			List<ResourceTypeDto> ucotLabors = taskElementLabors.ToList();
 
@@ -485,7 +486,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 			// Now, we loop over all the spreads and add the UCOT factor where needed
 			foreach (ResourceTypeDto labor in taskElementLabors)
 			{
-
 				// UCOT is only applicable if ResourceTypeDto is Hours and LMLabor Element of Cost, and Spread is past 1LMX date
 				if (labor.SpreadType == SpreadType.Hours &&
 					laborToElementOfCost[labor.Id] == ElementOfCostType.LMLabor &&
@@ -512,7 +512,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 					}
 
 					Collection<ResourceSpreadDto> spreads = new Collection<ResourceSpreadDto>();
-					foreach (ResourceSpreadDto spread in labor.LaborSpreads)
+					foreach (ResourceSpreadDto spread in labor.LaborSpreads.OrderBy(x => x.LaborSpreadDate))
 					{
 						spreads.Add(new ResourceSpreadDto()
 						{
@@ -521,9 +521,20 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 							BoeID = spread.BoeID,
 							Id = idCounter--,
 							LaborSpreadValue = (Utilities.OneLmxStartDate <= spread.LaborSpreadDate)
-								? spread.LaborSpreadValue * ucotMultiplier
+								? Utilities.AdjustPrecision(spread.LaborSpreadValue * ucotMultiplier, decimalPrecision)
 								: 0.0m
 						});
+					}
+
+					// Get UCOT total for the spread
+					decimal ucotTotal = labor.LaborSpreads.Sum(x => x.LaborSpreadValue) * (ucotFactor / 100m);
+					ucotTotal = Utilities.AdjustPrecision(ucotTotal, decimalPrecision);
+
+					// Smooth the UCOT spreads
+					decimal[] smoothedSpreadValues = SpreadCurve.Smooth(ucotTotal, spreads.OrderBy(x => x.LaborSpreadDate).Select(x => x.LaborSpreadValue).ToArray(), 0, spreads.Count, decimalPrecision);
+					for (int i = 0; i < spreads.Count; i++)
+					{
+						spreads[i].LaborSpreadValue = smoothedSpreadValues[i];
 					}
 
 					ResourceTypeDto ucot = new ResourceTypeDto()

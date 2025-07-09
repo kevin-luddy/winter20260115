@@ -1071,15 +1071,21 @@ namespace IES.Common.Core.Utilities
 		/// Is UCOT shown to the user for this workspace
 		/// </summary>
 		/// <param name="workspaceCreationDate">Workspace creation date</param>
-		/// <param name="ptmTrackingNumber">PTM tracking number that's checked that is excluded from UCOT.</param>
+		/// <param name="shortname">Workspace shortname.</param>
 		/// <returns>True to show UCOT</returns>
-		public static bool ShowUCOTForWorkspace(DateTime? workspaceCreationDate, string ptmTrackingNumber)
+		public static bool ShowUCOTForWorkspace(DateTime? workspaceCreationDate, string shortname)
 		{
-			// Exclude UCOT showing for specific PTM tracking numbers.
-			string excludedTrackingNumbers = ConfigurationUtilities.GetAppSetting("UcotExcludedPTMTrackingNumbers");
-			string[] excludedTrackingNumbersArray = excludedTrackingNumbers?.Split(',').Select(s => s.Trim()).ToArray();
+			// UCOT is space only, no need to run logic if it isn't space.
+			if (SystemConfiguration.Instance().CompanyMode != CompanyConfiguration.SpaceSystems)
+			{
+				return false;
+			}
 
-			if (excludedTrackingNumbersArray.Any() && excludedTrackingNumbersArray.Contains(ptmTrackingNumber))
+			// Exclude UCOT showing for specific PTM tracking numbers.
+			string excludedShortspaces = ConfigurationUtilities.GetAppSetting("UcotExcludedWorkspaces");
+			string[] excludedShortspacesArray = excludedShortspaces?.Split(',').Select(s => s.Trim()).ToArray();
+
+			if (excludedShortspacesArray != null && excludedShortspacesArray.Any() && excludedShortspacesArray.Contains(shortname))
 			{
 				return false;
 			}

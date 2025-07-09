@@ -46,7 +46,6 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 				this.LineOfBusinessTypeID = workspaceDTO.LineOfBusiness.Id;
 				this.ProjectMapType = workspaceDTO.ProjectMapType;
 				this.AllowGridEdit = workspaceDTO.AllowGridEdit;
-				this.EnableAssignTaskAuthor = workspaceDTO.EnableAssignTaskAuthor;
 			}
 			if (costVolumeLeadDTO != null)
 			{
