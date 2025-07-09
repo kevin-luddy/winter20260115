@@ -74,7 +74,7 @@ namespace GenBOE.DataBridge.DTO
 
 			foreach (DateShiftDTO dateShiftDTO in dateShiftDTOs)
 			{
-				RecursivelyGetDateShiftDTOs(dateShiftDTO);
+				FlattenListFromChildrenObjects(dateShiftDTO);
 			}
 
 			foreach (DateShiftDTO dateShiftDTOtoUpdate in uniqueDateShiftObjects.Values)
@@ -197,7 +197,7 @@ namespace GenBOE.DataBridge.DTO
 		/// Gets the date shift child DTOs recursively.
 		/// </summary>
 		/// <param name="dateShiftDTO">Date shift dtos.</param>
-		private void RecursivelyGetDateShiftDTOs(DateShiftDTO dateShiftDTO)
+		private void FlattenListFromChildrenObjects(DateShiftDTO dateShiftDTO)
 		{
 			if (dateShiftDTO == null)
 			{
@@ -213,7 +213,7 @@ namespace GenBOE.DataBridge.DTO
 			{
 				foreach (DateShiftDTO child in dateShiftDTO.Children)
 				{
-					RecursivelyGetDateShiftDTOs(child);
+					FlattenListFromChildrenObjects(child);
 				}
 			}
 		}
