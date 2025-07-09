@@ -111,7 +111,7 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <param name="parentLevel">The parent level.</param>
 		/// <param name="workspaceShortname">Workspace ShortName</param>
 		/// <param name="fullWorkspace">The full workspace</param>
-		/// <exception cref="ArgumentNullException">dateShiftable or details</exception>
+		/// <exception cref="ArgumentNullException">on incoming params</exception>
 		public void PerformDateShift(DateShiftDTO dateShiftDTO, DateShiftModelView dateShiftModel, DateTime? parentStart, DateTime? parentEnd,
 			bool validateOnly, Level parentLevel, string workspaceShortname, FullWorkspace fullWorkspace)
 		{

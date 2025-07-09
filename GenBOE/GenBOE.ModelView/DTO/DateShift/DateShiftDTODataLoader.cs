@@ -196,7 +196,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <summary>
 		/// Gets the date shift child DTOs recursively.
 		/// </summary>
-		/// <param name="dateShiftable">Date shiftable.</param>
+		/// <param name="dateShiftDTO">Date shift dtos.</param>
 		private void RecursivelyGetDateShiftDTOs(DateShiftDTO dateShiftDTO)
 		{
 			if (dateShiftDTO == null)
