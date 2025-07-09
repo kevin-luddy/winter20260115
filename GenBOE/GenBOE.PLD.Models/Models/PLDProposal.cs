@@ -10,8 +10,7 @@ namespace GenBOE.PLD.Models.Models
 {
 	[Table("V_PLD_GenBOE", Schema = "dbo")]
 	public class PLDProposal
-    {		
-	
+    {
 		[Column("PA Number")]
 		public string PA_Number { get; set; }
 
@@ -44,15 +43,7 @@ namespace GenBOE.PLD.Models.Models
 		public DateTime? Last_Modified_Date { get; set; }
 
 		[Column("Proposal Status")]
-		public string Proposal_Status { get; set; }	
+		public string Proposal_Status { get; set; }
 
-		
 	}
-
-
-
-
-
-
-	
 }

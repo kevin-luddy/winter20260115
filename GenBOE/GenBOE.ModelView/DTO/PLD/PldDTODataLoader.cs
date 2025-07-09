@@ -12,11 +12,34 @@ namespace GenBOE.DataBridge.DTO
 	using GenBOE.Models;
 	using GenBOE.PLD.Models;
 
+	/// <summary>
+	/// PLD DTO Data Loader
+	/// </summary>
 	public class PldDTODataLoader : IPldDTODataLoader, IDisposable
 	{
+
+		#region Fields
+		/// <summary>
+		/// Instance of the PLD DbContext
+		/// </summary>
 		private readonly PldDBContext _context;
+
+		/// <summary>
+		/// activeStatuses is for the known Active States that the Column in the View returns
+		/// </summary>
+		private static readonly string[] activeStatuses = new[] { "Open", "Submitted", "Negotiated", "In Negotiation" };
+		
+		/// <summary>
+		/// boolean for dispose
+		/// </summary>
 		private bool _disposed;
+		
+		/// <summary>
+		/// Logger
+		/// </summary> 
 		protected Logger Log { get; set; }
+
+		#endregion
 
 		public PldDTODataLoader(PldDBContext context = null)
 		{
@@ -83,7 +106,7 @@ namespace GenBOE.DataBridge.DTO
 			{
 				try
 				{
-					results = _context.Proposals						
+					results = _context.Proposals				
 						.Select(p => new ProposalDTO
 						{
 							PA_Number = p.PA_Number,
@@ -116,7 +139,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="active"></param>
 		/// <returns></returns>
-		public ICollection<ProposalDTO> GetAllActiveProposals(int active)
+		public ICollection<ProposalDTO> GetAllActiveProposals()
 		{
 			List<ProposalDTO> results = new List<ProposalDTO>();
 			
@@ -124,7 +147,7 @@ namespace GenBOE.DataBridge.DTO
 			{
 				try
 				{
-					string[] activeStatuses = new[] { "Submitted", "Negotiated" };
+					
 
 					results = _context.Proposals
 						.Where(p => activeStatuses.Contains(p.Proposal_Status))
@@ -160,20 +183,19 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="activeNames"></param>
 		/// <returns></returns>
-		public ICollection<string> GetAllActiveProposalNames(int activeNames)
+		public ICollection<string> GetAllActiveProposalNames()
 		{
 			List<string> results = new List<string>();
-			
+
 			using (StopwatchTimer sw = new StopwatchTimer(Log))
 			{
 				try
 				{
-					string[] activeStatuses = new[] { "Submitted", "Negotiated" };
+					string[] activeStatuses = new[] { "Open", "Submitted", "Negotiated", "In Negotiation" };
 
 					results = _context.Proposals
 						.Where(p => activeStatuses.Contains(p.Proposal_Status))
 						.Select(p => p.PA_Title)
-						//.Distinct()
 						.ToList();
 
 				}
@@ -187,12 +209,20 @@ namespace GenBOE.DataBridge.DTO
 			return results;
 		}
 
+		/// <summary>
+		///  Releases all resources used by the current instance of the class.  This does call the protected method to release unmanaged resources.
+		///  This also suppresses finalization to prevent the finalizer from running.
+		/// </summary>
 		public void Dispose()
 		{
 			Dispose(true);
 			GC.SuppressFinalize(this);
 		}
 
+		/// <summary>
+		/// Releases the unmanaged resources used and optionally releases managed resources.
+		/// </summary>
+		/// <param name="disposing"></param>
 		protected virtual void Dispose(bool disposing)
 		{
 			if (_disposed)
@@ -210,6 +240,10 @@ namespace GenBOE.DataBridge.DTO
 
 			_disposed = true;
 		}
+
+		/// <summary>
+		///   Finalizer that ensures resources are released if Dispose was not called.
+		/// </summary>
 		~PldDTODataLoader()
 		{
 			Dispose(false);

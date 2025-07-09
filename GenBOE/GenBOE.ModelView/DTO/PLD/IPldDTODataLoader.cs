@@ -21,14 +21,14 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="active"></param>
 		/// <returns></returns>
-		ICollection<ProposalDTO> GetAllActiveProposals (int active);
+		ICollection<ProposalDTO> GetAllActiveProposals ();
 
 		/// <summary>
 		/// Get All Active Proposals by Name
 		/// </summary>
 		/// <param name="activeNames"></param>
 		/// <returns></returns>
-		ICollection<string> GetAllActiveProposalNames(int activeNames);
+		ICollection<string> GetAllActiveProposalNames();
 
 		/// <summary>
 		/// Get Proposal by ID

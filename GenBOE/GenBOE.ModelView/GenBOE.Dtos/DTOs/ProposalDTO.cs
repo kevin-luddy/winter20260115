@@ -6,11 +6,16 @@ namespace GenBOE.Dtos
 	using System;
 	using System.Diagnostics.CodeAnalysis;
 
+	/// <summary>
+	/// Proposal DTO 
+	/// </summary>
 	[ExcludeFromCodeCoverage]
 	[Serializable()]
-	public class ProposalDTO : UpdateableDTO
+	public class ProposalDTO
 	{
-		
+		/// <summary>
+		/// Default ctor
+		/// </summary>
 		public ProposalDTO()
 		{
 			PA_Number = string.Empty;
@@ -24,8 +29,6 @@ namespace GenBOE.Dtos
 			RFP_Number = string.Empty;
 			Last_Modified_Date = DateTime.MinValue;
 			Proposal_Status = string.Empty;
-			
-
 		}
 
 		public string PA_Number { get; set; }
@@ -50,6 +53,5 @@ namespace GenBOE.Dtos
 
 		public string Proposal_Status { get; set; }
 
-		
 	}
 }
