@@ -16,10 +16,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using System.Web;
 	using System.Web.Configuration;
 	using System.Web.Mvc;
-	using DocumentFormat.OpenXml.Drawing.Charts;
-	using DocumentFormat.OpenXml.Spreadsheet;
-	using DocumentFormat.OpenXml.Vml;
-	using DocumentFormat.OpenXml.Wordprocessing;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
@@ -277,81 +273,74 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// Ralculates the discrete UCOT spread.
 		/// </summary>
 		/// <param name="workspaceData">The workspace data.</param>
-		/// <param name="laborTabData">The labor tab data.</param>
-		/// <param name="moqTotalHours">The moq total hours.</param>
-		/// <param name="calculateUCOT">Whether to calculate UCOT</param>
-		public void RecalculateDiscreteUCOTSpreads(FullWorkspace workspaceData, RecalcSpreadModelView[] laborTabData, decimal moqTotalHours, bool calculateUCOT)
+		/// <param name="ucotSpreadItem">The labor tab data.</param>
+		/// <returns></returns>
+		public RecalcSpreadModelView RecalculateDiscreteUCOTSpreads(FullWorkspace workspaceData, RecalcSpreadModelView ucotSpreadItem)
 		{
 			if (workspaceData == null)
 			{
 				throw new ArgumentNullException(nameof(workspaceData));
 			}
 
-			if (laborTabData == null)
+			if (ucotSpreadItem == null)
 			{
-				throw new ArgumentNullException(nameof(laborTabData));
+				throw new ArgumentNullException(nameof(ucotSpreadItem));
 			}
 
-			foreach (RecalcSpreadModelView resourceTypeData in laborTabData)
+			if (ucotSpreadItem.IsValid())
 			{
-				if (resourceTypeData.IsValid())
+				List<LaborSpreadDataModelView> ucotSpreadsToReturn = new List<LaborSpreadDataModelView>();
+
+				int precision = (ucotSpreadItem.rateType == RateType.Cost) ? workspaceData.CostDecimalPrecision : workspaceData.DecimalPrecision;
+
+				//Basically need to run the labor spreads for discrete hours through this code thats from CalculateLaborSpreads (without running through this method: CalculateLaborSpreadsBasedOnCurve)
+				decimal sumUCOT = 0m;
+
+				// Order Spread by Date and convert from Spread ModelView to DTO
+				foreach (ResourceSpreadDto dto in ucotSpreadItem.ucotSpreads.OrderBy(x => x.LaborSpreadDate).Select(x => x.ToBoeLaborSpread(null)))
 				{
-					int precision = (resourceTypeData.rateType == RateType.Cost) ? workspaceData.CostDecimalPrecision : workspaceData.DecimalPrecision;
-
-					decimal hourSpreadValue = resourceTypeData.value.HasValue ? Utilities.AdjustPrecision(resourceTypeData.value.Value, precision) : 0;
-					bool calculateUCOTForRow = calculateUCOT && resourceTypeData.ElementOfCost == ElementOfCostType.LMLabor && resourceTypeData.rateType == RateType.Hours;
-					//resourceTypeData.spreads = this.CalculateLaborSpreads(hourSpreadValue, resourceTypeData.start.Value, resourceTypeData.end.Value, resourceTypeData.curve.Value, precision, calculateUCOTForRow, workspaceData.UCOTFactor, out ICollection<LaborSpreadDataModelView> ucotSpreads);
-
-					//Basically need to run the labor spreads for discrete hours through this code thats from CalculateLaborSpreads (without running through this method: CalculateLaborSpreadsBasedOnCurve)
-					decimal sumUCOT = 0m;
-
-					// Convert dto to mv
-					foreach (ResourceSpreadDto dto in spreadDtos.OrderBy(s => s.LaborSpreadDate))
+					if (dto.LaborSpreadDate >= Utilities.OneLmxStartDate)
 					{
-						toReturn.Add(new LaborSpreadDataModelView()
+						decimal nonPrecisionUCOT = dto.LaborSpreadValue * workspaceData.UCOTFactor / 100.0m;
+						sumUCOT += nonPrecisionUCOT;
+						decimal precisionUCOT = Utilities.AdjustPrecision(nonPrecisionUCOT, precision);
+
+						ucotSpreadsToReturn.Add(new LaborSpreadDataModelView()
 						{
 							LaborSpreadDate = dto.LaborSpreadDate.ToMonthString(),
-							LaborSpreadValue = dto.LaborSpreadValue
+							LaborSpreadValue = precisionUCOT,
+							UpdateDate = dto.UpdateDate,
+							UpdateDateLong = dto.UpdateDateLong
 						});
-
-						if (calculateUCOT && dto.LaborSpreadDate >= Utilities.OneLmxStartDate)
-						{
-							decimal nonPrecisionUCOT = dto.LaborSpreadValue * ucotFactor / 100.0m;
-							sumUCOT += nonPrecisionUCOT;
-							decimal precisionUCOT = Utilities.AdjustPrecision(nonPrecisionUCOT, precision);
-
-							ucotSpreadsToReturn.Add(new LaborSpreadDataModelView()
-							{
-								LaborSpreadDate = dto.LaborSpreadDate.ToMonthString(),
-								LaborSpreadValue = precisionUCOT,
-								UpdateDate = dto.UpdateDate,
-								UpdateDateLong = dto.UpdateDateLong
-							});
-						}
 					}
-
-					if (calculateUCOT && ucotSpreadsToReturn.Any())
-					{
-						decimal totalUCOTPrecision = Utilities.AdjustPrecision(sumUCOT, precision);
-						decimal[] ucotSpreadValues = SpreadCurve.Smooth(totalUCOTPrecision, ucotSpreadsToReturn.Select(s => s.LaborSpreadValue ?? 0m).ToArray(), 0, ucotSpreadsToReturn.Count, precision);
-
-						// Reset the values to the Smooth'ed array to guarantee precision and no loss of rounding values
-						for (int i = 0; i < ucotSpreadsToReturn.Count; i++)
-						{
-							ucotSpreadsToReturn[i].LaborSpreadValue = ucotSpreadValues[i];
-						}
-					}
-					resourceTypeData.ucotSpreads = ucotSpreads;
-					resourceTypeData.ucotHours = resourceTypeData.ucotSpreads.Sum(x => x.LaborSpreadValue);
 				}
-				else
+
+				if (ucotSpreadsToReturn.Any())
 				{
-					resourceTypeData.spreads = new List<LaborSpreadDataModelView>();
-					resourceTypeData.ucotSpreads = new List<LaborSpreadDataModelView>();
-				}
-			}
-		}
+					// Order UCOT Spreads by date so that they match
+					ucotSpreadsToReturn.OrderBy(x => x.LaborSpreadDate);
 
+					decimal totalUCOTPrecision = Utilities.AdjustPrecision(sumUCOT, precision);
+					decimal[] ucotSpreadValues = SpreadCurve.Smooth(totalUCOTPrecision, ucotSpreadsToReturn.Select(s => s.LaborSpreadValue ?? 0m).ToArray(), 0, ucotSpreadsToReturn.Count, precision);
+
+					// Reset the values to the Smooth'ed array to guarantee precision and no loss of rounding values
+					for (int i = 0; i < ucotSpreadsToReturn.Count; i++)
+					{
+						ucotSpreadsToReturn[i].LaborSpreadValue = ucotSpreadValues[i];
+					}
+				}
+
+				ucotSpreadItem.ucotSpreads = ucotSpreadsToReturn;
+				ucotSpreadItem.ucotHours = ucotSpreadItem.ucotSpreads.Sum(x => x.LaborSpreadValue);
+			}
+			else
+			{
+				ucotSpreadItem.spreads = new List<LaborSpreadDataModelView>();
+				ucotSpreadItem.ucotSpreads = new List<LaborSpreadDataModelView>();
+			}
+
+			return ucotSpreadItem;
+		}
 
 		/// <summary>
 		/// In cases where the total hours DOES NOT divide evenly among the number of percent-locked auto-calculated (non-discrete)
@@ -1024,7 +1013,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, ws.UsingTemplateBOE, ws.EnableSAPConnection, moqTypes, taskElement.Id, modelView.IsUsingTMRatesInTask))
 			{
-				if (ws.EnableSAPConnection && (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST 
+				if (ws.EnableSAPConnection && (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST
 					|| moqTypes.Any(x => x.TableData != null && x.TableData.Any(t => t.RepositoryName == RepositoryName.SapWebi.GetDescription()))))
 				{
 					decimal historicalHoursTotals = taskElement.SkillMixTable.Sum(x => x.HistoricalHours);
@@ -1053,7 +1042,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				if (taskElement.CommonDisclosureTable != null && taskElement.CommonDisclosureTable.Any())
 				{
-					validationErrors.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(taskElement.CommonDisclosureTable, false, 
+					validationErrors.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(taskElement.CommonDisclosureTable, false,
 						taskElement.taskElementLabors.Any(x => x.Updateable != UpdateType.Deleted)).Select(x => new ValidationMessage(x)));
 				}
 			}
@@ -1738,7 +1727,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			ICollection<ResourceSpreadDto> spreadDtos = SpreadCurve.CalculateLaborSpreadsBasedOnCurve(request, precision);
 
 			decimal sumUCOT = 0m;
-			
+
 			// Convert dto to mv
 			foreach (ResourceSpreadDto dto in spreadDtos.OrderBy(s => s.LaborSpreadDate))
 			{
@@ -1753,7 +1742,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					decimal nonPrecisionUCOT = dto.LaborSpreadValue * ucotFactor / 100.0m;
 					sumUCOT += nonPrecisionUCOT;
 					decimal precisionUCOT = Utilities.AdjustPrecision(nonPrecisionUCOT, precision);
-				
+
 					ucotSpreadsToReturn.Add(new LaborSpreadDataModelView()
 					{
 						LaborSpreadDate = dto.LaborSpreadDate.ToMonthString(),
@@ -1850,7 +1839,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			MOQEquationModelView toReturn = new MOQEquationModelView(taskElement, this.VariableSelectBOEtoSumCalculation, workspace);
 			toReturn.MoqTemplateAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(workspace.Id, taskElement.BoeID, taskElement.Id).Where(t => t.SourceId == (int)RteTemplateSource.TaskMOQ).ToList();
-			
+
 			return toReturn;
 		}
 
@@ -3824,8 +3813,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			return response;
 		}
-			
-				
+
+
 		/// <summary>
 		/// Validates Actuals data for SAP
 		/// </summary>

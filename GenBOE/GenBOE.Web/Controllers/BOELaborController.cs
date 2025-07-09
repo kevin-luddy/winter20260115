@@ -680,46 +680,43 @@ namespace GenBOE.Web.Controllers
 		/// <param name="items">The items to calculate spread for.</param>
 		/// <param name="calculateUCOT">Whether to calculate UCOT</param>
 		/// <returns></returns>
-		public ActionResult CalculateDiscreteUCOTSpread(string workspace, RecalcSpreadModelView[] items, decimal moqTotalHours, bool calculateUCOT)
+		public ActionResult CalculateDiscreteUCOTSpread(string workspace, RecalcSpreadModelView item)
 		{
-			if (ReferenceEquals(items, null))
+			if (ReferenceEquals(item, null))
 			{
-				throw new ArgumentNullException(nameof(items));
+				throw new ArgumentNullException(nameof(item));
 			}
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			foreach (RecalcSpreadModelView item in items)
+			if (item.start == null)
 			{
-				if (item.start == null)
-				{
-					throw new ArgumentException("item's start was null");
-				}
-
-				if (item.end == null)
-				{
-					throw new ArgumentException("Item's end was null");
-				}
-
-				if (item.curve == null)
-				{
-					throw new ArgumentException("Item's curve was null");
-				}
-
-				if (item.value == null)
-				{
-					throw new ArgumentException("Item's spread value was null");
-				}
-
-				if (item.rateType == null)
-				{
-					throw new ArgumentException("Item's rateType was null");
-				}
+				throw new ArgumentException("item's start was null");
 			}
 
-			this._BoeLaborControllerLogic.RecalculateDiscreteUCOTSpreads(ws, items, moqTotalHours, calculateUCOT && Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.TrackingNumber));
+			if (item.end == null)
+			{
+				throw new ArgumentException("Item's end was null");
+			}
 
-			return this.Json(items);
+			if (item.curve == null)
+			{
+				throw new ArgumentException("Item's curve was null");
+			}
+
+			if (item.value == null)
+			{
+				throw new ArgumentException("Item's spread value was null");
+			}
+
+			if (item.rateType == null)
+			{
+				throw new ArgumentException("Item's rateType was null");
+			}
+
+			this._BoeLaborControllerLogic.RecalculateDiscreteUCOTSpreads(ws, item);
+
+			return this.Json(item);
 		}
 
 		/// <summary>
