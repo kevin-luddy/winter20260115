@@ -33,7 +33,7 @@ namespace GenBOE.ActionLogic.Misc
 			decimal ucotHoursTotal = 0m;
 
 			// We will only do calculations when in SPACE
-			if (Utilities.IsUCOTEnabledForSystem && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 			{
 				Dictionary<int, IGrouping<int, MoqTypeSelection>> moqTypeSelectionDictionary = moqTypeSelections.GroupBy(m => m.TaskId).ToDictionary(d => d.Key);
 				IDictionary<int, ResourceDTO> resourceDictionary = resourcesUsedInWsBoes.ToDictionary(r => r.Id);
@@ -61,7 +61,7 @@ namespace GenBOE.ActionLogic.Misc
 		public static void SetTaskElementsUCOTHours(IReadOnlyCollection<BoeTaskElementDTO> taskElements, IReadOnlyCollection<MoqTypeSelection> moqTypeSelections, IReadOnlyCollection<ResourceDTO> resourcesUsedInWsBoes, decimal ucotFactor, int? resourceDecimalPrecision)
 		{
 			// We will only do calculations when in SPACE
-			if (Utilities.IsUCOTEnabledForSystem && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 			{
 				Dictionary<int, IGrouping<int, MoqTypeSelection>> moqTypeSelectionDictionary = moqTypeSelections.GroupBy(m => m.TaskId).ToDictionary(d => d.Key);
 				IDictionary<int, ResourceDTO> resourceDictionary = resourcesUsedInWsBoes.ToDictionary(r => r.Id);
