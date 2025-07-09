@@ -272,27 +272,27 @@ namespace GenBOE.DataBridge.DTO
 			{
 				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
 
-				DateShiftDTO boe = (from b in gbe.BOEs
-									where b.BOEID == id
-									join xRef in gbe.WBS_CLIN_BOE_XREF.Where(x => x.BOEID.HasValue) on b.BOEID equals xRef.BOEID into temp
-									from xRef in temp.DefaultIfEmpty() // left outer joins for above..
-									select new DateShiftDTO
-									{
-										Id = b.BOEID,
-										BOEStateID = b.BOEStateID,
-										StartDate = b.BOEStartDate,
-										EndDate = b.BOEEndDate,
-										UpdateDate = b.UpdateDT,
-										WorkspaceId = b.WorkspaceID,
-										ClinId = xRef == null ? null : xRef.CLINID,
-										WbsId = xRef == null ? null : xRef.WBSID,
-										ParentId = xRef.CLINID ?? b.WorkspaceID,
-										DateShiftLevel = Level.BOE
-									}).FirstOrDefault();
+				DateShiftDTO boeDateShift = (from b in gbe.BOEs
+											 where b.BOEID == id
+											 join xRef in gbe.WBS_CLIN_BOE_XREF.Where(x => x.BOEID.HasValue) on b.BOEID equals xRef.BOEID into temp
+											 from xRef in temp.DefaultIfEmpty() // left outer joins for above..
+											 select new DateShiftDTO
+											 {
+												 Id = b.BOEID,
+												 BOEStateID = b.BOEStateID,
+												 StartDate = b.BOEStartDate,
+												 EndDate = b.BOEEndDate,
+												 UpdateDate = b.UpdateDT,
+												 WorkspaceId = b.WorkspaceID,
+												 ClinId = xRef == null ? null : xRef.CLINID,
+												 WbsId = xRef == null ? null : xRef.WBSID,
+												 ParentId = xRef.CLINID ?? b.WorkspaceID,
+												 DateShiftLevel = Level.BOE
+											 }).FirstOrDefault();
 
-				boe.Children.AddRange(GetBoeTaskElementDateShiftDataByBoeId(id));
+				boeDateShift.Children.AddRange(GetBoeTaskElementDateShiftDataByBoeId(id));
 
-				return boe;
+				return boeDateShift;
 			}
 		}
 
@@ -307,25 +307,25 @@ namespace GenBOE.DataBridge.DTO
 			{
 				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
 
-				DateShiftDTO clin = (from c in gbe.CLINs
-									 where c.CLINID == id
-									 select new DateShiftDTO
-									 {
-										 Id = c.CLINID,
-										 StartDate = c.CLINStartDate,
-										 EndDate = c.CLINEndDate,
-										 UpdateDate = c.UpdateDT,
-										 WorkspaceId = c.WorkspaceID,
-										 ParentId = c.WorkspaceID,
-										 DateShiftLevel = Level.CLIN
-									 }).FirstOrDefault();
+				DateShiftDTO clinDateShift = (from c in gbe.CLINs
+											  where c.CLINID == id
+											  select new DateShiftDTO
+											  {
+												  Id = c.CLINID,
+												  StartDate = c.CLINStartDate,
+												  EndDate = c.CLINEndDate,
+												  UpdateDate = c.UpdateDT,
+												  WorkspaceId = c.WorkspaceID,
+												  ParentId = c.WorkspaceID,
+												  DateShiftLevel = Level.CLIN
+											  }).FirstOrDefault();
 
 				if (getChildren)
 				{
-					clin.Children.AddRange(GetBoeDateShiftDataByClinId(clin.Id));
+					clinDateShift.Children.AddRange(GetBoeDateShiftDataByClinId(clinDateShift.Id));
 				}
 
-				return clin;
+				return clinDateShift;
 			}
 		}
 
@@ -340,28 +340,28 @@ namespace GenBOE.DataBridge.DTO
 			{
 				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
 
-				List<DateShiftDTO> boes = (from b in gbe.BOEs
-										   join xRef in gbe.WBS_CLIN_BOE_XREF.Where(x => x.CLINID == id) on b.BOEID equals xRef.BOEID
-										   select new DateShiftDTO
-										   {
-											   Id = b.BOEID,
-											   BOEStateID = b.BOEStateID,
-											   StartDate = b.BOEStartDate,
-											   EndDate = b.BOEEndDate,
-											   UpdateDate = b.UpdateDT,
-											   WorkspaceId = b.WorkspaceID,
-											   ClinId = xRef.CLINID,
-											   WbsId = xRef.WBSID,
-											   DateShiftLevel = Level.BOE,
-											   ParentId = xRef.CLINID,
-										   }).ToList();
+				List<DateShiftDTO> boeDateShifts = (from b in gbe.BOEs
+													join xRef in gbe.WBS_CLIN_BOE_XREF.Where(x => x.CLINID == id) on b.BOEID equals xRef.BOEID
+													select new DateShiftDTO
+													{
+														Id = b.BOEID,
+														BOEStateID = b.BOEStateID,
+														StartDate = b.BOEStartDate,
+														EndDate = b.BOEEndDate,
+														UpdateDate = b.UpdateDT,
+														WorkspaceId = b.WorkspaceID,
+														ClinId = xRef.CLINID,
+														WbsId = xRef.WBSID,
+														DateShiftLevel = Level.BOE,
+														ParentId = xRef.CLINID,
+													}).ToList();
 
-				foreach (DateShiftDTO boe in boes)
+				foreach (DateShiftDTO boe in boeDateShifts)
 				{
 					boe.Children.AddRange(GetBoeTaskElementDateShiftDataByBoeId(boe.Id));
 				}
 
-				return boes;
+				return boeDateShifts;
 			}
 		}
 
@@ -376,56 +376,56 @@ namespace GenBOE.DataBridge.DTO
 			{
 				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
 
-				DateShiftDTO boeTaskElement = (from bT in gbe.BOETaskElements
-											   where bT.BOETaskElementID == id
-											   select new DateShiftDTO
-											   {
-												   Id = bT.BOETaskElementID,
-												   BOETaskElementId = bT.BOETaskElementID,
-												   StartDate = bT.TaskStartDate,
-												   EndDate = bT.TaskEndDate,
-												   UpdateDate = bT.UpdateDT,
-												   BoeId = bT.BOEID,
-												   DateShiftLevel = Level.Task,
-												   ParentId = bT.BOEID
-											   }).FirstOrDefault();
+				DateShiftDTO boeTaskElementDateShift = (from bT in gbe.BOETaskElements
+														where bT.BOETaskElementID == id
+														select new DateShiftDTO
+														{
+															Id = bT.BOETaskElementID,
+															BOETaskElementId = bT.BOETaskElementID,
+															StartDate = bT.TaskStartDate,
+															EndDate = bT.TaskEndDate,
+															UpdateDate = bT.UpdateDT,
+															BoeId = bT.BOEID,
+															DateShiftLevel = Level.Task,
+															ParentId = bT.BOEID
+														}).FirstOrDefault();
 
-				boeTaskElement.SkillMixTable = skillMixLoader.GetByBOETaskElementID(id).Select(dto => new SkillMixModelView(dto)).ToList();
-				boeTaskElement.CommonDisclosureTable = commonDisclosureLoader.GetByBOETaskElementID(id).Select(dto => new CommonDisclosureModelView(dto)).ToList();
+				boeTaskElementDateShift.SkillMixTable = skillMixLoader.GetByBOETaskElementID(id).Select(dto => new SkillMixModelView(dto)).ToList();
+				boeTaskElementDateShift.CommonDisclosureTable = commonDisclosureLoader.GetByBOETaskElementID(id).Select(dto => new CommonDisclosureModelView(dto)).ToList();
 
 				// Get resource types for task element labors.
-				if (boeTaskElement != null)
+				if (boeTaskElementDateShift != null)
 				{
-					boeTaskElement.TaskElementLabors = (from lT in gbe.BOELaborTypes
-														where lT.BOETaskElementID == id
-														select new ResourceTypeDto
-														{
-															Id = lT.BOELaborTypeID,
-															TaskElementId = lT.BOETaskElementID,
-															ResourceID = lT.ResourceID,
-															StartDate = lT.BOELaborTypeStartDate,
-															EndDate = lT.BOELaborTypeEndDate,
-															SpreadType = lT.SpreadTypeID.HasValue ? (SpreadType)lT.SpreadTypeID.Value : SpreadType.NotSet,
-															UpdateDate = lT.UpdateDT,
-															SpreadCurveIDValue = lT.SpreadCurveID,
-															LaborSpreadsIEnum = lT.BOELaborSpreads
-																.Select(lS => new ResourceSpreadDto
-																{
-																	Id = lS.BOELaborSpreadID,
-																	LaborSpreadDate = lS.LaborSpreadDate,
-																	LaborSpreadValue = lS.LaborSpreadValue ?? 0,
-																	LaborTypeId = lS.BOELaborTypeID
-																}),
-														}).ToCollection();
+					boeTaskElementDateShift.TaskElementLabors = (from lT in gbe.BOELaborTypes
+																 where lT.BOETaskElementID == id
+																 select new ResourceTypeDto
+																 {
+																	 Id = lT.BOELaborTypeID,
+																	 TaskElementId = lT.BOETaskElementID,
+																	 ResourceID = lT.ResourceID,
+																	 StartDate = lT.BOELaborTypeStartDate,
+																	 EndDate = lT.BOELaborTypeEndDate,
+																	 SpreadType = lT.SpreadTypeID.HasValue ? (SpreadType)lT.SpreadTypeID.Value : SpreadType.NotSet,
+																	 UpdateDate = lT.UpdateDT,
+																	 SpreadCurveIDValue = lT.SpreadCurveID,
+																	 LaborSpreadsIEnum = lT.BOELaborSpreads
+																		 .Select(lS => new ResourceSpreadDto
+																		 {
+																			 Id = lS.BOELaborSpreadID,
+																			 LaborSpreadDate = lS.LaborSpreadDate,
+																			 LaborSpreadValue = lS.LaborSpreadValue ?? 0,
+																			 LaborTypeId = lS.BOELaborTypeID
+																		 }),
+																 }).ToCollection();
 
-					if (boeTaskElement.TaskElementLabors != null)
+					if (boeTaskElementDateShift.TaskElementLabors != null)
 					{
-						foreach (ResourceTypeDto resourceType in boeTaskElement.TaskElementLabors)
+						foreach (ResourceTypeDto resourceType in boeTaskElementDateShift.TaskElementLabors)
 						{
 							resourceType.LaborSpreads = resourceType.LaborSpreadsIEnum.ToCollection();
 							resourceType.LaborSpreadsIEnum = null;
 
-							boeTaskElement.Children.Add(new DateShiftDTO()
+							boeTaskElementDateShift.Children.Add(new DateShiftDTO()
 							{
 								Id = resourceType.Id,
 								StartDate = resourceType.StartDateValue,
@@ -442,7 +442,7 @@ namespace GenBOE.DataBridge.DTO
 					}
 				}
 
-				return boeTaskElement;
+				return boeTaskElementDateShift;
 			}
 		}
 
@@ -457,21 +457,21 @@ namespace GenBOE.DataBridge.DTO
 			{
 				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
 
-				List<DateShiftDTO> taskElements = (from te in gbe.BOETaskElements
-												   where te.BOEID == boeId
-												   select new DateShiftDTO
-												   {
-													   Id = te.BOETaskElementID,
-													   BoeId = te.BOEID,
-													   BOETaskElementId = te.BOETaskElementID,
-													   StartDate = te.TaskStartDate,
-													   EndDate = te.TaskEndDate,
-													   DateShiftLevel = Level.Task,
-													   UpdateDate = te.UpdateDT,
-													   ParentId = te.BOEID,
-												   }).ToList();
+				List<DateShiftDTO> boeTaskElementDateShifts = (from te in gbe.BOETaskElements
+															   where te.BOEID == boeId
+															   select new DateShiftDTO
+															   {
+																   Id = te.BOETaskElementID,
+																   BoeId = te.BOEID,
+																   BOETaskElementId = te.BOETaskElementID,
+																   StartDate = te.TaskStartDate,
+																   EndDate = te.TaskEndDate,
+																   DateShiftLevel = Level.Task,
+																   UpdateDate = te.UpdateDT,
+																   ParentId = te.BOEID,
+															   }).ToList();
 
-				foreach (DateShiftDTO taskElement in taskElements)
+				foreach (DateShiftDTO taskElement in boeTaskElementDateShifts)
 				{
 					taskElement.SkillMixTable = skillMixLoader.GetByBOETaskElementID(taskElement.Id).Select(dto => new SkillMixModelView(dto)).ToList();
 					taskElement.CommonDisclosureTable = commonDisclosureLoader.GetByBOETaskElementID(taskElement.Id).Select(dto => new CommonDisclosureModelView(dto)).ToList();
@@ -524,7 +524,7 @@ namespace GenBOE.DataBridge.DTO
 					}
 				}
 
-				return taskElements;
+				return boeTaskElementDateShifts;
 			}
 		}
 
@@ -539,27 +539,27 @@ namespace GenBOE.DataBridge.DTO
 			{
 				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
 
-				DateShiftDTO workspace = (from w in gbe.Workspaces
-										  where w.WorkspaceID == id
-										  select new DateShiftDTO
-										  {
-											  Id = w.WorkspaceID,
-											  StartDate = w.ContractStartDate,
-											  EndDate = w.ContractEndDate,
-											  UpdateDate = w.UpdateDT,
-											  DateShiftLevel = Level.Workspace,
-											  WorkspaceState = (WorkspaceState)w.WorkspaceStateID,
-										  }).FirstOrDefault();
+				DateShiftDTO workspaceDateShift = (from w in gbe.Workspaces
+												   where w.WorkspaceID == id
+												   select new DateShiftDTO
+												   {
+													   Id = w.WorkspaceID,
+													   StartDate = w.ContractStartDate,
+													   EndDate = w.ContractEndDate,
+													   UpdateDate = w.UpdateDT,
+													   DateShiftLevel = Level.Workspace,
+													   WorkspaceState = (WorkspaceState)w.WorkspaceStateID,
+												   }).FirstOrDefault();
 
-				workspace.WorkspaceVersionMetaData = workspaceVersionMetaDataDTODataLoader.GetByWorkspaceID(workspace.WorkspaceId);
+				workspaceDateShift.WorkspaceVersionMetaData = workspaceVersionMetaDataDTODataLoader.GetByWorkspaceID(workspaceDateShift.WorkspaceId);
 
 				if (getChildren)
 				{
-					workspace.Children.AddRange(GetClinByWorkspaceId(id));
-					workspace.Children.AddRange(GetBoeByWorkspaceId(id));
+					workspaceDateShift.Children.AddRange(GetClinByWorkspaceId(id));
+					workspaceDateShift.Children.AddRange(GetBoeByWorkspaceId(id));
 				}
 
-				return workspace;
+				return workspaceDateShift;
 			}
 		}
 
@@ -574,25 +574,25 @@ namespace GenBOE.DataBridge.DTO
 			{
 				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
 
-				List<DateShiftDTO> clins = (from c in gbe.CLINs
-											where c.WorkspaceID == workspaceId
-											select new DateShiftDTO
-											{
-												Id = c.CLINID,
-												StartDate = c.CLINStartDate,
-												EndDate = c.CLINEndDate,
-												UpdateDate = c.UpdateDT,
-												WorkspaceId = c.WorkspaceID,
-												DateShiftLevel = Level.CLIN,
-												ParentId = workspaceId,
-											}).ToList();
+				List<DateShiftDTO> clinDateShifts = (from c in gbe.CLINs
+													 where c.WorkspaceID == workspaceId
+													 select new DateShiftDTO
+													 {
+														 Id = c.CLINID,
+														 StartDate = c.CLINStartDate,
+														 EndDate = c.CLINEndDate,
+														 UpdateDate = c.UpdateDT,
+														 WorkspaceId = c.WorkspaceID,
+														 DateShiftLevel = Level.CLIN,
+														 ParentId = workspaceId,
+													 }).ToList();
 
-				foreach (DateShiftDTO clin in clins)
+				foreach (DateShiftDTO clin in clinDateShifts)
 				{
 					clin.Children.AddRange(GetBoeDateShiftDataByClinId(clin.Id));
 				}
 
-				return clins;
+				return clinDateShifts;
 			}
 		}
 
@@ -607,25 +607,25 @@ namespace GenBOE.DataBridge.DTO
 			{
 				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
 
-				List<DateShiftDTO> boes = (from b in gbe.BOEs
-										   where b.WorkspaceID == workspaceId
-										   join xRef in gbe.WBS_CLIN_BOE_XREF.Where(x => x.BOEID.HasValue) on b.BOEID equals xRef.BOEID into temp
-										   from xRef in temp.DefaultIfEmpty() // left outer joins for above..
-										   select new DateShiftDTO
-										   {
-											   Id = b.BOEID,
-											   BOEStateID = b.BOEStateID,
-											   StartDate = b.BOEStartDate,
-											   EndDate = b.BOEEndDate,
-											   UpdateDate = b.UpdateDT,
-											   WorkspaceId = b.WorkspaceID,
-											   ClinId = xRef == null ? null : xRef.CLINID,
-											   WbsId = xRef == null ? null : xRef.WBSID,
-											   DateShiftLevel = Level.BOE,
-											   ParentId = workspaceId,
-										   }).ToList();
+				List<DateShiftDTO> boeDateShifts = (from b in gbe.BOEs
+													where b.WorkspaceID == workspaceId
+													join xRef in gbe.WBS_CLIN_BOE_XREF.Where(x => x.BOEID.HasValue) on b.BOEID equals xRef.BOEID into temp
+													from xRef in temp.DefaultIfEmpty() // left outer joins for above..
+													select new DateShiftDTO
+													{
+														Id = b.BOEID,
+														BOEStateID = b.BOEStateID,
+														StartDate = b.BOEStartDate,
+														EndDate = b.BOEEndDate,
+														UpdateDate = b.UpdateDT,
+														WorkspaceId = b.WorkspaceID,
+														ClinId = xRef == null ? null : xRef.CLINID,
+														WbsId = xRef == null ? null : xRef.WBSID,
+														DateShiftLevel = Level.BOE,
+														ParentId = workspaceId,
+													}).ToList();
 
-				foreach (DateShiftDTO boe in boes)
+				foreach (DateShiftDTO boe in boeDateShifts)
 				{
 					if (boe.ClinId == null)
 					{
@@ -633,7 +633,7 @@ namespace GenBOE.DataBridge.DTO
 					}
 				}
 
-				return boes.Where(b => b.ClinId == null).ToList();
+				return boeDateShifts.Where(b => b.ClinId == null).ToList();
 			}
 		}
 	}
