@@ -304,9 +304,6 @@ namespace GenBOE.ActionLogic.Reporting
 										string.Empty,
 										string.Empty,
 										CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + wbs.BOEs.Sum(x => x.TotalHours).ToString(hoursFormatString),
-
-										//CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + this.variableSelectBOEtoSumCalculation.GetTotalBasedOnWBSID(wbs.WBS.Id,
-										//	this.GetResourceTypesToBeSummed(), data).ToString(hoursFormatString),
 										CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + wbs.BOEs.Sum(x => x.TotalUCOTHours).ToString(hoursFormatString),
 										CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + wbs.BOEs.Sum(x => x.TotalHoursWithUCOT).ToString(hoursFormatString));
 								}
