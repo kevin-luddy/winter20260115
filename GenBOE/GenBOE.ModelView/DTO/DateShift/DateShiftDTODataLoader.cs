@@ -435,7 +435,8 @@ namespace GenBOE.DataBridge.DTO
 								ParentId = resourceType.TaskElementId,
 								LaborSpreads = resourceType.LaborSpreads,
 								SpreadCurveID = resourceType.SpreadCurveID,
-								SpreadType = resourceType.SpreadType
+								SpreadType = resourceType.SpreadType,
+								HasSpread = resourceType.HasSpread
 							});
 						}
 					}
@@ -515,7 +516,8 @@ namespace GenBOE.DataBridge.DTO
 								ParentId = resourceType.TaskElementId,
 								LaborSpreads = resourceType.LaborSpreads,
 								SpreadCurveID = resourceType.SpreadCurveID,
-								SpreadType = resourceType.SpreadType
+								SpreadType = resourceType.SpreadType,
+								HasSpread = resourceType.HasSpread
 							}
 							);
 						}
