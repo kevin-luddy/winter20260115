@@ -13,12 +13,13 @@
 %>
 
 <script type="text/javascript">
-
 	var formConfigs = [];
 	var originalTrackingNumber = "";
 	var previousTrackingNumber = "";
 	var previousTrackingNumberSelection = "";
 	var originalSapConnectionEnabled = false;
+	var onLoadAssignAuthorsValue = '<%:Model.EnableAssignTaskAuthor%>';
+	var workspaceContainsTaskAuthor = '<%:Model.WorkspaceContainsTaskAuthor%>';
 
 	formConfigs.push({
 		ElementID: 'WorkspaceIdentificationForm',
@@ -459,6 +460,25 @@
 			disabledEnableSAPConnectionDropdown = false;
 		}
 	});
+
+	// Show the popup if the load value is set to true, but user changes it to false
+	$('#EnableAssignTaskAuthor').change(function () {
+		var isAuthorsAssignedSetToTrue = $('#EnableAssignTaskAuthor').val() === 'True';
+		if (onLoadAssignAuthorsValue === 'True' && !isAuthorsAssignedSetToTrue && workspaceContainsTaskAuthor === 'True') {
+			Session.confirmDialog(
+				'Delete Assigned Task Authors',
+				'At least one Task has an Author assigned. All assigned Authors for Tasks will be deleted and the BOEs containing those Tasks will have their Status changed to Draft.<br/><br/>Are you sure you want to delete the Assigned Task Authors?',
+				function () {
+					// This is a confirmation, do nothing
+					null
+				},
+				// Revert back to Yes if canceled
+				function () {
+					$('#EnableAssignTaskAuthor').val('True')
+				}
+			);
+		}
+	});
 </script>
 
 <div id="WorkspaceIdentification" class="workspace-identification module ">
@@ -784,7 +804,8 @@
 		<% if ((bool)Utilities.IsAssignTaskAuthorEnabledForSystem) { %>
 			<div class="form-row">
 			<div class="form-label">
-				<span helptext="Should Authors be required to Assign themselves to a Task?">Authors Assignable at Task Level</span>
+				<span helptext="When &quot;Yes&quot; is selected, Authors are prompted to choose their name from the BOE Author list and assign themselves to the task as the Task Author. 
+					When &quot;No&quot; is selected, Author Assignment is BOE Level only. No additional Author steps.">Authors Assignable at Task<br />Level *</span>
 			</div>
 			<div class="form-element">
 				<%: Html.DropDownListFor(c => c.EnableAssignTaskAuthor, new List<SelectListItem>()

@@ -1072,10 +1072,12 @@
 
 	$scope.deleteAllRecords = function () {
 		angular.forEach($scope.tableData, function (item, key) {
-			item.Deleted = true;
+			if (!item.NewLaborType) {
+				item.Deleted = true;
+			}
 		});
 
-		angular.forEach($scope.model, function (item, key) {
+		angular.forEach($scope.model, function (item, key) {			
 			if (!item.Deleted) {
 				item.Deleted = true;
 			}
@@ -1747,6 +1749,9 @@
 				// Filter out the blank row before save
 				postedData.LaborTypesData = postedData.LaborTypesData.filter(function (d) { return d.NewLaborType === false });
 
+				// Ensure IsUsingTMRatesInTask is set
+				postedData.IsUsingTMRatesInTask = $scope.IsUsingTMRatesInTask;
+
 				var data = { modelView: postedData };
 
 				var saveAction = wsLocked ? "SaveLockedTaskDataModel" : ManageTaskModel.saveAction;
@@ -2064,8 +2069,9 @@
 						return table.RepositoryName === $scope.ManageTaskModel.SapWebiRepository;
 					});
 
-					return hasBigThreeMoqType && hasSapWebiRepository;
-					// RMS
+ 					// Lastly, check that SAP is enabled
+					return hasBigThreeMoqType && hasSapWebiRepository && $scope.ManageTaskModel.SapConnectionEnabled;
+				// RMS
 				} else {
 					let hasProperMoqTypes = [5001, 5002, '5001', '5002'].includes($scope.SelectedMoqTypes[0].SelectedMOQType);
 					return $scope.IsSkillMixEnabled && hasProperMoqTypes;
@@ -2101,17 +2107,17 @@
 
 		// Check if there are no MOQ Tables
 		let noMoqTables = $scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0;
-
+			
 		// Check if any MOQ Table is missing SAP Resource Hours
-		let hasMissingSAPResourceHours = !$scope.SelectedMoqTypes.every(x =>
+		let hasMissingSAPResourceHours = $scope.SelectedMoqTypes.every(x =>
 			x.TableData !== undefined &&
 			x.TableData.length > 0 &&
 			x.TableData.some(y =>
 				// Space requires at least 1 table using SAP/WEBI Repository
 				y.RepositoryName === $scope.ManageTaskModel.SapWebiRepository || !$scope.ManageTaskModel.IsSpace
 			) &&
-			x.TableData.every(y =>
-				(y.ResourceHours !== undefined && y.ResourceHours.length > 0)
+			x.TableData.some(y =>
+				(y.ResourceHours !== undefined && (y.ResourceHours.length === 0 && y.RepositoryName === $scope.ManageTaskModel.SapWebiRepository && $scope.ManageTaskModel.IsSpace))
 			)
 		);
 

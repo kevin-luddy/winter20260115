@@ -224,8 +224,8 @@
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='OverrideBRC']/@value">
 		</parameterentry>
 	</parameter>
-	<parameter name="UcotExcludedPTMTrackingNumbers" description="Comma-separated list of PTM tracking numbers excluded from UCOT" defaultvalue="__UcotExcludedPTMTrackingNumbers__" tags="">
-		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='UcotExcludedPTMTrackingNumbers']/@value">
+	<parameter name="UcotExcludedWorkspaces" description="Comma-separated list of PTM tracking numbers excluded from UCOT" defaultvalue="__UcotExcludedWorkspaces__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='UcotExcludedWorkspaces']/@value">
 		</parameterentry>
 	</parameter>
 	<parameter name="EnableUCOT" description="doesn't matter" defaultvalue="__EnableUCOT__" tags="">

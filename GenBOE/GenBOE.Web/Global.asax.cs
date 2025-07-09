@@ -925,7 +925,6 @@ namespace GenBOE
 						new ResolvedParameter(typeof(IBOEFormIBOEDTODataLoader)),
 						new ResolvedParameter(typeof(IBOEFormPBOEDTODataLoader)),
 						new ResolvedParameter(typeof(IResourceDTODataLoader)),
-						new ResolvedParameter(typeof(ITMResourceRateDTODataLoader)),
 						new ResolvedParameter(typeof(IBOEFormExporter)),
 						new ResolvedParameter(typeof(PBOEFormExporter)),
 						new ResolvedParameter(typeof(TMCalculator))

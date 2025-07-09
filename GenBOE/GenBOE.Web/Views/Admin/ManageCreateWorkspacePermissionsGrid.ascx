@@ -123,6 +123,8 @@
 
     ManageCreateWorkspacePermissionsWidget.SaveNewPermissions = function () {
 
+        ManageCreateWorkspacePermissionsWidget.clearValidationBox($("#AddPermissionsForm ul.validation-box"));
+
         $("#Permissions-SaveNew").addClass("display-none");
         $("#Permissions-LoaderNew").removeClass("display-none");
 
