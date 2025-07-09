@@ -18,7 +18,7 @@ namespace GenBOE.Dtos
 			PA_Title = string.Empty;
 			PA_Description = string.Empty;
 			Line_of_Business = string.Empty;
-			Pricing = '\0';
+			Pricing = string.Empty;
 			Project_Start_Date = DateTime.MinValue;
 			Project_End_Date = DateTime.MinValue;
 			RFP_Number = string.Empty;
@@ -38,7 +38,7 @@ namespace GenBOE.Dtos
 
 		public string Line_of_Business { get; set; }
 
-		public char Pricing { get; set; }
+		public string Pricing { get; set; }
 
 		public DateTime? Project_Start_Date { get; set; }
 

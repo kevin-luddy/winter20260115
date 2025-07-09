@@ -81,7 +81,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
 			using (PldDBContext context = new PldDBContext())
 			{
 				PldDTODataLoader sut = new PldDTODataLoader(context);
-				string[] paNumbers = new[] { "PA-1", "PA-2" };
+				string[] paNumbers = new[] { "A09D0040", "A09D0047" };
 
 				// Act
 				ICollection<Dtos.ProposalDTO> proposals = sut.GetByIds(paNumbers);

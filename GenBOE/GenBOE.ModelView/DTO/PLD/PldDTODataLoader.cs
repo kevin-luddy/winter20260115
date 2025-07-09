@@ -12,29 +12,18 @@ namespace GenBOE.DataBridge.DTO
 	using GenBOE.Models;
 	using GenBOE.PLD.Models;
 
-	public class PldDTODataLoader : ReadOnlyDataLoader<ProposalDTO>, IPldDTODataLoader, IDisposable
+	public class PldDTODataLoader : IPldDTODataLoader, IDisposable
 	{
 		private readonly PldDBContext _context;
 		private bool _disposed;
+		protected Logger Log { get; set; }
 
 		public PldDTODataLoader(PldDBContext context = null)
 		{
 			_context = context ?? new PldDBContext();
 			this.Log = new Logger(typeof(PldDTODataLoader));
 		}
-
-		/// <summary>
-		///  This Loader only supports PA_Number as a string
-		/// </summary>
-		/// <param name="ids"></param>
-		/// <returns></returns>
-		/// <exception cref="NotSupportedException"></exception>
-		public override ICollection<ProposalDTO> GetByIds(ICollection<int> ids)
-		{
-			throw new NotSupportedException("This Loader only supports PA_Number as a string");
-		}
-
-
+		
 		/// <summary>
 		/// Get Proposal by ID   "PA Number" is a string  
 		/// </summary>
@@ -141,7 +130,7 @@ namespace GenBOE.DataBridge.DTO
 						.Where(p => activeStatuses.Contains(p.Proposal_Status))
 						.Select(p => new ProposalDTO
 						{
-							PA_Number = p.PA_Number,
+							PA_Number = p.PA_Number.Trim(),
 							PA_Title = p.PA_Title,
 							PA_Description = p.PA_Description,
 							PA_Version = p.PA_Version,

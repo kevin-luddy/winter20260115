@@ -7,7 +7,7 @@ namespace GenBOE.DataBridge.DTO
 	using IES.Common;
 
 
-	public interface IPldDTODataLoader : IReadOnlyDataLoader<ProposalDTO>
+	public interface IPldDTODataLoader
 	{
 		
 		/// <summary>

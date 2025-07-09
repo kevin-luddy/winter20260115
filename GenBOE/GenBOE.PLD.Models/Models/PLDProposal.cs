@@ -29,7 +29,7 @@ namespace GenBOE.PLD.Models.Models
 		public string Line_of_Business { get; set; }
 
 		[Column("Pricing")]
-		public char Pricing { get; set; }
+		public string Pricing { get; set; }
 
 		[Column("Project Start Date")]
 		public DateTime? Project_Start_Date { get; set; }
