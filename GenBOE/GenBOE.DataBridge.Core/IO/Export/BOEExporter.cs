@@ -1404,8 +1404,10 @@ namespace GenBOE.DataBridge.Core.IO.Export
 							StructuredDocumentTag newBOE = emptyBOE.Clone(true) as StructuredDocumentTag;
 
 							// Add a page break before the next BOE
-							Paragraph pageBreak = new Paragraph(new Run(new Break() { Type = BreakValues.Page }));
+							Paragraph pageBreak = new Paragraph(document);
+							pageBreak.Runs.Add(new Run(document, ControlChar.PageBreak);
 							lastBOE.ParentNode.InsertAfter(pageBreak, lastBOE);
+														
 
 							// Add the new empty table to the file after the last table
 							pageBreak.ParentNode.InsertAfter(newBOE, pageBreak);
