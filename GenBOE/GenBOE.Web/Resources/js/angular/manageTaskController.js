@@ -1291,7 +1291,7 @@
 	$scope.calculateDiscreteUCOTSpread = function (item, skipReCalc) {
 		$(document).trigger("SHOW_LOADING_BOX");
 
-		var data = { value: item.HourSpread, start: item.StartDate, end: item.EndDate, curve: item.SpreadCurveID, rateType: item.RateType, spreads: item.Spreads, ucotSpreads: item.UcotSpreads, percentLocked: item.PercentSpreadLocked, percentSpread: item.PercentSpread };
+		var data = { value: item.HourSpread, start: item.StartDate, end: item.EndDate, curve: item.SpreadCurveID, elementOfCost: item.ElementOfCost, rateType: item.RateType, spreads: item.Spreads, ucotSpreads: item.UcotSpreads, percentLocked: item.PercentSpreadLocked, percentSpread: item.PercentSpread };
 		//var dataArray = [];
 		//dataArray.push(data);
 		//var postedData = {
