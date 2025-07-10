@@ -611,16 +611,67 @@ namespace GenBOE.DataBridge.DTO
 							// Add BOE Task Elements as BOE children
 							foreach (BOETaskElement te in workspaceData.BOETaskElements.Where(t => t.BOEID == boe.BOEID))
 							{
-								boeDateShift.Children.Add(new DateShiftDTO
+								DateShiftDTO taskElementDateShift = new DateShiftDTO
 								{
 									Id = te.BOETaskElementID,
 									BoeId = te.BOEID,
 									BOETaskElementId = te.BOETaskElementID,
 									StartDate = te.TaskStartDate,
 									EndDate = te.TaskEndDate,
+									UpdateDate = te.UpdateDT,
 									DateShiftLevel = Level.Task,
 									ParentId = boeDateShift.Id,
-								});
+								};
+
+								// Get resource types for task element labors.
+								Collection<ResourceTypeDto> taskElementLabors = (from lT in gbe.BOELaborTypes
+														 where lT.BOETaskElementID == te.BOETaskElementID
+														 select new ResourceTypeDto
+														 {
+															 Id = lT.BOELaborTypeID,
+															 TaskElementId = lT.BOETaskElementID,
+															 ResourceID = lT.ResourceID,
+															 StartDateValue = lT.BOELaborTypeStartDate,
+															 EndDateValue = lT.BOELaborTypeEndDate,
+															 SpreadType = lT.SpreadTypeID.HasValue ? (SpreadType)lT.SpreadTypeID.Value : SpreadType.NotSet,
+															 UpdateDate = lT.UpdateDT,
+															 SpreadCurveIDValue = lT.SpreadCurveID,
+															 LaborSpreadsIEnum = lT.BOELaborSpreads
+																 .Select(lS => new ResourceSpreadDto
+																 {
+																	 Id = lS.BOELaborSpreadID,
+																	 LaborSpreadDate = lS.LaborSpreadDate,
+																	 LaborSpreadValue = lS.LaborSpreadValue ?? 0,
+																	 LaborTypeId = lS.BOELaborTypeID
+																 }),
+														 }).ToCollection();
+
+								taskElementDateShift.TaskElementLabors = taskElementLabors;
+
+								if (taskElementLabors != null)
+								{
+									foreach (ResourceTypeDto resourceType in taskElementLabors)
+									{
+										resourceType.LaborSpreads = resourceType.LaborSpreadsIEnum.ToCollection();
+										resourceType.LaborSpreadsIEnum = null;
+
+										taskElementDateShift.Children.Add(new DateShiftDTO()
+										{
+											Id = resourceType.Id,
+											StartDate = resourceType.StartDateValue,
+											EndDate = resourceType.EndDateValue,
+											UpdateDate = resourceType.UpdateDate,
+											DateShiftLevel = Level.Labor,
+											ParentId = resourceType.TaskElementId,
+											LaborSpreads = resourceType.LaborSpreads,
+											SpreadCurveID = resourceType.SpreadCurveID,
+											SpreadType = resourceType.SpreadType,
+											HasSpread = resourceType.HasSpread
+										});
+									}
+								}
+
+								boeDateShift.Children.Add(taskElementDateShift);
 							}
 						}
 					}
@@ -646,21 +697,73 @@ namespace GenBOE.DataBridge.DTO
 					// Add BOE Task Elements as BOE children
 					foreach (BOETaskElement te in workspaceData.BOETaskElements.Where(t => t.BOEID == boe.BOEID))
 					{
-						boeDateShift.Children.Add(new DateShiftDTO
+						DateShiftDTO taskElementDateShift = new DateShiftDTO
 						{
 							Id = te.BOETaskElementID,
 							BoeId = te.BOEID,
 							BOETaskElementId = te.BOETaskElementID,
 							StartDate = te.TaskStartDate,
 							EndDate = te.TaskEndDate,
+							UpdateDate = te.UpdateDT,
 							DateShiftLevel = Level.Task,
 							ParentId = boeDateShift.Id,
-						});
+						};
+
+						// Get resource types for task element labors.
+						Collection<ResourceTypeDto> taskElementLabors = (from lT in gbe.BOELaborTypes
+												 where lT.BOETaskElementID == te.BOETaskElementID
+												 select new ResourceTypeDto
+												 {
+													 Id = lT.BOELaborTypeID,
+													 TaskElementId = lT.BOETaskElementID,
+													 ResourceID = lT.ResourceID,
+													 StartDateValue = lT.BOELaborTypeStartDate,
+													 EndDateValue = lT.BOELaborTypeEndDate,
+													 SpreadType = lT.SpreadTypeID.HasValue ? (SpreadType)lT.SpreadTypeID.Value : SpreadType.NotSet,
+													 UpdateDate = lT.UpdateDT,
+													 SpreadCurveIDValue = lT.SpreadCurveID,
+													 LaborSpreadsIEnum = lT.BOELaborSpreads
+														 .Select(lS => new ResourceSpreadDto
+														 {
+															 Id = lS.BOELaborSpreadID,
+															 LaborSpreadDate = lS.LaborSpreadDate,
+															 LaborSpreadValue = lS.LaborSpreadValue ?? 0,
+															 LaborTypeId = lS.BOELaborTypeID
+														 }),
+												 }).ToCollection();
+
+						taskElementDateShift.TaskElementLabors = taskElementLabors;
+
+						if (taskElementLabors != null)
+						{
+							foreach (ResourceTypeDto resourceType in taskElementLabors)
+							{
+								resourceType.LaborSpreads = resourceType.LaborSpreadsIEnum.ToCollection();
+								resourceType.LaborSpreadsIEnum = null;
+
+								taskElementDateShift.Children.Add(new DateShiftDTO()
+								{
+									Id = resourceType.Id,
+									StartDate = resourceType.StartDateValue,
+									EndDate = resourceType.EndDateValue,
+									UpdateDate = resourceType.UpdateDate,
+									DateShiftLevel = Level.Labor,
+									ParentId = resourceType.TaskElementId,
+									LaborSpreads = resourceType.LaborSpreads,
+									SpreadCurveID = resourceType.SpreadCurveID,
+									SpreadType = resourceType.SpreadType,
+									HasSpread = resourceType.HasSpread
+								});
+							}
+						}
+
+						boeDateShift.Children.Add(taskElementDateShift);
 					}
 				}
 
 				return workspaceDateShift;
 			}
 		}
+
 	}
 }
