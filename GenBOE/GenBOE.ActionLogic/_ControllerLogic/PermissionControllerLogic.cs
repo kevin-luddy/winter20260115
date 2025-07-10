@@ -10,8 +10,12 @@ namespace GenBOE.ActionLogic
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Data;
+	using System.Diagnostics.CodeAnalysis;
+	using System.IO;
 	using System.Linq;
 	using System.Transactions;
+	using GenBOE.ActionLogic.IO.Export;
+	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.Backend;
 	using GenBOE.ActionLogic.Permissions;
@@ -20,7 +24,9 @@ namespace GenBOE.ActionLogic
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using IES.Common;
+	using IES.Common.classes;
 	using IES.Common.Exceptions;
+	using IES.Common.OfficeUtilities;
 
 	public class PermissionControllerLogic
 	{
@@ -485,5 +491,116 @@ namespace GenBOE.ActionLogic
 				}
 			}
 		}
+
+		/// <summary>
+		/// Export Permissions logic
+		/// </summary>
+		/// <param name="ws">Full Workspace</param>
+		/// <returns>Excel file as FileStream</returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		[SuppressMessage("Microsoft.Design", "CA1011: Consider passing base types as parameters")]
+		public FileStream ExportPermissions(FullWorkspace ws)
+		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
+
+			FileStream fs = null;
+
+			// Get the Permissions template file name
+			// Assume that "Templates" is a subdirectory of your application's root directory
+			string templateDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates", "Export");
+
+			// Ensure the template directory exists
+			if (!Directory.Exists(templateDir))
+			{
+				throw new InvalidOperationException($"Template directory '{templateDir}' does not exist.");
+			}
+
+			// Get data to export for this Workspace
+			Collection<PermissionsDTO> allPerms = this.permissionLoader.GetPermissionsForGridData(ws.Id).Where(p => p.Role != Role.WorkspaceUser).ToCollection();
+
+			// Get export template file name
+			string templateFileName = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST
+				? Path.Combine(templateDir, "PermissionsRMS.xlsx")
+				: Path.Combine(templateDir, "Permissions.xlsx");
+
+			// Check if the template file exists
+			if (!File.Exists(templateFileName))
+			{
+				throw new FileNotFoundException($"Template file '{templateFileName}' does not exist.");
+			}
+
+			// Call the export function in the business layer and get back the file name of the populated template.
+			string exportedFile = PermissionsExporter.ExportToExcelFile(templateFileName, allPerms);
+
+			if (exportedFile.Length > 0)
+			{
+				fs = new FileStream(exportedFile, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+			}
+
+			return fs;
+		}
+
+		/// <summary>
+		/// Import Permissions logic
+		/// </summary>
+		/// <param name="workspace">Workspace name</param>
+		/// <param name="inputStream">File Stream</param>
+		/// <returns>Error message</returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public string ImportPermissions(string workspace, Stream inputStream)
+		{
+			string errorMessage = string.Empty;
+			try
+			{
+				ICollection<SavePermissionModelView> permissionsFromImportFile = PermissionsImporter.ImportFromExcelFile(inputStream);
+
+				if (permissionsFromImportFile.Any())
+				{
+					SaveNewPermissions(workspace, permissionsFromImportFile);
+				}
+				else
+				{
+					errorMessage = "No Permissions Were Imported.";
+				}
+			}
+			// Catch custom exceptions from ExcelImporter and ResourcesImporter and generate friendly
+			// exception messages to display for the user
+			catch (NotExcelFileException)
+			{
+				errorMessage = "File is an invalid format. File must be in a MS Excel format (.xlsx or .xls).";
+			}
+			catch (ColumnMissingException ex2)
+			{
+				errorMessage = string.Format("File does not contain all of the required columns. File must contain 'NtId', 'Role' columns. The following columns are missing: {0}.", ex2.Message);
+			}
+			catch (CellValueMissingException ex3)
+			{
+				errorMessage = string.Format("A row in the file does not contain a value for NtId and Role. Every filled row must have a value for each. Check the following column: {0}.", ex3.Message);
+			}
+			catch (DuplicateValuesException ex4)
+			{
+				errorMessage = string.Format("Values must be unique. The following are not unique: {0}", ex4.Message);
+			}
+			catch (EntityCommandExecutionException)
+			{
+				errorMessage = "The Permissions were recently updated by another user. Please refresh the page to review these latest changes. Once the page is refreshed, you can try your import operation again.";
+			}
+			catch (GenValidationException ex5)
+			{
+				errorMessage = string.Format(ex5.ValidationList[0].ValidationIssue);
+			}
+			catch (Exception ex)
+			{
+				_log.Error(ex, "Unknown Import Permissions Error.");
+				errorMessage = "A general error occurred. Please ensure that your import file follows the format of the import template and retry the import.";
+			}
+
+			return errorMessage;
+		}
+
 	}
 }
