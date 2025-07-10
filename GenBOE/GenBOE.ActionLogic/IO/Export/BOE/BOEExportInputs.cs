@@ -11,6 +11,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 	using System.Collections.ObjectModel;
 	using System.Linq;
 	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.Misc;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
@@ -160,15 +161,17 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
 				// Filter by element of cost only want to work on labor
 				Dictionary<int, ElementOfCostType> laborToElementOfCost = new Dictionary<int, ElementOfCostType>();
+				Dictionary<int, RateType> laborToRateType = new Dictionary<int, RateType>();
 				foreach (ResourceTypeDto labor in taskElementLabors)
 				{
 					ResourceDTO resource = this.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == labor.ResourceID);
 
 					laborToElementOfCost[labor.Id] = resource?.ElementOfCost ?? ElementOfCostType.NotSet;
+					laborToRateType[labor.Id] = resource?.RateType ?? RateType.NotSet;
 				}
 
 				// Add UCOT data
-				taskElementLabors = AddUCOT(taskElementLabors, workspace.UCOTFactor, laborToElementOfCost, workspace.ResourceDecimalPrecision ?? 0);
+				taskElementLabors = AddUCOT(taskElementLabors, workspace.UCOTFactor, laborToElementOfCost, workspace.DecimalPrecision, workspace.CreationDate, workspace.Shortname, laborToRateType);
 
 				// Update TaskElements with the new labors
 				foreach (BoeTaskElementDTO taskElement in taskElements)
@@ -466,7 +469,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// <param name="laborToElementOfCost">Labor to element cost dictionary</param>
 		/// <param name="decimalPrecision">Workspace resource decimal precision</param>
 		/// <returns>UCOT resources.</returns>
-		private List<ResourceTypeDto> AddUCOT(List<ResourceTypeDto> taskElementLabors, decimal ucotFactor, Dictionary<int, ElementOfCostType> laborToElementOfCost, int decimalPrecision)
+		private List<ResourceTypeDto> AddUCOT(List<ResourceTypeDto> taskElementLabors, decimal ucotFactor, Dictionary<int, ElementOfCostType> laborToElementOfCost, 
+			int decimalPrecision, DateTime? workspaceCreationDate, string workspaceShortname, Dictionary<int, RateType> laborToRateType)
 		{
 			List<ResourceTypeDto> ucotLabors = taskElementLabors.ToList();
 
@@ -474,21 +478,19 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
 			// Keyed by original resource name to new ucot resource 
 			Dictionary<int, ResourceDTO> ucotResourceBindings = new Dictionary<int, ResourceDTO>();
-			decimal ucotMultiplier = ucotFactor / 100.0m;
 			int idCounter = -100;
 
 			// Now, we loop over all the spreads and add the UCOT factor where needed
+			ICollection<MoqTypeSelection> moqTypes = this.MOQTypes.ToList();
 			foreach (ResourceTypeDto labor in taskElementLabors)
 			{
 				// UCOT is only applicable if ResourceTypeDto is Hours and LMLabor Element of Cost, and Spread is past 1LMX date
-				if (labor.SpreadType == SpreadType.Hours &&
-					laborToElementOfCost[labor.Id] == ElementOfCostType.LMLabor &&
-					labor.LaborSpreads != null && labor.LaborSpreads.Any() &&
-					labor.EndDate >= Utilities.OneLmxStartDate && labor.BusinessResourceCodeID.HasValue)
-				{
-					int newLaborTypeId = idCounter--;
+				IDictionary<DateTime, decimal> ucotSpreads = UCOTUtility.GetUcotSpreads(workspaceCreationDate, workspaceShortname, decimalPrecision, ucotFactor,
+						labor.LaborSpreads, laborToElementOfCost[labor.Id], moqTypes, labor.TaskElementId, laborToRateType[labor.Id]);
 
-					// If it doesn't find the ucot resource then we need to create the ucot resource and add it back into our dictonary to pair the labor resource with its ucot counterpart (i.e. C1MDAAA1 vs. C1MDAAA1-UCOT)
+				if (ucotSpreads.Any())
+				{
+					// If it doesn't find the ucot resource then we need to create the ucot resource and add it back into our dictionary to pair the labor resource with its ucot counterpart (i.e. C1MDAAA1 vs. C1MDAAA1-UCOT)
 					if (!ucotResourceBindings.TryGetValue(labor.BusinessResourceCodeID.Value, out ResourceDTO ucotResource))
 					{
 						ResourceDTO originalResource = this.ResourcesUsedInWsBoes.First(x => x.Id == labor.BusinessResourceCodeID);
@@ -505,30 +507,19 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 						ucotResourceBindings.Add(labor.BusinessResourceCodeID.Value, ucotResource);
 					}
 
+					// Add the UCOT spreads where needed
+					int newLaborTypeId = idCounter--;
 					Collection<ResourceSpreadDto> spreads = new Collection<ResourceSpreadDto>();
-					foreach (ResourceSpreadDto spread in labor.LaborSpreads.OrderBy(x => x.LaborSpreadDate))
+					foreach (KeyValuePair<DateTime, decimal> spread in ucotSpreads)
 					{
 						spreads.Add(new ResourceSpreadDto()
 						{
-							LaborSpreadDate = spread.LaborSpreadDate,
+							LaborSpreadDate = spread.Key,
 							LaborTypeId = newLaborTypeId,
-							BoeID = spread.BoeID,
+							BoeID = labor.BoeID,
 							Id = idCounter--,
-							LaborSpreadValue = (Utilities.OneLmxStartDate <= spread.LaborSpreadDate)
-								? Utilities.AdjustPrecision(spread.LaborSpreadValue * ucotMultiplier, decimalPrecision)
-								: 0.0m
+							LaborSpreadValue = spread.Value
 						});
-					}
-
-					// Get UCOT total for the spread
-					decimal ucotTotal = labor.LaborSpreads.Sum(x => x.LaborSpreadValue) * (ucotFactor / 100m);
-					ucotTotal = Utilities.AdjustPrecision(ucotTotal, decimalPrecision);
-
-					// Smooth the UCOT spreads
-					decimal[] smoothedSpreadValues = SpreadCurve.Smooth(ucotTotal, spreads.OrderBy(x => x.LaborSpreadDate).Select(x => x.LaborSpreadValue).ToArray(), 0, spreads.Count, decimalPrecision);
-					for (int i = 0; i < spreads.Count; i++)
-					{
-						spreads[i].LaborSpreadValue = smoothedSpreadValues[i];
 					}
 
 					ResourceTypeDto ucot = new ResourceTypeDto()

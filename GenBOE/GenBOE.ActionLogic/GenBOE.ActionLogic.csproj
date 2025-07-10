@@ -278,6 +278,7 @@
     <Compile Include="IO\Import\TMResourceRatesImporter.cs" />
     <Compile Include="IO\Import\TrainingImporter.cs" />
     <Compile Include="IO\PermissionsImporter.cs" />
+    <Compile Include="Misc\UCOTUtility.cs" />
     <Compile Include="Reporting\BOEConfidenceReport.cs" />
     <Compile Include="Reporting\ConfidenceReportConstants.cs" />
     <Compile Include="Reporting\IBOEConfidenceReport.cs" />

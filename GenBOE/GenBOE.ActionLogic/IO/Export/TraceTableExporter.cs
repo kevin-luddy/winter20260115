@@ -12,6 +12,7 @@ namespace GenBOE.ActionLogic.IO.Export
 	using System.Linq;
 	using DocumentFormat.OpenXml.Spreadsheet;
 	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.Misc;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.Dtos;
 	using GenBOE.Models;
@@ -95,6 +96,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			// Filter by element of cost from the settings data
 			ICollection<int> laborsToRemove = new Collection<int>();
 			Dictionary<int, ElementOfCostType> laborToElementOfCost = new Dictionary<int, ElementOfCostType>();
+			Dictionary<int, RateType> laborToRateType = new Dictionary<int, RateType>();
 			foreach (ResourceTypeDto labor in taskElementLabors)
 			{
 				ResourceDTO resource = workspace.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == labor.ResourceID);
@@ -105,13 +107,15 @@ namespace GenBOE.ActionLogic.IO.Export
 				else
 				{
 					laborToElementOfCost[labor.Id] = resource.ElementOfCost;
+					laborToRateType[labor.Id] = resource.RateType;
 				}
 			}
 
 			taskElementLabors.RemoveAll(x => laborsToRemove.Contains(x.Id));
 
 			// Add UCOT data
-			taskElementLabors = AddUCOT(taskElementLabors, workspace.UCOTFactor, laborToElementOfCost, workspace.CreationDate, workspace.Shortname);
+			taskElementLabors = AddUCOT(taskElementLabors, workspace.UCOTFactor, laborToElementOfCost, workspace.CreationDate, workspace.Shortname,
+				workspace.DecimalPrecision, workspace.MoqTypeSelections.ToList(), laborToRateType);
 
 			// Populate CLIN and WBS IDs for non-multi-clin-wbs
 			foreach (ResourceTypeDto labor in taskElementLabors)
@@ -140,7 +144,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="workspaceCreationDate">Workspace creation date</param>
 		/// <returns></returns>
 		private List<ResourceTypeDto> AddUCOT(List<ResourceTypeDto> taskElementLabors, decimal ucotFactor, Dictionary<int, ElementOfCostType> laborToElementOfCost,
-			DateTime? workspaceCreationDate, string shortname)
+			DateTime? workspaceCreationDate, string shortname, int decimalPrecision, ICollection<MoqTypeSelection> moqTypeSelections, Dictionary<int, RateType> laborToRateType)
 		{
 			List<ResourceTypeDto> ucotLabors = taskElementLabors;
 
@@ -149,32 +153,27 @@ namespace GenBOE.ActionLogic.IO.Export
 				// First we clone so that we do not touch any Task Element Labor that may be attached to a Cached Property in the Cached FullWorkspace
 				ucotLabors = taskElementLabors.DeepClone();
 
-				decimal ucotMultiplier = ucotFactor / 100.0m;
-
 				int idCounter = -100;
 				// Now, we loop over all the spreads and add the UCOT factor where needed
 				foreach (ResourceTypeDto labor in taskElementLabors)
 				{
-					
-					// UCOT is only applicable if ResourceTypeDto is Hours and LMLabor Element of Cost, and Spread is past 1LMX date
-					if (labor.SpreadType == SpreadType.Hours &&
-						laborToElementOfCost[labor.Id] == ElementOfCostType.LMLabor &&
-						labor.LaborSpreads != null && labor.LaborSpreads.Any() && 
-						labor.EndDate >= Utilities.OneLmxStartDate)
+					IDictionary<DateTime, decimal> ucotSpreads = UCOTUtility.GetUcotSpreads(workspaceCreationDate, shortname, decimalPrecision, ucotFactor,
+						labor.LaborSpreads, laborToElementOfCost[labor.Id], moqTypeSelections, labor.TaskElementId, laborToRateType[labor.Id]);
+
+					if (ucotSpreads.Any())
 					{
+						// Add the UCOT spreads where needed
 						int newLaborTypeId = idCounter--;
 						Collection<ResourceSpreadDto> spreads = new Collection<ResourceSpreadDto>();
-						foreach (ResourceSpreadDto spread in labor.LaborSpreads)
+						foreach (KeyValuePair<DateTime, decimal> spread in ucotSpreads)
 						{
 							spreads.Add(new ResourceSpreadDto()
 							{
-								LaborSpreadDate = spread.LaborSpreadDate,
+								LaborSpreadDate = spread.Key,
 								LaborTypeId = newLaborTypeId,
-								BoeID = spread.BoeID,
+								BoeID = labor.BoeID,
 								Id = idCounter--,
-								LaborSpreadValue = (Utilities.OneLmxStartDate <= spread.LaborSpreadDate)
-									? spread.LaborSpreadValue * ucotMultiplier
-									: 0.0m
+								LaborSpreadValue = spread.Value
 							});
 						}
 
