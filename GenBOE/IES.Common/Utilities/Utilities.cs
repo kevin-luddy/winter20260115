@@ -950,28 +950,6 @@ namespace IES.Common
 		}
 
 		/// <summary>
-		/// Private for Is UCOT Enabled
-		/// </summary>
-		private static bool? isUCOTEnabled;
-
-		/// <summary>
-		/// Is UCOT/Uncompensated Overtime enabled?
-		/// </summary>
-		public static bool IsUCOTEnabledForSystem
-		{
-			get
-			{
-				if (isUCOTEnabled == null)
-				{
-					bool.TryParse(ConfigurationUtilities.GetAppSetting("EnableUCOT"), out bool ucotEnabled);
-					isUCOTEnabled = ucotEnabled;
-				}
-
-				return isUCOTEnabled.Value;
-			}
-		}
-
-		/// <summary>
 		///   Private for IsPLD 
 		/// </summary>
 		private static bool? isPLDIntegrated;
