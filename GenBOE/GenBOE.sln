@@ -461,7 +461,6 @@ Global
 		{F2AB5FFC-459A-4BB1-9CB5-61B4C89C14A0}.ReleaseTFS|Any CPU.ActiveCfg = Release|Any CPU
 		{F2AB5FFC-459A-4BB1-9CB5-61B4C89C14A0}.ReleaseTFS|Any CPU.Build.0 = Release|Any CPU
 		{F2AB5FFC-459A-4BB1-9CB5-61B4C89C14A0}.ReleaseTFSCore|Any CPU.ActiveCfg = Release|Any CPU
-		{F2AB5FFC-459A-4BB1-9CB5-61B4C89C14A0}.ReleaseTFSCore|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
