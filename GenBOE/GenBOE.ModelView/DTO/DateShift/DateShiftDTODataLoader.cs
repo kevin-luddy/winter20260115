@@ -42,11 +42,6 @@ namespace GenBOE.DataBridge.DTO
 		private readonly IWorkspaceVersionMetaDataDTODataLoader workspaceVersionMetaDataDTODataLoader;
 
 		/// <summary>
-		/// Unique date shift objects.
-		/// </summary>
-		private readonly Dictionary<(int, Level), DateShiftDTO> uniqueDateShiftObjects = new Dictionary<(int, Level), DateShiftDTO>();
-
-		/// <summary>
 		/// Default constructor
 		/// </summary>
 		public DateShiftDTODataLoader(IResourceSpreadLoader resourceSpreadLoader, ISkillMixDTOLoader skillMixLoader, ICommonDisclosureSMDTODataLoader commonDisclosureLoader, IWorkspaceVersionMetaDataDTODataLoader workspaceVersionMetaDataDTODataLoader)
@@ -69,12 +64,12 @@ namespace GenBOE.DataBridge.DTO
 				throw new ArgumentNullException(nameof(dateShiftDTOs));
 			}
 
-			// Clear out before update.
-			uniqueDateShiftObjects.Clear();
+			// Create a local dictionary to store unique date shift objects
+			Dictionary<(int, Level), DateShiftDTO> uniqueDateShiftObjects = new Dictionary<(int, Level), DateShiftDTO>();
 
 			foreach (DateShiftDTO dateShiftDTO in dateShiftDTOs)
 			{
-				FlattenListFromChildrenObjects(dateShiftDTO);
+				FlattenListFromChildrenObjects(dateShiftDTO, uniqueDateShiftObjects);
 			}
 
 			foreach (DateShiftDTO dateShiftDTOtoUpdate in uniqueDateShiftObjects.Values)
@@ -133,6 +128,32 @@ namespace GenBOE.DataBridge.DTO
 			this.UpdateDateShifts(uniqueDateShiftObjects.Values);
 		}
 
+		/// <summary>
+		/// Gets the date shift child DTOs recursively.
+		/// </summary>
+		/// <param name="dateShiftDTO">Date shift dtos.</param>
+		/// <param name="uniqueDateShiftObjects">Dictionary to store unique date shift objects.</param>
+		private void FlattenListFromChildrenObjects(DateShiftDTO dateShiftDTO, Dictionary<(int, Level), DateShiftDTO> uniqueDateShiftObjects)
+		{
+			if (dateShiftDTO == null)
+			{
+				throw new ArgumentNullException(nameof(dateShiftDTO));
+			}
+
+			if (!uniqueDateShiftObjects.ContainsKey((dateShiftDTO.Id, dateShiftDTO.DateShiftLevel)))
+			{
+				uniqueDateShiftObjects.Add((dateShiftDTO.Id, dateShiftDTO.DateShiftLevel), dateShiftDTO);
+			}
+
+			if (dateShiftDTO.Children != null)
+			{
+				foreach (DateShiftDTO child in dateShiftDTO.Children)
+				{
+					FlattenListFromChildrenObjects(child, uniqueDateShiftObjects);
+				}
+			}
+		}
+
 		#region Inherited
 		/// <summary>
 		/// Not implemented and not needed.
@@ -189,31 +210,6 @@ namespace GenBOE.DataBridge.DTO
 						"TT_DateShift",
 						false
 					);
-				}
-			}
-		}
-
-		/// <summary>
-		/// Gets the date shift child DTOs recursively.
-		/// </summary>
-		/// <param name="dateShiftDTO">Date shift dtos.</param>
-		private void FlattenListFromChildrenObjects(DateShiftDTO dateShiftDTO)
-		{
-			if (dateShiftDTO == null)
-			{
-				throw new ArgumentNullException(nameof(dateShiftDTO));
-			}
-
-			if (!uniqueDateShiftObjects.ContainsKey((dateShiftDTO.Id, dateShiftDTO.DateShiftLevel)))
-			{
-				uniqueDateShiftObjects.Add((dateShiftDTO.Id, dateShiftDTO.DateShiftLevel), dateShiftDTO);
-			}
-
-			if (dateShiftDTO.Children != null)
-			{
-				foreach (DateShiftDTO child in dateShiftDTO.Children)
-				{
-					FlattenListFromChildrenObjects(child);
 				}
 			}
 		}
