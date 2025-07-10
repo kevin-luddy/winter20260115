@@ -234,7 +234,7 @@ namespace GenBOE.DataBridge.DTO
 					dateShift.Parent = GetWorkspaceDateShiftDataById(dateShift.WorkspaceId, false);
 					break;
 				case Level.BOE:
-					dateShift = GetBoeDateShiftDataById(id);
+					dateShift = GetBoeDateShiftDataById(id, true);
 
 					// Sets parent to be CLIN if the BOE uses a clin, otherwise, if NO CLIN then set Workspace as parent.
 					if (dateShift.ClinId != null)
