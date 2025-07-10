@@ -260,6 +260,7 @@ namespace GenBOE.DataBridge.DTO
 		/// Gets the complete date shift data by workspace Id and sets up the hierarchy.
 		/// </summary>
 		/// <param name="workspaceId">Workspace id.</param>
+		/// <param name="getChildren">Get children objects.</param>
 		/// <returns>Complete workspace date shift data.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		public DateShiftDTO GetWorkspaceDateShiftDataById(int workspaceId, bool getChildren)
@@ -306,8 +307,6 @@ namespace GenBOE.DataBridge.DTO
 
 				if (getChildren)
 				{
-
-
 					// Add CLINs as workspace children
 					foreach (CLIN clin in workspaceData.CLINs)
 					{
@@ -759,6 +758,7 @@ namespace GenBOE.DataBridge.DTO
 		/// Gets the required boe data by id.
 		/// </summary>
 		/// <param name="id">id</param>
+		/// <param name="getChildren">Get child objects.</param>
 		/// <returns>Boe data.</returns>
 		public DateShiftDTO GetBoeDateShiftDataById(int id, bool getChildren)
 		{
