@@ -227,7 +227,7 @@ namespace GenBOE.DataBridge.DTO
 			switch (level)
 			{
 				case Level.Workspace:
-					dateShift = GetWorkspaceDateShiftDataById(id);
+					dateShift = GetWorkspaceDateShiftDataById(id, true);
 					break;
 				case Level.CLIN:
 					dateShift = GetClinDateShiftDataById(id, true);
@@ -239,11 +239,11 @@ namespace GenBOE.DataBridge.DTO
 					// Sets parent to be CLIN if the BOE uses a clin, otherwise, if NO CLIN then set Workspace as parent.
 					if (dateShift.ClinId != null)
 					{
-						dateShift.Parent = GetClinDateShiftDataById(dateShift.ParentId.Value, false);
+						dateShift.Parent = GetClinDateShiftDataById(dateShift.ClinId.Value, true);
 					}
 					else
 					{
-						//dateShift.Parent = GetWorkspaceDateShiftDataById(dateShift.WorkspaceId);
+						dateShift.Parent = GetWorkspaceDateShiftDataById(dateShift.WorkspaceId, true);
 					}
 					break;
 				case Level.Task:
@@ -268,6 +268,11 @@ namespace GenBOE.DataBridge.DTO
 			{
 				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
 
+				List<Models.SkillMix> skillMixes = gbe.SkillMixes.ToList();
+				List<CommonDisclosureSkillMix> commonDisclosures = gbe.CommonDisclosureSkillMixes.ToList();
+				List<BOELaborType> boeLaborTypes = gbe.BOELaborTypes.ToList();
+				List<BOELaborSpread> boeLaborSpreads = gbe.BOELaborSpreads.ToList();
+
 				DateShiftDTO boeDateShift = (from b in gbe.BOEs
 											 where b.BOEID == id
 											 join xRef in gbe.WBS_CLIN_BOE_XREF.Where(x => x.BOEID.HasValue) on b.BOEID equals xRef.BOEID into temp
@@ -288,7 +293,113 @@ namespace GenBOE.DataBridge.DTO
 
 				if (getChildren)
 				{
-					boeDateShift.Children.AddRange(GetBoeTaskElementDateShiftDataByBoeId(id));
+					// Add BOE Task Elements as BOE children
+					foreach (BOETaskElement te in gbe.BOETaskElements.Where(t => t.BOEID == boeDateShift.Id))
+					{
+						DateShiftDTO taskElementDateShift = new DateShiftDTO
+						{
+							Id = te.BOETaskElementID,
+							BoeId = te.BOEID,
+							BOETaskElementId = te.BOETaskElementID,
+							StartDate = te.TaskStartDate,
+							EndDate = te.TaskEndDate,
+							UpdateDate = te.UpdateDT,
+							DateShiftLevel = Level.Task,
+							ParentId = boeDateShift.Id,
+						};
+
+						// Get skill mixes and common disclosures for task element
+						List<SkillMixDTO> taskElementSkillMixes = skillMixes.Where(sm => sm.BOETaskElementID == te.BOETaskElementID)
+							.Select(sm => new SkillMixDTO
+							{
+								SkillMixID = sm.SkillMixID,
+								Rationale = sm.Rationale,
+								ProposedHours = sm.ProposedHours,
+								HistoricalHours = sm.HistoricalHours,
+								BOESkillMix = sm.BOESkillMix,
+								LaborSkillMix = sm.LaborSkillMix,
+								ResourceOld = sm.ResourceOld,
+								ResourceNew = sm.ResourceNew,
+								BOEID = sm.BOEID,
+								Included = sm.Included ?? false,
+								BOETaskElementID = sm.BOETaskElementID,
+								IsUserInput = sm.IsUserInput
+							}).ToList();
+
+						DoPostProcessing(taskElementSkillMixes);
+
+						List<CommonDisclosureSkillMixDTO> taskElementCommonDisclosures = commonDisclosures.Where(cdsm => cdsm.BOETaskElementID == te.BOETaskElementID)
+							.Select(cdsm => new CommonDisclosureSkillMixDTO
+							{
+								CommonDisclosureSkillMixID = cdsm.CommonDisclosureSkillMixID,
+								Rationale = cdsm.Rationale,
+								Included = cdsm.Included,
+								ProposedHours = cdsm.ProposedHours,
+								HistoricalHours = cdsm.HistoricalHours,
+								BOESkillMix = cdsm.BOESkillMix,
+								LaborSkillMix = cdsm.LaborSkillMix,
+								ResourceID = cdsm.ResourceID,
+								BusinessResourceID = cdsm.BusinessResourceID,
+								BOEID = cdsm.BOEID,
+								BOETaskElementID = cdsm.BOETaskElementID,
+								IsUserInput = cdsm.IsUserInput
+							}).ToList();
+
+						DoPostProcessing(taskElementCommonDisclosures);
+
+						// Assign the skill mix and common disclosure
+						taskElementDateShift.SkillMixTable = taskElementSkillMixes.Select(dto => new SkillMixModelView(dto)).ToList();
+						taskElementDateShift.CommonDisclosureTable = taskElementCommonDisclosures.Select(dto => new CommonDisclosureModelView(dto)).ToList();
+
+						// Get resource types for task element labors.
+						Collection<ResourceTypeDto> taskElementLabors = boeLaborTypes.Where(lT => lT.BOETaskElementID == te.BOETaskElementID)
+							.Select(lT => new ResourceTypeDto
+							{
+								Id = lT.BOELaborTypeID,
+								TaskElementId = lT.BOETaskElementID,
+								ResourceID = lT.ResourceID,
+								StartDateValue = lT.BOELaborTypeStartDate,
+								EndDateValue = lT.BOELaborTypeEndDate,
+								SpreadType = lT.SpreadTypeID.HasValue ? (SpreadType)lT.SpreadTypeID.Value : SpreadType.NotSet,
+								UpdateDate = lT.UpdateDT,
+								SpreadCurveIDValue = lT.SpreadCurveID,
+								LaborSpreadsIEnum = boeLaborSpreads.Where(lS => lS.BOELaborTypeID == lT.BOELaborTypeID)
+											.Select(lS => new ResourceSpreadDto
+											{
+												Id = lS.BOELaborSpreadID,
+												LaborSpreadDate = lS.LaborSpreadDate,
+												LaborSpreadValue = lS.LaborSpreadValue ?? 0,
+												LaborTypeId = lS.BOELaborTypeID
+											}),
+							}).ToCollection();
+
+						boeDateShift.TaskElementLabors = taskElementLabors;
+
+						if (taskElementLabors != null)
+						{
+							foreach (ResourceTypeDto resourceType in taskElementLabors)
+							{
+								resourceType.LaborSpreads = resourceType.LaborSpreadsIEnum.ToCollection();
+								resourceType.LaborSpreadsIEnum = null;
+
+								boeDateShift.Children.Add(new DateShiftDTO()
+								{
+									Id = resourceType.Id,
+									StartDate = resourceType.StartDateValue,
+									EndDate = resourceType.EndDateValue,
+									UpdateDate = resourceType.UpdateDate,
+									DateShiftLevel = Level.Labor,
+									ParentId = resourceType.TaskElementId,
+									LaborSpreads = resourceType.LaborSpreads,
+									SpreadCurveID = resourceType.SpreadCurveID,
+									SpreadType = resourceType.SpreadType,
+									HasSpread = resourceType.HasSpread
+								});
+							}
+						}
+
+						boeDateShift.Children.Add(taskElementDateShift);
+					}
 				}
 
 				return boeDateShift;
@@ -298,16 +409,22 @@ namespace GenBOE.DataBridge.DTO
 		/// <summary>
 		/// Gets the required clin data by id.
 		/// </summary>
-		/// <param name="id">id</param>
+		/// <param name="clinId">clinId</param>
+		/// <param name="getChildren">Should we get children objects?</param>
 		/// <returns>Clin data.</returns>
-		public DateShiftDTO GetClinDateShiftDataById(int id, bool getChildren)
+		public DateShiftDTO GetClinDateShiftDataById(int clinId, bool getChildren)
 		{
 			using (GenBoeEntities gbe = new GenBoeEntities())
 			{
 				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
 
+				List<Models.SkillMix> skillMixes = gbe.SkillMixes.ToList();
+				List<CommonDisclosureSkillMix> commonDisclosures = gbe.CommonDisclosureSkillMixes.ToList();
+				List<BOELaborType> boeLaborTypes = gbe.BOELaborTypes.ToList();
+				List<BOELaborSpread> boeLaborSpreads = gbe.BOELaborSpreads.ToList();
+
 				DateShiftDTO clinDateShift = (from c in gbe.CLINs
-											  where c.CLINID == id
+											  where c.CLINID == clinId
 											  select new DateShiftDTO
 											  {
 												  Id = c.CLINID,
@@ -315,282 +432,16 @@ namespace GenBOE.DataBridge.DTO
 												  EndDate = c.CLINEndDate,
 												  UpdateDate = c.UpdateDT,
 												  WorkspaceId = c.WorkspaceID,
+												  DateShiftLevel = Level.CLIN,
 												  ParentId = c.WorkspaceID,
-												  DateShiftLevel = Level.CLIN
 											  }).FirstOrDefault();
 
 				if (getChildren)
 				{
-					clinDateShift.Children.AddRange(GetBoeDateShiftDataByClinId(clinDateShift.Id));
-				}
-
-				return clinDateShift;
-			}
-		}
-
-		/// <summary>
-		/// Gets the required boe children data by clin id.
-		/// </summary>
-		/// <param name="id">id</param>
-		/// <returns>Boe children data.</returns>
-		public ICollection<DateShiftDTO> GetBoeDateShiftDataByClinId(int id)
-		{
-			using (GenBoeEntities gbe = new GenBoeEntities())
-			{
-				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
-
-				List<DateShiftDTO> boeDateShifts = (from b in gbe.BOEs
-													join xRef in gbe.WBS_CLIN_BOE_XREF.Where(x => x.CLINID == id) on b.BOEID equals xRef.BOEID
-													select new DateShiftDTO
-													{
-														Id = b.BOEID,
-														BOEStateID = b.BOEStateID,
-														StartDate = b.BOEStartDate,
-														EndDate = b.BOEEndDate,
-														UpdateDate = b.UpdateDT,
-														WorkspaceId = b.WorkspaceID,
-														ClinId = xRef.CLINID,
-														WbsId = xRef.WBSID,
-														DateShiftLevel = Level.BOE,
-														ParentId = xRef.CLINID,
-													}).ToList();
-
-				foreach (DateShiftDTO boe in boeDateShifts)
-				{
-					boe.Children.AddRange(GetBoeTaskElementDateShiftDataByBoeId(boe.Id));
-				}
-
-				return boeDateShifts;
-			}
-		}
-
-		/// <summary>
-		/// Get BOE Task Element by Id.
-		/// </summary>
-		/// <param name="id">Boe Task Element Id</param>
-		/// <returns>Boe Task Element.</returns>
-		public DateShiftDTO GetBoeTaskElementDateShiftDataById(int id)
-		{
-			using (GenBoeEntities gbe = new GenBoeEntities())
-			{
-				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
-
-				DateShiftDTO boeTaskElementDateShift = (from bT in gbe.BOETaskElements
-														where bT.BOETaskElementID == id
-														select new DateShiftDTO
-														{
-															Id = bT.BOETaskElementID,
-															BOETaskElementId = bT.BOETaskElementID,
-															StartDate = bT.TaskStartDate,
-															EndDate = bT.TaskEndDate,
-															UpdateDate = bT.UpdateDT,
-															BoeId = bT.BOEID,
-															DateShiftLevel = Level.Task,
-															ParentId = bT.BOEID
-														}).FirstOrDefault();
-
-				boeTaskElementDateShift.SkillMixTable = skillMixLoader.GetByBOETaskElementID(id).Select(dto => new SkillMixModelView(dto)).ToList();
-				boeTaskElementDateShift.CommonDisclosureTable = commonDisclosureLoader.GetByBOETaskElementID(id).Select(dto => new CommonDisclosureModelView(dto)).ToList();
-
-				// Get resource types for task element labors.
-				if (boeTaskElementDateShift != null)
-				{
-					boeTaskElementDateShift.TaskElementLabors = (from lT in gbe.BOELaborTypes
-																 where lT.BOETaskElementID == id
-																 select new ResourceTypeDto
-																 {
-																	 Id = lT.BOELaborTypeID,
-																	 TaskElementId = lT.BOETaskElementID,
-																	 ResourceID = lT.ResourceID,
-																	 StartDate = lT.BOELaborTypeStartDate,
-																	 EndDate = lT.BOELaborTypeEndDate,
-																	 SpreadType = lT.SpreadTypeID.HasValue ? (SpreadType)lT.SpreadTypeID.Value : SpreadType.NotSet,
-																	 UpdateDate = lT.UpdateDT,
-																	 SpreadCurveIDValue = lT.SpreadCurveID,
-																	 LaborSpreadsIEnum = lT.BOELaborSpreads
-																		 .Select(lS => new ResourceSpreadDto
-																		 {
-																			 Id = lS.BOELaborSpreadID,
-																			 LaborSpreadDate = lS.LaborSpreadDate,
-																			 LaborSpreadValue = lS.LaborSpreadValue ?? 0,
-																			 LaborTypeId = lS.BOELaborTypeID
-																		 }),
-																 }).ToCollection();
-
-					if (boeTaskElementDateShift.TaskElementLabors != null)
-					{
-						foreach (ResourceTypeDto resourceType in boeTaskElementDateShift.TaskElementLabors)
-						{
-							resourceType.LaborSpreads = resourceType.LaborSpreadsIEnum.ToCollection();
-							resourceType.LaborSpreadsIEnum = null;
-
-							boeTaskElementDateShift.Children.Add(new DateShiftDTO()
-							{
-								Id = resourceType.Id,
-								StartDate = resourceType.StartDateValue,
-								EndDate = resourceType.EndDateValue,
-								UpdateDate = resourceType.UpdateDate,
-								DateShiftLevel = Level.Labor,
-								ParentId = resourceType.TaskElementId,
-								LaborSpreads = resourceType.LaborSpreads,
-								SpreadCurveID = resourceType.SpreadCurveID,
-								SpreadType = resourceType.SpreadType,
-								HasSpread = resourceType.HasSpread
-							});
-						}
-					}
-				}
-
-				return boeTaskElementDateShift;
-			}
-		}
-
-		/// <summary>
-		/// Gets the required boe task element data by boe id.
-		/// </summary>
-		/// <param name="boeId">id</param>
-		/// <returns>Boe task element data.</returns>
-		public ICollection<DateShiftDTO> GetBoeTaskElementDateShiftDataByBoeId(int boeId)
-		{
-			using (GenBoeEntities gbe = new GenBoeEntities())
-			{
-				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
-
-				List<DateShiftDTO> boeTaskElementDateShifts = (from te in gbe.BOETaskElements
-															   where te.BOEID == boeId
-															   select new DateShiftDTO
-															   {
-																   Id = te.BOETaskElementID,
-																   BoeId = te.BOEID,
-																   BOETaskElementId = te.BOETaskElementID,
-																   StartDate = te.TaskStartDate,
-																   EndDate = te.TaskEndDate,
-																   DateShiftLevel = Level.Task,
-																   UpdateDate = te.UpdateDT,
-																   ParentId = te.BOEID,
-															   }).ToList();
-
-				foreach (DateShiftDTO taskElement in boeTaskElementDateShifts)
-				{
-					taskElement.SkillMixTable = skillMixLoader.GetByBOETaskElementID(taskElement.Id).Select(dto => new SkillMixModelView(dto)).ToList();
-					taskElement.CommonDisclosureTable = commonDisclosureLoader.GetByBOETaskElementID(taskElement.Id).Select(dto => new CommonDisclosureModelView(dto)).ToList();
-
-					// Get resource types for task element labors.
-					taskElement.TaskElementLabors = (from lT in gbe.BOELaborTypes
-													 where lT.BOETaskElementID == taskElement.Id
-													 select new ResourceTypeDto
-													 {
-														 Id = lT.BOELaborTypeID,
-														 TaskElementId = lT.BOETaskElementID,
-														 ResourceID = lT.ResourceID,
-														 StartDateValue = lT.BOELaborTypeStartDate,
-														 EndDateValue = lT.BOELaborTypeEndDate,
-														 SpreadType = lT.SpreadTypeID.HasValue ? (SpreadType)lT.SpreadTypeID.Value : SpreadType.NotSet,
-														 UpdateDate = lT.UpdateDT,
-														 SpreadCurveIDValue = lT.SpreadCurveID,
-														 LaborSpreadsIEnum = lT.BOELaborSpreads
-															 .Select(lS => new ResourceSpreadDto
-															 {
-																 Id = lS.BOELaborSpreadID,
-																 LaborSpreadDate = lS.LaborSpreadDate,
-																 LaborSpreadValue = lS.LaborSpreadValue ?? 0,
-																 LaborTypeId = lS.BOELaborTypeID
-															 }),
-													 }).ToCollection();
-
-					if (taskElement.TaskElementLabors != null)
-					{
-						foreach (ResourceTypeDto resourceType in taskElement.TaskElementLabors)
-						{
-							resourceType.LaborSpreads = resourceType.LaborSpreadsIEnum.ToCollection();
-							resourceType.LaborSpreadsIEnum = null;
-
-							taskElement.Children.Add(new DateShiftDTO()
-							{
-								Id = resourceType.Id,
-								StartDate = resourceType.StartDateValue,
-								EndDate = resourceType.EndDateValue,
-								UpdateDate = resourceType.UpdateDate,
-								DateShiftLevel = Level.Labor,
-								ParentId = resourceType.TaskElementId,
-								LaborSpreads = resourceType.LaborSpreads,
-								SpreadCurveID = resourceType.SpreadCurveID,
-								SpreadType = resourceType.SpreadType,
-								HasSpread = resourceType.HasSpread
-							}
-							);
-						}
-					}
-				}
-
-				return boeTaskElementDateShifts;
-			}
-		}
-
-		/// <summary>
-		/// Gets the workspace date shift object and sets up all of its children (and nested children).
-		/// </summary>
-		/// <param name="id">Workspace Id.</param>
-		/// <returns>Completel workspace date shift object.</returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-		public DateShiftDTO GetWorkspaceDateShiftDataById(int id)
-		{
-			using (GenBoeEntities gbe = new GenBoeEntities())
-			{
-				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
-
-				// Retrieve workspace data with CLINs, BOEs, and BOE Task Elements
-				var workspaceData = (from w in gbe.Workspaces
-									 join c in gbe.CLINs on w.WorkspaceID equals c.WorkspaceID into clinGroup
-									 from c in clinGroup.DefaultIfEmpty()
-									 join xRef in gbe.WBS_CLIN_BOE_XREF on c == null ? (int?)null : c.CLINID equals xRef.CLINID into xRefGroup
-									 from xRef in xRefGroup.DefaultIfEmpty()
-									 join b in gbe.BOEs on xRef == null ? w.WorkspaceID : xRef.BOEID equals b.WorkspaceID into boeGroup
-									 from b in boeGroup.DefaultIfEmpty()
-									 join te in gbe.BOETaskElements on b.BOEID equals te.BOEID into teGroup
-									 from te in teGroup.DefaultIfEmpty()
-									 where w.WorkspaceID == id
-									 select new
-									 {
-										 Workspace = w,
-										 CLINs = clinGroup,
-										 BOEs = boeGroup,
-										 BOETaskElements = teGroup,
-										 XRefs = xRefGroup
-									 }).FirstOrDefault();
-
-				// Construct DateShiftDTO hierarchy
-				DateShiftDTO workspaceDateShift = new DateShiftDTO
-				{
-					Id = workspaceData.Workspace.WorkspaceID,
-					StartDate = workspaceData.Workspace.ContractStartDate,
-					EndDate = workspaceData.Workspace.ContractEndDate,
-					UpdateDate = workspaceData.Workspace.UpdateDT,
-					DateShiftLevel = Level.Workspace,
-				};
-
-				workspaceDateShift.WorkspaceVersionMetaData = workspaceVersionMetaDataDTODataLoader.GetByWorkspaceID(workspaceDateShift.WorkspaceId);
-
-				// Add CLINs as workspace children
-				foreach (CLIN clin in workspaceData.CLINs)
-				{
-					DateShiftDTO clinDateShift = new DateShiftDTO
-					{
-						Id = clin.CLINID,
-						StartDate = clin.CLINStartDate,
-						EndDate = clin.CLINEndDate,
-						UpdateDate = clin.UpdateDT,
-						WorkspaceId = clin.WorkspaceID,
-						DateShiftLevel = Level.CLIN,
-						ParentId = workspaceDateShift.Id,
-					};
-
-					workspaceDateShift.Children.Add(clinDateShift);
-
 					// Add BOEs as CLIN children
-					foreach (WBS_CLIN_BOE_XREF xRef in workspaceData.XRefs.Where(x => x.CLINID == clin.CLINID))
+					foreach (WBS_CLIN_BOE_XREF xRef in gbe.WBS_CLIN_BOE_XREF.Where(x => x.CLINID == clinDateShift.Id))
 					{
-						BOE boe = workspaceData.BOEs.FirstOrDefault(b => b.BOEID == xRef.BOEID);
+						BOE boe = gbe.BOEs.FirstOrDefault(b => b.BOEID == xRef.BOEID);
 						if (boe != null)
 						{
 							DateShiftDTO boeDateShift = new DateShiftDTO
@@ -601,7 +452,7 @@ namespace GenBOE.DataBridge.DTO
 								EndDate = boe.BOEEndDate,
 								UpdateDate = boe.UpdateDT,
 								WorkspaceId = boe.WorkspaceID,
-								ClinId = clin.CLINID,
+								ClinId = clinDateShift.Id,
 								DateShiftLevel = Level.BOE,
 								ParentId = clinDateShift.Id,
 							};
@@ -609,7 +460,7 @@ namespace GenBOE.DataBridge.DTO
 							clinDateShift.Children.Add(boeDateShift);
 
 							// Add BOE Task Elements as BOE children
-							foreach (BOETaskElement te in workspaceData.BOETaskElements.Where(t => t.BOEID == boe.BOEID))
+							foreach (BOETaskElement te in gbe.BOETaskElements.Where(t => t.BOEID == boe.BOEID))
 							{
 								DateShiftDTO taskElementDateShift = new DateShiftDTO
 								{
@@ -623,28 +474,70 @@ namespace GenBOE.DataBridge.DTO
 									ParentId = boeDateShift.Id,
 								};
 
+								// Get skill mixes and common disclosures for task element
+								List<SkillMixDTO> taskElementSkillMixes = skillMixes.Where(sm => sm.BOETaskElementID == te.BOETaskElementID)
+									.Select(sm => new SkillMixDTO
+									{
+										SkillMixID = sm.SkillMixID,
+										Rationale = sm.Rationale,
+										ProposedHours = sm.ProposedHours,
+										HistoricalHours = sm.HistoricalHours,
+										BOESkillMix = sm.BOESkillMix,
+										LaborSkillMix = sm.LaborSkillMix,
+										ResourceOld = sm.ResourceOld,
+										ResourceNew = sm.ResourceNew,
+										BOEID = sm.BOEID,
+										Included = sm.Included ?? false,
+										BOETaskElementID = sm.BOETaskElementID,
+										IsUserInput = sm.IsUserInput
+									}).ToList();
+
+								DoPostProcessing(taskElementSkillMixes);
+
+								List<CommonDisclosureSkillMixDTO> taskElementCommonDisclosures = commonDisclosures.Where(cdsm => cdsm.BOETaskElementID == te.BOETaskElementID)
+									.Select(cdsm => new CommonDisclosureSkillMixDTO
+									{
+										CommonDisclosureSkillMixID = cdsm.CommonDisclosureSkillMixID,
+										Rationale = cdsm.Rationale,
+										Included = cdsm.Included,
+										ProposedHours = cdsm.ProposedHours,
+										HistoricalHours = cdsm.HistoricalHours,
+										BOESkillMix = cdsm.BOESkillMix,
+										LaborSkillMix = cdsm.LaborSkillMix,
+										ResourceID = cdsm.ResourceID,
+										BusinessResourceID = cdsm.BusinessResourceID,
+										BOEID = cdsm.BOEID,
+										BOETaskElementID = cdsm.BOETaskElementID,
+										IsUserInput = cdsm.IsUserInput
+									}).ToList();
+
+								DoPostProcessing(taskElementCommonDisclosures);
+
+								// Assign the skill mix and common disclosure
+								taskElementDateShift.SkillMixTable = taskElementSkillMixes.Select(dto => new SkillMixModelView(dto)).ToList();
+								taskElementDateShift.CommonDisclosureTable = taskElementCommonDisclosures.Select(dto => new CommonDisclosureModelView(dto)).ToList();
+
 								// Get resource types for task element labors.
-								Collection<ResourceTypeDto> taskElementLabors = (from lT in gbe.BOELaborTypes
-														 where lT.BOETaskElementID == te.BOETaskElementID
-														 select new ResourceTypeDto
-														 {
-															 Id = lT.BOELaborTypeID,
-															 TaskElementId = lT.BOETaskElementID,
-															 ResourceID = lT.ResourceID,
-															 StartDateValue = lT.BOELaborTypeStartDate,
-															 EndDateValue = lT.BOELaborTypeEndDate,
-															 SpreadType = lT.SpreadTypeID.HasValue ? (SpreadType)lT.SpreadTypeID.Value : SpreadType.NotSet,
-															 UpdateDate = lT.UpdateDT,
-															 SpreadCurveIDValue = lT.SpreadCurveID,
-															 LaborSpreadsIEnum = lT.BOELaborSpreads
-																 .Select(lS => new ResourceSpreadDto
-																 {
-																	 Id = lS.BOELaborSpreadID,
-																	 LaborSpreadDate = lS.LaborSpreadDate,
-																	 LaborSpreadValue = lS.LaborSpreadValue ?? 0,
-																	 LaborTypeId = lS.BOELaborTypeID
-																 }),
-														 }).ToCollection();
+								Collection<ResourceTypeDto> taskElementLabors = boeLaborTypes.Where(lT => lT.BOETaskElementID == te.BOETaskElementID)
+									.Select(lT => new ResourceTypeDto
+									{
+										Id = lT.BOELaborTypeID,
+										TaskElementId = lT.BOETaskElementID,
+										ResourceID = lT.ResourceID,
+										StartDateValue = lT.BOELaborTypeStartDate,
+										EndDateValue = lT.BOELaborTypeEndDate,
+										SpreadType = lT.SpreadTypeID.HasValue ? (SpreadType)lT.SpreadTypeID.Value : SpreadType.NotSet,
+										UpdateDate = lT.UpdateDT,
+										SpreadCurveIDValue = lT.SpreadCurveID,
+										LaborSpreadsIEnum = boeLaborSpreads.Where(lS => lS.BOELaborTypeID == lT.BOELaborTypeID)
+											.Select(lS => new ResourceSpreadDto
+											{
+												Id = lS.BOELaborSpreadID,
+												LaborSpreadDate = lS.LaborSpreadDate,
+												LaborSpreadValue = lS.LaborSpreadValue ?? 0,
+												LaborTypeId = lS.BOELaborTypeID
+											}),
+									}).ToCollection();
 
 								taskElementDateShift.TaskElementLabors = taskElementLabors;
 
@@ -677,87 +570,458 @@ namespace GenBOE.DataBridge.DTO
 					}
 				}
 
-				// Add BOEs without CLIN as workspace children
-				foreach (BOE boe in workspaceData.BOEs.Where(b => !workspaceData.XRefs.Any(x => x.BOEID == b.BOEID)))
+				return clinDateShift;
+			}
+		}
+
+		/// <summary>
+		/// Get BOE Task Element by Id.
+		/// </summary>
+		/// <param name="taskId">Boe Task Element Id</param>
+		/// <returns>Boe Task Element.</returns>
+		public DateShiftDTO GetBoeTaskElementDateShiftDataById(int taskId)
+		{
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
+
+				List<Models.SkillMix> skillMixes = gbe.SkillMixes.ToList();
+				List<CommonDisclosureSkillMix> commonDisclosures = gbe.CommonDisclosureSkillMixes.ToList();
+				List<BOELaborType> boeLaborTypes = gbe.BOELaborTypes.ToList();
+				List<BOELaborSpread> boeLaborSpreads = gbe.BOELaborSpreads.ToList();
+
+				DateShiftDTO boeTaskElementDateShift = (from bT in gbe.BOETaskElements
+														where bT.BOETaskElementID == taskId
+														select new DateShiftDTO
+														{
+															Id = bT.BOETaskElementID,
+															BOETaskElementId = bT.BOETaskElementID,
+															StartDate = bT.TaskStartDate,
+															EndDate = bT.TaskEndDate,
+															UpdateDate = bT.UpdateDT,
+															BoeId = bT.BOEID,
+															DateShiftLevel = Level.Task,
+															ParentId = bT.BOEID
+														}).FirstOrDefault();
+
+				// Get skill mixes and common disclosures for task element
+				List<SkillMixDTO> taskElementSkillMixes = skillMixes.Where(sm => sm.BOETaskElementID == boeTaskElementDateShift.Id)
+					.Select(sm => new SkillMixDTO
+					{
+						SkillMixID = sm.SkillMixID,
+						Rationale = sm.Rationale,
+						ProposedHours = sm.ProposedHours,
+						HistoricalHours = sm.HistoricalHours,
+						BOESkillMix = sm.BOESkillMix,
+						LaborSkillMix = sm.LaborSkillMix,
+						ResourceOld = sm.ResourceOld,
+						ResourceNew = sm.ResourceNew,
+						BOEID = sm.BOEID,
+						Included = sm.Included ?? false,
+						BOETaskElementID = sm.BOETaskElementID,
+						IsUserInput = sm.IsUserInput
+					}).ToList();
+
+				DoPostProcessing(taskElementSkillMixes);
+
+				List<CommonDisclosureSkillMixDTO> taskElementCommonDisclosures = commonDisclosures.Where(cdsm => cdsm.BOETaskElementID == boeTaskElementDateShift.Id)
+					.Select(cdsm => new CommonDisclosureSkillMixDTO
+					{
+						CommonDisclosureSkillMixID = cdsm.CommonDisclosureSkillMixID,
+						Rationale = cdsm.Rationale,
+						Included = cdsm.Included,
+						ProposedHours = cdsm.ProposedHours,
+						HistoricalHours = cdsm.HistoricalHours,
+						BOESkillMix = cdsm.BOESkillMix,
+						LaborSkillMix = cdsm.LaborSkillMix,
+						ResourceID = cdsm.ResourceID,
+						BusinessResourceID = cdsm.BusinessResourceID,
+						BOEID = cdsm.BOEID,
+						BOETaskElementID = cdsm.BOETaskElementID,
+						IsUserInput = cdsm.IsUserInput
+					}).ToList();
+
+				DoPostProcessing(taskElementCommonDisclosures);
+
+				// Assign the skill mix and common disclosure
+				boeTaskElementDateShift.SkillMixTable = taskElementSkillMixes.Select(dto => new SkillMixModelView(dto)).ToList();
+				boeTaskElementDateShift.CommonDisclosureTable = taskElementCommonDisclosures.Select(dto => new CommonDisclosureModelView(dto)).ToList();
+
+				// Get resource types for task element labors.
+				Collection<ResourceTypeDto> taskElementLabors = boeLaborTypes.Where(lT => lT.BOETaskElementID == boeTaskElementDateShift.Id)
+					.Select(lT => new ResourceTypeDto
+					{
+						Id = lT.BOELaborTypeID,
+						TaskElementId = lT.BOETaskElementID,
+						ResourceID = lT.ResourceID,
+						StartDateValue = lT.BOELaborTypeStartDate,
+						EndDateValue = lT.BOELaborTypeEndDate,
+						SpreadType = lT.SpreadTypeID.HasValue ? (SpreadType)lT.SpreadTypeID.Value : SpreadType.NotSet,
+						UpdateDate = lT.UpdateDT,
+						SpreadCurveIDValue = lT.SpreadCurveID,
+						LaborSpreadsIEnum = boeLaborSpreads.Where(lS => lS.BOELaborTypeID == lT.BOELaborTypeID)
+							.Select(lS => new ResourceSpreadDto
+							{
+								Id = lS.BOELaborSpreadID,
+								LaborSpreadDate = lS.LaborSpreadDate,
+								LaborSpreadValue = lS.LaborSpreadValue ?? 0,
+								LaborTypeId = lS.BOELaborTypeID
+							}),
+					}).ToCollection();
+
+				boeTaskElementDateShift.TaskElementLabors = taskElementLabors;
+
+				if (taskElementLabors != null)
 				{
-					DateShiftDTO boeDateShift = new DateShiftDTO
+					foreach (ResourceTypeDto resourceType in taskElementLabors)
 					{
-						Id = boe.BOEID,
-						BOEStateID = boe.BOEStateID,
-						StartDate = boe.BOEStartDate,
-						EndDate = boe.BOEEndDate,
-						UpdateDate = boe.UpdateDT,
-						WorkspaceId = boe.WorkspaceID,
-						DateShiftLevel = Level.BOE,
-						ParentId = workspaceDateShift.Id,
-					};
+						resourceType.LaborSpreads = resourceType.LaborSpreadsIEnum.ToCollection();
+						resourceType.LaborSpreadsIEnum = null;
 
-					workspaceDateShift.Children.Add(boeDateShift);
-
-					// Add BOE Task Elements as BOE children
-					foreach (BOETaskElement te in workspaceData.BOETaskElements.Where(t => t.BOEID == boe.BOEID))
-					{
-						DateShiftDTO taskElementDateShift = new DateShiftDTO
+						boeTaskElementDateShift.Children.Add(new DateShiftDTO()
 						{
-							Id = te.BOETaskElementID,
-							BoeId = te.BOEID,
-							BOETaskElementId = te.BOETaskElementID,
-							StartDate = te.TaskStartDate,
-							EndDate = te.TaskEndDate,
-							UpdateDate = te.UpdateDT,
-							DateShiftLevel = Level.Task,
-							ParentId = boeDateShift.Id,
+							Id = resourceType.Id,
+							StartDate = resourceType.StartDateValue,
+							EndDate = resourceType.EndDateValue,
+							UpdateDate = resourceType.UpdateDate,
+							DateShiftLevel = Level.Labor,
+							ParentId = resourceType.TaskElementId,
+							LaborSpreads = resourceType.LaborSpreads,
+							SpreadCurveID = resourceType.SpreadCurveID,
+							SpreadType = resourceType.SpreadType,
+							HasSpread = resourceType.HasSpread
+						});
+					}
+				}
+
+				return boeTaskElementDateShift;
+			}
+		}
+
+		/// <summary>
+		/// Gets the complete date shift data by workspace Id and sets up the hierarchy.
+		/// </summary>
+		/// <param name="workspaceId">Workspace id.</param>
+		/// <returns>Complete workspace date shift data.</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
+		public DateShiftDTO GetWorkspaceDateShiftDataById(int workspaceId, bool getChildren)
+		{
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
+
+				var workspaceData = (from w in gbe.Workspaces
+									 join c in gbe.CLINs on w.WorkspaceID equals c.WorkspaceID into clinGroup
+									 from c in clinGroup.DefaultIfEmpty()
+									 join xRef in gbe.WBS_CLIN_BOE_XREF on c == null ? (int?)null : c.CLINID equals xRef.CLINID into xRefGroup
+									 from xRef in xRefGroup.DefaultIfEmpty()
+									 join b in gbe.BOEs on xRef == null ? w.WorkspaceID : xRef.BOEID equals b.WorkspaceID into boeGroup
+									 from b in boeGroup.DefaultIfEmpty()
+									 join te in gbe.BOETaskElements on b.BOEID equals te.BOEID into teGroup
+									 from te in teGroup.DefaultIfEmpty()
+									 where w.WorkspaceID == workspaceId
+									 select new
+									 {
+										 Workspace = w,
+										 CLINs = clinGroup,
+										 BOEs = boeGroup,
+										 BOETaskElements = teGroup,
+										 XRefs = xRefGroup
+									 }).FirstOrDefault();
+
+				List<Models.SkillMix> skillMixes = gbe.SkillMixes.ToList();
+				List<CommonDisclosureSkillMix> commonDisclosures = gbe.CommonDisclosureSkillMixes.ToList();
+				List<BOELaborType> boeLaborTypes = gbe.BOELaborTypes.ToList();
+				List<BOELaborSpread> boeLaborSpreads = gbe.BOELaborSpreads.ToList();
+
+				// Construct DateShiftDTO hierarchy
+				DateShiftDTO workspaceDateShift = new DateShiftDTO
+				{
+					Id = workspaceData.Workspace.WorkspaceID,
+					StartDate = workspaceData.Workspace.ContractStartDate,
+					EndDate = workspaceData.Workspace.ContractEndDate,
+					UpdateDate = workspaceData.Workspace.UpdateDT,
+					DateShiftLevel = Level.Workspace,
+				};
+
+				workspaceDateShift.WorkspaceVersionMetaData = workspaceVersionMetaDataDTODataLoader.GetByWorkspaceID(workspaceDateShift.WorkspaceId);
+
+				if (getChildren)
+				{
+
+
+					// Add CLINs as workspace children
+					foreach (CLIN clin in workspaceData.CLINs)
+					{
+						DateShiftDTO clinDateShift = new DateShiftDTO
+						{
+							Id = clin.CLINID,
+							StartDate = clin.CLINStartDate,
+							EndDate = clin.CLINEndDate,
+							UpdateDate = clin.UpdateDT,
+							WorkspaceId = clin.WorkspaceID,
+							DateShiftLevel = Level.CLIN,
+							ParentId = workspaceDateShift.Id,
 						};
 
-						// Get resource types for task element labors.
-						Collection<ResourceTypeDto> taskElementLabors = (from lT in gbe.BOELaborTypes
-												 where lT.BOETaskElementID == te.BOETaskElementID
-												 select new ResourceTypeDto
-												 {
-													 Id = lT.BOELaborTypeID,
-													 TaskElementId = lT.BOETaskElementID,
-													 ResourceID = lT.ResourceID,
-													 StartDateValue = lT.BOELaborTypeStartDate,
-													 EndDateValue = lT.BOELaborTypeEndDate,
-													 SpreadType = lT.SpreadTypeID.HasValue ? (SpreadType)lT.SpreadTypeID.Value : SpreadType.NotSet,
-													 UpdateDate = lT.UpdateDT,
-													 SpreadCurveIDValue = lT.SpreadCurveID,
-													 LaborSpreadsIEnum = lT.BOELaborSpreads
-														 .Select(lS => new ResourceSpreadDto
-														 {
-															 Id = lS.BOELaborSpreadID,
-															 LaborSpreadDate = lS.LaborSpreadDate,
-															 LaborSpreadValue = lS.LaborSpreadValue ?? 0,
-															 LaborTypeId = lS.BOELaborTypeID
-														 }),
-												 }).ToCollection();
+						workspaceDateShift.Children.Add(clinDateShift);
 
-						taskElementDateShift.TaskElementLabors = taskElementLabors;
-
-						if (taskElementLabors != null)
+						// Add BOEs as CLIN children
+						foreach (WBS_CLIN_BOE_XREF xRef in workspaceData.XRefs.Where(x => x.CLINID == clin.CLINID))
 						{
-							foreach (ResourceTypeDto resourceType in taskElementLabors)
+							BOE boe = workspaceData.BOEs.FirstOrDefault(b => b.BOEID == xRef.BOEID);
+							if (boe != null)
 							{
-								resourceType.LaborSpreads = resourceType.LaborSpreadsIEnum.ToCollection();
-								resourceType.LaborSpreadsIEnum = null;
-
-								taskElementDateShift.Children.Add(new DateShiftDTO()
+								DateShiftDTO boeDateShift = new DateShiftDTO
 								{
-									Id = resourceType.Id,
-									StartDate = resourceType.StartDateValue,
-									EndDate = resourceType.EndDateValue,
-									UpdateDate = resourceType.UpdateDate,
-									DateShiftLevel = Level.Labor,
-									ParentId = resourceType.TaskElementId,
-									LaborSpreads = resourceType.LaborSpreads,
-									SpreadCurveID = resourceType.SpreadCurveID,
-									SpreadType = resourceType.SpreadType,
-									HasSpread = resourceType.HasSpread
-								});
+									Id = boe.BOEID,
+									BOEStateID = boe.BOEStateID,
+									StartDate = boe.BOEStartDate,
+									EndDate = boe.BOEEndDate,
+									UpdateDate = boe.UpdateDT,
+									WorkspaceId = boe.WorkspaceID,
+									ClinId = clin.CLINID,
+									DateShiftLevel = Level.BOE,
+									ParentId = clinDateShift.Id,
+								};
+
+								clinDateShift.Children.Add(boeDateShift);
+
+								// Add BOE Task Elements as BOE children
+								foreach (BOETaskElement te in workspaceData.BOETaskElements.Where(t => t.BOEID == boe.BOEID))
+								{
+									DateShiftDTO taskElementDateShift = new DateShiftDTO
+									{
+										Id = te.BOETaskElementID,
+										BoeId = te.BOEID,
+										BOETaskElementId = te.BOETaskElementID,
+										StartDate = te.TaskStartDate,
+										EndDate = te.TaskEndDate,
+										UpdateDate = te.UpdateDT,
+										DateShiftLevel = Level.Task,
+										ParentId = boeDateShift.Id,
+									};
+
+									// Get skill mixes and common disclosures for task element
+									List<SkillMixDTO> taskElementSkillMixes = skillMixes.Where(sm => sm.BOETaskElementID == te.BOETaskElementID)
+										.Select(sm => new SkillMixDTO
+										{
+											SkillMixID = sm.SkillMixID,
+											Rationale = sm.Rationale,
+											ProposedHours = sm.ProposedHours,
+											HistoricalHours = sm.HistoricalHours,
+											BOESkillMix = sm.BOESkillMix,
+											LaborSkillMix = sm.LaborSkillMix,
+											ResourceOld = sm.ResourceOld,
+											ResourceNew = sm.ResourceNew,
+											BOEID = sm.BOEID,
+											Included = sm.Included ?? false,
+											BOETaskElementID = sm.BOETaskElementID,
+											IsUserInput = sm.IsUserInput
+										}).ToList();
+
+									DoPostProcessing(taskElementSkillMixes);
+
+									List<CommonDisclosureSkillMixDTO> taskElementCommonDisclosures = commonDisclosures.Where(cdsm => cdsm.BOETaskElementID == te.BOETaskElementID)
+										.Select(cdsm => new CommonDisclosureSkillMixDTO
+										{
+											CommonDisclosureSkillMixID = cdsm.CommonDisclosureSkillMixID,
+											Rationale = cdsm.Rationale,
+											Included = cdsm.Included,
+											ProposedHours = cdsm.ProposedHours,
+											HistoricalHours = cdsm.HistoricalHours,
+											BOESkillMix = cdsm.BOESkillMix,
+											LaborSkillMix = cdsm.LaborSkillMix,
+											ResourceID = cdsm.ResourceID,
+											BusinessResourceID = cdsm.BusinessResourceID,
+											BOEID = cdsm.BOEID,
+											BOETaskElementID = cdsm.BOETaskElementID,
+											IsUserInput = cdsm.IsUserInput
+										}).ToList();
+
+									DoPostProcessing(taskElementCommonDisclosures);
+
+									// Assign the skill mix and common disclosure
+									taskElementDateShift.SkillMixTable = taskElementSkillMixes.Select(dto => new SkillMixModelView(dto)).ToList();
+									taskElementDateShift.CommonDisclosureTable = taskElementCommonDisclosures.Select(dto => new CommonDisclosureModelView(dto)).ToList();
+
+									// Get resource types for task element labors.
+									Collection<ResourceTypeDto> taskElementLabors = boeLaborTypes.Where(lT => lT.BOETaskElementID == te.BOETaskElementID)
+										.Select(lT => new ResourceTypeDto
+										{
+											Id = lT.BOELaborTypeID,
+											TaskElementId = lT.BOETaskElementID,
+											ResourceID = lT.ResourceID,
+											StartDateValue = lT.BOELaborTypeStartDate,
+											EndDateValue = lT.BOELaborTypeEndDate,
+											SpreadType = lT.SpreadTypeID.HasValue ? (SpreadType)lT.SpreadTypeID.Value : SpreadType.NotSet,
+											UpdateDate = lT.UpdateDT,
+											SpreadCurveIDValue = lT.SpreadCurveID,
+											LaborSpreadsIEnum = boeLaborSpreads.Where(lS => lS.BOELaborTypeID == lT.BOELaborTypeID)
+												.Select(lS => new ResourceSpreadDto
+												{
+													Id = lS.BOELaborSpreadID,
+													LaborSpreadDate = lS.LaborSpreadDate,
+													LaborSpreadValue = lS.LaborSpreadValue ?? 0,
+													LaborTypeId = lS.BOELaborTypeID
+												}),
+										}).ToCollection();
+
+									taskElementDateShift.TaskElementLabors = taskElementLabors;
+
+									if (taskElementLabors != null)
+									{
+										foreach (ResourceTypeDto resourceType in taskElementLabors)
+										{
+											resourceType.LaborSpreads = resourceType.LaborSpreadsIEnum.ToCollection();
+											resourceType.LaborSpreadsIEnum = null;
+
+											taskElementDateShift.Children.Add(new DateShiftDTO()
+											{
+												Id = resourceType.Id,
+												StartDate = resourceType.StartDateValue,
+												EndDate = resourceType.EndDateValue,
+												UpdateDate = resourceType.UpdateDate,
+												DateShiftLevel = Level.Labor,
+												ParentId = resourceType.TaskElementId,
+												LaborSpreads = resourceType.LaborSpreads,
+												SpreadCurveID = resourceType.SpreadCurveID,
+												SpreadType = resourceType.SpreadType,
+												HasSpread = resourceType.HasSpread
+											});
+										}
+									}
+
+									boeDateShift.Children.Add(taskElementDateShift);
+								}
 							}
 						}
+					}
 
-						boeDateShift.Children.Add(taskElementDateShift);
+					// Add BOEs without CLIN as workspace children
+					foreach (BOE boe in workspaceData.BOEs.Where(b => !workspaceData.XRefs.Any(x => x.BOEID == b.BOEID)))
+					{
+						DateShiftDTO boeDateShift = new DateShiftDTO
+						{
+							Id = boe.BOEID,
+							BOEStateID = boe.BOEStateID,
+							StartDate = boe.BOEStartDate,
+							EndDate = boe.BOEEndDate,
+							UpdateDate = boe.UpdateDT,
+							WorkspaceId = boe.WorkspaceID,
+							DateShiftLevel = Level.BOE,
+							ParentId = workspaceDateShift.Id,
+						};
+
+						workspaceDateShift.Children.Add(boeDateShift);
+
+						// Add BOE Task Elements as BOE children
+						foreach (BOETaskElement te in workspaceData.BOETaskElements.Where(t => t.BOEID == boe.BOEID))
+						{
+							DateShiftDTO taskElementDateShift = new DateShiftDTO
+							{
+								Id = te.BOETaskElementID,
+								BoeId = te.BOEID,
+								BOETaskElementId = te.BOETaskElementID,
+								StartDate = te.TaskStartDate,
+								EndDate = te.TaskEndDate,
+								UpdateDate = te.UpdateDT,
+								DateShiftLevel = Level.Task,
+								ParentId = boeDateShift.Id,
+							};
+
+							// Get skill mixes and common disclosures for task element
+							List<SkillMixDTO> taskElementSkillMixes = skillMixes.Where(sm => sm.BOETaskElementID == te.BOETaskElementID)
+								.Select(sm => new SkillMixDTO
+								{
+									SkillMixID = sm.SkillMixID,
+									Rationale = sm.Rationale,
+									ProposedHours = sm.ProposedHours,
+									HistoricalHours = sm.HistoricalHours,
+									BOESkillMix = sm.BOESkillMix,
+									LaborSkillMix = sm.LaborSkillMix,
+									ResourceOld = sm.ResourceOld,
+									ResourceNew = sm.ResourceNew,
+									BOEID = sm.BOEID,
+									Included = sm.Included ?? false,
+									BOETaskElementID = sm.BOETaskElementID,
+									IsUserInput = sm.IsUserInput
+								}).ToList();
+
+							DoPostProcessing(taskElementSkillMixes);
+
+							List<CommonDisclosureSkillMixDTO> taskElementCommonDisclosures = commonDisclosures.Where(cdsm => cdsm.BOETaskElementID == te.BOETaskElementID)
+								.Select(cdsm => new CommonDisclosureSkillMixDTO
+								{
+									CommonDisclosureSkillMixID = cdsm.CommonDisclosureSkillMixID,
+									Rationale = cdsm.Rationale,
+									Included = cdsm.Included,
+									ProposedHours = cdsm.ProposedHours,
+									HistoricalHours = cdsm.HistoricalHours,
+									BOESkillMix = cdsm.BOESkillMix,
+									LaborSkillMix = cdsm.LaborSkillMix,
+									ResourceID = cdsm.ResourceID,
+									BusinessResourceID = cdsm.BusinessResourceID,
+									BOEID = cdsm.BOEID,
+									BOETaskElementID = cdsm.BOETaskElementID,
+									IsUserInput = cdsm.IsUserInput
+								}).ToList();
+
+							DoPostProcessing(taskElementCommonDisclosures);
+
+							// Assign the skill mix and common disclosure
+							taskElementDateShift.SkillMixTable = taskElementSkillMixes.Select(dto => new SkillMixModelView(dto)).ToList();
+							taskElementDateShift.CommonDisclosureTable = taskElementCommonDisclosures.Select(dto => new CommonDisclosureModelView(dto)).ToList();
+
+							// Get resource types for task element labors.
+							Collection<ResourceTypeDto> taskElementLabors = boeLaborTypes.Where(lT => lT.BOETaskElementID == te.BOETaskElementID)
+								.Select(lT => new ResourceTypeDto
+								{
+									Id = lT.BOELaborTypeID,
+									TaskElementId = lT.BOETaskElementID,
+									ResourceID = lT.ResourceID,
+									StartDateValue = lT.BOELaborTypeStartDate,
+									EndDateValue = lT.BOELaborTypeEndDate,
+									SpreadType = lT.SpreadTypeID.HasValue ? (SpreadType)lT.SpreadTypeID.Value : SpreadType.NotSet,
+									UpdateDate = lT.UpdateDT,
+									SpreadCurveIDValue = lT.SpreadCurveID,
+									LaborSpreadsIEnum = boeLaborSpreads.Where(lS => lS.BOELaborTypeID == lT.BOELaborTypeID)
+										.Select(lS => new ResourceSpreadDto
+										{
+											Id = lS.BOELaborSpreadID,
+											LaborSpreadDate = lS.LaborSpreadDate,
+											LaborSpreadValue = lS.LaborSpreadValue ?? 0,
+											LaborTypeId = lS.BOELaborTypeID
+										}),
+								}).ToCollection();
+
+							taskElementDateShift.TaskElementLabors = taskElementLabors;
+
+							if (taskElementLabors != null)
+							{
+								foreach (ResourceTypeDto resourceType in taskElementLabors)
+								{
+									resourceType.LaborSpreads = resourceType.LaborSpreadsIEnum.ToCollection();
+									resourceType.LaborSpreadsIEnum = null;
+
+									taskElementDateShift.Children.Add(new DateShiftDTO()
+									{
+										Id = resourceType.Id,
+										StartDate = resourceType.StartDateValue,
+										EndDate = resourceType.EndDateValue,
+										UpdateDate = resourceType.UpdateDate,
+										DateShiftLevel = Level.Labor,
+										ParentId = resourceType.TaskElementId,
+										LaborSpreads = resourceType.LaborSpreads,
+										SpreadCurveID = resourceType.SpreadCurveID,
+										SpreadType = resourceType.SpreadType,
+										HasSpread = resourceType.HasSpread
+									});
+								}
+							}
+
+							boeDateShift.Children.Add(taskElementDateShift);
+						}
 					}
 				}
 
@@ -765,5 +1029,49 @@ namespace GenBOE.DataBridge.DTO
 			}
 		}
 
+		/// <summary>
+		/// Do post processing on the skill mixes.
+		/// </summary>
+		/// <param name="skillMixes">Skill mixes.</param>
+		private void DoPostProcessing(ICollection<SkillMixDTO> skillMixes)
+		{
+			IEnumerable<IGrouping<int, SkillMixDTO>> groupedResourceHours =
+				skillMixes.GroupBy(r => r.BOETaskElementID);
+
+			foreach (IGrouping<int, SkillMixDTO> grouping in groupedResourceHours)
+			{
+				decimal totalGroupHours = grouping.Sum(g => g.HistoricalHours);
+
+				if (totalGroupHours != 0m)
+				{
+					foreach (SkillMixDTO dto in grouping)
+					{
+						dto.LaborSkillMix = dto.HistoricalHours * 100m / totalGroupHours;
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Do post processing on the common disclosures.
+		/// </summary>
+		/// <param name="commonDisclosures">Common disclosures.</param>
+		private void DoPostProcessing(ICollection<CommonDisclosureSkillMixDTO> commonDisclosures)
+		{
+			IEnumerable<IGrouping<int, CommonDisclosureSkillMixDTO>> groupedResourceHours =
+				commonDisclosures.GroupBy(r => r.BOETaskElementID);
+
+			foreach (IGrouping<int, CommonDisclosureSkillMixDTO> grouping in groupedResourceHours)
+			{
+				decimal totalGroupHours = grouping.Sum(g => g.HistoricalHours);
+				if (totalGroupHours != 0m)
+				{
+					foreach (CommonDisclosureSkillMixDTO dto in grouping)
+					{
+						dto.LaborSkillMix = dto.HistoricalHours * 100m / totalGroupHours;
+					}
+				}
+			}
+		}
 	}
 }
