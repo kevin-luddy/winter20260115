@@ -248,7 +248,7 @@ namespace GenBOE.DataBridge.DTO
 					break;
 				case Level.Task:
 					dateShift = GetBoeTaskElementDateShiftDataById(id);
-					dateShift.Parent = GetBoeDateShiftDataById(dateShift.BoeId);
+					dateShift.Parent = GetBoeDateShiftDataById(dateShift.BoeId, false);
 					break;
 				default:
 					throw new NotSupportedException($"Unsupported level: {level}");
@@ -262,7 +262,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="id">id</param>
 		/// <returns>Boe data.</returns>
-		public DateShiftDTO GetBoeDateShiftDataById(int id)
+		public DateShiftDTO GetBoeDateShiftDataById(int id, bool getChildren)
 		{
 			using (GenBoeEntities gbe = new GenBoeEntities())
 			{
@@ -286,7 +286,10 @@ namespace GenBOE.DataBridge.DTO
 												 DateShiftLevel = Level.BOE
 											 }).FirstOrDefault();
 
-				boeDateShift.Children.AddRange(GetBoeTaskElementDateShiftDataByBoeId(id));
+				if (getChildren)
+				{
+					boeDateShift.Children.AddRange(GetBoeTaskElementDateShiftDataByBoeId(id));
+				}
 
 				return boeDateShift;
 			}
