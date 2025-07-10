@@ -54,9 +54,6 @@
 
         SortableGrid('boe-status-report-grid');
 
-        createModule(BOEStatusReportGrid.Module);
-        refreshModule(BOEStatusReportGrid.Module);
-
         $('#BOEStatusReportGrid-View').change();
     });
 
