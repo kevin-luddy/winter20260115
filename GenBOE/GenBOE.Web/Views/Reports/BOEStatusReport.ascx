@@ -54,9 +54,6 @@
 
         SortableGrid('boe-status-report-grid');
 
-        createModule(BOEStatusReportGrid.Module);
-        refreshModule(BOEStatusReportGrid.Module);
-
         $('#BOEStatusReportGrid-View').change();
     });
 
@@ -71,27 +68,58 @@
 
 
 </script>
-<div id="BOEStatusReportGrid" class="module">
-    <div class="module-header-data">BOE Status</div>
-    <div class="module-content-data">
+<% bool IsUCOTEnabledForWorkspace = (bool)ViewData["IsUCOTEnabledForWorkspace"]; %>
+<% string totalHoursClass = "all-hours";
+	if (IsUCOTEnabledForWorkspace) {
+		totalHoursClass = "all-hours ucot-hours";
+	}
+%>
+<div id="BOEStatusReportGrid" class="home module">
+	<div class="module-header-left"></div>
+    <div class="module-header-center boe-status-header">
+		<div class="boe-status-header-text">BOE Status</div>
+    </div>
+	<div class="module-header-right"></div>
+
+    <div class="module-content-center boe-status-content">
     
-        <div class="float-left">
-            View
-            <select id="BOEStatusReportGrid-View">
-                <option value="<%: (int)Reports.BOEStatusByBOE %>" selected="selected">BOEs Only</option>
-                <option value="<%: (int)Reports.BOEStatusByWBS %>">BOEs by WBS</option>
-                <option value="<%: (int)Reports.BOEStatusByCLIN %>">BOEs by CLIN</option>
-            </select>
-        </div>
+		<div class="boe-status-row">
+			<div class="view-selector-div">
+				<div>
+					View
+					<select id="BOEStatusReportGrid-View">
+						<option value="<%: (int)Reports.BOEStatusByBOE %>" selected="selected">BOEs Only</option>
+						<option value="<%: (int)Reports.BOEStatusByWBS %>">BOEs by WBS</option>
+						<option value="<%: (int)Reports.BOEStatusByCLIN %>">BOEs by CLIN</option>
+					</select>
+				</div>
+			</div>
 
-        <div class="buttons float-right">
-            <button id="BOEStatusReportGrid-Export" class="ies" type="button">Export</button>
-        </div>
+			<div class="totals-div">
+				<div class="<%: totalHoursClass %>">
+					Total <%: ViewData["HoursLabel"]%> for all BOEs:
+					<%: Model.Sum(m => m.TotalHours).ToString(Model.Any() ? Model.First().DecimalPrecisionStringFormat : "F0") %>
+				</div>
 
-        <div class="all-hours float-right">
-            Total <%: ViewData["HoursLabel"]%> for all BOEs:
-            <%: Model.Sum(m => m.TotalHours).ToString(Model.Any() ? Model.First().DecimalPrecisionStringFormat : "F0") %>
-        </div>
+				<% if (IsUCOTEnabledForWorkspace){  %>
+				<div class="all-hours">
+					Total UCOT <%: ViewData["HoursLabel"]%> for all BOEs:
+					<%: Model.Sum(m => m.TotalUCOTHours).ToString(Model.Any() ? Model.First().DecimalPrecisionStringFormat : "F0") %>
+				</div>
+
+				<div class="all-hours" style="padding-bottom: 8px;">
+					Grand Total <%: ViewData["HoursLabel"]%> for all BOEs:
+					<%: Model.Sum(m => m.TotalHoursWithUCOT).ToString(Model.Any() ? Model.First().DecimalPrecisionStringFormat : "F0") %>
+				</div>
+				<% } %>
+			</div>
+
+			<div class="export-button-div">
+				<div class="buttons boe-status-button">
+					<button id="BOEStatusReportGrid-Export" class="ies" type="button">Export</button>
+				</div>
+			</div>
+		</div>
 
         <div class="clear"></div>
 

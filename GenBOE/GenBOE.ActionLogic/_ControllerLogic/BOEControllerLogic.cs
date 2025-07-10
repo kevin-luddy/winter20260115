@@ -233,12 +233,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			// pulling from workspace instead of by BOE since we are already loading the full workspace task elements elsewhere to show the page, and for validation
 			boe.SetTaskElements(ws.TaskElements);
+			UCOTUtility.SetTaskElementsUCOTHours(ws);
 			IReadOnlyCollection<BoeTaskElementDTO> taskElementCollection = boe.TaskElements;
-
-			if (theModelView.IsUCOTEnabledForWorkspace)
-			{
-				UCOTUtility.SetTaskElementsUCOTData(taskElementCollection, ws.MoqTypeSelections, ws.ResourcesUsedInWsBoes, ws.UCOTFactor, ws.ResourceDecimalPrecision);
-			}
 
 			if (IsSubContractor)
             {

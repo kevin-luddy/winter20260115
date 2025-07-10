@@ -1,12 +1,18 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
-using System.ComponentModel.DataAnnotations;
-using IES.Common;
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2025 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace GenBOE.Dtos
 {
-    [ExcludeFromCodeCoverage]
+	using System;
+	using System.Collections.ObjectModel;
+	using System.Diagnostics.CodeAnalysis;
+	using System.ComponentModel.DataAnnotations;
+	using IES.Common;
+
+	[ExcludeFromCodeCoverage]
     public class BOEStatusReportModelView : IComparable
     {
         public BOEStatusReportModelView()
@@ -57,34 +63,63 @@ namespace GenBOE.Dtos
         public Collection<string> Approvers { get; set; }
         public string Status { get; set; }
 
-        /// <summary>
-        /// Number of decimal places for resources.
-        /// </summary>
-        public int ResourceDecimalPrecision { get; set; }
+		#region UCOT Variables
+
+		/// <summary>
+		/// Is UCOT Enabled for Workspace
+		/// </summary>
+		public bool IsUCOTEnabledForWorkspace { get; set; }
+
+		/// <summary>
+		/// Total UCOT Hours 
+		/// </summary>
+		public decimal TotalUCOTHours { get; set; }
+
+		/// <summary>
+		/// Gets Total UCOT Hours in the correct format as defined for the workspace.
+		/// </summary>
+		public string TotalUCOTHoursFormatted
+		{
+			get => Utilities.FormatStringWithPrecision(TotalUCOTHours, ResourceDecimalPrecision);
+		}
+
+		/// <summary>
+		/// Total Hours with UCOT (TotalHours + TotalUCOTHours)
+		/// </summary>
+		public decimal TotalHoursWithUCOT { get; set; }
+
+		/// <summary>
+		/// Gets Total Hours with UCOT Hours in the correct format as defined for the workspace.
+		/// </summary>
+		public string TotalHoursWithUCOTFormatted
+		{
+			get => Utilities.FormatStringWithPrecision(TotalHoursWithUCOT, ResourceDecimalPrecision);
+		}
+
+		#endregion UCOT Variables
+
+		/// <summary>
+		/// Number of decimal places for resources.
+		/// </summary>
+		public int ResourceDecimalPrecision { get; set; }
 
         /// <summary>
         /// Gets Total Hours in the correct format as defined for the workspace.
         /// </summary>
         public string TotalHoursFormatted
-        {
-            get
-            {
-                return Utilities.FormatStringWithPrecision(TotalHours, ResourceDecimalPrecision);
-            }
-        }
+		{
+			get => Utilities.FormatStringWithPrecision(TotalHours, ResourceDecimalPrecision);
+		}
 
-        /// <summary>
-        /// String format used by the UI for decimal precision.
-        /// </summary>
-        public string DecimalPrecisionStringFormat
-        {
-            get
-            {
-                return Utilities.PrecisionFormattingString(ResourceDecimalPrecision);
-            }
-        }
+		/// <summary>
+		/// String format used by the UI for decimal precision.
+		/// </summary>
+		public string DecimalPrecisionStringFormat
+		{
+			get => Utilities.PrecisionFormattingString(ResourceDecimalPrecision);
+		}
 
-        public int CompareTo(object obj)
+		public int CompareTo(object obj)
         {
             if (obj == null)
             {

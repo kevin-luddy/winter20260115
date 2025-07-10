@@ -17,7 +17,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.IO.Export;
     using GenBOE.ActionLogic.IO.Export.BOE;
-    using GenBOE.ActionLogic.ModelView;
+	using GenBOE.ActionLogic.Misc;
+	using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.Reporting;
     using GenBOE.ActionLogic.WBS.BOE;
     using GenBOE.ActionLogic.Workspace;
@@ -272,7 +273,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 			else if (isCustomExport)
 			{
-				
 				if (segmentedOutput)
 				{
 					this.boeCustomExporter.ExportBOEsToZipFile(
@@ -613,14 +613,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
             }
 
             ICollection<BoeWbsReportModelView> toReturn = new Collection<BoeWbsReportModelView>();
-
+			
             // Get all BOEs in the Workspace
             IReadOnlyCollection<BoeDTO> allBOEsInWorkspace = exportInputs.Boes;
             HashSet<TripDTO> allTravelTrips = new HashSet<TripDTO>(exportInputs.TravelTrips);
             HashSet<PerDiemDTO> allPerDiems = new HashSet<PerDiemDTO>(exportInputs.PerDiemsForTravelTrips);
             HashSet<EscalationRatesDTO> allEscalations = new HashSet<EscalationRatesDTO>(exportInputs.EscalationRates);
             HashSet<MiscTravelRateDTO> allMiscTravelRates = new HashSet<MiscTravelRateDTO>(exportInputs.MiscTravelRatesForTravelTrips);
-            
+
             // Create a report model view for each BOE
             foreach (BoeDTO boe in allBOEsInWorkspace)
             {
@@ -628,7 +628,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
                 // Set WBS Data
                 WbsDTO wbs = exportInputs.WbsElements.FirstOrDefault(x => x.Id == boe.WBSID);
-                modelView.WBSNumber = (wbs == null ? string.Empty : wbs.WbsNumber);
+                modelView.WBSNumber = wbs == null ? string.Empty : wbs.WbsNumber;
 
                 // Set BOE Data
                 modelView.BOETitle = boe.Title ?? string.Empty;
@@ -642,6 +642,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
                                         where laborType.SpreadType == SpreadType.Hours
                                               && laborType.ValueSpread.HasValue
                                         select laborType.ValueSpread.Value).Sum();
+
+				modelView.TotalUCOTHours = UCOTUtility.GetTaskElementsUCOTHours(exportInputs.FullWorkspace);
+				modelView.TotalHoursWithUCOT = modelView.TotalHours + modelView.TotalUCOTHours;
+
 
                 decimal taskCost = 0;
 
@@ -678,6 +682,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             toReturn.Add(new BoeWbsReportModelView() {
                 BOETitle = CommonConstants.SET_AS_BOLD_FOR_EXCEL + "Totals",
                 TotalHours = toReturn.Sum(x => x.TotalHours),
+				TotalUCOTHours = toReturn.Sum(x => x.TotalUCOTHours),
+				TotalHoursWithUCOT = toReturn.Sum(x => x.TotalHoursWithUCOT),
                 TotalCost = toReturn.Sum(x => x.TotalCost)
             });
 
@@ -725,21 +731,46 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             string hoursFormatString = Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision);
             string hoursLabel = "Total " + FullObjectHelper.HoursLabel(exportInputs.Workspace);
+			string hoursLabelUCOT = "Total UCOT " + FullObjectHelper.HoursLabel(exportInputs.Workspace);
+			string grandTotalHoursLabel = "Grand Total " + FullObjectHelper.HoursLabel(exportInputs.Workspace);
+			bool isUCOTEnabledForWorkspace = Utilities.ShowUCOTForWorkspace(exportInputs.FullWorkspace.CreationDate, exportInputs.FullWorkspace.Shortname);
+            
+			if (isUCOTEnabledForWorkspace)
+			{
+				// Add headers
+				toReturn.Add(ImportExportConstants.WBS_NUMBER_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER,
+					hoursLabel, hoursLabelUCOT, grandTotalHoursLabel, ImportExportConstants.TOTAL_COST_COLUMN_HEADER);
 
-            // Add headers
-            toReturn.Add(ImportExportConstants.WBS_NUMBER_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER,
-                hoursLabel, ImportExportConstants.TOTAL_COST_COLUMN_HEADER);
+				toReturn.AddRange(
+					from mv in reportModelView
+					select new Collection<string>
+					{
+						mv.WBSNumber,
+						mv.BOETitle,
+						CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + mv.TotalHours.ToString(hoursFormatString),
+						CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + mv.TotalUCOTHours.ToString(hoursFormatString),
+						CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + mv.TotalHoursWithUCOT.ToString(hoursFormatString),
+						CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, mv.TotalCost)
+					});
+			}
+			else
+			{
+				// Add headers
+				toReturn.Add(ImportExportConstants.WBS_NUMBER_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER,
+					hoursLabel, ImportExportConstants.TOTAL_COST_COLUMN_HEADER);
 
-            toReturn.AddRange(from mv in reportModelView
-                              select new Collection<string>
-                              {
-                                  mv.WBSNumber,
-                                  mv.BOETitle,
-                                  CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + mv.TotalHours.ToString(hoursFormatString),
-                                  CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, mv.TotalCost)
-                              });
+				toReturn.AddRange(
+					from mv in reportModelView
+					select new Collection<string>
+					{
+						mv.WBSNumber,
+						mv.BOETitle,
+						CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + mv.TotalHours.ToString(hoursFormatString),
+						CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, mv.TotalCost)
+					});
+			}
 
-            return toReturn;
+			return toReturn;
         }
 
 		/// <summary>

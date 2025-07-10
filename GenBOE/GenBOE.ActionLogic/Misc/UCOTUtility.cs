@@ -9,9 +9,10 @@ namespace GenBOE.ActionLogic.Misc
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
+	using GenBOE.Objects;
 	using IES.Common;
-	using IES.Common.classes;
 	using MoreLinq;
+	using System;
 	using System.Collections.Generic;
 	using System.Linq;
 
@@ -21,53 +22,108 @@ namespace GenBOE.ActionLogic.Misc
 	public static class UCOTUtility
 	{
 		/// <summary>
-		/// Set UCOT Hours Total for the Task Element
+		/// Get UCOT Hours Total for the Task Element Collection
 		/// </summary>
-		/// <param name="taskElements">Task Elements to ADD the UCOT Hours too</param>
-		/// <param name="moqTypeSelections">Workspace MOQ Type Selections</param>
-		/// <param name="resourcesUsedInWsBoes">Resources Used in Workspace BOES</param>
-		/// <param name="ucotFactor">UCOT Factor for the Workspace</param>
-		/// <param name="resourceDecimalPrecision">Resource Decimal Precision</param>
-		public static void SetTaskElementsUCOTData(IReadOnlyCollection<BoeTaskElementDTO> taskElements, IReadOnlyCollection<MoqTypeSelection> moqTypeSelections, IReadOnlyCollection<ResourceDTO> resourcesUsedInWsBoes, decimal ucotFactor, int? resourceDecimalPrecision)
+		/// <param name="fullWorkspace">Full Workspace to pull all necessary data for UCOT data manipulation</param>
+		public static decimal GetTaskElementsUCOTHours(FullWorkspace fullWorkspace)
 		{
-			// We will only do calculations when in SPACE
-			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			if (fullWorkspace == null)
 			{
-				Dictionary<int, IGrouping<int, MoqTypeSelection>> moqTypeSelectionDictionary = moqTypeSelections.GroupBy(m => m.TaskId).ToDictionary(d => d.Key);
-				IDictionary<int, ResourceDTO> resourceDictionary = resourcesUsedInWsBoes.ToDictionary(r => r.Id);
+				throw new ArgumentNullException(nameof(fullWorkspace));
+			}
 
-				taskElements.ForEach(t =>
+			decimal ucotHoursTotal = 0m;
+
+			// We will only do calculations when in SPACE
+			if (Utilities.ShowUCOTForWorkspace(fullWorkspace.CreationDate, fullWorkspace.Shortname))
+			{
+				Dictionary<int, IGrouping<int, MoqTypeSelection>> moqTypeSelectionDictionary = fullWorkspace.MoqTypeSelections.GroupBy(m => m.TaskId).ToDictionary(d => d.Key);
+				IDictionary<int, ResourceDTO> resourceDictionary = fullWorkspace.ResourcesUsedInWsBoes.ToDictionary(r => r.Id);
+
+				fullWorkspace.TaskElements.ForEach(taskElement =>
 				{
-					decimal ucotTotal = 0m;
-					IGrouping<int, MoqTypeSelection> moqGroup = moqTypeSelectionDictionary[t.Id];
+					decimal ucotTotal = CalculateTaskUCOTHours(taskElement, moqTypeSelectionDictionary, resourceDictionary);
 
-					if (moqGroup.Count() == 1)
-					{
-						MoqTypeSelection moqType = moqGroup.First();
+					taskElement.UCOTHours = Utilities.AdjustPrecision(ucotTotal * fullWorkspace.UCOTFactor / 100m, fullWorkspace.ResourceDecimalPrecision);
+					ucotHoursTotal += taskElement.UCOTHours.HasValue ? taskElement.UCOTHours.Value : 0;
+				});
+			}
 
-						if (moqType.SelectedMOQType == MOQType.AnalogousRelationships || moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative)
-						{
-							t.taskElementLabors.Where(x => x.SpreadType == SpreadType.Hours).ForEach(labor =>
-							{
-								if (labor.BusinessResourceCodeID.HasValue)
-								{
-									ResourceDTO resource = resourceDictionary[labor.BusinessResourceCodeID.Value];
+			return ucotHoursTotal;
+		}
 
-									if (resource != null && resource.ElementOfCost == ElementOfCostType.LMLabor)
-									{
-										ucotTotal += labor.LaborSpreads
-											.Where(s => s.LaborSpreadDate >= Utilities.OneLmxStartDate)
-											.Sum(spread => spread.LaborSpreadValue);
-									}
-								}
-							});
-						}
-					}
+		/// <summary>
+		/// Set UCOT Hours Total for the Task Element Collection (this method sets it on the individual task)
+		/// </summary>
+		/// <param name="fullWorkspace">Full Workspace to pull all necessary data for UCOT data manipulation</param>
+		public static void SetTaskElementsUCOTHours(FullWorkspace fullWorkspace)
+		{
+			if (fullWorkspace == null)
+			{
+				throw new ArgumentNullException(nameof(fullWorkspace));
+			}
 
-					t.UCOTHours = Utilities.AdjustPrecision(ucotTotal * ucotFactor / 100m, resourceDecimalPrecision);
-					t.TotalHoursWithUCOT = t.UCOTHours + t.TotalHours;
+			// We will only do calculations when in SPACE
+			if (Utilities.ShowUCOTForWorkspace(fullWorkspace.CreationDate, fullWorkspace.Shortname))
+			{
+				Dictionary<int, IGrouping<int, MoqTypeSelection>> moqTypeSelectionDictionary = fullWorkspace.MoqTypeSelections.GroupBy(m => m.TaskId).ToDictionary(d => d.Key);
+				IDictionary<int, ResourceDTO> resourceDictionary = fullWorkspace.ResourcesUsedInWsBoes.ToDictionary(r => r.Id);
+
+				fullWorkspace.TaskElements.ForEach(taskElement =>
+				{
+					decimal ucotTotal = CalculateTaskUCOTHours(taskElement, moqTypeSelectionDictionary, resourceDictionary);
+
+					taskElement.UCOTHours = Utilities.AdjustPrecision(ucotTotal * fullWorkspace.UCOTFactor / 100m, fullWorkspace.ResourceDecimalPrecision);
+					taskElement.TotalHoursWithUCOT = taskElement.UCOTHours + taskElement.TotalHours;
 				});
 			}
 		}
+
+		/// <summary>
+		/// Private Method to calculate individual Task Element UCOT Data
+		/// </summary>
+		/// <param name="taskElement">Task Element DTO</param>
+		/// <param name="moqTypeSelectionDictionary">MOQ Type Selection Dictionary</param>
+		/// <param name="resourceDictionary">Resource Dictionary</param>
+		/// <returns>UCOT Total for the Task</returns>
+		private static decimal CalculateTaskUCOTHours(BoeTaskElementDTO taskElement, Dictionary<int, IGrouping<int, MoqTypeSelection>> moqTypeSelectionDictionary, IDictionary<int, ResourceDTO> resourceDictionary)
+		{
+			decimal ucotTotal = 0m;
+
+			if (!moqTypeSelectionDictionary.ContainsKey(taskElement.Id))
+			{
+				return ucotTotal;
+			}
+
+			IGrouping<int, MoqTypeSelection> moqGroup = moqTypeSelectionDictionary[taskElement.Id];
+
+			if (moqGroup.Count() == 1)
+			{
+				MoqTypeSelection moqType = moqGroup.First();
+
+				if (moqType.SelectedMOQType == MOQType.AnalogousRelationships || moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative)
+				{
+					taskElement.taskElementLabors.Where(x => x.SpreadType == SpreadType.Hours).ForEach(labor =>
+					{
+						if (labor.BusinessResourceCodeID.HasValue)
+						{
+							ResourceDTO resource = resourceDictionary[labor.BusinessResourceCodeID.Value];
+
+							if (resource != null && resource.ElementOfCost == ElementOfCostType.LMLabor)
+							{
+								ucotTotal += labor.LaborSpreads
+									.Where(s => s.LaborSpreadDate >= Utilities.OneLmxStartDate)
+									.Sum(spread => spread.LaborSpreadValue);
+							}
+						}
+					});
+				}
+			}
+
+			return ucotTotal;
+		}
+
 	}
+
+
 }

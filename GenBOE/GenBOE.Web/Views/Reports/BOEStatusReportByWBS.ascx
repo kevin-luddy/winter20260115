@@ -1,6 +1,9 @@
 ﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<IEnumerable<GenBOE.Dtos.BOEStatusReportModelView>>" %>
 
-<% var AllWBS = (IEnumerable<GenBOE.Dtos.WbsDTO>)ViewData["AllWBS"]; %>
+<% 
+	var AllWBS = (IEnumerable<GenBOE.Dtos.WbsDTO>)ViewData["AllWBS"];
+	bool IsUCOTEnabledForWorkspace = (bool)ViewData["IsUCOTEnabledForWorkspace"];
+%>
 
 <table id="BOEStatusReportGrid-WBS" class="grid readonly">
     <thead>
@@ -11,6 +14,10 @@
             <th class="start-date" sortType="date">Start Date</th>
             <th class="end-date" sortType="date">End Date</th>
             <th class="total-hours" sortType="number">Total <%: ViewData["HoursLabel"]%></th>
+			<% if (IsUCOTEnabledForWorkspace) { %>
+				<th class="sort total-hours" sortType="number">Total UCOT <%: ViewData["HoursLabel"]%></th>
+				<th class="sort total-hours" sortType="number">Grand Total <%: ViewData["HoursLabel"]%></th>
+			<% } %>
             <th class="total-cost" sortType="number">Total Cost</th>
             <th class="author">Authors</th>
             <th class="approvers">Approvers</th>
@@ -37,11 +44,17 @@
                 if (wbs.BOEs.Any())
                 {
                     string totalHours = wbs.BOEs.Sum(c => c.TotalHours).ToString(decimalPrecisionStringFormat);
-                    %>
+                    string totalUCOTHours = wbs.BOEs.Sum(c => c.TotalUCOTHours).ToString(decimalPrecisionStringFormat);
+					string grandTotalHours = wbs.BOEs.Sum(c => c.TotalHoursWithUCOT).ToString(decimalPrecisionStringFormat);
+					%>
 
                     <tr>
                         <td colspan="5" style="font-weight: bold; padding-left: <%: wbs.WBSLevel * 10 %>px;"><%: wbs.WBSTitle%></td>
                         <td colspan="1" title="<%:totalHours%>"><b><%:totalHours%></b></td>
+						<% if (IsUCOTEnabledForWorkspace) { %>
+							<td colspan="1" title="<%:totalUCOTHours%>"><b><%:totalUCOTHours%></b></td>
+							<td colspan="1" title="<%:grandTotalHours%>"><b><%:grandTotalHours%></b></td>					
+						<% } %>
                         <td colspan="4"><b><%: wbs.BOEs.Sum(c => c.TotalCost).ToString("#0.00")%></b></td>
                     </tr>
 
@@ -57,6 +70,10 @@
                         <td><%:Html.DisplayFor(i => boe.StartDate)%></td>
                         <td><%:Html.DisplayFor(i => boe.EndDate)%></td>
                         <td title="<%:boe.TotalHoursFormatted %>"><%:boe.TotalHoursFormatted%></td>
+						<% if (IsUCOTEnabledForWorkspace) { %>
+							<td title="<%:boe.TotalUCOTHoursFormatted %>"><%:boe.TotalUCOTHoursFormatted %></td>
+							<td title="<%:boe.TotalHoursWithUCOTFormatted %>"><%:boe.TotalHoursWithUCOTFormatted %></td>
+						<% } %>
                         <td title="<%:boe.TotalCost %>"><%:boe.TotalCost.ToString("#0.00")%></td>
                         <%  string authorList = string.Empty;
                             foreach (var author in boe.Authors) {
