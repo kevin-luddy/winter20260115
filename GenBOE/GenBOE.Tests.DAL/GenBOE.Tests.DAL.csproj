@@ -103,8 +103,8 @@
       <HintPath>..\libraries\Microsoft.Practices.Unity.Interception.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-	<Reference Include="Moq">
-	  <HintPath>..\libraries\Moq.dll</HintPath>
+    <Reference Include="Moq">
+      <HintPath>..\libraries\Moq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -187,7 +187,6 @@
     <Compile Include="DataLoaders\PerfOrgDTODataLoaderTest.cs" />
     <Compile Include="DataLoaders\PerformingOrgListDTODataLoaderTest.cs" />
     <Compile Include="DataLoaders\PermissionsDTODataLoaderTest.cs" />
-    <Compile Include="DataLoaders\PldDTODataLoaderTest.cs" />
     <Compile Include="DataMappers\CommonDataMapperTest.cs" />
     <Compile Include="Other\MemoryCacheTest.cs" />
     <Compile Include="Other\SecurityAccessTest.cs" />
@@ -212,10 +211,6 @@
     <ProjectReference Include="..\GenBOE.ActionLogic\GenBOE.ActionLogic.csproj">
       <Project>{8B23113C-48A0-4F65-8ED5-0F725AC170E7}</Project>
       <Name>GenBOE.ActionLogic</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GenBOE.PLD.Models\GenBOE.PLD.Models.csproj">
-      <Project>{f2ab5ffc-459a-4bb1-9cb5-61b4c89c14a0}</Project>
-      <Name>GenBOE.PLD.Models</Name>
     </ProjectReference>
     <ProjectReference Include="..\GenTRAC.DataBridge\GenTRAC.DataBridge.csproj">
       <Project>{6ebd0376-9273-4a2a-9e23-1912418ddba5}</Project>
