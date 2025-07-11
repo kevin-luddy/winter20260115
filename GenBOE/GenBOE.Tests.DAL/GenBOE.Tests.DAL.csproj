@@ -64,6 +64,9 @@
     <CodeAnalysisRuleSet>..\rules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Castle.Core, Version=5.0.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Core.5.1.1\lib\net462\Castle.Core.dll</HintPath>
+    </Reference>
     <Reference Include="DocumentFormat.OpenXml, Version=2.0.5022.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\libraries\DocumentFormat.OpenXml.dll</HintPath>
@@ -100,8 +103,8 @@
       <HintPath>..\libraries\Microsoft.Practices.Unity.Interception.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Moq">
-      <HintPath>..\libraries\Moq.dll</HintPath>
+	<Reference Include="Moq">
+	  <HintPath>..\libraries\Moq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -115,6 +118,12 @@
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="System.Transactions" />
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
@@ -178,6 +187,7 @@
     <Compile Include="DataLoaders\PerfOrgDTODataLoaderTest.cs" />
     <Compile Include="DataLoaders\PerformingOrgListDTODataLoaderTest.cs" />
     <Compile Include="DataLoaders\PermissionsDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\PldDTODataLoaderTest.cs" />
     <Compile Include="DataMappers\CommonDataMapperTest.cs" />
     <Compile Include="Other\MemoryCacheTest.cs" />
     <Compile Include="Other\SecurityAccessTest.cs" />
@@ -202,6 +212,10 @@
     <ProjectReference Include="..\GenBOE.ActionLogic\GenBOE.ActionLogic.csproj">
       <Project>{8B23113C-48A0-4F65-8ED5-0F725AC170E7}</Project>
       <Name>GenBOE.ActionLogic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenBOE.PLD.Models\GenBOE.PLD.Models.csproj">
+      <Project>{f2ab5ffc-459a-4bb1-9cb5-61b4c89c14a0}</Project>
+      <Name>GenBOE.PLD.Models</Name>
     </ProjectReference>
     <ProjectReference Include="..\GenTRAC.DataBridge\GenTRAC.DataBridge.csproj">
       <Project>{6ebd0376-9273-4a2a-9e23-1912418ddba5}</Project>
