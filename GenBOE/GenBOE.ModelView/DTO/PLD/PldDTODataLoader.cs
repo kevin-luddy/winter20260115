@@ -27,7 +27,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <summary>
 		/// activeStatuses is for the known Active States that the Column in the View returns
 		/// </summary>
-		private static readonly string[] activeStatuses = new[] { "Open", "Submitted", "Negotiated", "In Negotiation" };
+		private static readonly string[] ACTIVE_STATUSES = new[] { "Open", "Submitted", "Negotiated", "In Negotiation" };
 		
 		/// <summary>
 		/// boolean for dispose
@@ -150,7 +150,7 @@ namespace GenBOE.DataBridge.DTO
 					
 
 					results = _context.Proposals
-						.Where(p => activeStatuses.Contains(p.Proposal_Status))
+						.Where(p => ACTIVE_STATUSES.Contains(p.Proposal_Status))
 						.Select(p => new ProposalDTO
 						{
 							PA_Number = p.PA_Number.Trim(),
@@ -191,10 +191,8 @@ namespace GenBOE.DataBridge.DTO
 			{
 				try
 				{
-					string[] activeStatuses = new[] { "Open", "Submitted", "Negotiated", "In Negotiation" };
-
 					results = _context.Proposals
-						.Where(p => activeStatuses.Contains(p.Proposal_Status))
+						.Where(p => ACTIVE_STATUSES.Contains(p.Proposal_Status))
 						.Select(p => p.PA_Title)
 						.ToList();
 
