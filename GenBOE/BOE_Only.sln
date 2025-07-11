@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenTRAC.DataBridge", "GenTR
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenTRAC.Models", "GenTRAC.Models\GenTRAC.Models.csproj", "{2802B2B5-80B1-4447-88D4-CAAD5FC36BA1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenBOE.PLD.Models", "GenBOE.PLD.Models\GenBOE.PLD.Models.csproj", "{F2AB5FFC-459A-4BB1-9CB5-61B4C89C14A0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		ConsoleRelease|Any CPU = ConsoleRelease|Any CPU
@@ -101,6 +103,14 @@ Global
 		{2802B2B5-80B1-4447-88D4-CAAD5FC36BA1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2802B2B5-80B1-4447-88D4-CAAD5FC36BA1}.ReleaseTFSCore|Any CPU.ActiveCfg = ReleaseTFSCore|Any CPU
 		{2802B2B5-80B1-4447-88D4-CAAD5FC36BA1}.ReleaseTFSCore|Any CPU.Build.0 = ReleaseTFSCore|Any CPU
+		{F2AB5FFC-459A-4BB1-9CB5-61B4C89C14A0}.ConsoleRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{F2AB5FFC-459A-4BB1-9CB5-61B4C89C14A0}.ConsoleRelease|Any CPU.Build.0 = Release|Any CPU
+		{F2AB5FFC-459A-4BB1-9CB5-61B4C89C14A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2AB5FFC-459A-4BB1-9CB5-61B4C89C14A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2AB5FFC-459A-4BB1-9CB5-61B4C89C14A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2AB5FFC-459A-4BB1-9CB5-61B4C89C14A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2AB5FFC-459A-4BB1-9CB5-61B4C89C14A0}.ReleaseTFSCore|Any CPU.ActiveCfg = Release|Any CPU
+		{F2AB5FFC-459A-4BB1-9CB5-61B4C89C14A0}.ReleaseTFSCore|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

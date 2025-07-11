@@ -1353,7 +1353,7 @@ namespace IES.Common
 				return false;
 			}
 
-			// Exclude UCOT showing for specific PTM tracking numbers.
+			// Exclude UCOT showing for specific Workspace Shortnames.
 			string excludedShortspaces = ConfigurationUtilities.GetAppSetting("UcotExcludedWorkspaces");
 			string[] excludedShortspacesArray = excludedShortspaces?.Split(',').Select(s => s.Trim()).ToArray();
 
