@@ -273,7 +273,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 			else if (isCustomExport)
 			{
-				
 				if (segmentedOutput)
 				{
 					this.boeCustomExporter.ExportBOEsToZipFile(
@@ -614,15 +613,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
             }
 
             ICollection<BoeWbsReportModelView> toReturn = new Collection<BoeWbsReportModelView>();
-
+			
             // Get all BOEs in the Workspace
             IReadOnlyCollection<BoeDTO> allBOEsInWorkspace = exportInputs.Boes;
             HashSet<TripDTO> allTravelTrips = new HashSet<TripDTO>(exportInputs.TravelTrips);
             HashSet<PerDiemDTO> allPerDiems = new HashSet<PerDiemDTO>(exportInputs.PerDiemsForTravelTrips);
             HashSet<EscalationRatesDTO> allEscalations = new HashSet<EscalationRatesDTO>(exportInputs.EscalationRates);
             HashSet<MiscTravelRateDTO> allMiscTravelRates = new HashSet<MiscTravelRateDTO>(exportInputs.MiscTravelRatesForTravelTrips);
-
-			bool isUCOTEnabledForWorkspace = Utilities.ShowUCOTForWorkspace(exportInputs.Workspace.CreationDate, exportInputs.Workspace.Shortname);
 
             // Create a report model view for each BOE
             foreach (BoeDTO boe in allBOEsInWorkspace)
@@ -646,12 +643,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
                                               && laborType.ValueSpread.HasValue
                                         select laborType.ValueSpread.Value).Sum();
 
-				if (isUCOTEnabledForWorkspace)
-				{
-					FullWorkspace fullWorkspace = exportInputs.FullWorkspace;
-					modelView.TotalUCOTHours = UCOTUtility.GetTaskElementsUCOTHours((IReadOnlyCollection<BoeTaskElementDTO>)tasks, fullWorkspace.MoqTypeSelections, fullWorkspace.ResourcesUsedInWsBoes, fullWorkspace.UCOTFactor, fullWorkspace.ResourceDecimalPrecision);
-					modelView.TotalHoursWithUCOT = modelView.TotalHours + modelView.TotalUCOTHours;
-				}
+				modelView.TotalUCOTHours = UCOTUtility.GetTaskElementsUCOTHours(exportInputs.FullWorkspace);
+				modelView.TotalHoursWithUCOT = modelView.TotalHours + modelView.TotalUCOTHours;
+
 
                 decimal taskCost = 0;
 
@@ -737,13 +731,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             string hoursFormatString = Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision);
             string hoursLabel = "Total " + FullObjectHelper.HoursLabel(exportInputs.Workspace);
+			string hoursLabelUCOT = "Total UCOT " + FullObjectHelper.HoursLabel(exportInputs.Workspace);
+			string grandTotalHoursLabel = "Grand Total " + FullObjectHelper.HoursLabel(exportInputs.Workspace);
 			bool isUCOTEnabledForWorkspace = Utilities.ShowUCOTForWorkspace(exportInputs.FullWorkspace.CreationDate, exportInputs.FullWorkspace.Shortname);
             
 			if (isUCOTEnabledForWorkspace)
 			{
 				// Add headers
 				toReturn.Add(ImportExportConstants.WBS_NUMBER_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER,
-					hoursLabel, ImportExportConstants.TOTAL_UCOT_HOURS_COLUMN_HEADER, ImportExportConstants.TOTAL_HOURS_WITH_UCOT_COLUMN_HEADER, ImportExportConstants.TOTAL_COST_COLUMN_HEADER);
+					hoursLabel, hoursLabelUCOT, grandTotalHoursLabel, ImportExportConstants.TOTAL_COST_COLUMN_HEADER);
 
 				toReturn.AddRange(
 					from mv in reportModelView
