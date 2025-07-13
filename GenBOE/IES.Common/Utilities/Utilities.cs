@@ -950,6 +950,29 @@ namespace IES.Common
 		}
 
 		/// <summary>
+		///   Private for IsPLD 
+		/// </summary>
+		private static bool? isPLDIntegrated;
+
+		/// <summary>
+		///  Is PLD Integrated
+		/// </summary>
+		public static bool ShowPLDIsIntegrated
+		{
+			get
+			{
+				if (isPLDIntegrated == null)
+				{
+					bool.TryParse(ConfigurationUtilities.GetAppSetting("IsPLDIntegrated"), out bool pldIntegrated);
+					isPLDIntegrated = pldIntegrated;
+				}
+
+				return isPLDIntegrated.Value;
+			}
+		}
+
+
+		/// <summary>
 		/// Private for Is BRC Enabled, used for unit testing
 		/// </summary>
 		private static bool? isBRCEnabled;
@@ -1330,7 +1353,7 @@ namespace IES.Common
 				return false;
 			}
 
-			// Exclude UCOT showing for specific PTM tracking numbers.
+			// Exclude UCOT showing for specific Workspace Shortnames.
 			string excludedShortspaces = ConfigurationUtilities.GetAppSetting("UcotExcludedWorkspaces");
 			string[] excludedShortspacesArray = excludedShortspaces?.Split(',').Select(s => s.Trim()).ToArray();
 

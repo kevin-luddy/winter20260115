@@ -126,12 +126,13 @@ namespace GenBOE.ActionLogic
             HashSet<ClinDTO> allClinsLoaded = clinIds.Any() ? new HashSet<ClinDTO>((from c in clins where new HashSet<int>(clinIds).Contains(c.Id) select c).ToArray()) : new HashSet<ClinDTO>();
 
             IDictionary<WbsDTO, Collection<BoeDTO>> allWbsBoesWithNestingLoaded = new Dictionary<WbsDTO, Collection<BoeDTO>>();
-            foreach (FullWbs wbs in allWbsLoaded)
+            foreach (WbsDTO wbs in allWbsLoaded)
             {
-                allWbsBoesWithNestingLoaded[wbs] = this.FindNestedBoes(wbs, boes, wbsElements).ToCollection();
+				FullWbs fullWbs = new FullWbs(wbs);
+                allWbsBoesWithNestingLoaded[wbs] = this.FindNestedBoes(fullWbs, boes, wbsElements).ToCollection();
 
                 // make sure the WBS's child BOEs are included in "all BOEs"
-                foreach (FullBoe wbsBoe in wbs.BoesWithNesting)
+                foreach (FullBoe wbsBoe in fullWbs.BoesWithNesting)
                 {
                     if (!allBoesLoaded.Any(b => b.Id == wbsBoe.Id))
                     {
