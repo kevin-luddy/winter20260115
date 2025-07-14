@@ -6,8 +6,10 @@
     const dateElements = [
         'CustomerDueDate',
         'CustomerSubmittalDate',
-        'NegotiationsSubmitted',
-        'ProgramEppDate',
+		'NegotiationsSubmitted',
+		'BidEppDate',
+		'ProgramEppDate',
+		'MissionSegmentEppDate',
         'LobEppDate',
         'PreSpaceEppDate',
         'SpaceEppDate',
@@ -361,9 +363,21 @@
 				</div>
 			</div>
 			<div class="form-row">
+				<div class="form-label">@Html.LabelFor(x => x.BidEppDate)</div>
+				<div class="form-element">
+					@Html.TextBoxFor(x => x.BidEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+				</div>
+			</div>
+			<div class="form-row">
 				<div class="form-label">@Html.LabelFor(x => x.ProgramEppDate)</div>
 				<div class="form-element">
 					@Html.TextBoxFor(x => x.ProgramEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label">@Html.LabelFor(x => x.MissionSegmentEppDate)</div>
+				<div class="form-element">
+					@Html.TextBoxFor(x => x.MissionSegmentEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 				</div>
 			</div>
 			<div class="form-row">
@@ -402,42 +416,43 @@
 					<textarea id="EppRosDelegationNotes" name="EppRosDelegationNotes" rows="3">@Model.EppRosDelegationNotes</textarea>
 				</div>
 			</div>
-            if (!Model.IsRomNte)
-            {
-			<div class="form-row">
-				<div class="form-label">@Html.LabelFor(x => x.LmWon)</div>
-				<div class="form-element">
-					<label>Yes</label> @Html.RadioButtonFor(x => x.LmWon, true)
-					<label>No</label>  @Html.RadioButtonFor(x => x.LmWon, false)
+			if (!Model.IsRomNte)
+			{
+				<div class="form-row">
+					<div class="form-label">@Html.LabelFor(x => x.LmWon)</div>
+					<div class="form-element">
+						<label>Yes</label> @Html.RadioButtonFor(x => x.LmWon, true)
+						<label>No</label>  @Html.RadioButtonFor(x => x.LmWon, false)
+					</div>
 				</div>
-			</div>
-			<div class="form-row">
-				<div class="form-label"><span helptext="Note: Certain insurance cost, such as Defense Base Act (DBA) Insurance, should not be proposed direct as it is an indirect cost.">@Html.LabelFor(x => x.IsInsuranceDirect)**</span></div>
-				<div class="form-element">
-					@Html.DropDownListFor(model => model.IsInsuranceDirect, Model.InsuranceProposedDirectOptions, new { name = "IsInsuranceDirect", @class = "half", onchange = "ContractsInfoWidget.insuranceChanged()" })
+				<div class="form-row">
+					<div class="form-label"><span helptext="Note: Certain insurance cost, such as Defense Base Act (DBA) Insurance, should not be proposed direct as it is an indirect cost.">@Html.LabelFor(x => x.IsInsuranceDirect)**</span></div>
+					<div class="form-element">
+						@Html.DropDownListFor(model => model.IsInsuranceDirect, Model.InsuranceProposedDirectOptions, new { name = "IsInsuranceDirect", @class = "half", onchange = "ContractsInfoWidget.insuranceChanged()" })
 
-                    <div id="InsuranceTypeDiv"><span>&nbsp;&nbsp;Select Insurance Type: </span>@Html.DropDownListFor(model => model.InsuranceType, Model.InsuranceTypeOptions, new { name = "InsuranceType", @class = "half" })
-                    </div>
+						<div id="InsuranceTypeDiv">
+							<span>&nbsp;&nbsp;Select Insurance Type: </span>@Html.DropDownListFor(model => model.InsuranceType, Model.InsuranceTypeOptions, new { name = "InsuranceType", @class = "half" })
+						</div>
+					</div>
 				</div>
-			</div>
-			<div class="form-row">
-				<div class="form-label"><span helptext="This is for insurance that is beyond what LMC already covers; Enter in U.S. whole dollars">@Html.LabelFor(x => x.ProposedInsurance)**</span></div>
-				<div class="form-element">
-					@Html.TextBoxFor(x => x.ProposedInsurance, new { @class = "half" })
+				<div class="form-row">
+					<div class="form-label"><span helptext="This is for insurance that is beyond what LMC already covers; Enter in U.S. whole dollars">@Html.LabelFor(x => x.ProposedInsurance)**</span></div>
+					<div class="form-element">
+						@Html.TextBoxFor(x => x.ProposedInsurance, new { @class = "half" })
+					</div>
 				</div>
-			</div>
-			<div class="form-row">
-				<div class="form-label"><span helptext="Enter in U.S. whole dollars">@Html.LabelFor(x => x.NegotiatedInsurance)**</span></div>
-				<div class="form-element">
-					@Html.TextBoxFor(x => x.NegotiatedInsurance, new { @class = "half" })
+				<div class="form-row">
+					<div class="form-label"><span helptext="Enter in U.S. whole dollars">@Html.LabelFor(x => x.NegotiatedInsurance)**</span></div>
+					<div class="form-element">
+						@Html.TextBoxFor(x => x.NegotiatedInsurance, new { @class = "half" })
+					</div>
 				</div>
-			</div>
-			<div class="form-row">
-				<div class="form-label">@Html.LabelFor(x => x.ModCompletedDate)</div>
-				<div class="form-element">
-					@Html.TextBoxFor(x => x.ModCompletedDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+				<div class="form-row">
+					<div class="form-label">@Html.LabelFor(x => x.ModCompletedDate)</div>
+					<div class="form-element">
+						@Html.TextBoxFor(x => x.ModCompletedDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+					</div>
 				</div>
-			</div>
 			}
 		}
 	</div>

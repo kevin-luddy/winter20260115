@@ -37,7 +37,6 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             this.TaskElementId = 0;
             this.MOQType = MOQType.None;
             this.MOQText = string.Empty;
-            this.PMMetricsUsed = new Collection<MSTMetricDetailsDTO>();
             this.Company = SystemConfiguration.Instance().CompanyMode;
             this.MOQTextLabel = String.Empty;
             this.HelpText = String.Empty;
@@ -135,16 +134,6 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// </summary>
         [RichText(RichTextDbColumn.BOE_TASK_ELEMENT_MOQ_TEXT, "TaskElementId")]
         public string MOQText { get; set; }
-
-        /// <summary>
-        /// Historical Metrics from MST PMM.
-        /// </summary>
-        public ICollection<MSTMetricDetailsDTO> PMMetricsUsed { get; set; }
-
-        /// <summary>
-        /// When true shows the "Search Estimating Catalog" link to insert historical metrics into task element.
-        /// </summary>
-        public bool ShowSearchMetricsLink { get; set; }
 
         #region ISGS Versus SSC terminology
         

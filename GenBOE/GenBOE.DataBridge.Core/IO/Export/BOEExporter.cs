@@ -37,6 +37,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 	using IES.Common.Core.Models;
 	using IES.Common.Core.OfficeUtilities;
 	using IES.Common.Core.Utilities;
+	using Microsoft.AspNetCore.Hosting;
 	using Microsoft.Extensions.Logging;
 
 	/// <summary>
@@ -415,15 +416,16 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <summary>
 		/// Export the BOEs as individual files and zip into single download.
 		/// </summary>
+		/// <param name="webHostEnvironment">Web host env.</param>
 		/// <param name="exportInputs">The export inputs</param>
 		/// <param name="boeExportModelViews">Collection of BOE View Models</param>
 		/// <param name="boeSummaryGridModelViews"></param>
 		/// <param name="fileData">byte[] the template to copy and populate.</param>
 		/// <param name="templateType">Type of the export template</param>
-		public string ExportBOEsToZipFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
+		public string ExportBOEsToZipFile(IWebHostEnvironment webHostEnvironment, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
 			byte[] fileData, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
 		{
-			return AllBOEExportHelper.ExportBOEsToZipFile<bool>(exportInputs, boeExportModelViews, boeSummaryGridModelViews, fileData, ExportBOEToWordStream);
+			return AllBOEExportHelper.ExportBOEsToZipFile<bool>(webHostEnvironment, exportInputs, boeExportModelViews, boeSummaryGridModelViews, fileData, ExportBOEToWordStream);
 		}
 
 		/// <summary>

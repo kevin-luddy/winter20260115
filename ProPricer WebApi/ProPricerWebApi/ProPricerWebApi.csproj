@@ -32,6 +32,9 @@
 
   <ItemGroup>
     <Content Include="DeleteMe\readme.txt" />
+    <Content Include="license\readme.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="logs\readme.txt" />
   </ItemGroup>
 

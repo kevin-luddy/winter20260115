@@ -60,11 +60,14 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 			this.Boes = new List<BoeDTO> { boe.ToDTO() }.AsReadOnly();
 			this.TaskElements = workspace.TaskElements.DeepClone();
 			this.Workspace = workspace.ToDTO();
-
+			bool isBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspace.Shortname);
+			
 			// since the resources used may not contain offloaded resources, need to manually get this
 			this.ResourcesUsedInWsBoes = workspace.ResourcesUsedInWsBoes;
 			this.PerformingOrgsUsedInBoes = workspace.PerformingOrgsUsedInBoes;
 			this.FullWorkspace = workspace;
+			this.CalculateSkillMix(workspace, isBRCEnabled, this.TaskElements);
+
 			this.logger.Debug("Exporting - BOEExportInputs - Initializing Inputs - end");
 		}
 
@@ -93,7 +96,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 			taskElements = taskElements.DeepClone();
 			this.PerformingOrgsUsedInBoes = workspace.PerformingOrgsUsedInBoes;
 
-			this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - begin");
+			this.logger.Debug("Exporting - BOEExportInputs - Initializing Inputs - begin");
 			IRetriever retriever = GenBOEUnityContainer.Container.Resolve(typeof(IRetriever)) as IRetriever;
 			this.SetRteTemplateOverrides(rteTemplatesOverrides);
 			this.SetMoqTypes(moqTypes);
@@ -122,10 +125,13 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				this.PerformingOrgsUsedInBoes = this.PerformingOrgsUsedInBoes.Concat(new[] { ucotPerformingOrg }).ToList().AsReadOnly();
 			}
 
+			bool isBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspace.Shortname);
+			
 			this.ResourcesUsedInWsBoes = retriever.GetResourcesByIds(resourceIds).ToList().AsReadOnly();
+			this.CalculateSkillMix(workspace, isBRCEnabled, taskElements);
 
 			int startingIndex = -1;
-			if (Utilities.IsBRCEnabledForWorkspace(workspace.Shortname) && processLaborTypesForBrc)
+			if (isBRCEnabled && processLaborTypesForBrc)
 			{
 				IDictionary<int, string> resourceIdToSegmentRegion = this.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
 				foreach (BoeTaskElementDTO taskElement in taskElements)
@@ -553,6 +559,68 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 			this.ResourcesUsedInWsBoes = updatedResources.AsReadOnly();
 
 			return ucotLabors;
+		}
+
+		/// <summary>
+		/// Calculate Skill Mix on the Tasks as needed
+		/// </summary>
+		/// <param name="isBRCEnabled">Is brc enabled</param>
+		/// <param name="ws">The Full Workspace</param>
+		/// <param name="taskElements">The task elements</param>
+		private void CalculateSkillMix(FullWorkspace ws, bool isBRCEnabled, IEnumerable<BoeTaskElementDTO> taskElements)
+		{
+			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate))
+			{
+				foreach (BoeTaskElementDTO task in taskElements)
+				{
+					if (BOETaskUtility.ShowSkillMixForTask(ws, task))
+					{
+						// Get all MOQ Resource Hours for Task
+						ICollection<MOQTypeSelectionTableDataResourceHoursDTO> moqResourceHours = ws.MoqTypeSelections.Where(m => m.TaskId == task.Id).SelectMany(m => m.TableData).SelectMany(t => t.ResourceHours).ToList();
+
+						// convert Task's labor resources to modelview
+						List<LaborTypeDataModelView> laborTypes = new List<LaborTypeDataModelView>();
+						foreach (ResourceTypeDto labor in task.taskElementLabors)
+						{
+							ResourceDTO resource = new ResourceDTO();
+							if (labor.ResourceID != null)
+							{
+								resource = this.ResourcesUsedInWsBoes.First(x => x.Id == labor.ResourceID.Value);
+							}
+
+							ResourceDTO businessResourceCode = new ResourceDTO();
+							if (labor.BusinessResourceCodeID != null && labor.BusinessResourceCodeID > 0)
+							{
+								businessResourceCode = this.ResourcesUsedInWsBoes.First(x => x.Id == labor.BusinessResourceCodeID.Value);
+							}
+
+							PerformingOrgDTO perfOrg = new PerformingOrgDTO();
+							if (labor.PerformingOrgID != null)
+							{
+								perfOrg = this.PerformingOrgsUsedInBoes.First(x => x.Id == labor.PerformingOrgID.Value);
+							}
+
+							LaborTypeDataModelView laborToAdd = new LaborTypeDataModelView(labor, resource, businessResourceCode, perfOrg, ws.UCOTFactor, Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.TrackingNumber) && businessResourceCode.ElementOfCost == ElementOfCostType.LMLabor && businessResourceCode.RateType == RateType.Hours, ws.DecimalPrecision);
+
+							laborTypes.Add(laborToAdd);
+						}
+
+
+						RefreshSkillMixModelView refreshedData = SkillMixUtility.RefreshSkillMixTables(moqResourceHours, laborTypes, task.SkillMixTable, task.CommonDisclosureTable, isBRCEnabled,
+							!ws.EnableSAPConnection);
+
+						// Now reset the data
+						task.SkillMixTable = refreshedData.SkillMixRows;
+						task.CommonDisclosureTable = refreshedData.CommonDisclosureRows;
+					}
+					else
+					{
+						// can safely zero out any bad data
+						task.SkillMixTable.Clear();
+						task.CommonDisclosureTable.Clear();
+					}
+				}
+			}
 		}
 	}
 }

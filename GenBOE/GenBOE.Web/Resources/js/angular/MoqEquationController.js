@@ -153,11 +153,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		});
 	};
 
-	// Called when the Search Estimating Catalog dropdown item is clicked.
-	$scope.SearchEstimatingCatalogClicked = function () {
-		$(document).trigger('SEARCH_METRICS');
-	}
-
 	// Called when the Copy MOQ from BOE dropdown item is clicked.
 	$scope.CopyMoqFromBoeClicked = function () {
 		$('#CopyMoqFromBoeLink').data('moq-task-id', $scope.model.TaskElementId);
@@ -2470,7 +2465,6 @@ InitializeMOQEquationFieldWidget = function (MOQEquationFieldWidget_ReadOnly, wo
 			MOQEquationFieldWidget.setDirty();
 		});
 
-		taskElementDetailsWidget.CheckToShowMetrics();
 		taskElementDetailsWidget.MOQText = CreateRteTemplate(showMoqQuestions, numberOfMoqQuestions);
 
 		if (!MOQEquationFieldWidget.isReadOnly() || shouldMoqReadOnlyBeReversed || !taskElementDetailsWidget.isReadOnly()) {

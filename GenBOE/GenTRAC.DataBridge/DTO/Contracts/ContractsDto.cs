@@ -70,9 +70,19 @@ namespace GenTRAC.DataBridge.DTO
 		public int? EppDelegationAuthority { get; set; }
 
 		/// <summary>
+		/// Bid EPP Date
+		/// </summary>
+		public DateTime? BidEppDate { get; set; }
+
+		/// <summary>
 		/// Program EPP Date
 		/// </summary>
 		public DateTime? ProgramEppDate { get; set; }
+
+		/// <summary>
+		/// Mission Segment EPP Date
+		/// </summary>
+		public DateTime? MissionSegmentEppDate { get; set; }
 
 		/// <summary>
 		/// LOB EPP Date

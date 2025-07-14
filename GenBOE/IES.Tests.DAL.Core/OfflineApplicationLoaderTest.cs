@@ -90,7 +90,7 @@ namespace IES.Tests.Core
         /// </summary>
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void UpdateTest_Ex()
+        public void UpdateTest_Exception()
         {
             this.CreateSystem();
             offlineApplicationLoader.Update(null);

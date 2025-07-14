@@ -462,6 +462,8 @@
           <Property Name="InsuranceType" Type="int" />
           <Property Name="ProposedInsurance" Type="bigint" />
           <Property Name="NegotiatedInsurance" Type="bigint" />
+          <Property Name="BidEppDate" Type="date" />
+          <Property Name="MissionSegmentEppDate" Type="date" />
         </EntityType>
         <EntityType Name="ProposalContractTypeXREF">
           <Key>
@@ -1868,7 +1870,9 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
           <Parameter Name="FinalNegotiatedValue" Type="bigint" Mode="In" />
           <Parameter Name="FinalNegotiatedDate" Type="date" Mode="In" />
           <Parameter Name="EppDelegationAuthority" Type="int" Mode="In" />
+          <Parameter Name="BidEppDate" Type="date" Mode="In" />
           <Parameter Name="ProgramEppDate" Type="date" Mode="In" />
+          <Parameter Name="MissionSegmentEppDate" Type="date" Mode="In" />
           <Parameter Name="LobEppDate" Type="date" Mode="In" />
           <Parameter Name="PreSpaceEppDate" Type="date" Mode="In" />
           <Parameter Name="SpaceEppDate" Type="date" Mode="In" />
@@ -3368,7 +3372,9 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
             <Parameter Name="FinalNegotiatedValue" Mode="In" Type="Int64" />
             <Parameter Name="FinalNegotiatedDate" Mode="In" Type="DateTime" />
             <Parameter Name="EppDelegationAuthority" Mode="In" Type="Int32" />
+            <Parameter Name="BidEppDate" Mode="In" Type="DateTime" />
             <Parameter Name="ProgramEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="MissionSegmentEppDate" Mode="In" Type="DateTime" />
             <Parameter Name="LobEppDate" Mode="In" Type="DateTime" />
             <Parameter Name="PreSpaceEppDate" Mode="In" Type="DateTime" />
             <Parameter Name="SpaceEppDate" Mode="In" Type="DateTime" />
@@ -4132,6 +4138,8 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
           <Property Name="ProposedInsurance" Type="Int64" />
           <Property Name="NegotiatedInsurance" Type="Int64" />
           <NavigationProperty Name="InsuranceTypeLU" Relationship="genTRACModel.FK_Contracts_InsuranceType" FromRole="ProposalContractsData" ToRole="InsuranceTypeLU" />
+          <Property Name="BidEppDate" Type="DateTime" Precision="0" />
+          <Property Name="MissionSegmentEppDate" Type="DateTime" Precision="0" />
           </EntityType>
         <Association Name="FK__ProposalC__EPPDe__02925FBF">
           <End Type="genTRACModel.EppDelegationAuthorityLU" Role="EppDelegationAuthorityLU" Multiplicity="0..1" />
@@ -5408,6 +5416,8 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
           <EntitySetMapping Name="ProposalContractsDatas">
             <EntityTypeMapping TypeName="genTRACModel.ProposalContractsData">
               <MappingFragment StoreEntitySet="ProposalContractsData">
+                <ScalarProperty Name="MissionSegmentEppDate" ColumnName="MissionSegmentEppDate" />
+                <ScalarProperty Name="BidEppDate" ColumnName="BidEppDate" />
                 <ScalarProperty Name="NegotiatedInsurance" ColumnName="NegotiatedInsurance" />
                 <ScalarProperty Name="ProposedInsurance" ColumnName="ProposedInsurance" />
                 <ScalarProperty Name="InsuranceType" ColumnName="InsuranceType" />

@@ -169,6 +169,8 @@ namespace GenBOE.Web.Controllers
 			this.ViewData["IsSkillMixEnabled"] = Utilities.ShowSkillMixForWorkspace(ws.CreationDate);
 			this.ViewData["IsUCOTEnabled"] = Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.Shortname);
 
+			// Additional Controls for SkillMixHelperText
+			ViewData["UsingTemplateBOE"] = ws.UsingTemplateBOE;
 
 			Collection<SelectListItem> WBSElements = new Collection<SelectListItem>((from x in ws.WbsElementsNoMultiWbs
 											 orderby x.WbsPaddedNumber
@@ -941,9 +943,23 @@ namespace GenBOE.Web.Controllers
 			ids.Add(boeId);
 
 			ActionResult result = new EmptyResult();
-
+			
 			try
 			{
+				// UCOT validation (Space only) - if there are multiple MOQ types assigned to a task and one of those MOQ types falls under a specified type, throw an exception
+				if (Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.TrackingNumber) && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+				{
+					FullBoe fullBoe = this.Factory.CreateFullBoe(boeId);
+					MultiMOQTypeResult multiMoqResult = MultiMOQTypeUtility.DoTasksHaveMultipleMOQTypes(fullBoe);
+
+					if (multiMoqResult.DoMultiMOQTypesExist)
+					{
+						string commaSeparatedTasks = string.Join(", ", multiMoqResult.Tasks);
+						string ucotExceptionString = string.Format(ValidationConstants.MULTI_TASK_WITH_MULTI_MOQ_TYPES_UCOT, commaSeparatedTasks);
+						throw new GenValidationException(ucotExceptionString);
+					}
+				}
+
 				bool isCustomExport;
 				WorkspaceExportFormatDTO wsExportFormatDTO;
 				BOEExportInputs exportInputs;
@@ -953,6 +969,12 @@ namespace GenBOE.Web.Controllers
 				this.reportsControllerLogic.PrepareAllBOEsReport(ws, isSubcontractorUser, summarizeByCustomField, ids, ViewData, out isCustomExport, out wsExportFormatDTO,
 					out exportInputs, out boeExportModelViews, out boeSummaryGridModelViews, false);
 				await this.reportsControllerLogic.ExportAllBOEsReport(ws, null, Response, isCustomExport, wsExportFormatDTO, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
+			}
+			catch (GenValidationException ex)
+			{
+				_log.Warn(ex);
+
+				result = this.CreateTextFileWithErrorMessage(ex.Message);
 			}
 			catch (Exception ex)
 			{
