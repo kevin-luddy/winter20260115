@@ -484,63 +484,66 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 			ICollection<MoqTypeSelection> moqTypes = this.MOQTypes.ToList();
 			foreach (ResourceTypeDto labor in taskElementLabors)
 			{
-				// UCOT is only applicable if ResourceTypeDto is Hours and LMLabor Element of Cost, and Spread is past 1LMX date
-				IDictionary<DateTime, decimal> ucotSpreads = UCOTUtility.GetUcotSpreads(workspaceCreationDate, workspaceShortname, decimalPrecision, ucotFactor,
-						labor.LaborSpreads, laborToElementOfCost[labor.Id], moqTypes, labor.TaskElementId, laborToRateType[labor.Id]);
-
-				if (ucotSpreads.Any())
+				if (labor.BusinessResourceCodeID.HasValue)
 				{
-					// If it doesn't find the ucot resource then we need to create the ucot resource and add it back into our dictionary to pair the labor resource with its ucot counterpart (i.e. C1MDAAA1 vs. C1MDAAA1-UCOT)
-					if (!ucotResourceBindings.TryGetValue(labor.BusinessResourceCodeID.Value, out ResourceDTO ucotResource))
-					{
-						ResourceDTO originalResource = this.ResourcesUsedInWsBoes.First(x => x.Id == labor.BusinessResourceCodeID);
+					// UCOT is only applicable if ResourceTypeDto is Hours and LMLabor Element of Cost, and Spread is past 1LMX date
+					IDictionary<DateTime, decimal> ucotSpreads = UCOTUtility.GetUcotSpreads(workspaceCreationDate, workspaceShortname, decimalPrecision, ucotFactor,
+							labor.LaborSpreads, laborToElementOfCost[labor.Id], moqTypes, labor.TaskElementId, laborToRateType[labor.Id]);
 
-						ucotResource = new ResourceDTO
+					if (ucotSpreads.Any())
+					{
+						// If it doesn't find the ucot resource then we need to create the ucot resource and add it back into our dictionary to pair the labor resource with its ucot counterpart (i.e. C1MDAAA1 vs. C1MDAAA1-UCOT)
+						if (!ucotResourceBindings.TryGetValue(labor.BusinessResourceCodeID.Value, out ResourceDTO ucotResource))
 						{
-							Id = ucotResourceIndex--,
-							ElementOfCost = ElementOfCostType.LMLabor,
-							ResourceDesc = $"{originalResource.ResourceDesc}-{Constants.UCOT_LABEL}",
-							ResourceName = $"{originalResource.ResourceName}-{Constants.UCOT_LABEL}",
-							SegRegion = originalResource.SegRegion,
+							ResourceDTO originalResource = this.ResourcesUsedInWsBoes.First(x => x.Id == labor.BusinessResourceCodeID);
+
+							ucotResource = new ResourceDTO
+							{
+								Id = ucotResourceIndex--,
+								ElementOfCost = ElementOfCostType.LMLabor,
+								ResourceDesc = $"{originalResource.ResourceDesc}-{Constants.UCOT_LABEL}",
+								ResourceName = $"{originalResource.ResourceName}-{Constants.UCOT_LABEL}",
+								SegRegion = originalResource.SegRegion,
+							};
+
+							ucotResourceBindings.Add(labor.BusinessResourceCodeID.Value, ucotResource);
+						}
+
+						// Add the UCOT spreads where needed
+						int newLaborTypeId = idCounter--;
+						Collection<ResourceSpreadDto> spreads = new Collection<ResourceSpreadDto>();
+						foreach (KeyValuePair<DateTime, decimal> spread in ucotSpreads)
+						{
+							spreads.Add(new ResourceSpreadDto()
+							{
+								LaborSpreadDate = spread.Key,
+								LaborTypeId = newLaborTypeId,
+								BoeID = labor.BoeID,
+								Id = idCounter--,
+								LaborSpreadValue = spread.Value
+							});
+						}
+
+						ResourceTypeDto ucot = new ResourceTypeDto()
+						{
+							BoeID = labor.BoeID,
+							LaborSpreads = spreads,
+							CLINID = labor.CLINID,
+							WBSID = labor.WBSID,
+							EndDate = labor.EndDate,
+							StartDate = labor.StartDate,
+							SpreadCurveID = labor.SpreadCurveID,
+							SpreadType = labor.SpreadType,
+							BusinessResourceCodeID = ucotResource.Id,
+							ResourceID = ucotResource.Id,
+							PerformingOrgID = Constants.UCOT_PERF_ORG_ID,
+							TaskElementId = labor.TaskElementId,
+							Id = newLaborTypeId,
+							ValueSpread = spreads.Sum(s => s.LaborSpreadValue)
 						};
 
-						ucotResourceBindings.Add(labor.BusinessResourceCodeID.Value, ucotResource);
+						ucotLabors.Add(ucot);
 					}
-
-					// Add the UCOT spreads where needed
-					int newLaborTypeId = idCounter--;
-					Collection<ResourceSpreadDto> spreads = new Collection<ResourceSpreadDto>();
-					foreach (KeyValuePair<DateTime, decimal> spread in ucotSpreads)
-					{
-						spreads.Add(new ResourceSpreadDto()
-						{
-							LaborSpreadDate = spread.Key,
-							LaborTypeId = newLaborTypeId,
-							BoeID = labor.BoeID,
-							Id = idCounter--,
-							LaborSpreadValue = spread.Value
-						});
-					}
-
-					ResourceTypeDto ucot = new ResourceTypeDto()
-					{
-						BoeID = labor.BoeID,
-						LaborSpreads = spreads,
-						CLINID = labor.CLINID,
-						WBSID = labor.WBSID,
-						EndDate = labor.EndDate,
-						StartDate = labor.StartDate,
-						SpreadCurveID = labor.SpreadCurveID,
-						SpreadType = labor.SpreadType,
-						BusinessResourceCodeID = ucotResource.Id,
-						ResourceID = ucotResource.Id,
-						PerformingOrgID = Constants.UCOT_PERF_ORG_ID,
-						TaskElementId = labor.TaskElementId,
-						Id = newLaborTypeId,
-						ValueSpread = spreads.Sum(s => s.LaborSpreadValue)
-					};
-
-					ucotLabors.Add(ucot);
 				}
 			}
 

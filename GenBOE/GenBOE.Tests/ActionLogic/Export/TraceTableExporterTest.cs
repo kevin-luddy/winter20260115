@@ -201,6 +201,8 @@ namespace GenBOE.Tests.ActionLogic.Export
 			FullWbs wbs2 = new FullWbs() { Id = 2, WbsNumber = "2" };
 			retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(ws.Id)).Returns(new Collection<FullWbs>() { wbs1, wbs2 });
 
+			retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(ws.Id)).Returns(new Collection<MoqTypeSelection>() { });
+
 			CustomFieldDTO customField1 = new CustomFieldDTO() { Id = 1, CustomFieldName = "TEST 1" };
 			CustomFieldDTO customField2 = new CustomFieldDTO() { Id = 2, CustomFieldName = "TEST 2" };
 			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(ws.Id)).Returns(new Collection<CustomFieldDTO>() { customField1, customField2 });
@@ -384,7 +386,8 @@ namespace GenBOE.Tests.ActionLogic.Export
 		public void TestExportTraceTableDataWbs()
 		{
 			ITraceTableExporter sut = new TraceTableExporter();
-			FullWorkspace ws = new FullWorkspace() { Id = 1 };
+			FullWorkspace ws = new FullWorkspace() { Id = 1, CreationDate = DateTime.Now, UCOTFactor = 0.0135m };
+			Utilities.isUCOTEnabled = true;
 
 			ResourceTypeDto resourceType1 = new ResourceTypeDto()
 			{
@@ -424,7 +427,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 			{
 				Id = 1,
 				BoeID = 1,
-				TaskElementId = 2,
+				TaskElementId = 1,
 				CLINID = 1,
 				WBSID = 3,
 				ResourceID = 1,
@@ -441,7 +444,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 			{
 				Id = 1,
 				BoeID = 2,
-				TaskElementId = 3,
+				TaskElementId = 1,
 				CLINID = 1,
 				WBSID = 4,
 				ResourceID = 1,
@@ -458,7 +461,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 			{
 				Id = 1,
 				BoeID = 2,
-				TaskElementId = 3,
+				TaskElementId = 1,
 				CLINID = 2,
 				WBSID = 5,
 				ResourceID = 3,
@@ -475,7 +478,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 			{
 				Id = 1,
 				BoeID = 2,
-				TaskElementId = 3,
+				TaskElementId = 1,
 				CLINID = 2,
 				WBSID = 6,
 				ResourceID = 3,
@@ -492,7 +495,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 			{
 				Id = 1,
 				BoeID = 2,
-				TaskElementId = 3,
+				TaskElementId = 1,
 				CLINID = 2,
 				WBSID = 7,
 				ResourceID = 3,
@@ -509,7 +512,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 			{
 				Id = 1,
 				BoeID = 2,
-				TaskElementId = 3,
+				TaskElementId = 1,
 				CLINID = 2,
 				WBSID = 8,
 				ResourceID = 3,
@@ -526,32 +529,43 @@ namespace GenBOE.Tests.ActionLogic.Export
 			{
 				Id = 1,
 				BoeID = 2,
-				TaskElementId = 3,
+				TaskElementId = 1,
 				CLINID = 2,
 				WBSID = null,
 				ResourceID = 3,
+				BusinessResourceCodeID = 4,
 				PerformingOrgID = 1,
 				SpreadType = SpreadType.Hours,
 				StartDate = new DateTime(2021, 1, 1),
-				EndDate = new DateTime(2023, 12, 31),
+				EndDate = new DateTime(2033, 12, 31),
 				SpreadCurveID = SpreadCurves.SpreadCurve6,
 				ValueSpread = 360000
 			};
 			resourceType9.LaborSpreads = CreateResourceSpreads(resourceType9.ValueSpread.Value, resourceType9.Id, resourceType9.StartDate.Value, resourceType9.EndDate.Value, resourceType9.BoeID);
 
-			BoeTaskElementDTO task = new BoeTaskElementDTO() { Id = 1, TaskTitle = "Task 1", taskElementLabors = new Collection<ResourceTypeDto>() { resourceType1, resourceType2, resourceType3, resourceType4, resourceType5, resourceType6, resourceType7, resourceType8, resourceType9 } };
+			BoeTaskElementDTO task = new BoeTaskElementDTO() { BoeID = 2, Id = 1, TaskTitle = "Task 1", taskElementLabors = new Collection<ResourceTypeDto>() { resourceType1, resourceType2, resourceType3, resourceType4, resourceType5, resourceType6, resourceType7, resourceType8, resourceType9 } };
 
-			FullBoe boe = new FullBoe() { Id = 1, Title = "BOE1", Workspace = ws, IsMultiClinWbs = true };
+			FullBoe boe = new FullBoe() { Id = 2, Title = "BOE1", Workspace = ws, IsMultiClinWbs = true };
 			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(ws.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>() { task });
 			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>() { task});
 			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(It.IsAny<int>(), false)).Returns(new Collection<OtherDirectCostDTO>());
 			retriever.Setup(x => x.GetTravelByWorkspaceId(It.IsAny<int>(), false)).Returns(new Collection<TravelDTO>());
 			retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { boe });
 
-			ResourceDTO resource1 = new ResourceDTO() { Id = 1, ResourceName = "TEST1", ResourceDesc = "TEST1 - TESTING ONE", ElementOfCost = ElementOfCostType.LMLabor };
-			ResourceDTO resource2 = new ResourceDTO() { Id = 2, ResourceName = "TEST2", ResourceDesc = "TEST2 - TESTING TWO", ElementOfCost = ElementOfCostType.LMLabor };
-			ResourceDTO resource3 = new ResourceDTO() { Id = 3, ResourceName = "TEST3", ResourceDesc = "TEST2 - TESTING THREE", ElementOfCost = ElementOfCostType.LMLabor };
-			retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<ResourceDTO>() { resource1, resource2, resource3 });
+			MoqTypeSelection moq = new MoqTypeSelection
+			{
+				SelectedMOQType = MOQType.AnalogousRelationships,
+				BoeId = boe.Id,
+				TaskId = task.Id
+			};
+			retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(ws.Id)).Returns(new Collection<MoqTypeSelection>() { moq });
+
+
+			ResourceDTO resource1 = new ResourceDTO() { Id = 1, ResourceName = "TEST1", ResourceDesc = "TEST1 - TESTING ONE", ElementOfCost = ElementOfCostType.LMLabor, RateType = RateType.Hours };
+			ResourceDTO resource2 = new ResourceDTO() { Id = 2, ResourceName = "TEST2", ResourceDesc = "TEST2 - TESTING TWO", ElementOfCost = ElementOfCostType.LMLabor, RateType = RateType.Hours };
+			ResourceDTO resource3 = new ResourceDTO() { Id = 3, ResourceName = "TEST3", ResourceDesc = "TEST2 - TESTING THREE", ElementOfCost = ElementOfCostType.LMLabor, RateType = RateType.Hours };
+			ResourceDTO resource4 = new ResourceDTO() { Id = 4, ResourceName = "TEST4", ResourceDesc = "TEST2 - TESTING 4", ElementOfCost = ElementOfCostType.LMLabor, RateType = RateType.Hours };
+			retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<ResourceDTO>() { resource1, resource2, resource3, resource4 });
 
 			PerformingOrgDTO perfOrg1 = new PerformingOrgDTO() { Id = 1, PerformingOrgName = "ORG 1" };
 			PerformingOrgDTO perfOrg2 = new PerformingOrgDTO() { Id = 2, PerformingOrgName = "ORG 2" };
@@ -577,6 +591,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 
 			ICollection<TraceTableBoeData> result = sut.ExportTraceTableData(ws, settings);
 
+			Utilities.isUCOTEnabled = false;
 			Assert.IsTrue(result.Any());
 			Assert.AreEqual(9, result.Count());
 
