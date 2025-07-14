@@ -419,14 +419,14 @@ namespace GenTRAC.ActionLogic.Validation
             public const string ADDITIONAL_PRICING_RESOURCE_2_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Additional Estimating Resource 2, or the user is not an LM, US based employee.";
 
             /// <summary>
-            /// Material Lead invalid NTID
+            /// PBOE Preparer invalid NTID
             /// </summary>
-            public const string SUPPLY_CHAIN_POC_MATL_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Material Lead, or the user is not an LM, US based employee.";
+            public const string SUPPLY_CHAIN_POC_MATL_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for PBOE Preparer, or the user is not an LM, US based employee.";
 
 			/// <summary>
-			/// Material Lead invalid NTID
+			/// PBOE Preparer invalid NTID
 			/// </summary>
-			public const string SUPPLY_CHAIN_POC_MATL_BACKUP_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Backup Material Lead, or the user is not an LM, US based employee.";
+			public const string SUPPLY_CHAIN_POC_MATL_BACKUP_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Backup PBOE Preparer, or the user is not an LM, US based employee.";
 
 			/// <summary>
 			/// IBOE Preparer invalid NTID
@@ -475,9 +475,9 @@ namespace GenTRAC.ActionLogic.Validation
             public const string CONTRACTS_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL = USER_INFO_VALDIATION + "Contracts Lead and Backup Contracts Lead cannot be the same person.";
 
 			/// <summary>
-			/// Material Lead and Backup cannot be the same person
+			/// PBOE Preparer and Backup cannot be the same person
 			/// </summary>
-			public const string MATERIAL_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL = USER_INFO_VALDIATION + "Material Lead and Backup Material Lead cannot be the same person.";
+			public const string MATERIAL_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL = USER_INFO_VALDIATION + "PBOE Preparer and Backup PBOE Preparer cannot be the same person.";
 
 			/// <summary>
 			/// IBOE Preparer and Backup cannot be the same person
@@ -485,12 +485,12 @@ namespace GenTRAC.ActionLogic.Validation
 			public const string SUBCONTRACTS_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL = USER_INFO_VALDIATION + "IBOE Preparer and Backup IBOE Preparer cannot be the same person.";
 
 			/// <summary>
-			/// Cannot have Material Lead Backup without a Material Lead
+			/// Cannot have PBOE Preparer Backup without a PBOE Preparer
 			/// </summary>
-			public const string MATERIAL_LEAD_BACKUP_REQUIRES_LEAD = USER_INFO_VALDIATION + "Material Lead is required if Backup Material Lead is populated.";
+			public const string MATERIAL_LEAD_BACKUP_REQUIRES_LEAD = USER_INFO_VALDIATION + "PBOE Preparer is required if Backup PBOE Preparer is populated.";
 
 			/// <summary>
-			/// Cannot have Material Lead Backup without a Material Lead
+			/// Cannot have PBOE Preparer Backup without a PBOE Preparer
 			/// </summary>
 			public const string SUBCONTRACTS_LEAD_BACKUP_REQUIRES_LEAD = USER_INFO_VALDIATION + "IBOE Preparer is required if Backup IBOE Preparer is populated.";
 

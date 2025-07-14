@@ -242,7 +242,7 @@ namespace IES.Common.Core.Enums
 		BackupContractsPOC = 22,
 
 		/// <summary>
-		/// Backup Subcontracts Lead
+		/// Backup IBOE Preparer (Subcontracts Lead)
 		/// </summary>
 		[Description("Backup Subcontracts Lead")]
 		BackupSubcontractsLead = 23,

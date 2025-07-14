@@ -2758,28 +2758,28 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(1, validationErrors.Count); // Role not required, so no additional errors should return
 
             validationErrors.Clear();
-            // CASE: Material Lead and Backup are the same
+            // CASE: PBOE Preparer and Backup are the same
             proposalUserInfo.SupplyChainPOCMaterialsBackupNtId = user.Ntid;
             sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
             Assert.IsTrue(validationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.MATERIAL_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL));
 
             proposalUserInfo.SupplyChainPOCMaterialsBackupNtId = user2.Ntid;
             validationErrors.Clear();
-            // CASE: Subcontracts Lead and Backup are the same
+            // CASE: IBOE Preparer and Backup are the same
             proposalUserInfo.SupplyChainPOCSubsBackupNtId = user.Ntid;
             sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
             Assert.IsTrue(validationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.SUBCONTRACTS_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL));
 
             proposalUserInfo.SupplyChainPOCSubsBackupNtId = user2.Ntid;
             validationErrors.Clear();
-            // CASE: Backup Material Lead with no Material Lead
+            // CASE: Backup PBOE Preparer with no PBOE Preparer
             proposalUserInfo.SupplyChainPOCMaterialsNtId = null;
             sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
             Assert.IsTrue(validationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.MATERIAL_LEAD_BACKUP_REQUIRES_LEAD));
 
             proposalUserInfo.SupplyChainPOCMaterialsNtId = user.Ntid;
             validationErrors.Clear();
-            // CASE: Backup Subcontracts Lead with no Material Lead
+            // CASE: Backup IBOE Preparer with no PBOE Preparer
             proposalUserInfo.SupplyChainPOCSubsNtId = null;
             sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
             Assert.IsTrue(validationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.SUBCONTRACTS_LEAD_BACKUP_REQUIRES_LEAD));
