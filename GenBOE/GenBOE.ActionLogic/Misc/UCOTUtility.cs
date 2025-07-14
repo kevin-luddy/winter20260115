@@ -25,7 +25,8 @@ namespace GenBOE.ActionLogic.Misc
 		/// Get UCOT Hours Total for the Task Element Collection
 		/// </summary>
 		/// <param name="fullWorkspace">Full Workspace to pull all necessary data for UCOT data manipulation</param>
-		public static decimal GetTaskElementsUCOTHours(FullWorkspace fullWorkspace)
+		/// <param name="taskElementsToIterate">Specific Tasks to Iterate through to get UCOT Totals</param>
+		public static decimal GetTaskElementsUCOTHours(FullWorkspace fullWorkspace, IReadOnlyCollection<BoeTaskElementDTO> taskElementsToIterate)
 		{
 			if (fullWorkspace == null)
 			{
@@ -39,8 +40,9 @@ namespace GenBOE.ActionLogic.Misc
 			{
 				Dictionary<int, IGrouping<int, MoqTypeSelection>> moqTypeSelectionDictionary = fullWorkspace.MoqTypeSelections.GroupBy(m => m.TaskId).ToDictionary(d => d.Key);
 				IDictionary<int, ResourceDTO> resourceDictionary = fullWorkspace.ResourcesUsedInWsBoes.ToDictionary(r => r.Id);
+				IReadOnlyCollection<BoeTaskElementDTO> taskElements = taskElementsToIterate.Count() > 0 ? taskElementsToIterate : fullWorkspace.TaskElements;
 
-				fullWorkspace.TaskElements.ForEach(taskElement =>
+				taskElements.ForEach(taskElement =>
 				{
 					decimal ucotTotal = CalculateTaskUCOTHours(taskElement, moqTypeSelectionDictionary, resourceDictionary);
 
@@ -56,7 +58,8 @@ namespace GenBOE.ActionLogic.Misc
 		/// Set UCOT Hours Total for the Task Element Collection (this method sets it on the individual task)
 		/// </summary>
 		/// <param name="fullWorkspace">Full Workspace to pull all necessary data for UCOT data manipulation</param>
-		public static void SetTaskElementsUCOTHours(FullWorkspace fullWorkspace)
+		/// <param name="taskElementsToIterate">Specific Tasks to Iterate through to get UCOT Totals</param>
+		public static void SetTaskElementsUCOTHours(FullWorkspace fullWorkspace, IReadOnlyCollection<BoeTaskElementDTO> taskElementsToIterate)
 		{
 			if (fullWorkspace == null)
 			{
@@ -68,8 +71,9 @@ namespace GenBOE.ActionLogic.Misc
 			{
 				Dictionary<int, IGrouping<int, MoqTypeSelection>> moqTypeSelectionDictionary = fullWorkspace.MoqTypeSelections.GroupBy(m => m.TaskId).ToDictionary(d => d.Key);
 				IDictionary<int, ResourceDTO> resourceDictionary = fullWorkspace.ResourcesUsedInWsBoes.ToDictionary(r => r.Id);
+				IReadOnlyCollection<BoeTaskElementDTO> taskElements = taskElementsToIterate.Count() > 0 ? taskElementsToIterate : fullWorkspace.TaskElements;
 
-				fullWorkspace.TaskElements.ForEach(taskElement =>
+				taskElements.ForEach(taskElement =>
 				{
 					decimal ucotTotal = CalculateTaskUCOTHours(taskElement, moqTypeSelectionDictionary, resourceDictionary);
 
