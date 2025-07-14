@@ -1877,49 +1877,6 @@ namespace GenBOE.ActionLogic.IO.Export
 		}
 
 		/// <summary>
-		/// Get smoothed UCOT spreads for the export
-		/// </summary>
-		/// <param name="exportInputs">BOE Export Inputs</param>
-		/// <param name="labor">Labor type</param>
-		/// <param name="addUcot">True if UCOT is being added to the export</param>
-		/// <returns>Smoothed UCOT spreads in a dictionary of spread date and spread value</returns>
-		private static IDictionary<DateTime, decimal> GetUcotSpreads(BOEExportInputs exportInputs, ResourceTypeDto labor, bool addUcot)
-		{
-			IDictionary<DateTime, decimal> smoothedUcotSpreads = new Dictionary<DateTime, decimal>();
-			if (addUcot)
-			{
-				// Get spreads on/after 1LMX start to see if UCOT needs to be applied
-				IDictionary<DateTime, decimal> spreadsToApplyUcot = labor.LaborSpreads.Where(x => x.LaborSpreadDate >= Utilities.OneLmxStartDate)
-					.ToDictionary(x => x.LaborSpreadDate, x => x.LaborSpreadValue);
-
-				if (spreadsToApplyUcot.Any())
-				{
-					// Get UCOT Total
-					decimal ucotTotal = spreadsToApplyUcot.Sum(x => x.Value) * (exportInputs.Workspace.UCOTFactor / 100m);
-					ucotTotal = Utilities.AdjustPrecision(ucotTotal, exportInputs.Workspace.ResourceDecimalPrecision);
-
-					// Calculate UCOT values for spreads
-					IDictionary<DateTime, decimal> ucotSpreads = new Dictionary<DateTime, decimal>();
-					foreach (KeyValuePair<DateTime, decimal> spread in spreadsToApplyUcot.OrderBy(x => x.Key))
-					{
-						ucotSpreads.Add(spread.Key, Utilities.AdjustPrecision(spread.Value * exportInputs.Workspace.UCOTFactor / 100m, exportInputs.Workspace.ResourceDecimalPrecision));
-					}
-
-					// Get smoothed curve values
-					decimal[] smoothedSpreadValues = SpreadCurve.Smooth(ucotTotal, ucotSpreads.Select(x => x.Value).ToArray(), 0, ucotSpreads.Count, exportInputs.Workspace.ResourceDecimalPrecision ?? 0);
-
-					// Add the smoothed values to the dictionary to apply to spreads later
-					for (int i = 0; i < ucotSpreads.Count; i++)
-					{
-						smoothedUcotSpreads.Add(ucotSpreads.ElementAt(i).Key, smoothedSpreadValues[i]);
-					}
-				}
-			}
-
-			return smoothedUcotSpreads;
-		}
-
-		/// <summary>
 		/// Gets the ODC Task row data for the BOE Resource Combo sheet
 		/// Makes call to method to get Resource Type data
 		/// </summary>
