@@ -1008,10 +1008,10 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(1, validationMessages.Count);
         }
 
-        /// <summary>
-        /// Tests Materials Lead Validation
-        /// </summary>
-        [TestMethod]
+		/// <summary>
+		/// Tests PBOE Preparer Validation
+		/// </summary>
+		[TestMethod]
         public void C_ValidateSupplyChainPOCMaterials()
         {
             ProposalControllerLogic sut = this.CreateSystem();
@@ -1020,19 +1020,19 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalApprovalsModelView proposalApprovalsMV = new Stubs().ProposalApprovalsVM;
             ICollection<ValidationMessage> validationMessages = new List<ValidationMessage>();
 
-            // CASE: Materials lead not set
+            // CASE: PBOE Preparer not set
             validationMessages = new List<ValidationMessage>();
             proposalInfoVM.CostElements = new Collection<int> { (int)CostElementType.Materials };
             proposalUserInfoVM.SupplyChainPOCMaterialsNtId = string.Empty;
             sut.ValidateProposal(proposalInfoVM, new ProposalGeneralInformationModelView(), proposalApprovalsMV, proposalUserInfoVM, validationMessages, false);
             Assert.AreEqual(1, validationMessages.Count);
-            Assert.IsTrue(validationMessages.First().ValidationIssue.ContainsEquivalent("Materials Lead is Required"));
+            Assert.IsTrue(validationMessages.First().ValidationIssue.ContainsEquivalent("PBOE Preparer is Required"));
             validationMessages = new List<ValidationMessage>();
             sut.ValidateProposal(proposalInfoVM, new ProposalGeneralInformationModelView(), proposalApprovalsMV, proposalUserInfoVM, validationMessages, true);
             Assert.AreEqual(0, validationMessages.Count);
 
-            // CASE: Materials lead is set
-            validationMessages = new List<ValidationMessage>();
+			// CASE: PBOE Preparer is set
+			validationMessages = new List<ValidationMessage>();
             proposalInfoVM.CostElements = new Collection<int> { (int)CostElementType.Materials };
             proposalUserInfoVM.SupplyChainPOCMaterialsNtId = "n00000";
             sut.ValidateProposal(proposalInfoVM, new ProposalGeneralInformationModelView(), proposalApprovalsMV, proposalUserInfoVM, validationMessages, false);
@@ -1363,8 +1363,8 @@ namespace GenTRAC.Tests.ActionLogic
             sut.ValidateProposal(proposalInfo, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView() { LeadEstimatorNtid = "fakeId2", CoverSheetApproverNtid = "fakeId", PricingVerificationNtid = "fakeId", IndependentReviewerNtid = "fakeId" }, proposalUserInfo, validationMessages, false);
 
             Assert.AreEqual(4, validationMessages.Count);
-            Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains("Materials Lead")).Count());
-            Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains("Subcontracts Lead is required")).Count());
+            Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains("PBOE Preparer")).Count());
+            Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains("IBOE Preparer is required")).Count());
             Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains("Additional Estimating Resource 1")).Count());
             Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains("Additional Estimating Resource 2")).Count());
 

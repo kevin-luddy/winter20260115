@@ -81,7 +81,7 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
 		public string SupplyChainPOCMaterialsNtId { get; set; }
 
 		/// <summary>
-		/// Gets or sets the list of Supply Chain POC Materials Leads
+		/// Gets or sets the list of Supply Chain POC PBOE Preparer
 		/// </summary>
 		public List<SelectListItem> SupplyChainPOCMaterialsLeadsList { get; set; }
 

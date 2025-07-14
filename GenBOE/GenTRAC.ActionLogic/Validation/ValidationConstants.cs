@@ -381,12 +381,12 @@ namespace GenTRAC.ActionLogic.Validation
             /// <summary>
             /// supply chain material is required
             /// </summary>
-            public const string SUPPLY_CHAIN_MATERIAL_REQUIRED = USER_INFO_VALDIATION + "Materials Lead is required if Elements of Cost includes Materials.";
+            public const string SUPPLY_CHAIN_MATERIAL_REQUIRED = USER_INFO_VALDIATION + "PBOE Preparer is required if Elements of Cost includes Materials.";
 
             /// <summary>
             /// supply chain subcontractor is required
             /// </summary>
-            public const string SUPPLY_CHAIN_SUBS_REQUIRED = USER_INFO_VALDIATION + "Subcontracts Lead is required if Elements of Cost includes Subcontractors.";
+            public const string SUPPLY_CHAIN_SUBS_REQUIRED = USER_INFO_VALDIATION + "IBOE Preparer is required if Elements of Cost includes Subcontractors.";
 
             /// <summary>
             /// additonal resource 1 type is required
@@ -429,14 +429,14 @@ namespace GenTRAC.ActionLogic.Validation
 			public const string SUPPLY_CHAIN_POC_MATL_BACKUP_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Backup Material Lead, or the user is not an LM, US based employee.";
 
 			/// <summary>
-			/// Subcontracts Lead invalid NTID
+			/// IBOE Preparer invalid NTID
 			/// </summary>
-			public const string SUPPLY_CHAIN_POC_SUBS_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Subcontracts Lead, or the user is not an LM, US based employee.";
+			public const string SUPPLY_CHAIN_POC_SUBS_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for IBOE Preparer, or the user is not an LM, US based employee.";
 
 			/// <summary>
-			/// Subcontracts Lead invalid NTID
+			/// IBOE Preparer invalid NTID
 			/// </summary>
-			public const string SUPPLY_CHAIN_POC_SUBS_BACKUP_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Backup Subcontracts Lead, or the user is not an LM, US based employee.";
+			public const string SUPPLY_CHAIN_POC_SUBS_BACKUP_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Backup IBOE Preparer, or the user is not an LM, US based employee.";
 
 			/// <summary>
 			/// Backup Lead Estimator invalid NTID
@@ -480,9 +480,9 @@ namespace GenTRAC.ActionLogic.Validation
 			public const string MATERIAL_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL = USER_INFO_VALDIATION + "Material Lead and Backup Material Lead cannot be the same person.";
 
 			/// <summary>
-			/// Subcontracts Lead and Backup cannot be the same person
+			/// IBOE Preparer and Backup cannot be the same person
 			/// </summary>
-			public const string SUBCONTRACTS_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL = USER_INFO_VALDIATION + "Subcontracts Lead and Backup Subcontracts Lead cannot be the same person.";
+			public const string SUBCONTRACTS_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL = USER_INFO_VALDIATION + "IBOE Preparer and Backup IBOE Preparer cannot be the same person.";
 
 			/// <summary>
 			/// Cannot have Material Lead Backup without a Material Lead
@@ -492,7 +492,7 @@ namespace GenTRAC.ActionLogic.Validation
 			/// <summary>
 			/// Cannot have Material Lead Backup without a Material Lead
 			/// </summary>
-			public const string SUBCONTRACTS_LEAD_BACKUP_REQUIRES_LEAD = USER_INFO_VALDIATION + "Subcontracts Lead is required if Backup Subcontracts Lead is populated.";
+			public const string SUBCONTRACTS_LEAD_BACKUP_REQUIRES_LEAD = USER_INFO_VALDIATION + "IBOE Preparer is required if Backup IBOE Preparer is populated.";
 
 			#endregion  Proposal User Info Section
 
