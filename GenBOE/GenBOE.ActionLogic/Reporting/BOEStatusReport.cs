@@ -126,7 +126,7 @@ namespace GenBOE.ActionLogic.Reporting
                                         select laborType.ValueSpread.Value).Sum();
 
 				// UCOT Data 
-				modelView.TotalUCOTHours = UCOTUtility.GetTaskElementsUCOTHours(exportInputs.FullWorkspace);
+				modelView.TotalUCOTHours = UCOTUtility.GetTaskElementsUCOTHours(exportInputs.FullWorkspace, (IReadOnlyCollection<BoeTaskElementDTO>)tasks);
 				modelView.TotalHoursWithUCOT = modelView.TotalHours + modelView.TotalUCOTHours;
 
 				decimal taskCost = 0;
