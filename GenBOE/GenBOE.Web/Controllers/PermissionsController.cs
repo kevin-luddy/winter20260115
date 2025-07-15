@@ -472,17 +472,6 @@ namespace GenBOE.Web.Controllers
 
 			// Perform Action
 
-			// Get data to export for this Workspace
-			Collection<PermissionsDTO> allPerms = this.PermissionsLoader.GetPermissionsForGridData(ws.Id).Where(p => p.Role != Role.WorkspaceUser).ToCollection();
-
-			// Get export template file name
-			string templateFileName = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST ?
-				Server.MapPath("~/Templates/Export/PermissionsRMS.xlsx") :
-				Server.MapPath("~/Templates/Export/Permissions.xlsx");
-
-			// Call the export function in the business layer and get back the file name of the populated template.
-			string exportedFileName = PermissionsExporter.ExportToExcelFile(templateFileName, allPerms);
-
 			string fileName = string.Format("{0}_Permissions.xlsx", ws.WorkspaceName);
 			// Generate a custom ActionResult to cause a file download to the client
 			FileStream fs = this._permissionControllerLogic.ExportPermissions(ws);
