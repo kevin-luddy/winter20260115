@@ -10,12 +10,10 @@ namespace GenBOE.ActionLogic.IO.Export
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
-	using DocumentFormat.OpenXml.Spreadsheet;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.Misc;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.Dtos;
-	using GenBOE.Models;
 	using GenBOE.Objects;
 	using IES.Common;
 	using IES.Common.classes;
@@ -29,12 +27,12 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <summary>
 		/// UCOT hardcoded resource Id
 		/// </summary>
-		private int ucotResourceId = -9000;
+		private readonly int ucotResourceId = -9000;
 
 		/// <summary>
 		/// UCOT hardcoded performing org id
 		/// </summary>
-		private int ucotPerformingOrgId = -9001;
+		private readonly int ucotPerformingOrgId = -9001;
 
 		/// <summary>
 		/// ctor
@@ -142,6 +140,10 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="ucotFactor">The UCOT Factor</param>
 		/// <param name="laborToElementOfCost">Labor to element of Cost Dictionary</param>
 		/// <param name="workspaceCreationDate">Workspace creation date</param>
+		/// <param name="decimalPrecision">Decimal precision for workspace</param>
+		/// <param name="laborToRateType">Labor Resource to RateType</param>
+		/// <param name="moqTypeSelections">MOQ Type Selections for tasks</param>
+		/// <param name="shortname">Workspace Shortname</param>
 		/// <returns></returns>
 		private List<ResourceTypeDto> AddUCOT(List<ResourceTypeDto> taskElementLabors, decimal ucotFactor, Dictionary<int, ElementOfCostType> laborToElementOfCost,
 			DateTime? workspaceCreationDate, string shortname, int decimalPrecision, ICollection<MoqTypeSelection> moqTypeSelections, Dictionary<int, RateType> laborToRateType)

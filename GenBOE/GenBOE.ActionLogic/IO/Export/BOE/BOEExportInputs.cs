@@ -474,6 +474,9 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// <param name="ucotFactor">The UCOT Factor</param>
 		/// <param name="laborToElementOfCost">Labor to element cost dictionary</param>
 		/// <param name="decimalPrecision">Workspace resource decimal precision</param>
+		/// <param name="laborToRateType">Labor Resource keyed to RateType</param>
+		/// <param name="workspaceCreationDate">Workspace's Creation Date</param>
+		/// <param name="workspaceShortname">Workspace's Short name</param>
 		/// <returns>UCOT resources.</returns>
 		private List<ResourceTypeDto> AddUCOT(List<ResourceTypeDto> taskElementLabors, decimal ucotFactor, Dictionary<int, ElementOfCostType> laborToElementOfCost, 
 			int decimalPrecision, DateTime? workspaceCreationDate, string workspaceShortname, Dictionary<int, RateType> laborToRateType)

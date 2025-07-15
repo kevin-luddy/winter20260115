@@ -6,16 +6,14 @@
 
 namespace GenBOE.ActionLogic.Misc
 {
-	using GenBOE.ActionLogic.IO.Export;
-	using GenBOE.ActionLogic.ModelView;
-	using GenBOE.DataBridge.DTO;
-	using GenBOE.Dtos;
-	using GenBOE.Objects;
-	using IES.Common;
-	using MoreLinq;
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using GenBOE.ActionLogic.IO.Export;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.Dtos;
+	using IES.Common;
+	using MoreLinq;
 
 	/// <summary>
 	/// UCOT Specific Utility Methods
