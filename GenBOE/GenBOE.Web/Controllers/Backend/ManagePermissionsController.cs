@@ -39,12 +39,12 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Logger
 		/// </summary>
-		private Logger logger = new Logger("ManagePermissionsController");
+		private readonly Logger logger = new Logger("ManagePermissionsController");
 
-        /// <summary>
-        /// The ad utilities class
-        /// </summary>
-        private IActiveDirectoryUtilities ADUtils = null;
+		/// <summary>
+		/// The ad utilities class
+		/// </summary>
+		private readonly IActiveDirectoryUtilities ADUtils = null;
 
 		/// <summary>
 		/// ctor
@@ -259,6 +259,36 @@ namespace GenBOE.Web.Controllers
 			{
 				logger.Error(ex);
 				result.Messages.Add($"{ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// POST method to edit permissions
+		/// </summary>
+		/// <param name="saveNewPermissionsModelView"></param>
+		/// <returns></returns>
+		[HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<bool> EditPermissions([FromBody] EditPermissionsModelView editPermissionsModelView)
+		{
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+			try
+			{
+				if (editPermissionsModelView != null)
+				{
+					FullWorkspace ws = this.Factory.CreateFullWorkspace(editPermissionsModelView.workspaceShortName);
+					PermissionControllerLogic.EditPermissions(ws, new System.Collections.ObjectModel.Collection<IES.Common.Role>(editPermissionsModelView.roles.ToList()), EntityType.User, editPermissionsModelView.entityId);
+					result.Data = true;
+					result.IsSuccessful = true;
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Data = false;
+				result.Messages.Add($"Unknown error occurred editing permissions data: {ex.Message}");
 			}
 
 			return result;
