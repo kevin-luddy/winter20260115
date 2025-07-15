@@ -682,7 +682,7 @@ namespace GenBOE.Web.Controllers
 		/// <returns></returns>
 		public ActionResult CalculateDiscreteUCOTSpread(string workspace, RecalcSpreadModelView item)
 		{
-			if (ReferenceEquals(item, null))
+			if (item is null)
 			{
 				throw new ArgumentNullException(nameof(item));
 			}
