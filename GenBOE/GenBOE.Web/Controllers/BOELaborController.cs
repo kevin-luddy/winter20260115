@@ -714,6 +714,16 @@ namespace GenBOE.Web.Controllers
 				throw new ArgumentException("Item's rateType was null");
 			}
 
+			if (item.ElementOfCost == null)
+			{
+				throw new ArgumentException("Item's Element of Cost was null");
+			}
+
+			if (item.boeTaskElementId <= 0)
+			{
+				throw new ArgumentException("Item's BOE Task Element ID was not assigned");
+			}
+
 			this._BoeLaborControllerLogic.RecalculateDiscreteUCOTSpreads(ws, item);
 
 			return this.Json(item);
