@@ -348,7 +348,6 @@ namespace GenBOE.ActionLogic
 		/// <param name="inRoles">Roles</param>
 		/// <param name="inType">User or Group</param>
 		/// <param name="inEntityId">User/Group Id</param>
-		/// <param name="url">UrlHelper from Controller</param>
 		/// <exception cref="GenValidationException"></exception>
 		public void EditPermissions(FullWorkspace workspace, Collection<Role> inRoles, EntityType inType, int inEntityId)
 		{
@@ -375,12 +374,13 @@ namespace GenBOE.ActionLogic
 												  (inRoles == null || !inRoles.Contains(permission.Role))
 												  select permission.Role).Distinct().ToList();
 
+				ICollection<PermissionsDTO> workspacePermissions = this.permissionLoader.GetWorkspacePermissions(workspace.Id);
 				// Get the users current roles
-				ICollection<Role> currentRoles = (from permission in this.permissionLoader.GetWorkspacePermissions(workspace.Id)
+				ICollection<Role> currentRoles = (from permission in workspacePermissions
 												  where permission.ETIUserId == inEntityId
 												  select permission.Role).Distinct().ToList();
 
-				int workspaceAdmins = (from r in this.permissionLoader.GetWorkspacePermissions(workspace.Id)
+				int workspaceAdmins = (from r in workspacePermissions
 									   where r.Role == Role.WorkspaceAdmin
 									   select r.ETIUserId).Count();
 
@@ -505,7 +505,7 @@ namespace GenBOE.ActionLogic
 
 				foreach (PermissionsDTO currentRoll in permissionsForUser)
 				{
-					Boolean delete = true;
+					bool delete = true;
 					foreach (Role uiPickedRole in newRoles)
 					{
 						if (currentRoll.Role == uiPickedRole)
@@ -570,6 +570,12 @@ namespace GenBOE.ActionLogic
 			}
 		}
 
+		/// <summary>
+		/// Helper function to get permissions grid on GetPermissions
+		/// </summary>
+		/// <param name="ws">Full Workspace</param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
 		public PermissionViewModel _GetPermissionsGrid(FullWorkspace ws)
 		{
 			if (ws == null)

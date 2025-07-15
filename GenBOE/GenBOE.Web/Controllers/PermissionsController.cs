@@ -167,8 +167,6 @@ namespace GenBOE.Web.Controllers
 			// Initialize Action
 			Stopwatch sw = InitializeAction(_log, "EditPermissions", SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
-			//Collection<ValidationMessage> ValidationErrors = new Collection<ValidationMessage>();
-
 			if (ModelState.IsValid)
 			{
 				this._permissionControllerLogic.EditPermissions(ws, inRoles, inType, inEntityId);
