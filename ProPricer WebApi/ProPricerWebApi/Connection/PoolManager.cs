@@ -24,9 +24,9 @@ namespace APTSPropricerApi.Connection
 		private readonly Queue poolQueue = new();
 
 		/// <summary>
-		/// Hashtable for the Pool objects
+		/// Hash set for the Pool objects
 		/// </summary>
-		private readonly Hashtable objPool = new();
+		private readonly Dictionary<int, IProPricerConnection> objPool = new();
 
 		/// <summary>
 		/// Maximum Pool size
@@ -77,7 +77,7 @@ namespace APTSPropricerApi.Connection
 		/// </summary>
 		/// <param name="obj">Object to be added</param>
 		/// <returns>True if success, false otherwise</returns>
-		public bool AddObject(object obj)
+		public bool AddObject(IProPricerConnection obj)
 		{
 			if (this.objCount == this.poolSize)
 			{
@@ -162,9 +162,9 @@ namespace APTSPropricerApi.Connection
 		/// <summary>
 		/// get next available object
 		/// </summary>
-		public object GetObjectsFromPool()
+		public IProPricerConnection GetObjectsFromPool()
 		{
-			object obj = null;
+			IProPricerConnection obj = null;
 			int j = 0;
 			foreach (int key in this.objPool.Keys)
 			{
@@ -176,6 +176,13 @@ namespace APTSPropricerApi.Connection
 				}
 
 				j++;
+			}
+
+			if (obj != null)
+			{
+				// Renew the connection if needed before we try to use it
+				Task task = obj.Renew();
+				task.Wait();
 			}
 
 			return obj;
