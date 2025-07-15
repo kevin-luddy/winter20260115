@@ -1819,7 +1819,7 @@ namespace GenTRAC.ActionLogic
 				}).ToCollection());
 			}
 
-			// Populate Material Leads and backup leads lists
+			// Populate PBOE Preparers and backup leads lists
 			ICollection<UserDTO> materialsUsers = this.GetUsersForSelectList(PtmRole.SupplyChainPOCMatl);
 
 			model.SupplyChainPOCMaterialsLeadsList = materialsUsers?

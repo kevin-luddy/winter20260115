@@ -40,6 +40,10 @@ namespace APTSPropricerApi.Connection
 		/// </summary>
 		private readonly PoolManagerList poolManagerList;
 
+		private readonly int ConnectionTimeLimit;
+
+		private DateTime Created;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ProPricerConnection" /> class.
 		/// </summary>
@@ -53,7 +57,30 @@ namespace APTSPropricerApi.Connection
 		{
 			this.InstanceId = instanceId;
 			this.poolManagerList = poolManagerList;
+			this.ConnectionTimeLimit = ConfigurationServiceWeb.Configuration.GetValue<int>("ConnectionTimeLimit");
 			this.Workspace = this.EstablishConnection(connectionName, server, port).Result;
+		}
+
+		/// <summary>
+		/// Renews a connection
+		/// </summary>
+		/// <returns>Async task</returns>
+		public async System.Threading.Tasks.Task Renew()
+		{
+			// If connection is older than 10 minutes
+			if (Created < DateTime.UtcNow.AddMinutes(ConnectionTimeLimit * -1))
+			{
+				// dispose of the old connection and create new one
+				this.Workspace.Close();
+
+				if (this.Workspace is IDisposable disposable)
+				{
+					disposable.Dispose();
+				}
+
+				this.Workspace = await this.DataServer.OpenWorkspaceAsync(this.GetUserLogon, GetRegistration, this.GetActivation);
+				this.Created = DateTime.UtcNow;
+			}
 		}
 
 		/// <summary>
@@ -64,6 +91,8 @@ namespace APTSPropricerApi.Connection
 		/// <param name="port">The port number</param>
 		private async System.Threading.Tasks.Task<Workspace> EstablishConnection(string connection, string serverName, int port)
 		{
+			Created = DateTime.UtcNow;
+
 			// Assigning the server name and port to the datacenter
 			DataCenter datacenter = await DataCenter.OpenAsync(serverName, port);
 

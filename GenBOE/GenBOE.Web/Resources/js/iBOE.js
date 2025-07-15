@@ -1671,8 +1671,10 @@ function createModule(module) {
 		//header first
 		var headerData = $(module).children('.module-header-data');
 		$(module).children('.module-header-data').remove();
+
 		$(module).append('<div class="module-header"><div class="module-header-left"></div><div class="module-header-center">' +
 			'</div><div class="module-header-right"></div></div>');
+
 		$(module).find('.module-header-center').append(headerData);
 
 
@@ -1689,6 +1691,7 @@ function createModule(module) {
 		}
 
 		$(module).append('<div class="module-footer"><div class="module-footer-left"></div><div class="module-footer-center"></div><div class="module-footer-right"></div></div>');
+		
 	}
 }
 

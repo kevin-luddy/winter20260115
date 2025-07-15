@@ -19,6 +19,8 @@ namespace GenBOE.Dtos
             BOETitle = string.Empty;
             WBSNumber = string.Empty;
             TotalHours = 0;
+			TotalUCOTHours = 0;
+			TotalHoursWithUCOT = 0;
             TotalCost = 0;
         }
 
@@ -36,6 +38,16 @@ namespace GenBOE.Dtos
         /// Total hours for the BOE
         /// </summary>
         public decimal TotalHours { get; set; }
+
+		/// <summary>
+		/// Total UCOT Hours for the BOE
+		/// </summary>
+		public decimal TotalUCOTHours { get; set; }
+
+		/// <summary>
+		/// Total Hours with UCOT for the BOE
+		/// </summary>
+		public decimal TotalHoursWithUCOT { get; set; }
 
         /// <summary>
         /// Total cost for the BOE

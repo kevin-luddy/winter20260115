@@ -11,9 +11,14 @@ namespace GenBOE.ActionLogic.Misc
 	using System.Linq;
 	using GenBOE.ActionLogic.IO.Export;
 	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
+	using GenBOE.Objects;
 	using IES.Common;
 	using MoreLinq;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
 
 	/// <summary>
 	/// UCOT Specific Utility Methods
@@ -47,13 +52,13 @@ namespace GenBOE.ActionLogic.Misc
 			{
 				MOQType taskMoqType = taskMoqTypes.First();
 				if (taskMoqType == MOQType.Historical || taskMoqType == MOQType.Comparative || taskMoqType == MOQType.AnalogousRelationships)
-				{	
+				{
 					// Get spreads on/after 1LMX start to see if UCOT needs to be applied
 					IDictionary<DateTime, decimal> spreadsToApplyUcot = laborSpreads.Where(x => x.LaborSpreadDate >= Utilities.OneLmxStartDate)
 						.ToDictionary(x => x.LaborSpreadDate, x => x.LaborSpreadValue);
 
 					if (spreadsToApplyUcot.Any())
-					{
+		{
 						// Get UCOT Total
 						decimal ucotTotal = spreadsToApplyUcot.Sum(x => x.Value) * (ucotFactor / 100m);
 						ucotTotal = Utilities.AdjustPrecision(ucotTotal, decimalPrecision);
@@ -61,19 +66,20 @@ namespace GenBOE.ActionLogic.Misc
 						// Calculate UCOT values for spreads
 						IDictionary<DateTime, decimal> ucotSpreads = new Dictionary<DateTime, decimal>();
 						foreach (KeyValuePair<DateTime, decimal> spread in spreadsToApplyUcot.OrderBy(x => x.Key))
-						{
+			{
 							ucotSpreads.Add(spread.Key, Utilities.AdjustPrecision(spread.Value * ucotFactor / 100m, decimalPrecision));
-						}
+			}
 
 						// Get smoothed curve values
 						decimal[] smoothedSpreadValues = SpreadCurve.Smooth(ucotTotal, ucotSpreads.Select(x => x.Value).ToArray(), 0, ucotSpreads.Count, decimalPrecision);
 
 						// Add the smoothed values to the dictionary to apply to spreads later
 						for (int i = 0; i < ucotSpreads.Count; i++)
-						{
+							{
 							smoothedUcotSpreads.Add(ucotSpreads.ElementAt(i).Key, smoothedSpreadValues[i]);
+							}
 						}
-					}
+					});
 				}
 			}
 
@@ -81,4 +87,6 @@ namespace GenBOE.ActionLogic.Misc
 		}
 
 	}
+
+
 }
