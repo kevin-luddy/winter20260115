@@ -179,8 +179,14 @@ namespace GenBOE.DataBridge.DTO
         // the Total Hours
         public decimal? TotalHours { get; set; }
 
-        // The total cost
-        public decimal? TotalCost { get; set; }
+		// Total UCOT Hours
+		public decimal? UCOTHours { get; set; }
+
+		// Total Hours and UCOT Hours combined
+		public decimal? TotalHoursWithUCOT { get; set; }
+
+		// The total cost
+		public decimal? TotalCost { get; set; }
 
         public int BoeID { get; set; }
 
