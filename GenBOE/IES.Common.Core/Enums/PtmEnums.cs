@@ -244,13 +244,13 @@ namespace IES.Common.Core.Enums
 		/// <summary>
 		/// Backup IBOE Preparer (Subcontracts Lead)
 		/// </summary>
-		[Description("Backup Subcontracts Lead")]
+		[Description("Backup IBOE Preparer")]
 		BackupSubcontractsLead = 23,
 
 		/// <summary>
-		/// Backup Material Lead
+		/// Backup PBOE Preparer (Material Lead)
 		/// </summary>
-		[Description("Backup Material Lead")]
+		[Description("Backup PBOE Preparer")]
 		BackupMaterialLead = 24,
 
 		/// <summary>
