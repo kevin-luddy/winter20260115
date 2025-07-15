@@ -1033,28 +1033,6 @@
 			}
 
 			if ($scope.IsUcot(item) && dt.toDate() >= $scope.oneLmxCutOff) {
-				//var ucotSpread = item.UcotSpreads.find(function (spreadItem) {
-				//	return spreadItem.LaborSpreadDate === dt;
-				//});
-
-				//var precision = $scope.getPrecision(item);
-				//var ucotSpreadValue = spreadValue.multipliedBy($scope.ManageTaskModel.UcotFactor).decimalPlaces(precision);
-
-				//// set the Ucot spread value in original array from the copy array
-				//if (ucotSpread !== undefined && ucotSpread.LaborSpreadValue !== undefined) {
-				//	delta = ucotSpreadValue.minus(ucotSpread.LaborSpreadValue);
-				//	ucotSpread.LaborSpreadValue = ucotSpreadValue;
-				//} else {
-				//	// this is a new value for the Ucot Spreads table
-				//	// Assuming that we do not need these in order
-				//	ucotSpread = { LaborSpreadDate: dt, LaborSpreadValue: ucotSpreadValue };
-				//	item.UcotSpreads.push(ucotSpread);
-				//	delta = ucotSpreadValue;
-				//}
-
-				//// add delta to labor type object Ucot Hours
-				//var ucotHourSpread = delta.plus(item.UcotHours);
-				//item.UcotHours = ucotHourSpread.toString();
 				$scope.calculateDiscreteUCOTSpread(item, false);
 			}
 			else {
