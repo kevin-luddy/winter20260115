@@ -9,7 +9,6 @@ namespace GenBOE.Web.Controllers
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
-	using System.Data.Entity.Core;
 	using System.Diagnostics;
 	using System.IO;
 	using System.Linq;
@@ -18,8 +17,6 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ControllerLogic;
-	using GenBOE.ActionLogic.IO.Export;
-	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.Metrics;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.Permissions;
@@ -31,7 +28,6 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.Web.Common;
 	using GenBOE.Web.ModelView;
 	using IES.Common;
-	using IES.Common.classes;
 	using IES.Common.Exceptions;
 	using IES.Common.OfficeUtilities;
 
