@@ -17,7 +17,7 @@ namespace IES.Common.Core.Utilities
 	using IES.Common.Core.Configuration;
 	using IES.Common.Core.Constants;
 	using IES.Common.Core.Enums;
-	using Microsoft.Data.SqlClient;
+	using System.Data.SqlClient;
 
 	public static class StoredProcedureHelper
 	{

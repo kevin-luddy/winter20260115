@@ -31,6 +31,8 @@ namespace GenBOE.ActionLogic.ModelView
             this.StartDate = DateTime.MinValue;
             this.EndDate = DateTime.MinValue;
             this.TotalHours = 0;
+			this.TotalUCOTHours = 0;
+			this.TotalHoursWithUCOT = 0;
             this._totalCost = 0;
             this.Deleted = false;
             this.TaskType = TaskElementType.None;
@@ -49,6 +51,8 @@ namespace GenBOE.ActionLogic.ModelView
                 this.StartDate = inBoeTaskElement.StartDate;
                 this.EndDate = inBoeTaskElement.EndDate;
                 this.TotalHours = inBoeTaskElement.TotalHours;
+				this.TotalUCOTHours = inBoeTaskElement.UCOTHours;
+				this.TotalHoursWithUCOT = inBoeTaskElement.TotalHoursWithUCOT;
                 this.Deleted = false;
                 this.TaskType = inBoeTaskElement.TaskElementType;
                 this._totalCost = inBoeTaskElement.TotalCost;

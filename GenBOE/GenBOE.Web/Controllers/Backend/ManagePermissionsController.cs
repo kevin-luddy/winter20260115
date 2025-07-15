@@ -6,18 +6,25 @@
 
 namespace GenBOE.Web.Controllers
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Web.Http;
+	using System.Net.Http;
+	using System.IO;
+	using System.Net;
+	using System.Net.Http.Headers;
+	using System.Web;
+	using System.Diagnostics.CodeAnalysis;
 	using GenBOE.ActionLogic;
-	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.Backend;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Objects;
 	using GenBOE.Web.ModelView;
 	using IES.Common;
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Web.Http;
+	using IES.Common.Exceptions;
+	using GenBOE.ActionLogic.ModelView;
 
 	/// <summary>
 	/// Manage Permissions Controller for getting workspace home data.
@@ -106,12 +113,12 @@ namespace GenBOE.Web.Controllers
 			return result;
 		}
 
-		/// <summary>
-		/// Gets Members of Group
-		/// </summary>
-		///<param name="groupName">The AD group name.</param>
-		/// <returns>Group Members</returns>
-		[HttpGet]
+        /// <summary>
+        /// Gets Members of Group
+        /// </summary>
+        ///<param name="groupName">The AD group name.</param>
+        /// <returns>Group Members</returns>
+        [HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public IESSingleResponse<ICollection<UserData>> GetGroupMembers(string groupName)
@@ -164,6 +171,94 @@ namespace GenBOE.Web.Controllers
 			{
 				logger.Error(ex);
 				result.Messages.Add($"Unknown error occured saving permissions: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Export Permissions
+		/// </summary>
+		/// <param name="exportPermissionModelView">ExportPermissionModelView (just workspaceShortName)</param>
+		/// <returns>filestream</returns>
+		[HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public HttpResponseMessage ExportPermissions([FromBody] ExportPermissionModelView exportPermissionModelView)
+		{
+			try
+			{
+				if (exportPermissionModelView != null)
+				{
+					FullWorkspace ws = this.Factory.CreateFullWorkspace(exportPermissionModelView.workspaceShortName);
+					FileStream fs = this.PermissionControllerLogic.ExportPermissions(ws);
+
+					HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+					response.Content = new StreamContent(fs);
+					response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+					response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
+					response.Content.Headers.ContentDisposition.FileName = "Permissions.xlsx";
+
+					return response;
+				}
+				else
+				{
+					return new HttpResponseMessage(HttpStatusCode.BadRequest)
+					{
+						Content = new StringContent("Invalid request body")
+					};
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				return new HttpResponseMessage(HttpStatusCode.InternalServerError)
+				{
+					Content = new StringContent("Unknown error exporting Permissions")
+				};
+			}
+		}
+
+		/// <summary>
+		/// Import Permissions from File
+		/// </summary>
+		/// <param name="workspace">The workspace name</param>
+		/// <returns>boolean</returns>
+		[System.Web.Http.HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes"), SuppressMessage("Microsoft.Design", "CA1011: Consider passing base types as parameters")]
+		public IESSingleResponse<bool> ImportPermissions(string workspace)
+		{
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+			try
+			{
+				//FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+				Stream importFile = HttpContext.Current.Request.Files[0].InputStream;
+
+				// If a file was uploaded successfully
+				if (importFile != null)
+				{
+					string errorMessage = PermissionControllerLogic.ImportPermissions(workspace, importFile);
+
+					if (!string.IsNullOrEmpty(errorMessage))
+					{
+						throw new GenValidationException(errorMessage);
+					}
+					else
+					{
+						result.Data = true;
+						result.IsSuccessful = true;
+					}
+				}
+				// If no file was uploaded, tell the user about it. Client validation should keep this from being hit.
+				else
+				{
+					result.Messages.Add("No file selected for upload");
+				}
+
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"{ex.Message}");
 			}
 
 			return result;
