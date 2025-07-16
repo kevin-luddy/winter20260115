@@ -186,6 +186,4 @@ namespace GenBOE.ActionLogic.Misc
 			return ucotTotal;
 		}
 	}
-
-
 }
