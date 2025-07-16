@@ -15,6 +15,7 @@ namespace GenBOE.ActionLogic.IO.Export
 	using System.Text;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.Common.Calculations;
+	using GenBOE.ActionLogic.Misc;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ZoneTravel;
 	using GenBOE.DataBridge.Common;
@@ -1404,7 +1405,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="inputsForExport">BOE Level export data</param>
 		/// <param name="clin">CLIN DTO</param>
 		/// <param name="wbs">WBS DTO</param>
-		/// <param name="inResourceIDs">Resouce IDs</param>
+		/// <param name="inResourceIDs">Resource IDs</param>
 		/// <param name="boeTask">BOE Task Element DTO</param>
 		/// <param name="laborTypeIdToProPricerIdMappings">Labor Type ID to ProPricer mappings</param>
 		/// <param name="labor">Labor/Resource Type DTO</param>
@@ -1608,7 +1609,9 @@ namespace GenBOE.ActionLogic.IO.Export
 				}
 
 				// Get UCOT Spreads if applicable
-				IDictionary<DateTime, decimal> ucotSpreads = GetUcotSpreads(wsLevelData, labor, workspaceShortname, elementOfCost, taskMoqType);
+				RateType rateType = wsLevelData.Resources.FirstOrDefault(r => r.Id == labor.BusinessResourceCodeID)?.RateType ?? RateType.NotSet;
+				IDictionary<DateTime, decimal> ucotSpreads = UCOTUtility.GetUcotSpreads(wsLevelData.CreationDate, workspaceShortname, wsLevelData.ResourceDecimalPrecision, wsLevelData.UCOTFactor,
+					labor.LaborSpreads, elementOfCost, wsLevelData.MoqTypes, labor.TaskElementId, rateType);
 
 				// Now get all the labor spreads
 				// Discrete spreads are only stored in the DB when a value for the month has been entered so to account for 0 months, add 0
@@ -1654,52 +1657,6 @@ namespace GenBOE.ActionLogic.IO.Export
 					wsLevelData.PpDataToBeExported.ResourceData.Add(newResourceRow.ToString());
 				}
 			}
-		}
-
-		/// <summary>
-		/// Get the UCOT spreads for the given Labor Spreads
-		/// </summary>
-		/// <param name="wsLevelData">Workspace level input data</param>
-		/// <param name="labor">Labor/Resource Type containing the spreads</param>
-		/// <param name="workspaceShortname">Workspace Shortname</param>
-		/// <param name="elementOfCost">Element of Cost for the Labor</param>
-		/// <param name="taskMoqType">MOQ Type for the task</param>
-		/// <returns>Smoothed UCOT spreads for the Labor</returns>
-		private static IDictionary<DateTime, decimal> GetUcotSpreads(WsLevelInputsForExport wsLevelData, ResourceTypeDto labor, string workspaceShortname, ElementOfCostType elementOfCost, string taskMoqType)
-		{
-			IDictionary<DateTime, decimal> smoothedUcotSpreads = new Dictionary<DateTime, decimal>();
-			if (Utilities.ShowUCOTForWorkspace(wsLevelData.CreationDate, workspaceShortname) && elementOfCost == ElementOfCostType.LMLabor
-				&& (taskMoqType == MOQType.Historical.GetDescription() || taskMoqType == MOQType.Comparative.GetDescription() || taskMoqType == MOQType.AnalogousRelationships.GetDescription()))
-			{
-				// Get spreads on/after 1LMX start to see if UCOT needs to be applied
-				IDictionary<DateTime, decimal> spreadsToApplyUcot = labor.LaborSpreads.Where(x => x.LaborSpreadDate >= Utilities.OneLmxStartDate)
-					.ToDictionary(x => x.LaborSpreadDate, x => x.LaborSpreadValue);
-
-				if (spreadsToApplyUcot.Any())
-				{
-					// Get UCOT Total
-					decimal ucotTotal = spreadsToApplyUcot.Sum(x => x.Value) * (wsLevelData.UCOTFactor / 100m);
-					ucotTotal = Utilities.AdjustPrecision(ucotTotal, wsLevelData.ResourceDecimalPrecision);
-
-					// Calculate UCOT values for spreads
-					IDictionary<DateTime, decimal> ucotSpreads = new Dictionary<DateTime, decimal>();
-					foreach (KeyValuePair<DateTime, decimal> spread in spreadsToApplyUcot.OrderBy(x => x.Key))
-					{
-						ucotSpreads.Add(spread.Key, Utilities.AdjustPrecision(spread.Value * wsLevelData.UCOTFactor / 100m, wsLevelData.ResourceDecimalPrecision));
-					}
-
-					// Get smoothed curve values
-					decimal[] smoothedSpreadValues = SpreadCurve.Smooth(ucotTotal, ucotSpreads.Select(x => x.Value).ToArray(), 0, ucotSpreads.Count, wsLevelData.ResourceDecimalPrecision);
-
-					// Add the smoothed values to the dictionary to apply to spreads later
-					for (int i = 0; i < ucotSpreads.Count; i++)
-					{
-						smoothedUcotSpreads.Add(ucotSpreads.ElementAt(i).Key, smoothedSpreadValues[i]);
-					}
-				}
-			}
-
-			return smoothedUcotSpreads;
 		}
 
 		/// <summary>

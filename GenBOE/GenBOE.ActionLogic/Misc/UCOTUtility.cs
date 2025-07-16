@@ -6,15 +6,16 @@
 
 namespace GenBOE.ActionLogic.Misc
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using GenBOE.ActionLogic.IO.Export;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using IES.Common;
 	using MoreLinq;
-	using System;
-	using System.Collections.Generic;
-	using System.Linq;
 
 	/// <summary>
 	/// UCOT Specific Utility Methods
@@ -185,4 +186,6 @@ namespace GenBOE.ActionLogic.Misc
 			return ucotTotal;
 		}
 	}
+
+
 }

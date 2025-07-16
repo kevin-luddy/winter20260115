@@ -27,6 +27,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using GenBOE.ActionLogic.Misc;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.BOE;
+	using GenBOE.ActionLogic.ModelView.Workspace;
 	using GenBOE.ActionLogic.Validation;
 	using GenBOE.ActionLogic.WBS.BOE;
 	using GenBOE.DataBridge.Common;
@@ -3440,27 +3441,69 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				// run SAP Validation/Calculation and update correct fields
 				if (validRows.Any())
 				{
-					ICollection<IESResponse<CalculateActualsViewModel>> sapResults = await this.CalculateAllActualsSap(validRows);
-					foreach (IESResponse<CalculateActualsViewModel> sapResult in sapResults)
+					// Make one bulk call to SAP
+					if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate))
 					{
-						CalculateActualsViewModel calculateActualsViewModel = sapResult.Data.FirstOrDefault();
-						if (calculateActualsViewModel != null && calculateActualsViewModel.TableId >= 0 && calculateActualsViewModel.TableId < dataToSaveArray.Length)
+						ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>> responses = await this.CalculateAllActualsSapWithSkillMix(validRows);
+						foreach (IESResponse<CalculateActualsWithSkillMixViewModel> response in responses)
 						{
-							// match by the tableId to the index in the array
-							ImportMoqTableResultsModelView modelView = dataToSaveArray[calculateActualsViewModel.TableId];
+							WorkspaceCalculateActualsModelView resultModel = new WorkspaceCalculateActualsModelView();
+							CalculateActualsWithSkillMixViewModel calculateActualsViewModel = response.Data.First();
 
-							if (sapResult.IsSuccessful)
+							if (calculateActualsViewModel != null && calculateActualsViewModel.TableId >= 0 && calculateActualsViewModel.TableId < dataToSaveArray.Length)
 							{
-								// update the totals and date
-								modelView.TotalRelevantHours = Convert.ToDecimal(calculateActualsViewModel.TotalHours);
-								modelView.TotalWbsHours = Convert.ToDecimal(calculateActualsViewModel.WbsHours ?? 0.0);
-								modelView.DateOfReport = DateTime.Now;
+								// match by the tableId to the index in the array
+								ImportMoqTableResultsModelView modelView = dataToSaveArray[calculateActualsViewModel.TableId];
+
+								if (response.IsSuccessful)
+								{
+									// update the totals and date
+									double? wbsHoursSum = calculateActualsViewModel.SkillMixDataTable.Sum(s => s.WbsHours);
+									double totalHoursSum = calculateActualsViewModel.SkillMixDataTable.Sum(s => s.TotalHours);
+									modelView.TotalRelevantHours = Convert.ToDecimal(totalHoursSum);
+									modelView.TotalWbsHours = Convert.ToDecimal(wbsHoursSum ?? 0.0);
+									modelView.DateOfReport = DateTime.Now;
+									modelView.ResourceHours = calculateActualsViewModel.SkillMixDataTable.Where(s => s.TotalHours != 0.0).Select(skillMix => new MOQTypeSelectionTableDataResourceHoursDTO
+									{
+										ResourceName = skillMix.ResourceID,
+										WbsHours = skillMix.WbsHours.HasValue ? Convert.ToDecimal(skillMix.WbsHours.Value) : default(decimal),
+										TotalHours = Convert.ToDecimal(skillMix.TotalHours)
+									}).ToArray();
+								}
+								else
+								{
+									// Update the Import Result Type
+									modelView.ImportType = (int)MoqTableImportType.InvalidSapCalculation;
+									modelView.ErrorMessages = response.Messages;
+								}
 							}
-							else
+						}
+					}
+					else
+					{
+
+						ICollection<IESResponse<CalculateActualsViewModel>> sapResults = await this.CalculateAllActualsSap(validRows);
+						foreach (IESResponse<CalculateActualsViewModel> sapResult in sapResults)
+						{
+							CalculateActualsViewModel calculateActualsViewModel = sapResult.Data.FirstOrDefault();
+							if (calculateActualsViewModel != null && calculateActualsViewModel.TableId >= 0 && calculateActualsViewModel.TableId < dataToSaveArray.Length)
 							{
-								// Update the Import Result Type
-								modelView.ImportType = (int)MoqTableImportType.InvalidSapCalculation;
-								modelView.ErrorMessages = sapResult.Messages;
+								// match by the tableId to the index in the array
+								ImportMoqTableResultsModelView modelView = dataToSaveArray[calculateActualsViewModel.TableId];
+
+								if (sapResult.IsSuccessful)
+								{
+									// update the totals and date
+									modelView.TotalRelevantHours = Convert.ToDecimal(calculateActualsViewModel.TotalHours);
+									modelView.TotalWbsHours = Convert.ToDecimal(calculateActualsViewModel.WbsHours ?? 0.0);
+									modelView.DateOfReport = DateTime.Now;
+								}
+								else
+								{
+									// Update the Import Result Type
+									modelView.ImportType = (int)MoqTableImportType.InvalidSapCalculation;
+									modelView.ErrorMessages = sapResult.Messages;
+								}
 							}
 						}
 					}
