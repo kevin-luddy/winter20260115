@@ -664,6 +664,25 @@ namespace GenTRAC.ActionLogic
 
 			this.AddAndDeletePermissions(fullProposalDto, backupPricerPermission, PtmRole.BackupPricer, permissionsToAdd, permissionsToDelete);
 
+			// MSAC POC
+			ProposalPermissionDto msacPOCPermission = null;
+			if (!string.IsNullOrEmpty(proposalUserInfo.MsacPOCNtid))
+			{
+				UserDTO MsacPOC = UserMapper.GetByNtid(proposalUserInfo.MsacPOCNtid);
+				msacPOCPermission = new ProposalPermissionDto()
+				{
+					Id = -1,
+					ProposalID = proposalId,
+					UserId = MsacPOC.Id,
+					Role = PtmRole.MsacPOC,
+					ResourceType = ResourceType.NotSet,
+					Updateable = IES.Common.UpdateType.Upsert,
+					UpdateDate = proposalUserInfo.UpdateDate
+				};
+			}
+
+			this.AddAndDeletePermissions(fullProposalDto, msacPOCPermission, PtmRole.MsacPOC, permissionsToAdd, permissionsToDelete);
+
 			ProposalPermissionDto genBoeWorkspaceCreatorPermission = null;
 			if (!string.IsNullOrEmpty(proposalUserInfo.GenBoeWorkspaceCreatorNtid))
 			{
@@ -1780,6 +1799,10 @@ namespace GenTRAC.ActionLogic
 							model.BackupContractsPOCNtId = user.Ntid;
 							model.BackupContractsPOCDisplayName = user.DisplayName;
 							break;
+						case PtmRole.MsacPOC:
+							model.MsacPOCNtid = user.Ntid;
+							model.MsacPOCDisplayName = user.DisplayName;
+							break;
 						case PtmRole.TechLead:
 							model.TechLeadNtid = user.Ntid;
 							model.TechLeadDisplayName = user.DisplayName;
@@ -2032,9 +2055,14 @@ namespace GenTRAC.ActionLogic
 				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.PROPOSALMGR_REQUIRED));
 			}
 
-			if (isNss &&   string.IsNullOrWhiteSpace(proposalUserInfo.ProgramMgrNtid))
+			if (isNss && string.IsNullOrWhiteSpace(proposalUserInfo.ProgramMgrNtid))
 			{
 				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.PROGRAMMGR_REQUIRED));
+			}
+
+			if (isNss && string.IsNullOrWhiteSpace(proposalUserInfo.MsacPOCNtid))
+			{
+				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.MSAC_POC_REQUIRED));
 			}
 
 			if (!invalidContractsPOCNtId && !invalidBackupContractsPOCNtId && (proposalUserInfo.ContractsPOCNtId == proposalUserInfo.BackupContractsPOCNtId))
@@ -2083,6 +2111,7 @@ namespace GenTRAC.ActionLogic
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.ContractsPOCNtId, savedProposalUsers.ContractsPOCNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.CONTRACTS_POC_INVALID_NTID, true, true) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.BackupContractsPOCNtId, savedProposalUsers.BackupContractsPOCNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.BACKUP_CONTRACTS_POC_INVALID_NTID, true, true) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.BackupPricerNtId, savedProposalUsers.BackupPricerNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.BACKUP_PRICER_INVALID_NTID, true, true) && validUnchangedUsers;
+			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.MsacPOCNtid, savedProposalUsers.MsacPOCNtid, inValidationErrors, ValidationConstants.ProposalValidationConstants.MSAC_POC_INVALID_NTID, true, true) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.ProposalMgrNtid, savedProposalUsers.ProposalMgrNtid, inValidationErrors, ValidationConstants.ProposalValidationConstants.PROPOSAL_MANAGER_INVALID_NTID, false, false) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.ProgramMgrNtid, savedProposalUsers.ProgramMgrNtid, inValidationErrors, ValidationConstants.ProposalValidationConstants.PROGRAM_MANAGER_INVALID_NTID, false, false) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.TechLeadNtid, savedProposalUsers.TechLeadNtid, inValidationErrors, ValidationConstants.ProposalValidationConstants.TECH_LEAD_INVALID_NTID, true, true) && validUnchangedUsers;

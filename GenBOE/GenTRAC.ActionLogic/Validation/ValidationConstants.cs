@@ -374,6 +374,11 @@ namespace GenTRAC.ActionLogic.Validation
 			public const string PROGRAMMGR_REQUIRED = USER_INFO_VALDIATION + "Program Manager is required if LOB is set to National Security Space.";
 
 			/// <summary>
+			/// MSAC POC is required
+			/// </summary>
+			public const string MSAC_POC_REQUIRED = USER_INFO_VALDIATION + "MSAC POC is required if LOB is set to National Security Space.";
+
+			/// <summary>
 			/// contracts POC is required
 			/// </summary>
 			public const string CONTRACTS_POC_REQUIRED = USER_INFO_VALDIATION + "Contracts POC is required.";
@@ -468,6 +473,11 @@ namespace GenTRAC.ActionLogic.Validation
 			/// Program Manager invalid NTID.
 			/// </summary>
 			public const string PROGRAM_MANAGER_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Program Manager.";
+
+			/// <summary>
+			/// MSAC POC invalid NTID.
+			/// </summary>
+			public const string MSAC_POC_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for MSAC POC.";
 
 			/// <summary>
 			/// Tech Lead invalid NTID.

@@ -260,6 +260,12 @@ namespace IES.Common
 		ProgramMgr = 25,
 
 		/// <summary>
+		/// MSAC POC (Business Development)
+		/// </summary>
+		[Description("MSAC POC (Business Development)")]
+		MsacPOC = 26,
+
+		/// <summary>
 		/// CAREFUL
 		/// 
 		/// Do not use this as a ROLE. This is only used for some decisions in which dropdown should be 
