@@ -1983,6 +1983,7 @@ namespace GenTRAC.ActionLogic
 		/// <param name="proposalApprovalsInfo">the proposal approvals to be verified</param>
 		/// <param name="proposalUserInfo">the proposal users to be verified</param>
 		/// <param name="inValidationErrors">validation errors collection</param>
+		/// <param name="isNss">indicates if LOB is set to National Security Space</param>
 		/// <returns>True if there are invalid users on an update but were not changed, false otherwise.</returns>
 		public bool ValidateUserTypes(int? proposalId, ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, ICollection<ValidationMessage> inValidationErrors, bool isNss = false)
 		{
