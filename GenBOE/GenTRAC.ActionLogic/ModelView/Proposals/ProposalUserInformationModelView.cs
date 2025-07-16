@@ -170,20 +170,30 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// </summary>
         public string TechLeadDisplayName { get; set; }
 
-        /// <summary>
-        /// Gets or sets PropsalMgr
-        /// </summary>
-        public string ProposalMgrNtid { get; set; }
+		/// <summary>
+		/// Gets or sets PropsalMgr
+		/// </summary>
+		public string ProposalMgrNtid { get; set; }
 
-        /// <summary>
-        /// Gets or sets ProposalMgr's account display name
-        /// </summary>
-        public string ProposalMgrDisplayName { get; set; }
+		/// <summary>
+		/// Gets or sets ProposalMgr's account display name
+		/// </summary>
+		public string ProposalMgrDisplayName { get; set; }
 
-        /// <summary>
-        /// Gets or sets the NTID of the GenBOE Workspace Creator
-        /// </summary>
-        public string GenBoeWorkspaceCreatorNtid { get; set; }
+		/// <summary>
+		/// Gets or sets Program Mgr
+		/// </summary>
+		public string ProgramMgrNtid { get; set; }
+
+		/// <summary>
+		/// Gets or sets Program Mgr's account display name
+		/// </summary>
+		public string ProgramMgrDisplayName { get; set; }
+
+		/// <summary>
+		/// Gets or sets the NTID of the GenBOE Workspace Creator
+		/// </summary>
+		public string GenBoeWorkspaceCreatorNtid { get; set; }
 
         /// <summary>
         /// Gets or sets the Display Name of the GenBOE Workspace Creator

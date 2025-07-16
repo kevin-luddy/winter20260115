@@ -254,6 +254,12 @@ namespace IES.Common.Core.Enums
 		BackupMaterialLead = 24,
 
 		/// <summary>
+		/// Program Mgr
+		/// </summary>
+		[Description("Program Manager")]
+		ProgramMgr = 25,
+
+		/// <summary>
 		/// CAREFUL
 		/// 
 		/// Do not use this as a ROLE. This is only used for some decisions in which dropdown should be 
