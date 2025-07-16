@@ -1033,7 +1033,7 @@
 			}
 
 			if ($scope.IsUcot(item) && dt.toDate() >= $scope.oneLmxCutOff) {
-				$scope.calculateDiscreteUCOTSpread(item, false);
+				$scope.calculateDiscreteUCOTSpread(item, true);
 			}
 			else {
 				// re-calculate totals
@@ -2284,7 +2284,7 @@
 					calculateSpread(item, spreadValue);
 				} else {
 					// discrete
-					$scope.calculateDiscreteUCOTSpread(item, spreadValue);
+					$scope.calculateDiscreteUCOTSpread(item, true);
 				}
 			}
 		} else if (item.SpreadCurveID === "-1") {

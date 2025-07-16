@@ -291,7 +291,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			if (ucotSpreadItem.IsValid())
 			{
 				IDictionary<DateTime, decimal> smoothedUCOTSpreads = UCOTUtility.GetUcotSpreads(workspaceData.CreationDate, workspaceData.Shortname, workspaceData.DecimalPrecision, workspaceData.UCOTFactor, ucotSpreadItem.spreads.Select(x => x.ToBoeLaborSpread((int)ucotSpreadItem.rateType)).ToList(), ucotSpreadItem.ElementOfCost.Value, workspaceData.MoqTypeSelections.ToList(), ucotSpreadItem.boeTaskElementId, ucotSpreadItem.rateType.Value);
-				smoothedUCOTSpreads.OrderBy(x => x.Key);
 				ucotSpreadItem.ucotHours = 0m;
 
 				foreach (LaborSpreadDataModelView item in ucotSpreadItem.ucotSpreads)
