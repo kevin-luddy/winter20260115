@@ -83,50 +83,6 @@ namespace GenBOE.ActionLogic.Misc
 		}
 
 		/// <summary>
-		/// Private Method to calculate individual Task Element UCOT Data
-		/// </summary>
-		/// <param name="taskElement">Task Element DTO</param>
-		/// <param name="moqTypeSelectionDictionary">MOQ Type Selection Dictionary</param>
-		/// <param name="resourceDictionary">Resource Dictionary</param>
-		/// <returns>UCOT Total for the Task</returns>
-		private static decimal CalculateTaskUCOTHours(BoeTaskElementDTO taskElement, Dictionary<int, IGrouping<int, MoqTypeSelection>> moqTypeSelectionDictionary, IDictionary<int, ResourceDTO> resourceDictionary)
-		{
-			decimal ucotTotal = 0m;
-
-			if (!moqTypeSelectionDictionary.ContainsKey(taskElement.Id))
-			{
-				return ucotTotal;
-			}
-
-			IGrouping<int, MoqTypeSelection> moqGroup = moqTypeSelectionDictionary[taskElement.Id];
-
-			if (moqGroup.Count() == 1)
-			{
-				MoqTypeSelection moqType = moqGroup.First();
-
-				if (moqType.SelectedMOQType == MOQType.AnalogousRelationships || moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative)
-				{
-					taskElement.taskElementLabors.Where(x => x.SpreadType == SpreadType.Hours).ForEach(labor =>
-					{
-						if (labor.BusinessResourceCodeID.HasValue)
-						{
-							ResourceDTO resource = resourceDictionary[labor.BusinessResourceCodeID.Value];
-
-							if (resource != null && resource.ElementOfCost == ElementOfCostType.LMLabor)
-							{
-								ucotTotal += labor.LaborSpreads
-									.Where(s => s.LaborSpreadDate >= Utilities.OneLmxStartDate)
-									.Sum(spread => spread.LaborSpreadValue);
-							}
-						}
-					});
-				}
-			}
-
-			return ucotTotal;
-		}
-		
-		/// <summary>
 		/// Get the UCOT spreads for the given Labor Spreads
 		/// </summary>
 		/// <param name="decimalPrecision">decimal precision</param>
@@ -184,6 +140,50 @@ namespace GenBOE.ActionLogic.Misc
 			}
 
 			return smoothedUcotSpreads;
+		}
+
+		/// <summary>
+		/// Private Method to calculate individual Task Element UCOT Data
+		/// </summary>
+		/// <param name="taskElement">Task Element DTO</param>
+		/// <param name="moqTypeSelectionDictionary">MOQ Type Selection Dictionary</param>
+		/// <param name="resourceDictionary">Resource Dictionary</param>
+		/// <returns>UCOT Total for the Task</returns>
+		private static decimal CalculateTaskUCOTHours(BoeTaskElementDTO taskElement, Dictionary<int, IGrouping<int, MoqTypeSelection>> moqTypeSelectionDictionary, IDictionary<int, ResourceDTO> resourceDictionary)
+		{
+			decimal ucotTotal = 0m;
+
+			if (!moqTypeSelectionDictionary.ContainsKey(taskElement.Id))
+			{
+				return ucotTotal;
+			}
+
+			IGrouping<int, MoqTypeSelection> moqGroup = moqTypeSelectionDictionary[taskElement.Id];
+
+			if (moqGroup.Count() == 1)
+			{
+				MoqTypeSelection moqType = moqGroup.First();
+
+				if (moqType.SelectedMOQType == MOQType.AnalogousRelationships || moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative)
+				{
+					taskElement.taskElementLabors.Where(x => x.SpreadType == SpreadType.Hours).ForEach(labor =>
+					{
+						if (labor.BusinessResourceCodeID.HasValue)
+						{
+							ResourceDTO resource = resourceDictionary[labor.BusinessResourceCodeID.Value];
+
+							if (resource != null && resource.ElementOfCost == ElementOfCostType.LMLabor)
+							{
+								ucotTotal += labor.LaborSpreads
+									.Where(s => s.LaborSpreadDate >= Utilities.OneLmxStartDate)
+									.Sum(spread => spread.LaborSpreadValue);
+							}
+						}
+					});
+				}
+			}
+
+			return ucotTotal;
 		}
 	}
 }

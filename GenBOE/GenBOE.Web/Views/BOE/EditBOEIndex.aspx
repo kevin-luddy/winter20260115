@@ -22,6 +22,7 @@
 			exportAction: '<%: WebConstants.ACTION_EXPORT_LABOR_TYPE_AND_SPREAD %>',
 			exportOffloadAction: '<%: WebConstants.ACTION_EXPORT_OFFLOAD_RATES %>',
 			calculateSpreadAction: '<%: WebConstants.ACTION_CALCULATE_SPREAD %>',
+            calculateDiscreteUCOTSpreadAction: '<%: WebConstants.ACTION_CALCULATE_DISCRETE_UCOT_SPREAD %>',
 			ImportMoqTablesAction: '<%: WebConstants.ACTION_IMPORT_MOQ_TABLES %>',
 			CompleteImportMoqTablesAction: '<%: WebConstants.ACTION_COMPLETE_IMPORT_MOQ_TABLES %>',
 			ExportMoqTablesAction: '<%: WebConstants.ACTION_EXPORT_MOQ_TABLES %>',
@@ -79,7 +80,7 @@
 				$("#SubmitForApproval").hide();
 			}
 		});
-	</script>
+    </script>
 
 	<% Html.RenderAction(WebConstants.ACTION_DISPLAY_BOE_HEADER, WebConstants.CONTROLLER_BOE, new { id = ViewData["BOEID"] }); %>
 

@@ -25,6 +25,8 @@ namespace GenBOE.ActionLogic.ModelView
 
         public bool? percentLocked { get; set; }
 
+		public int boeTaskElementId { get; set; }
+
         public ICollection<LaborSpreadDataModelView> spreads { get; set; }
 
 		/// <summary>
