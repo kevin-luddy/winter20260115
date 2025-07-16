@@ -2,15 +2,16 @@
 
 namespace GenBOE.DataBridge.DTO
 {
+	using GenBOE.Dtos;
+	using GenBOE.Models;
+	using GenBOE.PLD.Models;
+	using IES.Common;
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
+	using System.Runtime.Remoting.Contexts;
 	using System.Text;
-	using IES.Common;
-	using GenBOE.Dtos;
-	using GenBOE.Models;
-	using GenBOE.PLD.Models;
 
 	/// <summary>
 	/// PLD DTO Data Loader
@@ -40,6 +41,12 @@ namespace GenBOE.DataBridge.DTO
 		protected Logger Log { get; set; }
 
 		#endregion
+
+		public PldDTODataLoader()
+		{
+			_context = new PldDBContext();
+			this.Log = new Logger(typeof(PldDTODataLoader));
+		}
 
 		public PldDTODataLoader(PldDBContext context = null)
 		{

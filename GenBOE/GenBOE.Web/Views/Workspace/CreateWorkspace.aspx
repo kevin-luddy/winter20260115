@@ -39,7 +39,9 @@
             WorkSpaceShortNameURL: window.location.protocol + '//' + window.location.host + '/' + 'default/' +
                 '<%= WebConstants.CONTROLLER_WORKSPACE %>' + '/' + '<%:WebConstants.ACTION_IS_WORKSPACE_SHORT_NAME_AVAILABLE %>',
             TrackingNumber: '<%= Request.QueryString["TrackingNumber"]%>',
+            PLDPANumber: '<%= Request.QueryString["PLDPANumber"]%>',
             IsPTMIntegrated: <%= Utilities.IsPTMIntegrated.ToString().ToLower()%>,
+            IsPLDIntegrated: <%= Utilities.ShowPLDIsIntegrated.ToString().ToLower()%>,
             IsAdmin: <%= Model.IsAdmin.ToString().ToLower()%>,
             PtmTrackingNumberNotRequired: <%= Model.PtmTrackingNumberNotRequired.ToString().ToLower() %>,
             GetNextTrackingNumberRevisionAction: '<%= WebConstants.ACTION_GET_NEXT_TRACKING_NUMBER_REVISION%>',

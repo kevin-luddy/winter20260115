@@ -105,6 +105,7 @@ namespace GenBOE.Web.Controllers
 		private BoePickListMapper boePickListMapper;
 		private CommentsAndResponsesExporter _commentsAndResponsesExporter = null;
 		private BOECommentsControllerLogic _boeCommentsControllerLogic = null;
+		private GenBOE.DataBridge.DTO.IPldDTODataLoader pldDTODataLoader;
 
 		/// <summary>
 		/// Workspace Exporter
@@ -198,6 +199,7 @@ namespace GenBOE.Web.Controllers
 			IOffloadRatesDTOLoader offloadRatesDTOLoader,
 			IRetriever retriever,
 			GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader,
+			GenBOE.DataBridge.DTO.IPldDTODataLoader pldDataLoader,
 			GenTRAC.DataBridge.Common.Security.ISecurityMapper ptmSecurityMapper,
 			BoePickListMapper boePickListMapper,
 			WorkspaceExporter workspaceExporter,
@@ -251,6 +253,7 @@ namespace GenBOE.Web.Controllers
 			this.offloadRatesDTOLoader = offloadRatesDTOLoader;
 			this.retriever = retriever;
 			this.proposalLoader = proposalLoader;
+			this.pldDTODataLoader = pldDataLoader;
 			this.ptmSecurityMapper = ptmSecurityMapper;
 			this.boePickListMapper = boePickListMapper;
 			this.workspaceExporter = workspaceExporter;
@@ -792,6 +795,33 @@ namespace GenBOE.Web.Controllers
 			}
 
 			model.TrackingNumbers = trackingNumbers;
+
+
+			Collection<SelectListItem> pa_numbers = new Collection<SelectListItem>();
+
+			if(Utilities.ShowPLDIsIntegrated)
+			{
+				//string t = "test";
+				// fetch data
+				
+				//_log.Info(t);
+
+				ICollection<ProposalDTO> pldProposal = this.pldDTODataLoader.GetAllProposals().ToList();
+
+				foreach (ProposalDTO proposal in pldProposal)
+				{
+					pa_numbers.Add(new SelectListItem
+					{
+						Text = proposal.PA_Number + " - " + proposal.PA_Title,
+						Value = proposal.PA_Number
+					});
+				}
+
+			}
+
+			model.PLDPANumbers = pa_numbers;
+
+
 
 			IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(this._securityInformation.ActiveUserNTID);
 			model.IsAdmin = permissions.Any(p => p.AuthorizedRole == Role.SystemAdmin);

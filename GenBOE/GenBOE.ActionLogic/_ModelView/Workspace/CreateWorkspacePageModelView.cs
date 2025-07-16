@@ -41,6 +41,8 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// </summary>
 		public ICollection<SelectListItem> TrackingNumbers { get; set; }
 
+		public ICollection<SelectListItem> PLDPANumbers { get; set; }
+
 		/// <summary>
 		/// Gets or sets the application URL.
 		/// </summary>

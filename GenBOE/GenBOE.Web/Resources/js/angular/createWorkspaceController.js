@@ -19,6 +19,7 @@
 		applicationUrl: CreateWorkspaceModelView.ApplicationUrl,            // used in Step 3 & 5
 		lobs: CreateWorkspaceModelView.LOBs,                                // LOB array for dropdown (this one actually uses integers instead of strings for the ids)
 		trackingNumbers: CreateWorkspaceModelView.TrackingNumbers,          // Tracking # array for dropdown
+		pldPANumbers: CreateWorkspaceModelView.pldPANumbers,                // PA Number from PLD   
 		copyTrackingNumbers: [],                                            // Tracking # array for copy workspace dropdown (includes original WS Tracking # if any)
 		projectMapTypes: CreateWorkspaceModelView.ProjectMapTypes,          // Project Map array for dropdown
 		proposalClassTypes: CreateWorkspaceModelView.ProposalClassTypes,    // Proposal Class array for dropdown
@@ -34,8 +35,10 @@
 			WorkspaceName: ''
 		}, // json object
 		isPTMIntegrated: CreateWorkspaceModelView.IsPTMIntegrated && CreateWorkspaceModelView.IsSSC,    // SSC only
+		IsPLDIntegrated: CreateWorkspaceModelView.IsPLDIntegrated && !CreateWorkspaceModelView.IsSSC,
 		ptmTrackingNumber: '',                      // SSC only
 		selectedPtmTrackingNumber: '',              // SSC only
+		selectedPLDPANumber: '', // RTM only
 		isAdmin: CreateWorkspaceModelView.IsAdmin,  // SSC only
 		ptmTrackingNumberNotRequired: CreateWorkspaceModelView.PtmTrackingNumberNotRequired || CreateWorkspaceModelView.IsAdmin, // SSC only TODO - remove admin part
 		nextRevision: '', // SSC only, the next revision of the PTM tracking number
