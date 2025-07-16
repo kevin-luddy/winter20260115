@@ -187,8 +187,9 @@ namespace GenTRAC.Tests.ActionLogic
                         CostVolumeLeadNtid = "n00000",
                         ContractsPOCNtId = "n00000",
                         BackupContractsPOCNtId = "n22222",
-                        ProposalMgrNtid = "n00000",
-                        SupplyChainPOCMaterialsNtId = "n00000",
+						ProposalMgrNtid = "n00000",
+						ProgramMgrNtid = "n00001",
+						SupplyChainPOCMaterialsNtId = "n00000",
                         SupplyChainPOCMaterialsBackupNtId = "n00000",
                         SupplyChainPOCSubsNtId = "n00000",
                         SupplyChainPOCSubsBackupNtId = "n00000"
@@ -2782,13 +2783,13 @@ namespace GenTRAC.Tests.ActionLogic
             // CASE: Backup IBOE Preparer with no PBOE Preparer
             proposalUserInfo.SupplyChainPOCSubsNtId = null;
             sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
-            Assert.IsTrue(validationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.SUBCONTRACTS_LEAD_BACKUP_REQUIRES_LEAD));
-        }
+			Assert.IsTrue(validationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.SUBCONTRACTS_LEAD_BACKUP_REQUIRES_LEAD));
+		}
 
-        /// <summary>
-        /// Test the ValidateUserTypes functionality, verify the failed validation handling
-        /// </summary>
-        [TestMethod]
+		/// <summary>
+		/// Test the ValidateUserTypes functionality, verify the failed validation handling
+		/// </summary>
+		[TestMethod]
         public void C_ValidateUserTypesFailedValidationTest()
         {
             ProposalControllerLogic sut = this.CreateSystem();
@@ -3002,9 +3003,12 @@ namespace GenTRAC.Tests.ActionLogic
             userInfo.BackupPricerNtId = user.Ntid;
             userInfo.BackupPricerDisplayName = user.DisplayName;
 
-            userInfo.ProposalMgrNtid = user.Ntid;
-            userInfo.ProposalMgrDisplayName = user.DisplayName;
-            return userInfo;
+			userInfo.ProposalMgrNtid = user.Ntid;
+			userInfo.ProposalMgrDisplayName = user.DisplayName;
+
+			userInfo.ProgramMgrNtid = user.Ntid;
+			userInfo.ProgramMgrDisplayName = user.DisplayName;
+			return userInfo;
         }
 
         /// <summary>

@@ -363,15 +363,20 @@ namespace GenTRAC.ActionLogic.Validation
             /// </summary>
             public const string COST_VOLUME_REQUIRED = USER_INFO_VALDIATION + "Cost Volume Lead is required.";
 
-            /// <summary>
-            /// Proposal Manager is required
-            /// </summary>
-            public const string PROPOSALMGR_REQUIRED = USER_INFO_VALDIATION + "Proposal Manager is required.";
+			/// <summary>
+			/// Proposal Manager is required
+			/// </summary>
+			public const string PROPOSALMGR_REQUIRED = USER_INFO_VALDIATION + "Proposal Manager is required.";
 
-            /// <summary>
-            /// contracts POC is required
-            /// </summary>
-            public const string CONTRACTS_POC_REQUIRED = USER_INFO_VALDIATION + "Contracts POC is required.";
+			/// <summary>
+			/// Program Manager is required
+			/// </summary>
+			public const string PROGRAMMGR_REQUIRED = USER_INFO_VALDIATION + "Program Manager is required if LOB is set to National Security Space.";
+
+			/// <summary>
+			/// contracts POC is required
+			/// </summary>
+			public const string CONTRACTS_POC_REQUIRED = USER_INFO_VALDIATION + "Contracts POC is required.";
 
             /// <summary>
             /// backup contracts POC is required
@@ -459,10 +464,15 @@ namespace GenTRAC.ActionLogic.Validation
             /// </summary>
             public const string PROPOSAL_MANAGER_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Proposal Manager.";
 
-            /// <summary>
-            /// Tech Lead invalid NTID.
-            /// </summary>
-            public const string TECH_LEAD_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Tech Lead, or the user is not an LM, US based employee.";
+			/// <summary>
+			/// Program Manager invalid NTID.
+			/// </summary>
+			public const string PROGRAM_MANAGER_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Program Manager.";
+
+			/// <summary>
+			/// Tech Lead invalid NTID.
+			/// </summary>
+			public const string TECH_LEAD_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Tech Lead, or the user is not an LM, US based employee.";
 
             /// <summary>
             /// GenBOE Workspace Creator invalid NTID

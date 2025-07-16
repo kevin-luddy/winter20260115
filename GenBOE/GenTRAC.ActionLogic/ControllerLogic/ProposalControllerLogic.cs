@@ -835,6 +835,25 @@ namespace GenTRAC.ActionLogic
 
 			this.AddAndDeletePermissions(fullProposalDto, proposalMgrPermission, PtmRole.ProposalMgr, permissionsToAdd, permissionsToDelete);
 
+			// proposal mgr
+			ProposalPermissionDto programMgrPermission = null;
+			if (!isForecasted)
+			{
+				UserDTO prorgamMgr = UserMapper.GetByNtid(proposalUserInfo.ProgramMgrNtid);
+				programMgrPermission = new ProposalPermissionDto()
+				{
+					Id = -1,
+					ProposalID = proposalId,
+					UserId = prorgamMgr.Id,
+					Role = PtmRole.ProgramMgr,
+					ResourceType = ResourceType.NotSet,
+					Updateable = IES.Common.UpdateType.Upsert,
+					UpdateDate = proposalUserInfo.UpdateDate
+				};
+			}
+
+			this.AddAndDeletePermissions(fullProposalDto, programMgrPermission, PtmRole.ProgramMgr, permissionsToAdd, permissionsToDelete);
+
 			// CoverSheetApprover
 			if (string.IsNullOrWhiteSpace(proposalApprovalsInfo.CoverSheetApproverNtid))
 			{
@@ -1769,6 +1788,10 @@ namespace GenTRAC.ActionLogic
 							model.ProposalMgrNtid = user.Ntid;
 							model.ProposalMgrDisplayName = user.DisplayName;
 							break;
+						case PtmRole.ProgramMgr:
+							model.ProgramMgrNtid = user.Ntid;
+							model.ProgramMgrDisplayName = user.DisplayName;
+							break;
 						case PtmRole.GenBoeWorkspaceCreator:
 							model.GenBoeWorkspaceCreatorNtid = user.Ntid;
 							model.GenBoeWorkspaceCreatorDisplayName = user.DisplayName;
@@ -1961,7 +1984,9 @@ namespace GenTRAC.ActionLogic
 		/// <param name="proposalUserInfo">the proposal users to be verified</param>
 		/// <param name="inValidationErrors">validation errors collection</param>
 		/// <returns>True if there are invalid users on an update but were not changed, false otherwise.</returns>
-		public bool ValidateUserTypes(int? proposalId, ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, ICollection<ValidationMessage> inValidationErrors)
+		public bool ValidateUserTypes(int? proposalId, ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, ICollection<ValidationMessage> inValidationErrors, bool isNss = false)
+		//public bool ValidateUserTypes(int? proposalId, ProposalGeneralInformationModelView proposalGeneralInfo, ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, ICollection<ValidationMessage> inValidationErrors)
+
 		{
 			if (proposalApprovalsInfo == null)
 			{
@@ -2006,6 +2031,11 @@ namespace GenTRAC.ActionLogic
 			if (string.IsNullOrWhiteSpace(proposalUserInfo.ProposalMgrNtid))
 			{
 				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.PROPOSALMGR_REQUIRED));
+			}
+
+			if (isNss &&   string.IsNullOrWhiteSpace(proposalUserInfo.ProgramMgrNtid))
+			{
+				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.PROGRAMMGR_REQUIRED));
 			}
 
 			if (!invalidContractsPOCNtId && !invalidBackupContractsPOCNtId && (proposalUserInfo.ContractsPOCNtId == proposalUserInfo.BackupContractsPOCNtId))
@@ -2055,6 +2085,7 @@ namespace GenTRAC.ActionLogic
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.BackupContractsPOCNtId, savedProposalUsers.BackupContractsPOCNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.BACKUP_CONTRACTS_POC_INVALID_NTID, true, true) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.BackupPricerNtId, savedProposalUsers.BackupPricerNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.BACKUP_PRICER_INVALID_NTID, true, true) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.ProposalMgrNtid, savedProposalUsers.ProposalMgrNtid, inValidationErrors, ValidationConstants.ProposalValidationConstants.PROPOSAL_MANAGER_INVALID_NTID, false, false) && validUnchangedUsers;
+			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.ProgramMgrNtid, savedProposalUsers.ProgramMgrNtid, inValidationErrors, ValidationConstants.ProposalValidationConstants.PROGRAM_MANAGER_INVALID_NTID, false, false) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.TechLeadNtid, savedProposalUsers.TechLeadNtid, inValidationErrors, ValidationConstants.ProposalValidationConstants.TECH_LEAD_INVALID_NTID, true, true) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.GenBoeWorkspaceCreatorNtid, savedProposalUsers.GenBoeWorkspaceCreatorNtid, inValidationErrors, ValidationConstants.ProposalValidationConstants.WORKSPACE_CREATOR_INVALID_NTID, false, false) && validUnchangedUsers;
 
