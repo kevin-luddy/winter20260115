@@ -57,7 +57,7 @@ namespace IES.Common
 		/// <summary>
 		/// Private for Is UCOT Enabled
 		/// </summary>
-		private static bool? isUCOTEnabled;
+		internal static bool? isUCOTEnabled;
 
 		/// <summary>
 		/// Asserts the equality of decimal values within an epsilon error range.
