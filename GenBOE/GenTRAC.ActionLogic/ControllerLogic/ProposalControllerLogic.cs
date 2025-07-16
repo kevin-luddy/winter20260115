@@ -835,7 +835,7 @@ namespace GenTRAC.ActionLogic
 
 			this.AddAndDeletePermissions(fullProposalDto, proposalMgrPermission, PtmRole.ProposalMgr, permissionsToAdd, permissionsToDelete);
 
-			// proposal mgr
+			// program mgr
 			ProposalPermissionDto programMgrPermission = null;
 			if (!isForecasted)
 			{
