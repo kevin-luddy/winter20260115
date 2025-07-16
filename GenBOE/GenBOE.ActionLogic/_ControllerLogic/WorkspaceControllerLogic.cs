@@ -1954,7 +1954,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						table.TotalRelevantHours = Convert.ToDecimal(totalHoursSum);
 						resultModel.TotalRelevantHours = table.TotalRelevantHours;
 
-						table.ResourceHours = model.SkillMixDataTable.Select(skillMix => new MOQTypeSelectionTableDataResourceHoursDTO
+						table.ResourceHours = model.SkillMixDataTable.Where(s => s.TotalHours != 0.0).Select(skillMix => new MOQTypeSelectionTableDataResourceHoursDTO
 							{ 
 								ResourceName= skillMix.ResourceID, 
 								WbsHours= skillMix.WbsHours.HasValue ? Convert.ToDecimal(skillMix.WbsHours.Value) : default(decimal), 
