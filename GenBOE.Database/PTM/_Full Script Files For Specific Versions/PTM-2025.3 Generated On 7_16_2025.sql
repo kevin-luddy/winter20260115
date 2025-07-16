@@ -1,6 +1,6 @@
 PRINT '###### SCRIPT IS STARTING ######';
 /*
-    This file was auto-generated for Release: 2025.3, on 7/15/2025.
+    This file was auto-generated for Release: 2025.3, on 7/16/2025.
     It contains all of the Release specific scripts, modifying data/tables as well as all of the Stored Procedures and User Defined Table Types.
 */
 
@@ -11,7 +11,7 @@ PRINT '### Starting file: \Release 2025.3\1 - Release 2025.3 Script.sql';
 EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2025.3';
 GO
 
--- Author: ranzalon
+-- Author: Oyeyemi Oyetoro
 -- JIRA Story: PROPH-2835
 -- Added Program Mgr to Role table
 

@@ -839,12 +839,12 @@ namespace GenTRAC.ActionLogic
 			ProposalPermissionDto programMgrPermission = null;
 			if (!isForecasted)
 			{
-				UserDTO prorgamMgr = UserMapper.GetByNtid(proposalUserInfo.ProgramMgrNtid);
+				UserDTO progamMgr = UserMapper.GetByNtid(proposalUserInfo.ProgramMgrNtid);
 				programMgrPermission = new ProposalPermissionDto()
 				{
 					Id = -1,
 					ProposalID = proposalId,
-					UserId = prorgamMgr.Id,
+					UserId = progamMgr.Id,
 					Role = PtmRole.ProgramMgr,
 					ResourceType = ResourceType.NotSet,
 					Updateable = IES.Common.UpdateType.Upsert,
