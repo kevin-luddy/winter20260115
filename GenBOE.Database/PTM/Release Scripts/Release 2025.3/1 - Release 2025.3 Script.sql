@@ -1,7 +1,7 @@
 EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2025.3';
 GO
 
--- Author: Oyeyemi Oyetoro
+-- Author: Oyeyemi Oyetoro (e378233)
 -- JIRA Story: PROPH-2835
 -- Added Program Mgr to Role table
 
