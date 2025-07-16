@@ -353,31 +353,48 @@ namespace GenBOE.Dtos
                 inCurveValues[lastMonth - 1] = inCurveValues[lastMonth - 1] - Utilities.MultiplicationFactorForCalculationsDueToPrecisionAdjustment(decimalPlacesAllowed);
             }
 
-            // location of the largest value
-            int largest = 0;
-            decimal high = 0;
-            decimal cum = 0;
+			decimal diff = 0;
+			do
+			{
+				// location of the largest value
+				int largest = 0;
+				decimal high = 0;
+				decimal cum = 0;
 
-            for (int i = firstMonth; i < lastMonth; i++)
-            {
-				// extra check for negative values
-				if (inCurveValues[i] < 0)
+				for (int i = firstMonth; i < lastMonth; i++)
 				{
-					inCurveValues[i] = 0;
+					// extra check for negative values
+					if (inCurveValues[i] < 0)
+					{
+						inCurveValues[i] = 0;
+					}
+
+					cum += inCurveValues[i];
+					if (inCurveValues[i] > high)
+					{
+						largest = i;
+						high = inCurveValues[i];
+					}
 				}
 
-				cum += inCurveValues[i];
-                if (inCurveValues[i] > high)
-                {
-                    largest = i;
-                    high = inCurveValues[i];
-                }
-            }
-
-            if (inAmountToSpread - cum != 0)
-            {
-                inCurveValues[largest] += inAmountToSpread - cum;
-            }
+				// If there is a difference between what we need to spread and the cumulative sum
+				diff = inAmountToSpread - cum;
+				if (diff != 0)
+				{
+					// Check if the difference is negative and changing the largest value would make the largest value negative
+					if (diff < 0 && Math.Abs(diff) > inCurveValues[largest])
+					{
+						// Set the largest value to zero and loop again
+						inCurveValues[largest] = 0;
+					}
+					else
+					{
+						// Add the difference and exit the loop
+						inCurveValues[largest] += diff;
+						diff = 0;
+					}
+				}
+			} while (diff != 0);
 
             return inCurveValues;
         }
