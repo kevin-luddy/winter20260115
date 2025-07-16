@@ -1985,8 +1985,6 @@ namespace GenTRAC.ActionLogic
 		/// <param name="inValidationErrors">validation errors collection</param>
 		/// <returns>True if there are invalid users on an update but were not changed, false otherwise.</returns>
 		public bool ValidateUserTypes(int? proposalId, ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, ICollection<ValidationMessage> inValidationErrors, bool isNss = false)
-		//public bool ValidateUserTypes(int? proposalId, ProposalGeneralInformationModelView proposalGeneralInfo, ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, ICollection<ValidationMessage> inValidationErrors)
-
 		{
 			if (proposalApprovalsInfo == null)
 			{
