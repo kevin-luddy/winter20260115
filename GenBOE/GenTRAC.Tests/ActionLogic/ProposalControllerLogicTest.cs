@@ -581,6 +581,8 @@ namespace GenTRAC.Tests.ActionLogic
                 AdditionalPricingResource2NtId = ntid,
                 AdditionalPricingResource2Type = ResourceType.Pricer,
                 BackupPricerNtId = ntid,
+				MsacPOCNtid = ntid,
+				ProgramMgrNtid = ntid,
                 CaptureManagerNtid = ntid,
                 ContractsPOCNtId = ntid,
                 BackupContractsPOCNtId = ntid,
@@ -3000,7 +3002,10 @@ namespace GenTRAC.Tests.ActionLogic
             userInfo.BackupContractsPOCNtId = user2.Ntid;
             userInfo.BackupContractsPOCDisplayName = user2.DisplayName;
 
-            userInfo.BackupPricerNtId = user.Ntid;
+			userInfo.MsacPOCNtid = user.Ntid;
+			userInfo.MsacPOCDisplayName = user.DisplayName;
+
+			userInfo.BackupPricerNtId = user.Ntid;
             userInfo.BackupPricerDisplayName = user.DisplayName;
 
 			userInfo.ProposalMgrNtid = user.Ntid;

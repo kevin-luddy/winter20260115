@@ -159,16 +159,26 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// Gets or sets Backup pricer NT id
         /// </summary>
         public string BackupPricerNtId { get; set; }
-       
-        /// <summary>
-        /// Gets or sets TechLead
-        /// </summary>
-        public string TechLeadNtid { get; set; }
 
-        /// <summary>
-        /// Gets or sets TechLead's account display name
-        /// </summary>
-        public string TechLeadDisplayName { get; set; }
+		/// <summary>
+		/// Gets or sets MSAC POC (Business Development)
+		/// </summary>
+		public string MsacPOCNtid { get; set; }
+
+		/// <summary>
+		/// Gets or sets MSAC POC account display name
+		/// </summary>
+		public string MsacPOCDisplayName { get; set; }
+
+		/// <summary>
+		/// Gets or sets TechLead
+		/// </summary>
+		public string TechLeadNtid { get; set; }
+
+		/// <summary>
+		/// Gets or sets TechLead's account display name
+		/// </summary>
+		public string TechLeadDisplayName { get; set; }
 
 		/// <summary>
 		/// Gets or sets PropsalMgr
