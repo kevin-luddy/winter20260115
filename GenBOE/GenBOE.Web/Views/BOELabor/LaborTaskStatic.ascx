@@ -229,6 +229,14 @@
                         <div class="replacedWidgetText">{{model.TaskElementData.EndDate}}</div>
                     </div>
                 </div>
+				<div class="form-row" data-ng-if="showTaskAuthor">
+					<div class="form-label">
+						Task Author **
+					</div>
+					<div class="form-element">
+						<div class="replacedWidgetText">{{getAuthorDisplayName(model.TaskElementData.AuthorUserId)}}</div>
+					</div>
+				</div>
                 <div id="MOQEquationFieldContent">
                     <div class="form-row">
                         <div class="form-label">

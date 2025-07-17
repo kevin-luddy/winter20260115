@@ -1237,7 +1237,8 @@ div.create-workspace.buttons.full
     padding: 10px 5px 7px;
 }
 
-select.customField
+select.customField,
+select.taskAuthor
 {
     width:250px;
 }

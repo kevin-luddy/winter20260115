@@ -62,7 +62,9 @@
 			IsUcotEnabled: '<%= (bool)ViewData["IsUCOTEnabled"] %>'.isTrue(),
 			UcotFactor: <%=ViewData["UcotFactor"]%>,
 			SkillMixTableHelpUrls: <%=serializer.Serialize(ViewData["SkillMixTableHelpUrls"])%>,
-			UsingTemplateBOE: '<%=serializer.Serialize(ViewData["UsingTemplateBOE"]) %>'.isTrue()
+			UsingTemplateBOE: '<%=serializer.Serialize(ViewData["UsingTemplateBOE"]) %>'.isTrue(),
+			EnableTaskAuthor: '<%= (bool)ViewData["EnableTaskAuthor"] %>'.isTrue(),
+			BoeAuthors: <%=serializer.Serialize(ViewData["BoeAuthors"])%>
 		});
 
 		$(function () {

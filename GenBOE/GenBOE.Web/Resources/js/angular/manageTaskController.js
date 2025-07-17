@@ -41,6 +41,7 @@
 	$scope.dataLoaded = false;
 	$scope.showUCOT = false;
 	$scope.skillMixHelperText = "";
+	$scope.showTaskAuthor = ManageTaskModel.EnableTaskAuthor;
 
 	// Sets the Selected MOQ Types from the Selected MOQ Types from MoqEuationController.js.
 	$scope.$on('MOQ_TYPE_SELECTION_CHANGED', function (event, selectedMoqTypes) {
@@ -514,6 +515,11 @@
 		text = spreadValue.toString();
 
 		return text;
+	};
+
+	$scope.getAuthorDisplayName = function (authorId) {
+		let author = $scope.ManageTaskModel.BoeAuthors.find(x => x.UserID == authorId);
+		return author ? author.DisplayName : "";
 	};
 
 	/*
@@ -2757,5 +2763,5 @@
 		})) {
 			errorArray.push({ ValidationIssue: error });
 		}
-	}
+	};
 }]); 

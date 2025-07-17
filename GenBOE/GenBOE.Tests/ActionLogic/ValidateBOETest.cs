@@ -4844,5 +4844,117 @@ namespace GenBOE.Tests.ActionLogic
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("The Rationale field") && messages.First().Contains("required"));
 		}
+
+		/// <summary>
+		/// Test ValidateTaskAuthor when task author is valid
+		/// </summary>
+		[TestMethod]
+		public void ValidateTaskAuthor_Valid()
+		{
+			try
+			{
+				CreateSystem();
+				ValidateBOE sut = CreateSystem();
+				Utilities.IsAssignTaskAuthorEnabledForSystem = true;
+
+				FullWorkspace ws = new FullWorkspace() { EnableAssignTaskAuthor = true };
+				FullBoe boe = new FullBoe() { AuthorIDs = { 1 }, SubcontractorAuthorIDs = { 2 } };
+				Collection<string> messages = new Collection<string>();
+				BoeTaskElementDTO task = new BoeTaskElementDTO() { AuthorUserId = 1 };
+
+				sut.ValidateTaskAuthor(ws, boe, messages, task);
+
+				Assert.IsFalse(messages.Any());
+			}
+			finally
+			{
+				Utilities.IsAssignTaskAuthorEnabledForSystem = false;
+			}
+		}
+
+		/// <summary>
+		/// Test ValidateTaskAuthor when task author is invalid
+		/// </summary>
+		[TestMethod]
+		public void ValidateTaskAuthor_Invalid()
+		{
+			try
+			{
+				CreateSystem();
+				ValidateBOE sut = CreateSystem();
+				Utilities.IsAssignTaskAuthorEnabledForSystem = true;
+
+				FullWorkspace ws = new FullWorkspace() { EnableAssignTaskAuthor = true };
+				FullBoe boe = new FullBoe() { AuthorIDs = { 1 }, SubcontractorAuthorIDs = { 2 } };
+				Collection<string> messages = new Collection<string>();
+
+				// Set Author ID to one not in AuthorIDs or SubcontractorAuthorIDs
+				BoeTaskElementDTO task = new BoeTaskElementDTO() { AuthorUserId = 3 };
+
+				sut.ValidateTaskAuthor(ws, boe, messages, task);
+
+				Assert.IsTrue(messages.Any());
+				Assert.AreEqual(1, messages.Count);
+				Assert.AreEqual(ValidationConstants.TASK_AUTHOR_INVALID, messages.First());
+			}
+			finally
+			{
+				Utilities.IsAssignTaskAuthorEnabledForSystem = false;
+			}
+		}
+
+		/// <summary>
+		/// Test ValidateTaskAuthor when task author is missing
+		/// </summary>
+		[TestMethod]
+		public void ValidateTaskAuthor_Required()
+		{
+			try
+			{
+				CreateSystem();
+				ValidateBOE sut = CreateSystem();
+				Utilities.IsAssignTaskAuthorEnabledForSystem = true;
+
+				FullWorkspace ws = new FullWorkspace() { EnableAssignTaskAuthor = true };
+				FullBoe boe = new FullBoe() { AuthorIDs = { 1 }, SubcontractorAuthorIDs = { 2 } };
+				Collection<string> messages = new Collection<string>();
+				BoeTaskElementDTO task = new BoeTaskElementDTO() { AuthorUserId = null };
+
+				sut.ValidateTaskAuthor(ws, boe, messages, task);
+
+				Assert.IsTrue(messages.Any());
+				Assert.AreEqual(1, messages.Count);
+				Assert.AreEqual(ValidationConstants.TASK_AUTHOR_REQUIRED, messages.First());
+			}
+			finally
+			{
+				Utilities.IsAssignTaskAuthorEnabledForSystem = false;
+			}
+		}
+
+		/// <summary>
+		/// Test ValidateTaskAuthor when EnableAssignTaskAuthor is disabled
+		/// </summary>
+		[TestMethod]
+		public void ValidateTaskAuthor_Disabled()
+		{
+			CreateSystem();
+			ValidateBOE sut = CreateSystem();
+
+			// ensure feature flag is disabled
+			Utilities.IsAssignTaskAuthorEnabledForSystem = false;
+
+			FullWorkspace ws = new FullWorkspace() { EnableAssignTaskAuthor = true };
+			FullBoe boe = new FullBoe() { AuthorIDs = { 1 }, SubcontractorAuthorIDs = { 2 } };
+			Collection<string> messages = new Collection<string>();
+
+			// Set author id to null, which would be invalid if the feature flag was enabled
+			// This way we can be sure the validation is skipped when the feature flag is disabled
+			BoeTaskElementDTO task = new BoeTaskElementDTO() { AuthorUserId = null };
+
+			sut.ValidateTaskAuthor(ws, boe, messages, task);
+
+			Assert.IsFalse(messages.Any());
+		}
 	}
 }

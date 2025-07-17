@@ -129,8 +129,8 @@ namespace GenBOE.DataBridge.DTO
 			using (GenBoeEntities gbe = new GenBoeEntities())
 			{
 				IQueryable<int> resultsLinq = from c in gbe.MessageConfirmations
-								  where c.ETIUserId == userID
-								  select c.MessageId;
+											  where c.ETIUserId == userID
+											  select c.MessageId;
 
 				toReturn = resultsLinq.Select(r => (ConfirmationMessage)r).ToList();
 			}
@@ -150,8 +150,8 @@ namespace GenBOE.DataBridge.DTO
 			using (GenBoeEntities gbe = new GenBoeEntities())
 			{
 				IQueryable<int> resultsLinq = from c in gbe.ETIusers
-								  where c.NTID == inUserNTID.ToLower()
-								  select c.ETIUserID;
+											  where c.NTID == inUserNTID.ToLower()
+											  select c.ETIUserID;
 
 				outUserId = resultsLinq.FirstOrDefault();
 			}
@@ -215,17 +215,17 @@ namespace GenBOE.DataBridge.DTO
 					IEnumerable<UserDTO> resultLinq = from s in gbe.ETIusers
 													  where inUserIds.Contains(s.ETIUserID)
 													  select new UserDTO
-														  {
-															  UserID = s.ETIUserID,
-															  DisplayName = s.DisplayName,
-															  FirstName = s.FirstName,
-															  LastName = s.LastName,
-															  EmailAddress = (s.EmailAddress == null) ? string.Empty : s.EmailAddress.ToLower(),
-															  NTID = s.NTID.ToLower(),
-															  PhoneNumber = s.PhoneNumber,
-															  UpdateDate = s.UpdateDT,
-															  IsUsPerson = s.IsUsPerson,
-															  IsSubcontractor = s.IsSubcontractor
+													  {
+														  UserID = s.ETIUserID,
+														  DisplayName = s.DisplayName,
+														  FirstName = s.FirstName,
+														  LastName = s.LastName,
+														  EmailAddress = (s.EmailAddress == null) ? string.Empty : s.EmailAddress.ToLower(),
+														  NTID = s.NTID.ToLower(),
+														  PhoneNumber = s.PhoneNumber,
+														  UpdateDate = s.UpdateDT,
+														  IsUsPerson = s.IsUsPerson,
+														  IsSubcontractor = s.IsSubcontractor
 													  };
 					if (resultLinq.Any())
 					{
@@ -336,7 +336,7 @@ namespace GenBOE.DataBridge.DTO
 							IsSubcontractor = adUser.IsSubcontractor
 						});
 					}
-				} 
+				}
 			}
 
 			return userDto;
@@ -360,8 +360,8 @@ namespace GenBOE.DataBridge.DTO
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
 					IQueryable<int> data = (from s in gbe.ETIusers
-								where ntids.Contains(s.NTID)
-								select s.ETIUserID);
+											where ntids.Contains(s.NTID)
+											select s.ETIUserID);
 
 					return data.ToList();
 				}
@@ -504,6 +504,43 @@ namespace GenBOE.DataBridge.DTO
 			}
 
 			return toReturn;
+		}
+
+		/// <summary>
+		/// Get Author and Subcontractor Author UserDTOs for the given BOE ID
+		/// </summary>
+		/// <param name="boeId">BOE ID</param>
+		/// <returns>Collection of UserDTOs for BOE Authors and Subcontractor Authors</returns>
+		public ICollection<UserDTO> GetBoeAuthors(int boeId)
+		{
+			ICollection<UserDTO> authors = new Collection<UserDTO>();
+
+			using (StopwatchTimer sw = new StopwatchTimer(this._log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					authors = (from u in gbe.ETIusers
+							   join r in gbe.BOEUserRoles.Where(x => x.BOEID == boeId
+									&& (x.RoleID == (int)Role.Author || x.RoleID == (int)Role.SubcontractorAuthor))
+							   on u.ETIUserID equals r.ETIUserID
+							   select new UserDTO
+							   {
+								   UserID = u.ETIUserID,
+								   UpdateDate = u.UpdateDT,
+								   NTID = u.NTID,
+								   DisplayName = u.DisplayName,
+								   FirstName = u.FirstName,
+								   LastName = u.LastName,
+								   IsSubcontractor = u.IsSubcontractor,
+								   IsUsPerson = u.IsUsPerson,
+								   EmailAddress = u.EmailAddress,
+								   PhoneNumber = u.PhoneNumber
+							   }).ToList();
+
+				}
+			}
+
+			return authors;
 		}
 	}
 }
