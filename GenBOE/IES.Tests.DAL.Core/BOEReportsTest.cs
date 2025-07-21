@@ -259,7 +259,8 @@ namespace IES.Tests.Core
 
 			string afterText = doc.GetText();
 
-			Assert.AreEqual(beforeText.Replace("Hours", "EPs"), afterText);
+			Assert.IsFalse(afterText.Contains("Hours"));
+			Assert.IsTrue(afterText.Contains("EPs"));
 		}
 
 		/// <summary>

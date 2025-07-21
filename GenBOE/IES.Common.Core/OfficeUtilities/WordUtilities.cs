@@ -399,9 +399,14 @@ namespace IES.Common.Core.OfficeUtilities
 					// do some initial prep
 					htmlFormattedText = RTEUtilities.PrepareHtmlForWordExport(htmlFormattedText, removeSpacing, ref skipCleanup);
 
+					// remove any children of the SDT
+					element.RemoveAllChildren();
+					element.AppendChild(new Run(document));
+
 					DocumentBuilder builder = new DocumentBuilder(document);
-					builder.MoveToStructuredDocumentTag(element, 0);
+					builder.MoveTo(element.FirstChild);
 					builder.InsertHtml(htmlFormattedText, HtmlInsertOptions.RemoveLastEmptyParagraph);
+					
 
 					//// Get font information for the field/element into which we are inserting the HTML.
 					//decimal? fontSize = RTEUtilities.GetFontSizeBasedOnWordElementXml(element);
