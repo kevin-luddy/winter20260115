@@ -483,8 +483,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				this.CleanupLaborTaskData(ws, modelView);
 
-
-
 				// Validate Task Variables
 				bool addNullValidationError = true;
 				if (modelView.TaskElementData.TaskOrdinaryVariables.Any())
@@ -504,6 +502,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				// Validate Task Details Composite
 				this.ValidateTaskDetails(boe, modelView, validationErrors, ws, moqEquationTotal);
+
+				// Validate Task Author is a valid selection if one was made
+				if (Utilities.IsAssignTaskAuthorEnabledForSystem && ws.EnableAssignTaskAuthor && modelView.TaskElementData.AuthorUserId.HasValue &&
+					!boe.AuthorIDs.Contains(modelView.TaskElementData.AuthorUserId.Value) && !boe.SubcontractorAuthorIDs.Contains(modelView.TaskElementData.AuthorUserId.Value))
+				{
+					validationErrors.Add(new ValidationMessage("Task Author", ValidationConstants.TASK_AUTHOR_INVALID));
+				}
 
 				// Validate Precision
 				if (modelView.LaborTypesData.Any())
@@ -2000,6 +2005,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			toReturn.WorkspaceVariableIDs = modelview.TaskElementData.WorkspaceVariableIDs;
 			toReturn.TaskElementType = TaskElementType.Labor;
 			toReturn.BOETaskElementOrder = modelview.TaskElementData.BOETaskElementOrder;
+			toReturn.AuthorUserId = modelview.TaskElementData.AuthorUserId;
 
 			if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, ws.UsingTemplateBOE, ws.EnableSAPConnection, modelview.MOQTypes, toReturn.Id, modelview.IsUsingTMRatesInTask))
 			{

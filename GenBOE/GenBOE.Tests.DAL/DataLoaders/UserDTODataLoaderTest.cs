@@ -142,5 +142,23 @@ namespace GenBOE.Tests.DAL.DataLoaders
             UserDTO user = sut.GetOrCreateUserByNtid(userDto.NTID);
             Assert.IsNotNull(user);
         }
+
+		/// <summary>
+		/// Test GetBoeAuthors returns Author for BOE
+		/// </summary>
+		[TestMethod]
+		public void GetBoeAuthors()
+		{
+			Mock<IActiveDirectoryUtilities> adUtils = new Mock<IActiveDirectoryUtilities>();
+			Mock<MemoryCache> memCache = new Mock<MemoryCache>();
+			SecurityInformation securityInformation = new SecurityInformation(adUtils.Object, memCache.Object);
+
+			UserDTODataLoader sut = new UserDTODataLoader(securityInformation, adUtils.Object);
+
+			ICollection<UserDTO> result = sut.GetBoeAuthors(this.Boe1.Id);
+
+			Assert.IsTrue(result.Any());
+			Assert.AreEqual(Author.UserID, result.First().UserID);
+		}
     }
 }

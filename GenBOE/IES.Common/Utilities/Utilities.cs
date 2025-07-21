@@ -1139,12 +1139,10 @@ namespace IES.Common
 		{
 			get
 			{
-				if (isAssignTaskAuthorEnabled == null)
+				if (isAssignTaskAuthorEnabled == null 
+					&& bool.TryParse(ConfigurationUtilities.GetAppSetting("EnableAssignTaskAuthor"), out bool value))
 				{
-					if (bool.TryParse(ConfigurationUtilities.GetAppSetting("EnableAssignTaskAuthor"), out bool value))
-					{
-						isAssignTaskAuthorEnabled = value;
-					}
+					isAssignTaskAuthorEnabled = value;
 				}
 
 				return isAssignTaskAuthorEnabled ?? false;

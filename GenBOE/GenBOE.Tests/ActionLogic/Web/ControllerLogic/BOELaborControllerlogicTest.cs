@@ -801,7 +801,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.IsTrue(validations.Count == 0, "validation errors occurred");
 		}
 
-
 		[TestMethod]
 		public void Test_ValidateLaborTaskData_ValidTask()
 		{
@@ -956,6 +955,116 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
 			ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
 			Assert.AreEqual(1, validations.Count());
+		}
+
+		/// <summary>
+		/// Test Task Validation for a valid Author selection
+		/// </summary>
+		[TestMethod]
+		public void Test_ValidateLaborTaskData_ValidTaskAuthor()
+		{
+			try
+			{
+				BOELaborControllerLogic sut = CreateSystem();
+
+				WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
+				FullBoe boe = new FullBoe(new BoeDTO
+				{
+					Id = 1,
+					WorkspaceID = workspace.Id,
+					StartDate = Convert.ToDateTime("12/01/2012"),
+					EndDate = Convert.ToDateTime("12/01/2016"),
+					AuthorIDs = { 1 },
+					SubcontractorAuthorIDs = { 2 }
+				});
+				FullWorkspace ws = new FullWorkspace(workspace);
+
+				LaborTaskDataModelView task = CreateModelView(boe, ws);
+
+				// enable feature flag and set author to a valid selection matching AuthorIDs in the boe
+				Utilities.IsAssignTaskAuthorEnabledForSystem = true;
+				ws.EnableAssignTaskAuthor = true;
+				task.TaskElementData.AuthorUserId = 1;
+
+				ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
+				Assert.IsFalse(validations.Any(), "There were validation errors");
+			}
+			finally
+			{
+				Utilities.IsAssignTaskAuthorEnabledForSystem = false;
+			}
+		}
+
+		/// <summary>
+		/// Test Task Validation for a null/no Author selection
+		/// </summary>
+		[TestMethod]
+		public void Test_ValidateLaborTaskData_ValidNullTaskAuthor()
+		{
+			try
+			{
+				BOELaborControllerLogic sut = CreateSystem();
+
+				WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
+				FullBoe boe = new FullBoe(new BoeDTO
+				{
+					Id = 1,
+					WorkspaceID = workspace.Id,
+					StartDate = Convert.ToDateTime("12/01/2012"),
+					EndDate = Convert.ToDateTime("12/01/2016"),
+					AuthorIDs = { 1 },
+					SubcontractorAuthorIDs = { 2 }
+				});
+				FullWorkspace ws = new FullWorkspace(workspace);
+
+				LaborTaskDataModelView task = CreateModelView(boe, ws);
+
+				// enable feature flag and set author null, representing not selecting one
+				Utilities.IsAssignTaskAuthorEnabledForSystem = true;
+				ws.EnableAssignTaskAuthor = true;
+				task.TaskElementData.AuthorUserId = null;
+
+				// assert no validation errors as author is not required on save
+				ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
+				Assert.IsFalse(validations.Any(), "There were validation errors");
+			}
+			finally
+			{
+				Utilities.IsAssignTaskAuthorEnabledForSystem = false;
+			}
+		}
+
+		/// <summary>
+		/// Test Task Validation for an invalid Author selection
+		/// </summary>
+		[TestMethod]
+		public void Test_ValidateLaborTaskData_InvalidTaskAuthor()
+		{
+			try
+			{
+				BOELaborControllerLogic sut = CreateSystem();
+
+				WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
+				FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), 
+					AuthorIDs = { 1 }, SubcontractorAuthorIDs = { 2 } });
+				FullWorkspace ws = new FullWorkspace(workspace);
+
+				LaborTaskDataModelView task = CreateModelView(boe, ws);
+
+				// enable feature flag and set author to a value not in AuthorIDs or SubcontractorAuthorIDs in the boe
+				Utilities.IsAssignTaskAuthorEnabledForSystem = true;
+				ws.EnableAssignTaskAuthor = true;
+				task.TaskElementData.AuthorUserId = 3;
+
+				ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
+				Assert.IsTrue(validations.Any(), "There were no validation errors");
+				Assert.AreEqual(1, validations.Count);
+				Assert.AreEqual(ValidationConstants.TASK_AUTHOR_INVALID, validations.First().ValidationIssue);
+			}
+			finally
+			{
+				Utilities.IsAssignTaskAuthorEnabledForSystem = false;
+			}
 		}
 
 		[TestMethod, ExpectedException(typeof(ArgumentNullException))]
@@ -1810,6 +1919,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			FullWorkspace ws = new FullWorkspace(workspace);
 
 			LaborTaskDataModelView task = CreateModelView(boe, ws);
+			task.TaskElementData.AuthorUserId = 1;
 
 			BoeTaskElementDTO result = sut.ConvertModelViewToDto(task, ws);
 
@@ -1827,6 +1937,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual(task.TaskElementData.WorkspaceVariableIDs, result.WorkspaceVariableIDs);
 			Assert.AreEqual(task.TaskElementData.StartDate, result.StartDate.Value.ToString("MM/yyyy"));
 			Assert.AreEqual(task.TaskElementData.EndDate, result.EndDate.Value.ToString("MM/yyyy"));
+			Assert.AreEqual(task.TaskElementData.AuthorUserId, result.AuthorUserId);
 
 			// Assert Variables
 			Assert.IsTrue(result.OrdinaryVariables.Any());
