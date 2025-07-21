@@ -3486,7 +3486,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			{
 				CompositeNode tableTitleContainerParentElement = tableTitleContainerElement.ParentNode;
 
-				if (tableTitleContainerElement is SdtRun && tableTitleContainerParentElement is Paragraph)
+				if (tableTitleContainerParentElement is Paragraph) // && tableTitleContainerElement is SdtRun (TODO TIW - SdtRun is type of SdtElement, which is a SDT)
 				{
 					return;
 				}
@@ -3527,7 +3527,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			#region Delete IDs to avoid conflict with existing elements
 			// TIW TODO 
 			// clonedContainerElement.Id = 0;
-			clonedContainerElement.Placeholder.Remove();
+			clonedContainerElement.Placeholder?.Remove();
 
 			#endregion
 
@@ -3855,7 +3855,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					StructuredDocumentTag overallTotalCellRun = WordUtilities.GetTaggedChildElement(overallTotalRow, BOEExporterConstants.FieldName_Total);
 					WordUtilities.SetElementText(overallTotalCellRun, numericFormat == null ? data.SummaryTotalComplete.ToString() : data.SummaryTotalComplete.ToString(numericFormat));
 					// remove placeholder (band-aid)
-					overallTotalCellRun.Placeholder.Remove();
+					overallTotalCellRun.Placeholder?.Remove();
 				}
 
 				// locate the table markers
@@ -4023,9 +4023,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			//The column may have been deleted if there are no custom fields at the resource level
 			if (customFieldDescriptionBlock != null)
 			{
-				SdtContentBlock contentBlock = customFieldDescriptionBlock.GetFirstChild<SdtContentBlock>();
-				RemoveAllButOneElement(contentBlock, NodeType.Paragraph);
-				Paragraph paragraphTemplate = contentBlock.GetFirstChild<Paragraph>();
+				// TODO TIW 
+				//SdtContentBlock contentBlock = customFieldDescriptionBlock.GetFirstChild<SdtContentBlock>();
+				//RemoveAllButOneElement(contentBlock, NodeType.Paragraph);
+				//Paragraph paragraphTemplate = contentBlock.GetFirstChild<Paragraph>();
+
+				RemoveAllButOneElement(customFieldDescriptionBlock, NodeType.Paragraph);
+				Paragraph paragraphTemplate = customFieldDescriptionBlock.GetChild(NodeType.Paragraph, 0, true) as Paragraph;
 
 				if (rowData.CustomFields.Any())
 				{
@@ -4342,9 +4346,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			if (customFieldValues.Any())
 			{
 				// initialize the "insertion" row
-				SdtBlock contentBlockTemplate;
+				StructuredDocumentTag contentBlockTemplate;
 
-				SdtBlock currentInsertionBlock = contentBlockTemplate = customFieldsContainerElement as SdtBlock;
+				StructuredDocumentTag currentInsertionBlock = contentBlockTemplate = customFieldsContainerElement; // TODO TIW as SdtBlock;
 
 				/*
                  * SdtBlock
@@ -4364,7 +4368,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				{
 					foreach (KeyValuePair<CustomFieldValueDTO, CustomFieldDTO> customField in customFieldMappings.Value)
 					{
-						SdtBlock contentBlock = contentBlockTemplate.Clone(true) as SdtBlock;
+						StructuredDocumentTag contentBlock = contentBlockTemplate.Clone(true) as StructuredDocumentTag;
 
 						CustomFieldValueDTO fieldValue = customField.Key;
 						CustomFieldDTO field = customField.Value;
@@ -4375,12 +4379,12 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 						// Note: The template has an indeterminate number of [multiple] Run elements containing "pieces" of the full text.
 						// Delete all but the first Run.
-						RemoveAllButOneElement(customFieldLabelElement.GetFirstChild<SdtContentRun>(), NodeType.Run);
+						RemoveAllButOneElement(customFieldLabelElement.GetChild(NodeType.Run, 0, true), NodeType.Run);
 						if (customFieldIdElement != null)
 						{
-							RemoveAllButOneElement(customFieldIdElement.GetFirstChild<SdtContentRun>(), NodeType.Run);
+							RemoveAllButOneElement(customFieldIdElement.GetChild(NodeType.Run, 0, true), NodeType.Run);
 						}
-						RemoveAllButOneElement(customFieldDescriptionElement.GetFirstChild<SdtContentRun>(), NodeType.Run);
+						RemoveAllButOneElement(customFieldDescriptionElement.GetChild(NodeType.Run, 0, true), NodeType.Run);
 
 						// set values
 						WordUtilities.SetElementText(customFieldLabelElement, field.CustomFieldName);

@@ -11,14 +11,20 @@ namespace IES.Tests
     using System.Collections.ObjectModel;
     using System.Linq;
     using IES.Common;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using IES.Common.classes;
+	using Microsoft.Practices.Unity;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using Moq;
 
-    /// <summary>
-    /// Tests Active Directory Utilities.
-    /// </summary>
-    [TestClass]
+	/// <summary>
+	/// Tests Active Directory Utilities.
+	/// </summary>
+	[TestClass]
     public class ActiveDirectoryUtilitiesTest
     {
+
+		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
+
         /// <summary>
         /// The account to use for an Exact lookup.
         /// </summary>
@@ -48,6 +54,15 @@ namespace IES.Tests
         /// The name to use for a Contains lookup.
         /// </summary>
         private const string CONTAINS_LAST_NAME = "atton, Christopher R";
+
+		/// <summary>
+		/// Initialization of this class
+		/// </summary>
+		[TestInitialize]
+		public void TestSetup()
+		{
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
+		}
 
         /// <summary>
         /// test searching for an ntid that exists in the AD

@@ -16,6 +16,7 @@ using IES.Common.Core.Interfaces;
 using IES.Common.Core.Loaders;
 using IES.Common.Core.Security;
 using IES.Common.Core.Services;
+using IES.Common.Core.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -23,6 +24,8 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 ApplicationConfigurationBase config = new();
 config.ConfigureBasics<Program>(builder, "BOE_DATABASE");
 config.AddWindowsAuthentication(builder.Services, builder.Configuration);
+
+CommonUtilities.SetLicense();
 
 // Add Custom Services
 builder.Services.AddScoped<ISecurityInformation, SecurityInformation>();

@@ -19,6 +19,8 @@ ApplicationConfigurationBase config = new();
 config.ConfigureBasics<Program>(builder, "IES_DATABASE");
 config.AddWindowsAuthentication(builder.Services, builder.Configuration);
 
+CommonUtilities.SetLicense();
+
 // Add Custom Services
 // Register ICache, Cache and Non Cache Data Loader
 builder.Services.AddSingleton<ICacheService, CacheService>();

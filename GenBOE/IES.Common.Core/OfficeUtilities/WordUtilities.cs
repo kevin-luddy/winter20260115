@@ -84,10 +84,10 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <param name="match">The Title to match</param>
 		/// <param name="comparison">How will the Comparison work</param>
 		/// <returns></returns>
-		public static StructuredDocumentTag GetLastMatchingChildSDT(this CompositeNode compositeNode, string match, StringComparison comparison = StringComparison.CurrentCulture)
+		public static StructuredDocumentTag GetLastMatchingChildSDTByTag(this CompositeNode compositeNode, string match, StringComparison comparison = StringComparison.CurrentCulture)
 		{
 			NodeCollection collection = compositeNode.GetChildNodes(NodeType.StructuredDocumentTag, true);
-			StructuredDocumentTag found = collection.LastOrDefault(compositeNode => compositeNode is StructuredDocumentTag sdt && match.Equals(sdt.Title, comparison)) as StructuredDocumentTag;
+			StructuredDocumentTag found = collection.LastOrDefault(compositeNode => compositeNode is StructuredDocumentTag sdt && match.Equals(sdt.Tag, comparison)) as StructuredDocumentTag;
 
 			return found;
 		}
@@ -188,27 +188,6 @@ namespace IES.Common.Core.OfficeUtilities
 		}
 
 		/// <summary>
-		/// Removes the corresponding label from the table cell for the tagged element.
-		/// </summary>
-		/// <param name="element">The element to be searched.</param>
-		/// <param name="tag">The tag of the element which should have its label removed.</param>
-		internal static void RemoveCellLabelWithTaggedElement(Node element, string tag)
-		{
-			StructuredDocumentTag sdt = GetTaggedChildElement(element, tag);
-			
-			if (sdt != null)
-			{
-				Paragraph pg = sdt.GetAncestor(typeof(Paragraph)) as Paragraph;
-				// only remove children of paragraph if it has an ancestor that is a table row
-				CompositeNode row = pg.GetAncestor(typeof(Row));
-				if (row != null)
-				{
-					pg.Runs.Clear();
-				}
-			}
-		}
-
-		/// <summary>
 		/// Removes an entire column from a table.
 		/// </summary>
 		/// <param name="elementInColumnToRemove">Element contained in the table column that should be removed.</param>
@@ -303,20 +282,6 @@ namespace IES.Common.Core.OfficeUtilities
 		{
 			SetElementText(new Run[] { run }, inText);
 		}
-
-		// TODO, this may be OBE 
-		///// <summary>
-		///// Sets the text of a run within a Content Element
-		///// </summary>
-		///// <param name="inElement">The element to set text on</param>
-		///// <param name="inText">The text to set</param>
-		//public static void SetElementText(StructuredDocumentTag inElement, params string[] inText)
-		//{
-		//	if (inElement != null)
-		//	{
-		//		SetElementText(inElement.GetChildNodes(NodeType.Run, true).Cast<Run>(), inText);
-		//	}
-		//}
 
 		/// <summary>
 		/// Sets the text of a run within a Content Element
@@ -598,158 +563,158 @@ namespace IES.Common.Core.OfficeUtilities
 		private static void RemoveContentControls(StructuredDocumentTag element)
 		{
 			// TODO TIW consider // Use the "RemoveSelfOnly" method to remove a structured document tag, while keeping its contents in the document.
-			// element.RemoveSelfOnly();
+			element.RemoveSelfOnly();
 
 
-			// only StructuredDocumentTag items need to be "cleaned"
-			if (element is StructuredDocumentTag)  // SdtBlock, SdtRun, SdtCell, SdtRow, SdtRunRuby
-			{
-				#region If element has children
-				if (element.HasChildNodes)
-				{
-					Node insertionPoint = element;
+			//// only StructuredDocumentTag items need to be "cleaned"
+			//if (element is StructuredDocumentTag)  // SdtBlock, SdtRun, SdtCell, SdtRow, SdtRunRuby
+			//{
+			//	#region If element has children
+			//	if (element.HasChildNodes)
+			//	{
+			//		Node insertionPoint = element;
 
-					Node[] childElements = element.GetChildNodes(NodeType.Any, false).ToArray();
-					int totalChildElements = childElements.Length;
+			//		Node[] childElements = element.GetChildNodes(NodeType.Any, false).ToArray();
+			//		int totalChildElements = childElements.Length;
 
-					for (int i = 0; i < totalChildElements; i++)
-					{
-						Node child = childElements[i];
-						bool removeChild = true;
+			//		for (int i = 0; i < totalChildElements; i++)
+			//		{
+			//			Node child = childElements[i];
+			//			bool removeChild = true;
 
-						if (child is Cell or Row) // TODO TIW check for SdtContentBlock or Run
-						{
-							insertionPoint = MoveChildrenAfterInsertionPoint(child as CompositeNode, insertionPoint);
-						}
-						//else if (child is SdtProperties or SdtEndCharProperties)
-						//{
-						//	// skip
-						//	removeChild = false;
-						//}
-						else
-						{
-							PreCheckValidationResult xmlValidationResult = PreCheckInvalidXmlCondition(child, insertionPoint);
+			//			if (child is Cell or Row) // TODO TIW check for SdtContentBlock or Run
+			//			{
+			//				insertionPoint = MoveChildrenAfterInsertionPoint(child as CompositeNode, insertionPoint);
+			//			}
+			//			//else if (child is SdtProperties or SdtEndCharProperties)
+			//			//{
+			//			//	// skip
+			//			//	removeChild = false;
+			//			//}
+			//			else
+			//			{
+			//				PreCheckValidationResult xmlValidationResult = PreCheckInvalidXmlCondition(child, insertionPoint);
 
-							// TODO TIW this whole section is never used because PreCheckInvalidXmlCondition never returns MoveContentOnly
-							//if (xmlValidationResult == PreCheckValidationResult.MoveContentOnly)
-							//{
-							//	/*
-       //                          * Move the child element's CONTENTS (but NOT the element itself)
-       //                          * ---------------------------------
-       //                          * 
-       //                          * Example:
-       //                          * 
-       //                          *                      Paragraph1
-       //                          *      [element]           SdtBlock                [insertionPoint]
-       //                          *      [child]                Paragraph2
-       //                          *                          <------ Run
-       //                          *                          <------ Run
-       //                          *                          <------ Run
-       //                          * 
-       //                          *      If the child (Paragraph2) were moved after the proposed insertion point, it would become
-       //                          *      a child node of Paragraph1, which is NOT valid XML.
-       //                          *      
-       //                          *      Instead, move the CONTENTS of Paragraph2 WITHIN Paragraph1.
-       //                          *      
-       //                          */
+			//				// TODO TIW this whole section is never used because PreCheckInvalidXmlCondition never returns MoveContentOnly
+			//				//if (xmlValidationResult == PreCheckValidationResult.MoveContentOnly)
+			//				//{
+			//				//	/*
+   //    //                          * Move the child element's CONTENTS (but NOT the element itself)
+   //    //                          * ---------------------------------
+   //    //                          * 
+   //    //                          * Example:
+   //    //                          * 
+   //    //                          *                      Paragraph1
+   //    //                          *      [element]           SdtBlock                [insertionPoint]
+   //    //                          *      [child]                Paragraph2
+   //    //                          *                          <------ Run
+   //    //                          *                          <------ Run
+   //    //                          *                          <------ Run
+   //    //                          * 
+   //    //                          *      If the child (Paragraph2) were moved after the proposed insertion point, it would become
+   //    //                          *      a child node of Paragraph1, which is NOT valid XML.
+   //    //                          *      
+   //    //                          *      Instead, move the CONTENTS of Paragraph2 WITHIN Paragraph1.
+   //    //                          *      
+   //    //                          */
 
-							//	insertionPoint = MoveChildrenAfterInsertionPoint(child as CompositeNode, insertionPoint);
-							//}
-							//else
+			//				//	insertionPoint = MoveChildrenAfterInsertionPoint(child as CompositeNode, insertionPoint);
+			//				//}
+			//				//else
 							
-							if (xmlValidationResult == PreCheckValidationResult.MoveEntireElement)
-							{
-								/*
-                                 * Move the entire child element
-                                 * -----------------------------
-                                 * 
-                                 * Example:
-                                 * 
-                                 *                      Paragraph                   [insertionPoint #2]
-                                 *      [element]           SdtBlock                [insertionPoint #1]
-                                 *      [child]         <------ Table
-                                 *                          <------ Row
-                                 *                          <------ Row
-                                 *                          <------ Row
-                                 *                      <------ Table
-                                 *                          <------ Row
-                                 *                          <------ Row
-                                 *                          <------ Row
-                                 * 
-                                 *      If the child (Table) were moved after the proposed insertion point (#1), it would become
-                                 *      a child node of the Paragraph, which is NOT valid XML.
-                                 *      
-                                 *      The child needs to be moved OUTSIDE/AFTER the Paragraph - So the NEW insertion point becomes
-                                 *      insertion point #2.
-                                 *      
-                                 *      Furthermore, to preserve ORDERING of elements, all remaining sibling nodes of the child (that
-                                 *      occur AFTER it) ALSO need to be moved (WITH the child).
-                                 * 
-                                 */
+			//				if (xmlValidationResult == PreCheckValidationResult.MoveEntireElement)
+			//				{
+			//					/*
+   //                              * Move the entire child element
+   //                              * -----------------------------
+   //                              * 
+   //                              * Example:
+   //                              * 
+   //                              *                      Paragraph                   [insertionPoint #2]
+   //                              *      [element]           SdtBlock                [insertionPoint #1]
+   //                              *      [child]         <------ Table
+   //                              *                          <------ Row
+   //                              *                          <------ Row
+   //                              *                          <------ Row
+   //                              *                      <------ Table
+   //                              *                          <------ Row
+   //                              *                          <------ Row
+   //                              *                          <------ Row
+   //                              * 
+   //                              *      If the child (Table) were moved after the proposed insertion point (#1), it would become
+   //                              *      a child node of the Paragraph, which is NOT valid XML.
+   //                              *      
+   //                              *      The child needs to be moved OUTSIDE/AFTER the Paragraph - So the NEW insertion point becomes
+   //                              *      insertion point #2.
+   //                              *      
+   //                              *      Furthermore, to preserve ORDERING of elements, all remaining sibling nodes of the child (that
+   //                              *      occur AFTER it) ALSO need to be moved (WITH the child).
+   //                              * 
+   //                              */
 
-								insertionPoint = insertionPoint.ParentNode;
+			//					insertionPoint = insertionPoint.ParentNode;
 
-								for (int j = i; j < totalChildElements; j++)  // child and every subsequent sibling element
-								{
-									child = childElements[j];
-									insertionPoint = insertionPoint.ParentNode.InsertAfter(child.Clone(true), insertionPoint);
-									child.Remove();
-								}
+			//					for (int j = i; j < totalChildElements; j++)  // child and every subsequent sibling element
+			//					{
+			//						child = childElements[j];
+			//						insertionPoint = insertionPoint.ParentNode.InsertAfter(child.Clone(true), insertionPoint);
+			//						child.Remove();
+			//					}
 
-								i = totalChildElements;  // avoid re-processing the subsequent children
-								removeChild = false;  // removals were already done in the above loop
-							}
-							else // Valid
-							{
-								insertionPoint = insertionPoint.ParentNode.InsertAfter(child.Clone(true), insertionPoint.ParentNode);
-							}
-						}
+			//					i = totalChildElements;  // avoid re-processing the subsequent children
+			//					removeChild = false;  // removals were already done in the above loop
+			//				}
+			//				else // Valid
+			//				{
+			//					insertionPoint = insertionPoint.ParentNode.InsertAfter(child.Clone(true), insertionPoint);
+			//				}
+			//			}
 
-						if (removeChild)
-						{
-							child.Remove();
-						}
-					}
-				}  // end element.HasChildren
-				#endregion If element has children
+			//			if (removeChild)
+			//			{
+			//				child.Remove();
+			//			}
+			//		}
+			//	}  // end element.HasChildren
+			//	#endregion If element has children
 
-				#region Remove the (content control) element itself
+			//	#region Remove the (content control) element itself
 
-				CompositeNode parent = element.ParentNode;
-				if (parent != null)
-				{
-					element.Remove();  // remove the (content control) element
+			//	CompositeNode parent = element.ParentNode;
+			//	if (parent != null)
+			//	{
+			//		element.Remove();  // remove the (content control) element
 
-					/*
-                     * If removal of the element creates an "empty-nest" (for the element's parent), then delete the parent as well.
-                     * This was specifically added to eliminate extraneous line-breaks, but it removes unused nodes in general.
-                     * 
-                     */
-					if (parent.HasChildNodes)
-					{
-						// TODO TIW Properties are not Nodes in Aspose
-						if (parent.GetChildNodes(NodeType.Any, false).Any()) 
-							//child => (child is not ParagraphProperties and
-							//not RunProperties and
-							//not SdtProperties and
-							//not SdtEndCharProperties and
-							//not CellProperties and
-							//not TableProperties and
-							//not RowProperties and
-							//not TableStyleProperties and
-							//not CustomXmlProperties)))
-						{
-							// this child is valid content - need parent
-						}
-						else
-						{
-							parent.Remove();
-						}
-					}
-				}
+			//		/*
+   //                  * If removal of the element creates an "empty-nest" (for the element's parent), then delete the parent as well.
+   //                  * This was specifically added to eliminate extraneous line-breaks, but it removes unused nodes in general.
+   //                  * 
+   //                  */
+			//		if (parent.HasChildNodes)
+			//		{
+			//			// TODO TIW Properties are not Nodes in Aspose
+			//			if (parent.GetChildNodes(NodeType.Any, false).Any()) 
+			//				//child => (child is not ParagraphProperties and
+			//				//not RunProperties and
+			//				//not SdtProperties and
+			//				//not SdtEndCharProperties and
+			//				//not CellProperties and
+			//				//not TableProperties and
+			//				//not RowProperties and
+			//				//not TableStyleProperties and
+			//				//not CustomXmlProperties)))
+			//			{
+			//				// this child is valid content - need parent
+			//			}
+			//			else
+			//			{
+			//				parent.Remove();
+			//			}
+			//		}
+			//	}
 
-				#endregion
-			}
+			//	#endregion
+			//}
 		}
 
 		/// <summary>

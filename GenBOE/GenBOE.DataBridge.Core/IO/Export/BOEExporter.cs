@@ -561,15 +561,15 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 						double useFontSizeDflt24 = this.GetFontSize(24, boeExportModelView.ExportFormat.TemplateType);
 						double useFontSizeDflt19 = this.GetFontSize(19, boeExportModelView.ExportFormat.TemplateType);
-						string useHeaderFontSizeDflt24 = this.GetHeaderFontSize(24, boeExportModelView.ExportFormat.TemplateType);
-						string useHeaderFontSizeDflt19 = this.GetHeaderFontSize(19, boeExportModelView.ExportFormat.TemplateType);
+						double useHeaderFontSizeDflt24 = this.GetHeaderFontSize(24, boeExportModelView.ExportFormat.TemplateType);
+						double useHeaderFontSizeDflt19 = this.GetHeaderFontSize(19, boeExportModelView.ExportFormat.TemplateType);
 						string useFont = this.GetFont("Times New Roman", boeExportModelView.ExportFormat.TemplateType);
 
 						#region Populate the BOE hour summary table
 
 						if (boeExportModelView.IsMaterial)
 						{
-							StructuredDocumentTag TableAlias = lastBOE.GetLastMatchingChildSDT(FieldName_HoursSummaryRollupContainer, StringComparison.CurrentCultureIgnoreCase);
+							StructuredDocumentTag TableAlias = lastBOE.GetLastMatchingChildSDTByTag(FieldName_HoursSummaryRollupContainer, StringComparison.CurrentCultureIgnoreCase);
 
 							if (TableAlias != null)
 							{
@@ -608,7 +608,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 								}
 								else
 								{
-									StructuredDocumentTag TableAliasContainer = lastBOE.GetLastMatchingChildSDT(FieldName_HoursSummaryRollupContainer, StringComparison.CurrentCultureIgnoreCase);
+									StructuredDocumentTag TableAliasContainer = lastBOE.GetLastMatchingChildSDTByTag(FieldName_HoursSummaryRollupContainer, StringComparison.CurrentCultureIgnoreCase);
 
 									if (TableAliasContainer != null)
 									{
@@ -631,7 +631,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 							if (boeExportModelView.IsMaterial)
 							{
 								// never any material types with cost, remove
-								StructuredDocumentTag TableAliasContainer = lastBOE.GetLastMatchingChildSDT(FieldName_CostSummaryRollupContainer, StringComparison.CurrentCultureIgnoreCase);
+								StructuredDocumentTag TableAliasContainer = lastBOE.GetLastMatchingChildSDTByTag(FieldName_CostSummaryRollupContainer, StringComparison.CurrentCultureIgnoreCase);
 
 								if (TableAliasContainer != null)
 								{
@@ -645,7 +645,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 								ICollection<BoeTaskElementDTO> laborTaskElementDtos = exportInputs.TaskElements.Where(x => x.BoeID == boeExportModelView.BoeID).ToList();
 
-								if (TableAlias2.Val.Value.Equals(FieldName_LMSI_NISSCCostSummaryRollup, StringComparison.CurrentCultureIgnoreCase))
+								if (TableAlias2.Title.Equals(FieldName_LMSI_NISSCCostSummaryRollup, StringComparison.CurrentCultureIgnoreCase))
 								{
 									foreach (BoeTaskElementDTO dto in laborTaskElementDtos)
 									{
@@ -685,8 +685,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 								Collection<BOEExportTaskElementLabor> CurrentODCLabors = boeExportModelView.TaskElements.Where(x => x.ElementType == BOEExportTaskElementType.ODC).SelectMany(x => x.taskElementLabors).ToCollection();
 								ICollection<TravelDTO> CurrentTravelElements = exportInputs.Travels.Where(x => x.BoeID == boeExportModelView.BoeID).ToList();
 
-								if (TableAlias2.Val.Value.Equals(FieldName_LMSI_NISSCCostSummaryRollup)
-									|| TableAlias2.Val.Value.Equals(FieldName_CostSummaryRollupWithResDesc))
+								if (TableAlias2.Title.Equals(FieldName_LMSI_NISSCCostSummaryRollup)
+									|| TableAlias2.Title.Equals(FieldName_CostSummaryRollupWithResDesc))
 								{
 									ReplaceResNameForNISSC(CurrentODCLabors, exportInputs);
 								}
@@ -776,7 +776,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 										#region Labor 
 
 										case BOEExportTaskElementType.Labor:
-											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_LaborHoursRollup, StringComparison.CurrentCultureIgnoreCase);
+											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_LaborHoursRollup, StringComparison.CurrentCultureIgnoreCase);
 
 											if (TableAlias2 != null)
 											{
@@ -790,7 +790,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 													useFont, useFontSizeDflt24, useHeaderFontSizeDflt24, ParagraphAlignment.Center);
 											}
 
-											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_GSMOLaborHoursRollup, StringComparison.CurrentCultureIgnoreCase);
+											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_GSMOLaborHoursRollup, StringComparison.CurrentCultureIgnoreCase);
 
 											if (TableAlias2 != null)
 											{
@@ -798,14 +798,14 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 												Dictionary<int, List<GSMOLaborRollupByDate>> TaskRollup = this.GetGSMOTaskHourRollup(new Collection<BoeTaskElementDTO> { CurrentTaskElement },
 													taskElement.taskElementLabors, true, exportInputs, boeExportModelView, false);
-												string tempFontSize = boeExportModelView.ExportFormat.TemplateType == ExcelReportTemplateType.LMSI_GSM_O_LANDSACPE_WITH_TIME_PHASED_SUMMARIES ? "22" : "24";
+												double tempFontSize = boeExportModelView.ExportFormat.TemplateType == ExcelReportTemplateType.LMSI_GSM_O_LANDSACPE_WITH_TIME_PHASED_SUMMARIES ? 22 : 24;
 
 												PopulateGSMOTaskElementRollup(TableAlias2, TaskRollup,
 													new DateRange(CurrentTaskElement.StartDate, CurrentTaskElement.EndDate), DefaultHoursFormat, null,
 													"Times New Roman", tempFontSize, templateType);
 											}
 
-											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_GSMOLaborHoursRollupNoResTotals, StringComparison.CurrentCultureIgnoreCase);
+											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_GSMOLaborHoursRollupNoResTotals, StringComparison.CurrentCultureIgnoreCase);
 											if (TableAlias2 != null)
 											{
 												BoeTaskElementDTO CurrentTaskElement = taskElements.FirstOrDefault(x => x.Id == taskElement.BOETaskElementID.Value);
@@ -815,7 +815,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 												PopulateGSMOTaskElementRollupWithoutResTotals(TableAlias2, TaskRollup,
 													new DateRange(CurrentTaskElement.StartDate, CurrentTaskElement.EndDate), DefaultHoursFormat, null,
-													"Times New Roman", "20");
+													"Times New Roman", 20);
 											}
 
 											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDT(new string[] { FieldName_SMORSLaborHoursRollup, FieldName_SMORSLaborHoursRollupWithPerfOrg }, StringComparison.CurrentCultureIgnoreCase);
@@ -831,10 +831,10 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 												PopulateSMORSTaskElementRollup(TableAlias2, TaskRollup,
 													new DateRange(CurrentTaskElement.StartDate, CurrentTaskElement.EndDate), DefaultHoursFormat, null,
-													"Times New Roman", "20", includePerfOrg);
+													"Times New Roman", 20, includePerfOrg);
 											}
 
-											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_MSTLaborHoursRollup, StringComparison.CurrentCultureIgnoreCase);
+											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_MSTLaborHoursRollup, StringComparison.CurrentCultureIgnoreCase);
 											if (TableAlias2 != null)
 											{
 												BoeTaskElementDTO CurrentTaskElement = taskElements.FirstOrDefault(x => x.Id == taskElement.BOETaskElementID.Value);
@@ -846,12 +846,12 @@ namespace GenBOE.DataBridge.Core.IO.Export
 													if (TaskRollup != null && TaskRollup.Any())
 													{
 														StructuredDocumentTag element = TableAlias2;
-														PopulateBoeYearSummaryRollup(element, TaskRollup, DefaultHoursFormat, null, useFont, 18, "18", TableAlias2.Title, ParagraphAlignment.Center);
+														PopulateBoeYearSummaryRollup(element, TaskRollup, DefaultHoursFormat, null, useFont, 18, 18, TableAlias2.Title, ParagraphAlignment.Center);
 													}
 												}
 											}
 
-											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_MSTLaborCostRollup, StringComparison.CurrentCultureIgnoreCase);
+											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_MSTLaborCostRollup, StringComparison.CurrentCultureIgnoreCase);
 
 											if (TableAlias2 != null)
 											{
@@ -867,7 +867,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 												PopulateTaskCostRollup(Rollup, useFont, TableAlias2, taskContainer, FieldName_MSTLaborCostRollupContainer);
 											}
 
-											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_TaskCustomFields, StringComparison.CurrentCultureIgnoreCase);
+											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_TaskCustomFields, StringComparison.CurrentCultureIgnoreCase);
 
 											if (TableAlias2 != null)
 											{
@@ -892,7 +892,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 												}
 											}
 
-											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_ResourceContainer + "-Labor");
+											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_ResourceContainer + "-Labor");
 
 											if (TableAlias2 != null)
 											{
@@ -940,7 +940,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 														{
 															PopulateResourceContent(resourceContainer, resource);
 
-															StructuredDocumentTag TableAlias3 = resourceContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_ResCustomFields);
+															StructuredDocumentTag TableAlias3 = resourceContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_ResCustomFields);
 
 															if (TableAlias3 != null)
 															{
@@ -970,7 +970,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 																}
 															}
 
-															TableAlias3 = resourceContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_ResourceHoursRollup);
+															TableAlias3 = resourceContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_ResourceHoursRollup);
 															if (TableAlias3 != null && currentResourceTypeDto.SpreadType.Equals(SpreadType.Hours))
 															{
 																Collection<LaborRollupByDate> rollup = this.GetResourceRollup(currentResourceTypeDto, taskElement.taskElementLabors).ToCollection();
@@ -978,12 +978,12 @@ namespace GenBOE.DataBridge.Core.IO.Export
 																StructuredDocumentTag element = TableAlias3;
 																if (element != null)
 																{
-																	PopulateBoeYearSummaryRollup(element, rollup, DefaultHoursFormat, null, useFont, 18, "18", TableAlias3.Title, ParagraphAlignment.Center);
+																	PopulateBoeYearSummaryRollup(element, rollup, DefaultHoursFormat, null, useFont, 18, 18, TableAlias3.Title, ParagraphAlignment.Center);
 																}
 															}
 															else
 															{
-																StructuredDocumentTag TableAlias3a = resourceContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_ResourceHoursRollupContainer);
+																StructuredDocumentTag TableAlias3a = resourceContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_ResourceHoursRollupContainer);
 
 																if (TableAlias3a != null)
 																{
@@ -997,7 +997,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 																TableAlias3a.RemoveIt();
 															}
 
-															TableAlias3 = resourceContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_ResourceCostRollup);
+															TableAlias3 = resourceContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_ResourceCostRollup);
 
 															if (TableAlias3 != null && currentResourceTypeDto.SpreadType.Equals(SpreadType.Cost))
 															{
@@ -1007,7 +1007,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 															}
 															else
 															{
-																StructuredDocumentTag TableAlias3a = resourceContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_ResourceCostRollupContainer);
+																StructuredDocumentTag TableAlias3a = resourceContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_ResourceCostRollupContainer);
 
 																if (TableAlias3a != null)
 																{
@@ -1027,7 +1027,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 												CleanEmptyTaskContainers(ResourceContainers);
 											}
 
-											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_SOWResourceTable);
+											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_SOWResourceTable);
 
 											if (TableAlias2 != null)
 											{
@@ -1044,7 +1044,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 										#region Travel
 
 										case BOEExportTaskElementType.Travel:
-											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_TravelDirectCostRollup, StringComparison.CurrentCultureIgnoreCase);
+											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_TravelDirectCostRollup, StringComparison.CurrentCultureIgnoreCase);
 
 											if (TableAlias2 != null)
 											{
@@ -1056,7 +1056,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 													useFont, useFontSizeDflt19, useHeaderFontSizeDflt19, ParagraphAlignment.Center);
 											}
 
-											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_GSMOTravelDirectCostRollup, StringComparison.CurrentCultureIgnoreCase);
+											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_GSMOTravelDirectCostRollup, StringComparison.CurrentCultureIgnoreCase);
 											if (TableAlias2 != null)
 											{
 												TravelDTO CurrentTravel = exportInputs.Travels.First(x => x.Id == taskElement.BOETaskElementID.Value);
@@ -1064,10 +1064,10 @@ namespace GenBOE.DataBridge.Core.IO.Export
 												Dictionary<int, List<LaborRollupByDate>> TaskRollup = GetTravelCostRollup(new Collection<TravelDTO> { CurrentTravel }, new Collection<BOEExportTaskElement> { taskElement }, TravelResources);
 												PopulateTaskElementRollup(TableAlias2, TaskRollup,
 													new DateRange(CurrentTravel.StartDate, CurrentTravel.EndDate), "C2", new NumberFormatInfo() { CurrencyNegativePattern = BOEExporterConstants.CURRENCY_NEGATIVE_PATTERN_MINUS_DOLLAR, CurrencySymbol = string.Empty, CurrencyDecimalDigits = 2 },
-													useFont, "20", "20", ParagraphAlignment.Right);
+													useFont, 20, 20, ParagraphAlignment.Right);
 											}
 
-											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_MSTTravelCostRollup, StringComparison.CurrentCultureIgnoreCase);
+											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_MSTTravelCostRollup, StringComparison.CurrentCultureIgnoreCase);
 
 											if (TableAlias2 != null)
 											{
@@ -1084,7 +1084,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 												PopulateTaskCostRollup(Rollup, useFont, TableAlias2, taskContainer, FieldName_MSTTravelCostRollupContainer);
 											}
 
-											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_ZoneTravelSummary, StringComparison.CurrentCultureIgnoreCase);
+											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_ZoneTravelSummary, StringComparison.CurrentCultureIgnoreCase);
 											if (TableAlias2 != null)
 											{
 												StructuredDocumentTag zoneElement = TableAlias2;
@@ -1100,7 +1100,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 														foreach (IGrouping<string, BOEExportTaskElementLabor> group in multiGroups)
 														{
 															StructuredDocumentTag clonedTable = zoneTableElement.Clone(true) as StructuredDocumentTag;
-															StructuredDocumentTag currentRowAlias = clonedTable.GetLastMatchingChildSDT(FieldName_TaskTypeRow_ZoneTravel, StringComparison.CurrentCulture);
+															StructuredDocumentTag currentRowAlias = clonedTable.GetLastMatchingChildSDTByTag(FieldName_TaskTypeRow_ZoneTravel, StringComparison.CurrentCulture);
 															Row originalRow = currentRowAlias.GetAncestor(NodeType.Row) as Row;
 															Row currentRow = originalRow;
 															multiLabel = WordUtilities.GetTaggedChildElement(clonedTable, FieldName_MultiLabel);
@@ -1134,7 +1134,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 													{
 														multiLabel.RemoveIt();
 
-														StructuredDocumentTag zoneRowAlias = taskContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_TaskTypeRow_ZoneTravel, StringComparison.CurrentCulture);
+														StructuredDocumentTag zoneRowAlias = taskContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_TaskTypeRow_ZoneTravel, StringComparison.CurrentCulture);
 														Row zoneRow = zoneRowAlias.GetAncestor(NodeType.Row) as Row;
 														Row currentRow = zoneRow;
 
@@ -1165,7 +1165,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 												}
 											}
 
-											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_NonzoneTravelSummary, StringComparison.CurrentCultureIgnoreCase);
+											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_NonzoneTravelSummary, StringComparison.CurrentCultureIgnoreCase);
 											if (TableAlias2 != null)
 											{
 												StructuredDocumentTag nonzoneElement = TableAlias2;
@@ -1181,7 +1181,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 														foreach (IGrouping<string, BOEExportTaskElementLabor> group in multiGroups)
 														{
 															StructuredDocumentTag clonedTable = nonzoneTableElement.Clone(true) as StructuredDocumentTag;
-															StructuredDocumentTag currentRowAlias = clonedTable.GetLastMatchingChildSDT(FieldName_TaskTypeRow_NonzoneTravel, StringComparison.CurrentCulture);
+															StructuredDocumentTag currentRowAlias = clonedTable.GetLastMatchingChildSDTByTag(FieldName_TaskTypeRow_NonzoneTravel, StringComparison.CurrentCulture);
 															Row originalRow = currentRowAlias.GetAncestor(NodeType.Row) as Row;
 															Row currentRow = originalRow;
 															multiLabel = WordUtilities.GetTaggedChildElement(clonedTable, FieldName_MultiLabel);
@@ -1202,7 +1202,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 													{
 														multiLabel.RemoveIt();
 
-														StructuredDocumentTag nonzoneRowAlias = taskContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_TaskTypeRow_NonzoneTravel, StringComparison.CurrentCulture);
+														StructuredDocumentTag nonzoneRowAlias = taskContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_TaskTypeRow_NonzoneTravel, StringComparison.CurrentCulture);
 														Row nonzoneRow = nonzoneRowAlias.GetAncestor(NodeType.Row) as Row;
 														Row currentRow = nonzoneRow;
 
@@ -1228,7 +1228,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 										case BOEExportTaskElementType.ODC:
 
-											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_ODCDirectCostRollup, StringComparison.CurrentCultureIgnoreCase);
+											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_ODCDirectCostRollup, StringComparison.CurrentCultureIgnoreCase);
 											if (TableAlias2 != null)
 											{
 												OtherDirectCostDTO CurrentODC = exportInputs.Odcs.First(x => x.Id == taskElement.BOETaskElementID.Value);
@@ -1239,7 +1239,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 													useFont, useFontSizeDflt19, useHeaderFontSizeDflt19, ParagraphAlignment.Center);
 											}
 
-											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_GSMOODCDirectCostRollup, StringComparison.CurrentCultureIgnoreCase);
+											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_GSMOODCDirectCostRollup, StringComparison.CurrentCultureIgnoreCase);
 											if (TableAlias2 != null)
 											{
 												OtherDirectCostDTO CurrentODC = exportInputs.Odcs.First(x => x.Id == taskElement.BOETaskElementID.Value);
@@ -1247,10 +1247,10 @@ namespace GenBOE.DataBridge.Core.IO.Export
 												Dictionary<int, List<LaborRollupByDate>> TaskRollup = this.GetODCCostRollup(new Collection<OtherDirectCostDTO>() { CurrentODC }, taskElement.taskElementLabors);
 												PopulateTaskElementRollup(TableAlias2, TaskRollup,
 													new DateRange(CurrentODC.StartDate, CurrentODC.EndDate), "C2", new NumberFormatInfo() { CurrencyNegativePattern = BOEExporterConstants.CURRENCY_NEGATIVE_PATTERN_MINUS_DOLLAR, CurrencySymbol = string.Empty, CurrencyDecimalDigits = 2 },
-													useFont, "20", "20", ParagraphAlignment.Right);
+													useFont, 20, 20, ParagraphAlignment.Right);
 											}
 
-											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_MSTODCCostRollup, StringComparison.CurrentCultureIgnoreCase);
+											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_MSTODCCostRollup, StringComparison.CurrentCultureIgnoreCase);
 
 											if (TableAlias2 != null)
 											{
@@ -1266,7 +1266,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 												PopulateTaskCostRollup(Rollup, useFont, TableAlias2, taskContainer, FieldName_MSTODCCostRollupContainer);
 											}
 
-											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_ResourceContainer + "-ODC", StringComparison.CurrentCulture);
+											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_ResourceContainer + "-ODC", StringComparison.CurrentCulture);
 											if (TableAlias2 != null)
 											{
 												Dictionary<BOEExportTaskElementType, BOEExportTaskContainer> ResourceContainers = new Dictionary<BOEExportTaskElementType, BOEExportTaskContainer>();
@@ -1306,7 +1306,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 																	PopulateResourceContent(resourceContainer, resource);
 
-																	StructuredDocumentTag TableAlias3 = resourceContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_ResourceCostRollup, StringComparison.CurrentCulture);
+																	StructuredDocumentTag TableAlias3 = resourceContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_ResourceCostRollup, StringComparison.CurrentCulture);
 																	if (TableAlias3 != null)
 																	{
 																		Collection<LaborRollupByDate> rollup = this.GetODCResourceRollup(odcType, taskElement.taskElementLabors).ToCollection();
@@ -1315,7 +1315,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 																	}
 																	else
 																	{
-																		StructuredDocumentTag element = resourceContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_ResourceCostRollupContainer, StringComparison.CurrentCulture);
+																		StructuredDocumentTag element = resourceContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_ResourceCostRollupContainer, StringComparison.CurrentCulture);
 																		if (element != null)
 																		{
 																			element.RemoveAllChildren();
@@ -1338,7 +1338,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 										#region Material
 
 										case BOEExportTaskElementType.Material:
-											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_MaterialDirectCostRollup, StringComparison.CurrentCultureIgnoreCase);
+											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_MaterialDirectCostRollup, StringComparison.CurrentCultureIgnoreCase);
 
 											if (TableAlias2 != null)
 											{
@@ -1350,7 +1350,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 													useFont, useFontSizeDflt19, useHeaderFontSizeDflt19, ParagraphAlignment.Center);
 											}
 
-											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_GSMOMaterialDirectCostRollup, StringComparison.CurrentCultureIgnoreCase);
+											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_GSMOMaterialDirectCostRollup, StringComparison.CurrentCultureIgnoreCase);
 											if (TableAlias2 != null)
 											{
 												MaterialDTO CurrentMaterialElement = exportInputs.Materials.First(x => x.Id == taskElement.BOETaskElementID.Value);
@@ -1358,10 +1358,10 @@ namespace GenBOE.DataBridge.Core.IO.Export
 												Dictionary<int, List<LaborRollupByDate>> MaterialRollup = new Dictionary<int, List<LaborRollupByDate>>();
 												PopulateTaskElementRollup(TableAlias2, MaterialRollup,
 													new DateRange(CurrentMaterialElement.StartDate, CurrentMaterialElement.EndDate), "C2", new NumberFormatInfo() { CurrencyNegativePattern = 1, CurrencySymbol = string.Empty, CurrencyDecimalDigits = 2 },
-													useFont, 20, "20", ParagraphAlignment.Right);
+													useFont, 20, 20, ParagraphAlignment.Right);
 											}
 
-											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDT(FieldName_MSTMaterialCostRollup, StringComparison.CurrentCultureIgnoreCase);
+											TableAlias2 = taskContainer.TaskContainer.GetLastMatchingChildSDTByTag(FieldName_MSTMaterialCostRollup, StringComparison.CurrentCultureIgnoreCase);
 											if (TableAlias2 != null)
 											{
 												Collection<LaborRollupByDate> Rollup = null;
@@ -1405,7 +1405,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 							// Add a page break before the next BOE
 							Paragraph pageBreak = new Paragraph(document);
-							pageBreak.Runs.Add(new Run(document, ControlChar.PageBreak);
+							pageBreak.Runs.Add(new Run(document, ControlChar.PageBreak));
 							lastBOE.ParentNode.InsertAfter(pageBreak, lastBOE);
 														
 
@@ -1641,27 +1641,30 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="boeExportModelView">Object to hold most of the BOE's data</param>
 		private void PopulateGeneralContent(Document document, BOEExportModelView boeExportModelView)
 		{
-			// Get all tagged elements in Header
-			IEnumerable<StructuredDocumentTag> headerElements = from footerPart in document.HeaderParts
-												   from StructuredDocumentTag in footerPart.Header.Descendants<SdtAlias>()
-												   select StructuredDocumentTag;
+			//// Get all tagged elements in Header
+			//IEnumerable<IStructuredDocumentTag> headerElements = from footerPart in document.HeaderParts
+			//									   from StructuredDocumentTag in footerPart.Header.Descendants<SdtAlias>()
+			//									   select StructuredDocumentTag;
 
-			// Get all tagged elements in Main Document
-			IEnumerable<StructuredDocumentTag> mainDocumentElements = document.Document.Range.StructuredDocumentTags;
+			//// Get all tagged elements in Main Document
+			//IEnumerable<IStructuredDocumentTag> mainDocumentElements = document.Document.Range.StructuredDocumentTags;
 
-			// Get all tagged elements in Footer
-			IEnumerable<StructuredDocumentTag> footerElements = from footerPart in document.FooterParts
-												   from StructuredDocumentTag in footerPart.Footer.Descendants<SdtAlias>()
-												   select StructuredDocumentTag;
+			//// Get all tagged elements in Footer
+			//IEnumerable<IStructuredDocumentTag> footerElements = from footerPart in document.FooterParts
+			//									   from StructuredDocumentTag in footerPart.Footer.Descendants<SdtAlias>()
+			//									   select StructuredDocumentTag;
 
 			// Iterate over all StructuredDocumentTags in the document
-			foreach (StructuredDocumentTag alias in headerElements.Concat(mainDocumentElements).Concat(footerElements).ToList())
+			//foreach (StructuredDocumentTag alias in headerElements.Concat(mainDocumentElements).Concat(footerElements).ToList())
+			
+			// TODO TIW could also try foreach (Node node in doc.GetChildNodes(NodeType.StructuredDocumentTag, true)) then cast as SDT
+			foreach (StructuredDocumentTag alias in document.Range.StructuredDocumentTags)
 			{
 				// Get the title of this Alias
 				string sdtTitle = alias.Title;
 
 				// Get the Element that encapsulates the current alias
-				StructuredDocumentTag element = alias;
+				StructuredDocumentTag element = alias as StructuredDocumentTag;
 
 				// If the current element is not null, populate it with the appropriate data from the BOEExportModelView
 				if (element != null)
@@ -1714,8 +1717,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		{
 			// Get all tagged elements in Main Document
 			HashSet<StructuredDocumentTag> boeElements = new HashSet<StructuredDocumentTag>(boeContainer.GetChildNodes<StructuredDocumentTag>(NodeType.StructuredDocumentTag, true));
-			string useFontSize = this.GetFontSize(24, boeExportModelView.ExportFormat.TemplateType);
-			string useHeaderFontSize = this.GetHeaderFontSize(24, boeExportModelView.ExportFormat.TemplateType);
+			double useFontSize = this.GetFontSize(24, boeExportModelView.ExportFormat.TemplateType);
+			double useHeaderFontSize = this.GetHeaderFontSize(24, boeExportModelView.ExportFormat.TemplateType);
 			string useFont = this.GetFont("Times New Roman", boeExportModelView.ExportFormat.TemplateType);
 
 			StructuredDocumentTag SummaryAlias1 = boeElements.LastOrDefault(s => s.Title?.Equals(FieldName_SummaryElementofCost, StringComparison.CurrentCultureIgnoreCase) ?? false);
@@ -1726,7 +1729,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			if (boeExportModelView.IsMaterial)
 			{
-				StructuredDocumentTag SummaryAlias4 = boeElements.LastOrDefault(s => s.Title?.Equals(FieldName_SummaryHourByDateContainer, StringComparison.CurrentCultureIgnoreCase));
+				StructuredDocumentTag SummaryAlias4 = boeElements.LastOrDefault(s => s.Title?.Equals(FieldName_SummaryHourByDateContainer, StringComparison.CurrentCultureIgnoreCase) ?? false);
 				if (SummaryAlias4 != null)
 				{
 					PopulateBOEContent_MaterialSummaryHourByDateContainer(SummaryAlias4);
@@ -1760,21 +1763,21 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			}
 
 			// If the template contains the Summary Hour by Resource table in the BOE Header, populate it with all summarized resource types, except travel
-			StructuredDocumentTag SummaryAlias8 = boeElements.LastOrDefault(s => s.Title?.Equals(FieldName_SummaryHourByResource, StringComparison.CurrentCultureIgnoreCase));
+			StructuredDocumentTag SummaryAlias8 = boeElements.LastOrDefault(s => s.Title?.Equals(FieldName_SummaryHourByResource, StringComparison.CurrentCultureIgnoreCase) ?? false);
 			if (SummaryAlias8 != null)
 			{
 				PopulateBOEContent_SummaryHourByResource(boeExportModelView, boeElements, SummaryAlias8);
 			}
 
 			// Populate the BOE-level custom fields if there are any
-			StructuredDocumentTag SummaryAlias9 = boeElements.LastOrDefault(s => s.Title?.Equals(FieldName_BOECustomFields, StringComparison.CurrentCultureIgnoreCase));
+			StructuredDocumentTag SummaryAlias9 = boeElements.LastOrDefault(s => s.Title?.Equals(FieldName_BOECustomFields, StringComparison.CurrentCultureIgnoreCase) ?? false);
 			if (SummaryAlias9 != null)
 			{
 				PopulateBOEContent_BOECustomFields(boeExportModelView, exportInputs, SummaryAlias9);
 			}
 
 			// Populate BOE Summary Table of Hours for SSDS Template
-			StructuredDocumentTag SummaryAlias10 = boeElements.LastOrDefault(s => s.Title?.Equals(FieldName_SummaryTableOfHours, StringComparison.CurrentCultureIgnoreCase));
+			StructuredDocumentTag SummaryAlias10 = boeElements.LastOrDefault(s => s.Title?.Equals(FieldName_SummaryTableOfHours, StringComparison.CurrentCultureIgnoreCase) ?? false);
 			if (SummaryAlias10 != null)
 			{
 				PopulateBOEContent_BOESummaryTableOfHours(boeExportModelView, exportInputs, SummaryAlias10);
@@ -1970,15 +1973,15 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 					// if the template has this field in a table row and it is removed, the document will be unable to open
 					// so the extra space needs to be kept if the Sources of Data field is empty
-					bool keepEmptyRow = element.GetAncestor(NodeType.Row) != null && string.IsNullOrEmpty(SourcesOfData);
+					bool keepEmptyTableRow = element.GetAncestor(NodeType.Row) != null && string.IsNullOrEmpty(SourcesOfData);
 
 					// removes blank spaces in output and "Sources" placeholder
 					foreach (Node child in element.GetChildNodes(NodeType.Any, false))
 					{
 						string innerText = child.GetText();
-						if ((string.IsNullOrEmpty(innerText) || innerText == "Sources" && child.HasAttributes) && !keepEmptyTableRow)
+						if ((string.IsNullOrEmpty(innerText) || innerText == "Sources") && !keepEmptyTableRow)
 						{
-							if (child is not CompositeNode compositeNode || !compositeNode.Descendants<Drawing>().Any())  // Bug 32436 - Avoid deleting images
+							if (child is not CompositeNode compositeNode || !compositeNode.GetChildNodes(NodeType.Shape, true).Any())  // Bug 32436 - Avoid deleting images
 							{
 								child.Remove();
 							}
@@ -2129,7 +2132,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="useHeaderFontSize">Font size for header cells</param>
 		/// <param name="useFont">Font to use in the table</param>
 		/// <param name="SummaryAlias5">sdtAlias of the table</param>
-		private void PopulateBOEContent_SummaryHourByDate(BOEExportModelView boeExportModelView, BOEExportInputs exportInputs, ExcelReportTemplateType templateType, HashSet<StructuredDocumentTag> boeElements, string useFontSize, string useHeaderFontSize, string useFont, StructuredDocumentTag SummaryAlias5)
+		private void PopulateBOEContent_SummaryHourByDate(BOEExportModelView boeExportModelView, BOEExportInputs exportInputs, ExcelReportTemplateType templateType, HashSet<StructuredDocumentTag> boeElements, double useFontSize, double useHeaderFontSize, string useFont, StructuredDocumentTag SummaryAlias5)
 		{
 			StructuredDocumentTag element = SummaryAlias5;
 			ICollection<BoeTaskElementDTO> taskElementCollection = exportInputs.TaskElements.Where(x => x.BoeID == boeExportModelView.BoeID).ToList();
@@ -2145,15 +2148,16 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					Collection<LaborRollupByDate> RollupByDate = GetRollupByYearData(taskElementCollection).ToCollection();
 
 					ParagraphAlignment numberAlignment = ParagraphAlignment.Center;
-					string fontSize = useFontSize;
-					string headerFontSize = useHeaderFontSize;
+					double fontSize = useFontSize;
+					double headerFontSize = useHeaderFontSize;
 					if (SummaryAlias5.Title == FieldName_GSMOSummaryHourByDate)
 					{
 						numberAlignment = ParagraphAlignment.Right;
-						fontSize = headerFontSize = "20";
+						fontSize = 20;
+						headerFontSize = 20;
 					}
 
-					PopulateBoeYearSummaryRollup(element, RollupByDate, DefaultHoursFormat, null, useFont, fontSize, headerFontSize, SummaryAlias5.Val.Value, numberAlignment);
+					PopulateBoeYearSummaryRollup(element, RollupByDate, DefaultHoursFormat, null, useFont, fontSize, headerFontSize, SummaryAlias5.Title, numberAlignment);
 				}
 			}
 			else
@@ -2187,7 +2191,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="useFont">Font to use in the table</param>
 		/// <param name="SummaryAlias6">sdtAlias of the table</param>
 		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-		private void PopulateBOEContent_SummaryCostByDate(BOEExportModelView boeExportModelView, BOEExportInputs exportInputs, HashSet<StructuredDocumentTag> boeElements, string useFontSize, string useHeaderFontSize, string useFont, StructuredDocumentTag SummaryAlias6)
+		private void PopulateBOEContent_SummaryCostByDate(BOEExportModelView boeExportModelView, BOEExportInputs exportInputs, HashSet<StructuredDocumentTag> boeElements, double useFontSize, double useHeaderFontSize, string useFont, StructuredDocumentTag SummaryAlias6)
 		{
 			StructuredDocumentTag element = SummaryAlias6;
 			NumberFormatInfo currencyFormatter = new NumberFormatInfo();
@@ -2528,32 +2532,33 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="inFontSize">font size to use</param>
 		/// <param name="noAfterSpacing">bool to determine if any after spacing should be removed from text in the table</param>
 		/// <returns>returns table header row</returns>
-		protected virtual Row CreateRollupHeaderRow(DocumentBase document, List<string> Headers, string inFont, string inFontSize, bool noAfterSpacing)
+		protected virtual Row CreateRollupHeaderRow(DocumentBase document, List<string> Headers, string inFont, double inFontSize, bool noAfterSpacing)
 		{
-			TableRowProperties trp = new TableRowProperties(new TableHeader(), new CantSplit());
+			// TODO TIW 
+			// TableRowProperties trp = new TableRowProperties(new TableHeader(), new CantSplit());
 			Row tr = new Row(document);
-			tr.Append(trp);
-			if (Headers != null)
-			{
-				foreach (string header in Headers)
-				{
-					ParagraphAlignment hAlign = ParagraphAlignment.Center;
-					Action<Cell> tcp = null;// TODO TIW new CellProperties(
-						//new Shading() { Color = "auto", Fill = "BFBFBF", Val = ShadingPatternValues.Clear });
-					Action<Run> rp = null;// TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
-					Action<Paragraph> pp;
-					if (noAfterSpacing)
-					{
-						pp = new ParagraphProperties(new Justification() { Val = hAlign }, new KeepNext() { Val = true }, new SpacingBetweenLines() { After = "0" });
-					}
-					else
-					{
-						pp = new ParagraphProperties(new Justification() { Val = hAlign }, new KeepNext() { Val = true });
-					}
+			//tr.Append(trp);
+			//if (Headers != null)
+			//{
+			//	foreach (string header in Headers)
+			//	{
+			//		ParagraphAlignment hAlign = ParagraphAlignment.Center;
+			//		Action<Cell> tcp = null;// TODO TIW new CellProperties(
+			//			//new Shading() { Color = "auto", Fill = "BFBFBF", Val = ShadingPatternValues.Clear });
+			//		Action<Run> rp = null;// TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
+			//		Action<Paragraph> pp;
+			//		if (noAfterSpacing)
+			//		{
+			//			pp = new ParagraphProperties(new Justification() { Val = hAlign }, new KeepNext() { Val = true }, new SpacingBetweenLines() { After = "0" });
+			//		}
+			//		else
+			//		{
+			//			pp = new ParagraphProperties(new Justification() { Val = hAlign }, new KeepNext() { Val = true });
+			//		}
 
-					PopulateTableCell(tr, header, inFont, inFontSize, tcp, pp, rp);
-				}
-			}
+			//		PopulateTableCell(tr, header, inFont, inFontSize, tcp, pp, rp);
+			//	}
+			//}
 			return tr;
 		}
 
@@ -2593,7 +2598,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					// can just use the existing total row (it does not need to be cloned)
 					Row totalsRow;
 					StructuredDocumentTag dataTotalsRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, FieldName_TotalHours);
-					if ((totalsRow = dataTotalsRowMarkerTag.Ancestors<Row>().FirstOrDefault()) != null)
+					if ((totalsRow = dataTotalsRowMarkerTag.GetAncestor(NodeType.Row) as Row) != null)
 					{
 						this.SetCantSplit(totalsRow);
 
@@ -2677,9 +2682,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			if (customFieldValues.Any())
 			{
 				// initialize the "insertion" row
-				SdtBlock contentBlockTemplate;
+				StructuredDocumentTag contentBlockTemplate;
 
-				SdtBlock currentInsertionBlock = contentBlockTemplate = customFieldsElement as SdtBlock;
+				StructuredDocumentTag currentInsertionBlock = contentBlockTemplate = customFieldsElement as StructuredDocumentTag;
 
 				/*
                  * SdtBlock
@@ -2699,7 +2704,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				{
 					foreach (KeyValuePair<CustomFieldValueDTO, CustomFieldDTO> customField in customFieldMappings.Value)
 					{
-						SdtBlock contentBlock = contentBlockTemplate.Clone(true) as SdtBlock;
+						StructuredDocumentTag contentBlock = contentBlockTemplate.Clone(true) as StructuredDocumentTag;
 
 						CustomFieldValueDTO fieldValue = customField.Key;
 						CustomFieldDTO field = customField.Value;
@@ -2710,12 +2715,12 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 						// Note: The template has an indeterminate number of [multiple] Run elements containing "pieces" of the full text.
 						// Delete all but the first Run.
-						RemoveAllButOneElement<Run>(customFieldLabel.GetFirstChild<SdtContentRun>());
+						RemoveAllButOneElement(customFieldLabel, NodeType.Run);// .GetFirstChild<SdtContentRun>());
 						if (customFieldID != null)
 						{
-							RemoveAllButOneElement<Run>(customFieldID.GetFirstChild<SdtContentRun>());
+							RemoveAllButOneElement(customFieldID, NodeType.Run);// .GetFirstChild<SdtContentRun>());
 						}
-						RemoveAllButOneElement<Run>(customFieldDesc.GetFirstChild<SdtContentRun>());
+						RemoveAllButOneElement(customFieldDesc, NodeType.Run); // .GetFirstChild<SdtContentRun>());
 
 						// set values
 						WordUtilities.SetElementText(customFieldLabel, field.CustomFieldName);
@@ -3056,7 +3061,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, LOCATION_CUSTOM_FIELD), rollupRowData.Location);
 
 						// add the row to the table
-						currentInsertionRow.InsertAfterSelf(tableRow);
+						currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
 						currentInsertionRow = tableRow;
 					}
 
@@ -3189,7 +3194,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, FieldName_TieredPercent), rowData.TieredPercent.HasValue ? rowData.TieredPercent.Value.ToString("F1") + " %" : string.Empty);
 
 						// add the row to the table
-						currentInsertionRow.InsertAfterSelf(tableRow);
+						currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
 						currentInsertionRow = tableRow;
 					}
 
@@ -3275,12 +3280,12 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				StructuredDocumentTag element = TableAlias;
 				if (element != null)
 				{
-					this.PopulateBoeYearSummaryRollup(element, Rollup.ToCollection(), format, CurrencyFormatter, Font, "18", "18", TableAlias.Title, ParagraphAlignment.Center);
+					this.PopulateBoeYearSummaryRollup(element, Rollup.ToCollection(), format, CurrencyFormatter, Font, 18, 18, TableAlias.Title, ParagraphAlignment.Center);
 				}
 			}
 			else
 			{
-				StructuredDocumentTag alias = taskContainer.TaskContainer.GetLastMatchingChildSDT(containerName, StringComparison.CurrentCultureIgnoreCase);
+				StructuredDocumentTag alias = taskContainer.TaskContainer.GetLastMatchingChildSDTByTag(containerName, StringComparison.CurrentCultureIgnoreCase);
 
 				StructuredDocumentTag element = alias;
 				if (element != null)
@@ -3413,7 +3418,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="tag">Content control tag name</param>
 		/// <param name="numberAlignment">Horizontal text alignment for number values in the table</param>
 		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals")]
-		protected virtual void PopulateBoeYearSummaryRollup(StructuredDocumentTag element, Collection<LaborRollupByDate> laborRollup, string Format, NumberFormatInfo NumberFormatter, string Font, double FontSize, string headerFontSize, string tag, ParagraphAlignment numberAlignment)
+		protected virtual void PopulateBoeYearSummaryRollup(StructuredDocumentTag element, Collection<LaborRollupByDate> laborRollup, string Format, NumberFormatInfo NumberFormatter, string Font, double FontSize, double headerFontSize, string tag, ParagraphAlignment numberAlignment)
 		{
 			if (element != null)
 			{
@@ -3484,7 +3489,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				Action<Cell> totalLabelProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Pct },
 					// new CellBorders(new BottomBorder() { Val = BorderValues.Nil }), new CellBorders(new LeftBorder() { Val = BorderValues.Nil }));
 				Action<Run> totalLabelRunProperties = null;// TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
-				PopulateTableCell(tr3, "Total\u00A0", Font, FontSize, totalLabelProperties, rightPP, totalLabelRunProperties, new GridSpan() { Val = 13 });
+				PopulateTableCell(tr3, "Total\u00A0", Font, FontSize, totalLabelProperties, rightPP, totalLabelRunProperties, 13 );
 
 				if (NumberFormatter != null)
 				{
@@ -3517,7 +3522,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="numberAlignment">Horizontal text alignment for number values in the table</param>
 		[SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals"), SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		private void PopulateTaskElementRollup(StructuredDocumentTag element, Dictionary<int, List<LaborRollupByDate>> taskRollup,
-			DateRange TasksDateRange, string Format, NumberFormatInfo NumberFormatter, string Font, double FontSize, string headerFontSize, ParagraphAlignment numberAlignment,
+			DateRange TasksDateRange, string Format, NumberFormatInfo NumberFormatter, string Font, double FontSize, double headerFontSize, ParagraphAlignment numberAlignment,
 			bool includesCompanyAndLocation = false)
 		{
 			if (element != null)
@@ -3611,7 +3616,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 																  //new CellBorders(new BottomBorder() { Val = BorderValues.Nil }));
 					Action<Run> totalLabelRunProperties = null;// TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
 
-					PopulateTableCell(tr3, "Total\u00A0", Font, FontSize, totalLabelCellProperties, rightPP, totalLabelRunProperties, new GridSpan() { Val = includesCompanyAndLocation ? 17 : 14 });
+					PopulateTableCell(tr3, "Total\u00A0", Font, FontSize, totalLabelCellProperties, rightPP, totalLabelRunProperties, includesCompanyAndLocation ? 17 : 14 );
 
 					// print the Total value
 					Action<Cell> totalValueCellProperties = null; // TODO TIW new CellProperties(new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Pct },
@@ -3627,7 +3632,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					Action<Cell>blankCellProperties = null; // TODO TIW new CellProperties(new CellProperties(new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center },
 															 //new CellWidth() { Type = TableWidthUnitValues.Pct }), new CellBorders(new TopBorder() { Val = BorderValues.Nil }));
 					Action <Run>blankRunProperties = null; // TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
-					PopulateTableCell(tr4, string.Empty, Font, FontSize, blankCellProperties, centerPP, blankRunProperties, new GridSpan() { Val = includesCompanyAndLocation ? 18 : 15 });
+					PopulateTableCell(tr4, string.Empty, Font, FontSize, blankCellProperties, centerPP, blankRunProperties, includesCompanyAndLocation ? 18 : 15 );
 
 					table.Append(tr4);
 				}
@@ -3710,7 +3715,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 						// Total label
 						Action<Cell> tcp = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Pct });
-						PopulateTableCell(tr6, "Total", Font, FontSize, tcp, centerPP, rpSummaryTotal, new GridSpan() { Val = includesCompanyAndLocation ? 4 : 1 });
+						PopulateTableCell(tr6, "Total", Font, FontSize, tcp, centerPP, rpSummaryTotal, includesCompanyAndLocation ? 4 : 1);
 
 						// get overall total values
 						string janTotal = LaborValues.Select(x => x.January).Sum().ToString(Format, NumberFormatter);
@@ -3770,7 +3775,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="FontSize">Font size to use in the table</param>
 		/// <param name="templateType">type of output template being exported</param>
 		private void PopulateGSMOTaskElementRollup(StructuredDocumentTag element, Dictionary<int, List<GSMOLaborRollupByDate>> taskRollup,
-			DateRange TasksDateRange, string Format, NumberFormatInfo NumberFormatter, string Font, string FontSize, ExcelReportTemplateType templateType)
+			DateRange TasksDateRange, string Format, NumberFormatInfo NumberFormatter, string Font, double FontSize, ExcelReportTemplateType templateType)
 		{
 			if (element != null)
 			{
@@ -3868,7 +3873,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="FontSize">Font size to use in the table</param>
 		/// <param name="includePerfOrg">if set to <c>true</c> [include perf org].</param>
 		private void PopulateSMORSTaskElementRollup(StructuredDocumentTag element, Dictionary<int, List<GSMOLaborRollupByDate>> taskRollup,
-			DateRange TasksDateRange, string Format, NumberFormatInfo NumberFormatter, string Font, string FontSize, bool includePerfOrg)
+			DateRange TasksDateRange, string Format, NumberFormatInfo NumberFormatter, string Font, double FontSize, bool includePerfOrg)
 		{
 			if (element != null)
 			{
@@ -3962,7 +3967,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="numberAlignment">Horizontal text alignment for number values in the table</param>
 		[SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals"), SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		private void PopulateGSMOTaskElementRollupData(StructuredDocumentTag element, Dictionary<int, List<GSMOLaborRollupByDate>> taskRollup, Table table,
-			DateRange TasksDateRange, string Format, NumberFormatInfo NumberFormatter, string Font, string FontSize, bool removeResourceTotals, ParagraphAlignment numberAlignment)
+			DateRange TasksDateRange, string Format, NumberFormatInfo NumberFormatter, string Font, double FontSize, bool removeResourceTotals, ParagraphAlignment numberAlignment)
 		{
 			if (!taskRollup.Keys.Any())
 			{
@@ -4193,7 +4198,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			int numColumns = includesPerfOrg ? 16 : 15;
 			if (!taskRollup.Keys.Any())
 			{
-				table.Append(CreateTableBlankRow(numColumns));
+				table.Append(CreateTableBlankRow(table.Document, numColumns));
 			}
 
 			// TableVerticalAlignmentValues vertAlign = TableVerticalAlignmentValues.Center;
@@ -4239,7 +4244,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				Action<Cell> totalLabelCellProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = vertAlign },
 					// new CellWidth() { Type = TableWidthUnitValues.Pct }, new CellBorders(new BottomBorder() { Val = BorderValues.Nil }));
 				Action<Run> rp1 = null;// TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
-				PopulateTableCell(tr3, "Total", Font, FontSize, totalLabelCellProperties, rightPP, rp1, new GridSpan() { Val = numColumns - 1 });
+				PopulateTableCell(tr3, "Total", Font, FontSize, totalLabelCellProperties, rightPP, rp1, numColumns - 1);
 
 				// and print the total value
 				if (NumberFormatter != null)
@@ -4262,7 +4267,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				Action<Cell>blankCellProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = vertAlign },
 					// new CellWidth() { Type = TableWidthUnitValues.Pct }, new CellBorders(new TopBorder() { Val = BorderValues.Nil }));
 				Action<Run> rp = null;// TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
-				PopulateTableCell(tr4, string.Empty, Font, FontSize, blankCellProperties, centerPP, rp, new GridSpan() { Val = numColumns });
+				PopulateTableCell(tr4, string.Empty, Font, FontSize, blankCellProperties, centerPP, rp, numColumns);
 
 				table.Append(tr4);
 			}
@@ -4387,11 +4392,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="text">The text to populate the cell with</param>
 		/// <param name="font">Font to be used</param>
 		/// <param name="fontSize">Size of the font</param>
-		/// <param name="cellProperties">Properties to apply to the table cell</param>
-		/// <param name="paragraphProperties">Properties to apply to the paragraph (main text container)</param>
-		/// <param name="runProperties">Properties to apply to the run (text container within the paragraph) - optional</param>
+		/// <param name="cellAction">Properties to apply to the table cell</param>
+		/// <param name="paragraphAction">Properties to apply to the paragraph (main text container)</param>
+		/// <param name="runAction">Properties to apply to the run (text container within the paragraph) - optional</param>
 		/// <param name="gridSpan">How many cells this cell should span across - optional, default is one when not set</param>
-		protected void PopulateTableCell(Row tableRow, string text, string font, double fontSize, Action<Cell> cellAction, Action<Paragraph> paragraphAction = null, Action<Run> runAction = null, CellMerge gridSpan = CellMerge.None)
+		protected void PopulateTableCell(Row tableRow, string text, string font, double fontSize, Action<Cell> cellAction, Action<Paragraph> paragraphAction = null, Action<Run> runAction = null, int gridSpan = 1)
 		{
 			if (tableRow == null)
 			{
@@ -4406,7 +4411,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			Cell tc = new Cell(tableRow.Document);
 			cellAction(tc);
 			
-			tc.CellFormat.HorizontalMerge = gridSpan;
+			// tc.CellFormat.HorizontalMerge = gridSpan;
 
 			//Action<Paragraph> pp = new ParagraphProperties(paragraphProperties.Clone(true));
 			//Action<Run> rp;
@@ -4456,10 +4461,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			for (int i = 0; i < NumOfColumns; i++)
 			{
 				Cell tc = new Cell(document);
-				tc.PrependChild(new CellProperties(new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Pct }));
-				Action<Paragraph> pp = new ParagraphProperties(new Justification() { Val = ParagraphAlignment.Center });
-				Paragraph p = new Paragraph(new Run(new Text(string.Empty)));
-				p.PrependChild(pp);
+				tc.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+				// TODO TIW
+				//tc.CellFormat.PreferredWidth.Type = PreferredWidthType.Percent; 
+				//tc.PrependChild(new CellProperties(new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Pct }));
+				Paragraph p = new Paragraph(document);
+				p.AppendChild(new Run(document, string.Empty));
+				p.ParagraphFormat.Alignment = ParagraphAlignment.Center;
 				tc.AppendChild(p);
 				tr2.AppendChild(tc);
 			}
@@ -4503,7 +4511,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="table">The table object that the generated headed is appended to</param>
 		/// <param name="inFont">The font.</param>
 		/// <param name="inFontSize">Size of the font.</param>
-		private void AppendTaskVariableTableHeader(List<string> headers, Table table, string inFont, string inFontSize)
+		private void AppendTaskVariableTableHeader(List<string> headers, Table table, string inFont, double inFontSize)
 		{
 			Row tr = new Row(table.Document);
 			tr.RowFormat.AllowBreakAcrossPages = false;
@@ -4514,8 +4522,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			Action<Run> rp = null;// TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
 			Action<Paragraph> pp = null;// TODO TIW new ParagraphProperties(new Justification() { Val = ParagraphAlignment.Center });
 
-			PopulateTableCell(tr, "Variable", inFont, inFontSize, tcp, pp, rp, new GridSpan() { Val = 2 });
-			PopulateTableCell(tr, "Dependents", inFont, inFontSize, tcp, pp, rp, new GridSpan() { Val = 3 });
+			PopulateTableCell(tr, "Variable", inFont, inFontSize, tcp, pp, rp, 2);
+			PopulateTableCell(tr, "Dependents", inFont, inFontSize, tcp, pp, rp, 3);
 
 			table.Append(tr);
 
@@ -4744,7 +4752,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					{
 						if (taskElement.ElementType == BOEExportTaskElementType.Labor)
 						{
-							string useFontSize = "24";
+							double useFontSize = 24;
 							string useFont = "Times New Roman";
 
 							element.RemoveAllChildren();
@@ -4758,7 +4766,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 								{
 									string id = taskElement.ExportFields[FieldName_ExportFormatId];
 									string gsmoTemplateId = ((int)ExcelReportTemplateType.LMSI_GSM_O_LANDSACPE_WITH_TIME_PHASED_SUMMARIES).ToString();
-									useFontSize = id == gsmoTemplateId ? "22" : "24";
+									useFontSize = id == gsmoTemplateId ? 22 : 24;
 								}
 
 								AppendTaskVariableTableHeader(Headers, table, useFont, useFontSize);
@@ -4792,9 +4800,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						}
 						else
 						{
-							OpenXmlCompositeElement item;
-							if ((item = element.ChildElements.OfType<SdtContentBlock>().FirstOrDefault()) != null ||
-								(item = element.ChildElements.OfType<SdtContentRun>().FirstOrDefault()) != null)
+							Node item;
+							if ((item = element.GetChild(NodeType.BuildingBlock, 0, true)) != null ||
+								(item = element.GetChild(NodeType.Run, 0, true)) != null)
 							{
 								if (taskElement.MOQText == null)
 								{
@@ -4803,11 +4811,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 								if (exportInputs.Workspace.IsProjectMapWorkspace)
 								{
-									WordUtilities.SetElementText(item, taskElement.MOQText);
+									WordUtilities.SetElementText(element, taskElement.MOQText);
 								}
 								else
 								{
-									WordUtilities.SetElementTextWithHTML(mainPart, item, taskElement.MOQText, ref counters);
+									WordUtilities.SetElementTextWithHTML(mainPart, element, taskElement.MOQText, ref counters);
 								}
 
 								if (wsHasMoqRteTemplate && exportInputs.Workspace.UsingTemplateBOE)
@@ -4818,7 +4826,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 								}
 							}
 
-							alias.RemoveIt();
+							// Set sdtAlias/Title to empty
+							element.Title = string.Empty;
 						}
 					}
 					else if (sdtTitle == BOEExporterConstants.Container_MOQSelection)
@@ -4836,7 +4845,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					else if (sdtTitle == FieldName_MOQSSDS)
 					{
 						WordUtilities.SetElementTextWithHTML(mainPart, element, this.ReplaceParagraphTags(taskElement.MOQText), ref counters);
-						alias.RemoveIt();
+						// Set sdtAlias/Title to empty
+						element.Title = string.Empty;
 					}
 					else if (sdtTitle == FieldName_TaskCostCenter)
 					{
@@ -4847,12 +4857,14 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						}
 
 						WordUtilities.SetElementText(element, value);
-						alias.RemoveIt();
+						// Set sdtAlias/Title to empty
+						element.Title = string.Empty;
 					}
 					else if (taskElement.ExportFields.ContainsKey(sdtTitle))
 					{
 						WordUtilities.SetElementText(element, taskElement.ExportFields[sdtTitle]);
-						alias.RemoveIt();
+						// Set sdtAlias/Title to empty
+						element.Title = string.Empty;
 					}
 				}
 			}
@@ -5033,7 +5045,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <returns>
 		/// A new Run element containing the given text
 		/// </returns>
-		private Run CreateNewTextRun(Document document, params string[] text)
+		private Run CreateNewTextRun(DocumentBase document, params string[] text)
 		{
 			Run toReturn = new Run(document);
 			toReturn.Text = string.Join(ControlChar.LineBreak, text);
@@ -5139,7 +5151,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// </summary>
 		/// <param name="boeElement">The BOE containing the tasks that will be retrieved</param>
 		/// <param name="inTaskContainers">The task containers.</param>
-		private void FetchContainerElements(Node boeElement, Dictionary<BOEExportTaskElementType, BOEExportTaskContainer> inTaskContainers)
+		private void FetchContainerElements(CompositeNode boeElement, Dictionary<BOEExportTaskElementType, BOEExportTaskContainer> inTaskContainers)
 		{
 			// Get all StructuredDocumentTags (tags) that have Aliases (tag names) attached to them
 			StructuredDocumentTagCollection sdtAliases = boeElement.Range.StructuredDocumentTags;
@@ -5237,7 +5249,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="boeElement">The container BOE will be used to look for this type's task type row, since it will be a sibling
 		/// of the task row</param>
 		/// <param name="inTaskContainers">The task containers.</param>
-		private void FetchRowContainerElement(StructuredDocumentTagCollection sdtAliases, BOEExportTaskElementType boeExportTaskElementType, Node boeElement, Dictionary<BOEExportTaskElementType, BOEExportTaskContainer> inTaskContainers)
+		private void FetchRowContainerElement(StructuredDocumentTagCollection sdtAliases, BOEExportTaskElementType boeExportTaskElementType, CompositeNode boeElement, Dictionary<BOEExportTaskElementType, BOEExportTaskContainer> inTaskContainers)
 		{
 			// Attempt to find the StructuredDocumentTag with a special name for the current task type
 			StructuredDocumentTag alias = sdtAliases.LastOrDefault(s => s.Title.Equals("BOE:TaskRow-" + Enum.GetName(typeof(BOEExportTaskElementType), boeExportTaskElementType), StringComparison.CurrentCultureIgnoreCase)) as StructuredDocumentTag;
@@ -5270,7 +5282,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			Row toReturn = null;
 
 			// Attempt to find the StructuredDocumentTag with a special name for the landscape template
-			StructuredDocumentTag finder = taskElementContainer.GetLastMatchingChildSDT("BOE:TaskTypeRow-" + Enum.GetName(typeof(BOEExportTaskElementType), boeExportTaskElementType));
+			StructuredDocumentTag finder = taskElementContainer.GetLastMatchingChildSDTByTag("BOE:TaskTypeRow-" + Enum.GetName(typeof(BOEExportTaskElementType), boeExportTaskElementType));
 
 			// If the special element was found, return it
 			if (finder != null)
@@ -5345,7 +5357,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			}
 
 			// Attempt to find the StructuredDocumentTag with a special name for the current task type
-			StructuredDocumentTag titleContainer = container.GetLastMatchingChildSDT("BOE:SectionTitle-" + Enum.GetName(typeof(BOEExportTaskElementType), taskElementType), StringComparison.CurrentCultureIgnoreCase);
+			StructuredDocumentTag titleContainer = container.GetLastMatchingChildSDTByTag("BOE:SectionTitle-" + Enum.GetName(typeof(BOEExportTaskElementType), taskElementType), StringComparison.CurrentCultureIgnoreCase);
 
 			if (titleContainer != null)
 			{
@@ -6832,19 +6844,19 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="defaultSize">default size to be used</param>
 		/// <param name="templateType">template being used</param>
 		/// <returns>the font size to be used in the template</returns>
-		protected virtual string GetHeaderFontSize(int defaultSize, ExcelReportTemplateType templateType)
+		protected virtual double GetHeaderFontSize(int defaultSize, ExcelReportTemplateType templateType)
 		{
 			if (templateType == ExcelReportTemplateType.LMSI_GSM_O_LANDSACPE_WITH_TIME_PHASED_SUMMARIES)
 			{
-				return "22";
+				return 22;
 			}
 			else if (templateType == ExcelReportTemplateType.LMSI_NISSC_LANDSCAPE_WITH_NON_LABOR_COST)
 			{
-				return "18";
+				return 18;
 			}
 			else
 			{
-				return defaultSize.ToString();
+				return Convert.ToDouble(defaultSize);
 			}
 		}
 
@@ -6956,8 +6968,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				{
 					// Set the cell, paragraph, and run properties
 					Action<Cell> cellProperties = null;// TODO TIW new CellProperties(templateCell.CellProperties.Clone(true));
-					Action<Paragraph> paraProperties = templateCell.Descendants<ParagraphProperties>().FirstOrDefault();
-					Action<Run> runProperties = templateCell.Descendants<RunProperties>().FirstOrDefault();
+					Action<Paragraph> paraProperties = null;// TODO TIW templateCell.Descendants<ParagraphProperties>().FirstOrDefault();
+					Action<Run> runProperties = null;// TODO TIW templateCell.Descendants<RunProperties>().FirstOrDefault();
 
 					// Set the text and cell properties
 					Cell cell = new Cell(templateCell.Document);

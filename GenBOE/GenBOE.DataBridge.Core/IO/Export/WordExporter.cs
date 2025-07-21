@@ -302,7 +302,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				// TODO TIW Id
 				// sdt.Id = 0;  
 				// Aspose might make these Ids unique??
-				sdt.Placeholder.Remove();
+				sdt.Placeholder?.Remove();
 			}
 
 			#endregion
@@ -360,7 +360,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				else
 				{
 					// TODO TIW this looks very dubious
-					row.ParentNode.RemoveIt();
+				    element.RemoveIt();
 				}
 			}
 		}

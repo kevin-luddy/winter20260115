@@ -1311,5 +1311,14 @@ namespace IES.Common.Core.Utilities
 
 			return ntIDOnly.ToLower();
 		}
+
+		/// <summary>
+		/// A method to set Aspose licenses
+		/// </summary>
+		public static void SetLicense()
+		{
+			new Aspose.Words.License().SetLicense("Aspose.Total.lic");
+			new Aspose.Cells.License().SetLicense("Aspose.Total.lic");
+		}
 	}
 }
