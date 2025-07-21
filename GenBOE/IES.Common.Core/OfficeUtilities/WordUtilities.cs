@@ -401,10 +401,21 @@ namespace IES.Common.Core.OfficeUtilities
 
 					// remove any children of the SDT
 					element.RemoveAllChildren();
-					element.AppendChild(new Run(document));
+
+					Node insertionPoint;
+					// Move to the paragraph or Run
+					if (element.ParentNode != null && element.ParentNode is Paragraph)
+					{
+						insertionPoint = element.ParentNode;
+					}
+					else
+					{
+						element.AppendChild(new Run(document));
+						insertionPoint = element.FirstChild;
+					}
 
 					DocumentBuilder builder = new DocumentBuilder(document);
-					builder.MoveTo(element.FirstChild);
+					builder.MoveTo(insertionPoint);
 					builder.InsertHtml(htmlFormattedText, HtmlInsertOptions.RemoveLastEmptyParagraph);
 					
 

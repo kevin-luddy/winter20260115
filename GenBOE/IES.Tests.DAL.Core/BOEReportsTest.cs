@@ -100,11 +100,11 @@ namespace IES.Tests.Core
 		public void RemoveTaggedElementAncestorTest()
 		{
 			Document doc = LoadTemplate();
-			StructuredDocumentTag sdt = WordUtilities.GetTaggedElement(doc, BOEExporterConstants.FieldName_ProgramName);
-			WordUtilities.RemoveTaggedElementAncestor(sdt, BOEExporterConstants.Container_BOE, NodeType.StructuredDocumentTag);
+			StructuredDocumentTag sdt = WordUtilities.GetTaggedElement(doc, BOEExporterConstants.Container_BOE);
+			WordUtilities.RemoveTaggedElementAncestor(sdt, BOEExporterConstants.FieldName_ProgramName, NodeType.StructuredDocumentTag);
 
-			StructuredDocumentTag boeContainer = WordUtilities.GetTaggedElement(doc, BOEExporterConstants.Container_BOE);
-			Assert.IsNull(boeContainer);
+			StructuredDocumentTag programName = WordUtilities.GetTaggedElement(doc, BOEExporterConstants.FieldName_ProgramName);
+			Assert.IsNull(programName);
 		}
 
 		/// <summary>
@@ -129,7 +129,10 @@ namespace IES.Tests.Core
 			Assert.AreEqual(numRows - 1, table.Rows.Count);
 
 			boeHeaderElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Container_BOEHeader);
-			Assert.IsNull(boeHeaderElement);
+			Assert.IsNotNull(boeHeaderElement);
+
+			StructuredDocumentTag programName = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.FieldName_ProgramName);
+			Assert.IsNull(programName);
 		}
 
 		/// <summary>
@@ -270,7 +273,7 @@ namespace IES.Tests.Core
 		public void SetElementTextWithHTMLTest()
 		{
 			// Note:  Current code does not do cleanup...is that still needed?
-			string html = @"<div><p><strong>BoldedText</strong></p><p>NextParagraph</p><p></p></div>";
+			string html = @"<p><strong>BoldedText</strong></p><p>NextParagraph</p><p></p>";
 
 			Document doc = LoadTemplate();
 			StructuredDocumentTag sdt = WordUtilities.GetTaggedElement(doc, BOEExporterConstants.FieldName_ProgramName);
@@ -278,12 +281,86 @@ namespace IES.Tests.Core
 			WordUtilities.SetElementTextWithHTML(doc, sdt, html, ref counter);
 
 			// now we compare to the output
-			Assert.AreEqual("BoldedText NextParagraph", sdt.GetText());
-			HashSet<Paragraph> paragraphs = sdt.GetChildNodes<Paragraph>(NodeType.Paragraph, true);
+			if (sdt.ParentNode is Paragraph paragraph)
+			{
+				Assert.AreEqual("BoldedText", paragraph.LastChild.GetText());
+				Assert.AreEqual("NextParagraph", ((Paragraph)paragraph.NextSibling).LastChild.GetText());
+			}
+			else
+			{
+				Assert.AreEqual("BoldedText NextParagraph", sdt.GetText());
+				HashSet<Paragraph> paragraphs = sdt.GetChildNodes<Paragraph>(NodeType.Paragraph, true);
 
-			Assert.AreEqual(2, paragraphs.Count);
-			Assert.AreEqual("BoldedText", paragraphs.First().GetText());
-			Assert.AreEqual("NextParagraph", paragraphs.Last().GetText());
+				Assert.AreEqual(2, paragraphs.Count);
+				Assert.AreEqual("BoldedText", paragraphs.First().GetText());
+				Assert.AreEqual("NextParagraph", paragraphs.Last().GetText());
+			}
+		}
+
+		/// <summary>
+		/// Sets the text element w/ HTML formatted text (from Rich Text Editor) and appends it to the node passed in the element parameter
+		/// </summary>
+		[TestMethod]
+		public void SetElementTextWithHTMLTest2()
+		{
+			// Note:  Current code does not do cleanup...is that still needed?
+			string html = @"<p>SADE 1/15/12 - 12/31/13, Chg # 345678-4321, 15,275 hours for Meeting attendance and coordination.</p>
+<p>&nbsp;</p>
+<table style=""width: 384px; border-collapse: collapse;"" border=""0"" cellspacing=""0"" cellpadding=""0""><colgroup> <col style=""width: 48pt;"" span=""6"" width=""64"" /></colgroup>
+<tbody>
+<tr style=""height: 14.4pt;"">
+<td class=""xl65"" style=""width: 48pt; height: 14.4pt;"" width=""64"" height=""19"">HEADER</td>
+<td class=""xl65"" style=""border-left: medium none; width: 48pt;"" width=""64"">1</td>
+<td class=""xl65"" style=""border-left: medium none; width: 48pt;"" width=""64"">2</td>
+<td class=""xl65"" style=""border-left: medium none; width: 48pt;"" width=""64"">3</td>
+<td class=""xl65"" style=""border-left: medium none; width: 48pt;"" width=""64"">4</td>
+<td class=""xl65"" style=""border-left: medium none; width: 48pt;"" width=""64"">5</td>
+</tr>
+<tr style=""height: 14.4pt;"">
+<td class=""xl66"" style=""height: 14.4pt; border-top: medium none;"" height=""19"">TEXT</td>
+<td class=""xl67"" style=""border-left: medium none; border-top: medium none;""><span style=""mso-spacerun: yes;"">&nbsp;</span>$<span style=""mso-spacerun: yes;"">&nbsp;&nbsp; </span>100.0</td>
+<td class=""xl67"" style=""border-left: medium none; border-top: medium none;""><span style=""mso-spacerun: yes;"">&nbsp;</span>$<span style=""mso-spacerun: yes;"">&nbsp;&nbsp; </span>100.0</td>
+<td class=""xl67"" style=""border-left: medium none; border-top: medium none;""><span style=""mso-spacerun: yes;"">&nbsp;</span>$<span style=""mso-spacerun: yes;"">&nbsp;&nbsp; </span>100.0</td>
+<td class=""xl67"" style=""border-left: medium none; border-top: medium none;""><span style=""mso-spacerun: yes;"">&nbsp;</span>$<span style=""mso-spacerun: yes;"">&nbsp;&nbsp; </span>100.0</td>
+<td class=""xl67"" style=""border-left: medium none; border-top: medium none;""><span style=""mso-spacerun: yes;"">&nbsp;</span>$<span style=""mso-spacerun: yes;"">&nbsp;&nbsp; </span>100.0</td>
+</tr>
+<tr style=""height: 14.4pt;"">
+<td class=""xl66"" style=""height: 14.4pt; border-top: medium none;"" height=""19"">TEXT</td>
+<td class=""xl67"" style=""border-left: medium none; border-top: medium none;""><span style=""mso-spacerun: yes;"">&nbsp;</span>$<span style=""mso-spacerun: yes;"">&nbsp;&nbsp; </span>100.0</td>
+<td class=""xl67"" style=""border-left: medium none; border-top: medium none;""><span style=""mso-spacerun: yes;"">&nbsp;</span>$<span style=""mso-spacerun: yes;"">&nbsp;&nbsp; </span>100.0</td>
+<td class=""xl67"" style=""border-left: medium none; border-top: medium none;""><span style=""mso-spacerun: yes;"">&nbsp;</span>$<span style=""mso-spacerun: yes;"">&nbsp;&nbsp; </span>100.0</td>
+<td class=""xl67"" style=""border-left: medium none; border-top: medium none;""><span style=""mso-spacerun: yes;"">&nbsp;</span>$<span style=""mso-spacerun: yes;"">&nbsp;&nbsp; </span>100.0</td>
+<td class=""xl67"" style=""border-left: medium none; border-top: medium none;""><span style=""mso-spacerun: yes;"">&nbsp;</span>$<span style=""mso-spacerun: yes;"">&nbsp;&nbsp; </span>100.0</td>
+</tr>
+<tr style=""height: 14.4pt;"">
+<td class=""xl66"" style=""height: 14.4pt; border-top: medium none;"" height=""19"">TEXT</td>
+<td class=""xl67"" style=""border-left: medium none; border-top: medium none;""><span style=""mso-spacerun: yes;"">&nbsp;</span>$<span style=""mso-spacerun: yes;"">&nbsp;&nbsp; </span>100.0</td>
+<td class=""xl67"" style=""border-left: medium none; border-top: medium none;""><span style=""mso-spacerun: yes;"">&nbsp;</span>$<span style=""mso-spacerun: yes;"">&nbsp;&nbsp; </span>100.0</td>
+<td class=""xl67"" style=""border-left: medium none; border-top: medium none;""><span style=""mso-spacerun: yes;"">&nbsp;</span>$<span style=""mso-spacerun: yes;"">&nbsp;&nbsp; </span>100.0</td>
+<td class=""xl67"" style=""border-left: medium none; border-top: medium none;""><span style=""mso-spacerun: yes;"">&nbsp;</span>$<span style=""mso-spacerun: yes;"">&nbsp;&nbsp; </span>100.0</td>
+<td class=""xl67"" style=""border-left: medium none; border-top: medium none;""><span style=""mso-spacerun: yes;"">&nbsp;</span>$<span style=""mso-spacerun: yes;"">&nbsp;&nbsp; </span>100.0</td>
+</tr>
+<tr style=""height: 14.4pt;"">
+<td class=""xl66"" style=""height: 14.4pt; border-top: medium none;"" height=""19"">TEXT</td>
+<td class=""xl67"" style=""border-left: medium none; border-top: medium none;""><span style=""mso-spacerun: yes;"">&nbsp;</span>$<span style=""mso-spacerun: yes;"">&nbsp;&nbsp; </span>100.0</td>
+<td class=""xl67"" style=""border-left: medium none; border-top: medium none;""><span style=""mso-spacerun: yes;"">&nbsp;</span>$<span style=""mso-spacerun: yes;"">&nbsp;&nbsp; </span>100.0</td>
+<td class=""xl67"" style=""border-left: medium none; border-top: medium none;""><span style=""mso-spacerun: yes;"">&nbsp;</span>$<span style=""mso-spacerun: yes;"">&nbsp;&nbsp; </span>100.0</td>
+<td class=""xl67"" style=""border-left: medium none; border-top: medium none;""><span style=""mso-spacerun: yes;"">&nbsp;</span>$<span style=""mso-spacerun: yes;"">&nbsp;&nbsp; </span>100.0</td>
+<td class=""xl67"" style=""border-left: medium none; border-top: medium none;""><span style=""mso-spacerun: yes;"">&nbsp;</span>$<span style=""mso-spacerun: yes;"">&nbsp;&nbsp; </span>100.0</td>
+</tr>
+</tbody>
+</table>";
+
+			Document doc = LoadTemplate();
+			StructuredDocumentTag sdt = WordUtilities.GetTaggedElement(doc, BOEExporterConstants.FieldName_ProgramName);
+			ChunkCounter counter = new();
+			WordUtilities.SetElementTextWithHTML(doc, sdt, html, ref counter);
+
+			// now we compare to the output
+			if (sdt.ParentNode is Paragraph paragraph)
+			{
+				Assert.IsTrue(paragraph.LastChild is Run);
+			}
 		}
 
 		/// <summary>
@@ -457,7 +534,7 @@ namespace IES.Tests.Core
 			Document doc = LoadTemplate();
 			BOEExportInputs exportInputs = GetExportInputs();
 			BOEExportTaskElement task = GetTaskElement(exportInputs);
-			StructuredDocumentTag taskContainer = WordUtilities.GetTaggedElement(doc, BOEExporterConstants.Container_TaskElement);
+			StructuredDocumentTag taskContainer = WordUtilities.GetTaggedElement(doc, "TaskContainer-Labor");
 			this.ProcessSkillMixTable(task, [], taskContainer, exportInputs);
 			Assert.Fail();
 		}
@@ -472,7 +549,7 @@ namespace IES.Tests.Core
 			BOEExportInputs exportInputs = GetExportInputs();
 			BOEExportTaskElement task = GetTaskElement(exportInputs);
 
-			StructuredDocumentTag taskContainer = WordUtilities.GetTaggedElement(doc, BOEExporterConstants.Container_TaskElement);
+			StructuredDocumentTag taskContainer = WordUtilities.GetTaggedElement(doc, "TaskContainer-Labor");
 			this.ProcessSkillMixTable(task, [BoeCustomReportComponent.TaskDescription, BoeCustomReportComponent.TaskMOQEquation], taskContainer, exportInputs);
 			Assert.Fail();
 		}
