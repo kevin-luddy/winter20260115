@@ -856,7 +856,7 @@ namespace GenTRAC.ActionLogic
 
 			// program mgr
 			ProposalPermissionDto programMgrPermission = null;
-			if (!isForecasted)
+			if (!string.IsNullOrWhiteSpace(proposalUserInfo.ProgramMgrNtid))
 			{
 				UserDTO progamMgr = UserMapper.GetByNtid(proposalUserInfo.ProgramMgrNtid);
 				programMgrPermission = new ProposalPermissionDto()
