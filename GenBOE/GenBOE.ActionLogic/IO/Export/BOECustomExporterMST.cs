@@ -259,7 +259,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
             SdtElement currentInsertionElement = templateElement;
 
-            List<LaborRollupByDateNew> laborRollupData = this.GetRollupByYear(currentLaborTaskElementAsICollection, null, RateType.Hours, useGfy);
+            List<LaborRollupByDateNew> laborRollupData = this.GetRollupByYear(currentLaborTaskElementAsICollection, null, null, RateType.Hours, useGfy);
             IList<RollupSummaryByYearTableRowData> laborHoursSummaryRollupData = laborRollupData.Convert();
 
             RollupSummaryByYearTableData laborRollupTableData = new RollupSummaryByYearTableData

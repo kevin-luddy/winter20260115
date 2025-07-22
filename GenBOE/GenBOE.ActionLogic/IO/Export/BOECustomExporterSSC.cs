@@ -712,7 +712,9 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="resourcesByElementOfCost">Resources used by the BOE</param>
         /// <param name="selectedComponents">Components to be included in the export</param>
         /// <param name="useGfy">use government fiscal year?</param>
-        protected override void ProcessLaborHoursSummaryTable(SdtElement boeContainer, ICollection<BoeTaskElementDTO> taskElementCollection, IDictionary<ElementOfCostType, Collection<ResourceDTO>> resourcesByElementOfCost, ICollection<BoeCustomReportComponent> selectedComponents, bool isUsingEquivalentPerson, bool useGfy)
+		/// <param name="isUsingEquivalentPerson">Is workspace using Equivalent Person?</param>
+		/// <param name="workspace">Workspace dto</param>
+        protected override void ProcessLaborHoursSummaryTable(SdtElement boeContainer, ICollection<BoeTaskElementDTO> taskElementCollection, IDictionary<ElementOfCostType, Collection<ResourceDTO>> resourcesByElementOfCost, ICollection<BoeCustomReportComponent> selectedComponents, bool isUsingEquivalentPerson, bool useGfy, WorkspaceDTO workspace)
         {
             if (selectedComponents == null)
             {
@@ -782,8 +784,8 @@ namespace GenBOE.ActionLogic.IO.Export
                         Collection<ResourceDTO> laborResources = resourcesByElementOfCost[entry.Key];
 
                         // compile the rollup data
-                        this.PopulateLaborHoursSummaryTable(taskElementCollection, laborResources, gfyLaborHoursSummaryTableTemplateElement, currentInsertionElement, entry, byQuarter, true);
-                        this.PopulateLaborHoursSummaryTable(taskElementCollection, laborResources, laborHoursSummaryTableTemplateElement, currentInsertionElement, entry, byQuarter, false);
+                        this.PopulateLaborHoursSummaryTable(taskElementCollection, laborResources, gfyLaborHoursSummaryTableTemplateElement, currentInsertionElement, entry, byQuarter, true, workspace);
+                        this.PopulateLaborHoursSummaryTable(taskElementCollection, laborResources, laborHoursSummaryTableTemplateElement, currentInsertionElement, entry, byQuarter, false, workspace);
                     }
                     
                     #endregion
@@ -806,11 +808,12 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="entry">table title entry</param>
         /// <param name="byQuarter">table by Quarter?</param>
         /// <param name="useGfy">Use Govt Fiscal Year?</param>
-        private void PopulateLaborHoursSummaryTable(ICollection<BoeTaskElementDTO> taskElementCollection, Collection<ResourceDTO> laborResources, SdtElement templateElement, SdtElement currentInsertionElement, KeyValuePair<ElementOfCostType, string> entry, bool byQuarter, bool useGfy)
+		/// <param name="workspace">Workspace dto</param>
+        private void PopulateLaborHoursSummaryTable(ICollection<BoeTaskElementDTO> taskElementCollection, Collection<ResourceDTO> laborResources, SdtElement templateElement, SdtElement currentInsertionElement, KeyValuePair<ElementOfCostType, string> entry, bool byQuarter, bool useGfy, WorkspaceDTO workspace)
         {
             if (templateElement != null)
             {
-                List<LaborRollupByDateNew> laborRollupData = this.GetRollupByYear(taskElementCollection, laborResources, null, useGfy);
+                List<LaborRollupByDateNew> laborRollupData = this.GetRollupByYear(taskElementCollection, workspace, laborResources, null, useGfy);
                 IList<RollupSummaryByYearTableRowData> laborHoursSummaryRollupData = laborRollupData.Convert();
 
                 RollupSummaryByYearTableData rollupTableData = new RollupSummaryByYearTableData
@@ -849,18 +852,37 @@ namespace GenBOE.ActionLogic.IO.Export
             }
         }
 
-        /// <summary>
-        /// Processes the labor cost summary table.
-        /// </summary>
-        /// <param name="boeContainer">The boe container.</param>
-        /// <param name="exportInputs">The export inputs.</param>
-        /// <param name="boe">The boe.</param>
-        /// <param name="taskElementDtos">The task element dtos.</param>
-        /// <param name="resourcesByElementOfCost">The resources by element of cost.</param>
-        /// <param name="selectedComponents">The selected components.</param>
-        /// <param name="useGfy">use government fiscal year?</param>
-        /// <returns>List of Labor Cost Summary Table</returns>
-        [SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists")]
+		/// <summary>
+		/// Adjust the Month Rollup Sum for UCOT
+		/// </summary>
+		/// <param name="sum">Sum to adjust</param>
+		/// <param name="rollupDate">Month for rollup sum as DateTime</param>
+		/// <param name="workspace">Workspace</param>
+		/// <returns>Sum adjusted for UCOT if applicable</returns>
+		protected override decimal AdjustMonthRollupSumForUcot(decimal sum, DateTime rollupDate, WorkspaceDTO workspace)
+		{
+			_ = workspace ?? throw new ArgumentNullException(nameof(workspace));
+
+			if (Utilities.ShowUCOTForWorkspace(workspace.CreationDate, workspace.Shortname) && rollupDate.Date >= Utilities.OneLmxStartDate.Date)
+			{
+				sum *= 1 + (workspace.UCOTFactor / 100m);
+			}
+
+			return sum;
+		}
+
+		/// <summary>
+		/// Processes the labor cost summary table.
+		/// </summary>
+		/// <param name="boeContainer">The boe container.</param>
+		/// <param name="exportInputs">The export inputs.</param>
+		/// <param name="boe">The boe.</param>
+		/// <param name="taskElementDtos">The task element dtos.</param>
+		/// <param name="resourcesByElementOfCost">The resources by element of cost.</param>
+		/// <param name="selectedComponents">The selected components.</param>
+		/// <param name="useGfy">use government fiscal year?</param>
+		/// <returns>List of Labor Cost Summary Table</returns>
+		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists")]
         protected override List<LaborRollupByDateNew> ProcessLaborCostSummaryTable(SdtElement boeContainer, BOEExportInputs exportInputs, BoeDTO boe, ICollection<BoeTaskElementDTO> taskElementDtos, IDictionary<ElementOfCostType, Collection<ResourceDTO>> resourcesByElementOfCost, ICollection<BoeCustomReportComponent> selectedComponents, bool useGfy)
         {
             if (selectedComponents == null)
