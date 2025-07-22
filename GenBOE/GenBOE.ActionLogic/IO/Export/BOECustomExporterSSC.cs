@@ -813,7 +813,7 @@ namespace GenBOE.ActionLogic.IO.Export
         {
             if (templateElement != null)
             {
-                List<LaborRollupByDateNew> laborRollupData = this.GetRollupByYear(taskElementCollection, workspace, laborResources, null, useGfy);
+                List<LaborRollupByDateNew> laborRollupData = this.GetRollupByYear(taskElementCollection, workspace, laborResources, null, useGfy, entry.Key);
                 IList<RollupSummaryByYearTableRowData> laborHoursSummaryRollupData = laborRollupData.Convert();
 
                 RollupSummaryByYearTableData rollupTableData = new RollupSummaryByYearTableData
@@ -858,12 +858,13 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="sum">Sum to adjust</param>
 		/// <param name="rollupDate">Month for rollup sum as DateTime</param>
 		/// <param name="workspace">Workspace</param>
+		/// <param name="elementOfCost">Element of Cost Type</param>
 		/// <returns>Sum adjusted for UCOT if applicable</returns>
-		protected override decimal AdjustMonthRollupSumForUcot(decimal sum, DateTime rollupDate, WorkspaceDTO workspace)
+		protected override decimal AdjustMonthRollupSumForUcot(decimal sum, DateTime rollupDate, WorkspaceDTO workspace, ElementOfCostType elementOfCost)
 		{
 			_ = workspace ?? throw new ArgumentNullException(nameof(workspace));
 
-			if (Utilities.ShowUCOTForWorkspace(workspace.CreationDate, workspace.Shortname) && rollupDate.Date >= Utilities.OneLmxStartDate.Date)
+			if (Utilities.ShowUCOTForWorkspace(workspace.CreationDate, workspace.Shortname) && rollupDate.Date >= Utilities.OneLmxStartDate.Date && elementOfCost == ElementOfCostType.LMLabor)
 			{
 				sum *= 1 + (workspace.UCOTFactor / 100m);
 			}

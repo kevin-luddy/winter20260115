@@ -5054,9 +5054,10 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="resources">Resources</param>
 		/// <param name="useGfy">use government fiscal year?</param>
 		/// <param name="workspace">Workspace dto</param>
+		/// <param name="elementOfCost">Element of Cost Type</param>
 		/// <returns>A <see cref="LaborRollupByDateNew"/> object containing the rolled up data</returns>
 
-		protected virtual List<LaborRollupByDateNew> GetRollupByYear(ICollection<BoeTaskElementDTO> taskElementCollection, WorkspaceDTO workspace, Collection<ResourceDTO> resources = null, RateType? rateTypeFilter = null, bool useGfy = false)
+		protected virtual List<LaborRollupByDateNew> GetRollupByYear(ICollection<BoeTaskElementDTO> taskElementCollection, WorkspaceDTO workspace, Collection<ResourceDTO> resources = null, RateType? rateTypeFilter = null, bool useGfy = false, ElementOfCostType elementOfCost = ElementOfCostType.NotSet)
 		{
 			List<ResourceTypeDto> allTaskElementResources;
 			if (resources == null)
@@ -5105,18 +5106,18 @@ namespace GenBOE.ActionLogic.IO.Export
 					LaborRollupByDateNew Rollup = new LaborRollupByDateNew();
 					Rollup.Year = i;
 
-					Rollup.January = this.GetRollupForMonth(allTaskElementResources, i, 1, resources, rateTypeFilter, workspace);
-					Rollup.February = this.GetRollupForMonth(allTaskElementResources, i, 2, resources, rateTypeFilter, workspace);
-					Rollup.March = this.GetRollupForMonth(allTaskElementResources, i, 3, resources, rateTypeFilter, workspace);
-					Rollup.April = this.GetRollupForMonth(allTaskElementResources, i, 4, resources, rateTypeFilter, workspace);
-					Rollup.May = this.GetRollupForMonth(allTaskElementResources, i, 5, resources, rateTypeFilter, workspace);
-					Rollup.June = this.GetRollupForMonth(allTaskElementResources, i, 6, resources, rateTypeFilter, workspace);
-					Rollup.July = this.GetRollupForMonth(allTaskElementResources, i, 7, resources, rateTypeFilter, workspace);
-					Rollup.August = this.GetRollupForMonth(allTaskElementResources, i, 8, resources, rateTypeFilter, workspace);
-					Rollup.September = this.GetRollupForMonth(allTaskElementResources, i, 9, resources, rateTypeFilter, workspace);
-					Rollup.October = this.GetRollupForMonth(allTaskElementResources, i, 10, resources, rateTypeFilter, workspace);
-					Rollup.November = this.GetRollupForMonth(allTaskElementResources, i, 11, resources, rateTypeFilter, workspace);
-					Rollup.December = this.GetRollupForMonth(allTaskElementResources, i, 12, resources, rateTypeFilter, workspace);
+					Rollup.January = this.GetRollupForMonth(allTaskElementResources, i, 1, resources, rateTypeFilter, workspace, elementOfCost);
+					Rollup.February = this.GetRollupForMonth(allTaskElementResources, i, 2, resources, rateTypeFilter, workspace, elementOfCost);
+					Rollup.March = this.GetRollupForMonth(allTaskElementResources, i, 3, resources, rateTypeFilter, workspace, elementOfCost);
+					Rollup.April = this.GetRollupForMonth(allTaskElementResources, i, 4, resources, rateTypeFilter, workspace, elementOfCost);
+					Rollup.May = this.GetRollupForMonth(allTaskElementResources, i, 5, resources, rateTypeFilter, workspace, elementOfCost);
+					Rollup.June = this.GetRollupForMonth(allTaskElementResources, i, 6, resources, rateTypeFilter, workspace, elementOfCost);
+					Rollup.July = this.GetRollupForMonth(allTaskElementResources, i, 7, resources, rateTypeFilter, workspace, elementOfCost);
+					Rollup.August = this.GetRollupForMonth(allTaskElementResources, i, 8, resources, rateTypeFilter, workspace, elementOfCost);
+					Rollup.September = this.GetRollupForMonth(allTaskElementResources, i, 9, resources, rateTypeFilter, workspace, elementOfCost);
+					Rollup.October = this.GetRollupForMonth(allTaskElementResources, i, 10, resources, rateTypeFilter, workspace, elementOfCost);
+					Rollup.November = this.GetRollupForMonth(allTaskElementResources, i, 11, resources, rateTypeFilter, workspace, elementOfCost);
+					Rollup.December = this.GetRollupForMonth(allTaskElementResources, i, 12, resources, rateTypeFilter, workspace, elementOfCost);
 
 					RollupByDateList.Add(Rollup);
 				}
@@ -5133,8 +5134,9 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="resources">Resources</param>
 		/// <param name="rateTypeFilter">Rate Type filter</param>
 		/// <param name="workspace">Workspace DTO</param>
+		/// <param name="elementOfCost">Element of Cost Type</param>
 		/// <returns>Rollup sum for month</returns>
-		private decimal GetRollupForMonth(List<ResourceTypeDto> resourceTypeCollection, int year, int month, Collection<ResourceDTO> resources, RateType? rateTypeFilter, WorkspaceDTO workspace)
+		private decimal GetRollupForMonth(List<ResourceTypeDto> resourceTypeCollection, int year, int month, Collection<ResourceDTO> resources, RateType? rateTypeFilter, WorkspaceDTO workspace, ElementOfCostType elementOfCost)
 		{
 			decimal sum;
 
@@ -5163,7 +5165,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				sum = sum / 100m;
 			}
 
-			sum = AdjustMonthRollupSumForUcot(sum, new DateTime(year, month, 15), workspace);
+			sum = AdjustMonthRollupSumForUcot(sum, new DateTime(year, month, 15), workspace, elementOfCost);
 
 			return sum;
 		}
@@ -5174,8 +5176,9 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="sum">Sum to adjust</param>
 		/// <param name="rollupDate">Month for rollup sum as DateTime</param>
 		/// <param name="workspace">Workspace</param>
+		/// <param name="elementOfCost">Element of Cost Type</param>
 		/// <returns>Sum adjusted for UCOT if applicable</returns>
-		protected virtual decimal AdjustMonthRollupSumForUcot(decimal sum, DateTime rollupDate, WorkspaceDTO workspace)
+		protected virtual decimal AdjustMonthRollupSumForUcot(decimal sum, DateTime rollupDate, WorkspaceDTO workspace, ElementOfCostType elementOfCost)
 		{
 			// UCOT only used in Space, so just return the sum for RMS/default
 			return sum;
