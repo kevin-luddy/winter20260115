@@ -848,26 +848,6 @@ namespace GenBOE.ActionLogic.IO.Export
         }
 
 		/// <summary>
-		/// Adjust the Month Rollup Sum for UCOT
-		/// </summary>
-		/// <param name="sum">Sum to adjust</param>
-		/// <param name="rollupDate">Month for rollup sum as DateTime</param>
-		/// <param name="workspace">Workspace</param>
-		/// <param name="elementOfCost">Element of Cost Type</param>
-		/// <returns>Sum adjusted for UCOT if applicable</returns>
-		protected override decimal AdjustMonthRollupSumForUcot(decimal sum, DateTime rollupDate, WorkspaceDTO workspace, ElementOfCostType elementOfCost)
-		{
-			_ = workspace ?? throw new ArgumentNullException(nameof(workspace));
-
-			if (Utilities.ShowUCOTForWorkspace(workspace.CreationDate, workspace.Shortname) && rollupDate.Date >= Utilities.OneLmxStartDate.Date && elementOfCost == ElementOfCostType.LMLabor)
-			{
-				sum *= 1 + (workspace.UCOTFactor / 100m);
-			}
-
-			return sum;
-		}
-
-		/// <summary>
 		/// Processes the labor cost summary table.
 		/// </summary>
 		/// <param name="boeContainer">The boe container.</param>

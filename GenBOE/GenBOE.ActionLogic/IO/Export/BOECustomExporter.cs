@@ -5169,20 +5169,6 @@ namespace GenBOE.ActionLogic.IO.Export
 		}
 
 		/// <summary>
-		/// Adjust the Month Rollup Sum for UCOT
-		/// </summary>
-		/// <param name="sum">Sum to adjust</param>
-		/// <param name="rollupDate">Month for rollup sum as DateTime</param>
-		/// <param name="workspace">Workspace</param>
-		/// <param name="elementOfCost">Element of Cost Type</param>
-		/// <returns>Sum adjusted for UCOT if applicable</returns>
-		protected virtual decimal AdjustMonthRollupSumForUcot(decimal sum, DateTime rollupDate, WorkspaceDTO workspace, ElementOfCostType elementOfCost)
-		{
-			// UCOT only used in Space, so just return the sum for RMS/default
-			return sum;
-		}
-
-		/// <summary>
 		/// Gets the data needed for the custom field rollup
 		/// </summary>
 		/// <param name="taskElementCollection">The task elements containing the data to rollup</param>
