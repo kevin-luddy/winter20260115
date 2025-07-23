@@ -716,15 +716,9 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="workspace">Workspace dto</param>
         protected override void ProcessLaborHoursSummaryTable(SdtElement boeContainer, ICollection<BoeTaskElementDTO> taskElementCollection, IDictionary<ElementOfCostType, Collection<ResourceDTO>> resourcesByElementOfCost, ICollection<BoeCustomReportComponent> selectedComponents, bool isUsingEquivalentPerson, bool useGfy, WorkspaceDTO workspace)
         {
-            if (selectedComponents == null)
-            {
-                throw new ArgumentNullException(nameof(selectedComponents));
-            }
-
-            if (resourcesByElementOfCost == null)
-            {
-                throw new ArgumentNullException(nameof(resourcesByElementOfCost));
-            }
+            _ = selectedComponents ?? throw new ArgumentNullException(nameof(selectedComponents));
+            _ = resourcesByElementOfCost  ?? throw new ArgumentNullException(nameof(resourcesByElementOfCost));
+            _ = workspace ?? throw new ArgumentNullException(nameof(workspace));
 
             #region Labor Hours Summary By Date Table
 
@@ -782,10 +776,11 @@ namespace GenBOE.ActionLogic.IO.Export
                     foreach (KeyValuePair<ElementOfCostType, string> entry in rollupTableTitles)
                     {
                         Collection<ResourceDTO> laborResources = resourcesByElementOfCost[entry.Key];
+						bool includeUcot = entry.Key == ElementOfCostType.LMLabor && Utilities.ShowUCOTForWorkspace(workspace.CreationDate, workspace.Shortname);
 
                         // compile the rollup data
-                        this.PopulateLaborHoursSummaryTable(taskElementCollection, laborResources, gfyLaborHoursSummaryTableTemplateElement, currentInsertionElement, entry, byQuarter, true, workspace);
-                        this.PopulateLaborHoursSummaryTable(taskElementCollection, laborResources, laborHoursSummaryTableTemplateElement, currentInsertionElement, entry, byQuarter, false, workspace);
+                        this.PopulateLaborHoursSummaryTable(taskElementCollection, laborResources, gfyLaborHoursSummaryTableTemplateElement, currentInsertionElement, entry, byQuarter, true, includeUcot);
+                        this.PopulateLaborHoursSummaryTable(taskElementCollection, laborResources, laborHoursSummaryTableTemplateElement, currentInsertionElement, entry, byQuarter, false, includeUcot);
                     }
                     
                     #endregion
@@ -808,12 +803,12 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="entry">table title entry</param>
         /// <param name="byQuarter">table by Quarter?</param>
         /// <param name="useGfy">Use Govt Fiscal Year?</param>
-		/// <param name="workspace">Workspace dto</param>
-        private void PopulateLaborHoursSummaryTable(ICollection<BoeTaskElementDTO> taskElementCollection, Collection<ResourceDTO> laborResources, SdtElement templateElement, SdtElement currentInsertionElement, KeyValuePair<ElementOfCostType, string> entry, bool byQuarter, bool useGfy, WorkspaceDTO workspace)
+		/// <param name="includeUcot">Should UCOT resources be included in the table</param>
+        private void PopulateLaborHoursSummaryTable(ICollection<BoeTaskElementDTO> taskElementCollection, Collection<ResourceDTO> laborResources, SdtElement templateElement, SdtElement currentInsertionElement, KeyValuePair<ElementOfCostType, string> entry, bool byQuarter, bool useGfy, bool includeUcot)
         {
             if (templateElement != null)
             {
-                List<LaborRollupByDateNew> laborRollupData = this.GetRollupByYear(taskElementCollection, workspace, laborResources, null, useGfy, entry.Key);
+                List<LaborRollupByDateNew> laborRollupData = this.GetRollupByYear(taskElementCollection, laborResources, null, useGfy, includeUcot);
                 IList<RollupSummaryByYearTableRowData> laborHoursSummaryRollupData = laborRollupData.Convert();
 
                 RollupSummaryByYearTableData rollupTableData = new RollupSummaryByYearTableData
