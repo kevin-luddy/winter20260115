@@ -207,6 +207,8 @@ namespace GenBOE.Tests.ActionLogic
 		[TestMethod]
 		public void BL_MoreInvalidBOEsToValidate()
 		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
+
 			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
 			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
@@ -4924,6 +4926,16 @@ namespace GenBOE.Tests.ActionLogic
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("The Rationale field") && messages.First().Contains("required"));
+		}
+
+		/// <summary>
+		/// Reset test config data
+		/// </summary>
+		[TestCleanup()]
+		public override void TestCleanup()
+		{
+			base.TestCleanup();
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
 		}
 	}
 }
