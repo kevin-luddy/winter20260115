@@ -433,9 +433,11 @@
     <Content Include="_Other Scripts\Custom Field Stuff\Relink Labor Type Level Custom Fields.sql" />
     <Content Include="_Other Scripts\DB Copy Script.sql" />
     <Content Include="_Other Scripts\FindBadPerformingOrgsInMSTTravelTrips.sql" />
+    <Content Include="_Other Scripts\FindBadBRCsinLaborTypes.sql" />
     <Content Include="_Other Scripts\FindDuplicateNTIDs.sql" />
     <Content Include="_Other Scripts\FindRolesAndWorkspacesForNtId.sql" />
     <Content Include="_Other Scripts\Fix Duplicate Ordinary Variables.sql" />
+    <Content Include="_Other Scripts\FixBadBRCsinLaborTypes.sql" />
     <Content Include="_Other Scripts\FixBadPerformingOrgsInMSTTravelTrips.sql" />
     <Content Include="_Other Scripts\FixDuplicateNTIDs.sql" />
     <Content Include="_Other Scripts\From Transition\quick collation fix 20141215_b - Forgot to compare Schema Names in Functions.sql" />
