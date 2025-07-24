@@ -56,6 +56,7 @@ namespace GenBOE.ActionLogic.Common
 			bool doesEmptyNullCurrentResourceExist = skillMixModels.Any(x => string.IsNullOrEmpty(x.ResourceNew) && x.Included);
 			decimal totalSKillMixRowsBOESkillMix = skillMixModels.Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
 			string skillMixTableName = string.Empty;
+			string BoeSkillMixColumnName = string.Empty;
 
 			// Applies the proper name for the Skill Mix table based on the company configuration mode.
 			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
@@ -66,6 +67,16 @@ namespace GenBOE.ActionLogic.Common
 			{
 				skillMixTableName = Constants.RMS_SKILL_MIX_TABLE_HEADER;
 			}
+			
+			// Applies the proper name for the BOE Skill Mix column on Skill Mix table based on the company configuration mode.
+			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			{
+				BoeSkillMixColumnName = Constants.SPACE_BOE_SKILL_MIX_COLUMN_NAME;
+			}
+			else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+			{
+				BoeSkillMixColumnName = Constants.RMS_BOE_SKILL_MIX_COLUMN_NAME;
+			}
 
 			// This check applies to both Space and RMS
 			if (doesEmptyNullCurrentResourceExist)
@@ -75,17 +86,17 @@ namespace GenBOE.ActionLogic.Common
 
 			foreach (string skillMixResourceOld in skillMixRowsEmptyBoeMixWhenIncluded.Select(x => x.ResourceOld))
 			{
-				errorMessages.Add($"{skillMixTableName}: BOE Skill Mix is missing for {skillMixResourceOld}.");
+				errorMessages.Add($"{skillMixTableName}: ${BoeSkillMixColumnName} is missing for {skillMixResourceOld}.");
 			}
 
 			foreach (string skillMixResourceOld in skillMixRowsInvalidBoeMixWhenIncluded.Select(x => x.ResourceOld))
 			{
-				errorMessages.Add($"{skillMixTableName}: BOE Skill Mix has invalid value for {skillMixResourceOld}.");
+				errorMessages.Add($"{skillMixTableName}: ${BoeSkillMixColumnName} has invalid value for {skillMixResourceOld}.");
 			}
 
 			if (!totalSKillMixRowsBOESkillMix.EqualsEpsilon(100) && !totalSKillMixRowsBOESkillMix.EqualsEpsilon(0))
 			{
-				errorMessages.Add($"{skillMixTableName}: BOE Skill Mix total must be either 0% or 100%");
+				errorMessages.Add($"{skillMixTableName}: ${BoeSkillMixColumnName} total must be either 0% or 100%");
 			}
 
 			foreach (string skillMixResourceOld in skillMixRowsExceedChars.Select(x => x.ResourceOld))
