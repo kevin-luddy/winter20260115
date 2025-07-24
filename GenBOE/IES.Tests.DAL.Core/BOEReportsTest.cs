@@ -398,7 +398,8 @@ namespace IES.Tests.Core
 			Table newTable = new (doc);
 			newTable.AppendChild(new Row(doc));
 			newTable.FirstRow.AppendChild(new Cell(doc));
-			newTable.FirstRow.FirstCell.AppendChild(new Run(doc, "child table"));
+			Paragraph para = newTable.FirstRow.FirstCell.AppendChild(new Paragraph(doc));
+			para.AppendChild(new Run(doc, "child table"));
 			table.FirstRow.FirstCell.AppendChild(newTable);
 
 			// this should add a paragraph after this new table
@@ -499,13 +500,16 @@ namespace IES.Tests.Core
 		{
 			Document doc = LoadTemplate();
 			BOEExportInputs exportInputs = GetExportInputs();
-			BOEExportTaskElement task = GetTaskElement(exportInputs);
+			BOEExportTaskElement task = GetTaskElement();
 
 			StructuredDocumentTag moqElement = WordUtilities.GetTaggedElement(doc, BOEExporterConstants.Container_MOQSelection);
 			ChunkCounter counter = new();
 			this.PopulateMOQTypeData(task, [], doc, moqElement, false, exportInputs, ref counter);
 
-			Assert.Fail();
+			string filename = Path.GetTempFileName();
+			doc.Save(filename, SaveFormat.Docx);
+			Console.WriteLine(filename);
+			Assert.Fail(filename);
 		}
 
 		/// <summary>
@@ -516,7 +520,7 @@ namespace IES.Tests.Core
 		{
 			Document doc = LoadTemplate();
 			BOEExportInputs exportInputs = GetExportInputs();
-			BOEExportTaskElement task = GetTaskElement(exportInputs);
+			BOEExportTaskElement task = GetTaskElement();
 
 			StructuredDocumentTag moqElement = WordUtilities.GetTaggedElement(doc, BOEExporterConstants.Container_MOQSelection);
 			ChunkCounter counter = new();
@@ -533,7 +537,7 @@ namespace IES.Tests.Core
 		{
 			Document doc = LoadTemplate();
 			BOEExportInputs exportInputs = GetExportInputs();
-			BOEExportTaskElement task = GetTaskElement(exportInputs);
+			BOEExportTaskElement task = GetTaskElement();
 			StructuredDocumentTag taskContainer = WordUtilities.GetTaggedElement(doc, "TaskContainer-Labor");
 			this.ProcessSkillMixTable(task, [], taskContainer, exportInputs);
 			Assert.Fail();
@@ -547,7 +551,7 @@ namespace IES.Tests.Core
 		{
 			Document doc = LoadTemplate();
 			BOEExportInputs exportInputs = GetExportInputs();
-			BOEExportTaskElement task = GetTaskElement(exportInputs);
+			BOEExportTaskElement task = GetTaskElement();
 
 			StructuredDocumentTag taskContainer = WordUtilities.GetTaggedElement(doc, "TaskContainer-Labor");
 			this.ProcessSkillMixTable(task, [BoeCustomReportComponent.TaskDescription, BoeCustomReportComponent.TaskMOQEquation], taskContainer, exportInputs);
@@ -559,76 +563,12 @@ namespace IES.Tests.Core
 		#region Helper Methods
 
 		/// <summary>
-		/// Generates a Test Task Element
+		/// Gets MOQ Types
 		/// </summary>
-		/// <returns>Test Task Element</returns>
-		private static BOEExportTaskElement GetTaskElement(BOEExportInputs exportInputs)
+		/// <returns></returns>
+		private static List<MoqTypeSelection> GetMoqTypes()
 		{
-			return new BOEExportTaskElement
-			{
-				BoeID = 1,
-				BOETaskDesc = "BOE Task Description test",
-				TaskTitle = "This is the task title test",
-				BOETaskElementID = 1,
-				BOETaskID = "100",
-				StartDate = new DateTime(2025, 01, 15),
-				EndDate = new DateTime(2032, 01, 15),
-				HasTMRates = false,
-				SourceOfData = "this is the source of data test",
-				ElementType = BOEExportTaskElementType.Labor,
-				MOQEquation = "2000 hrs",
-				MOQTotal = "2000",
-				MOQType = MOQType.Historical.GetDescription(),
-				BOETaskElementOrder = 1,
-				MOQText = "Selected MOQ Text",
-				MOQTypes = exportInputs.MOQTypes.ToList(),
-				MOQVariableModelViews = [],
-				WorkspaceVariables = [],
-				OrdinaryVariables = [],
-				taskElementLabors =
-				[
-					new BOEExportTaskElementLabor
-					{
-						StartDate = new DateTime(2025, 01, 15),
-						EndDate = new DateTime(2032, 01, 15),
-						Hours = 2000,
-						CustomFields = [],
-						ElementType = BOEExportTaskElementType.Labor,
-						LaborTypeOrder = 0
-					}
-				]
-			};
-		}
-
-		private static BOEExportInputs GetExportInputs()
-		{
-			ExportBoeWordRequestViewModel viewModel = new()
-			{
-				ExportFormatDTO = new GenBOE.DataBridge.Core.WorkspaceExportFormatDTO(),
-				AllWorkspaceBoes = [],
-				AssignedBoeIdsAndCustomFieldValuesMapping = [],
-				BoeIdsAndLastUserToSubmitThemForApprovalMapping = [],
-				BoeExportModelViews = [],
-				BoeMappingWithApproverResponses = [],
-				Boes = [],
-				BoeSummaryGridModelViews = [],
-				GetUserDataForBoesForWs = [],
-				Clins = [],
-				CustomFields = [],
-				CustomFieldValues = [],
-				IsCustomExport = true,
-				PerDiemsForTravelTrips = [],
-				EscalationRates = [],
-				RTETemplatesOverrides = [],
-				ResourcesForSystemResourceListId = [],
-				ResourcesForWsResourceListId = [],
-				ResourcesUsedInWsBoes = [],
-				MiscTravelRatesForTravelTrips = [],
-				LaborTypesMappingWithCustomFieldsValuesAndContainerIds = [],
-				LocationsUsedByTrips = [],
-				PerformingOrgsForWsList = [],
-				Odcs = [],
-				MOQTypes = [
+			List<MoqTypeSelection> moqTypes = [
 					new() {
 						DescriptionHoursRequired = "This is description test",
 						SmeDurationLogic = "SME Duration logic test",
@@ -652,8 +592,31 @@ namespace IES.Tests.Core
 								MOQTypeSelectionId = 1,
 								HistoricalProgramName = "Historical Program Test",
 								WbsElement = "WBS12345678",
+								QueryType = MoqTableData.MONTHLY,
 								PoPStart = new DateTime(2020, 1, 15),
-								PoPEnd = new DateTime(2021, 1, 15)
+								PoPEnd = new DateTime(2021, 1, 15),
+							},
+							new() {
+								AdditionalQueryFilters = "N/A",
+								DateOfReport = DateTime.Now.AddMonths(-1),
+								ContractNumber = "Contract 2",
+								RepositoryName = RepositoryName.Other.GetDescription(),
+								TotalWbsHours = 400m,
+								TotalRelevantHours = 400m,
+								TableName = "table 2",
+								Id = 2,
+								Order = 2,
+								ResourceHours = new Collection<MOQTypeSelectionTableDataResourceHoursDTO>
+								{
+
+								},
+								CustomFieldValueContainers = [],
+								MOQTypeSelectionId = 1,
+								HistoricalProgramName = "Historical Program Test #2",
+								WbsElement = "WBS12345679",
+								QueryType = MoqTableData.MONTHLY,
+								PoPStart = new DateTime(2025, 1, 15),
+								PoPEnd = new DateTime(2022, 1, 15),
 							}
 						],
 						BoeId = 1,
@@ -665,20 +628,214 @@ namespace IES.Tests.Core
 						Rationale = "Rationale test",
 						SkillMixRationale = "Skill Mix MOQ Rationale test"
 					}
+				];
+
+			return moqTypes;
+		}
+
+		/// <summary>
+		/// Generates a Test Task Element
+		/// </summary>
+		/// <returns>Test Task Element</returns>
+		private static BOEExportTaskElement GetTaskElement()
+		{
+			return new BOEExportTaskElement
+			{
+				BoeID = 1,
+				BOETaskDesc = "BOE Task Description test",
+				TaskTitle = "This is the task title test",
+				BOETaskElementID = 1,
+				BOETaskID = "100",
+				StartDate = new DateTime(2025, 01, 15),
+				EndDate = new DateTime(2032, 01, 15),
+				HasTMRates = false,
+				SourceOfData = "this is the source of data test",
+				ElementType = BOEExportTaskElementType.Labor,
+				MOQEquation = "2000 hrs",
+				MOQTotal = "2000",
+				MOQType = MOQType.Historical.GetDescription(),
+				BOETaskElementOrder = 1,
+				MOQText = "Selected MOQ Text",
+				MOQTypes = GetMoqTypes(),
+				MOQVariableModelViews = [],
+				WorkspaceVariables = [],
+				OrdinaryVariables = [],
+				taskElementLabors =
+				[
+					new BOEExportTaskElementLabor
+					{
+						StartDate = new DateTime(2025, 01, 15),
+						EndDate = new DateTime(2032, 01, 15),
+						Hours = 2000,
+						CustomFields = [],
+						ElementType = BOEExportTaskElementType.Labor,
+						LaborTypeOrder = 0
+					}
+				]
+			};
+		}
+
+		private static List<BoeDTO> GetBOEs()
+		{
+			return
+			[
+				new ()
+				{
+					DataSource = "test datasource",
+					Description = "boe test desc.",
+					AuthorIDs = [1],
+					StartDate = new DateTime(2025, 01, 15),
+					EndDate = new DateTime(2032, 01, 15),
+					ClassOfCost = ClassOfCost.None,
+					Id = 1,
+					WBSID = 1,
+					WorkspaceID = 1,
+					WasDataSourceSet = true,
+					WasDescriptionSet = true,
+					State = BOEState.Approved,
+					SOWTitle = "SOW ttttttt",
+					Title = "Title of BOE tst"
+				}
+			];
+		}
+
+		private static List<WbsDTO> GetWBSs()
+		{
+			return
+				[
+				new ()
+				{
+					Id = 1,
+					WbsNumber = "1.1",
+					WbsTitle = "wbs 1",
+					WbsPaddedNumber = "wbs 1   ",
+					ClinsInUse = new(),
+					ClinIDs = new(),
+					inUse = true,
+					WorkspaceID = 1,
+					Level = 1,
+				}
+				];
+		}
+
+		private static List<PerformingOrgDTO> GetPerformingOrgs()
+		{
+			return [
+				new ()
+				{
+					PerformingOrgDesc = "fake PO",
+					Id = 1,
+					PerformingOrgName = "fake PO Name",
+				}
+				];
+		}
+
+		private static BOEExportInputs GetExportInputs()
+		{
+			
+			ExportBoeWordRequestViewModel viewModel = new()
+			{
+				ExportFormatDTO = new GenBOE.DataBridge.Core.WorkspaceExportFormatDTO(),
+				AllWorkspaceBoes =GetBOEs(),
+				AssignedBoeIdsAndCustomFieldValuesMapping = [],
+				BoeIdsAndLastUserToSubmitThemForApprovalMapping = [],
+				BoeExportModelViews = [
+					new ()
+					{
+						DataSource = "test datasource",
+						BOEDescription = "boe test desc.",
+						BoeID = 1,
+						BOETitle = "Title of BOE tst",
+						WBSNumber = "1.1",
+						WBSTitle = "wbs 1",
+						IsMultiClinWbs = false,
+						PaddedWbsName = "wbs 1   ",
+						StartDate = new DateTime(2025, 01, 15),
+						EndDate = new DateTime(2032, 01, 15),
+						WorkspaceDescription = "work space desc test",
+						Authors = ["Tim"],
+						Approvers = [new() { ApprovedBy = "Dusan", ApprovedDate = DateTime.Now.AddDays(-2).ToString() }],
+						ContainsOCI = false,
+						SOWTitle = "SOW ttttttt",
+						TaskElements = [
+							new BOEExportTaskElement
+							{
+								BoeID = 1,
+								BOETaskDesc = "BOE Task Description test",
+								TaskTitle = "This is the task title test",
+								BOETaskElementID = 1,
+								BOETaskID = "100",
+								StartDate = new DateTime(2025, 01, 15),
+								EndDate = new DateTime(2032, 01, 15),
+								HasTMRates = false,
+								SourceOfData = "this is the source of data test",
+								ElementType = BOEExportTaskElementType.Labor,
+								MOQEquation = "2000 hrs",
+								MOQTotal = "2000",
+								MOQType = MOQType.Historical.GetDescription(),
+								BOETaskElementOrder = 1,
+								MOQText = "Selected MOQ Text",
+								MOQTypes = GetMoqTypes(),
+								MOQVariableModelViews = [],
+								WorkspaceVariables = [],
+								OrdinaryVariables = [],
+								taskElementLabors =
+								[
+									new BOEExportTaskElementLabor
+									{
+										StartDate = new DateTime(2025, 01, 15),
+										EndDate = new DateTime(2032, 01, 15),
+										Hours = 2000,
+										CustomFields = [],
+										ElementType = BOEExportTaskElementType.Labor,
+										LaborTypeOrder = 0
+									}
+								]
+							}
+						]
+					}
 				],
+				BoeMappingWithApproverResponses = [],
+				Boes = GetBOEs(),
+				BoeSummaryGridModelViews = [],
+				GetUserDataForBoesForWs = [],
+				Clins = [],
+				CustomFields = [],
+				CustomFieldValues = [],
+				IsCustomExport = true,
+				PerDiemsForTravelTrips = [],
+				EscalationRates = [],
+				RTETemplatesOverrides = [],
+				ResourcesForSystemResourceListId = [],
+				ResourcesForWsResourceListId = [],
+				ResourcesUsedInWsBoes = [],
+				MiscTravelRatesForTravelTrips = [],
+				LaborTypesMappingWithCustomFieldsValuesAndContainerIds = [],
+				LocationsUsedByTrips = [],
+				PerformingOrgsForWsList = [],
+				Odcs = [],
+				MOQTypes = GetMoqTypes(),
 				Materials = [],
 				TaskElementsMappingWithCustomFieldsValuesAndContainerIds = [],
 				TaskElements = [],
 				Travels = [],
 				TravelTrips = [],
-				PerformingOrgsUsedInBoes = [],
+				PerformingOrgsUsedInBoes = GetPerformingOrgs(),
 				SegmentedOutput = false,
 				SelectedComponents = [],
 				SummarizeByCustomField = "CLIN",
-				WbsElements = [],
+				WbsElements = GetWBSs(),
 				Workspace = new ()
 				{
-
+					Id = 1,
+					IsUsingEquivalentPerson = false,
+					IsUsingTM = false,
+					ContainsOCI = false,
+					ContainsTemplate = false,
+					ContractStartDate = new DateTime(2025, 01, 15),
+					ContractEndDate = new DateTime(2032, 01, 15),
+					UCOTFactor = 1.3m,
+					WorkspaceName = "fake name"
 				},
 				WorkspaceHistory = [],
 				WorkspaceVariables = [],
