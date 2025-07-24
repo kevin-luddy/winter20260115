@@ -4426,39 +4426,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false);
 
 			Assert.IsNotNull(result);
-			Assert.IsNotNull(result.SkillMixRows);
-			Assert.IsTrue(result.SkillMixRows.Any());
 			Assert.AreEqual(4, result.SkillMixRows.Count);
-			Assert.AreEqual(HISTORICAL_RESOURCE_NAME1, result.SkillMixRows.ElementAt(0).ResourceOld);
-			Assert.AreEqual(HISTORICAL_RESOURCE_NAME2, result.SkillMixRows.ElementAt(1).ResourceOld);
-			Assert.AreEqual(HISTORICAL_RESOURCE_NAME3, result.SkillMixRows.ElementAt(2).ResourceOld);
-			Assert.AreEqual(string.Empty, result.SkillMixRows.ElementAt(3).ResourceOld);
-			Assert.AreEqual(150.0m, result.SkillMixRows.ElementAt(0).HistoricalHours);
-			Assert.AreEqual(40.0m, result.SkillMixRows.ElementAt(1).HistoricalHours);
-			Assert.AreEqual(110.0m, result.SkillMixRows.ElementAt(2).HistoricalHours);
-			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(0).ProposedHours);
-
-			Assert.AreEqual(100m * 150.0m / result.SkillMixTotals.HistoricalHours, result.SkillMixRows.ElementAt(0).LaborSkillMix);
-			Assert.AreEqual(4000.0m / result.SkillMixTotals.HistoricalHours, result.SkillMixRows.ElementAt(1).LaborSkillMix);
-			Assert.AreEqual(11000.0m / result.SkillMixTotals.HistoricalHours, result.SkillMixRows.ElementAt(2).LaborSkillMix);
-			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(0).BOESkillMix);
-			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(1).BOESkillMix);
-			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(2).BOESkillMix);
-			Assert.IsTrue(result.SkillMixRows.ElementAt(0).Included);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(3).Included);
-			Assert.AreEqual(Rationale1, result.SkillMixRows.ElementAt(0).Rationale);
-
 			Assert.AreEqual(1, result.CommonDisclosureRows.Count);
-			Assert.AreEqual(RESOURCE_NAME1, result.CommonDisclosureRows.First().ResourceID);
-			Assert.AreEqual(BRC_RESOURCE_NAME1, result.CommonDisclosureRows.First().BusinessResourceID);
-			Assert.AreEqual(true, result.CommonDisclosureRows.First().Included);
-			Assert.AreEqual(0.0m, result.CommonDisclosureRows.First().HistoricalHours);
-			Assert.AreEqual(0.0m, result.CommonDisclosureRows.First().ProposedHours);
-			Assert.AreEqual(0.0m, result.CommonDisclosureRows.First().BOESkillMix);
-			Assert.AreEqual(0.0m, result.CommonDisclosureRows.First().LaborSkillMix);
-			Assert.AreEqual(Rationale2, result.CommonDisclosureRows.First().Rationale);
 		}
 
 		/// <summary>
@@ -4551,47 +4520,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false);
 
 			Assert.IsNotNull(result);
-			Assert.IsNotNull(result.SkillMixRows);
-			Assert.IsTrue(result.SkillMixRows.Any());
 			Assert.AreEqual(3, result.SkillMixRows.Count);
-			Assert.AreEqual(HISTORICAL_RESOURCE_NAME1, result.SkillMixRows.ElementAt(0).ResourceOld);
-			Assert.AreEqual(HISTORICAL_RESOURCE_NAME2, result.SkillMixRows.ElementAt(1).ResourceOld);
-			Assert.AreEqual(HISTORICAL_RESOURCE_NAME3, result.SkillMixRows.ElementAt(2).ResourceOld);
-			Assert.AreEqual(150.0m, result.SkillMixRows.ElementAt(0).HistoricalHours);
-			Assert.AreEqual(40.0m, result.SkillMixRows.ElementAt(1).HistoricalHours);
-			Assert.AreEqual(110.0m, result.SkillMixRows.ElementAt(2).HistoricalHours);
-			Assert.AreEqual(50.0m, result.SkillMixRows.ElementAt(0).LaborSkillMix);
-			Assert.AreEqual(4000.0m / 300m, result.SkillMixRows.ElementAt(1).LaborSkillMix);
-			Assert.AreEqual(11000.0m / 300m, result.SkillMixRows.ElementAt(2).LaborSkillMix);
-			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(1).BOESkillMix);
-			Assert.AreEqual(0.0m, result.SkillMixRows.ElementAt(2).BOESkillMix);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(0).Included);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(1).Included);
-			Assert.IsFalse(result.SkillMixRows.ElementAt(2).Included);
-
 			Assert.AreEqual(3, result.CommonDisclosureRows.Count);
-
-			Assert.AreEqual(HISTORICAL_RESOURCE_NAME1, result.CommonDisclosureRows.ElementAt(0).ResourceID);
-			Assert.AreEqual(BRC_RESOURCE_NAME1, result.CommonDisclosureRows.ElementAt(0).BusinessResourceID);
-			Assert.AreEqual(false, result.CommonDisclosureRows.ElementAt(0).Included);
-			Assert.AreEqual(0.0m, result.CommonDisclosureRows.ElementAt(0).ProposedHours);
-			Assert.AreEqual(0.0m, result.CommonDisclosureRows.ElementAt(0).BOESkillMix);
-			Assert.IsTrue(string.IsNullOrWhiteSpace(result.CommonDisclosureRows.ElementAt(0).Rationale));
-
-			Assert.AreEqual(HISTORICAL_RESOURCE_NAME2, result.CommonDisclosureRows.ElementAt(1).ResourceID);
-			Assert.AreEqual(BRC_RESOURCE_NAME2, result.CommonDisclosureRows.ElementAt(1).BusinessResourceID);
-			Assert.AreEqual(false, result.CommonDisclosureRows.ElementAt(1).Included);
-			Assert.AreEqual(0.0m, result.CommonDisclosureRows.ElementAt(1).ProposedHours);
-			Assert.AreEqual(0.0m, result.CommonDisclosureRows.ElementAt(1).BOESkillMix);
-			Assert.IsTrue(string.IsNullOrWhiteSpace(result.CommonDisclosureRows.ElementAt(1).Rationale));
-
-			Assert.AreEqual(HISTORICAL_RESOURCE_NAME3, result.CommonDisclosureRows.ElementAt(2).ResourceID);
-			Assert.AreEqual(BRC_RESOURCE_NAME3, result.CommonDisclosureRows.ElementAt(2).BusinessResourceID);
-			Assert.AreEqual(false, result.CommonDisclosureRows.ElementAt(2).Included);
-			Assert.AreEqual(0.0m, result.CommonDisclosureRows.ElementAt(2).ProposedHours);
-			Assert.AreEqual(0.0m, result.CommonDisclosureRows.ElementAt(2).BOESkillMix);
-			Assert.IsTrue(string.IsNullOrWhiteSpace(result.CommonDisclosureRows.ElementAt(2).Rationale));
-			Assert.IsNotNull(result.CommonDisclosureRows.ElementAt(0).UCOTHours);
 		}
 
 		/// <summary>

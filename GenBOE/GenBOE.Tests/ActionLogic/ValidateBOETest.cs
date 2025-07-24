@@ -4346,7 +4346,7 @@ namespace GenBOE.Tests.ActionLogic
 			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
-			Assert.IsTrue(messages.First().Contains("BOE Skill Mix is missing"));
+			Assert.IsTrue(messages.First().Contains($"{Constants.RMS_BOE_SKILL_MIX_COLUMN_NAME} is missing"));
 		}
 
 		/// <summary>
@@ -4372,7 +4372,7 @@ namespace GenBOE.Tests.ActionLogic
 			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
-			Assert.IsTrue(messages.First().Contains("Proposed Skill Mix is missing"));
+			Assert.IsTrue(messages.First().Contains($"{Constants.SPACE_BOE_SKILL_MIX_COLUMN_NAME} is missing"));
 		}
 
 		/// <summary>
@@ -4398,7 +4398,7 @@ namespace GenBOE.Tests.ActionLogic
 			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
-			Assert.IsTrue(messages.First().Contains("BOE Skill Mix has invalid value"));
+			Assert.IsTrue(messages.First().Contains($"{Constants.RMS_BOE_SKILL_MIX_COLUMN_NAME} has invalid value"));
 		}
 
 		/// <summary>
@@ -4424,7 +4424,7 @@ namespace GenBOE.Tests.ActionLogic
 			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
-			Assert.IsTrue(messages.First().Contains("Proposed Skill Mix has invalid value"));
+			Assert.IsTrue(messages.First().Contains($"{Constants.SPACE_BOE_SKILL_MIX_COLUMN_NAME} has invalid value"));
 		}
 
 		/// <summary>
@@ -4450,7 +4450,7 @@ namespace GenBOE.Tests.ActionLogic
 			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
-			Assert.IsTrue(messages.First().Contains("BOE Skill Mix total must be either 0% or 100%"));
+			Assert.IsTrue(messages.First().Contains($"{Constants.RMS_BOE_SKILL_MIX_COLUMN_NAME} total must be either 0% or 100%"));
 		}
 
 		/// <summary>
@@ -4476,7 +4476,7 @@ namespace GenBOE.Tests.ActionLogic
 			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
-			Assert.IsTrue(messages.First().Contains("Proposed Skill Mix total must be either 0% or 100%"));
+			Assert.IsTrue(messages.First().Contains($"{Constants.SPACE_BOE_SKILL_MIX_COLUMN_NAME} total must be either 0% or 100%"));
 		}
 
 		/// <summary>

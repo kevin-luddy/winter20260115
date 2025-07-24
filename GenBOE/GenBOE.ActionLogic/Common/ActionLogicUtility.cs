@@ -58,23 +58,15 @@ namespace GenBOE.ActionLogic.Common
 			string skillMixTableName = string.Empty;
 			string BoeSkillMixColumnName = string.Empty;
 
-			// Applies the proper name for the Skill Mix table based on the company configuration mode.
+			// Applies the proper name for the Skill Mix table and the BOE Skill Mix column based on the company configuration mode.
 			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 			{
 				skillMixTableName = Constants.SPACE_SKILL_MIX_TABLE_HEADER;
-			}
-			else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-			{
-				skillMixTableName = Constants.RMS_SKILL_MIX_TABLE_HEADER;
-			}
-			
-			// Applies the proper name for the BOE Skill Mix column on Skill Mix table based on the company configuration mode.
-			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-			{
 				BoeSkillMixColumnName = Constants.SPACE_BOE_SKILL_MIX_COLUMN_NAME;
 			}
 			else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
 			{
+				skillMixTableName = Constants.RMS_SKILL_MIX_TABLE_HEADER;
 				BoeSkillMixColumnName = Constants.RMS_BOE_SKILL_MIX_COLUMN_NAME;
 			}
 
