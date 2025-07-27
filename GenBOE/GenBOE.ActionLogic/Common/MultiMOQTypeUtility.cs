@@ -24,13 +24,16 @@ namespace GenBOE.ActionLogic.Common
 		/// Space only - will check the current BOE for multiple MOQ Types for a single task, and if any of those have the following MOQ Types
 		/// </summary>
 		/// <param name="fullBoe">The full BOE</param>
+		/// <param name="workspaceCreationDate">Workspace creation date</param>
+		/// <param name="workspaceShortname">Workspace short name</param>
 		/// <returns>Whether or not the task has multiple MOQ Types, and what tasks if so</returns>
-		public static MultiMOQTypeResult DoTasksHaveMultipleMOQTypes(FullBoe fullBoe)
+		public static MultiMOQTypeResult DoTasksHaveMultipleMOQTypes(FullBoe fullBoe, DateTime? workspaceCreationDate, 
+			string workspaceShortname)
 		{
 			_ = fullBoe ?? throw new ArgumentNullException(nameof(fullBoe));
 			MultiMOQTypeResult result = new MultiMOQTypeResult();
 
-			if (Utilities.IsUCOTEnabledForSystem && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			if (Utilities.ShowUCOTForWorkspace(workspaceCreationDate, workspaceShortname) && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 			{
 				foreach (BoeTaskElementDTO task in fullBoe.TaskElements)
 				{
