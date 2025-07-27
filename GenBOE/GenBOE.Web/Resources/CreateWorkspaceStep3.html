@@ -40,7 +40,11 @@
         </div>
     </div>
     <div class="form-element">
-        <span class="url">{{model.applicationUrl}}<span data-ng-show="model.isPTMIntegrated && model.ptmTrackingNumber !== ''">{{model.nextRevision}}</span></span>
+        <span class="url">
+            {{model.applicationUrl}}
+            {{model.IsPLDIntegrated && model.PLD_PANumber ? getSantizedUrl() : ''}}
+            <span data-ng-show="model.isPTMIntegrated && model.ptmTrackingNumber !== ''">{{model.nextRevision}}</span>
+        </span>
         <input data-ng-hide="model.isPTMIntegrated && model.ptmTrackingNumber !== ''" name="ShortName" class="quarter" id="ShortName" data-ng-model="data.Shortname" type="text" maxlength="15">
     </div>
 </div>
@@ -230,9 +234,19 @@
                 The PLD PA Number.
             </div>
         </div>
+        <div id="Tracking-HelpDialog" class="help-dialog" style="width: 200px;">
+            <div class="help-dialog-close"></div>
+            <div class="help-dialog-text">
+                The PLD PA Title.
+            </div>
+        </div>
         <div class="form-element">
             <span>{{data.PLD_PANumber}}</span>
             <input class="full ignoreValidation" readonly id="PLD_PANumber" maxlength="100" name="PLD_PANumber" type="text" data-ng-model="model.PLD_PANumber">
+        </div>
+        <div class="form-element">
+            <span>{{data.PLD_PATitle}}</span>
+            <input class="full ignoreValidation" readonly id="PLD_PATitle" maxlength="100" name="PLD_PANumber" type="text" data-ng-model="model.PLD_PANumber">
         </div>
     </div>
 </div>

@@ -55,9 +55,22 @@
 	$scope.model.PLD_PANumber = '' // stored selected PA Number
 	$scope.model.PLD_PATitle = '' // store selected PA Title
 	$scope.isFromSelection = false;
-	//window.handleDropdownSelection = $scope.handleDropdownSelection;
+
+	$scope.getSantizedUrl = function () {
+		if ($scope.model.IsPLDIntegrated) {
+			const base = ($scope.model.applicationUrl || '').trim();
+			const pa = ($scope.model.PLD_PANumber || '').trim()
+			return base + pa;
+		} else {
+			return ($scope.model.applicationUrl || '').trim();
+		}
+	}
+
+
 
 	$scope.tryParsePLDSelection = function () {
+
+		console.log('application url: ', '"' + $scope.model.applicationUrl + '"');
 
 		console.log('parsing search term');
 
