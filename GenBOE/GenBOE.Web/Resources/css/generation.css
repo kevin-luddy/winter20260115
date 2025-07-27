@@ -1723,7 +1723,6 @@ button.ui-datepicker-trigger
 }
 
 .grid div.delete,
-.historicalMetric .delete,
 .question-table .delete
 {
     background: transparent url(/Resources/css/images/delete.png) no-repeat 0 0;
@@ -1734,7 +1733,6 @@ button.ui-datepicker-trigger
 }
 
 .grid div.delete:hover,
-.historicalMetric .delete:hover,
 .question-table .delete:hover
 {
     background: transparent url(/Resources/css/images/deletehover.png) no-repeat 0 0;
@@ -2833,40 +2831,6 @@ div#LaborTypeWarningFlag .warning-message
     width: 496px;
 }
 
-table.manage-historical-metrics-grid
-{
-    width: 950px;
-}
-
-.manage-historical-metrics-grid .id
-{
-    width: 50px;
-}
-
-.manage-historical-metrics-grid .milestone
-{
-    width: 120px;
-}
-
-.manage-historical-metrics-grid .metric-title,
-.manage-historical-metrics-grid .discipline,
-.manage-historical-metrics-grid .program,
-.manage-historical-metrics-grid .moq
-{
-    width: 80px;
-}
-
-.manage-historical-metrics-grid .labor,
-.manage-historical-metrics-grid .status
-{
-    width: 75px;
-}
-
-.manage-historical-metrics-grid .size
-{
-    width: 80px;
-}
-
 .delete-checkbox,
 .manage-wbs-grid th.delete
 {
@@ -3075,8 +3039,7 @@ table.manage-historical-metrics-grid
 .system-admin-permissions.section,
 .manage-default-resources.section,
 .manage-default-performing-organizations.section,
-.manage-trips-for-travel.section,
-.manage-historical-metrics.section
+.manage-trips-for-travel.section
 {
     margin-top: 20px;
 }
@@ -3088,8 +3051,7 @@ table.manage-historical-metrics-grid
 .manage-default-resources .title,
 .manage-default-performing-organizations .title,
 .manage-output-format-templates .title,
-.manage-trips-for-travel .title,
-.manage-historical-metrics .title
+.manage-trips-for-travel .title
 {
     margin-bottom: 20px;
 }
@@ -5513,43 +5475,6 @@ table.question-table tr {
     display:inline;
 }
 
-#AddHistoricalMetrics .form-label
-{
-    min-width:210px;
-}
-
-#AddHistoricalMetrics .form-label.sub
-{
-    min-width:30px;
-    margin-left:50px;
-}
-
-#AddHistoricalMetrics .form-element.full input, #AddHistoricalMetrics.full .form-element textarea
-{
-    min-width:710px;
-}
-
-#AddHistoricalMetrics .form-element
-{
-    *zoom:0;
-}
-
-#AddHistoricalMetrics .form-element.half input
-{
-    min-width:350px;
-}
-
-#AddHistoricalMetrics .form-element.short input
-{
-    min-width: 200px;
-}
-
-#AddHistoricalMetrics .form-element.sub.short input
-{
-    min-width:0;
-    width:50px;
-}
-
 /*Find Replace */
 
 .findReplace-Results .inLineBlock
@@ -5565,46 +5490,6 @@ table.question-table tr {
     background: #ffffff url(/Resources/css/images/warning.png) no-repeat 5px 5px;
     margin-bottom:5px;
     padding: 10px 55px;
-}
-
-/*Historical Metrics */
-
-.HistoricalMetricsSearch-Results .inLineBlockBold,
-.AddHistoricalMetricToBOE .inLineBlockBold
-{
-    font-weight: bold;
-     display: inline-block;
-    *display: inline;
-    *zoom: 1;
-}
-
-.AddHistoricalMetricToBOE .inLineBlock,
-.historicalMetric .inLineBlock,
-.HistoricalMetricsSearch-Results .inLineBlock
-{
-     display: inline-block;
-    *display: inline;
-    *zoom: 1;
-}
-.genBOEMetricsSection .genBOEMetricsRow
-{
-    font-weight: bold;
-    font-size: 14px;
-     display: inline-block;
-    *display: inline;
-    *zoom: 1;
-    width: 210px;
-}
-
-
-#ManageDefaultResourcesGridData
-{
-    margin-top:5px;
-}
-
-.metric-filter 
-{
-    padding-left: 2em;
 }
 
 /*---------------- Export to ProPricer --------------------*/
@@ -5765,22 +5650,10 @@ select.select-list-with-ellipses option,
     width: 295px;
 }
 
-.import-historical-metrics.form a
-{
-    text-decoration: none;
-}
-
 #ImportLaborTypeResults .container
 {
     height:400px;
     overflow:auto;
-}
-
-.import-historical-metrics.form ul
-{
-    display: inline-block;
-    *display: inline;
-    *zoom: 1;
 }
 
 .getting-started-help-workspace
@@ -6123,11 +5996,6 @@ span.currency + div {
     cursor: pointer;
 }
 
-.manage-historical-metrics .data
-{
-    width: 950px;
-}
-
 .boe-custom-field .ID .default-text 
 {
     float: left;
@@ -6338,49 +6206,6 @@ table#BOECustomFieldsResourceTable.readonly-apply a {
     min-height: 70px;
     max-height: 200px;
     overflow: auto;
-}
-
-#HistoricalMetricsUsedGrid {
-    width: 770px;
-    padding-left: 40px;
-}
-
-.manage-historical-metrics-used-grid {
-    width: 90%;
-    padding: 250px;
-}
-
-.manage-historical-metrics-used-grid td {
-    width: 70%;
-}
-
-.manage-historical-metrics-used-grid tr {
-    padding-left: 200px;
-}
-
-.manage-historical-metrics-used-grid tr.expandable-section {
-    background-color: #F8F9F9;
-    font-weight: bold;
-}
-
-.manage-historical-metrics-used-grid tr.expandable-section td > .expanded {
-    display: inline-block;
-    background: url("/Resources/css/images/expand.png") no-repeat scroll transparent;
-    height: 11px;
-    width: 11px;
-    padding-right: 3px;
-}
-
-.manage-historical-metrics-used-grid tr.expandable-section td > .collapsed {
-    display: inline-block;
-    background: url("/Resources/css/images/collapse.png") no-repeat scroll transparent;
-    height: 11px;
-    width: 11px;
-    padding-right: 3px;
-}
-
-.manage-historical-metrics-used-grid tr.expandable-section td > .expandable-title {
-                display: inline;
 }
 
 .lock-resource-toggle {
@@ -6666,15 +6491,6 @@ div.labor-spread-scroll th {
     white-space: nowrap;
 }
 
-#HistoricalMetricsResults div.divider {
-    border-top: 1px solid #5297AD;
-    margin: 8px 0;
-}
-
-#MetricSearchResults div.buttons {
-    text-align: center;
-}
-
 .moq-equation-menu {
     float: left;
     margin-right: 5px;
@@ -6687,111 +6503,6 @@ div.labor-spread-scroll th {
     vertical-align: middle;
     position: relative;
     top: -18px;
-}
-
-/*Historical Metrics */
-
-.historical-metrics-search-results .metric-label {
-    /*display: inline-block;*/
-    font-weight: bold;
-}
-
-.historical-metric-search-results-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.historical-metrics-search-results .full-text-width {
-    width: 960px;
-}
-
-.historical-metrics-search-results .metric-text {
-    display: inline-block;
-}
-
-.metric-filter .form-label {
-    width: 125px;
-}
-
-.first-column {
-    width: 35%;
-    max-height: 500px;
-    overflow: auto;
-    float: left;
-    margin: 5px;
-}
-
-.second-column {
-    width: 30%;
-    max-height: 500px;
-    overflow: auto;
-    float: left;
-    margin: 5px;
-}
-
-.third-column {
-    width: 30%;
-    max-height: 500px;
-    float: left;
-    margin: 5px;
-}
-
-.first-two-column {
-    width: 45%;
-    float: left;
-    margin: 5px;
-}
-.second-two-column {
-    width: 45%;
-    float: left;
-    margin: 5px;
-}
-
-.metric-filter select {
-    width: 380px;
-}
-
-.metric-filter input {
-    width: 370px;
-}
-
-.historical-metrics-details .metric-column {
-    display: inline-block;
-    width: 350px;
-    float: left;
-}
-
-.historical-metrics-details .metric-label {
-    display: inline-block;
-    font-weight: bold;
-}
-
-/*Metric Details Dialog*/
-#AddHistoricalMetricToBOE .moduled-table tr {
-    border-bottom: 1px solid #CCCCCC;
-    border-right: 1px solid #CCCCCC;
-}
-
-#AddHistoricalMetricToBOE .moduled-table tr.no-line {
-    border-bottom: medium none;
-}
-
-#AddHistoricalMetricToBOE .moduled-table {
-    border: 1px solid #CCCCCC;
-    /*width:auto;*/
-    width: 440px;
-    vertical-align: top;
-    margin-bottom: 0px;
-}
-
-.metric-detail-title {
-    font-weight: bold;
-    margin-top: 10px;
-}
-
-.metric-eq-good {
-    color: green;
 }
 
 .color-red {

@@ -7,19 +7,12 @@
 namespace IES.Tests.Core
 {
 	using System;
-	using IES.ActionLogic.Core.Mediator;
 	using IES.Common.Core;
-	using IES.Common.Core.Interfaces;
-	using IES.Common.Core.Loaders;
-	using IES.Common.Core.Services;
-	using IES.DataBridge.Loaders;
 	using Microsoft.AspNetCore.Http;
-	using Microsoft.Extensions.Caching.Memory;
 	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.Logging;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
-	using Serilog;
 
 	/// <summary>
 	/// Configuration helper class

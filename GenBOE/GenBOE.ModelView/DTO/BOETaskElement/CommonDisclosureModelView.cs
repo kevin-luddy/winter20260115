@@ -33,6 +33,7 @@ namespace GenBOE.DataBridge.DTO
 				this.ResourceID = disclosureDTO.ResourceID;
 				this.IsUserInput = disclosureDTO.IsUserInput;
 				this.UCOTHours = disclosureDTO.UCOTHours;
+				this.GrandTotalHours = disclosureDTO.GrandTotalHours;
 			}
 		}
 
@@ -56,7 +57,8 @@ namespace GenBOE.DataBridge.DTO
 				BOEID = this.BOEID,
 				BOETaskElementID = this.BOETaskElementID,
 				IsUserInput = this.IsUserInput,
-				UCOTHours = this.UCOTHours
+				UCOTHours = this.UCOTHours,
+				GrandTotalHours = this.GrandTotalHours
 			};
 		}
 	}

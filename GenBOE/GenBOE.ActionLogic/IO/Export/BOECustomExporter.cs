@@ -1434,7 +1434,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					this.ProcessLaborTaskResources(containerElement, exportInputs, laborTaskElement, allLaborTaskElements, selectedComponents, exportBoe.IsMultiClinWbs);
 
 					ICollection<BoeTaskElementDTO> taskElements = exportInputs.TaskElements.Where(x => x.BoeID == boeExportModelView.BoeID).ToList();
-					this.ProcessSkillMixTable(laborTaskElement, selectedComponents, containerElement, exportInputs, taskElements.FirstOrDefault(x => x.Id == laborTaskElement.BOETaskElementID.Value), ws.UCOTFactor);
+					this.ProcessSkillMixTable(laborTaskElement, selectedComponents, containerElement, exportInputs, taskElements.FirstOrDefault(x => x.Id == laborTaskElement.BOETaskElementID.Value));
 
 					#endregion
 
@@ -4549,29 +4549,28 @@ namespace GenBOE.ActionLogic.IO.Export
 			IDictionary<int, SpreadCurveModelView> allSpreadCurves = this._ICommonDataMapper.getSpreadCurveDictionary();
 
 			foreach (BoeTaskElementDTO boeTaskElement in allBoeTaskElements)
-			{
-				BOEExportTaskElement boeExportTaskElement = new BOEExportTaskElement();
-				boeExportTaskElement.BoeID = boeTaskElement.BoeID;
-				boeExportTaskElement.BOETaskDesc = BOEExportConverter.GetRteOverride(boeTaskElement.BoeID, boeTaskElement.Id, boeTaskElement.Description, IES.Common.RteTemplateSource.TaskDescription, exportInputs.RTETemplatesOverrides);
-				boeExportTaskElement.BOETaskElementID = boeTaskElement.Id;
-				boeExportTaskElement.BOETaskID = boeTaskElement.BOETaskID;
-				boeExportTaskElement.EndDate = boeTaskElement.EndDate;
-				boeExportTaskElement.MOQEquation = boeTaskElement.MOQHoursEquation;
-				boeExportTaskElement.MOQText = BOEExportConverter.GetRteOverride(boeTaskElement.BoeID, boeTaskElement.Id, boeTaskElement.MOQText, IES.Common.RteTemplateSource.TaskMOQ, exportInputs.RTETemplatesOverrides);
-				boeExportTaskElement.MOQType = boeTaskElement.MOQType.GetDescription();
-				boeExportTaskElement.OrdinaryVariables = boeTaskElement.OrdinaryVariables;
-				boeExportTaskElement.StartDate = boeTaskElement.StartDate;
-				boeExportTaskElement.TaskTitle = boeTaskElement.TaskTitle;
-				boeExportTaskElement.IMS_ID = boeTaskElement.IMS_ID;
-				boeExportTaskElement.BOETaskElementOrder = boeTaskElement.BOETaskElementOrder;
-				bool skillMixEnabled = false;
+            {
+                BOEExportTaskElement boeExportTaskElement = new BOEExportTaskElement();
+                boeExportTaskElement.BoeID = boeTaskElement.BoeID;
+                boeExportTaskElement.BOETaskDesc = BOEExportConverter.GetRteOverride(boeTaskElement.BoeID, boeTaskElement.Id, boeTaskElement.Description, IES.Common.RteTemplateSource.TaskDescription, exportInputs.RTETemplatesOverrides);
+                boeExportTaskElement.BOETaskElementID = boeTaskElement.Id;
+                boeExportTaskElement.BOETaskID = boeTaskElement.BOETaskID;
+                boeExportTaskElement.EndDate = boeTaskElement.EndDate;
+                boeExportTaskElement.MOQEquation = boeTaskElement.MOQHoursEquation;
+                boeExportTaskElement.MOQText = BOEExportConverter.GetRteOverride(boeTaskElement.BoeID, boeTaskElement.Id, boeTaskElement.MOQText, IES.Common.RteTemplateSource.TaskMOQ, exportInputs.RTETemplatesOverrides);
+                boeExportTaskElement.MOQType = boeTaskElement.MOQType.GetDescription();
+				boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToList();
+                boeExportTaskElement.OrdinaryVariables = boeTaskElement.OrdinaryVariables;
+                boeExportTaskElement.StartDate = boeTaskElement.StartDate;
+                boeExportTaskElement.TaskTitle = boeTaskElement.TaskTitle;
+                boeExportTaskElement.IMS_ID = boeTaskElement.IMS_ID;
+                boeExportTaskElement.BOETaskElementOrder = boeTaskElement.BOETaskElementOrder;
 
 				if (exportInputs.Workspace.UsingTemplateBOE)
 				{
 					boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
 
-					skillMixEnabled = BOETaskUtility.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, BOETaskUtility.IsUsingTMRates(exportInputs.FullWorkspace, boeTaskElement), boeExportTaskElement.MOQTypes);
-					if (skillMixEnabled)
+					if (BOETaskUtility.ShowSkillMixForTask(exportInputs.FullWorkspace, boeTaskElement))
 					{
 						boeExportTaskElement.SkillMixTable = boeTaskElement.SkillMixTable;
 						boeExportTaskElement.CommonDisclosureTable = boeTaskElement.CommonDisclosureTable;

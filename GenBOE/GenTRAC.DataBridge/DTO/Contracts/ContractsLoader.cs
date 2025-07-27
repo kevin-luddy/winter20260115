@@ -52,7 +52,9 @@ namespace GenTRAC.DataBridge.DTO
 							dtoToUpsert.FinalNegotiatedValue,
 							dtoToUpsert.NegotiationsSubmitted,
 							dtoToUpsert.EppDelegationAuthority,
+							dtoToUpsert.BidEppDate,
 							dtoToUpsert.ProgramEppDate,
+							dtoToUpsert.MissionSegmentEppDate,
 							dtoToUpsert.LobEppDate,
 							dtoToUpsert.PreSpaceEppDate,
 							dtoToUpsert.SpaceEppDate,
@@ -96,7 +98,7 @@ namespace GenTRAC.DataBridge.DTO
 		/// </returns>
 		public ContractsDto GetContractForProposal(int proposalId)
 		{
-			ContractsDto toReturn = new ContractsDto();
+			ContractsDto toReturn;
 
 			using (StopwatchTimer sw = new StopwatchTimer("ContractsLoader.GetContractForProposal", Log))
 			{
@@ -115,7 +117,9 @@ namespace GenTRAC.DataBridge.DTO
 							FinalNegotiatedValue = x.FinalNegotiatedValue,
 							NegotiationsSubmitted = x.FinalNegotiatedDate,
 							EppDelegationAuthority = x.EppDelegationAuthority,
+							BidEppDate = x.BidEppDate,
 							ProgramEppDate = x.ProgramEppDate,
+							MissionSegmentEppDate = x.MissionSegmentEppDate,
 							LobEppDate = x.LobEppDate,
 							PreSpaceEppDate = x.PreSpaceEppDate,
 							SpaceEppDate = x.SpaceEppDate,
@@ -165,7 +169,9 @@ namespace GenTRAC.DataBridge.DTO
 							FinalNegotiatedValue = x.FinalNegotiatedValue,
 							NegotiationsSubmitted = x.FinalNegotiatedDate,
 							EppDelegationAuthority = x.EppDelegationAuthority,
+							BidEppDate = x.BidEppDate,
 							ProgramEppDate = x.ProgramEppDate,
+							MissionSegmentEppDate = x.MissionSegmentEppDate,
 							LobEppDate = x.LobEppDate,
 							PreSpaceEppDate = x.PreSpaceEppDate,
 							SpaceEppDate = x.SpaceEppDate,

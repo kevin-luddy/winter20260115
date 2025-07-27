@@ -14,8 +14,8 @@ namespace GenBOE.ActionLogic.Validation
 
     public class BOECLINMoveValidator : Validator
     {
-        private VariableCircularReferenceChecker _VariableCircularReferenceChecker;
-        private IFullObjectFactory factory;
+        private readonly VariableCircularReferenceChecker _VariableCircularReferenceChecker;
+        private readonly IFullObjectFactory factory;
 
         /// <summary>
         /// Constructor
@@ -114,21 +114,21 @@ namespace GenBOE.ActionLogic.Validation
             }
             else if (data.Keys.Contains("Boe"))
             {
-                FullBoe boe = null;
-                FullWorkspace workspace = null;
+				FullBoe boe;
+				object boeObject;
+				if (!data.TryGetValue("Boe", out boeObject) || boeObject == null || (boe = boeObject as FullBoe) == null)
+				{
+					throw new ArgumentException("data['BOE']");
+				}
 
-                Object boeObject = null;
-                if (!data.TryGetValue("Boe", out boeObject)|| boeObject == null || (boe = boeObject as FullBoe) == null)
-                {
-                    throw new ArgumentException("data['BOE']");
-                }
+				FullWorkspace workspace;
 
-                // now grab the workspace
-                Object workspaceObject = null;
-                if (!data.TryGetValue("Workspace", out workspaceObject) || workspaceObject == null || (workspace = workspaceObject as FullWorkspace) == null)
-                {
-                    throw new ArgumentException("data['Workspace']");
-                }
+				// now grab the workspace
+				object workspaceObject;
+				if (!data.TryGetValue("Workspace", out workspaceObject) || workspaceObject == null || (workspace = workspaceObject as FullWorkspace) == null)
+				{
+					throw new ArgumentException("data['Workspace']");
+				}
 
 
 				// now find the clin with the id

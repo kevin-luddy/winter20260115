@@ -926,7 +926,7 @@ namespace IES.Common
 		/// <summary>
 		/// Private for Is UCOT Enabled
 		/// </summary>
-		private static bool? isUCOTEnabled;
+		internal static bool? isUCOTEnabled;
 
 		/// <summary>
 		/// Is UCOT/Uncompensated Overtime enabled?

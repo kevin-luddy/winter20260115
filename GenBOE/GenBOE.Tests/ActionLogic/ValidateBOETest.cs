@@ -10,6 +10,7 @@ namespace GenBOE.Tests.ActionLogic
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
+	using System.Resources;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.ModelView;
@@ -206,6 +207,8 @@ namespace GenBOE.Tests.ActionLogic
 		[TestMethod]
 		public void BL_MoreInvalidBOEsToValidate()
 		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
+
 			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
 			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
@@ -436,6 +439,125 @@ namespace GenBOE.Tests.ActionLogic
 			Assert.IsTrue(validationBOE.BOEHeaderMsgs.Count == 0, string.Empty, "The BOE Header was not empty");
 			Assert.IsTrue(toAssertTasks.Count == 0, "Task messages were not empty");
 			Assert.IsTrue(toAssertLabors.Count == 0, "Task labor messages were not empty");
+		}
+
+		[TestMethod]
+		// This test case will test if there's a task with multiple MOQ types
+		public void BL_ValidateForNoUCOT()
+		{
+			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+			Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
+
+			ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+
+			// set up workspace
+			string WorkspaceName = "ValidateWorkspace";
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, UsingTemplateBOE = false };
+
+			// set up resource
+			ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
+			resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
+			resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
+
+			//setup custom fields to be false, we'll check them in another test
+			CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
+			ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+			retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
+
+			//setup a BOE
+			ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
+			ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
+			BoeTaskElementDTO boeTE = new BoeTaskElementDTO
+			{
+				Id = 1,
+				BoeID = 4,
+				BOETaskID = "T56",
+				Description = "validate data",
+				StartDate = Convert.ToDateTime("02/01/2011"),
+				EndDate = Convert.ToDateTime("06/01/2011"),
+				MOQHoursEquation = "100",
+				MOQText = "validate moq",
+				MOQType = MOQType.Comparison,
+				MOQTypeName = "validate",
+				taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
+				TaskTitle = "Validate Task",
+				TotalHours = 100,
+				WorkspaceVariableIDs = new Collection<int> { 2 },
+				TaskElementType = TaskElementType.Labor,
+			};
+			BoeTaskElementDTO boeTE2 = new BoeTaskElementDTO
+			{
+				Id = 2,
+				BoeID = 4,
+				BOETaskID = "T56",
+				Description = "validate data",
+				StartDate = Convert.ToDateTime("02/01/2011"),
+				EndDate = Convert.ToDateTime("06/01/2011"),
+				MOQHoursEquation = "100",
+				MOQText = "validate moq",
+				MOQType = MOQType.AnalogousRelationships,
+				MOQTypeName = "validate",
+				taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
+				TaskTitle = "Validate Task",
+				TotalHours = 100,
+				WorkspaceVariableIDs = new Collection<int> { 2 },
+				TaskElementType = TaskElementType.Labor,
+			};
+
+			BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, DataSource = "validate data" };
+
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
+			FullWorkspace workspaceObject = new FullWorkspace(workspace);
+			FullBoe boeObject = new FullBoe(boe);
+
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+
+			retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE, boeTE2 });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE, boeTE2 });
+			retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
+			retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+			retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+			retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+
+			Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+			this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+			this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
+			factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+			factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+			this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
+			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new List<FullBoe>() { boeObject });
+			this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO> { });
+
+			ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+
+			//Act
+			validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+
+			//Assert
+			Assert.IsNotNull(validationBOE, "The BOE to validate was null");
+			Assert.IsTrue(validationBOE.BOEHeaderMsgs.Contains("UCOT is not calculated"));
 		}
 
 		// This test case will test that if a BOE and CLIN don't have a start/end date, the contract start/end date are used
@@ -3680,6 +3802,55 @@ namespace GenBOE.Tests.ActionLogic
 		}
 
 		/// <summary>
+		/// Test ValidateTemplateMoqForTask for validation PoP Dates are valid when in the current month when using Monthly Query Type
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_PoPCurrentMonth_SpaceMode_Monthly()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabledForSystem = true;
+
+			ValidateBOE sut = CreateSystem();
+
+			// Create a valid MOQ Table
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = MoqTableData.MONTHLY,
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = DateTime.Today,
+                            PoPEnd = DateTime.Today,
+                            AdditionalQueryFilters = "TestFilter",
+							TotalRelevantHours = 1000
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix",
+				HistoricalReferenceExplanation = "Test historical reference explanation"
+			};
+
+			// Adjust dates to mid-month as they would be while using the application
+			moqType.TableData.First().PoPStart = moqType.TableData.First().PoPStartString.ToDateTimeMidMonth();
+			moqType.TableData.First().PoPEnd = moqType.TableData.First().PoPEndString.ToDateTimeMidMonth();
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS", CreationDate = DateTime.Now };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			Assert.IsFalse(result.Any());
+		}
+
+		/// <summary>
 		/// Test ValidateTemplateMoqForTask for additional PoP date and Date of Report validation
 		/// </summary>
 		[TestMethod]
@@ -4155,11 +4326,12 @@ namespace GenBOE.Tests.ActionLogic
 		}
 
 		/// <summary>
-		/// Test Invalid BOE Skill Mix (null)
+		/// Test Invalid BOE Skill Mix (null) for RMS
 		/// </summary>
 		[TestMethod]
-		public void ValidateSkillMix_NullBoeSkillMix()
+		public void ValidateSkillMix_NullBoeSkillMix_RMS()
 		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
 			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
 			{
 				new SkillMixModelView {
@@ -4176,15 +4348,42 @@ namespace GenBOE.Tests.ActionLogic
 			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
-			Assert.IsTrue(messages.First().Contains("BOE Skill Mix is missing"));
+			Assert.IsTrue(messages.First().Contains($"{Constants.RMS_BOE_SKILL_MIX_COLUMN_NAME} is missing"));
 		}
 
 		/// <summary>
-		/// Test Invalid BOE Skill Mix (<=0)
+		/// Test Invalid BOE Skill Mix (null) for space
 		/// </summary>
 		[TestMethod]
-		public void ValidateSkillMix_InvalidBoeSkillMix()
+		public void ValidateSkillMix_NullBoeSkillMix_Space()
 		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
+			{
+				new SkillMixModelView {
+					ResourceOld = "HISTORICAL_R",
+					HistoricalHours = 100,
+					ResourceNew = "NEW",
+					Included = true,
+					IsUserInput = true,
+					Rationale = "Rationale1",
+					BOESkillMix = null
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains($"{Constants.SPACE_BOE_SKILL_MIX_COLUMN_NAME} is missing"));
+		}
+
+		/// <summary>
+		/// Test Invalid BOE Skill Mix (<=0) for RMS
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMix_InvalidBoeSkillMixfor_RMS()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
 			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
 			{
 				new SkillMixModelView {
@@ -4201,15 +4400,42 @@ namespace GenBOE.Tests.ActionLogic
 			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
-			Assert.IsTrue(messages.First().Contains("BOE Skill Mix has invalid value"));
+			Assert.IsTrue(messages.First().Contains($"{Constants.RMS_BOE_SKILL_MIX_COLUMN_NAME} has invalid value"));
 		}
 
 		/// <summary>
-		/// Test Invalid BOE Skill Mix Total
+		/// Test Invalid BOE Skill Mix (<=0) for space
 		/// </summary>
 		[TestMethod]
-		public void ValidateSkillMix_InvalidSkillMixTotal()
+		public void ValidateSkillMix_InvalidBoeSkillMixfor_Space()
 		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
+			{
+				new SkillMixModelView {
+					ResourceOld = "HISTORICAL_R",
+					HistoricalHours = 100,
+					ResourceNew = "NEW",
+					Included = true,
+					IsUserInput = true,
+					Rationale = "Rationale1",
+					BOESkillMix = 0
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains($"{Constants.SPACE_BOE_SKILL_MIX_COLUMN_NAME} has invalid value"));
+		}
+
+		/// <summary>
+		/// Test Invalid BOE Skill Mix Total for RMS
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMix_InvalidSkillMixTotal_RMS()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
 			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
 			{
 				new SkillMixModelView {
@@ -4226,7 +4452,33 @@ namespace GenBOE.Tests.ActionLogic
 			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
-			Assert.IsTrue(messages.First().Contains("BOE Skill Mix total must be either 0% or 100%"));
+			Assert.IsTrue(messages.First().Contains($"{Constants.RMS_BOE_SKILL_MIX_COLUMN_NAME} total must be either 0% or 100%"));
+		}
+
+		/// <summary>
+		/// Test Invalid BOE Skill Mix Total for space
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMix_InvalidSkillMixTotal_Space()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
+			{
+				new SkillMixModelView {
+					ResourceOld = "HISTORICAL_R",
+					HistoricalHours = 100,
+					ResourceNew = "NEW",
+					Included = true,
+					IsUserInput = true,
+					Rationale = "Rationale1",
+					BOESkillMix = 50
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains($"{Constants.SPACE_BOE_SKILL_MIX_COLUMN_NAME} total must be either 0% or 100%"));
 		}
 
 		/// <summary>
@@ -4463,7 +4715,7 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, true);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("The maximum length of the Rationale field"));
@@ -4488,7 +4740,7 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, true);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("BOE Skill Mix is missing"));
@@ -4513,7 +4765,7 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, true);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("BOE skill Mix has invalid value"));
@@ -4538,10 +4790,34 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, true);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("At least one Resource has to be included"));
+		}
+
+		/// <summary>
+		/// Test at least one resource included not validated with no resources
+		/// </summary>
+		[TestMethod]
+		public void ValidateCommonDisclosureSkillMix_MissingResourceNoResources()
+		{
+			List<CommonDisclosureModelView> skillmix = new List<CommonDisclosureModelView>
+			{
+				new CommonDisclosureModelView {
+					ResourceID = "HISTORICAL_R",
+					HistoricalHours = 100,
+					BusinessResourceID = null,
+					Included = false,
+					IsUserInput = true,
+					Rationale = "Rationale1",
+					BOESkillMix = 0
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, false);
+			Assert.IsNotNull(messages);
+			Assert.IsFalse(messages.Any());
 		}
 
 		/// <summary>
@@ -4563,7 +4839,7 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, true);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("BOE Skill Mix total must be either 0% or 100%"));
@@ -4597,7 +4873,7 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, true);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("Each BRC must be unique for Resource"));
@@ -4622,7 +4898,7 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, false);
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, false, true);
 			Assert.IsNotNull(messages);
 			Assert.IsTrue(messages.None());
 		}
@@ -4646,10 +4922,20 @@ namespace GenBOE.Tests.ActionLogic
 				}
 			};
 
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true);
+			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, true);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("The Rationale field") && messages.First().Contains("required"));
+		}
+
+		/// <summary>
+		/// Reset test config data
+		/// </summary>
+		[TestCleanup()]
+		public override void TestCleanup()
+		{
+			base.TestCleanup();
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
 		}
 	}
 }

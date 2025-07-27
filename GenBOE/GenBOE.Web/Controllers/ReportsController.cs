@@ -1864,6 +1864,31 @@ namespace GenBOE.Web.Controllers
 						// Get the workspace again in case the user clicked twice
 						ws = this.Factory.CreateFullWorkspace(workspace);
 
+						// Validate for UCOT and multiple MOQ tasks - Space only
+						if (Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.TrackingNumber) && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+						{
+							IList<MultiMOQTypeResult> multiMoqResults = new List<MultiMOQTypeResult>();
+							IList<string> allTasks = new List<string>();
+
+							foreach (FullBoe boe in ws.Boes)
+							{
+								boe.SetTaskElements(ws.TaskElements.Where(x => x.BoeID == boe.Id));
+								multiMoqResults.Add(MultiMOQTypeUtility.DoTasksHaveMultipleMOQTypes(boe, ws.CreationDate, ws.Shortname));
+							}
+
+							if (multiMoqResults.Any() && multiMoqResults.Any(x => x.DoMultiMOQTypesExist))
+							{
+								foreach (MultiMOQTypeResult result in multiMoqResults)
+								{
+									allTasks.AddRange(result.Tasks);
+								}
+
+								string commaSeparatedTasks = string.Join(", ", allTasks);
+								string ucotExceptionString = string.Format(ValidationConstants.MULTI_TASK_WITH_MULTI_MOQ_TYPES_UCOT, commaSeparatedTasks);
+								throw new GenValidationException(ucotExceptionString);
+							}
+						}
+
 						// once the export is complete, increment the total of exports for this workspace for reporting tracking purposes
 						ws.NumberOfTimesExportedToProPricer = ++ws.NumberOfTimesExportedToProPricer;
 
@@ -2072,9 +2097,8 @@ namespace GenBOE.Web.Controllers
 					// Need picklist values for contract type for Workspace Identification sheet
 					exportInputs.ContractTypes = this.contractTypeLoader.GetPickListValues();
 
-					MetricNameTaskElementMappingDTO metricTaskElementMappings = new MetricNameTaskElementMappingDTO();
 					ICollection<PickListDto> contractTypes = this.contractTypeLoader.GetPickListValues();
-					string exportedFileName = this.workspaceExporter.ExportToExcelFile(Server.MapPath(workspaceExporter.WORKSPACE_DATA_EXCEL_MAP_PATH), exportInputs, metricTaskElementMappings, contractTypes);
+					string exportedFileName = this.workspaceExporter.ExportToExcelFile(Server.MapPath(workspaceExporter.WORKSPACE_DATA_EXCEL_MAP_PATH), exportInputs, contractTypes);
 
 					// Generate a custom ActionResult to cause a file download to the client
 					string fileName = string.Format("{0}_WorkspaceData.xlsx", ws.WorkspaceName);

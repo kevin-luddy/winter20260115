@@ -153,11 +153,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		});
 	};
 
-	// Called when the Search Estimating Catalog dropdown item is clicked.
-	$scope.SearchEstimatingCatalogClicked = function () {
-		$(document).trigger('SEARCH_METRICS');
-	}
-
 	// Called when the Copy MOQ from BOE dropdown item is clicked.
 	$scope.CopyMoqFromBoeClicked = function () {
 		$('#CopyMoqFromBoeLink').data('moq-task-id', $scope.model.TaskElementId);
@@ -1242,7 +1237,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 								tableData.DateOfReport = new Date();
 								tableData.TotalRelevantHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.TotalHours, 0) + Number.EPSILON) * 100) / 100;
 								tableData.TotalWbsHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.WbsHours, 0) + Number.EPSILON) * 100) / 100;
-								tableData.ResourceHours = res.SkillMixDataTable.map(skillMix => ({ ResourceName: skillMix.ResourceID, WbsHours: skillMix.WbsHours, TotalHours: skillMix.TotalHours, BRCName: skillMix.Brc }));
+								tableData.ResourceHours = res.SkillMixDataTable.filter(s => s.TotalHours != 0.0).map(skillMix => ({ ResourceName: skillMix.ResourceID, WbsHours: skillMix.WbsHours, TotalHours: skillMix.TotalHours, BRCName: skillMix.Brc }));
 
 								// this is RMS only
 								if (!ManageTaskModel.IsSpace) {
@@ -1463,7 +1458,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 												tableData.DateOfReport = new Date();
 												tableData.TotalRelevantHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.TotalHours, 0) + Number.EPSILON) * 100) / 100;
 												tableData.TotalWbsHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.WbsHours, 0) + Number.EPSILON) * 100) / 100;
-												tableData.ResourceHours = res.SkillMixDataTable.map(skillMix => ({ ResourceName: skillMix.ResourceID, WbsHours: skillMix.WbsHours, TotalHours: skillMix.TotalHours, BRCName: skillMix.Brc }));
+												tableData.ResourceHours = res.SkillMixDataTable.filter(s => s.TotalHours != 0.0).map(skillMix => ({ ResourceName: skillMix.ResourceID, WbsHours: skillMix.WbsHours, TotalHours: skillMix.TotalHours, BRCName: skillMix.Brc }));
 
 												// this is RMS only
 												if (!ManageTaskModel.IsSpace && !tableData.ContractNumber && res.ContractNumber) {
@@ -2470,7 +2465,6 @@ InitializeMOQEquationFieldWidget = function (MOQEquationFieldWidget_ReadOnly, wo
 			MOQEquationFieldWidget.setDirty();
 		});
 
-		taskElementDetailsWidget.CheckToShowMetrics();
 		taskElementDetailsWidget.MOQText = CreateRteTemplate(showMoqQuestions, numberOfMoqQuestions);
 
 		if (!MOQEquationFieldWidget.isReadOnly() || shouldMoqReadOnlyBeReversed || !taskElementDetailsWidget.isReadOnly()) {

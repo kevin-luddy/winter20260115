@@ -9,14 +9,12 @@ namespace GenBOE.Web.Controllers
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
-	using System.Globalization;
 	using System.IO;
 	using System.Linq;
 	using System.Net;
 	using System.Net.Http;
 	using System.Net.Http.Headers;
 	using System.Threading.Tasks;
-	using System.Web;
 	using System.Web.Http;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.BOE;
@@ -26,7 +24,6 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.ActionLogic.IO.Export.BOE;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.BOE;
-	using GenBOE.DataBridge.Common;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.DataBridge.Reference;
@@ -112,6 +109,11 @@ namespace GenBOE.Web.Controllers
 		private readonly ContractTypeLoader contractTypeLoader;
 
 		/// <summary>
+		/// TM Resource Rate Loader
+		/// </summary>
+		private readonly ITMResourceRateDTODataLoader tmResourceRateLoader;
+
+		/// <summary>
 		/// Resource Loader
 		/// </summary>
 		private readonly IResourceDTODataLoader resourceLoader;
@@ -152,7 +154,8 @@ namespace GenBOE.Web.Controllers
 		/// <param name="traceTableExporter">Trace Table data exporter</param>
 		/// <param name="boeFormControllerLogic">BOE Form Controller logic</param>
 		/// <param name="contractTypeLoader">Pick List loader for Contract Types</param>
-		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, IBOEFormIBOEDTODataLoader boeFormIBOEDTODataLoader, IActiveDirectoryUtilities activeDirectoryUtilities, IUserDTODataLoader userDataLoader, ContractTypeLoader contractTypeLoader, IResourceDTODataLoader resourceLoader, TMCalculator tmCalculator, IInUseDataLoader inUseDataLoader)
+		/// <param name="tmResourceRateLoader">TM Resource Loader</param>
+		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, IBOEFormIBOEDTODataLoader boeFormIBOEDTODataLoader, IActiveDirectoryUtilities activeDirectoryUtilities, IUserDTODataLoader userDataLoader, ContractTypeLoader contractTypeLoader, IResourceDTODataLoader resourceLoader, TMCalculator tmCalculator, IInUseDataLoader inUseDataLoader, ITMResourceRateDTODataLoader tmResourceRateLoader)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.loader = loader;
@@ -171,6 +174,7 @@ namespace GenBOE.Web.Controllers
 			this.resourceLoader = resourceLoader;
 			this.tmCalculator = tmCalculator;
 			this.inUseDataLoader = inUseDataLoader;
+			this.tmResourceRateLoader = tmResourceRateLoader;
 		}
 		#endregion
 
@@ -1398,18 +1402,23 @@ namespace GenBOE.Web.Controllers
 						BOEFormPBOEDTO pboeForm = exporter.transformPBOEViewToFormDTO(pboe);
 
 						//need to convert resources into a list of ints (resource IDs)
-						List<int> resourceIds = new List<int>();
 						ICollection<ResourceDTO> workspaceResources = this.resourceLoader.GetByListId(fullWorkspace.ResourceListID);
 						ICollection<ResourceDTO> actualResources = workspaceResources.Where(x => pboe.Resources.Contains(x.ResourceName)).ToList();
-						resourceIds = actualResources.Select(r => r.Id).ToList();
+						List<int> resourceIds = actualResources.Select(r => r.Id).ToList();
 
 						//if we don't have sub resources, still return the pboe with the pop data
 						if (resourceIds != null && resourceIds.Any())
 						{
-							ICollection<PBOETableRow> rowData = new Collection<PBOETableRow>();
-							rowData = exporter.PullRowsFromWorkspace(fullWorkspace, pboeForm, resourceIds, this.contractTypeLoader.GetPickListValues());
+							ICollection<PBOETableRow> rowData = exporter.PullRowsFromWorkspace(fullWorkspace, pboeForm, resourceIds, this.contractTypeLoader.GetPickListValues());
 							foreach (PBOETableRow row in rowData)
 							{
+								// Use the contract type selected in NLF
+								PBOECLINContractXREFData clinContractXref = pboe.PboeClinContractXREF.FirstOrDefault(x => x.Title == row.ClinNumber);
+								if (clinContractXref != null)
+								{
+									row.ContractType = clinContractXref.ContractTypeName;
+								}
+
 								PBOEClinData data = new PBOEClinData(row);
 								pboe.PboeClinData.Add(data);
 							}
@@ -1492,18 +1501,23 @@ namespace GenBOE.Web.Controllers
 						BOEFormIBOEDTO iboeForm = exporter.TransformIBOEViewToFormDTO(iboe);
 
 						// need to convert resources into a list of ints (resource IDs)
-						List<int> resourceIds = new List<int>();
 						ICollection<ResourceDTO> workspaceResources = this.resourceLoader.GetByListId(fullWorkspace.ResourceListID);
 						ICollection<ResourceDTO> actualResources = workspaceResources.Where(x => iboe.Resources.Contains(x.ResourceName)).ToList();
-						resourceIds = actualResources.Select(r => r.Id).ToList();
+						List<int> resourceIds = actualResources.Select(r => r.Id).ToList();
 
 						// if we don't have sub resources, still return the iboe with the pop data
 						if (resourceIds != null && resourceIds.Any())
 						{
-							ICollection<IBOETableRow> rowData = new Collection<IBOETableRow>();
-							rowData = exporter.PullRowsFromWorkspace(fullWorkspace, iboeForm, resourceIds, this.contractTypeLoader.GetPickListValues());
+							ICollection<IBOETableRow> rowData = exporter.PullRowsFromWorkspace(fullWorkspace, iboeForm, resourceIds, this.contractTypeLoader.GetPickListValues());
 							foreach (IBOETableRow row in rowData)
 							{
+								// Use the contract type selected in NLF
+								IBOECLINContractXREFData clinContractXref = iboe.IBOECLINContractXREF.FirstOrDefault(x => x.Title == row.ClinNumber);
+								if (clinContractXref != null)
+								{
+									row.ContractType = clinContractXref.ContractTypeName;
+								}
+
 								IBOEClinData data = new IBOEClinData(row);
 								iboe.IboeClinData.Add(data);
 							}
@@ -1565,11 +1579,17 @@ namespace GenBOE.Web.Controllers
 
 				ICollection<WorkspaceDTO> workspaces = loader.GetWorkspacesByTrackingNumber(trackingNumber).Where(x => x.CurrentPTMWorkspace).ToCollection();
 
-				foreach (int wsResourceListId in workspaces.Select(x => x.ResourceListID))
+				foreach (WorkspaceDTO workspace in workspaces)
 				{
-					HashSet<int> inUseIds = inUseDataLoader.GetWorkspaceResourceIDsInUseByListID(wsResourceListId);
-					ICollection<ResourceDTO> inUseResources = resourceLoader.GetByListId(wsResourceListId)
+					ICollection<TMResourceRateDTO> workspaceTMResourceRates = tmResourceRateLoader.GetByWorkspaceId(workspace.Id);
+					IList<string> distinctTMRateResourceNames = workspaceTMResourceRates.Select(x => x.ResourceName).Distinct().ToList();
+
+					HashSet<int> inUseIds = inUseDataLoader.GetWorkspaceResourceIDsInUseByListID(workspace.ResourceListID);
+					ICollection<ResourceDTO> inUseResources = resourceLoader.GetByListId(workspace.ResourceListID)
 						.Where(x => x.ElementOfCost == elementOfCost && inUseIds.Contains(x.Id) && !result.Data.Any(y => y.ResourceName == x.ResourceName)).ToCollection();
+
+					// Remove Hour-type resources and if there are no T&M rates
+					inUseResources = inUseResources.Where(x => x.RateType != RateType.Hours || distinctTMRateResourceNames.Contains(x.ResourceName)).ToCollection();
 
 					result.Data.AddRange(inUseResources.Select(x => new NlfResourceData()
 					{

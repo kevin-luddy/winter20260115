@@ -11,6 +11,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 	using System.Collections.ObjectModel;
 	using System.Linq;
 	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.Misc;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
@@ -59,11 +60,14 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 			this.Boes = new List<BoeDTO> { boe.ToDTO() }.AsReadOnly();
 			this.TaskElements = workspace.TaskElements.DeepClone();
 			this.Workspace = workspace.ToDTO();
-
+			bool isBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspace.Shortname);
+			
 			// since the resources used may not contain offloaded resources, need to manually get this
 			this.ResourcesUsedInWsBoes = workspace.ResourcesUsedInWsBoes;
 			this.PerformingOrgsUsedInBoes = workspace.PerformingOrgsUsedInBoes;
 			this.FullWorkspace = workspace;
+			this.CalculateSkillMix(workspace, isBRCEnabled, this.TaskElements);
+
 			this.logger.Debug("Exporting - BOEExportInputs - Initializing Inputs - end");
 		}
 
@@ -92,7 +96,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 			taskElements = taskElements.DeepClone();
 			this.PerformingOrgsUsedInBoes = workspace.PerformingOrgsUsedInBoes;
 
-			this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - begin");
+			this.logger.Debug("Exporting - BOEExportInputs - Initializing Inputs - begin");
 			IRetriever retriever = GenBOEUnityContainer.Container.Resolve(typeof(IRetriever)) as IRetriever;
 			this.SetRteTemplateOverrides(rteTemplatesOverrides);
 			this.SetMoqTypes(moqTypes);
@@ -121,10 +125,13 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				this.PerformingOrgsUsedInBoes = this.PerformingOrgsUsedInBoes.Concat(new[] { ucotPerformingOrg }).ToList().AsReadOnly();
 			}
 
+			bool isBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspace.Shortname);
+			
 			this.ResourcesUsedInWsBoes = retriever.GetResourcesByIds(resourceIds).ToList().AsReadOnly();
+			this.CalculateSkillMix(workspace, isBRCEnabled, taskElements);
 
 			int startingIndex = -1;
-			if (Utilities.IsBRCEnabledForWorkspace(workspace.Shortname) && processLaborTypesForBrc)
+			if (isBRCEnabled && processLaborTypesForBrc)
 			{
 				IDictionary<int, string> resourceIdToSegmentRegion = this.ResourcesUsedInWsBoes.ToDictionary(r => r.Id, d => d.SegRegion);
 				foreach (BoeTaskElementDTO taskElement in taskElements)
@@ -160,15 +167,17 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
 				// Filter by element of cost only want to work on labor
 				Dictionary<int, ElementOfCostType> laborToElementOfCost = new Dictionary<int, ElementOfCostType>();
+				Dictionary<int, RateType> laborToRateType = new Dictionary<int, RateType>();
 				foreach (ResourceTypeDto labor in taskElementLabors)
 				{
 					ResourceDTO resource = this.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == labor.ResourceID);
 
 					laborToElementOfCost[labor.Id] = resource?.ElementOfCost ?? ElementOfCostType.NotSet;
+					laborToRateType[labor.Id] = resource?.RateType ?? RateType.NotSet;
 				}
 
 				// Add UCOT data
-				taskElementLabors = AddUCOT(taskElementLabors, workspace.UCOTFactor, laborToElementOfCost, workspace.ResourceDecimalPrecision ?? 0);
+				taskElementLabors = AddUCOT(taskElementLabors, workspace.UCOTFactor, laborToElementOfCost, workspace.DecimalPrecision, workspace.CreationDate, workspace.Shortname, laborToRateType);
 
 				// Update TaskElements with the new labors
 				foreach (BoeTaskElementDTO taskElement in taskElements)
@@ -465,8 +474,12 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// <param name="ucotFactor">The UCOT Factor</param>
 		/// <param name="laborToElementOfCost">Labor to element cost dictionary</param>
 		/// <param name="decimalPrecision">Workspace resource decimal precision</param>
+		/// <param name="laborToRateType">Labor Resource keyed to RateType</param>
+		/// <param name="workspaceCreationDate">Workspace's Creation Date</param>
+		/// <param name="workspaceShortname">Workspace's Short name</param>
 		/// <returns>UCOT resources.</returns>
-		private List<ResourceTypeDto> AddUCOT(List<ResourceTypeDto> taskElementLabors, decimal ucotFactor, Dictionary<int, ElementOfCostType> laborToElementOfCost, int decimalPrecision)
+		private List<ResourceTypeDto> AddUCOT(List<ResourceTypeDto> taskElementLabors, decimal ucotFactor, Dictionary<int, ElementOfCostType> laborToElementOfCost, 
+			int decimalPrecision, DateTime? workspaceCreationDate, string workspaceShortname, Dictionary<int, RateType> laborToRateType)
 		{
 			List<ResourceTypeDto> ucotLabors = taskElementLabors.ToList();
 
@@ -474,82 +487,72 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
 			// Keyed by original resource name to new ucot resource 
 			Dictionary<int, ResourceDTO> ucotResourceBindings = new Dictionary<int, ResourceDTO>();
-			decimal ucotMultiplier = ucotFactor / 100.0m;
 			int idCounter = -100;
 
 			// Now, we loop over all the spreads and add the UCOT factor where needed
+			ICollection<MoqTypeSelection> moqTypes = this.MOQTypes.ToList();
 			foreach (ResourceTypeDto labor in taskElementLabors)
 			{
-				// UCOT is only applicable if ResourceTypeDto is Hours and LMLabor Element of Cost, and Spread is past 1LMX date
-				if (labor.SpreadType == SpreadType.Hours &&
-					laborToElementOfCost[labor.Id] == ElementOfCostType.LMLabor &&
-					labor.LaborSpreads != null && labor.LaborSpreads.Any() &&
-					labor.EndDate >= Utilities.OneLmxStartDate && labor.BusinessResourceCodeID.HasValue)
+				if (labor.BusinessResourceCodeID.HasValue)
 				{
-					int newLaborTypeId = idCounter--;
+					// UCOT is only applicable if ResourceTypeDto is Hours and LMLabor Element of Cost, and Spread is past 1LMX date
+					IDictionary<DateTime, decimal> ucotSpreads = UCOTUtility.GetUcotSpreads(workspaceCreationDate, workspaceShortname, decimalPrecision, ucotFactor,
+							labor.LaborSpreads, laborToElementOfCost[labor.Id], moqTypes, labor.TaskElementId, laborToRateType[labor.Id]);
 
-					// If it doesn't find the ucot resource then we need to create the ucot resource and add it back into our dictonary to pair the labor resource with its ucot counterpart (i.e. C1MDAAA1 vs. C1MDAAA1-UCOT)
-					if (!ucotResourceBindings.TryGetValue(labor.BusinessResourceCodeID.Value, out ResourceDTO ucotResource))
+					if (ucotSpreads.Any())
 					{
-						ResourceDTO originalResource = this.ResourcesUsedInWsBoes.First(x => x.Id == labor.BusinessResourceCodeID);
-
-						ucotResource = new ResourceDTO
+						// If it doesn't find the ucot resource then we need to create the ucot resource and add it back into our dictionary to pair the labor resource with its ucot counterpart (i.e. C1MDAAA1 vs. C1MDAAA1-UCOT)
+						if (!ucotResourceBindings.TryGetValue(labor.BusinessResourceCodeID.Value, out ResourceDTO ucotResource))
 						{
-							Id = ucotResourceIndex--,
-							ElementOfCost = ElementOfCostType.LMLabor,
-							ResourceDesc = $"{originalResource.ResourceDesc}-{Constants.UCOT_LABEL}",
-							ResourceName = $"{originalResource.ResourceName}-{Constants.UCOT_LABEL}",
-							SegRegion = originalResource.SegRegion,
+							ResourceDTO originalResource = this.ResourcesUsedInWsBoes.First(x => x.Id == labor.BusinessResourceCodeID);
+
+							ucotResource = new ResourceDTO
+							{
+								Id = ucotResourceIndex--,
+								ElementOfCost = ElementOfCostType.LMLabor,
+								ResourceDesc = $"{originalResource.ResourceDesc}-{Constants.UCOT_LABEL}",
+								ResourceName = $"{originalResource.ResourceName}-{Constants.UCOT_LABEL}",
+								SegRegion = originalResource.SegRegion,
+							};
+
+							ucotResourceBindings.Add(labor.BusinessResourceCodeID.Value, ucotResource);
+						}
+
+						// Add the UCOT spreads where needed
+						int newLaborTypeId = idCounter--;
+						Collection<ResourceSpreadDto> spreads = new Collection<ResourceSpreadDto>();
+						foreach (KeyValuePair<DateTime, decimal> spread in ucotSpreads)
+						{
+							spreads.Add(new ResourceSpreadDto()
+							{
+								LaborSpreadDate = spread.Key,
+								LaborTypeId = newLaborTypeId,
+								BoeID = labor.BoeID,
+								Id = idCounter--,
+								LaborSpreadValue = spread.Value
+							});
+						}
+
+						ResourceTypeDto ucot = new ResourceTypeDto()
+						{
+							BoeID = labor.BoeID,
+							LaborSpreads = spreads,
+							CLINID = labor.CLINID,
+							WBSID = labor.WBSID,
+							EndDate = labor.EndDate,
+							StartDate = labor.StartDate,
+							SpreadCurveID = labor.SpreadCurveID,
+							SpreadType = labor.SpreadType,
+							BusinessResourceCodeID = ucotResource.Id,
+							ResourceID = ucotResource.Id,
+							PerformingOrgID = Constants.UCOT_PERF_ORG_ID,
+							TaskElementId = labor.TaskElementId,
+							Id = newLaborTypeId,
+							ValueSpread = spreads.Sum(s => s.LaborSpreadValue)
 						};
 
-						ucotResourceBindings.Add(labor.BusinessResourceCodeID.Value, ucotResource);
+						ucotLabors.Add(ucot);
 					}
-
-					Collection<ResourceSpreadDto> spreads = new Collection<ResourceSpreadDto>();
-					foreach (ResourceSpreadDto spread in labor.LaborSpreads.OrderBy(x => x.LaborSpreadDate))
-					{
-						spreads.Add(new ResourceSpreadDto()
-						{
-							LaborSpreadDate = spread.LaborSpreadDate,
-							LaborTypeId = newLaborTypeId,
-							BoeID = spread.BoeID,
-							Id = idCounter--,
-							LaborSpreadValue = (Utilities.OneLmxStartDate <= spread.LaborSpreadDate)
-								? Utilities.AdjustPrecision(spread.LaborSpreadValue * ucotMultiplier, decimalPrecision)
-								: 0.0m
-						});
-					}
-
-					// Get UCOT total for the spread
-					decimal ucotTotal = labor.LaborSpreads.Sum(x => x.LaborSpreadValue) * (ucotFactor / 100m);
-					ucotTotal = Utilities.AdjustPrecision(ucotTotal, decimalPrecision);
-
-					// Smooth the UCOT spreads
-					decimal[] smoothedSpreadValues = SpreadCurve.Smooth(ucotTotal, spreads.OrderBy(x => x.LaborSpreadDate).Select(x => x.LaborSpreadValue).ToArray(), 0, spreads.Count, decimalPrecision);
-					for (int i = 0; i < spreads.Count; i++)
-					{
-						spreads[i].LaborSpreadValue = smoothedSpreadValues[i];
-					}
-
-					ResourceTypeDto ucot = new ResourceTypeDto()
-					{
-						BoeID = labor.BoeID,
-						LaborSpreads = spreads,
-						CLINID = labor.CLINID,
-						WBSID = labor.WBSID,
-						EndDate = labor.EndDate,
-						StartDate = labor.StartDate,
-						SpreadCurveID = labor.SpreadCurveID,
-						SpreadType = labor.SpreadType,
-						BusinessResourceCodeID = ucotResource.Id,
-						ResourceID = ucotResource.Id,
-						PerformingOrgID = Constants.UCOT_PERF_ORG_ID,
-						TaskElementId = labor.TaskElementId,
-						Id = newLaborTypeId,
-						ValueSpread = spreads.Sum(s => s.LaborSpreadValue)
-					};
-
-					ucotLabors.Add(ucot);
 				}
 			}
 
@@ -559,6 +562,68 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 			this.ResourcesUsedInWsBoes = updatedResources.AsReadOnly();
 
 			return ucotLabors;
+		}
+
+		/// <summary>
+		/// Calculate Skill Mix on the Tasks as needed
+		/// </summary>
+		/// <param name="isBRCEnabled">Is brc enabled</param>
+		/// <param name="ws">The Full Workspace</param>
+		/// <param name="taskElements">The task elements</param>
+		private void CalculateSkillMix(FullWorkspace ws, bool isBRCEnabled, IEnumerable<BoeTaskElementDTO> taskElements)
+		{
+			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate))
+			{
+				foreach (BoeTaskElementDTO task in taskElements)
+				{
+					if (BOETaskUtility.ShowSkillMixForTask(ws, task))
+					{
+						// Get all MOQ Resource Hours for Task
+						ICollection<MOQTypeSelectionTableDataResourceHoursDTO> moqResourceHours = ws.MoqTypeSelections.Where(m => m.TaskId == task.Id).SelectMany(m => m.TableData).SelectMany(t => t.ResourceHours).ToList();
+
+						// convert Task's labor resources to modelview
+						List<LaborTypeDataModelView> laborTypes = new List<LaborTypeDataModelView>();
+						foreach (ResourceTypeDto labor in task.taskElementLabors)
+						{
+							ResourceDTO resource = new ResourceDTO();
+							if (labor.ResourceID != null)
+							{
+								resource = this.ResourcesUsedInWsBoes.First(x => x.Id == labor.ResourceID.Value);
+							}
+
+							ResourceDTO businessResourceCode = new ResourceDTO();
+							if (labor.BusinessResourceCodeID != null && labor.BusinessResourceCodeID > 0)
+							{
+								businessResourceCode = this.ResourcesUsedInWsBoes.First(x => x.Id == labor.BusinessResourceCodeID.Value);
+							}
+
+							PerformingOrgDTO perfOrg = new PerformingOrgDTO();
+							if (labor.PerformingOrgID != null)
+							{
+								perfOrg = this.PerformingOrgsUsedInBoes.First(x => x.Id == labor.PerformingOrgID.Value);
+							}
+
+							LaborTypeDataModelView laborToAdd = new LaborTypeDataModelView(labor, resource, businessResourceCode, perfOrg, ws.UCOTFactor, Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.TrackingNumber) && businessResourceCode.ElementOfCost == ElementOfCostType.LMLabor && businessResourceCode.RateType == RateType.Hours, ws.DecimalPrecision);
+
+							laborTypes.Add(laborToAdd);
+						}
+
+
+						RefreshSkillMixModelView refreshedData = SkillMixUtility.RefreshSkillMixTables(moqResourceHours, laborTypes, task.SkillMixTable, task.CommonDisclosureTable, isBRCEnabled,
+							!ws.EnableSAPConnection);
+
+						// Now reset the data
+						task.SkillMixTable = refreshedData.SkillMixRows;
+						task.CommonDisclosureTable = refreshedData.CommonDisclosureRows;
+					}
+					else
+					{
+						// can safely zero out any bad data
+						task.SkillMixTable.Clear();
+						task.CommonDisclosureTable.Clear();
+					}
+				}
+			}
 		}
 	}
 }

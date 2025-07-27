@@ -603,7 +603,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.FieldName_HistoricalRefExp);
 					}
 
-					if (moqType.SelectedMOQType != MOQType.NonLabor && !BOETaskUtility.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, false, laborTaskElement.MOQTypes))
+					if (moqType.SelectedMOQType != MOQType.NonLabor && !BOETaskUtility.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, exportInputs.Workspace.UsingTemplateBOE,
+						exportInputs.Workspace.EnableSAPConnection, laborTaskElement.MOQTypes, laborTaskElement.BOETaskElementID ?? -1, laborTaskElement.HasTMRates))
 					{
 						WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SkillMix),
 							moqType.SkillMixRationale, ref counters, true);
@@ -855,7 +856,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			if (skillMixTablesContainer != null)
 			{
 				if ((selectedComponents.Contains(BoeCustomReportComponent.SkillMixTables) || !selectedComponents.Any())
-					&& BOETaskUtility.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, laborTaskElement.HasTMRates, laborTaskElement.MOQTypes))
+					&& BOETaskUtility.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, exportInputs.Workspace.UsingTemplateBOE, exportInputs.Workspace.EnableSAPConnection,
+					laborTaskElement.MOQTypes, laborTaskElement.BOETaskElementID ?? -1, laborTaskElement.HasTMRates))
 				{
 					// populate Current/Legacy Skill Mix Table
 					SdtElement currentTableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_CurrentSkillMix);
@@ -879,7 +881,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Resource), skillMixRow.ResourceOld);
 								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_CurrentResource), skillMixRow.ResourceNew);
 								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_HistoricalHours), skillMixRow.HistoricalHours.ToString("F"));
-								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_LaborSkillMix), skillMixRow.LaborSkillMix.ToString("P1"));
+								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_LaborSkillMix), (skillMixRow.LaborSkillMix / 100m).ToString("P1"));
 								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Included), skillMixRow.Included ? "Yes" : "No");
 								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_BoeSkillMix), (skillMixRow.BOESkillMix / 100m)?.ToString("P1"));
 								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_ProposedHours), skillMixRow.ProposedHours.ToString(CommonUtilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
@@ -935,7 +937,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Resource), commonDisclosureRow.ResourceID);
 									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_BusinessResourceCode), commonDisclosureRow.BusinessResourceID);
 									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_HistoricalHours), commonDisclosureRow.HistoricalHours.ToString("F"));
-									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_LaborSkillMix), commonDisclosureRow.LaborSkillMix.ToString("P1"));
+									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_LaborSkillMix), (commonDisclosureRow.LaborSkillMix / 100m).ToString("P1"));
 									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Included), commonDisclosureRow.Included ? "Yes" : "No");
 									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_BoeSkillMix), (commonDisclosureRow.BOESkillMix / 100m)?.ToString("P1"));
 									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_ProposedHours), commonDisclosureRow.ProposedHours.ToString(CommonUtilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
@@ -944,8 +946,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 									// UCOT Hours is Space only
 									if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 									{
-										commonDisclosureRow.UCOTHours = commonDisclosureRow.ProposedHours * exportInputs.Workspace.UCOTFactor / 100m;
 										WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_UCOTHours), commonDisclosureRow.UCOTHours.ToString(CommonUtilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
+										WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_GrandTotalHours), commonDisclosureRow.GrandTotalHours.ToString(CommonUtilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
 									}
 
 									// Add the row to the table
@@ -967,6 +969,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 								string boeSkillMixTotal = (laborTaskElement.CommonDisclosureTable.Where(x => x.Included).Sum(x => x.BOESkillMix ?? 0.0m) / 100m).ToString("P1");
 								string proposedHoursTotal = laborTaskElement.CommonDisclosureTable.Where(x => x.Included).Sum(x => x.ProposedHours).ToString(CommonUtilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision));
 								string ucotHoursTotal = laborTaskElement.CommonDisclosureTable.Sum(x => x.UCOTHours).ToString(CommonUtilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision));
+								string grandHoursTotal = laborTaskElement.CommonDisclosureTable.Sum(x => x.UCOTHours + x.ProposedHours).ToString(CommonUtilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision));
 
 								// populate totals
 								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_HistoricalHours), historicalHoursTotal);
@@ -978,6 +981,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 								if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 								{
 									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_UCOTHoursTotal), ucotHoursTotal);
+									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_GrandTotalHoursTotal), grandHoursTotal);
 								}
 							}
 						}

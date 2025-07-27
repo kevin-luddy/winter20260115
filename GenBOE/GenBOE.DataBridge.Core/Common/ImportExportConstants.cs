@@ -10,7 +10,7 @@ namespace GenBOE.DataBridge.Core.Common
 
 	public static class ImportExportConstants
 	{
-		public static readonly string EXPORT_PATH = "/Templates/Temp/";
+		public static readonly string EXPORT_PATH = "Templates\\Temp";
 
 		// worksheet names
 		public static readonly string OPTIONS_LISTS = "Options Lists";

@@ -796,7 +796,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="originalWorkspaceName">Original Workspace name</param>
 		/// <param name="versionId">Version ID</param>
 		/// <returns>File location of Workspace Data Report for the previous version</returns>
-		public string CreateWorkspaceDataReportForVersion(FullWorkspace ws, string templateFileLocation, MetricNameTaskElementMappingDTO metricTaskElementMappings, string originalWorkspaceName, int versionId)
+		public string CreateWorkspaceDataReportForVersion(FullWorkspace ws, string templateFileLocation, string originalWorkspaceName, int versionId)
 		{
 			if (ws == null)
 			{
@@ -827,7 +827,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			exportInputs.ContractTypes = this.contractTypeLoader.GetPickListValues();
 			ICollection<PickListDto> contractTypes = this.contractTypeLoader.GetPickListValues();
 
-			return this.workspaceExporter.ExportToExcelFile(templateFileLocation, exportInputs, metricTaskElementMappings, contractTypes);
+			return this.workspaceExporter.ExportToExcelFile(templateFileLocation, exportInputs, contractTypes);
 		}
 
 		#endregion
@@ -1874,6 +1874,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			workspace.UCOTFactor = systemUCOTFactor;
 
 			this.WorkspaceLoader.SaveIdentificationAndExportFormat(workspace.CurrentActiveUser.UserID, workspace);
+			
+			// Clear the cache after the save of the workspace
+			this.factory.ClearWorkspaceCache(workspace.Shortname);
 		}
 
 		/// <summary>
@@ -1951,7 +1954,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						table.TotalRelevantHours = Convert.ToDecimal(totalHoursSum);
 						resultModel.TotalRelevantHours = table.TotalRelevantHours;
 
-						table.ResourceHours = model.SkillMixDataTable.Select(skillMix => new MOQTypeSelectionTableDataResourceHoursDTO
+						table.ResourceHours = model.SkillMixDataTable.Where(s => s.TotalHours != 0.0).Select(skillMix => new MOQTypeSelectionTableDataResourceHoursDTO
 							{ 
 								ResourceName= skillMix.ResourceID, 
 								WbsHours= skillMix.WbsHours.HasValue ? Convert.ToDecimal(skillMix.WbsHours.Value) : default(decimal), 

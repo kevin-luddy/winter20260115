@@ -7,11 +7,13 @@
 namespace IES.Common
 {
     using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 
-    /// <summary>
-    /// The constants class, containing shared constants to be used across the entire solution.
-    /// </summary>
-    public static class Constants
+	/// <summary>
+	/// The constants class, containing shared constants to be used across the entire solution.
+	/// </summary>
+	public static class Constants
     {
         /// <summary>
         /// The maximum length of an RTE field
@@ -402,10 +404,10 @@ namespace IES.Common
 		/// </summary>
 		public const string UCOT_LABEL = "UCOT";
 
-        /// <summary>
-        /// The read only roles for RDSB.
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
+		/// <summary>
+		/// The read only roles for RDSB.
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
         public static readonly PtmRole[] READ_ONLY_ROLES = { PtmRole.PeerReviewer, PtmRole.CoverSheetApprover, PtmRole.LOBEstLead, PtmRole.PricingVerification };
 
         /// <summary>
@@ -447,6 +449,11 @@ namespace IES.Common
 																	"MMM yy", "MMM-yy", "MMM/yy",
 																	"MM yy", "MM-yy", "MM/yy",
 																	"M yy", "M-yy", "M/yy" };
+
+		/// <summary>
+		/// Name of the National Security Space Line of Business
+		/// </summary>
+		public const string NSS_LOB_NAME = "National Security Space";
 
 		#region MOQ Type Text Field Lengths
 
@@ -704,6 +711,16 @@ namespace IES.Common
 		public const string INVALID_INSURANCE_TYPE = "Insurance Type is required.";
 
 		/// <summary>
+		/// Validation failed for Proposed Insurance value - Must be blank
+		/// </summary>
+		public const string INVALID_PROPOSED_INSURANCE_BLANK = "Proposed Insurance must be blank when 'Has Insurance been proposed direct' is N/A or No.";
+
+		/// <summary>
+		/// Validation failed for Negotiated Insurance value - Must be blank
+		/// </summary>
+		public const string INVALID_NEGOTIATED_INSURANCE_BLANK = "Negotiated Insurance must be blank when 'Has Insurance been proposed direct' is N/A or No.";
+
+		/// <summary>
 		/// Validation failed for Proposed Insurance value
 		/// </summary>
 		public const string INVALID_PROPOSED_INSURANCE = "Proposed Insurance is required.";
@@ -711,7 +728,7 @@ namespace IES.Common
 		/// <summary>
 		/// Validation failed for Negotiated Insurance value
 		/// </summary>
-		public const string INVALID_NEGOTIATED_INSURANCE = "Negotiated Insurance required."; 
+		public const string INVALID_NEGOTIATED_INSURANCE = "Negotiated Insurance is required.";
 
 		/// <summary>
 		/// Validation failed for Customer Due Date
@@ -783,14 +800,19 @@ namespace IES.Common
         /// </summary>
         public const string SUBMITTAL_DATE_REQUIRED_FOR_LOST = "The Proposal Submittal Date to Customer is required in order to set the proposal as Not Awarded.";
 
-        #endregion
+		/// <summary>
+		/// Validation that EPP Delegation Authority is set to a valid value
+		/// </summary>
+		public const string EPP_DELEGATION_AUTHORITY_INVALID = "EPP Delegation Authority is unset or not valid.";
 
-        #region Default Address
+		#endregion
 
-        /// <summary>
-        /// Default Office
-        /// </summary>
-        public const string DEFAULT_ADDRESS_OFFICE = "Contract Administration Office";
+		#region Default Address
+
+		/// <summary>
+		/// Default Office
+		/// </summary>
+		public const string DEFAULT_ADDRESS_OFFICE = "Contract Administration Office";
 
         /// <summary>
         /// Default Agency
@@ -810,17 +832,17 @@ namespace IES.Common
         /// <summary>
         /// Default Street/Building
         /// </summary>
-        public const string DEFAULT_ADDRESS_STREET = "244 Terminal Road, Building 1040";
+        public const string DEFAULT_ADDRESS_STREET = "37 Grenier Street, Building 1108";
 
         /// <summary>
         /// Default City, ST
         /// </summary>
-        public const string DEFAULT_ADDRESS_CITY_ST = "Greenville, SC 29605";
+        public const string DEFAULT_ADDRESS_CITY_ST = "Hanscom AFB, MA 01731-1600";
 
         /// <summary>
         /// Default Phone
         /// </summary>
-        public const string DEFAULT_ADDRESS_PHONE = "(864) 934-3579";
+        public const string DEFAULT_ADDRESS_PHONE = "(864) 315-0429";
 
         /// <summary>
         /// Default Email
@@ -1045,6 +1067,16 @@ namespace IES.Common
 		/// Skill Mix table name for RMS.
 		/// </summary>
 		public readonly static string RMS_SKILL_MIX_TABLE_HEADER = "Current Skill Mix Table";
+
+		/// <summary>
+		/// BOE Skill Mix column name for Space.
+		/// </summary>
+		public readonly static string SPACE_BOE_SKILL_MIX_COLUMN_NAME = "Proposed Skill Mix";
+
+		/// <summary>
+		/// BOE Skill Mix column name for RMS.
+		/// </summary>
+		public readonly static string RMS_BOE_SKILL_MIX_COLUMN_NAME = "BOE Skill Mix";
 
 		/// <summary>
 		/// Error to display to the user when they encounter an application error.

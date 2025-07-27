@@ -56,15 +56,18 @@ namespace GenBOE.ActionLogic.Common
 			bool doesEmptyNullCurrentResourceExist = skillMixModels.Any(x => string.IsNullOrEmpty(x.ResourceNew) && x.Included);
 			decimal totalSKillMixRowsBOESkillMix = skillMixModels.Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
 			string skillMixTableName = string.Empty;
+			string BoeSkillMixColumnName = string.Empty;
 
-			// Applies the proper name for the Skill Mix table based on the company configuration mode.
+			// Applies the proper name for the Skill Mix table and the BOE Skill Mix column based on the company configuration mode.
 			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 			{
 				skillMixTableName = Constants.SPACE_SKILL_MIX_TABLE_HEADER;
+				BoeSkillMixColumnName = Constants.SPACE_BOE_SKILL_MIX_COLUMN_NAME;
 			}
 			else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
 			{
 				skillMixTableName = Constants.RMS_SKILL_MIX_TABLE_HEADER;
+				BoeSkillMixColumnName = Constants.RMS_BOE_SKILL_MIX_COLUMN_NAME;
 			}
 
 			// This check applies to both Space and RMS
@@ -75,17 +78,17 @@ namespace GenBOE.ActionLogic.Common
 
 			foreach (string skillMixResourceOld in skillMixRowsEmptyBoeMixWhenIncluded.Select(x => x.ResourceOld))
 			{
-				errorMessages.Add($"{skillMixTableName}: BOE Skill Mix is missing for {skillMixResourceOld}.");
+				errorMessages.Add($"{skillMixTableName}: ${BoeSkillMixColumnName} is missing for {skillMixResourceOld}.");
 			}
 
 			foreach (string skillMixResourceOld in skillMixRowsInvalidBoeMixWhenIncluded.Select(x => x.ResourceOld))
 			{
-				errorMessages.Add($"{skillMixTableName}: BOE Skill Mix has invalid value for {skillMixResourceOld}.");
+				errorMessages.Add($"{skillMixTableName}: ${BoeSkillMixColumnName} has invalid value for {skillMixResourceOld}.");
 			}
 
 			if (!totalSKillMixRowsBOESkillMix.EqualsEpsilon(100) && !totalSKillMixRowsBOESkillMix.EqualsEpsilon(0))
 			{
-				errorMessages.Add($"{skillMixTableName}: BOE Skill Mix total must be either 0% or 100%");
+				errorMessages.Add($"{skillMixTableName}: ${BoeSkillMixColumnName} total must be either 0% or 100%");
 			}
 
 			foreach (string skillMixResourceOld in skillMixRowsExceedChars.Select(x => x.ResourceOld))
@@ -115,8 +118,9 @@ namespace GenBOE.ActionLogic.Common
 		/// </summary>
 		/// <param name="commonDisclosures">Common Disclosures</param>
 		/// <param name="onButtonPress">True if this validation is being performed as part of the Validate BOE button</param>
+		/// <param name="hasResourceTypes">Does the Task contain resource types?</param>
 		/// <returns>A collection of validation errors/messages</returns>
-		public static ICollection<string> ValidateCommonDisclosureSkillMixTable(ICollection<CommonDisclosureModelView> commonDisclosures, bool onButtonPress)
+		public static ICollection<string> ValidateCommonDisclosureSkillMixTable(ICollection<CommonDisclosureModelView> commonDisclosures, bool onButtonPress, bool hasResourceTypes)
 		{
 			ICollection<string> errorMessages = new Collection<string>();
 
@@ -144,14 +148,16 @@ namespace GenBOE.ActionLogic.Common
 				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: BOE skill Mix has invalid value for {0}.", skillMixResourceID));
 			}
 
-			if (commonDisclosureIncludedHasTrueValue.Count <= 0)
+			// A task is valid for save if it has no Resource Types and a Resource Type is needed to be marked as Included
+			// So only perform this validation if there are Resource Types
+			if (hasResourceTypes && commonDisclosureIncludedHasTrueValue.Count <= 0)
 			{
-				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: At least one Resource has to be included"));
+				errorMessages.Add("LM Enterprise Skill Mix Table: At least one Resource has to be included");
 			}
 
 			if (!totalCommonDisclosureRowsBOESkillMix.EqualsEpsilon(100) && !totalCommonDisclosureRowsBOESkillMix.EqualsEpsilon(0))
 			{
-				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: BOE Skill Mix total must be either 0% or 100%"));
+				errorMessages.Add("LM Enterprise Skill Mix Table: BOE Skill Mix total must be either 0% or 100%");
 			}
 
 			ValidateResourceAndBRCCombos(commonDisclosures, errorMessages);

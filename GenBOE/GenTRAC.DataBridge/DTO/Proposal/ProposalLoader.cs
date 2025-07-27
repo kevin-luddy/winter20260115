@@ -2349,10 +2349,10 @@ namespace GenTRAC.DataBridge.DTO
 		}
 
 		/// <summary>
-		/// Get Lead Estimator and Backup Estimator names for a tracking number
+		/// Get Lead/Backup Estimator and Cost Volume Lead names for a tracking number
 		/// </summary>
 		/// <param name="ptmTrackingNumber">PTM tracking number</param>
-		public ICollection<ProposalRoleDto> GetEstimatorNames(string ptmTrackingNumber)
+		public ICollection<ProposalRoleDto> GetAuthorNames(string ptmTrackingNumber)
 		{
 			ICollection<ProposalRoleDto> names;
 
@@ -2364,7 +2364,7 @@ namespace GenTRAC.DataBridge.DTO
 							 join pur in gte.ProposalUserRoles on p.ProposalID equals pur.ProposalID
 							 join gtu in gte.genTRACUsers on pur.UserID equals gtu.UserID
 							 where p.ProposalTrackingID == ptmTrackingNumber
-							 && (pur.RoleID == (int)PtmRole.Pricer || pur.RoleID == (int)PtmRole.BackupPricer)
+							 && (pur.RoleID == (int)PtmRole.Pricer || pur.RoleID == (int)PtmRole.BackupPricer || pur.RoleID == (int)PtmRole.CostVolumeLead)
 							 select new ProposalRoleDto
 							 {
 								 TrackingNumber = p.ProposalTrackingID,
