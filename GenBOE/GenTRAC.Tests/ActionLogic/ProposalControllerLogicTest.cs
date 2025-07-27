@@ -187,8 +187,9 @@ namespace GenTRAC.Tests.ActionLogic
                         CostVolumeLeadNtid = "n00000",
                         ContractsPOCNtId = "n00000",
                         BackupContractsPOCNtId = "n22222",
-                        ProposalMgrNtid = "n00000",
-                        SupplyChainPOCMaterialsNtId = "n00000",
+						ProposalMgrNtid = "n00000",
+						ProgramMgrNtid = "n00001",
+						SupplyChainPOCMaterialsNtId = "n00000",
                         SupplyChainPOCMaterialsBackupNtId = "n00000",
                         SupplyChainPOCSubsNtId = "n00000",
                         SupplyChainPOCSubsBackupNtId = "n00000"
@@ -580,6 +581,8 @@ namespace GenTRAC.Tests.ActionLogic
                 AdditionalPricingResource2NtId = ntid,
                 AdditionalPricingResource2Type = ResourceType.Pricer,
                 BackupPricerNtId = ntid,
+				MsacPOCNtid = ntid,
+				ProgramMgrNtid = ntid,
                 CaptureManagerNtid = ntid,
                 ContractsPOCNtId = ntid,
                 BackupContractsPOCNtId = ntid,
@@ -1008,10 +1011,10 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(1, validationMessages.Count);
         }
 
-        /// <summary>
-        /// Tests Materials Lead Validation
-        /// </summary>
-        [TestMethod]
+		/// <summary>
+		/// Tests PBOE Preparer Validation
+		/// </summary>
+		[TestMethod]
         public void C_ValidateSupplyChainPOCMaterials()
         {
             ProposalControllerLogic sut = this.CreateSystem();
@@ -1020,19 +1023,19 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalApprovalsModelView proposalApprovalsMV = new Stubs().ProposalApprovalsVM;
             ICollection<ValidationMessage> validationMessages = new List<ValidationMessage>();
 
-            // CASE: Materials lead not set
+            // CASE: PBOE Preparer not set
             validationMessages = new List<ValidationMessage>();
             proposalInfoVM.CostElements = new Collection<int> { (int)CostElementType.Materials };
             proposalUserInfoVM.SupplyChainPOCMaterialsNtId = string.Empty;
             sut.ValidateProposal(proposalInfoVM, new ProposalGeneralInformationModelView(), proposalApprovalsMV, proposalUserInfoVM, validationMessages, false);
             Assert.AreEqual(1, validationMessages.Count);
-            Assert.IsTrue(validationMessages.First().ValidationIssue.ContainsEquivalent("Materials Lead is Required"));
+            Assert.IsTrue(validationMessages.First().ValidationIssue.ContainsEquivalent("PBOE Preparer is Required"));
             validationMessages = new List<ValidationMessage>();
             sut.ValidateProposal(proposalInfoVM, new ProposalGeneralInformationModelView(), proposalApprovalsMV, proposalUserInfoVM, validationMessages, true);
             Assert.AreEqual(0, validationMessages.Count);
 
-            // CASE: Materials lead is set
-            validationMessages = new List<ValidationMessage>();
+			// CASE: PBOE Preparer is set
+			validationMessages = new List<ValidationMessage>();
             proposalInfoVM.CostElements = new Collection<int> { (int)CostElementType.Materials };
             proposalUserInfoVM.SupplyChainPOCMaterialsNtId = "n00000";
             sut.ValidateProposal(proposalInfoVM, new ProposalGeneralInformationModelView(), proposalApprovalsMV, proposalUserInfoVM, validationMessages, false);
@@ -1363,8 +1366,8 @@ namespace GenTRAC.Tests.ActionLogic
             sut.ValidateProposal(proposalInfo, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView() { LeadEstimatorNtid = "fakeId2", CoverSheetApproverNtid = "fakeId", PricingVerificationNtid = "fakeId", IndependentReviewerNtid = "fakeId" }, proposalUserInfo, validationMessages, false);
 
             Assert.AreEqual(4, validationMessages.Count);
-            Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains("Materials Lead")).Count());
-            Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains("Subcontracts Lead is required")).Count());
+            Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains("PBOE Preparer")).Count());
+            Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains("IBOE Preparer is required")).Count());
             Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains("Additional Estimating Resource 1")).Count());
             Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains("Additional Estimating Resource 2")).Count());
 
@@ -2758,37 +2761,37 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(1, validationErrors.Count); // Role not required, so no additional errors should return
 
             validationErrors.Clear();
-            // CASE: Material Lead and Backup are the same
+            // CASE: PBOE Preparer and Backup are the same
             proposalUserInfo.SupplyChainPOCMaterialsBackupNtId = user.Ntid;
             sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
             Assert.IsTrue(validationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.MATERIAL_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL));
 
             proposalUserInfo.SupplyChainPOCMaterialsBackupNtId = user2.Ntid;
             validationErrors.Clear();
-            // CASE: Subcontracts Lead and Backup are the same
+            // CASE: IBOE Preparer and Backup are the same
             proposalUserInfo.SupplyChainPOCSubsBackupNtId = user.Ntid;
             sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
             Assert.IsTrue(validationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.SUBCONTRACTS_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL));
 
             proposalUserInfo.SupplyChainPOCSubsBackupNtId = user2.Ntid;
             validationErrors.Clear();
-            // CASE: Backup Material Lead with no Material Lead
+            // CASE: Backup PBOE Preparer with no PBOE Preparer
             proposalUserInfo.SupplyChainPOCMaterialsNtId = null;
             sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
             Assert.IsTrue(validationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.MATERIAL_LEAD_BACKUP_REQUIRES_LEAD));
 
             proposalUserInfo.SupplyChainPOCMaterialsNtId = user.Ntid;
             validationErrors.Clear();
-            // CASE: Backup Subcontracts Lead with no Material Lead
+            // CASE: Backup IBOE Preparer with no PBOE Preparer
             proposalUserInfo.SupplyChainPOCSubsNtId = null;
             sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
-            Assert.IsTrue(validationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.SUBCONTRACTS_LEAD_BACKUP_REQUIRES_LEAD));
-        }
+			Assert.IsTrue(validationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.SUBCONTRACTS_LEAD_BACKUP_REQUIRES_LEAD));
+		}
 
-        /// <summary>
-        /// Test the ValidateUserTypes functionality, verify the failed validation handling
-        /// </summary>
-        [TestMethod]
+		/// <summary>
+		/// Test the ValidateUserTypes functionality, verify the failed validation handling
+		/// </summary>
+		[TestMethod]
         public void C_ValidateUserTypesFailedValidationTest()
         {
             ProposalControllerLogic sut = this.CreateSystem();
@@ -2999,12 +3002,18 @@ namespace GenTRAC.Tests.ActionLogic
             userInfo.BackupContractsPOCNtId = user2.Ntid;
             userInfo.BackupContractsPOCDisplayName = user2.DisplayName;
 
-            userInfo.BackupPricerNtId = user.Ntid;
+			userInfo.MsacPOCNtid = user.Ntid;
+			userInfo.MsacPOCDisplayName = user.DisplayName;
+
+			userInfo.BackupPricerNtId = user.Ntid;
             userInfo.BackupPricerDisplayName = user.DisplayName;
 
-            userInfo.ProposalMgrNtid = user.Ntid;
-            userInfo.ProposalMgrDisplayName = user.DisplayName;
-            return userInfo;
+			userInfo.ProposalMgrNtid = user.Ntid;
+			userInfo.ProposalMgrDisplayName = user.DisplayName;
+
+			userInfo.ProgramMgrNtid = user.Ntid;
+			userInfo.ProgramMgrDisplayName = user.DisplayName;
+			return userInfo;
         }
 
         /// <summary>

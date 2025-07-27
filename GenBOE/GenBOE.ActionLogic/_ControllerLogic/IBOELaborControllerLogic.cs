@@ -232,13 +232,21 @@ namespace GenBOE.ActionLogic
 		/// <param name="calculateUCOT">Whether to calculate UCOT</param>
 		void RecalculateLaborSpreads(FullWorkspace workspaceData, RecalcSpreadModelView[] laborTabData, decimal moqTotalHours, bool calculateUCOT);
 
-        /// <summary>
-        /// Updates the OrderList for the Labor Types in a Task Element
-        /// </summary>
-        /// <param name="ws">The Workspace</param>
-        /// <param name="taskElement">Task Element containing the Labor Types</param>
-        /// <param name="modelView">Collection of the Labor Type Order</param>
-        void ReOrderLaborTypeOrder(FullWorkspace ws, BoeTaskElementDTO taskElement, LaborTypeOrderCollection modelView);
+		/// <summary>
+		/// Ralculates the discrete UCOT spread.
+		/// </summary>
+		/// <param name="workspaceData">The workspace data.</param>
+		/// <param name="ucotSpreadItem">The labor tab data.</param>
+		/// <returns></returns>
+		RecalcSpreadModelView RecalculateDiscreteUCOTSpreads(FullWorkspace workspaceData, RecalcSpreadModelView ucotSpreadItem);
+
+		/// <summary>
+		/// Updates the OrderList for the Labor Types in a Task Element
+		/// </summary>
+		/// <param name="ws">The Workspace</param>
+		/// <param name="taskElement">Task Element containing the Labor Types</param>
+		/// <param name="modelView">Collection of the Labor Type Order</param>
+		void ReOrderLaborTypeOrder(FullWorkspace ws, BoeTaskElementDTO taskElement, LaborTypeOrderCollection modelView);
 
         /// <summary>
         /// Get a list of MOQ Types for dropdown

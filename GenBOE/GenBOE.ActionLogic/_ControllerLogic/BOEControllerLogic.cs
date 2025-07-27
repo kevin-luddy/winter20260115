@@ -24,6 +24,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using GenBOE.ActionLogic.IO.Export;
 	using GenBOE.ActionLogic.IO.Export.BOE;
 	using GenBOE.ActionLogic.IO.Import;
+	using GenBOE.ActionLogic.Misc;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.BOE;
 	using GenBOE.ActionLogic.ModelView.Clin;
@@ -226,15 +227,16 @@ namespace GenBOE.ActionLogic.ControllerLogic
                                     select p).Any();
 
             GenericTaskElementGridModelView theModelView = new GenericTaskElementGridModelView();
-
+			theModelView.IsUCOTEnabledForWorkspace = Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.Shortname);
             theModelView.DeleteAction = WebConstants.ACTION_DELETE_TASK_ELEMENTS;
             theModelView.DisplayEvent = WebConstants.EVENT_DISPLAY_TASK_ELEMENT_DETAILS;
 
 			// pulling from workspace instead of by BOE since we are already loading the full workspace task elements elsewhere to show the page, and for validation
 			boe.SetTaskElements(ws.TaskElements);
-            IReadOnlyCollection<BoeTaskElementDTO> taskElementCollection = boe.TaskElements;
+			UCOTUtility.SetTaskElementsUCOTHours(ws, boe.TaskElements);
+			IReadOnlyCollection<BoeTaskElementDTO> taskElementCollection = boe.TaskElements;
 
-            if (IsSubContractor)
+			if (IsSubContractor)
             {
                 theModelView.TaskElements = new Collection<GenericTaskElementGridRow>((
                                from t in taskElementCollection
@@ -250,7 +252,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
                                    TotalHours = t.TotalHours,
                                    UpdateDate = t.UpdateDate,
                                    TotalCost = t.TotalCost,
-                                   BOETaskElementOrder = t.BOETaskElementOrder
+                                   BOETaskElementOrder = t.BOETaskElementOrder,
+								   TotalUCOTHours = t.UCOTHours,
+								   TotalHoursWithUCOT = t.TotalHoursWithUCOT
                                }).ToArray());
             }
             else
@@ -269,8 +273,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     TotalHours = t.TotalHours,
                     UpdateDate = t.UpdateDate,
                     TotalCost = t.TotalCost,
-                    BOETaskElementOrder = t.BOETaskElementOrder
-                }).ToArray());
+                    BOETaskElementOrder = t.BOETaskElementOrder,
+					TotalUCOTHours = t.UCOTHours,
+					TotalHoursWithUCOT = t.TotalHoursWithUCOT
+				}).ToArray());
 
             }
 

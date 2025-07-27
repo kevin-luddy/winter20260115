@@ -59,6 +59,7 @@ namespace GenBOE.ActionLogic.ModelView
                 this.UpdateDate = inBoeTaskElement.UpdateDate;
                 this.LaborTypeWarning = inBoeTaskElement.LaborTypeWarningFlag.HasValue ? inBoeTaskElement.LaborTypeWarningFlag.Value : false;
                 this.CustomFieldValues = new Collection<CustomFieldSelectionModelView>();
+				this.AuthorUserId = inBoeTaskElement.AuthorUserId;
             }
         }
 
@@ -130,9 +131,14 @@ namespace GenBOE.ActionLogic.ModelView
         /// </summary>
         public ICollection<RTECustomTemplateQuestionAnswerModelView> RteTemplateAnswers { get; set; }
 
-        #region ISGS Versus SSC terminology
+		/// <summary>
+		/// Author User Id
+		/// </summary>
+		public int? AuthorUserId { get; set; }
 
-        public string MOQEquationLabel
+		#region ISGS Versus SSC terminology
+
+		public string MOQEquationLabel
         {
             get
             {
