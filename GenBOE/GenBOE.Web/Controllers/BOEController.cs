@@ -950,7 +950,7 @@ namespace GenBOE.Web.Controllers
 				if (Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.TrackingNumber) && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 				{
 					FullBoe fullBoe = this.Factory.CreateFullBoe(boeId);
-					MultiMOQTypeResult multiMoqResult = MultiMOQTypeUtility.DoTasksHaveMultipleMOQTypes(fullBoe);
+					MultiMOQTypeResult multiMoqResult = MultiMOQTypeUtility.DoTasksHaveMultipleMOQTypes(fullBoe, ws.CreationDate, ws.Shortname);
 
 					if (multiMoqResult.DoMultiMOQTypesExist)
 					{
