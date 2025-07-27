@@ -5,6 +5,8 @@
 	$scope.errors = [];
 	$scope.identificationPageSetup = false; // Has the identification page been setup yet.  Used to make sure the setup code is only run once when Step 3 is shown to user.
 
+
+
 	// model houses the labels, dropdowns, etc for page setup
 	$scope.model = {
 		stepTitle: '',                      // Current Step Title for the page
@@ -19,7 +21,7 @@
 		applicationUrl: CreateWorkspaceModelView.ApplicationUrl,            // used in Step 3 & 5
 		lobs: CreateWorkspaceModelView.LOBs,                                // LOB array for dropdown (this one actually uses integers instead of strings for the ids)
 		trackingNumbers: CreateWorkspaceModelView.TrackingNumbers,          // Tracking # array for dropdown
-		pldPANumbers: CreateWorkspaceModelView.pldPANumbers,                // PA Number from PLD   
+		pldpaNumbers: CreateWorkspaceModelView.PLDPANumbers,                // PA Number from PLD   
 		copyTrackingNumbers: [],                                            // Tracking # array for copy workspace dropdown (includes original WS Tracking # if any)
 		projectMapTypes: CreateWorkspaceModelView.ProjectMapTypes,          // Project Map array for dropdown
 		proposalClassTypes: CreateWorkspaceModelView.ProposalClassTypes,    // Proposal Class array for dropdown
@@ -48,6 +50,106 @@
 		openCurrentDialog: false                // Space only
 	};
 
+	$scope.model = $scope.model || {};
+	$scope.model.searchTerm = '';
+	$scope.model.PLD_PANumber = '' // stored selected PA Number
+	$scope.model.PLD_PATitle = '' // store selected PA Title
+	$scope.isFromSelection = false;
+	//window.handleDropdownSelection = $scope.handleDropdownSelection;
+
+	$scope.tryParsePLDSelection = function () {
+
+		console.log('parsing search term');
+
+		var text = $scope.model.searchTerm;
+
+		if (!text || text.trim().length === 0) {
+			console.warn("Skipping parsing - searchTerm is empty");
+			return;
+		}
+
+		console.log('parsing search term:', text);
+
+		var cleanedText = text.trim();
+		//var parts = cleanedText.split(/\s*-s*/);  //trimmed additional spaces around dash
+		var parts = cleanedText.split(" - ");
+
+
+		if (parts.length < 2) {
+			console.warn("unable to parse pld selection , unexpected format", cleanedText);
+			return;
+		}
+
+		$scope.model.PLD_PANumber = parts[0].trim();
+		// re-join in case the title itself had "-"
+		$scope.model.PLD_PATitle = parts.slice(1).join(' - ').trim();
+		//store number for downstream logic 
+		$scope.model.selectedPLDPANumber = $scope.model.PLD_PANumber;
+	};
+
+	$scope.filteredPLDPANumbers = [];
+	let debounceTimer;
+
+	$scope.handleDropdownSelection = function () {
+		console.log("dropdown selection made  setting isFromSelection to true");
+		$scope.isFromSelection = true;
+		$scope.tryParsePLDSelection();
+	}
+
+
+
+	$scope.$watch('model.searchTerm',
+		function (newVal, oldVal) {
+
+			if (!newVal || newVal === oldVal) {
+				return;
+			}
+			//check if it is a match to one of the know options
+			const match = $scope.filteredPLDPANumbers.find(x => x.Text.trim().toLowerCase() === newVal.trim().toLowerCase());
+			if (match) {
+				console.log("datalist item selected", newVal);
+				$scope.model.selectedPLDPANumber = match;
+				$scope.tryParsePLDSelection();
+				return;
+			}
+			console.log("user typed:", newVal);
+
+			if ($scope.isFromSelection) {
+				console.log('inside isFromSelection  about to set to false ')
+				$scope.isFromSelection = false;
+				return; // skip debounce 
+			}
+
+			if (!newVal || newVal.length < 2) {    // wait for at least 2 characters before filtering   possibly switch to 3
+				$scope.filteredPLDPANumbers = [];
+				return;
+			}
+
+			clearTimeout(debounceTimer);
+		
+			debounceTimer = setTimeout(function () {
+				// call API or filter locally
+				$http.get('/default/Workspace/SearchPLDProposals', { params: { term: newVal } })
+					.then(function (response) {
+						if (Array.isArray(response.data)) {
+							$scope.filteredPLDPANumbers = response.data;
+							console.log('Filtered results from server', $scope.filteredPLDPANumbers);
+														
+						}
+					})
+					.catch(function (error) {
+						console.error('Error fetching proposals:', error);
+
+						$scope.filteredPLDPANumbers = [];
+					});
+
+			}, 300);  // 300 ms delay after typing stops
+
+			
+	});
+
+
+	console.log("pldpanumbers from controller.js", $scope.model.pldpaNumbers);
 	// data houses the data being saved and sent to the back-end
 	$scope.data = {};
 
@@ -178,6 +280,22 @@
 
 	$scope.next = function () {
 		if (!$scope.nextButtonDisabled()) {
+
+			if ($scope.model.IsPLDIntegrated)
+			{
+				// PLD Number and Title check
+				//if (!$scope.model.searchTerm || !$scope.model.searchTerm.length) {
+				//	$scope.tryParsePLDSelection();
+				//}
+				
+
+				if (!$scope.model.PLD_PANumber || !$scope.model.PLD_PATitle) {
+					alert("Please select a valid PLD Proposal from the list before continuing.")
+					return;
+				}
+			}
+			
+
 			$scope.errors = [];
 			$('#urlValidationBox').html('');
 			switch ($scope.step) {

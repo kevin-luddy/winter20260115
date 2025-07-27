@@ -44,7 +44,7 @@ namespace GenBOE.DataBridge.DTO
 
 		public PldDTODataLoader()
 		{
-			_context = new PldDBContext();
+			//_context = new PldDBContext();
 			this.Log = new Logger(typeof(PldDTODataLoader));
 		}
 
@@ -105,40 +105,59 @@ namespace GenBOE.DataBridge.DTO
 		/// Get All Proposals from PLD database view
 		/// </summary>
 		/// <returns></returns>
-		public ICollection<ProposalDTO> GetAllProposals()
+		public ICollection<ProposalDTO> GetAllProposals(string search = null)
 		{
-			List<ProposalDTO> results = new List<ProposalDTO>();
-			
-			using (StopwatchTimer sw = new StopwatchTimer(Log))
-			{
-				try
-				{
-					results = _context.Proposals				
-						.Select(p => new ProposalDTO
-						{
-							PA_Number = p.PA_Number,
-							PA_Title = p.PA_Title,
-							PA_Description = p.PA_Description,
-							PA_Version = p.PA_Version,
-							Project_Start_Date = p.Project_Start_Date,
-							Project_End_Date = p.Project_End_Date,
-							Last_Modified_Date = p.Last_Modified_Date,
-							Line_of_Business = p.Line_of_Business,
-							Pricing = p.Pricing,
-							RFP_Number = p.RFP_Number,
-							Proposal_Status = p.Proposal_Status
-						})
-						.ToList();
 
-				}
-				catch (Exception ex)
-				{
-					Log.Error(ex, "Error getting all proposals");
-					throw;
-				}
+			IQueryable<PLD.Models.Models.PLDProposal> query = _context.Proposals.AsQueryable();
+
+			if (!string.IsNullOrWhiteSpace(search))
+			{
+				query = query.Where(p =>
+				p.PA_Number.Contains(search) ||
+				p.PA_Title.Contains(search));
 			}
 
+			List<ProposalDTO> results = query
+				.Select(p => new ProposalDTO
+				{
+					PA_Number = p.PA_Number.Trim(),
+					PA_Title = p.PA_Title.Trim(),
+				})
+				.Take(50)
+				.ToList();
+
 			return results;
+			
+			//List<ProposalDTO> results = new List<ProposalDTO>();
+
+			//System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+			//using (StopwatchTimer sw = new StopwatchTimer(Log))
+			//{
+			//	try
+			//	{
+			//		results = _context.Proposals				
+			//			.Select(p => new ProposalDTO
+			//			{
+			//				PA_Number = p.PA_Number,
+			//				PA_Title = p.PA_Title
+			//			})
+			//			//.Take(100) 
+			//			.ToList();
+
+			//		stopwatch.Stop();
+
+			//	}
+			//	catch (Exception ex)
+			//	{
+			//		Log.Error(ex, "Error getting all proposals");
+			//		throw;
+			//	}
+			//}
+
+			//System.Diagnostics.Debug.WriteLine($"[PLD] Getallproposals took {stopwatch.ElapsedMilliseconds} ms for {results.Count} rows");
+
+			//return results;
 		}
 
 		/// <summary>

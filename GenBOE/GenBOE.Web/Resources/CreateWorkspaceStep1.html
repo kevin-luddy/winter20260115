@@ -14,14 +14,26 @@
                     <div class="help-dialog-text">If you are unable to locate a newly created PTM record, please refresh this page.</div>
                 </div>
             </label>
-            <input id="proposalSelect" list="proposalList" type="text" autocomplete="on" data-ng-model="model.selectedPtmTrackingNumber" data-ng-trim="false" data-ng-change="setProposalId()">
+            <input id="proposalSelect" 
+                   list="proposalList" 
+                   type="text" 
+                   autocomplete="on" 
+                   data-ng-model="model.selectedPtmTrackingNumber" 
+                   data-ng-trim="false" 
+                   data-ng-change="setProposalId()">
             <datalist id="proposalList">
-                <option ng-repeat="proposal in model.trackingNumbers" propId="{{proposal.Value}}" value="{{proposal.Text}}"></option>
+                <option ng-repeat="proposal in model.trackingNumbers" 
+                        propId="{{proposal.Value}}" 
+                        value="{{proposal.Text}}">
+                </option>
             </datalist>
             <br />
         </div>
-        PTM --> {{model.isPTMIntegrated}}
-        IsPLDIntegrated --> {{model.IsPLDIntegrated}}
+            
+     
+            
+
+    <!---NEW PLD Feature -->
     <div data-ng-show="model.IsPLDIntegrated">
         <div></div>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label for="pldSelect">
@@ -33,17 +45,28 @@
                 <div class="help-dialog-text">If you are unable to locate a newly created PLD record, please refresh this page.</div>
             </div>
         </label>
-        <!--<select id="pldSelect" data-ng-model="model.selectedPldTrackingNumber" data-ng-change="setPldId()">
-            <option value="">Select a PLD Tracking Number</option>
-            <option value="PLD-1">PLD-1</option>
-            <option value="PLD-2">PLD-2</option>
-            <option value="PLD-3">PLD-3</option>
-        </select>-->
-
-        <input id="proposalSelect" list="proposalList" type="text" autocomplete="on" data-ng-model="model.selectedPLDPANumber" data-ng-trim="false" data-ng-change="setProposalId()">
-        <datalist id="proposalList">
-            <option ng-repeat="proposal in model.pldPANumbers" propId="{{proposal.Value}}" value="{{proposal.Text}}"></option>
+        <input type="text"
+               data-ng-model="model.searchTerm"
+               autocomplete="off" 
+               list="pldpa-options"
+               id="pldProposalSelect"              
+               />
+        <datalist id="pldpa-options">
+            <option data-ng-repeat="item in filteredPLDPANumbers"
+                    value="{{item.Text}}">
+            </option>
         </datalist>
+
+
+        <!--<ui-select ng-model="model.selectedPLDPANumber" ng-change="setProposalId()">
+        <ui-select-match allow-clear="true" placeholder="Select a PLD PA Number">{{$select.selected.Text}}</ui-select-match>
+        <ui-select-choices repeat="proposal in model.pldpaNumbers | filter: $select.search">
+            <div ng-bind="proposal.Text"></div>
+        </ui-select-choices>
+    </ui-select>-->
+
+
+
 
         <br />
     </div>
