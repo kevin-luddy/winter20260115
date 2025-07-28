@@ -20,7 +20,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using GenBOE.ActionLogic.Misc;
 	using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.Reporting;
-    using GenBOE.ActionLogic.WBS.BOE;
+	using GenBOE.ActionLogic.Validation;
+	using GenBOE.ActionLogic.WBS.BOE;
     using GenBOE.ActionLogic.Workspace;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -145,6 +146,30 @@ namespace GenBOE.ActionLogic.ControllerLogic
             List<BoeTaskElementDTO> tasks = workspace.TaskElements.ToList();
             boeSummaryGridModelViews = new List<BOESummaryGridModelView>();
 
+			// Validate for UCOT and multiple MOQ tasks - Space only
+			if (Utilities.ShowUCOTForWorkspace(workspace.CreationDate, workspace.TrackingNumber))
+			{
+				IList<MultiMOQTypeResult> multiMoqResults = new List<MultiMOQTypeResult>();
+				IList<string> allTasks = new List<string>();
+
+				foreach (FullBoe boe in workspace.Boes)
+				{
+					multiMoqResults.Add(MultiMOQTypeUtility.DoTasksHaveMultipleMOQTypes(boe, workspace.CreationDate, workspace.Shortname));
+				}
+
+				if (multiMoqResults.Any(x => x.DoMultiMOQTypesExist))
+				{
+					foreach (MultiMOQTypeResult result in multiMoqResults)
+					{
+						allTasks.AddRange(result.Tasks);
+					}
+
+					string commaSeparatedTasks = string.Join(", ", allTasks);
+					string ucotExceptionString = string.Format(ValidationConstants.MULTI_TASK_WITH_MULTI_MOQ_TYPES_UCOT, commaSeparatedTasks);
+					throw new GenValidationException(ucotExceptionString);
+				}
+			}
+
 			#region Override assigned output format template
 
 			// Get template based on workspace preferences
@@ -227,7 +252,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     boeExportModelViews = SortAllBOEReport(boeExportModelViews, sortField, sortDirection, viewDataDictionary);
                 }
             }
-        }
+		}
 
 		/// <summary>
 		/// Reusable logic for exporting the "All BOEs" report

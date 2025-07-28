@@ -148,6 +148,7 @@
 				});
 			}
 
+			CleanupData(refreshedModel);
 			CalculateSkillMixTotals(refreshedModel);
 			CalculateBoeSkillMixPercentage(refreshedModel);
 
@@ -157,7 +158,7 @@
 
 			return refreshedModel;
 		}
-
+		
 		/// <summary>
 		/// Create the Common Disclosure Rows from the data
 		/// </summary>
@@ -704,6 +705,41 @@
 			refreshedModel.CommonDisclosureTotals.ProposedHours = refreshedModel.CommonDisclosureRows.Where(d => d.Included).Sum(s => s.ProposedHours);
 			refreshedModel.CommonDisclosureTotals.UCOTHours = refreshedModel.CommonDisclosureRows.Sum(s => s.UCOTHours);
 			refreshedModel.CommonDisclosureTotals.GrandTotalHours = refreshedModel.CommonDisclosureTotals.ProposedHours + refreshedModel.CommonDisclosureTotals.UCOTHours;
+		}
+
+		/// <summary>
+		/// Remove SkillMix and CommonDisclosure rows as needed
+		/// </summary>
+		/// <param name="refreshedModel">The skill mix model view to cleanup</param>
+		private static void CleanupData(RefreshSkillMixModelView refreshedModel)
+		{
+			if (refreshedModel == null)
+			{
+				throw new ArgumentNullException(nameof(refreshedModel));
+			}
+
+			if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
+			{
+				// Remove Skill Mix rows where historical and proposed hours are zero
+				List<SkillMixModelView> skillMixRowsToRemove = refreshedModel.SkillMixRows
+					.Where(row => row.HistoricalHours == 0 && row.ProposedHours == 0)
+					.ToList();
+
+				foreach (SkillMixModelView item in skillMixRowsToRemove)
+				{
+					refreshedModel.SkillMixRows.Remove(item);
+				}
+
+				// Remove Common Disclosure rows where historical and proposed hours are zero
+				List<CommonDisclosureModelView> commonDisclosureRowsToRemove = refreshedModel.CommonDisclosureRows
+					.Where(row => row.HistoricalHours == 0 && row.ProposedHours == 0)
+					.ToList();
+
+				foreach (CommonDisclosureModelView item in commonDisclosureRowsToRemove)
+				{
+					refreshedModel.CommonDisclosureRows.Remove(item);
+				}
+			}
 		}
 	}
 }

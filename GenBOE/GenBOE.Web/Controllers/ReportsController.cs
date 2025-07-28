@@ -1878,7 +1878,7 @@ namespace GenBOE.Web.Controllers
 							foreach (FullBoe boe in ws.Boes)
 							{
 								boe.SetTaskElements(ws.TaskElements.Where(x => x.BoeID == boe.Id));
-								multiMoqResults.Add(MultiMOQTypeUtility.DoTasksHaveMultipleMOQTypes(boe));
+								multiMoqResults.Add(MultiMOQTypeUtility.DoTasksHaveMultipleMOQTypes(boe, ws.CreationDate, ws.Shortname));
 							}
 
 							if (multiMoqResults.Any() && multiMoqResults.Any(x => x.DoMultiMOQTypesExist))
