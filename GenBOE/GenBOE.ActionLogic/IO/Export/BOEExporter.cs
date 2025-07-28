@@ -2410,7 +2410,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 List<BOEExportTaskElementLabor> allExportResourceTypes =
                     boeExportModelView.TaskElements.SelectMany(x => x.taskElementLabors).ToList();
 
-                // Get resouce data from exportInputs
+                // Get resource data from exportInputs
                 List<ResourceTypeDto> resourceInputs = exportInputs.TaskElements.SelectMany(x => x.taskElementLabors)
                     .Where(y => allExportResourceTypes.Select(z => z.ExportFields[FieldName_LaborTypeID])
                         .Contains(y.Id.ToString())).ToList();

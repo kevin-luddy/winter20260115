@@ -97,8 +97,16 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				//Create the table
 				Table table = CreateRollupTable(element.Document);
 
-				Action<Paragraph> leftPP = null; // TODO TIW new ParagraphProperties(new Justification() { Val = ParagraphAlignment.Left }, new SpacingBetweenLines() { After = "0" });
-				Action<Paragraph> rightPP = null; // TODO TIW  new ParagraphProperties(new Justification() { Val = ParagraphAlignment.Right }, new SpacingBetweenLines() { After = "0" });
+				Action<Paragraph> leftPP = p =>
+				{
+					p.ParagraphFormat.Alignment = ParagraphAlignment.Left;
+					p.ParagraphFormat.SpaceAfter = 0;
+				}; 
+				Action<Paragraph> rightPP = p =>
+				{
+					p.ParagraphFormat.Alignment = ParagraphAlignment.Right;
+					p.ParagraphFormat.SpaceAfter = 0;
+				}; 
 
 				Action<Run> boldRP = null; // TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
 

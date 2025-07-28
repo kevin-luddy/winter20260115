@@ -1639,32 +1639,12 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// </summary>
 		/// <param name="document">The Word document to populate</param>
 		/// <param name="boeExportModelView">Object to hold most of the BOE's data</param>
-		private void PopulateGeneralContent(Document document, BOEExportModelView boeExportModelView)
+		internal void PopulateGeneralContent(Document document, BOEExportModelView boeExportModelView)
 		{
-			//// Get all tagged elements in Header
-			//IEnumerable<IStructuredDocumentTag> headerElements = from footerPart in document.HeaderParts
-			//									   from StructuredDocumentTag in footerPart.Header.Descendants<SdtAlias>()
-			//									   select StructuredDocumentTag;
-
-			//// Get all tagged elements in Main Document
-			//IEnumerable<IStructuredDocumentTag> mainDocumentElements = document.Document.Range.StructuredDocumentTags;
-
-			//// Get all tagged elements in Footer
-			//IEnumerable<IStructuredDocumentTag> footerElements = from footerPart in document.FooterParts
-			//									   from StructuredDocumentTag in footerPart.Footer.Descendants<SdtAlias>()
-			//									   select StructuredDocumentTag;
-
-			// Iterate over all StructuredDocumentTags in the document
-			//foreach (StructuredDocumentTag alias in headerElements.Concat(mainDocumentElements).Concat(footerElements).ToList())
-			
-			// TODO TIW could also try foreach (Node node in doc.GetChildNodes(NodeType.StructuredDocumentTag, true)) then cast as SDT
-			foreach (StructuredDocumentTag alias in document.Range.StructuredDocumentTags)
+			foreach (StructuredDocumentTag element in document.Range.StructuredDocumentTags)
 			{
 				// Get the title of this Alias
-				string sdtTitle = alias.Title;
-
-				// Get the Element that encapsulates the current alias
-				StructuredDocumentTag element = alias as StructuredDocumentTag;
+				string sdtTitle = element.Title;
 
 				// If the current element is not null, populate it with the appropriate data from the BOEExportModelView
 				if (element != null)
@@ -2354,14 +2334,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				// Append Total Column Header
 				AppendCellToRow(headerRow, "Total");
 
-				// Set header row property
-				//if (headerRow.TableRowProperties == null)
-				//{
-				//	headerRow.TableRowProperties = new TableRowProperties();
-				//}
-
-				// TODO TIW
-				//headerRow.TableRowProperties.AppendChild(new TableHeader());
+				headerRow.RowFormat.HeadingFormat = true;
 
 				// Populate data rows
 				StructuredDocumentTag dataRowMarkerTag = WordUtilities.GetTaggedChildElement(boeSummaryTableOfHoursElement, BOEExporterConstants.Marker_DataRow);
@@ -2512,12 +2485,12 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				tableStyle.TopPadding = 58f / 20f;
 				tableStyle.BottomPadding = 58f / 20f;
 				tableStyle.Alignment = TableAlignment.Center;
-				tableStyle.ConditionalStyles[ConditionalStyleType.OddColumnBanding].Shading.BackgroundPatternColor = Color.FromArgb(0, 68, 170); // 0, 68, 170 rgb is 04A0 hex
+				tableStyle.ConditionalStyles[ConditionalStyleType.OddColumnBanding].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
 			}
 
 			table.AllowAutoFit = autoFitLayout;
-			table.PreferredWidth = PreferredWidth.FromPoints(730.8);
-			//new TableLook() { Val = "04A0", FirstRow = true, LastRow = false, FirstColumn = true, LastColumn = false, NoHorizontalBand = false, NoVerticalBand = true },
+			table.PreferredWidth = PreferredWidth.FromPoints(730.8 / 20.0);
+			// TODO TIW new TableLook() { Val = "04A0", FirstRow = true, LastRow = false, FirstColumn = true, LastColumn = false, NoHorizontalBand = false, NoVerticalBand = true },
 
 			table.Style = tableStyle;
 
@@ -2534,31 +2507,35 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <returns>returns table header row</returns>
 		protected virtual Row CreateRollupHeaderRow(DocumentBase document, List<string> Headers, string inFont, double inFontSize, bool noAfterSpacing)
 		{
-			// TODO TIW 
-			// TableRowProperties trp = new TableRowProperties(new TableHeader(), new CantSplit());
 			Row tr = new Row(document);
-			//tr.Append(trp);
-			//if (Headers != null)
-			//{
-			//	foreach (string header in Headers)
-			//	{
-			//		ParagraphAlignment hAlign = ParagraphAlignment.Center;
-			//		Action<Cell> tcp = null;// TODO TIW new CellProperties(
-			//			//new Shading() { Color = "auto", Fill = "BFBFBF", Val = ShadingPatternValues.Clear });
-			//		Action<Run> rp = null;// TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
-			//		Action<Paragraph> pp;
-			//		if (noAfterSpacing)
-			//		{
-			//			pp = new ParagraphProperties(new Justification() { Val = hAlign }, new KeepNext() { Val = true }, new SpacingBetweenLines() { After = "0" });
-			//		}
-			//		else
-			//		{
-			//			pp = new ParagraphProperties(new Justification() { Val = hAlign }, new KeepNext() { Val = true });
-			//		}
+			tr.RowFormat.AllowBreakAcrossPages = false;
 
-			//		PopulateTableCell(tr, header, inFont, inFontSize, tcp, pp, rp);
-			//	}
-			//}
+			//tr.Append(trp);
+			if (Headers != null)
+			{
+				foreach (string header in Headers)
+				{
+
+					ParagraphAlignment hAlign = ParagraphAlignment.Center;
+					Action<Cell> tcp = c => {
+						c.CellFormat.Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#BFBFBF");
+						c.CellFormat.Shading.Texture = TextureIndex.TextureNone;
+					};
+
+					Action<Run> rp = r => r.Font.Bold = true;
+					Action<Paragraph> pp = p =>
+					{
+						p.ParagraphFormat.Alignment = hAlign;
+						p.ParagraphFormat.KeepWithNext = true;
+						if (noAfterSpacing)
+						{
+							p.ParagraphFormat.SpaceAfter = 0;
+						}
+					};
+
+					PopulateTableCell(tr, header, inFont, inFontSize, tcp, pp, rp);
+				}
+			}
 			return tr;
 		}
 
@@ -3009,7 +2986,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						Row tableRow = templateDataRow.Clone(true) as Row;
 						foreach (StructuredDocumentTag sdt in tableRow.GetChildNodes(NodeType.StructuredDocumentTag, true))
 						{
-							sdt.Placeholder?.RemoveAllChildren();
+							sdt.Placeholder?.RemoveIt();
 						}
 
 						// TODO TIW
@@ -3164,19 +3141,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						Row tableRow = templateDataRow.Clone(true) as Row;
 						foreach (StructuredDocumentTag sdt in tableRow.GetChildNodes(NodeType.StructuredDocumentTag, true))
 						{
-							sdt.Placeholder?.RemoveAllChildren();
+							sdt.Placeholder?.RemoveIt();
 						}
-
-						// TODO TIW
-						//foreach (SdtId id in tableRow.Descendants<SdtId>())
-						//{
-						//	id.RemoveIt();
-						//}
-
-						//foreach (SdtPlaceholder placeholder in tableRow.Descendants<SdtPlaceholder>())
-						//{
-						//	placeholder.RemoveIt();
-						//}
 
 						decimal hours = rowData.HoursTotal.HasValue ? rowData.HoursTotal.Value : 0m;
 						decimal cost = rowData.CostTotal.HasValue ? rowData.CostTotal.Value : 0m;
@@ -3442,10 +3408,23 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				List<string> Headers = new List<string>() { "Calendar Year", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Total" };
 				table.Append(CreateRollupHeaderRow(element.Document, Headers, Font, headerFontSize, noAfterSpacing));
 
-				Action<Paragraph> centerPP = null; // TODO TIW new ParagraphProperties(new Justification() { Val = ParagraphAlignment.Center }, new SpacingBetweenLines() { After = "0" });
-				Action<Paragraph> rightPP = null; // TODO TIW new ParagraphProperties(new Justification() { Val = ParagraphAlignment.Right }, new SpacingBetweenLines() { After = "0" });
-				Action<Paragraph> naPP = null; // TODO TIW new ParagraphProperties(new Justification() { Val = numberAlignment }, new SpacingBetweenLines() { After = "0" });
-
+				Action<Paragraph> centerPP = p =>
+				{
+					p.ParagraphFormat.Alignment = ParagraphAlignment.Center;
+					p.ParagraphFormat.SpaceAfter = 0;
+				}; 
+				
+				Action<Paragraph> rightPP = p =>
+				{
+					p.ParagraphFormat.Alignment = ParagraphAlignment.Right;
+					p.ParagraphFormat.SpaceAfter = 0;
+				}; 
+				Action<Paragraph> naPP = p =>
+				{
+					p.ParagraphFormat.Alignment = numberAlignment;
+					p.ParagraphFormat.SpaceAfter = 0;
+				};
+				
 				if (laborRollup != null)
 				{
 					foreach (LaborRollupByDate item in laborRollup)
@@ -3455,7 +3434,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						// so rows won't be split across pages
 						tr2.RowFormat.AllowBreakAcrossPages = false;
 
-						Action<Cell> tcp = null; // TODO TIW new CellProperties(new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Pct });
+						Action<Cell> tcp = c => {
+							c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+							c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO new CellWidth() { Type = TableWidthUnitValues.Pct });
+							c.CellFormat.Shading.Texture = TextureIndex.TextureNone;
+						}; 
 
 						PopulateTableCell(tr2, item.Year.ToString(), Font, FontSize, tcp, centerPP);
 						PopulateTableCell(tr2, item.January.ToString(Format, NumberFormatter), Font, FontSize, tcp, naPP);
@@ -3486,17 +3469,27 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 				Row tr3 = new Row(element.Document);
 
-				Action<Cell> totalLabelProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Pct },
-					// new CellBorders(new BottomBorder() { Val = BorderValues.Nil }), new CellBorders(new LeftBorder() { Val = BorderValues.Nil }));
-				Action<Run> totalLabelRunProperties = null;// TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
+				Action<Cell> totalLabelProperties = l =>
+				{
+					l.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+					l.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO CellWidth() { Type = TableWidthUnitValues.Pct
+					l.CellFormat.Borders.Left.LineStyle = LineStyle.None;
+					l.CellFormat.Borders.Bottom.LineStyle = LineStyle.None;
+				};Action<Run> totalLabelRunProperties = r => r.Font.Bold = true;
 				PopulateTableCell(tr3, "Total\u00A0", Font, FontSize, totalLabelProperties, rightPP, totalLabelRunProperties, 13 );
 
 				if (NumberFormatter != null)
 				{
 					NumberFormatter.CurrencySymbol = "$";
 				}
-				Action<Cell> totalValueProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Pct },
-														 // new CellBorders(new BottomBorder() { Val = BorderValues.Single, Color = "auto", Size = (UInt32Value)4U, Space = (UInt32Value)0U }));
+				Action<Cell> totalValueProperties = c =>
+				{
+					c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+					c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO CellWidth() { Type = TableWidthUnitValues.Pct
+					c.CellFormat.Borders.Bottom.LineStyle = LineStyle.Single;
+					c.CellFormat.Borders.Bottom.LineWidth = 4;
+				}; 
+
 				PopulateTableCell(tr3, laborRollup.Select(x => x.Total).Sum().ToString(Format, NumberFormatter), Font, FontSize, totalValueProperties, naPP);
 				if (NumberFormatter != null)
 				{
@@ -3567,9 +3560,22 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					table.Append(CreateTableBlankRow(table.Document, 15));
 				}
 
-				Action<Paragraph> naPP = null; // TODO TIW new ParagraphProperties(new Justification() { Val = numberAlignment }, new SpacingBetweenLines() { After = "0" });
-				Action<Paragraph> centerPP = null; // TODO TIW new ParagraphProperties(new Justification() { Val = ParagraphAlignment.Center }, new SpacingBetweenLines() { After = "0" });
-				Action<Paragraph> rightPP = null; // TODO TIW new ParagraphProperties(new Justification() { Val = ParagraphAlignment.Right }, new SpacingBetweenLines() { After = "0" });
+				Action<Paragraph> naPP = p =>
+				{
+					p.ParagraphFormat.Alignment = numberAlignment;
+					p.ParagraphFormat.SpaceAfter = 0;
+				};
+
+				Action<Paragraph> centerPP = p =>
+				{
+					p.ParagraphFormat.Alignment = ParagraphAlignment.Center;
+					p.ParagraphFormat.SpaceAfter = 0;
+				}; 
+				Action<Paragraph> rightPP = p =>
+				{
+					p.ParagraphFormat.Alignment = ParagraphAlignment.Right;
+					p.ParagraphFormat.SpaceAfter = 0;
+				};
 
 				// Create the year rows for each resource
 				foreach (int item in taskRollup.Keys)
@@ -3578,7 +3584,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					{
 						Row tr2 = new Row(element.Document);
 
-						Action<Cell> cellProperties = null; // TODO TIW new CellProperties(new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Pct });
+						Action<Cell> cellProperties = c =>
+						{
+							c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+							c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO CellWidth() { Type = TableWidthUnitValues.Pct
+						}; 
 
 						PopulateTableCell(tr2, item2.Resource, Font, FontSize, cellProperties, centerPP);
 
@@ -3612,15 +3622,26 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					Row tr3 = new Row(element.Document);
 
 					// print the Total label
-					Action<Cell> totalLabelCellProperties = null; // TODO TIW new CellProperties(new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Pct },
-																  //new CellBorders(new BottomBorder() { Val = BorderValues.Nil }));
-					Action<Run> totalLabelRunProperties = null;// TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
+					Action<Cell> totalLabelCellProperties = c =>
+					{
+						c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO CellWidth() { Type = TableWidthUnitValues.Pct
+						c.CellFormat.Borders.Bottom.LineStyle = LineStyle.None;
+					};
+
+					Action<Run> totalLabelRunProperties = r => r.Font.Bold = true;
 
 					PopulateTableCell(tr3, "Total\u00A0", Font, FontSize, totalLabelCellProperties, rightPP, totalLabelRunProperties, includesCompanyAndLocation ? 17 : 14 );
 
 					// print the Total value
-					Action<Cell> totalValueCellProperties = null; // TODO TIW new CellProperties(new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Pct },
-																   //new CellBorders(new BottomBorder() { Val = BorderValues.Single, Color = "auto", Size = (UInt32Value)4U, Space = (UInt32Value)0U }));
+					Action<Cell> totalValueCellProperties = c =>
+					{
+						c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO CellWidth() { Type = TableWidthUnitValues.Pct
+						c.CellFormat.Borders.Bottom.LineStyle = LineStyle.Single;
+						c.CellFormat.Borders.Bottom.LineWidth = 4;
+					}; 
+
 					if (NumberFormatter != null) { NumberFormatter.CurrencySymbol = "$"; }
 					PopulateTableCell(tr3, taskRollup[item].Select(x => x.Total).Sum().ToString(Format, NumberFormatter), Font, FontSize, totalValueCellProperties, naPP);
 					if (NumberFormatter != null) { NumberFormatter.CurrencySymbol = string.Empty; }
@@ -3629,9 +3650,14 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 					// blank row
 					Row tr4 = new Row(element.Document);
-					Action<Cell>blankCellProperties = null; // TODO TIW new CellProperties(new CellProperties(new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center },
-															 //new CellWidth() { Type = TableWidthUnitValues.Pct }), new CellBorders(new TopBorder() { Val = BorderValues.Nil }));
-					Action <Run>blankRunProperties = null; // TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
+					Action<Cell> blankCellProperties = c =>
+					{
+						c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO CellWidth() { Type = TableWidthUnitValues.Pct
+						c.CellFormat.Borders.Top.LineStyle = LineStyle.None;
+					};
+
+					Action<Run> blankRunProperties = r => r.Font.Bold = true;
 					PopulateTableCell(tr4, string.Empty, Font, FontSize, blankCellProperties, centerPP, blankRunProperties, includesCompanyAndLocation ? 18 : 15 );
 
 					table.Append(tr4);
@@ -3648,9 +3674,15 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						{
 							// create shaded Summary label cell
 							Row tr5 = new Row(element.Document);
-							Action<Cell> shadedCellProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center },
-								//new CellWidth() { Type = TableWidthUnitValues.Pct }, new Shading() { Color = "auto", Fill = "BFBFBF", Val = ShadingPatternValues.Clear });
-							Action<Run> shadedRunProperties = null;// TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
+							Action<Cell> shadedCellProperties = c =>
+							{
+								c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+								c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO CellWidth() { Type = TableWidthUnitValues.Pct;
+								c.CellFormat.Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#BFBFBF");
+								c.CellFormat.Shading.Texture = TextureIndex.TextureNone;
+							};
+
+							Action<Run> shadedRunProperties = r => r.Font.Bold = true;
 							PopulateTableCell(tr5, "Summary", Font, FontSize, shadedCellProperties, centerPP, shadedRunProperties);
 
 							// get total values for year
@@ -3677,7 +3709,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 							}
 
 							//populate cells with above values
-							Action<Cell> cellProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Pct });
+							Action<Cell> cellProperties = c =>
+							{
+								c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+								c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO CellWidth() { Type = TableWidthUnitValues.Pct
+							};
 
 							if (includesCompanyAndLocation)
 							{
@@ -3708,13 +3744,24 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						Row tr6 = new Row(element.Document);
 
 						// Shaded summary label
-						Action<Cell> summaryCellProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center },
-							//new CellWidth() { Type = TableWidthUnitValues.Pct }, new Shading() { Color = "auto", Fill = "BFBFBF", Val = ShadingPatternValues.Clear });
-						Action<Run> rpSummaryTotal = null;// TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
+						Action<Cell> summaryCellProperties = c =>
+						{
+							c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+							c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO CellWidth() { Type = TableWidthUnitValues.Pct
+							c.CellFormat.Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#BFBFBF");
+							c.CellFormat.Shading.Texture = TextureIndex.TextureNone;
+						};
+
+						Action<Run> rpSummaryTotal = r => r.Font.Bold = true;
 						PopulateTableCell(tr6, "Summary", Font, FontSize, summaryCellProperties, centerPP, rpSummaryTotal);
 
 						// Total label
-						Action<Cell> tcp = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Pct });
+						Action<Cell> tcp = c =>
+						{
+							c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+							c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO CellWidth() { Type = TableWidthUnitValues.Pct
+						}; 
+
 						PopulateTableCell(tr6, "Total", Font, FontSize, tcp, centerPP, rpSummaryTotal, includesCompanyAndLocation ? 4 : 1);
 
 						// get overall total values
@@ -3833,23 +3880,40 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						Action<Cell> tcp;
 						if (header == "GSMO Labor Category")
 						{
-							tcp = null;// TODO TIW new CellProperties(new Shading() { Color = "auto", Fill = "BFBFBF", Val = ShadingPatternValues.Clear },
-								// new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Dxa, Width = "3528" }); // 3528 20ths of a point or 2.45 inches
+							tcp = c => {
+								c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+								c.CellFormat.PreferredWidth = PreferredWidth.FromPoints(3528.0 / 20.0); // 3528 20ths of a point or 2.45 inches
+								c.CellFormat.Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#BFBFBF");
+								c.CellFormat.Shading.Texture = TextureIndex.TextureNone;
+							};  								
 						}
 						else if (header == "Calendar Year")
 						{
-							tcp = null;// TODO TIW new CellProperties(new Shading() { Color = "auto", Fill = "BFBFBF", Val = ShadingPatternValues.Clear },
-									   // new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Dxa, Width = "1008" }); // 1008 20ths of a point or .7 inches
+							tcp = c => {
+								c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+								c.CellFormat.PreferredWidth = PreferredWidth.FromPoints(1008.0 / 20.0); // 1008 20ths of a point or .7 inches
+								c.CellFormat.Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#BFBFBF");
+								c.CellFormat.Shading.Texture = TextureIndex.TextureNone;
+							};          
 						}
 						else
 						{
-							tcp = null;// TODO TIW new CellProperties(new Shading() { Color = "auto", Fill = "BFBFBF", Val = ShadingPatternValues.Clear },
-									   // new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Dxa, Width = "720" }); // 720 20ths of a point or 0.5 inches
+							tcp = c => {
+								c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+								c.CellFormat.PreferredWidth = PreferredWidth.FromPoints(720.0 / 20.0); // 720 20ths of a point or 0.5 inches
+								c.CellFormat.Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#BFBFBF");
+								c.CellFormat.Shading.Texture = TextureIndex.TextureNone;
+							};
 						}
 
-						Action<Run> rp = null;// TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
+						Action<Run> rp = r => r.Font.Bold = true;
 
-						Action<Paragraph> pp = null;// TODO TIW new ParagraphProperties(new Justification() { Val = ParagraphAlignment.Center }, new KeepNext() { Val = true }, new SpacingBetweenLines() { After = "0" });
+						Action<Paragraph> pp = p =>
+						{
+							p.ParagraphFormat.Alignment = ParagraphAlignment.Center;
+							p.ParagraphFormat.KeepWithNext = true;
+							p.ParagraphFormat.SpaceAfter = 0;
+						};
 
 						PopulateTableCell(tr, header, Font, FontSize, tcp, pp, rp);
 					}
@@ -3899,12 +3963,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				{
 					foreach (string header in Headers)
 					{
-						//Action<Cell> tcp;
-						CellFormat tcp;
-						
-
-						Action<Paragraph> pp = null;// TODO TIW new ParagraphProperties(new Justification() { Val = ParagraphAlignment.Center }, new KeepNext() { Val = true }, new SpacingBetweenLines() { After = "0" });
-						Action<Run> rp = null;// TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
+						Action<Paragraph> pp = p =>
+						{
+							p.ParagraphFormat.Alignment = ParagraphAlignment.Center;
+							p.ParagraphFormat.KeepWithNext = true;
+							p.ParagraphFormat.SpaceAfter = 0;
+						}; 
+						Action<Run> rp = r => r.Font.Bold = true;
 						PopulateTableCell(tr, header, Font, FontSize,
 							 (Cell cell) =>
 							 {
@@ -3912,35 +3977,34 @@ namespace GenBOE.DataBridge.Core.IO.Export
 								 {
 									 // Shading Color = Auto with Val = Clear means to just set the BackgroundColor to Fill
 									 cell.CellFormat.Shading.BackgroundPatternColor = System.Drawing.ColorTranslator.FromHtml("#BFBFBF");
+									 cell.CellFormat.Shading.Texture = TextureIndex.TextureNone;
 									 cell.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-									 cell.CellFormat.PreferredWidth = PreferredWidth.FromPoints(3571);
-									 
-									 //CellProperties(new Shading() { Color = "auto", Fill = "BFBFBF", Val = ShadingPatternValues.Clear },
-									 //new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Dxa, Width = "3571" }); // 3571 20ths of a point or 2.48 inches
+									 cell.CellFormat.PreferredWidth = PreferredWidth.FromPoints(3571.0 / 20.0);
+									 //Type = TableWidthUnitValues.Dxa, Width = "3571" }); // 3571 20ths of a point or 2.48 inches
 						}
 								 else if (header == "Calendar Year")
 								 {
 									 cell.CellFormat.Shading.BackgroundPatternColor = System.Drawing.ColorTranslator.FromHtml("#BFBFBF");
+									 cell.CellFormat.Shading.Texture = TextureIndex.TextureNone;
 									 cell.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-									 cell.CellFormat.PreferredWidth = PreferredWidth.FromPoints(1022);
-									 //tcp = null;// TODO TIW new CellProperties(new Shading() { Color = "auto", Fill = "BFBFBF", Val = ShadingPatternValues.Clear },
-									 // new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Dxa, Width = "1022" }); // 1022 20ths of a point or .71 inches
+									 cell.CellFormat.PreferredWidth = PreferredWidth.FromPoints(1022.0 / 20.0);
+									 //  TableWidthUnitValues.Dxa, Width = "1022" }); // 1022 20ths of a point or .71 inches
 								 }
 								 else if (includePerfOrg)
 								 {
 									 cell.CellFormat.Shading.BackgroundPatternColor = System.Drawing.ColorTranslator.FromHtml("#BFBFBF");
+									 cell.CellFormat.Shading.Texture = TextureIndex.TextureNone;
 									 cell.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-									 cell.CellFormat.PreferredWidth = PreferredWidth.FromPoints(720);
-									 //tcp = null;// TODO TIW new CellProperties(new Shading() { Color = "auto", Fill = "BFBFBF", Val = ShadingPatternValues.Clear },
-										// new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Dxa, Width = "720" }); // 720 20ths of a point or 0.5 inches
+									 cell.CellFormat.PreferredWidth = PreferredWidth.FromPoints(720.0 / 20.0);
+									 // TableWidthUnitValues.Dxa, Width = "720" }); // 720 20ths of a point or 0.5 inches
 								 }
 								 else
 								 {
 									 cell.CellFormat.Shading.BackgroundPatternColor = System.Drawing.ColorTranslator.FromHtml("#BFBFBF");
+									 cell.CellFormat.Shading.Texture = TextureIndex.TextureNone;
 									 cell.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-									 cell.CellFormat.PreferredWidth = PreferredWidth.FromPoints(778);
-									 //tcp = null;// TODO TIW new CellProperties(new Shading() { Color = "auto", Fill = "BFBFBF", Val = ShadingPatternValues.Clear },
-										// new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Dxa, Width = "778" }); // 778 20ths of a point or 0.54 inches
+									 cell.CellFormat.PreferredWidth = PreferredWidth.FromPoints(778.0 / 20.0);
+									 // TableWidthUnitValues.Dxa, Width = "778" }); // 778 20ths of a point or 0.54 inches
 								 }
 							 }
 						);
@@ -3975,206 +4039,258 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			}
 
 			// TODO TIW 
-			//TableVerticalAlignmentValues vertAlign = TableVerticalAlignmentValues.Center;
+			CellVerticalAlignment vertAlign = CellVerticalAlignment.Center;
 
-			//Action<Paragraph> naPP = new ParagraphProperties(new Justification() { Val = numberAlignment }, new SpacingBetweenLines() { After = "0" });
-			//Action<Paragraph> rightPP = new ParagraphProperties(new Justification() { Val = ParagraphAlignment.Right }, new SpacingBetweenLines() { After = "0" });
-			//Action<Paragraph> centerPP = new ParagraphProperties(new Justification() { Val = ParagraphAlignment.Center }, new SpacingBetweenLines() { After = "0" });
+			Action<Paragraph> centerPP = p =>
+			{
+				p.ParagraphFormat.Alignment = ParagraphAlignment.Center;
+				p.ParagraphFormat.SpaceAfter = 0;
+			};
 
-			//// Create the year rows for each resource
-			//foreach (int item in taskRollup.Keys)
-			//{
-			//	foreach (GSMOLaborRollupByDate item2 in taskRollup[item])
-			//	{
-			//		Row tr2 = new Row(element.Document);
-			//		Action<Cell> cellProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = vertAlign }, new CellWidth() { Type = TableWidthUnitValues.Pct });
+			Action<Paragraph> rightPP = p =>
+			{
+				p.ParagraphFormat.Alignment = ParagraphAlignment.Right;
+				p.ParagraphFormat.SpaceAfter = 0;
+			};
+			Action<Paragraph> naPP = p =>
+			{
+				p.ParagraphFormat.Alignment = numberAlignment;
+				p.ParagraphFormat.SpaceAfter = 0;
+			};
 
-			//		// populate the cells
-			//		PopulateTableCell(tr2, item2.LaborType, Font, FontSize, cellProperties, centerPP);
-			//		PopulateTableCell(tr2, item2.Company, Font, FontSize, cellProperties, centerPP);
-			//		PopulateTableCell(tr2, item2.Year.ToString(), Font, FontSize, cellProperties, centerPP);
-			//		PopulateTableCell(tr2, item2.January.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
-			//		PopulateTableCell(tr2, item2.February.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
-			//		PopulateTableCell(tr2, item2.March.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
-			//		PopulateTableCell(tr2, item2.April.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
-			//		PopulateTableCell(tr2, item2.May.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
-			//		PopulateTableCell(tr2, item2.June.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
-			//		PopulateTableCell(tr2, item2.July.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
-			//		PopulateTableCell(tr2, item2.August.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
-			//		PopulateTableCell(tr2, item2.September.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
-			//		PopulateTableCell(tr2, item2.October.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
-			//		PopulateTableCell(tr2, item2.November.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
-			//		PopulateTableCell(tr2, item2.December.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
-			//		if (NumberFormatter != null)
-			//		{
-			//			NumberFormatter.CurrencySymbol = "$";
-			//		}
-			//		PopulateTableCell(tr2, item2.Total.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
-			//		if (NumberFormatter != null)
-			//		{
-			//			NumberFormatter.CurrencySymbol = string.Empty;
-			//		}
+			// Create the year rows for each resource
+			foreach (int item in taskRollup.Keys)
+			{
+				foreach (GSMOLaborRollupByDate item2 in taskRollup[item])
+				{
+					Row tr2 = new Row(element.Document);
+					Action<Cell> cellProperties = c =>
+					{
+						c.CellFormat.VerticalAlignment = vertAlign;
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
+					}; 
 
-			//		table.Append(tr2);
-			//	}
+					// populate the cells
+					PopulateTableCell(tr2, item2.LaborType, Font, FontSize, cellProperties, centerPP);
+					PopulateTableCell(tr2, item2.Company, Font, FontSize, cellProperties, centerPP);
+					PopulateTableCell(tr2, item2.Year.ToString(), Font, FontSize, cellProperties, centerPP);
+					PopulateTableCell(tr2, item2.January.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
+					PopulateTableCell(tr2, item2.February.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
+					PopulateTableCell(tr2, item2.March.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
+					PopulateTableCell(tr2, item2.April.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
+					PopulateTableCell(tr2, item2.May.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
+					PopulateTableCell(tr2, item2.June.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
+					PopulateTableCell(tr2, item2.July.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
+					PopulateTableCell(tr2, item2.August.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
+					PopulateTableCell(tr2, item2.September.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
+					PopulateTableCell(tr2, item2.October.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
+					PopulateTableCell(tr2, item2.November.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
+					PopulateTableCell(tr2, item2.December.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
+					if (NumberFormatter != null)
+					{
+						NumberFormatter.CurrencySymbol = "$";
+					}
+					PopulateTableCell(tr2, item2.Total.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
+					if (NumberFormatter != null)
+					{
+						NumberFormatter.CurrencySymbol = string.Empty;
+					}
 
-			//	if (!removeResourceTotals)
-			//	{
-			//		Row tr3 = new Row(element.Document);
+					table.Append(tr2);
+				}
 
-			//		// create resource total field
-			//		Action<Cell> totalLabelCellProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = vertAlign },
-			//			new CellWidth() { Type = TableWidthUnitValues.Pct }, new CellBorders(new BottomBorder() { Val = BorderValues.Nil }));
-			//		Action<Run> rp1 = null;// TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
-			//		PopulateTableCell(tr3, "Total", Font, FontSize, totalLabelCellProperties, rightPP, rp1, new GridSpan() { Val = 15 });
+				if (!removeResourceTotals)
+				{
+					Row tr3 = new Row(element.Document);
 
-			//		// and print the total value
-			//		if (NumberFormatter != null)
-			//		{
-			//			NumberFormatter.CurrencySymbol = "$";
-			//		}
-			//		Action<Cell> totalValueCellProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = vertAlign }, new CellWidth() { Type = TableWidthUnitValues.Pct },
-			//			new CellBorders(new BottomBorder() { Val = BorderValues.Single, Color = "auto", Size = (UInt32Value)4U, Space = (UInt32Value)0U }));
-			//		string totalValue = taskRollup[item].Select(x => x.Total).Sum().ToString(Format, NumberFormatter);
-			//		PopulateTableCell(tr3, totalValue, Font, FontSize, totalValueCellProperties, naPP);
-			//		if (NumberFormatter != null)
-			//		{
-			//			NumberFormatter.CurrencySymbol = string.Empty;
-			//		}
+					// create resource total field
+					Action<Cell> totalLabelCellProperties = c =>
+					{
+						c.CellFormat.VerticalAlignment = vertAlign;
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto;
+						c.CellFormat.Borders.Bottom.LineStyle = LineStyle.None;
+					}; 
+					
+					Action<Run> rp1 = r => r.Font.Bold = true;
+					PopulateTableCell(tr3, "Total", Font, FontSize, totalLabelCellProperties, rightPP, rp1, new GridSpan() { Val = 15 });
 
-			//		table.Append(tr3);
-			//	}
+					// and print the total value
+					if (NumberFormatter != null)
+					{
+						NumberFormatter.CurrencySymbol = "$";
+					}
+					Action<Cell> totalValueCellProperties = c =>
+					{
+						c.CellFormat.VerticalAlignment = vertAlign;
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto;
+						c.CellFormat.Borders.Bottom.LineStyle = LineStyle.Single;
+						c.CellFormat.Borders.Bottom.LineWidth = 4;
+					}; 
+					
+					string totalValue = taskRollup[item].Select(x => x.Total).Sum().ToString(Format, NumberFormatter);
+					PopulateTableCell(tr3, totalValue, Font, FontSize, totalValueCellProperties, naPP);
+					if (NumberFormatter != null)
+					{
+						NumberFormatter.CurrencySymbol = string.Empty;
+					}
 
-			//	// create blank separator row between resources
-			//	Row tr4 = new Row(element.Document);
-			//	Action<Cell>blankCellProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = vertAlign },
-			//		new CellWidth() { Type = TableWidthUnitValues.Pct }, new CellBorders(new TopBorder() { Val = BorderValues.Nil }));
-			//	Action<Run> blankCellRP = null;// TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
-			//	PopulateTableCell(tr4, string.Empty, Font, FontSize, blankCellProperties, centerPP, blankCellRP, new GridSpan() { Val = 16 }); // old gridspan value 15
+					table.Append(tr3);
+				}
 
-			//	table.Append(tr4);
-			//}
+				// create blank separator row between resources
+				Row tr4 = new Row(element.Document);
+				Action<Cell> blankCellProperties = c =>
+				{
+					c.CellFormat.VerticalAlignment = vertAlign;
+					c.CellFormat.PreferredWidth = PreferredWidth.Auto;
+					c.CellFormat.Borders.Top.LineStyle = LineStyle.None;
+				}; 
+				Action<Run> blankCellRP = r => r.Font.Bold = true;
+				PopulateTableCell(tr4, string.Empty, Font, FontSize, blankCellProperties, centerPP, blankCellRP, 16); // old gridspan value 15
 
-			//if (taskRollup.Keys.Any())
-			//{
-			//	// Summary
-			//	if (TasksDateRange.StartDate.HasValue && TasksDateRange.EndDate.HasValue)
-			//	{
-			//		List<GSMOLaborRollupByDate> LaborValues = taskRollup.Values.SelectMany(x => x).ToList();
+				table.Append(tr4);
+			}
 
-			//		for (int i = TasksDateRange.StartDate.Value.Year; i <= TasksDateRange.EndDate.Value.Year; i++)
-			//		{
-			//			Row tr5 = new Row(element.Document);
+			if (taskRollup.Keys.Any())
+			{
+				// Summary
+				if (TasksDateRange.StartDate.HasValue && TasksDateRange.EndDate.HasValue)
+				{
+					List<GSMOLaborRollupByDate> LaborValues = taskRollup.Values.SelectMany(x => x).ToList();
 
-			//			// create shaded summary cell
-			//			Action<Cell> summaryCellProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = vertAlign },
-			//				new CellWidth() { Type = TableWidthUnitValues.Pct }, new Shading() { Color = "auto", Fill = "BFBFBF", Val = ShadingPatternValues.Clear });
-			//			Action<Run> rp = null;// TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
-			//			PopulateTableCell(tr5, "Summary", Font, FontSize, summaryCellProperties, centerPP, rp);
+					for (int i = TasksDateRange.StartDate.Value.Year; i <= TasksDateRange.EndDate.Value.Year; i++)
+					{
+						Row tr5 = new Row(element.Document);
 
-			//			// blank cell
-			//			Action<Cell> cellProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = vertAlign }, new CellWidth() { Type = TableWidthUnitValues.Pct });
-			//			PopulateTableCell(tr5, string.Empty, Font, FontSize, cellProperties, centerPP);
+						// create shaded summary cell
+						Action<Cell> summaryCellProperties = c =>
+						{
+							c.CellFormat.VerticalAlignment = vertAlign;
+							c.CellFormat.PreferredWidth = PreferredWidth.Auto;
+							c.CellFormat.Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#BFBFBF");
+							c.CellFormat.Shading.Texture = TextureIndex.TextureNone;
+						}; 
+						
+						Action<Run> rp = r => r.Font.Bold = true;
+						PopulateTableCell(tr5, "Summary", Font, FontSize, summaryCellProperties, centerPP, rp);
 
-			//			// get the summary value strings
-			//			string janSum = LaborValues.Where(x => x.Year == i).Select(x => x.January).Sum().ToString(Format, NumberFormatter);
-			//			string febSum = LaborValues.Where(x => x.Year == i).Select(x => x.February).Sum().ToString(Format, NumberFormatter);
-			//			string marSum = LaborValues.Where(x => x.Year == i).Select(x => x.March).Sum().ToString(Format, NumberFormatter);
-			//			string aprSum = LaborValues.Where(x => x.Year == i).Select(x => x.April).Sum().ToString(Format, NumberFormatter);
-			//			string maySum = LaborValues.Where(x => x.Year == i).Select(x => x.May).Sum().ToString(Format, NumberFormatter);
-			//			string junSum = LaborValues.Where(x => x.Year == i).Select(x => x.June).Sum().ToString(Format, NumberFormatter);
-			//			string julSum = LaborValues.Where(x => x.Year == i).Select(x => x.July).Sum().ToString(Format, NumberFormatter);
-			//			string augSum = LaborValues.Where(x => x.Year == i).Select(x => x.August).Sum().ToString(Format, NumberFormatter);
-			//			string sepSum = LaborValues.Where(x => x.Year == i).Select(x => x.September).Sum().ToString(Format, NumberFormatter);
-			//			string octSum = LaborValues.Where(x => x.Year == i).Select(x => x.October).Sum().ToString(Format, NumberFormatter);
-			//			string novSum = LaborValues.Where(x => x.Year == i).Select(x => x.November).Sum().ToString(Format, NumberFormatter);
-			//			string decSum = LaborValues.Where(x => x.Year == i).Select(x => x.December).Sum().ToString(Format, NumberFormatter);
-			//			if (NumberFormatter != null)
-			//			{
-			//				NumberFormatter.CurrencySymbol = "$";
-			//			}
-			//			string total = LaborValues.Where(x => x.Year == i).Select(x => x.Total).Sum().ToString(Format, NumberFormatter);
-			//			if (NumberFormatter != null)
-			//			{
-			//				NumberFormatter.CurrencySymbol = string.Empty;
-			//			}
+						// blank cell
+						Action<Cell> cellProperties = c =>
+						{
+							c.CellFormat.VerticalAlignment = vertAlign;
+							c.CellFormat.PreferredWidth = PreferredWidth.Auto;
+						};
+						PopulateTableCell(tr5, string.Empty, Font, FontSize, cellProperties, centerPP);
 
-			//			// populate the cells
-			//			PopulateTableCell(tr5, i.ToString(), Font, FontSize, cellProperties, centerPP);
-			//			PopulateTableCell(tr5, janSum, Font, FontSize, cellProperties, naPP);
-			//			PopulateTableCell(tr5, febSum, Font, FontSize, cellProperties, naPP);
-			//			PopulateTableCell(tr5, marSum, Font, FontSize, cellProperties, naPP);
-			//			PopulateTableCell(tr5, aprSum, Font, FontSize, cellProperties, naPP);
-			//			PopulateTableCell(tr5, maySum, Font, FontSize, cellProperties, naPP);
-			//			PopulateTableCell(tr5, junSum, Font, FontSize, cellProperties, naPP);
-			//			PopulateTableCell(tr5, julSum, Font, FontSize, cellProperties, naPP);
-			//			PopulateTableCell(tr5, augSum, Font, FontSize, cellProperties, naPP);
-			//			PopulateTableCell(tr5, sepSum, Font, FontSize, cellProperties, naPP);
-			//			PopulateTableCell(tr5, octSum, Font, FontSize, cellProperties, naPP);
-			//			PopulateTableCell(tr5, novSum, Font, FontSize, cellProperties, naPP);
-			//			PopulateTableCell(tr5, decSum, Font, FontSize, cellProperties, naPP);
-			//			PopulateTableCell(tr5, total, Font, FontSize, cellProperties, naPP);
+						// get the summary value strings
+						string janSum = LaborValues.Where(x => x.Year == i).Select(x => x.January).Sum().ToString(Format, NumberFormatter);
+						string febSum = LaborValues.Where(x => x.Year == i).Select(x => x.February).Sum().ToString(Format, NumberFormatter);
+						string marSum = LaborValues.Where(x => x.Year == i).Select(x => x.March).Sum().ToString(Format, NumberFormatter);
+						string aprSum = LaborValues.Where(x => x.Year == i).Select(x => x.April).Sum().ToString(Format, NumberFormatter);
+						string maySum = LaborValues.Where(x => x.Year == i).Select(x => x.May).Sum().ToString(Format, NumberFormatter);
+						string junSum = LaborValues.Where(x => x.Year == i).Select(x => x.June).Sum().ToString(Format, NumberFormatter);
+						string julSum = LaborValues.Where(x => x.Year == i).Select(x => x.July).Sum().ToString(Format, NumberFormatter);
+						string augSum = LaborValues.Where(x => x.Year == i).Select(x => x.August).Sum().ToString(Format, NumberFormatter);
+						string sepSum = LaborValues.Where(x => x.Year == i).Select(x => x.September).Sum().ToString(Format, NumberFormatter);
+						string octSum = LaborValues.Where(x => x.Year == i).Select(x => x.October).Sum().ToString(Format, NumberFormatter);
+						string novSum = LaborValues.Where(x => x.Year == i).Select(x => x.November).Sum().ToString(Format, NumberFormatter);
+						string decSum = LaborValues.Where(x => x.Year == i).Select(x => x.December).Sum().ToString(Format, NumberFormatter);
+						if (NumberFormatter != null)
+						{
+							NumberFormatter.CurrencySymbol = "$";
+						}
+						string total = LaborValues.Where(x => x.Year == i).Select(x => x.Total).Sum().ToString(Format, NumberFormatter);
+						if (NumberFormatter != null)
+						{
+							NumberFormatter.CurrencySymbol = string.Empty;
+						}
 
-			//			table.Append(tr5);
-			//		}
+						// populate the cells
+						PopulateTableCell(tr5, i.ToString(), Font, FontSize, cellProperties, centerPP);
+						PopulateTableCell(tr5, janSum, Font, FontSize, cellProperties, naPP);
+						PopulateTableCell(tr5, febSum, Font, FontSize, cellProperties, naPP);
+						PopulateTableCell(tr5, marSum, Font, FontSize, cellProperties, naPP);
+						PopulateTableCell(tr5, aprSum, Font, FontSize, cellProperties, naPP);
+						PopulateTableCell(tr5, maySum, Font, FontSize, cellProperties, naPP);
+						PopulateTableCell(tr5, junSum, Font, FontSize, cellProperties, naPP);
+						PopulateTableCell(tr5, julSum, Font, FontSize, cellProperties, naPP);
+						PopulateTableCell(tr5, augSum, Font, FontSize, cellProperties, naPP);
+						PopulateTableCell(tr5, sepSum, Font, FontSize, cellProperties, naPP);
+						PopulateTableCell(tr5, octSum, Font, FontSize, cellProperties, naPP);
+						PopulateTableCell(tr5, novSum, Font, FontSize, cellProperties, naPP);
+						PopulateTableCell(tr5, decSum, Font, FontSize, cellProperties, naPP);
+						PopulateTableCell(tr5, total, Font, FontSize, cellProperties, naPP);
 
-			//		// Create the totals row
-			//		Row tr6 = new Row(element.Document);
+						table.Append(tr5);
+					}
 
-			//		// create shaded summary cell
-			//		Action<Cell> totalSummaryAction<Cell> = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = vertAlign },
-			//			new CellWidth() { Type = TableWidthUnitValues.Pct }, new Shading() { Color = "auto", Fill = "BFBFBF", Val = ShadingPatternValues.Clear });
-			//		Action<Run> rp1 = null;// TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
-			//		PopulateTableCell(tr6, "Summary", Font, FontSize, totalSummaryCellProperties, centerPP, rp1);
+					// Create the totals row
+					Row tr6 = new Row(element.Document);
 
-			//		// blank cell
-			//		Action<Cell> totalAction<Cell> = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = vertAlign }, new CellWidth() { Type = TableWidthUnitValues.Pct });
-			//		PopulateTableCell(tr6, string.Empty, Font, FontSize, totalCellProperties, centerPP);
+					// create shaded summary cell
+					Action<Cell> totalSummaryCellProperties = c =>
+					{
+						c.CellFormat.VerticalAlignment = vertAlign;
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto;
+						c.CellFormat.Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#BFBFBF");
+						c.CellFormat.Shading.Texture = TextureIndex.TextureNone;
+					}; 
 
-			//		// total label
-			//		PopulateTableCell(tr6, "Total", Font, FontSize, totalCellProperties, centerPP, rp1);
+					Action<Run> rp1 = r => r.Font.Bold = true;
+					PopulateTableCell(tr6, "Summary", Font, FontSize, totalSummaryCellProperties, centerPP, rp1);
 
-			//		// get the values
-			//		string janTotal = LaborValues.Select(x => x.January).Sum().ToString(Format, NumberFormatter);
-			//		string febTotal = LaborValues.Select(x => x.February).Sum().ToString(Format, NumberFormatter);
-			//		string marTotal = LaborValues.Select(x => x.March).Sum().ToString(Format, NumberFormatter);
-			//		string aprTotal = LaborValues.Select(x => x.April).Sum().ToString(Format, NumberFormatter);
-			//		string mayTotal = LaborValues.Select(x => x.May).Sum().ToString(Format, NumberFormatter);
-			//		string junTotal = LaborValues.Select(x => x.June).Sum().ToString(Format, NumberFormatter);
-			//		string julTotal = LaborValues.Select(x => x.July).Sum().ToString(Format, NumberFormatter);
-			//		string augTotal = LaborValues.Select(x => x.August).Sum().ToString(Format, NumberFormatter);
-			//		string sepTotal = LaborValues.Select(x => x.September).Sum().ToString(Format, NumberFormatter);
-			//		string octTotal = LaborValues.Select(x => x.October).Sum().ToString(Format, NumberFormatter);
-			//		string novTotal = LaborValues.Select(x => x.November).Sum().ToString(Format, NumberFormatter);
-			//		string decTotal = LaborValues.Select(x => x.December).Sum().ToString(Format, NumberFormatter);
-			//		if (NumberFormatter != null)
-			//		{
-			//			NumberFormatter.CurrencySymbol = "$";
-			//		}
-			//		string totalTotal = LaborValues.Select(x => x.Total).Sum().ToString(Format, NumberFormatter);
-			//		if (NumberFormatter != null)
-			//		{
-			//			NumberFormatter.CurrencySymbol = string.Empty;
-			//		}
+					// blank cell
+					Action<Cell> totalCellProperties = c =>
+					{
+						c.CellFormat.VerticalAlignment = vertAlign;
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto;
+					}; 
+					PopulateTableCell(tr6, string.Empty, Font, FontSize, totalCellProperties, centerPP);
 
-			//		// populate cells with the above values
-			//		PopulateTableCell(tr6, janTotal, Font, FontSize, totalCellProperties, naPP);
-			//		PopulateTableCell(tr6, febTotal, Font, FontSize, totalCellProperties, naPP);
-			//		PopulateTableCell(tr6, marTotal, Font, FontSize, totalCellProperties, naPP);
-			//		PopulateTableCell(tr6, aprTotal, Font, FontSize, totalCellProperties, naPP);
-			//		PopulateTableCell(tr6, mayTotal, Font, FontSize, totalCellProperties, naPP);
-			//		PopulateTableCell(tr6, junTotal, Font, FontSize, totalCellProperties, naPP);
-			//		PopulateTableCell(tr6, julTotal, Font, FontSize, totalCellProperties, naPP);
-			//		PopulateTableCell(tr6, augTotal, Font, FontSize, totalCellProperties, naPP);
-			//		PopulateTableCell(tr6, sepTotal, Font, FontSize, totalCellProperties, naPP);
-			//		PopulateTableCell(tr6, octTotal, Font, FontSize, totalCellProperties, naPP);
-			//		PopulateTableCell(tr6, novTotal, Font, FontSize, totalCellProperties, naPP);
-			//		PopulateTableCell(tr6, decTotal, Font, FontSize, totalCellProperties, naPP);
-			//		PopulateTableCell(tr6, totalTotal, Font, FontSize, totalCellProperties, naPP);
+					// total label
+					PopulateTableCell(tr6, "Total", Font, FontSize, totalCellProperties, centerPP, rp1);
 
-			//		table.Append(tr6);
-			//	}
-			//}
+					// get the values
+					string janTotal = LaborValues.Select(x => x.January).Sum().ToString(Format, NumberFormatter);
+					string febTotal = LaborValues.Select(x => x.February).Sum().ToString(Format, NumberFormatter);
+					string marTotal = LaborValues.Select(x => x.March).Sum().ToString(Format, NumberFormatter);
+					string aprTotal = LaborValues.Select(x => x.April).Sum().ToString(Format, NumberFormatter);
+					string mayTotal = LaborValues.Select(x => x.May).Sum().ToString(Format, NumberFormatter);
+					string junTotal = LaborValues.Select(x => x.June).Sum().ToString(Format, NumberFormatter);
+					string julTotal = LaborValues.Select(x => x.July).Sum().ToString(Format, NumberFormatter);
+					string augTotal = LaborValues.Select(x => x.August).Sum().ToString(Format, NumberFormatter);
+					string sepTotal = LaborValues.Select(x => x.September).Sum().ToString(Format, NumberFormatter);
+					string octTotal = LaborValues.Select(x => x.October).Sum().ToString(Format, NumberFormatter);
+					string novTotal = LaborValues.Select(x => x.November).Sum().ToString(Format, NumberFormatter);
+					string decTotal = LaborValues.Select(x => x.December).Sum().ToString(Format, NumberFormatter);
+					if (NumberFormatter != null)
+					{
+						NumberFormatter.CurrencySymbol = "$";
+					}
+					string totalTotal = LaborValues.Select(x => x.Total).Sum().ToString(Format, NumberFormatter);
+					if (NumberFormatter != null)
+					{
+						NumberFormatter.CurrencySymbol = string.Empty;
+					}
+
+					// populate cells with the above values
+					PopulateTableCell(tr6, janTotal, Font, FontSize, totalCellProperties, naPP);
+					PopulateTableCell(tr6, febTotal, Font, FontSize, totalCellProperties, naPP);
+					PopulateTableCell(tr6, marTotal, Font, FontSize, totalCellProperties, naPP);
+					PopulateTableCell(tr6, aprTotal, Font, FontSize, totalCellProperties, naPP);
+					PopulateTableCell(tr6, mayTotal, Font, FontSize, totalCellProperties, naPP);
+					PopulateTableCell(tr6, junTotal, Font, FontSize, totalCellProperties, naPP);
+					PopulateTableCell(tr6, julTotal, Font, FontSize, totalCellProperties, naPP);
+					PopulateTableCell(tr6, augTotal, Font, FontSize, totalCellProperties, naPP);
+					PopulateTableCell(tr6, sepTotal, Font, FontSize, totalCellProperties, naPP);
+					PopulateTableCell(tr6, octTotal, Font, FontSize, totalCellProperties, naPP);
+					PopulateTableCell(tr6, novTotal, Font, FontSize, totalCellProperties, naPP);
+					PopulateTableCell(tr6, decTotal, Font, FontSize, totalCellProperties, naPP);
+					PopulateTableCell(tr6, totalTotal, Font, FontSize, totalCellProperties, naPP);
+
+					table.Append(tr6);
+				}
+			}
 
 			element.Append(table);
 		}
@@ -4201,9 +4317,17 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				table.Append(CreateTableBlankRow(table.Document, numColumns));
 			}
 
-			// TableVerticalAlignmentValues vertAlign = TableVerticalAlignmentValues.Center;
-			Action<Paragraph> centerPP = null;// TODO TIW new ParagraphProperties(new Justification() { Val = ParagraphAlignment.Center }, new SpacingBetweenLines() { After = "0" });
-			Action<Paragraph> rightPP = null;// TODO TIW new ParagraphProperties(new Justification() { Val = ParagraphAlignment.Right }, new SpacingBetweenLines() { After = "0" });
+			CellVerticalAlignment vertAlign = CellVerticalAlignment.Center;
+			Action<Paragraph> centerPP = p =>
+			{
+				p.ParagraphFormat.Alignment = ParagraphAlignment.Center;
+				p.ParagraphFormat.SpaceAfter = 0;
+			}; 
+			Action<Paragraph> rightPP = p =>
+			{
+				p.ParagraphFormat.Alignment = ParagraphAlignment.Right;
+				p.ParagraphFormat.SpaceAfter = 0;
+			};
 
 			// Create the year rows for each resource
 			foreach (int item in taskRollup.Keys)
@@ -4211,7 +4335,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				foreach (GSMOLaborRollupByDate item2 in taskRollup[item])
 				{
 					Row tr2 = new Row(element.Document);
-					Action<Cell> cellProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = vertAlign }, new CellWidth() { Type = TableWidthUnitValues.Pct });
+					Action<Cell> cellProperties = c =>
+					{
+						c.CellFormat.VerticalAlignment = vertAlign;
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+					};
 
 					// populate the cells
 					PopulateTableCell(tr2, item2.LaborType, Font, FontSize, cellProperties, centerPP);
@@ -4243,7 +4371,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				// create resource total field
 				Action<Cell> totalLabelCellProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = vertAlign },
 					// new CellWidth() { Type = TableWidthUnitValues.Pct }, new CellBorders(new BottomBorder() { Val = BorderValues.Nil }));
-				Action<Run> rp1 = null;// TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
+				Action<Run> rp1 = r => r.Font.Bold = true;
 				PopulateTableCell(tr3, "Total", Font, FontSize, totalLabelCellProperties, rightPP, rp1, numColumns - 1);
 
 				// and print the total value
@@ -4266,7 +4394,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				Row tr4 = new Row(element.Document);
 				Action<Cell>blankCellProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = vertAlign },
 					// new CellWidth() { Type = TableWidthUnitValues.Pct }, new CellBorders(new TopBorder() { Val = BorderValues.Nil }));
-				Action<Run> rp = null;// TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
+				Action<Run> rp = r => r.Font.Bold = true;
 				PopulateTableCell(tr4, string.Empty, Font, FontSize, blankCellProperties, centerPP, rp, numColumns);
 
 				table.Append(tr4);
@@ -4286,7 +4414,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						// create shaded summary cell
 						Action<Cell> summaryCellProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = vertAlign },
 							// new CellWidth() { Type = TableWidthUnitValues.Pct }, new Shading() { Color = "auto", Fill = "BFBFBF", Val = ShadingPatternValues.Clear });
-						Action<Run> rp = null;// TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
+						Action<Run> rp = r => r.Font.Bold = true;
 						PopulateTableCell(tr5, "Summary", Font, FontSize, summaryCellProperties, centerPP, rp);
 
 						// get the summary value strings
@@ -4336,7 +4464,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					// create shaded summary cell
 					Action<Cell> totalSummaryCellProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = vertAlign },
 						// new CellWidth() { Type = TableWidthUnitValues.Pct }, new Shading() { Color = "auto", Fill = "BFBFBF", Val = ShadingPatternValues.Clear });
-					Action<Run> rp1 = null;// TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
+					Action<Run> rp1 = r => r.Font.Bold = true;
 					PopulateTableCell(tr6, "Summary", Font, FontSize, totalSummaryCellProperties, centerPP, rp1);
 
 					// total label
@@ -4410,26 +4538,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			Cell tc = new Cell(tableRow.Document);
 			cellAction(tc);
-			
+			// TODO TIW
 			// tc.CellFormat.HorizontalMerge = gridSpan;
-
-			//Action<Paragraph> pp = new ParagraphProperties(paragraphProperties.Clone(true));
-			//Action<Run> rp;
-			//if (runProperties != null)
-			//{
-			//	rp = null;// TODO TIW new RunProperties(runProperties.Clone(true));
-			//}
-			//else
-			//{
-			//	rp = null;// TODO TIW new RunProperties();
-			//}
-
-			//RunFonts runFonts = new RunFonts() { Ascii = font, HighAnsi = font, ComplexScript = font };
-			//FontSize fs = new FontSize() { Val = fontSize };
-			//FontSizeComplexScript fontSizeComplexScript2 = new FontSizeComplexScript() { Val = fontSize };
-			//rp.Append(runFonts);
-			//rp.Append(fs);
-			//rp.Append(fontSizeComplexScript2);
+			
 			Run run = new Run(tableRow.Document);
 			run.Font.NameAscii = font;
 			run.Font.Size = fontSize;
@@ -4462,9 +4573,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			{
 				Cell tc = new Cell(document);
 				tc.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-				// TODO TIW
-				//tc.CellFormat.PreferredWidth.Type = PreferredWidthType.Percent; 
-				//tc.PrependChild(new CellProperties(new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Pct }));
+				tc.CellFormat.PreferredWidth = PreferredWidth.Auto; //tc.CellFormat.PreferredWidth.Type = PreferredWidthType.Percent; 
+				
 				Paragraph p = new Paragraph(document);
 				p.AppendChild(new Run(document, string.Empty));
 				p.ParagraphFormat.Alignment = ParagraphAlignment.Center;
@@ -4493,11 +4603,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				tableStyle.TopPadding = 58f / 20f;
 				tableStyle.BottomPadding = 58f / 20f;
 				tableStyle.Alignment = TableAlignment.Center;
-				tableStyle.ConditionalStyles[ConditionalStyleType.OddColumnBanding].Shading.BackgroundPatternColor = Color.FromArgb(0, 68, 170); // 0, 68, 170 rgb is 04A0 hex
+				tableStyle.ConditionalStyles[ConditionalStyleType.OddColumnBanding].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
 			}
 
-			table.PreferredWidth = PreferredWidth.FromPoints(497);
-			//new TableLook() { Val = "04A0", FirstRow = true, LastRow = false, FirstColumn = true, LastColumn = false, NoHorizontalBand = false, NoVerticalBand = true },
+			table.PreferredWidth = PreferredWidth.FromPoints(497f/ 20f);
+			// TODO TIW new TableLook() { Val = "04A0", FirstRow = true, LastRow = false, FirstColumn = true, LastColumn = false, NoHorizontalBand = false, NoVerticalBand = true },
 
 			table.Style = tableStyle;
 
@@ -4519,8 +4629,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			
 			Action<Cell> tcp = null;// TODO TIW new CellProperties(new Shading() { Color = "auto", Fill = "BFBFBF", Val = ShadingPatternValues.Clear },
 				//new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Pct });
-			Action<Run> rp = null;// TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
-			Action<Paragraph> pp = null;// TODO TIW new ParagraphProperties(new Justification() { Val = ParagraphAlignment.Center });
+			Action<Run> rp = r => r.Font.Bold = true;
+			Action<Paragraph> pp = p =>
+			{
+				p.ParagraphFormat.Alignment = ParagraphAlignment.Center;
+			}; 
 
 			PopulateTableCell(tr, "Variable", inFont, inFontSize, tcp, pp, rp, 2);
 			PopulateTableCell(tr, "Dependents", inFont, inFontSize, tcp, pp, rp, 3);

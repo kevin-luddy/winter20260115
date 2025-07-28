@@ -3462,7 +3462,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			// locate the corresponding table element (and the parent that contains it)
 			CompositeNode tableContainerElement = containerElement;
 			Table tableElement = null;
-			// TODO TIW check while loop
 			while (tableContainerElement != null && (tableElement = tableContainerElement.GetChild(NodeType.Table, 0, true) as Table) == null)
 			{
 				tableContainerElement = tableContainerElement.ParentNode;
@@ -3486,7 +3485,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			{
 				CompositeNode tableTitleContainerParentElement = tableTitleContainerElement.ParentNode;
 
-				if (tableTitleContainerParentElement is Paragraph) // && tableTitleContainerElement is SdtRun (TODO TIW - SdtRun is type of SdtElement, which is a SDT)
+				if (tableTitleContainerElement is StructuredDocumentTag && tableTitleContainerParentElement is Paragraph) 
 				{
 					return;
 				}
@@ -4023,11 +4022,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			//The column may have been deleted if there are no custom fields at the resource level
 			if (customFieldDescriptionBlock != null)
 			{
-				// TODO TIW 
-				//SdtContentBlock contentBlock = customFieldDescriptionBlock.GetFirstChild<SdtContentBlock>();
-				//RemoveAllButOneElement(contentBlock, NodeType.Paragraph);
-				//Paragraph paragraphTemplate = contentBlock.GetFirstChild<Paragraph>();
-
 				RemoveAllButOneElement(customFieldDescriptionBlock, NodeType.Paragraph);
 				Paragraph paragraphTemplate = customFieldDescriptionBlock.GetChild(NodeType.Paragraph, 0, true) as Paragraph;
 
@@ -4348,7 +4342,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				// initialize the "insertion" row
 				StructuredDocumentTag contentBlockTemplate;
 
-				StructuredDocumentTag currentInsertionBlock = contentBlockTemplate = customFieldsContainerElement; // TODO TIW as SdtBlock;
+				StructuredDocumentTag currentInsertionBlock = contentBlockTemplate = customFieldsContainerElement;
 
 				/*
                  * SdtBlock

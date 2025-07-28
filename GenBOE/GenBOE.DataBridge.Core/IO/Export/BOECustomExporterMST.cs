@@ -138,13 +138,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						Parallel.ForEach(tableRow.GetChildNodes(NodeType.StructuredDocumentTag, true), descendant =>
 						{
 							StructuredDocumentTag tag = descendant as StructuredDocumentTag;
-							// TODO TIW ??
-							//tag.Id = 0;
-							tag.Placeholder.Remove();
-							//if (descendant is SdtId || descendant is SdtPlaceholder)
-							//{
-							//	descendant.RemoveIt();
-							//}
+							tag.Placeholder?.Remove();
 						}
 						);
 

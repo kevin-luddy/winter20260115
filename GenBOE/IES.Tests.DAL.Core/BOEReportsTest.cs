@@ -19,6 +19,7 @@ namespace IES.Tests.Core
 	using IES.Common.Core;
 	using IES.Common.Core.Enums;
 	using IES.Common.Core.OfficeUtilities;
+	using IES.Common.Core.Services;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 	/// <summary>
@@ -506,10 +507,11 @@ namespace IES.Tests.Core
 			ChunkCounter counter = new();
 			this.PopulateMOQTypeData(task, [], doc, moqElement, false, exportInputs, ref counter);
 
-			string filename = Path.GetTempFileName();
-			doc.Save(filename, SaveFormat.Docx);
-			Console.WriteLine(filename);
-			Assert.Fail(filename);
+			//string filename = Path.GetTempFileName();
+			//doc.Save(filename, SaveFormat.Docx);
+			//Console.WriteLine(filename);
+			//Assert.Fail(filename);
+			Assert.Fail();
 		}
 
 		/// <summary>
@@ -556,6 +558,15 @@ namespace IES.Tests.Core
 			StructuredDocumentTag taskContainer = WordUtilities.GetTaggedElement(doc, "TaskContainer-Labor");
 			this.ProcessSkillMixTable(task, [BoeCustomReportComponent.TaskDescription, BoeCustomReportComponent.TaskMOQEquation], taskContainer, exportInputs);
 			Assert.Fail();
+		}
+
+		[TestMethod]
+		public void PopulateGeneralContentTest()
+		{
+			Document doc = LoadTemplate();
+			List<BOEExportModelView> boes = GetBOEModelViews();
+			BOEExporter sut = new (null, null, null, null, null);
+			sut.PopulateGeneralContent(doc, boes.First());
 		}
 
 		#endregion BOEExportUtilities 	
@@ -675,6 +686,10 @@ namespace IES.Tests.Core
 			};
 		}
 
+		/// <summary>
+		/// Get BOEs
+		/// </summary>
+		/// <returns>list of boes</returns>
 		private static List<BoeDTO> GetBOEs()
 		{
 			return
@@ -699,6 +714,10 @@ namespace IES.Tests.Core
 			];
 		}
 
+		/// <summary>
+		/// Get WBSs
+		/// </summary>
+		/// <returns>List of wbs</returns>
 		private static List<WbsDTO> GetWBSs()
 		{
 			return
@@ -718,6 +737,10 @@ namespace IES.Tests.Core
 				];
 		}
 
+		/// <summary>
+		/// Get performing orgs
+		/// </summary>
+		/// <returns>List of performing orgs</returns>
 		private static List<PerformingOrgDTO> GetPerformingOrgs()
 		{
 			return [
@@ -730,16 +753,13 @@ namespace IES.Tests.Core
 				];
 		}
 
-		private static BOEExportInputs GetExportInputs()
+		/// <summary>
+		/// Get BOE Model Views
+		/// </summary>
+		/// <returns>BOE Model Views</returns>
+		private static List<BOEExportModelView> GetBOEModelViews()
 		{
-			
-			ExportBoeWordRequestViewModel viewModel = new()
-			{
-				ExportFormatDTO = new GenBOE.DataBridge.Core.WorkspaceExportFormatDTO(),
-				AllWorkspaceBoes =GetBOEs(),
-				AssignedBoeIdsAndCustomFieldValuesMapping = [],
-				BoeIdsAndLastUserToSubmitThemForApprovalMapping = [],
-				BoeExportModelViews = [
+			return [
 					new ()
 					{
 						DataSource = "test datasource",
@@ -794,7 +814,20 @@ namespace IES.Tests.Core
 							}
 						]
 					}
-				],
+				];
+		}
+
+
+		private static BOEExportInputs GetExportInputs()
+		{
+			
+			ExportBoeWordRequestViewModel viewModel = new()
+			{
+				ExportFormatDTO = new GenBOE.DataBridge.Core.WorkspaceExportFormatDTO(),
+				AllWorkspaceBoes =GetBOEs(),
+				AssignedBoeIdsAndCustomFieldValuesMapping = [],
+				BoeIdsAndLastUserToSubmitThemForApprovalMapping = [],
+				BoeExportModelViews = GetBOEModelViews(),
 				BoeMappingWithApproverResponses = [],
 				Boes = GetBOEs(),
 				BoeSummaryGridModelViews = [],

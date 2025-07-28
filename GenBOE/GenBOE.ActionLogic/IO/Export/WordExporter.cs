@@ -386,11 +386,6 @@ namespace GenBOE.ActionLogic.IO.Export
 				{
 					row.RemoveIt();
 				}
-				else
-				{
-					// TODO TIW this looks very dubious
-					row.Parent.RemoveIt();
-				}
 			}
 		}
 

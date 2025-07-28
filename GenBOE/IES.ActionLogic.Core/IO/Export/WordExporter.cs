@@ -13,6 +13,7 @@ namespace IES.ActionLogic.Core.IO.Export
 	using Aspose.Words.Markup;
 	using Aspose.Words.Saving;
 	using Aspose.Words.Tables;
+	using GenBOE.DataBridge.Core.IO.Export;
 	using IES.ActionLogic.Core.Common;
 	using IES.Common.Core.Configuration;
 	using IES.Common.Core.Constants;
@@ -217,8 +218,7 @@ namespace IES.ActionLogic.Core.IO.Export
 
 			foreach (StructuredDocumentTag sdt in clonedRow.GetChildNodes(NodeType.StructuredDocumentTag, true))
 			{
-				// TODO TIW confirm sdt.Id is new Id after Clone
-				sdt.Placeholder?.Remove();
+				sdt.Placeholder?.RemoveIt();
 			}
 
 			#endregion

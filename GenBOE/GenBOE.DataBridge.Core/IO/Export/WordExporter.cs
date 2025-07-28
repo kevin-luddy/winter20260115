@@ -299,10 +299,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			foreach (StructuredDocumentTag sdt in clonedRow.GetChildNodes(NodeType.StructuredDocumentTag, true))
 			{
-				// TODO TIW Id
-				// sdt.Id = 0;  
-				// Aspose might make these Ids unique??
-				sdt.Placeholder?.Remove();
+				sdt.Placeholder?.RemoveIt();
 			}
 
 			#endregion
@@ -356,11 +353,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				if (row != null)
 				{
 					row.RemoveIt();
-				}
-				else
-				{
-					// TODO TIW this looks very dubious
-				    element.RemoveIt();
 				}
 			}
 		}
