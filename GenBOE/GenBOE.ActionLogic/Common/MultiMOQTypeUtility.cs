@@ -13,7 +13,6 @@ namespace GenBOE.ActionLogic.Common
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Objects;
 	using IES.Common;
-	using IES.Common.classes;
 
 	/// <summary>
 	/// Utility class used for checking whether a workspace or task has multiple MOQ Types (Space only)
@@ -33,7 +32,7 @@ namespace GenBOE.ActionLogic.Common
 			_ = fullBoe ?? throw new ArgumentNullException(nameof(fullBoe));
 			MultiMOQTypeResult result = new MultiMOQTypeResult();
 
-			if (Utilities.ShowUCOTForWorkspace(workspaceCreationDate, workspaceShortname) && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			if (Utilities.ShowUCOTForWorkspace(workspaceCreationDate, workspaceShortname))
 			{
 				foreach (BoeTaskElementDTO task in fullBoe.TaskElements)
 				{

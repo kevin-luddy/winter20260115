@@ -659,6 +659,31 @@ div.rottenEgg {
     height:40px;
 }
 
+/* BOE Status Page specific styling to get grid to be full width */
+.boe-status-header {
+	word-spacing: normal;
+	width: 1386px !important; /* Offset from original 1400px by 7px for left and right corners */
+	max-width: unset;
+}
+
+.boe-status-header-text {
+	padding: 0px 10px;
+	font-weight: bold;
+	font-size: 14px;
+	height: 40px;
+}
+
+.boe-status-content {
+	padding: 5px 15px;
+	border: solid 1px darkgray;
+	max-width: unset;
+	width: 1362px !important;
+	margin-left: 3px;
+}
+
+.ucot-hours {
+	padding-top: 0px !important;
+}
 
 .collapsed .module-header-data,
 .expanded .module-header-data
@@ -1212,7 +1237,8 @@ div.create-workspace.buttons.full
     padding: 10px 5px 7px;
 }
 
-select.customField
+select.customField,
+select.taskAuthor
 {
     width:250px;
 }
@@ -1417,10 +1443,33 @@ div.summary-search-box div.search-magnify-glass-button {
     float: left;
 }
 
-.error
-{
-    color:Red;
-    
+.boe-status-row {
+	display: flex;
+	width: 100%;
+}
+
+.view-selector-div {
+	display: grid;
+	margin-top: auto;
+	margin-bottom: auto;
+}
+
+.totals-div {
+	display: grid;
+	margin-left: auto;
+}
+
+.export-button-div {
+	display: flex;
+}
+
+.boe-status-button {
+	margin-top: auto;
+	margin-bottom: auto;
+}
+
+.error {
+	color: Red;
 }
 .securityerror
 {

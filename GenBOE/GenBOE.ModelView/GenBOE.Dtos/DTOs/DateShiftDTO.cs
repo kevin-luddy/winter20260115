@@ -7,23 +7,20 @@
 namespace GenBOE.Dtos
 {
 	using GenBOE.DataBridge.DTO;
-	using GenBOE.Objects;
 	using IES.Common;
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
-	using System.Linq;
 
 	/// <summary>
 	/// DTO that will contain Date Shifts.
 	/// </summary>
 	[ExcludeFromCodeCoverage]
 	[Serializable()]
-	public sealed class DateShiftDTO : UpdateableDTO, IDateShiftable
+	public sealed class DateShiftDTO : UpdateableDTO
 	{
-		private bool hasSpread;
-		private object originalObject;
+		private Level dateShiftLevel;
 
 		/// <summary>
 		/// Start date.
@@ -38,17 +35,12 @@ namespace GenBOE.Dtos
 		/// <summary>
 		/// Children date shift objects.
 		/// </summary>
-		public List<IDateShiftable> Children { get; set; } = new List<IDateShiftable>();
-
-		/// <summary>
-		/// Child date shift objects.
-		/// </summary>
-		ICollection<IDateShiftable> IDateShiftable.Children => Children;
+		public List<DateShiftDTO> Children { get; set; } = new List<DateShiftDTO>();
 
 		/// <summary>
 		/// Parent of the date shift object.
 		/// </summary>
-		public IDateShiftable Parent { get; set; }
+		public DateShiftDTO Parent { get; set; }
 
 		/// <summary>
 		/// Parent id of the date shift object.
@@ -56,24 +48,27 @@ namespace GenBOE.Dtos
 		public int? ParentId { get; set; }
 
 		/// <summary>
-		/// Has spread?
-		/// </summary>
-		bool IDateShiftable.HasSpread => hasSpread;
-
-		/// <summary>
 		/// Has spread value due to readonly has spread on interface.
 		/// </summary>
-		public bool HasSpreadValue { get => hasSpread; set => hasSpread = value; }
+		public bool HasSpread { get; set; }
 
 		/// <summary>
 		/// Date shift level.
 		/// </summary>
-		public Level DateShiftLevel { get; set; }
+		public Level DateShiftLevel
+		{
+			get => dateShiftLevel;
+			set
+			{
+				dateShiftLevel = value;
+				Level = (int)value;
+			}
+		}
 
 		/// <summary>
 		/// Date shift level value due to readonly date shift level on interface.
 		/// </summary>
-		public int Level { get; set; }
+		public int Level { get; private set; }
 
 		/// <summary>
 		/// Workspace Id (highest parent level for any date shift).
@@ -108,7 +103,7 @@ namespace GenBOE.Dtos
 		/// <summary>
 		/// Labor spreads across resources that needs to be date shifted.
 		/// </summary>
-		public Collection<ResourceSpreadDto> LaborSpreads { get; set; }
+		public Collection<ResourceSpreadDto> LaborSpreads { get; set; } = new Collection<ResourceSpreadDto>();
 
 		/// <summary>
 		/// Skill Mix table
@@ -126,9 +121,29 @@ namespace GenBOE.Dtos
 		public Collection<ResourceTypeDto> TaskElementLabors { get; set; }
 
 		/// <summary>
+		/// Labor Type Id.
+		/// </summary>
+		public int LaborTypeId { get; set; }
+
+		/// <summary>
+		/// Resource Id.
+		/// </summary>
+		public int ResourceId { get; set; }
+
+		/// <summary>
+		/// These are used for data load.. During the load the data is stored here temporarily, then it's placed into the public property and cleared out
+		/// </summary>
+		internal IEnumerable<ResourceSpreadDto> LaborSpreadsIEnum { get; set; }
+
+		/// <summary>
 		/// Spread curve id.
 		/// </summary>
 		public SpreadCurves? SpreadCurveID { get; set; }
+
+		/// <summary>
+		/// Spread curve id value.
+		/// </summary>
+		public int SpreadCurveIdValue { get; set; }
 
 		/// <summary>
 		/// Gets/Sets Spread Type (Hours/Cost).
@@ -149,91 +164,5 @@ namespace GenBOE.Dtos
 		/// Workspace state.
 		/// </summary>
 		public WorkspaceState WorkspaceState { get; set; }
-
-		/// <summary>
-		/// Original object data.
-		/// </summary>
-		public object OriginalObject { get => this.originalObject; set => this.originalObject = value; }
-
-		/// <summary>
-		/// Conversion for incoming inherit classes.
-		/// </summary>
-		public static DateShiftDTO FromIDateShiftable(IDateShiftable dateShiftable)
-		{
-			if (dateShiftable == null)
-			{
-				throw new ArgumentNullException(nameof(dateShiftable));
-			}
-
-			DateShiftDTO dateShiftDTO = new DateShiftDTO();
-			dateShiftDTO.OriginalObject = dateShiftable;
-			dateShiftDTO.StartDate = dateShiftable.StartDate;
-			dateShiftDTO.EndDate = dateShiftable.EndDate;
-			dateShiftDTO.Level = (int)dateShiftable.DateShiftLevel;
-			dateShiftDTO.DateShiftLevel = dateShiftable.DateShiftLevel;
-			dateShiftDTO.HasSpreadValue = dateShiftable.HasSpread;
-			dateShiftDTO.Updateable = dateShiftable.Updateable;
-
-			if (dateShiftable is IUpdateableDTO updateableDTO)
-			{
-				dateShiftDTO.Id = updateableDTO.Id;
-				dateShiftDTO.UpdateDate = updateableDTO.UpdateDate;
-			}
-
-			if (dateShiftable is FullClin clinDTO && clinDTO != null)
-			{
-				dateShiftDTO.ClinId = clinDTO.Id;
-				dateShiftDTO.WorkspaceId = clinDTO.WorkspaceID;
-				dateShiftDTO.ParentId = clinDTO.WorkspaceID;
-			}
-
-			if (dateShiftable is FullBoe boeDTO && boeDTO != null)
-			{
-				dateShiftDTO.BOEStateID = (int)boeDTO.State;
-				dateShiftDTO.ParentId = boeDTO.CLINID ?? boeDTO.WorkspaceID;
-				dateShiftDTO.ClinId = boeDTO.CLINID;
-				dateShiftDTO.WbsId = boeDTO.WBSID;
-				dateShiftDTO.WorkspaceId = boeDTO.WorkspaceID;
-			}
-
-			if (dateShiftable is BoeTaskElementDTO boeTaskElementDTO && boeTaskElementDTO != null)
-			{
-				dateShiftDTO.BoeId = boeTaskElementDTO.BoeID;
-				dateShiftDTO.BOETaskElementId = boeTaskElementDTO.Id;
-				dateShiftDTO.CommonDisclosureTable = boeTaskElementDTO.CommonDisclosureTable;
-				dateShiftDTO.SkillMixTable = boeTaskElementDTO.SkillMixTable;
-				dateShiftDTO.TaskElementLabors = boeTaskElementDTO.taskElementLabors;
-				dateShiftDTO.ParentId = boeTaskElementDTO.BoeID;
-			}
-
-			if (dateShiftable is ResourceTypeDto resourceTypeDto && resourceTypeDto != null && (resourceTypeDto.SpreadCurveID == SpreadCurves.DiscreteCost || resourceTypeDto.SpreadCurveID == SpreadCurves.DiscreteHours))
-			{
-				// Check if Labor Spreads is not null and if not null then save them later.
-				dateShiftDTO.LaborSpreads = resourceTypeDto.LaborSpreads;
-				dateShiftDTO.SpreadCurveID = resourceTypeDto.SpreadCurveID;
-			}
-
-			if (dateShiftable is FullWorkspace fullWorkspace && fullWorkspace != null)
-			{
-				dateShiftDTO.WorkspaceVersionMetaData = fullWorkspace.WorkspaceVersionMetaData.ToList();
-				dateShiftDTO.WorkspaceState = fullWorkspace.WorkspaceState;
-			}
-			HashSet<(int Id, int Level)> uniqueChildren = new HashSet<(int Id, int Level)>();
-
-			foreach (IDateShiftable child in dateShiftable.Children)
-			{
-				DateShiftDTO childDTO = FromIDateShiftable(child);
-
-				if (childDTO != null)
-				{
-					if (uniqueChildren.Add((childDTO.Id, (int)childDTO.DateShiftLevel)))
-					{
-						dateShiftDTO.Children.Add(childDTO);
-					}
-				}
-			}
-
-			return dateShiftDTO;
-		}
 	}
 }

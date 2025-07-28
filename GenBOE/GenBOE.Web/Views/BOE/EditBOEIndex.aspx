@@ -22,6 +22,7 @@
 			exportAction: '<%: WebConstants.ACTION_EXPORT_LABOR_TYPE_AND_SPREAD %>',
 			exportOffloadAction: '<%: WebConstants.ACTION_EXPORT_OFFLOAD_RATES %>',
 			calculateSpreadAction: '<%: WebConstants.ACTION_CALCULATE_SPREAD %>',
+            calculateDiscreteUCOTSpreadAction: '<%: WebConstants.ACTION_CALCULATE_DISCRETE_UCOT_SPREAD %>',
 			ImportMoqTablesAction: '<%: WebConstants.ACTION_IMPORT_MOQ_TABLES %>',
 			CompleteImportMoqTablesAction: '<%: WebConstants.ACTION_COMPLETE_IMPORT_MOQ_TABLES %>',
 			ExportMoqTablesAction: '<%: WebConstants.ACTION_EXPORT_MOQ_TABLES %>',
@@ -62,7 +63,9 @@
 			IsUcotEnabled: '<%= (bool)ViewData["IsUCOTEnabled"] %>'.isTrue(),
 			UcotFactor: <%=ViewData["UcotFactor"]%>,
 			SkillMixTableHelpUrls: <%=serializer.Serialize(ViewData["SkillMixTableHelpUrls"])%>,
-			UsingTemplateBOE: '<%=serializer.Serialize(ViewData["UsingTemplateBOE"]) %>'.isTrue()
+			UsingTemplateBOE: '<%=serializer.Serialize(ViewData["UsingTemplateBOE"]) %>'.isTrue(),
+			EnableTaskAuthor: '<%= (bool)ViewData["EnableTaskAuthor"] %>'.isTrue(),
+			BoeAuthors: <%=serializer.Serialize(ViewData["BoeAuthors"])%>
 		});
 
 		$(function () {
@@ -79,7 +82,7 @@
 				$("#SubmitForApproval").hide();
 			}
 		});
-	</script>
+    </script>
 
 	<% Html.RenderAction(WebConstants.ACTION_DISPLAY_BOE_HEADER, WebConstants.CONTROLLER_BOE, new { id = ViewData["BOEID"] }); %>
 

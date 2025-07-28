@@ -173,40 +173,43 @@ namespace GenBOE.Web.Controllers
 			ViewData["UsingTemplateBOE"] = ws.UsingTemplateBOE;
 
 			Collection<SelectListItem> WBSElements = new Collection<SelectListItem>((from x in ws.WbsElementsNoMultiWbs
-											 orderby x.WbsPaddedNumber
-											 select new SelectListItem()
-											 {
-		 Text = x.WbsString,
-		 Value = x.Id.ToString()
-											 }).ToList());
+																					 orderby x.WbsPaddedNumber
+																					 select new SelectListItem()
+																					 {
+																						 Text = x.WbsString,
+																						 Value = x.Id.ToString()
+																					 }).ToList());
 			WBSElements.Insert(0, new SelectListItem() { Selected = true, Text = string.Empty, Value = "-1" });
 
 			Collection<SelectListItem> ClinElements = new Collection<SelectListItem>((from x in ws.ClinsNoMultiClin
-											  orderby x.ClinPaddedNumber
-											  select new SelectListItem()
-											  {
-		  Text = x.ClinString,
-		  Value = x.Id.ToString()
-											  }).ToList());
+																					  orderby x.ClinPaddedNumber
+																					  select new SelectListItem()
+																					  {
+																						  Text = x.ClinString,
+																						  Value = x.Id.ToString()
+																					  }).ToList());
 			ClinElements.Insert(0, new SelectListItem() { Selected = true, Text = string.Empty, Value = "-1" });
 
 			string hoursLabel = FullObjectHelper.HoursLabel(ws);
 			Collection<SelectListItem> costCurves = new Collection<SelectListItem>((from x in this._BoeLaborControllerLogic.GetSpreadCurves(RateType.Cost)
-											select new SelectListItem()
-											{
-		Text = x.GetDescription().Replace("Hours", hoursLabel),
-		Value = ((int)x).ToString()
-											}).ToList());
+																					select new SelectListItem()
+																					{
+																						Text = x.GetDescription().Replace("Hours", hoursLabel),
+																						Value = ((int)x).ToString()
+																					}).ToList());
 			costCurves.Insert(0, new SelectListItem() { Selected = true, Text = string.Empty, Value = "-1" });
 
 
 			Collection<SelectListItem> hourCurves = new Collection<SelectListItem>((from x in this._BoeLaborControllerLogic.GetSpreadCurves(RateType.Hours)
-											select new SelectListItem()
-											{
-		Text = x.GetDescription().Replace("Hours", hoursLabel),
-		Value = ((int)x).ToString()
-											}).ToList());
+																					select new SelectListItem()
+																					{
+																						Text = x.GetDescription().Replace("Hours", hoursLabel),
+																						Value = ((int)x).ToString()
+																					}).ToList());
 			hourCurves.Insert(0, new SelectListItem() { Selected = true, Text = string.Empty, Value = "-1" });
+
+			bool enableTaskAuthor = Utilities.IsAssignTaskAuthorEnabledForSystem && ws.EnableAssignTaskAuthor;
+			ICollection<UserDTO> availableTaskAuthors = enableTaskAuthor ? UserLoader.GetBoeAuthors(boeID) : null;
 
 			this.ViewData["WBSElements"] = WBSElements;
 			this.ViewData["CLINElements"] = ClinElements;
@@ -217,6 +220,8 @@ namespace GenBOE.Web.Controllers
 			this.ViewData["SapFields"] = await _ControllerLogic.GetAllFields();
 			this.ViewData["SapOperators"] = await _ControllerLogic.GetAllOperators();
 			this.ViewData["EnableSAPConnection"] = ws.EnableSAPConnection;
+			this.ViewData["EnableTaskAuthor"] = enableTaskAuthor;
+			this.ViewData["BoeAuthors"] = availableTaskAuthors;
 
 			ViewResult toReturn = this.GetMasterView(WebConstants.VIEW_EDIT_BOE_INDEX, workspace);
 
@@ -672,7 +677,7 @@ namespace GenBOE.Web.Controllers
 
 			// Initiate a NON Readonly list of Resources
 			ICollection<ResourceDTO> originalResourceList = ws.ResourcesForWsResourceListId.ToList();
-			
+
 			// Perform Action
 			ViewData["BOEID"] = boeID;
 			ViewData["isMaterial"] = boe.isMaterial;
@@ -817,7 +822,7 @@ namespace GenBOE.Web.Controllers
 
 			// Initialize Action
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CONFIDENCE_REPORT_BUTTON, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
-			
+
 			ViewData["BOEID"] = boeID;
 			ViewData["HideConfidenceReport"] = !Utilities.IsConfidenceReportEnabled;
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_CONFIDENCE_REPORT_BUTTON);
@@ -943,7 +948,7 @@ namespace GenBOE.Web.Controllers
 			ids.Add(boeId);
 
 			ActionResult result = new EmptyResult();
-			
+
 			try
 			{
 				// UCOT validation (Space only) - if there are multiple MOQ types assigned to a task and one of those MOQ types falls under a specified type, throw an exception
@@ -1254,7 +1259,7 @@ namespace GenBOE.Web.Controllers
 			{
 				throw new ArgumentNullException(nameof(boes));
 			}
-			
+
 			boes = boes.Where(b => b.State != BOEState.Draft).ToCollection();
 
 			if (boes.Count == 0)
@@ -1303,8 +1308,8 @@ namespace GenBOE.Web.Controllers
 
 			// grab the ids of all original boes that have been modified in some way
 			ICollection<int> originalModifiedBoeIds = (from b in boes
-			   where b.BoeID > 0 && !b.Deleted
-			   select b.BoeID).ToCollection();
+													   where b.BoeID > 0 && !b.Deleted
+													   select b.BoeID).ToCollection();
 
 			// grab all the original boe permissions for each original boe that has been modified
 			ICollection<PermissionsDTO> boePermissions = this.PermissionsLoader.GetBOEPermissions(originalModifiedBoeIds);
@@ -1365,7 +1370,7 @@ namespace GenBOE.Web.Controllers
 				IDictionary<int, FullBoe> workspaceBoeDictionary = ws.Boes.ToDictionary(x => x.Id);
 
 				Collection<int> allMVboeIds = (from mv in boes
-	   select mv.BoeID).Distinct().ToCollection();
+											   select mv.BoeID).Distinct().ToCollection();
 
 				// get all approver responses at one time
 				ICollection<BoeApproverResponseDTO> allApproverResponses = this._BoeApproverResponseLoader.GetByBoeIds(allMVboeIds);
@@ -1582,17 +1587,17 @@ namespace GenBOE.Web.Controllers
 
 					PermissionsDTO[] Approvers = boePermissionsLookup[originalBoe.Id].Where(x => x.Role == Role.Approver).Select(x => x).ToArray();
 					bool approversRemoved = (from removedApprover in Approvers
-	where !boeMV.Approvers.Contains(removedApprover.ETIUserId)
-	select removedApprover).Any();
+											 where !boeMV.Approvers.Contains(removedApprover.ETIUserId)
+											 select removedApprover).Any();
 
 					bool approversAdded = (from addedApprover in boeMV.Approvers
-										  where !(Approvers.Select(a => a.ETIUserId).Contains(addedApprover))
-										  select addedApprover).Any();
+										   where !(Approvers.Select(a => a.ETIUserId).Contains(addedApprover))
+										   select addedApprover).Any();
 
 					if (approversRemoved || approversAdded)
 					{
 						IEnumerable<UserDTO> oldApprovers = from oldApprover in Approvers
-										   select this.UserLoader.GetUserByID(oldApprover.ETIUserId);
+															select this.UserLoader.GetUserByID(oldApprover.ETIUserId);
 
 						ApproversChangeDictionary[originalBoe.Id] = new Collection<UserDTO>(oldApprovers.ToArray());
 					}
@@ -1604,7 +1609,7 @@ namespace GenBOE.Web.Controllers
 					{
 
 						BoeApproverResponseDTO boeApprover = allApproverResponses.FirstOrDefault(a => a.BoeID == boeMV.BoeID && a.ETIUserID == BoeApproverID);
-						
+
 						if (boeApprover == null)
 						{
 							// create a new one
@@ -1759,8 +1764,8 @@ namespace GenBOE.Web.Controllers
 
 				// grab the clins that need to be recalculated
 				ICollection<ClinDTO> clinsToRecalculate = (from c in ws.Clins
-				   where ClinIDsToRecalculateLaborSpread.Contains(c.Id)
-				   select c).ToCollection<ClinDTO>();
+														   where ClinIDsToRecalculateLaborSpread.Contains(c.Id)
+														   select c).ToCollection<ClinDTO>();
 
 				// update BOE sums based on the workspace variables associated with each clin to recalculate
 				#region
@@ -1956,8 +1961,8 @@ namespace GenBOE.Web.Controllers
 					boeTaskElementsToRecalculate.Clear();
 
 					ICollection<FullWbs> WbsObjectsToRecalculateSpread = (from w in ws.WbsElements
-								  where WbsIDsToRecalculateLaborSpread.Contains(w.Id)
-								  select w).ToCollection();
+																		  where WbsIDsToRecalculateLaborSpread.Contains(w.Id)
+																		  select w).ToCollection();
 					foreach (FullWbs wbsObject in WbsObjectsToRecalculateSpread)
 					{
 						boeTaskElementsToRecalculate.AddRange(this._BoeTaskElementRecalculation.RecalculateLaborWithWBS(wbsObject, VariableType.Task, ws));
@@ -1980,9 +1985,9 @@ namespace GenBOE.Web.Controllers
 					foreach (OrdinaryVariableDto taskVar in taskVariablesEffectedByDelete)
 					{
 						boeTaskElementsToRecalculate.AddRange(from t in this._BoeTaskElementRecalculation.RecalculateLaborWithVariable(taskVar.Id, VariableType.Task, ws)
-					  where !(from o in boeTaskElementsToRecalculate
-							  select o.Id).Contains(t.Id)
-					  select t);
+															  where !(from o in boeTaskElementsToRecalculate
+																	  select o.Id).Contains(t.Id)
+															  select t);
 					}
 
 					Collection<BoeTaskElementDTO> taskEffectedByMutliBOE = new Collection<BoeTaskElementDTO>(this._ControllerLogic.RemoveMultiBOEReferenceTaskVar(ws, BoeIdsEffectedByMulti));
@@ -1992,9 +1997,9 @@ namespace GenBOE.Web.Controllers
 					{
 
 						boeTaskElementsToRecalculate.AddRange(from t in this._BoeTaskElementRecalculation.RecalculateLaborWithVariable(taskVar.Id, VariableType.Task, ws, taskEffectedByMutliBOE)
-					  where !(from o in boeTaskElementsToRecalculate
-							  select o.Id).Contains(t.Id)
-					  select t);
+															  where !(from o in boeTaskElementsToRecalculate
+																	  select o.Id).Contains(t.Id)
+															  select t);
 					}
 					// Task elements and workspace variables may have been updated as part of a side affect of saving Boes.
 					ws.RefreshTaskElements();
@@ -2005,8 +2010,8 @@ namespace GenBOE.Web.Controllers
 					if (WSIds.Any())
 					{
 						ICollection<WorkspaceVariableDTO> workspaceVariables = (from v in ws.WorkspaceVariables
-										where WSIds.Contains(v.Id)
-										select v).ToCollection();
+																				where WSIds.Contains(v.Id)
+																				select v).ToCollection();
 
 						Collection<WorkspaceVariableDTO> workspaceVarToSave = new Collection<WorkspaceVariableDTO>();
 						foreach (WorkspaceVariableDTO workspaceVar in workspaceVariables)
@@ -2031,9 +2036,9 @@ namespace GenBOE.Web.Controllers
 					foreach (WorkspaceVariableDTO workspaceVar in workspaceVariablesEffectedByDelete)
 					{
 						boeTaskElementsToRecalculate.AddRange(from t in this._BoeTaskElementRecalculation.RecalculateLaborWithVariable(workspaceVar.Id, VariableType.Workspace, ws)
-					  where !(from o in boeTaskElementsToRecalculate
-							  select o.Id).Contains(t.Id)
-					  select t);
+															  where !(from o in boeTaskElementsToRecalculate
+																	  select o.Id).Contains(t.Id)
+															  select t);
 					}
 
 					workspaceVariablesEffectedByMulti = workspaceVariablesEffectedByMulti.Where(x => ws.TaskElements.SelectMany(z => z.WorkspaceVariableIDs).Contains(x.Id)).ToList();
@@ -2041,9 +2046,9 @@ namespace GenBOE.Web.Controllers
 					foreach (WorkspaceVariableDTO workspaceVar in workspaceVariablesEffectedByMulti)
 					{
 						boeTaskElementsToRecalculate.AddRange(from t in this._BoeTaskElementRecalculation.RecalculateLaborWithVariable(workspaceVar.Id, VariableType.Workspace, ws)
-					  where !(from o in boeTaskElementsToRecalculate
-							  select o.Id).Contains(t.Id)
-					  select t);
+															  where !(from o in boeTaskElementsToRecalculate
+																	  select o.Id).Contains(t.Id)
+															  select t);
 					}
 
 					// save all the task elements that were effected by a BOE deletion or a CLIN/WBS remapping
@@ -2059,14 +2064,14 @@ namespace GenBOE.Web.Controllers
 					// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 					// Now that the first layer has been recalculated, cause a recalculation of everything else.
 					ICollection<BoeDTO> boesEffectedByDelete = (from b in ws.Boes
-						where BoeIdsEffectedByDelete.Contains(b.Id)
-						select b as BoeDTO).ToCollection();
+																where BoeIdsEffectedByDelete.Contains(b.Id)
+																select b as BoeDTO).ToCollection();
 
 					foreach (BoeDTO boe in boesEffectedByDelete)
 					{
 						ICollection<BoeTaskElementDTO> taskElements = (from te in ws.TaskElements
-							   where te.BoeID == boe.Id
-							   select te).ToCollection();
+																	   where te.BoeID == boe.Id
+																	   select te).ToCollection();
 
 						this._BoeLaborControllerLogic.CalculateLinkedTaskElements(ValidationErrors, taskElements, new Collection<BoeTaskElementDTO>(), ws);
 					}
@@ -2842,34 +2847,34 @@ namespace GenBOE.Web.Controllers
 						if (boe.AuthorIDs != null)
 						{
 							authorsRemoved = (from removedAuthor in Authors
-	  where !boe.AuthorIDs.Contains(removedAuthor.ETIUserId)
-	  select removedAuthor).Any();
+											  where !boe.AuthorIDs.Contains(removedAuthor.ETIUserId)
+											  select removedAuthor).Any();
 
 							authorsAdded = (from addedAuthor in boe.AuthorIDs
-	where !(Authors.Select(a => a.ETIUserId).Contains(addedAuthor))
-	select addedAuthor).Any();
+											where !(Authors.Select(a => a.ETIUserId).Contains(addedAuthor))
+											select addedAuthor).Any();
 						}
 
 						if (authorsRemoved || authorsAdded)
 						{
 							IEnumerable<UserDTO> oldAuthors = from oldAuthor in Authors
-	 select userData.First(x => x.UserID == oldAuthor.ETIUserId);
+															  select userData.First(x => x.UserID == oldAuthor.ETIUserId);
 
 							AuthorsChangeDictionary[boe.Id] = new Collection<UserDTO>(oldAuthors.ToArray());
 						}
 
 						bool approversRemoved = (from removedApprover in BoeApprovers
-		where !boeImportResult.ApproverIDs.Contains(removedApprover.ETIUserId)
-		select removedApprover).Any();
+												 where !boeImportResult.ApproverIDs.Contains(removedApprover.ETIUserId)
+												 select removedApprover).Any();
 
 						bool approversAdded = (from addedApprover in boeImportResult.ApproverIDs
-	  where !(BoeApprovers.Select(a => a.ETIUserId).Contains(addedApprover))
-	  select addedApprover).Any();
+											   where !(BoeApprovers.Select(a => a.ETIUserId).Contains(addedApprover))
+											   select addedApprover).Any();
 
 						if (approversRemoved || approversAdded)
 						{
 							IEnumerable<UserDTO> oldApprovers = from oldApprover in BoeApprovers
-	   select userData.First(x => x.UserID == oldApprover.ETIUserId);
+																select userData.First(x => x.UserID == oldApprover.ETIUserId);
 
 							ApproversChangeDictionary[boe.Id] = new Collection<UserDTO>(oldApprovers.ToArray());
 						}
@@ -3018,9 +3023,9 @@ namespace GenBOE.Web.Controllers
 					foreach (WorkspaceVariableDTO workspaceVar in workspaceVariablesEffectedByMulti)
 					{
 						boeTaskElementsToRecalculate.AddRange(from t in this._BoeTaskElementRecalculation.RecalculateLaborWithVariable(workspaceVar.Id, VariableType.Workspace, ws)
-					  where !(from o in boeTaskElementsToRecalculate
-							  select o.Id).Contains(t.Id)
-					  select t);
+															  where !(from o in boeTaskElementsToRecalculate
+																	  select o.Id).Contains(t.Id)
+															  select t);
 					}
 					Collection<BoeTaskElementDTO> taskAffectedByMutliBOE = new Collection<BoeTaskElementDTO>(this._ControllerLogic.RemoveMultiBOEReferenceTaskVar(ws, BoeIdsEffectedByMulti.Select(b => b.Id).ToList()));
 					// check if any task elements need to be recalculated that were effected by a multi boe being changed
@@ -3029,9 +3034,9 @@ namespace GenBOE.Web.Controllers
 					{
 
 						boeTaskElementsToRecalculate.AddRange(from t in this._BoeTaskElementRecalculation.RecalculateLaborWithVariable(taskVar.Id, VariableType.Task, ws, taskAffectedByMutliBOE)
-					  where !(from o in boeTaskElementsToRecalculate
-							  select o.Id).Contains(t.Id)
-					  select t);
+															  where !(from o in boeTaskElementsToRecalculate
+																	  select o.Id).Contains(t.Id)
+															  select t);
 					}
 
 					// Save approvers for existing BOEs so they can be copied correctly in the mediator.
