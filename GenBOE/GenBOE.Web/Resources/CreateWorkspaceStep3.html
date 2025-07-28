@@ -40,12 +40,13 @@
         </div>
     </div>
     <div class="form-element">
-        <span class="url">
-            {{model.applicationUrl}}
-            {{model.IsPLDIntegrated && model.PLD_PANumber ? getSantizedUrl() : ''}}
+        <span class="url">            
+            {{ !model.IsPLDIntegrated ? model.applicationURL : getSantizedUrl() }}
             <span data-ng-show="model.isPTMIntegrated && model.ptmTrackingNumber !== ''">{{model.nextRevision}}</span>
         </span>
-        <input data-ng-hide="model.isPTMIntegrated && model.ptmTrackingNumber !== ''" name="ShortName" class="quarter" id="ShortName" data-ng-model="data.Shortname" type="text" maxlength="15">
+        <span data-ng-show="!model.IsPLDIntegrated">
+            <input data-ng-hide="model.isPTMIntegrated && model.ptmTrackingNumber !== ''" name="ShortName" class="quarter" id="ShortName" data-ng-model="data.Shortname" type="text" maxlength="15">
+        </span>
     </div>
 </div>
 <div class="form-row" data-ng-show="model.showProjectMap && !model.isSSC">
@@ -214,15 +215,7 @@
         </select>
     </div>
 </div>
-<div class="form-row" data-ng-hide="model.isSSC">
-    <div class="form-label">
-        RFP #
-    </div>
-    <div class="form-element">
-        <input class="full ignoreValidation" id="RFPNumber" maxlength="100" name="RFPNumber" type="text" data-ng-model="data.RFPNumber">
-    </div>
-</div>
-<!--PLD-->
+<!--PLD PA Number-->
 <div class="form-row" data-ng-show="model.IsPLDIntegrated">
     <div class="form-label">
         <span>PLD PA Number</span>
@@ -234,6 +227,26 @@
                 The PLD PA Number.
             </div>
         </div>
+        <div class="form-element">
+            <span>{{data.PLD_PANumber}}</span>
+            <input class="full ignoreValidation" style="width:100px" readonly id="PLD_PANumber" maxlength="100" name="PLD_PANumber" type="text" data-ng-model="model.PLD_PANumber">
+        </div>
+    </div>
+</div>
+<div class="form-row" data-ng-hide="model.isSSC">
+    <div class="form-label">
+        RFP #
+    </div>
+    <div class="form-element">
+        <input class="full ignoreValidation" id="RFPNumber" maxlength="100" name="RFPNumber" type="text" data-ng-model="data.RFPNumber">
+    </div>
+</div>
+<!--PLD PA Title-->
+<div class="form-row" data-ng-show="model.IsPLDIntegrated">
+    <div class="form-label">
+        <span>PLD PA Title</span>
+        <div id="Tracking-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
+        </div>
         <div id="Tracking-HelpDialog" class="help-dialog" style="width: 200px;">
             <div class="help-dialog-close"></div>
             <div class="help-dialog-text">
@@ -241,16 +254,13 @@
             </div>
         </div>
         <div class="form-element">
-            <span>{{data.PLD_PANumber}}</span>
-            <input class="full ignoreValidation" readonly id="PLD_PANumber" maxlength="100" name="PLD_PANumber" type="text" data-ng-model="model.PLD_PANumber">
-        </div>
-        <div class="form-element">
             <span>{{data.PLD_PATitle}}</span>
-            <input class="full ignoreValidation" readonly id="PLD_PATitle" maxlength="100" name="PLD_PANumber" type="text" data-ng-model="model.PLD_PANumber">
+            <input class="full ignoreValidation" readonly id="PLD_PATitle" maxlength="100" name="PLD_PATitle" type="text" data-ng-model="model.PLD_PATitle">
         </div>
     </div>
 </div>
-<pre>{{ model | json }}</pre>
+
+<!--<pre>{{ model | json }}</pre>-->
 <!--PTM Space-->
 <div class="form-row" data-ng-show="model.isSSC">
     <div class="form-label">
