@@ -587,7 +587,7 @@ namespace IES.Common.Core.OfficeUtilities
 		private static void RemoveContentControls(StructuredDocumentTag element)
 		{
 			// TODO TIW consider // Use the "RemoveSelfOnly" method to remove a structured document tag, while keeping its contents in the document.
-			// element.RemoveSelfOnly();
+			element.RemoveSelfOnly();
 
 
 			//// only StructuredDocumentTag items need to be "cleaned"
@@ -794,7 +794,8 @@ namespace IES.Common.Core.OfficeUtilities
 			{
 				builder.MoveTo(shape);
 				PageSetup ps = builder.CurrentSection.PageSetup;
-				double targetHeight = ps.PageHeight - ps.TopMargin - ps.BottomMargin - ps.FooterDistance;
+				// make sure the Height has extra space for a section header
+				double targetHeight = ps.PageHeight - ps.TopMargin - ps.BottomMargin - ps.FooterDistance - ps.HeaderDistance - ConvertUtil.InchToPoint(0.5);
 				double targetWidth = ps.PageWidth - ps.LeftMargin - ps.RightMargin;
 
 				if (shape.Height > targetHeight || shape.Width > targetWidth)
