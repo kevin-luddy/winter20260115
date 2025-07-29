@@ -146,7 +146,7 @@ namespace GenBOE.DataBridge.Common
         /// </summary>
         /// <param name="wsProjectMapType"></param>
         /// <returns>List of fields</returns>
-        IDictionary<int, EnumTypeModelView> GetProPricerFieldsDictionary(bool isProjectMapType);
+        IDictionary<int, EnumTypeModelView> GetProPricerFieldsDictionary(bool isProjectMapType, bool enableTaskAuthor);
         #endregion
 
         #region ProposalStatusTypes
