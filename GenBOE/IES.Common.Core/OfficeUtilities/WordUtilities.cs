@@ -14,6 +14,7 @@ namespace IES.Common.Core.OfficeUtilities
 	using System.Text;
 	using System.Text.RegularExpressions;
 	using Aspose.Words;
+	using Aspose.Words.Drawing;
 	using Aspose.Words.Markup;
 	using Aspose.Words.Tables;
 	using DocumentFormat.OpenXml;
@@ -377,12 +378,10 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <param name="mainPart">Main document part</param>
 		/// <param name="element">Element to set</param>
 		/// <param name="htmlFormattedText">Html</param>
-		/// <param name="counters">Counters for altChunk processing</param>
 		/// <param name="removeSpacing">Removes spacing under certain circumstances -> Bool for if the extra spacing before and after paragraphs should be removed</param>
-		/// <param name="applyInternalSectionFormatting">bool to note if internal section formatting should be applied - for use with PPRD export, false by default</param>
 		[SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "3#")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
-		public static void SetElementTextWithHTML(Document document, StructuredDocumentTag element, string htmlFormattedText, ref ChunkCounter counters, bool removeSpacing = false, bool applyInternalSectionFormatting = false)
+		public static void SetElementTextWithHTML(Document document, StructuredDocumentTag element, string htmlFormattedText, bool removeSpacing = false)
 		{
 			if (element != null)
 			{
@@ -403,21 +402,30 @@ namespace IES.Common.Core.OfficeUtilities
 					element.RemoveAllChildren();
 
 					Node insertionPoint;
-					// Move to the paragraph or Run
+
+					// Insertion point has to be a Paragraph, and you cannot have paragraphs inside paragraphs
 					if (element.ParentNode != null && element.ParentNode is Paragraph)
 					{
 						insertionPoint = element.ParentNode;
 					}
 					else
 					{
-						element.AppendChild(new Run(document));
-						insertionPoint = element.FirstChild;
+						// Try to create a paragraph inside the SDT so DocumentBuilder can MoveTo it
+						Paragraph paragraph = new Paragraph(document);
+						element.AppendChild(paragraph);
+						insertionPoint = paragraph;
 					}
-
+					
 					DocumentBuilder builder = new DocumentBuilder(document);
 					builder.MoveTo(insertionPoint);
-					builder.InsertHtml(htmlFormattedText, HtmlInsertOptions.RemoveLastEmptyParagraph);
-					
+					HtmlInsertOptions options = removeSpacing ? HtmlInsertOptions.RemoveLastEmptyParagraph : HtmlInsertOptions.None;
+					if (!removeSpacing)
+					{
+						// need to manually add a linebreak before the html insert for Aspose
+						builder.InsertBreak(BreakType.LineBreak);
+					}
+
+					builder.InsertHtml(htmlFormattedText, options);
 
 					//// Get font information for the field/element into which we are inserting the HTML.
 					//decimal? fontSize = RTEUtilities.GetFontSizeBasedOnWordElementXml(element);
@@ -579,7 +587,7 @@ namespace IES.Common.Core.OfficeUtilities
 		private static void RemoveContentControls(StructuredDocumentTag element)
 		{
 			// TODO TIW consider // Use the "RemoveSelfOnly" method to remove a structured document tag, while keeping its contents in the document.
-			element.RemoveSelfOnly();
+			// element.RemoveSelfOnly();
 
 
 			//// only StructuredDocumentTag items need to be "cleaned"
@@ -777,6 +785,29 @@ namespace IES.Common.Core.OfficeUtilities
 				if (Cell.LastChild is not Paragraph)
 				{
 					Cell.AppendChild<Paragraph>(new Paragraph(wordDocument));
+				}
+			}
+			DocumentBuilder builder = new DocumentBuilder(wordDocument);
+			// make sure all images are not wider than the page
+			ICollection<Node> shapes = wordDocument.GetChildNodes(NodeType.Shape, true).ToList();
+			foreach (Shape shape in shapes)
+			{
+				builder.MoveTo(shape);
+				PageSetup ps = builder.CurrentSection.PageSetup;
+				double targetHeight = ps.PageHeight - ps.TopMargin - ps.BottomMargin - ps.FooterDistance;
+				double targetWidth = ps.PageWidth - ps.LeftMargin - ps.RightMargin;
+
+				if (shape.Height > targetHeight || shape.Width > targetWidth)
+				{
+					double ratioX = targetWidth / shape.Width;
+					double ratioY = targetHeight / shape.Height;
+					double ratio = Math.Min(ratioX, ratioY);
+
+					double newWidth = shape.Width * ratio;
+					double newHeight = shape.Height * ratio;
+
+					shape.Width = newWidth;
+					shape.Height = newHeight;
 				}
 			}
 		}

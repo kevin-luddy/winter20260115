@@ -10,6 +10,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Drawing;
 	using System.Globalization;
 	using System.Linq;
 	using Aspose.Words;
@@ -108,14 +109,19 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					p.ParagraphFormat.SpaceAfter = 0;
 				}; 
 
-				Action<Run> boldRP = null; // TODO TIW new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) });
+				Action<Run> boldRP = r => r.Font.Bold = true; 
 
 				if (tag.Contains("TopTotal")) //if total goes on top of table, add now
 				{
 					Row tr = new Row(table.Document);
 
-					Action<Cell> labelTCP = null;// TODO TIW new TableCellProperties(new TableCellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new TableCellWidth() { Type = TableWidthUnitValues.Pct },
-					//	new TableCellBorders(new BottomBorder() { Val = BorderValues.Nil }), new TableCellBorders(new LeftBorder() { Val = BorderValues.Nil }), new GridSpan() { Val = 2 });
+					Action<Cell> labelTCP = c => {
+						c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO new CellWidth() { Type = TableWidthUnitValues.Pct });
+						c.CellFormat.Borders.Bottom.LineStyle = LineStyle.None;
+						c.CellFormat.Borders.Left.LineStyle = LineStyle.None;
+					}; 
+						
 					string label;
 					if (tag.Contains("SummaryHourByDate"))
 					{
@@ -129,13 +135,16 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					{
 						label = "Total:\u00A0";
 					}
-					PopulateTableCell(tr, label, Font, 24, labelTCP, leftPP, boldRP);
+					PopulateTableCell(tr, label, Font, 24, labelTCP, leftPP, boldRP, 2);
 
 					if (NumberFormatter != null)
 					{
 						NumberFormatter.CurrencySymbol = "$";
 					}
-					Action<Cell> totalTCP = null;// TODO TIW  new TableCellProperties(new TableCellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new TableCellWidth() { Type = TableWidthUnitValues.Pct });
+					Action<Cell> totalTCP = c => {
+						c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO new CellWidth() { Type = TableWidthUnitValues.Pct });						
+					};
 					string total = laborRollup.Select(x => x.Total).Sum().ToString(Format, NumberFormatter);
 					PopulateTableCell(tr, total, Font, 24, totalTCP, leftPP, boldRP, 2);
 					if (NumberFormatter != null)
@@ -162,12 +171,19 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					if (evenRow)
 					{
 						//shaded cell
-						tcp = null; // TOWO TIW new TableCellProperties(new TableCellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new TableCellWidth() { Type = TableWidthUnitValues.Pct },
-							//new Shading() { Color = "auto", Fill = "BFBFBF", Val = ShadingPatternValues.Clear });
+						tcp = c => {
+							c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+							c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO new CellWidth() { Type = TableWidthUnitValues.Pct });
+							c.CellFormat.Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#BFBFBF");
+							c.CellFormat.Shading.Texture = TextureIndex.TextureNone;
+						}; 							
 					}
 					else
 					{
-						tcp = null; // TOWO TIW new TableCellProperties(new TableCellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new TableCellWidth() { Type = TableWidthUnitValues.Pct });
+						tcp = c => {
+							c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+							c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO new CellWidth() { Type = TableWidthUnitValues.Pct });
+						}; 
 					}
 
 					PopulateTableCell(tr2, item.Year.ToString(), Font, FontSize, tcp, leftPP);
@@ -196,15 +212,24 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				{
 					Row tr3 = new Row(table.Document);
 
-					Action<Cell> labelTCP = null; // TODO TIW new TableCellProperties(new TableCellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new TableCellWidth() { Type = TableWidthUnitValues.Pct },
-												  // new TableCellBorders(new BottomBorder() { Val = BorderValues.Nil }), new TableCellBorders(new LeftBorder() { Val = BorderValues.Nil }));
+					Action<Cell> labelTCP = c => {
+						c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO new CellWidth() { Type = TableWidthUnitValues.Pct });						
+						c.CellFormat.Borders.Bottom.LineStyle = LineStyle.None;
+						c.CellFormat.Borders.Left.LineStyle = LineStyle.None;
+					};
+					
 					PopulateTableCell(tr3, "Total:\u00A0", Font, headerFontSize, labelTCP, leftPP, boldRP, 1);
 
 					if (NumberFormatter != null)
 					{
 						NumberFormatter.CurrencySymbol = "$";
 					}
-					Action<Cell> totalTCP = null; // TODO TIW new TableCellProperties(new TableCellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new TableCellWidth() { Type = TableWidthUnitValues.Pct });
+					Action<Cell> totalTCP = c => {
+						c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO new CellWidth() { Type = TableWidthUnitValues.Pct });
+					};
+
 					PopulateTableCell(tr3, laborRollup.Select(x => x.Total).Sum().ToString(Format, NumberFormatter), Font, FontSize, totalTCP, rightPP, boldRP, 2);
 					if (NumberFormatter != null)
 					{
@@ -234,22 +259,19 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			{
 				tableStyle = (TableStyle)document.Styles.Add(StyleType.Table, "rolluptableMST");
 				tableStyle.Borders.ClearFormatting();
-				tableStyle.Borders.LineStyle = LineStyle.Single;
-				tableStyle.Borders.LineWidth = 4;
-				tableStyle.LeftPadding = 2.9;
-				tableStyle.RightPadding = 2.9;
-				tableStyle.TopPadding = 7.2;
-				tableStyle.ConditionalStyles[ConditionalStyleType.OddColumnBanding].Shading.BackgroundPatternColor = System.Drawing.Color.FromArgb(0, 68, 170); // 0, 68, 170 rgb is 04A0 hex
-				
+				tableStyle.Borders.LineStyle = LineStyle.None;
+				// tableStyle.Borders.LineWidth = 0.5;  If you set line width greater than zero when line style is none, the line style is automatically changed to single line.
+				tableStyle.LeftPadding = 58d / 20d; // TableWidthValues.Dxa), Width = 58 }, //58 20ths of a point = 0.04"
+				tableStyle.RightPadding = 58d / 20d; // TableWidthValues.Dxa), Width = 58 }, //58 20ths of a point = 0.04"
+				tableStyle.ConditionalStyles[ConditionalStyleType.OddColumnBanding].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
+				// TODO TIW new TableLook() { Val = "04A0", FirstRow = true, LastRow = false, FirstColumn = true, LastColumn = false, NoHorizontalBand = false, NoVerticalBand = true },
 			}
 
+			// TODO TIW 5000 seems very dubious, was TableWidthUnitValues.Pct), Width = "5000"
 			table.PreferredWidth = PreferredWidth.FromPercent(5000);
 			table.Style = tableStyle;
 				
-			//new TableLook() { Val = "04A0", FirstRow = true, LastRow = false, FirstColumn = true, LastColumn = false, NoHorizontalBand = false, NoVerticalBand = true },
-			//TableCellLeftMargin = new TableCellLeftMargin() { Type = new EnumValue<TableWidthValues>(TableWidthValues.Dxa), Width = 58 }, //58 20ths of a point = 0.04"
-			//TableCellRightMargin = new TableCellRightMargin() { Type = new EnumValue<TableWidthValues>(TableWidthValues.Dxa), Width = 58 }
-		
+			
 			return table;
 		}
 
@@ -263,28 +285,34 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <returns>returns table header row</returns>
 		protected override Row CreateRollupHeaderRow(DocumentBase document, List<string> Headers, string inFont, double inFontSize, bool noAfterSpacing = false)
 		{
-			// TODO TIW 
-			// TableRowProperties trp = new TableRowProperties(new TableHeader(), new CantSplit());
+			
 			Row tr = new Row(document);
-			//tr.Append(trp);
-			//if (Headers != null)
-			//{
-			//	foreach (string header in Headers)
-			//	{
-			//		TableCellProperties tcp = new TableCellProperties(new TableCellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new TableCellWidth() { Type = TableWidthUnitValues.Pct, Width = "385" });
-			//		RunProperties rp = new RunProperties(new Bold() { Val = OnOffValue.FromBoolean(true) }, new Underline() { Val = UnderlineValues.Single });
-			//		ParagraphProperties pp;
-			//		if (header == "Year")
-			//		{
-			//			pp = new ParagraphProperties(new Justification() { Val = ParagraphAlignment.Left }, new KeepNext() { Val = true }, new SpacingBetweenLines() { After = "0" });
-			//		}
-			//		else
-			//		{
-			//			pp = new ParagraphProperties(new Justification() { Val = ParagraphAlignment.Right }, new KeepNext() { Val = true }, new SpacingBetweenLines() { After = "0" });
-			//		}
-			//		PopulateTableCell(tr, header, inFont, inFontSize, tcp, pp, rp);
-			//	}
-			//}
+			tr.RowFormat.AllowBreakAcrossPages = false;
+
+			if (Headers != null)
+			{
+				foreach (string header in Headers)
+				{
+					Action<Cell> tcp = c => {
+						c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+						c.CellFormat.PreferredWidth = PreferredWidth.FromPercent(385); // TableWidthUnitValues.Pct, Width = "385" }
+					};
+
+					Action<Run> rp = r =>
+					{
+						r.Font.Bold = true;
+						r.Font.Underline = Underline.Single;
+					};
+					Action<Paragraph> pp = p =>
+					{
+						p.ParagraphFormat.Alignment = (header == "Year") ? ParagraphAlignment.Left : ParagraphAlignment.Right;
+						p.ParagraphFormat.KeepWithNext = true;
+						p.ParagraphFormat.SpaceAfter = 0;
+					};
+
+					PopulateTableCell(tr, header, inFont, inFontSize, tcp, pp, rp);
+				}
+			}
 			return tr;
 		}
 

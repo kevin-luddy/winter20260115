@@ -136,8 +136,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				throw new ArgumentNullException(nameof(exportFormat));
 			}
 
-			ChunkCounter counters = new ChunkCounter();
-
 			// If the ModelViews have data
 			if (boeExportModelViews != null && boeSummaryGridModelViews != null)
 			{
@@ -146,7 +144,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					// template file is on disk
 					this.Export(exportFormat.PhysicalFilePathCache, (document) =>
 					{
-						this.PopulateDataExportBOE(exportInputs, document, boeExportModelViews, boeSummaryGridModelViews, components, ref counters);
+						this.PopulateDataExportBOE(exportInputs, document, boeExportModelViews, boeSummaryGridModelViews, components);
 					}, returnStream);
 				}
 				else
@@ -154,7 +152,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					// template file content was serialized to the DB (i.e. this template was DERIVED from the master)
 					this.Export(exportFormat.FileData, (document) =>
 					{
-						this.PopulateDataExportBOE(exportInputs, document, boeExportModelViews, boeSummaryGridModelViews, components, ref counters);
+						this.PopulateDataExportBOE(exportInputs, document, boeExportModelViews, boeSummaryGridModelViews, components);
 					}, returnStream);
 				}
 			}
@@ -360,9 +358,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="ws">Full WS</param>
 		/// <param name="boeSummaryGridModelViews">The boe summary grid model views.</param>
 		/// <param name="selectedComponents">The selected components.</param>
-		/// <param name="counters">The counters.</param>
 		private void PopulateDataExportBOE(BOEExportInputs exportInputs, Document document, ICollection<BOEExportModelView> boeExportModelViews, 
-			ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, ICollection<BoeCustomReportComponent> selectedComponents, ref ChunkCounter counters)
+			ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, ICollection<BoeCustomReportComponent> selectedComponents)
 		{
 			/*
              * SJR:Notes - Wireframes
@@ -469,7 +466,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					try  // catch and rethrow to give exception some context
 					{
 
-						ProcessBOEHeader(document, boeContainer, boeExportModelView, selectedComponents, ref counters);
+						ProcessBOEHeader(document, boeContainer, boeExportModelView, selectedComponents);
 						ProcessBOECustomFields(boeContainer, boeExportModelView, selectedComponents, exportInputs);
 						ProcessTaskSummaryTable(boeContainer, boeExportModelView);
 						ProcessResourceSummaryByResourceTypeTable(boeContainer, boeSummaryGridModelView, selectedComponents);
@@ -487,11 +484,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						List<LaborRollupByDateNew> nonLaborRollupCostData = ProcessNonLaborCostSummaryTable(boe, boeContainer, boeExportModelView, selectedComponents, exportInputs);
 						ProcessLaborAndNonLaborCostSummaryTable(boeContainer, laborTasksRollupCostData, nonLaborRollupCostData, selectedComponents);
 
-						ProcessAllTaskElements(document, boeContainer, taskElementCollection, boe, exportInputs, boeExportModelView, resourcesByElementOfCost, selectedComponents, containsBoeHeaderInTask, ref counters);
+						ProcessAllTaskElements(document, boeContainer, taskElementCollection, boe, exportInputs, boeExportModelView, resourcesByElementOfCost, selectedComponents, containsBoeHeaderInTask);
 
 						ProcessBOEHoursSummaryTable(boeContainer, boeExportModelView, selectedComponents);
 						this.ProcessBOECostSummaryTable(boeContainer, exportInputs.Workspace, travelResources, boeExportModelView, selectedComponents);
-						ProcessBOESourcesOfData(document, boeContainer, boeExportModelView, selectedComponents, ref counters);
+						ProcessBOESourcesOfData(document, boeContainer, boeExportModelView, selectedComponents);
 						ProcessBOESignaturesAndDatePrepared(boeContainer, boeExportModelView, selectedComponents);
 					}
 					catch (Exception ex)
@@ -593,8 +590,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="boeContainer">Template container for the BOE</param>
 		/// <param name="boeExportModelView">Modelview for the BOE</param>
 		/// <param name="selectedComponents">Template components selected for the export</param>
-		/// <param name="counters"></param>
-		private void ProcessBOEHeader(Document document, StructuredDocumentTag boeContainer, BOEExportModelView boeExportModelView, ICollection<BoeCustomReportComponent> selectedComponents, ref ChunkCounter counters)
+		private void ProcessBOEHeader(Document document, StructuredDocumentTag boeContainer, BOEExportModelView boeExportModelView, 
+			ICollection<BoeCustomReportComponent> selectedComponents)
 		{
 			if (selectedComponents == null)
 			{
@@ -727,7 +724,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 					if (entry.Key == BOEExporterConstants.FieldName_BOEDescription)
 					{
-						WordUtilities.SetElementTextWithHTML(document, dataElement, entry.Value, ref counters);
+						WordUtilities.SetElementTextWithHTML(document, dataElement, entry.Value);
 					}
 					else
 					{
@@ -861,10 +858,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="boeContainer">The boe container.</param>
 		/// <param name="boeExportModelView">The boe export model view.</param>
 		/// <param name="selectedComponents">The selected components.</param>
-		/// <param name="counters">The counters.</param>
 		/// <exception cref="ArgumentNullException">selectedComponents</exception>
 		private void ProcessBOESourcesOfData(Document document, StructuredDocumentTag boeContainer, BOEExportModelView boeExportModelView,
-			ICollection<BoeCustomReportComponent> selectedComponents, ref ChunkCounter counters)
+			ICollection<BoeCustomReportComponent> selectedComponents)
 		{
 			if (selectedComponents == null)
 			{
@@ -877,7 +873,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				StructuredDocumentTag sourcesOfDataElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.FieldName_BOESourcesOfData);
 				if (sourcesOfDataElement != null)
 				{
-					WordUtilities.SetElementTextWithHTML(document, sourcesOfDataElement, boeExportModelView.DataSource, ref counters);
+					WordUtilities.SetElementTextWithHTML(document, sourcesOfDataElement, boeExportModelView.DataSource);
 				}
 			}
 			// If Sources of Data was not selected or if the BOE is set to not show it, remove its container from the output.
@@ -1327,10 +1323,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="resourcesByElementOfCost">The resources by element of cost.</param>
 		/// <param name="selectedComponents">The selected components.</param>
 		/// <param name="containsBoeHeaderInTask">if set to <c>true</c> [contains boe header in task].</param>
-		/// <param name="counters">The counters.</param>
 		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		private void ProcessAllTaskElements(Document document, StructuredDocumentTag boeContainer, ICollection<BoeTaskElementDTO> taskElementCollection, BoeDTO exportBoe, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView,
-			IDictionary<ElementOfCostType, Collection<ResourceDTO>> resourcesByElementOfCost, ICollection<BoeCustomReportComponent> selectedComponents, bool containsBoeHeaderInTask, ref ChunkCounter counters)
+			IDictionary<ElementOfCostType, Collection<ResourceDTO>> resourcesByElementOfCost, ICollection<BoeCustomReportComponent> selectedComponents, bool containsBoeHeaderInTask)
 		{
 			Collection<ResourceDTO> travelResources = resourcesByElementOfCost[ElementOfCostType.Travel];
 
@@ -1414,7 +1409,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					{
 						ProcessTaskHeaderWithBoeData(containerElement, selectedComponents, boeExportModelView);
 					}
-					ProcessLaborTaskHeader(document, containerElement, laborTaskElement, selectedComponents, exportInputs, ref counters);
+					ProcessLaborTaskHeader(document, containerElement, laborTaskElement, selectedComponents, exportInputs);
 					this.ProcessLaborTaskCustomFields(containerElement, laborTaskElement, exportInputs.CustomFields, selectedComponents, exportInputs);
 					this.ProcessLaborTaskResourceTable(containerElement, laborTaskElement, allLaborTaskElements, exportInputs.CustomFields, selectedComponents, exportInputs);
 					ProcessLaborTaskHoursRollupTable(containerElement, laborTaskElement, allLaborTaskElements, selectedComponents, exportInputs, boeExportModelView);
@@ -1463,7 +1458,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 						#region Process the data (IS&GS)
 
-						ProcessTravelTaskHeader(document, containerElement, travelTaskElement, selectedComponents, ref counters);
+						ProcessTravelTaskHeader(document, containerElement, travelTaskElement, selectedComponents);
 						ProcessTravelTaskResourceTable(containerElement, travelTaskElement, selectedComponents);
 						ProcessTravelTaskDirectCostRollupTable(containerElement, travelTaskElement, travelResources, selectedComponents, exportInputs, true);
 						ProcessTravelTaskDirectCostRollupTable(containerElement, travelTaskElement, travelResources, selectedComponents, exportInputs, false);
@@ -1509,7 +1504,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 						#region Process the data (IS&GS)
 
-						ProcessODCTaskHeader(document, containerElement, odcTaskElement, selectedComponents, ref counters);
+						ProcessODCTaskHeader(document, containerElement, odcTaskElement, selectedComponents);
 						ProcessODCTaskResourceTable(containerElement, odcTaskElement, selectedComponents);
 						ProcessODCTaskDirectCostRollupTable(containerElement, odcTaskElement, selectedComponents, exportInputs, false);
 						ProcessODCTaskDirectCostRollupTable(containerElement, odcTaskElement, selectedComponents, exportInputs, true);
@@ -1554,7 +1549,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 						#region Process the data (IS&GS)
 
-						ProcessMaterialTaskHeader(document, containerElement, materialTaskElement, selectedComponents, ref counters);
+						ProcessMaterialTaskHeader(document, containerElement, materialTaskElement, selectedComponents);
 						ProcessMaterialTaskResourceTable(containerElement, materialTaskElement, selectedComponents);
 						ProcessMaterialTaskDirectCostRollupTable(containerElement, materialTaskElement, selectedComponents, exportInputs, false);
 						ProcessMaterialTaskDirectCostRollupTable(containerElement, materialTaskElement, selectedComponents, exportInputs, true);
@@ -2304,10 +2299,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="selectedComponents">The selected components.</param>
 		/// <param name="exportInputs">The export inputs.</param>
 		/// <param name="ws">Full WS</param>
-		/// <param name="counters">The counters.</param>
 		/// <exception cref="ArgumentNullException">selectedComponents</exception>
 		private void ProcessLaborTaskHeader(Document document, StructuredDocumentTag containerElement, BOEExportTaskElement laborTaskElement,
-			ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, ref ChunkCounter counters)
+			ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs)
 		{
 			if (selectedComponents == null)
 			{
@@ -2392,7 +2386,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				if (selectedComponents.Contains(BoeCustomReportComponent.TaskMOQType))
 				{
 					StructuredDocumentTag templateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Container_MOQSelection);
-					this.PopulateMOQTypeData(laborTaskElement, selectedComponents, document, templateElement, true, exportInputs, ref counters);
+					this.PopulateMOQTypeData(laborTaskElement, selectedComponents, document, templateElement, true, exportInputs);
 
 					// if using RTE Template for MOQ Types, populate the fields
 					if (wsHasMoqRteTemplate)
@@ -2478,11 +2472,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 				if (entry.Key == BOEExporterConstants.FieldName_TaskDescription || entry.Key == BOEExporterConstants.FieldName_MethodOfQuoting)
 				{
-					WordUtilities.SetElementTextWithHTML(document, headerDataElement, entry.Value, ref counters, false);
+					WordUtilities.SetElementTextWithHTML(document, headerDataElement, entry.Value, false);
 				}
 				else if (entry.Key == BOEExporterConstants.FieldName_TaskDescription_NoSpacing || entry.Key == BOEExporterConstants.FieldName_MethodOfQuoting_NoSpacing)
 				{
-					WordUtilities.SetElementTextWithHTML(document, headerDataElement, entry.Value, ref counters, true);
+					WordUtilities.SetElementTextWithHTML(document, headerDataElement, entry.Value, true);
 				}
 				else
 				{
@@ -2503,7 +2497,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="travelTaskElement">Task element for the Travel task</param>
 		/// <param name="selectedComponents">Selected components for the export</param>
 		private void ProcessTravelTaskHeader(Document document, StructuredDocumentTag containerElement, BOEExportTaskElement travelTaskElement,
-			ICollection<BoeCustomReportComponent> selectedComponents, ref ChunkCounter counters)
+			ICollection<BoeCustomReportComponent> selectedComponents)
 		{
 			if (selectedComponents == null)
 			{
@@ -2546,7 +2540,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				{
 					if (entry.Key == BOEExporterConstants.FieldName_TaskDescription)
 					{
-						WordUtilities.SetElementTextWithHTML(document, headerDataElement, entry.Value, ref counters);
+						WordUtilities.SetElementTextWithHTML(document, headerDataElement, entry.Value);
 					}
 					else
 					{
@@ -2566,7 +2560,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="odcTaskElement">Task element for the ODC task</param>
 		/// <param name="selectedComponents">Selected components for the export</param>
 		private void ProcessODCTaskHeader(Document document, StructuredDocumentTag containerElement, BOEExportTaskElement odcTaskElement,
-			ICollection<BoeCustomReportComponent> selectedComponents, ref ChunkCounter counters)
+			ICollection<BoeCustomReportComponent> selectedComponents)
 		{
 			if (selectedComponents == null)
 			{
@@ -2642,7 +2636,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					if (entry.Key == BOEExporterConstants.FieldName_TaskDescription ||
 						entry.Key == BOEExporterConstants.FieldName_MethodOfQuoting)
 					{
-						WordUtilities.SetElementTextWithHTML(document, headerDataElement, entry.Value, ref counters);
+						WordUtilities.SetElementTextWithHTML(document, headerDataElement, entry.Value);
 					}
 					else
 					{
@@ -2662,7 +2656,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="materialTaskElement">Task element for the Material task</param>
 		/// <param name="selectedComponents">Selected components for the export</param>
 		private void ProcessMaterialTaskHeader(Document document, StructuredDocumentTag containerElement, BOEExportTaskElement materialTaskElement,
-			ICollection<BoeCustomReportComponent> selectedComponents, ref ChunkCounter counters)
+			ICollection<BoeCustomReportComponent> selectedComponents)
 		{
 			if (selectedComponents == null)
 			{
@@ -2720,7 +2714,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					if (entry.Key == BOEExporterConstants.FieldName_TaskDescription ||
 						entry.Key == BOEExporterConstants.FieldName_MethodOfQuoting)
 					{
-						WordUtilities.SetElementTextWithHTML(document, headerDataElement, entry.Value, ref counters);
+						WordUtilities.SetElementTextWithHTML(document, headerDataElement, entry.Value);
 					}
 					else
 					{

@@ -9,21 +9,21 @@ namespace IES.ActionLogic.Core.IO.Export
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.Drawing;
 	using System.IO;
 	using System.Linq;
-	using Common;
-	using IES.DataBridge.ModelViews;
-	using IES.Common.Core;
-	using IES.Common.Core.OfficeUtilities;
-	using Microsoft.AspNetCore.Mvc;
-	using IES.Common.Core.Enums;
-	using IES.Common.Core.Constants;
-	using IES.Common.Core.Services;
-	using Microsoft.Extensions.Logging;
-	using IES.Common.Core.Interfaces;
 	using Aspose.Words;
 	using Aspose.Words.Markup;
 	using Aspose.Words.Tables;
+	using Common;
+	using IES.Common.Core;
+	using IES.Common.Core.Constants;
+	using IES.Common.Core.Enums;
+	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.OfficeUtilities;
+	using IES.DataBridge.ModelViews;
+	using Microsoft.AspNetCore.Mvc;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// The PPRD Exporter.
@@ -75,10 +75,8 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
 		public async Task<IActionResult> ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, int refNumberPrefixLevel, bool? portionMarkingRequired)
 		{
-			ChunkCounter counters = new();
-
 			Stream stream = new MemoryStream(32000);
-			await Export(serverFileName, (document) => { PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel); }, stream, portionMarkingRequired, tokenService);
+			await Export(serverFileName, (document) => { PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, refNumberPrefixLevel); }, stream, portionMarkingRequired, tokenService);
 			stream.Position = 0;
 			return new FileStreamResult(stream, ExportFileDownloadBase.ContentType_DOCX)
 			{
@@ -101,11 +99,9 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
 		public async Task ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, Stream stream, int refNumberPrefixLevel, bool includeDocumentDetails = true, bool portionMarkingRequired = false)
 		{
-			ChunkCounter counters = new();
-
 			int rateTableYears = rddDocument.EndYear - rddDocument.StartYear;
 
-			await Export(serverFileName, (document) => { PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel, rddDocument, includeDocumentDetails); }, stream, portionMarkingRequired, tokenService);
+			await Export(serverFileName, (document) => { PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, refNumberPrefixLevel, rddDocument, includeDocumentDetails); }, stream, portionMarkingRequired, tokenService);
 		}
 
 		#region Populate Methods
@@ -119,11 +115,12 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="fileAttachments">Collection of File Attachment MVs</param>
 		/// <param name="revision">Revision modelview</param>
 		/// <param name="rateTableYears">Number of years to include in the rate tables</param>
-		/// <param name="counters">The chunk counters</param>
 		/// <param name="rddDocument">The RDD document model view.</param>
 		/// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
 		/// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
-		private void PopulatePPRDExport(Document document, ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, RevisionModelView revision, int rateTableYears, ref ChunkCounter counters, int refNumberPrefixLevel, DocumentDetailModelView rddDocument = null, bool includeDocumentDetails = true)
+		private void PopulatePPRDExport(Document document, ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, 
+			ICollection<FileAttachmentRowModelView> fileAttachments, RevisionModelView revision, int rateTableYears, int refNumberPrefixLevel, 
+			DocumentDetailModelView rddDocument = null, bool includeDocumentDetails = true)
 		{
 			// Populate the header
 			PopulatePPRDHeader(document, revision);
@@ -131,7 +128,7 @@ namespace IES.ActionLogic.Core.IO.Export
 			if (includeDocumentDetails)
 			{
 				// Populate introduction text
-				PopulateIntroduction(document, revision, ref counters);
+				PopulateIntroduction(document, revision);
 			}
 			else
 			{
@@ -158,7 +155,7 @@ namespace IES.ActionLogic.Core.IO.Export
 			SectionModelView lastSection = sections.LastOrDefault();
 
 			// Add File Attachments that do not have sections
-			PopulateFileAttachments(fileAttachments, sectionContainerTemplate, lastElement, document, ref counters, lastSection, refNumberPrefixLevel);
+			PopulateFileAttachments(fileAttachments, sectionContainerTemplate, lastElement, document, lastSection, refNumberPrefixLevel);
 
 			int firstSectionId = sections.FirstOrDefault() == null ? -1 : sections.First().Id;
 
@@ -166,7 +163,7 @@ namespace IES.ActionLogic.Core.IO.Export
 			foreach (SectionModelView section in sections.Reverse())
 			{
 				PopulateSectionContainer(section, rates, fileAttachments, publishYear, rateTableYears, 0, sectionContainerTemplate,
-					lastElement, document, ref counters, rddDocument, section.Id == firstSectionId, refNumberPrefixLevel);
+					lastElement, document, rddDocument, section.Id == firstSectionId, refNumberPrefixLevel);
 			}
 
 			if (sectionContainerTemplate != null)
@@ -187,25 +184,24 @@ namespace IES.ActionLogic.Core.IO.Export
 		private void PopulatePPRDHeader(Document document, RevisionModelView revision)
 		{
 			// TODO TIW
-			ICollection<StructuredDocumentTag> headerElements = null;
-			//ICollection<SdtAlias> headerElements = (from headerPart in document.Document.HeaderParts
-			//										from StructuredDocumentTag in headerPart.Header.Descendants<SdtAlias>()
-			//										select StructuredDocumentTag).ToCollection();
+			StructuredDocumentTagCollection sdts = document.Range.StructuredDocumentTags;
 
-			// Populate the revision number
-			StructuredDocumentTag revNumberElement = headerElements.FirstOrDefault(x => x.Title == PPRDExporterConstants.FIELDNAME_REVISIONNUMBER);
-			if (revNumberElement != null)
+			foreach (StructuredDocumentTag tag in sdts)
 			{
-				WordUtilities.SetElementText(revNumberElement, revision.Revision);
-				revNumberElement.Title = string.Empty;
-			}
-
-			// Populate the publish date
-			StructuredDocumentTag publishDateElement = headerElements.FirstOrDefault(x => x.Title == PPRDExporterConstants.FIELDNAME_PUBLISHDATE);
-			if (publishDateElement != null)
-			{
-				WordUtilities.SetElementText(publishDateElement, revision.RevisionPublishedInfo);
-				publishDateElement.Title = string.Empty;
+				HeaderFooter headerFooter = tag.GetAncestor(NodeType.HeaderFooter) as HeaderFooter;
+				if (headerFooter != null && headerFooter.HeaderFooterType == HeaderFooterType.HeaderPrimary)
+				{
+					if (tag.Title == PPRDExporterConstants.FIELDNAME_REVISIONNUMBER)
+					{
+						WordUtilities.SetElementText(tag, revision.Revision);
+						tag.Title = string.Empty;
+					}
+					else if (tag.Title == PPRDExporterConstants.FIELDNAME_PUBLISHDATE)
+					{
+						WordUtilities.SetElementText(tag, revision.RevisionPublishedInfo);
+						tag.Title = string.Empty;
+					}
+				}
 			}
 		}
 
@@ -214,8 +210,7 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// </summary>
 		/// <param name="document">The document</param>
 		/// <param name="revision">Revision modelview</param>
-		/// <param name="counters">The chunk counters</param>
-		private void PopulateIntroduction(Document document, RevisionModelView revision, ref ChunkCounter counters)
+		private void PopulateIntroduction(Document document, RevisionModelView revision)
 		{
 			// Get container element
 			StructuredDocumentTag introductionContainerTemplate = WordUtilities.GetTaggedElement(document, PPRDExporterConstants.CONTAINER_INTRODUCTION);
@@ -224,7 +219,7 @@ namespace IES.ActionLogic.Core.IO.Export
 			StructuredDocumentTag historyElement = WordUtilities.GetTaggedChildElement(introductionContainerTemplate,
 				PPRDExporterConstants.FIELDNAME_HISTORY);
 			WordUtilities.SetElementTextWithHTML(document, historyElement,
-				ReplaceParagraphTags(revision.History), ref counters);
+				ReplaceParagraphTags(revision.History));
 
 			// populate Release Notes
 			StructuredDocumentTag publishDateElement = WordUtilities.GetTaggedChildElement(introductionContainerTemplate,
@@ -236,7 +231,7 @@ namespace IES.ActionLogic.Core.IO.Export
 			if (!string.IsNullOrWhiteSpace(revision.ReleaseNotes))
 			{
 				WordUtilities.SetElementTextWithHTML(document, releaseNotesElement,
-					ReplaceParagraphTags(revision.ReleaseNotes), ref counters);
+					ReplaceParagraphTags(revision.ReleaseNotes));
 			}
 			else
 			{
@@ -256,11 +251,13 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="sectionContainerTemplate">The Section Container Template</param>
 		/// <param name="lastElement">Last Element</param>
 		/// <param name="mainPart">The main document part</param>
-		/// <param name="counters">The chunk counters</param>
 		/// <param name="rddDocument">The RDD document to create from.  If null, then export full PPRD.</param>
 		/// <param name="firstSection">Bool noting if this is the first section</param>
 		/// <param name="refNumberPrefixLevel">The prefix level for the Reference Numbers.</param>
-		private void PopulateSectionContainer(SectionModelView section, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, int publishYear, int rateTableYears, int subsectionLevel, StructuredDocumentTag sectionContainerTemplate, Node lastElement, Document mainPart, ref ChunkCounter counters, DocumentDetailModelView rddDocument, bool firstSection, int refNumberPrefixLevel)
+		private void PopulateSectionContainer(SectionModelView section, ICollection<RateDetailModelView> rates, 
+			ICollection<FileAttachmentRowModelView> fileAttachments, int publishYear, int rateTableYears, int subsectionLevel, 
+			StructuredDocumentTag sectionContainerTemplate, Node lastElement, Document mainPart,
+			DocumentDetailModelView rddDocument, bool firstSection, int refNumberPrefixLevel)
 		{
 			if (rddDocument == null || rddDocument.SelectedSectionIds.Contains(section.Id))
 			{
@@ -276,10 +273,9 @@ namespace IES.ActionLogic.Core.IO.Export
 				{
 					StructuredDocumentTag pageBreakElement =
 						WordUtilities.GetTaggedChildElement(sectionContainer, PPRDExporterConstants.PAGE_BREAK);
-					Paragraph pageBreak = new(mainPart);
+					Paragraph pageBreak = pageBreakElement.GetChild(NodeType.Paragraph, 0, true) as Paragraph;
 					Run run = new Run(mainPart, ControlChar.PageBreak);
 					pageBreak.AppendChild(run);
-					pageBreakElement.Append(pageBreak);
 				}
 
 				// Populate the section number and title
@@ -317,7 +313,12 @@ namespace IES.ActionLogic.Core.IO.Export
 
 						if (modelView.ContentType == SectionContentType.Text && textElement != null)
 						{
-							WordUtilities.SetElementTextWithHTML(mainPart, textElement, modelView.TextContent, ref counters, false, modelView.IsInternalSection ?? false);
+							WordUtilities.SetElementTextWithHTML(mainPart, textElement, modelView.TextContent, false);
+
+							if (modelView.IsInternalSection ?? false)
+							{
+								ApplyInternalSectionFormatting(textElement);
+							}
 
 							// Remove table elements
 							RemoveElement(rateTableElement);
@@ -440,7 +441,7 @@ namespace IES.ActionLogic.Core.IO.Export
 
 				// Get the file attachments for this section
 				ICollection<FileAttachmentRowModelView> sectionFileAttachments = fileAttachments.Where(f => f.SectionId == section.Id).ToList();
-				AddFileAttachments(mainPart, ref counters, textAndTableContainerTemplate, ref lastTextTableElement, sectionFileAttachments);
+				AddFileAttachments(mainPart, textAndTableContainerTemplate, ref lastTextTableElement, sectionFileAttachments);
 
 				// Remove the template element
 				RemoveElement(textAndTableContainerTemplate);
@@ -451,7 +452,7 @@ namespace IES.ActionLogic.Core.IO.Export
 				foreach (SectionModelView subsectionElement in subsectionMVs.Reverse())
 				{
 					// Recursive call to populate subsections
-					PopulateSectionContainer(subsectionElement, rates, fileAttachments, publishYear, rateTableYears, subsectionLevel, sectionContainerTemplate, lastElement, mainPart, ref counters, rddDocument, firstSection, refNumberPrefixLevel);
+					PopulateSectionContainer(subsectionElement, rates, fileAttachments, publishYear, rateTableYears, subsectionLevel, sectionContainerTemplate, lastElement, mainPart, rddDocument, firstSection, refNumberPrefixLevel);
 				}
 			}
 		}
@@ -460,11 +461,10 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// Adds the file attachments to a clone of the specified template.
 		/// </summary>
 		/// <param name="mainPart">The main part.</param>
-		/// <param name="counters">The counters.</param>
 		/// <param name="textAndTableContainerTemplate">The text and table container template.</param>
 		/// <param name="lastTextTableElement">The last text table element.</param>
 		/// <param name="sectionFileAttachments">The section file attachments.</param>
-		private void AddFileAttachments(Document mainPart, ref ChunkCounter counters, StructuredDocumentTag textAndTableContainerTemplate, ref Node lastTextTableElement, ICollection<FileAttachmentRowModelView> sectionFileAttachments)
+		private void AddFileAttachments(Document mainPart, StructuredDocumentTag textAndTableContainerTemplate, ref Node lastTextTableElement, ICollection<FileAttachmentRowModelView> sectionFileAttachments)
 		{
 			if (sectionFileAttachments.Any())
 			{
@@ -486,7 +486,7 @@ namespace IES.ActionLogic.Core.IO.Export
 					string hyperlink = string.Format("<a href=\"{1}\">{0}</a>", attachment.Name, attachment.Link);
 
 					// Set the hyperlink
-					WordUtilities.SetElementTextWithHTML(mainPart, textElement, hyperlink, ref counters, false, false);
+					WordUtilities.SetElementTextWithHTML(mainPart, textElement, hyperlink, false);
 
 					// Remove table elements
 					RemoveElement(rateTableElement);
@@ -735,10 +735,11 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="sectionContainerTemplate">The section container template.</param>
 		/// <param name="lastElement">The last element.</param>
 		/// <param name="Document">The main document part.</param>
-		/// <param name="counters">The counters.</param>
 		/// <param name="lastSection">The last section of the document (if one exists).</param>
 		/// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
-		private void PopulateFileAttachments(ICollection<FileAttachmentRowModelView> fileAttachments, StructuredDocumentTag sectionContainerTemplate, Node lastElement, Document Document, ref ChunkCounter counters, SectionModelView lastSection, int refNumberPrefixLevel)
+		private void PopulateFileAttachments(ICollection<FileAttachmentRowModelView> fileAttachments, 
+			StructuredDocumentTag sectionContainerTemplate, Node lastElement, Document Document, SectionModelView lastSection, 
+			int refNumberPrefixLevel)
 		{
 			ICollection<FileAttachmentRowModelView> attachments = fileAttachments.Where(f => f.SectionId == 0).ToList();
 
@@ -774,7 +775,7 @@ namespace IES.ActionLogic.Core.IO.Export
 				Node lastTextTableElement = textAndTableContainerTemplate;
 
 				// Add the file attachments
-				AddFileAttachments(Document, ref counters, textAndTableContainerTemplate, ref lastTextTableElement, attachments);
+				AddFileAttachments(Document, textAndTableContainerTemplate, ref lastTextTableElement, attachments);
 
 				// Remove the template element
 				RemoveElement(textAndTableContainerTemplate);
@@ -791,25 +792,9 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="document">the document to clean</param>
 		private void PerformFinalDocumentCleanup(Document document)
 		{
-			// TODO TIW
-			//// Set View to Print layout
-			//if (document.Document.DocumentSettingsPart == null)
-			//{
-			//	document.Document.AddNewPart<DocumentSettingsPart>();
-			//}
-
-			//if (document.Document.DocumentSettingsPart.Settings == null)
-			//{
-			//	document.Document.DocumentSettingsPart.Settings = new Settings();
-			//}
-
-			//if (document.Document.DocumentSettingsPart.Settings.View == null)
-			//{
-			//	document.Document.DocumentSettingsPart.Settings.View = new View();
-			//}
-
-			//document.Document.DocumentSettingsPart.Settings.View.Val = ViewValues.Print;
-
+			// Set View to Print layout
+			document.ViewOptions.ViewType = Aspose.Words.Settings.ViewType.PageLayout;
+			
 			// Remove content controls
 			WordUtilities.RemoveContentControls(document);
 
@@ -823,23 +808,20 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="element">element to apply formatting to</param>
 		private void ApplyInternalSectionFormatting(StructuredDocumentTag element)
 		{
-			// TODO TIW
-			//RunProperties runProperties = new();
-
-			//Italic italic = new() { Val = OnOffValue.FromBoolean(true) };
-			//Color color = new() { Val = PPRDExporterConstants.INTERNALSECTIONTEXTCOLOR }; // blue
-
-			//runProperties.Append(italic);
-			//runProperties.Append(color);
-
-			//if (element.GetFirstChild<SdtContentRun>() != null && element.GetFirstChild<SdtContentRun>().GetFirstChild<Run>() != null)
-			//{
-			//	element.GetFirstChild<SdtContentRun>().GetFirstChild<Run>().PrependChild(runProperties);
-			//}
+			HashSet<Run> runs = element.GetChildNodes<Run>(NodeType.Run, true);
+			
+			if (runs.Any())
+			{
+				foreach (Run run in runs)
+				{
+					run.Font.Italic = true;
+					run.Font.Color = ColorTranslator.FromHtml("#" + PPRDExporterConstants.INTERNALSECTIONTEXTCOLOR); // blue
+				}
+			}
 		}
 
 		/// <summary>
-		/// Append cell to the end of a row, using the formatting and properites of that row
+		/// Append cell to the end of a row, using the formatting and properties of that row
 		/// </summary>
 		/// <param name="row">Row to append cell to</param>
 		/// <param name="text">Text for cell</param>
@@ -876,13 +858,7 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="headerRow">Row to set as header</param>
 		private void SetHeaderRow(Row headerRow)
 		{
-			// TODO TIW
-			//if (headerRow.TableRowProperties == null)
-			//{
-			//	headerRow.TableRowProperties = new TableRowProperties();
-			//}
-
-			//headerRow.TableRowProperties.AppendChild(new TableHeader());
+			headerRow.RowFormat.HeadingFormat = true;
 		}
 
 		/// <summary>
@@ -891,20 +867,9 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="table">The table</param>
 		private void AdjustTableBorders(Table table)
 		{
-			// TODO TIW
-			//TableProperties tableProperties = table.Descendants<TableProperties>().FirstOrDefault();
-			//if (tableProperties != null && tableProperties.TableBorders != null)
-			//{
-			//	if (tableProperties.TableBorders.BottomBorder != null)
-			//	{
-			//		tableProperties.TableBorders.BottomBorder.Size = 12U; // 1.5 point border
-			//	}
-
-			//	if (tableProperties.TableBorders.RightBorder != null)
-			//	{
-			//		tableProperties.TableBorders.RightBorder.Size = 12U; // 1.5 point border
-			//	}
-			//}
+			// TODO TIW is black correct color?
+			table.SetBorder(BorderType.Bottom, LineStyle.Single, 1.5, Color.Black, true); 
+			table.SetBorder(BorderType.Right, LineStyle.Single, 1.5, Color.Black, true);
 		}
 
 		/// <summary>
@@ -913,18 +878,11 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="row">The row</param>
 		private void AdjustRowBorders(Row row)
 		{
-			// TODO TIW
-			//// There are no border properties for rows, so need to apply to each cell in the row
-			//ICollection<Cell> cells = row.Descendants<Cell>().ToCollection();
-			//foreach (Cell cell in cells)
-			//{
-			//	CellProperties cellProperties = cell.Descendants<CellProperties>().FirstOrDefault();
-			//	if (cellProperties != null && cellProperties.CellBorders != null &&
-			//		cellProperties.CellBorders.BottomBorder != null)
-			//	{
-			//		cellProperties.CellBorders.BottomBorder.Size = 12U; // 1.5 point border
-			//	}
-			//}
+			// There are no border properties for rows, so need to apply to each cell in the row
+			foreach (Cell cell in row.Cells)
+			{
+				cell.CellFormat.Borders.Bottom.LineWidth = 1.5; // 1.5 point border
+			}
 		}
 
 		/// <summary>

@@ -278,8 +278,7 @@ namespace IES.Tests.Core
 
 			Document doc = LoadTemplate();
 			StructuredDocumentTag sdt = WordUtilities.GetTaggedElement(doc, BOEExporterConstants.FieldName_ProgramName);
-			ChunkCounter counter = new ();
-			WordUtilities.SetElementTextWithHTML(doc, sdt, html, ref counter);
+			WordUtilities.SetElementTextWithHTML(doc, sdt, html);
 
 			// now we compare to the output
 			if (sdt.ParentNode is Paragraph paragraph)
@@ -354,8 +353,8 @@ namespace IES.Tests.Core
 
 			Document doc = LoadTemplate();
 			StructuredDocumentTag sdt = WordUtilities.GetTaggedElement(doc, BOEExporterConstants.FieldName_ProgramName);
-			ChunkCounter counter = new();
-			WordUtilities.SetElementTextWithHTML(doc, sdt, html, ref counter);
+			
+			WordUtilities.SetElementTextWithHTML(doc, sdt, html);
 
 			// now we compare to the output
 			if (sdt.ParentNode is Paragraph paragraph)
@@ -504,8 +503,8 @@ namespace IES.Tests.Core
 			BOEExportTaskElement task = GetTaskElement();
 
 			StructuredDocumentTag moqElement = WordUtilities.GetTaggedElement(doc, BOEExporterConstants.Container_MOQSelection);
-			ChunkCounter counter = new();
-			this.PopulateMOQTypeData(task, [], doc, moqElement, false, exportInputs, ref counter);
+			
+			this.PopulateMOQTypeData(task, [], doc, moqElement, false, exportInputs);
 
 			//string filename = Path.GetTempFileName();
 			//doc.Save(filename, SaveFormat.Docx);
@@ -525,8 +524,8 @@ namespace IES.Tests.Core
 			BOEExportTaskElement task = GetTaskElement();
 
 			StructuredDocumentTag moqElement = WordUtilities.GetTaggedElement(doc, BOEExporterConstants.Container_MOQSelection);
-			ChunkCounter counter = new();
-			this.PopulateMOQTypeData(task, [], doc, moqElement, true, exportInputs, ref counter);
+			
+			this.PopulateMOQTypeData(task, [], doc, moqElement, true, exportInputs);
 
 			Assert.Fail();
 		}

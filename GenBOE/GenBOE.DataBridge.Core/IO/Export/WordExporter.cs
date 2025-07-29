@@ -366,10 +366,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="moqTypeContainerTemplate">MOQ container template element</param>
 		/// <param name="customExport">If using custom exporter</param>
 		/// <param name="exportInputs">Export inputs</param>
-		/// <param name="counters">counters</param>
 		[SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "6#")]
 		protected void PopulateMOQTypeData(BOEExportTaskElement laborTaskElement, ICollection<BoeCustomReportComponent> selectedComponents,
-			Document mainDocumentPart, StructuredDocumentTag moqTypeContainerTemplate, bool customExport, BOEExportInputs exportInputs, ref ChunkCounter counters)
+			Document mainDocumentPart, StructuredDocumentTag moqTypeContainerTemplate, bool customExport, BOEExportInputs exportInputs)
 		{
 			_ = laborTaskElement ?? throw new ArgumentNullException(nameof(laborTaskElement));
 			_ = selectedComponents ?? throw new ArgumentNullException(nameof(selectedComponents));
@@ -504,7 +503,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_HoursDescriptionLabel), label);
 							WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_HoursDescription),
-								moqType.DescriptionHoursRequired, ref counters, true);
+								moqType.DescriptionHoursRequired, true);
 							break;
 						case MOQType.SME:
 							if (customExport)
@@ -521,13 +520,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 							}
 
 							WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMEReasons),
-								moqType.SmeReason, ref counters, true);
+								moqType.SmeReason, true);
 							WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMEHoursLogic),
-								moqType.SmeHoursLogic, ref counters, true);
+								moqType.SmeHoursLogic, true);
 							WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMEDurationLogic),
-								moqType.SmeDurationLogic, ref counters, true);
+								moqType.SmeDurationLogic, true);
 							WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMETasks),
-								moqType.SmeTaskEstimates, ref counters, true);
+								moqType.SmeTaskEstimates, true);
 							break;
 						case MOQType.NonLabor:
 							if (customExport)
@@ -553,7 +552,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					if (moqType.SelectedMOQType != MOQType.SME)
 					{
 						WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_Rationale),
-							moqType.Rationale, ref counters, true);
+							moqType.Rationale, true);
 					}
 					else if (customExport)
 					{
@@ -567,7 +566,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					if (CommonUtilities.IsHistoricalReferenceExplanationRequired(exportInputs.Workspace.CreationDate) && (moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative))
 					{
 						WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_HistoricalRefExp),
-							moqType.HistoricalReferenceExplanation, ref counters, true);
+							moqType.HistoricalReferenceExplanation, true);
 					}
 					else if (customExport)
 					{
@@ -582,7 +581,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						exportInputs.Workspace.EnableSAPConnection, laborTaskElement.MOQTypes, laborTaskElement.BOETaskElementID ?? -1, laborTaskElement.HasTMRates))
 					{
 						WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SkillMix),
-							moqType.SkillMixRationale, ref counters, true);
+							moqType.SkillMixRationale, true);
 					}
 					else if (customExport)
 					{

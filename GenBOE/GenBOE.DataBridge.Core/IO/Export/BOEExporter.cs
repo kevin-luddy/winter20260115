@@ -480,8 +480,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		private void PopulateDataExportBOE(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
 			ExcelReportTemplateType templateType, Document document)
 		{
-			ChunkCounter counters = new ChunkCounter();
-
 			bool writelogstatements = ConfigurationUtilities.GetAppSetting<bool>("ExportLoggingEnableInternalMV", false);
 
 			if (FullObjectHelper.ShowEquivalentPersonsOption && exportInputs.Workspace.IsUsingEquivalentPerson)
@@ -557,7 +555,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					try
 					{
 						// Populate the boe-level content in the template
-						PopulateBOEContent(lastBOE, boeExportModelView, boeSummaryGridModelView, exportInputs, document, templateType, ref counters);
+						PopulateBOEContent(lastBOE, boeExportModelView, boeSummaryGridModelView, exportInputs, document, templateType);
 
 						double useFontSizeDflt24 = this.GetFontSize(24, boeExportModelView.ExportFormat.TemplateType);
 						double useFontSizeDflt19 = this.GetFontSize(19, boeExportModelView.ExportFormat.TemplateType);
@@ -766,7 +764,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 								if (taskContainer != null)
 								{
 									// Populate the task-specific items in the template
-									PopulateTaskElementContent(exportInputs, taskContainer, taskElement, document, wsHasMoqRteTemplate, ref counters);
+									PopulateTaskElementContent(exportInputs, taskContainer, taskElement, document, wsHasMoqRteTemplate);
 
 									switch (taskElement.ElementType)
 									{
@@ -1689,11 +1687,10 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="exportInputs">The export inputs.</param>
 		/// <param name="mainPart">Main document part</param>
 		/// <param name="templateType">Template type</param>
-		/// <param name="counters">The counters.</param>
 		[SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals")]
 		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		private void PopulateBOEContent(CompositeNode boeContainer, BOEExportModelView boeExportModelView, List<BOESummaryGridModelView> boeSummaryGridModelView,
-			BOEExportInputs exportInputs, Document mainPart, ExcelReportTemplateType templateType, ref ChunkCounter counters)
+			BOEExportInputs exportInputs, Document mainPart, ExcelReportTemplateType templateType)
 		{
 			// Get all tagged elements in Main Document
 			HashSet<StructuredDocumentTag> boeElements = new HashSet<StructuredDocumentTag>(boeContainer.GetChildNodes<StructuredDocumentTag>(NodeType.StructuredDocumentTag, true));
@@ -1803,10 +1800,10 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			}
 			else
 			{
-				SetFieldWithValueHtmlText(mainPart, boeElements, FieldName_BOEDescription, boeExportModelView.BOEDescription, ref counters);
+				SetFieldWithValueHtmlText(mainPart, boeElements, FieldName_BOEDescription, boeExportModelView.BOEDescription);
 			}
 
-			SetFieldWithValueHtmlText(mainPart, boeElements, FieldName_BOEDescriptionSSDS, this.ReplaceParagraphTags(boeExportModelView.BOEDescription), ref counters);
+			SetFieldWithValueHtmlText(mainPart, boeElements, FieldName_BOEDescriptionSSDS, this.ReplaceParagraphTags(boeExportModelView.BOEDescription));
 
 			decimal total = boeSummaryGridModelView.Sum(s => s.TotalHours).Value;
 			SetFieldWithValuePlainText(boeElements, FieldName_SummaryTotal, total == 0 && !exportInputs.Workspace.IsProjectMapWorkspace ? string.Empty : CommonUtilities.FormatStringWithPrecision(total, WorkspaceDecimalPrecision));
@@ -1948,7 +1945,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					}
 					else
 					{
-						WordUtilities.SetElementTextWithHTML(mainPart, element, SourcesOfData, ref counters);
+						WordUtilities.SetElementTextWithHTML(mainPart, element, SourcesOfData);
 					}
 
 					// if the template has this field in a table row and it is removed, the document will be unable to open
@@ -2036,8 +2033,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="boeElements">Task Elements</param>
 		/// <param name="fieldName">Field Name</param>
 		/// <param name="fieldValue">Field Values</param>
-		/// <param name="counters">Counters for alt-chunks</param>
-		private static void SetFieldWithValueHtmlText(Document mainPart, HashSet<StructuredDocumentTag> boeElements, string fieldName, string fieldValue, ref ChunkCounter counters)
+		private static void SetFieldWithValueHtmlText(Document mainPart, HashSet<StructuredDocumentTag> boeElements, string fieldName, string fieldValue)
 		{
 			StructuredDocumentTag alias = boeElements.LastOrDefault(x => x.Title == fieldName);
 			if (alias != null)
@@ -2045,7 +2041,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				StructuredDocumentTag element = alias;
 				if (element != null)
 				{
-					WordUtilities.SetElementTextWithHTML(mainPart, element, fieldValue, ref counters);
+					WordUtilities.SetElementTextWithHTML(mainPart, element, fieldValue);
 					alias.RemoveIt();
 				}
 			}
@@ -2451,7 +2447,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			{
 				tableStyle = (TableStyle)document.Styles.Add(StyleType.Table, "rolluptable");
 				tableStyle.Borders.LineStyle = LineStyle.Single;
-				tableStyle.Borders.LineWidth = 4;
+				tableStyle.Borders.LineWidth = 0.5; 
 				tableStyle.LeftPadding = 0;
 				tableStyle.RightPadding = 0;
 				tableStyle.TopPadding = 7.2;
@@ -2479,17 +2475,17 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			{
 				tableStyle = (TableStyle)document.Styles.Add(StyleType.Table, "gsmorolluptable");
 				tableStyle.Borders.LineStyle = LineStyle.Single;
-				tableStyle.Borders.LineWidth = 4;
-				tableStyle.LeftPadding = 58f / 20f;
-				tableStyle.RightPadding = 58f / 20f;
-				tableStyle.TopPadding = 58f / 20f;
-				tableStyle.BottomPadding = 58f / 20f;
+				tableStyle.Borders.LineWidth = 0.5; 
+				tableStyle.LeftPadding = 58d / 20d;
+				tableStyle.RightPadding = 58f / 20d;
+				tableStyle.TopPadding = 58d / 20d;
+				tableStyle.BottomPadding = 58d / 20d;
 				tableStyle.Alignment = TableAlignment.Center;
 				tableStyle.ConditionalStyles[ConditionalStyleType.OddColumnBanding].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
 			}
 
 			table.AllowAutoFit = autoFitLayout;
-			table.PreferredWidth = PreferredWidth.FromPoints(730.8 / 20.0);
+			table.PreferredWidth = PreferredWidth.FromPoints(730.8 / 20d);
 			// TODO TIW new TableLook() { Val = "04A0", FirstRow = true, LastRow = false, FirstColumn = true, LastColumn = false, NoHorizontalBand = false, NoVerticalBand = true },
 
 			table.Style = tableStyle;
@@ -2510,7 +2506,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			Row tr = new Row(document);
 			tr.RowFormat.AllowBreakAcrossPages = false;
 
-			//tr.Append(trp);
 			if (Headers != null)
 			{
 				foreach (string header in Headers)
@@ -2988,17 +2983,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						{
 							sdt.Placeholder?.RemoveIt();
 						}
-
-						// TODO TIW
-						//foreach (SdtId id in tableRow.Descendants<SdtId>())
-						//{
-						//	id.RemoveIt();
-						//}
-
-						//foreach (SdtPlaceholder placeholder in tableRow.Descendants<SdtPlaceholder>())
-						//{
-						//	placeholder.RemoveIt();
-						//}
 
 						decimal hours = rollupRowData.HoursTotal.HasValue ? rollupRowData.HoursTotal.Value : 0m;
 						hoursTotal += hours;
@@ -3487,7 +3471,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
 					c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO CellWidth() { Type = TableWidthUnitValues.Pct
 					c.CellFormat.Borders.Bottom.LineStyle = LineStyle.Single;
-					c.CellFormat.Borders.Bottom.LineWidth = 4;
+					c.CellFormat.Borders.Bottom.LineWidth = 0.5;
 				}; 
 
 				PopulateTableCell(tr3, laborRollup.Select(x => x.Total).Sum().ToString(Format, NumberFormatter), Font, FontSize, totalValueProperties, naPP);
@@ -3639,7 +3623,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
 						c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO CellWidth() { Type = TableWidthUnitValues.Pct
 						c.CellFormat.Borders.Bottom.LineStyle = LineStyle.Single;
-						c.CellFormat.Borders.Bottom.LineWidth = 4;
+						c.CellFormat.Borders.Bottom.LineWidth = 0.5;
 					}; 
 
 					if (NumberFormatter != null) { NumberFormatter.CurrencySymbol = "$"; }
@@ -4038,7 +4022,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				table.Append(CreateTableBlankRow(table.Document, 16));
 			}
 
-			// TODO TIW 
 			CellVerticalAlignment vertAlign = CellVerticalAlignment.Center;
 
 			Action<Paragraph> centerPP = p =>
@@ -4112,7 +4095,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					}; 
 					
 					Action<Run> rp1 = r => r.Font.Bold = true;
-					PopulateTableCell(tr3, "Total", Font, FontSize, totalLabelCellProperties, rightPP, rp1, new GridSpan() { Val = 15 });
+					PopulateTableCell(tr3, "Total", Font, FontSize, totalLabelCellProperties, rightPP, rp1, 15);
 
 					// and print the total value
 					if (NumberFormatter != null)
@@ -4124,7 +4107,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						c.CellFormat.VerticalAlignment = vertAlign;
 						c.CellFormat.PreferredWidth = PreferredWidth.Auto;
 						c.CellFormat.Borders.Bottom.LineStyle = LineStyle.Single;
-						c.CellFormat.Borders.Bottom.LineWidth = 4;
+						c.CellFormat.Borders.Bottom.LineWidth = 0.5;
 					}; 
 					
 					string totalValue = taskRollup[item].Select(x => x.Total).Sum().ToString(Format, NumberFormatter);
@@ -4369,8 +4352,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				Row tr3 = new Row(element.Document);
 
 				// create resource total field
-				Action<Cell> totalLabelCellProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = vertAlign },
-					// new CellWidth() { Type = TableWidthUnitValues.Pct }, new CellBorders(new BottomBorder() { Val = BorderValues.Nil }));
+				Action<Cell> totalLabelCellProperties = c =>
+				{
+					c.CellFormat.VerticalAlignment = vertAlign;
+					c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+					c.CellFormat.Borders.Bottom.LineStyle = LineStyle.None;
+				}; 
+				
 				Action<Run> rp1 = r => r.Font.Bold = true;
 				PopulateTableCell(tr3, "Total", Font, FontSize, totalLabelCellProperties, rightPP, rp1, numColumns - 1);
 
@@ -4379,8 +4367,14 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				{
 					NumberFormatter.CurrencySymbol = "$";
 				}
-				Action<Cell> totalValueCellProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = vertAlign }, new CellWidth() { Type = TableWidthUnitValues.Pct },
-															 // new CellBorders(new BottomBorder() { Val = BorderValues.Single, Color = "auto", Size = (UInt32Value)4U, Space = (UInt32Value)0U }));
+				Action<Cell> totalValueCellProperties = c =>
+				{
+					c.CellFormat.VerticalAlignment = vertAlign;
+					c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+					c.CellFormat.Borders.Bottom.LineStyle = LineStyle.None;
+					c.CellFormat.Borders.Bottom.LineWidth = 0.5;
+				}; 
+				
 				string totalValue = taskRollup[item].Select(x => x.Total).Sum().ToString(Format, NumberFormatter);
 				PopulateTableCell(tr3, totalValue, Font, FontSize, totalValueCellProperties, centerPP);
 				if (NumberFormatter != null)
@@ -4392,8 +4386,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 				// create blank separator row between resources
 				Row tr4 = new Row(element.Document);
-				Action<Cell>blankCellProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = vertAlign },
-					// new CellWidth() { Type = TableWidthUnitValues.Pct }, new CellBorders(new TopBorder() { Val = BorderValues.Nil }));
+				Action<Cell>blankCellProperties = c =>
+				{
+					c.CellFormat.VerticalAlignment = vertAlign;
+					c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+					c.CellFormat.Borders.Top.LineStyle = LineStyle.None;
+				}; 
+
 				Action<Run> rp = r => r.Font.Bold = true;
 				PopulateTableCell(tr4, string.Empty, Font, FontSize, blankCellProperties, centerPP, rp, numColumns);
 
@@ -4412,8 +4411,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						Row tr5 = new Row(element.Document);
 
 						// create shaded summary cell
-						Action<Cell> summaryCellProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = vertAlign },
-							// new CellWidth() { Type = TableWidthUnitValues.Pct }, new Shading() { Color = "auto", Fill = "BFBFBF", Val = ShadingPatternValues.Clear });
+						Action<Cell> summaryCellProperties = c =>
+						{
+							c.CellFormat.VerticalAlignment = vertAlign;
+							c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+							c.CellFormat.Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#BFBFBF");
+							c.CellFormat.Shading.Texture = TextureIndex.TextureNone;
+						}; 
 						Action<Run> rp = r => r.Font.Bold = true;
 						PopulateTableCell(tr5, "Summary", Font, FontSize, summaryCellProperties, centerPP, rp);
 
@@ -4432,7 +4436,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						string decSum = LaborValues.Where(x => x.Year == i).Select(x => x.December).Sum().ToString(Format, NumberFormatter);
 						string total = LaborValues.Where(x => x.Year == i).Select(x => x.Total).Sum().ToString(Format, NumberFormatter);
 
-						Action<Cell> cellProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = vertAlign }, new CellWidth() { Type = TableWidthUnitValues.Pct });
+						Action<Cell> cellProperties = c =>
+						{
+							c.CellFormat.VerticalAlignment = vertAlign;
+							c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+						}; 
 
 						// populate the cells
 						PopulateTableCell(tr5, i.ToString(), Font, FontSize, cellProperties, centerPP);
@@ -4462,13 +4470,24 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					Row tr6 = new Row(element.Document);
 
 					// create shaded summary cell
-					Action<Cell> totalSummaryCellProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = vertAlign },
-						// new CellWidth() { Type = TableWidthUnitValues.Pct }, new Shading() { Color = "auto", Fill = "BFBFBF", Val = ShadingPatternValues.Clear });
+					Action<Cell> totalSummaryCellProperties = c =>
+					{
+						c.CellFormat.VerticalAlignment = vertAlign;
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+						c.CellFormat.Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#BFBFBF");
+						c.CellFormat.Shading.Texture = TextureIndex.TextureNone;
+					}; 
+
 					Action<Run> rp1 = r => r.Font.Bold = true;
 					PopulateTableCell(tr6, "Summary", Font, FontSize, totalSummaryCellProperties, centerPP, rp1);
 
 					// total label
-					Action<Cell> totalCellProperties = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = vertAlign }, new CellWidth() { Type = TableWidthUnitValues.Pct });
+					Action<Cell> totalCellProperties = c =>
+					{
+						c.CellFormat.VerticalAlignment = vertAlign;
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+					};
+
 					PopulateTableCell(tr6, "Total", Font, FontSize, totalCellProperties, centerPP, rp1);
 
 					// get the values
@@ -4538,8 +4557,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			Cell tc = new Cell(tableRow.Document);
 			cellAction(tc);
-			// TODO TIW
-			// tc.CellFormat.HorizontalMerge = gridSpan;
 			
 			Run run = new Run(tableRow.Document);
 			run.Font.NameAscii = font;
@@ -4563,6 +4580,16 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			p.AppendChild(run);
 			tc.AppendChild(p);
 			tableRow.AppendChild(tc);
+			if (gridSpan > 1)
+			{
+				tc.CellFormat.HorizontalMerge = CellMerge.First;
+				for (int i = 1; i < gridSpan; i++)
+				{
+					Cell mergedCell = new Cell(tableRow.Document);
+					mergedCell.CellFormat.HorizontalMerge = CellMerge.Previous;
+					tableRow.AppendChild(mergedCell);
+				}
+			}
 		}
 
 		private Row CreateTableBlankRow(DocumentBase document, int NumOfColumns)
@@ -4573,7 +4600,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			{
 				Cell tc = new Cell(document);
 				tc.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-				tc.CellFormat.PreferredWidth = PreferredWidth.Auto; //tc.CellFormat.PreferredWidth.Type = PreferredWidthType.Percent; 
+				tc.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO tc.CellFormat.PreferredWidth.Type = PreferredWidthType.Percent; 
 				
 				Paragraph p = new Paragraph(document);
 				p.AppendChild(new Run(document, string.Empty));
@@ -4597,16 +4624,16 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			{
 				tableStyle = (TableStyle)document.Styles.Add(StyleType.Table, "taskvariabletable");
 				tableStyle.Borders.LineStyle = LineStyle.Single;
-				tableStyle.Borders.LineWidth = 4;
-				tableStyle.LeftPadding = 58f / 20f;
-				tableStyle.RightPadding = 58f / 20f;
-				tableStyle.TopPadding = 58f / 20f;
-				tableStyle.BottomPadding = 58f / 20f;
+				tableStyle.Borders.LineWidth = 0.5;
+				tableStyle.LeftPadding = 58d / 20d;
+				tableStyle.RightPadding = 58d / 20d;
+				tableStyle.TopPadding = 58d / 20d;
+				tableStyle.BottomPadding = 58d / 20d;
 				tableStyle.Alignment = TableAlignment.Center;
 				tableStyle.ConditionalStyles[ConditionalStyleType.OddColumnBanding].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
 			}
 
-			table.PreferredWidth = PreferredWidth.FromPoints(497f/ 20f);
+			table.PreferredWidth = PreferredWidth.FromPoints(497d/ 20d);
 			// TODO TIW new TableLook() { Val = "04A0", FirstRow = true, LastRow = false, FirstColumn = true, LastColumn = false, NoHorizontalBand = false, NoVerticalBand = true },
 
 			table.Style = tableStyle;
@@ -4627,8 +4654,14 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			tr.RowFormat.AllowBreakAcrossPages = false;
 			
 			
-			Action<Cell> tcp = null;// TODO TIW new CellProperties(new Shading() { Color = "auto", Fill = "BFBFBF", Val = ShadingPatternValues.Clear },
-				//new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Pct });
+			Action<Cell> tcp = c =>
+			{
+				c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+				c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+				c.CellFormat.Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#BFBFBF");
+				c.CellFormat.Shading.Texture = TextureIndex.TextureNone;
+			}; 
+
 			Action<Run> rp = r => r.Font.Bold = true;
 			Action<Paragraph> pp = p =>
 			{
@@ -4664,22 +4697,35 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					Row tr = new Row(table.Document);
 
 					// Populate Variable Cells
-					// TODO TIW
 					Action<Cell> VariableTCP = null;
-					//if (initialpass && item.ReferencedBOEs.Count == 1)
-					//{
-					//	VariableTCP = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Pct });
-					//}
-					//else if (initialpass && item.ReferencedBOEs.Count > 1)
-					//{
-					//	VariableTCP = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Pct }, new VerticalMerge() { Val = MergedCellValues.Restart });
-					//}
-					//else
-					//{
-					//	VariableTCP = null;// TODO TIW new CellProperties(new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Pct }, new VerticalMerge() { Val = MergedCellValues.Continue });
-					//}
+					if (initialpass && item.ReferencedBOEs.Count == 1)
+					{
+						VariableTCP = c =>
+						{
+							c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+							c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+						}; 
+					}
+					else if (initialpass && item.ReferencedBOEs.Count > 1)
+					{
+						VariableTCP = c =>
+						{
+							c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+							c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+							c.CellFormat.VerticalMerge = CellMerge.First;
+						}; 
+					}
+					else
+					{
+						VariableTCP = c =>
+						{
+							c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+							c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+							c.CellFormat.VerticalMerge = CellMerge.Previous;
+						}; 
+					}
 
-					Action<Paragraph> pp = null; //= new ParagraphProperties(new Justification() { Val = ParagraphAlignment.Center });
+					Action<Paragraph> pp = p => p.ParagraphFormat.Alignment = ParagraphAlignment.Center;
 
 					string name = null;
 					if (initialpass)
@@ -4697,7 +4743,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					PopulateTableCell(tr, total, Font, FontSize, VariableTCP, pp);
 
 					// Populate Dependents Cells
-					Action<Cell> DependentsTCP = null; // new CellProperties(new CellVerticalAlignment() { Val = TableVerticalAlignmentValues.Center }, new CellWidth() { Type = TableWidthUnitValues.Pct });
+					Action<Cell> DependentsTCP = c =>
+					{
+						c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+					}; 
 
 					this.PopulateTableCell(tr, CommonUtilities.FormatNumberTitleString(item2.WBSNumber, item2.WBSTitle, " - "), Font, FontSize, DependentsTCP, pp);
 					this.PopulateTableCell(tr, item2.ClinNumber, Font, FontSize, DependentsTCP, pp);
@@ -4719,9 +4769,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="taskElement">The task element whose data will populate the template</param>
 		/// <param name="mainPart">Main Document Part</param>
 		/// <param name="wsHasMoqRteTemplate">Whether there are any MOQ RTE Templates</param>
-		/// <param name="counters">The counters.</param>
 		private void PopulateTaskElementContent(BOEExportInputs exportInputs, BOEExportTaskContainer taskContainer, BOEExportTaskElement taskElement, 
-			Document mainPart, bool wsHasMoqRteTemplate, ref ChunkCounter counters)
+			Document mainPart, bool wsHasMoqRteTemplate)
 		{
 			// Iterate over all StructuredDocumentTags in the document
 			foreach (StructuredDocumentTag element in taskContainer.TaskContainer.Range.StructuredDocumentTags)
@@ -4735,8 +4784,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					if (sdtTitle == FieldName_TaskElementTitle)
 					{
 						WordUtilities.SetElementText(element, taskElement.TaskTitle);
-						// alias.RemoveIt(); 
-						// TODO TIW this was removing the SDTAlias...
+						// Set sdtAlias/Title to empty
+						element.Title = string.Empty;
 					}
 					else if (sdtTitle == FieldName_TaskElementDescription)
 					{
@@ -4746,17 +4795,17 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						}
 						else
 						{
-							WordUtilities.SetElementTextWithHTML(mainPart, element, taskElement.BOETaskDesc, ref counters);
+							WordUtilities.SetElementTextWithHTML(mainPart, element, taskElement.BOETaskDesc);
 						}
 
-						// alias.RemoveIt(); 
-						// TODO TIW this was removing the SDTAlias...
+						// Set sdtAlias/Title to empty
+						element.Title = string.Empty;
 					}
 					else if (sdtTitle == FieldName_TaskDescriptionSSDS)
 					{
-						WordUtilities.SetElementTextWithHTML(mainPart, element, this.ReplaceParagraphTags(taskElement.BOETaskDesc), ref counters);
-						// alias.RemoveIt(); 
-						// TODO TIW this was removing the SDTAlias...
+						WordUtilities.SetElementTextWithHTML(mainPart, element, this.ReplaceParagraphTags(taskElement.BOETaskDesc));
+						// Set sdtAlias/Title to empty
+						element.Title = string.Empty;
 					}
 					else if (sdtTitle == FieldName_TaskStartDate)
 					{
@@ -4768,8 +4817,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						}
 
 						WordUtilities.SetElementText(element, value);
-						// alias.RemoveIt(); 
-						// TODO TIW this was removing the SDTAlias...
+						// Set sdtAlias/Title to empty
+						element.Title = string.Empty;
 					}
 					else if (sdtTitle == FieldName_TaskEndDate)
 					{
@@ -4928,7 +4977,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 								}
 								else
 								{
-									WordUtilities.SetElementTextWithHTML(mainPart, element, taskElement.MOQText, ref counters);
+									WordUtilities.SetElementTextWithHTML(mainPart, element, taskElement.MOQText);
 								}
 
 								if (wsHasMoqRteTemplate && exportInputs.Workspace.UsingTemplateBOE)
@@ -4947,7 +4996,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					{
 						if (exportInputs.Workspace.UsingTemplateBOE)
 						{
-							this.PopulateMOQTypeData(taskElement, new Collection<BoeCustomReportComponent>(), mainPart, element, false, exportInputs, ref counters);
+							this.PopulateMOQTypeData(taskElement, new Collection<BoeCustomReportComponent>(), mainPart, element, false, exportInputs);
 						}
 						else
 						{
@@ -4957,7 +5006,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					}
 					else if (sdtTitle == FieldName_MOQSSDS)
 					{
-						WordUtilities.SetElementTextWithHTML(mainPart, element, this.ReplaceParagraphTags(taskElement.MOQText), ref counters);
+						WordUtilities.SetElementTextWithHTML(mainPart, element, this.ReplaceParagraphTags(taskElement.MOQText));
 						// Set sdtAlias/Title to empty
 						element.Title = string.Empty;
 					}
@@ -5004,8 +5053,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="resource">Resource info to populate container with</param>
 		private void PopulateResourceContent(BOEExportTaskContainer resourceContainer, BOEExportTaskElementLabor resource)
 		{
-			// Iterate over all StructuredDocumentTags in the document
-			// TODO TIW make sure Range.StructuredDocumentTags is only Descendants
+			// Iterate over all StructuredDocumentTags in the task container
 			foreach (StructuredDocumentTag alias in resourceContainer.TaskContainer.Range.StructuredDocumentTags)
 			{
 				// Get the title of this Alias
@@ -7066,7 +7114,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		}
 
 		/// <summary>
-		/// Append cell to the end of a row, using the formatting and properites of that row
+		/// Append cell to the end of a row, using the formatting and properties of that row
 		/// </summary>
 		/// <param name="row">Row to append cell to</param>
 		/// <param name="text">Text for cell</param>
@@ -7079,27 +7127,38 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 				if (templateCell != null)
 				{
-					// Set the cell, paragraph, and run properties
-					Action<Cell> cellProperties = null;// TODO TIW new CellProperties(templateCell.CellProperties.Clone(true));
-					Action<Paragraph> paraProperties = null;// TODO TIW templateCell.Descendants<ParagraphProperties>().FirstOrDefault();
-					Action<Run> runProperties = null;// TODO TIW templateCell.Descendants<RunProperties>().FirstOrDefault();
+					// Set the text and cell properties by cloning original template cell
+					Cell cell = templateCell.Clone(true) as Cell;
 
-					// Set the text and cell properties
-					Cell cell = new Cell(templateCell.Document);
-					cell.AppendChild(new Paragraph(templateCell.Document));
-					cell.FirstParagraph.AppendChild(new Run(templateCell.Document, text));
-					////Text cellText = new Text() { Text = text };
-					////cell.PrependChild(cellProperties);
+					// clear out the cell
+					NodeCollection runs = cell.GetChildNodes(NodeType.Run, true);
+					if (runs.Any())
+					{
+						// Clear out text for runs
+						foreach (Run run in runs)
+						{
+							run.Text = string.Empty;
+						}
+					}
+					else
+					{
+						// If no runs, confirm we have a paragrph
+						Paragraph para = cell.FirstParagraph;
+						if (para == null)
+						{
+							// need to add the paragraph
+							para = new Paragraph(templateCell.Document);
+							cell.AppendChild(para);
+						}
 
-					//// Add text and run properties to run
-					//Run run = new Run();
-					//run.Append(cellText);
-					//run.PrependChild(runProperties != null ? runProperties.Clone(true) : new RunProperties());
+						// need to add the Run to the paragraph
+						Run run = new Run(templateCell.Document);
+						para.AppendChild(run);
+					}
 
-					//// Add run and paragraph properties to paragraph, add paragraph to cell
-					//Paragraph paragraph = new Paragraph(run);
-					//paragraph.PrependChild(paraProperties != null ? paraProperties.Clone(true) : new ParagraphProperties());
-					//cell.Append(paragraph);
+					// Now set the text on the first run
+					Run firstRun = cell.GetChild(NodeType.Run, 0, true) as Run;
+					firstRun.Text = text;
 
 					// Append cell to row
 					row.Append(cell);
