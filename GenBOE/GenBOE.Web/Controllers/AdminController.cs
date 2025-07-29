@@ -1472,11 +1472,11 @@ namespace GenBOE.Web.Controllers
             // Get Select list for Tasks
             ICollection<SelectListItem> taskSelectList_Unselected = new Collection<SelectListItem>();
             ICollection<SelectListItem> taskSelectList_Selected = new Collection<SelectListItem>();
-            IDictionary<int, EnumTypeModelView> allProPricerFieldNames = this._CommonDataMapper.GetProPricerFieldsDictionary(false);
+            IDictionary<int, EnumTypeModelView> allProPricerFieldNames = this._CommonDataMapper.GetProPricerFieldsDictionary(false, Utilities.IsAssignTaskAuthorEnabledForSystem);
             if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)
             {
                 // need to add Project Map stuff as well
-                IDictionary<int, EnumTypeModelView> projectMapFieldNames = this._CommonDataMapper.GetProPricerFieldsDictionary(true);
+                IDictionary<int, EnumTypeModelView> projectMapFieldNames = this._CommonDataMapper.GetProPricerFieldsDictionary(true, false);
                 foreach(KeyValuePair<int, EnumTypeModelView> kvp in projectMapFieldNames)
                 {
                     if (!kvp.Value.EnumTypeName.StartsWith("Project Map - "))
