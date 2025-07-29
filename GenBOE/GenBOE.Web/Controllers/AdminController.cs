@@ -1557,6 +1557,35 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
+		/// Displays the Manage Skill Mix Settings page
+		/// </summary>
+		/// <returns>The view for Manage Skill Mix Settings</returns>
+		public virtual ActionResult DisplayManageSkillMixSettings()
+		{
+			Stopwatch sw = InitializeAction(this._log, WebConstants.ACTION_DISPLAY_MANAGE_SKILL_MIX_SETTINGS, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+			ViewResult toReturn = View(WebConstants.VIEW_MANAGE_SKILL_MIX_SETTINGS);
+			// Finalize Action
+			FinalizeAction(this._log, WebConstants.ACTION_DISPLAY_MANAGE_SKILL_MIX_SETTINGS, sw);
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Gets the Skill Mix settings.
+		/// </summary>
+		/// <returns>Json result of the Skill Mix settings.</returns>
+		public JsonResult GetSkillMixSettings()
+		{
+			Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_SAVE_SKILL_MIX_SETTINGS, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+
+			// Get the current Skill Mix settings
+			//ICollection<SystemSettingDTO> systemSettings = this.systemSettingLoader.GetSystemSettings();
+
+			this.FinalizeAction(this._log, WebConstants.ACTION_SAVE_SKILL_MIX_SETTINGS, sw);
+
+			return this.Json(new Collection<SystemSettingDTO>());
+		}
+
+		/// <summary>
 		/// Displays the partial view for the performing orgs page
 		/// </summary>
 		/// <returns></returns>

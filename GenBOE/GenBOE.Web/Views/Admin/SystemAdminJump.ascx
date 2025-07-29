@@ -146,6 +146,12 @@
                 </div>
             </div>
             <% } %>
+            <div>
+                <a id="ManageSkillMixSettings" href="#ManageSkillMixSettings">Manage Skill Mix Settings</a>
+                <div>
+                    Manage Skill Mix settings.
+                </div>
+            </div>
         </div>
         <div class="clear"></div>
     </div>

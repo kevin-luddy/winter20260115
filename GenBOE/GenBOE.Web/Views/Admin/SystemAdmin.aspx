@@ -30,6 +30,13 @@
             controller: '<%: WebConstants.CONTROLLER_ADMIN %>',
             importOverdueTrainingAction: '<%: WebConstants.ACTION_IMPORT_OVERDUE_TRAINING %>'
         });
+
+        angular.module('genboe').value('ManageSkillMixSettingsModelView',
+        {
+			controller: '<%: WebConstants.CONTROLLER_ADMIN %>',
+            getSkillMixSettingsAction: '<%: WebConstants.ACTION_GET_SKILL_MIX_SETTINGS %>',
+            saveSkillMixSettingsAction: '<%: WebConstants.ACTION_SAVE_SKILL_MIX_SETTINGS %>'
+        });
     
         SystemAdmin.LoadSystemAdminJump = function () {
             SystemAdmin.RetrievePage(CreateSystemAdminPostURL(
@@ -149,6 +156,13 @@
 			SystemAdmin.RetrievePage(CreateSystemAdminPostURL(
                     '<%: WebConstants.CONTROLLER_ADMIN %>',
 				'<%: WebConstants.ACTION_DISPLAY_MANAGE_UCOT %>'), "MANAGE_UCOT_LOADED");
+        };
+
+        SystemAdmin.LoadManageSkillMixSettings = function () {
+            console.log('test');
+			SystemAdmin.RetrievePage(CreateSystemAdminPostURL(
+            '<%: WebConstants.CONTROLLER_ADMIN %>',
+		'<%: WebConstants.ACTION_DISPLAY_MANAGE_SKILL_MIX_SETTINGS %>'), "MANAGE_SKILL_MIX_SETTINGS_LOADED");
 		};
 
         SystemAdmin.RetrievePage = function (actionURL, trigger) {
@@ -161,6 +175,8 @@
                     HideLoadingBox();
                     SystemAdmin.Content.html(response);
 
+                    console.log('test')
+
                     SystemAdmin.Content.each(function () {
                         var content = $(this);
                         angular.element(document).injector().invoke(
@@ -171,6 +187,8 @@
                             }
                         ]);
                     });
+
+					console.log('test')
 
                     $(document).trigger(trigger);
                 }
@@ -260,7 +278,10 @@
                         break;
 					case "ManageUCOT":
 						SystemAdmin.LoadManageUCOT();
-						break;
+                        break;
+                    case "ManageSkillMixSettings":
+                        SystemAdmin.LoadManageSkillMixSettings();
+                        break;
                     default:
                         SystemAdmin.LoadSystemAdminJump();
                 }
@@ -285,6 +306,7 @@
             SystemAdmin.registerForEvent("SA_LOAD_EMAIL_PREFERENCES", SystemAdmin.LoadManageEmailPreferences);
             SystemAdmin.registerForEvent("SA_LOAD_MANAGE_SYSTEM_SETTINGS", SystemAdmin.LoadManageSystemSettings);
             SystemAdmin.registerForEvent("SA_LOAD_MANAGE_UCOT", SystemAdmin.LoadManageUCOT);
+            SystemAdmin.registerForEvent("SA_LOAD_MANAGE_SKILL_MIX_SETTINGS", SystemAdmin.LoadManageSkillMixSettings);
             window.onhashchange = SystemAdmin.LoadPage;
 
             SystemAdmin.LoadPage();
