@@ -99,6 +99,7 @@ namespace GenBOE.Web
                 "~/Resources/js/angular/systemEmailController.js",
                 "~/Resources/js/angular/manageSystemSettingsController.js",
                 "~/Resources/js/angular/manageOverdueTrainingController.js",
+				"~/Resources/js/angular/manageSkillMixSettingsController.js",
                 "~/Scripts/angularjs-dropdown-multiselect.js"
                 ));
 
