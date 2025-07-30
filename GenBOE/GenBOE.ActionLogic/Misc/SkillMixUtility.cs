@@ -749,7 +749,7 @@
 				{
 					if (!distinctCurrentResources.Add(row.ResourceNew))
 					{
-						// Duplciate found - Set proposed hours to 0 and included to false
+						// Duplicate found - Set proposed hours to 0 and included to false
 						row.ProposedHours = 0;
 						row.Included = false;
 					}
