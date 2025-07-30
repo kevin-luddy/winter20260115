@@ -5,14 +5,9 @@
 // -----------------------------------------------------------------------
 namespace GenBOE.Web.Controllers.Backend
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Collections.ObjectModel;
-	using System.Diagnostics;
-	using System.Linq;
-	using System.Web.Http;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ControllerLogic.Backend;
+	using GenBOE.ActionLogic.ModelView.BOE;
 	using GenBOE.ActionLogic.ModelView.Clin;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
@@ -22,6 +17,12 @@ namespace GenBOE.Web.Controllers.Backend
 	using IES.Common;
 	using IES.Common.classes;
 	using IES.Common.PickList;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Diagnostics;
+	using System.Linq;
+	using System.Web.Http;
 
 	/// <summary>
 	/// Workspace Admin Controller
@@ -130,6 +131,48 @@ namespace GenBOE.Web.Controllers.Backend
 
 				// Finalize Action
 				FinalizeAction(logger, WebConstants.ACTION_GET_MANAGE_WBS_MODEL, sw);
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occurred returning WBS data: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get WBSs for Workspace in Manage WBS page
+		/// </summary>
+		/// <param name="workspaceShortName"> the workspace shortname</param>
+		/// <returns>The MV for the Manage WBS grid</returns>
+		[HttpGet]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<ManageBOEGridWidgetModelView> GetManageBOE(string workspaceShortName)
+		{
+			IESSingleResponse<ManageBOEGridWidgetModelView> result = new IESSingleResponse<ManageBOEGridWidgetModelView>();
+
+			try
+			{
+				ManageBOEGridWidgetModelView theModelView = new ManageBOEGridWidgetModelView();
+				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortName);
+
+				// Initialize Action
+				Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_GET_MANAGE_BOE_MODEL, SecurityPage.ManageBOEs, SecurityAuthorization.Read, new Collection<WorkspaceDTO>() { ws }, null);
+
+				theModelView.ContainsOCI = ws.ContainsOCI;
+
+
+				workspaceAdminControllerLogic.CalculateManageBOEDefaults(theModelView, ws);
+
+				theModelView.ManageBoeHeaderInfo = workspaceAdminControllerLogic.GetCompanySpecificManageBoeHeaderInfo;
+				theModelView.WorkspaceState = ws.WorkspaceState;
+				theModelView.AllowBOEStateChanges = (workspaceAdminControllerLogic.CheckPermissions(SecurityPage.EditBoeLockedState, ws, null) == SecurityAuthorization.CreateReadUpdateDelete);
+				result.Data = theModelView;
+				result.IsSuccessful = true;
+
+				// Finalize Action
+				FinalizeAction(logger, WebConstants.ACTION_GET_MANAGE_BOE_MODEL, sw);
 			}
 			catch (Exception ex)
 			{

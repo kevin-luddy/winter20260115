@@ -6,16 +6,6 @@
 
 namespace GenBOE.Web.Controllers
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Collections.ObjectModel;
-	using System.Diagnostics;
-	using System.IO;
-	using System.Linq;
-	using System.Threading.Tasks;
-	using System.Transactions;
-	using System.Web.Mvc;
-	using System.Web.Script.Serialization;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
@@ -23,6 +13,7 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.Common.Email;
 	using GenBOE.ActionLogic.ControllerLogic;
+	using GenBOE.ActionLogic.ControllerLogic.Backend;
 	using GenBOE.ActionLogic.IO.Export.BOE;
 	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.Metrics;
@@ -42,6 +33,16 @@ namespace GenBOE.Web.Controllers
 	using IES.Common.Exceptions;
 	using IES.Common.OfficeUtilities;
 	using Microsoft.VisualBasic.Logging;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Diagnostics;
+	using System.IO;
+	using System.Linq;
+	using System.Threading.Tasks;
+	using System.Transactions;
+	using System.Web.Mvc;
+	using System.Web.Script.Serialization;
 
 	public class BOEController : GenBOEController
 	{
@@ -80,6 +81,11 @@ namespace GenBOE.Web.Controllers
 		private IReportsControllerLogic reportsControllerLogic;
 
 		/// <summary>
+		/// Workspace Admin Controller Logic
+		/// </summary>
+		private WorkspaceAdminControllerLogic workspaceAdminControllerLogic;
+
+		/// <summary>
 		/// Constructor
 		/// </summary>
 		public BOEController(ISecurityAccess inSecurityAccess,
@@ -110,7 +116,8 @@ namespace GenBOE.Web.Controllers
 			TaskElementValidation taskElementValidation,
 			ITravelDTODataLoader travelLoader,
 			IWorkspaceVersionMetaDataDTODataLoader versionLoader,
-			IRteTemplateDataLoader rteTemplateDataLoader)
+			IRteTemplateDataLoader rteTemplateDataLoader,
+			WorkspaceAdminControllerLogic workspaceAdminControllerLogic)
 		  : base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inUserDataLoader, inPermissionsLoader, inControllerLogic)
 		{
 			_emailer = inEmailer;
@@ -134,6 +141,7 @@ namespace GenBOE.Web.Controllers
 			this._TravelDTOLoader = travelLoader;
 			this.versionLoader = versionLoader;
 			this.rteTemplateDataLoader = rteTemplateDataLoader;
+			this.workspaceAdminControllerLogic = workspaceAdminControllerLogic;
 		}
 
 		#region Display
@@ -851,11 +859,11 @@ namespace GenBOE.Web.Controllers
 			ManageBOEGridWidgetModelView theModelView = new ManageBOEGridWidgetModelView();
 			theModelView.ContainsOCI = ws.ContainsOCI;
 
-			_ControllerLogic.CalculateManageBOEDefaults(theModelView, ws);
+			workspaceAdminControllerLogic.CalculateManageBOEDefaults(theModelView, ws);
 
-			theModelView.ManageBoeHeaderInfo = _ControllerLogic.GetCompanySpecificManageBoeHeaderInfo;
+			theModelView.ManageBoeHeaderInfo = workspaceAdminControllerLogic.GetCompanySpecificManageBoeHeaderInfo;
 			theModelView.WorkspaceState = ws.WorkspaceState;
-			theModelView.AllowBOEStateChanges = (CheckPermissions(SecurityPage.EditBoeLockedState, ws, null) == SecurityAuthorization.CreateReadUpdateDelete);
+			theModelView.AllowBOEStateChanges = (workspaceAdminControllerLogic.CheckPermissions(SecurityPage.EditBoeLockedState, ws, null) == SecurityAuthorization.CreateReadUpdateDelete);
 
 			// Finalize Action
 			FinalizeAction(_log, WebConstants.ACTION_GET_MANAGE_BOE_MODEL, sw);
