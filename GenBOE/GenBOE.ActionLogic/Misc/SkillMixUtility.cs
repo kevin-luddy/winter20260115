@@ -129,7 +129,7 @@
 						CreateCommonDisclosureRowsRMS(resourceHours, laborTypes, currentCommonDisclosureData, 
 							refreshedModel, isManual);
 					}
-					}
+				}
 				else
 				{
 					refreshedModel.CommonDisclosureRows?.Clear();
@@ -148,7 +148,7 @@
 				});
 			}
 
-			CleanupData(refreshedModel);
+			CleanupData(refreshedModel, isSpace);
 			CalculateSkillMixTotals(refreshedModel);
 			CalculateBoeSkillMixPercentage(refreshedModel);
 
@@ -711,14 +711,15 @@
 		/// Remove SkillMix and CommonDisclosure rows as needed
 		/// </summary>
 		/// <param name="refreshedModel">The skill mix model view to cleanup</param>
-		private static void CleanupData(RefreshSkillMixModelView refreshedModel)
+		/// <param name="isSpace">Is Space the current company mode?</param>
+		private static void CleanupData(RefreshSkillMixModelView refreshedModel, bool isSpace)
 		{
 			if (refreshedModel == null)
 			{
 				throw new ArgumentNullException(nameof(refreshedModel));
 			}
 
-			if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
+			if (isSpace)
 			{
 				// Remove Skill Mix rows where historical and proposed hours are zero
 				List<SkillMixModelView> skillMixRowsToRemove = refreshedModel.SkillMixRows
@@ -738,6 +739,20 @@
 				foreach (CommonDisclosureModelView item in commonDisclosureRowsToRemove)
 				{
 					refreshedModel.CommonDisclosureRows.Remove(item);
+				}
+			}
+			else
+			{
+				// Check for duplicate Current Resources
+				HashSet<string> distinctCurrentResources = new HashSet<string>();
+				foreach (SkillMixModelView row in refreshedModel.SkillMixRows.Where(x => !string.IsNullOrEmpty(x.ResourceNew)))
+				{
+					if (!distinctCurrentResources.Add(row.ResourceNew))
+					{
+						// Duplicate found - Set proposed hours to 0 and included to false
+						row.ProposedHours = 0;
+						row.Included = false;
+					}
 				}
 			}
 		}
