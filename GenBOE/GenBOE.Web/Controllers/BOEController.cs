@@ -13,7 +13,6 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.Common.Email;
 	using GenBOE.ActionLogic.ControllerLogic;
-	using GenBOE.ActionLogic.ControllerLogic.Backend;
 	using GenBOE.ActionLogic.IO.Export.BOE;
 	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.Metrics;
@@ -32,7 +31,6 @@ namespace GenBOE.Web.Controllers
 	using IES.Common.classes;
 	using IES.Common.Exceptions;
 	using IES.Common.OfficeUtilities;
-	using Microsoft.VisualBasic.Logging;
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
