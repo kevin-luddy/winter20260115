@@ -140,6 +140,12 @@
     </div>
     <div class="form-element static">{{data.TrackingNumber}}</div>
 </div>
+<div class="form-row" data-ng-show="model.IsPLDIntegrated">
+    <div class="form-label">
+        <b>PLD PA #:</b>
+    </div>
+    <div class="form-element static">{{data.TrackingNumber}}</div>
+</div>
 <div class="form-row" data-ng-show="model.isPTMIntegrated || !model.isSSC">
     <div class="form-label">
         <b>RFP #:</b>
@@ -149,6 +155,12 @@
 <div class="form-row" data-ng-show="model.isPTMIntegrated">
     <div class="form-label">
         <b>PTM Proposal Title:</b>
+    </div>
+    <div class="form-element static">{{data.ProposalTitle}}</div>
+</div>
+<div class="form-row" data-ng-show="model.IsPLDIntegrated">
+    <div class="form-label">
+        <b>PLD PA Title:</b>
     </div>
     <div class="form-element static">{{data.ProposalTitle}}</div>
 </div>

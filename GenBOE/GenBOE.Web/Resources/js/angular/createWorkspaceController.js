@@ -98,6 +98,15 @@
 		$scope.model.PLD_PATitle = parts.slice(1).join(' - ').trim();
 		//store number for downstream logic 
 		$scope.model.selectedPLDPANumber = $scope.model.PLD_PANumber;
+
+		console.log('try parse');
+
+		$scope.data.TrackingNumber = $scope.model.PLD_PANumber;
+		$scope.data.ProposalTitle = $scope.model.PLD_PATitle;
+
+		console.log('$scope.model.PLD_PANumber', $scope.model.PLD_PANumber);
+		console.log('scope.data.TrackingNumber', $scope.data.TrackingNumber);
+
 	};
 
 	$scope.filteredPLDPANumbers = [];
@@ -231,6 +240,20 @@
 	};
 
 	$scope.setStepSpecificElements = function (newStep) {
+
+		console.log('in setStep...  step is ', newStep);
+		console.log('panumber in setStepSpecificElements', $scope.model.PLD_PANumber);
+		console.log('BEFORE $scope.model.PLD_PANumber', $scope.data.PLD_PANumber);
+		$scope.data.TrackingNumber = $scope.model.PLD_PANumber;
+		$scope.data.ProposalTitle = $scope.model.PLD_PATitle;
+
+
+		console.log('AFTER scope.data.TrackingNumber', $scope.data.TrackingNumber);
+		console.log('AFTER scope.data.ProposalTitle', $scope.data.ProposalTitle);
+
+
+
+
 		$scope.step = newStep;
 		switch ($scope.step) {
 			case 1:
@@ -292,6 +315,9 @@
 	};
 
 	$scope.next = function () {
+
+		console.log('in next ,  step is :', $scope.step);
+
 		if (!$scope.nextButtonDisabled()) {
 
 			if ($scope.model.IsPLDIntegrated)
@@ -753,8 +779,12 @@
 		$('#urlValidationBox').html('');
 		$scope.model.showButtonLoader = true;
 
+		console.log('just into createNewWs');
+
 		if ($scope.model.UpdatePreviousWorkspace) {
 			var postURL = GenSession.CreatePostURL($scope.model.workspaceToCopy.ShortName, CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.UpdateCurrentWorkspaceIdentification);
+
+			console.log('in if with postURL', postURL);
 
 			$http({
 				method: 'POST',
@@ -778,6 +808,22 @@
 		
 		// create the workspace
 		var createUrl = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.CreateWorkspaceAction);
+		console.log('url save:', createUrl);
+		console.log('scope.data', $scope.data);
+		//return;
+
+		console.log('panumber in create on scope model', $scope.model.PLD_PANumber);
+		console.log('BEFORE $scope.model.PLD_PANumber', $scope.data.PLD_PANumber);
+		$scope.data.TrackingNumber = $scope.model.PLD_PANumber;
+		$scope.data.ProposalTitle = $scope.model.PLD_PATitle;
+
+		
+		console.log('AFTER scope.data.TrackingNumber', $scope.data.TrackingNumber);
+		console.log('AFTER scope.data.ProposalTitle', $scope.data.ProposalTitle);
+
+		debugger;
+
+
 		$http({
 			method: 'POST',
 			url: createUrl,
@@ -886,6 +932,10 @@
 		var deferred = $q.defer();
 		// use default for the workspace name since this is not a real workspace yet
 		var validateUrl = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.ValidateIndentificationAction);
+
+		$scope.data.TrackingNumber = $scope.model.PLD_PANumber;
+		$scope.data.ProposalTitle = $scope.model.PLD_PATitle;
+		console.log('validateworkspace section  pld pa number ', $scope.data.TrackingNumber);
 
 		$http({
 			method: 'POST',

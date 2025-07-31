@@ -4827,6 +4827,11 @@ namespace GenBOE.Web.Controllers
 					newWorkspaceDTO.CurrentPTMWorkspace = newWorkspace.CurrentPTMWorkspace;
 					newWorkspaceDTO.EnableAssignTaskAuthor = newWorkspace.EnableAssignTaskAuthor;
 
+					if (Utilities.ShowPLDIsIntegrated)
+					{
+						newWorkspaceDTO.ProposalTitle = newWorkspace.ProposalTitle;
+					}
+
 					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 					{
 						newWorkspaceDTO.ProposalTitle = newWorkspace.ProposalTitle;

@@ -229,7 +229,7 @@
         </div>
         <div class="form-element">
             <span>{{data.PLD_PANumber}}</span>
-            <input class="full ignoreValidation" style="width:100px" readonly id="PLD_PANumber" maxlength="100" name="PLD_PANumber" type="text" data-ng-model="model.PLD_PANumber">
+            <input class="full ignoreValidation" style="width:100px" readonly id="TrackingNumber" maxlength="100" name="TrackingNumber" type="text" data-ng-model="model.PLD_PANumber">
         </div>
     </div>
 </div>
@@ -255,7 +255,7 @@
         </div>
         <div class="form-element">
             <span>{{data.PLD_PATitle}}</span>
-            <input class="full ignoreValidation" readonly id="PLD_PATitle" maxlength="100" name="PLD_PATitle" type="text" data-ng-model="model.PLD_PATitle">
+            <input class="full ignoreValidation" readonly id="ProposalTitle" maxlength="100" name="ProposalTitle" type="text" data-ng-model="model.PLD_PATitle">
         </div>
     </div>
 </div>
@@ -309,6 +309,7 @@
         </div>
     </div>
     <div class="form-element static">{{data.ProposalTitle}}</div>
+    <div>proposaltitle is {{data.ProposalTitle}}</div>
 </div>
 <div class="form-row" data-ng-show="model.isSSC && model.showEquivalentPersonsOption && !data.IsAttemptingToImport">
     <div class="form-label">
