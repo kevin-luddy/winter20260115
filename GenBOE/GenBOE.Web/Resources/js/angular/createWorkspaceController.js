@@ -315,18 +315,11 @@
 	};
 
 	$scope.next = function () {
-
-		console.log('in next ,  step is :', $scope.step);
-
+		
 		if (!$scope.nextButtonDisabled()) {
 
 			if ($scope.model.IsPLDIntegrated)
-			{
-				// PLD Number and Title check
-				//if (!$scope.model.searchTerm || !$scope.model.searchTerm.length) {
-				//	$scope.tryParsePLDSelection();
-				//}
-				
+			{								
 
 				if (!$scope.model.PLD_PANumber || !$scope.model.PLD_PATitle) {
 					alert("Please select a valid PLD Proposal from the list before continuing.")
@@ -779,12 +772,11 @@
 		$('#urlValidationBox').html('');
 		$scope.model.showButtonLoader = true;
 
-		console.log('just into createNewWs');
+		
 
 		if ($scope.model.UpdatePreviousWorkspace) {
 			var postURL = GenSession.CreatePostURL($scope.model.workspaceToCopy.ShortName, CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.UpdateCurrentWorkspaceIdentification);
-
-			console.log('in if with postURL', postURL);
+						
 
 			$http({
 				method: 'POST',
@@ -808,22 +800,10 @@
 		
 		// create the workspace
 		var createUrl = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.CreateWorkspaceAction);
-		console.log('url save:', createUrl);
-		console.log('scope.data', $scope.data);
-		//return;
-
-		console.log('panumber in create on scope model', $scope.model.PLD_PANumber);
-		console.log('BEFORE $scope.model.PLD_PANumber', $scope.data.PLD_PANumber);
-		$scope.data.TrackingNumber = $scope.model.PLD_PANumber;
-		$scope.data.ProposalTitle = $scope.model.PLD_PATitle;
-
 		
-		console.log('AFTER scope.data.TrackingNumber', $scope.data.TrackingNumber);
-		console.log('AFTER scope.data.ProposalTitle', $scope.data.ProposalTitle);
-
-		debugger;
-
-
+		//$scope.data.TrackingNumber = $scope.model.PLD_PANumber;
+		//$scope.data.ProposalTitle = $scope.model.PLD_PATitle;
+		
 		$http({
 			method: 'POST',
 			url: createUrl,
