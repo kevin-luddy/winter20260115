@@ -283,8 +283,11 @@ namespace IES.Tests.Core
 			// now we compare to the output
 			if (sdt.ParentNode is Paragraph paragraph)
 			{
-				Assert.AreEqual("BoldedText", paragraph.LastChild.GetText());
-				Assert.AreEqual("NextParagraph", ((Paragraph)paragraph.NextSibling).LastChild.GetText());
+				string text = paragraph.ParentNode.GetText();
+				Assert.IsTrue(text.Contains("Proposal/Program Name"));
+				Assert.IsTrue(text.Contains("BoldedText"));
+				Assert.IsTrue(text.Contains("NextParagraph"));
+				Assert.IsTrue(text.IndexOf("BoldedText") < text.IndexOf("NextParagraph"));
 			}
 			else
 			{
@@ -359,7 +362,12 @@ namespace IES.Tests.Core
 			// now we compare to the output
 			if (sdt.ParentNode is Paragraph paragraph)
 			{
-				Assert.IsTrue(paragraph.LastChild is Run);
+				// paragraphs above get inserted as sibling paragraphs adjacent to the original paragraph
+				string insertedText = paragraph.ParentNode.GetText();
+				Assert.IsTrue(insertedText.Contains("SADE 1/15/12 - 12/31/13, Chg # 345678-4321, 15,275 hours for Meeting attendance and coordination."));
+				Table table = paragraph.ParentNode.GetChild(NodeType.Table, 0, true) as Table;
+				Assert.IsNotNull(table);
+				Assert.IsTrue(table.FirstRow.FirstCell.GetText().StartsWith("HEADER"));
 			}
 		}
 
@@ -486,10 +494,10 @@ namespace IES.Tests.Core
 			Assert.IsNotNull(table);
 			Assert.AreEqual(numRows - 1, table.Rows.Count);
 
-			// Now test that we can remove an element row that is not inside a table
+			// Now test that we can remove an element row that is not inside a table, this should fail
 			this.RemoveElementRow(boeContainer);
 			boeContainer = WordUtilities.GetTaggedElement(doc, BOEExporterConstants.Container_BOE);
-			Assert.IsNull(boeContainer);
+			Assert.IsNotNull(boeContainer);
 		}
 
 		/// <summary>

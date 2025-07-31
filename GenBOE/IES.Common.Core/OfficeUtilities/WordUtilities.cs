@@ -45,7 +45,6 @@ namespace IES.Common.Core.OfficeUtilities
 				throw new ArgumentNullException(nameof(document));
 			}
 
-			//TODO TIW does this work since it returns IStructuredDocumentTag
 			return document.Range.StructuredDocumentTags.GetByTag(tag) as StructuredDocumentTag;
 		}
 
@@ -401,21 +400,30 @@ namespace IES.Common.Core.OfficeUtilities
 					// remove any children of the SDT
 					element.RemoveAllChildren();
 
-					Node insertionPoint;
+					Node insertionPoint = element;
 
-					// Insertion point has to be a Paragraph, and you cannot have paragraphs inside paragraphs
-					if (element.ParentNode != null && element.ParentNode is Paragraph)
-					{
-						insertionPoint = element.ParentNode;
-					}
-					else
+					//// Insertion point has to be inside a Paragraph, and you cannot have paragraphs inside paragraphs
+					//if (element.ParentNode != null && element.ParentNode is Paragraph)
+					//{
+					//	insertionPoint = element;
+					//}
+					//else
+					//{
+					//	// Try to create a paragraph inside the SDT so DocumentBuilder can MoveTo it
+					//	Paragraph paragraph = new Paragraph(document);
+					//	element.AppendChild(paragraph);
+					//	insertionPoint = paragraph;
+					//}
+
+					// Insertion point has to be inside a Paragraph, and you cannot have paragraphs inside paragraphs
+					if (element.GetAncestor(NodeType.Paragraph) is null)
 					{
 						// Try to create a paragraph inside the SDT so DocumentBuilder can MoveTo it
 						Paragraph paragraph = new Paragraph(document);
 						element.AppendChild(paragraph);
 						insertionPoint = paragraph;
 					}
-					
+
 					DocumentBuilder builder = new DocumentBuilder(document);
 					builder.MoveTo(insertionPoint);
 					HtmlInsertOptions options = removeSpacing ? HtmlInsertOptions.RemoveLastEmptyParagraph : HtmlInsertOptions.None;
