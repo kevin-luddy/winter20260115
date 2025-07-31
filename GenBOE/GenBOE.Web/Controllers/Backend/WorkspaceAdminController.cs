@@ -5,6 +5,7 @@
 // -----------------------------------------------------------------------
 namespace GenBOE.Web.Controllers.Backend
 {
+	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ControllerLogic.Backend;
 	using GenBOE.ActionLogic.ModelView.BOE;
@@ -32,17 +33,22 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <summary>
 		/// Contract Type loader
 		/// </summary>
-		private ContractTypeLoader contractTypeLoader;
+		private readonly ContractTypeLoader contractTypeLoader;
 
 		/// <summary>
 		/// Workspace Admin Controller Logic
 		/// </summary>
-		private WorkspaceAdminControllerLogic workspaceAdminControllerLogic;
+		private readonly WorkspaceAdminControllerLogic workspaceAdminControllerLogic;
+
+		/// <summary>
+		/// BOE Controller Logic
+		/// </summary>
+		private readonly IBOEControllerLogic boeControllerLogic;
 
 		/// <summary>
 		/// logger
 		/// </summary>
-		private Logger logger = new Logger("WorkspaceAdminController");
+		private readonly Logger logger = new Logger("WorkspaceAdminController");
 
 		/// <summary>
 		/// Constructor
@@ -51,11 +57,15 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <param name="factory"></param>
 		/// <param name="userLoader"></param>
 		/// <param name="permissionsLoader"></param>
-		public WorkspaceAdminController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, WorkspaceAdminControllerLogic workspaceAdminControllerLogic, ContractTypeLoader contractTypeLoader)
+		/// <param name="workspaceAdminControllerLogic"></param>
+		/// <param name="contractTypeLoader"></param>
+		/// <param name="boeControllerLogic"></param>
+		public WorkspaceAdminController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, WorkspaceAdminControllerLogic workspaceAdminControllerLogic, ContractTypeLoader contractTypeLoader, IBOEControllerLogic boeControllerLogic)
 	: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.workspaceAdminControllerLogic = workspaceAdminControllerLogic;
 			this.contractTypeLoader = contractTypeLoader;
+			this.boeControllerLogic = boeControllerLogic;
 		}
 
 		/// <summary>
@@ -163,11 +173,11 @@ namespace GenBOE.Web.Controllers.Backend
 				theModelView.ContainsOCI = ws.ContainsOCI;
 
 
-				workspaceAdminControllerLogic.CalculateManageBOEDefaults(theModelView, ws);
+				boeControllerLogic.CalculateManageBOEDefaults(theModelView, ws);
 
-				theModelView.ManageBoeHeaderInfo = workspaceAdminControllerLogic.GetCompanySpecificManageBoeHeaderInfo;
+				theModelView.ManageBoeHeaderInfo = boeControllerLogic.GetCompanySpecificManageBoeHeaderInfo;
 				theModelView.WorkspaceState = ws.WorkspaceState;
-				theModelView.AllowBOEStateChanges = (workspaceAdminControllerLogic.CheckPermissions(SecurityPage.EditBoeLockedState, ws, null) == SecurityAuthorization.CreateReadUpdateDelete);
+				theModelView.AllowBOEStateChanges = (CheckPermission(SecurityPage.EditBoeLockedState, ws, null) == SecurityAuthorization.CreateReadUpdateDelete);
 				result.Data = theModelView;
 				result.IsSuccessful = true;
 

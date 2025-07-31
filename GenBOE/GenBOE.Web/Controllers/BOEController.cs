@@ -81,11 +81,6 @@ namespace GenBOE.Web.Controllers
 		private IReportsControllerLogic reportsControllerLogic;
 
 		/// <summary>
-		/// Workspace Admin Controller Logic
-		/// </summary>
-		private WorkspaceAdminControllerLogic workspaceAdminControllerLogic;
-
-		/// <summary>
 		/// Constructor
 		/// </summary>
 		public BOEController(ISecurityAccess inSecurityAccess,
@@ -116,8 +111,7 @@ namespace GenBOE.Web.Controllers
 			TaskElementValidation taskElementValidation,
 			ITravelDTODataLoader travelLoader,
 			IWorkspaceVersionMetaDataDTODataLoader versionLoader,
-			IRteTemplateDataLoader rteTemplateDataLoader,
-			WorkspaceAdminControllerLogic workspaceAdminControllerLogic)
+			IRteTemplateDataLoader rteTemplateDataLoader)
 		  : base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inUserDataLoader, inPermissionsLoader, inControllerLogic)
 		{
 			_emailer = inEmailer;
@@ -141,7 +135,6 @@ namespace GenBOE.Web.Controllers
 			this._TravelDTOLoader = travelLoader;
 			this.versionLoader = versionLoader;
 			this.rteTemplateDataLoader = rteTemplateDataLoader;
-			this.workspaceAdminControllerLogic = workspaceAdminControllerLogic;
 		}
 
 		#region Display
@@ -859,11 +852,11 @@ namespace GenBOE.Web.Controllers
 			ManageBOEGridWidgetModelView theModelView = new ManageBOEGridWidgetModelView();
 			theModelView.ContainsOCI = ws.ContainsOCI;
 
-			workspaceAdminControllerLogic.CalculateManageBOEDefaults(theModelView, ws);
+			_ControllerLogic.CalculateManageBOEDefaults(theModelView, ws);
 
-			theModelView.ManageBoeHeaderInfo = workspaceAdminControllerLogic.GetCompanySpecificManageBoeHeaderInfo;
+			theModelView.ManageBoeHeaderInfo = _ControllerLogic.GetCompanySpecificManageBoeHeaderInfo;
 			theModelView.WorkspaceState = ws.WorkspaceState;
-			theModelView.AllowBOEStateChanges = (workspaceAdminControllerLogic.CheckPermissions(SecurityPage.EditBoeLockedState, ws, null) == SecurityAuthorization.CreateReadUpdateDelete);
+			theModelView.AllowBOEStateChanges = (CheckPermissions(SecurityPage.EditBoeLockedState, ws, null) == SecurityAuthorization.CreateReadUpdateDelete);
 
 			// Finalize Action
 			FinalizeAction(_log, WebConstants.ACTION_GET_MANAGE_BOE_MODEL, sw);
