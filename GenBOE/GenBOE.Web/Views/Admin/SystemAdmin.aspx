@@ -35,7 +35,7 @@
         {
 			controller: '<%: WebConstants.CONTROLLER_ADMIN %>',
             getSkillMixSettingsAction: '<%: WebConstants.ACTION_GET_SKILL_MIX_SETTINGS %>',
-            saveSkillMixSettingsAction: '<%: WebConstants.ACTION_SAVE_SKILL_MIX_SETTINGS %>'
+            saveSkillMixSettingsAction: '<%: WebConstants.ACTION_SAVE_SYSTEM_SETTINGS %>' // Reused from System Settings
         });
     
         SystemAdmin.LoadSystemAdminJump = function () {
@@ -148,21 +148,20 @@
 
         SystemAdmin.LoadManageSystemProPricerExports = function () {
             SystemAdmin.RetrievePage(CreateSystemAdminPostURL(
-                    '<%: WebConstants.CONTROLLER_ADMIN %>',
+                '<%: WebConstants.CONTROLLER_ADMIN %>',
                 '<%: WebConstants.ACTION_DISPLAY_SYSTEM_PROPRICER_EXPORTS %>'), "MANAGE_SYSTEM_PROPRICER_EXPORTS_LOADED");
         }
 
 		SystemAdmin.LoadManageUCOT = function () {
 			SystemAdmin.RetrievePage(CreateSystemAdminPostURL(
-                    '<%: WebConstants.CONTROLLER_ADMIN %>',
+                '<%: WebConstants.CONTROLLER_ADMIN %>',
 				'<%: WebConstants.ACTION_DISPLAY_MANAGE_UCOT %>'), "MANAGE_UCOT_LOADED");
         };
 
         SystemAdmin.LoadManageSkillMixSettings = function () {
-            console.log('test');
 			SystemAdmin.RetrievePage(CreateSystemAdminPostURL(
-            '<%: WebConstants.CONTROLLER_ADMIN %>',
-		'<%: WebConstants.ACTION_DISPLAY_MANAGE_SKILL_MIX_SETTINGS %>'), "MANAGE_SKILL_MIX_SETTINGS_LOADED");
+                '<%: WebConstants.CONTROLLER_ADMIN %>',
+		        '<%: WebConstants.ACTION_DISPLAY_MANAGE_SKILL_MIX_SETTINGS %>'), "MANAGE_SKILL_MIX_SETTINGS_LOADED");
 		};
 
         SystemAdmin.RetrievePage = function (actionURL, trigger) {
@@ -174,9 +173,6 @@
                 success: function (response) {
                     HideLoadingBox();
                     SystemAdmin.Content.html(response);
-
-                    console.log('test')
-
                     SystemAdmin.Content.each(function () {
                         var content = $(this);
                         angular.element(document).injector().invoke(
@@ -187,9 +183,6 @@
                             }
                         ]);
                     });
-
-					console.log('test')
-
                     $(document).trigger(trigger);
                 }
             });

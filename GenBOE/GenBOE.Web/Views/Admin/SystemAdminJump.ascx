@@ -146,12 +146,17 @@
                 </div>
             </div>
             <% } %>
+            <% // Manage Skill Mix Settings is Space-only
+                if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+                {
+                %>
             <div>
                 <a id="ManageSkillMixSettings" href="#ManageSkillMixSettings">Manage Skill Mix Settings</a>
                 <div>
                     Manage Skill Mix settings.
                 </div>
             </div>
+            <% } %>
         </div>
         <div class="clear"></div>
     </div>

@@ -16,6 +16,20 @@
             $scope.loadData();
         };
 
+        $scope.cellClass = function (grid, row, col, rowRenderIndex, colRenderIndex) {
+            // This is a row-entity column, since we only have one Dirty flag for the row,
+            // I broke out each column so interface is consistant.
+            if (row.entity.D === true && $scope.dirtyArray !== undefined) {
+                var dirtyEditedRow = $scope.dirtyArray.filter(function (daRow) {
+                    return daRow.Key === row.entity.Key;
+                });
+                if (dirtyEditedRow[0] && dirtyEditedRow[0][col.field] === true) {
+                    return 'dirty-text';
+                }
+            }
+            return 'no-spinner';    // Chrome is making number input elements show spinner.
+        };
+
         $scope.setGridOptions = function () {
             $scope.gridOptions = {
                 enablePagination: false,
@@ -150,6 +164,50 @@
                 $scope.isDataLoading = true;
                 $scope.isDataError = false;
                 $scope.reloadGrid();
+            }
+        };
+
+        /* Saves the Skill Mix Settings. */
+        $scope.saveSkillMixSettings = function () {
+            // clear error messages.
+            $rootScope.errors = [];
+            $(document).trigger("SHOW_LOADING_BOX");
+
+            var saveUrl = GenSession.CreateSystemAdminPostURL(ManageSkillMixSettingsModelView.controller, ManageSkillMixSettingsModelView.saveSkillMixSettingsAction);
+            var dirtyItems = $scope.data.filter(function (item) { return item.D; });  // return all items that are dirty
+
+            return $http({
+                method: 'POST',
+                url: saveUrl,
+                data: JSON.stringify(dirtyItems)
+            }).then(function successCallback(response) {
+                $scope.skillMixSettingsForm.$setPristine();
+                $scope.loadData();
+                $(document).trigger("HIDE_LOADING_BOX");
+            }, function errorCallback(response) {
+                $rootScope.errors = response.data.MessageList;
+                $(document).trigger("HIDE_LOADING_BOX");
+            });
+        };
+
+        $scope.initializeDirtyGrid = function () {
+            var rowCount = $scope.data.length;
+            $scope.dirtyArray = new Array(rowCount);
+            for (var i = 0; i < rowCount; i++) {
+                $scope.dirtyArray[i] = { 'Key': $scope.data[i].Key, 'Value': false };
+            }
+        };
+
+        $scope.confirmCancel = function () {
+            if ($scope.skillMixSettingsForm.$dirty) {
+                Session.confirmDialog("Confirm Cancel", "Are you sure you want to cancel all changes?", function () {
+                    // go to admin section
+                    $scope.skillMixSettingsForm.$setPristine();
+                    window.location.hash = '#';
+                });
+            } else {
+                // If no changes, go to admin section
+                window.location.hash = '#';
             }
         };
 

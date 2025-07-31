@@ -32,7 +32,7 @@ namespace GenBOE.Web.Controllers
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.Common.Interfaces;
     using GenBOE.DataBridge.DTO;
-    using GenBOE.DataBridge.Reference;
+	using GenBOE.DataBridge.Reference;
     using GenBOE.Dtos;
     using GenBOE.Models;
     using GenBOE.Objects;
@@ -1425,7 +1425,9 @@ namespace GenBOE.Web.Controllers
             Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_SYSTEM_SETTINGS, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             // Get the current system settings
-            ICollection<SystemSettingDTO> systemSettings = this.systemSettingLoader.GetSystemSettings();
+			// Skill Mix system settings are currently Space-only
+            ICollection<SystemSettingDTO> systemSettings = this.systemSettingLoader.GetSystemSettings().Where(x => !x.Key.Contains(Constants.ENABLE_WHITELIST_VALUE_PARSE_FAILED)
+				&& !x.Key.Contains(Constants.SKILL_MIX_WHITELIST)).ToList();
 
             this.FinalizeAction(this._log, WebConstants.ACTION_SYSTEM_SETTINGS, sw);
 
@@ -1578,11 +1580,11 @@ namespace GenBOE.Web.Controllers
 			Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_SAVE_SKILL_MIX_SETTINGS, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
 			// Get the current Skill Mix settings
-			//ICollection<SystemSettingDTO> systemSettings = this.systemSettingLoader.GetSystemSettings();
+			ICollection<SystemSettingDTO> skillMixSettings = this.systemSettingLoader.GetSkillMixSettings();
 
 			this.FinalizeAction(this._log, WebConstants.ACTION_SAVE_SKILL_MIX_SETTINGS, sw);
 
-			return this.Json(new Collection<SystemSettingDTO>());
+			return this.Json(skillMixSettings);
 		}
 
 		/// <summary>

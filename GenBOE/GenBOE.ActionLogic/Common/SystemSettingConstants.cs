@@ -12,10 +12,15 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string JUSTIFYING_PUBLICATION = "JustifyingPublication";
         public static readonly string SAP_CLIENT_SECRET = "SapClientSecret";
 
-        /// <summary>
-        /// The value for sorting by Work Breakdown Structure
-        /// </summary>
-        public static readonly int EXPORT_SORT_WBS = 1;
+		#region Skill Mix Settings
+		public static readonly string ENABLE_SKILL_MIX_WHITELIST = "EnableSkillMixWhitelist";
+		public static readonly string SKILL_MIX_WHITELIST = "SkillMixWhitelist";
+		#endregion
+
+		/// <summary>
+		/// The value for sorting by Work Breakdown Structure
+		/// </summary>
+		public static readonly int EXPORT_SORT_WBS = 1;
 
         /// <summary>
         /// The value for sorting by Contract Line Item Number

@@ -1153,13 +1153,48 @@ namespace IES.Common
 		}
 
 		/// <summary>
+		/// Private for Is Skill Mix Whitelist Enabled
+		/// </summary>
+		/*private static bool isSkillMixWhitelistEnabled;
+
+		/// <summary>
+		/// Indicates whether if the Skill Mix whitelist is enabled
+		/// </summary>
+		public static bool IsSkillMixWhiteListEnabled
+		{
+			get
+			{
+				if (isSkillMixWhitelistEnabled == null)
+				{
+					isSkillMixWhiteListEnabled = true;
+				}
+
+				return isSkillMixWhitelistEnabled ?? false;
+			}
+
+			internal set => isSkillMixWhitelistEnabled = value;
+		}*/
+
+		/// <summary>
 		/// Is Skill Mix connection shown to the user for this workspace
 		/// </summary>
 		/// <param name="workspaceCreationDate">Workspace creation date.</param>
 		/// <returns>Option to show skill mix for workspace.</returns>
-		public static bool ShowSkillMixForWorkspace(DateTime? workspaceCreationDate)
+		/// pass in short workspace name too
+		/// check for whitelist enabled -> should have a running whitelist property, set it at application start inside global.asax
+		public static bool ShowSkillMixForWorkspace(DateTime? workspaceCreationDate/*, string workspaceShortName*/)
 		{
-			return IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate;
+			//if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			//{
+			//	if (IsSkillMixEnabledForSystem && workspaceCreationDate >= skillMixStartDate && )
+			//	{
+
+			//	}
+			//}
+			//else
+			//{
+				return IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate;
+			//}
 		}
 
 		/// <summary>
