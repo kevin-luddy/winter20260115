@@ -16,7 +16,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using System.Web;
 	using System.Web.Configuration;
 	using System.Web.Mvc;
-	using DocumentFormat.OpenXml.Drawing.Charts;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
@@ -25,8 +24,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using GenBOE.ActionLogic.IESSAPClient;
 	using GenBOE.ActionLogic.IO.Export;
 	using GenBOE.ActionLogic.IO.Import;
+	using GenBOE.ActionLogic.Misc;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.BOE;
+	using GenBOE.ActionLogic.ModelView.Workspace;
 	using GenBOE.ActionLogic.Validation;
 	using GenBOE.ActionLogic.WBS.BOE;
 	using GenBOE.DataBridge.Common;
@@ -271,6 +272,53 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		}
 
 		/// <summary>
+		/// Ralculates the discrete UCOT spread.
+		/// </summary>
+		/// <param name="workspaceData">The workspace data.</param>
+		/// <param name="ucotSpreadItem">The labor tab data.</param>
+		/// <returns>UCOT Spreads with new UCOT Hours calculated</returns>
+		public RecalcSpreadModelView RecalculateDiscreteUCOTSpreads(FullWorkspace workspaceData, RecalcSpreadModelView ucotSpreadItem)
+		{
+			if (workspaceData == null)
+			{
+				throw new ArgumentNullException(nameof(workspaceData));
+			}
+
+			if (ucotSpreadItem == null)
+			{
+				throw new ArgumentNullException(nameof(ucotSpreadItem));
+			}
+
+			if (ucotSpreadItem.IsValid())
+			{
+				IDictionary<DateTime, decimal> smoothedUCOTSpreads = UCOTUtility.GetUcotSpreads(workspaceData.CreationDate, workspaceData.Shortname, workspaceData.DecimalPrecision, workspaceData.UCOTFactor, ucotSpreadItem.spreads.Select(x => x.ToBoeLaborSpread((int)ucotSpreadItem.rateType)).ToList(), ucotSpreadItem.ElementOfCost.Value, workspaceData.MoqTypeSelections.ToList(), ucotSpreadItem.boeTaskElementId, ucotSpreadItem.rateType.Value);
+				ucotSpreadItem.ucotHours = 0m;
+
+				foreach (LaborSpreadDataModelView item in ucotSpreadItem.ucotSpreads)
+				{
+					DateTime convertedDate = DateTime.Parse(item.LaborSpreadDate).Normalize();
+
+					if (smoothedUCOTSpreads.TryGetValue(convertedDate, out decimal spreadVal))
+					{
+						item.LaborSpreadValue = spreadVal;
+					}
+					else
+					{
+						item.LaborSpreadValue = 0;
+					}
+					ucotSpreadItem.ucotHours += item.LaborSpreadValue;
+				}
+			}
+			else
+			{
+				ucotSpreadItem.spreads = new List<LaborSpreadDataModelView>();
+				ucotSpreadItem.ucotSpreads = new List<LaborSpreadDataModelView>();
+			}
+
+			return ucotSpreadItem;
+		}
+
+		/// <summary>
 		/// In cases where the total hours DOES NOT divide evenly among the number of percent-locked auto-calculated (non-discrete)
 		/// resource entries, we need to adjust (+/-1) the hour spread values for a subset of those entries so that the overall
 		/// delta is corrected to zero.
@@ -435,8 +483,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				this.CleanupLaborTaskData(ws, modelView);
 
-
-
 				// Validate Task Variables
 				bool addNullValidationError = true;
 				if (modelView.TaskElementData.TaskOrdinaryVariables.Any())
@@ -456,6 +502,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				// Validate Task Details Composite
 				this.ValidateTaskDetails(boe, modelView, validationErrors, ws, moqEquationTotal);
+
+				// Validate Task Author is a valid selection if one was made
+				if (Utilities.IsAssignTaskAuthorEnabledForSystem && ws.EnableAssignTaskAuthor && modelView.TaskElementData.AuthorUserId.HasValue &&
+					!boe.AuthorIDs.Contains(modelView.TaskElementData.AuthorUserId.Value) && !boe.SubcontractorAuthorIDs.Contains(modelView.TaskElementData.AuthorUserId.Value))
+				{
+					validationErrors.Add(new ValidationMessage("Task Author", ValidationConstants.TASK_AUTHOR_INVALID));
+				}
 
 				// Validate Precision
 				if (modelView.LaborTypesData.Any())
@@ -941,7 +994,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, ws.UsingTemplateBOE, ws.EnableSAPConnection, moqTypes, taskElement.Id, modelView.IsUsingTMRatesInTask))
 			{
-				if (ws.EnableSAPConnection && (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST 
+				if (ws.EnableSAPConnection && (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST
 					|| moqTypes.Any(x => x.TableData != null && x.TableData.Any(t => t.RepositoryName == RepositoryName.SapWebi.GetDescription()))))
 				{
 					decimal historicalHoursTotals = taskElement.SkillMixTable.Sum(x => x.HistoricalHours);
@@ -970,7 +1023,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				if (taskElement.CommonDisclosureTable != null && taskElement.CommonDisclosureTable.Any())
 				{
-					validationErrors.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(taskElement.CommonDisclosureTable, false, 
+					validationErrors.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(taskElement.CommonDisclosureTable, false,
 						taskElement.taskElementLabors.Any(x => x.Updateable != UpdateType.Deleted)).Select(x => new ValidationMessage(x)));
 				}
 			}
@@ -1655,7 +1708,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			ICollection<ResourceSpreadDto> spreadDtos = SpreadCurve.CalculateLaborSpreadsBasedOnCurve(request, precision);
 
 			decimal sumUCOT = 0m;
-			
+
 			// Convert dto to mv
 			foreach (ResourceSpreadDto dto in spreadDtos.OrderBy(s => s.LaborSpreadDate))
 			{
@@ -1670,7 +1723,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					decimal nonPrecisionUCOT = dto.LaborSpreadValue * ucotFactor / 100.0m;
 					sumUCOT += nonPrecisionUCOT;
 					decimal precisionUCOT = Utilities.AdjustPrecision(nonPrecisionUCOT, precision);
-				
+
 					ucotSpreadsToReturn.Add(new LaborSpreadDataModelView()
 					{
 						LaborSpreadDate = dto.LaborSpreadDate.ToMonthString(),
@@ -1767,7 +1820,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			MOQEquationModelView toReturn = new MOQEquationModelView(taskElement, this.VariableSelectBOEtoSumCalculation, workspace);
 			toReturn.MoqTemplateAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(workspace.Id, taskElement.BoeID, taskElement.Id).Where(t => t.SourceId == (int)RteTemplateSource.TaskMOQ).ToList();
-			
+
 			return toReturn;
 		}
 
@@ -1952,6 +2005,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			toReturn.WorkspaceVariableIDs = modelview.TaskElementData.WorkspaceVariableIDs;
 			toReturn.TaskElementType = TaskElementType.Labor;
 			toReturn.BOETaskElementOrder = modelview.TaskElementData.BOETaskElementOrder;
+			toReturn.AuthorUserId = modelview.TaskElementData.AuthorUserId;
 
 			if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, ws.UsingTemplateBOE, ws.EnableSAPConnection, modelview.MOQTypes, toReturn.Id, modelview.IsUsingTMRatesInTask))
 			{
@@ -3393,27 +3447,69 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				// run SAP Validation/Calculation and update correct fields
 				if (validRows.Any())
 				{
-					ICollection<IESResponse<CalculateActualsViewModel>> sapResults = await this.CalculateAllActualsSap(validRows);
-					foreach (IESResponse<CalculateActualsViewModel> sapResult in sapResults)
+					// Make one bulk call to SAP
+					if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate))
 					{
-						CalculateActualsViewModel calculateActualsViewModel = sapResult.Data.FirstOrDefault();
-						if (calculateActualsViewModel != null && calculateActualsViewModel.TableId >= 0 && calculateActualsViewModel.TableId < dataToSaveArray.Length)
+						ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>> responses = await this.CalculateAllActualsSapWithSkillMix(validRows);
+						foreach (IESResponse<CalculateActualsWithSkillMixViewModel> response in responses)
 						{
-							// match by the tableId to the index in the array
-							ImportMoqTableResultsModelView modelView = dataToSaveArray[calculateActualsViewModel.TableId];
+							WorkspaceCalculateActualsModelView resultModel = new WorkspaceCalculateActualsModelView();
+							CalculateActualsWithSkillMixViewModel calculateActualsViewModel = response.Data.First();
 
-							if (sapResult.IsSuccessful)
+							if (calculateActualsViewModel != null && calculateActualsViewModel.TableId >= 0 && calculateActualsViewModel.TableId < dataToSaveArray.Length)
 							{
-								// update the totals and date
-								modelView.TotalRelevantHours = Convert.ToDecimal(calculateActualsViewModel.TotalHours);
-								modelView.TotalWbsHours = Convert.ToDecimal(calculateActualsViewModel.WbsHours ?? 0.0);
-								modelView.DateOfReport = DateTime.Now;
+								// match by the tableId to the index in the array
+								ImportMoqTableResultsModelView modelView = dataToSaveArray[calculateActualsViewModel.TableId];
+
+								if (response.IsSuccessful)
+								{
+									// update the totals and date
+									double? wbsHoursSum = calculateActualsViewModel.SkillMixDataTable.Sum(s => s.WbsHours);
+									double totalHoursSum = calculateActualsViewModel.SkillMixDataTable.Sum(s => s.TotalHours);
+									modelView.TotalRelevantHours = Convert.ToDecimal(totalHoursSum);
+									modelView.TotalWbsHours = Convert.ToDecimal(wbsHoursSum ?? 0.0);
+									modelView.DateOfReport = DateTime.Now;
+									modelView.ResourceHours = calculateActualsViewModel.SkillMixDataTable.Where(s => s.TotalHours != 0.0).Select(skillMix => new MOQTypeSelectionTableDataResourceHoursDTO
+									{
+										ResourceName = skillMix.ResourceID,
+										WbsHours = skillMix.WbsHours.HasValue ? Convert.ToDecimal(skillMix.WbsHours.Value) : default(decimal),
+										TotalHours = Convert.ToDecimal(skillMix.TotalHours)
+									}).ToArray();
+								}
+								else
+								{
+									// Update the Import Result Type
+									modelView.ImportType = (int)MoqTableImportType.InvalidSapCalculation;
+									modelView.ErrorMessages = response.Messages;
+								}
 							}
-							else
+						}
+					}
+					else
+					{
+
+						ICollection<IESResponse<CalculateActualsViewModel>> sapResults = await this.CalculateAllActualsSap(validRows);
+						foreach (IESResponse<CalculateActualsViewModel> sapResult in sapResults)
+						{
+							CalculateActualsViewModel calculateActualsViewModel = sapResult.Data.FirstOrDefault();
+							if (calculateActualsViewModel != null && calculateActualsViewModel.TableId >= 0 && calculateActualsViewModel.TableId < dataToSaveArray.Length)
 							{
-								// Update the Import Result Type
-								modelView.ImportType = (int)MoqTableImportType.InvalidSapCalculation;
-								modelView.ErrorMessages = sapResult.Messages;
+								// match by the tableId to the index in the array
+								ImportMoqTableResultsModelView modelView = dataToSaveArray[calculateActualsViewModel.TableId];
+
+								if (sapResult.IsSuccessful)
+								{
+									// update the totals and date
+									modelView.TotalRelevantHours = Convert.ToDecimal(calculateActualsViewModel.TotalHours);
+									modelView.TotalWbsHours = Convert.ToDecimal(calculateActualsViewModel.WbsHours ?? 0.0);
+									modelView.DateOfReport = DateTime.Now;
+								}
+								else
+								{
+									// Update the Import Result Type
+									modelView.ImportType = (int)MoqTableImportType.InvalidSapCalculation;
+									modelView.ErrorMessages = sapResult.Messages;
+								}
 							}
 						}
 					}
@@ -3741,8 +3837,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			return response;
 		}
-			
-				
+
+
 		/// <summary>
 		/// Validates Actuals data for SAP
 		/// </summary>

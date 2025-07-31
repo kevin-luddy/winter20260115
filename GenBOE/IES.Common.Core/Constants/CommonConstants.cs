@@ -529,6 +529,21 @@ namespace IES.Common.Core.Constants
 		public const int PERF_ORG_DESC_MAX_LENGTH = 50;
 
 		/// <summary>
+		/// Fake resource ID for UCOT resources.
+		/// </summary>
+		public const int UCOT_RESOURCE_ID = -9000;
+
+		/// <summary>
+		/// Fake perf org ID for UCOT perf orgs.
+		/// </summary>
+		public const int UCOT_PERF_ORG_ID = -9001;
+
+		/// <summary>
+		/// UCOT string constant.
+		/// </summary>
+		public const string UCOT_LABEL = "UCOT";
+
+		/// <summary>
 		/// The read only roles for RDSB.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]

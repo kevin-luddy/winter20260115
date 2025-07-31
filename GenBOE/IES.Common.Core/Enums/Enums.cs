@@ -623,6 +623,10 @@ namespace IES.Common.Core.Enums
 		ProjMapClassOfCost = 73,
 		ProjMapOldResource = 74,
 		ResourceSegmentRegion = 76,
+		ProjMapResourceSegmentRegion = 78,
+		TaskUrl = 80,
+		WorkspaceUrl = 82,
+		TaskAuthor = 85
 	}
 
 	/// <summary>
@@ -653,7 +657,12 @@ namespace IES.Common.Core.Enums
 		ProjMapSpreadCode = 70,
 		ProjMapStartDate = 71,
 		ProjMapOldResource = 75,
-		ResourceSegmentRegion = 77
+		ResourceSegmentRegion = 77,
+		ProjMapResourceSegmentRegion = 79,
+		TaskUrl = 81,
+		WorkspaceUrl = 83,
+		MOQType = 84,
+		TaskAuthor = 86
 	}
 
 	/// <summary>

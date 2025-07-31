@@ -57,7 +57,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
             }
 
 			// UCOT validation (Space only) - if there are multiple MOQ types assigned to a task and one of those MOQ Types is Historical/Comparative/Analogous, add a warning
-			MultiMOQTypeResult multiMoqResult = MultiMOQTypeUtility.DoTasksHaveMultipleMOQTypes(inBOE);
+			MultiMOQTypeResult multiMoqResult = MultiMOQTypeUtility.DoTasksHaveMultipleMOQTypes(inBOE, ws.CreationDate, ws.Shortname);
 			if (multiMoqResult.DoMultiMOQTypesExist)
 			{
 				foreach (string task in multiMoqResult.Tasks)

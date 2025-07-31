@@ -129,7 +129,7 @@
 						CreateCommonDisclosureRowsRMS(resourceHours, laborTypes, currentCommonDisclosureData, 
 							refreshedModel, isManual);
 					}
-					}
+				}
 				else
 				{
 					refreshedModel.CommonDisclosureRows?.Clear();
@@ -148,6 +148,7 @@
 				});
 			}
 
+			CleanupData(refreshedModel, isSpace);
 			CalculateSkillMixTotals(refreshedModel);
 			CalculateBoeSkillMixPercentage(refreshedModel);
 
@@ -157,7 +158,7 @@
 
 			return refreshedModel;
 		}
-
+		
 		/// <summary>
 		/// Create the Common Disclosure Rows from the data
 		/// </summary>
@@ -704,6 +705,56 @@
 			refreshedModel.CommonDisclosureTotals.ProposedHours = refreshedModel.CommonDisclosureRows.Where(d => d.Included).Sum(s => s.ProposedHours);
 			refreshedModel.CommonDisclosureTotals.UCOTHours = refreshedModel.CommonDisclosureRows.Sum(s => s.UCOTHours);
 			refreshedModel.CommonDisclosureTotals.GrandTotalHours = refreshedModel.CommonDisclosureTotals.ProposedHours + refreshedModel.CommonDisclosureTotals.UCOTHours;
+		}
+
+		/// <summary>
+		/// Remove SkillMix and CommonDisclosure rows as needed
+		/// </summary>
+		/// <param name="refreshedModel">The skill mix model view to cleanup</param>
+		/// <param name="isSpace">Is Space the current company mode?</param>
+		private static void CleanupData(RefreshSkillMixModelView refreshedModel, bool isSpace)
+		{
+			if (refreshedModel == null)
+			{
+				throw new ArgumentNullException(nameof(refreshedModel));
+			}
+
+			if (isSpace)
+			{
+				// Remove Skill Mix rows where historical and proposed hours are zero
+				List<SkillMixModelView> skillMixRowsToRemove = refreshedModel.SkillMixRows
+					.Where(row => row.HistoricalHours == 0 && row.ProposedHours == 0)
+					.ToList();
+
+				foreach (SkillMixModelView item in skillMixRowsToRemove)
+				{
+					refreshedModel.SkillMixRows.Remove(item);
+				}
+
+				// Remove Common Disclosure rows where historical and proposed hours are zero
+				List<CommonDisclosureModelView> commonDisclosureRowsToRemove = refreshedModel.CommonDisclosureRows
+					.Where(row => row.HistoricalHours == 0 && row.ProposedHours == 0)
+					.ToList();
+
+				foreach (CommonDisclosureModelView item in commonDisclosureRowsToRemove)
+				{
+					refreshedModel.CommonDisclosureRows.Remove(item);
+				}
+			}
+			else
+			{
+				// Check for duplicate Current Resources
+				HashSet<string> distinctCurrentResources = new HashSet<string>();
+				foreach (SkillMixModelView row in refreshedModel.SkillMixRows.Where(x => !string.IsNullOrEmpty(x.ResourceNew)))
+				{
+					if (!distinctCurrentResources.Add(row.ResourceNew))
+					{
+						// Duplicate found - Set proposed hours to 0 and included to false
+						row.ProposedHours = 0;
+						row.Included = false;
+					}
+				}
+			}
 		}
 	}
 }

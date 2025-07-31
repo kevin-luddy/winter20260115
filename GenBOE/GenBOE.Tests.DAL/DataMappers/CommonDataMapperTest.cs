@@ -5,12 +5,35 @@ using GenBOE.DataBridge.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using GenBOE.Dtos;
+using System.Collections.Generic;
 
 namespace GenBOE.Tests.DAL.DataMappers
 {
     [TestClass]
     public class CommonDataMapperTest
     {
+		/// <summary>
+		/// Mocked Common Data Loader
+		/// </summary>
+		private Mock<CommonDataLoader> dataLoader { get; set; }
+
+		/// <summary>
+		/// Mocked Cache Data Loader
+		/// </summary>
+		private Mock<ICacheDataLoader> cacheLoader { get; set; }
+
+		/// <summary>
+		/// Get System Under Test
+		/// </summary>
+		/// <returns>Common Data Mapper</returns>
+		private CommonDataMapper GetSUT()
+		{
+			dataLoader = new Mock<CommonDataLoader>();
+			cacheLoader = new Mock<ICacheDataLoader>();
+
+			return new CommonDataMapper(dataLoader.Object, cacheLoader.Object);
+		}
+
         [TestMethod]
         public void getRoles()
         {
@@ -304,5 +327,59 @@ namespace GenBOE.Tests.DAL.DataMappers
             Assert.IsTrue(returned.Count == 1);
             Assert.AreEqual("LOE Sub", returned[0].SumVariableResourceTypeName);
         }
-    }
+
+		/// <summary>
+		/// Test GetProPricerFieldsDictionary when Task Author is enabled
+		/// </summary>
+		[TestMethod]
+		public void GetProPricerFieldsDictionaryTest_TaskAuthorEnabled()
+		{
+			CommonDataMapper sut = GetSUT();
+
+			ICollection<EnumTypeModelView> cachedFields = new Collection<EnumTypeModelView>()
+			{
+				new EnumTypeModelView() { EnumTypeID = (int)ProPricerField_Task.TaskTitle, EnumTypeName = ProPricerField_Task.TaskTitle.GetDescription() },
+				new EnumTypeModelView() { EnumTypeID = (int)ProPricerField_Task.TaskAuthor, EnumTypeName = ProPricerField_Task.TaskAuthor.GetDescription() },
+				new EnumTypeModelView() { EnumTypeID = (int)ProPricerField_Resources.ResourceID, EnumTypeName = ProPricerField_Resources.ResourceID.GetDescription() },
+				new EnumTypeModelView() { EnumTypeID = (int)ProPricerField_Resources.TaskAuthor, EnumTypeName = ProPricerField_Resources.TaskAuthor.GetDescription() },
+			};
+
+			cacheLoader.Setup(x => x.GetData(It.IsAny<GetProPricerFieldsDelegate>(), It.IsAny<object[]>(), CacheConstants.PROPRICER_FIELDS, false)).Returns(cachedFields);
+
+			IDictionary<int, EnumTypeModelView> result = sut.GetProPricerFieldsDictionary(false, true);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.ContainsKey((int)ProPricerField_Task.TaskTitle));
+			Assert.IsTrue(result.ContainsKey((int)ProPricerField_Task.TaskAuthor));
+			Assert.IsTrue(result.ContainsKey((int)ProPricerField_Resources.ResourceID));
+			Assert.IsTrue(result.ContainsKey((int)ProPricerField_Resources.TaskAuthor));
+		}
+
+		/// <summary>
+		/// Test GetProPricerFieldsDictionary when Task Author is disabled
+		/// </summary>
+		[TestMethod]
+		public void GetProPricerFieldsDictionaryTest_TaskAuthorDisabled()
+		{
+			CommonDataMapper sut = GetSUT();
+
+			ICollection<EnumTypeModelView> cachedFields = new Collection<EnumTypeModelView>()
+			{
+				new EnumTypeModelView() { EnumTypeID = (int)ProPricerField_Task.TaskTitle, EnumTypeName = ProPricerField_Task.TaskTitle.GetDescription() },
+				new EnumTypeModelView() { EnumTypeID = (int)ProPricerField_Task.TaskAuthor, EnumTypeName = ProPricerField_Task.TaskAuthor.GetDescription() },
+				new EnumTypeModelView() { EnumTypeID = (int)ProPricerField_Resources.ResourceID, EnumTypeName = ProPricerField_Resources.ResourceID.GetDescription() },
+				new EnumTypeModelView() { EnumTypeID = (int)ProPricerField_Resources.TaskAuthor, EnumTypeName = ProPricerField_Resources.TaskAuthor.GetDescription() },
+			};
+
+			cacheLoader.Setup(x => x.GetData(It.IsAny<GetProPricerFieldsDelegate>(), It.IsAny<object[]>(), CacheConstants.PROPRICER_FIELDS, false)).Returns(cachedFields);
+
+			IDictionary<int, EnumTypeModelView> result = sut.GetProPricerFieldsDictionary(false, false);
+
+			Assert.IsTrue(result.Any());
+			Assert.IsTrue(result.ContainsKey((int)ProPricerField_Task.TaskTitle));
+			Assert.IsFalse(result.ContainsKey((int)ProPricerField_Task.TaskAuthor));
+			Assert.IsTrue(result.ContainsKey((int)ProPricerField_Resources.ResourceID));
+			Assert.IsFalse(result.ContainsKey((int)ProPricerField_Resources.TaskAuthor));
+		}
+	}
 }

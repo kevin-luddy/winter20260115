@@ -1069,6 +1069,16 @@ namespace IES.Common
 		public readonly static string RMS_SKILL_MIX_TABLE_HEADER = "Current Skill Mix Table";
 
 		/// <summary>
+		/// BOE Skill Mix column name for Space.
+		/// </summary>
+		public readonly static string SPACE_BOE_SKILL_MIX_COLUMN_NAME = "Proposed Skill Mix";
+
+		/// <summary>
+		/// BOE Skill Mix column name for RMS.
+		/// </summary>
+		public readonly static string RMS_BOE_SKILL_MIX_COLUMN_NAME = "BOE Skill Mix";
+
+		/// <summary>
 		/// Error to display to the user when they encounter an application error.
 		/// </summary>
 		public static readonly string GENERIC_USER_ERROR = "The requested action could not be completed. If the problem persists, please contact your application administrator.";

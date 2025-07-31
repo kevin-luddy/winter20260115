@@ -6,13 +6,6 @@
 
 namespace GenTRAC.Web.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using System.Transactions;
-    using System.Web.Configuration;
-    using System.Web.Mvc;
     using ActionLogic.ModelView.Admin;
     using GenTRAC.ActionLogic;
     using GenTRAC.ActionLogic.ModelView.Proposals;
@@ -22,6 +15,13 @@ namespace GenTRAC.Web.Controllers
     using IES.Common;
     using IES.Common.Exceptions;
     using IES.Common.PickList;
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Linq;
+    using System.Transactions;
+    using System.Web.Configuration;
+    using System.Web.Mvc;
 
     /// <summary>
     /// Proposal Controller
@@ -300,11 +300,16 @@ namespace GenTRAC.Web.Controllers
             bool isForecasted = proposalClassText == Constants.PROPOSAL_CLASS_FORECASTED;
             this.proposalLogic.ValidateProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, validationErrors, isForecasted);
             this.proposalLogic.ValidateGeneralInfoTypes(proposalGeneralInfo, validationErrors, isForecasted, proposalInfo.ProposalClass);
-
-            bool invalidUnsavedUsers = false;
+			
+			bool invalidUnsavedUsers = false;
             if (!isForecasted)
-            {
-                invalidUnsavedUsers = this.proposalLogic.ValidateUserTypes(proposalId, proposalApprovalsInfo, proposalUserInfo, validationErrors);
+			{
+				// LOBs don't have consistent IDs between dev/uat/prod so we need to get the LOB picklist to get the NSS ID
+				// in order to pass if the proposal has NSS as its LOB to the helper method
+				ICollection<SelectListItem> lobList = pickListMapper.GetSelectListPickList(PickListEnum.LineOfBusiness);
+				SelectListItem nssLob = lobList.FirstOrDefault(x => x.Text == Constants.NSS_LOB_NAME);
+				bool isNss = nssLob != null && proposalGeneralInfo.LineOfBusiness.ToString() == nssLob.Value;
+				invalidUnsavedUsers = this.proposalLogic.ValidateUserTypes(proposalId, proposalApprovalsInfo, proposalUserInfo, validationErrors, isNss);
             }
 
             validationErrors.ForEach(x => x.FormIDToTarget = GenTRAC.ActionLogic.ProposalControllerLogic.PROPOSAL_INFO_FORM);

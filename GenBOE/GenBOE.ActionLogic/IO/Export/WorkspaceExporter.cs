@@ -17,6 +17,7 @@ namespace GenBOE.ActionLogic.IO.Export
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.Common.MOQ;
 	using GenBOE.ActionLogic.IO.Export.BOE;
+	using GenBOE.ActionLogic.Misc;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.Reporting;
 	using GenBOE.DataBridge.Common;
@@ -1705,6 +1706,8 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// </returns>
 		private ExcelExportWorksheet GetLaborResourceTypeDataforBOEResourceCombo(BOEExportInputs exportInputs, ExcelExportWorksheet toReturn, BoeDTO boe, BoeTaskElementDTO task, HashSet<WbsDTO> allWbs, HashSet<ClinDTO> allClins, IReadOnlyCollection<ResourceDTO> workspaceResources, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, IDictionary<int, SpreadCurveModelView> allSpreadCurves, HashSet<PerformingOrgDTO> perfOrgsFromDb, string[] taskFields1, string[] taskFields2)
 		{
+			ICollection<MoqTypeSelection> moqTypes = exportInputs.MOQTypes.ToList();
+
 			foreach (ResourceTypeDto resourceType in task.taskElementLabors)
 			{
 				List<string> row = new List<string>();
@@ -1742,28 +1745,8 @@ namespace GenBOE.ActionLogic.IO.Export
 
 				toReturn.Add(row);
 
-				bool addUCOT = false;
-				// UCOT is only applicable if ResourceTypeDto is Hours and LMLabor Element of Cost, and Spread is past 1LMX date
-				if (Utilities.ShowUCOTForWorkspace(exportInputs.Workspace.CreationDate, exportInputs.Workspace.Shortname) &&
-					resourceType.SpreadType == SpreadType.Hours &&
-					((aResource != null && aResource.ElementOfCost == ElementOfCostType.LMLabor) || (brcResource != null && brcResource.ElementOfCost == ElementOfCostType.LMLabor)) &&
-					resourceType.LaborSpreads != null && resourceType.LaborSpreads.Any())
-				{
-					// Get the MOQ Types for this task
-					ICollection<MoqTypeSelection> taskMOQs = exportInputs.MOQTypes.Where(m => m.TaskId == task.Id).ToList();
-					if (taskMOQs.Count == 1)
-					{
-						MoqTypeSelection moqType = taskMOQs.First();
-						if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems &&
-							(moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative || moqType.SelectedMOQType == MOQType.AnalogousRelationships))
-						{
-							addUCOT = true;
-						}
-					}
-				}
-
 				// Labor Resource Spreads
-				toReturn = this.GetLaborSpreadDataforBOEResourceCombo(exportInputs, toReturn, boe, resourceType, taskFields1, taskFields2, resFields1, resFields2, currentDate, workspace_customFields, workspaceCustomFieldValues, resourceUsesCostValues, addUCOT);
+				toReturn = this.GetLaborSpreadDataforBOEResourceCombo(exportInputs, toReturn, boe, resourceType, taskFields1, taskFields2, resFields1, resFields2, currentDate, workspace_customFields, workspaceCustomFieldValues, resourceUsesCostValues, brcResource?.ElementOfCost ?? ElementOfCostType.NotSet, brcResource?.RateType ?? RateType.NotSet, moqTypes);
 
 			}
 
@@ -1785,13 +1768,21 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="workspace_customFields">Workspace Custom Fields</param>
 		/// <param name="workspaceCustomFieldValues">Workspace Custom Field Values</param>
 		/// <param name="resourceUsesCostValues">Bool noting if Resource Type uses a Cost Spread</param>
-		/// <param name="addUCOT">Whether to add UCOT</param>
+		/// <param name="elementOfCostType">Element of cost type for BRC</param>
+		/// <param name="moqTypes">MOQ Types for Workspace</param>
+		/// <param name="rateType">Rate Type for BRC</param>
 		/// <returns>
 		/// Excel Export Worksheet with Labor Task data
 		/// </returns>
-		private ExcelExportWorksheet GetLaborSpreadDataforBOEResourceCombo(BOEExportInputs exportInputs, ExcelExportWorksheet toReturn, BoeDTO boe, ResourceTypeDto resourceType, string[] taskFields1, string[] taskFields2, string[] resFields1, List<string> resFields2, DateTime currentDate, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, bool resourceUsesCostValues, bool addUCOT)
+		private ExcelExportWorksheet GetLaborSpreadDataforBOEResourceCombo(BOEExportInputs exportInputs, ExcelExportWorksheet toReturn, 
+			BoeDTO boe, ResourceTypeDto resourceType, string[] taskFields1, string[] taskFields2, string[] resFields1, 
+			List<string> resFields2, DateTime currentDate, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, 
+			ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, bool resourceUsesCostValues, 
+			ElementOfCostType elementOfCostType, RateType rateType, ICollection<MoqTypeSelection> moqTypes)
 		{
-			IDictionary<DateTime, decimal> smoothedUcotSpreads = GetUcotSpreads(exportInputs, resourceType, addUCOT);
+			IDictionary<DateTime, decimal> smoothedUcotSpreads = UCOTUtility.GetUcotSpreads(exportInputs.Workspace.CreationDate,
+				exportInputs.Workspace.Shortname, exportInputs.Workspace.DecimalPrecision, exportInputs.Workspace.UCOTFactor, resourceType.LaborSpreads,
+				elementOfCostType, moqTypes, resourceType.TaskElementId, rateType);
 
 			while (currentDate <= resourceType.EndDate.Value)
 			{
@@ -1858,7 +1849,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + ((spread == null) ? "0" : spread.LaborSpreadValue.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision))));
 
 					// Add the UCOT Factor, if enabled, and is past 1LMX start date
-					if (addUCOT)
+					if (smoothedUcotSpreads.Any())
 					{
 						if (Utilities.OneLmxStartDate <= spread?.LaborSpreadDate)
 						{
@@ -1883,49 +1874,6 @@ namespace GenBOE.ActionLogic.IO.Export
 			}
 
 			return toReturn;
-		}
-
-		/// <summary>
-		/// Get smoothed UCOT spreads for the export
-		/// </summary>
-		/// <param name="exportInputs">BOE Export Inputs</param>
-		/// <param name="labor">Labor type</param>
-		/// <param name="addUcot">True if UCOT is being added to the export</param>
-		/// <returns>Smoothed UCOT spreads in a dictionary of spread date and spread value</returns>
-		private static IDictionary<DateTime, decimal> GetUcotSpreads(BOEExportInputs exportInputs, ResourceTypeDto labor, bool addUcot)
-		{
-			IDictionary<DateTime, decimal> smoothedUcotSpreads = new Dictionary<DateTime, decimal>();
-			if (addUcot)
-			{
-				// Get spreads on/after 1LMX start to see if UCOT needs to be applied
-				IDictionary<DateTime, decimal> spreadsToApplyUcot = labor.LaborSpreads.Where(x => x.LaborSpreadDate >= Utilities.OneLmxStartDate)
-					.ToDictionary(x => x.LaborSpreadDate, x => x.LaborSpreadValue);
-
-				if (spreadsToApplyUcot.Any())
-				{
-					// Get UCOT Total
-					decimal ucotTotal = spreadsToApplyUcot.Sum(x => x.Value) * (exportInputs.Workspace.UCOTFactor / 100m);
-					ucotTotal = Utilities.AdjustPrecision(ucotTotal, exportInputs.Workspace.ResourceDecimalPrecision);
-
-					// Calculate UCOT values for spreads
-					IDictionary<DateTime, decimal> ucotSpreads = new Dictionary<DateTime, decimal>();
-					foreach (KeyValuePair<DateTime, decimal> spread in spreadsToApplyUcot.OrderBy(x => x.Key))
-					{
-						ucotSpreads.Add(spread.Key, Utilities.AdjustPrecision(spread.Value * exportInputs.Workspace.UCOTFactor / 100m, exportInputs.Workspace.ResourceDecimalPrecision));
-					}
-
-					// Get smoothed curve values
-					decimal[] smoothedSpreadValues = SpreadCurve.Smooth(ucotTotal, ucotSpreads.Select(x => x.Value).ToArray(), 0, ucotSpreads.Count, exportInputs.Workspace.ResourceDecimalPrecision ?? 0);
-
-					// Add the smoothed values to the dictionary to apply to spreads later
-					for (int i = 0; i < ucotSpreads.Count; i++)
-					{
-						smoothedUcotSpreads.Add(ucotSpreads.ElementAt(i).Key, smoothedSpreadValues[i]);
-					}
-				}
-			}
-
-			return smoothedUcotSpreads;
 		}
 
 		/// <summary>

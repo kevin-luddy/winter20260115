@@ -1237,7 +1237,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 								tableData.DateOfReport = new Date();
 								tableData.TotalRelevantHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.TotalHours, 0) + Number.EPSILON) * 100) / 100;
 								tableData.TotalWbsHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.WbsHours, 0) + Number.EPSILON) * 100) / 100;
-								tableData.ResourceHours = res.SkillMixDataTable.map(skillMix => ({ ResourceName: skillMix.ResourceID, WbsHours: skillMix.WbsHours, TotalHours: skillMix.TotalHours, BRCName: skillMix.Brc }));
+								tableData.ResourceHours = res.SkillMixDataTable.filter(s => s.TotalHours != 0.0).map(skillMix => ({ ResourceName: skillMix.ResourceID, WbsHours: skillMix.WbsHours, TotalHours: skillMix.TotalHours, BRCName: skillMix.Brc }));
 
 								// this is RMS only
 								if (!ManageTaskModel.IsSpace) {
@@ -1458,7 +1458,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 												tableData.DateOfReport = new Date();
 												tableData.TotalRelevantHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.TotalHours, 0) + Number.EPSILON) * 100) / 100;
 												tableData.TotalWbsHours = Math.round((res.SkillMixDataTable.reduce((acc, obj) => acc + obj.WbsHours, 0) + Number.EPSILON) * 100) / 100;
-												tableData.ResourceHours = res.SkillMixDataTable.map(skillMix => ({ ResourceName: skillMix.ResourceID, WbsHours: skillMix.WbsHours, TotalHours: skillMix.TotalHours, BRCName: skillMix.Brc }));
+												tableData.ResourceHours = res.SkillMixDataTable.filter(s => s.TotalHours != 0.0).map(skillMix => ({ ResourceName: skillMix.ResourceID, WbsHours: skillMix.WbsHours, TotalHours: skillMix.TotalHours, BRCName: skillMix.Brc }));
 
 												// this is RMS only
 												if (!ManageTaskModel.IsSpace && !tableData.ContractNumber && res.ContractNumber) {

@@ -57,5 +57,9 @@ namespace GenBOE.ActionLogic.Validation
 		// Validation for UCOT with multiple MOQ Types
 		public const string TASK_WITH_MULTI_MOQ_TYPES_UCOT = "UCOT is not calculated for Task {0} because it has multiple MOQ Types.";
 		public const string MULTI_TASK_WITH_MULTI_MOQ_TYPES_UCOT = "UCOT is not calculated for one or more tasks ({0}) because they have multiple MOQ Types. Please ensure that there is ONLY one MOQ Type per task prior to exporting to Word or ProPricer.";
-    }
+
+		// Validation for Task Author
+		public const string TASK_AUTHOR_REQUIRED = "Task Author is required.";
+		public const string TASK_AUTHOR_INVALID = "Task Author must be an Author or Subcontractor Author assigned to this BOE.";
+	}
 }
