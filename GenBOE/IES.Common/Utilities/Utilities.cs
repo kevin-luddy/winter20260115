@@ -1155,46 +1155,56 @@ namespace IES.Common
 		/// <summary>
 		/// Private for Is Skill Mix Whitelist Enabled
 		/// </summary>
-		/*private static bool isSkillMixWhitelistEnabled;
+		private static bool? isSkillMixWhitelistEnabled;
 
 		/// <summary>
-		/// Indicates whether if the Skill Mix whitelist is enabled
+		/// Private for Skill Mix whitelisted workspaces
 		/// </summary>
-		public static bool IsSkillMixWhiteListEnabled
-		{
-			get
-			{
-				if (isSkillMixWhitelistEnabled == null)
-				{
-					isSkillMixWhiteListEnabled = true;
-				}
+		private static Collection<string> skillMixWhitelistWorkspaces;
 
-				return isSkillMixWhitelistEnabled ?? false;
+		/// <summary>
+		/// Update the Skill Mix Whitelist settings--currently utilized by Space only
+		/// </summary>
+		/// <param name="whiteListEnabled">Is the whitelist for Skill Mix enabled? (set as a boolean-parseable string)</param>
+		/// <param name="whiteListWorkspaces">Comma-separated string of whitelisted workspaces (by short name)</param>
+		public static void UpdateSkillMixWhitelistSettings(string whiteListEnabled, string whiteListWorkspaces)
+		{
+			// Parse the disabled/enabled whitelist value
+			if (bool.TryParse(whiteListEnabled, out bool value))
+			{
+				isSkillMixWhitelistEnabled = value;
 			}
 
-			internal set => isSkillMixWhitelistEnabled = value;
-		}*/
+			// Update the list of whitelisted Skill Mix workspaces (short name)
+			skillMixWhitelistWorkspaces = whiteListWorkspaces.Split(',').ToCollection();
+		}
 
 		/// <summary>
-		/// Is Skill Mix connection shown to the user for this workspace
+		/// Is Skill Mix connection shown to the user for this workspace?
 		/// </summary>
 		/// <param name="workspaceCreationDate">Workspace creation date.</param>
+		/// <param name="workspaceShortName">The workspace short name</param>
 		/// <returns>Option to show skill mix for workspace.</returns>
-		/// pass in short workspace name too
-		/// check for whitelist enabled -> should have a running whitelist property, set it at application start inside global.asax
-		public static bool ShowSkillMixForWorkspace(DateTime? workspaceCreationDate/*, string workspaceShortName*/)
+		public static bool ShowSkillMixForWorkspace(DateTime? workspaceCreationDate, string workspaceShortName)
 		{
-			//if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-			//{
-			//	if (IsSkillMixEnabledForSystem && workspaceCreationDate >= skillMixStartDate && )
-			//	{
-
-			//	}
-			//}
-			//else
-			//{
+			// Whitelist config is for Space-only
+			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			{
+				if (IsSkillMixEnabledForSystem && workspaceCreationDate >= skillMixStartDate
+					&& isSkillMixWhitelistEnabled.HasValue && isSkillMixWhitelistEnabled.Value
+					&& skillMixWhitelistWorkspaces.Contains(workspaceShortName))
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			else
+			{
 				return IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate;
-			//}
+			}
 		}
 
 		/// <summary>
