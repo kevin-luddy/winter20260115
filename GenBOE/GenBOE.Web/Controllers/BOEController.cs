@@ -6,16 +6,6 @@
 
 namespace GenBOE.Web.Controllers
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Collections.ObjectModel;
-	using System.Diagnostics;
-	using System.IO;
-	using System.Linq;
-	using System.Threading.Tasks;
-	using System.Transactions;
-	using System.Web.Mvc;
-	using System.Web.Script.Serialization;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
@@ -41,7 +31,16 @@ namespace GenBOE.Web.Controllers
 	using IES.Common.classes;
 	using IES.Common.Exceptions;
 	using IES.Common.OfficeUtilities;
-	using Microsoft.VisualBasic.Logging;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Diagnostics;
+	using System.IO;
+	using System.Linq;
+	using System.Threading.Tasks;
+	using System.Transactions;
+	using System.Web.Mvc;
+	using System.Web.Script.Serialization;
 
 	public class BOEController : GenBOEController
 	{
