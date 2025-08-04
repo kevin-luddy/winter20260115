@@ -3086,6 +3086,14 @@ namespace GenBOE.Web.Controllers
 
                     scope.Complete();
                 }
+
+				// Skill Mix settings only (Space only) - update the utilities method
+				IEnumerable<string> systemSettingsForSkillMix = systemSettings.Select(x => x.Key);
+				if (systemSettingsForSkillMix.Contains(Constants.SKILL_MIX_WHITELIST) && systemSettingsForSkillMix.Contains(Constants.ENABLE_SKILL_MIX_WHITELIST))
+				{
+					Utilities.UpdateSkillMixWhitelistSettings(systemSettings.FirstOrDefault(x => x.Key.Equals(Constants.ENABLE_SKILL_MIX_WHITELIST)).Value,
+						systemSettings.FirstOrDefault(x => x.Key.Equals(Constants.SKILL_MIX_WHITELIST)).Value);
+				}
             }
             else
             {
