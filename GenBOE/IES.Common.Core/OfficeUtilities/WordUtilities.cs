@@ -427,11 +427,6 @@ namespace IES.Common.Core.OfficeUtilities
 					DocumentBuilder builder = new DocumentBuilder(document);
 					builder.MoveTo(insertionPoint);
 					HtmlInsertOptions options = removeSpacing ? HtmlInsertOptions.RemoveLastEmptyParagraph : HtmlInsertOptions.None;
-					if (!removeSpacing)
-					{
-						// need to manually add a linebreak before the html insert for Aspose
-						builder.InsertBreak(BreakType.LineBreak);
-					}
 
 					builder.InsertHtml(htmlFormattedText, options);
 

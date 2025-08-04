@@ -532,10 +532,10 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 				// remove page break on last BOE
 				if (boeContainer != null && boeContainer.LastChild is CompositeNode composite 
-					&& string.IsNullOrEmpty(composite.LastChild.GetText()) &&
+					&& composite.HasChildNodes && string.IsNullOrEmpty(composite.LastChild.GetText()) &&
 					composite.LastChild is Paragraph)
 				{
-					composite.LastChild.Remove();
+					composite.LastChild.RemoveIt();
 				}
 			}
 
@@ -3518,10 +3518,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			StructuredDocumentTag clonedContainerElement = containerElement.Clone(true) as StructuredDocumentTag;
 
 			#region Delete IDs to avoid conflict with existing elements
-			// TIW TODO 
-			// clonedContainerElement.Id = 0;
-			clonedContainerElement.Placeholder?.Remove();
-
+			clonedContainerElement.Placeholder?.RemoveIt();
 			#endregion
 
 			return clonedContainerElement;
@@ -3848,7 +3845,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					StructuredDocumentTag overallTotalCellRun = WordUtilities.GetTaggedChildElement(overallTotalRow, BOEExporterConstants.FieldName_Total);
 					WordUtilities.SetElementText(overallTotalCellRun, numericFormat == null ? data.SummaryTotalComplete.ToString() : data.SummaryTotalComplete.ToString(numericFormat));
 					// remove placeholder (band-aid)
-					overallTotalCellRun.Placeholder?.Remove();
+					overallTotalCellRun.Placeholder?.RemoveIt();
 				}
 
 				// locate the table markers
@@ -3862,7 +3859,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				currentInsertionRow = SummaryRowHelper(numericFormat, byQuarter, templateDataRow, currentInsertionRow, data.YearlyData, null, useGfy);
 
 				// remove template rows
-				templateDataRow.Remove();
+				templateDataRow.RemoveIt();
 
 				populated = true;
 			}
@@ -3926,7 +3923,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				}
 
 				// remove template rows
-				templateDataRow.Remove();
+				templateDataRow.RemoveIt();
 			}
 			else
 			{
@@ -4037,7 +4034,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						WordUtilities.SetElementText(nextCustomFieldElement, customFieldString);
 					}
 
-					paragraphTemplate.Remove();
+					paragraphTemplate.RemoveIt();
 				}
 				else
 				{   //There may be custom fields at the resource level, but none selected for this resource, so column will still print
@@ -4312,7 +4309,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				}
 
 				// remove template rows
-				templateDataRow.Remove();
+				templateDataRow.RemoveIt();
 			}
 			else
 			{
@@ -4399,7 +4396,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					}
 				}
 
-				contentBlockTemplate.Remove();
+				contentBlockTemplate.RemoveIt();
 			}
 			else
 			{
@@ -4454,7 +4451,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				{
 					WordUtilities.SetElementText(sdt, boeExportModelView.ContainsOCI ? BOEExporterConstants.LMPI_OCI_LABEL_TEXT : BOEExporterConstants.LMPI_LABEL_TEXT);
 					sdt.Title = string.Empty;
-					// alias.Remove();  OpenXML SdtAlias is Title on IStructuredDocumentTag
 				}
 
 				sdt = footer.Range.StructuredDocumentTags.GetByTitle(BOEExporterConstants.FieldName_Date) as StructuredDocumentTag;
@@ -4462,7 +4458,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				{
 					WordUtilities.SetElementText(sdt, DateTime.Today.ToShortDateString());
 					sdt.Title = string.Empty;
-					// alias.Remove();  OpenXML SdtAlias is Title on IStructuredDocumentTag
 				}
 			}
 		}

@@ -138,7 +138,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						Parallel.ForEach(tableRow.GetChildNodes(NodeType.StructuredDocumentTag, true), descendant =>
 						{
 							StructuredDocumentTag tag = descendant as StructuredDocumentTag;
-							tag.Placeholder?.Remove();
+							tag.Placeholder?.RemoveIt();
 						}
 						);
 
@@ -1178,7 +1178,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				}
 
 				// remove template rows
-				templateDataRow.Remove();
+				templateDataRow.RemoveIt();
 			}
 			else
 			{
@@ -1248,7 +1248,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				}
 
 				// remove template rows
-				templateDataRow.Remove();
+				templateDataRow.RemoveIt();
 			}
 			else
 			{

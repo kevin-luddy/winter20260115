@@ -263,8 +263,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				// tableStyle.Borders.LineWidth = 0.5;  If you set line width greater than zero when line style is none, the line style is automatically changed to single line.
 				tableStyle.LeftPadding = 58d / 20d; // TableWidthValues.Dxa), Width = 58 }, //58 20ths of a point = 0.04"
 				tableStyle.RightPadding = 58d / 20d; // TableWidthValues.Dxa), Width = 58 }, //58 20ths of a point = 0.04"
-				tableStyle.ConditionalStyles[ConditionalStyleType.OddColumnBanding].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
-				// TODO TIW new TableLook() { Val = "04A0", FirstRow = true, LastRow = false, FirstColumn = true, LastColumn = false, NoHorizontalBand = false, NoVerticalBand = true },
+				tableStyle.ConditionalStyles[ConditionalStyleType.FirstColumn].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
+				tableStyle.ConditionalStyles[ConditionalStyleType.FirstRow].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
+				tableStyle.ConditionalStyles[ConditionalStyleType.OddRowBanding].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
 			}
 
 			// TODO TIW 5000 seems very dubious, was TableWidthUnitValues.Pct), Width = "5000"

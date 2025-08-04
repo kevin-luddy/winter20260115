@@ -183,7 +183,6 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="revision">Revision ModelView</param>
 		private void PopulatePPRDHeader(Document document, RevisionModelView revision)
 		{
-			// TODO TIW
 			StructuredDocumentTagCollection sdts = document.Range.StructuredDocumentTags;
 
 			foreach (StructuredDocumentTag tag in sdts)
@@ -522,7 +521,7 @@ namespace IES.ActionLogic.Core.IO.Export
 						PPRDExporterConstants.FIELDNAME_SECTIONNUMBER);
 					if (sectionNumberElement != null)
 					{
-						WordUtilities.SetElementText(sectionNumberElement, section.ReferenceNumber);
+						WordUtilities.SetElementText(sectionNumberElement, section.ReferenceNumber + ControlChar.LineBreak);
 
 						if (section.IsInternalSection == true)
 						{
@@ -890,18 +889,13 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// </summary>
 		/// <param name="cell">Cell to adjust</param>
 		/// <param name="width">Width to set (inches)</param>
-		private void SetCellWidth(Cell cell, decimal width)
+		private void SetCellWidth(Cell cell, double width)
 		{
-			// TODO TIW
-			//// Convert width from inches to 20ths of a point
-			//// points = inches*72, 20ths of a point = points*20
-			//decimal convertedWidth = width * 72 * 20;
+			// Convert width from inches to points
+			// points = inches*72 
+			double convertedWidth = width * 72d;
 
-			//CellProperties cellProperties = cell.Descendants<CellProperties>().FirstOrDefault();
-			//if (cellProperties != null)
-			//{
-			//	cellProperties.CellWidth = new CellWidth() { Width = convertedWidth.ToString(), Type = TableWidthUnitValues.Dxa };
-			//}
+			cell.CellFormat.PreferredWidth = PreferredWidth.FromPoints(convertedWidth);
 		}
 
 		/// <summary>

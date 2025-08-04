@@ -44,39 +44,37 @@ namespace IES.Common.Core.OfficeUtilities
 		public MemoryStream UpdateDocumentVersion(byte[] fileData, string physicalFilePathCache, ExcelReportTemplate exportFormat)
 		{
 			MemoryStream mem = new();
-			lock (CacheConstants.OPEN_XML_LOCK)
+			byte[] docBytes;
+
+			// if the file is serialized to the DB (.FileData property), then use THAT; otherwise use the physical file
+			if (fileData != null && fileData.Any())
 			{
-				byte[] docBytes;
-
-				// if the file is serialized to the DB (.FileData property), then use THAT; otherwise use the physical file
-				if (fileData != null && fileData.Any())
-				{
-					docBytes = fileData;
-				}
-				else if (!string.IsNullOrEmpty(physicalFilePathCache))
-				{
-					docBytes = System.IO.File.ReadAllBytes(physicalFilePathCache);
-				}
-				else
-				{
-					docBytes = Array.Empty<byte>();
-				}
-
-				mem.Write(docBytes, 0, docBytes.Length);
-
-				if (exportFormat != null)
-				{
-					int parentTemplateId = exportFormat.ParentTemplateId ?? exportFormat.TemplateId;
-
-					Document document = new Document(mem);
-					document.BuiltInDocumentProperties.Version = parentTemplateId;
-					// TODO TIW check if you can save back to the original memory stream or not
-					mem.Dispose();
-					mem = new MemoryStream(docBytes.Length);
-					document.Save(mem, SaveFormat.Docx);
-					mem.Position = 0;
-				}
+				docBytes = fileData;
 			}
+			else if (!string.IsNullOrEmpty(physicalFilePathCache))
+			{
+				docBytes = System.IO.File.ReadAllBytes(physicalFilePathCache);
+			}
+			else
+			{
+				docBytes = Array.Empty<byte>();
+			}
+
+			mem.Write(docBytes, 0, docBytes.Length);
+
+			if (exportFormat != null)
+			{
+				int parentTemplateId = exportFormat.ParentTemplateId ?? exportFormat.TemplateId;
+
+				Document document = new Document(mem);
+				document.BuiltInDocumentProperties.Version = parentTemplateId;
+				// TODO TIW check if you can save back to the original memory stream or not
+				mem.Dispose();
+				mem = new MemoryStream(docBytes.Length);
+				document.Save(mem, SaveFormat.Docx);
+				mem.Position = 0;
+			}
+
 			return mem;
 		}
 	}

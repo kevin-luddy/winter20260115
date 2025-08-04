@@ -71,12 +71,14 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 			if (returnStream.IsSuccessful)
 			{
 
-				httpResponse.ContentType = segmentedOutput ? BOEExporter.CONTENT_TYPE_ZIP : BOEExporter.CONTENT_TYPE_DOCX;
+				httpResponse.ContentType = segmentedOutput ? BOEExporter.CONTENT_TYPE_ZIP : BOEExporterConstants.ContentType_DOCX;
 				httpResponse.Clear();
 				httpResponse.BufferOutput = true;
-				httpResponse.AppendHeader("Content-Disposition", $"attachment;filename={returnFilename}");
+				httpResponse.AppendHeader(BOEExporterConstants.CONTENT_HEADER_NAME, string.Format(BOEExporterConstants.CONTENT_HEADER_FORMAT_STRING, returnFilename));
 
-				await httpResponse.OutputStream.WriteAsync(returnStream.Data, 0, returnStream.Data.Length);
+				httpResponse.OutputStream.Write(returnStream.Data, 0, returnStream.Data.Length);
+				//returnStream.Data.CopyTo(httpResponse.OutputStream);
+				//await httpResponse.OutputStream.WriteAsync(returnStream.Data, 0, returnStream.Data.Length);
 			}
 			else
 			{

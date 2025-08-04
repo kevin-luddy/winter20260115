@@ -264,7 +264,7 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <summary>
 		/// Width for description column in inches when there is no rate code column
 		/// </summary>
-		internal const decimal DESCRIPTION_NO_RATE_CODE_COLUMN_WIDTH = 2.59m;
+		internal const double DESCRIPTION_NO_RATE_CODE_COLUMN_WIDTH = 2.59d;
 
 		#endregion
 	}

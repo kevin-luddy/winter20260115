@@ -1960,7 +1960,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						{
 							if (child is not CompositeNode compositeNode || !compositeNode.GetChildNodes(NodeType.Shape, true).Any())  // Bug 32436 - Avoid deleting images
 							{
-								child.Remove();
+								child.RemoveIt();
 							}
 						}
 					}
@@ -2400,7 +2400,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				}
 
 				// remove template row
-				templateDataRow.Remove();
+				templateDataRow.RemoveIt();
 
 				// Populate totals row
 				StructuredDocumentTag totalsRowMarkerTag = WordUtilities.GetTaggedChildElement(boeSummaryTableOfHoursElement, BOEExporterConstants.Marker_TotalsRow);
@@ -2451,13 +2451,14 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				tableStyle.LeftPadding = 0;
 				tableStyle.RightPadding = 0;
 				tableStyle.TopPadding = 7.2;
-				tableStyle.ConditionalStyles[ConditionalStyleType.OddColumnBanding].Shading.BackgroundPatternColor = Color.FromArgb(0, 68, 170); // 0, 68, 170 rgb is 04A0 hex
+				tableStyle.ConditionalStyles[ConditionalStyleType.FirstColumn].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
+				tableStyle.ConditionalStyles[ConditionalStyleType.FirstRow].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
+				tableStyle.ConditionalStyles[ConditionalStyleType.OddRowBanding].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
 			}
 
 			table.PreferredWidth = PreferredWidth.FromPercent(4995);
 			
 			table.Style = tableStyle;
-			//new TableLook() { Val = "04A0", FirstRow = true, LastRow = false, FirstColumn = true, LastColumn = false, NoHorizontalBand = false, NoVerticalBand = true },
 				
 			return table;
 		}
@@ -2481,13 +2482,14 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				tableStyle.TopPadding = 58d / 20d;
 				tableStyle.BottomPadding = 58d / 20d;
 				tableStyle.Alignment = TableAlignment.Center;
-				tableStyle.ConditionalStyles[ConditionalStyleType.OddColumnBanding].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
+				tableStyle.ConditionalStyles[ConditionalStyleType.FirstColumn].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
+				tableStyle.ConditionalStyles[ConditionalStyleType.FirstRow].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
+				tableStyle.ConditionalStyles[ConditionalStyleType.OddRowBanding].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
 			}
 
 			table.AllowAutoFit = autoFitLayout;
 			table.PreferredWidth = PreferredWidth.FromPoints(730.8 / 20d);
-			// TODO TIW new TableLook() { Val = "04A0", FirstRow = true, LastRow = false, FirstColumn = true, LastColumn = false, NoHorizontalBand = false, NoVerticalBand = true },
-
+			
 			table.Style = tableStyle;
 
 			return table;
@@ -2580,7 +2582,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					}
 
 					// remove template rows
-					templateDataRow.Remove();
+					templateDataRow.RemoveIt();
 				}
 			}
 			else
@@ -2635,7 +2637,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					}
 
 					// remove template rows
-					templateDataRow.Remove();
+					templateDataRow.RemoveIt();
 				}
 			}
 			else
@@ -3338,7 +3340,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			}
 
 			// remove template row
-			templateDataRow.Remove();
+			templateDataRow.RemoveIt();
 
 			// populate totals row
 			ICollection<ResourceSpreadDto> resourceSpreads =
@@ -4630,12 +4632,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				tableStyle.TopPadding = 58d / 20d;
 				tableStyle.BottomPadding = 58d / 20d;
 				tableStyle.Alignment = TableAlignment.Center;
-				tableStyle.ConditionalStyles[ConditionalStyleType.OddColumnBanding].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
+				tableStyle.ConditionalStyles[ConditionalStyleType.FirstColumn].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
+				tableStyle.ConditionalStyles[ConditionalStyleType.FirstRow].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
+				tableStyle.ConditionalStyles[ConditionalStyleType.OddRowBanding].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
 			}
 
 			table.PreferredWidth = PreferredWidth.FromPoints(497d/ 20d);
-			// TODO TIW new TableLook() { Val = "04A0", FirstRow = true, LastRow = false, FirstColumn = true, LastColumn = false, NoHorizontalBand = false, NoVerticalBand = true },
-
+			
 			table.Style = tableStyle;
 
 			return table;
