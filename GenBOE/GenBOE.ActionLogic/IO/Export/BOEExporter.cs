@@ -415,8 +415,9 @@ namespace GenBOE.ActionLogic.IO.Export
                 throw new ArgumentNullException(nameof(response));
             }
 
-            // setup the response correctly with BufferOutput since this is going to be awhile...
-            response.ContentType = CONTENT_TYPE_DOCX;
+			// setup the response correctly with BufferOutput since this is going to be awhile...
+			fileNameToDisplayToBrowser = Utilities.StripIllegalFileNameCharacters(fileNameToDisplayToBrowser); 
+			response.ContentType = CONTENT_TYPE_DOCX;
             response.Clear();
             response.BufferOutput = true;
             response.AppendHeader("Content-Disposition", $"attachment;filename={fileNameToDisplayToBrowser}");
