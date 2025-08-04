@@ -73,10 +73,10 @@ namespace GenBOE.Web.Controllers
 				result.Data = PermissionControllerLogic._GetPermissionsGrid(ws);
 				result.IsSuccessful = true;
 			}
-			catch (Exception ex)
+			catch (GenValidationException ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown error occured: {ex.Message}");
+				result.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
 			return result;
@@ -104,10 +104,10 @@ namespace GenBOE.Web.Controllers
 				result.Data = PermissionControllerLogic.DeleteUserPermissions(workspace, Int32.Parse(inUserID));
 				result.IsSuccessful = true;
 			}
-			catch (Exception ex)
+			catch (GenValidationException ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add(ex.Message);
+				result.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
 			return result;
@@ -133,10 +133,10 @@ namespace GenBOE.Web.Controllers
 				result.Data = orderedMembers;
 				result.IsSuccessful = true;
 			}
-			catch (Exception ex)
+			catch (GenValidationException ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown error occured: {ex.Message}");
+				result.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
 			return result;
@@ -167,10 +167,10 @@ namespace GenBOE.Web.Controllers
 					result.IsSuccessful = true;
 				}
 			}
-			catch (Exception ex)
+			catch (GenValidationException ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown error occured saving permissions: {ex.Message}");
+				result.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
 			return result;
@@ -255,10 +255,10 @@ namespace GenBOE.Web.Controllers
 				}
 
 			}
-			catch (Exception ex)
+			catch (GenValidationException ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"{ex.Message}");
+				result.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
 			return result;
@@ -284,11 +284,10 @@ namespace GenBOE.Web.Controllers
 					result.IsSuccessful = true;
 				}
 			}
-			catch (Exception ex)
+			catch (GenValidationException ex)
 			{
 				logger.Error(ex);
-				result.Data = false;
-				result.Messages.Add($"Unknown error occurred editing permissions data: {ex.Message}");
+				result.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
 			return result;
