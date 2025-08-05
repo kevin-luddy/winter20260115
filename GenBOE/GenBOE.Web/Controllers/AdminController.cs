@@ -3089,10 +3089,13 @@ namespace GenBOE.Web.Controllers
 
 				// Skill Mix settings only (Space only) - update the utilities method
 				IEnumerable<string> systemSettingsForSkillMix = systemSettings.Select(x => x.Key);
-				if (systemSettingsForSkillMix.Contains(Constants.SKILL_MIX_WHITELIST) && systemSettingsForSkillMix.Contains(Constants.ENABLE_SKILL_MIX_WHITELIST))
+				if (systemSettingsForSkillMix.Contains(Constants.SKILL_MIX_WHITELIST) || systemSettingsForSkillMix.Contains(Constants.ENABLE_SKILL_MIX_WHITELIST))
 				{
-					Utilities.UpdateSkillMixWhitelistSettings(systemSettings.FirstOrDefault(x => x.Key.Equals(Constants.ENABLE_SKILL_MIX_WHITELIST)).Value,
-						systemSettings.FirstOrDefault(x => x.Key.Equals(Constants.SKILL_MIX_WHITELIST)).Value);
+					Utilities.UpdateSkillMixWhitelistSettings(
+						systemSettings.FirstOrDefault(x => x.Key.Equals(Constants.ENABLE_SKILL_MIX_WHITELIST)) == null ? string.Empty :
+							systemSettings.FirstOrDefault(x => x.Key.Equals(Constants.ENABLE_SKILL_MIX_WHITELIST)).Value,
+						systemSettings.FirstOrDefault(x => x.Key.Equals(Constants.SKILL_MIX_WHITELIST)) == null ? string.Empty :
+							systemSettings.FirstOrDefault(x => x.Key.Equals(Constants.SKILL_MIX_WHITELIST)).Value);
 				}
             }
             else
