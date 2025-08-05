@@ -1176,7 +1176,10 @@ namespace IES.Common
 			}
 
 			// Update the list of whitelisted Skill Mix workspaces (short name)
-			skillMixWhitelistWorkspaces = whiteListWorkspaces.Split(',').ToCollection();
+			if (whiteListWorkspaces != null)
+			{
+				skillMixWhitelistWorkspaces = whiteListWorkspaces.Split(',').ToCollection();
+			}
 		}
 
 		/// <summary>
