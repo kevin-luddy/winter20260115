@@ -579,8 +579,8 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 		/// <summary>
 		/// Data normalization for Workspace Status History
 		/// </summary>
-		/// <param name="ws"></param>
-		/// <returns></returns>
+		/// <param name="ws">Full Workspace</param>
+		/// <returns>Workspace Status History Model View</returns>
 		public ICollection<WorkspaceStatusHistoryModelView> GetWorkspaceStatusHistory(FullWorkspace ws)
 		{
 			if (ws == null)
@@ -590,17 +590,24 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 
 			ICollection<WorkspaceStatusHistoryModelView> theModelViews = new Collection<WorkspaceStatusHistoryModelView>();
 			IDictionary<int, WorkspaceStateModelView> allWorkspaceStates = this.commonDataMapper.getWorkspaceStatesDictionary();
+			IDictionary<int, string> userIdCache = new Dictionary<int, string>();
 
 			// Create a ModelView for each DTO and add it to the View collection
 			foreach (WorkspaceHistoryDTO workspaceHistory in ws.WorkspaceHistory)
 			{
+				if (!userIdCache.ContainsKey(workspaceHistory.PerformedByETIUserId))
+				{
+					string displayName = this.userLoader.GetUserByID(workspaceHistory.PerformedByETIUserId).DisplayName;
+					userIdCache.Add(workspaceHistory.PerformedByETIUserId, displayName);
+				}
+
 				theModelViews.Add(
 					new WorkspaceStatusHistoryModelView
 					{
 						Date = workspaceHistory.Date,
 						OldValue = allWorkspaceStates[(int)workspaceHistory.OldValue].WorkspaceState,
 						NewValue = allWorkspaceStates[(int)workspaceHistory.NewValue].WorkspaceState,
-						PerformedBy = this.userLoader.GetUserByID(workspaceHistory.PerformedByETIUserId).DisplayName
+						PerformedBy = userIdCache[workspaceHistory.PerformedByETIUserId]
 					});
 			}
 
