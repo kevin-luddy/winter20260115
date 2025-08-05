@@ -55,14 +55,14 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
-		/// Display the Exports View
+		/// Get Exports data for report page
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
 		[System.Web.Http.HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
-		public IESSingleResponse<ExportReportViewModel> DisplayExports(string workspace)
+		public IESSingleResponse<ExportReportViewModel> GetExports(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			IESSingleResponse<ExportReportViewModel> result = new IESSingleResponse<ExportReportViewModel>();
@@ -83,14 +83,14 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
-		/// Display the General Reports View
+		/// Get General reports data for report page
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
 		[System.Web.Http.HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
-		public IESSingleResponse<Collection<GeneralReportViewModel>> DisplayGeneralReports(string workspace)
+		public IESSingleResponse<Collection<GeneralReportViewModel>> GetGeneralReports(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			IESSingleResponse<Collection<GeneralReportViewModel>> result = new IESSingleResponse<Collection<GeneralReportViewModel>>();
