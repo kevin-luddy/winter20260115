@@ -810,6 +810,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			return toReturn;
         }
 
+		/// <summary>
+		/// Get export data for report page
+		/// </summary>
+		/// <param name="ws">FullWorkspace</param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
 		public ExportReportViewModel GetDisplayExports(FullWorkspace ws)
 		{
 			if (ws == null)
@@ -937,6 +943,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 		}
 
+		/// <summary>
+		/// Get general report data for report page
+		/// </summary>
+		/// <param name="ws">FullWorkspace</param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
 		public Collection<GeneralReportViewModel> GetDisplayGeneralReports(FullWorkspace ws)
 		{
 			if (ws == null)

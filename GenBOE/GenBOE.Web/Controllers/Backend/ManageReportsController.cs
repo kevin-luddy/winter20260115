@@ -37,17 +37,11 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		private readonly Logger logger = new Logger("ReportsController");
 
-		//private IUserDTODataLoader UserLoader { get; set; }
-
-		//private SiteMasterUtilities inSiteMasterUtilities { get; set; }
-
 		/// <summary>
 		/// Business logic for the reports controller
 		/// </summary>
 		private IReportsControllerLogic reportsControllerLogic { get; set; }
 
-
-		//private IUserDTODataLoader UserLoader { get; set; }
 
 		/// <summary>
 		/// ctor
