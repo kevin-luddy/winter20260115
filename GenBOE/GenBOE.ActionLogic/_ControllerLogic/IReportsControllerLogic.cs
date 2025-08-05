@@ -8,12 +8,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
 {
     using System;
     using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Threading.Tasks;
 	using System.Web;
     using System.Web.Mvc;
-    using GenBOE.ActionLogic.IO.Export.BOE;
+	using GenBOE.ActionLogic._ModelView.Backend;
+	using GenBOE.ActionLogic.IO.Export.BOE;
     using GenBOE.ActionLogic.ModelView;
-    using GenBOE.ActionLogic.Reporting;
+	using GenBOE.ActionLogic.ModelView.Backend;
+	using GenBOE.ActionLogic.Reporting;
     using GenBOE.Dtos;
     using GenBOE.Objects;
     using IES.Common;
@@ -160,5 +163,19 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="exportInputs">export inputs</param>
         /// <returns>Report filename</returns>
         string ExportWbsBoeReport(FullWorkspace ws, string fileLocation, ICollection<BoeWbsReportModelView> reportModelView, BOEExportInputs exportInputs);
-    }
+
+		/// <summary>
+		/// Get the report for export data
+		/// </summary>
+		/// <param name="ws">Workspace</param>
+		/// <returns>Export data</returns>
+		ExportReportViewModel GetDisplayExports(FullWorkspace ws);
+
+		/// <summary>
+		/// Get the report for general report data
+		/// </summary>
+		/// <param name="ws">Workspace</param>
+		/// <returns>General report data</returns>
+		Collection<GeneralReportViewModel> GetDisplayGeneralReports(FullWorkspace ws);
+	}
 }
