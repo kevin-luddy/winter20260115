@@ -476,7 +476,7 @@ namespace GenBOE.ActionLogic.DateShift
 					DateTime? shiftedStartDate = null;
 					DateTime? shiftedEndDate = null;
 
-					if (dateShiftable.StartDate < parentStart)
+					if (dateShiftable.StartDate.Normalize() < parentStart.Normalize())
 					{
 						if (detail.Error2Handling.HasValue)
 						{
@@ -526,7 +526,7 @@ namespace GenBOE.ActionLogic.DateShift
 						}
 					}
 
-					if (dateShiftable.EndDate > parentEnd)
+					if (dateShiftable.EndDate.Normalize() > parentEnd.Normalize())
 					{
 						if (detail.Error2Handling.HasValue)
 						{
