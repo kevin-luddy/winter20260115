@@ -878,7 +878,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						if (theModelView.ReportID == (int)Reports.WorkbenchOffload)
 						{
 							// we need to get the ssrs report uri as well for the front-end
-							theModelView = new SSRSReportsViewModel(report, GetReportUrl(Reports.WorkbenchOffload));
+							theModelView = new SSRSReportsModelView(report, GetReportUrl(Reports.WorkbenchOffload));
 						}
 
 						if (theModelView.ReportID == (int)Reports.AllBOEs)
