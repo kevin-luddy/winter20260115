@@ -7,6 +7,18 @@
 
 namespace GenBOE.Web.Controllers
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Data.Entity.Core;
+	using System.Diagnostics;
+	using System.IO;
+	using System.Linq;
+	using System.Text;
+	using System.Transactions;
+	using System.Web;
+	using System.Web.Mvc;
+	using System.Web.Script.Serialization;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic._ControllerLogic.Backend;
 	using GenBOE.ActionLogic.BLL;
@@ -44,18 +56,6 @@ namespace GenBOE.Web.Controllers
 	using IES.Common.Exceptions;
 	using IES.Common.OfficeUtilities;
 	using IES.Common.PickList;
-	using System;
-	using System.Collections.Generic;
-	using System.Collections.ObjectModel;
-	using System.Data.Entity.Core;
-	using System.Diagnostics;
-	using System.IO;
-	using System.Linq;
-	using System.Text;
-	using System.Transactions;
-	using System.Web;
-	using System.Web.Mvc;
-	using System.Web.Script.Serialization;
 	using UserDTO = Dtos.UserDTO;
 
 	public class WorkspaceController : GenBOEController
@@ -106,7 +106,7 @@ namespace GenBOE.Web.Controllers
 		private BoePickListMapper boePickListMapper;
 		private CommentsAndResponsesExporter _commentsAndResponsesExporter = null;
 		private BOECommentsControllerLogic _boeCommentsControllerLogic = null;
-		//private GenBOE.DataBridge.DTO.IPldDTODataLoader pldDTODataLoader;
+		private readonly GenBOE.DataBridge.DTO.IPldDTODataLoader _pldDTODataLoader;
 
 		/// <summary>
 		/// Workspace Exporter
@@ -200,7 +200,7 @@ namespace GenBOE.Web.Controllers
 			IOffloadRatesDTOLoader offloadRatesDTOLoader,
 			IRetriever retriever,
 			GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader,
-			//GenBOE.DataBridge.DTO.IPldDTODataLoader pldDataLoader,
+			GenBOE.DataBridge.DTO.IPldDTODataLoader pldDTODataLoader,
 			GenTRAC.DataBridge.Common.Security.ISecurityMapper ptmSecurityMapper,
 			BoePickListMapper boePickListMapper,
 			WorkspaceExporter workspaceExporter,
@@ -254,7 +254,7 @@ namespace GenBOE.Web.Controllers
 			this.offloadRatesDTOLoader = offloadRatesDTOLoader;
 			this.retriever = retriever;
 			this.proposalLoader = proposalLoader;
-			//this.pldDTODataLoader = pldDataLoader;
+			_pldDTODataLoader = pldDTODataLoader;
 			this.ptmSecurityMapper = ptmSecurityMapper;
 			this.boePickListMapper = boePickListMapper;
 			this.workspaceExporter = workspaceExporter;
@@ -779,9 +779,7 @@ namespace GenBOE.Web.Controllers
 				// retrieve valid tracking numbers for the current user
 				IReadOnlyCollection<GenTRAC.DataBridge.Common.Security.SecurityPermissionsResponse> roles = this.ptmSecurityMapper.GetRolesForLoggedInUser();
 				bool isAdmin = roles.Any(r => r.AuthorizedRole == PtmRole.Admin);
-				//TEMP
-				isAdmin = true;
-
+				
 				ICollection<ProposalDto> proposals = (isAdmin ? this.proposalLoader.GetAllSlim() : this.proposalLoader.GetProposalsByUser(this._securityInformation.ActiveUserNTID, true))
 																	.Where(p => !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.NoBid && p.ProposalStatus != ProposalStatus.Revised).ToList();
 
@@ -796,40 +794,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			model.TrackingNumbers = trackingNumbers;
-
-
-			//Collection<SelectListItem> pa_numbers = new Collection<SelectListItem>();
-
-			//if(Utilities.ShowPLDIsIntegrated)
-			//{
-
-			//	Stopwatch watch = Stopwatch.StartNew();
-
-			//	using (PldDBContext context = new PldDBContext())
-			//	{
-			//		PldDTODataLoader pld = new PldDTODataLoader(context);
-										
-			//		ICollection<Dtos.ProposalDTO> pldProposal = pld.GetAllProposals();
-
-			//		foreach (ProposalDTO proposal in pldProposal)
-			//		{
-			//			pa_numbers.Add(new SelectListItem
-			//			{
-			//				Text = proposal.PA_Number + " - " + proposal.PA_Title,
-			//				Value = proposal.PA_Number
-			//			});
-			//		}
-
-			//	}
-			//	watch.Stop();
-			//	System.Diagnostics.Debug.WriteLine($"controller and after foreach loop getallproposals took {watch.ElapsedMilliseconds} ms for {pa_numbers.Count} records");
-
-			//}
-
-			//model.PLDPANumbers = pa_numbers;
-
-
-
+			
 			IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(this._securityInformation.ActiveUserNTID);
 			model.IsAdmin = permissions.Any(p => p.AuthorizedRole == Role.SystemAdmin);
 			model.PtmTrackingNumberNotRequired = string.IsNullOrEmpty(ConfigurationUtilities.GetAppSetting("CanCreateWorkspaceWithoutPtmTrackingNumber")) ?
@@ -845,12 +810,17 @@ namespace GenBOE.Web.Controllers
 			return toReturn;
 		}
 
+		/// <summary>
+		///  Returns Top 50 PLD proposals for the RMS search for pa numbers and pa titles
+		/// </summary>
+		/// <param name="term"></param>
+		/// <returns></returns>
 		public JsonResult SearchPLDProposals(string term)
 		{
 
-			PldDTODataLoader loader = new PldDTODataLoader(new PldDBContext());
+			//PldDTODataLoader loader = new PldDTODataLoader(new PldDBContext());
 
-			ICollection<ProposalDTO> matches = loader.GetAllProposals(term);
+			ICollection<ProposalDTO> matches = _pldDTODataLoader.GetTopProposals(term);
 
 			var results = matches.Select(p => new
 			{

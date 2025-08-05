@@ -42,18 +42,31 @@ namespace GenBOE.DataBridge.DTO
 
 		#endregion
 
-		public PldDTODataLoader()
+		/// <summary>
+		/// ctor for PldDTODataLoader
+		/// </summary>
+		//public PldDTODataLoader()
+		//{
+		//	this.Log = new Logger(typeof(PldDTODataLoader));
+		//}
+
+		//public PldDTODataLoader(PldDBContext context = null)
+		//{
+		//	_context = context ?? new PldDBContext();
+		//	this.Log = new Logger(typeof(PldDTODataLoader));
+		//}
+
+
+		///
+		// ctr PldDTODataLoader
+		///
+		public PldDTODataLoader(PldDBContext context)
 		{
-			//_context = new PldDBContext();
+			_context = context ?? throw new ArgumentNullException(nameof(context));
 			this.Log = new Logger(typeof(PldDTODataLoader));
 		}
 
-		public PldDTODataLoader(PldDBContext context = null)
-		{
-			_context = context ?? new PldDBContext();
-			this.Log = new Logger(typeof(PldDTODataLoader));
-		}
-		
+
 		/// <summary>
 		/// Get Proposal by ID   "PA Number" is a string  
 		/// </summary>
@@ -105,7 +118,7 @@ namespace GenBOE.DataBridge.DTO
 		/// Get All Proposals from PLD database view
 		/// </summary>
 		/// <returns></returns>
-		public ICollection<ProposalDTO> GetAllProposals(string search = null)
+		public ICollection<ProposalDTO> GetTopProposals(string search = null)
 		{
 
 			IQueryable<PLD.Models.Models.PLDProposal> query = _context.Proposals.AsQueryable();
@@ -127,37 +140,7 @@ namespace GenBOE.DataBridge.DTO
 				.ToList();
 
 			return results;
-			
-			//List<ProposalDTO> results = new List<ProposalDTO>();
-
-			//System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
-
-			//using (StopwatchTimer sw = new StopwatchTimer(Log))
-			//{
-			//	try
-			//	{
-			//		results = _context.Proposals				
-			//			.Select(p => new ProposalDTO
-			//			{
-			//				PA_Number = p.PA_Number,
-			//				PA_Title = p.PA_Title
-			//			})
-			//			//.Take(100) 
-			//			.ToList();
-
-			//		stopwatch.Stop();
-
-			//	}
-			//	catch (Exception ex)
-			//	{
-			//		Log.Error(ex, "Error getting all proposals");
-			//		throw;
-			//	}
-			//}
-
-			//System.Diagnostics.Debug.WriteLine($"[PLD] Getallproposals took {stopwatch.ElapsedMilliseconds} ms for {results.Count} rows");
-
-			//return results;
+						
 		}
 
 		/// <summary>

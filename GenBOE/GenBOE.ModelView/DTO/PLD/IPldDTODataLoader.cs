@@ -14,7 +14,7 @@ namespace GenBOE.DataBridge.DTO
 		/// Get All Proposals from PLD database view
 		/// </summary>
 		/// <returns></returns>
-		ICollection<ProposalDTO> GetAllProposals(string search = null);
+		ICollection<ProposalDTO> GetTopProposals(string search = null);
 
 		/// <summary>
 		///  Get All Active Proposals

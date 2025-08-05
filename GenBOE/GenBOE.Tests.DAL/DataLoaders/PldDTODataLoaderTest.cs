@@ -34,7 +34,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
 				PldDTODataLoader sut = new PldDTODataLoader(context);
 
 				// Act
-				ICollection<Dtos.ProposalDTO> proposals = sut.GetAllProposals();
+				ICollection<Dtos.ProposalDTO> proposals = sut.GetTopProposals();
 
 				// Assert
 				Assert.IsNotNull(proposals);

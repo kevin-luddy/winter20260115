@@ -430,13 +430,17 @@ namespace GenBOE
 			GenBOEUnityContainer.Container.RegisterType(typeof(IProjectMapSpreadLoader), typeof(ProjectMapSpreadLoader), GetLifetimeManager(), new InjectionMember[] { });
 			GenBOEUnityContainer.Container.RegisterType(typeof(IProjectMapDataLoader), typeof(ProjectMapDataLoader), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IProjectMapSpreadLoader))));
 			GenBOEUnityContainer.Container.RegisterType(typeof(GenTRAC.DataBridge.DTO.IProposalLoader), typeof(GenTRAC.DataBridge.DTO.ProposalLoader), this.GetLifetimeManager(), new InjectionConstructor()).Configure<Interception>().SetInterceptorFor<GenTRAC.DataBridge.DTO.IProposalLoader>(new InterfaceInterceptor());
-			//GenBOEUnityContainer.Container.RegisterType<PldDBContext>();
-			GenBOEUnityContainer.Container.RegisterType(typeof(GenBOE.DataBridge.DTO.IPldDTODataLoader), typeof(GenBOE.DataBridge.DTO.PldDTODataLoader), this.GetLifetimeManager(), new InjectionConstructor()).Configure<Interception>().SetInterceptorFor<GenBOE.DataBridge.DTO.IPldDTODataLoader>(new InterfaceInterceptor());
-			//GenBOEUnityContainer.Container.RegisterType(typeof(GenBOE.DataBridge.DTO.IPldDTODataLoader), 
-			//	typeof(GenBOE.DataBridge.DTO.PldDTODataLoader(null)), 
-			//	this.GetLifetimeManager(), 
-			//	new InjectionConstructor()).Configure<Interception>().SetInterceptorFor<GenBOE.DataBridge.DTO.IPldDTODataLoader>(new InterfaceInterceptor());
-
+			
+			GenBOEUnityContainer.Container.RegisterType<PldDBContext>(new HierarchicalLifetimeManager());
+			
+			GenBOEUnityContainer.Container.RegisterType(typeof(GenBOE.DataBridge.DTO.IPldDTODataLoader),
+				typeof(GenBOE.DataBridge.DTO.PldDTODataLoader),
+				this.GetLifetimeManager(),
+				new InjectionConstructor(typeof(PldDBContext)))
+				.Configure<Interception>()
+				.SetInterceptorFor<GenBOE.DataBridge.DTO.IPldDTODataLoader>(new InterfaceInterceptor());
+			
+		
 			GenBOEUnityContainer.Container.RegisterType(typeof(IRequestDataLoader), typeof(RequestDataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IRequestDataLoader>(new InterfaceInterceptor());
 
 
