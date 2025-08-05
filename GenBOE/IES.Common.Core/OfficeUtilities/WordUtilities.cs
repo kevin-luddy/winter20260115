@@ -388,7 +388,7 @@ namespace IES.Common.Core.OfficeUtilities
 				//	// it's been heavily modified & adjusted beyond what it started it..
 
 				// Clears out the original text
-				SetElementText(element, null);
+				SetElementText(element, ControlChar.LineBreak);
 
 				if (!string.IsNullOrEmpty(htmlFormattedText))
 				{
