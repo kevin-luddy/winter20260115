@@ -103,7 +103,7 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <summary>
 		/// Performs the date shift.
 		/// </summary>
-		/// <param name="dateShiftable">The date shiftable object.</param>
+		/// <param name="dateShiftDTO">The date shiftable object.</param>
 		/// <param name="dateShiftModel">The dateshift model.</param>
 		/// <param name="parentStart">The parent start.</param>
 		/// <param name="parentEnd">The parent end.</param>
@@ -111,13 +111,13 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <param name="parentLevel">The parent level.</param>
 		/// <param name="workspaceShortname">Workspace ShortName</param>
 		/// <param name="fullWorkspace">The full workspace</param>
-		/// <exception cref="ArgumentNullException">dateShiftable or details</exception>
-		public void PerformDateShift(IDateShiftable dateShiftable, DateShiftModelView dateShiftModel, DateTime? parentStart, DateTime? parentEnd,
+		/// <exception cref="ArgumentNullException">on incoming params</exception>
+		public void PerformDateShift(DateShiftDTO dateShiftDTO, DateShiftModelView dateShiftModel, DateTime? parentStart, DateTime? parentEnd,
 			bool validateOnly, Level parentLevel, string workspaceShortname, FullWorkspace fullWorkspace)
 		{
-			if (dateShiftable == null)
+			if (dateShiftDTO == null)
 			{
-				throw new ArgumentNullException(nameof(dateShiftable));
+				throw new ArgumentNullException(nameof(dateShiftDTO));
 			}
 
 			if (dateShiftModel == null)
@@ -135,13 +135,13 @@ namespace GenBOE.ActionLogic.DateShift
 				throw new ArgumentException("Details for a dateshift cannot be null or empty", nameof(dateShiftModel));
 			}
 
-			if (!dateShiftable.StartDate.HasValue || !dateShiftable.EndDate.HasValue)
+			if (!dateShiftDTO.StartDate.HasValue || !dateShiftDTO.EndDate.HasValue)
 			{
 				throw new ArgumentException("Object to DateShift does not have a valid start or end time.");
 			}
 
 			// Perform Shifts
-			PerformShifts(dateShiftable, dateShiftModel, parentStart, parentEnd, null, parentLevel, workspaceShortname);
+			PerformShifts(dateShiftDTO, dateShiftModel, parentStart, parentEnd, null, parentLevel, workspaceShortname);
 
 			// Error handling - only need to throw the errors for the last detail (duration change) in case there are both a shift and duration change
 			if (dateShiftModel.Details.Last().Errors.Messages.Any())
@@ -152,7 +152,7 @@ namespace GenBOE.ActionLogic.DateShift
 			if (!validateOnly)
 			{
 				// Pre-load emails (to get original start/end dates)
-				this.GenerateEmails(dateShiftable, dateShiftModel);
+				this.GenerateEmails(dateShiftDTO, dateShiftModel);
 
 
 				// Check if we have Skill Mix enabled to adjust Skill Mix table data as needed
@@ -193,7 +193,7 @@ namespace GenBOE.ActionLogic.DateShift
 				}
 
 				// Save
-				this.Save(dateShiftable, dateShiftModel);
+				this.Save(dateShiftDTO, dateShiftModel);
 
 				// Send emails
 				this.SendEmails(dateShiftModel);
@@ -203,94 +203,89 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <summary>
 		/// Performs the shifts.
 		/// </summary>
-		/// <param name="dateShiftable">The date shiftable object.</param>
+		/// <param name="dateShiftDTO">The date shiftable object.</param>
 		/// <param name="dateShiftModel">The dateshift model containing details.</param>
 		/// <param name="parentStart">The parent start.</param>
 		/// <param name="parentEnd">The parent end.</param>
 		/// <param name="parentBoeId">The parent's BOE ID.</param>
 		/// <param name="parentLevel">The parent's Level.</param>
-		internal static void PerformShifts(IDateShiftable dateShiftable, DateShiftModelView dateShiftModel, DateTime? parentStart, DateTime? parentEnd, int? parentBoeId, Level parentLevel, string workspaceShortname)
+		internal static void PerformShifts(DateShiftDTO dateShiftDTO, DateShiftModelView dateShiftModel, DateTime? parentStart, DateTime? parentEnd, int? parentBoeId, Level parentLevel, string workspaceShortname)
 		{
 			// Perform dateshift on this object
-			if (!dateShiftable.StartDate.HasValue || !dateShiftable.EndDate.HasValue)
+			if (!dateShiftDTO.StartDate.HasValue || !dateShiftDTO.EndDate.HasValue)
 			{
-				dateShiftable.StartDate = parentStart;
-				dateShiftable.EndDate = parentEnd;
+				dateShiftDTO.StartDate = parentStart;
+				dateShiftDTO.EndDate = parentEnd;
 			}
 
 			foreach (DateShiftDetailModelView detail in dateShiftModel.Details)
 			{
-				PerformShiftOperation(dateShiftable, detail);
-				Validate(dateShiftable, detail, parentStart, parentEnd, parentBoeId, parentLevel, workspaceShortname);
-				PerformChildrenShift(dateShiftable, parentStart, parentEnd, parentBoeId, detail, dateShiftModel, workspaceShortname);
+				PerformShiftOperation(dateShiftDTO, detail);
+				Validate(dateShiftDTO, detail, parentStart, parentEnd, parentBoeId, parentLevel, workspaceShortname);
+				PerformChildrenShift(dateShiftDTO, parentStart, parentEnd, parentBoeId, detail, dateShiftModel, workspaceShortname);
 			}
 		}
 
 		/// <summary>
 		/// Performs the children shift.
 		/// </summary>
-		/// <param name="dateShiftable">The date shiftable.</param>
+		/// <param name="dateShiftDTO">The date shiftable.</param>
 		/// <param name="parentStart">The parent start.</param>
 		/// <param name="parentEnd">The parent end.</param>
 		/// <param name="detail">The detail.</param>
 		/// <param name="modelView">The Dateshift modelview.</param>
 		/// <param name="workspaceShortname">Workspace shortname</param>
 		/// <exception cref="NotSupportedException"></exception>
-		private static void PerformChildrenShift(IDateShiftable dateShiftable, DateTime? parentStart, DateTime? parentEnd, int? parentBoeId, DateShiftDetailModelView detail, DateShiftModelView modelView, string workspaceShortname)
+		private static void PerformChildrenShift(DateShiftDTO dateShiftDTO, DateTime? parentStart, DateTime? parentEnd, int? parentBoeId, DateShiftDetailModelView detail, DateShiftModelView modelView, string workspaceShortname)
 		{
 			// Perform dateshift on child objects
-			if (dateShiftable.HasSpread)
+			if (dateShiftDTO.HasSpread)
 			{
-				switch (dateShiftable.DateShiftLevel)
+				switch (dateShiftDTO.DateShiftLevel)
 				{
 					case Level.Labor:
-						PerformLaborSpreadShift(dateShiftable, detail, modelView);
-						Validate(dateShiftable, detail, parentStart, parentEnd, parentBoeId, Level.Task, workspaceShortname);
-						break;
-					case Level.Travel:
-						PerformTravelSpreadShift(dateShiftable, detail);
-						Validate(dateShiftable, detail, parentStart, parentEnd, parentBoeId, Level.BOE, workspaceShortname);
+						PerformLaborSpreadShift(dateShiftDTO, detail, modelView);
+						Validate(dateShiftDTO, detail, parentStart, parentEnd, parentBoeId, Level.Task, workspaceShortname);
 						break;
 					default:
-
-						throw new NotSupportedException(string.Format("Data class setup incorrectly, Class with level {0} has Spreads.", dateShiftable.DateShiftLevel.ToString()));
+						throw new NotSupportedException(string.Format("Data class setup incorrectly, Class with level {0} has Spreads.", dateShiftDTO.DateShiftLevel.ToString()));
 				}
 			}
 			else
 			{
-				RecursiveChildShifts(dateShiftable, detail, parentStart, parentEnd, modelView, workspaceShortname);
+				RecursiveChildShifts(dateShiftDTO, detail, parentStart, parentEnd, modelView, workspaceShortname);
 			}
 		}
 
 		/// <summary>
 		/// Recursively dateshifts the children.
 		/// </summary>
-		/// <param name="dateShiftable">The date shiftable object to pull children from.</param>
+		/// <param name="dateShiftDTO">The date shiftable object to pull children from.</param>
 		/// <param name="detail">The detail.</param>
 		/// <param name="grandParentStart">The object's parent start.</param>
 		/// <param name="grandParentEnd">The object's parent end.</param>
 		/// <param name="workspaceShortname">workspace shortname</param>
-		internal static void RecursiveChildShifts(IDateShiftable dateShiftable, DateShiftDetailModelView detail, DateTime? grandParentStart, DateTime? grandParentEnd, DateShiftModelView modelView, string workspaceShortname)
+		internal static void RecursiveChildShifts(DateShiftDTO dateShiftDTO, DateShiftDetailModelView detail, DateTime? grandParentStart, DateTime? grandParentEnd, DateShiftModelView modelView, string workspaceShortname)
 		{
-			if (dateShiftable.Children.Any())
+			if (dateShiftDTO.Children.Any())
 			{
 				// if parent's start/end are not valid, use grandparent's
-				DateTime? pStart = dateShiftable.StartDate;
-				DateTime? pEnd = dateShiftable.EndDate;
+				DateTime? pStart = dateShiftDTO.StartDate;
+				DateTime? pEnd = dateShiftDTO.EndDate;
 				if (!pStart.HasValue || !pEnd.HasValue)
 				{
 					pStart = grandParentStart;
 					pEnd = grandParentEnd;
 				}
 
-				int? parentBoeId = GetAttachedBoeId(dateShiftable);
+				int? parentBoeId = GetAttachedBoeId(dateShiftDTO);
 
-				foreach (IDateShiftable child in dateShiftable.Children)
+				foreach (DateShiftDTO child in dateShiftDTO.Children)
 				{
 					if (detail.ChildModificationType == ChildModificationType.NoChange)
 					{
 						// validate the no change
-						Validate(child, detail, pStart, pEnd, parentBoeId, dateShiftable.DateShiftLevel, workspaceShortname);
+						Validate(child, detail, pStart, pEnd, parentBoeId, dateShiftDTO.DateShiftLevel, workspaceShortname);
 
 						// recursive call to recursive validate
 						PerformChildrenShift(child, pStart, pEnd, parentBoeId, detail, modelView, workspaceShortname);
@@ -300,7 +295,7 @@ namespace GenBOE.ActionLogic.DateShift
 						PerformChildShift(child, detail, pStart, pEnd);
 
 						// validate the shift
-						Validate(child, detail, pStart, pEnd, parentBoeId, dateShiftable.DateShiftLevel, workspaceShortname);
+						Validate(child, detail, pStart, pEnd, parentBoeId, dateShiftDTO.DateShiftLevel, workspaceShortname);
 
 						// recursive call
 						PerformChildrenShift(child, pStart, pEnd, parentBoeId, detail, modelView, workspaceShortname);
@@ -312,25 +307,25 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <summary>
 		/// Performs the shift for a child.
 		/// </summary>
-		/// <param name="dateShiftable">The date shiftable.</param>
+		/// <param name="dateShiftDTO">The date shiftable.</param>
 		/// <param name="detail">The detail.</param>
 		/// <param name="parentStart">The parent start time</param>
 		/// <param name="parentEnd">The parent end time.</param>
-		internal static void PerformChildShift(IDateShiftable dateShiftable, DateShiftDetailModelView detail, DateTime? parentStart, DateTime? parentEnd)
+		internal static void PerformChildShift(DateShiftDTO dateShiftDTO, DateShiftDetailModelView detail, DateTime? parentStart, DateTime? parentEnd)
 		{
-			if (dateShiftable.StartDate.HasValue && dateShiftable.EndDate.HasValue)
+			if (dateShiftDTO.StartDate.HasValue && dateShiftDTO.EndDate.HasValue)
 			{
-				dateShiftable.Updateable = UpdateType.Upsert;
+				dateShiftDTO.Updateable = UpdateType.Upsert;
 				switch (detail.ChildModificationType)
 				{
 					case ChildModificationType.FlowDown:
-						PerformShiftOperation(dateShiftable, detail);
+						PerformShiftOperation(dateShiftDTO, detail);
 						break;
 					case ChildModificationType.ToEnd:
-						if (parentEnd.HasValue && dateShiftable.StartDate.HasValue && dateShiftable.EndDate.HasValue)
+						if (parentEnd.HasValue && dateShiftDTO.StartDate.HasValue && dateShiftDTO.EndDate.HasValue)
 						{
-							int negativeDuration = -1 * dateShiftable.StartDate.Value.MonthDifference(dateShiftable.EndDate.Value);
-							dateShiftable.EndDate = parentEnd.Normalize();
+							int negativeDuration = -1 * dateShiftDTO.StartDate.Value.MonthDifference(dateShiftDTO.EndDate.Value);
+							dateShiftDTO.EndDate = parentEnd.Normalize();
 							if (detail.Operation == Operation.Shift)
 							{
 								// make sure this was a negative shift
@@ -338,28 +333,28 @@ namespace GenBOE.ActionLogic.DateShift
 								{
 									throw new NotSupportedException("Positive Shifts cannot have Child Modification Type set to End.");
 								}
-								dateShiftable.StartDate = dateShiftable.EndDate.Value.AddMonths(negativeDuration).Normalize();
+								dateShiftDTO.StartDate = dateShiftDTO.EndDate.Value.AddMonths(negativeDuration).Normalize();
 							}
 						}
 						break;
 					case ChildModificationType.ToPoP:
 						if (parentStart.HasValue && parentEnd.HasValue)
 						{
-							dateShiftable.StartDate = parentStart.Value.Normalize();
-							dateShiftable.EndDate = parentEnd.Value.Normalize();
+							dateShiftDTO.StartDate = parentStart.Value.Normalize();
+							dateShiftDTO.EndDate = parentEnd.Value.Normalize();
 						}
 						break;
 					case ChildModificationType.ToStart:
-						if (parentStart.HasValue && dateShiftable.StartDate.HasValue && dateShiftable.EndDate.HasValue)
+						if (parentStart.HasValue && dateShiftDTO.StartDate.HasValue && dateShiftDTO.EndDate.HasValue)
 						{
 							if (detail.Operation != Operation.Shift || detail.MonthChange < 0)
 							{
 								throw new NotSupportedException("Only a Positive Shift can have Child Modification Type set to Start.");
 							}
 
-							int duration = dateShiftable.StartDate.Value.MonthDifference(dateShiftable.EndDate.Value);
-							dateShiftable.StartDate = parentStart.Normalize();
-							dateShiftable.EndDate = dateShiftable.StartDate.Value.AddMonths(duration);
+							int duration = dateShiftDTO.StartDate.Value.MonthDifference(dateShiftDTO.EndDate.Value);
+							dateShiftDTO.StartDate = parentStart.Normalize();
+							dateShiftDTO.EndDate = dateShiftDTO.StartDate.Value.AddMonths(duration);
 						}
 						break;
 				}
@@ -369,60 +364,51 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <summary>
 		/// Performs the shift operation.
 		/// </summary>
-		/// <param name="dateShiftable">The date shiftable.</param>
+		/// <param name="dateShiftDTO">The date shiftable.</param>
 		/// <param name="detail">The detail.</param>
-		internal static void PerformShiftOperation(IDateShiftable dateShiftable, DateShiftDetailModelView detail)
+		internal static void PerformShiftOperation(DateShiftDTO dateShiftDTO, DateShiftDetailModelView detail)
 		{
 			switch (detail.Operation)
 			{
 				case Operation.Shift:
-					dateShiftable.StartDate = dateShiftable.StartDate.Value.AddMonths(detail.MonthChange).Normalize();
+					dateShiftDTO.StartDate = dateShiftDTO.StartDate.Value.AddMonths(detail.MonthChange).Normalize();
 					break;
 				case Operation.DurationChange:
 					break;
 			}
 
-			dateShiftable.EndDate = dateShiftable.EndDate.Value.AddMonths(detail.MonthChange).Normalize();
-			dateShiftable.Updateable = UpdateType.Upsert;
+			dateShiftDTO.EndDate = dateShiftDTO.EndDate.Value.AddMonths(detail.MonthChange).Normalize();
+			dateShiftDTO.Updateable = UpdateType.Upsert;
 		}
 
 		/// <summary>
 		/// Validates the specified date shiftable.
 		/// </summary>
-		/// <param name="dateShiftable">The date shiftable.</param>
+		/// <param name="dateShiftDTO">The date shiftable.</param>
 		/// <param name="detail">The detail.</param>
 		/// <param name="parentStart">The parent start.</param>
 		/// <param name="parentEnd">The parent end.</param>
 		/// <param name="parentBoeId">The parent's BOE ID.</param>
 		/// <param name="parentLevel">The parent's level.</param>
 		/// <param name="workspaceShortname">Workspace short name</param>
-		internal static void Validate(IDateShiftable dateShiftable, DateShiftDetailModelView detail, DateTime? parentStart, DateTime? parentEnd, int? parentBoeId, Level parentLevel, string workspaceShortname)
+		internal static void Validate(DateShiftDTO dateShiftDTO, DateShiftDetailModelView detail, DateTime? parentStart, DateTime? parentEnd, int? parentBoeId, Level parentLevel, string workspaceShortname)
 		{
-			CheckErrors(dateShiftable, detail, parentStart, parentEnd, parentBoeId, parentLevel, workspaceShortname);
+			CheckErrors(dateShiftDTO, detail, parentStart, parentEnd, parentBoeId, parentLevel, workspaceShortname);
 
 			bool rerunError1Check = detail.Errors.HasError1 && detail.Error1FixSingleMonth == true;
 			bool rerunError2Check = detail.Errors.HasError2 && detail.Error2Handling.HasValue;
 			if (rerunError1Check || rerunError2Check)
 			{
-				DateShiftable ds = new DateShiftable
-				{
-					DateShiftLevel = dateShiftable.DateShiftLevel,
-					StartDate = dateShiftable.StartDate,
-					EndDate = dateShiftable.EndDate,
-					HasSpread = dateShiftable.HasSpread,
-					BoeId = GetAttachedBoeId(dateShiftable) ?? parentBoeId ?? 0
-				};
-
 				DateShiftDetailModelView secondCheck = detail.Clone();
-				CheckErrors(ds, secondCheck, parentStart, parentEnd, parentBoeId, parentLevel, workspaceShortname);
+				CheckErrors(dateShiftDTO, secondCheck, parentStart, parentEnd, parentBoeId, parentLevel, workspaceShortname);
 
 				if (rerunError1Check)
 				{
 					if (secondCheck.Errors.HasError1)
 					{
 						detail.Errors.HasError1 = true;
-						AddErrorInfo(dateShiftable, detail, parentBoeId);
-						detail.Errors.Messages.Add(string.Format("Negative duration for a {0}.", dateShiftable.DateShiftLevel.ToDescription()));
+						AddErrorInfo(dateShiftDTO, detail, parentBoeId);
+						detail.Errors.Messages.Add(string.Format("Negative duration for a {0}.", dateShiftDTO.DateShiftLevel.ToDescription()));
 					}
 				}
 
@@ -431,8 +417,8 @@ namespace GenBOE.ActionLogic.DateShift
 					if (secondCheck.Errors.HasError2)
 					{
 						detail.Errors.HasError2 = true;
-						AddErrorInfo(dateShiftable, detail, parentBoeId);
-						detail.Errors.Messages.Add(string.Format("{0} is outside the PoP of parent {1}.", dateShiftable.DateShiftLevel.ToDescription(), parentLevel.ToDescription()));
+						AddErrorInfo(dateShiftDTO, detail, parentBoeId);
+						detail.Errors.Messages.Add(string.Format("{0} is outside the PoP of parent {1}.", dateShiftDTO.DateShiftLevel.ToDescription(), parentLevel.ToDescription()));
 					}
 				}
 			}
@@ -441,29 +427,29 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <summary>
 		/// Checks the errors.
 		/// </summary>
-		/// <param name="dateShiftable">The date shiftable.</param>
+		/// <param name="dateShiftDTO">The date shiftable.</param>
 		/// <param name="detail">The detail.</param>
 		/// <param name="parentStart">The parent start.</param>
 		/// <param name="parentEnd">The parent end.</param>
 		/// <param name="parentBoeId">The parent's BOE ID.</param>
 		/// <param name="parentLevel">The parent's Level.</param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0010:Add missing cases", Justification = "<Pending>")]
-		private static void CheckErrors(IDateShiftable dateShiftable, DateShiftDetailModelView detail, DateTime? parentStart, DateTime? parentEnd, int? parentBoeId, Level parentLevel, string workspaceShortname)
+		private static void CheckErrors(DateShiftDTO dateShiftDTO, DateShiftDetailModelView detail, DateTime? parentStart, DateTime? parentEnd, int? parentBoeId, Level parentLevel, string workspaceShortname)
 		{
-			if (dateShiftable.StartDate.HasValue && dateShiftable.EndDate.HasValue)
+			if (dateShiftDTO.StartDate.HasValue && dateShiftDTO.EndDate.HasValue)
 			{
 				// Check for negative duration
-				if (dateShiftable.EndDate < dateShiftable.StartDate)
+				if (dateShiftDTO.EndDate < dateShiftDTO.StartDate)
 				{
 					if (detail.Error1FixSingleMonth == true)
 					{
-						dateShiftable.EndDate = dateShiftable.StartDate.Normalize();
+						dateShiftDTO.EndDate = dateShiftDTO.StartDate.Normalize();
 					}
 					else
 					{
 						detail.Errors.HasError1 = true;
-						AddErrorInfo(dateShiftable, detail, parentBoeId);
-						detail.Errors.Messages.Add(string.Format("Negative duration for a {0}.", dateShiftable.DateShiftLevel.ToDescription()));
+						AddErrorInfo(dateShiftDTO, detail, parentBoeId);
+						detail.Errors.Messages.Add(string.Format("Negative duration for a {0}.", dateShiftDTO.DateShiftLevel.ToDescription()));
 					}
 				}
 
@@ -471,46 +457,46 @@ namespace GenBOE.ActionLogic.DateShift
 				if (parentStart.HasValue && parentEnd.HasValue)
 				{
 					DateTime oneLMXStartDate = Utilities.OneLmxStartDate;
-					DateTime previousStartDate = dateShiftable.StartDate.Value;
-					DateTime previousEndDate = dateShiftable.EndDate.Value;
+					DateTime previousStartDate = dateShiftDTO.StartDate.Value;
+					DateTime previousEndDate = dateShiftDTO.EndDate.Value;
 					DateTime? shiftedStartDate = null;
 					DateTime? shiftedEndDate = null;
 
-					if (dateShiftable.StartDate < parentStart)
+					if (dateShiftDTO.StartDate < parentStart)
 					{
 						if (detail.Error2Handling.HasValue)
 						{
 							switch (detail.Error2Handling.Value)
 							{
 								case ChildModificationType.NoChange:
-									AddErrorInfo(dateShiftable, detail, parentBoeId);
+									AddErrorInfo(dateShiftDTO, detail, parentBoeId);
 									break;
 								case ChildModificationType.ToStart:
 									if (detail.Operation == Operation.DurationChange || detail.MonthChange < 0)
 									{
 										throw new NotSupportedException("This Child Modification Type is not allowed for Error Child outside the PoP of the Parent. To Start is only allowed for Error Handling when the Operation is a positive Shift.");
 									}
-									dateShiftable.StartDate = parentStart;
+									dateShiftDTO.StartDate = parentStart;
 									shiftedStartDate = parentStart.Value;
 
-									if (dateShiftable.EndDate < parentStart)
+									if (dateShiftDTO.EndDate < parentStart)
 									{
-										dateShiftable.EndDate = parentStart;
+										dateShiftDTO.EndDate = parentStart;
 										shiftedEndDate = parentStart.Value;
 									}
 									break;
 								case ChildModificationType.ToEnd:
-									dateShiftable.EndDate = parentEnd;
+									dateShiftDTO.EndDate = parentEnd;
 									shiftedEndDate = parentEnd.Value;
-									if (dateShiftable.StartDate > parentEnd)
+									if (dateShiftDTO.StartDate > parentEnd)
 									{
-										dateShiftable.StartDate = parentEnd;
+										dateShiftDTO.StartDate = parentEnd;
 										shiftedStartDate = parentEnd.Value;
 									}
 									break;
 								case ChildModificationType.ToPoP:
-									dateShiftable.StartDate = parentStart;
-									dateShiftable.EndDate = parentEnd;
+									dateShiftDTO.StartDate = parentStart;
+									dateShiftDTO.EndDate = parentEnd;
 									shiftedStartDate = parentStart.Value;
 									shiftedEndDate = parentEnd.Value;
 									break;
@@ -521,34 +507,34 @@ namespace GenBOE.ActionLogic.DateShift
 						else
 						{
 							detail.Errors.HasError2 = true;
-							AddErrorInfo(dateShiftable, detail, parentBoeId);
-							detail.Errors.Messages.Add(string.Format("{0} is outside the PoP of parent {1}.", dateShiftable.DateShiftLevel.ToDescription(), parentLevel.ToDescription()));
+							AddErrorInfo(dateShiftDTO, detail, parentBoeId);
+							detail.Errors.Messages.Add(string.Format("{0} is outside the PoP of parent {1}.", dateShiftDTO.DateShiftLevel.ToDescription(), parentLevel.ToDescription()));
 						}
 					}
 
-					if (dateShiftable.EndDate > parentEnd)
+					if (dateShiftDTO.EndDate > parentEnd)
 					{
 						if (detail.Error2Handling.HasValue)
 						{
 							switch (detail.Error2Handling.Value)
 							{
 								case ChildModificationType.NoChange:
-									AddErrorInfo(dateShiftable, detail, parentBoeId);
+									AddErrorInfo(dateShiftDTO, detail, parentBoeId);
 									break;
 								case ChildModificationType.ToEnd:
-									int duration = dateShiftable.StartDate.Value.MonthDifference(dateShiftable.EndDate.Value);
-									dateShiftable.EndDate = parentEnd;
+									int duration = dateShiftDTO.StartDate.Value.MonthDifference(dateShiftDTO.EndDate.Value);
+									dateShiftDTO.EndDate = parentEnd;
 									shiftedEndDate = parentEnd.Value;
 									if (detail.Operation == Operation.Shift)
 									{
 										// only change start date if this is a shift
-										dateShiftable.StartDate = parentEnd.Value.AddMonths(-1 * duration);
+										dateShiftDTO.StartDate = parentEnd.Value.AddMonths(-1 * duration);
 										shiftedStartDate = parentEnd.Value.AddMonths(-1 * duration);
 									}
 									break;
 								case ChildModificationType.ToPoP:
-									dateShiftable.StartDate = parentStart;
-									dateShiftable.EndDate = parentEnd;
+									dateShiftDTO.StartDate = parentStart;
+									dateShiftDTO.EndDate = parentEnd;
 									shiftedStartDate = parentStart.Value;
 									shiftedEndDate = parentEnd.Value;
 									break;
@@ -559,8 +545,8 @@ namespace GenBOE.ActionLogic.DateShift
 						else
 						{
 							detail.Errors.HasError2 = true;
-							AddErrorInfo(dateShiftable, detail, parentBoeId);
-							detail.Errors.Messages.Add(string.Format("{0} is outside the PoP of parent {1}.", dateShiftable.DateShiftLevel.ToDescription(), parentLevel.ToDescription()));
+							AddErrorInfo(dateShiftDTO, detail, parentBoeId);
+							detail.Errors.Messages.Add(string.Format("{0} is outside the PoP of parent {1}.", dateShiftDTO.DateShiftLevel.ToDescription(), parentLevel.ToDescription()));
 						}
 					}
 
@@ -570,7 +556,7 @@ namespace GenBOE.ActionLogic.DateShift
 						{
 							if (shiftedStartDate.HasValue && shiftedStartDate.Value >= oneLMXStartDate)
 							{
-								AddResourceTypeError(dateShiftable, detail, parentBoeId, "Resource and Business Resource Code", "Start Date", "shifted to the right of");
+								AddResourceTypeError(dateShiftDTO, detail, parentBoeId, "Resource and Business Resource Code", "Start Date", "shifted to the right of");
 							}
 						}
 
@@ -578,7 +564,7 @@ namespace GenBOE.ActionLogic.DateShift
 						{
 							if (shiftedEndDate.HasValue && shiftedEndDate.Value >= oneLMXStartDate)
 							{
-								AddResourceTypeError(dateShiftable, detail, parentBoeId, "Resource", "End Date", "shifted to the right of");
+								AddResourceTypeError(dateShiftDTO, detail, parentBoeId, "Resource", "End Date", "shifted to the right of");
 							}
 						}
 
@@ -586,7 +572,7 @@ namespace GenBOE.ActionLogic.DateShift
 						{
 							if (shiftedStartDate.HasValue && shiftedStartDate.Value < oneLMXStartDate)
 							{
-								AddResourceTypeError(dateShiftable, detail, parentBoeId, "Resource and Business Resource Code", "Start Date", "shifted to the left of");
+								AddResourceTypeError(dateShiftDTO, detail, parentBoeId, "Resource and Business Resource Code", "Start Date", "shifted to the left of");
 							}
 						}
 
@@ -594,7 +580,7 @@ namespace GenBOE.ActionLogic.DateShift
 						{
 							if (shiftedEndDate.HasValue && shiftedEndDate.Value < oneLMXStartDate)
 							{
-								AddResourceTypeError(dateShiftable, detail, parentBoeId, "Resource and Business Resource Code", "End Date", "shifted to the left of");
+								AddResourceTypeError(dateShiftDTO, detail, parentBoeId, "Resource and Business Resource Code", "End Date", "shifted to the left of");
 							}
 						}
 					}
@@ -605,16 +591,16 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <summary>
 		/// Populate Details Model with proper Error message
 		/// </summary>
-		/// <param name="dateShiftable">Shiftable Model</param>
+		/// <param name="dateShiftDTO">Shiftable Model</param>
 		/// <param name="detail">Date Shift Table Model</param>
 		/// <param name="parentBoeId">Parent BOE ID</param>
 		/// <param name="type">Type affect (Resource and/or Business Resource Code)</param>
 		/// <param name="affectedDate">Start or End Date affected</param>
 		/// <param name="shift">Shift to left or right of 1LMX Cutoff Date</param>
-		private static void AddResourceTypeError(IDateShiftable dateShiftable, DateShiftDetailModelView detail, int? parentBoeId, string type, string affectedDate, string shift)
+		private static void AddResourceTypeError(DateShiftDTO dateShiftDTO, DateShiftDetailModelView detail, int? parentBoeId, string type, string affectedDate, string shift)
 		{
 			detail.Errors.HasError2 = true;
-			AddErrorInfo(dateShiftable, detail, parentBoeId);
+			AddErrorInfo(dateShiftDTO, detail, parentBoeId);
 			detail.Errors.Messages.Add($"{affectedDate} has {shift} 1LMX Start Date. {type} will be affected");
 		}
 
@@ -625,18 +611,17 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <param name="detail">The detail.</param>
 		/// <param name="modelView">The model view.</param>
 		/// <exception cref="NotSupportedException">The parentTask is set to Level.Labor but is not a Resource Labor Type.</exception>
-		internal static void PerformLaborSpreadShift(IDateShiftable parentTask, DateShiftDetailModelView detail, DateShiftModelView modelView)
+		internal static void PerformLaborSpreadShift(DateShiftDTO parentTask, DateShiftDetailModelView detail, DateShiftModelView modelView)
 		{
 			if (detail.ChildModificationType != ChildModificationType.NoChange)
 			{
-				ResourceTypeDto labor = parentTask as ResourceTypeDto;
-				if (labor == null)
+				if (parentTask.DateShiftLevel != Level.Labor)
 				{
 					throw new NotSupportedException("The parentTask is set to Level.Labor but is not a Resource Labor Type.");
 				}
 
 				// move the spreads
-				PerformSpreadsShift(labor, detail, modelView);
+				PerformSpreadsShift(parentTask, detail, modelView);
 			}
 		}
 
@@ -646,7 +631,7 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <param name="labor">The Resource Labor.</param>
 		/// <param name="detail">The details for the DateShift.</param>
 		/// <param name="modelView">The model view.</param>
-		internal static void PerformSpreadsShift(ResourceTypeDto labor, DateShiftDetailModelView detail, DateShiftModelView modelView)
+		internal static void PerformSpreadsShift(DateShiftDTO labor, DateShiftDetailModelView detail, DateShiftModelView modelView)
 		{
 			if (labor.SpreadCurveID.HasValue)
 			{
@@ -698,7 +683,7 @@ namespace GenBOE.ActionLogic.DateShift
 								DateTime laborSpreadRequestedDate = spread.LaborSpreadDate.AddMonths(startDateDiff);
 								spread.LaborSpreadDate = GenBOEUtilities.AdjustDateTimePrecision(laborSpreadRequestedDate, DateTimePrecision.Month);
 
-								if (spread.LaborSpreadDate.CompareTo(labor.EndDateValue) > 0 && (detail.SpreadHandling == SpreadHandling.DiscreteToFirst || detail.SpreadHandling == SpreadHandling.DiscreteToLast))
+								if (spread.LaborSpreadDate.CompareTo(labor.EndDate) > 0 && (detail.SpreadHandling == SpreadHandling.DiscreteToFirst || detail.SpreadHandling == SpreadHandling.DiscreteToLast))
 								{
 									tempTotal += spread.LaborSpreadValue;
 								}
@@ -710,8 +695,8 @@ namespace GenBOE.ActionLogic.DateShift
 							{
 								CurveID = labor.SpreadCurveID,
 								HourSpread = 0,
-								StartDate = labor.StartDateValue,
-								EndDate = labor.EndDateValue
+								StartDate = labor.StartDate.Value,
+								EndDate = labor.EndDate.Value
 							};
 							int decimalPrecision = labor.SpreadType == SpreadType.Cost ? modelView.Workspace.CostDecimalPrecision : modelView.Workspace.DecimalPrecision;
 							labor.LaborSpreads = SpreadCurve.CalculateLaborSpreadsBasedOnCurve(spreadRequest, decimalPrecision);
@@ -731,7 +716,7 @@ namespace GenBOE.ActionLogic.DateShift
 								{
 									DateTime spreadDate = GenBOEUtilities.AdjustDateTimePrecision(spread.LaborSpreadDate, DateTimePrecision.Month);
 
-									if (spreadDate.CompareTo(labor.StartDateValue) == 0)
+									if (spreadDate.CompareTo(labor.StartDate) == 0)
 									{
 										spread.LaborSpreadValue += tempTotal;
 									}
@@ -740,14 +725,14 @@ namespace GenBOE.ActionLogic.DateShift
 								{
 									DateTime spreadDate = GenBOEUtilities.AdjustDateTimePrecision(spread.LaborSpreadDate, DateTimePrecision.Month);
 
-									if (spreadDate.CompareTo(labor.EndDateValue) == 0)
+									if (spreadDate.CompareTo(labor.EndDate) == 0)
 									{
 										spread.LaborSpreadValue += tempTotal;
 									}
 								}
 
 								spread.Updateable = UpdateType.Upsert;
-								spread.BoeID = labor.BoeID;
+								spread.BoeID = labor.BoeId;
 								spread.LaborTypeId = labor.Id;
 							}
 
@@ -758,39 +743,6 @@ namespace GenBOE.ActionLogic.DateShift
 				}
 
 				// else do nothing since the spreads are not saved in database
-			}
-		}
-
-		/// <summary>
-		/// Performs the travel spreads/trips shift.
-		/// </summary>
-		/// <param name="dateShiftable">The parent travel dto.</param>
-		/// <param name="detail">The detail.</param>
-		internal static void PerformTravelSpreadShift(IDateShiftable parentTravel, DateShiftDetailModelView detail)
-		{
-			if (detail.ChildModificationType != ChildModificationType.NoChange)
-			{
-				TravelDTO task = parentTravel as TravelDTO;
-				if (task == null)
-				{
-					throw new ArgumentException("The parentTask is set to Level.Travel but is not a Travel object.");
-				}
-
-				if (task.TravelTrips != null && task.TravelTrips.Any())
-				{
-					throw new NotSupportedException("Travel Trips are not supported for Date Shift.");
-				}
-
-				if (task.MSTTravelTrips != null && task.MSTTravelTrips.Any())
-				{
-					foreach (MSTTravelTripType trip in task.MSTTravelTrips)
-					{
-						int startDateOffset = detail.Operation == Operation.Shift ? detail.MonthChange : 0;
-						trip.TripDate = trip.TripDate.AddMonths(startDateOffset);
-						trip.EstimateDate = DateTime.Now;
-						trip.Updateable = UpdateType.Upsert;
-					}
-				}
 			}
 		}
 
@@ -818,18 +770,18 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <summary>
 		/// Sends the emails.
 		/// </summary>
-		/// <param name="dateShiftable">The date shiftable.</param>
+		/// <param name="dateShiftDTO">The date shiftable.</param>
 		/// <param name="dateShiftModel">The model view.</param>
-		private void GenerateEmails(IDateShiftable dateShiftable, DateShiftModelView dateShiftModel)
+		private void GenerateEmails(DateShiftDTO dateShiftDTO, DateShiftModelView dateShiftModel)
 		{
 			switch (dateShiftModel.EmailOption)
 			{
 				case EmailOption.EmailBOEAuthors:
-					this.GenerateEmailBOEAuthors(dateShiftable, dateShiftModel);
-					this.GenerateEmailBoeAuthorsErrorsOnly(dateShiftable, dateShiftModel);
+					this.GenerateEmailBOEAuthors(dateShiftDTO, dateShiftModel);
+					this.GenerateEmailBoeAuthorsErrorsOnly(dateShiftDTO, dateShiftModel);
 					break;
 				case EmailOption.EmailBOEAuthorsErrorsOnly:
-					this.GenerateEmailBoeAuthorsErrorsOnly(dateShiftable, dateShiftModel);
+					this.GenerateEmailBoeAuthorsErrorsOnly(dateShiftDTO, dateShiftModel);
 					break;
 				default:
 					// do nothing
@@ -840,21 +792,18 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <summary>
 		/// Saves the specified date shiftable objects.
 		/// </summary>
-		/// <param name="dateShiftable">The date shiftable parent object.</param>
+		/// <param name="dateShiftDTO">The date shiftable parent object.</param>
 		/// <param name="dateShiftModel">The model view.</param>
-		/// 
-		private void Save(IDateShiftable dateShiftable, DateShiftModelView dateShiftModel)
+		private void Save(DateShiftDTO dateShiftDTO, DateShiftModelView dateShiftModel)
 		{
-			DateShiftDTO dateShiftDTO = DateShiftDTO.FromIDateShiftable(dateShiftable);
-			if (dateShiftable.DateShiftLevel == Level.Workspace)
+			if (dateShiftDTO.DateShiftLevel == Level.Workspace)
 			{
 				// separate transaction for backup
 				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("CopyWorkspaceTransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
 				{
-					FullWorkspace workspace = dateShiftable as FullWorkspace;
 					// make a backup first
 					string versionName = "SYSTEM: DATE SHIFT " + DateTime.Now.ToString();
-					IReadOnlyCollection<WorkspaceVersionMetaDataDTO> workspaceVersions = workspace.WorkspaceVersionMetaData;
+					ICollection<WorkspaceVersionMetaDataDTO> workspaceVersions = dateShiftDTO.WorkspaceVersionMetaData;
 
 					foreach (WorkspaceVersionMetaDataDTO versionToCheck in workspaceVersions)
 					{
@@ -873,11 +822,11 @@ namespace GenBOE.ActionLogic.DateShift
 							Updateable = UpdateType.Upsert,
 							CreatedByID = 0, // genBOE System 
                             DateCreated = new DateTime(),
-							VersionState = workspace.WorkspaceState
+							VersionState = dateShiftDTO.WorkspaceState
 						}
 					};
 
-					this.workspaceVersionMetaDataDTODataLoader.Save(toSave, workspace.Id);
+					this.workspaceVersionMetaDataDTODataLoader.Save(toSave, dateShiftDTO.Id);
 
 					scope.Complete();
 				}
@@ -891,7 +840,7 @@ namespace GenBOE.ActionLogic.DateShift
 				this.dateShiftLoader.Update(dateShiftedItems);
 
 				// Transition BOEs to Draft if needed
-				this.TransitionBOEs(dateShiftable, dateShiftModel);
+				this.TransitionBOEs(dateShiftDTO, dateShiftModel);
 
 				scope.Complete();
 			}
@@ -900,17 +849,23 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <summary>
 		/// Transitions the BOEs to Draft if needed.
 		/// </summary>
-		/// <param name="dateShiftable">The date shiftable parent object.</param>
+		/// <param name="dateShiftDTO">The date shiftable parent object.</param>
 		/// <param name="dateShiftModel">The model view.</param>
-		private void TransitionBOEs(IDateShiftable dateShiftable, DateShiftModelView dateShiftModel)
+		private void TransitionBOEs(DateShiftDTO dateShiftDTO, DateShiftModelView dateShiftModel)
 		{
 			// get all the affected BOEs that are not in Draft
-			ICollection<FullBoe> boesBackToDraft = this.GetAffectedBOEs(dateShiftable, dateShiftModel).Where(b => b.State != BOEState.Draft && b.State != BOEState.DraftLocked && b.State != BOEState.DateShiftDraft).ToList();
+			ICollection<DateShiftDTO> affectedBOEs = this.GetAffectedBOEs(dateShiftDTO, dateShiftModel);
 
-			if (boesBackToDraft.Any())
+			IList<DateShiftDTO> boesToChangeState = affectedBOEs.Where(b =>
+				b.BOEStateID != (int)BOEState.Draft &&
+				b.BOEStateID != (int)BOEState.DraftLocked &&
+				b.BOEStateID != (int)BOEState.DateShiftDraft
+			).ToList();
+
+			if (boesToChangeState.Any())
 			{
 				// we need to get the updated boes from the db (updateddate)
-				ICollection<FullBoe> updatedBOEs = this.factory.CreateFullBoes(boesBackToDraft.Select(b => b.Id).ToList());
+				ICollection<FullBoe> updatedBOEs = this.factory.CreateFullBoes(boesToChangeState.Select(b => b.Id).ToList());
 
 				BOEState newBOEState = BOEState.Draft;
 
@@ -945,7 +900,7 @@ namespace GenBOE.ActionLogic.DateShift
 		/// </summary>
 		/// <param name="workspace">The workspace to adjust.</param>
 		/// <param name="userID">user id.</param>
-		/// <param name="boeDTO">boe.</param>
+		/// <param name="boeData">boe.</param>
 		/// <param name="wbsDisplayID">wbs display id.</param>
 		/// <param name="wbsTitle">wbs title.</param>
 		/// <param name="clinDisplayID">clin display id.</param>
@@ -954,7 +909,7 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <param name="orgED">org ED.</param>
 		/// <param name="workspaceAdmin">workspace admin.</param>
 		/// <param name="isError">If this is for a BOE with errors.</param>
-		private void AddEmailInfo(WorkspaceDTO workspace, int userID, BoeDTO boeDTO, string wbsDisplayID, string wbsTitle, string clinDisplayID, string clinTitle,
+		private void AddEmailInfo(WorkspaceDTO workspace, int userID, DateShiftDTO boeData, string wbsDisplayID, string wbsTitle, string clinDisplayID, string clinTitle,
 		string workspaceAdmin, DateTime orgSD, DateTime orgED, string dateShiftType, bool isError)
 		{
 			HashSet<UserDateChangeInfo> dateChangeInfo = isError ? this.userDateChangeInfoErrors : this.userDateChangeInfo;
@@ -963,13 +918,13 @@ namespace GenBOE.ActionLogic.DateShift
 				userID = userID,
 				originalStartDate = orgSD,
 				originalEndDate = orgED,
-				boeID = boeDTO.Id,
+				boeID = boeData.Id,
 				wbsDisplayID = wbsDisplayID,
 				wbsTitle = wbsTitle,
 				clinDisplayID = clinDisplayID,
 				clinTitle = clinTitle,
-				newStartDate = boeDTO.StartDate,
-				newEndDate = boeDTO.EndDate
+				newStartDate = boeData.StartDate.Value,
+				newEndDate = boeData.EndDate.Value
 			};
 
 			List<UserDateChangeInfo> temp = (from x in dateChangeInfo
@@ -1004,13 +959,10 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <summary>
 		/// Generates and sends an email to notify the boe authors of a date change
 		/// </summary>
-		/// <param name="inputs">The Date Adjust inputs.</param>
 		/// <param name="boeDTO">boe that changed</param>
-		/// <param name="originalStartDate">original start date</param>
-		/// <param name="originalEndDate">original end date</param>
 		/// <param name="dateShiftModel">The date shift model.</param>
 		/// <param name="isError">If this is for a BOE with errors.</param>
-		private void GenerateEmail(DateShiftModelView dateShiftModel, Level level, BoeDTO boeDTO, bool isError)
+		private void GenerateEmail(DateShiftModelView dateShiftModel, Level level, DateShiftDTO boeDTO, bool isError)
 		{
 			string wbsTitle = string.Empty;
 			string wbsDisplayID = string.Empty;
@@ -1027,10 +979,10 @@ namespace GenBOE.ActionLogic.DateShift
 									 where x.Role == Role.Author || x.Role == Role.SubcontractorAuthor
 									 select x.ETIUserId).ToList();
 
-			if (boeDTO.WBSID.HasValue)
+			if (boeDTO.WbsId.HasValue)
 			{
 				WbsDTO wbs = (from w in dateShiftModel.Workspace.WbsElements
-							  where w.Id == boeDTO.WBSID.Value
+							  where w.Id == boeDTO.WbsId.Value
 							  select w).FirstOrDefault();
 
 				if (wbs != null)
@@ -1040,10 +992,10 @@ namespace GenBOE.ActionLogic.DateShift
 				}
 			}
 
-			if (boeDTO.CLINID.HasValue)
+			if (boeDTO.ClinId.HasValue)
 			{
 				ClinDTO clin = (from c in dateShiftModel.Workspace.Clins
-								where c.Id == boeDTO.CLINID.Value
+								where c.Id == boeDTO.ClinId.Value
 								select c).FirstOrDefault();
 
 				if (clin != null)
@@ -1054,23 +1006,23 @@ namespace GenBOE.ActionLogic.DateShift
 			}
 
 			// get the original start/end from databse
-			BoeDTO originalBoe = this.boeLoader.GetById(boeDTO.Id);
+			DateShiftDTO originalBoe = this.dateShiftLoader.GetDateShiftObject(Level.BOE, boeDTO.Id);
 
 			// for each Author
 			foreach (int authorID in authorsList)
 			{
-				this.AddEmailInfo(dateShiftModel.Workspace, authorID, boeDTO, wbsDisplayID, wbsTitle, clinDisplayID, clinTitle, workspaceAdmin.DisplayName, originalBoe.StartDate, originalBoe.EndDate, GetDateShiftString(dateShiftModel, level), isError);
+				this.AddEmailInfo(dateShiftModel.Workspace, authorID, boeDTO, wbsDisplayID, wbsTitle, clinDisplayID, clinTitle, workspaceAdmin.DisplayName, originalBoe.StartDate.Value, originalBoe.EndDate.Value, GetDateShiftString(dateShiftModel, level), isError);
 			}
 
 			// Gather the approvers
-			if (boeDTO.State != BOEState.Draft && boeDTO.State != BOEState.DraftLocked && boeDTO.State != BOEState.DateShiftDraft)
+			if (boeDTO.BOEStateID != (int)BOEState.Draft && boeDTO.BOEStateID != (int)BOEState.DraftLocked && boeDTO.BOEStateID != (int)BOEState.DateShiftDraft)
 			{
 				List<int> approvers = permissions.Where(x => x.Role == Role.Approver).Select(x => x.ETIUserId).ToList();
 
 				// build info for each approver
 				foreach (int approver in approvers)
 				{
-					this.AddEmailInfo(dateShiftModel.Workspace, approver, boeDTO, wbsDisplayID, wbsTitle, clinDisplayID, clinTitle, workspaceAdmin.DisplayName, originalBoe.StartDate, originalBoe.EndDate, GetDateShiftString(dateShiftModel, level), isError);
+					this.AddEmailInfo(dateShiftModel.Workspace, approver, boeDTO, wbsDisplayID, wbsTitle, clinDisplayID, clinTitle, workspaceAdmin.DisplayName, originalBoe.StartDate.Value, originalBoe.EndDate.Value, GetDateShiftString(dateShiftModel, level), isError);
 				}
 			}
 		}
@@ -1117,64 +1069,90 @@ namespace GenBOE.ActionLogic.DateShift
 		/// Emails the boe authors errors only.
 		/// </summary>
 		/// <param name="dateShiftModel">The date shift model.</param>
-		private void GenerateEmailBoeAuthorsErrorsOnly(IDateShiftable dateShiftable, DateShiftModelView dateShiftModel)
+		private void GenerateEmailBoeAuthorsErrorsOnly(DateShiftDTO dateShiftDTO, DateShiftModelView dateShiftModel)
 		{
 			// Get list of boeids that are in error
 			ICollection<int> boeIds = dateShiftModel.Details.Last().Errors.AffectedBoeIds.ToList();
 
-			ICollection<FullBoe> boes;
-			switch (dateShiftable.DateShiftLevel)
+			ICollection<DateShiftDTO> boes;
+			switch (dateShiftDTO.DateShiftLevel)
 			{
 				case Level.BOE:
-					boes = new FullBoe[] { dateShiftable as FullBoe };
+					boes = new DateShiftDTO[] { dateShiftDTO };
 					break;
 				case Level.CLIN:
-					boes = (dateShiftable as FullClin).Boes.Where(b => boeIds.Contains(b.Id)).ToList();
+					boes = dateShiftDTO.Children.Where(clin => boeIds.Contains(clin.Id)).ToList();
 					break;
 				default:
-					boes = dateShiftModel.Workspace.Boes.Where(b => boeIds.Contains(b.Id)).ToList();
+					boes = dateShiftModel.Workspace.Boes.Select(boe => new DateShiftDTO
+					{
+						DateShiftLevel = IES.Common.Level.BOE,
+						BOEStateID = boe.Id,
+						ParentId = boe.CLINID ?? boe.WorkspaceID,
+						ClinId = boe.CLINID,
+						WbsId = boe.WBSID,
+						WorkspaceId = boe.WorkspaceID,
+						StartDate = boe.StartDate,
+						EndDate = boe.EndDate,
+						HasSpread = boe.HasSpread,
+						Updateable = boe.Updateable
+					}).Where(d => boeIds.Contains(d.BOEStateID)).ToList();
 					break;
 			}
 
-			foreach (FullBoe boe in boes)
+			foreach (DateShiftDTO boe in boes)
 			{
-				this.GenerateEmail(dateShiftModel, dateShiftable.DateShiftLevel, boe, true);
+				this.GenerateEmail(dateShiftModel, dateShiftDTO.DateShiftLevel, boe, true);
 			}
 		}
 
 		/// <summary>
 		/// Emails the boe authors.
 		/// </summary>
-		/// <param name="dateShiftable">The date shiftable.</param>
+		/// <param name="dateShiftDTO">The date shiftable.</param>
 		/// <param name="dateShiftModel">The date shift model.</param>
-		private void GenerateEmailBOEAuthors(IDateShiftable dateShiftable, DateShiftModelView dateShiftModel)
+		private void GenerateEmailBOEAuthors(DateShiftDTO dateShiftDTO, DateShiftModelView dateShiftModel)
 		{
-			ICollection<FullBoe> boes = this.GetAffectedBOEs(dateShiftable, dateShiftModel);
-			foreach (FullBoe boe in boes)
+			ICollection<DateShiftDTO> boes = this.GetAffectedBOEs(dateShiftDTO, dateShiftModel);
+			foreach (DateShiftDTO boe in boes)
 			{
-				this.GenerateEmail(dateShiftModel, dateShiftable.DateShiftLevel, boe, false);
+				this.GenerateEmail(dateShiftModel, dateShiftDTO.DateShiftLevel, boe, false);
 			}
 		}
 
 		/// <summary>
 		/// Gets the affected BOEs
 		/// </summary>
-		/// <param name="dateShiftable"></param>
+		/// <param name="dateShiftDTO"></param>
 		/// <param name="dateShiftModel"></param>
 		/// <returns></returns>
-		private ICollection<FullBoe> GetAffectedBOEs(IDateShiftable dateShiftable, DateShiftModelView dateShiftModel)
+		private ICollection<DateShiftDTO> GetAffectedBOEs(DateShiftDTO dateShiftDTO, DateShiftModelView dateShiftModel)
 		{
-			switch (dateShiftable.DateShiftLevel)
+			switch (dateShiftDTO.DateShiftLevel)
 			{
 				case Level.BOE:
-					return new FullBoe[] { dateShiftable as FullBoe };
+					return new DateShiftDTO[] { dateShiftDTO };
 				case Level.CLIN:
-					ICollection<FullBoe> clinBoes = (dateShiftable as FullClin).Boes.Where(b => b.Updateable == UpdateType.Upsert).ToList();
-
+					ICollection<DateShiftDTO> clinBoes = dateShiftDTO.Children.Where(d => d.Updateable == UpdateType.Upsert).ToList();
 					return clinBoes;
 				default:
-					ICollection<FullBoe> boes = dateShiftModel.Workspace.Boes.Where(b => b.Updateable == UpdateType.Upsert).ToList();
+					// Default at workspace level.
+					IEnumerable<DateShiftDTO> boesAsDateShiftDTOs = dateShiftModel.Workspace.Boes.Select(b => new DateShiftDTO
+					{
+						DateShiftLevel = IES.Common.Level.BOE,
+						BOEStateID = b.Id,
+						ParentId = b.CLINID ?? b.WorkspaceID,
+						ClinId = b.CLINID,
+						WbsId = b.WBSID,
+						WorkspaceId = b.WorkspaceID,
+						StartDate = b.StartDate,
+						EndDate = b.EndDate,
+						HasSpread = b.HasSpread,
+						Updateable = b.Updateable
+					});
 
+					IEnumerable<DateShiftDTO> upsertBoes = boesAsDateShiftDTOs.Where(d => d.Updateable == UpdateType.Upsert);
+					ICollection<DateShiftDTO> boes = upsertBoes.ToList();
 					return boes;
 			}
 		}
@@ -1182,48 +1160,22 @@ namespace GenBOE.ActionLogic.DateShift
 		/// <summary>
 		/// Gets the attached boe identifier.
 		/// </summary>
-		/// <param name="dateShiftable">The date shiftable.</param>
+		/// <param name="dateShiftDTO">The date shiftable.</param>
 		/// <returns>The boe id if found.</returns>
-		private static int? GetAttachedBoeId(IDateShiftable dateShiftable)
+		private static int? GetAttachedBoeId(DateShiftDTO dateShiftDTO)
 		{
-			int? boeId = null;
-			if (dateShiftable is DateShiftable)
-			{
-				boeId = ((DateShiftable)dateShiftable).BoeId;
-			}
-			else
-			{
-				switch (dateShiftable.DateShiftLevel)
-				{
-					case Level.BOE:
-						FullBoe boe = dateShiftable as FullBoe;
-						boeId = boe.Id;
-						break;
-					case Level.Task:
-						BoeTaskElementDTO task = dateShiftable as BoeTaskElementDTO;
-						boeId = task.BoeID;
-						break;
-					case Level.Travel:
-						TravelDTO travel = dateShiftable as TravelDTO;
-						boeId = travel.BoeID;
-						break;
-					default:
-						// no boe attached (clin/workspace/labor)
-						break;
-				}
-			}
+			int? boeId = dateShiftDTO.BoeId;
 			return boeId;
 		}
 
 		/// <summary>
 		/// Adds the error information.
 		/// </summary>
-		/// <param name="dateShiftable">The date shiftable.</param>
-		/// <param name="hasError">if set to <c>true</c> [has error].</param>
+		/// <param name="dateShiftDTO">The date shiftable.</param>
 		/// <param name="detail">The detail.</param>
-		private static void AddErrorInfo(IDateShiftable dateShiftable, DateShiftDetailModelView detail, int? parentBoeId)
+		private static void AddErrorInfo(DateShiftDTO dateShiftDTO, DateShiftDetailModelView detail, int? parentBoeId)
 		{
-			int? boeId = GetAttachedBoeId(dateShiftable);
+			int? boeId = GetAttachedBoeId(dateShiftDTO);
 			if (boeId.HasValue)
 			{
 				detail.Errors.AffectedBoeIds.Add(boeId.Value);

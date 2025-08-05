@@ -8,6 +8,12 @@
 
 	<!--appSettings-->
 
+
+	<parameter name="IsPLDIntegrated" description="Feature Flag for PLD Integration" defaultvalue="__IsPLDIntegrated__">
+		<paremeterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IsPLDIntegrated']/@value">			
+		</paremeterentry>
+	</parameter>
+	
 	<parameter name="RemoveEmptySpans" description="doesn't matter" defaultvalue="__RemoveEmptySpans__" tags="">
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='RemoveEmptySpans']/@value">
 		</parameterentry>
@@ -218,8 +224,8 @@
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='OverrideBRC']/@value">
 		</parameterentry>
 	</parameter>
-	<parameter name="UcotExcludedPTMTrackingNumbers" description="Comma-separated list of PTM tracking numbers excluded from UCOT" defaultvalue="__UcotExcludedPTMTrackingNumbers__" tags="">
-		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='UcotExcludedPTMTrackingNumbers']/@value">
+	<parameter name="UcotExcludedWorkspaces" description="Comma-separated list of PTM tracking numbers excluded from UCOT" defaultvalue="__UcotExcludedWorkspaces__" tags="">
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='UcotExcludedWorkspaces']/@value">
 		</parameterentry>
 	</parameter>
 	<parameter name="EnableUCOT" description="doesn't matter" defaultvalue="__EnableUCOT__" tags="">

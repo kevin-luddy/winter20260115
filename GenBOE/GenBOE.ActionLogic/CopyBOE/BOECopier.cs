@@ -294,7 +294,7 @@ namespace GenBOE.ActionLogic.CopyBOE
                                      .Union(from t in inSourceBOE.TaskElements
                                      from l in t.taskElementLabors
                                      where l.BusinessResourceCodeID.HasValue
-                                     select l.BusinessResourceCodeID.Value).ToList();
+                                     select l.BusinessResourceCodeID.Value).Distinct().ToList();
 
             ICollection<ResourceDTO> resourcesToMap = this._IResourceDTODataLoader.GetByIds(resourceIDs);
 
@@ -307,8 +307,8 @@ namespace GenBOE.ActionLogic.CopyBOE
                 {
                     // Get the resource to copy
                     ResourceDTO matchingResource = (from r in allCurrentResources
-	        where r.ResourceName.Equals(resource.ResourceName, StringComparison.CurrentCultureIgnoreCase)
-	        select r).FirstOrDefault();
+						where r.ResourceName.Equals(resource.ResourceName, StringComparison.CurrentCultureIgnoreCase)
+						select r).FirstOrDefault();
 
                     // If a resource exists with the same name, add the ID mapping to return
                     if (matchingResource != null)

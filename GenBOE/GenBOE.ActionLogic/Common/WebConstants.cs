@@ -380,6 +380,7 @@ namespace GenBOE.ActionLogic.Common
 
 		// BOELabor Controller
 		public static readonly string ACTION_CALCULATE_SPREAD = "CalculateSpread";
+		public static readonly string ACTION_CALCULATE_DISCRETE_UCOT_SPREAD = "CalculateDiscreteUCOTSpread";
 		public static readonly string ACTION_SAVE_TASK_DATA_MODEL = "SaveTaskDataModel";
 		public static readonly string ACTION_GET_TASK_DATA_MODEL = "GetTaskDataModel";
 		public static readonly string ACTION_DISPLAY_IWTA_TASK_ELEMENT_DETAILS = "DisplayIWTATaskElementDetails";

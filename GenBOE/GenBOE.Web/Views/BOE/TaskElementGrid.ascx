@@ -59,6 +59,10 @@
                     <th class="sort task-start" sorttype="date">Task Start</th>
                     <th class="sort task-end" sorttype="date">Task End</th>
                     <th class="sort total-hours" sorttype="number">Total <%: ViewData["HoursLabel"] %></th>
+				<%if (Model.IsUCOTEnabledForWorkspace) { %>
+					<th class="sort total-hours" sorttype="number">Total UCOT <%: ViewData["HoursLabel"] %></th>
+					<th class="sort total-hours" sorttype="number">Grand Total <%: ViewData["HoursLabel"] %></th>
+				<% } %>
                     <th class="sort total-cost" sorttype="number">Total Cost</th>
                     <th class="delete last-child">
                         <div class="delete"></div>
@@ -80,6 +84,10 @@
                     <td><%: Html.DisplayFor(model => item.StartDate) %></td>
                     <td><%: Html.DisplayFor(model => item.EndDate) %></td>
                     <td><%:item.TotalHoursFormatted %></td>
+				<%if (Model.IsUCOTEnabledForWorkspace) { %>
+					<td><%:item.TotalUCOTHoursFormatted %></td>
+					<td><%:item.TotalHoursWithUCOTFormatted %></td>
+				<% } %>
                     <td>$<%: Html.DisplayFor(model => item.TotalCost)%></td>
                     <td class="deleteColumn">
                         <div class="delete"></div>

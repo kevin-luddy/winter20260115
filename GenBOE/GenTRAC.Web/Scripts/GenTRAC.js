@@ -96,7 +96,7 @@ GenTRACUtilities.prototype.validateDateStringFormatMMDDYYYY = function (dateText
 
 GenTRACUtilities.prototype.numericCommaSeparator = function (widget, dollarAmount, element, readOnly) {
     if (!isNaN(parseFloat(dollarAmount)) && isFinite(dollarAmount)) {
-        dollarAmount = String(dollarAmount).replace(/\B(?=(\d{3})+(?!\d))/g, ","); // add comma separator for every three numerical digits
+        dollarAmount = String(dollarAmount).replace(/\B(?=(\d{3})+(?!\d))/g, ",").trim(); // add comma separator for every three numerical digits
     }
 
     if (readOnly) {

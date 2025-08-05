@@ -207,6 +207,8 @@ namespace GenBOE.Tests.ActionLogic
 		[TestMethod]
 		public void BL_MoreInvalidBOEsToValidate()
 		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
+
 			Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
 			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
@@ -4324,11 +4326,12 @@ namespace GenBOE.Tests.ActionLogic
 		}
 
 		/// <summary>
-		/// Test Invalid BOE Skill Mix (null)
+		/// Test Invalid BOE Skill Mix (null) for RMS
 		/// </summary>
 		[TestMethod]
-		public void ValidateSkillMix_NullBoeSkillMix()
+		public void ValidateSkillMix_NullBoeSkillMix_RMS()
 		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
 			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
 			{
 				new SkillMixModelView {
@@ -4345,15 +4348,42 @@ namespace GenBOE.Tests.ActionLogic
 			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
-			Assert.IsTrue(messages.First().Contains("BOE Skill Mix is missing"));
+			Assert.IsTrue(messages.First().Contains($"{Constants.RMS_BOE_SKILL_MIX_COLUMN_NAME} is missing"));
 		}
 
 		/// <summary>
-		/// Test Invalid BOE Skill Mix (<=0)
+		/// Test Invalid BOE Skill Mix (null) for space
 		/// </summary>
 		[TestMethod]
-		public void ValidateSkillMix_InvalidBoeSkillMix()
+		public void ValidateSkillMix_NullBoeSkillMix_Space()
 		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
+			{
+				new SkillMixModelView {
+					ResourceOld = "HISTORICAL_R",
+					HistoricalHours = 100,
+					ResourceNew = "NEW",
+					Included = true,
+					IsUserInput = true,
+					Rationale = "Rationale1",
+					BOESkillMix = null
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains($"{Constants.SPACE_BOE_SKILL_MIX_COLUMN_NAME} is missing"));
+		}
+
+		/// <summary>
+		/// Test Invalid BOE Skill Mix (<=0) for RMS
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMix_InvalidBoeSkillMixfor_RMS()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
 			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
 			{
 				new SkillMixModelView {
@@ -4370,15 +4400,42 @@ namespace GenBOE.Tests.ActionLogic
 			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
-			Assert.IsTrue(messages.First().Contains("BOE Skill Mix has invalid value"));
+			Assert.IsTrue(messages.First().Contains($"{Constants.RMS_BOE_SKILL_MIX_COLUMN_NAME} has invalid value"));
 		}
 
 		/// <summary>
-		/// Test Invalid BOE Skill Mix Total
+		/// Test Invalid BOE Skill Mix (<=0) for space
 		/// </summary>
 		[TestMethod]
-		public void ValidateSkillMix_InvalidSkillMixTotal()
+		public void ValidateSkillMix_InvalidBoeSkillMixfor_Space()
 		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
+			{
+				new SkillMixModelView {
+					ResourceOld = "HISTORICAL_R",
+					HistoricalHours = 100,
+					ResourceNew = "NEW",
+					Included = true,
+					IsUserInput = true,
+					Rationale = "Rationale1",
+					BOESkillMix = 0
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains($"{Constants.SPACE_BOE_SKILL_MIX_COLUMN_NAME} has invalid value"));
+		}
+
+		/// <summary>
+		/// Test Invalid BOE Skill Mix Total for RMS
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMix_InvalidSkillMixTotal_RMS()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
 			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
 			{
 				new SkillMixModelView {
@@ -4395,7 +4452,33 @@ namespace GenBOE.Tests.ActionLogic
 			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
-			Assert.IsTrue(messages.First().Contains("BOE Skill Mix total must be either 0% or 100%"));
+			Assert.IsTrue(messages.First().Contains($"{Constants.RMS_BOE_SKILL_MIX_COLUMN_NAME} total must be either 0% or 100%"));
+		}
+
+		/// <summary>
+		/// Test Invalid BOE Skill Mix Total for space
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMix_InvalidSkillMixTotal_Space()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
+			{
+				new SkillMixModelView {
+					ResourceOld = "HISTORICAL_R",
+					HistoricalHours = 100,
+					ResourceNew = "NEW",
+					Included = true,
+					IsUserInput = true,
+					Rationale = "Rationale1",
+					BOESkillMix = 50
+				}
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains($"{Constants.SPACE_BOE_SKILL_MIX_COLUMN_NAME} total must be either 0% or 100%"));
 		}
 
 		/// <summary>
@@ -4843,6 +4926,128 @@ namespace GenBOE.Tests.ActionLogic
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("The Rationale field") && messages.First().Contains("required"));
+		}
+
+		/// <summary>
+		/// Test ValidateTaskAuthor when task author is valid
+		/// </summary>
+		[TestMethod]
+		public void ValidateTaskAuthor_Valid()
+		{
+			try
+			{
+				CreateSystem();
+				ValidateBOE sut = CreateSystem();
+				Utilities.IsAssignTaskAuthorEnabledForSystem = true;
+
+				FullWorkspace ws = new FullWorkspace() { EnableAssignTaskAuthor = true };
+				FullBoe boe = new FullBoe() { AuthorIDs = { 1 }, SubcontractorAuthorIDs = { 2 } };
+				Collection<string> messages = new Collection<string>();
+				BoeTaskElementDTO task = new BoeTaskElementDTO() { AuthorUserId = 1 };
+
+				sut.ValidateTaskAuthor(ws, boe, messages, task);
+
+				Assert.IsFalse(messages.Any());
+			}
+			finally
+			{
+				Utilities.IsAssignTaskAuthorEnabledForSystem = false;
+			}
+		}
+
+		/// <summary>
+		/// Test ValidateTaskAuthor when task author is invalid
+		/// </summary>
+		[TestMethod]
+		public void ValidateTaskAuthor_Invalid()
+		{
+			try
+			{
+				CreateSystem();
+				ValidateBOE sut = CreateSystem();
+				Utilities.IsAssignTaskAuthorEnabledForSystem = true;
+
+				FullWorkspace ws = new FullWorkspace() { EnableAssignTaskAuthor = true };
+				FullBoe boe = new FullBoe() { AuthorIDs = { 1 }, SubcontractorAuthorIDs = { 2 } };
+				Collection<string> messages = new Collection<string>();
+
+				// Set Author ID to one not in AuthorIDs or SubcontractorAuthorIDs
+				BoeTaskElementDTO task = new BoeTaskElementDTO() { AuthorUserId = 3 };
+
+				sut.ValidateTaskAuthor(ws, boe, messages, task);
+
+				Assert.IsTrue(messages.Any());
+				Assert.AreEqual(1, messages.Count);
+				Assert.AreEqual(ValidationConstants.TASK_AUTHOR_INVALID, messages.First());
+			}
+			finally
+			{
+				Utilities.IsAssignTaskAuthorEnabledForSystem = false;
+			}
+		}
+
+		/// <summary>
+		/// Test ValidateTaskAuthor when task author is missing
+		/// </summary>
+		[TestMethod]
+		public void ValidateTaskAuthor_Required()
+		{
+			try
+			{
+				CreateSystem();
+				ValidateBOE sut = CreateSystem();
+				Utilities.IsAssignTaskAuthorEnabledForSystem = true;
+
+				FullWorkspace ws = new FullWorkspace() { EnableAssignTaskAuthor = true };
+				FullBoe boe = new FullBoe() { AuthorIDs = { 1 }, SubcontractorAuthorIDs = { 2 } };
+				Collection<string> messages = new Collection<string>();
+				BoeTaskElementDTO task = new BoeTaskElementDTO() { AuthorUserId = null };
+
+				sut.ValidateTaskAuthor(ws, boe, messages, task);
+
+				Assert.IsTrue(messages.Any());
+				Assert.AreEqual(1, messages.Count);
+				Assert.AreEqual(ValidationConstants.TASK_AUTHOR_REQUIRED, messages.First());
+			}
+			finally
+			{
+				Utilities.IsAssignTaskAuthorEnabledForSystem = false;
+			}
+		}
+
+		/// <summary>
+		/// Test ValidateTaskAuthor when EnableAssignTaskAuthor is disabled
+		/// </summary>
+		[TestMethod]
+		public void ValidateTaskAuthor_Disabled()
+		{
+			CreateSystem();
+			ValidateBOE sut = CreateSystem();
+
+			// ensure feature flag is disabled
+			Utilities.IsAssignTaskAuthorEnabledForSystem = false;
+
+			FullWorkspace ws = new FullWorkspace() { EnableAssignTaskAuthor = true };
+			FullBoe boe = new FullBoe() { AuthorIDs = { 1 }, SubcontractorAuthorIDs = { 2 } };
+			Collection<string> messages = new Collection<string>();
+
+			// Set author id to null, which would be invalid if the feature flag was enabled
+			// This way we can be sure the validation is skipped when the feature flag is disabled
+			BoeTaskElementDTO task = new BoeTaskElementDTO() { AuthorUserId = null };
+
+			sut.ValidateTaskAuthor(ws, boe, messages, task);
+
+			Assert.IsFalse(messages.Any());
+		}
+
+		/// <summary>
+		/// Reset test config data
+		/// </summary>
+		[TestCleanup()]
+		public override void TestCleanup()
+		{
+			base.TestCleanup();
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
 		}
 	}
 }

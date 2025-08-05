@@ -18,6 +18,7 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.Common.Interfaces;
     using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
 	using GenBOE.Objects;
     using GenBOE.Web.Common;
     using GenBOE.Web.ModelView;
@@ -39,6 +40,11 @@ namespace GenBOE.Web.Controllers
         /// The task loader
         /// </summary>
         private IBoeTaskElementDTODataLoader taskLoader;
+
+		/// <summary>
+		/// Date shift dto data loader.
+		/// </summary>
+		private IDateShiftDTODataLoader dateShiftDTODataLoader;
 
         /// <summary>
         /// The logger
@@ -65,12 +71,14 @@ namespace GenBOE.Web.Controllers
             IPermissionsDTODataLoader permissionsLoader,
             IGenBOEControllerLogic controllerLogic,
             DateShiftCalculation dateShiftCalculation,
-            IBoeTaskElementDTODataLoader taskLoader)
+            IBoeTaskElementDTODataLoader taskLoader,
+			IDateShiftDTODataLoader dateShiftDTODataLoader)
             : base(securityAccess, commonDataMapper, siteMasterUtilities, systemMetrics, factory, userLoader,
                  permissionsLoader, controllerLogic)
         {
             this.dateShiftCalculation = dateShiftCalculation;
             this.taskLoader = taskLoader;
+			this.dateShiftDTODataLoader = dateShiftDTODataLoader;
 		}
 
         /// <summary>
@@ -85,7 +93,7 @@ namespace GenBOE.Web.Controllers
         public JsonResult ApplyDateShift(string workspace, int id, Level dateShiftLevel, DateShiftModelView dateShiftModel, bool validateOnly)
         {
             Stopwatch sw;
-			IDateShiftable dateShiftable = null; 
+			DateShiftDTO dateShiftable = null;
 			Level parentLevel = Level.Workspace;
             try
             {
@@ -115,10 +123,11 @@ namespace GenBOE.Web.Controllers
                 }
 
                 FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
+				DateShiftDTO parentDateShiftDTO = dateShiftDTODataLoader.GetDateShiftObject(Level.Workspace, ws.Id);
 
                 // Initialize Action
-                DateTime? parentStart = ws.ContractStartDate;
-                DateTime? parentEnd = ws.ContractEndDate;
+                DateTime? parentStart = ws.StartDate;
+				DateTime? parentEnd = parentDateShiftDTO.EndDate;
 
                 dateShiftModel.Workspace = ws;
 
@@ -134,77 +143,46 @@ namespace GenBOE.Web.Controllers
                     }
                 }
 
-				// create the IDateShiftable based on Level and Id 
 				switch (dateShiftLevel)
 				{
 					case Level.BOE:
-						FullBoe boe = this.Factory.CreateFullBoe(id);
 						sw = this.InitializeAction(this.logger, WebConstants.ACTION_APPLY_DATE_SHIFT, SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, id);
-						dateShiftable = boe;
-						if (boe.CLINID.HasValue && boe.Clin.StartDate.HasValue && boe.Clin.EndDate.HasValue)
+
+						dateShiftable = dateShiftDTODataLoader.GetDateShiftObject(Level.BOE, id);
+
+						// Set the parent level and values.
+						if (dateShiftable.Parent != null && dateShiftable.Parent.StartDate != null && dateShiftable.Parent.EndDate != null)
 						{
-							parentStart = boe.Clin.StartDate;
-							parentEnd = boe.Clin.EndDate;
+							parentStart = dateShiftable.Parent.StartDate;
+							parentEnd = dateShiftable.Parent.EndDate;
 							parentLevel = Level.CLIN;
 						}
 
-						// preload data
-						boe.LoadTaskElementRTEData();
-						boe.LoadTravelRTEData();
-
 						break;
 					case Level.CLIN:
-						FullClin clin = this.Factory.CreateFullClin(id);
 						sw = this.InitializeAction(this.logger, WebConstants.ACTION_APPLY_DATE_SHIFT, SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
-						dateShiftable = clin;
 
-						// preload data
-						IReadOnlyCollection<FullBoe> boes = clin.Boes;
-						foreach (FullBoe clinboe in boes)
+						dateShiftable = dateShiftDTODataLoader.GetDateShiftObject(Level.CLIN, id);
+						if (!dateShiftable.StartDate.HasValue || !dateShiftable.EndDate.HasValue)
 						{
-							clinboe.LoadTravelRTEData();
-							clinboe.LoadTaskElementRTEData();
-						}
-
-						if (!clin.StartDate.HasValue || !clin.EndDate.HasValue)
-						{
-							clin.StartDate = ws.StartDate;
-							clin.EndDate = ws.EndDate;
+							dateShiftable.StartDate = parentDateShiftDTO.StartDate;
+							dateShiftable.EndDate = parentDateShiftDTO.EndDate;
 						}
 
 						break;
 					case Level.Task:
-						BoeTaskElementDTO taskElement = this.Factory.CreateTaskElement(id, ws.DecimalPrecision, ws.CostDecimalPrecision);
-						sw = this.InitializeAction(this.logger, WebConstants.ACTION_APPLY_DATE_SHIFT, SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, taskElement.BoeID);
-						dateShiftable = taskElement;
-						FullBoe taskBoe = this.Factory.CreateFullBoe(taskElement.BoeID);
-						parentStart = taskBoe.StartDate;
-						parentEnd = taskBoe.EndDate;
+						dateShiftable = dateShiftDTODataLoader.GetDateShiftObject(Level.Task, id);
+						sw = this.InitializeAction(this.logger, WebConstants.ACTION_APPLY_DATE_SHIFT, SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, dateShiftable.BoeId);
+
+						parentStart = dateShiftable.Parent.StartDate;
+						parentEnd = dateShiftable.Parent.EndDate;
 						parentLevel = Level.BOE;
-						break;
-					case Level.Travel:
-						TravelDTO travel = this.Factory.CreateTravel(id);
-						sw = this.InitializeAction(this.logger, WebConstants.ACTION_APPLY_DATE_SHIFT, SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, travel.BoeID);
-						dateShiftable = travel;
-						FullBoe travelBoe = this.Factory.CreateFullBoe(travel.BoeID);
-						parentStart = travelBoe.StartDate;
-						parentEnd = travelBoe.EndDate;
-						parentLevel = Level.BOE;
+
 						break;
 					case Level.Workspace:
 						sw = this.InitializeAction(this.logger, WebConstants.ACTION_APPLY_DATE_SHIFT, SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
-						dateShiftable = ws;
+						dateShiftable = parentDateShiftDTO;
 						parentStart = parentEnd = null;
-
-						// pre-load the data efficiently
-						ws.LoadClinsAndBoes(false);
-						ICollection<BoeTaskElementDTO> tasks = ws.TaskElements.ToList();
-						ICollection<TravelDTO> travels = ws.Travels.ToList();
-						foreach (FullBoe fullboe in ws.Boes)
-						{
-							fullboe.SetTaskElements(tasks);
-							fullboe.SetTravels(travels);
-						}
 
 						break;
 					default:

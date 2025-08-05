@@ -949,6 +949,91 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 		}
 
 		/// <summary>
+		///Create BOE
+		/// </summary>
+		/// <param name="ws">current workspace</param>
+		/// <param name="selectedWbsIDs">WBS IDs to create BOE for</param>
+		/// <returns></returns>
+		public void CreateBOEs(FullWorkspace ws, List<int> selectedWbsIDs)
+		{
+			if (selectedWbsIDs == null)
+			{
+				throw new ArgumentNullException(nameof(selectedWbsIDs));
+			}
+
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
+
+			Collection<BoeDTO> newBOEs = new Collection<BoeDTO>();
+			int seedNewBoeID = -1;
+
+			Collection<KeyValuePair<int, int>> wbsAndBoesToRemap = new Collection<KeyValuePair<int, int>>();
+
+			foreach (int selectedWbs in selectedWbsIDs)
+			{
+				FullWbs wbs = ws.WbsElements.First(x => x.Id == selectedWbs);
+
+				if (wbs.ClinIDs.Count > 0)
+				{
+					foreach (int selectedClinID in wbs.ClinIDs)
+					{
+						ClinDTO selectedClin = wbs.Clins.First(x => x.Id == selectedClinID);
+						DataRelationshipVerifier.VerifyDataRelation(selectedClin, ws.Id);
+
+						int xrefID = this.boeLoader.GetWbsClinBoeXrefId(selectedWbs, selectedClin.Id, null);
+						if (xrefID > 0)
+						{
+							BoeDTO newBOE = new BoeDTO();
+							newBOE.Id = seedNewBoeID--;
+							newBOE.CLINID = selectedClin.Id;
+							newBOE.WBSID = wbs.Id;
+							newBOE.WorkspaceID = ws.Id;
+							newBOE.Updateable = UpdateType.Upsert;
+							newBOE.WCBID = xrefID;
+							newBOE.StartDate = selectedClin.StartDate.HasValue ? selectedClin.StartDate.Value : ws.ContractStartDate;
+							newBOE.EndDate = selectedClin.EndDate.HasValue ? selectedClin.EndDate.Value : ws.ContractEndDate;
+
+							newBOEs.Add(newBOE);
+						}
+					}
+				}
+				else if (this.boeLoader.GetWbsClinBoeXrefId(selectedWbs, null, null) < 1)
+				{
+					BoeDTO newBOE = new BoeDTO()
+					{
+						Id = seedNewBoeID--,
+						WBSID = wbs.Id,
+						WorkspaceID = ws.Id,
+						CLINID = null,
+						StartDate = ws.ContractStartDate,
+						EndDate = ws.ContractEndDate,
+						Updateable = UpdateType.Upsert
+					};
+
+					newBOEs.Add(newBOE);
+
+					wbsAndBoesToRemap.Add(new KeyValuePair<int, int>(selectedWbs, newBOE.Id));
+				}
+			}
+
+			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+			{
+				IDictionary<int, int> BoeIdMappingDictionary = boeMediator.MediatedSaveBOEs(ws, newBOEs);
+
+				// Now we need to see if the Wbs had a variable mapped to it.. if it did, remap to BOEs created for it
+				foreach (KeyValuePair<int, int> keyPair in wbsAndBoesToRemap)
+				{
+					int boeId = BoeIdMappingDictionary[keyPair.Value];
+					this.wbsLoader.RemapTaskAndWorkspaceVariablesFromWbsToBoe(keyPair.Key, boeId);
+				}
+
+				scope.Complete();
+			}
+		}
+
+		/// <summary>
 		/// ChangedValueContainer - pulled from the front end. 
 		/// </summary>
 		private struct ChangedValueContainer

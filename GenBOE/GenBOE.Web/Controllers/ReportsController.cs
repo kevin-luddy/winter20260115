@@ -815,6 +815,11 @@ namespace GenBOE.Web.Controllers
             ViewData["AllCLIN"] = ws.Clins;
             ViewData["HoursLabel"] = FullObjectHelper.HoursLabel(ws);
 
+			// UCOT check (only need this because the totals are calculated
+			// but the variable for IsUCOTEnabledForWorkspace within the Workspace is not set properly.
+			// Force check here and pass into the Views
+			ViewData["IsUCOTEnabledForWorkspace"] = Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.Shortname);
+
             // Call the BL to generate the status report
             // All BOEs for the workspace as a default
             List<FullBoe> boes = ws.Boes.ToList();
@@ -928,10 +933,11 @@ namespace GenBOE.Web.Controllers
 
 	        this.ViewData["EnableSendDirectly"] = !ws.IsProjectMapWorkspace && ConfigurationUtilities.GetAppSetting<bool>("EnableSendToProPricerDirectly", false);
 
-            // Get Select list for Tasks
-            ICollection<SelectListItem> taskSelectList_Unselected = new Collection<SelectListItem>();
-            ICollection<SelectListItem> taskSelectList_Selected = new Collection<SelectListItem>();
-            IDictionary<int, EnumTypeModelView> allProPricerFieldNames = this._CommonDataMapper.GetProPricerFieldsDictionary(ws.IsProjectMapWorkspace);
+			IDictionary<int, EnumTypeModelView> allProPricerFieldNames = this._CommonDataMapper.GetProPricerFieldsDictionary(ws.IsProjectMapWorkspace, Utilities.IsAssignTaskAuthorEnabledForSystem && ws.EnableAssignTaskAuthor);
+
+			// Get Select list for Tasks
+			ICollection<SelectListItem> taskSelectList_Unselected = new Collection<SelectListItem>();
+            ICollection<SelectListItem> taskSelectList_Selected = new Collection<SelectListItem>();            
             List<int> fieldIDs = allProPricerFieldNames.Select(x => x.Value.EnumTypeID).ToList();
             foreach (ProPricerField_Task task in Enum.GetValues(typeof(ProPricerField_Task)))
             {
@@ -944,13 +950,11 @@ namespace GenBOE.Web.Controllers
             // Get Select list for Resources
             ICollection<SelectListItem> resourceSelectList_Unselected = new Collection<SelectListItem>();
             ICollection<SelectListItem> resourceSelectList_Selected = new Collection<SelectListItem>();
-            IDictionary<int, EnumTypeModelView> allProPricerFields = this._CommonDataMapper.GetProPricerFieldsDictionary(ws.IsProjectMapWorkspace);
-
             foreach (ProPricerField_Resources resource in Enum.GetValues(typeof(ProPricerField_Resources)))
             {
                 if (resource != ProPricerField_Resources.BLANK && fieldIDs.Contains((int)resource))
                 {
-                    resourceSelectList_Unselected.Add(new SelectListItem { Text = allProPricerFields[(int)resource].EnumTypeName, Value = ((int)resource).ToString() });
+                    resourceSelectList_Unselected.Add(new SelectListItem { Text = allProPricerFieldNames[(int)resource].EnumTypeName, Value = ((int)resource).ToString() });
                 }
             }
 
@@ -1103,7 +1107,7 @@ namespace GenBOE.Web.Controllers
                     format = modelView.GetAssociatedDTO();
                 }
 
-                IDictionary<int, EnumTypeModelView> allProPricerFieldNames = this._CommonDataMapper.GetProPricerFieldsDictionary(ws.IsProjectMapWorkspace);
+                IDictionary<int, EnumTypeModelView> allProPricerFieldNames = this._CommonDataMapper.GetProPricerFieldsDictionary(ws.IsProjectMapWorkspace, Utilities.IsAssignTaskAuthorEnabledForSystem && ws.EnableAssignTaskAuthor);
                 List<int> fieldIDs = allProPricerFieldNames.Select(x => x.Value.EnumTypeID).ToList();
 
                 // add blanks for row number
@@ -1873,7 +1877,7 @@ namespace GenBOE.Web.Controllers
 							foreach (FullBoe boe in ws.Boes)
 							{
 								boe.SetTaskElements(ws.TaskElements.Where(x => x.BoeID == boe.Id));
-								multiMoqResults.Add(MultiMOQTypeUtility.DoTasksHaveMultipleMOQTypes(boe));
+								multiMoqResults.Add(MultiMOQTypeUtility.DoTasksHaveMultipleMOQTypes(boe, ws.CreationDate, ws.Shortname));
 							}
 
 							if (multiMoqResults.Any() && multiMoqResults.Any(x => x.DoMultiMOQTypesExist))
@@ -1997,23 +2001,47 @@ namespace GenBOE.Web.Controllers
 					if (theModelViews.Count > 0)
 					{
 						string templateFileName;
-
-						switch (reportID)
+						bool isUCOTEnabledForWorkspace = Utilities.ShowUCOTForWorkspace(exportInputs.FullWorkspace.CreationDate, exportInputs.FullWorkspace.Shortname);
+						
+						if (isUCOTEnabledForWorkspace)
 						{
-							case (int)Reports.BOEStatusByWBS:
-								// Get BOE Status Report template file name
-								templateFileName = Server.MapPath("~/Templates/Export/BOEStatusByWBS.xlsx");
-								break;
+							switch (reportID)
+							{
+								case (int)Reports.BOEStatusByWBS:
+									// Get BOE Status Report template file name
+									templateFileName = Server.MapPath("~/Templates/Export/BOEStatusWithUCOTByWBS.xlsx");
+									break;
 
-							case (int)Reports.BOEStatusByCLIN:
-								// Get BOE Status Report template file name
-								templateFileName = Server.MapPath("~/Templates/Export/BOEStatusByCLIN.xlsx");
-								break;
+								case (int)Reports.BOEStatusByCLIN:
+									// Get BOE Status Report template file name
+									templateFileName = Server.MapPath("~/Templates/Export/BOEStatusWithUCOTByCLIN.xlsx");
+									break;
 
-							default:
-								// Get BOE Status Report template file name
-								templateFileName = Server.MapPath("~/Templates/Export/BOEStatusByBOE.xlsx");
-								break;
+								default:
+									// Get BOE Status Report template file name
+									templateFileName = Server.MapPath("~/Templates/Export/BOEStatusWithUCOTByBOE.xlsx");
+									break;
+							}
+						}
+						else
+						{
+							switch (reportID)
+							{
+								case (int)Reports.BOEStatusByWBS:
+									// Get BOE Status Report template file name
+									templateFileName = Server.MapPath("~/Templates/Export/BOEStatusByWBS.xlsx");
+									break;
+
+								case (int)Reports.BOEStatusByCLIN:
+									// Get BOE Status Report template file name
+									templateFileName = Server.MapPath("~/Templates/Export/BOEStatusByCLIN.xlsx");
+									break;
+
+								default:
+									// Get BOE Status Report template file name
+									templateFileName = Server.MapPath("~/Templates/Export/BOEStatusByBOE.xlsx");
+									break;
+							}
 						}
 
 						// Generate an export file from the data
@@ -2145,7 +2173,11 @@ namespace GenBOE.Web.Controllers
 					BOEExportInputs exportInputs = this.reportsControllerLogic.GetExportInputsForStatusAndWbsReports(ws);
 					ICollection<BoeWbsReportModelView> reportModelView = this.reportsControllerLogic.GenerateWbsBoeReport(exportInputs);
 
-					string exportedFileName = this.reportsControllerLogic.ExportWbsBoeReport(ws, Server.MapPath("~/Templates/Export/WbsBoeReport.xlsx"), reportModelView, exportInputs);
+					// Check to see if UCOT is enabled for Workspace and pull Template location based on check
+					bool isUCOTEnabledForWorkspace = Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.Shortname);
+					string templatePath = isUCOTEnabledForWorkspace ? Server.MapPath("~/Templates/Export/WbsBoeReportWithUCOT.xlsx") : Server.MapPath("~/Templates/Export/WbsBoeReport.xlsx");
+					
+					string exportedFileName = this.reportsControllerLogic.ExportWbsBoeReport(ws, templatePath, reportModelView, exportInputs);
 
 					string fileName = string.Format("{0}_WbsSummaryReport.xlsx", ws.WorkspaceName);
 					// Generate a custom ActionResult to cause a file download to the client

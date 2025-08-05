@@ -1156,6 +1156,9 @@ namespace GenBOE.Objects
 			get
 			{
 				List<IDateShiftable> children = new List<IDateShiftable>();
+				// load the task elements performantly
+				_ = this.TaskElements;
+				this.LoadClinsAndBoes(false);
 				children.AddRange(this.Clins);
 				children.AddRange(this.Boes.Where(b => !b.CLINID.HasValue));
 

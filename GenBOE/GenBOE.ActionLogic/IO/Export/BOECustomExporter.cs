@@ -478,7 +478,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						this.ProcessLaborHoursSummaryByCustomFieldTable(boeContainer, boeExportModelView, exportInputs.CustomFields, taskElementCollection, exportInputs, FullObjectHelper.ShowEquivalentPersonsOption && exportInputs.Workspace.IsUsingEquivalentPerson, exportInputs.SummarizeByCustomField);
 
 						// Called twice, once for Calendar Year table, once for Govt Fiscal Year version of the table since both can be included
-						this.ProcessLaborHoursSummaryTable(boeContainer, taskElementCollection, resourcesByElementOfCost, selectedComponents, FullObjectHelper.ShowEquivalentPersonsOption && exportInputs.Workspace.IsUsingEquivalentPerson, false);
+						this.ProcessLaborHoursSummaryTable(boeContainer, taskElementCollection, resourcesByElementOfCost, selectedComponents, FullObjectHelper.ShowEquivalentPersonsOption && exportInputs.Workspace.IsUsingEquivalentPerson, false, exportInputs.Workspace);
 
 						// Called twice, once for Calendar Year table, once for Govt Fiscal Year version of the table since both can be included
 						List<LaborRollupByDateNew> laborTasksRollupCostData = this.ProcessLaborCostSummaryTable(boeContainer, exportInputs, boe, taskElementCollection, resourcesByElementOfCost, selectedComponents, false);
@@ -1888,8 +1888,9 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="selectedComponents">Components to be included in the export</param>
 		/// <param name="isUsingEquivalentPerson">True if using EP, false if using Hours for spreads.</param>
 		/// <param name="useGfy">use government fiscal year?</param>
+		/// <param name="workspace">Workspace dto</param>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		protected virtual void ProcessLaborHoursSummaryTable(SdtElement boeContainer, ICollection<BoeTaskElementDTO> taskElementCollection, IDictionary<ElementOfCostType, Collection<ResourceDTO>> resourcesByElementOfCost, ICollection<BoeCustomReportComponent> selectedComponents, bool isUsingEquivalentPerson, bool useGfy)
+		protected virtual void ProcessLaborHoursSummaryTable(SdtElement boeContainer, ICollection<BoeTaskElementDTO> taskElementCollection, IDictionary<ElementOfCostType, Collection<ResourceDTO>> resourcesByElementOfCost, ICollection<BoeCustomReportComponent> selectedComponents, bool isUsingEquivalentPerson, bool useGfy, WorkspaceDTO workspace)
 		{
 			if (selectedComponents == null)
 			{
@@ -5051,9 +5052,10 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="rateTypeFilter">Rate Type filter</param>
 		/// <param name="resources">Resources</param>
 		/// <param name="useGfy">use government fiscal year?</param>
+		/// <param name="includeUcot">Should UCOT resources be included in the rollup</param>
 		/// <returns>A <see cref="LaborRollupByDateNew"/> object containing the rolled up data</returns>
 
-		protected virtual List<LaborRollupByDateNew> GetRollupByYear(ICollection<BoeTaskElementDTO> taskElementCollection, Collection<ResourceDTO> resources = null, RateType? rateTypeFilter = null, bool useGfy = false)
+		protected virtual List<LaborRollupByDateNew> GetRollupByYear(ICollection<BoeTaskElementDTO> taskElementCollection, Collection<ResourceDTO> resources = null, RateType? rateTypeFilter = null, bool useGfy = false, bool includeUcot = false)
 		{
 			List<ResourceTypeDto> allTaskElementResources;
 			if (resources == null)
@@ -5064,7 +5066,8 @@ namespace GenBOE.ActionLogic.IO.Export
 			{
 				//ignore unassigned resources
 				ICollection<int> resourceIds = resources.Select(r => r.Id).ToList();
-				allTaskElementResources = taskElementCollection.SelectMany(x => x.taskElementLabors).Where(r => r.ResourceID.HasValue && resourceIds.Contains(r.ResourceID.Value)).ToList().DeepClone();
+				allTaskElementResources = taskElementCollection.SelectMany(x => x.taskElementLabors).Where(r => r.ResourceID.HasValue 
+					&& (resourceIds.Contains(r.ResourceID.Value) || (includeUcot && r.ResourceID <= Constants.UCOT_RESOURCE_ID))).ToList().DeepClone();
 			}
 
 			// If using Govt Fiscal Year, add 1 year to dates in October - December as they are in the following fiscal year
@@ -5102,33 +5105,44 @@ namespace GenBOE.ActionLogic.IO.Export
 					LaborRollupByDateNew Rollup = new LaborRollupByDateNew();
 					Rollup.Year = i;
 
-					Rollup.January = this.GetRollupForMonth(allTaskElementResources, i, 1, resources, rateTypeFilter);
-					Rollup.February = this.GetRollupForMonth(allTaskElementResources, i, 2, resources, rateTypeFilter);
-					Rollup.March = this.GetRollupForMonth(allTaskElementResources, i, 3, resources, rateTypeFilter);
-					Rollup.April = this.GetRollupForMonth(allTaskElementResources, i, 4, resources, rateTypeFilter);
-					Rollup.May = this.GetRollupForMonth(allTaskElementResources, i, 5, resources, rateTypeFilter);
-					Rollup.June = this.GetRollupForMonth(allTaskElementResources, i, 6, resources, rateTypeFilter);
-					Rollup.July = this.GetRollupForMonth(allTaskElementResources, i, 7, resources, rateTypeFilter);
-					Rollup.August = this.GetRollupForMonth(allTaskElementResources, i, 8, resources, rateTypeFilter);
-					Rollup.September = this.GetRollupForMonth(allTaskElementResources, i, 9, resources, rateTypeFilter);
-					Rollup.October = this.GetRollupForMonth(allTaskElementResources, i, 10, resources, rateTypeFilter);
-					Rollup.November = this.GetRollupForMonth(allTaskElementResources, i, 11, resources, rateTypeFilter);
-					Rollup.December = this.GetRollupForMonth(allTaskElementResources, i, 12, resources, rateTypeFilter);
+					Rollup.January = this.GetRollupForMonth(allTaskElementResources, i, 1, resources, rateTypeFilter, includeUcot);
+					Rollup.February = this.GetRollupForMonth(allTaskElementResources, i, 2, resources, rateTypeFilter, includeUcot);
+					Rollup.March = this.GetRollupForMonth(allTaskElementResources, i, 3, resources, rateTypeFilter, includeUcot);
+					Rollup.April = this.GetRollupForMonth(allTaskElementResources, i, 4, resources, rateTypeFilter, includeUcot);
+					Rollup.May = this.GetRollupForMonth(allTaskElementResources, i, 5, resources, rateTypeFilter, includeUcot);
+					Rollup.June = this.GetRollupForMonth(allTaskElementResources, i, 6, resources, rateTypeFilter, includeUcot);
+					Rollup.July = this.GetRollupForMonth(allTaskElementResources, i, 7, resources, rateTypeFilter, includeUcot);
+					Rollup.August = this.GetRollupForMonth(allTaskElementResources, i, 8, resources, rateTypeFilter, includeUcot);
+					Rollup.September = this.GetRollupForMonth(allTaskElementResources, i, 9, resources, rateTypeFilter, includeUcot);
+					Rollup.October = this.GetRollupForMonth(allTaskElementResources, i, 10, resources, rateTypeFilter, includeUcot);
+					Rollup.November = this.GetRollupForMonth(allTaskElementResources, i, 11, resources, rateTypeFilter, includeUcot);
+					Rollup.December = this.GetRollupForMonth(allTaskElementResources, i, 12, resources, rateTypeFilter, includeUcot);
 
 					RollupByDateList.Add(Rollup);
 				}
 			}
+
 			return RollupByDateList.OrderBy(x => x.Year).ToList();
 		}
 
-		private decimal GetRollupForMonth(List<ResourceTypeDto> taskElementCollection, int year, int month, Collection<ResourceDTO> resources, RateType? rateTypeFilter = null)
+		/// <summary>
+		/// Get Rollup for the given month
+		/// </summary>
+		/// <param name="resourceTypeCollection">Resource Types</param>
+		/// <param name="year">rollup year</param>
+		/// <param name="month">rollup month</param>
+		/// <param name="resources">Resources</param>
+		/// <param name="rateTypeFilter">Rate Type filter</param>
+		/// <param name="includeUcot">Should UCOT resources be included in the rollup</param>
+		/// <returns>Rollup sum for month</returns>
+		private decimal GetRollupForMonth(List<ResourceTypeDto> resourceTypeCollection, int year, int month, Collection<ResourceDTO> resources, RateType? rateTypeFilter, bool includeUcot)
 		{
 			decimal sum;
 
 			if (resources == null)
 			{
 				sum =
-					(from f in taskElementCollection
+					(from f in resourceTypeCollection
 					 where f.SpreadType == SpreadType.Hours
 					 from g in f.LaborSpreads
 					 where g.LaborSpreadDate.Year == year && g.LaborSpreadDate.Month == month
@@ -5138,8 +5152,8 @@ namespace GenBOE.ActionLogic.IO.Export
 			{
 				ICollection<int> resourceIds = resources.Select(r => r.Id).ToList();
 				sum =
-					(from f in taskElementCollection
-					 where f.SpreadType == SpreadType.Hours && resourceIds.Contains(f.ResourceID.Value)
+					(from f in resourceTypeCollection
+					 where f.SpreadType == SpreadType.Hours && (resourceIds.Contains(f.ResourceID.Value) || (includeUcot && f.ResourceID.Value <= Constants.UCOT_RESOURCE_ID))
 					 from g in f.LaborSpreads
 					 where g.LaborSpreadDate.Year == year && g.LaborSpreadDate.Month == month
 					 select g.LaborSpreadValue).Sum();

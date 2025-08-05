@@ -717,17 +717,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="resourcesByElementOfCost">Resources used by the BOE</param>
 		/// <param name="selectedComponents">Components to be included in the export</param>
 		/// <param name="useGfy">use government fiscal year?</param>
-		protected override void ProcessLaborHoursSummaryTable(StructuredDocumentTag boeContainer, ICollection<BoeTaskElementDTO> taskElementCollection, IDictionary<ElementOfCostType, Collection<ResourceDTO>> resourcesByElementOfCost, ICollection<BoeCustomReportComponent> selectedComponents, bool isUsingEquivalentPerson, bool useGfy)
+		protected override void ProcessLaborHoursSummaryTable(StructuredDocumentTag boeContainer, ICollection<BoeTaskElementDTO> taskElementCollection, IDictionary<ElementOfCostType, Collection<ResourceDTO>> resourcesByElementOfCost, ICollection<BoeCustomReportComponent> selectedComponents, bool isUsingEquivalentPerson, bool useGfy, WorkspaceDTO workspace)
 		{
-			if (selectedComponents == null)
-			{
-				throw new ArgumentNullException(nameof(selectedComponents));
-			}
-
-			if (resourcesByElementOfCost == null)
-			{
-				throw new ArgumentNullException(nameof(resourcesByElementOfCost));
-			}
+			_ = selectedComponents ?? throw new ArgumentNullException(nameof(selectedComponents));
+			_ = resourcesByElementOfCost ?? throw new ArgumentNullException(nameof(resourcesByElementOfCost));
+			_ = workspace ?? throw new ArgumentNullException(nameof(workspace));
 
 			#region Labor Hours Summary By Date Table
 
@@ -785,10 +779,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					foreach (KeyValuePair<ElementOfCostType, string> entry in rollupTableTitles)
 					{
 						Collection<ResourceDTO> laborResources = resourcesByElementOfCost[entry.Key];
+						bool includeUcot = entry.Key == ElementOfCostType.LMLabor && CommonUtilities.ShowUCOTForWorkspace(workspace.CreationDate, workspace.Shortname);
 
 						// compile the rollup data
-						PopulateLaborHoursSummaryTable(taskElementCollection, laborResources, gfyLaborHoursSummaryTableTemplateElement, currentInsertionElement, entry, byQuarter, true);
-						PopulateLaborHoursSummaryTable(taskElementCollection, laborResources, laborHoursSummaryTableTemplateElement, currentInsertionElement, entry, byQuarter, false);
+						PopulateLaborHoursSummaryTable(taskElementCollection, laborResources, gfyLaborHoursSummaryTableTemplateElement, currentInsertionElement, entry, byQuarter, true, includeUcot);
+						PopulateLaborHoursSummaryTable(taskElementCollection, laborResources, laborHoursSummaryTableTemplateElement, currentInsertionElement, entry, byQuarter, false, includeUcot);
 					}
 
 					#endregion
@@ -811,11 +806,12 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="entry">table title entry</param>
 		/// <param name="byQuarter">table by Quarter?</param>
 		/// <param name="useGfy">Use Govt Fiscal Year?</param>
-		private void PopulateLaborHoursSummaryTable(ICollection<BoeTaskElementDTO> taskElementCollection, Collection<ResourceDTO> laborResources, StructuredDocumentTag templateElement, StructuredDocumentTag currentInsertionElement, KeyValuePair<ElementOfCostType, string> entry, bool byQuarter, bool useGfy)
+		/// <param name="includeUcot">Should UCOT resources be included in the table</param>
+		private void PopulateLaborHoursSummaryTable(ICollection<BoeTaskElementDTO> taskElementCollection, Collection<ResourceDTO> laborResources, StructuredDocumentTag templateElement, StructuredDocumentTag currentInsertionElement, KeyValuePair<ElementOfCostType, string> entry, bool byQuarter, bool useGfy, bool includeUcot)
 		{
 			if (templateElement != null)
 			{
-				List<LaborRollupByDateNew> laborRollupData = GetRollupByYear(taskElementCollection, laborResources, null, useGfy);
+				List<LaborRollupByDateNew> laborRollupData = GetRollupByYear(taskElementCollection, laborResources, null, useGfy, includeUcot);
 				IList<RollupSummaryByYearTableRowData> laborHoursSummaryRollupData = laborRollupData.Convert();
 
 				RollupSummaryByYearTableData rollupTableData = new RollupSummaryByYearTableData

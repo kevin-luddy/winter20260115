@@ -829,13 +829,25 @@ namespace GenTRAC.ActionLogic
 					messages.Add(Constants.INVALID_INSURANCE_TYPE);
 				}
 
-				if (dto.ProposedInsurance is null)
+				if (dto.ProposedInsurance != null && (dto.IsInsuranceDirect == TripleBooleanState.NA || dto.IsInsuranceDirect == TripleBooleanState.No))
+				{
+					isValid = false;
+					messages.Add(Constants.INVALID_PROPOSED_INSURANCE_BLANK);
+				}
+
+				if (dto.NegotiatedInsurance != null && (dto.IsInsuranceDirect == TripleBooleanState.NA || dto.IsInsuranceDirect == TripleBooleanState.No))
+				{
+					isValid = false;
+					messages.Add(Constants.INVALID_NEGOTIATED_INSURANCE_BLANK);
+				}
+
+				if (dto.ProposedInsurance is null && dto.IsInsuranceDirect == TripleBooleanState.Yes)
 				{
 					isValid = false;
 					messages.Add(Constants.INVALID_PROPOSED_INSURANCE);
 				}
 
-				if (dto.NegotiatedInsurance is null)
+				if (dto.NegotiatedInsurance is null && dto.IsInsuranceDirect == TripleBooleanState.Yes)
 				{
 					isValid = false;
 					messages.Add(Constants.INVALID_NEGOTIATED_INSURANCE);

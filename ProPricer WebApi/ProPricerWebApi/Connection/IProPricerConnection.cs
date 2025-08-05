@@ -21,5 +21,12 @@ namespace APTSPropricerApi.Connection
 		/// Gets or sets the Workspace
 		/// </summary>
 		Workspace Workspace { get; set; }
+
+		/// <summary>
+		/// Renews a connection
+		/// </summary>
+		/// <returns>Async task</returns>
+
+		System.Threading.Tasks.Task Renew();
 	}
 }

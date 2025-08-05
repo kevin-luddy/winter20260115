@@ -508,6 +508,17 @@
                             <a id="AdjustTaskDatesLink" style="float: right;">Adjust Dates</a>
                         </div>
                     </div>
+					<div class="form-row" data-ng-if="showTaskAuthor">
+						<div class="form-label">
+							Task Author **
+						</div>
+						<div class="form-element">
+							<select onchange="TaskElementDetailsWidget.setDirty()" class="taskAuthor" data-ng-model="model.TaskElementData.AuthorUserId">
+								<option></option>
+								<option data-ng-repeat="option in ManageTaskModel.BoeAuthors" data-ng-value="option.UserID">{{option.DisplayName}}</option>
+							</select>
+						</div>
+					</div>
                     <div id="MOQEquationFieldContent">
                         <div class="form-row">
                             <div class="form-label">
@@ -1094,7 +1105,6 @@
                                         <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.GrandTotalHours}}</td>
                                     <% } %>
                                     <td></td>
-                                    <td data-ng-if="!ManageTaskModel.IsSpace"></td>
                                 </tr>
                             </tbody>
                         </table>
