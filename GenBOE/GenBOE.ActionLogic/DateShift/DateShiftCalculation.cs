@@ -453,7 +453,7 @@ namespace GenBOE.ActionLogic.DateShift
 			if (dateShiftable.StartDate.HasValue && dateShiftable.EndDate.HasValue)
 			{
 				// Check for negative duration
-				if (dateShiftable.EndDate < dateShiftable.StartDate)
+				if (dateShiftable.EndDate.Normalize() < dateShiftable.StartDate.Normalize())
 				{
 					if (detail.Error1FixSingleMonth == true)
 					{
@@ -493,7 +493,7 @@ namespace GenBOE.ActionLogic.DateShift
 									dateShiftable.StartDate = parentStart;
 									shiftedStartDate = parentStart.Value;
 
-									if (dateShiftable.EndDate < parentStart)
+									if (dateShiftable.EndDate.Normalize() < parentStart.Normalize())
 									{
 										dateShiftable.EndDate = parentStart;
 										shiftedEndDate = parentStart.Value;
@@ -502,7 +502,7 @@ namespace GenBOE.ActionLogic.DateShift
 								case ChildModificationType.ToEnd:
 									dateShiftable.EndDate = parentEnd;
 									shiftedEndDate = parentEnd.Value;
-									if (dateShiftable.StartDate > parentEnd)
+									if (dateShiftable.StartDate.Normalize() > parentEnd.Normalize())
 									{
 										dateShiftable.StartDate = parentEnd;
 										shiftedStartDate = parentEnd.Value;
