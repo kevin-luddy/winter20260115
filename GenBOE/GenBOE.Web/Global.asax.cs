@@ -1485,10 +1485,16 @@ namespace GenBOE
 			GenBOEUnityContainer.Container.RegisterType(typeof(ISystemSettingDTODataLoader), typeof(SystemSettingDTODataLoader), GetLifetimeManager());
 
 			// Avoid calling the method to get the Skill Mix system settings on every whitelist check - initialize the value on startup (and only update it on every update)
-			ISystemSettingDTODataLoader systemSettingLoader = GenBOEUnityContainer.Resolve<ISystemSettingDTODataLoader>();
-			ICollection<SystemSettingDTO> skillMixSettings = systemSettingLoader.GetSkillMixSettings();
-			Utilities.UpdateSkillMixWhitelistSettings(skillMixSettings.FirstOrDefault(x => x.Key.Equals(Constants.ENABLE_SKILL_MIX_WHITELIST)).Value,
-				skillMixSettings.FirstOrDefault(x => x.Key.Equals(Constants.SKILL_MIX_WHITELIST)).Value);
+			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			{
+				ISystemSettingDTODataLoader systemSettingLoader = GenBOEUnityContainer.Resolve<ISystemSettingDTODataLoader>();
+				ICollection<SystemSettingDTO> skillMixSettings = systemSettingLoader.GetSkillMixSettings();
+				Utilities.UpdateSkillMixWhitelistSettings(
+					skillMixSettings.FirstOrDefault(x => x.Key.Equals(Constants.ENABLE_SKILL_MIX_WHITELIST)) == null ? string.Empty :
+						skillMixSettings.FirstOrDefault(x => x.Key.Equals(Constants.ENABLE_SKILL_MIX_WHITELIST)).Value,
+					skillMixSettings.FirstOrDefault(x => x.Key.Equals(Constants.SKILL_MIX_WHITELIST)) == null ? string.Empty :
+						skillMixSettings.FirstOrDefault(x => x.Key.Equals(Constants.SKILL_MIX_WHITELIST)).Value);
+			}
 
 			GenBOEUnityContainer.Container.RegisterType(typeof(IRteTemplateDataLoader), typeof(RteTemplateDataLoader), GetLifetimeManager());
 			GenBOEUnityContainer.Container.RegisterType(typeof(IMOQTypeSelectionTableDataResourceHoursDTOLoader), typeof(MOQTypeSelectionTableDataResourceHoursDTOLoader), GetLifetimeManager());
