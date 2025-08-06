@@ -1089,18 +1089,8 @@ namespace IES.Common
 		public static readonly string GENERIC_USER_UNAUTHORIZED = "You are not authorized to access the requested action. If the problem persists, please contact your application administrator.";
 
 		/// <summary>
-		/// System Setting for enabling the Skill Mix whitelist
+		/// System Setting for listing which workspaces are blacklisted for Skill Mix
 		/// </summary>
-		public static readonly string ENABLE_SKILL_MIX_WHITELIST = "EnableSkillMixWhitelist";
-
-		/// <summary>
-		/// System Setting for listing which workspaces are whistlisted for Skill Mix
-		/// </summary>
-		public static readonly string SKILL_MIX_WHITELIST = "SkillMixWhitelist";
-
-		/// <summary>
-		/// Error message in validation for failure to parse true/false for enable whitelist value
-		/// </summary>
-		public static readonly string ENABLE_WHITELIST_VALUE_PARSE_FAILED = $"Failed to parse {ENABLE_SKILL_MIX_WHITELIST} as true/false.";
+		public static readonly string SKILL_MIX_BLACKLIST = "SkillMixBlacklist";
 	}
 }

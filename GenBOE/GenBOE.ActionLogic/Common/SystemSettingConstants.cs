@@ -13,8 +13,7 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string SAP_CLIENT_SECRET = "SapClientSecret";
 
 		#region Skill Mix Settings
-		public static readonly string ENABLE_SKILL_MIX_WHITELIST = "EnableSkillMixWhitelist";
-		public static readonly string SKILL_MIX_WHITELIST = "SkillMixWhitelist";
+		public static readonly string SKILL_MIX_BLACKLIST = "SkillMixBlacklist";
 		#endregion
 
 		/// <summary>

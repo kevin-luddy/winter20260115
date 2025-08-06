@@ -76,7 +76,7 @@ namespace GenBOE.DataBridge.DTO
 				{
 					toReturn =
 					   (from ss in gbe.SystemSettings
-						where ss.Key.Contains(Constants.SKILL_MIX_WHITELIST) || ss.Key.Contains(Constants.ENABLE_SKILL_MIX_WHITELIST)
+						where ss.Key.Contains(Constants.SKILL_MIX_BLACKLIST)
 						select new SystemSettingDTO
 						{
 							Key = ss.Key,
