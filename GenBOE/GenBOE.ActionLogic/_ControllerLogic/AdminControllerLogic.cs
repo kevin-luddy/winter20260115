@@ -313,20 +313,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     RowIndex = rowNum
                 });
             }
-
-			// Currently Space-only--check if the enable whitelist for Skill Mix value is parsable
-			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-			{
-				if (systemSetting.Key.Equals(Constants.ENABLE_SKILL_MIX_WHITELIST) && !bool.TryParse(systemSetting.Value, out _))
-				{
-					validationErrors.Add(new ValidationMessage
-					{
-						ValidationIssue = Constants.ENABLE_WHITELIST_VALUE_PARSE_FAILED,
-						TreatAsWarning = false,
-						RowIndex = rowNum
-					});
-				}
-			}
         }
 
         /// <summary>

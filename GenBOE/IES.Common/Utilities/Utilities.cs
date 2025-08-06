@@ -1153,32 +1153,20 @@ namespace IES.Common
 		}
 
 		/// <summary>
-		/// Private for Is Skill Mix Whitelist Enabled
+		/// Private for Skill Mix blacklisted workspaces
 		/// </summary>
-		private static bool? isSkillMixWhitelistEnabled;
+		private static Collection<string> skillMixBlacklistWorkspaces;
 
 		/// <summary>
-		/// Private for Skill Mix whitelisted workspaces
+		/// Update the Skill Mix Blacklist settings--currently utilized by Space only
 		/// </summary>
-		private static Collection<string> skillMixWhitelistWorkspaces;
-
-		/// <summary>
-		/// Update the Skill Mix Whitelist settings--currently utilized by Space only
-		/// </summary>
-		/// <param name="whiteListEnabled">Is the whitelist for Skill Mix enabled? (set as a boolean-parseable string)</param>
-		/// <param name="whiteListWorkspaces">Comma-separated string of whitelisted workspaces (by short name)</param>
-		public static void UpdateSkillMixWhitelistSettings(string whiteListEnabled, string whiteListWorkspaces)
+		/// <param name="blackListWorkspaces">Comma-separated string of blacklisted workspaces (by short name)</param>
+		public static void UpdateSkillMixBlacklistSettings(string blackListWorkspaces)
 		{
-			// Parse the disabled/enabled whitelist value
-			if (bool.TryParse(whiteListEnabled, out bool value))
+			// Update the list of blacklisted Skill Mix workspaces (short name)
+			if (blackListWorkspaces != null)
 			{
-				isSkillMixWhitelistEnabled = value;
-			}
-
-			// Update the list of whitelisted Skill Mix workspaces (short name)
-			if (whiteListWorkspaces != null)
-			{
-				skillMixWhitelistWorkspaces = whiteListWorkspaces.Split(',').ToCollection();
+				skillMixBlacklistWorkspaces = blackListWorkspaces.Split(',').ToCollection();
 			}
 		}
 
@@ -1190,12 +1178,11 @@ namespace IES.Common
 		/// <returns>Option to show skill mix for workspace.</returns>
 		public static bool ShowSkillMixForWorkspace(DateTime? workspaceCreationDate, string workspaceShortName)
 		{
-			// Whitelist config is for Space-only
+			// Blacklist config is for Space-only
 			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 			{
 				if (IsSkillMixEnabledForSystem && workspaceCreationDate >= skillMixStartDate
-					&& isSkillMixWhitelistEnabled.HasValue && isSkillMixWhitelistEnabled.Value
-					&& skillMixWhitelistWorkspaces.Contains(workspaceShortName))
+					&& !skillMixBlacklistWorkspaces.Contains(workspaceShortName))
 				{
 					return true;
 				}
