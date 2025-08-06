@@ -886,7 +886,9 @@ namespace GenBOE
 						new ResolvedParameter(typeof(ICommonDataMapper)),
 						new ResolvedParameter(typeof(IProposalLoader)),
 						new ResolvedParameter(typeof(IWorkspaceControllerLogic)),
-						new ResolvedParameter(typeof(TravelTripCostCalculation))
+						new ResolvedParameter(typeof(TravelTripCostCalculation)),
+						new ResolvedParameter(typeof(IPermissionsDTODataLoader)),
+						new ResolvedParameter(typeof(IUserDTODataLoader))
 						));
 					break;
 				case CompanyConfiguration.SpaceSystems:
@@ -902,7 +904,10 @@ namespace GenBOE
 						new ResolvedParameter(typeof(IInUseDataLoader)),
 						new ResolvedParameter(typeof(IProposalLoader)),
 						new ResolvedParameter(typeof(IWorkspaceControllerLogic)),
-						new ResolvedParameter(typeof(TravelTripCostCalculation))
+						new ResolvedParameter(typeof(TravelTripCostCalculation)),
+						new ResolvedParameter(typeof(ICommonDataMapper)),
+						new ResolvedParameter(typeof(IPermissionsDTODataLoader)),
+						new ResolvedParameter(typeof(IUserDTODataLoader))
 						));
 					break;
 
