@@ -1,14 +1,14 @@
 PRINT '###### SCRIPT IS STARTING ######';
 /*
-    This file was auto-generated for Release: 2025.10, on 8/5/2025.
+    This file was auto-generated for Release: 2025.11, on 8/6/2025.
     It contains all of the Release specific scripts, modifying data/tables as well as all of the Stored Procedures and User Defined Table Types.
 */
 
 /*
-    File: \Release 2025.10\1 - Release 2025.10 Script.sql
+    File: \Release 2025.11\1 - Release 2025.11 Script.sql
 */
-PRINT '### Starting file: \Release 2025.10\1 - Release 2025.10 Script.sql';
-EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2025.10';
+PRINT '### Starting file: \Release 2025.11\1 - Release 2025.11 Script.sql';
+EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2025.11';
 GO
 
 -- 8/5/2025	Katie Pham (e309214),	PROPH-3202 - Skill Mix Disabling via UI
