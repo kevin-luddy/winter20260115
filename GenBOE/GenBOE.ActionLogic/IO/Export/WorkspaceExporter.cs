@@ -173,7 +173,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
 			if (exportInputs.FullWorkspace.TaskElements.Any() && !Utilities.IsAssignTaskAuthorEnabledForSystem && !exportInputs.FullWorkspace.EnableAssignTaskAuthor)
 			{
-				// hide task author colum on report boe resource combo if assign task author is disabled
+				// hide task author column on report boe resource combo if assign task author is disabled
 				using (SpreadsheetDocument document = SpreadsheetDocument.Open(toReturn, true))
 				{
 					ExcelUtilities.HideColumns(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE_RESOURCE_COMBO, new List<int>() { 7 });
