@@ -18,6 +18,7 @@ namespace IES.Common.Core.OfficeUtilities
 	using Aspose.Words.Markup;
 	using Aspose.Words.Tables;
 	using DocumentFormat.OpenXml;
+	using IES.Common.Core.Constants;
 
 	[ExcludeFromCodeCoverage]
 	public static class WordUtilities
@@ -415,20 +416,73 @@ namespace IES.Common.Core.OfficeUtilities
 					//	insertionPoint = paragraph;
 					//}
 
-					// Insertion point has to be inside a Paragraph, and you cannot have paragraphs inside paragraphs
-					if (element.GetAncestor(NodeType.Paragraph) is null)
+					//// Insertion point has to be inside a Paragraph, and you cannot have paragraphs inside paragraphs
+					//if (element.GetAncestor(NodeType.Paragraph) is null)
+					//{
+					//	// Try to create a paragraph inside the SDT so DocumentBuilder can MoveTo it
+					//	Paragraph paragraph = new Paragraph(document);
+					//	element.AppendChild(paragraph);
+					//	insertionPoint = paragraph;
+					//}
+					//else
+					//{
+					if (element.Level == MarkupLevel.Block)
 					{
-						// Try to create a paragraph inside the SDT so DocumentBuilder can MoveTo it
-						Paragraph paragraph = new Paragraph(document);
-						element.AppendChild(paragraph);
-						insertionPoint = paragraph;
+						element.AppendChild(new Paragraph(document));
 					}
+					else if (element.Level == MarkupLevel.Inline)
+					{
+						element.AppendChild(new Run(document));
+					}
+
+					//insertionPoint = element.FirstChild;
+
+					//if (insertionPoint.ParentNode is not Paragraph)
+					//{
+					//	if (element.Level != MarkupLevel.Block)
+					//	{
+					//		// HACK we will create a copy of the SDT with BLOCK markup level and insert html into that directly
+					//		// Doing this because creating a Run inside the SDT usually works but sometimes barfs
+					//		StructuredDocumentTag tempTag = new StructuredDocumentTag(document, SdtType.RichText, MarkupLevel.Block);
+					//		element.ParentNode.InsertAfter(tempTag, element);
+					//		insertionPoint = tempTag;
+
+					//		// remove original element
+					//		element.Remove();
+					//	}
+
+					//	//// we will insert a Run inside the SDT and use that
+					//	//element.RemoveAllChildren();
+					//	//element.AppendChild(new Run(document));
+					//	//insertionPoint = element.FirstChild;
+					//}
+					//// Hack
+					//while (insertionPoint.ParentNode is not Paragraph)
+					//{
+					//	insertionPoint = insertionPoint.ParentNode;
+					//}
+					//}
+
+					// Aspose HACK inserting paragraphs inside of SDT that is buried inside other SDT(s) inside a Paragraph causes issues
+					//     instead, we will convert any paragraphs in the SDT to line breaks
+
+					htmlFormattedText = ReplaceParagraphTagsWithLineBreaks(htmlFormattedText);
 
 					DocumentBuilder builder = new DocumentBuilder(document);
 					builder.MoveTo(insertionPoint);
-					HtmlInsertOptions options = removeSpacing ? HtmlInsertOptions.RemoveLastEmptyParagraph : HtmlInsertOptions.None;
+					//builder.MoveToStructuredDocumentTag(element, 0);
+					HtmlInsertOptions options = HtmlInsertOptions.RemoveLastEmptyParagraph; // removeSpacing ? HtmlInsertOptions.RemoveLastEmptyParagraph : HtmlInsertOptions.None;
 
-					builder.InsertHtml(htmlFormattedText, options);
+					try
+					{
+						builder.InsertHtml(htmlFormattedText, options);
+					}
+					catch (InvalidOperationException ex)
+					{
+						element.RemoveAllChildren();
+						builder.MoveToStructuredDocumentTag(element, 0);
+						builder.InsertHtml(htmlFormattedText, options);
+					}
 
 					//// Get font information for the field/element into which we are inserting the HTML.
 					//decimal? fontSize = RTEUtilities.GetFontSizeBasedOnWordElementXml(element);
@@ -863,6 +917,29 @@ namespace IES.Common.Core.OfficeUtilities
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Replaces paragraph tags in html text with div tags
+		/// Fixes line spacing issues in export
+		/// </summary>
+		/// <param name="htmlText">HTML text to replace tags in</param>
+		/// <returns>string with paragraph tags replaced with div tags</returns>
+		public static string ReplaceParagraphTags(string htmlText)
+		{
+			return htmlText.Replace(CommonConstants.P_START_TAG, CommonConstants.DIV_START_TAG).Replace(CommonConstants.P_END_TAG, CommonConstants.DIV_END_TAG).Replace("\r\n", ControlChar.LineFeed).Replace(ControlChar.ParagraphBreakChar, ControlChar.LineBreakChar);
+		}
+
+		/// <summary>
+		/// Replace Paragraph Tags with Line Breaks
+		/// This fixes Aspose issue with inserting Paragraphs/Block elements inside Paragraph
+		/// </summary>
+		/// <param name="htmlText"></param>
+		/// <returns></returns>
+		public static string ReplaceParagraphTagsWithLineBreaks(string htmlText)
+		{
+			// TODO TIW possibly also replace <h1> as well :|
+			return htmlText.Replace(CommonConstants.DIV_START_TAG, string.Empty).Replace(CommonConstants.DIV_END_TAG, ControlChar.LineBreak).Replace(CommonConstants.P_START_TAG, string.Empty).Replace(CommonConstants.P_END_TAG, ControlChar.LineBreak).Replace("\r\n", ControlChar.LineFeed).Replace(ControlChar.ParagraphBreakChar, ControlChar.LineBreakChar);
+		}
 
 		#endregion
 	}

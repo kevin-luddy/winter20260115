@@ -218,7 +218,7 @@ namespace IES.ActionLogic.Core.IO.Export
 			StructuredDocumentTag historyElement = WordUtilities.GetTaggedChildElement(introductionContainerTemplate,
 				PPRDExporterConstants.FIELDNAME_HISTORY);
 			WordUtilities.SetElementTextWithHTML(document, historyElement,
-				ReplaceParagraphTags(revision.History));
+				WordUtilities.ReplaceParagraphTags(revision.History));
 
 			// populate Release Notes
 			StructuredDocumentTag publishDateElement = WordUtilities.GetTaggedChildElement(introductionContainerTemplate,
@@ -230,7 +230,7 @@ namespace IES.ActionLogic.Core.IO.Export
 			if (!string.IsNullOrWhiteSpace(revision.ReleaseNotes))
 			{
 				WordUtilities.SetElementTextWithHTML(document, releaseNotesElement,
-					ReplaceParagraphTags(revision.ReleaseNotes));
+					WordUtilities.ReplaceParagraphTags(revision.ReleaseNotes));
 			}
 			else
 			{
@@ -905,17 +905,6 @@ namespace IES.ActionLogic.Core.IO.Export
 		private void RemoveTablePreferredWidth(Table table)
 		{
 			table.PreferredWidth = null;
-		}
-
-		/// <summary>
-		/// Replaces paragraph tags in html text with div tags
-		/// Fixes line spacing issues in export
-		/// </summary>
-		/// <param name="htmlText">HTML text to replace tags in</param>
-		/// <returns>string with paragraph tags replaced with div tags</returns>
-		internal string ReplaceParagraphTags(string htmlText)
-		{
-			return htmlText.Replace(PPRDExporterConstants.P_START_TAG, PPRDExporterConstants.DIV_START_TAG).Replace(PPRDExporterConstants.P_END_TAG, PPRDExporterConstants.DIV_END_TAG);
 		}
 
 		#endregion

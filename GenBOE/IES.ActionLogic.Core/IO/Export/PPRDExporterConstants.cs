@@ -227,28 +227,6 @@ namespace IES.ActionLogic.Core.IO.Export
 		internal const string INTERNALSECTIONTEXTCOLOR = "0000FF";
 
 		/// <summary>
-		/// Start tag for html paragraph
-		/// No closing bracket to catch tags with attributes
-		/// </summary>
-		internal const string P_START_TAG = "<p";
-
-		/// <summary>
-		/// End tag for html paragraph
-		/// </summary>
-		internal const string P_END_TAG = "</p>";
-
-		/// <summary>
-		/// Start tag for html div
-		/// No closing bracket to not lose attributes
-		/// </summary>
-		internal const string DIV_START_TAG = "<div";
-
-		/// <summary>
-		/// End tag for html div
-		/// </summary>
-		internal const string DIV_END_TAG = "</div>";
-
-		/// <summary>
 		/// Tag for the page break
 		/// </summary>
 		internal const string PAGE_BREAK = "PageBreak";

@@ -1171,5 +1171,27 @@ namespace IES.Common.Core.Constants
 		/// Error message when exporting (getting JSON) rates for version
 		/// </summary>
 		public const string ERROR_GETTING_RATES_FOR_VERSION = "Error exporting rates for version";
+
+		/// <summary>
+		/// Start tag for html paragraph
+		/// No closing bracket to catch tags with attributes
+		/// </summary>
+		public const string P_START_TAG = "<p";
+
+		/// <summary>
+		/// End tag for html paragraph
+		/// </summary>
+		public const string P_END_TAG = "</p>";
+
+		/// <summary>
+		/// Start tag for html div
+		/// No closing bracket to not lose attributes
+		/// </summary>
+		public const string DIV_START_TAG = "<div";
+
+		/// <summary>
+		/// End tag for html div
+		/// </summary>
+		public const string DIV_END_TAG = "</div>";
 	}
 }
