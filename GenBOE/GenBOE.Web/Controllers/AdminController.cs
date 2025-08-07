@@ -1424,11 +1424,18 @@ namespace GenBOE.Web.Controllers
         {
             Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_SYSTEM_SETTINGS, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
-            // Get the current system settings
-			// Skill Mix system settings are currently Space-only
-            ICollection<SystemSettingDTO> systemSettings = this.systemSettingLoader.GetSystemSettings().Where(x => !x.Key.Contains(Constants.SKILL_MIX_BLACKLIST)).ToList();
+			// Get the current system settings
+			ICollection<SystemSettingDTO> systemSettings;
+			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			{
+				systemSettings = this.systemSettingLoader.GetSkillMixSettings();
+			}
+			else
+			{
+				systemSettings = this.systemSettingLoader.GetSystemSettings().Where(x => !x.Key.Contains(Constants.SKILL_MIX_BLACKLIST)).ToList();
+			}
 
-            this.FinalizeAction(this._log, WebConstants.ACTION_SYSTEM_SETTINGS, sw);
+			this.FinalizeAction(this._log, WebConstants.ACTION_SYSTEM_SETTINGS, sw);
 
             return this.Json(systemSettings);
         }
@@ -1561,20 +1568,20 @@ namespace GenBOE.Web.Controllers
 		/// Displays the Manage Skill Mix Settings page
 		/// </summary>
 		/// <returns>The view for Manage Skill Mix Settings</returns>
-		public virtual ActionResult DisplayManageSkillMixSettings()
+		/*public virtual ActionResult DisplayManageSkillMixSettings()
 		{
 			Stopwatch sw = InitializeAction(this._log, WebConstants.ACTION_DISPLAY_MANAGE_SKILL_MIX_SETTINGS, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 			ViewResult toReturn = View(WebConstants.VIEW_MANAGE_SKILL_MIX_SETTINGS);
 			// Finalize Action
 			FinalizeAction(this._log, WebConstants.ACTION_DISPLAY_MANAGE_SKILL_MIX_SETTINGS, sw);
 			return toReturn;
-		}
+		}*/
 
 		/// <summary>
 		/// Gets the Skill Mix settings.
 		/// </summary>
 		/// <returns>Json result of the Skill Mix settings.</returns>
-		public JsonResult GetSkillMixSettings()
+		/*public JsonResult GetSkillMixSettings()
 		{
 			Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_SAVE_SKILL_MIX_SETTINGS, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
@@ -1584,7 +1591,7 @@ namespace GenBOE.Web.Controllers
 			this.FinalizeAction(this._log, WebConstants.ACTION_SAVE_SKILL_MIX_SETTINGS, sw);
 
 			return this.Json(skillMixSettings);
-		}
+		}*/
 
 		/// <summary>
 		/// Displays the partial view for the performing orgs page

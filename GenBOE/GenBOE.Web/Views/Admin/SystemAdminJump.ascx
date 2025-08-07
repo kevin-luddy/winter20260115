@@ -37,16 +37,13 @@
                     Manage output format templates access in association with Workspaces.
                 </div>
             </div>
-            <% // This is only for RMS. SSC does not use this feature.
-            if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-            {  %>
+            <% // Per PROPH-3203, the Manage System Settings page will now show up for Space--but for the Skill Mix blacklist %>
             <div>
                 <a id="ManageSystemSettings" href="#ManageSystemSettings">Manage System Settings</a>
                 <div>
                     Manage system settings.
                 </div>
             </div>
-            <% } %>
         </div>
         <div class="right-column">
             <% // This feature is no longer used. But we are not allowed to delete, because maybe, just maybe, in the future, maybe, they will want it back.
@@ -143,17 +140,6 @@
                 <a id="ManageUCOT" href="#ManageUCOT">Manage Uncompensated Overtime</a>
                 <div>
                     Manage and edit the UCOT (Uncompensated Overtime) Factor.
-                </div>
-            </div>
-            <% } %>
-            <% // Manage Skill Mix Settings is Space-only
-                if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-                {
-                %>
-            <div>
-                <a id="ManageSkillMixSettings" href="#ManageSkillMixSettings">Manage Skill Mix Settings</a>
-                <div>
-                    Manage Skill Mix settings.
                 </div>
             </div>
             <% } %>

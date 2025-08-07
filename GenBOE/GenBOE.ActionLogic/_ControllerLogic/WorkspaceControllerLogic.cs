@@ -1889,7 +1889,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="tableIdToMoqType">Dictionary of MOQ Types keyed by Table Id</param>
 		/// <param name="workspaceCreationDate">Workspace Creation Date</param>
 		/// <param name="workspaceShortname">The workspace short name</param>
-		/// <returns></returns>
+		/// <returns>The BOEs that were updated</returns>
 		private async Task<List<int>> RecalculateActualsAcrossWorkspace(List<WorkspaceCalculateActualsModelView> result, Dictionary<int, FullBoe> boes, Dictionary<int, string> tasks,
 			Dictionary<int, MoqTableData> tables, Dictionary<int, MoqTypeSelection> tableIdToMoqType, DateTime? workspaceCreationDate, string workspaceShortname)
 		{

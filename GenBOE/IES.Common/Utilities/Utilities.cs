@@ -1178,23 +1178,26 @@ namespace IES.Common
 		/// <returns>Option to show skill mix for workspace.</returns>
 		public static bool ShowSkillMixForWorkspace(DateTime? workspaceCreationDate, string workspaceShortName)
 		{
-			// Blacklist config is for Space-only
-			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-			{
-				if (IsSkillMixEnabledForSystem && workspaceCreationDate >= skillMixStartDate
-					&& !skillMixBlacklistWorkspaces.Contains(workspaceShortName))
-				{
-					return true;
-				}
-				else
-				{
-					return false;
-				}
-			}
-			else
-			{
-				return IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate;
-			}
+			//// Blacklist config is for Space-only
+			//if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			//{
+			//	if (IsSkillMixEnabledForSystem && workspaceCreationDate >= skillMixStartDate
+			//		&& !skillMixBlacklistWorkspaces.Contains(workspaceShortName))
+			//	{
+			//		return true;
+			//	}
+			//	else
+			//	{
+			//		return false;
+			//	}
+			//}
+			//else
+			//{
+			//	return IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate;
+			//}
+
+			return IsSkillMixEnabledForSystem && workspaceCreationDate >= skillMixStartDate
+				&& !skillMixBlacklistWorkspaces.Contains(workspaceShortName);
 		}
 
 		/// <summary>
