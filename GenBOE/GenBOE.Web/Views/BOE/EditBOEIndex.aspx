@@ -58,6 +58,7 @@
 			OneLMXCutOffDate: '<%: Utilities.OneLmxStartDate %>',
 			SkillMixStartDate: '<%: Utilities.SkillMixStartDate %>',
 			IsBRCEnabled: '<%= Utilities.IsBRCEnabledForWorkspace(SiteMasterUtilities.GetCurrentWorkspace()) %>'.isTrue(),
+			IsSkillMixFeatureEnabled: '<%= (bool)ViewData["IsSkillMixFeatureEnabled"] %>'.isTrue(),
 			IsSkillMixEnabled: '<%= (bool)ViewData["IsSkillMixEnabled"] %>'.isTrue(),
 			IsUcotEnabled: '<%= (bool)ViewData["IsUCOTEnabled"] %>'.isTrue(),
 			UcotFactor: <%=ViewData["UcotFactor"]%>,
