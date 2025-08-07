@@ -11,7 +11,6 @@ namespace GenBOE.DataBridge.DTO
     using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.Dtos;
 	using IES.Common;
     using IES.Common.Interfaces;
@@ -185,8 +184,11 @@ namespace GenBOE.DataBridge.DTO
 		// Total Hours and UCOT Hours combined
 		public decimal? TotalHoursWithUCOT { get; set; }
 
-		// The total cost
-		public decimal? TotalCost { get; set; }
+        // The total cost
+        public decimal? TotalCost { get; set; }
+
+		// Boolean to control whether UCOT is enabled for specific task
+		public bool IsUCOTEnabledForTask { get; set; }
 
         public int BoeID { get; set; }
 

@@ -10,8 +10,13 @@ namespace GenBOE.ActionLogic
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Data;
+	using System.Diagnostics.CodeAnalysis;
+	using System.IO;
 	using System.Linq;
 	using System.Transactions;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.IO.Export;
+	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.Backend;
 	using GenBOE.ActionLogic.Permissions;
@@ -20,18 +25,20 @@ namespace GenBOE.ActionLogic
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using IES.Common;
+	using IES.Common.classes;
 	using IES.Common.Exceptions;
+	using IES.Common.OfficeUtilities;
 
 	public class PermissionControllerLogic
 	{
-		private Logger _log = new Logger(typeof(PermissionControllerLogic));
+		private readonly Logger _log = new Logger(typeof(PermissionControllerLogic));
 
 		protected IFullObjectFactory Factory { get; set; }
-		private IPermissionsDTODataLoader permissionLoader;
-		private IActiveDirectoryUtilities ADUtils;
-		private ISecurityInformation _SecurityInformation;
-		private IUserDTODataLoader _UserDTODataLoader;
-		private ICommonDataMapper _CommonDataMapper;
+		private readonly IPermissionsDTODataLoader permissionLoader;
+		private readonly IActiveDirectoryUtilities ADUtils;
+		private readonly ISecurityInformation _SecurityInformation;
+		private readonly IUserDTODataLoader _UserDTODataLoader;
+		private readonly ICommonDataMapper _CommonDataMapper;
 
 
 		public PermissionControllerLogic(IPermissionsDTODataLoader inPermissionsLoader,
@@ -334,7 +341,241 @@ namespace GenBOE.ActionLogic
 			return toReturn;
 		}
 
+		/// <summary>
+		/// Edit existing Permissions for groups or single users
+		/// </summary>
+		/// <param name="workspace">Full Workspace</param>
+		/// <param name="inRoles">Roles</param>
+		/// <param name="inType">User or Group</param>
+		/// <param name="inEntityId">User/Group Id</param>
+		/// <exception cref="GenValidationException"></exception>
+		public void EditPermissions(FullWorkspace workspace, Collection<Role> inRoles, EntityType inType, int inEntityId)
+		{
+			if (workspace == null)
+			{
+				throw new ArgumentNullException(nameof(workspace));
+			}
 
+			Collection<ValidationMessage> ValidationErrors = new Collection<ValidationMessage>();
+
+			inRoles = new Collection<Role>(inRoles.Distinct().ToList());
+
+			PermissionDeleteAction action = PermissionDeleteAction.Invalid;
+			Collection<UserDTO> usersToReassign = new Collection<UserDTO>();
+
+			// if this is a group, get the users in the group
+			Collection<UserDTO> usersToAdjust = new Collection<UserDTO>();
+
+			if (inType == EntityType.User)
+			{
+				// Get the roles that this user had previously which are being removed by this edit
+				ICollection<Role> removedRoles = (from permission in this.permissionLoader.GetBOEPotentialPermissionsForWorkspace(workspace.Id)
+												  where permission.ETIUserId == inEntityId &&
+												  (inRoles == null || !inRoles.Contains(permission.Role))
+												  select permission.Role).Distinct().ToList();
+
+				ICollection<PermissionsDTO> workspacePermissions = this.permissionLoader.GetWorkspacePermissions(workspace.Id);
+				// Get the users current roles
+				ICollection<Role> currentRoles = (from permission in workspacePermissions
+												  where permission.ETIUserId == inEntityId
+												  select permission.Role).Distinct().ToList();
+
+				int workspaceAdmins = (from r in workspacePermissions
+									   where r.Role == Role.WorkspaceAdmin
+									   select r.ETIUserId).Count();
+
+				if (workspaceAdmins <= 1)
+				{
+					if (currentRoles.Contains(Role.WorkspaceAdmin) && !inRoles.Contains(Role.WorkspaceAdmin))
+					{
+						ValidationErrors.Add(new ValidationMessage("WorkspaceAdmin", "The Workspace Administrator cannot be deleted. In order to delete the user, at least one other Workspace Administrator must exist."));
+					}
+				}
+
+				// perform checks for the Subcontractor Author role
+				UserDTO currentUser = this._UserDTODataLoader.GetUserByID(inEntityId);
+				this.Factory.ClearPermissionsCache(currentUser.NTID);
+				bool isSubcontractor = _SecurityInformation.IsSubcontractorUser(currentUser.NTID, currentUser.IsSubcontractor ?? false);
+
+				this.ValidateWsAdminMustHaveCreateWsPermission(currentUser.NTID, inRoles);
+
+				if (isSubcontractor && (!inRoles.Contains(Role.SubcontractorAuthor) || inRoles.Count() > 1))
+				{
+					ValidationErrors.Add(new ValidationMessage("SubcontractorAuthor", "Subcontractor users are only permitted Subcontractor Author permissions"));
+				}
+				if (!isSubcontractor && inRoles.Contains(Role.SubcontractorAuthor))
+				{
+					ValidationErrors.Add(new ValidationMessage("SubcontractorAuthor", "LM Users are not permitted Subcontractor Author permissions"));
+				}
+
+				// perform checks for genBOE access
+				if (currentUser.NTID.Contains('.') && this.ADUtils.IsGroup(currentUser.NTID))
+				{
+					ICollection<UserData> groupMembers = this.ADUtils.GetAdGroupUsers(currentUser.NTID);
+					Dictionary<UserData, bool> groupMemberAccess = this.GetGenBOEAccess(groupMembers);
+
+					if (groupMemberAccess.Any(x => !x.Value))
+					{
+						ValidationErrors.Add(new ValidationMessage("NoGenBoeAccess", string.Format("The following members of group {0} do not have access to genBOE and therefore the group's permissions cannot be changed: <ul><li>{1}</li></ul>Please have the user request access.",
+							currentUser.NTID, string.Join("</li><li>", groupMemberAccess.Where(x => !x.Value).Select(x => x.Key).Select(x => x.DisplayName)))));
+						throw new GenValidationException(ValidationErrors);
+					}
+				}
+				else
+				{
+					Dictionary<UserData, bool> genBoeAccess = this.GetGenBOEAccess(new Collection<UserData>() { new UserData() { Ntid = currentUser.NTID } });
+					if (genBoeAccess.Any(x => !x.Value))
+					{
+						ValidationErrors.Add(new ValidationMessage("NoGenBoeAccess", "The user does not have access to genBOE and their permissions cannot be changed. Please have the user request access."));
+					}
+				}
+
+				// Check the Workspace's BOEs for assignments using one of the roles being removed
+				action = PermissionsDelete.CheckUserAssignments(
+					workspace,
+					inEntityId,
+					removedRoles,
+					this.permissionLoader);
+
+				// If the action requires reassignment, then the user is the sole user to reassign
+				if (action >= PermissionDeleteAction.DeleteRoleRequireReassignment)
+				{
+					usersToReassign = new Collection<UserDTO> { this._UserDTODataLoader.GetUserByID(inEntityId) };
+				}
+
+				usersToAdjust.Add(this._UserDTODataLoader.GetUserByID(inEntityId));
+			}
+			else
+			{
+				ValidationErrors.Add(new ValidationMessage("The account could not be resolved as a user or a group."));
+			}
+
+			// If the action for the group or user requires reassignment, then we'll pass back a failed status
+			// and the list of users that must be reassigned
+			if (action >= PermissionDeleteAction.DeleteRoleRequireReassignment)
+			{
+				ValidationErrors.Add(new ValidationMessage("Delete Failed", String.Format(
+					"The following users are assigned to at least one BOE. BOE(s) must be reassigned through the <a href=\"{0}\">Manage BOEs</a> page before the roles can be removed.<BR/>{1}",
+					$"{WebConstants.ROUTE_WORKSPACE}/{WebConstants.ACTION_INDEX}/{WebConstants.CONTROLLER_BOE}/{workspace.Shortname}",
+					String.Join("<BR/>", usersToReassign.Select(u => u.DisplayName).ToArray()))));
+			}
+			// Otherwise, we can go ahead and edit the roles.
+			else
+			{
+				if (ValidationErrors.Any())
+				{
+					throw new GenValidationException(ValidationErrors);
+				}
+				// perform the actual edit ... we've made our list and checked it twice
+				this._EditPermissions(inRoles, workspace, usersToAdjust);
+			}
+
+			// if I'm trying to delete a WS permission that has BOE level permissions, prevent that..
+			if (ValidationErrors.Any())
+			{
+				throw new GenValidationException(ValidationErrors);
+			}
+		}
+
+		/// <summary>
+		/// Edit permissions
+		/// </summary>
+		/// <param name="inRoles">The roles selected from the UI</param>
+		/// <param name="ws">The workspace</param>
+		/// <param name="usersToAdjust">the users to check permissions for and adjust</param>
+		/// <returns>string.empty if no errors, otherwise errors returned in the string</returns>
+		private void _EditPermissions(Collection<Role> inRoles, FullWorkspace ws, Collection<UserDTO> usersToAdjust)
+		{
+			// by now we've found all roles are ok, none are in use that are attempting to edit.  
+			Collection<PermissionsDTO> toSave = new Collection<PermissionsDTO>();
+
+			foreach (UserDTO user in usersToAdjust)
+			{
+				Collection<Role> newRoles = new Collection<Role>(inRoles.Distinct().ToList());
+				List<PermissionsDTO> permissionsForUser = this.permissionLoader.GetBOEPotentialPermissionsForWorkspace(ws.Id).ToList();
+				permissionsForUser.AddRange(this.permissionLoader.GetWorkspacePermissions(ws.Id));
+
+				// get the workspace level permissions this user has assigned right now (in the database)
+				permissionsForUser =
+							permissionsForUser
+									.Where(x => x.ETIUserId == user.UserID &&
+												x.BOEId == null &&
+												((x.Role >= Role.Author && x.Role <= Role.WorkspaceAdmin) || x.Role == Role.SubcontractorAuthor || x.Role == Role.SubcontractAdmin) &&
+												x.WorkspaceId == ws.Id).Select(x => x).ToList<PermissionsDTO>();
+
+				foreach (PermissionsDTO currentRoll in permissionsForUser)
+				{
+					bool delete = true;
+					foreach (Role uiPickedRole in newRoles)
+					{
+						if (currentRoll.Role == uiPickedRole)
+						{
+							delete = false;
+							break;
+						}
+					}
+
+					if (delete)
+					{
+						// insert the new role for all users in the group.. the UI didn't previously have it assigned
+						toSave.Add(new PermissionsDTO
+						{
+							BOEId = null, // no BOE Id b/c this is potential
+							ETIUserId = user.UserID,
+							Role = currentRoll.Role,
+							Updateable = UpdateType.Deleted,
+							UpdateDate = currentRoll.UpdateDate,
+							WorkspaceId = ws.Id
+						});
+					}
+					//removed all handled existing roles (deletes or remain the same)
+					newRoles.Remove(currentRoll.Role);
+				}
+
+				//Add any new roles
+				foreach (Role uiPickedRole in newRoles)
+				{
+					toSave.Add(new PermissionsDTO
+					{
+						BOEId = null, // no BOE Id b/c this is potential
+						ETIUserId = user.UserID,
+						Role = uiPickedRole,
+						Updateable = UpdateType.Upsert,
+						WorkspaceId = ws.Id
+					});
+				}
+			}
+
+			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+			{
+				foreach (PermissionsDTO save in toSave)
+				{
+					try
+					{
+						this.permissionLoader.SavePermission(save);
+					}
+					catch (Exception ex)
+					{
+						if (ex.InnerException != null && ex.InnerException.Message == "You can not add any other roles to a user that has the Subcontractor Author role ")
+						{
+							throw new GenValidationException("You can not add any other roles to a user that has the Subcontractor Author role");
+						}
+						else
+						{
+							throw;
+						}
+					}
+				}
+				scope.Complete();
+			}
+		}
+
+		/// <summary>
+		/// Helper function to get permissions grid on GetPermissions
+		/// </summary>
+		/// <param name="ws">Full Workspace</param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
 		public PermissionViewModel _GetPermissionsGrid(FullWorkspace ws)
 		{
 			if (ws == null)
@@ -432,6 +673,7 @@ namespace GenBOE.ActionLogic
 			toReturn.Permissions = reGrouping;
 			toReturn.CurrentUserId = ws.CurrentActiveUser.UserID;
 			toReturn.CurrentUserDisplayName = ws.CurrentActiveUser.DisplayName;
+			toReturn.IsPastCutOffDate = ws.CreationDate > Utilities.ShowINLCutoffDate;
 
 			return toReturn;
 		}
@@ -484,5 +726,116 @@ namespace GenBOE.ActionLogic
 				}
 			}
 		}
+
+		/// <summary>
+		/// Export Permissions logic
+		/// </summary>
+		/// <param name="ws">Full Workspace</param>
+		/// <returns>Excel file as FileStream</returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		[SuppressMessage("Microsoft.Design", "CA1011: Consider passing base types as parameters")]
+		public FileStream ExportPermissions(FullWorkspace ws)
+		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
+
+			FileStream fs = null;
+
+			// Get the Permissions template file name
+			// Assume that "Templates" is a subdirectory of your application's root directory
+			string templateDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates", "Export");
+
+			// Ensure the template directory exists
+			if (!Directory.Exists(templateDir))
+			{
+				throw new InvalidOperationException($"Template directory '{templateDir}' does not exist.");
+			}
+
+			// Get data to export for this Workspace
+			Collection<PermissionsDTO> allPerms = this.permissionLoader.GetPermissionsForGridData(ws.Id).Where(p => p.Role != Role.WorkspaceUser).ToCollection();
+
+			// Get export template file name
+			string templateFileName = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST
+				? Path.Combine(templateDir, "PermissionsRMS.xlsx")
+				: Path.Combine(templateDir, "Permissions.xlsx");
+
+			// Check if the template file exists
+			if (!File.Exists(templateFileName))
+			{
+				throw new FileNotFoundException($"Template file '{templateFileName}' does not exist.");
+			}
+
+			// Call the export function in the business layer and get back the file name of the populated template.
+			string exportedFile = PermissionsExporter.ExportToExcelFile(templateFileName, allPerms);
+
+			if (exportedFile.Length > 0)
+			{
+				fs = new FileStream(exportedFile, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+			}
+
+			return fs;
+		}
+
+		/// <summary>
+		/// Import Permissions logic
+		/// </summary>
+		/// <param name="workspace">Workspace name</param>
+		/// <param name="inputStream">File Stream</param>
+		/// <returns>Error message</returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public string ImportPermissions(string workspace, Stream inputStream)
+		{
+			string errorMessage = string.Empty;
+			try
+			{
+				ICollection<SavePermissionModelView> permissionsFromImportFile = PermissionsImporter.ImportFromExcelFile(inputStream);
+
+				if (permissionsFromImportFile.Any())
+				{
+					SaveNewPermissions(workspace, permissionsFromImportFile);
+				}
+				else
+				{
+					errorMessage = "No Permissions Were Imported.";
+				}
+			}
+			// Catch custom exceptions from ExcelImporter and ResourcesImporter and generate friendly
+			// exception messages to display for the user
+			catch (NotExcelFileException)
+			{
+				errorMessage = "File is an invalid format. File must be in a MS Excel format (.xlsx or .xls).";
+			}
+			catch (ColumnMissingException ex2)
+			{
+				errorMessage = string.Format("File does not contain all of the required columns. File must contain 'NtId', 'Role' columns. The following columns are missing: {0}.", ex2.Message);
+			}
+			catch (CellValueMissingException ex3)
+			{
+				errorMessage = string.Format("A row in the file does not contain a value for NtId and Role. Every filled row must have a value for each. Check the following column: {0}.", ex3.Message);
+			}
+			catch (DuplicateValuesException ex4)
+			{
+				errorMessage = string.Format("Values must be unique. The following are not unique: {0}", ex4.Message);
+			}
+			catch (EntityCommandExecutionException)
+			{
+				errorMessage = "The Permissions were recently updated by another user. Please refresh the page to review these latest changes. Once the page is refreshed, you can try your import operation again.";
+			}
+			catch (GenValidationException ex5)
+			{
+				errorMessage = string.Format(ex5.ValidationList[0].ValidationIssue);
+			}
+			catch (Exception ex)
+			{
+				_log.Error(ex, "Unknown Import Permissions Error.");
+				errorMessage = "A general error occurred. Please ensure that your import file follows the format of the import template and retry the import.";
+			}
+
+			return errorMessage;
+		}
+
 	}
 }

@@ -6,16 +6,15 @@
 
 namespace GenBOE.ActionLogic.ModelView
 {
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using GenBOE.DataBridge.DTO;
-	using GenBOE.Dtos;
-    using IES.Common.Exceptions;
+	using IES.Common.Exceptions;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    public class LaborTaskDataModelView
+	/// <summary>
+	/// 
+	/// </summary>
+	public class LaborTaskDataModelView
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LaborTaskDataModelView"/> class.
@@ -31,7 +30,6 @@ namespace GenBOE.ActionLogic.ModelView
 			this.SkillMixData = new Collection<SkillMixModelView>();
 			this.CommonDisclosureSkillMixData = new Collection<CommonDisclosureModelView>();
 			this.IsUsingTMRatesInTask = false;
-
 		}
 
         /// <summary>
