@@ -54,6 +54,7 @@ namespace GenBOE.ActionLogic.Common
 		/// <param name="resourcesUsedInBOEs">Resources used in BOEs</param>
 		/// <param name="tmRates">T&amp;M Rates</param>
 		/// <param name="task">The Task</param>
+		/// <param name="workspaceShortname">The Workspace shortname</param>
 		/// <returns>Option to show skill mix for task.</returns>
 		public static bool ShowSkillMixForTask(DateTime? workspaceCreationDate, bool workspaceUsingTemplateBOE, bool workspaceEnableSAPConnection, 
 			BoeTaskElementDTO task, IReadOnlyCollection<MoqTypeSelection> moqTypeSelections, IReadOnlyCollection<ResourceDTO> resourcesUsedInBOEs, IReadOnlyCollection<TMResourceRateDTO> tmRates,
