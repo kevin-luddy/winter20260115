@@ -44,12 +44,12 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <summary>
 		/// Skill Mix Table's Sheet Name
 		/// </summary>
-		protected virtual string SkillMixTableSheetName { get { return "Legacy Skill Mix"; } }
+		protected virtual string SkillMixTableSheetName { get { return CommonConstants.WORKSPACE_REPORT_WORKSHEET_LEGACY_SKILL_MIX; } }
 
 		/// <summary>
 		/// Common Disclosure Table's Sheet Name
 		/// </summary>
-		private string CommonDisclosureSheetName { get { return "LM Enterprise Skill Mix"; } }
+		private string CommonDisclosureSheetName { get { return CommonConstants.WORKSPACE_REPORT_WORKSHEET_ENTERPRISE_SKILL_MIX; } }
 
 		/// <summary>
 		/// A string for building a Task URL. Requires 3 parameters:
@@ -171,6 +171,14 @@ namespace GenBOE.ActionLogic.IO.Export
 				}
 			}
 
+			if (exportInputs.FullWorkspace.TaskElements.Any() && !Utilities.IsAssignTaskAuthorEnabledForSystem && !exportInputs.FullWorkspace.EnableAssignTaskAuthor)
+			{
+				// hide task author column on report boe resource combo if assign task author is disabled
+				using (SpreadsheetDocument document = SpreadsheetDocument.Open(toReturn, true))
+				{
+					ExcelUtilities.HideColumns(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE_RESOURCE_COMBO, new List<int>() { 7 });
+				}
+			}
 			return toReturn;
 		}
 
@@ -296,35 +304,35 @@ namespace GenBOE.ActionLogic.IO.Export
 			{
 				if (boeCustomFieldNames.Any())
 				{
-					ExcelUtilities.DuplicateColumn(document, "BOE & Resource Combo", "BOE Custom Field", boeCustomFieldNames.ToArray());
-					ExcelUtilities.DuplicateColumn(document, "BOEs", "BOE Custom Field", boeCustomFieldNames.ToArray());
+					ExcelUtilities.DuplicateColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE_RESOURCE_COMBO, "BOE Custom Field", boeCustomFieldNames.ToArray());
+					ExcelUtilities.DuplicateColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE, "BOE Custom Field", boeCustomFieldNames.ToArray());
 				}
 				else
 				{
-					ExcelUtilities.RemoveColumn(document, "BOE & Resource Combo", "BOE Custom Field");
-					ExcelUtilities.RemoveColumn(document, "BOEs", "BOE Custom Field");
+					ExcelUtilities.RemoveColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE_RESOURCE_COMBO, "BOE Custom Field");
+					ExcelUtilities.RemoveColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE, "BOE Custom Field");
 				}
 
 				if (taskCustomFieldNames.Any())
 				{
-					ExcelUtilities.DuplicateColumn(document, "BOE & Resource Combo", "Task Custom Field", taskCustomFieldNames.ToArray());
-					ExcelUtilities.DuplicateColumn(document, "BOEs", "Task Custom Field", taskCustomFieldNames.ToArray());
+					ExcelUtilities.DuplicateColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE_RESOURCE_COMBO, "Task Custom Field", taskCustomFieldNames.ToArray());
+					ExcelUtilities.DuplicateColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE, "Task Custom Field", taskCustomFieldNames.ToArray());
 				}
 				else
 				{
-					ExcelUtilities.RemoveColumn(document, "BOE & Resource Combo", "Task Custom Field");
-					ExcelUtilities.RemoveColumn(document, "BOEs", "Task Custom Field");
+					ExcelUtilities.RemoveColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE_RESOURCE_COMBO, "Task Custom Field");
+					ExcelUtilities.RemoveColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE, "Task Custom Field");
 				}
 
 				if (resourceCustomFieldNames.Any())
 				{
-					ExcelUtilities.DuplicateColumn(document, "BOE & Resource Combo", "Resource Custom Field", resourceCustomFieldNames.ToArray());
-					ExcelUtilities.DuplicateColumn(document, "BOEs", "Resource Custom Field", resourceCustomFieldNames.ToArray());
+					ExcelUtilities.DuplicateColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE_RESOURCE_COMBO, "Resource Custom Field", resourceCustomFieldNames.ToArray());
+					ExcelUtilities.DuplicateColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE, "Resource Custom Field", resourceCustomFieldNames.ToArray());
 				}
 				else
 				{
-					ExcelUtilities.RemoveColumn(document, "BOE & Resource Combo", "Resource Custom Field");
-					ExcelUtilities.RemoveColumn(document, "BOEs", "Resource Custom Field");
+					ExcelUtilities.RemoveColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE_RESOURCE_COMBO, "Resource Custom Field");
+					ExcelUtilities.RemoveColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE, "Resource Custom Field");
 				}
 
 				if (moqTableCustomFieldNames.Any())
@@ -349,8 +357,8 @@ namespace GenBOE.ActionLogic.IO.Export
 			{
 				if (exportInputs.Workspace.UsingTemplateBOE)
 				{
-					ExcelUtilities.RemoveColumn(document, "BOE & Resource Combo", "MOQ Rationale");
-					ExcelUtilities.RemoveColumn(document, "BOEs", "MOQ Rationale");
+					ExcelUtilities.RemoveColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE_RESOURCE_COMBO, "MOQ Rationale");
+					ExcelUtilities.RemoveColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE, "MOQ Rationale");
 				}
 			}
 		}
@@ -1188,7 +1196,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
 			// Reuse BOE Status Report Exporter since formats are the same
 			ExcelExportWorksheet toReturn = this.boeStatusReport.GetExcelExportWorksheet(statusReport, (int)Reports.BOEStatusByBOE, exportInputs);
-			toReturn.WorksheetName = "BOE Status";
+			toReturn.WorksheetName = CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE_STATUS;
 
 			return toReturn;
 		}
@@ -1201,7 +1209,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		[SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals"), SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		private ExcelExportWorksheet GetResourceSpreadsSheetExportData(BOEExportInputs exportInputs)
 		{
-			ExcelExportWorksheet toReturn = new ExcelExportWorksheet("Resource Spreads");
+			ExcelExportWorksheet toReturn = new ExcelExportWorksheet(CommonConstants.WORKSPACE_REPORT_WORKSHEET_RESOURCE_SPREADS);
 
 			IReadOnlyCollection<BoeDTO> boes = exportInputs.Boes;
 
@@ -1535,7 +1543,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <returns>Worksheet with data for BOE & Resource Combo tab of the Workspace Data Report</returns>
 		private ExcelExportWorksheet GetBOEResourceComboSheetExportData(BOEExportInputs exportInputs)
 		{
-			ExcelExportWorksheet toReturn = new ExcelExportWorksheet("BOE & Resource Combo");
+			ExcelExportWorksheet toReturn = new ExcelExportWorksheet(CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE_RESOURCE_COMBO);
 
 			IReadOnlyCollection<BoeDTO> boes = exportInputs.Boes.ToCollection();
 
@@ -1598,6 +1606,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						this.sEmpty, // Task URL
                         this.sEmpty, // Task ID
                         this.sEmpty, // Task Title
+                        this.sEmpty, // Task Author
                         this.sEmpty, // MOQ Equation
                         this.sEmpty, // MOQ Type
                     });
@@ -2227,6 +2236,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				string.Format(TaskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
 				taskID,
 				task.TaskTitle,
+				task.AuthorDisplayName,
 				this.GetMOQEquation(task, exportInputs),
 				this.GetTaskMoqType(task, exportInputs)
 			}.Concat(exportInputs.Workspace.UsingTemplateBOE ? new string[0] : new string[] { taskMOQText }).ToArray();
@@ -2520,7 +2530,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
 			// Reuse WBS Exporter since formats are the same
 			ExcelExportWorksheet toReturn = this.wbsExporter.GetExcelExportWorksheet(wbs.ToCollection<WbsDTO>(), clinStrings);
-			toReturn.WorksheetName = "WBS";
+			toReturn.WorksheetName = CommonConstants.WORKSPACE_REPORT_WORKSHEET_WBS;
 
 			return toReturn;
 		}
@@ -2550,7 +2560,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		private ExcelExportWorksheet GetUserPermissionsSheetExportData(BOEExportInputs exportInputs)
 		{
 			//TODO: Add code to look up the group accounts from active directory and then add them to the export.
-			ExcelExportWorksheet toReturn = new ExcelExportWorksheet("User Permissions");
+			ExcelExportWorksheet toReturn = new ExcelExportWorksheet(CommonConstants.WORKSPACE_REPORT_WORKSHEET_USER_PERMISSIONS);
 
 			// Get workspace admin and workspace BOE potential permissions
 			Collection<PermissionsDTO> workspacePotentialPermissions = this.permissionsDTOLoader.GetBOEPotentialPermissionsForWorkspace(exportInputs.Workspace.Id);
