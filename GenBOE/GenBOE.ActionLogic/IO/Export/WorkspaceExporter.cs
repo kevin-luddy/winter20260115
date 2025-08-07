@@ -129,7 +129,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			this.SetAutofilterRange(toReturn);
 
 
-			bool usingSkillMix = Utilities.ShowSkillMixForWorkspace(exportInputs.Workspace.CreationDate);
+			bool usingSkillMix = Utilities.ShowSkillMixForWorkspace(exportInputs.Workspace.CreationDate, exportInputs.Workspace.Shortname);
 			if (!exportInputs.Workspace.UsingTemplateBOE)
 			{
 				// Hide Template BOE and Skill Mix sheets
@@ -387,7 +387,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					toReturn.Add(this.GetMOQTableData(exportInputs));
 
 
-					if (Utilities.ShowSkillMixForWorkspace(exportInputs.Workspace.CreationDate))
+					if (Utilities.ShowSkillMixForWorkspace(exportInputs.Workspace.CreationDate, exportInputs.Workspace.Shortname))
 					{
 						toReturn.Add(GetCurrentSkillMixTableData(exportInputs));
 						toReturn.Add(GetCommonDisclosureSkillMixTableData(exportInputs));

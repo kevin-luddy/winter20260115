@@ -43,6 +43,7 @@ namespace GenBOE
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.DataBridge.DTO.Request;
 	using GenBOE.DataBridge.Reference;
+	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using GenBOE.Web;
 	using GenBOE.Web.Common;
@@ -1487,6 +1488,14 @@ namespace GenBOE
 			GenBOEUnityContainer.Container.RegisterType(typeof(GenTRAC.DataBridge.DTO.IUserLoader), typeof(GenTRAC.DataBridge.DTO.UserLoader), this.GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IActiveDirectoryUtilities)))).Configure<Interception>().SetInterceptorFor<GenTRAC.DataBridge.DTO.IUserLoader>(new InterfaceInterceptor());
 			GenBOEUnityContainer.Container.RegisterType(typeof(GenTRAC.DataBridge.DTO.IUserMapper), typeof(GenTRAC.DataBridge.DTO.UserMapper), this.GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(GenTRAC.DataBridge.DTO.IUserLoader)), new ResolvedParameter(typeof(CacheDataLoader)), new ResolvedParameter(typeof(ISecurityInformation)), new ResolvedParameter(typeof(IActiveDirectoryUtilities)), new ResolvedParameter(typeof(ICache))));
 			GenBOEUnityContainer.Container.RegisterType(typeof(ISystemSettingDTODataLoader), typeof(SystemSettingDTODataLoader), GetLifetimeManager());
+
+			// Avoid calling the method to get the Skill Mix system settings on every blacklist check - initialize the value on startup (and only update it on every update)
+			ISystemSettingDTODataLoader systemSettingLoader = GenBOEUnityContainer.Resolve<ISystemSettingDTODataLoader>();
+			ICollection<SystemSettingDTO> skillMixSettings = systemSettingLoader.GetSkillMixSettings();
+			Utilities.UpdateSkillMixBlacklistSettings(
+				skillMixSettings.FirstOrDefault(x => x.Key.Equals(Constants.SKILL_MIX_BLACKLIST)) == null ? string.Empty :
+					skillMixSettings.FirstOrDefault(x => x.Key.Equals(Constants.SKILL_MIX_BLACKLIST)).Value);
+
 			GenBOEUnityContainer.Container.RegisterType(typeof(IRteTemplateDataLoader), typeof(RteTemplateDataLoader), GetLifetimeManager());
 			GenBOEUnityContainer.Container.RegisterType(typeof(IMOQTypeSelectionTableDataResourceHoursDTOLoader), typeof(MOQTypeSelectionTableDataResourceHoursDTOLoader), GetLifetimeManager());
 			GenBOEUnityContainer.Container.RegisterType(typeof(IMoqTypeDataLoader), typeof(MoqTypeDataLoader), this.GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IMoqTypeTableCustomFieldValueXREFLoader)), new ResolvedParameter(typeof(IMOQTypeSelectionTableDataResourceHoursDTOLoader)))).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());

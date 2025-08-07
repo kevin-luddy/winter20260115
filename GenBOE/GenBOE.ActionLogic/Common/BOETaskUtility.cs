@@ -41,7 +41,7 @@ namespace GenBOE.ActionLogic.Common
 			}
 
 			return BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, ws.UsingTemplateBOE, ws.EnableSAPConnection, task, ws.MoqTypeSelections,
-				ws.ResourcesUsedInWsBoes, ws.TMResourceRatesForWorkspace);
+				ws.ResourcesUsedInWsBoes, ws.TMResourceRatesForWorkspace, ws.Shortname);
 		}
 
 		/// <summary>
@@ -54,14 +54,16 @@ namespace GenBOE.ActionLogic.Common
 		/// <param name="resourcesUsedInBOEs">Resources used in BOEs</param>
 		/// <param name="tmRates">T&amp;M Rates</param>
 		/// <param name="task">The Task</param>
+		/// <param name="workspaceShortname">The Workspace shortname</param>
 		/// <returns>Option to show skill mix for task.</returns>
 		public static bool ShowSkillMixForTask(DateTime? workspaceCreationDate, bool workspaceUsingTemplateBOE, bool workspaceEnableSAPConnection, 
-			BoeTaskElementDTO task, IReadOnlyCollection<MoqTypeSelection> moqTypeSelections, IReadOnlyCollection<ResourceDTO> resourcesUsedInBOEs, IReadOnlyCollection<TMResourceRateDTO> tmRates)
+			BoeTaskElementDTO task, IReadOnlyCollection<MoqTypeSelection> moqTypeSelections, IReadOnlyCollection<ResourceDTO> resourcesUsedInBOEs, IReadOnlyCollection<TMResourceRateDTO> tmRates,
+			string workspaceShortname)
 		{
 			bool hasTMRates = BOETaskUtility.IsUsingTMRates(task, resourcesUsedInBOEs, tmRates);
 
 			return ShowSkillMixForTask(workspaceCreationDate, workspaceUsingTemplateBOE, workspaceEnableSAPConnection,
-				moqTypeSelections, task.Id, hasTMRates);
+				moqTypeSelections, task.Id, hasTMRates, workspaceShortname);
 		}
 
 		/// <summary>
@@ -73,13 +75,14 @@ namespace GenBOE.ActionLogic.Common
 		/// <param name="moqTypeSelections">Workspace MOQType selections</param>
 		/// <param name="hasTMRates">Has T&amp;M Rates</param>
 		/// <param name="task">The Task</param>
+		/// <param name="workspaceShortname">Workspace short name</param>
 		/// <returns>Option to show skill mix for task.</returns>
 		public static bool ShowSkillMixForTask(DateTime? workspaceCreationDate, bool workspaceUsingTemplateBOE, bool workspaceEnableSAPConnection,
-			IEnumerable<MoqTypeSelection> moqTypeSelections, int boeTaskElementId, bool hasTMRates)
+			IEnumerable<MoqTypeSelection> moqTypeSelections, int boeTaskElementId, bool hasTMRates, string workspaceShortname)
 		{
 			bool showSkillMixRationale = false;
 
-			if (Utilities.ShowSkillMixForWorkspace(workspaceCreationDate))
+			if (Utilities.ShowSkillMixForWorkspace(workspaceCreationDate, workspaceShortname))
 			{
 				ICollection<MoqTypeSelection> moqTypes = moqTypeSelections.Where(m => m.TaskId == boeTaskElementId).ToList();
 				// Only show SkillMix if there is 1 and only 1 MOQ Type
