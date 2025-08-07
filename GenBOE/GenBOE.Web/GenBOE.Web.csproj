@@ -644,7 +644,6 @@
     <Content Include="Content\images\ui-icons_cd0a0a_256x240.png" />
     <Content Include="Resources\css\tinymce.css" />
     <Content Include="Resources\js\angular\boeConfidenceReportController.js" />
-    <Content Include="Resources\js\angular\manageSkillMixSettingsController.js" />
     <Content Include="Resources\js\angular\workspaceCalculateActualsController.js" />
     <Content Include="Resources\js\angular\rteTemplatesController.js" />
     <Content Include="Resources\js\angular\boeBulkSubmitController.js" />
@@ -905,7 +904,6 @@
     <Content Include="Views\Admin\ManageOffloadRates.ascx" />
     <Content Include="Views\Admin\ManageNonzoneFeesAndCosts.ascx" />
     <Content Include="Views\Admin\ManageNonzoneFeesAndCostsGrid.ascx" />
-    <Content Include="Views\Admin\ManageSkillMixSettings.ascx" />
     <Content Include="Views\Admin\ManageSystemProPricerExports.ascx" />
     <Content Include="Views\Admin\ManageOverdueTraining.ascx" />
     <Content Include="Views\Admin\ManageZoneTravel.ascx" />

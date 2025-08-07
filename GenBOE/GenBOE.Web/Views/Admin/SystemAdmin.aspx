@@ -31,13 +31,6 @@
             importOverdueTrainingAction: '<%: WebConstants.ACTION_IMPORT_OVERDUE_TRAINING %>'
         });
 
-<%--        angular.module('genboe').value('ManageSkillMixSettingsModelView',
-        {
-			controller: '<%: WebConstants.CONTROLLER_ADMIN %>',
-            getSkillMixSettingsAction: '<%: WebConstants.ACTION_GET_SKILL_MIX_SETTINGS %>',
-            saveSkillMixSettingsAction: '<%: WebConstants.ACTION_SAVE_SYSTEM_SETTINGS %>' // Reused from System Settings
-        });--%>
-    
         SystemAdmin.LoadSystemAdminJump = function () {
             SystemAdmin.RetrievePage(CreateSystemAdminPostURL(
                     '<%: WebConstants.CONTROLLER_ADMIN %>',
@@ -158,12 +151,6 @@
 				'<%: WebConstants.ACTION_DISPLAY_MANAGE_UCOT %>'), "MANAGE_UCOT_LOADED");
         };
 
-<%--        SystemAdmin.LoadManageSkillMixSettings = function () {
-			SystemAdmin.RetrievePage(CreateSystemAdminPostURL(
-                '<%: WebConstants.CONTROLLER_ADMIN %>',
-		        '<%: WebConstants.ACTION_DISPLAY_MANAGE_SKILL_MIX_SETTINGS %>'), "MANAGE_SKILL_MIX_SETTINGS_LOADED");
-		};--%>
-
         SystemAdmin.RetrievePage = function (actionURL, trigger) {
             ShowLoadingBox();
             $.ajax({
@@ -272,9 +259,6 @@
 					case "ManageUCOT":
 						SystemAdmin.LoadManageUCOT();
                         break;
-                    //case "ManageSkillMixSettings":
-                    //    SystemAdmin.LoadManageSkillMixSettings();
-                    //    break;
                     default:
                         SystemAdmin.LoadSystemAdminJump();
                 }
@@ -299,7 +283,6 @@
             SystemAdmin.registerForEvent("SA_LOAD_EMAIL_PREFERENCES", SystemAdmin.LoadManageEmailPreferences);
             SystemAdmin.registerForEvent("SA_LOAD_MANAGE_SYSTEM_SETTINGS", SystemAdmin.LoadManageSystemSettings);
             SystemAdmin.registerForEvent("SA_LOAD_MANAGE_UCOT", SystemAdmin.LoadManageUCOT);
-            //SystemAdmin.registerForEvent("SA_LOAD_MANAGE_SKILL_MIX_SETTINGS", SystemAdmin.LoadManageSkillMixSettings);
             window.onhashchange = SystemAdmin.LoadPage;
 
             SystemAdmin.LoadPage();

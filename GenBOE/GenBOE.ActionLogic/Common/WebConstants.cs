@@ -172,8 +172,6 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_SYSTEM_SETTINGS = "GetSystemSettings";
 		public static readonly string ACTION_SAVE_SYSTEM_SETTINGS = "SaveSystemSettings";
 		public static readonly string ACTION_IMPORT_OVERDUE_TRAINING = "ImportOverdueTraining";
-		public static readonly string ACTION_GET_SKILL_MIX_SETTINGS = "GetSkillMixSettings";
-		public static readonly string ACTION_SAVE_SKILL_MIX_SETTINGS = "SaveSkillMixSettings";
 
 		public static readonly string ACTION_CANCEL = "Cancel";
 		public static readonly string ACTION_ERROR = "Error";
@@ -299,7 +297,6 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_DISPLAY_WHOS_ONELINE = "WhosOnline";
 		public static readonly string ACTION_CONVERT_HTML_TO_TEXT = "ConvertHtmlToText";
 		public static readonly string ACTION_DISPLAY_MANAGE_UCOT = "DisplayManageUCOT";
-		public static readonly string ACTION_DISPLAY_MANAGE_SKILL_MIX_SETTINGS = "DisplayManageSkillMixSettings";
 
 		#endregion ADMIN
 
@@ -784,7 +781,6 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string VIEW_MANAGE_SYSTEM_PROPRICER_EXPORTS = "ManageSystemProPricerExports";
 		public static readonly string VIEW_SYSTEM_EXPORT_TO_PROPRICER_GRID = "ManageSystemProPricerGrid";
 		public static readonly string VIEW_MANAGE_UCOT = "ManageUCOT";
-		public static readonly string VIEW_MANAGE_SKILL_MIX_SETTINGS = "ManageSkillMixSettings";
 
 		#endregion ADMIN
 
