@@ -130,6 +130,8 @@ namespace GenBOE.DataBridge.DTO
 				p.PA_Title.Contains(search));
 			}
 
+			query = query.Where(p => p.Last_Modified_Date >= new DateTime(2020, 1, 1));
+
 			List<ProposalDTO> results = query
 				.Select(p => new ProposalDTO
 				{
@@ -142,6 +144,30 @@ namespace GenBOE.DataBridge.DTO
 			return results;
 						
 		}
+
+		/// <summary>
+		/// Get selected proposal with specific pa number
+		/// </summary>
+		/// <param name="paNumber"></param>
+		/// <returns></returns>
+		public ProposalDTO GetProposalDetails(string paNumber)
+		{
+			ProposalDTO result = _context.Proposals
+				.Where(p => p.PA_Number == paNumber)
+				.Select(p => new ProposalDTO
+				{
+					PA_Number = p.PA_Number,
+					Line_of_Business = p.Line_of_Business,
+					Project_Start_Date = p.Project_Start_Date,
+					Project_End_Date = p.Project_End_Date,
+				})
+				.FirstOrDefault();
+
+			return result;
+
+		}
+
+
 
 		/// <summary>
 		///   Get All Active Proposals

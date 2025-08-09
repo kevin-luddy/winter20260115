@@ -47,8 +47,26 @@
 		isSAPConfigurationEnabled: CreateWorkspaceModelView.IsSAPConnectionEnabled,   // This value will be grabbed from Web.config
 		isAssignTaskAuthorEnabled: CreateWorkspaceModelView.IsAssignTaskAuthorEnabled,
 		updatePreviousWorkspace: false,         // Space only
-		openCurrentDialog: false                // Space only
+		openCurrentDialog: false,                // Space only
+		LineOfBusiness: '',
+		lobAliases: {},
+		resolveLobIdFromPLD: '',
+		lobIdLookup: '',
+		buildLobIdLookup: ''
 	};
+
+	$scope.model.lobAliases = {
+		'sac': 'sikorsky',
+		'iwss': 'integrated warfare systems and sensors',
+		'tls': 'training and logistics solutions',
+		'c6isr': 'c6isr',
+		'new ventures': 'new ventures',
+		'cyber, ships and advanced technologies': 'cyber, ships & advanced technologies',
+		'cyber, ships & advanced technologies': 'cyber, ships and advanced technologies',
+
+	}
+
+
 
 	$scope.model = $scope.model || {};
 	$scope.model.searchTerm = '';
@@ -70,9 +88,9 @@
 
 	$scope.tryParsePLDSelection = function () {
 
-		console.log('application url: ', '"' + $scope.model.applicationUrl + '"');
+		//console.log('application url: ', '"' + $scope.model.applicationUrl + '"');
 
-		console.log('parsing search term');
+		//console.log('parsing search term');
 
 		var text = $scope.model.searchTerm;
 
@@ -81,7 +99,7 @@
 			return;
 		}
 
-		console.log('parsing search term:', text);
+		//console.log('parsing search term:', text);
 
 		var cleanedText = text.trim();
 		//var parts = cleanedText.split(/\s*-s*/);  //trimmed additional spaces around dash
@@ -99,13 +117,13 @@
 		//store number for downstream logic 
 		$scope.model.selectedPLDPANumber = $scope.model.PLD_PANumber;
 
-		console.log('try parse');
+		//console.log('try parse');
 
 		$scope.data.TrackingNumber = $scope.model.PLD_PANumber;
 		$scope.data.ProposalTitle = $scope.model.PLD_PATitle;
 
-		console.log('$scope.model.PLD_PANumber', $scope.model.PLD_PANumber);
-		console.log('scope.data.TrackingNumber', $scope.data.TrackingNumber);
+		//console.log('$scope.model.PLD_PANumber', $scope.model.PLD_PANumber);
+		//console.log('scope.data.TrackingNumber', $scope.data.TrackingNumber);
 
 	};
 
@@ -129,12 +147,12 @@
 			//check if it is a match to one of the know options
 			const match = $scope.filteredPLDPANumbers.find(x => x.Text.trim().toLowerCase() === newVal.trim().toLowerCase());
 			if (match) {
-				console.log("datalist item selected", newVal);
+				//console.log("datalist item selected", newVal);
 				$scope.model.selectedPLDPANumber = match;
 				$scope.tryParsePLDSelection();
 				return;
 			}
-			console.log("user typed:", newVal);
+			//console.log("user typed:", newVal);
 
 			if ($scope.isFromSelection) {
 				console.log('inside isFromSelection  about to set to false ')
@@ -155,7 +173,7 @@
 					.then(function (response) {
 						if (Array.isArray(response.data)) {
 							$scope.filteredPLDPANumbers = response.data;
-							console.log('Filtered results from server', $scope.filteredPLDPANumbers);
+							//console.log('Filtered results from server', $scope.filteredPLDPANumbers);
 														
 						}
 					})
@@ -169,6 +187,56 @@
 
 			
 	});
+
+	function normalizeLobName(name) {
+		return (name || '').toLowerCase().trim();
+	}
+
+	function resolveLobId(pldName) {
+		const normalized = normalizeLobName(pldName);
+
+		if (!$scope.model || !$scope.model.lobAliases || !$scope.model.lobIdLookup) {
+			console.warn('model or LOB mappings not yet available');
+			return null;
+		}
+
+		const canonical = ($scope.model && $scope.model.lobAliases)
+			? $scope.model.lobAliases[normalized] || normalized : normalized;
+
+
+		const lobId = ($scope.model && $scope.model.lobIdLookup)
+			? $scope.model.lobIdLookup[canonical] || null : null;
+
+		console.log(`resolved lob name: "${pldName}" "${canonical}" ID: ${lobId}`);
+
+		return lobId;
+	}
+
+	function parseDotNetDate(dotNetDate) {
+
+		console.log('dotnet raw ', dotNetDate);
+		console.log('type of dotnetdate', typeof dotNetDate);
+
+		if (!dotNetDate || typeof dotNetDate !== 'string')
+			return 'N/A';
+
+
+
+		var timestamp = parseInt(dotNetDate.match(/\d+/)[0], 10);
+		if (isNaN(timestamp)) return 'N/A';
+
+		var date = new Date(timestamp);
+		var yyyy = date.getFullYear();
+		var mm = String(date.getMonth() + 1).padStart(2, '0');
+		var dd = String(date.getDate()).padStart(2, '0');
+
+		return `${yyyy}-${mm}-${dd}`;
+
+
+		//var timestamp = parseInt(dotNetDate.replace(/\/Date\((\d+)\)\//, '$1'), 10);
+		//return isNaN(timestamp) ? null : new Date(timestamp);
+
+	}
 
 
 	console.log("pldpanumbers from controller.js", $scope.model.pldpaNumbers);
@@ -241,18 +309,84 @@
 
 	$scope.setStepSpecificElements = function (newStep) {
 
-		console.log('in setStep...  step is ', newStep);
-		console.log('panumber in setStepSpecificElements', $scope.model.PLD_PANumber);
-		console.log('BEFORE $scope.model.PLD_PANumber', $scope.data.PLD_PANumber);
+		//console.log('in line 244 setStep...  step is ', newStep);
+		//console.log('panumber in setStepSpecificElements', $scope.model.PLD_PANumber);
+		//console.log('BEFORE $scope.model.PLD_PANumber', $scope.data.PLD_PANumber); 
 		$scope.data.TrackingNumber = $scope.model.PLD_PANumber;
 		$scope.data.ProposalTitle = $scope.model.PLD_PATitle;
 
+		//console.log('AFTER scope.data.TrackingNumber', $scope.data.TrackingNumber);
+		//console.log('AFTER scope.data.ProposalTitle', $scope.data.ProposalTitle);
 
-		console.log('AFTER scope.data.TrackingNumber', $scope.data.TrackingNumber);
-		console.log('AFTER scope.data.ProposalTitle', $scope.data.ProposalTitle);
+		//debugger;
+
+		console.log("before debug full scope.model", $scope.model);
+		console.log("before debug ispldint = ", $scope.model.IsPLDIntegrated);
+
+		if ($scope.model.IsPLDIntegrated && newStep === 3) {
+
+			//console.log('in isPLDint');
+
+			$http.get('/default/Workspace/GetLineOfBusiness')
+				.then(function (response) {
+					console.log('lob data', response.data);
+
+					const lobList = response.data;
+
+					$scope.model.lobIdLookup = {};
+
+					lobList.forEach(function (lob) {
+						if (lob && lob.Name && lob.LOBID != null) {
+							const name = lob.Name.toLowerCase().trim();
+							$scope.model.lobIdLookup[name] = lob.LOBID;
+						} else {
+							console.warn('skipping malformed lob', lob);
+						}
+						
+					});
+
+					console.log('built lobidlookup', $scope.model.lobIdLookup);
+
+				})
 
 
 
+
+			$http.get('/default/Workspace/GetProposalDetails', { params: { paNumber: $scope.data.TrackingNumber } })
+				.then(function (response) {
+
+					//console.log('getpropdetails data', response.data);
+					const data = response.data;
+					const lobName = data.Line_of_Business;
+					const resolvedLobId = resolveLobId(lobName);
+					$scope.model.LineOfBusiness = lobName;
+					$scope.model.LineOfBusinessID = resolvedLobId;
+
+					$scope.data.LineOfBusiness = lobName;
+					$scope.data.LineOfBusinessID = resolvedLobId;
+
+
+					console.log("after debug full scope.model", $scope.model);
+					console.log("after debug full scope.data", $scope.data);
+					console.log("after debug ispldint = ", $scope.model.IsPLDIntegrated);
+
+					//console.log('raw start date:', data.Project_Start_Date);
+
+					//console.log("parsed date", parseDotNetDate(data.Project_Start_Date));
+
+					//$scope.model.LineOfBusiness = data.Line_of_Business;
+					//$scope.model.LineOfBusinessID = $scope.model.LineOfBusiness;
+
+					//$scope.data.LineOfBusinessID = $scope.model.LineOfBusiness;
+					
+				})
+				.catch(function (error) {
+					console.error('Error fetching detail proposal:', error);
+
+				});
+
+		}
+		
 
 		$scope.step = newStep;
 		switch ($scope.step) {
@@ -321,10 +455,10 @@
 			if ($scope.model.IsPLDIntegrated)
 			{								
 
-				if (!$scope.model.PLD_PANumber || !$scope.model.PLD_PATitle) {
-					alert("Please select a valid PLD Proposal from the list before continuing.")
-					return;
-				}
+				//if (!$scope.model.PLD_PANumber || !$scope.model.PLD_PATitle) {
+				//	alert("Please select a valid PLD Proposal from the list before continuing.")
+				//	return;
+				//}
 			}
 			
 
@@ -913,9 +1047,9 @@
 		// use default for the workspace name since this is not a real workspace yet
 		var validateUrl = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.ValidateIndentificationAction);
 
-		$scope.data.TrackingNumber = $scope.model.PLD_PANumber;
-		$scope.data.ProposalTitle = $scope.model.PLD_PATitle;
-		console.log('validateworkspace section  pld pa number ', $scope.data.TrackingNumber);
+		//$scope.data.TrackingNumber = $scope.model.PLD_PANumber;
+		//$scope.data.ProposalTitle = $scope.model.PLD_PATitle;
+		//console.log('validateworkspace section  pld pa number ', $scope.data.TrackingNumber);
 
 		$http({
 			method: 'POST',

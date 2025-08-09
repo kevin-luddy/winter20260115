@@ -50,12 +50,7 @@
 			EnableAssignTaskAuthor: <%: Model.IsAuthorAssignableAtTaskLevelEnabled.ToString().ToLower() %>,
 			IsAssignTaskAuthorEnabled: <%: Model.IsAssignTaskAuthorEnabled.ToString().ToLower() %>
         });
-
-        //window.onload = function () {
-        //    console.log("PLD NUmber from createworkspace.aspx :", PLDPANumbers);
-        //}
-       
-
+        
 
         var CreateWorkspace = new Widget("CreateWorkspaceForm");
 

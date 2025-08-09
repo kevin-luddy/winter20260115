@@ -56,6 +56,7 @@ namespace GenBOE.Web.Controllers
 	using IES.Common.Exceptions;
 	using IES.Common.OfficeUtilities;
 	using IES.Common.PickList;
+	using LineOfBusinessDataLoader = DataBridge.DTO.LineOfBusinessDataLoader;
 	using UserDTO = Dtos.UserDTO;
 
 	public class WorkspaceController : GenBOEController
@@ -107,6 +108,7 @@ namespace GenBOE.Web.Controllers
 		private CommentsAndResponsesExporter _commentsAndResponsesExporter = null;
 		private BOECommentsControllerLogic _boeCommentsControllerLogic = null;
 		private readonly GenBOE.DataBridge.DTO.IPldDTODataLoader _pldDTODataLoader;
+		
 
 		/// <summary>
 		/// Workspace Exporter
@@ -817,9 +819,7 @@ namespace GenBOE.Web.Controllers
 		/// <returns></returns>
 		public JsonResult SearchPLDProposals(string term)
 		{
-
-			//PldDTODataLoader loader = new PldDTODataLoader(new PldDBContext());
-
+		
 			ICollection<ProposalDTO> matches = _pldDTODataLoader.GetTopProposals(term);
 
 			var results = matches.Select(p => new
@@ -829,8 +829,31 @@ namespace GenBOE.Web.Controllers
 			});
 
 			return Json(results, JsonRequestBehavior.AllowGet);
+				
+		}
 
-	
+		public JsonResult GetProposalDetails(string paNumber)
+		{
+			ProposalDTO result = _pldDTODataLoader.GetProposalDetails(paNumber);
+
+			return Json(result, JsonRequestBehavior.AllowGet);
+
+		}
+
+
+		public JsonResult GetLineOfBusiness()
+		{
+			LineOfBusinessDataLoader lobDataLoader = new LineOfBusinessDataLoader();
+			ICollection<PickListDto> lobPickList = lobDataLoader.GetPickListValues();
+
+			var results = lobPickList.Select(p => new
+			{
+				LOBID = p.Id,
+				Name = p.Text
+			});
+
+			return Json(results, JsonRequestBehavior.AllowGet);
+
 		}
 
 
