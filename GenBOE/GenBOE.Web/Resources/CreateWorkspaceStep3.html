@@ -139,7 +139,25 @@
         <input id="CostVolumeLeadPricerDisplayName" name="CostVolumeLeadPricerDisplayName" type="text" class="half" maxlength="50" data-ng-model="data.CostVolumeLeadPricerDisplayName" />
     </div>
 </div>
-<div class="form-row" id="ContractDates" data-ng-show="!data.IsAttemptingToImport && (model.isSSC || data.ProjectMapType == '1' || data.ProjectMapType == '2')">
+<div ng-if="model.IsPLDIntegrated" class="form-row" id="ContractDates" data-ng-show="!data.IsAttemptingToImport && (model.isSSC || data.ProjectMapType == '1' || data.ProjectMapType == '2')">
+    <div class="form-label contract-start-date-label">
+        Contract Start Date
+    </div>
+    <div class="form-element contract-start-date" style="vertical-align:bottom;">
+        <span class="readonly-value">
+            {{ model.ContractStartDate ? (model.ContractStartDate | date:'MM/yyyy') : 'N/A'}}
+        </span>       
+    </div>
+    <div class="form-label contract-end-date-label">
+        Contract End Date
+    </div>
+    <div class="form-element contract-end-date"  style="vertical-align:bottom;">
+        <span class="readonly-value">
+            {{ model.ContractEndDate ? (model.ContractEndDate | date:'MM/yyyy') : 'N/A'}}
+        </span>      
+    </div>
+</div>
+<div ng-if="!model.IsPLDIntegrated" class="form-row" id="ContractDates" data-ng-show="!data.IsAttemptingToImport && (model.isSSC || data.ProjectMapType == '1' || data.ProjectMapType == '2')">
     <div class="form-label">
         Contract Start Date *
     </div>

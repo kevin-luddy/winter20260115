@@ -230,7 +230,10 @@
 		var mm = String(date.getMonth() + 1).padStart(2, '0');
 		var dd = String(date.getDate()).padStart(2, '0');
 
-		return `${yyyy}-${mm}-${dd}`;
+
+		return `${mm}/${yyyy}`;
+
+		//return `${yyyy}-${mm}-${dd}`;
 
 
 		//var timestamp = parseInt(dotNetDate.replace(/\/Date\((\d+)\)\//, '$1'), 10);
@@ -323,6 +326,13 @@
 		console.log("before debug full scope.model", $scope.model);
 		console.log("before debug ispldint = ", $scope.model.IsPLDIntegrated);
 
+		if ($scope.model.IsPLDIntegrated && newStep === 5) {
+			console.log("5 after debug full scope.model", $scope.model);
+			console.log("5 after debug full scope.data", $scope.data);
+		}
+
+
+
 		if ($scope.model.IsPLDIntegrated && newStep === 3) {
 
 			//console.log('in isPLDint');
@@ -370,9 +380,20 @@
 					console.log("after debug full scope.data", $scope.data);
 					console.log("after debug ispldint = ", $scope.model.IsPLDIntegrated);
 
-					//console.log('raw start date:', data.Project_Start_Date);
+					console.log('raw start date:', data.Project_Start_Date);
+					console.log('raw end date:', data.Project_End_Date);
 
-					//console.log("parsed date", parseDotNetDate(data.Project_Start_Date));
+					console.log("parsed start date", parseDotNetDate(data.Project_Start_Date));
+					console.log("parsed end date", parseDotNetDate(data.Project_End_Date));
+
+
+					$scope.model.ContractStartDate = parseDotNetDate(data.Project_Start_Date);
+					$scope.model.ContractEndDate = parseDotNetDate(data.Project_End_Date);
+
+					$scope.data.ContractStartDate = $scope.model.ContractStartDate;
+					$scope.data.ContractEndDate = $scope.model.ContractEndDate;
+
+
 
 					//$scope.model.LineOfBusiness = data.Line_of_Business;
 					//$scope.model.LineOfBusinessID = $scope.model.LineOfBusiness;
