@@ -832,6 +832,11 @@ namespace GenBOE.Web.Controllers
 				
 		}
 
+		/// <summary>
+		///  Get Proposal Detail by paNumber 
+		/// </summary>
+		/// <param name="paNumber"></param>
+		/// <returns></returns>
 		public JsonResult GetProposalDetails(string paNumber)
 		{
 			ProposalDTO result = _pldDTODataLoader.GetProposalDetails(paNumber);
@@ -840,7 +845,10 @@ namespace GenBOE.Web.Controllers
 
 		}
 
-
+		/// <summary>
+		/// Get Line Of Business Ids
+		/// </summary>
+		/// <returns></returns>
 		public JsonResult GetLineOfBusiness()
 		{
 			LineOfBusinessDataLoader lobDataLoader = new LineOfBusinessDataLoader();

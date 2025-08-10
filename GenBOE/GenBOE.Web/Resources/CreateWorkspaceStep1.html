@@ -29,10 +29,7 @@
             </datalist>
             <br />
         </div>
-            
      
-            
-
     <!---NEW PLD Feature -->
     <div data-ng-show="model.IsPLDIntegrated">
         <div></div>
@@ -56,18 +53,7 @@
                     value="{{item.Text}}">
             </option>
         </datalist>
-
-
-        <!--<ui-select ng-model="model.selectedPLDPANumber" ng-change="setProposalId()">
-        <ui-select-match allow-clear="true" placeholder="Select a PLD PA Number">{{$select.selected.Text}}</ui-select-match>
-        <ui-select-choices repeat="proposal in model.pldpaNumbers | filter: $select.search">
-            <div ng-bind="proposal.Text"></div>
-        </ui-select-choices>
-    </ui-select>-->
-
-
-
-
+        
         <br />
     </div>
         <input id="WorkspaceType-Create" name="WorkspaceType" data-ng-model="data.IsAttemptingToImport" type="radio" data-ng-value="true" />

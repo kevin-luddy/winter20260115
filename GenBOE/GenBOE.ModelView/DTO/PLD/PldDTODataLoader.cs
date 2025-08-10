@@ -41,22 +41,7 @@ namespace GenBOE.DataBridge.DTO
 		protected Logger Log { get; set; }
 
 		#endregion
-
-		/// <summary>
-		/// ctor for PldDTODataLoader
-		/// </summary>
-		//public PldDTODataLoader()
-		//{
-		//	this.Log = new Logger(typeof(PldDTODataLoader));
-		//}
-
-		//public PldDTODataLoader(PldDBContext context = null)
-		//{
-		//	_context = context ?? new PldDBContext();
-		//	this.Log = new Logger(typeof(PldDTODataLoader));
-		//}
-
-
+		
 		///
 		// ctr PldDTODataLoader
 		///

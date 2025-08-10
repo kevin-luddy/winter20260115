@@ -17,7 +17,6 @@
             IsSSC: <%=(SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems).ToString().ToLower()%>,
             LOBs: <%= JsonConvert.SerializeObject(Model.LineOfBusinessTypes)%>, // Array of PickListDto
             TrackingNumbers: <%= JsonConvert.SerializeObject(Model.TrackingNumbers)%>, // Array of SelectListItem
-            PLDPANumbers: <%= JsonConvert.SerializeObject(Model.PLDPANumbers)%>, // Array of PLD PA Numbers in SelectListItem
             ContractTypes: <%= JsonConvert.SerializeObject(Model.ContractTypes)%>, // Array of PickListDto
             ProposalClassTypes: <%= JsonConvert.SerializeObject(Model.ProposalClassTypes)%>, // Array of PickListDto
             ProjectMapTypes: <%= JsonConvert.SerializeObject(Model.ProjectMapTypes)%>, // Array of SelectListItem

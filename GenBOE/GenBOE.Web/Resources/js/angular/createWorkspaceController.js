@@ -21,7 +21,6 @@
 		applicationUrl: CreateWorkspaceModelView.ApplicationUrl,            // used in Step 3 & 5
 		lobs: CreateWorkspaceModelView.LOBs,                                // LOB array for dropdown (this one actually uses integers instead of strings for the ids)
 		trackingNumbers: CreateWorkspaceModelView.TrackingNumbers,          // Tracking # array for dropdown
-		pldpaNumbers: CreateWorkspaceModelView.PLDPANumbers,                // PA Number from PLD   
 		copyTrackingNumbers: [],                                            // Tracking # array for copy workspace dropdown (includes original WS Tracking # if any)
 		projectMapTypes: CreateWorkspaceModelView.ProjectMapTypes,          // Project Map array for dropdown
 		proposalClassTypes: CreateWorkspaceModelView.ProposalClassTypes,    // Proposal Class array for dropdown
@@ -40,7 +39,6 @@
 		IsPLDIntegrated: CreateWorkspaceModelView.IsPLDIntegrated && !CreateWorkspaceModelView.IsSSC,
 		ptmTrackingNumber: '',                      // SSC only
 		selectedPtmTrackingNumber: '',              // SSC only
-		selectedPLDPANumber: '', // RTM only
 		isAdmin: CreateWorkspaceModelView.IsAdmin,  // SSC only
 		ptmTrackingNumberNotRequired: CreateWorkspaceModelView.PtmTrackingNumberNotRequired || CreateWorkspaceModelView.IsAdmin, // SSC only TODO - remove admin part
 		nextRevision: '', // SSC only, the next revision of the PTM tracking number
@@ -66,12 +64,10 @@
 
 	}
 
-
-
 	$scope.model = $scope.model || {};
 	$scope.model.searchTerm = '';
-	$scope.model.PLD_PANumber = '' // stored selected PA Number
-	$scope.model.PLD_PATitle = '' // store selected PA Title
+	$scope.model.PLD_PANumber = '';
+	$scope.model.PLD_PATitle = ''; 
 	$scope.isFromSelection = false;
 
 	$scope.getSantizedUrl = function () {
@@ -84,14 +80,7 @@
 		}
 	}
 
-
-
 	$scope.tryParsePLDSelection = function () {
-
-		//console.log('application url: ', '"' + $scope.model.applicationUrl + '"');
-
-		//console.log('parsing search term');
-
 		var text = $scope.model.searchTerm;
 
 		if (!text || text.trim().length === 0) {
@@ -99,12 +88,8 @@
 			return;
 		}
 
-		//console.log('parsing search term:', text);
-
 		var cleanedText = text.trim();
-		//var parts = cleanedText.split(/\s*-s*/);  //trimmed additional spaces around dash
 		var parts = cleanedText.split(" - ");
-
 
 		if (parts.length < 2) {
 			console.warn("unable to parse pld selection , unexpected format", cleanedText);
@@ -112,18 +97,10 @@
 		}
 
 		$scope.model.PLD_PANumber = parts[0].trim();
-		// re-join in case the title itself had "-"
 		$scope.model.PLD_PATitle = parts.slice(1).join(' - ').trim();
-		//store number for downstream logic 
-		$scope.model.selectedPLDPANumber = $scope.model.PLD_PANumber;
-
-		//console.log('try parse');
-
+		$scope.model.selectedPtmTrackingNumber = $scope.model.TrackingNumber;
 		$scope.data.TrackingNumber = $scope.model.PLD_PANumber;
 		$scope.data.ProposalTitle = $scope.model.PLD_PATitle;
-
-		//console.log('$scope.model.PLD_PANumber', $scope.model.PLD_PANumber);
-		//console.log('scope.data.TrackingNumber', $scope.data.TrackingNumber);
 
 	};
 
@@ -144,23 +121,20 @@
 			if (!newVal || newVal === oldVal) {
 				return;
 			}
-			//check if it is a match to one of the know options
+		
 			const match = $scope.filteredPLDPANumbers.find(x => x.Text.trim().toLowerCase() === newVal.trim().toLowerCase());
 			if (match) {
-				//console.log("datalist item selected", newVal);
-				$scope.model.selectedPLDPANumber = match;
 				$scope.tryParsePLDSelection();
 				return;
 			}
-			//console.log("user typed:", newVal);
-
+		
 			if ($scope.isFromSelection) {
 				console.log('inside isFromSelection  about to set to false ')
 				$scope.isFromSelection = false;
-				return; // skip debounce 
+				return; 
 			}
 
-			if (!newVal || newVal.length < 2) {    // wait for at least 2 characters before filtering   possibly switch to 3
+			if (!newVal || newVal.length < 2) { 
 				$scope.filteredPLDPANumbers = [];
 				return;
 			}
@@ -168,23 +142,18 @@
 			clearTimeout(debounceTimer);
 		
 			debounceTimer = setTimeout(function () {
-				// call API or filter locally
 				$http.get('/default/Workspace/SearchPLDProposals', { params: { term: newVal } })
 					.then(function (response) {
 						if (Array.isArray(response.data)) {
 							$scope.filteredPLDPANumbers = response.data;
-							//console.log('Filtered results from server', $scope.filteredPLDPANumbers);
-														
 						}
 					})
 					.catch(function (error) {
 						console.error('Error fetching proposals:', error);
-
 						$scope.filteredPLDPANumbers = [];
 					});
 
-			}, 300);  // 300 ms delay after typing stops
-
+			}, 300);  
 			
 	});
 
@@ -220,30 +189,17 @@
 		if (!dotNetDate || typeof dotNetDate !== 'string')
 			return 'N/A';
 
-
-
 		var timestamp = parseInt(dotNetDate.match(/\d+/)[0], 10);
 		if (isNaN(timestamp)) return 'N/A';
 
 		var date = new Date(timestamp);
 		var yyyy = date.getFullYear();
 		var mm = String(date.getMonth() + 1).padStart(2, '0');
-		var dd = String(date.getDate()).padStart(2, '0');
-
-
+		
 		return `${mm}/${yyyy}`;
-
-		//return `${yyyy}-${mm}-${dd}`;
-
-
-		//var timestamp = parseInt(dotNetDate.replace(/\/Date\((\d+)\)\//, '$1'), 10);
-		//return isNaN(timestamp) ? null : new Date(timestamp);
-
+		
 	}
 
-
-	console.log("pldpanumbers from controller.js", $scope.model.pldpaNumbers);
-	// data houses the data being saved and sent to the back-end
 	$scope.data = {};
 
 	$scope.resetData = function () {
@@ -312,37 +268,16 @@
 
 	$scope.setStepSpecificElements = function (newStep) {
 
-		//console.log('in line 244 setStep...  step is ', newStep);
-		//console.log('panumber in setStepSpecificElements', $scope.model.PLD_PANumber);
-		//console.log('BEFORE $scope.model.PLD_PANumber', $scope.data.PLD_PANumber); 
 		$scope.data.TrackingNumber = $scope.model.PLD_PANumber;
 		$scope.data.ProposalTitle = $scope.model.PLD_PATitle;
-
-		//console.log('AFTER scope.data.TrackingNumber', $scope.data.TrackingNumber);
-		//console.log('AFTER scope.data.ProposalTitle', $scope.data.ProposalTitle);
-
-		//debugger;
-
-		console.log("before debug full scope.model", $scope.model);
-		console.log("before debug ispldint = ", $scope.model.IsPLDIntegrated);
-
-		if ($scope.model.IsPLDIntegrated && newStep === 5) {
-			console.log("5 after debug full scope.model", $scope.model);
-			console.log("5 after debug full scope.data", $scope.data);
-		}
-
-
+		
 
 		if ($scope.model.IsPLDIntegrated && newStep === 3) {
 
-			//console.log('in isPLDint');
-
 			$http.get('/default/Workspace/GetLineOfBusiness')
 				.then(function (response) {
-					console.log('lob data', response.data);
-
+			
 					const lobList = response.data;
-
 					$scope.model.lobIdLookup = {};
 
 					lobList.forEach(function (lob) {
@@ -354,56 +289,27 @@
 						}
 						
 					});
-
-					console.log('built lobidlookup', $scope.model.lobIdLookup);
-
+					
 				})
-
-
-
 
 			$http.get('/default/Workspace/GetProposalDetails', { params: { paNumber: $scope.data.TrackingNumber } })
 				.then(function (response) {
 
-					//console.log('getpropdetails data', response.data);
 					const data = response.data;
 					const lobName = data.Line_of_Business;
 					const resolvedLobId = resolveLobId(lobName);
 					$scope.model.LineOfBusiness = lobName;
 					$scope.model.LineOfBusinessID = resolvedLobId;
-
 					$scope.data.LineOfBusiness = lobName;
 					$scope.data.LineOfBusinessID = resolvedLobId;
-
-
-					console.log("after debug full scope.model", $scope.model);
-					console.log("after debug full scope.data", $scope.data);
-					console.log("after debug ispldint = ", $scope.model.IsPLDIntegrated);
-
-					console.log('raw start date:', data.Project_Start_Date);
-					console.log('raw end date:', data.Project_End_Date);
-
-					console.log("parsed start date", parseDotNetDate(data.Project_Start_Date));
-					console.log("parsed end date", parseDotNetDate(data.Project_End_Date));
-
-
 					$scope.model.ContractStartDate = parseDotNetDate(data.Project_Start_Date);
 					$scope.model.ContractEndDate = parseDotNetDate(data.Project_End_Date);
-
 					$scope.data.ContractStartDate = $scope.model.ContractStartDate;
 					$scope.data.ContractEndDate = $scope.model.ContractEndDate;
 
-
-
-					//$scope.model.LineOfBusiness = data.Line_of_Business;
-					//$scope.model.LineOfBusinessID = $scope.model.LineOfBusiness;
-
-					//$scope.data.LineOfBusinessID = $scope.model.LineOfBusiness;
-					
 				})
 				.catch(function (error) {
 					console.error('Error fetching detail proposal:', error);
-
 				});
 
 		}
@@ -472,17 +378,7 @@
 	$scope.next = function () {
 		
 		if (!$scope.nextButtonDisabled()) {
-
-			if ($scope.model.IsPLDIntegrated)
-			{								
-
-				//if (!$scope.model.PLD_PANumber || !$scope.model.PLD_PATitle) {
-				//	alert("Please select a valid PLD Proposal from the list before continuing.")
-				//	return;
-				//}
-			}
 			
-
 			$scope.errors = [];
 			$('#urlValidationBox').html('');
 			switch ($scope.step) {
@@ -956,9 +852,6 @@
 		// create the workspace
 		var createUrl = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.CreateWorkspaceAction);
 		
-		//$scope.data.TrackingNumber = $scope.model.PLD_PANumber;
-		//$scope.data.ProposalTitle = $scope.model.PLD_PATitle;
-		
 		$http({
 			method: 'POST',
 			url: createUrl,
@@ -1067,10 +960,6 @@
 		var deferred = $q.defer();
 		// use default for the workspace name since this is not a real workspace yet
 		var validateUrl = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.ValidateIndentificationAction);
-
-		//$scope.data.TrackingNumber = $scope.model.PLD_PANumber;
-		//$scope.data.ProposalTitle = $scope.model.PLD_PATitle;
-		//console.log('validateworkspace section  pld pa number ', $scope.data.TrackingNumber);
 
 		$http({
 			method: 'POST',
