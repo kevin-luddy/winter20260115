@@ -10,6 +10,7 @@ namespace RDM.Tests.IO
 	using IES.ActionLogic.Core.Common;
 	using IES.ActionLogic.Core.IO.Export;
 	using IES.Common.Core;
+	using IES.Common.Core.OfficeUtilities;
 	using IES.Common.Core.Services;
 	using IES.DataBridge.Loaders;
 	using Microsoft.Extensions.Logging;
@@ -43,7 +44,7 @@ namespace RDM.Tests.IO
             PPRDExporter sut = this.CreateSut();
 
             string htmlTextWithP = "<p>Test text 1</p><p style=\"color:red\">Test text 2</p>";
-            string result = sut.ReplaceParagraphTags(htmlTextWithP);
+            string result = WordUtilities.ReplaceParagraphTags(htmlTextWithP);
 
             Assert.AreEqual("<div>Test text 1</div><div style=\"color:red\">Test text 2</div>", result);
         }

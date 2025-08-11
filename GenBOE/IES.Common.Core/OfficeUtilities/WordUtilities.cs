@@ -938,7 +938,7 @@ namespace IES.Common.Core.OfficeUtilities
 		public static string ReplaceParagraphTagsWithLineBreaks(string htmlText)
 		{
 			// TODO TIW possibly also replace <h1> as well :|
-			return htmlText.Replace(CommonConstants.DIV_START_TAG, string.Empty).Replace(CommonConstants.DIV_END_TAG, ControlChar.LineBreak).Replace(CommonConstants.P_START_TAG, string.Empty).Replace(CommonConstants.P_END_TAG, ControlChar.LineBreak).Replace("\r\n", ControlChar.LineFeed).Replace(ControlChar.ParagraphBreakChar, ControlChar.LineBreakChar);
+			return htmlText.Replace(CommonConstants.DIV_START_TAG + ">", string.Empty).Replace(CommonConstants.DIV_END_TAG, ControlChar.LineBreak).Replace(CommonConstants.P_START_TAG + ">", string.Empty).Replace(CommonConstants.P_END_TAG, ControlChar.LineBreak).Replace("\r\n", ControlChar.LineFeed).Replace(ControlChar.ParagraphBreakChar, ControlChar.LineBreakChar);
 		}
 
 		#endregion
