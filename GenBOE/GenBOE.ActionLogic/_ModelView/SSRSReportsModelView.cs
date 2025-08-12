@@ -7,13 +7,14 @@
 namespace GenBOE.ActionLogic.ModelView
 {
     using System;
-    using GenBOE.Dtos;
+	using GenBOE.ActionLogic.ModelView.Backend;
+	using GenBOE.Dtos;
 
     /// <summary>
     /// SSRS Report Modelview
     /// Inherits Exports Modelview, with report URL
     /// </summary>
-    public class SSRSReportsModelView : ExportsModelView
+    public class SSRSReportsModelView : GeneralReportViewModel
     {
         /// <summary>
         /// Default constructor

@@ -17,12 +17,14 @@ namespace GenBOE.Web.Controllers
 	using System.Transactions;
 	using System.Web.Mvc;
 	using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic._ModelView.Backend;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ControllerLogic;
 	using GenBOE.ActionLogic.IO.Export;
 	using GenBOE.ActionLogic.IO.Export.BOE;
 	using GenBOE.ActionLogic.Metrics;
 	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.ActionLogic.ModelView.Backend;
 	using GenBOE.ActionLogic.ModelView.BOE;
 	using GenBOE.ActionLogic.Reporting;
 	using GenBOE.ActionLogic.Validation;
@@ -58,7 +60,6 @@ namespace GenBOE.Web.Controllers
         private IValidateBOE validateBOE;
         private IBOEFormControllerLogic boeFormControllerLogic;
         private ISSRSControllerLogic ssrsControllerLogic;
-        private IUserDTODataLoader userLoader;
         private ContractTypeLoader contractTypeLoader;
 		private IBOEConfidenceReport boeConfidenceReport;
 		private IBOEConfidenceReportExporter boeConfidenceReportExporter;
@@ -93,7 +94,6 @@ namespace GenBOE.Web.Controllers
             IGenBOEControllerLogic inControllerLogic,
             IBOEFormControllerLogic inBOEFormControllerLogic,
             ISSRSControllerLogic ssrsControllerLogic,
-            IUserDTODataLoader userLoader,
             ContractTypeLoader contractTypeLoader,
 			IBOEConfidenceReport boeConfidenceReport,
 			IBOEConfidenceReportExporter boeConfidenceReportExporter)
@@ -113,7 +113,6 @@ namespace GenBOE.Web.Controllers
             this.workspaceLoader = workspaceLoader;
             this.boeFormControllerLogic = inBOEFormControllerLogic;
             this.ssrsControllerLogic = ssrsControllerLogic;
-            this.userLoader = userLoader;
             this.contractTypeLoader = contractTypeLoader;
 			this.boeConfidenceReport = boeConfidenceReport;
 			this.boeConfidenceReportExporter = boeConfidenceReportExporter;
@@ -174,121 +173,19 @@ namespace GenBOE.Web.Controllers
             // Initialize Action
             Stopwatch sw = InitializeAction(log, "DisplayExports", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
 
-            ViewData["IsUsingSummarizeByCustomFieldTemplate"] = false;
-            ViewData["SummarizeByCustomFieldOptions"] = null;
-            
-            bool hasTravel = false;
-			bool hideINLMenuItem = ws.CreationDate > Utilities.ShowINLCutoffDate;
+			// Perform Action
+			ExportReportViewModel reportView = reportsControllerLogic.GetDisplayExports(ws);
+			Collection<GeneralReportViewModel> theModelViews = (Collection<GeneralReportViewModel>)reportView.Reports;
 
-			if (ws.Travels.Any())
-            {
-                hasTravel = true;
-            }
+			ViewData["IsUsingSummarizeByCustomFieldTemplate"] = reportView.IsUsingSummarizeByCustomFieldTemplate;
+			ViewData["SummarizeByCustomFieldOptions"] = reportView.SummarizeByCustomFieldOptions;
+			ViewData["SupportCustomExport"] = reportView.SupportCustomExport;
+			this.ViewData["OutOfSyncMessages"] = reportView.OutOfSyncMessages;
+			this.ViewData["WorkspaceAdmins"] = reportView.WorkspaceAdmins;
+			ViewBag.IsProjectMapWs = reportView.IsProjectMapWs;
+			this.ViewBag.IsPtmDataOutOfSync = reportView.OutOfSyncMessages.Any();
 
-            // Perform Action
-            // Get all available reports
-            Collection<ReportDTO> reportsAvailable = _CommonDataMapper.getReports();
-			Collection<ExportsModelView> theModelViews = new Collection<ExportsModelView>();
-            bool isSubcontractorUser = IsSubcontractorUser(ws);
-			// Filter exports
-			if (hideINLMenuItem)
-			{
-				// Hardcoded reportId 17 for PBOE/IBOE reports as that was really the only way to single it out here
-				reportsAvailable = reportsAvailable.Where(x => x.ReportName != "PBOE / IBOE Forms").ToCollection();
-			}
-			if (reportsAvailable != null)
-            {
-                foreach (ReportDTO report in reportsAvailable)
-                {
-                    if ((isSubcontractorUser && report.ReportID == (int)Reports.INLFormsExport) || 
-                        (!SiteMasterUtilities.IsBOEFormVisible && report.ReportID == (int)Reports.INLFormsExport)) {
-                        continue;
-                    }
-
-                    if (ws.IsProjectMapWorkspace && report.ReportID != (int)Reports.AllBOEs && report.ReportID != (int)Reports.WorkbenchOffload)
-                    {
-                        // In a Project Map Workspace and Workbench Offload are shown
-                        // If this is a Project Map WS, but the report is not All BOEs or Workbench Offload,
-                        // skip the rest of the logic so the report is not shown
-                        continue;
-                    }
-
-                    if (SystemConfiguration.Instance().CompanyMode != IES.Common.CompanyConfiguration.MST && report.ReportID == (int)Reports.WorkbenchOffload)
-                    {
-                        // Workbench is only shown for RMS Workspaces
-                        // If the report is one of these but this is not a RMS WS,
-                        // skip the rest of the logic so the report is not shown
-                        continue;
-                    }
-
-                    if (report.ReportType == ReportType.Export)
-                    {
-                        ExportsModelView theModelView = new ExportsModelView(report);
-
-                        if (theModelView.ReportID == (int)Reports.WorkbenchOffload)
-                        {
-                            // we need to get the ssrs report uri as well for the front-end
-                            theModelView = new SSRSReportsModelView(report, this.reportsControllerLogic.GetReportUrl(Reports.WorkbenchOffload));
-                        }
-
-                        if (theModelView.ReportID == (int)Reports.AllBOEs)
-                        {
-                            WorkspaceExportFormatDTO exportFormat = ws.WorkspaceExportFormats.FirstOrDefault(x => x.Id == ws.TemplateID);
-                            theModelView.Description = String.Format(theModelView.Description, exportFormat.ExportFormatName);
-
-                            // Do we need to support the special Labor Hours Summary by Custom Field template?
-                            if (this.reportsControllerLogic.IsUsingSummarizeByCustomFieldTemplate(exportFormat.ExportFormatName))
-                            {
-                                this.ViewData["IsUsingSummarizeByCustomFieldTemplate"] = true;
-                                this.ViewData["SummarizeByCustomFieldOptions"] = this.reportsControllerLogic.SummarizeByCustomFieldOptions(ws.CustomFields);
-                            }
-                        }
-
-                        if (theModelView.ReportID == (int)Reports.AllBOEsSegmented)
-                        {
-                            WorkspaceExportFormatDTO exportFormat = ws.WorkspaceExportFormats.FirstOrDefault(x => x.Id == ws.TemplateID);
-                            theModelView.Description = String.Format(theModelView.Description, exportFormat.ExportFormatName);
-
-                            // Do we need to support the special Labor Hours Summary by Custom Field template?
-                            if (this.reportsControllerLogic.IsUsingSummarizeByCustomFieldTemplate(exportFormat.ExportFormatName))
-                            {
-                                this.ViewData["IsUsingSummarizeByCustomFieldTemplate"] = true;
-                                this.ViewData["SummarizeByCustomFieldOptions"] = this.reportsControllerLogic.SummarizeByCustomFieldOptions(ws.CustomFields);
-                            }
-                        }
-
-                        if (!((report.ReportID == (int)Reports.TravelExtendedCost || report.ReportID == (int)Reports.TravelUnitCost) && !hasTravel))
-                        {
-                            theModelViews.Add(theModelView);
-                        }
-                    }
-                }
-            }
-
-            ViewData["SupportCustomExport"] = this.reportsControllerLogic.SupportCustomExport;
-            ViewBag.IsProjectMapWs = ws.IsProjectMapWorkspace;
-            
-            ICollection<string> outOfSyncMessages = this.reportsControllerLogic.GetPtmDataOutOfSyncMessages(ws);
-            this.ViewBag.IsPtmDataOutOfSync = outOfSyncMessages.Any();
-            this.ViewData["OutOfSyncMessages"] = outOfSyncMessages;
-
-            ICollection<PermissionsDTO> adminDtos = this.PermissionsLoader.GetWorkspacePermissions(ws.Id)
-                .Where(x => x.Role == Role.WorkspaceAdmin).ToCollection();
-            ICollection<UserDTO> users = this.userLoader.GetByIds(adminDtos.Select(a => a.ETIUserId).ToList());
-            this.ViewData["WorkspaceAdmins"] = users.Select(u => u.DisplayName).ToCollection();
-
-            // find the position of "allBOEs"
-            int? pos = theModelViews.Select((report, index) => new { report, index }).FirstOrDefault(x => x.report.ReportID == (int)Reports.AllBOEs)?.index;
-            // insert Chunked Report after it if it exists
-            if (pos != null && theModelViews.FirstOrDefault(x => x.ReportID == (int)Reports.AllBOEsSegmented) != null)
-            {
-                int newPosition = (int)pos + 1;
-                theModelViews.Insert(newPosition, theModelViews.First(x => x.ReportID == (int)Reports.AllBOEsSegmented));
-                int? oldPos = theModelViews.Select((report, index) => new { report, index }).LastOrDefault(x => x.report.ReportID == (int)Reports.AllBOEsSegmented)?.index;
-                theModelViews.RemoveAt(oldPos.Value);
-            }
-
-            ViewResult toReturn = View(WebConstants.VIEW_EXPORTS, theModelViews);
+			ViewResult toReturn = View(WebConstants.VIEW_EXPORTS, theModelViews);
 
             // Finalize Action
             FinalizeAction(log, "DisplayExports", sw);
@@ -307,44 +204,10 @@ namespace GenBOE.Web.Controllers
             // Initialize Action
             Stopwatch sw = InitializeAction(log, "DisplayGeneralReports", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
 
-            // Perform Action
-            // Get all available reports
-            Collection<ReportDTO> reportsAvailable = _CommonDataMapper.getReports();
-            Collection<ExportsModelView> theModelViews = new Collection<ExportsModelView>();
+			// Perform Action
+			Collection<GeneralReportViewModel> theModelViews = reportsControllerLogic.GetDisplayGeneralReports(ws);
 
-            if (reportsAvailable != null)
-            {
-                // get the reports we are interested in and order the way we want
-                ReportDTO boeStatusReport = reportsAvailable.Where(x => x.ReportType == ReportType.View && x.ReportID == (int)Reports.BOEStatus).Single();
-                theModelViews.Add(new ExportsModelView(boeStatusReport));
-
-                ReportDTO boeActivityReport = reportsAvailable.Where(x => x.ReportType == ReportType.View && x.ReportID == (int)Reports.BOEActivity).Single();
-                theModelViews.Add(new ExportsModelView(boeActivityReport));
-
-                ReportDTO workspaceActivityReport = reportsAvailable.Where(x => x.ReportType == ReportType.View && x.ReportID == (int)Reports.WorkspaceActivity).Single();
-                theModelViews.Add(new ExportsModelView(workspaceActivityReport));
-
-                ReportDTO discrepancyReport = reportsAvailable.Where(x => x.ReportType == ReportType.View && x.ReportID == (int)Reports.BoeDiscrepancy).Single();
-                theModelViews.Add(new ExportsModelView(discrepancyReport));
-
-                ReportDTO validateAllReport = reportsAvailable.Where(x => x.ReportType == ReportType.View && x.ReportID == (int)Reports.ValidateAllBOE).Single();
-                theModelViews.Add(new ExportsModelView(validateAllReport));
-
-				if (Utilities.IsConfidenceReportEnabled)
-				{
-					ReportDTO confidenceReport = reportsAvailable.Where(x => x.ReportType == ReportType.View && x.ReportID == (int)Reports.ConfidenceReport).Single();
-					theModelViews.Add(new ExportsModelView(confidenceReport));
-				}
-
-                if (FullObjectHelper.ShowEquivalentPersonsOption && ws.IsUsingEquivalentPerson)
-                {
-                    foreach (ExportsModelView model in theModelViews)
-                    {
-                        model.Description = model.Description.Replace("Hours", "EPs").Replace("hour", "EP");
-                    }
-                }
-            }
-            ViewResult toReturn = View(WebConstants.VIEW_GENERAL_REPORTS, theModelViews);
+			ViewResult toReturn = View(WebConstants.VIEW_GENERAL_REPORTS, theModelViews);
 
             // Finalize Action
             FinalizeAction(log, "DisplayGeneralReports", sw);
@@ -1343,7 +1206,7 @@ namespace GenBOE.Web.Controllers
             // generate the complete set of all BOEs for this workspace
             ICollection<BoeCustomReportBoeData> boeData = this.GetBoeDataForWorkspace(ws, selectedSortBy, secondarySelectedSortBy);
 
-            CustomReportSelectorModelView viewModelCustomReport = new CustomReportSelectorModelView(workspace, boeData, selectedSortBy, secondarySelectedSortBy, selections, ws.UsingTemplateBOE, Utilities.ShowSkillMixForWorkspace(ws.CreationDate));
+            CustomReportSelectorModelView viewModelCustomReport = new CustomReportSelectorModelView(workspace, boeData, selectedSortBy, secondarySelectedSortBy, selections, ws.UsingTemplateBOE, Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.Shortname));
             ViewData["ContainsOCI"] = ws.ContainsOCI.ToString().ToLower();
 
             return this.PartialView(WebConstants.VIEW_BOE_CUSTOM_REPORT_SELECTOR, viewModelCustomReport);

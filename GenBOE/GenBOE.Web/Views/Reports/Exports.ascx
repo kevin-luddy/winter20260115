@@ -1,4 +1,4 @@
-﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<IEnumerable<GenBOE.ActionLogic.ModelView.ExportsModelView>>" %>
+﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<IEnumerable<GenBOE.ActionLogic.ModelView.Backend.GeneralReportViewModel>>" %>
 
 <%@ Import Namespace="System.Collections.ObjectModel" %>
 
@@ -264,7 +264,7 @@
                 <% foreach (var item in Model) { 
                     bool isAllBOEsReport = (item.ReportID == (int)Reports.AllBOEs);
                     
-                    if (isAllBOEsReport) {%>
+                       if (isAllBOEsReport) {%>
                         <tr pkid="<%: item.ReportID %>" reportName="<%: item.ReportName %>">
                             <td style="vertical-align: top;"><span><%: item.ReportName %></span></td>
                             <td>
@@ -288,23 +288,23 @@
                                 ssrs = "ssrsUrl=" + ssrsItem.ReportUrl;
                             }
                             %>
-					<tr pkid="<%: item.ReportID %>" <%:ssrs %> reportName="<%: item.ReportName %>">
-						<td><span><%: item.ReportName %></span></td>
-						<td><span><%: item.Description %></span></td>
-						<td style="text-align: right">
-							<%if (item.ReportID == (int)Reports.AllBOEs) { %>
-								<span><a name="Reports-ExportButton">Export...</a>
-									<%if (supportCustomExport) {%>
-										&nbsp;|&nbsp;<a name="Reports-CustomExportButton">Custom Export...</a>
-									<%}%>
-								</span>
-							<% } else { %>
-								<span><a name="Reports-ExportButton">Export...</a></span>
-							<% } %>
-						</td>
-					</tr>
-                <%}%>
-            <% } // end foreach 
+					    <tr pkid="<%: item.ReportID %>" <%:ssrs %> reportName="<%: item.ReportName %>">
+						    <td><span><%: item.ReportName %></span></td>
+						    <td><span><%: item.Description %></span></td>
+						    <td style="text-align: right">
+							    <%if (item.ReportID == (int)Reports.AllBOEs) { %>
+								    <span><a name="Reports-ExportButton">Export...</a>
+									    <%if (supportCustomExport) {%>
+										    &nbsp;|&nbsp;<a name="Reports-CustomExportButton">Custom Export...</a>
+									    <%}%>
+								    </span>
+							    <% } else { %>
+								    <span><a name="Reports-ExportButton">Export...</a></span>
+							    <% } %>
+						    </td>
+					    </tr>
+                    <%}%>
+                <% } // end foreach 
                 if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST) {
                 %>
                 <tr offloadtype="false">
