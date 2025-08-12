@@ -218,7 +218,7 @@ namespace IES.ActionLogic.Core.IO.Export
 			StructuredDocumentTag historyElement = WordUtilities.GetTaggedChildElement(introductionContainerTemplate,
 				PPRDExporterConstants.FIELDNAME_HISTORY);
 			WordUtilities.SetElementTextWithHTML(document, historyElement,
-				WordUtilities.ReplaceParagraphTags(revision.History));
+				WordUtilities.ReplaceParagraphTags(revision.History), false, true);
 
 			// populate Release Notes
 			StructuredDocumentTag publishDateElement = WordUtilities.GetTaggedChildElement(introductionContainerTemplate,
@@ -230,7 +230,7 @@ namespace IES.ActionLogic.Core.IO.Export
 			if (!string.IsNullOrWhiteSpace(revision.ReleaseNotes))
 			{
 				WordUtilities.SetElementTextWithHTML(document, releaseNotesElement,
-					WordUtilities.ReplaceParagraphTags(revision.ReleaseNotes));
+					WordUtilities.ReplaceParagraphTags(revision.ReleaseNotes), false, true);
 			}
 			else
 			{
@@ -312,7 +312,7 @@ namespace IES.ActionLogic.Core.IO.Export
 
 						if (modelView.ContentType == SectionContentType.Text && textElement != null)
 						{
-							WordUtilities.SetElementTextWithHTML(mainPart, textElement, modelView.TextContent, false);
+							WordUtilities.SetElementTextWithHTML(mainPart, textElement, modelView.TextContent, false, true);
 
 							if (modelView.IsInternalSection ?? false)
 							{
@@ -485,7 +485,7 @@ namespace IES.ActionLogic.Core.IO.Export
 					string hyperlink = string.Format("<a href=\"{1}\">{0}</a>", attachment.Name, attachment.Link);
 
 					// Set the hyperlink
-					WordUtilities.SetElementTextWithHTML(mainPart, textElement, hyperlink, false);
+					WordUtilities.SetElementTextWithHTML(mainPart, textElement, hyperlink, false, true);
 
 					// Remove table elements
 					RemoveElement(rateTableElement);
@@ -521,7 +521,7 @@ namespace IES.ActionLogic.Core.IO.Export
 						PPRDExporterConstants.FIELDNAME_SECTIONNUMBER);
 					if (sectionNumberElement != null)
 					{
-						WordUtilities.SetElementText(sectionNumberElement, section.ReferenceNumber + ControlChar.LineBreak);
+						WordUtilities.SetElementText(sectionNumberElement, section.ReferenceNumber);
 
 						if (section.IsInternalSection == true)
 						{
@@ -533,7 +533,7 @@ namespace IES.ActionLogic.Core.IO.Export
 						PPRDExporterConstants.FIELDNAME_SECTIONTITLE);
 					if (sectionTitleElement != null)
 					{
-						WordUtilities.SetElementText(sectionTitleElement, section.Title);
+						WordUtilities.SetElementText(sectionTitleElement, section.Title + ControlChar.LineBreak);
 
 						if (section.IsInternalSection == true)
 						{
@@ -568,7 +568,7 @@ namespace IES.ActionLogic.Core.IO.Export
 						PPRDExporterConstants.FIELDNAME_SUBSECTIONTITLE);
 					if (subsectionTitleElement != null)
 					{
-						WordUtilities.SetElementText(subsectionTitleElement, section.Title);
+						WordUtilities.SetElementText(subsectionTitleElement, section.Title + ControlChar.LineBreak);
 
 						if (section.IsInternalSection == true)
 						{
@@ -603,7 +603,7 @@ namespace IES.ActionLogic.Core.IO.Export
 						PPRDExporterConstants.FIELDNAME_SUBSUBSECTIONTITLE);
 					if (subsubsectionTitleElement != null)
 					{
-						WordUtilities.SetElementText(subsubsectionTitleElement, section.Title);
+						WordUtilities.SetElementText(subsubsectionTitleElement, section.Title + ControlChar.LineBreak);
 
 						if (section.IsInternalSection == true)
 						{

@@ -381,13 +381,10 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <param name="removeSpacing">Removes spacing under certain circumstances -> Bool for if the extra spacing before and after paragraphs should be removed</param>
 		[SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "3#")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
-		public static void SetElementTextWithHTML(Document document, StructuredDocumentTag element, string htmlFormattedText, bool removeSpacing = false)
+		public static void SetElementTextWithHTML(Document document, StructuredDocumentTag element, string htmlFormattedText, bool removeSpacing = false, bool keepParagraphs = false)
 		{
 			if (element != null)
 			{
-				//	// the idea for altchunks was based on http://yeshagupta.blogspot.com/2010/06/downloading-ms-word-2007-files-for-html.html
-				//	// it's been heavily modified & adjusted beyond what it started it..
-
 				// Clears out the original text
 				SetElementText(element, ControlChar.LineBreak);
 
@@ -403,29 +400,6 @@ namespace IES.Common.Core.OfficeUtilities
 
 					Node insertionPoint = element;
 
-					//// Insertion point has to be inside a Paragraph, and you cannot have paragraphs inside paragraphs
-					//if (element.ParentNode != null && element.ParentNode is Paragraph)
-					//{
-					//	insertionPoint = element;
-					//}
-					//else
-					//{
-					//	// Try to create a paragraph inside the SDT so DocumentBuilder can MoveTo it
-					//	Paragraph paragraph = new Paragraph(document);
-					//	element.AppendChild(paragraph);
-					//	insertionPoint = paragraph;
-					//}
-
-					//// Insertion point has to be inside a Paragraph, and you cannot have paragraphs inside paragraphs
-					//if (element.GetAncestor(NodeType.Paragraph) is null)
-					//{
-					//	// Try to create a paragraph inside the SDT so DocumentBuilder can MoveTo it
-					//	Paragraph paragraph = new Paragraph(document);
-					//	element.AppendChild(paragraph);
-					//	insertionPoint = paragraph;
-					//}
-					//else
-					//{
 					if (element.Level == MarkupLevel.Block)
 					{
 						element.AppendChild(new Paragraph(document));
@@ -435,43 +409,22 @@ namespace IES.Common.Core.OfficeUtilities
 						element.AppendChild(new Run(document));
 					}
 
-					//insertionPoint = element.FirstChild;
-
-					//if (insertionPoint.ParentNode is not Paragraph)
-					//{
-					//	if (element.Level != MarkupLevel.Block)
-					//	{
-					//		// HACK we will create a copy of the SDT with BLOCK markup level and insert html into that directly
-					//		// Doing this because creating a Run inside the SDT usually works but sometimes barfs
-					//		StructuredDocumentTag tempTag = new StructuredDocumentTag(document, SdtType.RichText, MarkupLevel.Block);
-					//		element.ParentNode.InsertAfter(tempTag, element);
-					//		insertionPoint = tempTag;
-
-					//		// remove original element
-					//		element.Remove();
-					//	}
-
-					//	//// we will insert a Run inside the SDT and use that
-					//	//element.RemoveAllChildren();
-					//	//element.AppendChild(new Run(document));
-					//	//insertionPoint = element.FirstChild;
-					//}
-					//// Hack
-					//while (insertionPoint.ParentNode is not Paragraph)
-					//{
-					//	insertionPoint = insertionPoint.ParentNode;
-					//}
-					//}
-
 					// Aspose HACK inserting paragraphs inside of SDT that is buried inside other SDT(s) inside a Paragraph causes issues
 					//     instead, we will convert any paragraphs in the SDT to line breaks
-
-					htmlFormattedText = ReplaceParagraphTagsWithLineBreaks(htmlFormattedText);
+					if (!keepParagraphs)
+					{
+						htmlFormattedText = ReplaceParagraphTagsWithLineBreaks(htmlFormattedText);
+					}
 
 					DocumentBuilder builder = new DocumentBuilder(document);
 					builder.MoveTo(insertionPoint);
-					//builder.MoveToStructuredDocumentTag(element, 0);
-					HtmlInsertOptions options = HtmlInsertOptions.RemoveLastEmptyParagraph; // removeSpacing ? HtmlInsertOptions.RemoveLastEmptyParagraph : HtmlInsertOptions.None;
+					HtmlInsertOptions options = HtmlInsertOptions.RemoveLastEmptyParagraph;
+
+					if (keepParagraphs && !removeSpacing)
+					{
+						// If we are keeping paragraphs and not removing spacing, then insert the last empty paragraph
+						options = HtmlInsertOptions.None;
+					}
 
 					try
 					{
@@ -479,6 +432,10 @@ namespace IES.Common.Core.OfficeUtilities
 					}
 					catch (InvalidOperationException ex)
 					{
+						// Error inserting the paragraph, we need to remove them
+						options = HtmlInsertOptions.RemoveLastEmptyParagraph;
+						htmlFormattedText = ReplaceParagraphTagsWithLineBreaks(htmlFormattedText);
+
 						element.RemoveAllChildren();
 						builder.MoveToStructuredDocumentTag(element, 0);
 						builder.InsertHtml(htmlFormattedText, options);
