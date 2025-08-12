@@ -674,6 +674,7 @@ namespace GenBOE.ActionLogic
 			toReturn.CurrentUserId = ws.CurrentActiveUser.UserID;
 			toReturn.CurrentUserDisplayName = ws.CurrentActiveUser.DisplayName;
 			toReturn.IsPastCutOffDate = ws.CreationDate > Utilities.ShowINLCutoffDate;
+			toReturn.WorkspaceName = ws.WorkspaceName;
 
 			return toReturn;
 		}
