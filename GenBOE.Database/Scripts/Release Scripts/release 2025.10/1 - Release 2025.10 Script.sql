@@ -2,8 +2,8 @@ EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2025.10';
 GO
 
 -- Author: ranzalon
--- JIRA Story: PROPH-3038
--- Contracts Tab Delegation of Authority Addition & Additional EPP Date Fields
+-- JIRA Story: PROPH-1869
+-- Add Task Author ProPricer LU Fields
 
 IF NOT EXISTS (SELECT * FROM dbo.ProPricerFieldLU WHERE ProPricerFieldID IN (85, 86))
 	INSERT INTO ProPricerFieldLU
