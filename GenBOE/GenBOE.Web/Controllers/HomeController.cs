@@ -6,18 +6,17 @@
 
 namespace GenBOE.Web.Controllers
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Collections.ObjectModel;
-	using System.Diagnostics;
-	using System.Linq;
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Diagnostics;
+    using System.Linq;
 	using System.Transactions;
-	using System.Web.Mvc;
-	using GenBOE.ActionLogic;
+    using System.Web.Mvc;
+    using GenBOE.ActionLogic;
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.ControllerLogic;
-	using GenBOE.ActionLogic.ControllerLogic.Backend;
-	using GenBOE.ActionLogic.Metrics;
+    using GenBOE.ActionLogic.Metrics;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.Validation;
     using GenBOE.DataBridge.Common;
@@ -43,18 +42,17 @@ namespace GenBOE.Web.Controllers
         private GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader;
         private IWorkspaceControllerLogic workspaceLogic;
 
-		/// <summary>
-		/// Home Controller Logic
-		/// </summary>
-		private WorkspaceHomeControllerLogic workspaceHomeControllerLogic = null;
-		private IHomeControllerLogic homeLogic = null;
+        /// <summary>
+        /// Home Controller Logic
+        /// </summary>
+        private IHomeControllerLogic homeLogic = null;
         private IWorkspaceDTODataLoader _WorkspaceDTODataLoader = null;
         private ActiveDirectoryUtilities _ADUtils = null;
 
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		public HomeController(ISecurityAccess inSecurityAccess,
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public HomeController(ISecurityAccess inSecurityAccess,
             CommonDataMapper inCommonDataMapper,
             SiteMasterUtilities inSiteMasterUtilities,
             ValidationFactory inValidationFactory,
@@ -70,8 +68,7 @@ namespace GenBOE.Web.Controllers
             IGenBOEControllerLogic inControllerLogic,
             GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader,
             GenTRAC.DataBridge.Common.Security.ISecurityMapper ptmSecurityMapper,
-            IWorkspaceControllerLogic workspaceLogic,
-			WorkspaceHomeControllerLogic workspaceHomeControllerLogic)
+            IWorkspaceControllerLogic workspaceLogic)
             : base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inUserDTODataLoader, permissionsLoader, inControllerLogic)
         {
             _ValidationFactory = inValidationFactory;
@@ -83,7 +80,6 @@ namespace GenBOE.Web.Controllers
             this.proposalLoader = proposalLoader;
             this.ptmSecurityMapper = ptmSecurityMapper;
             this.workspaceLogic = workspaceLogic;
-			this.workspaceHomeControllerLogic = workspaceHomeControllerLogic;
         }
 
         public JsonResult GetUserMetricsModel()
@@ -466,7 +462,10 @@ namespace GenBOE.Web.Controllers
         /// <returns>results for display</returns>
         public ViewResult DisplayWhosOnline()
         {
-			return View(WebConstants.VIEW_HOME_WHOS_ONLINE_INDEX, workspaceHomeControllerLogic.DisplayWhosOnline());
+            GenBOEUsersOnlineDTO systemMetricInfo = boeMetricsLoader.GetOnlineUserDetails();
+            WhosOnlineGridModelView viewModel = new WhosOnlineGridModelView(systemMetricInfo);
+
+            return View(WebConstants.VIEW_HOME_WHOS_ONLINE_INDEX, viewModel);
         }
 
         /// <summary>

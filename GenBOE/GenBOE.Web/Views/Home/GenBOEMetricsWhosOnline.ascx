@@ -1,4 +1,4 @@
-﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<GenBOE.ActionLogic._ModelView.WhosOnlineGridModelView>" %>
+﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<WhosOnlineGridModelView>" %>
 <%@ Import Namespace="System.Web.Script.Serialization" %>
 <%
         var serializer = new JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };

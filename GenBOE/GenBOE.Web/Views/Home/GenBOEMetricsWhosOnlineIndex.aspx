@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Views/Home/Master/Home.Master" Inherits="System.Web.Mvc.ViewPage<GenBOE.ActionLogic._ModelView.WhosOnlineGridModelView>" %>
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Views/Home/Master/Home.Master" Inherits="System.Web.Mvc.ViewPage<WhosOnlineGridModelView>" %>
 <%@ Import Namespace="System.Web.Script.Serialization" %>
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
     <%
