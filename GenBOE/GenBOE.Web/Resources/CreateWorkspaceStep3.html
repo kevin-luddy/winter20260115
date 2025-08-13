@@ -11,11 +11,17 @@
             </div>
         </div>
     </div>
+  
     <div class="form-element">
+        <div data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber !=''">
+            <span>{{model.nextRevision}} </span>
+            <!--<input class="half" data-ng-trim="false" data-ng-model="data.RevisionWorkspaceName" type="text" maxlength="88" />-->
+            <input name="WorkspaceName" class="full" id="WorkspaceName" data-ng-keyup="workspaceNameKeyUp()" data-ng-model="data.WorkspaceName" type="text" maxlength="100" />
+        </div>
         <div data-ng-show="model.isPTMIntegrated && model.ptmTrackingNumber !== ''">
             <span>{{model.nextRevision}} </span><input class="half" data-ng-trim="false" data-ng-model="data.RevisionWorkspaceName" type="text" maxlength="88" />
         </div>
-        <input data-ng-hide="model.isPTMIntegrated && model.ptmTrackingNumber !== ''" name="WorkspaceName" class="full" id="WorkspaceName" data-ng-keyup="workspaceNameKeyUp()" data-ng-model="data.WorkspaceName" type="text" maxlength="100" />
+        <input ng-if="!model.IsPLDIntegrated" data-ng-hide="model.isPTMIntegrated && model.ptmTrackingNumber !== ''" name="WorkspaceName" class="full" id="WorkspaceName" data-ng-keyup="workspaceNameKeyUp()" data-ng-model="data.WorkspaceName" type="text" maxlength="100" />
     </div>
 </div>
 <div class="form-row">
@@ -182,7 +188,7 @@
         <label for="AllowGridEdit-No">No</label>
     </div>
 </div>
-<div class="form-row">
+<div class="form-row" ng-if="!model.IsPLDIntegrated">
     <div class="form-label" data-ng-hide="model.isSSC">
         Proposal Submittal Date
     </div>
@@ -240,7 +246,6 @@
         </select>
     </div>
 </div>
-<!--PLD PA Number-->
 <div class="form-row" data-ng-show="model.IsPLDIntegrated">
     <div class="form-label">
         <span>PLD PA Number</span>
@@ -252,11 +257,12 @@
                 The PLD PA Number.
             </div>
         </div>
-        <div class="form-element">
-            <span>{{data.PLD_PANumber}}</span>
-            <input class="full ignoreValidation" style="width:100px" readonly id="TrackingNumber" maxlength="100" name="TrackingNumber" type="text" data-ng-model="model.PLD_PANumber">
-        </div>
     </div>
+    <div class="form-element">        
+        <div class="readonly-value">
+            {{ model.PLD_PANumber}}
+        </div>        
+    </div>   
 </div>
 <div class="form-row" data-ng-hide="model.isSSC">
     <div class="form-label">
@@ -266,7 +272,6 @@
         <input ng-readonly="model.IsPLDIntegrated" class="full ignoreValidation" id="RFPNumber" maxlength="100" name="RFPNumber" type="text" data-ng-model="data.RFPNumber">
     </div>
 </div>
-<!--PLD PA Title-->
 <div class="form-row" data-ng-show="model.IsPLDIntegrated">
     <div class="form-label">
         <span>PLD PA Title</span>
@@ -278,11 +283,13 @@
                 The PLD PA Title.
             </div>
         </div>
-        <div class="form-element">
-            <span>{{data.PLD_PATitle}}</span>
-            <input class="full ignoreValidation" ng-readonly="model.IsPLDIntegrated" id="ProposalTitle" maxlength="100" name="ProposalTitle" type="text" data-ng-model="model.PLD_PATitle">
+    </div>
+    <div class="form-element">
+        <div class="readonly-value">
+            {{ model.PLD_PATitle}}
         </div>
     </div>
+    
 </div>
 
 <!--PTM Space-->

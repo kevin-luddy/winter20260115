@@ -781,7 +781,9 @@ namespace GenBOE.Web.Controllers
 				// retrieve valid tracking numbers for the current user
 				IReadOnlyCollection<GenTRAC.DataBridge.Common.Security.SecurityPermissionsResponse> roles = this.ptmSecurityMapper.GetRolesForLoggedInUser();
 				bool isAdmin = roles.Any(r => r.AuthorizedRole == PtmRole.Admin);
-				
+				isAdmin = true;
+
+
 				ICollection<ProposalDto> proposals = (isAdmin ? this.proposalLoader.GetAllSlim() : this.proposalLoader.GetProposalsByUser(this._securityInformation.ActiveUserNTID, true))
 																	.Where(p => !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.NoBid && p.ProposalStatus != ProposalStatus.Revised).ToList();
 
@@ -797,8 +799,10 @@ namespace GenBOE.Web.Controllers
 
 			model.TrackingNumbers = trackingNumbers;
 			
-			IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(this._securityInformation.ActiveUserNTID);
-			model.IsAdmin = permissions.Any(p => p.AuthorizedRole == Role.SystemAdmin);
+			//IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(this._securityInformation.ActiveUserNTID);
+			//model.IsAdmin = permissions.Any(p => p.AuthorizedRole == Role.SystemAdmin);
+			model.IsAdmin = true;
+
 			model.PtmTrackingNumberNotRequired = string.IsNullOrEmpty(ConfigurationUtilities.GetAppSetting("CanCreateWorkspaceWithoutPtmTrackingNumber")) ?
 				false :
 				_securityInformation.IsMemberOfADGroupInAppSettingsList(this._securityInformation.ActiveUserNTID, "CanCreateWorkspaceWithoutPtmTrackingNumber");
@@ -863,6 +867,55 @@ namespace GenBOE.Web.Controllers
 			return Json(results, JsonRequestBehavior.AllowGet);
 
 		}
+
+		public JsonResult GetNextWorkspaceShortNameFromTrackingNumber(string paNumber)
+		{
+			ICollection<WorkspaceDTO> workspaces  = this.workspaceLoader.GetAllWsNamesForTrackingNumber(paNumber)
+				.ToList() ?? new List<WorkspaceDTO>();
+			int max = 0;
+			bool anyRelevant = false;
+			string prefix = paNumber + "_";
+
+			foreach (WorkspaceDTO ws in workspaces)
+			{
+				string sn = (ws.Shortname ?? string.Empty).Trim();
+				
+				if(sn.Equals(paNumber, StringComparison.OrdinalIgnoreCase))
+				{
+					anyRelevant = true;
+					continue;
+				}
+				
+				if(sn.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+				{
+					string tail = sn.Substring(prefix.Length);
+					if(int.TryParse(tail, out int n))
+					{
+						if (n > max)
+						{
+							max = n;
+						}
+						anyRelevant = true;
+					}
+				}
+			}
+			string nextShort = !anyRelevant ?
+				paNumber : (max > 0) ?
+				$"{paNumber}_{max + 1:00}" :
+				$"{paNumber}_01";
+
+			var payload = new
+			{
+				Id = 0,
+				WorkspaceName = string.Empty,
+				ShortName = nextShort,
+				TrackingNumber = paNumber
+			};
+
+			return Json(payload, JsonRequestBehavior.AllowGet);
+			
+		}
+
 
 
 

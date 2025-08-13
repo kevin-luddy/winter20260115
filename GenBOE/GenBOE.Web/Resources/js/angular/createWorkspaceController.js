@@ -65,7 +65,7 @@
 	}
 
 	$scope.model = $scope.model || {};
-	$scope.model.searchTerm = '';
+	$scope.model.pldSearchTerm = '';
 	$scope.model.PLD_PANumber = '';
 	$scope.model.PLD_PATitle = ''; 
 	$scope.isFromSelection = false;
@@ -81,10 +81,10 @@
 	}
 
 	$scope.tryParsePLDSelection = function () {
-		var text = $scope.model.searchTerm;
+		var text = $scope.model.pldSearchTerm;
 
 		if (!text || text.trim().length === 0) {
-			console.warn("Skipping parsing - searchTerm is empty");
+			console.warn("Skipping parsing - pldSearchTerm is empty");
 			return;
 		}
 
@@ -108,14 +108,12 @@
 	let debounceTimer;
 
 	$scope.handleDropdownSelection = function () {
-		console.log("dropdown selection made  setting isFromSelection to true");
 		$scope.isFromSelection = true;
 		$scope.tryParsePLDSelection();
 	}
 
 
-
-	$scope.$watch('model.searchTerm',
+	$scope.$watch('model.pldSearchTerm',
 		function (newVal, oldVal) {
 
 			if (!newVal || newVal === oldVal) {
@@ -129,7 +127,6 @@
 			}
 		
 			if ($scope.isFromSelection) {
-				console.log('inside isFromSelection  about to set to false ')
 				$scope.isFromSelection = false;
 				return; 
 			}
@@ -176,16 +173,12 @@
 		const lobId = ($scope.model && $scope.model.lobIdLookup)
 			? $scope.model.lobIdLookup[canonical] || null : null;
 
-		console.log(`resolved lob name: "${pldName}" "${canonical}" ID: ${lobId}`);
-
+	
 		return lobId;
 	}
 
 	function parseDotNetDate(dotNetDate) {
-
-		console.log('dotnet raw ', dotNetDate);
-		console.log('type of dotnetdate', typeof dotNetDate);
-
+			
 		if (!dotNetDate || typeof dotNetDate !== 'string')
 			return 'N/A';
 
@@ -268,11 +261,24 @@
 
 	$scope.setStepSpecificElements = function (newStep) {
 
-		$scope.data.TrackingNumber = $scope.model.PLD_PANumber;
-		$scope.data.ProposalTitle = $scope.model.PLD_PATitle;
-		
+
+		if ($scope.model.IsPLDIntegrated) {
+			$scope.data.TrackingNumber = $scope.model.PLD_PANumber;
+			$scope.data.ProposalTitle = $scope.model.PLD_PATitle;
+		}
+
+
+		if ($scope.model.IsPLDIntegrated && newStep === 5) {
+
+			$scope.data.WorkspaceName = $scope.data.nextRevision + " " + $scope.data.WorkspaceName;
+			$scope.data.Shortname = $scope.data.nextRevision;
+
+		}
+
+
 
 		if ($scope.model.IsPLDIntegrated && newStep === 3) {
+			
 
 			$http.get('/default/Workspace/GetLineOfBusiness')
 				.then(function (response) {
@@ -307,10 +313,24 @@
 					$scope.data.ContractStartDate = $scope.model.ContractStartDate;
 					$scope.data.ContractEndDate = $scope.model.ContractEndDate;
 
+					console.log('model', $scope.model);
+					console.log('data', $scope.data);
+
 				})
 				.catch(function (error) {
 					console.error('Error fetching detail proposal:', error);
 				});
+
+			$http.get('/default/Workspace/GetNextWorkspaceShortNameFromTrackingNumber', { params: { paNumber: $scope.data.TrackingNumber } })
+				.then(function (response) {
+					const data = response.data;
+					console.log('next workspace shortname:', data);
+
+					$scope.model.nextRevision = data.ShortName;
+					$scope.data.nextRevision = $scope.model.nextRevision;
+
+				});
+
 
 		}
 		
