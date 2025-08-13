@@ -55,8 +55,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
             ICommonDataMapper commonDataMapper,
             IProposalLoader proposalLoader,
             IWorkspaceControllerLogic workspaceControllerLogic,
-            TravelTripCostCalculation travelTripCostCalculator)
-            : base(boeExporter, boeSummary, boeCustomExporter, workspaceExportFormatDTOLoader, boeDiscrepancyReport, proposalLoader, workspaceControllerLogic, travelTripCostCalculator)
+            TravelTripCostCalculation travelTripCostCalculator,
+			IPermissionsDTODataLoader permissionsLoader,
+			IUserDTODataLoader userLoader)
+            : base(boeExporter, boeSummary, boeCustomExporter, workspaceExportFormatDTOLoader, boeDiscrepancyReport, proposalLoader, workspaceControllerLogic, travelTripCostCalculator,
+				  commonDataMapper, permissionsLoader, userLoader)
         {
             this._CommonDataMapper = commonDataMapper;
         }

@@ -5,14 +5,10 @@
 // -----------------------------------------------------------------------
 namespace GenBOE.Web.Controllers.Backend
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Collections.ObjectModel;
-	using System.Diagnostics;
-	using System.Linq;
-	using System.Web.Http;
+	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ControllerLogic.Backend;
+	using GenBOE.ActionLogic.ModelView.BOE;
 	using GenBOE.ActionLogic.ModelView.Clin;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
@@ -22,6 +18,12 @@ namespace GenBOE.Web.Controllers.Backend
 	using IES.Common;
 	using IES.Common.classes;
 	using IES.Common.PickList;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Diagnostics;
+	using System.Linq;
+	using System.Web.Http;
 
 	/// <summary>
 	/// Workspace Admin Controller
@@ -31,17 +33,22 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <summary>
 		/// Contract Type loader
 		/// </summary>
-		private ContractTypeLoader contractTypeLoader;
+		private readonly ContractTypeLoader contractTypeLoader;
 
 		/// <summary>
 		/// Workspace Admin Controller Logic
 		/// </summary>
-		private WorkspaceAdminControllerLogic workspaceAdminControllerLogic;
+		private readonly WorkspaceAdminControllerLogic workspaceAdminControllerLogic;
+
+		/// <summary>
+		/// BOE Controller Logic
+		/// </summary>
+		private readonly IBOEControllerLogic boeControllerLogic;
 
 		/// <summary>
 		/// logger
 		/// </summary>
-		private Logger logger = new Logger("WorkspaceAdminController");
+		private readonly Logger logger = new Logger("WorkspaceAdminController");
 
 		/// <summary>
 		/// Constructor
@@ -50,11 +57,15 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <param name="factory"></param>
 		/// <param name="userLoader"></param>
 		/// <param name="permissionsLoader"></param>
-		public WorkspaceAdminController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, WorkspaceAdminControllerLogic workspaceAdminControllerLogic, ContractTypeLoader contractTypeLoader)
+		/// <param name="workspaceAdminControllerLogic"></param>
+		/// <param name="contractTypeLoader"></param>
+		/// <param name="boeControllerLogic"></param>
+		public WorkspaceAdminController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, WorkspaceAdminControllerLogic workspaceAdminControllerLogic, ContractTypeLoader contractTypeLoader, IBOEControllerLogic boeControllerLogic)
 	: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.workspaceAdminControllerLogic = workspaceAdminControllerLogic;
 			this.contractTypeLoader = contractTypeLoader;
+			this.boeControllerLogic = boeControllerLogic;
 		}
 
 		/// <summary>
@@ -130,6 +141,48 @@ namespace GenBOE.Web.Controllers.Backend
 
 				// Finalize Action
 				FinalizeAction(logger, WebConstants.ACTION_GET_MANAGE_WBS_MODEL, sw);
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occurred returning WBS data: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get WBSs for Workspace in Manage WBS page
+		/// </summary>
+		/// <param name="workspaceShortName"> the workspace shortname</param>
+		/// <returns>The MV for the Manage WBS grid</returns>
+		[HttpGet]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<ManageBOEGridWidgetModelView> GetManageBOE(string workspaceShortName)
+		{
+			IESSingleResponse<ManageBOEGridWidgetModelView> result = new IESSingleResponse<ManageBOEGridWidgetModelView>();
+
+			try
+			{
+				ManageBOEGridWidgetModelView theModelView = new ManageBOEGridWidgetModelView();
+				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortName);
+
+				// Initialize Action
+				Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_GET_MANAGE_BOE_MODEL, SecurityPage.ManageBOEs, SecurityAuthorization.Read, new Collection<WorkspaceDTO>() { ws }, null);
+
+				theModelView.ContainsOCI = ws.ContainsOCI;
+
+
+				boeControllerLogic.CalculateManageBOEDefaults(theModelView, ws);
+
+				theModelView.ManageBoeHeaderInfo = boeControllerLogic.GetCompanySpecificManageBoeHeaderInfo;
+				theModelView.WorkspaceState = ws.WorkspaceState;
+				theModelView.AllowBOEStateChanges = (CheckPermission(SecurityPage.EditBoeLockedState, ws, null) == SecurityAuthorization.CreateReadUpdateDelete);
+				result.Data = theModelView;
+				result.IsSuccessful = true;
+
+				// Finalize Action
+				FinalizeAction(logger, WebConstants.ACTION_GET_MANAGE_BOE_MODEL, sw);
 			}
 			catch (Exception ex)
 			{

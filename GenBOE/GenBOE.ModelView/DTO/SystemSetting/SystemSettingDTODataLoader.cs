@@ -66,12 +66,35 @@ namespace GenBOE.DataBridge.DTO
             return toReturn;
         }
 
-        /// <summary>
-        /// Get the system setting DTO
-        /// </summary>
-        /// <param name="key">system setting key to retrieve</param>
-        /// <returns>system setting value</returns>
-        [DbQuery]
+
+		virtual public ICollection<SystemSettingDTO> GetSkillMixSettings()
+		{
+			ICollection<SystemSettingDTO> toReturn = new Collection<SystemSettingDTO>();
+			using (StopwatchTimer sw = new StopwatchTimer(this._log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					toReturn =
+					   (from ss in gbe.SystemSettings
+						where ss.Key.Contains(Constants.SKILL_MIX_BLACKLIST)
+						select new SystemSettingDTO
+						{
+							Key = ss.Key,
+							Value = ss.Value
+						}
+						).OrderBy(ss => ss.Key).ToList();
+				}
+			}
+
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Get the system setting DTO
+		/// </summary>
+		/// <param name="key">system setting key to retrieve</param>
+		/// <returns>system setting value</returns>
+		[DbQuery]
         virtual public SystemSettingDTO GetSystemSetting(string key)
         {
             if (string.IsNullOrEmpty(key))

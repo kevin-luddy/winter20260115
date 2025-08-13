@@ -280,6 +280,7 @@
     <Compile Include="Controllers\Backend\CLINController.cs" />
     <Compile Include="Controllers\Backend\ImportController.cs" />
     <Compile Include="Controllers\Backend\ManagePermissionsController.cs" />
+    <Compile Include="Controllers\Backend\ManageReportsController.cs" />
     <Compile Include="Controllers\Backend\WBSController.cs" />
     <Compile Include="Controllers\Backend\WorkspaceAdminController.cs" />
     <Compile Include="Controllers\Backend\WorkspaceHomeController.cs" />

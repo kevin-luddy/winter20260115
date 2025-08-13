@@ -1087,5 +1087,10 @@ namespace IES.Common
 		/// Error to display to the user when they encounter a 401 error.
 		/// </summary>
 		public static readonly string GENERIC_USER_UNAUTHORIZED = "You are not authorized to access the requested action. If the problem persists, please contact your application administrator.";
+
+		/// <summary>
+		/// System Setting for listing which workspaces are blacklisted for Skill Mix
+		/// </summary>
+		public static readonly string SKILL_MIX_BLACKLIST = "SkillMixBlacklist";
 	}
 }

@@ -32,7 +32,7 @@ namespace GenBOE.Web.Controllers
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.Common.Interfaces;
     using GenBOE.DataBridge.DTO;
-    using GenBOE.DataBridge.Reference;
+	using GenBOE.DataBridge.Reference;
     using GenBOE.Dtos;
     using GenBOE.Models;
     using GenBOE.Objects;
@@ -1424,10 +1424,18 @@ namespace GenBOE.Web.Controllers
         {
             Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_SYSTEM_SETTINGS, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
-            // Get the current system settings
-            ICollection<SystemSettingDTO> systemSettings = this.systemSettingLoader.GetSystemSettings();
+			// Get the current system settings
+			ICollection<SystemSettingDTO> systemSettings;
+			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+			{
+				systemSettings = this.systemSettingLoader.GetSkillMixSettings();
+			}
+			else
+			{
+				systemSettings = this.systemSettingLoader.GetSystemSettings().Where(x => !x.Key.Contains(Constants.SKILL_MIX_BLACKLIST)).ToList();
+			}
 
-            this.FinalizeAction(this._log, WebConstants.ACTION_SYSTEM_SETTINGS, sw);
+			this.FinalizeAction(this._log, WebConstants.ACTION_SYSTEM_SETTINGS, sw);
 
             return this.Json(systemSettings);
         }
@@ -3055,6 +3063,15 @@ namespace GenBOE.Web.Controllers
 
                     scope.Complete();
                 }
+
+				// Skill Mix settings only (Space only) - update the utilities method
+				IEnumerable<string> systemSettingsForSkillMix = systemSettings.Select(x => x.Key);
+				if (systemSettingsForSkillMix.Contains(Constants.SKILL_MIX_BLACKLIST))
+				{
+					Utilities.UpdateSkillMixBlacklistSettings(
+						systemSettings.FirstOrDefault(x => x.Key.Equals(Constants.SKILL_MIX_BLACKLIST)) == null ? string.Empty :
+							systemSettings.FirstOrDefault(x => x.Key.Equals(Constants.SKILL_MIX_BLACKLIST)).Value);
+				}
             }
             else
             {

@@ -1482,26 +1482,12 @@ namespace GenBOE.Web.Controllers
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayWorkspaceStatusHistory", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_STATUS_HISTORY_GRID, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
-			// Call the BL to generate the status report
-			Collection<WorkspaceStatusHistoryModelView> theModelViews = new Collection<WorkspaceStatusHistoryModelView>();
-			IDictionary<int, WorkspaceStateModelView> allWorkspaceStates = _CommonDataMapper.getWorkspaceStatesDictionary();
+			//// Call the BL to generate the status report
+			ICollection<WorkspaceStatusHistoryModelView> theModelViews = this._workspaceSettingsControllerLogic.GetWorkspaceStatusHistory(ws);
 
-			// Create a ModelView for each DTO and add it to the View collection
-			foreach (WorkspaceHistoryDTO workspaceHistory in ws.WorkspaceHistory)
-			{
-				theModelViews.Add(
-					new WorkspaceStatusHistoryModelView
-					{
-						Date = workspaceHistory.Date,
-						OldValue = allWorkspaceStates[(int)workspaceHistory.OldValue].WorkspaceState,
-						NewValue = allWorkspaceStates[(int)workspaceHistory.NewValue].WorkspaceState,
-						PerformedBy = this.UserLoader.GetUserByID(workspaceHistory.PerformedByETIUserId).DisplayName
-					});
-			}
-
-			ViewResult toReturn = null;
+			ViewResult toReturn;
 
 			/** Valid Model Check */
 			if (ModelState.IsValid)
@@ -1514,7 +1500,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayWorkspaceStatusHistory", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_STATUS_HISTORY_GRID, sw);
 			return toReturn;
 		}
 
