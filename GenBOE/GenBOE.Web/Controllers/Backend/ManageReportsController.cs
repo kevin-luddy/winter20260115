@@ -55,8 +55,8 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Get Exports data for report page
 		/// </summary>
-		/// <param name="workspace"></param>
-		/// <returns></returns>
+		/// <param name="workspace">workspace short name</param>
+		/// <returns>Exports Data</returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
@@ -83,8 +83,8 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Get General reports data for report page
 		/// </summary>
-		/// <param name="workspace"></param>
-		/// <returns></returns>
+		/// <param name="workspace">workspace short name</param>
+		/// <returns>General Reports Data</returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
