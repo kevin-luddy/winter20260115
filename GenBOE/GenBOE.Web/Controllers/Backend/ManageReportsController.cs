@@ -7,20 +7,18 @@
 namespace GenBOE.Web.Controllers
 {
 	using System;
-	using System.Linq;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Web.Http;
+	using GenBOE.ActionLogic._ModelView.Backend;
+	using GenBOE.ActionLogic.ControllerLogic;
+	using GenBOE.ActionLogic.IESSAPClient;
 	using GenBOE.ActionLogic.ModelView.Backend;
+	using GenBOE.ActionLogic.Reporting;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Objects;
 	using IES.Common;
-	using GenBOE.Dtos;
-	using GenBOE.DataBridge.Common;
-	using System.Collections.ObjectModel;
-	using System.Collections.Generic;
-	using IES.Common.classes;
-	using GenBOE.Web.Common;
-	using GenBOE.ActionLogic.ControllerLogic;
-	using GenBOE.ActionLogic._ModelView.Backend;
 
 	/// <summary>
 	/// Manage Permissions Controller for getting workspace home data.
@@ -59,7 +57,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
-		[System.Web.Http.HttpGet]
+		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
 		public IESSingleResponse<ExportReportViewModel> GetExports(string workspace)
@@ -87,18 +85,74 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
-		[System.Web.Http.HttpGet]
+		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
-		public IESSingleResponse<Collection<GeneralReportViewModel>> GetGeneralReports(string workspace)
+		public IESResponse<GeneralReportViewModel> GetGeneralReports(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-			IESSingleResponse<Collection<GeneralReportViewModel>> result = new IESSingleResponse<Collection<GeneralReportViewModel>>();
+			IESResponse<GeneralReportViewModel> result = new IESResponse<GeneralReportViewModel>();
 
 			try
 			{
-				Collection<GeneralReportViewModel> theModelViews = reportsControllerLogic.GetDisplayGeneralReports(ws);
+				ICollection<GeneralReportViewModel> theModelViews = reportsControllerLogic.GetDisplayGeneralReports(ws);
 				result.Data = theModelViews;
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add(ex.Message);
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get the BOE Discrepancy Reports Data for Reports Page
+		/// </summary>
+		/// <param name="workspace">Workspace Short Name</param>
+		/// <returns>BOE Discrepancy Report Model View</returns>
+		[HttpGet]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
+		public IESResponse<BoeDiscrepancyReportModelView> GetBOEDiscrepancyReport(string workspace)
+		{
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+			IESResponse<BoeDiscrepancyReportModelView> result = new IESResponse<BoeDiscrepancyReportModelView>();
+
+			try
+			{
+				ICollection<BoeDiscrepancyReportModelView> theModelViews = reportsControllerLogic.GenerateDataForBoeDiscrepancyReport(ws, true);
+				result.Data = theModelViews;
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add(ex.Message);
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get the Hours Label used in the BOE Discrepancy Report
+		/// </summary>
+		/// <param name="workspace">workspace short name</param>
+		/// <returns>label string</returns>
+		[HttpGet]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
+		public IESSingleResponse<string> GetBOEDiscrepancyReportHoursLabel(string workspace)
+		{
+			IESSingleResponse<string> result = new IESSingleResponse<string>();
+
+			try
+			{
+				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+				string hoursLabel = FullObjectHelper.HoursLabel(ws);
+				result.Data = hoursLabel;
 				result.IsSuccessful = true;
 			}
 			catch (Exception ex)
