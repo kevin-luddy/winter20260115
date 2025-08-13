@@ -8,9 +8,7 @@ namespace GenBOE.ActionLogic._ModelView
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Collections.ObjectModel;
 	using System.Linq;
-	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.Dtos;
 	using IES.Common;
 
@@ -35,7 +33,7 @@ namespace GenBOE.ActionLogic._ModelView
 		{
 			if (usersOnlineDetails != null && usersOnlineDetails.UserOnlineDetailsCollection != null)
 			{
-				// Sort by User display name.
+				// Sort by time last accessed.
 				UserResults = usersOnlineDetails.UserOnlineDetailsCollection.OrderByDescending(x => x.TimeLastAccessed).ToCollection();
 
 				foreach (UserOnlineDetails user in UserResults)
