@@ -14,9 +14,7 @@
   
     <div class="form-element">
         <div data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber !=''">
-            <span>{{model.nextRevision}} </span>
-            <!--<input class="half" data-ng-trim="false" data-ng-model="data.RevisionWorkspaceName" type="text" maxlength="88" />-->
-            <input name="WorkspaceName" class="full" id="WorkspaceName" data-ng-keyup="workspaceNameKeyUp()" data-ng-model="data.WorkspaceName" type="text" maxlength="100" />
+            <span>{{model.nextRevision}} </span><input name="WorkspaceName" data-ng-trim="false" class="half" id="WorkspaceName" data-ng-keyup="workspaceNameKeyUp()" data-ng-model="data.WorkspaceName" type="text" maxlength="88" />
         </div>
         <div data-ng-show="model.isPTMIntegrated && model.ptmTrackingNumber !== ''">
             <span>{{model.nextRevision}} </span><input class="half" data-ng-trim="false" data-ng-model="data.RevisionWorkspaceName" type="text" maxlength="88" />
