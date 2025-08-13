@@ -511,6 +511,7 @@
     <Compile Include="_ModelView\Task\TaskElementOrder.cs" />
     <Compile Include="_ModelView\Task\TaskElementOrderCollection.cs" />
     <Compile Include="_ModelView\UsageMetricsModelView.cs" />
+    <Compile Include="_ModelView\WhosOnlineGridModelView.cs" />
     <Compile Include="_ModelView\WorkspaceVariableModelView.cs" />
     <Compile Include="_ModelView\Workspace\CreateWorkspacePageModelView.cs" />
     <Compile Include="_ModelView\Workspace\HomeWorkspaceGridApproverModelView.cs" />
