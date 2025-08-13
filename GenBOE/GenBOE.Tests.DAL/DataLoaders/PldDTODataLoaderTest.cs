@@ -13,17 +13,15 @@ namespace GenBOE.Tests.DAL.DataLoaders
 	[TestClass]
 	public class PldDTODataLoaderTest
 	{
-
-		private Mock<PldDBContext> _mockContext;
-		private PldDTODataLoader _dataLoader;
+		private PldDBContext _context;
+		private PldDTODataLoader _loader;
 
 		[TestInitialize]
 		public void Initialize()
 		{
-			_mockContext = new Mock<PldDBContext>();
-			_dataLoader = new PldDTODataLoader();
+			_context = new PldDBContext();
+			_loader = new PldDTODataLoader(_context);
 		}
-
 
 		[TestMethod]
 		public void GetAllProposals_ReturnsProposals()
