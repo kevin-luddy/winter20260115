@@ -177,7 +177,8 @@ namespace GenBOE.ActionLogic.IO.Export
         internal const string FieldName_TableTitle = "TableTitle";
         internal const string FieldName_TaskCostTotal = "TaskCostTotal";
         internal const string FieldName_TaskDescription = "TaskDescription";
-        internal const string FieldName_TaskDescription_NoSpacing = "TaskDescription-NoSpacing";
+		internal const string FieldName_TaskAuthor = "TaskAuthor";
+		internal const string FieldName_TaskDescription_NoSpacing = "TaskDescription-NoSpacing";
         internal const string FieldName_TaskDescriptionLabel = "TaskDescriptionLabel";
         internal const string FieldName_TaskDetailRevCode = "TaskDetailRevCode";
         internal const string FieldName_TaskDetailRevCodeDesc = "TaskDetailRevCodeDesc";

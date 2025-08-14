@@ -60,6 +60,7 @@ namespace GenBOE.Dtos
 
         public int BoeID { get; set; }
         public string BOETaskDesc { get; set; }
+		public string BOETaskAuthor { get; set; }
         public string BOETaskID { get; set; }
         public int? BOETaskElementID { get; set; }
 

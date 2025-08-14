@@ -204,7 +204,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 boes = selectedAndOrderedBoes;
             }
 
-            // Get RTE overrides
+            // Get RTE overridescu
             ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateOverrides = workspace.TemplateQuestionsAndAnswers.ToList();
 
             if (isOffloading)
