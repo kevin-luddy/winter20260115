@@ -855,6 +855,7 @@ namespace GenBOE.Web.Controllers
 			theModelView.ManageBoeHeaderInfo = _ControllerLogic.GetCompanySpecificManageBoeHeaderInfo;
 			theModelView.WorkspaceState = ws.WorkspaceState;
 			theModelView.AllowBOEStateChanges = (CheckPermissions(SecurityPage.EditBoeLockedState, ws, null) == SecurityAuthorization.CreateReadUpdateDelete);
+			theModelView.EnableTaskAuthor = Utilities.IsAssignTaskAuthorEnabledForSystem && ws.EnableAssignTaskAuthor;
 
 			// Finalize Action
 			FinalizeAction(_log, WebConstants.ACTION_GET_MANAGE_BOE_MODEL, sw);
