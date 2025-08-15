@@ -246,9 +246,9 @@ namespace GenBOE.Web.Controllers
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
-		public IESSingleResponse<BOEStatusReportModelView> GetBOEStatusReport(string workspaceShortname)
+		public IESSingleResponse<FullBOEStatusReportModelView> GetBOEStatusReport(string workspaceShortname)
 		{
-			IESSingleResponse<BOEStatusReportModelView> result = new IESSingleResponse<BOEStatusReportView>();
+			IESSingleResponse<FullBOEStatusReportModelView> result = new IESSingleResponse<FullBOEStatusReportModelView>();
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortname);
 
 			// Start Stopwatch to measure performance
@@ -260,7 +260,7 @@ namespace GenBOE.Web.Controllers
 				BOEExportInputs exportInputs = new BOEExportInputs(boes, boes, tasks, ws);
 				Collection<BOEStatusReportModelView> reports = this.boeStatusReport.GenerateBOEStatusReport(exportInputs);
 
-				result.Data = new BOEStatusReportView
+				result.Data = new FullBOEStatusReportModelView
 				{
 					HoursLabel = FullObjectHelper.HoursLabel(ws),
 					IsUCOTEnabledForWorkspace = Utilities.ShowUCOTForWorkspace(ws.CreationDate, workspaceShortname),
