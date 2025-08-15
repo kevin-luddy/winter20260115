@@ -682,22 +682,7 @@ namespace GenBOE.Web.Controllers
 			// but the variable for IsUCOTEnabledForWorkspace within the Workspace is not set properly.
 			// Force check here and pass into the Views
 			ViewData["IsUCOTEnabledForWorkspace"] = Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.Shortname);
-
-			// Call the BL to generate the status report
-			// All BOEs for the workspace as a default
-			List<FullBoe> boes = ws.Boes.ToList();
-			List<BoeTaskElementDTO> tasks = ws.TaskElements.ToList();
-
-			bool isOffloading = ws.ProjectMapType != ProjectMapType.StandardWithoutOffload;
-			if (isOffloading)
-			{
-				OffloadLaborRates offloader = new OffloadLaborRates();
-				List<int> selectedBoeIds = boes.Select(b => b.Id).ToList();
-				OffloadLaborRatesResults results = offloader.OffloadWorkspace(boes.Where(b => selectedBoeIds.Contains(b.Id)).ToList(), ws);
-
-				boes = results.Boes.ToList();
-				tasks = boes.SelectMany(b => b.TaskElements).ToList();
-			}
+			BOETaskUtility.GetBOEAndTaskDataForWorkspace(ws, out List<FullBoe> boes, out List<BoeTaskElementDTO> tasks);
 
 			BOEExportInputs exportInputs = new BOEExportInputs(boes, boes, tasks, ws);
 			Collection<BOEStatusReportModelView> theModelViews = _BOEStatusReport.GenerateBOEStatusReport(exportInputs);
