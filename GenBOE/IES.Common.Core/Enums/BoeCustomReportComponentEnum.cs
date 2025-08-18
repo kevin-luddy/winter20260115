@@ -50,6 +50,8 @@
 		[Description("Task - Cost/Hours Spread Tables")]
 		TaskSpreadTables = 20,
 		[Description("Resource - Information and Spread Tables")]
-		ResourceInfoAndSpreadTables = 21
+		ResourceInfoAndSpreadTables = 21,
+		[Description("Task - Author")]
+		TaskAuthor = 22
 	}
 }

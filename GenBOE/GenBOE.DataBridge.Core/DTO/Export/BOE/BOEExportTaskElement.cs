@@ -78,6 +78,7 @@ namespace GenBOE.DataBridge.Core.DTO.Export.BOE
 		public string MOQEquation { get; set; }
 		public string MOQTotal { get; set; }
 		public string MOQType { get; set; }
+		public string BOETaskAuthor { get; set; }
 		public DateTime? StartDate { get; set; }
 		public DateTime? EndDate { get; set; }
 		public Collection<OrdinaryVariableDto> OrdinaryVariables { get; set; }
