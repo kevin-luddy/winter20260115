@@ -56,7 +56,7 @@ namespace GenBOE.Web.Controllers
 	using IES.Common.Exceptions;
 	using IES.Common.OfficeUtilities;
 	using IES.Common.PickList;
-	using LineOfBusinessDataLoader = DataBridge.DTO.LineOfBusinessDataLoader;
+	//using LineOfBusinessDataLoader = DataBridge.DTO.LineOfBusinessDataLoader;
 	using UserDTO = Dtos.UserDTO;
 
 	public class WorkspaceController : GenBOEController
@@ -108,7 +108,8 @@ namespace GenBOE.Web.Controllers
 		private CommentsAndResponsesExporter _commentsAndResponsesExporter = null;
 		private BOECommentsControllerLogic _boeCommentsControllerLogic = null;
 		private readonly GenBOE.DataBridge.DTO.IPldDTODataLoader _pldDTODataLoader;
-		
+		private readonly DataBridge.DTO.LineOfBusinessDataLoader _lineOfBusinessDataLoader;
+
 
 		/// <summary>
 		/// Workspace Exporter
@@ -203,6 +204,7 @@ namespace GenBOE.Web.Controllers
 			IRetriever retriever,
 			GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader,
 			GenBOE.DataBridge.DTO.IPldDTODataLoader pldDTODataLoader,
+			DataBridge.DTO.LineOfBusinessDataLoader lineOfBusinessDataLoader,
 			GenTRAC.DataBridge.Common.Security.ISecurityMapper ptmSecurityMapper,
 			BoePickListMapper boePickListMapper,
 			WorkspaceExporter workspaceExporter,
@@ -266,6 +268,7 @@ namespace GenBOE.Web.Controllers
 			_commentsAndResponsesExporter = commentsAndResponsesExporter;
 			_boeCommentsControllerLogic = boeCommentsControllerLogic;
 			_workspaceSettingsControllerLogic = workspaceSettingsControllerLogic;
+			_lineOfBusinessDataLoader = lineOfBusinessDataLoader;
 		}
 
 		#region Public Methods
@@ -781,9 +784,7 @@ namespace GenBOE.Web.Controllers
 				// retrieve valid tracking numbers for the current user
 				IReadOnlyCollection<GenTRAC.DataBridge.Common.Security.SecurityPermissionsResponse> roles = this.ptmSecurityMapper.GetRolesForLoggedInUser();
 				bool isAdmin = roles.Any(r => r.AuthorizedRole == PtmRole.Admin);
-				isAdmin = true;
-
-
+				
 				ICollection<ProposalDto> proposals = (isAdmin ? this.proposalLoader.GetAllSlim() : this.proposalLoader.GetProposalsByUser(this._securityInformation.ActiveUserNTID, true))
 																	.Where(p => !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.NoBid && p.ProposalStatus != ProposalStatus.Revised).ToList();
 
@@ -799,10 +800,9 @@ namespace GenBOE.Web.Controllers
 
 			model.TrackingNumbers = trackingNumbers;
 			
-			//IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(this._securityInformation.ActiveUserNTID);
-			//model.IsAdmin = permissions.Any(p => p.AuthorizedRole == Role.SystemAdmin);
-			model.IsAdmin = true;
-
+			IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(this._securityInformation.ActiveUserNTID);
+			model.IsAdmin = permissions.Any(p => p.AuthorizedRole == Role.SystemAdmin);
+			
 			model.PtmTrackingNumberNotRequired = string.IsNullOrEmpty(ConfigurationUtilities.GetAppSetting("CanCreateWorkspaceWithoutPtmTrackingNumber")) ?
 				false :
 				_securityInformation.IsMemberOfADGroupInAppSettingsList(this._securityInformation.ActiveUserNTID, "CanCreateWorkspaceWithoutPtmTrackingNumber");
@@ -841,7 +841,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="paNumber"></param>
 		/// <returns></returns>
-		public JsonResult GetProposalDetails(string paNumber)
+		public JsonResult xGetProposalDetails(string paNumber)
 		{
 			ProposalDTO result = _pldDTODataLoader.GetProposalDetails(paNumber);
 
@@ -849,14 +849,43 @@ namespace GenBOE.Web.Controllers
 
 		}
 
+		public JsonResult GetProposalDetails(string paNumber)
+		{
+			ProposalDTO result = _pldDTODataLoader.GetProposalDetails(paNumber);
+
+			if (result != null)
+			{
+				ICollection<PickListDto> pickList = _lineOfBusinessDataLoader.GetPickListValues();
+
+				string resolvedLob = LineOfBusinessHelper.Resolve(result.Line_of_Business, pickList);
+				result.Line_of_Business = resolvedLob;
+
+				PickListDto match = pickList.FirstOrDefault(p => string.Equals(p.Text.Trim(), resolvedLob.Trim(), StringComparison.OrdinalIgnoreCase));
+
+				if (match != null)
+				{
+					result.Line_of_Business_ID = match.Id;
+				}
+
+
+			}
+
+
+			return Json(result, JsonRequestBehavior.AllowGet);
+		}
+
+
+		
+
 		/// <summary>
 		/// Get Line Of Business Ids
 		/// </summary>
 		/// <returns></returns>
 		public JsonResult GetLineOfBusiness()
 		{
-			LineOfBusinessDataLoader lobDataLoader = new LineOfBusinessDataLoader();
-			ICollection<PickListDto> lobPickList = lobDataLoader.GetPickListValues();
+			//LineOfBusinessDataLoader lobDataLoader = new LineOfBusinessDataLoader();
+
+			ICollection<PickListDto> lobPickList = _lineOfBusinessDataLoader.GetPickListValues();
 
 			var results = lobPickList.Select(p => new
 			{
@@ -868,6 +897,11 @@ namespace GenBOE.Web.Controllers
 
 		}
 
+		/// <summary>
+		/// Get Short Name Workspace from Tracking Number  PLD 
+		/// </summary>
+		/// <param name="paNumber"></param>
+		/// <returns></returns>
 		public JsonResult GetNextWorkspaceShortNameFromTrackingNumber(string paNumber)
 		{
 			ICollection<WorkspaceDTO> workspaces  = this.workspaceLoader.GetAllWsNamesForTrackingNumber(paNumber)
@@ -6941,5 +6975,40 @@ namespace GenBOE.Web.Controllers
 	public class SelectListItemWithTitle : SelectListItem
 	{
 		public string Title { get; set; }
+	}
+
+
+	public static class LineOfBusinessHelper
+	{
+		private static readonly Dictionary<string, string> _aliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+			{
+				{ "sac", "Sikorsky" },
+				{ "iwss", "Integrated Warfare Systems and Sensors" },
+				{ "tls", "Training and Logistics Solutions" },
+				{ "new ventures", "new ventures"},
+				{ "c6isr", "c6isr" },
+				{ "cyber ships and advanced technologies", "Cyber, Ships & Advanced Technologies" },
+				{ "cyber, ships & advanced technologies","cyber, ships & advanced technologies" }
+			};
+
+		public static string Resolve(string raw, IEnumerable<PickListDto> pickList)
+		{
+			if (string.IsNullOrWhiteSpace(raw))
+			{
+				return raw;
+			}
+
+			// First, try alias map
+			if (_aliases.TryGetValue(raw.Trim(), out string mapped))
+			{
+				raw = mapped;
+			}
+
+			// Then, resolve against the picklist
+			PickListDto match = pickList.FirstOrDefault(p =>
+				string.Equals(p.Text, raw, StringComparison.OrdinalIgnoreCase));
+
+			return match?.Text ?? raw;
+		}
 	}
 }

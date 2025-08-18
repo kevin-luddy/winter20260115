@@ -46,23 +46,13 @@
 		isAssignTaskAuthorEnabled: CreateWorkspaceModelView.IsAssignTaskAuthorEnabled,
 		updatePreviousWorkspace: false,         // Space only
 		openCurrentDialog: false,                // Space only
-		LineOfBusiness: '',
-		lobAliases: {},
+		LineOfBusiness: '',		
 		resolveLobIdFromPLD: '',
 		lobIdLookup: '',
 		buildLobIdLookup: ''
 	};
 
-	$scope.model.lobAliases = {
-		'sac': 'sikorsky',
-		'iwss': 'integrated warfare systems and sensors',
-		'tls': 'training and logistics solutions',
-		'c6isr': 'c6isr',
-		'new ventures': 'new ventures',
-		'cyber, ships and advanced technologies': 'cyber, ships & advanced technologies',
-		'cyber, ships & advanced technologies': 'cyber, ships and advanced technologies',
 
-	}
 
 	$scope.model = $scope.model || {};
 	$scope.model.pldSearchTerm = '';
@@ -154,28 +144,7 @@
 			
 	});
 
-	function normalizeLobName(name) {
-		return (name || '').toLowerCase().trim();
-	}
-
-	function resolveLobId(pldName) {
-		const normalized = normalizeLobName(pldName);
-
-		if (!$scope.model || !$scope.model.lobAliases || !$scope.model.lobIdLookup) {
-			console.warn('model or LOB mappings not yet available');
-			return null;
-		}
-
-		const canonical = ($scope.model && $scope.model.lobAliases)
-			? $scope.model.lobAliases[normalized] || normalized : normalized;
-
-
-		const lobId = ($scope.model && $scope.model.lobIdLookup)
-			? $scope.model.lobIdLookup[canonical] || null : null;
-
 	
-		return lobId;
-	}
 
 	function parseDotNetDate(dotNetDate) {
 			
@@ -279,42 +248,24 @@
 
 		if ($scope.model.IsPLDIntegrated && newStep === 3) {
 			
-
-			$http.get('/default/Workspace/GetLineOfBusiness')
-				.then(function (response) {
-			
-					const lobList = response.data;
-					$scope.model.lobIdLookup = {};
-
-					lobList.forEach(function (lob) {
-						if (lob && lob.Name && lob.LOBID != null) {
-							const name = lob.Name.toLowerCase().trim();
-							$scope.model.lobIdLookup[name] = lob.LOBID;
-						} else {
-							console.warn('skipping malformed lob', lob);
-						}
 						
-					});
-					
-				})
 
 			$http.get('/default/Workspace/GetProposalDetails', { params: { paNumber: $scope.data.TrackingNumber } })
 				.then(function (response) {
 
 					const data = response.data;
 					const lobName = data.Line_of_Business;
-					const resolvedLobId = resolveLobId(lobName);
+					
 					$scope.model.LineOfBusiness = lobName;
-					$scope.model.LineOfBusinessID = resolvedLobId;
+					$scope.model.LineOfBusinessID = data.Line_of_Business_ID;
 					$scope.data.LineOfBusiness = lobName;
-					$scope.data.LineOfBusinessID = resolvedLobId;
+					$scope.data.LineOfBusinessID = data.Line_of_Business_ID;
 					$scope.model.ContractStartDate = parseDotNetDate(data.Project_Start_Date);
 					$scope.model.ContractEndDate = parseDotNetDate(data.Project_End_Date);
 					$scope.data.ContractStartDate = $scope.model.ContractStartDate;
 					$scope.data.ContractEndDate = $scope.model.ContractEndDate;
 
-					console.log('model', $scope.model);
-					console.log('data', $scope.data);
+				
 
 				})
 				.catch(function (error) {
@@ -324,7 +275,7 @@
 			$http.get('/default/Workspace/GetNextWorkspaceShortNameFromTrackingNumber', { params: { paNumber: $scope.data.TrackingNumber } })
 				.then(function (response) {
 					const data = response.data;
-					console.log('next workspace shortname:', data);
+				
 
 					$scope.model.nextRevision = data.ShortName;
 					$scope.data.nextRevision = $scope.model.nextRevision;
