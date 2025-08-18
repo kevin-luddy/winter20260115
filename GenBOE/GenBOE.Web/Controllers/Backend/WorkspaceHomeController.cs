@@ -226,13 +226,13 @@ namespace GenBOE.Web.Controllers
 				// Initialize Action
 				Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_HOME_DELETE_WORKSPACES, SecurityPage.WorkspaceDelete, SecurityAuthorization.CreateReadUpdateDelete, GetFullWorkspaces(toBeDeleted), null);
 
-                result.Data = workspaceHomeControllerLogic.DeleteWorkspaces(toBeDeleted); 
+				result.Data = workspaceHomeControllerLogic.DeleteWorkspaces(toBeDeleted);
 				result.IsSuccessful = true;
 
 				// Finalize Action
 				FinalizeAction(logger, WebConstants.ACTION_HOME_DELETE_WORKSPACES, sw);
-            }
-            catch (Exception ex)
+			}
+			catch (Exception ex)
 			{
 				logger.Error(ex);
 				result.Messages.Add(ex.Message);
@@ -261,7 +261,7 @@ namespace GenBOE.Web.Controllers
 			{
 				// Initialize Action
 				Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_HOME_RESTORE_PTM_WORKSPACE, SecurityPage.WorkspaceRestore, SecurityAuthorization.CreateReadUpdateDelete, GetFullWorkspaces(new[] { toBeRestored }), null);
-				
+
 				result.Data = workspaceHomeControllerLogic.RestorePtmWorkspace(toBeRestored);
 				result.IsSuccessful = true;
 
@@ -297,10 +297,10 @@ namespace GenBOE.Web.Controllers
 			{
 				// Initialize Action
 				Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_HOME_RESTORE_WORKSPACE, SecurityPage.WorkspaceRestore, SecurityAuthorization.CreateReadUpdateDelete, GetFullWorkspaces(new[] { toBeRestored }), null);
-				
+
 				result.Data = workspaceHomeControllerLogic.RestoreWorkspace(toBeRestored);
-				result.IsSuccessful = true;             
-				
+				result.IsSuccessful = true;
+
 				// Finalize Action
 				FinalizeAction(logger, WebConstants.ACTION_HOME_RESTORE_WORKSPACE, sw);
 			}
