@@ -26,6 +26,7 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.Web.ModelView;
 	using IES.Common;
 	using IES.Common.Exceptions;
+	using WhosOnlineGridModelView = ActionLogic._ModelView.WhosOnlineGridModelView;
 
 	/// <summary>
 	/// Workspace Home Controller for getting workspace home data.
@@ -310,6 +311,20 @@ namespace GenBOE.Web.Controllers
 				result.Messages.Add(ex.Message);
 			}
 
+			return result;
+		}
+
+
+		/// <summary>
+		/// Set up the inital display of "Who's online?".
+		/// </summary>
+		/// <returns>results for display</returns>
+		[System.Web.Http.HttpGet]
+		public IESSingleResponse<WhosOnlineGridModelView> DisplayWhosOnline()
+		{
+			IESSingleResponse<WhosOnlineGridModelView> result = new IESSingleResponse<WhosOnlineGridModelView>();
+			result.Data = workspaceHomeControllerLogic.DisplayWhosOnline();
+			result.IsSuccessful = true;
 			return result;
 		}
 

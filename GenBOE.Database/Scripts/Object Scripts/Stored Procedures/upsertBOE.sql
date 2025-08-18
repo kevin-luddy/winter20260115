@@ -106,6 +106,7 @@ AS
 **		7/21/2017	momeara				BOEJ-2412 - RMS Feedback (round 3?)
 **		10/2/2017	twilson3			BOEJ-2520 Cleanup DB, remove old ProjectMap columns
 **		12/7/17		twilson3			BOEJ-1994 - Remove Summary BOE
+**		08/12/25	ranzalon			PROPH-1877 - Clear Task Authors when unassigned from BOE
 *******************************************************************************/
 
 SET NOCOUNT ON 
@@ -131,8 +132,7 @@ IF RIGHT(@AuthorID, 1) <> ','
 
 DECLARE @Author TABLE (AuthorID INT, Processed bit default (0))
 WHILE (SELECT CHARINDEX (',', @AuthorID) ) > 1
-	BEGIN
-	
+	BEGIN	
 		INSERT INTO @Author (AuthorID)
 		SELECT LEFT (@AuthorID, CHARINDEX (',', @AuthorID) -1)
 		SET @AuthorID = RIGHT (@AuthorID, LEN (@AuthorID) - CHARINDEX (',', @AuthorID) )
@@ -441,35 +441,35 @@ ELSE
 						DELETE FROM [dbo].[BOEUserRole] WHERE [RoleID] = 1/*Author*/ AND BOEID = @BOEID		
 					END
 
-IF EXISTS (SELECT * FROM @Author)
-BEGIN 
-/*Handle Users who are no longer in new list*/
-	IF EXISTS 
-		(
-			SELECT [ETIUserID] 
-			FROM [dbo].[BOEUserRole] 
-			WHERE [RoleID] = 1/*Author*/ AND 
-			BOEID = @BOEID AND 
-			ETIUserID NOT IN (SELECT AuthorID FROM @Author)
-		)
-	BEGIN
+	IF EXISTS (SELECT * FROM @Author)
+	BEGIN 
+	/*Handle Users who are no longer in new list*/
+		IF EXISTS 
+			(
+				SELECT [ETIUserID] 
+				FROM [dbo].[BOEUserRole] 
+				WHERE [RoleID] = 1/*Author*/ AND 
+				BOEID = @BOEID AND 
+				ETIUserID NOT IN (SELECT AuthorID FROM @Author)
+			)
+		BEGIN
  
-		INSERT INTO [dbo].[BOEUserRoleHistory]
-			   ([UpdateDT]
-			   ,[CurrentETIUserID]
-			   ,[UpdatedETIUserID]
-			   ,[RoleID]
-			   ,[BOEID]
-			   ,[FieldID]
-			   ,[ChangedByETIUserID])
-		 SELECT
-			   @UpdateDT
-			   ,ETIUserID
-			   ,NULL
-			   ,1 /*Author Role is 1*/
-			   ,@BOEID
-			   ,7/*Author*/
-			   ,@ETIUserID
+			INSERT INTO [dbo].[BOEUserRoleHistory]
+				([UpdateDT]
+				,[CurrentETIUserID]
+				,[UpdatedETIUserID]
+				,[RoleID]
+				,[BOEID]
+				,[FieldID]
+				,[ChangedByETIUserID])
+			SELECT
+				@UpdateDT
+				,ETIUserID
+				,NULL
+				,1 /*Author Role is 1*/
+				,@BOEID
+				,7/*Author*/
+				,@ETIUserID
 			FROM [dbo].[BOEUserRole] 
 			WHERE [RoleID] = 1/*Author*/ AND 
 			BOEID = @BOEID AND 
@@ -479,18 +479,12 @@ BEGIN
 			WHERE [RoleID] = 1/*Author*/ AND 
 			BOEID = @BOEID AND 
 			ETIUserID NOT IN (SELECT AuthorID FROM @Author)
-	
-	END
-	
-
+		END
 
 	WHILE EXISTS (SELECT 1 FROM @Author WHERE Processed = 0)
 	BEGIN 
 	SELECT TOP 1 @CurrentAuthorID = AuthorID FROM @Author WHERE Processed = 0
-	
-	
 
-	
 	IF NOT EXISTS (SELECT [ETIUserID] FROM [dbo].[BOEUserRole] WHERE [RoleID] = 1/*Author*/ AND BOEID = @BOEID AND ETIUserID = @CurrentAuthorID)
 		BEGIN 
 			/*New*/
@@ -526,8 +520,7 @@ BEGIN
 				7,/*Author*/
 				@ETIUserID
 			   FROM @Author
-			   WHERE AuthorID = @CurrentAuthorID
-			   
+			   WHERE AuthorID = @CurrentAuthorID			   
 		END	
 
 UPDATE @Author SET Processed = 1 WHERE AuthorID = @CurrentAuthorID AND Processed = 0
@@ -565,7 +558,6 @@ BEGIN
 
 	DELETE FROM [dbo].[BOEUserRole] WHERE [RoleID] = 9	/*Subcontractor Author*/ AND BOEID = @BOEID
 	
-	
 END
 
 IF EXISTS (SELECT * FROM @SubcontractorAuthor)
@@ -582,41 +574,35 @@ BEGIN
 	BEGIN
  
 		INSERT INTO [dbo].[BOEUserRoleHistory]
-			   ([UpdateDT]
-			   ,[CurrentETIUserID]
-			   ,[UpdatedETIUserID]
-			   ,[RoleID]
-			   ,[BOEID]
-			   ,[FieldID]
-			   ,[ChangedByETIUserID])
-		 SELECT
-			   @UpdateDT
-			   ,ETIUserID
-			   ,NULL
-			   ,9 /*Subcontractor Author Role*/
-			   ,@BOEID
-			   ,7/*Author*/
-			   ,@ETIUserID
-			FROM [dbo].[BOEUserRole] 
-			WHERE [RoleID] = 9/*SubcontractorAuthor*/ AND 
-			BOEID = @BOEID AND 
-			ETIUserID NOT IN (SELECT AuthorID FROM @SubcontractorAuthor)
+			([UpdateDT]
+			,[CurrentETIUserID]
+			,[UpdatedETIUserID]
+			,[RoleID]
+			,[BOEID]
+			,[FieldID]
+			,[ChangedByETIUserID])
+		SELECT
+			@UpdateDT
+			,ETIUserID
+			,NULL
+			,9 /*Subcontractor Author Role*/
+			,@BOEID
+			,7/*Author*/
+			,@ETIUserID
+		FROM [dbo].[BOEUserRole] 
+		WHERE [RoleID] = 9/*SubcontractorAuthor*/ AND 
+		BOEID = @BOEID AND 
+		ETIUserID NOT IN (SELECT AuthorID FROM @SubcontractorAuthor)
 
-			DELETE FROM [dbo].[BOEUserRole] 
-			WHERE [RoleID] = 9/*SubcontractorAuthor*/ AND 
-			BOEID = @BOEID AND 
-			ETIUserID NOT IN (SELECT AuthorID FROM @SubcontractorAuthor)
-	
+		DELETE FROM [dbo].[BOEUserRole] 
+		WHERE [RoleID] = 9/*SubcontractorAuthor*/ AND 
+		BOEID = @BOEID AND 
+		ETIUserID NOT IN (SELECT AuthorID FROM @SubcontractorAuthor)
 	END
-	
-
 
 	WHILE EXISTS (SELECT 1 FROM @SubcontractorAuthor WHERE Processed = 0)
 	BEGIN 
 	SELECT TOP 1 @CurrentSubcontractorAuthorID = AuthorID FROM @SubcontractorAuthor WHERE Processed = 0
-	
-	
-
 	
 	IF NOT EXISTS (SELECT [ETIUserID] FROM [dbo].[BOEUserRole] WHERE [RoleID] = 9/*SubcontractorAuthor*/ AND BOEID = @BOEID AND ETIUserID = @CurrentSubcontractorAuthorID)
 		BEGIN 
@@ -654,16 +640,18 @@ BEGIN
 				@ETIUserID
 			   FROM @SubcontractorAuthor
 			   WHERE AuthorID = @CurrentSubcontractorAuthorID
-			   
-
-			
 		END	
 
-UPDATE @SubcontractorAuthor SET Processed = 1 WHERE AuthorID = @CurrentSubcontractorAuthorID AND Processed = 0
+	UPDATE @SubcontractorAuthor SET Processed = 1 WHERE AuthorID = @CurrentSubcontractorAuthorID AND Processed = 0
+	END
 END
 
-END
-
+/* Clear Task Author from all tasks in BOE where user was unassigned from Author/Subcontractor Author */
+UPDATE dbo.[BOETaskElement]
+SET AuthorUserId = NULL, UpdateDT = @UpdateDT
+WHERE BOEID = @BOEID AND AuthorUserId IS NOT NULL 
+	AND AuthorUserId NOT IN (SELECT AuthorID FROM @Author) 
+	AND AuthorUserId NOT IN (SELECT AuthorID FROM @SubcontractorAuthor)
 
 /*
 	BOEJ-1333, multiple Custom form selections are allowed
