@@ -25,7 +25,6 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="workspaceShortName">workspace shortname</param>
 		/// <param name="boeDiscrepancyData">BOE Discrepancy Data</param>
 		/// <returns>Memory stream of excel sheet</returns>
-		/// <exception cref="ArgumentNullException"></exception>
 		public static MemoryStream ExportBOEDiscrepancyToExcelFile(string workspaceShortName, ICollection<BoeDiscrepancyReportModelView> boeDiscrepancyData)
 		{
 			if (boeDiscrepancyData == null)
@@ -102,7 +101,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				{
 					Id = wbPart.GetIdOfPart(wsPart),
 					SheetId = 1,
-					Name = "Sheet1"
+					Name = "BOEDiscrepancyReport"
 				});
 
 				wbPart.Workbook.Save();
@@ -172,7 +171,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// Generate the header styling for Task Details
 		/// </summary>
 		/// <param name="text">header text</param>
-		/// <returns></returns>
+		/// <returns>Task Detail Header Cell</returns>
 		private static Cell GenerateTaskDetailHeaderCell(string text)
 		{
 			return new Cell

@@ -18,6 +18,7 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ControllerLogic;
 	using GenBOE.ActionLogic.IESSAPClient;
+	using GenBOE.ActionLogic.IO.Export;
 	using GenBOE.ActionLogic.ModelView.Backend;
 	using GenBOE.ActionLogic.Reporting;
 	using GenBOE.DataBridge.Common.Interfaces;
@@ -191,7 +192,7 @@ namespace GenBOE.Web.Controllers
 
 				HttpResponseMessage response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
 				response.Content = new StreamContent(ms);
-				response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+				response.Content.Headers.ContentType = new MediaTypeHeaderValue(BOEExporterConstants.ContentType_XLSX);
 				response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
 				response.Content.Headers.ContentDisposition.FileName = "BOEDiscrepancyReport.xlsx";
 
