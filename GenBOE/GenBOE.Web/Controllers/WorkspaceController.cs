@@ -836,19 +836,12 @@ namespace GenBOE.Web.Controllers
 				
 		}
 
+
 		/// <summary>
 		///  Get Proposal Detail by paNumber 
 		/// </summary>
 		/// <param name="paNumber"></param>
 		/// <returns></returns>
-		public JsonResult xGetProposalDetails(string paNumber)
-		{
-			ProposalDTO result = _pldDTODataLoader.GetProposalDetails(paNumber);
-
-			return Json(result, JsonRequestBehavior.AllowGet);
-
-		}
-
 		public JsonResult GetProposalDetails(string paNumber)
 		{
 			ProposalDTO result = _pldDTODataLoader.GetProposalDetails(paNumber);
@@ -873,29 +866,7 @@ namespace GenBOE.Web.Controllers
 
 			return Json(result, JsonRequestBehavior.AllowGet);
 		}
-
-
-		
-
-		/// <summary>
-		/// Get Line Of Business Ids
-		/// </summary>
-		/// <returns></returns>
-		public JsonResult GetLineOfBusiness()
-		{
-			//LineOfBusinessDataLoader lobDataLoader = new LineOfBusinessDataLoader();
-
-			ICollection<PickListDto> lobPickList = _lineOfBusinessDataLoader.GetPickListValues();
-
-			var results = lobPickList.Select(p => new
-			{
-				LOBID = p.Id,
-				Name = p.Text
-			});
-
-			return Json(results, JsonRequestBehavior.AllowGet);
-
-		}
+			
 
 		/// <summary>
 		/// Get Short Name Workspace from Tracking Number  PLD 
@@ -6997,14 +6968,12 @@ namespace GenBOE.Web.Controllers
 			{
 				return raw;
 			}
-
-			// First, try alias map
+						
 			if (_aliases.TryGetValue(raw.Trim(), out string mapped))
 			{
 				raw = mapped;
 			}
-
-			// Then, resolve against the picklist
+						
 			PickListDto match = pickList.FirstOrDefault(p =>
 				string.Equals(p.Text, raw, StringComparison.OrdinalIgnoreCase));
 

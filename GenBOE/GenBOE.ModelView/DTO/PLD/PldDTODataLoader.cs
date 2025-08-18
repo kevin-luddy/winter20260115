@@ -58,13 +58,6 @@ namespace GenBOE.DataBridge.DTO
 		private static DateTime GetCutoffDate() 
 		{
 
-			string cfgFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
-			System.Diagnostics.Debug.WriteLine("CFG=" + cfgFile);
-
-			string raw = System.Configuration.ConfigurationManager.AppSettings["Pld.TopProposals.CutoffDate"];
-			System.Diagnostics.Debug.WriteLine("Cutoffkey" + (raw ?? "(null"));
-
-
 			string s = ConfigurationManager.AppSettings["Pld.TopProposals.CutoffDate"];
 
 
@@ -165,7 +158,7 @@ namespace GenBOE.DataBridge.DTO
 
 			using (PldDBContext ctx = CreateContext())
 			{
-				IQueryable<PLD.Models.Models.PLDProposal> query = ctx.Proposals.AsNoTracking();   //.AsQueryable();
+				IQueryable<PLD.Models.Models.PLDProposal> query = ctx.Proposals.AsNoTracking();
 
 				if (!string.IsNullOrWhiteSpace(search))
 				{
@@ -177,8 +170,6 @@ namespace GenBOE.DataBridge.DTO
 				}
 
 				DateTime cutoff = _cutoffDate;
-
-				//query = query.Where(p => p.Last_Modified_Date >= new DateTime(2020, 1, 1));
 
 				query = query.Where(p => p.Last_Modified_Date >= cutoff)
 					.OrderByDescending(p => p.Last_Modified_Date);
