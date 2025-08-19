@@ -9,6 +9,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System;
     using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.IO;
 	using System.Threading.Tasks;
 	using System.Web;
     using System.Web.Mvc;
@@ -177,5 +178,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="ws">Workspace</param>
 		/// <returns>General report data</returns>
 		Collection<GeneralReportViewModel> GetDisplayGeneralReports(FullWorkspace ws);
+
+		/// <summary>
+		/// Export BOE Discrepancy Data Worksheet 
+		/// </summary>
+		/// <param name="workspaceShortname">Workspace Shortname</param>
+		/// <param name="boeDiscrepancyReportData">BoeDiscrepancyReportModelView</param>
+		/// <returns>Excel MemoryStream</returns>
+		MemoryStream ExportBOEDiscrepancyReport(string workspaceShortname, ICollection<BoeDiscrepancyReportModelView> boeDiscrepancyReportData);
 	}
 }

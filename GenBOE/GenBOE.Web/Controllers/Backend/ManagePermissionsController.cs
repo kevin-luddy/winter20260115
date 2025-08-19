@@ -8,15 +8,16 @@ namespace GenBOE.Web.Controllers
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
-	using System.Web.Http;
-	using System.Net.Http;
+	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
+	using System.Linq;
 	using System.Net;
+	using System.Net.Http;
 	using System.Net.Http.Headers;
 	using System.Web;
-	using System.Diagnostics.CodeAnalysis;
+	using System.Web.Http;
 	using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.Backend;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
@@ -24,7 +25,6 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.Web.ModelView;
 	using IES.Common;
 	using IES.Common.Exceptions;
-	using GenBOE.ActionLogic.ModelView;
 
 	/// <summary>
 	/// Manage Permissions Controller for getting workspace home data.
@@ -113,12 +113,12 @@ namespace GenBOE.Web.Controllers
 			return result;
 		}
 
-        /// <summary>
-        /// Gets Members of Group
-        /// </summary>
-        ///<param name="groupName">The AD group name.</param>
-        /// <returns>Group Members</returns>
-        [HttpGet]
+		/// <summary>
+		/// Gets Members of Group
+		/// </summary>
+		///<param name="groupName">The AD group name.</param>
+		/// <returns>Group Members</returns>
+		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public IESSingleResponse<ICollection<UserData>> GetGroupMembers(string groupName)
@@ -179,11 +179,11 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Export Permissions
 		/// </summary>
-		/// <param name="exportPermissionModelView">ExportPermissionModelView (just workspaceShortName)</param>
+		/// <param name="exportPermissionModelView">ExportFileModelView</param>
 		/// <returns>filestream</returns>
 		[HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public HttpResponseMessage ExportPermissions([FromBody] ExportPermissionModelView exportPermissionModelView)
+		public HttpResponseMessage ExportPermissions([FromBody] ExportFileModelView exportPermissionModelView)
 		{
 			try
 			{

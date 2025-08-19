@@ -260,6 +260,7 @@
     <Compile Include="DateShift\SpreadHandling.cs" />
     <Compile Include="DateShift\Operation.cs" />
     <Compile Include="IO\Export\BOEConfidenceReportExporter.cs" />
+    <Compile Include="IO\Export\BOEDiscrepancyExporter.cs" />
     <Compile Include="IO\Export\BOE\BOEExcelExportInputs.cs" />
     <Compile Include="IO\Export\BOE\BOEExportConverter.cs" />
     <Compile Include="IO\Export\BOE\BOEExportInputs.cs" />
