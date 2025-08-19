@@ -34,5 +34,10 @@ namespace GenBOE.ActionLogic.ModelView.Backend
 		/// Check to see if this workspace Creation Date > ShowINLCutoffDate
 		/// </summary>
 		public bool? IsPastCutOffDate { get; set; }
+
+		/// <summary>
+		/// The name of the workspace
+		/// </summary>
+		public string WorkspaceName { get; set; }
 	}
 }
