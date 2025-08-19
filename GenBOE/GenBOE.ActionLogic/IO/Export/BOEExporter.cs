@@ -4822,9 +4822,16 @@ namespace GenBOE.ActionLogic.IO.Export
                     }
 					else if (sdtTitle == BOEExporterConstants.FieldName_TaskAuthor)
 					{
-						string value = taskElement.BOETaskAuthor;
-						SetElementText(element, value);
-						alias.RemoveIt();
+						if (Utilities.IsAssignTaskAuthorEnabledForSystem && ws.EnableAssignTaskAuthor)
+						{
+							string value = taskElement.BOETaskAuthor;
+							SetElementText(element, value);
+							alias.RemoveIt();
+						}
+						else
+						{
+							element.RemoveIt();
+						}
 					}
 					else if (sdtTitle == FieldName_TaskSegregation)
 					{
