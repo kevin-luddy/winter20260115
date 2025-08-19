@@ -90,7 +90,6 @@ namespace GenBOE.ActionLogic.IO.Export
         public const string FieldName_MOQOriginalVarsTable = "BOE:MOQOriginalVarsTable";
         public const string FieldName_TaskElementTitle = "BOE:TaskTitle";
         public const string FieldName_TaskElementDescription = "BOE:TaskDescription";
-		public const string FieldName_TaskAuthor = "BOE:TaskAuthor";
 		public const string FieldName_PerfOrg = "BOE:PerfOper";
         public const string FieldName_PerfOrgId = "BOE:PerfOrgId";
         public const string FieldName_SegmentRegion = "BOE:SegmentRegion";
@@ -4821,7 +4820,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         SetElementText(element, value);
                         alias.RemoveIt();
                     }
-					else if (sdtTitle == FieldName_TaskAuthor)
+					else if (sdtTitle == BOEExporterConstants.FieldName_TaskAuthor)
 					{
 						string value = taskElement.BOETaskAuthor;
 						SetElementText(element, value);

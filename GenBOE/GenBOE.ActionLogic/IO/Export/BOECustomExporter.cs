@@ -2385,7 +2385,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQTypeContainer);
 			}
 
-			if (selectedComponents.Contains(BoeCustomReportComponent.TaskAuthor))
+			if (Utilities.IsAssignTaskAuthorEnabledForSystem && exportInputs.Workspace.EnableAssignTaskAuthor && selectedComponents.Contains(BoeCustomReportComponent.TaskAuthor))
 			{
 				laborTaskHeaderDataValueMappings.Add(BOEExporterConstants.FieldName_TaskAuthor, laborTaskElement.BOETaskAuthor);
 			}

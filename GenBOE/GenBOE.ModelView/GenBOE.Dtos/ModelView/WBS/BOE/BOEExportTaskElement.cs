@@ -60,7 +60,13 @@ namespace GenBOE.Dtos
 
         public int BoeID { get; set; }
         public string BOETaskDesc { get; set; }
+
+		/// <summary>
+		/// Task Author field.
+		/// RMS only.
+		/// </summary>
 		public string BOETaskAuthor { get; set; }
+
         public string BOETaskID { get; set; }
         public int? BOETaskElementID { get; set; }
 
