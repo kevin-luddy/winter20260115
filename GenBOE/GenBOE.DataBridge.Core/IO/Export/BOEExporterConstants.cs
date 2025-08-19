@@ -107,6 +107,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		internal const string FieldName_MonthsTotal = "MonthsTotal";
 		internal const string FieldName_MOQEquationContainer = "MOQEquationContainer";
 		internal const string FieldName_MOQTypeContainer = "MOQTypeContainer";
+		internal const string FieldName_TaskAuthor = "TaskAuthor";
 		internal const string FieldName_MOQRationaleContainer = "MOQRationaleContainer";
 		internal const string FieldName_MOQSectionLabel = "MOQSectionLabel";
 		internal const string FieldName_MOQEquation = "MOQEquation";

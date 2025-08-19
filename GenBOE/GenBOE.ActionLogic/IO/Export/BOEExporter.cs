@@ -90,7 +90,7 @@ namespace GenBOE.ActionLogic.IO.Export
         public const string FieldName_MOQOriginalVarsTable = "BOE:MOQOriginalVarsTable";
         public const string FieldName_TaskElementTitle = "BOE:TaskTitle";
         public const string FieldName_TaskElementDescription = "BOE:TaskDescription";
-        public const string FieldName_PerfOrg = "BOE:PerfOper";
+		public const string FieldName_PerfOrg = "BOE:PerfOper";
         public const string FieldName_PerfOrgId = "BOE:PerfOrgId";
         public const string FieldName_SegmentRegion = "BOE:SegmentRegion";
         public const string FieldName_LaborTypes = "BOE:LaborTypes";
@@ -4745,19 +4745,20 @@ namespace GenBOE.ActionLogic.IO.Export
             }
         }
 
-        /// <summary>
-        /// Take a task element and populate the task-specific items in the template with its
-        /// data. A new task table row (landscape) or table (portrait) should already be created
-        /// before this function is called. This function will then populate that empty row/table.
-        /// </summary>
-        /// <param name="exportInputs">The export inputs.</param>
-        /// <param name="taskContainer">The task container.</param>
-        /// <param name="taskElement">The task element whose data will populate the template</param>
-        /// <param name="ws">Full WS</param>
-        /// <param name="mainPart">Main Document Part</param>
-        /// <param name="wsHasMoqRteTemplate">Whether there are any MOQ RTE Templates</param>
-        /// <param name="counters">The counters.</param>
-        private void PopulateTaskElementContent(BOEExportInputs exportInputs, BOEExportTaskContainer taskContainer, BOEExportTaskElement taskElement, FullWorkspace ws,
+		/// <summary>
+		/// Take a task element and populate the task-specific items in the template with its
+		/// data. A new task table row (landscape) or table (portrait) should already be created
+		/// before this function is called. This function will then populate that empty row/table.
+		/// </summary>
+		/// <param name="exportInputs">The export inputs.</param>
+		/// <param name="taskContainer">The task container.</param>
+		/// <param name="taskElement">The task element whose data will populate the template</param>
+		/// <param name="ws">Full WS</param>
+		/// <param name="mainPart">Main Document Part</param>
+		/// <param name="wsHasMoqRteTemplate">Whether there are any MOQ RTE Templates</param>
+		/// <param name="counters">The counters.</param>
+		[SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals"), SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
+		private void PopulateTaskElementContent(BOEExportInputs exportInputs, BOEExportTaskContainer taskContainer, BOEExportTaskElement taskElement, FullWorkspace ws,
             MainDocumentPart mainPart, bool wsHasMoqRteTemplate, ref ChunkCounter counters)
         {
             // Iterate over all SdtElements in the document
@@ -4819,189 +4820,202 @@ namespace GenBOE.ActionLogic.IO.Export
                         SetElementText(element, value);
                         alias.RemoveIt();
                     }
-                    else if (sdtTitle == FieldName_TaskSegregation)
-                    {
-                        string value = string.Empty;
-                        if (taskElement.ExportFields.ContainsKey(FieldName_TaskSegregation))
-                        {
-                            value = taskElement.ExportFields[FieldName_TaskSegregation];
-                        }
+					else if (sdtTitle == BOEExporterConstants.FieldName_TaskAuthor)
+					{
+						if (Utilities.IsAssignTaskAuthorEnabledForSystem && ws.EnableAssignTaskAuthor)
+						{
+							string value = taskElement.BOETaskAuthor;
+							SetElementText(element, value);
+							alias.RemoveIt();
+						}
+						else
+						{
+							element.RemoveIt();
+						}
+					}
+					else if (sdtTitle == FieldName_TaskSegregation)
+					{
+						string value = string.Empty;
+						if (taskElement.ExportFields.ContainsKey(FieldName_TaskSegregation))
+						{
+							value = taskElement.ExportFields[FieldName_TaskSegregation];
+						}
 
-                        SetElementText(element, value);
-                        alias.RemoveIt();
-                    }
-                    else if (sdtTitle == FieldName_UID)
-                    {
-                        if (taskElement.IMS_ID != null && taskElement.IMS_ID.Length > 0)
-                        {
-                            SetElementText(element, taskElement.BOETaskID);
-                            alias.RemoveIt();
-                        }
-                        else
-                        {
-                            element.Parent.RemoveIt();
-                        }
-                    }
-                    else if (sdtTitle == FieldName_TaskID)
-                    {
-                        if (taskElement.BOETaskID != null && taskElement.BOETaskID.Length > 0)
-                        {
-                            SetElementText(element, "Task #" + taskElement.BOETaskID + "\t");
-                            alias.RemoveIt();
-                        }
-                        else
-                        {
-                            element.RemoveIt();
-                        }
-                    }
-                    else if (sdtTitle == FieldName_TaskIDNumber)
-                    {
-                        if (taskElement.BOETaskID != null && taskElement.BOETaskID.Length > 0)
-                        {
-                            SetElementText(element, taskElement.BOETaskID);
-                            alias.RemoveIt();
-                        }
-                        else
-                        {
-                            element.RemoveIt();
-                        }
-                    }
-                    else if (sdtTitle == FieldName_GenBOETaskID)
-                    {
-                        if (taskElement.BOETaskElementID != null)
-                        {
-                            SetElementText(element, taskElement.BOETaskElementID.ToString());
-                            alias.RemoveIt();
-                        }
-                        else
-                        {
-                            element.RemoveIt();
-                        }
-                    }
-                    else if (sdtTitle == FieldName_MOQEquation)
-                    {
-                        if (taskElement.ElementType == BOEExportTaskElementType.Labor)
-                        {
-                            SetElementText(element, this.GetMOQEquationToDisplay(taskElement, exportInputs, ws));
-                            alias.RemoveIt();
-                        }
-                        else
-                        {
-                            element.Parent.RemoveIt();
-                        }
-                    }
-                    else if (sdtTitle == FieldName_MOQOriginalVarsTable)
-                    {
-                        if (taskElement.ElementType == BOEExportTaskElementType.Labor)
-                        {
-                            string useFontSize = "24";
-                            string useFont = "Times New Roman";
+						SetElementText(element, value);
+						alias.RemoveIt();
+					}
+					else if (sdtTitle == FieldName_UID)
+					{
+						if (taskElement.IMS_ID != null && taskElement.IMS_ID.Length > 0)
+						{
+							SetElementText(element, taskElement.BOETaskID);
+							alias.RemoveIt();
+						}
+						else
+						{
+							element.Parent.RemoveIt();
+						}
+					}
+					else if (sdtTitle == FieldName_TaskID)
+					{
+						if (taskElement.BOETaskID != null && taskElement.BOETaskID.Length > 0)
+						{
+							SetElementText(element, "Task #" + taskElement.BOETaskID + "\t");
+							alias.RemoveIt();
+						}
+						else
+						{
+							element.RemoveIt();
+						}
+					}
+					else if (sdtTitle == FieldName_TaskIDNumber)
+					{
+						if (taskElement.BOETaskID != null && taskElement.BOETaskID.Length > 0)
+						{
+							SetElementText(element, taskElement.BOETaskID);
+							alias.RemoveIt();
+						}
+						else
+						{
+							element.RemoveIt();
+						}
+					}
+					else if (sdtTitle == FieldName_GenBOETaskID)
+					{
+						if (taskElement.BOETaskElementID != null)
+						{
+							SetElementText(element, taskElement.BOETaskElementID.ToString());
+							alias.RemoveIt();
+						}
+						else
+						{
+							element.RemoveIt();
+						}
+					}
+					else if (sdtTitle == FieldName_MOQEquation)
+					{
+						if (taskElement.ElementType == BOEExportTaskElementType.Labor)
+						{
+							SetElementText(element, this.GetMOQEquationToDisplay(taskElement, exportInputs, ws));
+							alias.RemoveIt();
+						}
+						else
+						{
+							element.Parent.RemoveIt();
+						}
+					}
+					else if (sdtTitle == FieldName_MOQOriginalVarsTable)
+					{
+						if (taskElement.ElementType == BOEExportTaskElementType.Labor)
+						{
+							string useFontSize = "24";
+							string useFont = "Times New Roman";
 
-                            element.RemoveAllChildren();
+							element.RemoveAllChildren();
 
-                            if (taskElement.MOQVariableModelViews.Any())
-                            {
-                                Table table = this.CreateTaskVariableTable();
-                                string hoursLabel = FullObjectHelper.HoursLabel(exportInputs.Workspace);
-                                List<string> Headers = new List<string>() { "Name", "Total", "WBS Number/Title", "CLIN", hoursLabel };
-                                if (taskElement.ExportFields.ContainsKey(FieldName_ExportFormatId))
-                                {
-                                    string id = taskElement.ExportFields[FieldName_ExportFormatId];
-                                    string gsmoTemplateId = ((int)ExcelReportTemplateType.LMSI_GSM_O_LANDSACPE_WITH_TIME_PHASED_SUMMARIES).ToString();
-                                    useFontSize = (id == gsmoTemplateId) ? "22" : "24";
-                                }
+							if (taskElement.MOQVariableModelViews.Any())
+							{
+								Table table = this.CreateTaskVariableTable();
+								string hoursLabel = FullObjectHelper.HoursLabel(exportInputs.Workspace);
+								List<string> Headers = new List<string>() { "Name", "Total", "WBS Number/Title", "CLIN", hoursLabel };
+								if (taskElement.ExportFields.ContainsKey(FieldName_ExportFormatId))
+								{
+									string id = taskElement.ExportFields[FieldName_ExportFormatId];
+									string gsmoTemplateId = ((int)ExcelReportTemplateType.LMSI_GSM_O_LANDSACPE_WITH_TIME_PHASED_SUMMARIES).ToString();
+									useFontSize = (id == gsmoTemplateId) ? "22" : "24";
+								}
 
-                                this.AppendTaskVariableTableHeader(Headers, table, useFont, useFontSize);
-                                this.PopulateTaskVariableTable(taskElement.MOQVariableModelViews, table);
-                                element.Append(table);
-                            }
+								this.AppendTaskVariableTableHeader(Headers, table, useFont, useFontSize);
+								this.PopulateTaskVariableTable(taskElement.MOQVariableModelViews, table);
+								element.Append(table);
+							}
 
-                            alias.RemoveIt();
-                        }
-                        else
-                        {
-                            element.Parent.RemoveIt();
-                        }
-                    }
-                    else if (sdtTitle == FieldName_MOQEquationResult)
-                    {
-                        SetElementText(element, this.GetMOQTotal(taskElement, exportInputs, ws.TaskElements));
-                        alias.RemoveIt();
-                    }
-                    else if (sdtTitle == FieldName_MethodOfQuoting || sdtTitle == FieldName_Rationale)
-                    {
-                        if (exportInputs.Workspace.UsingTemplateBOE && !wsHasMoqRteTemplate)
-                        {
-                            // remove this for Workspaces using Template BOE if they have no MOQ RTE templates
-                            // call both remove row and element since it can be either depending on the template
-                            // both methods already handle there not being a row/element, so both can be run safely without affecting the other
-                            WordUtilities.RemoveTableRowWithTaggedElement(taskContainer.TaskContainer, sdtTitle);
-                            WordUtilities.RemoveTaggedElement(taskContainer.TaskContainer, sdtTitle);
-                        }
-                        else
-                        {
-                            OpenXmlCompositeElement item;
-                            if ((item = element.ChildElements.OfType<SdtContentBlock>().FirstOrDefault()) != null ||
-                                (item = element.ChildElements.OfType<SdtContentRun>().FirstOrDefault()) != null)
-                            {
-                                if (taskElement.MOQText == null)
-                                {
-                                    taskElement.MOQText = "<p><br></p>"; // filler text that allows removal of place-holder text, otherwise "Method of Quoting" remains
-                                }
+							alias.RemoveIt();
+						}
+						else
+						{
+							element.Parent.RemoveIt();
+						}
+					}
+					else if (sdtTitle == FieldName_MOQEquationResult)
+					{
+						SetElementText(element, this.GetMOQTotal(taskElement, exportInputs, ws.TaskElements));
+						alias.RemoveIt();
+					}
+					else if (sdtTitle == FieldName_MethodOfQuoting || sdtTitle == FieldName_Rationale)
+					{
+						if (exportInputs.Workspace.UsingTemplateBOE && !wsHasMoqRteTemplate)
+						{
+							// remove this for Workspaces using Template BOE if they have no MOQ RTE templates
+							// call both remove row and element since it can be either depending on the template
+							// both methods already handle there not being a row/element, so both can be run safely without affecting the other
+							WordUtilities.RemoveTableRowWithTaggedElement(taskContainer.TaskContainer, sdtTitle);
+							WordUtilities.RemoveTaggedElement(taskContainer.TaskContainer, sdtTitle);
+						}
+						else
+						{
+							OpenXmlCompositeElement item;
+							if ((item = element.ChildElements.OfType<SdtContentBlock>().FirstOrDefault()) != null ||
+								(item = element.ChildElements.OfType<SdtContentRun>().FirstOrDefault()) != null)
+							{
+								if (taskElement.MOQText == null)
+								{
+									taskElement.MOQText = "<p><br></p>"; // filler text that allows removal of place-holder text, otherwise "Method of Quoting" remains
+								}
 
-                                if (exportInputs.Workspace.IsProjectMapWorkspace)
-                                {
-                                    SetElementText(item, taskElement.MOQText);
-                                }
-                                else
-                                {
-                                    WordUtilities.SetElementTextWithHTML(mainPart, item, taskElement.MOQText, ref counters);
-                                }
+								if (exportInputs.Workspace.IsProjectMapWorkspace)
+								{
+									SetElementText(item, taskElement.MOQText);
+								}
+								else
+								{
+									WordUtilities.SetElementTextWithHTML(mainPart, item, taskElement.MOQText, ref counters);
+								}
 
-                                if (wsHasMoqRteTemplate && exportInputs.Workspace.UsingTemplateBOE)
-                                {
-                                    // replace the label for RTE Templates in MOQ Types
-                                    SdtElement moqLabelElement = WordUtilities.GetTaggedChildElement(taskContainer.TaskContainer, FieldName_MethodOfQuotingLabel);
-                                    WordUtilities.SetElementText(moqLabelElement, "Additional MOQ Rationale: ");
-                                }
-                            }
+								if (wsHasMoqRteTemplate && exportInputs.Workspace.UsingTemplateBOE)
+								{
+									// replace the label for RTE Templates in MOQ Types
+									SdtElement moqLabelElement = WordUtilities.GetTaggedChildElement(taskContainer.TaskContainer, FieldName_MethodOfQuotingLabel);
+									WordUtilities.SetElementText(moqLabelElement, "Additional MOQ Rationale: ");
+								}
+							}
 
-                            alias.RemoveIt();
-                        }
-                    }
-                    else if (sdtTitle == BOEExporterConstants.Container_MOQSelection)
-                    {
-                        if (exportInputs.Workspace.UsingTemplateBOE)
-                        {
-                            this.PopulateMOQTypeData(taskElement, new Collection<BoeCustomReportComponent>(), mainPart, element, false, exportInputs, ref counters);
-                        }
-                        else
-                        {
-                            // remove this for Workspaces not using Template BOE
-                            WordUtilities.RemoveTaggedElement(taskContainer.TaskContainer, sdtTitle);
-                        }
-                    }
-                    else if (sdtTitle == FieldName_MOQSSDS)
-                    {
-                        WordUtilities.SetElementTextWithHTML(mainPart, element, this.ReplaceParagraphTags(taskElement.MOQText), ref counters);
-                        alias.RemoveIt();
-                    }
-                    else if (sdtTitle == FieldName_TaskCostCenter)
-                    {
-                        string value = string.Empty;
-                        if (taskElement.ExportFields.ContainsKey(FieldName_TaskCostCenter))
-                        {
-                            value = taskElement.ExportFields[FieldName_TaskCostCenter];
-                        }
+							alias.RemoveIt();
+						}
+					}
+					else if (sdtTitle == BOEExporterConstants.Container_MOQSelection)
+					{
+						if (exportInputs.Workspace.UsingTemplateBOE)
+						{
+							this.PopulateMOQTypeData(taskElement, new Collection<BoeCustomReportComponent>(), mainPart, element, false, exportInputs, ref counters);
+						}
+						else
+						{
+							// remove this for Workspaces not using Template BOE
+							WordUtilities.RemoveTaggedElement(taskContainer.TaskContainer, sdtTitle);
+						}
+					}
+					else if (sdtTitle == FieldName_MOQSSDS)
+					{
+						WordUtilities.SetElementTextWithHTML(mainPart, element, this.ReplaceParagraphTags(taskElement.MOQText), ref counters);
+						alias.RemoveIt();
+					}
+					else if (sdtTitle == FieldName_TaskCostCenter)
+					{
+						string value = string.Empty;
+						if (taskElement.ExportFields.ContainsKey(FieldName_TaskCostCenter))
+						{
+							value = taskElement.ExportFields[FieldName_TaskCostCenter];
+						}
 
-                        SetElementText(element, value);
-                        alias.RemoveIt();
-                    }
-                    else if (taskElement.ExportFields.ContainsKey(sdtTitle))
-                    {
-                        SetElementText(element, taskElement.ExportFields[sdtTitle]);
-                        alias.RemoveIt();
-                    }
+						SetElementText(element, value);
+						alias.RemoveIt();
+					}
+					else if (taskElement.ExportFields.ContainsKey(sdtTitle))
+					{
+						SetElementText(element, taskElement.ExportFields[sdtTitle]);
+						alias.RemoveIt();
+					}
                 }
             }
 
