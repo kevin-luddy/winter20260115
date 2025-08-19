@@ -29,29 +29,29 @@
 		BOESpreadSummaryTables = 9,
 		[Description("BOE - Prepared by/Signature Section")]
 		BOESignatures = 10,
-		[Description("Task - Custom Field(s)")]
-		TaskCustomFields = 11,
-		[Description("Task - Description")]
-		TaskDescription = 12,
-		[Description("Task - Method of Quoting Type")]
-		TaskMOQType = 13,
-		[Description("Task - Method of Quoting Equation")]
-		TaskMOQEquation = 14,
-		[Description("Task - Method of Quoting Additional Query Filters")]
-		TaskMOQAdditionalQueryFilters = 15,
-		[Description("Task - Method of Quoting Employee ID Filters")]
-		TaskMOQEmployeeIDFilters = 16,
-		[Description("Task - Method of Quoting Rationale")]
-		TaskMOQRationale = 17,
-		[Description("Task - Skill Mix Tables")]
-		SkillMixTables = 18,
-		[Description("Task - Resource Types Summary Table")]
-		TaskResourceTypesSummaryTable = 19,
-		[Description("Task - Cost/Hours Spread Tables")]
-		TaskSpreadTables = 20,
-		[Description("Resource - Information and Spread Tables")]
-		ResourceInfoAndSpreadTables = 21,
 		[Description("Task - Author")]
-		TaskAuthor = 22
+		TaskAuthor = 11,
+		[Description("Task - Custom Field(s)")]
+		TaskCustomFields = 12,
+		[Description("Task - Description")]
+		TaskDescription = 13,
+		[Description("Task - Method of Quoting Type")]
+		TaskMOQType = 14,
+		[Description("Task - Method of Quoting Equation")]
+		TaskMOQEquation = 15,
+		[Description("Task - Method of Quoting Additional Query Filters")]
+		TaskMOQAdditionalQueryFilters = 16,
+		[Description("Task - Method of Quoting Employee ID Filters")]
+		TaskMOQEmployeeIDFilters = 17,
+		[Description("Task - Method of Quoting Rationale")]
+		TaskMOQRationale = 18,
+		[Description("Task - Skill Mix Tables")]
+		SkillMixTables = 19,
+		[Description("Task - Resource Types Summary Table")]
+		TaskResourceTypesSummaryTable = 20,
+		[Description("Task - Cost/Hours Spread Tables")]
+		TaskSpreadTables = 21,
+		[Description("Resource - Information and Spread Tables")]
+		ResourceInfoAndSpreadTables = 22
 	}
 }
