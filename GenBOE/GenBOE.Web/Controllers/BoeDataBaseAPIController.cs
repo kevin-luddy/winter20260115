@@ -11,13 +11,13 @@ namespace GenBOE.Web.Controllers
 	using System.Diagnostics;
 	using System.Linq;
 	using System.Web.Http;
-	using IES.Common;
-	using IES.Common.Exceptions;
 	using GenBOE.DataBridge.Common;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
+	using IES.Common;
+	using IES.Common.Exceptions;
 
 	/// <summary>
 	/// Base BOE Api data controller
@@ -96,16 +96,16 @@ namespace GenBOE.Web.Controllers
 		/// <returns>Security Authorization</returns>
 		protected SecurityAuthorization CheckPermission(SecurityPage page, WorkspaceDTO workspace, int? inBOEId = null)
 		{
-            if (inBOEId.HasValue)
-            {
-                if (workspace == null) { throw new ArgumentNullException(nameof(workspace), "If BOEId is specified, workspace must be specified as well"); }
-                if (!this.Factory.BoeLoader.DoesWorkspaceContainBoe(workspace.Id, inBOEId.Value))
-                { 
-					throw new InvalidDataRelationException("The requested BOE: " + inBOEId.Value + " does not belong to the current workspace: " + workspace.Id + "."); 
+			if (inBOEId.HasValue)
+			{
+				if (workspace == null) { throw new ArgumentNullException(nameof(workspace), "If BOEId is specified, workspace must be specified as well"); }
+				if (!this.Factory.BoeLoader.DoesWorkspaceContainBoe(workspace.Id, inBOEId.Value))
+				{
+					throw new InvalidDataRelationException("The requested BOE: " + inBOEId.Value + " does not belong to the current workspace: " + workspace.Id + ".");
 				}
-            }
+			}
 
-            Dictionary<SecurityPage, SecurityAuthorization> securityDictionary = new Dictionary<SecurityPage, SecurityAuthorization>();
+			Dictionary<SecurityPage, SecurityAuthorization> securityDictionary = new Dictionary<SecurityPage, SecurityAuthorization>();
 			int? wsId = workspace == null ? null : (int?)workspace.Id;
 
 			UserDTO user = this.UserLoader.GetUserForActiveUser();
@@ -139,18 +139,18 @@ namespace GenBOE.Web.Controllers
 
 
 
-        /// <summary>
-        /// Initializes a controller action.
-        /// </summary>
-        /// <param name="logger">The logger for the controller calling the action</param>
-        /// <param name="functionName">The name of the function being initialized</param>
-        /// <param name="page">The security page being initialized</param>
-        /// <param name="authorizationRequired">The minimum required to perform the action</param>
-        /// <param name="workspace">The workspace shortname</param>
-        /// <param name="boeID">The current BOE ID if one exists</param>
-        /// <returns>A stopwatch to track the action start</returns>
-        protected Stopwatch InitializeAction(Logger logger, string functionName, SecurityPage page, SecurityAuthorization authorizationRequired, ICollection<WorkspaceDTO>  workspaces, int? boeID)
-        {
+		/// <summary>
+		/// Initializes a controller action.
+		/// </summary>
+		/// <param name="logger">The logger for the controller calling the action</param>
+		/// <param name="functionName">The name of the function being initialized</param>
+		/// <param name="page">The security page being initialized</param>
+		/// <param name="authorizationRequired">The minimum required to perform the action</param>
+		/// <param name="workspace">The workspace shortname</param>
+		/// <param name="boeID">The current BOE ID if one exists</param>
+		/// <returns>A stopwatch to track the action start</returns>
+		protected Stopwatch InitializeAction(Logger logger, string functionName, SecurityPage page, SecurityAuthorization authorizationRequired, ICollection<WorkspaceDTO> workspaces, int? boeID)
+		{
 			if (logger == null)
 			{
 				throw new ArgumentNullException(nameof(logger));
@@ -175,30 +175,30 @@ namespace GenBOE.Web.Controllers
 			}
 
 			return sw;
-        }
+		}
 
-        /// <summary>
-        /// Finalizes a controller action
-        /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="functionName"></param>
-        /// <param name="sw"></param>
-        protected void FinalizeAction(Logger logger, string functionName, Stopwatch sw)
-        {
-            if (logger == null)
-            {
-                throw new ArgumentNullException(nameof(logger));
-            }
+		/// <summary>
+		/// Finalizes a controller action
+		/// </summary>
+		/// <param name="logger"></param>
+		/// <param name="functionName"></param>
+		/// <param name="sw"></param>
+		protected void FinalizeAction(Logger logger, string functionName, Stopwatch sw)
+		{
+			if (logger == null)
+			{
+				throw new ArgumentNullException(nameof(logger));
+			}
 
-            if (sw != null)
-            {
-                sw.Stop();
-                logger.Performance("ACTION - " + functionName, sw.ElapsedMilliseconds);
-            }
-            else
-            {
-                logger.Performance(string.Format("Finished " + functionName + ": " + "This action was not timed."), 0);
-            }
-        }
-    }
+			if (sw != null)
+			{
+				sw.Stop();
+				logger.Performance("ACTION - " + functionName, sw.ElapsedMilliseconds);
+			}
+			else
+			{
+				logger.Performance(string.Format("Finished " + functionName + ": " + "This action was not timed."), 0);
+			}
+		}
+	}
 }

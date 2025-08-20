@@ -159,6 +159,10 @@ namespace GenBOE.DataBridge.Core.DTO
 		// the task element type
 		public TaskElementType TaskElementType { get; set; }
 
+		/// <summary>
+		/// Gets or sets the Author display name
+		/// </summary>
+		public string AuthorDisplayName { get; set; }
 
 		/// <summary>
 		/// Skill Mix table
