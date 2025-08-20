@@ -28,8 +28,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using GenBOE.Objects;
     using IES.Common;
     using IES.Common.classes;
+	using GenBOE.DataBridge.Common;
 
-    public class BOEControllerLogicSpaceSystems : BOEControllerLogic
+	public class BOEControllerLogicSpaceSystems : BOEControllerLogic
     {
         #region Protected Properties and Constructor
 
@@ -69,14 +70,20 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IMoqTypeDataLoader moqTypeDataLoader,
             IBoeApproverResponseDTODataLoader boeApproverResponseLoader,
             IESSAPClient iesSapClient,
-            ITokenService tokenService
+            ITokenService tokenService,
+			ICommonDataMapper inCommonDataMapper,
+			IMaterialDTODataLoader inMaterialLoader,
+			ITravelDTODataLoader travelLoader,
+			IWorkspaceVersionMetaDataDTODataLoader versionLoader,
+			IWbsDTODataLoader wbsLoader
 			)
             : base(inBOESummary, inUserLoader, inActiveDirectoryUtil,
             inPermissionsLoader, inFactory, inBOEExporter, inBoeCustomExporter, inGenBOEControllerLogic,
             inBoeMediator, inValidationHelper, inBoeCommentLoader, inEmailer, inBoeTaskElementMediator, inWorkspaceVariableLoader, inBOEStateMachine,
             inVariableSelectBOEtoSumCalculation, inBOELaborControllerLogic, inValidateBOE, inSecurityInformation, inBoeSearchLoader, inSecurityAccess,
             inBoeTaskElementRecalculation, inBOEImporter, inVariableCircularReferenceChecker, inConflictBOE, inNestedWBSUtilities, projectMapLoader, zoneTravelRatesFeesDataLoader,
-            rteTemplateDataLoader, moqTypeDataLoader, boeApproverResponseLoader, iesSapClient, tokenService)
+            rteTemplateDataLoader, moqTypeDataLoader, boeApproverResponseLoader, iesSapClient, tokenService, inCommonDataMapper, inMaterialLoader, travelLoader,
+			versionLoader, wbsLoader)
         {
         }
 

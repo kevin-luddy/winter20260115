@@ -24,7 +24,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using GenBOE.ActionLogic.WBS;
     using GenBOE.ActionLogic.WBS.BOE;
     using GenBOE.ActionLogic.ZoneTravel;
-    using GenBOE.DataBridge.Common.Interfaces;
+	using GenBOE.DataBridge.Common;
+	using GenBOE.DataBridge.Common.Interfaces;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
@@ -74,14 +75,20 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IMoqTypeDataLoader moqTypeDataLoader,
             IBoeApproverResponseDTODataLoader boeApproverResponseLoader,
             IESSAPClient iesSapClient,
-            ITokenService tokenService
+            ITokenService tokenService,
+			ICommonDataMapper inCommonDataMapper,
+			IMaterialDTODataLoader inMaterialLoader,
+			ITravelDTODataLoader travelLoader,
+			IWorkspaceVersionMetaDataDTODataLoader versionLoader,
+			IWbsDTODataLoader wbsLoader
 			)
             : base(inBOESummary, inUserLoader, inActiveDirectoryUtil, 
             inPermissionsLoader, inFactory, inBOEExporter, inBoeCustomExporter, inGenBOEControllerLogic,
             inBoeMediator, inValidationHelper, inBoeCommentLoader, inEmailer, inBoeTaskElementMediator, inWorkspaceVariableLoader, inBOEStateMachine,
             inVariableSelectBOEtoSumCalculation, inBOELaborControllerLogic, inValidateBOE, inSecurityInformation, inBoeSearchLoader, inSecurityAccess,
             inBoeTaskElementRecalculation, inBOEImporter, inVariableCircularReferenceChecker, inConflictBOE, inNestedWBSUtilities, projectMapLoader, zoneTravelRatesFeesLoader,
-            rteTemplateDataLoader, moqTypeDataLoader, boeApproverResponseLoader, iesSapClient, tokenService)
+            rteTemplateDataLoader, moqTypeDataLoader, boeApproverResponseLoader, iesSapClient, tokenService, inCommonDataMapper, inMaterialLoader, travelLoader,
+			versionLoader, wbsLoader)
         {
             this.offloadRatesDTOLoader = offloadRatesDTOLoader;
         }

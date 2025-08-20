@@ -18,7 +18,7 @@ namespace GenBOE.ActionLogic
     using IES.Common;
     using GenBOE.Dtos;
     using GenBOE.Objects;
-    using IES.Common.Exceptions;	
+    using IES.Common.Exceptions;
 
 	public interface IBOEControllerLogic
     {
@@ -347,5 +347,9 @@ namespace GenBOE.ActionLogic
 		/// <returns>Collection of view model fields</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		Task<ICollection<QueryFieldViewModel>> GetAllFields();
-    }
+
+
+		void SaveManageBOE(Collection<ManageBOEModelView> boes, FullWorkspace ws);
+
+	}
 }

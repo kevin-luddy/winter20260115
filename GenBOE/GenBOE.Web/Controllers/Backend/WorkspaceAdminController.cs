@@ -8,6 +8,7 @@ namespace GenBOE.Web.Controllers.Backend
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ControllerLogic.Backend;
+	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.BOE;
 	using GenBOE.ActionLogic.ModelView.Clin;
 	using GenBOE.DataBridge.Common.Interfaces;
@@ -24,6 +25,7 @@ namespace GenBOE.Web.Controllers.Backend
 	using System.Diagnostics;
 	using System.Linq;
 	using System.Web.Http;
+	using System.Web.Mvc;
 
 	/// <summary>
 	/// Workspace Admin Controller
@@ -73,7 +75,7 @@ namespace GenBOE.Web.Controllers.Backend
 		/// </summary>
 		/// <param name="workspaceShortName"></param>
 		/// <returns></returns>
-		[HttpGet]
+		[System.Web.Http.HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<ManageCLINGridModelView> GetManageCLINs(string workspaceShortName)
 		{
@@ -119,7 +121,7 @@ namespace GenBOE.Web.Controllers.Backend
         /// </summary>
         /// <param name="workspaceShortName"> the workspace shortname</param>
         /// <returns>The MV for the Manage WBS grid</returns>
-        [HttpGet]
+        [System.Web.Http.HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<ManageWBSGridModelView> GetManageWBS(string workspaceShortName)
 		{
@@ -156,7 +158,7 @@ namespace GenBOE.Web.Controllers.Backend
 		/// </summary>
 		/// <param name="workspaceShortName"> the workspace shortname</param>
 		/// <returns>The MV for the Manage WBS grid</returns>
-		[HttpGet]
+		[System.Web.Http.HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<ManageBOEGridWidgetModelView> GetManageBOE(string workspaceShortName)
 		{
@@ -187,9 +189,43 @@ namespace GenBOE.Web.Controllers.Backend
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown error occurred returning WBS data: {ex.Message}");
+				result.Messages.Add($"Unknown error occurred returning BOE data: {ex.Message}");
 			}
 
+			return result;
+		}
+
+		[System.Web.Http.HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<ManageBOEGridWidgetModelView>SaveManageBOE(string workspace, [FromBody] Collection<ManageBOEModelView> boes)
+		{
+			if (boes == null)
+			{
+				throw new ArgumentNullException(nameof(boes));
+			}
+
+
+			IESSingleResponse<ManageBOEGridWidgetModelView> result = new IESSingleResponse<ManageBOEGridWidgetModelView>();
+
+			try
+			{
+				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
+
+				// Initialize Action
+				Stopwatch sw = this.InitializeAction(logger, WebConstants.ACTION_SAVE_MANAGE_BOE, SecurityPage.ManageBOEs, SecurityAuthorization.CreateReadUpdateDelete, new Collection<WorkspaceDTO>() { ws }, null);
+
+				boeControllerLogic.SaveManageBOE(boes, ws);
+
+
+				// Finalize Action
+				this.FinalizeAction(logger, WebConstants.ACTION_SAVE_MANAGE_BOE, sw);
+
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occurred saving BOE data: {ex.Message}");
+			}
 			return result;
 		}
 	}
