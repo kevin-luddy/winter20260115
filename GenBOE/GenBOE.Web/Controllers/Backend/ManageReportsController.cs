@@ -126,18 +126,15 @@ namespace GenBOE.Web.Controllers
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
-		public IESResponse<BOEStatusReportModelView> GetBOEStatusReport(string workspace)
+		public IESSingleResponse<BOEStatusReportView> GetBOEStatusReport(string workspace)
 		{
-			IESResponse<BOEStatusReportModelView> result = new IESResponse<BOEStatusReportModelView>();
-			BOEStatusReportData data = new BOEStatusReportData();
+			IESSingleResponse<BOEStatusReportView> result = new IESSingleResponse<BOEStatusReportView>();
+			BOEStatusReportView data = new BOEStatusReportView();
 
 			try
 			{
 				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 				Stopwatch sw = this.InitializeAction(this.logger, WebConstants.ACTION_DISPLAY_BOE_STATUS_REPORT, SecurityPage.Reports, SecurityAuthorization.Read, new Collection<WorkspaceDTO>() { ws }, null);
-
-				data.allWBS = ws.WbsElements;
-				data.allCLIN = ws.Clins;
 
 				// UCOT check (only need this because the totals are calculated
 				// but the variable for IsUCOTEnabledForWorkspace within the Workspace is not set properly.
@@ -162,9 +159,10 @@ namespace GenBOE.Web.Controllers
 
 				BOEExportInputs exportInputs = new BOEExportInputs(boes, boes, tasks, ws);
 				Collection<BOEStatusReportModelView> reportData = boeStatusReport.GenerateBOEStatusReport(exportInputs);
-				data.boeStatusReportModel = reportData;
+				ICollection<BOEStatusReportGrid> reportGrid = boeStatusReport.ConvertBOEStatusData(reportData);
+				data.boeStatusReportModel = reportGrid;
 
-				result.Data = reportData;
+				result.Data = data;
 
 				FinalizeAction(logger, WebConstants.ACTION_DISPLAY_BOE_STATUS_REPORT, sw);
 				result.IsSuccessful = true;

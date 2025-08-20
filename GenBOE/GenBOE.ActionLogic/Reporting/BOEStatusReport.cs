@@ -6,124 +6,124 @@
 
 namespace GenBOE.ActionLogic.Reporting
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Linq;
-    using GenBOE.ActionLogic.Common;
-    using GenBOE.ActionLogic.Common.Calculations;
-    using GenBOE.ActionLogic.IO.Export.BOE;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Diagnostics.CodeAnalysis;
+	using System.Linq;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.Common.Calculations;
+	using GenBOE.ActionLogic.IO.Export.BOE;
 	using GenBOE.ActionLogic.Misc;
 	using GenBOE.DataBridge.Common;
-    using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
-    using GenBOE.Objects;
-    using IES.Common;
-    using IES.Common.classes;
-    using IES.Common.OfficeUtilities;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
+	using IES.Common;
+	using IES.Common.classes;
+	using IES.Common.OfficeUtilities;
 
-    /// <summary>
-    /// Class to generate a ModelView used for BOE Status report display and export
-    /// </summary>
-    public class BOEStatusReport : IBOEStatusReport
-    {
-        private readonly string sEmpty = string.Empty;
+	/// <summary>
+	/// Class to generate a ModelView used for BOE Status report display and export
+	/// </summary>
+	public class BOEStatusReport : IBOEStatusReport
+	{
+		private readonly string sEmpty = string.Empty;
 
-        private ICommonDataMapper commonDataMapper;
-        private IUserDTODataLoader userDTODataLoader;
-        private IVariableSelectBOEtoSumCalculation variableSelectBOEtoSumCalculation;
-        private IPermissionsDTODataLoader permissionsLoader;
-        private TravelTripCostCalculation travelTripCostCalculator;
-        
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BOEStatusReport"/> class.
-        /// </summary>
-        /// <param name="commonDataMapper">The common data mapper.</param>
-        /// <param name="userDTODataLoader">The user dto data loader.</param>
-        /// <param name="variableSelectBOEtoSumCalculation">The variable select bo eto sum calculation.</param>
-        /// <param name="permissionsLoader">The permissions loader.</param>
-        /// <param name="travelTripCostCalculator">The travel trip cost calculator.</param>
-        public BOEStatusReport(
-            ICommonDataMapper commonDataMapper,
-            IUserDTODataLoader userDTODataLoader,
-            IVariableSelectBOEtoSumCalculation variableSelectBOEtoSumCalculation,
-            IPermissionsDTODataLoader permissionsLoader,
-            TravelTripCostCalculation travelTripCostCalculator)
-        {
-            this.commonDataMapper = commonDataMapper;
-            this.userDTODataLoader = userDTODataLoader;
-            this.variableSelectBOEtoSumCalculation = variableSelectBOEtoSumCalculation;
-            this.permissionsLoader = permissionsLoader;
-            this.travelTripCostCalculator = travelTripCostCalculator;
-        }
+		private ICommonDataMapper commonDataMapper;
+		private IUserDTODataLoader userDTODataLoader;
+		private IVariableSelectBOEtoSumCalculation variableSelectBOEtoSumCalculation;
+		private IPermissionsDTODataLoader permissionsLoader;
+		private TravelTripCostCalculation travelTripCostCalculator;
 
-        /// <summary>
-        /// Generates a ModelViews used for BOE Status report display and export
-        /// </summary>
-        /// <param name="exportInputs">The export inputs.</param>
-        /// <returns>
-        /// Boe Status Report Model Views
-        /// </returns>
-        /// <exception cref="System.ArgumentNullException">exportInputs</exception>
-        [SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-        public Collection<BOEStatusReportModelView> GenerateBOEStatusReport(BOEExportInputs exportInputs)
-        {
-            if (exportInputs == null)
-            {
-                throw new ArgumentNullException(nameof(exportInputs));
-            }
+		/// <summary>
+		/// Initializes a new instance of the <see cref="BOEStatusReport"/> class.
+		/// </summary>
+		/// <param name="commonDataMapper">The common data mapper.</param>
+		/// <param name="userDTODataLoader">The user dto data loader.</param>
+		/// <param name="variableSelectBOEtoSumCalculation">The variable select bo eto sum calculation.</param>
+		/// <param name="permissionsLoader">The permissions loader.</param>
+		/// <param name="travelTripCostCalculator">The travel trip cost calculator.</param>
+		public BOEStatusReport(
+			ICommonDataMapper commonDataMapper,
+			IUserDTODataLoader userDTODataLoader,
+			IVariableSelectBOEtoSumCalculation variableSelectBOEtoSumCalculation,
+			IPermissionsDTODataLoader permissionsLoader,
+			TravelTripCostCalculation travelTripCostCalculator)
+		{
+			this.commonDataMapper = commonDataMapper;
+			this.userDTODataLoader = userDTODataLoader;
+			this.variableSelectBOEtoSumCalculation = variableSelectBOEtoSumCalculation;
+			this.permissionsLoader = permissionsLoader;
+			this.travelTripCostCalculator = travelTripCostCalculator;
+		}
 
-            List<BOEStatusReportModelView> toSortAndReturn = new List<BOEStatusReportModelView>();
+		/// <summary>
+		/// Generates a ModelViews used for BOE Status report display and export
+		/// </summary>
+		/// <param name="exportInputs">The export inputs.</param>
+		/// <returns>
+		/// Boe Status Report Model Views
+		/// </returns>
+		/// <exception cref="System.ArgumentNullException">exportInputs</exception>
+		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
+		public Collection<BOEStatusReportModelView> GenerateBOEStatusReport(BOEExportInputs exportInputs)
+		{
+			if (exportInputs == null)
+			{
+				throw new ArgumentNullException(nameof(exportInputs));
+			}
+
+			List<BOEStatusReportModelView> toSortAndReturn = new List<BOEStatusReportModelView>();
 
 			// Get all BOEs in the Workspace
 			IReadOnlyCollection<BoeDTO> allBOEsInWorkspace = exportInputs.Boes;
-            IDictionary<int,BOEStateModelView> boeStates = this.commonDataMapper.getBOEStatesDictionary();
+			IDictionary<int, BOEStateModelView> boeStates = this.commonDataMapper.getBOEStatesDictionary();
 
-            HashSet<PermissionsDTO> permissionsAssociatedWithBoes = new HashSet<PermissionsDTO>(this.permissionsLoader.GetBOEPermissions(allBOEsInWorkspace.Select(x => x.Id).Distinct().ToList()));
-            HashSet<PermissionsDTO> authorsForBoes = new HashSet<PermissionsDTO>(permissionsAssociatedWithBoes.Where(x => x.Role == Role.Author || x.Role == Role.SubcontractorAuthor).ToCollection());
-            HashSet<PermissionsDTO> approversForBoes = new HashSet<PermissionsDTO>(permissionsAssociatedWithBoes.Where(x => x.Role == Role.Approver).Select(x => x).ToCollection());
-            HashSet<UserDTO> usersForBoe = new HashSet<UserDTO>(this.userDTODataLoader.GetByIds(permissionsAssociatedWithBoes.Select(x => x.ETIUserId).Distinct().ToList()));
-            HashSet<TripDTO> allTravelTrips = new HashSet<TripDTO>(exportInputs.TravelTrips);
-            HashSet<PerDiemDTO> allPerDiems = new HashSet<PerDiemDTO>(exportInputs.PerDiemsForTravelTrips);
-            HashSet<EscalationRatesDTO> allEscalations = new HashSet<EscalationRatesDTO>(exportInputs.EscalationRates);
-            HashSet<MiscTravelRateDTO> allMiscTravelRates = new HashSet<MiscTravelRateDTO>(exportInputs.MiscTravelRatesForTravelTrips);
+			HashSet<PermissionsDTO> permissionsAssociatedWithBoes = new HashSet<PermissionsDTO>(this.permissionsLoader.GetBOEPermissions(allBOEsInWorkspace.Select(x => x.Id).Distinct().ToList()));
+			HashSet<PermissionsDTO> authorsForBoes = new HashSet<PermissionsDTO>(permissionsAssociatedWithBoes.Where(x => x.Role == Role.Author || x.Role == Role.SubcontractorAuthor).ToCollection());
+			HashSet<PermissionsDTO> approversForBoes = new HashSet<PermissionsDTO>(permissionsAssociatedWithBoes.Where(x => x.Role == Role.Approver).Select(x => x).ToCollection());
+			HashSet<UserDTO> usersForBoe = new HashSet<UserDTO>(this.userDTODataLoader.GetByIds(permissionsAssociatedWithBoes.Select(x => x.ETIUserId).Distinct().ToList()));
+			HashSet<TripDTO> allTravelTrips = new HashSet<TripDTO>(exportInputs.TravelTrips);
+			HashSet<PerDiemDTO> allPerDiems = new HashSet<PerDiemDTO>(exportInputs.PerDiemsForTravelTrips);
+			HashSet<EscalationRatesDTO> allEscalations = new HashSet<EscalationRatesDTO>(exportInputs.EscalationRates);
+			HashSet<MiscTravelRateDTO> allMiscTravelRates = new HashSet<MiscTravelRateDTO>(exportInputs.MiscTravelRatesForTravelTrips);
 
-            // Create a report model view for each BOE
-            foreach (BoeDTO boe in allBOEsInWorkspace)
-            {
-                BOEStatusReportModelView modelView = new BOEStatusReportModelView();
+			// Create a report model view for each BOE
+			foreach (BoeDTO boe in allBOEsInWorkspace)
+			{
+				BOEStatusReportModelView modelView = new BOEStatusReportModelView();
 
-                // Set WBS Data
-                WbsDTO wbs = exportInputs.WbsElements.FirstOrDefault(x => x.Id == boe.WBSID);
-                modelView.ResourceDecimalPrecision = exportInputs.Workspace.DecimalPrecision;
+				// Set WBS Data
+				WbsDTO wbs = exportInputs.WbsElements.FirstOrDefault(x => x.Id == boe.WBSID);
+				modelView.ResourceDecimalPrecision = exportInputs.Workspace.DecimalPrecision;
 
-                modelView.WBSNumber = (wbs == null ? "" : wbs.WbsNumber);
-                modelView.WBSPaddedNumber = (wbs == null ? "" : wbs.WbsPaddedNumber);
-                modelView.WBSTitle = (wbs == null ? "None" : wbs.WbsTitle);
+				modelView.WBSNumber = (wbs == null ? "" : wbs.WbsNumber);
+				modelView.WBSPaddedNumber = (wbs == null ? "" : wbs.WbsPaddedNumber);
+				modelView.WBSTitle = (wbs == null ? "None" : wbs.WbsTitle);
 
-                // Set CLIN Data
-                ClinDTO clin = exportInputs.Clins.FirstOrDefault(x => x.Id == boe.CLINID);
+				// Set CLIN Data
+				ClinDTO clin = exportInputs.Clins.FirstOrDefault(x => x.Id == boe.CLINID);
 
-                modelView.CLINNumber = (clin == null ? "" : clin.ClinNumber);
-                modelView.CLINTitle = (clin == null ? "None" : clin.ClinTitle);
-                modelView.CLINPaddedNumber = (clin == null ? "" : clin.ClinPaddedNumber);
+				modelView.CLINNumber = (clin == null ? "" : clin.ClinNumber);
+				modelView.CLINTitle = (clin == null ? "None" : clin.ClinTitle);
+				modelView.CLINPaddedNumber = (clin == null ? "" : clin.ClinPaddedNumber);
 
-                // Set BOE Data
-                modelView.BOEID = boe.Id;
-                modelView.StartDate = boe.StartDate;
-                modelView.EndDate = boe.EndDate;
-                modelView.BOETitle = boe.Title ?? this.sEmpty;
+				// Set BOE Data
+				modelView.BOEID = boe.Id;
+				modelView.StartDate = boe.StartDate;
+				modelView.EndDate = boe.EndDate;
+				modelView.BOETitle = boe.Title ?? this.sEmpty;
 
-                ICollection<BoeTaskElementDTO> tasks = exportInputs.TaskElements.Where(x => x.BoeID == boe.Id).ToCollection();
-                ICollection<TravelDTO> travelElements = exportInputs.Travels.Where(x => x.BoeID == boe.Id).ToCollection();
-                ICollection<OtherDirectCostDTO> odcs = exportInputs.Odcs.Where(x => x.BoeID == boe.Id).ToCollection();
+				ICollection<BoeTaskElementDTO> tasks = exportInputs.TaskElements.Where(x => x.BoeID == boe.Id).ToCollection();
+				ICollection<TravelDTO> travelElements = exportInputs.Travels.Where(x => x.BoeID == boe.Id).ToCollection();
+				ICollection<OtherDirectCostDTO> odcs = exportInputs.Odcs.Where(x => x.BoeID == boe.Id).ToCollection();
 
-                modelView.TotalHours = (from taskElement in tasks
-                                        from laborType in taskElement.taskElementLabors
-                                        where laborType.SpreadType == SpreadType.Hours
-                                              && laborType.ValueSpread.HasValue
-                                        select laborType.ValueSpread.Value).Sum();
+				modelView.TotalHours = (from taskElement in tasks
+										from laborType in taskElement.taskElementLabors
+										where laborType.SpreadType == SpreadType.Hours
+											  && laborType.ValueSpread.HasValue
+										select laborType.ValueSpread.Value).Sum();
 
 				// UCOT Data 
 				modelView.TotalUCOTHours = UCOTUtility.GetTaskElementsUCOTHours(exportInputs.FullWorkspace, (IReadOnlyCollection<BoeTaskElementDTO>)tasks);
@@ -131,122 +131,167 @@ namespace GenBOE.ActionLogic.Reporting
 
 				decimal taskCost = 0;
 
-                // calculate labor cost
-                foreach (ResourceTypeDto boeResource in tasks.SelectMany(x => x.taskElementLabors))
-                {
-                    taskCost += boeResource.SpreadType == SpreadType.Cost ? Convert.ToDecimal(boeResource.ValueSpread) : 0m;
-                }
+				// calculate labor cost
+				foreach (ResourceTypeDto boeResource in tasks.SelectMany(x => x.taskElementLabors))
+				{
+					taskCost += boeResource.SpreadType == SpreadType.Cost ? Convert.ToDecimal(boeResource.ValueSpread) : 0m;
+				}
 
-                decimal odcCost = ((decimal)(odcs.Sum(odc => odc.ODCTypes.Sum(odcTypes => odcTypes.ODCSpreads.Sum(odcSpreads => odcSpreads.CostSpreadValue))))) / 100;
-                // Sum the trip data for all travel elements.
-                decimal travelCost = 0;
-                foreach (TravelDTO travel in travelElements)
-                {
-                    foreach (TravelTripType tripType in travel.TravelTrips)
-                    {
-                        TripDTO trip = allTravelTrips.First(i => i.TripID == tripType.SystemTripID);
-                        MiscTravelRateDTO miscRateDTO = allMiscTravelRates.First(i => i.Id == trip.MiscTravelRateID);
-                        PerDiemDTO perDiem = allPerDiems.First(i => i.Id == trip.PerDiemID);
-                        travelCost += this.travelTripCostCalculator.CalculateTravelCost(tripType, exportInputs.FullWorkspace, trip, miscRateDTO.MiscTravelRate, perDiem, allEscalations).CostTotal;
-                    }
-                }
-                
-                modelView.TotalCost = taskCost + odcCost + travelCost;
-                modelView.Status = boeStates[(int)boe.State].BOEState;
-                modelView.isMaterial = boe.isMaterial;
-                modelView.IsMultiClinWbs = boe.IsMultiClinWbs;
-                modelView.WorkspaceID = exportInputs.Workspace.Id;
+				decimal odcCost = ((decimal)(odcs.Sum(odc => odc.ODCTypes.Sum(odcTypes => odcTypes.ODCSpreads.Sum(odcSpreads => odcSpreads.CostSpreadValue))))) / 100;
+				// Sum the trip data for all travel elements.
+				decimal travelCost = 0;
+				foreach (TravelDTO travel in travelElements)
+				{
+					foreach (TravelTripType tripType in travel.TravelTrips)
+					{
+						TripDTO trip = allTravelTrips.First(i => i.TripID == tripType.SystemTripID);
+						MiscTravelRateDTO miscRateDTO = allMiscTravelRates.First(i => i.Id == trip.MiscTravelRateID);
+						PerDiemDTO perDiem = allPerDiems.First(i => i.Id == trip.PerDiemID);
+						travelCost += this.travelTripCostCalculator.CalculateTravelCost(tripType, exportInputs.FullWorkspace, trip, miscRateDTO.MiscTravelRate, perDiem, allEscalations).CostTotal;
+					}
+				}
+
+				modelView.TotalCost = taskCost + odcCost + travelCost;
+				modelView.Status = boeStates[(int)boe.State].BOEState;
+				modelView.isMaterial = boe.isMaterial;
+				modelView.IsMultiClinWbs = boe.IsMultiClinWbs;
+				modelView.WorkspaceID = exportInputs.Workspace.Id;
 
 				// Set User Data
 				Collection<PermissionsDTO> boeAuthors = authorsForBoes.Where(x => x.BOEId == boe.Id).ToCollection();
-                if (boeAuthors.Any())
-                {
+				if (boeAuthors.Any())
+				{
 					IEnumerable<string> authors = from author in boeAuthors
-                                  where author.Role == Role.Author
-                                  select usersForBoe.First(x => x.UserID == author.ETIUserId).DisplayName;
+												  where author.Role == Role.Author
+												  select usersForBoe.First(x => x.UserID == author.ETIUserId).DisplayName;
 
 					IEnumerable<string> subcontractorAuthors = from author in boeAuthors
-                                               where author.Role == Role.SubcontractorAuthor
-                                               select usersForBoe.First(x => x.UserID == author.ETIUserId).DisplayName + " (Sub)";
+															   where author.Role == Role.SubcontractorAuthor
+															   select usersForBoe.First(x => x.UserID == author.ETIUserId).DisplayName + " (Sub)";
 
 					List<string> allAuthors = authors.Union(subcontractorAuthors).OrderBy(x => x).Distinct().ToList();
-                    modelView.Authors = new Collection<string>(allAuthors.ToArray());
-                }
+					modelView.Authors = new Collection<string>(allAuthors.ToArray());
+				}
 
 				Collection<PermissionsDTO> boeApprovers = approversForBoes.Where(x => x.BOEId == boe.Id).ToCollection();
-                if (boeApprovers.Any())
-                {
+				if (boeApprovers.Any())
+				{
 					IEnumerable<string> approvers = from approver in boeApprovers
-                                    select usersForBoe.First(x => x.UserID == approver.ETIUserId).DisplayName;
+													select usersForBoe.First(x => x.UserID == approver.ETIUserId).DisplayName;
 
-                    modelView.Approvers = new Collection<string>(approvers.ToArray());
-                }
+					modelView.Approvers = new Collection<string>(approvers.ToArray());
+				}
 
-                // Add the model view to the list to sort and return
-                toSortAndReturn.Add(modelView);
-            }
+				// Add the model view to the list to sort and return
+				toSortAndReturn.Add(modelView);
+			}
 
-            // Sort the modelViews, using custom comparer in the ModelView class for
-            // desired multi-sort order
-            toSortAndReturn.Sort();
+			// Sort the modelViews, using custom comparer in the ModelView class for
+			// desired multi-sort order
+			toSortAndReturn.Sort();
 
-            return new Collection<BOEStatusReportModelView>(toSortAndReturn.ToArray());
-        }
+			return new Collection<BOEStatusReportModelView>(toSortAndReturn.ToArray());
+		}
 
-        /// <summary>
-        /// Send a BOEStatus report to file and return the file name
-        /// </summary>
-        /// <param name="templateFileLocation">The template file location.</param>
-        /// <param name="statusReport">The generated status report</param>
-        /// <param name="reportID">The report identifier.</param>
-        /// <param name="exportInputs">The export inputs.</param>
-        /// <returns>
-        /// The path of the generated file
-        /// </returns>
-        [ExcludeFromCodeCoverage]
-        public string SendBOEStatusReportToFile(string templateFileLocation, Collection<BOEStatusReportModelView> statusReport, int reportID, BOEExportInputs exportInputs)
-        {
-            if (templateFileLocation == null)
-            {
-                throw new ArgumentNullException(nameof(templateFileLocation));
-            }
+		public ICollection<BOEStatusReportGrid> ConvertBOEStatusData(Collection<BOEStatusReportModelView> boeStatusReportModelView)
+		{
+			if (boeStatusReportModelView == null)
+			{
+				throw new ArgumentNullException(nameof(boeStatusReportModelView));
+			}
 
-            if (statusReport == null)
-            {
-                throw new ArgumentNullException(nameof(statusReport));
-            }
+			ICollection<BOEStatusReportGrid> data = new Collection<BOEStatusReportGrid>();
 
-            string toReturn = "";
+			foreach (BOEStatusReportModelView value in boeStatusReportModelView)
+			{
+				BOEStatusReportGrid report = new BOEStatusReportGrid();
+				report.Approvers = value.Approvers;
+				report.Authors = value.Authors;
+				report.BOEID = value.BOEID;
+				report.BOETitle = value.BOETitle;
+				report.CLINNumber = value.CLINNumber;
+				report.CLINPaddedNumber = value.CLINPaddedNumber;
+				report.CLINTitle = value.CLINTitle;
+				report.DecimalPrecisionStringFormat = value.DecimalPrecisionStringFormat;
+				report.EndDate = value.EndDate;
+				report.IsMaterial = value.isMaterial;
+				report.IsMultiClinWbs = value.IsMultiClinWbs;
+				report.IsUCOTEnabledForWorkspace = value.IsUCOTEnabledForWorkspace;
+				report.ResourceDecimalPrecision = value.ResourceDecimalPrecision;
+				report.StartDate = value.StartDate;
+				report.Status = value.Status;
+				report.TotalCost = value.TotalCost;
+				report.TotalHours = value.TotalHours;
+				report.TotalHoursFormatted = value.TotalHoursFormatted;
+				report.TotalHoursWithUCOT = value.TotalHoursWithUCOT;
+				report.TotalHoursWithUCOTFormatted = value.TotalHoursWithUCOTFormatted;
+				report.TotalUCOTHours = value.TotalUCOTHours;
+				report.TotalUCOTHoursFormatted = value.TotalUCOTHoursFormatted;
+				report.WBSNumber = value.WBSNumber;
+				report.WBSPaddedNumber = value.WBSPaddedNumber;
+				report.WBSTitle = value.WBSTitle;
+				report.WorkspaceID = value.WorkspaceID;
 
-            if (statusReport.Any())
-            {
+				data.Add(report);
+			}
+
+			return data;
+		}
+
+		/// <summary>
+		/// Send a BOEStatus report to file and return the file name
+		/// </summary>
+		/// <param name="templateFileLocation">The template file location.</param>
+		/// <param name="statusReport">The generated status report</param>
+		/// <param name="reportID">The report identifier.</param>
+		/// <param name="exportInputs">The export inputs.</param>
+		/// <returns>
+		/// The path of the generated file
+		/// </returns>
+		[ExcludeFromCodeCoverage]
+		public string SendBOEStatusReportToFile(string templateFileLocation, Collection<BOEStatusReportModelView> statusReport, int reportID, BOEExportInputs exportInputs)
+		{
+			if (templateFileLocation == null)
+			{
+				throw new ArgumentNullException(nameof(templateFileLocation));
+			}
+
+			if (statusReport == null)
+			{
+				throw new ArgumentNullException(nameof(statusReport));
+			}
+
+			string toReturn = "";
+
+			if (statusReport.Any())
+			{
 				// Create all rows for the export file
 				ExcelExportWorksheet worksheet = this.GetExcelExportWorksheet(statusReport, reportID, exportInputs);
 
-                // Pass the rows to the generic Excel exporter
-                toReturn = ExcelExporter.ExportToExcelFile(templateFileLocation, true, new List<ExcelExportWorksheet> { worksheet }, new int?[] { 1 });
-                
-            }
+				// Pass the rows to the generic Excel exporter
+				toReturn = ExcelExporter.ExportToExcelFile(templateFileLocation, true, new List<ExcelExportWorksheet> { worksheet }, new int?[] { 1 });
 
-            // Return the file name of the Export File
-            return toReturn;
-        }
+			}
 
-        /// <summary>
-        /// Gets the excel export worksheet.
-        /// </summary>
-        /// <param name="statusReport">The status report.</param>
-        /// <param name="reportID">The report identifier.</param>
-        /// <param name="exportInputs">The export inputs.</param>
-        /// <returns></returns>
-        /// <exception cref="System.ArgumentNullException">exportInputs</exception>
-        [SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmantainableCode"), SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists"), ExcludeFromCodeCoverage]
-        public ExcelExportWorksheet GetExcelExportWorksheet(Collection<BOEStatusReportModelView> statusReport, int reportID, BOEExportInputs exportInputs)
-        {
-            if (exportInputs == null)
-            {
-                throw new ArgumentNullException(nameof(exportInputs));
-            }
+			// Return the file name of the Export File
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Gets the excel export worksheet.
+		/// </summary>
+		/// <param name="statusReport">The status report.</param>
+		/// <param name="reportID">The report identifier.</param>
+		/// <param name="exportInputs">The export inputs.</param>
+		/// <returns></returns>
+		/// <exception cref="System.ArgumentNullException">exportInputs</exception>
+		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmantainableCode"), SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists"), ExcludeFromCodeCoverage]
+		public ExcelExportWorksheet GetExcelExportWorksheet(Collection<BOEStatusReportModelView> statusReport, int reportID, BOEExportInputs exportInputs)
+		{
+			if (exportInputs == null)
+			{
+				throw new ArgumentNullException(nameof(exportInputs));
+			}
 
 			// Pull Full Workspace to manipulate Report Data for UCOT
 			FullWorkspace fullWorkspace = exportInputs.FullWorkspace;
@@ -255,12 +300,12 @@ namespace GenBOE.ActionLogic.Reporting
 			string grandTotalHoursLabel = "Grand Total " + FullObjectHelper.HoursLabel(exportInputs.Workspace);
 
 			ExcelExportWorksheet toReturn = new ExcelExportWorksheet();
-            string hoursFormatString = Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision);
-            string hoursLabel = "Total " + FullObjectHelper.HoursLabel(exportInputs.Workspace);
+			string hoursFormatString = Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision);
+			string hoursLabel = "Total " + FullObjectHelper.HoursLabel(exportInputs.Workspace);
 
-            switch (reportID)
-            {
-                case (int)Reports.BOEStatusByWBS:
+			switch (reportID)
+			{
+				case (int)Reports.BOEStatusByWBS:
 					// Add Headers
 					if (isUCOTEnabledForWorkspace)
 					{
@@ -271,29 +316,29 @@ namespace GenBOE.ActionLogic.Reporting
 						toReturn.Add(ImportExportConstants.WBS_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER, ImportExportConstants.CLIN_COLUMN_HEADER, ImportExportConstants.START_DATE_COLUMN_HEADER, ImportExportConstants.END_DATE_COLUMN_HEADER, hoursLabel, ImportExportConstants.TOTAL_COST_COLUMN_HEADER, ImportExportConstants.AUTHORS_COLUMN_HEADER, ImportExportConstants.APPROVERS_COLUMN_HEADER, ImportExportConstants.STATUS_COLUMN_HEADER, ImportExportConstants.MULTI_CLIN_COLUMN_HEADER, ImportExportConstants.MATERIAL_COLUMN_HEADER);
 					}
 
-                    if (statusReport.Any())
-                    {
+					if (statusReport.Any())
+					{
 						IReadOnlyCollection<WbsDTO> allWBS = exportInputs.WbsElements;
 
-                        var boesGroupedByWBS = from w in allWBS
-                                               orderby w.WbsPaddedNumber
-                                               select new
-                                               {
-                                                   WBS = w,
-                                                   BOEs = (from b in statusReport
-                                                           where b.WBSNumber == w.WbsNumber
-                                                           select b).ToList()
-                                               };
+						var boesGroupedByWBS = from w in allWBS
+											   orderby w.WbsPaddedNumber
+											   select new
+											   {
+												   WBS = w,
+												   BOEs = (from b in statusReport
+														   where b.WBSNumber == w.WbsNumber
+														   select b).ToList()
+											   };
 
-                        foreach (var wbs in boesGroupedByWBS)
-                        {
-                            DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
-                            data.FillData(new List<OrdinaryVariableDto>() { new OrdinaryVariableDto() { SelectedBOEsToSum = new Collection<SelectBOEsToSum>() { new SelectBOEsToSum() { WBSID = wbs.WBS.Id } } } },
-                                new List<WorkspaceVariableDTO>() { new WorkspaceVariableDTO() { SelectedBOEsToSum = new Collection<SelectBOEsToSum>() { new SelectBOEsToSum() { WBSID = wbs.WBS.Id } } } },
-                                exportInputs.WbsElements, exportInputs.Boes, exportInputs.TaskElements, exportInputs.ResourcesForWsResourceListId, exportInputs.Clins);
+						foreach (var wbs in boesGroupedByWBS)
+						{
+							DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
+							data.FillData(new List<OrdinaryVariableDto>() { new OrdinaryVariableDto() { SelectedBOEsToSum = new Collection<SelectBOEsToSum>() { new SelectBOEsToSum() { WBSID = wbs.WBS.Id } } } },
+								new List<WorkspaceVariableDTO>() { new WorkspaceVariableDTO() { SelectedBOEsToSum = new Collection<SelectBOEsToSum>() { new SelectBOEsToSum() { WBSID = wbs.WBS.Id } } } },
+								exportInputs.WbsElements, exportInputs.Boes, exportInputs.TaskElements, exportInputs.ResourcesForWsResourceListId, exportInputs.Clins);
 
-                            if (wbs.BOEs.Any())
-                            {
+							if (wbs.BOEs.Any())
+							{
 								if (isUCOTEnabledForWorkspace)
 								{
 									toReturn.Add(
@@ -317,10 +362,10 @@ namespace GenBOE.ActionLogic.Reporting
 										CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + this.variableSelectBOEtoSumCalculation.GetTotalBasedOnWBSID(wbs.WBS.Id,
 											this.GetResourceTypesToBeSummed(), data).ToString(hoursFormatString));
 								}
-                            }
+							}
 
-                            foreach (BOEStatusReportModelView boe in wbs.BOEs)
-                            {
+							foreach (BOEStatusReportModelView boe in wbs.BOEs)
+							{
 								if (isUCOTEnabledForWorkspace)
 								{
 									toReturn.Add(
@@ -355,40 +400,40 @@ namespace GenBOE.ActionLogic.Reporting
 										boe.IsMultiClinWbs ? "Yes" : "No",
 										boe.isMaterial ? "Yes" : "No");
 								}
-                            }
-                        }
-                    }
-                    break;
+							}
+						}
+					}
+					break;
 
-                case (int)Reports.BOEStatusByCLIN:
+				case (int)Reports.BOEStatusByCLIN:
 					// Add Headers
 					if (isUCOTEnabledForWorkspace)
 					{
- 						toReturn.Add(ImportExportConstants.CLIN_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER, ImportExportConstants.WBS_COLUMN_HEADER, ImportExportConstants.START_DATE_COLUMN_HEADER, ImportExportConstants.END_DATE_COLUMN_HEADER, hoursLabel, hoursLabelUCOT, grandTotalHoursLabel, ImportExportConstants.TOTAL_COST_COLUMN_HEADER, ImportExportConstants.AUTHORS_COLUMN_HEADER, ImportExportConstants.APPROVERS_COLUMN_HEADER, ImportExportConstants.STATUS_COLUMN_HEADER, ImportExportConstants.MULTI_CLIN_COLUMN_HEADER, ImportExportConstants.MATERIAL_COLUMN_HEADER);
+						toReturn.Add(ImportExportConstants.CLIN_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER, ImportExportConstants.WBS_COLUMN_HEADER, ImportExportConstants.START_DATE_COLUMN_HEADER, ImportExportConstants.END_DATE_COLUMN_HEADER, hoursLabel, hoursLabelUCOT, grandTotalHoursLabel, ImportExportConstants.TOTAL_COST_COLUMN_HEADER, ImportExportConstants.AUTHORS_COLUMN_HEADER, ImportExportConstants.APPROVERS_COLUMN_HEADER, ImportExportConstants.STATUS_COLUMN_HEADER, ImportExportConstants.MULTI_CLIN_COLUMN_HEADER, ImportExportConstants.MATERIAL_COLUMN_HEADER);
 					}
 					else
 					{
 						toReturn.Add(ImportExportConstants.CLIN_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER, ImportExportConstants.WBS_COLUMN_HEADER, ImportExportConstants.START_DATE_COLUMN_HEADER, ImportExportConstants.END_DATE_COLUMN_HEADER, hoursLabel, ImportExportConstants.TOTAL_COST_COLUMN_HEADER, ImportExportConstants.AUTHORS_COLUMN_HEADER, ImportExportConstants.APPROVERS_COLUMN_HEADER, ImportExportConstants.STATUS_COLUMN_HEADER, ImportExportConstants.MULTI_CLIN_COLUMN_HEADER, ImportExportConstants.MATERIAL_COLUMN_HEADER);
 					}
 
-                    if (statusReport.Count > 0)
-                    {
+					if (statusReport.Count > 0)
+					{
 						IReadOnlyCollection<ClinDTO> allClin = exportInputs.Clins;
 
-                        var boesGroupedByClin = from c in allClin
-							orderby c.ClinPaddedNumber
-							select new
-							{
-								CLINTitle = c.ClinString,
-								BOEs = from b in statusReport
-										where b.CLINNumber == c.ClinNumber
-										select b
-							};
+						var boesGroupedByClin = from c in allClin
+												orderby c.ClinPaddedNumber
+												select new
+												{
+													CLINTitle = c.ClinString,
+													BOEs = from b in statusReport
+														   where b.CLINNumber == c.ClinNumber
+														   select b
+												};
 
-                        foreach (var clin in boesGroupedByClin)
-                        {
-                            if (clin.BOEs.Any())
-                            {
+						foreach (var clin in boesGroupedByClin)
+						{
+							if (clin.BOEs.Any())
+							{
 								if (isUCOTEnabledForWorkspace)
 								{
 									toReturn.Add(
@@ -451,12 +496,12 @@ namespace GenBOE.ActionLogic.Reporting
 											boe.isMaterial ? "Yes" : "No");
 									}
 								}
-                            }
-                        }
-                    }
-                    break;
+							}
+						}
+					}
+					break;
 
-                default:
+				default:
 					if (isUCOTEnabledForWorkspace)
 					{
 						// Add Headers
@@ -509,29 +554,29 @@ namespace GenBOE.ActionLogic.Reporting
 							boe.isMaterial ? "Yes" : "No"
 						});
 					}
-                    
-                    break;
-            }
+
+					break;
+			}
 
 
-            return toReturn;
-        }
+			return toReturn;
+		}
 
-        /// <summary>
-        /// Return a collection of Resource Types to be summed.
-        /// </summary>
-        /// <returns>A collection of Resource Types to be summed.</returns>
-        public virtual Collection<int> GetResourceTypesToBeSummed()
-        {
-            return new Collection<int>
-            {
-                (int)SumVariableResourceType.DSLabor,
-                (int)SumVariableResourceType.ESLabor,
-                (int)SumVariableResourceType.TSLabor,
-                (int)SumVariableResourceType.LSLabor,
-                (int)SumVariableResourceType.LOEIWTA,
-                (int)SumVariableResourceType.LOESub
-            };
-        }
-    }
+		/// <summary>
+		/// Return a collection of Resource Types to be summed.
+		/// </summary>
+		/// <returns>A collection of Resource Types to be summed.</returns>
+		public virtual Collection<int> GetResourceTypesToBeSummed()
+		{
+			return new Collection<int>
+			{
+				(int)SumVariableResourceType.DSLabor,
+				(int)SumVariableResourceType.ESLabor,
+				(int)SumVariableResourceType.TSLabor,
+				(int)SumVariableResourceType.LSLabor,
+				(int)SumVariableResourceType.LOEIWTA,
+				(int)SumVariableResourceType.LOESub
+			};
+		}
+	}
 }
