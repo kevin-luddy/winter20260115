@@ -2,21 +2,15 @@
 
 namespace GenBOE.DataBridge.DTO
 {
-	using GenBOE.Dtos;
-	using GenBOE.Models;
-	using GenBOE.PLD.Models;
-	using IES.Common;
-	using IES.Common.PickList;
 	using System;
-	using System.CodeDom;
 	using System.Collections.Generic;
-	using System.Collections.ObjectModel;
 	using System.Configuration;
 	using System.Data.Entity;
-	using System.Globalization;
 	using System.Linq;
-	using System.Runtime.Remoting.Contexts;
-	using System.Text;
+	using GenBOE.Dtos;
+	using GenBOE.PLD.Models;
+	using IES.Common;
+	
 
 	/// <summary>
 	/// PLD DTO Data Loader
@@ -25,11 +19,7 @@ namespace GenBOE.DataBridge.DTO
 	{
 
 		#region Fields
-		/// <summary>
-		/// Instance of the PLD DbContext
-		/// </summary>
-		//private readonly PldDBContext _context;
-
+		
 		/// <summary>
 		/// activeStatuses is for the known Active States that the Column in the View returns
 		/// </summary>
@@ -48,31 +38,59 @@ namespace GenBOE.DataBridge.DTO
 		/// <summary>
 		/// private cutoff date 
 		/// </summary>
-		private static readonly DateTime _cutoffDate = GetCutoffDate();
+		private DateTime? _cutoffDate;
+
+
+		/// <summary>
+		/// Get the cutoff date
+		/// </summary>
+		private DateTime CutoffDate
+		{
+			get
+			{
+				if (_cutoffDate.HasValue)
+				{
+					return _cutoffDate.Value;
+				}
+
+				using (StopwatchTimer sw = new StopwatchTimer(Log, nameof(GetCutoffDate)))
+				{
+					try
+					{
+						_cutoffDate = GetCutoffDate();
+						return _cutoffDate.Value;
+					}
+					catch (Exception ex)
+					{
+						Log.Error(ex, nameof(GetCutoffDate));
+						throw;
+					}
+				}
+			}
+		}
 
 		/// <summary>
 		///  Get the config appsetting for pld toppropals cutoffdate
 		/// </summary>
 		/// <returns></returns>
 		/// <exception cref="ConfigurationErrorsException"></exception>
-		private static DateTime GetCutoffDate() 
+		private DateTime GetCutoffDate() 
 		{
 
 			string s = ConfigurationManager.AppSettings["Pld.TopProposals.CutoffDate"];
 
-
 			if (string.IsNullOrWhiteSpace(s))
 			{
 				throw new ConfigurationErrorsException("Missing appsetting pld cutoffdate");
-			}	
-				
-			if(!DateTime.TryParse(s, out DateTime dt))
+			}
+
+			if (!DateTime.TryParse(s, out DateTime dt))
 			{
 				throw new ConfigurationErrorsException($"Invalid date format for appsetting  pld.topproposals.cutoffdate");
 			}
 
 			return dt.Date;
-
+			
 		}
 
 		#endregion
@@ -81,8 +99,7 @@ namespace GenBOE.DataBridge.DTO
 		// ctr PldDTODataLoader
 		///
 		public PldDTODataLoader()
-		{
-			//_context = context ?? throw new ArgumentNullException(nameof(context));
+		{			
 			this.Log = new Logger(typeof(PldDTODataLoader));
 		}
 
@@ -169,7 +186,7 @@ namespace GenBOE.DataBridge.DTO
 					p.PA_Title.Contains(search));
 				}
 
-				DateTime cutoff = _cutoffDate;
+				DateTime cutoff = CutoffDate;
 
 				query = query.Where(p => p.Last_Modified_Date >= cutoff)
 					.OrderByDescending(p => p.Last_Modified_Date);

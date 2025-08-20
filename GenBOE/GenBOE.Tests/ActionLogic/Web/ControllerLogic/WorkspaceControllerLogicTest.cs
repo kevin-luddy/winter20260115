@@ -2363,5 +2363,84 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             return validationFactoryMock;
         }
-    }
+
+		/// <summary>
+		/// 
+		/// </summary>
+		[TestMethod]
+		public void NextTrackingNumber_WhenNoExistingMatches_ReturnsBasePaNumber()
+		{
+			
+			WorkspaceControllerLogicSpaceSystems sut = this.CreateSystemSpaceSystems();
+			IEnumerable<WorkspaceDTO> workspaces = new List<WorkspaceDTO>
+			{
+				new WorkspaceDTO { Shortname = "SOMETHING-ELSE" },
+				new WorkspaceDTO { Shortname = "OTHER" }
+			};
+			string paNumber = "PA";
+
+			Dictionary<string, object> result = sut.NextTrackingNumber(workspaces, paNumber);
+
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result.ContainsKey("ShortName"));
+			Assert.AreEqual("PA", result["ShortName"]);
+			Assert.AreEqual("PA", result["TrackingNumber"]);
+			Assert.AreEqual(0, (int)result["Id"]);
+			Assert.AreEqual(string.Empty, (string)result["WorkspaceName"]);
+		}
+
+		[TestMethod]
+		public void NextTrackingNumber_WhenExistingSuffixes_ReturnsIncrementedSuffix()
+		{
+			
+			WorkspaceControllerLogicSpaceSystems sut = this.CreateSystemSpaceSystems();
+			IEnumerable<WorkspaceDTO> workspaces = new List<WorkspaceDTO>
+			{
+				new WorkspaceDTO { Shortname = "PA" },          // exact match -> relevant
+                new WorkspaceDTO { Shortname = "PA-001" },
+				new WorkspaceDTO { Shortname = "PA-007" },      // max = 7
+                new WorkspaceDTO { Shortname = "PA-003" },
+				new WorkspaceDTO { Shortname = "IRRELEVANT" }
+			};
+			string paNumber = "PA";
+
+			
+			Dictionary<string, object> result = sut.NextTrackingNumber(workspaces, paNumber);
+
+			
+			Assert.IsNotNull(result);
+			Assert.AreEqual("PA_01", result["ShortName"]); // padded increment of max
+			Assert.AreEqual("PA", result["TrackingNumber"]);
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentNullException))]
+		public void NextTrackingNumber_WhenWorkspacesIsNull_Throws()
+		{
+
+			WorkspaceControllerLogicSpaceSystems sut = this.CreateSystemSpaceSystems();
+			IEnumerable<WorkspaceDTO> workspaces = null;
+			string paNumber = "PA";
+
+			
+			sut.NextTrackingNumber(workspaces, paNumber);
+
+			
+		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ArgumentException))]
+		public void NextTrackingNumber_WhenPaNumberBlank_Throws()
+		{
+
+			WorkspaceControllerLogicSpaceSystems sut = this.CreateSystemSpaceSystems();
+			IEnumerable<WorkspaceDTO> workspaces = Enumerable.Empty<WorkspaceDTO>();
+			string paNumber = "  ";
+
+			
+			sut.NextTrackingNumber(workspaces, paNumber);
+
+			
+		}
+	}
 }

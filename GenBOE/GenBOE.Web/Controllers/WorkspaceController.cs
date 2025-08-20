@@ -46,7 +46,6 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.DataBridge.Reference;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
-	using GenBOE.PLD.Models;
 	using GenBOE.Web.Common;
 	using GenBOE.Web.ModelView;
 	using GenTRAC.DataBridge.DTO;
@@ -56,7 +55,6 @@ namespace GenBOE.Web.Controllers
 	using IES.Common.Exceptions;
 	using IES.Common.OfficeUtilities;
 	using IES.Common.PickList;
-	//using LineOfBusinessDataLoader = DataBridge.DTO.LineOfBusinessDataLoader;
 	using UserDTO = Dtos.UserDTO;
 
 	public class WorkspaceController : GenBOEController
@@ -823,7 +821,8 @@ namespace GenBOE.Web.Controllers
 		/// <returns></returns>
 		public JsonResult SearchPLDProposals(string term)
 		{
-		
+			Stopwatch sw = InitializeAction(_log, "GetProposalDetails", SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
+
 			ICollection<ProposalDTO> matches = _pldDTODataLoader.GetTopProposals(term);
 
 			var results = matches.Select(p => new
@@ -831,6 +830,8 @@ namespace GenBOE.Web.Controllers
 				Text = p.PA_Number + " - " + p.PA_Title,
 				Value = p.PA_Number
 			});
+
+			FinalizeAction(_log, "GetProposalDetails", sw);
 
 			return Json(results, JsonRequestBehavior.AllowGet);
 				
@@ -844,6 +845,9 @@ namespace GenBOE.Web.Controllers
 		/// <returns></returns>
 		public JsonResult GetProposalDetails(string paNumber)
 		{
+						
+			Stopwatch sw = InitializeAction(_log, "GetProposalDetails", SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
+
 			ProposalDTO result = _pldDTODataLoader.GetProposalDetails(paNumber);
 
 			if (result != null)
@@ -863,6 +867,7 @@ namespace GenBOE.Web.Controllers
 
 			}
 
+			FinalizeAction(_log, "GetProposalDetails", sw);
 
 			return Json(result, JsonRequestBehavior.AllowGet);
 		}
@@ -875,47 +880,14 @@ namespace GenBOE.Web.Controllers
 		/// <returns></returns>
 		public JsonResult GetNextWorkspaceShortNameFromTrackingNumber(string paNumber)
 		{
+			Stopwatch sw = InitializeAction(_log, "GetProposalDetails", SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
+			
 			ICollection<WorkspaceDTO> workspaces  = this.workspaceLoader.GetAllWsNamesForTrackingNumber(paNumber)
 				.ToList() ?? new List<WorkspaceDTO>();
-			int max = 0;
-			bool anyRelevant = false;
-			string prefix = paNumber + "_";
 
-			foreach (WorkspaceDTO ws in workspaces)
-			{
-				string sn = (ws.Shortname ?? string.Empty).Trim();
-				
-				if(sn.Equals(paNumber, StringComparison.OrdinalIgnoreCase))
-				{
-					anyRelevant = true;
-					continue;
-				}
-				
-				if(sn.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-				{
-					string tail = sn.Substring(prefix.Length);
-					if(int.TryParse(tail, out int n))
-					{
-						if (n > max)
-						{
-							max = n;
-						}
-						anyRelevant = true;
-					}
-				}
-			}
-			string nextShort = !anyRelevant ?
-				paNumber : (max > 0) ?
-				$"{paNumber}_{max + 1:00}" :
-				$"{paNumber}_01";
+			Dictionary<string, object> payload = _ControllerLogic.NextTrackingNumber(workspaces, paNumber);
 
-			var payload = new
-			{
-				Id = 0,
-				WorkspaceName = string.Empty,
-				ShortName = nextShort,
-				TrackingNumber = paNumber
-			};
+			FinalizeAction(_log, "GetProposalDetails", sw);
 
 			return Json(payload, JsonRequestBehavior.AllowGet);
 			
