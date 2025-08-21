@@ -37,6 +37,7 @@ namespace GenBOE.ActionLogic.IO.Export
         internal const string Container_TaskSpreadTables = "TaskSpreadTablesContainer";
         internal const string Container_TaskID = "TaskIDContainer";
         internal const string Container_Travel = "TravelContainer";
+		internal const string Container_TaskAuthor = "TaskAuthorContainer";
 
         internal const string CustomFields_BOEContainer = "CustomFields-BOE";
         internal const string CustomFields_LaborContainer = "CustomFields-Labor";
