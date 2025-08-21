@@ -262,6 +262,8 @@ namespace GenBOE.Web.Controllers
 
 				result.Data = new FullBOEStatusReportModelView
 				{
+					AllClins = ws.Clins.ToCollection(),
+					AllWbs = ws.WbsElements.ToCollection(),
 					HoursLabel = FullObjectHelper.HoursLabel(ws),
 					IsUCOTEnabledForWorkspace = Utilities.ShowUCOTForWorkspace(ws.CreationDate, workspaceShortname),
 					BOEStatusReports = reports,

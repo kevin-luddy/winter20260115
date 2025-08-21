@@ -8,6 +8,7 @@ namespace GenBOE.ActionLogic.Reporting
 {
 	using System.Collections.Generic;
 	using GenBOE.Dtos;
+	using GenBOE.Objects;
 
 	/// <summary>
 	/// Class to pass BOE Status Report Data along with some Workspace Data
@@ -24,6 +25,10 @@ namespace GenBOE.ActionLogic.Reporting
 			IsUCOTEnabledForWorkspace = false;
 			BOEStatusReports = new List<BOEStatusReportModelView>();
 		}
+
+		public ICollection<FullWbs> AllWbs { get; set; }
+
+		public ICollection<FullClin> AllClins { get; set; }
 
 		/// <summary>
 		/// Hours Label
