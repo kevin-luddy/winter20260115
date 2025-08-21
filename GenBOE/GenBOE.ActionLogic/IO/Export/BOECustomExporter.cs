@@ -2391,7 +2391,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			}
 			else
 			{
-				WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_TaskAuthor);
+				WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.Container_TaskAuthor);
 			}
 
 			if (selectedComponents.Contains(BoeCustomReportComponent.TaskMOQEquation))
