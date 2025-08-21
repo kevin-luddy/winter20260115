@@ -4,13 +4,13 @@ namespace GenBOE.DataBridge.DTO
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Collections.ObjectModel;
+	using System.Configuration;
+	using System.Data.Entity;
 	using System.Linq;
-	using System.Text;
-	using IES.Common;
 	using GenBOE.Dtos;
-	using GenBOE.Models;
 	using GenBOE.PLD.Models;
+	using IES.Common;
+	
 
 	/// <summary>
 	/// PLD DTO Data Loader
@@ -19,11 +19,7 @@ namespace GenBOE.DataBridge.DTO
 	{
 
 		#region Fields
-		/// <summary>
-		/// Instance of the PLD DbContext
-		/// </summary>
-		private readonly PldDBContext _context;
-
+		
 		/// <summary>
 		/// activeStatuses is for the known Active States that the Column in the View returns
 		/// </summary>
@@ -39,14 +35,84 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary> 
 		protected Logger Log { get; set; }
 
-		#endregion
+		/// <summary>
+		/// private cutoff date 
+		/// </summary>
+		private DateTime? _cutoffDate;
 
-		public PldDTODataLoader(PldDBContext context = null)
+
+		/// <summary>
+		/// Get the cutoff date
+		/// </summary>
+		private DateTime CutoffDate
 		{
-			_context = context ?? new PldDBContext();
+			get
+			{
+				if (_cutoffDate.HasValue)
+				{
+					return _cutoffDate.Value;
+				}
+
+				using (StopwatchTimer sw = new StopwatchTimer(Log, nameof(GetCutoffDate)))
+				{
+					try
+					{
+						_cutoffDate = GetCutoffDate();
+						return _cutoffDate.Value;
+					}
+					catch (Exception ex)
+					{
+						Log.Error(ex, nameof(GetCutoffDate));
+						throw;
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		///  Get the config appsetting for pld toppropals cutoffdate
+		/// </summary>
+		/// <returns></returns>
+		/// <exception cref="ConfigurationErrorsException"></exception>
+		private DateTime GetCutoffDate() 
+		{
+
+			string s = ConfigurationManager.AppSettings["Pld.TopProposals.CutoffDate"];
+
+			if (string.IsNullOrWhiteSpace(s))
+			{
+				throw new ConfigurationErrorsException("Missing appsetting pld cutoffdate");
+			}
+
+			if (!DateTime.TryParse(s, out DateTime dt))
+			{
+				throw new ConfigurationErrorsException($"Invalid date format for appsetting  pld.topproposals.cutoffdate");
+			}
+
+			return dt.Date;
+			
+		}
+
+		#endregion
+		
+		///
+		// ctr PldDTODataLoader
+		///
+		public PldDTODataLoader()
+		{			
 			this.Log = new Logger(typeof(PldDTODataLoader));
 		}
-		
+
+		/// <summary>
+		/// Helper for newing up context
+		/// </summary>
+		/// <returns></returns>
+		private PldDBContext CreateContext()
+		{
+			return new PldDBContext();
+		}
+
+
 		/// <summary>
 		/// Get Proposal by ID   "PA Number" is a string  
 		/// </summary>
@@ -65,24 +131,30 @@ namespace GenBOE.DataBridge.DTO
 			{
 				try
 				{
-					results = _context.Proposals
-						.Where(p => paNumbers.Contains(p.PA_Number))
-						.Select(p => new ProposalDTO
-						{
-							PA_Number = p.PA_Number,
-							PA_Title = p.PA_Title,
-							PA_Description = p.PA_Description,
-							PA_Version = p.PA_Version,
-							Project_Start_Date = p.Project_Start_Date,
-							Project_End_Date = p.Project_End_Date,
-							Last_Modified_Date = p.Last_Modified_Date,
-							Line_of_Business = p.Line_of_Business,
-							Pricing = p.Pricing,
-							RFP_Number = p.RFP_Number,
-							Proposal_Status = p.Proposal_Status
-						})
-						.ToList();
+					using (PldDBContext ctx = CreateContext())
+					{
 
+						ctx.Configuration.AutoDetectChangesEnabled = false;
+
+						results = ctx.Proposals
+							.Where(p => paNumbers.Contains(p.PA_Number))
+							.Select(p => new ProposalDTO
+							{
+								PA_Number = p.PA_Number,
+								PA_Title = p.PA_Title,
+								PA_Description = p.PA_Description,
+								PA_Version = p.PA_Version,
+								Project_Start_Date = p.Project_Start_Date,
+								Project_End_Date = p.Project_End_Date,
+								Last_Modified_Date = p.Last_Modified_Date,
+								Line_of_Business = p.Line_of_Business,
+								Pricing = p.Pricing,
+								RFP_Number = p.RFP_Number,
+								Proposal_Status = p.Proposal_Status
+							})
+							.AsNoTracking()
+							.ToList();
+					}
 				}
 				catch (Exception ex)
 				{
@@ -98,41 +170,75 @@ namespace GenBOE.DataBridge.DTO
 		/// Get All Proposals from PLD database view
 		/// </summary>
 		/// <returns></returns>
-		public ICollection<ProposalDTO> GetAllProposals()
+		public ICollection<ProposalDTO> GetTopProposals(string search = null)
 		{
-			List<ProposalDTO> results = new List<ProposalDTO>();
-			
-			using (StopwatchTimer sw = new StopwatchTimer(Log))
+
+			using (PldDBContext ctx = CreateContext())
 			{
-				try
-				{
-					results = _context.Proposals				
-						.Select(p => new ProposalDTO
-						{
-							PA_Number = p.PA_Number,
-							PA_Title = p.PA_Title,
-							PA_Description = p.PA_Description,
-							PA_Version = p.PA_Version,
-							Project_Start_Date = p.Project_Start_Date,
-							Project_End_Date = p.Project_End_Date,
-							Last_Modified_Date = p.Last_Modified_Date,
-							Line_of_Business = p.Line_of_Business,
-							Pricing = p.Pricing,
-							RFP_Number = p.RFP_Number,
-							Proposal_Status = p.Proposal_Status
-						})
-						.ToList();
+				IQueryable<PLD.Models.Models.PLDProposal> query = ctx.Proposals.AsNoTracking();
 
-				}
-				catch (Exception ex)
+				if (!string.IsNullOrWhiteSpace(search))
 				{
-					Log.Error(ex, "Error getting all proposals");
-					throw;
+					search = search.Trim();
+
+					query = query.Where(p =>
+					p.PA_Number.Contains(search) ||
+					p.PA_Title.Contains(search));
 				}
+
+				DateTime cutoff = CutoffDate;
+
+				query = query.Where(p => p.Last_Modified_Date >= cutoff)
+					.OrderByDescending(p => p.Last_Modified_Date);
+
+
+				List<ProposalDTO> results = query
+					.Select(p => new ProposalDTO
+					{
+						PA_Number = p.PA_Number.Trim(),
+						PA_Title = p.PA_Title.Trim(),
+					})
+					.Take(50)
+					.ToList();
+
+				return results;
 			}
-
-			return results;
+						
 		}
+
+		/// <summary>
+		/// Get selected proposal with specific pa number
+		/// </summary>
+		/// <param name="paNumber"></param>
+		/// <returns></returns>
+		public ProposalDTO GetProposalDetails(string paNumber)
+		{
+
+			using (PldDBContext ctx = CreateContext())
+			{
+
+				ProposalDTO result = ctx.Proposals
+					.AsNoTracking()
+					.Where(p => p.PA_Number == paNumber)
+					.Select(p => new ProposalDTO
+					{
+						PA_Number = p.PA_Number,
+						Line_of_Business = p.Line_of_Business,
+						Project_Start_Date = p.Project_Start_Date,
+						Project_End_Date = p.Project_End_Date,
+					})
+					.FirstOrDefault();
+
+				
+
+
+
+				return result;
+			}
+		}
+
+		
+
 
 		/// <summary>
 		///   Get All Active Proposals
@@ -147,26 +253,28 @@ namespace GenBOE.DataBridge.DTO
 			{
 				try
 				{
-					
 
-					results = _context.Proposals
-						.Where(p => ACTIVE_STATUSES.Contains(p.Proposal_Status))
-						.Select(p => new ProposalDTO
-						{
-							PA_Number = p.PA_Number.Trim(),
-							PA_Title = p.PA_Title,
-							PA_Description = p.PA_Description,
-							PA_Version = p.PA_Version,
-							Project_Start_Date = p.Project_Start_Date,
-							Project_End_Date = p.Project_End_Date,
-							Last_Modified_Date = p.Last_Modified_Date,
-							Line_of_Business = p.Line_of_Business,
-							Pricing = p.Pricing,
-							RFP_Number = p.RFP_Number,
-							Proposal_Status = p.Proposal_Status
-						})
-						.ToList();
-
+					using (PldDBContext ctx = CreateContext())
+					{
+						results = ctx.Proposals
+							.AsNoTracking()
+							.Where(p => ACTIVE_STATUSES.Contains(p.Proposal_Status))
+							.Select(p => new ProposalDTO
+							{
+								PA_Number = p.PA_Number.Trim(),
+								PA_Title = p.PA_Title,
+								PA_Description = p.PA_Description,
+								PA_Version = p.PA_Version,
+								Project_Start_Date = p.Project_Start_Date,
+								Project_End_Date = p.Project_End_Date,
+								Last_Modified_Date = p.Last_Modified_Date,
+								Line_of_Business = p.Line_of_Business,
+								Pricing = p.Pricing,
+								RFP_Number = p.RFP_Number,
+								Proposal_Status = p.Proposal_Status
+							})
+							.ToList();
+					}
 				}
 				catch (Exception ex)
 				{
@@ -191,11 +299,15 @@ namespace GenBOE.DataBridge.DTO
 			{
 				try
 				{
-					results = _context.Proposals
-						.Where(p => ACTIVE_STATUSES.Contains(p.Proposal_Status))
-						.Select(p => p.PA_Title)
-						.ToList();
 
+					using (PldDBContext ctx = CreateContext())
+					{
+
+						results = ctx.Proposals.AsNoTracking()
+							.Where(p => ACTIVE_STATUSES.Contains(p.Proposal_Status))
+							.Select(p => p.PA_Title)
+							.ToList();
+					}
 				}
 				catch (Exception ex)
 				{
@@ -218,7 +330,7 @@ namespace GenBOE.DataBridge.DTO
 		}
 
 		/// <summary>
-		/// Releases the unmanaged resources used and optionally releases managed resources.
+		///  Dispose  FxCop friendly
 		/// </summary>
 		/// <param name="disposing"></param>
 		protected virtual void Dispose(bool disposing)
@@ -228,25 +340,9 @@ namespace GenBOE.DataBridge.DTO
 				return;
 			}
 
-			if (disposing)
-			{
-				if (_context != null)
-				{
-					_context.Dispose();
-				}
-			}
-
 			_disposed = true;
-		}
 
-		/// <summary>
-		///   Finalizer that ensures resources are released if Dispose was not called.
-		/// </summary>
-		~PldDTODataLoader()
-		{
-			Dispose(false);
 		}
-
 	}
 
 }

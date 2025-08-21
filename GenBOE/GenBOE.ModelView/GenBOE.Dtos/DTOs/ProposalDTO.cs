@@ -32,6 +32,11 @@ namespace GenBOE.Dtos
 		}
 
 		/// <summary>
+		/// Line of Business ID
+		/// </summary>
+		public int? Line_of_Business_ID { get; set; }
+
+		/// <summary>
 		///  PA Number 
 		/// </summary>
 		public string PA_Number { get; set; }

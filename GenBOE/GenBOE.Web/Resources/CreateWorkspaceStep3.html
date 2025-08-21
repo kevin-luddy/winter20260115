@@ -11,11 +11,15 @@
             </div>
         </div>
     </div>
+  
     <div class="form-element">
+        <div data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber !=''">
+            <span>{{model.nextRevision}} </span><input name="WorkspaceName" data-ng-trim="false" class="half" id="WorkspaceName" data-ng-keyup="workspaceNameKeyUp()" data-ng-model="data.WorkspaceName" type="text" maxlength="88" />
+        </div>
         <div data-ng-show="model.isPTMIntegrated && model.ptmTrackingNumber !== ''">
             <span>{{model.nextRevision}} </span><input class="half" data-ng-trim="false" data-ng-model="data.RevisionWorkspaceName" type="text" maxlength="88" />
         </div>
-        <input data-ng-hide="model.isPTMIntegrated && model.ptmTrackingNumber !== ''" name="WorkspaceName" class="full" id="WorkspaceName" data-ng-keyup="workspaceNameKeyUp()" data-ng-model="data.WorkspaceName" type="text" maxlength="100" />
+        <input ng-if="!model.IsPLDIntegrated" data-ng-hide="model.isPTMIntegrated && model.ptmTrackingNumber !== ''" name="WorkspaceName" class="full" id="WorkspaceName" data-ng-keyup="workspaceNameKeyUp()" data-ng-model="data.WorkspaceName" type="text" maxlength="100" />
     </div>
 </div>
 <div class="form-row">
@@ -40,8 +44,13 @@
         </div>
     </div>
     <div class="form-element">
-        <span class="url">{{model.applicationUrl}}<span data-ng-show="model.isPTMIntegrated && model.ptmTrackingNumber !== ''">{{model.nextRevision}}</span></span>
-        <input data-ng-hide="model.isPTMIntegrated && model.ptmTrackingNumber !== ''" name="ShortName" class="quarter" id="ShortName" data-ng-model="data.Shortname" type="text" maxlength="15">
+        <span class="url">            
+            {{ !model.IsPLDIntegrated ? model.applicationURL : getSantizedUrl() }}
+            <span data-ng-show="model.isPTMIntegrated && model.ptmTrackingNumber !== ''">{{model.nextRevision}}</span>
+        </span>
+        <span data-ng-show="!model.IsPLDIntegrated">
+            <input data-ng-hide="model.isPTMIntegrated && model.ptmTrackingNumber !== ''" name="ShortName" class="quarter" id="ShortName" data-ng-model="data.Shortname" type="text" maxlength="15">
+        </span>
     </div>
 </div>
 <div class="form-row" data-ng-show="model.showProjectMap && !model.isSSC">
@@ -63,9 +72,16 @@
             </div>
         </div>
     </div>
-    <div class="form-element">
+    <div class="form-element" ng-if="model.IsPLDIntegrated">
+        <div class="readonly-value" ng-init="data.LineOfBusinessID = model.LineOfBusiness && model.LineOfBusiness.trim()">
+            {{ model.LineOfBusiness ? model.LineOfBusiness.trim() : 'NA'}}
+        </div>
+    </div>
+    <div class="form-element" ng-if="!model.IsPLDIntegrated">
         <span data-ng-show="model.isPTMIntegrated && !model.isAdmin">{{getLOB()}}</span>
-        <select data-ng-hide="model.isPTMIntegrated && !model.isAdmin" name="LineOfBusiness" id="LineOfBusiness" data-ng-options="item.Id as item.Text for item in model.lobs | isActiveOrInitialPickListItem:data.LineOfBusinessID" data-ng-model="data.LineOfBusinessID"></select>
+        <select data-ng-hide="model.isPTMIntegrated && !model.isAdmin" name="LineOfBusiness" id="LineOfBusiness" 
+                data-ng-options="item.Id as item.Text for item in model.lobs | isActiveOrInitialPickListItem:data.LineOfBusinessID" 
+                data-ng-model="data.LineOfBusinessID"></select>
     </div>
 </div>
 <div class="form-row" data-ng-show="model.isSSC">
@@ -127,7 +143,25 @@
         <input id="CostVolumeLeadPricerDisplayName" name="CostVolumeLeadPricerDisplayName" type="text" class="half" maxlength="50" data-ng-model="data.CostVolumeLeadPricerDisplayName" />
     </div>
 </div>
-<div class="form-row" id="ContractDates" data-ng-show="!data.IsAttemptingToImport && (model.isSSC || data.ProjectMapType == '1' || data.ProjectMapType == '2')">
+<div ng-if="model.IsPLDIntegrated" class="form-row" id="ContractDates" data-ng-show="!data.IsAttemptingToImport && (model.isSSC || data.ProjectMapType == '1' || data.ProjectMapType == '2')">
+    <div class="form-label contract-start-date-label">
+        Contract Start Date
+    </div>
+    <div class="form-element contract-start-date" style="vertical-align:bottom;">
+        <span class="readonly-value">
+            {{ model.ContractStartDate ? (model.ContractStartDate | date:'MM/yyyy') : 'N/A'}}
+        </span>       
+    </div>
+    <div class="form-label contract-end-date-label">
+        Contract End Date
+    </div>
+    <div class="form-element contract-end-date"  style="vertical-align:bottom;">
+        <span class="readonly-value">
+            {{ model.ContractEndDate ? (model.ContractEndDate | date:'MM/yyyy') : 'N/A'}}
+        </span>      
+    </div>
+</div>
+<div ng-if="!model.IsPLDIntegrated" class="form-row" id="ContractDates" data-ng-show="!data.IsAttemptingToImport && (model.isSSC || data.ProjectMapType == '1' || data.ProjectMapType == '2')">
     <div class="form-label">
         Contract Start Date *
     </div>
@@ -152,7 +186,7 @@
         <label for="AllowGridEdit-No">No</label>
     </div>
 </div>
-<div class="form-row">
+<div class="form-row" ng-if="!model.IsPLDIntegrated">
     <div class="form-label" data-ng-hide="model.isSSC">
         Proposal Submittal Date
     </div>
@@ -210,14 +244,53 @@
         </select>
     </div>
 </div>
+<div class="form-row" data-ng-show="model.IsPLDIntegrated">
+    <div class="form-label">
+        <span>PLD PA Number</span>
+        <div id="Tracking-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
+        </div>
+        <div id="Tracking-HelpDialog" class="help-dialog" style="width: 200px;">
+            <div class="help-dialog-close"></div>
+            <div class="help-dialog-text">
+                The Proposal Log Database  "PA Number".
+            </div>
+        </div>
+    </div>
+    <div class="form-element">        
+        <div class="readonly-value">
+            {{ model.PLD_PANumber}}
+        </div>        
+    </div>   
+</div>
 <div class="form-row" data-ng-hide="model.isSSC">
     <div class="form-label">
         RFP #
     </div>
     <div class="form-element">
-        <input class="full ignoreValidation" id="RFPNumber" maxlength="100" name="RFPNumber" type="text" data-ng-model="data.RFPNumber">
+        <input ng-readonly="model.IsPLDIntegrated" class="full ignoreValidation" id="RFPNumber" maxlength="100" name="RFPNumber" type="text" data-ng-model="data.RFPNumber">
     </div>
 </div>
+<div class="form-row" data-ng-show="model.IsPLDIntegrated">
+    <div class="form-label">
+        <span>PLD PA Title</span>
+        <div id="Tracking-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
+        </div>
+        <div id="Tracking-HelpDialog" class="help-dialog" style="width: 200px;">
+            <div class="help-dialog-close"></div>
+            <div class="help-dialog-text">
+                The Proposal Log Database "PA Title".
+            </div>
+        </div>
+    </div>
+    <div class="form-element">
+        <div class="readonly-value">
+            {{ model.PLD_PATitle}}
+        </div>
+    </div>
+    
+</div>
+
+<!--PTM Space-->
 <div class="form-row" data-ng-show="model.isSSC">
     <div class="form-label">
         <span>PTM Tracking #</span>
@@ -264,7 +337,7 @@
             </div>
         </div>
     </div>
-    <div class="form-element static">{{data.ProposalTitle}}</div>
+    <div class="form-element static">{{data.ProposalTitle}}</div>   
 </div>
 <div class="form-row" data-ng-show="model.isSSC && model.showEquivalentPersonsOption && !data.IsAttemptingToImport">
     <div class="form-label">

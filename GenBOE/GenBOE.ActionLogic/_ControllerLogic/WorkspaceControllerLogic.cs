@@ -6,14 +6,7 @@
 
 namespace GenBOE.ActionLogic.ControllerLogic
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Collections.ObjectModel;
-	using System.Globalization;
-	using System.Linq;
-	using System.Threading.Tasks;
-	using System.Transactions;
-	using System.Web.Configuration;
+	using DocumentFormat.OpenXml.Wordprocessing;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
@@ -36,6 +29,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using IES.Common.Exceptions;
 	using IES.Common.PickList;
 	using MoreLinq;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Globalization;
+	using System.Linq;
+	using System.Threading.Tasks;
+	using System.Transactions;
+	using System.Web.Configuration;
 	using static IES.Common.Constants;
 
 	public abstract class WorkspaceControllerLogic : IWorkspaceControllerLogic
@@ -1791,6 +1792,76 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			this.customFieldValueLoader.Save(customFieldValues);
 		}
+
+		/// <summary>
+		///  Get Next Tracking Number for PLD
+		/// </summary>
+		/// <param name="workspaces"></param>
+		/// <param name="paNumber"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <exception cref="ArgumentException"></exception>
+		public Dictionary<string, object> NextTrackingNumber(IEnumerable<WorkspaceDTO> workspaces, string paNumber)
+		{
+
+			if(workspaces == null)
+			{
+				throw new ArgumentNullException(nameof(workspaces));				
+			}
+
+			if(string.IsNullOrWhiteSpace(paNumber))
+			{
+				throw new ArgumentException("paNumber is required", nameof(paNumber));
+			}
+
+
+			int max = 0;
+			bool anyRelevant = false;
+			string prefix = paNumber + "_";
+
+
+			foreach (WorkspaceDTO ws in workspaces)
+			{
+				string sn = (ws.Shortname ?? string.Empty).Trim();
+
+				if (sn.Equals(paNumber, StringComparison.OrdinalIgnoreCase))
+				{
+					anyRelevant = true;
+					continue;
+				}
+
+				if (sn.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+				{
+					string tail = sn.Substring(prefix.Length);
+					if (int.TryParse(tail, out int n))
+					{
+						if (n > max)
+						{
+							max = n;
+						}
+						anyRelevant = true;
+					}
+				}
+			}
+			string nextShort = !anyRelevant ?
+				paNumber : (max > 0) ?
+				$"{paNumber}_{max + 1:00}" :
+				$"{paNumber}_01";
+						
+
+			return new Dictionary<string, object>
+			{
+				["Id"] = 0,
+				["WorkspaceName"] = "",
+				["ShortName"] = nextShort,
+				["TrackingNumber"] = paNumber
+			};
+
+								
+
+		}
+
+
 
 		/// <summary>
 		/// Calculates (SAP) Actuals for MOQ Types inside a Workspace, then saves the changes to the database, 
