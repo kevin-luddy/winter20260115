@@ -777,7 +777,7 @@
 		return selectedItem;
 	};
 
-	$scope.recalculateTotals = function () {
+	$scope.recalculateTotals = function (setDirty = true) {
 		var cost = new BigNumber(0.0);
 		var hours = new BigNumber(0.0);
 		var ucotHours = new BigNumber(0.0);
@@ -832,7 +832,7 @@
 		$scope.deltaHours = $scope.getMOQTotal().minus($scope.totalSpreadHours).toString();
 		$scope.validateTotals();
 
-		$scope.refreshSkillMixTables();
+		$scope.refreshSkillMixTables(setDirty);
 	};
 
 	$scope.getMOQTotal = function () {
@@ -851,7 +851,7 @@
 			recalculateAllSpreadsAndTotals();
 			$scope.setDirty();
 		} else {
-			$scope.recalculateTotals();
+			$scope.recalculateTotals(false);
 		}
 	};
 
@@ -1410,7 +1410,7 @@
 			});
 
 			$scope.generateSpreadTable();
-			$scope.recalculateTotals();
+			$scope.recalculateTotals(false);
 
 			if (response.data.ValidationErrors) {
 				$scope.errors = response.data.ValidationErrors;
