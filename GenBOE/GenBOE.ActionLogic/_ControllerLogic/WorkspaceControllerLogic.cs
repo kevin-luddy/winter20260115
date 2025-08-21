@@ -1840,14 +1840,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				paNumber : (max > 0) ?
 				$"{paNumber}_{max + 1:00}" :
 				$"{paNumber}_01";
-
-			//var payload = new
-			//{
-			//	Id = 0,
-			//	WorkspaceName = string.Empty,
-			//	ShortName = nextShort,
-			//	TrackingNumber = paNumber
-			//};
+						
 
 			return new Dictionary<string, object>
 			{
@@ -1857,9 +1850,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				["TrackingNumber"] = paNumber
 			};
 
-
-
-			//return payload;
+								
 
 		}
 
