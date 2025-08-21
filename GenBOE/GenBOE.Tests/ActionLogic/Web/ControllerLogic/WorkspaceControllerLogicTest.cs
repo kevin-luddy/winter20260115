@@ -2365,7 +2365,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         }
 
 		/// <summary>
-		/// 
+		/// NextTrackingNumber When No Existing Matches then Returns a Base PaNumber
 		/// </summary>
 		[TestMethod]
 		public void NextTrackingNumber_WhenNoExistingMatches_ReturnsBasePaNumber()
@@ -2389,6 +2389,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual(string.Empty, (string)result["WorkspaceName"]);
 		}
 
+		/// <summary>
+		/// Next TrackingNumber  -- When Existing Suffixes Returns Incremented Suffix
+		/// </summary>
 		[TestMethod]
 		public void NextTrackingNumber_WhenExistingSuffixes_ReturnsIncrementedSuffix()
 		{
@@ -2413,6 +2416,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual("PA", result["TrackingNumber"]);
 		}
 
+		/// <summary>
+		/// Next Tracking Number When Workspaces IsNull 
+		/// </summary>
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void NextTrackingNumber_WhenWorkspacesIsNull_Throws()
@@ -2428,6 +2434,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			
 		}
 
+		/// <summary>
+		/// Next TrackingNumber When the Pa Number is Blank
+		/// </summary>
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentException))]
 		public void NextTrackingNumber_WhenPaNumberBlank_Throws()
