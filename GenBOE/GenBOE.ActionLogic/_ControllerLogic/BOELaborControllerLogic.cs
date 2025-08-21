@@ -292,21 +292,20 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			if (ucotSpreadItem.IsValid())
 			{
 				IDictionary<DateTime, decimal> smoothedUCOTSpreads = UCOTUtility.GetUcotSpreads(workspaceData.CreationDate, workspaceData.Shortname, workspaceData.DecimalPrecision, workspaceData.UCOTFactor, ucotSpreadItem.spreads.Select(x => x.ToBoeLaborSpread((int)ucotSpreadItem.rateType)).ToList(), ucotSpreadItem.ElementOfCost.Value, workspaceData.MoqTypeSelections.ToList(), ucotSpreadItem.boeTaskElementId, ucotSpreadItem.rateType.Value);
+				
+				// Clear out existing ucot spreads and add them as new
 				ucotSpreadItem.ucotHours = 0m;
+				ucotSpreadItem.ucotSpreads = new List<LaborSpreadDataModelView>();
 
-				foreach (LaborSpreadDataModelView item in ucotSpreadItem.ucotSpreads)
+				foreach (KeyValuePair<DateTime, decimal> item in smoothedUCOTSpreads)
 				{
-					DateTime convertedDate = DateTime.Parse(item.LaborSpreadDate).Normalize();
+					ucotSpreadItem.ucotSpreads.Add(new LaborSpreadDataModelView()
+					{
+						LaborSpreadDate = item.Key.ToMonthString(),
+						LaborSpreadValue = item.Value
+					});
 
-					if (smoothedUCOTSpreads.TryGetValue(convertedDate, out decimal spreadVal))
-					{
-						item.LaborSpreadValue = spreadVal;
-					}
-					else
-					{
-						item.LaborSpreadValue = 0;
-					}
-					ucotSpreadItem.ucotHours += item.LaborSpreadValue;
+					ucotSpreadItem.ucotHours += item.Value;
 				}
 			}
 			else

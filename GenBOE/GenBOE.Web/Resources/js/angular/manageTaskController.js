@@ -229,32 +229,34 @@
 	$scope.updateSkillMixHelperText = function () {
 		$scope.skillMixHelperText = "";
 
-		if (!$scope.ManageTaskModel.IsSkillMixEnabled) {
-			let skillMixStart = ManageTaskModel.SkillMixStartDate.split(' ')[0].toDate();
-			$scope.skillMixHelperText = "Skill Mix Tables are not showing because either Skill Mix is not enabled or blacklisted for this Workspace, or Workspace Creation Date is before " + skillMixStart.toLocaleDateString("en-US") + ".";
-		} else if (!$scope.ManageTaskModel.UsingTemplateBOE) {
-			$scope.skillMixHelperText = "Skill Mix Tables are not showing because Workspace is not setup to use MOQ Templates.";
-		} else if ($scope.ManageTaskModel.IsSpace && !$scope.ManageTaskModel.SapConnectionEnabled) {
-			$scope.skillMixHelperText = "Skill Mix Tables are not showing because SAP Connection is disabled for this Workspace.";
-		} else if ($scope.SelectedMoqTypes.length == 0) {
-			$scope.skillMixHelperText = "Skill Mix Tables are not showing because an MOQ Type has not been selected.";
-		} else if ($scope.SelectedMoqTypes.length > 1) {
-			$scope.skillMixHelperText = "Skill Mix Tables are not showing because there can only be 1 MOQ Type Selection for this Task.";
-		} else if ($scope.ManageTaskModel.IsSpace && $scope.SelectedMoqTypes.some(moqType => moqType.SelectedMOQType != 5001 && moqType.SelectedMOQType != 5002 && moqType.SelectedMOQType != 5005)) {
-			$scope.skillMixHelperText = "Skill Mix Tables are not showing because MOQ Type Selection can only be of Type \"Actual Program or Task Cost Data (Historical)\", \"Comparative Analysis\", or \"Analogous Relationships\".";
-		} else if (!$scope.ManageTaskModel.IsSpace && $scope.SelectedMoqTypes.some(moqType => moqType.SelectedMOQType != 5001 && moqType.SelectedMOQType != 5002)) {
-			$scope.skillMixHelperText = "Skill Mix Tables are not showing because MOQ Type Selection can only be of Type \"Actual Program or Task Cost Data (Historical)\" or \"Comparative Analysis\".";
-		} else if ($scope.ManageTaskModel.IsSpace) {
-			let isSapWebi = $scope.SelectedMoqTypes.some(function (moqType) {
-				return moqType.TableData.some(function (table) {
-					return table.RepositoryName == $scope.ManageTaskModel.SapWebiRepository;					
+		if ($scope.ManageTaskModel.IsSkillMixFeatureEnabled) {
+			if (!$scope.ManageTaskModel.IsSkillMixEnabled) {
+				let skillMixStart = ManageTaskModel.SkillMixStartDate.split(' ')[0].toDate();
+				$scope.skillMixHelperText = "Skill Mix Tables are not showing because either Skill Mix is not enabled or blacklisted for this Workspace, or Workspace Creation Date is before " + skillMixStart.toLocaleDateString("en-US") + ".";
+			} else if (!$scope.ManageTaskModel.UsingTemplateBOE) {
+				$scope.skillMixHelperText = "Skill Mix Tables are not showing because Workspace is not setup to use MOQ Templates.";
+			} else if ($scope.ManageTaskModel.IsSpace && !$scope.ManageTaskModel.SapConnectionEnabled) {
+				$scope.skillMixHelperText = "Skill Mix Tables are not showing because SAP Connection is disabled for this Workspace.";
+			} else if ($scope.SelectedMoqTypes.length == 0) {
+				$scope.skillMixHelperText = "Skill Mix Tables are not showing because an MOQ Type has not been selected.";
+			} else if ($scope.SelectedMoqTypes.length > 1) {
+				$scope.skillMixHelperText = "Skill Mix Tables are not showing because there can only be 1 MOQ Type Selection for this Task.";
+			} else if ($scope.ManageTaskModel.IsSpace && $scope.SelectedMoqTypes.some(moqType => moqType.SelectedMOQType != 5001 && moqType.SelectedMOQType != 5002 && moqType.SelectedMOQType != 5005)) {
+				$scope.skillMixHelperText = "Skill Mix Tables are not showing because MOQ Type Selection can only be of Type \"Actual Program or Task Cost Data (Historical)\", \"Comparative Analysis\", or \"Analogous Relationships\".";
+			} else if (!$scope.ManageTaskModel.IsSpace && $scope.SelectedMoqTypes.some(moqType => moqType.SelectedMOQType != 5001 && moqType.SelectedMOQType != 5002)) {
+				$scope.skillMixHelperText = "Skill Mix Tables are not showing because MOQ Type Selection can only be of Type \"Actual Program or Task Cost Data (Historical)\" or \"Comparative Analysis\".";
+			} else if ($scope.ManageTaskModel.IsSpace) {
+				let isSapWebi = $scope.SelectedMoqTypes.some(function (moqType) {
+					return moqType.TableData.some(function (table) {
+						return table.RepositoryName == $scope.ManageTaskModel.SapWebiRepository;
+					});
 				});
-			});
 
-			if (!isSapWebi) {
-				$scope.skillMixHelperText = "Skill Mix Tables are not showing because at least one MOQ Type Table needs to have a Repository Name of SAP/WEBI.";
-			} else if ($scope.IsUsingTMRatesInTask) {
-				$scope.skillMixHelperText = "Skill Mix Tables are not showing because T&M Rates are currently being used in this task.";
+				if (!isSapWebi) {
+					$scope.skillMixHelperText = "Skill Mix Tables are not showing because at least one MOQ Type Table needs to have a Repository Name of SAP/WEBI.";
+				} else if ($scope.IsUsingTMRatesInTask) {
+					$scope.skillMixHelperText = "Skill Mix Tables are not showing because T&M Rates are currently being used in this task.";
+				}
 			}
 		}
 	}
@@ -775,7 +777,7 @@
 		return selectedItem;
 	};
 
-	$scope.recalculateTotals = function () {
+	$scope.recalculateTotals = function (setDirty = true) {
 		var cost = new BigNumber(0.0);
 		var hours = new BigNumber(0.0);
 		var ucotHours = new BigNumber(0.0);
@@ -830,7 +832,7 @@
 		$scope.deltaHours = $scope.getMOQTotal().minus($scope.totalSpreadHours).toString();
 		$scope.validateTotals();
 
-		$scope.refreshSkillMixTables();
+		$scope.refreshSkillMixTables(setDirty);
 	};
 
 	$scope.getMOQTotal = function () {
@@ -849,7 +851,7 @@
 			recalculateAllSpreadsAndTotals();
 			$scope.setDirty();
 		} else {
-			$scope.recalculateTotals();
+			$scope.recalculateTotals(false);
 		}
 	};
 
@@ -1039,7 +1041,7 @@
 			}
 
 			if ($scope.IsUcot(item) && dt.toDate() >= $scope.oneLmxCutOff) {
-				$scope.calculateDiscreteUCOTSpread(item, true);
+				$scope.calculateDiscreteUCOTSpread(item, false);
 			}
 			else {
 				// re-calculate totals
@@ -1063,7 +1065,7 @@
 			}
 		});
 
-		angular.forEach($scope.model, function (item, key) {			
+		angular.forEach($scope.model, function (item, key) {
 			if (!item.Deleted) {
 				item.Deleted = true;
 			}
@@ -1408,7 +1410,7 @@
 			});
 
 			$scope.generateSpreadTable();
-			$scope.recalculateTotals();
+			$scope.recalculateTotals(false);
 
 			if (response.data.ValidationErrors) {
 				$scope.errors = response.data.ValidationErrors;
@@ -2094,9 +2096,9 @@
 						return table.RepositoryName === $scope.ManageTaskModel.SapWebiRepository;
 					});
 
- 					// Lastly, check that SAP is enabled
+					// Lastly, check that SAP is enabled
 					return hasBigThreeMoqType && hasSapWebiRepository && $scope.ManageTaskModel.SapConnectionEnabled;
-				// RMS
+					// RMS
 				} else {
 					let hasProperMoqTypes = [5001, 5002, '5001', '5002'].includes($scope.SelectedMoqTypes[0].SelectedMOQType);
 					return $scope.IsSkillMixEnabled && hasProperMoqTypes;
@@ -2132,7 +2134,7 @@
 
 		// Check if there are no MOQ Tables
 		let noMoqTables = $scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0;
-			
+
 		// Check if any MOQ Table is missing SAP Resource Hours
 		let hasMissingSAPResourceHours = $scope.SelectedMoqTypes.every(x =>
 			x.TableData !== undefined &&
@@ -2290,7 +2292,7 @@
 					calculateSpread(item, spreadValue);
 				} else {
 					// discrete
-					$scope.calculateDiscreteUCOTSpread(item, true);
+					$scope.fixDiscreteSpread(item, false);
 				}
 			}
 		} else if (item.SpreadCurveID === "-1") {
