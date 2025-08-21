@@ -73,16 +73,14 @@
 	$scope.tryParsePLDSelection = function () {
 		var text = $scope.model.pldSearchTerm;
 
-		if (!text || text.trim().length === 0) {
-			console.warn("Skipping parsing - pldSearchTerm is empty");
+		if (!text || text.trim().length === 0) {			
 			return;
 		}
 
 		var cleanedText = text.trim();
 		var parts = cleanedText.split(" - ");
 
-		if (parts.length < 2) {
-			console.warn("unable to parse pld selection , unexpected format", cleanedText);
+		if (parts.length < 2) {		
 			return;
 		}
 
@@ -127,18 +125,24 @@
 			}
 
 			clearTimeout(debounceTimer);
+
 		
 			debounceTimer = setTimeout(function () {
-				$http.get('/default/Workspace/SearchPLDProposals', { params: { term: newVal } })
-					.then(function (response) {
-						if (Array.isArray(response.data)) {
-							$scope.filteredPLDPANumbers = response.data;
-						}
+
+				var searchPLDProposals = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.SearchPLDProposals);
+
+				$http({
+					method: 'GET',
+					url: searchPLDProposals,
+					params: { term: newVal }
+				})
+					.then(function (res) {
+						$scope.filteredPLDPANumbers = Array.isArray(res.data) ? res.data : [];
 					})
-					.catch(function (error) {
-						console.error('Error fetching proposals:', error);
+					.catch(function (err) {
 						$scope.filteredPLDPANumbers = [];
-					});
+					})
+									
 
 			}, 300);  
 			
@@ -248,14 +252,19 @@
 
 		if ($scope.model.IsPLDIntegrated && newStep === 3) {
 			
-						
 
-			$http.get('/default/Workspace/GetProposalDetails', { params: { paNumber: $scope.data.TrackingNumber } })
-				.then(function (response) {
+			var getProposalDetails = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetProposalDetails);
 
-					const data = response.data;
+			$http({
+				method: 'GET',
+				url: getProposalDetails,
+				params: { paNumber: $scope.data.TrackingNumber }
+			})
+				.then(function (res) {
+					const data = res.data;
+					console.log('data', data);
 					const lobName = data.Line_of_Business;
-					
+
 					$scope.model.LineOfBusiness = lobName;
 					$scope.model.LineOfBusinessID = data.Line_of_Business_ID;
 					$scope.data.LineOfBusiness = lobName;
@@ -264,24 +273,24 @@
 					$scope.model.ContractEndDate = parseDotNetDate(data.Project_End_Date);
 					$scope.data.ContractStartDate = $scope.model.ContractStartDate;
 					$scope.data.ContractEndDate = $scope.model.ContractEndDate;
-
-				
-
 				})
-				.catch(function (error) {
-					console.error('Error fetching detail proposal:', error);
-				});
 
-			$http.get('/default/Workspace/GetNextWorkspaceShortNameFromTrackingNumber', { params: { paNumber: $scope.data.TrackingNumber } })
-				.then(function (response) {
-					const data = response.data;
-				
+			
+
+			var getNextWorkspaceShortNameFromTrackingNumber = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetNextWorkspaceShortNameFromTrackingNumber);
+
+			$http({
+				method: 'GET',
+				url: getNextWorkspaceShortNameFromTrackingNumber,
+				params: { paNumber: $scope.data.TrackingNumber }
+			})
+				.then(function (res) {
+					const data = res.data;
 
 					$scope.model.nextRevision = data.ShortName;
 					$scope.data.nextRevision = $scope.model.nextRevision;
-
-				});
-
+				})
+				
 
 		}
 		

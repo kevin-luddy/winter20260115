@@ -47,7 +47,11 @@
             GetNextTrackingNumberRevisionAction: '<%= WebConstants.ACTION_GET_NEXT_TRACKING_NUMBER_REVISION%>',
             IsSAPConnectionEnabled: <%: Model.IsSAPConnectionEnabled.ToString().ToLower() %>,
 			EnableAssignTaskAuthor: <%: Model.IsAuthorAssignableAtTaskLevelEnabled.ToString().ToLower() %>,
-			IsAssignTaskAuthorEnabled: <%: Model.IsAssignTaskAuthorEnabled.ToString().ToLower() %>
+            IsAssignTaskAuthorEnabled: <%: Model.IsAssignTaskAuthorEnabled.ToString().ToLower() %>,
+            SearchPLDProposals: '<%= WebConstants.ACTION_SEARCH_PLD_PROPOSALS %>',
+            GetProposalDetails: '<%= WebConstants.ACTION_GET_PROPOSAL_DETAILS %>',
+            GetNextWorkspaceShortNameFromTrackingNumber: '<%= WebConstants.ACTION_GET_NEXT_WORKSPACE_SHORTNAME_FROM_TRACKING_NUMBER %>'
+
         });
         
 
