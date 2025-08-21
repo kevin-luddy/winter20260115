@@ -1793,7 +1793,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			this.customFieldValueLoader.Save(customFieldValues);
 		}
 
-
+		/// <summary>
+		///  Get Next Tracking Number for PLD
+		/// </summary>
+		/// <param name="workspaces"></param>
+		/// <param name="paNumber"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <exception cref="ArgumentException"></exception>
 		public Dictionary<string, object> NextTrackingNumber(IEnumerable<WorkspaceDTO> workspaces, string paNumber)
 		{
 
