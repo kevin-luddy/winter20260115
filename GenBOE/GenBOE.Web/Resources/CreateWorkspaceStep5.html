@@ -107,8 +107,8 @@
     </div>
     <div class="form-element static">{{data.ContractEndDate}}</div>
 </div>
-<div class="form-row" ng-if="!model.IsPLDIntegrated">
-    <div class="form-label" data-ng-show="model.isSSC">
+<div class="form-row">
+    <div class="form-label" data-ng-show="model.isSSC || !model.IsPLDIntegrated">
         <b>Proposal Submittal Date:</b>
     </div>
     <div class="form-label" data-ng-show="model.isSSC">

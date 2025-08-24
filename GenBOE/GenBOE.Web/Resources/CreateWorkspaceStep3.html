@@ -150,29 +150,29 @@
     <div class="form-element contract-start-date" style="vertical-align:bottom;">
         <span class="readonly-value">
             {{ model.ContractStartDate ? (model.ContractStartDate | date:'MM/yyyy') : 'N/A'}}
-        </span>       
+        </span>
     </div>
     <div class="form-label contract-end-date-label">
         Contract End Date
     </div>
-    <div class="form-element contract-end-date"  style="vertical-align:bottom;">
+    <div class="form-element contract-end-date" style="vertical-align:bottom;">
         <span class="readonly-value">
             {{ model.ContractEndDate ? (model.ContractEndDate | date:'MM/yyyy') : 'N/A'}}
-        </span>      
+        </span>
     </div>
 </div>
-<div ng-if="!model.IsPLDIntegrated" class="form-row" id="ContractDates" data-ng-show="!data.IsAttemptingToImport && (model.isSSC || data.ProjectMapType == '1' || data.ProjectMapType == '2')">
+<div class="form-row" id="ContractDates" data-ng-show="!model.IsPLDIntegrated && !data.IsAttemptingToImport && (model.isSSC || data.ProjectMapType == '1' || data.ProjectMapType == '2')">
     <div class="form-label">
         Contract Start Date *
     </div>
     <div class="form-element contract-start-date">
-        <input class="normal-date" id="ContractStartDate" placeholder="mm/yyyy" name="ContractStartDate" type="text" data-ng-model="data.ContractStartDate">
+        <input class="normal-date" id="ContractStartDate" placeholder="mm/dd/yyyy" name="ContractStartDate" type="text" data-ng-model="data.ContractStartDate">
     </div>
     <div class="form-label contract-end-date-label">
         Contract End Date *
     </div>
     <div class="form-element contract-end-date">
-        <input class="normal-date" id="ContractEndDate" placeholder="mm/yyyy" name="ContractEndDate" type="text" data-ng-model="data.ContractEndDate">
+        <input class="normal-date" id="ContractEndDate" placeholder="mm/dd/yyyy" name="ContractEndDate" type="text" data-ng-model="data.ContractEndDate">
     </div>
 </div>
 <div class="form-row" id="AllowGridEdit" data-ng-hide="model.isSSC || data.ProjectMapType == '1' || data.ProjectMapType == '2'">
