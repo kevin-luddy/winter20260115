@@ -541,14 +541,8 @@ namespace GenBOE.Web.Controllers
 				enableSkillMix = true;
 			}
 			ViewData["IsSkillMixEnabled"] = enableSkillMix;
-			ViewData["EnableCommonDisclosure"] = false;
 			if (Utilities.IsBRCEnabledForWorkspace(workspace) && boe.EndDate >= Utilities.OneLmxStartDate)
 			{
-				//enable the common disclosure table
-				if (enableSkillMix)
-				{
-					ViewData["EnableCommonDisclosure"] = true;
-				}
 				//check if ws contains BRCs, if not, mark moq equation as read only
 				ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true, workspace);
 				if (resources.Count == 0)
@@ -1649,12 +1643,12 @@ namespace GenBOE.Web.Controllers
 		/// <returns></returns>
 		public ActionResult RefreshSkillMixTables(string workspace, int boeId, ICollection<MoqTypeSelection> selectedMoqTypes,
 			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData,
-			bool isManual)
+			bool isManual, DateTime? taskEndDate)
 		{
 			// Initialize Action
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			bool isBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspace);
+			bool isBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspace) && taskEndDate >= Utilities.OneLmxStartDate;
 
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLES, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeId);
 
@@ -1665,7 +1659,7 @@ namespace GenBOE.Web.Controllers
 
 			// Call to Controller Logic
 			RefreshSkillMixModelView response = SkillMixUtility.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData, 
-				isBRCEnabled, isManual);
+				isBRCEnabled, isManual, taskEndDate);
 
 			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });
 
