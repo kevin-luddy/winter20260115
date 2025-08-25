@@ -48,27 +48,22 @@ namespace GenBOE.ActionLogic.Common
 		public static ICollection<string> ValidateSkillMixTable(ICollection<SkillMixModelView> skillMixModels, bool onButtonPress)
 		{
 			ICollection<string> errorMessages = new Collection<string>();
+			bool isSpace = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems;
 
 			IList<SkillMixModelView> skillMixRowsEmptyBoeMixWhenIncluded = skillMixModels.Where(x => x.Included && !x.BOESkillMix.HasValue).ToList();
-			IList<SkillMixModelView> skillMixRowsInvalidBoeMixWhenIncluded = skillMixModels.Where(x => x.Included && x.BOESkillMix.HasValue && x.BOESkillMix.Value <= 0).ToList();
 			IList<SkillMixModelView> skillMixRowsExceedChars = skillMixModels.Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
 			IList<SkillMixModelView> skillMixRowsResourceOldExceedChars = skillMixModels.Where(x => !string.IsNullOrEmpty(x.ResourceOld) && x.ResourceOld.Length > 20).ToList();
+
+			// If RMS, also check if it's a duplicate Current Resource with 0 Proposed Hours, which is allowed
+			IList<SkillMixModelView> skillMixRowsInvalidBoeMixWhenIncluded = skillMixModels.Where(x => x.Included && x.BOESkillMix.HasValue && x.BOESkillMix.Value <= 0
+			 && (isSpace || (x.BOESkillMix.Value == 0 && !skillMixModels.Any(y => y.ResourceNew == x.ResourceNew && y.SkillMixID != x.SkillMixID)))).ToList();
+
 			bool doesEmptyNullCurrentResourceExist = skillMixModels.Any(x => string.IsNullOrEmpty(x.ResourceNew) && x.Included);
 			decimal totalSKillMixRowsBOESkillMix = skillMixModels.Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
-			string skillMixTableName = string.Empty;
-			string BoeSkillMixColumnName = string.Empty;
 
 			// Applies the proper name for the Skill Mix table and the BOE Skill Mix column based on the company configuration mode.
-			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-			{
-				skillMixTableName = Constants.SPACE_SKILL_MIX_TABLE_HEADER;
-				BoeSkillMixColumnName = Constants.SPACE_BOE_SKILL_MIX_COLUMN_NAME;
-			}
-			else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-			{
-				skillMixTableName = Constants.RMS_SKILL_MIX_TABLE_HEADER;
-				BoeSkillMixColumnName = Constants.RMS_BOE_SKILL_MIX_COLUMN_NAME;
-			}
+			string skillMixTableName = isSpace ? Constants.SPACE_SKILL_MIX_TABLE_HEADER : Constants.RMS_SKILL_MIX_TABLE_HEADER;
+			string BoeSkillMixColumnName = isSpace ? Constants.SPACE_BOE_SKILL_MIX_COLUMN_NAME : Constants.RMS_BOE_SKILL_MIX_COLUMN_NAME;
 
 			// This check applies to both Space and RMS
 			if (doesEmptyNullCurrentResourceExist)
@@ -78,17 +73,17 @@ namespace GenBOE.ActionLogic.Common
 
 			foreach (string skillMixResourceOld in skillMixRowsEmptyBoeMixWhenIncluded.Select(x => x.ResourceOld))
 			{
-				errorMessages.Add($"{skillMixTableName}: ${BoeSkillMixColumnName} is missing for {skillMixResourceOld}.");
+				errorMessages.Add($"{skillMixTableName}: {BoeSkillMixColumnName} is missing for {skillMixResourceOld}.");
 			}
 
 			foreach (string skillMixResourceOld in skillMixRowsInvalidBoeMixWhenIncluded.Select(x => x.ResourceOld))
 			{
-				errorMessages.Add($"{skillMixTableName}: ${BoeSkillMixColumnName} has invalid value for {skillMixResourceOld}.");
+				errorMessages.Add($"{skillMixTableName}: {BoeSkillMixColumnName} has invalid value for {skillMixResourceOld}.");
 			}
 
 			if (!totalSKillMixRowsBOESkillMix.EqualsEpsilon(100) && !totalSKillMixRowsBOESkillMix.EqualsEpsilon(0))
 			{
-				errorMessages.Add($"{skillMixTableName}: ${BoeSkillMixColumnName} total must be either 0% or 100%");
+				errorMessages.Add($"{skillMixTableName}: {BoeSkillMixColumnName} total must be either 0% or 100%");
 			}
 
 			foreach (string skillMixResourceOld in skillMixRowsExceedChars.Select(x => x.ResourceOld))

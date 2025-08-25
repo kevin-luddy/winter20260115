@@ -749,9 +749,8 @@
 				{
 					if (!distinctCurrentResources.Add(row.ResourceNew))
 					{
-						// Duplicate found - Set proposed hours to 0 and included to false
+						// Duplicate found - Set proposed hours to 0
 						row.ProposedHours = 0;
-						row.Included = false;
 					}
 				}
 			}

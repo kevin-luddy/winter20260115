@@ -4770,7 +4770,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.IsTrue(duplicates.Any());
 			Assert.IsTrue(duplicates[0].Included);
 			Assert.AreNotEqual(0, duplicates[0].ProposedHours);
-			Assert.IsFalse(duplicates[1].Included);
+			Assert.IsTrue(duplicates[1].Included);
 			Assert.AreEqual(0, duplicates[1].ProposedHours);
 		}
 
