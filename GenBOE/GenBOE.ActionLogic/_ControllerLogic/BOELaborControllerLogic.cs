@@ -1003,7 +1003,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						validationErrors.Add(new ValidationMessage(string.Format("Total Historical Hours in {0} Skill Mix Table do not match the sum of the Total Relevant Hours.", skillMixTableName)));
 					}
 
-					if (taskElement.CommonDisclosureTable != null && Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
+					if (taskElement.CommonDisclosureTable != null && Utilities.IsBRCEnabledForWorkspace(ws.Shortname) && taskElement.EndDate >= Utilities.OneLmxStartDate)
 					{
 						// Check the Common Disclosure table totals
 						historicalHoursTotals = taskElement.CommonDisclosureTable.Sum(c => c.HistoricalHours);
