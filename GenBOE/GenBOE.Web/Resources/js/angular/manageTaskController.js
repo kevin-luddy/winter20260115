@@ -32,8 +32,9 @@
 	$scope.model.AdjacentItems.NextId = undefined;
 	$scope.SelectedMoqTypes = [];
 	$scope.IsDraftOrDraftLocked = false;
-	$scope.IsBRCEnabled = ManageTaskModel.IsBRCEnabled; // For CDSM table only show if this BRC Enabaled = true 
+	$scope.IsBRCEnabled = ManageTaskModel.IsBRCEnabled; // For CDSM table only show if this BRC Enabled = true 
 	$scope.IsSkillMixEnabled = ManageTaskModel.IsSkillMixEnabled;
+	$scope.IsCommonDisclosureEnabled = false; // this will be calculated after $scope.oneLMXCutoff is created below.  Do we show Common Disclosure table
 	$scope.skillMixRationale = [];
 	$scope.skillMixRationaleLaborTypeSelections = [];
 	$scope.IsUsingTMRatesInTask = false;
@@ -164,7 +165,8 @@
 				laborTypes: laborTypesData,
 				currentSkillMixData: $scope.model.SkillMixData,
 				currentCommonDisclosureData: $scope.model.CommonDisclosureSkillMixData,
-				isManual: $scope.isSkillMixManual()
+				isManual: $scope.isSkillMixManual(),
+				taskEndDate: $scope.model.TaskElementData.EndDate
 			};
 
 			return $http({
@@ -1340,6 +1342,8 @@
 			if (!$scope.model.LaborTypesData) {
 				$scope.model.LaborTypesData = [];
 			}
+
+			$scope.IsCommonDisclosureEnabled = $scope.IsSkillMixEnabled && $scope.IsBRCEnabled && $scope.model.TaskElementData.EndDate >= $scope.oneLmxCutOff;
 
 			$scope.updateShowUcot();
 			$scope.TaskCustomFields = $scope.model.TaskCustomFields;

@@ -610,7 +610,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
 
 						RefreshSkillMixModelView refreshedData = SkillMixUtility.RefreshSkillMixTables(moqResourceHours, laborTypes, task.SkillMixTable, task.CommonDisclosureTable, isBRCEnabled,
-							!ws.EnableSAPConnection);
+							!ws.EnableSAPConnection, task.EndDate);
 
 						// Now reset the data
 						task.SkillMixTable = refreshedData.SkillMixRows;
