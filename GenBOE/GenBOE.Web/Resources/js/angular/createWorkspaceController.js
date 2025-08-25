@@ -99,7 +99,7 @@
 		$scope.isFromSelection = true;
 		$scope.tryParsePLDSelection();
 	}
-
+	
 
 	$scope.$watch('model.pldSearchTerm',
 		function (newVal, oldVal) {
