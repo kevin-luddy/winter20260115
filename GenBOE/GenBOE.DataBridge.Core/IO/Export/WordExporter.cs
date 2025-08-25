@@ -259,26 +259,10 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		[SuppressMessage("Microsoft.Naming", "CA1726:UsePreferredTerms", MessageId = "Cant")]
 		protected void SetCantSplit(Row row)
 		{
-			//if (row == null)
-			//{
-			//	throw new ArgumentNullException(nameof(row));
-			//}
-
-			//TableRowProperties tableRowProperties;
-			//if ((tableRowProperties = row.TableRowProperties) == null)
-			//{
-			//	tableRowProperties = new TableRowProperties();
-			//	row.Append(tableRowProperties);
-			//}
-
-			//if (!tableRowProperties.Descendants<CantSplit>().Any())
-			//{
-			//	CantSplit cantSplit = new CantSplit();
-			//	tableRowProperties.Append(cantSplit);
-			//}
-
-			// See RowFormat.AllowBreakAcrossPages and ParagraphFormat.KeepWithNext.
-			// Please read following documentation link. https://docs.aspose.com/words/net/working-with-columns-and-rows/
+			if (row != null)
+			{
+				row.RowFormat.AllowBreakAcrossPages = false;
+			}
 		}
 
 		/// <summary>

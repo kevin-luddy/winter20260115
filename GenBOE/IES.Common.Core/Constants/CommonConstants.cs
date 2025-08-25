@@ -7,6 +7,7 @@
 namespace IES.Common.Core.Constants
 {
 	using System.Collections.ObjectModel;
+	using Aspose.Words;
 	using IES.Common.Core.Enums;
 
 	/// <summary>
@@ -1193,5 +1194,16 @@ namespace IES.Common.Core.Constants
 		/// End tag for html div
 		/// </summary>
 		public const string DIV_END_TAG = "</div>";
+
+		/// <summary>
+		/// Start tag for html span
+		/// No closing bracket to not lose attributes
+		/// </summary>
+		public const string SPAN_START_TAG = "<span";
+
+		/// <summary>
+		/// End tag for html span
+		/// </summary>
+		public const string SPAN_END_TAG_WITH_NewLine = "</span>\n";
 	}
 }

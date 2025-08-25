@@ -27,6 +27,8 @@ namespace IES.Common.Core.OfficeUtilities
 
 		public const char NEWLINE_CHAR = '\n';
 
+		private static Regex CONTROL_CHAR_REPLACE  = new Regex(@"![\P{Cc}\P{Cn}\P{Cs}]"); // new Regex(@"[^\P{C}\n]+");
+
 		#endregion
 
 		#region Utility methods
@@ -127,11 +129,12 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <param name="element">Parent element</param>
 		/// <param name="tag">Child element's tag</param>
 		/// <returns>Child element</returns>
-		public static StructuredDocumentTag GetTaggedChildElement(Node element, string tag)
+		public static StructuredDocumentTag GetTaggedChildElement(CompositeNode element, string tag)
 		{
 			if (element == null) { throw new ArgumentNullException(nameof(element)); }
 
-			return element.Range.StructuredDocumentTags.GetByTag(tag) as StructuredDocumentTag; // document.GetChildNodes(NodeType.StructuredDocumentTag, true).FirstOrDefault(s => ((StructuredDocumentTag)s).Tag == tag);
+			// return element.Range.StructuredDocumentTags.GetByTag(tag) as StructuredDocumentTag;
+			return element.GetChildNodes(NodeType.StructuredDocumentTag, true).FirstOrDefault(s => s is StructuredDocumentTag && ((StructuredDocumentTag)s).Tag == tag) as StructuredDocumentTag;
 		}
 
 		#endregion
@@ -435,7 +438,7 @@ namespace IES.Common.Core.OfficeUtilities
 						// Error inserting the paragraph, we need to remove them
 						options = HtmlInsertOptions.RemoveLastEmptyParagraph;
 						htmlFormattedText = ReplaceParagraphTagsWithLineBreaks(htmlFormattedText);
-
+						
 						element.RemoveAllChildren();
 						builder.MoveToStructuredDocumentTag(element, 0);
 						builder.InsertHtml(htmlFormattedText, options);
@@ -895,7 +898,9 @@ namespace IES.Common.Core.OfficeUtilities
 		public static string ReplaceParagraphTagsWithLineBreaks(string htmlText)
 		{
 			// TODO TIW possibly also replace <h1> as well :|
-			return htmlText.Replace(CommonConstants.DIV_START_TAG + ">", string.Empty).Replace(CommonConstants.DIV_END_TAG, ControlChar.LineBreak).Replace(CommonConstants.P_START_TAG + ">", string.Empty).Replace(CommonConstants.P_END_TAG, ControlChar.LineBreak).Replace("\r\n", ControlChar.LineFeed).Replace(ControlChar.ParagraphBreakChar, ControlChar.LineFeedChar).Replace(ControlChar.LineBreakChar, ControlChar.LineFeedChar);
+			htmlText = htmlText.Replace(CommonConstants.DIV_START_TAG, CommonConstants.SPAN_START_TAG).Replace(CommonConstants.DIV_END_TAG, CommonConstants.SPAN_END_TAG_WITH_NewLine).Replace(CommonConstants.P_START_TAG, CommonConstants.SPAN_START_TAG).Replace(CommonConstants.P_END_TAG, CommonConstants.SPAN_END_TAG_WITH_NewLine).Replace("\r\n", ControlChar.LineFeed).Replace(ControlChar.ParagraphBreakChar, ControlChar.LineFeedChar).Replace(ControlChar.LineBreakChar, ControlChar.LineFeedChar);
+			
+			return CONTROL_CHAR_REPLACE.Replace(ReplaceParagraphTags(htmlText), string.Empty);
 		}
 
 		#endregion

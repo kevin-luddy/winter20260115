@@ -1403,6 +1403,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				{
 					//  create (clone) a new container for this task
 					StructuredDocumentTag containerElement = CloneContainerTemplate(laborTaskContainerTemplateElement);
+					// add cloned container
+					currentLaborTaskContainerInsertionPoint.ParentNode.InsertAfter(containerElement, currentLaborTaskContainerInsertionPoint);
 
 					#region Process the data (IS&GS)
 					if (containsBoeHeaderInTask)
@@ -1420,8 +1422,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 					#endregion
 
-					// add cloned container
-					currentLaborTaskContainerInsertionPoint.ParentNode.InsertAfter(containerElement, currentLaborTaskContainerInsertionPoint);
+					
 					currentLaborTaskContainerInsertionPoint = containerElement;
 				}
 
@@ -3640,15 +3641,15 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				this.SetCantSplit(templateDataRow);
 
 				StructuredDocumentTag dataTotalsRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_TotalsRow);
-				Row templateTotalsRow = dataTotalsRowMarkerTag.GetAncestor(NodeType.Row) as Row;
+				Row templateTotalsRow = dataTotalsRowMarkerTag?.GetAncestor(NodeType.Row) as Row;
 				this.SetCantSplit(templateTotalsRow);
 
 				StructuredDocumentTag summaryDataRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_SummaryDataRow);
-				Row templateSummaryDataRow = summaryDataRowMarkerTag.GetAncestor(NodeType.Row) as Row;
+				Row templateSummaryDataRow = summaryDataRowMarkerTag?.GetAncestor(NodeType.Row) as Row;
 				this.SetCantSplit(templateSummaryDataRow);
 
 				StructuredDocumentTag summaryTotalsRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_SummaryTotalsRow);
-				Row templateSummaryTotalsRow = summaryTotalsRowMarkerTag.GetAncestor(NodeType.Row) as Row;
+				Row templateSummaryTotalsRow = summaryTotalsRowMarkerTag?.GetAncestor(NodeType.Row) as Row;
 				this.SetCantSplit(templateSummaryTotalsRow);
 
 				// initialize the "insertion" row
