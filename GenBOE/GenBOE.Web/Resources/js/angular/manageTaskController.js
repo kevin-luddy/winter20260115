@@ -166,7 +166,7 @@
 				currentSkillMixData: $scope.model.SkillMixData,
 				currentCommonDisclosureData: $scope.model.CommonDisclosureSkillMixData,
 				isManual: $scope.isSkillMixManual(),
-				taskEndDate: $scope.model.TaskElementData.EndDate
+				taskEndDate: $scope.model.TaskElementData.EndDate.toDate()
 			};
 
 			return $http({
@@ -1343,7 +1343,7 @@
 				$scope.model.LaborTypesData = [];
 			}
 
-			$scope.IsCommonDisclosureEnabled = $scope.IsSkillMixEnabled && $scope.IsBRCEnabled && $scope.model.TaskElementData.EndDate >= $scope.oneLmxCutOff;
+			$scope.IsCommonDisclosureEnabled = $scope.IsSkillMixEnabled && $scope.IsBRCEnabled && $scope.model.TaskElementData.EndDate.toDate() >= $scope.oneLmxCutOff;
 
 			$scope.updateShowUcot();
 			$scope.TaskCustomFields = $scope.model.TaskCustomFields;
