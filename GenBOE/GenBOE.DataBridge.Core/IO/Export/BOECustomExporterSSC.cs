@@ -187,6 +187,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 					if (populated)
 					{
+						// This is adding the Node to the document after Setting Element Text, which should be ok.  Fails if adding Element Text as Html
 						currentInsertionElement.ParentNode.InsertAfter(lmLaborHoursRollupTableElement, currentInsertionElement);
 						currentInsertionElement = lmLaborHoursRollupTableElement;
 					}
@@ -200,6 +201,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						populated = PopulateRollupSummaryByGroupByYearTable(gfyLaborHoursRollupTableElement, tableTitle, gfyLmLaborSummaryRollupData, DefaultHoursFormat, byQuarter, true);
 						if (populated)
 						{
+							// This is adding the Node to the document after Setting Element Text, which should be ok.  Fails if adding Element Text as Html
 							currentInsertionElement.ParentNode.InsertAfter(gfyLaborHoursRollupTableElement, currentInsertionElement);
 							currentInsertionElement = gfyLaborHoursRollupTableElement;
 						}
@@ -222,6 +224,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 					if (populated)
 					{
+						// This is adding the Node to the document after Setting Element Text, which should be ok.  Fails if adding Element Text as Html
 						currentInsertionElement.ParentNode.InsertAfter(subLaborHoursRollupTableElement, currentInsertionElement);
 						currentInsertionElement = subLaborHoursRollupTableElement;
 					}
@@ -235,6 +238,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						populated = PopulateRollupSummaryByGroupByYearTable(gfySubHoursRollupTableElement, tableTitle, gfySubLaborSummaryRollupData, DefaultHoursFormat, byQuarter, true);
 						if (populated)
 						{
+							// This is adding the Node to the document after Setting Element Text, which should be ok.  Fails if adding Element Text as Html
 							currentInsertionElement.ParentNode.InsertAfter(gfySubHoursRollupTableElement, currentInsertionElement);
 							currentInsertionElement = gfySubHoursRollupTableElement;
 						}
@@ -257,6 +261,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 					if (populated)
 					{
+						// This is adding the Node to the document after Setting Element Text, which should be ok.  Fails if adding Element Text as Html
 						currentInsertionElement.ParentNode.InsertAfter(iwtaLaborHoursRollupTableElement, currentInsertionElement);
 						currentInsertionElement = iwtaLaborHoursRollupTableElement;
 					}
@@ -271,6 +276,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 						if (populated)
 						{
+							// This is adding the Node to the document after Setting Element Text, which should be ok.  Fails if adding Element Text as Html
 							currentInsertionElement.ParentNode.InsertAfter(gfyIwtaHoursRollupTableElement, currentInsertionElement);
 							currentInsertionElement = gfyIwtaHoursRollupTableElement;
 						}
@@ -361,6 +367,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 					if (populated)
 					{
+						// This is adding the Node to the document after Setting Element Text, which should be ok.  Fails if adding Element Text as Html
 						currentInsertionElement = currentInsertionElement.ParentNode.InsertAfter(lmLaborCostRollupTableElement, currentInsertionElement);
 					}
 
@@ -381,6 +388,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 					if (populated)
 					{
+						// This is adding the Node to the document after Setting Element Text, which should be ok.  Fails if adding Element Text as Html
 						currentInsertionElement = currentInsertionElement.ParentNode.InsertAfter(subLaborCostRollupTableElement, currentInsertionElement);
 					}
 
@@ -401,6 +409,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 					if (populated)
 					{
+						// This is adding the Node to the document after Setting Element Text, which should be ok.  Fails if adding Element Text as Html
 						currentInsertionElement = currentInsertionElement.ParentNode.InsertAfter(iwtaLaborCostRollupTableElement, currentInsertionElement);
 					}
 
@@ -421,6 +430,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 					if (populated)
 					{
+						// This is adding the Node to the document after Setting Element Text, which should be ok.  Fails if adding Element Text as Html
 						currentInsertionElement = currentInsertionElement.ParentNode.InsertAfter(materialLaborCostRollupTableElement, currentInsertionElement);
 					}
 
@@ -441,6 +451,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 					if (populated)
 					{
+						// This is adding the Node to the document after Setting Element Text, which should be ok.  Fails if adding Element Text as Html
 						currentInsertionElement = currentInsertionElement.ParentNode.InsertAfter(odcLaborCostRollupTableElement, currentInsertionElement);
 					}
 
@@ -461,6 +472,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 					if (populated)
 					{
+						// This is adding the Node to the document after Setting Element Text, which should be ok.  Fails if adding Element Text as Html
 						currentInsertionElement = currentInsertionElement.ParentNode.InsertAfter(travelLaborCostRollupTableElement, currentInsertionElement);
 					}
 
@@ -843,6 +855,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 					if (PopulateRollupSummaryByYearTable(laborHoursSummaryByDateTableElement, tableTitle, rollupTableData, DefaultHoursFormat, byQuarter, useGfy))
 					{
+						// This is adding the Node to the document after Setting Element Text, which should be ok.  Fails if adding Element Text as Html
 						currentInsertionElement.ParentNode.InsertAfter(laborHoursSummaryByDateTableElement, currentInsertionElement);
 						currentInsertionElement = laborHoursSummaryByDateTableElement;
 					}
@@ -953,6 +966,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 							if (PopulateRollupSummaryByYearTable(costSummaryByDateTableElement, tableTitle, costSummaryRollupData, DefaultCurrencyFormat, byQuarter, useGfy))
 							{
+								// This is adding the Node to the document after Setting Element Text, which should be ok.  Fails if adding Element Text as Html
 								currentInsertionElement.ParentNode.InsertAfter(costSummaryByDateTableElement, currentInsertionElement);
 								currentInsertionElement = costSummaryByDateTableElement;
 							}
@@ -1030,67 +1044,67 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					foreach (BOEExportTaskElementLabor resourceElement in LMLaborResources)
 					{
 						StructuredDocumentTag laborResourceContainerElement = CloneContainerTemplate(laborResourceContainerTemplateElement);
+						currentInsertionPoint.ParentNode.InsertAfter(laborResourceContainerElement, currentInsertionPoint);
 
 						this.ProcessResourceHeader(laborResourceContainerElement, resourceElement, multiBoe, exportInputs.Workspace);
 						this.ProcessResourceCustomFields(laborResourceContainerElement, resourceElement, exportInputs.CustomFields, exportInputs);
 						ProcessResourceRollupTable(laborResourceContainerElement, resourceElement, allLaborTaskElements, laborTaskElement);
 
-						currentInsertionPoint.ParentNode.InsertAfter(laborResourceContainerElement, currentInsertionPoint);
 						currentInsertionPoint = laborResourceContainerElement;
 					}
 					foreach (BOEExportTaskElementLabor resourceElement in SubResources)
 					{
 						StructuredDocumentTag laborResourceContainerElement = CloneContainerTemplate(laborResourceContainerTemplateElement);
+						currentInsertionPoint.ParentNode.InsertAfter(laborResourceContainerElement, currentInsertionPoint);
 
 						this.ProcessResourceHeader(laborResourceContainerElement, resourceElement, multiBoe, exportInputs.Workspace);
 						this.ProcessResourceCustomFields(laborResourceContainerElement, resourceElement, exportInputs.CustomFields, exportInputs);
 						ProcessResourceRollupTable(laborResourceContainerElement, resourceElement, allLaborTaskElements, laborTaskElement);
 
-						currentInsertionPoint.ParentNode.InsertAfter(laborResourceContainerElement, currentInsertionPoint);
 						currentInsertionPoint = laborResourceContainerElement;
 					}
 					foreach (BOEExportTaskElementLabor resourceElement in IWTAResources)
 					{
 						StructuredDocumentTag laborResourceContainerElement = CloneContainerTemplate(laborResourceContainerTemplateElement);
+						currentInsertionPoint.ParentNode.InsertAfter(laborResourceContainerElement, currentInsertionPoint);
 
 						this.ProcessResourceHeader(laborResourceContainerElement, resourceElement, multiBoe, exportInputs.Workspace);
 						this.ProcessResourceCustomFields(laborResourceContainerElement, resourceElement, exportInputs.CustomFields, exportInputs);
 						ProcessResourceRollupTable(laborResourceContainerElement, resourceElement, allLaborTaskElements, laborTaskElement);
 
-						currentInsertionPoint.ParentNode.InsertAfter(laborResourceContainerElement, currentInsertionPoint);
 						currentInsertionPoint = laborResourceContainerElement;
 					}
 					foreach (BOEExportTaskElementLabor resourceElement in TravelResources)
 					{
 						StructuredDocumentTag laborResourceContainerElement = CloneContainerTemplate(laborResourceContainerTemplateElement);
+						currentInsertionPoint.ParentNode.InsertAfter(laborResourceContainerElement, currentInsertionPoint);
 
 						this.ProcessResourceHeader(laborResourceContainerElement, resourceElement, multiBoe, exportInputs.Workspace);
 						this.ProcessResourceCustomFields(laborResourceContainerElement, resourceElement, exportInputs.CustomFields, exportInputs);
 						ProcessResourceRollupTable(laborResourceContainerElement, resourceElement, allLaborTaskElements, laborTaskElement);
 
-						currentInsertionPoint.ParentNode.InsertAfter(laborResourceContainerElement, currentInsertionPoint);
 						currentInsertionPoint = laborResourceContainerElement;
 					}
 					foreach (BOEExportTaskElementLabor resourceElement in MaterialsResources)
 					{
 						StructuredDocumentTag laborResourceContainerElement = CloneContainerTemplate(laborResourceContainerTemplateElement);
+						currentInsertionPoint.ParentNode.InsertAfter(laborResourceContainerElement, currentInsertionPoint);
 
 						this.ProcessResourceHeader(laborResourceContainerElement, resourceElement, multiBoe, exportInputs.Workspace);
 						this.ProcessResourceCustomFields(laborResourceContainerElement, resourceElement, exportInputs.CustomFields, exportInputs);
 						ProcessResourceRollupTable(laborResourceContainerElement, resourceElement, allLaborTaskElements, laborTaskElement);
 
-						currentInsertionPoint.ParentNode.InsertAfter(laborResourceContainerElement, currentInsertionPoint);
 						currentInsertionPoint = laborResourceContainerElement;
 					}
 					foreach (BOEExportTaskElementLabor resourceElement in ODCResources)
 					{
 						StructuredDocumentTag laborResourceContainerElement = CloneContainerTemplate(laborResourceContainerTemplateElement);
+						currentInsertionPoint.ParentNode.InsertAfter(laborResourceContainerElement, currentInsertionPoint);
 
 						this.ProcessResourceHeader(laborResourceContainerElement, resourceElement, multiBoe, exportInputs.Workspace);
 						this.ProcessResourceCustomFields(laborResourceContainerElement, resourceElement, exportInputs.CustomFields, exportInputs);
 						ProcessResourceRollupTable(laborResourceContainerElement, resourceElement, allLaborTaskElements, laborTaskElement);
 
-						currentInsertionPoint.ParentNode.InsertAfter(laborResourceContainerElement, currentInsertionPoint);
 						currentInsertionPoint = laborResourceContainerElement;
 					}
 					this.RemoveElement(laborResourceContainerTemplateElement);
@@ -1157,6 +1171,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					foreach (BOEExportTaskElementLabor resourceElement in orderedResources)
 					{
 						StructuredDocumentTag odcResourceContainerElement = CloneContainerTemplate(odcResourceContainerTemplateElement);
+						currentInsertionPoint.ParentNode.InsertAfter(odcResourceContainerElement, currentInsertionPoint);
 
 						OtherDirectCostType currentODCType = ODCTypes
 							.FirstOrDefault(r => r.ResourceID.ToString() == resourceElement.ExportFields[BOEExporterConstants.FieldName_ResourceID]
@@ -1172,7 +1187,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 							ProcessODCResourceCostRollupTable(odcResourceContainerElement, odcTaskElement, currentODCType);
 						}
 
-						currentInsertionPoint.ParentNode.InsertAfter(odcResourceContainerElement, currentInsertionPoint);
 						currentInsertionPoint = odcResourceContainerElement;
 					}
 					this.RemoveElement(odcResourceContainerTemplateElement);

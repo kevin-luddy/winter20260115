@@ -135,6 +135,10 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						//create a new summary data row in the table
 						//clone marked template row
 						Row tableRow = templateDataRow.Clone(true) as Row;
+
+						//add the row to the table
+						currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
+
 						Parallel.ForEach(tableRow.GetChildNodes(NodeType.StructuredDocumentTag, true), descendant =>
 						{
 							StructuredDocumentTag tag = descendant as StructuredDocumentTag;
@@ -171,8 +175,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_OtherCost), otherCost.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, _CurrencyFormatter));
 						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Cost), cost.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, _CurrencyFormatter));
 
-						//add the row to the table
-						currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
 						currentInsertionRow = tableRow;
 					}
 
@@ -276,6 +278,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			StructuredDocumentTag HourRollupTableElement = templateElement.Clone(true) as StructuredDocumentTag;
 			if (PopulateRollupSummaryByYearTable(HourRollupTableElement, null, laborRollupTableData, DefaultHoursFormat, byQuarter, useGfy))
 			{
+				// This is adding the Node to the document after Setting Element Text, which should be ok.  Fails if adding Element Text as Html
 				currentInsertionElement.ParentNode.InsertAfter(HourRollupTableElement, currentInsertionElement);
 				currentInsertionElement = HourRollupTableElement;
 			}
@@ -336,6 +339,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 					if (PopulateRollupSummaryByYearTable(CostRollupTableElement, null, laborRollupTableData, DefaultCurrencyFormat, byQuarter, useGfy))
 					{
+						// This is adding the Node to the document after Setting Element Text, which should be ok.  Fails if adding Element Text as Html
 						currentInsertionElement = currentInsertionElement.ParentNode.InsertAfter(CostRollupTableElement, currentInsertionElement);
 					}
 				}
@@ -401,6 +405,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 					if (PopulateRollupSummaryByYearTable(CostRollupTableElement, null, ODCRollupTableData, DefaultCurrencyFormat, byQuarter, useGfy))
 					{
+						// This is adding the Node to the document after Setting Element Text, which should be ok.  Fails if adding Element Text as Html
 						currentInsertionElement = currentInsertionElement.ParentNode.InsertAfter(CostRollupTableElement, currentInsertionElement);
 					}
 				}
@@ -479,13 +484,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					foreach (BOEExportTaskElementLabor resourceElement in orderedResources)
 					{
 						StructuredDocumentTag laborResourceContainerElement = CloneContainerTemplate(laborResourceContainerTemplateElement);
+						currentInsertionPoint.ParentNode.InsertAfter(laborResourceContainerElement, currentInsertionPoint);
 
 						ProcessResourceHeader(laborResourceContainerElement, resourceElement);
 						this.ProcessResourceCustomFields(laborResourceContainerElement, resourceElement, exportInputs.CustomFields, exportInputs);
 						ProcessResourceHoursRollupTable(laborResourceContainerElement, resourceElement, allLaborTaskElements, laborTaskElement);
 						ProcessResourceCostRollupTable(laborResourceContainerElement, resourceElement, allLaborTaskElements, laborTaskElement);
 
-						currentInsertionPoint.ParentNode.InsertAfter(laborResourceContainerElement, currentInsertionPoint);
 						currentInsertionPoint = laborResourceContainerElement;
 					}
 
@@ -592,11 +597,10 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 
 						StructuredDocumentTag odcResourceContainerElement = CloneContainerTemplate(odcResourceContainerTemplateElement);
+						currentInsertionPoint.ParentNode.InsertAfter(odcResourceContainerElement, currentInsertionPoint);
 
 						ProcessResourceHeader(odcResourceContainerElement, boeExportLabor);
 						ProcessODCResourceCostRollupTable(odcResourceContainerElement, odcTaskElement, odcType);
-
-						currentInsertionPoint.ParentNode.InsertAfter(odcResourceContainerElement, currentInsertionPoint);
 						currentInsertionPoint = odcResourceContainerElement;
 					}
 					this.RemoveElement(odcResourceContainerTemplateElement);
@@ -1160,19 +1164,20 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					// create a new data row in the table
 					Row tableRow = this.CloneMarkedTemplateRow(templateDataRow);
 
+					// add the row to the table
+					currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
+
 					// populate the row with the data
 					PopulateZoneTravelTripsTableRow(tableRow, rowData, false);
 
-					// add the row to the table
-					currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
 					currentInsertionRow = tableRow;
 
 					// Add second row for airfare resource for airfare trips
 					if (rowData.IsAirfareTrip)
 					{
 						tableRow = this.CloneMarkedTemplateRow(templateDataRow);
-						PopulateZoneTravelTripsTableRow(tableRow, rowData, true);
 						currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
+						PopulateZoneTravelTripsTableRow(tableRow, rowData, true);
 						currentInsertionRow = tableRow;
 					}
 				}
@@ -1231,6 +1236,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					// create a new data row in the table
 					Row tableRow = this.CloneMarkedTemplateRow(templateDataRow);
 
+					// add the row to the table
+					currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
+
 					// populate the row with the data
 					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_GroupID), rowData.GroupID);
 					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_ResourceName), rowData.ResourceName);
@@ -1242,8 +1250,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Days), rowData.Days.ToString());
 					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Cars), rowData.Cars.ToString());
 
-					// add the row to the table
-					currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
 					currentInsertionRow = tableRow;
 				}
 
@@ -1270,13 +1276,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			foreach (IGrouping<string, BOEExportTaskElementLabor> group in multiGroups)
 			{
 				StructuredDocumentTag clonedTable = tableElement.Clone(true) as StructuredDocumentTag;
-				WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(clonedTable, BOEExporterConstants.FieldName_MultiLabel), group.First().ExportFields[BOEExporterConstants.FieldName_MultiLabel]);
 				RMSTravelResourceTypesTableData travelTableData = group.ToCollection().ConvertRMSTravel();
-				PopulateTravelTripsTable(clonedTable, tableLabelElement, travelTableData, isZone);
 				if (travelTableData.ResourcesData.Any())
 				{
 					currentTable.ParentNode.InsertAfter(clonedTable, currentTable);
 					currentTable = clonedTable;
+					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(clonedTable, BOEExporterConstants.FieldName_MultiLabel), group.First().ExportFields[BOEExporterConstants.FieldName_MultiLabel]);
+					PopulateTravelTripsTable(clonedTable, tableLabelElement, travelTableData, isZone);
 				}
 			}
 			this.RemoveElement(tableElement);

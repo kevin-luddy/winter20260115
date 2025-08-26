@@ -368,6 +368,7 @@ namespace IES.ActionLogic.Core.IO.Export
 								foreach (int startYear in startYears)
 								{
 									StructuredDocumentTag tableElement = templateTableElement.Clone(true) as StructuredDocumentTag;
+									currentInsertionElement.ParentNode.InsertAfter(tableElement, currentInsertionElement);
 
 									// Number of years will be the max for all tables but the last, which will be the remaining number of years
 									int years = startYear == startYears.Last()
@@ -377,7 +378,6 @@ namespace IES.ActionLogic.Core.IO.Export
 									PopulateRateTable(tableElement, sectionRates, startYear, years,
 										modelView.DisplayRateCode);
 
-									currentInsertionElement.ParentNode.InsertAfter(tableElement, currentInsertionElement);
 									currentInsertionElement = tableElement;
 								}
 

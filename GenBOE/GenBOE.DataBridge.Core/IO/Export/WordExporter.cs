@@ -748,12 +748,15 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					// clone the row before Additional Query Filters to use it as a template for adding new rows
 					Row rowToClone = WordUtilities.GetTaggedChildElement(moqTypeTableContainer,
 						SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST ? BOEExporterConstants.FieldName_TotalWBSHours : BOEExporterConstants.FieldName_PoPEndDate).GetAncestor(NodeType.Row) as Row;
-					Row cfTemplateRow = (Row)rowToClone.Clone(true);
-
+					
 					foreach (CustomFieldValueContainer customFieldValue in table.CustomFieldValueContainers.Reverse())
 					{
 						// clone the template row
-						Row cfRow = (Row)cfTemplateRow.Clone(true);
+						Row cfRow = (Row)rowToClone.Clone(true);
+
+						// Add row to the table after the cloned row
+						rowToClone.ParentNode.InsertAfter(cfRow, rowToClone);
+
 						ICollection<Cell> cfRowCells = cfRow.Cells.ToArray();
 
 						// First cell is label
@@ -788,9 +791,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 								WordUtilities.SetElementText(valueRuns.ElementAt(i), string.Empty);
 							}
 						}
-
-						// Add row to the table after the cloned row
-						rowToClone.ParentNode.InsertAfter(cfRow, rowToClone);
 					}
 				}
 			}
@@ -832,6 +832,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 							{
 								// Create a new row
 								Row dataRow = CloneMarkedTemplateRow(templateDataRow);
+								
+								// Add the row to the table
+								currentInsertionRow.ParentNode.InsertAfter(dataRow, currentInsertionRow);
 
 								// Populate the row
 								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Resource), skillMixRow.ResourceOld);
@@ -843,8 +846,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_ProposedHours), skillMixRow.ProposedHours.ToString(CommonUtilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
 								WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Rationale), skillMixRow.Rationale);
 
-								// Add the row to the table
-								currentInsertionRow.ParentNode.InsertAfter(dataRow, currentInsertionRow);
 								currentInsertionRow = dataRow;
 							}
 
@@ -889,6 +890,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 									// Create a new row
 									Row dataRow = CloneMarkedTemplateRow(templateDataRow);
 
+									// Add the row to the table
+									currentInsertionRow.ParentNode.InsertAfter(dataRow, currentInsertionRow);
+
 									// Populate the row
 									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Resource), commonDisclosureRow.ResourceID);
 									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_BusinessResourceCode), commonDisclosureRow.BusinessResourceID);
@@ -906,8 +910,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 										WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_GrandTotalHours), commonDisclosureRow.GrandTotalHours.ToString(CommonUtilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
 									}
 
-									// Add the row to the table
-									currentInsertionRow.ParentNode.InsertAfter(dataRow, currentInsertionRow);
 									currentInsertionRow = dataRow;
 								}
 

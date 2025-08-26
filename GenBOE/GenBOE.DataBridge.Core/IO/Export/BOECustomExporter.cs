@@ -993,6 +993,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			{
 				// Create a new row
 				Row tableRow = this.CloneMarkedTemplateRow(templateDataRow);
+				
+				// Add the row to the table
+				currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
 
 				// Populate the row
 				StructuredDocumentTag wbsNumberElement = WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_WBSNumber);
@@ -1027,18 +1030,17 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				grandTotal += hours;
 				WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Hours), hours.ToString(DefaultHoursFormat));
 
-				// Add the row to the table
-				currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
 				currentInsertionRow = tableRow;
 			}
 
 			// populate the total row
 			Row totalRow = this.CloneMarkedTemplateRow(templateTotalRow);
-			WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_Total), grandTotal.ToString(DefaultHoursFormat));
-
+			
 			// add it to the table
 			currentInsertionRow.ParentNode.InsertAfter(totalRow, currentInsertionRow);
-
+			
+			WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_Total), grandTotal.ToString(DefaultHoursFormat));
+						
 			// remove template rows
 			this.RemoveElement(templateDataRow);
 			this.RemoveElement(templateTotalRow);
@@ -1068,6 +1070,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				{
 					// Create a new row
 					Row tableRow = this.CloneMarkedTemplateRow(templateDataRow);
+					
+					// add the row to the table
+					currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
 
 					// Populate the row
 					StructuredDocumentTag wbsNumberElement = WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_WBSNumber);
@@ -1107,30 +1112,31 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 					subTotal += taskHours;
 
-					// add the row to the table
-					currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
 					currentInsertionRow = tableRow;
 				}
 
 				// populate the subtotal for the WBS
 				Row subtotalRow = this.CloneMarkedTemplateRow(templateSubtotalRow);
+
+				// add the row to the table
+				currentInsertionRow.ParentNode.InsertAfter(subtotalRow, currentInsertionRow);
+
 				WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(subtotalRow, BOEExporterConstants.FieldName_WBSNumber), string.IsNullOrEmpty(wbs) ? "No WBS" : "WBS " + wbs);
 				WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(subtotalRow, BOEExporterConstants.FieldName_SubTotal), subTotal.ToString(DefaultHoursFormat));
 
 				grandTotal += subTotal;
 
-				// add the row to the table
-				currentInsertionRow.ParentNode.InsertAfter(subtotalRow, currentInsertionRow);
 				currentInsertionRow = subtotalRow;
 			}
 
 			// populate the total row
 			Row totalRow = this.CloneMarkedTemplateRow(templateTotalRow);
-			WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_Total), grandTotal.ToString(DefaultHoursFormat));
 
 			// add it to the table
 			currentInsertionRow.ParentNode.InsertAfter(totalRow, currentInsertionRow);
-
+			
+			WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_Total), grandTotal.ToString(DefaultHoursFormat));
+						
 			// remove template rows
 			this.RemoveElement(templateDataRow);
 			this.RemoveElement(templateSubtotalRow);
@@ -1457,6 +1463,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						//  create (clone) a new container for this task
 						StructuredDocumentTag containerElement = CloneContainerTemplate(travelTaskContainerTemplateElement);
 
+						// add cloned container
+						currentTravelTaskContainerInsertionPoint.ParentNode.InsertAfter(containerElement, currentTravelTaskContainerInsertionPoint);
+
 						#region Process the data (IS&GS)
 
 						ProcessTravelTaskHeader(document, containerElement, travelTaskElement, selectedComponents);
@@ -1466,8 +1475,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 						#endregion
 
-						// add cloned container
-						currentTravelTaskContainerInsertionPoint.ParentNode.InsertAfter(containerElement, currentTravelTaskContainerInsertionPoint);
 						currentTravelTaskContainerInsertionPoint = containerElement;
 					}
 
@@ -1503,6 +1510,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						//  create (clone) a new container for this task
 						StructuredDocumentTag containerElement = CloneContainerTemplate(odcTaskContainerTemplateElement);
 
+						// add cloned container
+						currentODCTaskContainerInsertionPoint.ParentNode.InsertAfter(containerElement, currentODCTaskContainerInsertionPoint);
+
 						#region Process the data (IS&GS)
 
 						ProcessODCTaskHeader(document, containerElement, odcTaskElement, selectedComponents);
@@ -1513,8 +1523,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 						#endregion
 
-						// add cloned container
-						currentODCTaskContainerInsertionPoint.ParentNode.InsertAfter(containerElement, currentODCTaskContainerInsertionPoint);
 						currentODCTaskContainerInsertionPoint = containerElement;
 					}
 
@@ -1548,6 +1556,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						//  create (clone) a new container for this task
 						StructuredDocumentTag containerElement = CloneContainerTemplate(materialTaskContainerTemplateElement);
 
+						// add cloned container
+						currentMaterialTaskContainerInsertionPoint.ParentNode.InsertAfter(containerElement, currentMaterialTaskContainerInsertionPoint);
+
 						#region Process the data (IS&GS)
 
 						ProcessMaterialTaskHeader(document, containerElement, materialTaskElement, selectedComponents);
@@ -1557,8 +1568,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 						#endregion
 
-						// add cloned container
-						currentMaterialTaskContainerInsertionPoint.ParentNode.InsertAfter(containerElement, currentMaterialTaskContainerInsertionPoint);
 						currentMaterialTaskContainerInsertionPoint = containerElement;
 					}
 
@@ -3662,11 +3671,12 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					// create a new total row for this group
 					Row totalRow = this.CloneMarkedTemplateRow(templateTotalsRow);
 
+					// add the row to the table
+					currentInsertionRow.ParentNode.InsertAfter(totalRow, currentInsertionRow);
+
 					// populate the sub-total (for the group)
 					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_Total), numericFormat == null ? group.GroupSubTotal.ToString() : group.GroupSubTotal.ToString(numericFormat));
 
-					// add the row to the table
-					currentInsertionRow.ParentNode.InsertAfter(totalRow, currentInsertionRow);
 					currentInsertionRow = totalRow;
 				}
 
@@ -3678,6 +3688,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 					// create a new summary data row in the table
 					Row tableRow = this.CloneMarkedTemplateRow(templateSummaryDataRow);
+
+					// add the row to the table
+					currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
 
 					// populate the row
 					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Year), rowData.Year);
@@ -3723,13 +3736,14 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						}
 					}
 
-					// add the row to the table
-					currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
 					currentInsertionRow = tableRow;
 				}
 
 				// create a new summary total row
 				Row summaryTotalRow = this.CloneMarkedTemplateRow(templateSummaryTotalsRow);
+
+				// add the row to the table
+				currentInsertionRow.ParentNode.InsertAfter(summaryTotalRow, currentInsertionRow);
 
 				// populate the summary total
 				if (byQuarter)
@@ -3741,10 +3755,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					PopulateTableRowWithMonthlyData(summaryTotalRow, data.SummaryTotalsByMonth, numericFormat);
 				}
 				WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(summaryTotalRow, BOEExporterConstants.FieldName_Total), numericFormat == null ? data.SummaryTotalComplete.ToString() : data.SummaryTotalComplete.ToString(numericFormat));
-
-				// add the row to the table
-				currentInsertionRow.ParentNode.InsertAfter(summaryTotalRow, currentInsertionRow);
-
+								
 				// remove template rows
 				this.RemoveElement(templateDataRow);
 				this.RemoveElement(templateTotalsRow);
@@ -3781,6 +3792,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				// create a new data row in the table
 				Row tableRow = this.CloneMarkedTemplateRow(templateDataRow);
 
+				// add the row to the table
+				currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
+
 				// populate the row
 				WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Resource), resource ?? string.Empty);
 				WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_ResourceDescription), resource ?? string.Empty);
@@ -3796,8 +3810,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				}
 				WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Total), numericFormat == null ? rowData.YearTotal.ToString() : rowData.YearTotal.ToString(numericFormat));
 
-				// add the row to the table
-				currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
 				currentInsertionRow = tableRow;
 			}
 
@@ -3904,6 +3916,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					// create a new data row in the table
 					Row tableRow = this.CloneMarkedTemplateRow(templateDataRow);
 
+					// add the row to the table
+					currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
+
 					// populate the row with the "base" row data
 					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_PerformingOrgID), rowData.PerformingOrgID);
 					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_PerformingOrg), rowData.PerformingOrgName);
@@ -3919,8 +3934,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					// populate the row with the additional (task-specific) row data
 					populateDataRow(tableRow, rowData);
 
-					// add the row to the table
-					currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
 					currentInsertionRow = tableRow;
 				}
 
@@ -4260,6 +4273,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					// create a new summary data row in the table
 					Row tableRow = this.CloneMarkedTemplateRow(templateDataRow);
 
+					// add the row to the table
+					currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
+
 					decimal cost = rollupRowData.CostTotal.HasValue ? rollupRowData.CostTotal.Value : 0m;
 					decimal hours = rollupRowData.HoursTotal.HasValue ? rollupRowData.HoursTotal.Value : 0m;
 
@@ -4287,8 +4303,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Cost), cost.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, _CurrencyFormatter));
 					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Hours), hours.ToString(DefaultHoursFormat));
 
-					// add the row to the table
-					currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
 					currentInsertionRow = tableRow;
 				}
 
@@ -4357,6 +4371,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					{
 						StructuredDocumentTag contentBlock = contentBlockTemplate.Clone(true) as StructuredDocumentTag;
 
+						// add the row to the table
+						currentInsertionBlock.ParentNode.InsertAfter(contentBlock, currentInsertionBlock);
+
 						CustomFieldValueDTO fieldValue = customField.Key;
 						CustomFieldDTO field = customField.Value;
 
@@ -4392,8 +4409,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 							WordUtilities.SetElementText(customFieldDescriptionElement, fieldValue.CustomFieldValueDescription);
 						}
 
-						// add the row to the table
-						currentInsertionBlock.ParentNode.InsertAfter(contentBlock, currentInsertionBlock);
 						currentInsertionBlock = contentBlock;
 					}
 				}

@@ -68,7 +68,7 @@ namespace IES.Common.Core.OfficeUtilities
 
 				Document document = new Document(mem);
 				document.BuiltInDocumentProperties.Version = parentTemplateId;
-				// TODO TIW check if you can save back to the original memory stream or not
+				
 				mem.Dispose();
 				mem = new MemoryStream(docBytes.Length);
 				document.Save(mem, SaveFormat.Docx);
