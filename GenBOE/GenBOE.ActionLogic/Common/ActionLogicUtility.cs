@@ -54,10 +54,6 @@ namespace GenBOE.ActionLogic.Common
 			IList<SkillMixModelView> skillMixRowsExceedChars = skillMixModels.Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
 			IList<SkillMixModelView> skillMixRowsResourceOldExceedChars = skillMixModels.Where(x => !string.IsNullOrEmpty(x.ResourceOld) && x.ResourceOld.Length > 20).ToList();
 
-			// If RMS, also check if it's a duplicate Current Resource with 0 Proposed Hours, which is allowed
-			IList<SkillMixModelView> skillMixRowsInvalidBoeMixWhenIncluded = skillMixModels.Where(x => x.Included && x.BOESkillMix.HasValue && x.BOESkillMix.Value <= 0
-			 && (isSpace || (x.BOESkillMix.Value == 0 && !skillMixModels.Any(y => y.ResourceNew == x.ResourceNew && y.SkillMixID != x.SkillMixID)))).ToList();
-
 			bool doesEmptyNullCurrentResourceExist = skillMixModels.Any(x => string.IsNullOrEmpty(x.ResourceNew) && x.Included);
 			decimal totalSKillMixRowsBOESkillMix = skillMixModels.Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
 
@@ -74,11 +70,6 @@ namespace GenBOE.ActionLogic.Common
 			foreach (string skillMixResourceOld in skillMixRowsEmptyBoeMixWhenIncluded.Select(x => x.ResourceOld))
 			{
 				errorMessages.Add($"{skillMixTableName}: {BoeSkillMixColumnName} is missing for {skillMixResourceOld}.");
-			}
-
-			foreach (string skillMixResourceOld in skillMixRowsInvalidBoeMixWhenIncluded.Select(x => x.ResourceOld))
-			{
-				errorMessages.Add($"{skillMixTableName}: {BoeSkillMixColumnName} has invalid value for {skillMixResourceOld}.");
 			}
 
 			if (!totalSKillMixRowsBOESkillMix.EqualsEpsilon(100) && !totalSKillMixRowsBOESkillMix.EqualsEpsilon(0))
