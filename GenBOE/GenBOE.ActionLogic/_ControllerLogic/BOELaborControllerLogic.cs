@@ -1670,7 +1670,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				{
 					decimal nonPrecisionUCOT = dto.LaborSpreadValue * ucotFactor / 100.0m;
 					sumUCOT += nonPrecisionUCOT;
-					decimal precisionUCOT = Utilities.AdjustPrecision(nonPrecisionUCOT, precision);
+					decimal precisionUCOT = Math.Abs(Utilities.AdjustPrecision(nonPrecisionUCOT, precision));
 				
 					ucotSpreadsToReturn.Add(new LaborSpreadDataModelView()
 					{
@@ -1684,8 +1684,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			if (calculateUCOT && ucotSpreadsToReturn.Any())
 			{
-				decimal totalUCOTPrecision = Utilities.AdjustPrecision(sumUCOT, precision);
+				decimal totalUCOTPrecision = Math.Abs(Utilities.AdjustPrecision(sumUCOT, precision));
 				decimal[] ucotSpreadValues = SpreadCurve.Smooth(totalUCOTPrecision, ucotSpreadsToReturn.Select(s => s.LaborSpreadValue ?? 0m).ToArray(), 0, ucotSpreadsToReturn.Count, precision);
+
+				if (sumUCOT < 0)
+				{
+					// if UCOT is negative, then change the sign
+					ucotSpreadValues = SpreadCurve.ChangeSign(ucotSpreadValues, 0, ucotSpreadValues.Length);
+				}
 
 				// Reset the values to the Smooth'ed array to guarantee precision and no loss of rounding values
 				for (int i = 0; i < ucotSpreadsToReturn.Count; i++)
