@@ -437,7 +437,7 @@ namespace IES.Common.Core.OfficeUtilities
 					{
 						// Error inserting the paragraph, we need to remove them
 						options = HtmlInsertOptions.RemoveLastEmptyParagraph;
-						htmlFormattedText = ReplaceParagraphTagsWithLineBreaks(htmlFormattedText);
+						htmlFormattedText = ReplaceParagraphTagsWithLineBreaks(htmlFormattedText) + ControlChar.LineBreak;
 						
 						element.RemoveAllChildren();
 						builder.MoveToStructuredDocumentTag(element, 0);

@@ -676,7 +676,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						}
 						else if (multiline)
 						{
-							authorList.Append("\r\n");
+							authorList.Append("\n");
 							authorList.Append(cleanAuthor);
 						}
 						else
