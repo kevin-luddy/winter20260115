@@ -26,7 +26,7 @@
 		/// <returns>Refreshed/Recalculated Skill Mix Model View</returns>
 		public static RefreshSkillMixModelView RefreshSkillMixTables(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
 			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData,
-			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isBRCEnabled, bool isManual)
+			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isBRCEnabled, bool isManual, DateTime? taskEndDate)
 		{
 			// null checks 
 			if (resourceHours == null)
@@ -43,6 +43,9 @@
 			{
 				currentCommonDisclosureData = new List<CommonDisclosureModelView>();
 			}
+
+			// Only do Common Disclosure if the task is past the 1LMX start date
+			isBRCEnabled = isBRCEnabled && taskEndDate.HasValue && taskEndDate >= Utilities.OneLmxStartDate;
 
 			RefreshSkillMixModelView refreshedModel = new RefreshSkillMixModelView();
 			laborTypes = laborTypes == null ? new List<LaborTypeDataModelView>() : laborTypes.Where(l => l.RateType == RateType.Hours).ToList();
