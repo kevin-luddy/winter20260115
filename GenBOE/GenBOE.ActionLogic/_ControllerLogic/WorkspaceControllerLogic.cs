@@ -32,11 +32,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.ComponentModel;
 	using System.Globalization;
 	using System.Linq;
 	using System.Threading.Tasks;
 	using System.Transactions;
 	using System.Web.Configuration;
+	using System.Web.Management;
 	using static IES.Common.Constants;
 
 	public abstract class WorkspaceControllerLogic : IWorkspaceControllerLogic
@@ -1808,12 +1810,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			{
 				throw new ArgumentNullException(nameof(workspaces));				
 			}
-
-			if(string.IsNullOrWhiteSpace(paNumber))
-			{
-				throw new ArgumentException("paNumber is required", nameof(paNumber));
-			}
-
+			
 
 			int max = 0;
 			bool anyRelevant = false;

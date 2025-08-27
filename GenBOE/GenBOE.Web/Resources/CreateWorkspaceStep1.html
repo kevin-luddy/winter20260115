@@ -31,7 +31,7 @@
         </div>
      
     <!---NEW PLD Feature -->
-    <div data-ng-show="model.IsPLDIntegrated">
+    <div data-ng-show="model.IsPLDIntegrated && data.IsAttemptingToImport !== undefined && data.IsAttemptingToImport === false">
         <div></div>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label for="pldSelect">
             PLD PA Number: *

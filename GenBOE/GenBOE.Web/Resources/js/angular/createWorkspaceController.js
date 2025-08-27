@@ -269,6 +269,8 @@
 					$scope.model.LineOfBusinessID = data.Line_of_Business_ID;
 					$scope.data.LineOfBusiness = lobName;
 					$scope.data.LineOfBusinessID = data.Line_of_Business_ID;
+					$scope.model.Description = data.PA_Description;
+					$scope.data.Description = data.PA_Description;
 					$scope.model.ContractStartDate = parseDotNetDate(data.Project_Start_Date);
 					$scope.model.ContractEndDate = parseDotNetDate(data.Project_End_Date);
 					$scope.data.ContractStartDate = $scope.model.ContractStartDate;
@@ -375,6 +377,18 @@
 						// reset the data in case the user went back and forth
 						$scope.data = $scope.resetData();
 						$scope.data.IsAttemptingToImport = false;
+
+						var pa = ($scope.model.PLD_PANumber || '').toString().trim();
+						var hasPA = pa.length > 0;
+
+						if ($scope.model.IsPLDIntegrated && !hasPA) {
+							Session.confirmDialog("PLD Tracking Number", "A PLD Tracking Number was not set, are you sure you want to continue?",
+								function () { $scope.$apply(function () { $scope.setStepSpecificElements(3); }) },
+								null
+							);
+							return;
+						} 
+
 
 						if ($scope.model.isPTMIntegrated && ($scope.model.isAdmin || $scope.model.ptmTrackingNumberNotRequired) && $scope.model.ptmTrackingNumber === '') {
 							// show notification to System Admin that they did not (optionally) select a PTM Tracking Number
