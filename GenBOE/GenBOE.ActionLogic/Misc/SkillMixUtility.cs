@@ -723,17 +723,6 @@
 				throw new ArgumentNullException(nameof(refreshedModel));
 			}
 
-			// Set Included to 'No' for rows in both tables if there are no proposed hours
-			foreach (SkillMixModelView row in refreshedModel.SkillMixRows.Where(x => x.Included && x.ProposedHours == 0.0m))
-			{
-				row.Included = false;
-			}
-
-			foreach (CommonDisclosureModelView row in refreshedModel.CommonDisclosureRows.Where(x => x.Included && x.ProposedHours == 0.0m))
-			{
-				row.Included = false;
-			}
-
 			if (isSpace)
 			{
 				// Remove Skill Mix rows where historical and proposed hours are zero
