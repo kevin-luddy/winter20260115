@@ -4695,31 +4695,6 @@ namespace GenBOE.Tests.ActionLogic
 		}
 
 		/// <summary>
-		/// Test BOE Skill Mix <= 0
-		/// </summary>
-		[TestMethod]
-		public void ValidateCommonDisclosureSkillMix_BoeSkillMixInvalid()
-		{
-			List<CommonDisclosureModelView> skillmix = new List<CommonDisclosureModelView>
-			{
-				new CommonDisclosureModelView {
-					ResourceID = "HISTORICAL_R",
-					HistoricalHours = 100,
-					BusinessResourceID = null,
-					Included = true,
-					IsUserInput = true,
-					Rationale = "Rationale1",
-					BOESkillMix = 0
-				}
-			};
-
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, true);
-			Assert.IsNotNull(messages);
-			Assert.AreEqual(1, messages.Count);
-			Assert.IsTrue(messages.First().Contains("BOE skill Mix has invalid value"));
-		}
-
-		/// <summary>
 		/// Test at least one resource included
 		/// </summary>
 		[TestMethod]

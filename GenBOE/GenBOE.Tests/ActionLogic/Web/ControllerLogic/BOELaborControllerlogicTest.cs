@@ -4775,6 +4775,145 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		}
 
 		/// <summary>
+		/// Test Refresh SkillMix cleanup method to set included to No for table rows with 0 proposed hours
+		/// </summary>
+		[TestMethod]
+		public void RefreshSkillMix_All_Cleanup_ZeroProposedHours()
+		{
+			BOELaborControllerLogic sut = CreateSystemMST();
+
+			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
+			{
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 2,
+					ResourceName = HISTORICAL_RESOURCE_NAME2,
+					TotalHours = 40.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 1,
+					ResourceName = HISTORICAL_RESOURCE_NAME1,
+					TotalHours = 100.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 3,
+					ResourceName = HISTORICAL_RESOURCE_NAME3,
+					TotalHours = 110.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 2,
+					MOQTypeSelectionTableDataResourceHoursId = 4,
+					ResourceName = HISTORICAL_RESOURCE_NAME1,
+					TotalHours = 50.0m
+				}
+			};
+
+			List<LaborTypeDataModelView> laborTypes = new List<LaborTypeDataModelView>
+			{
+				new LaborTypeDataModelView
+				{
+					ResourceName = RESOURCE_NAME1,
+					BusinessResourceCodeName = BRC_RESOURCE_NAME1,
+					Spreads = new List<LaborSpreadDataModelView> {
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "01/2024",
+							LaborSpreadValue = 0m
+						},
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "12/2032",
+							LaborSpreadValue = 0m
+						}
+					},
+					Deleted = false,
+					HourSpread = 500m,
+					RateType = RateType.Hours
+				},
+				new LaborTypeDataModelView
+				{
+					ResourceName = RESOURCE_NAME2,
+					BusinessResourceCodeName = BRC_RESOURCE_NAME2,
+					Spreads = new List<LaborSpreadDataModelView> {
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "01/2024",
+							LaborSpreadValue = 250m
+						},
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "12/2032",
+							LaborSpreadValue = 250m
+						}
+					},
+					Deleted = false,
+					HourSpread = 500m,
+					RateType = RateType.Hours
+				}
+			};
+
+			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
+			{
+				new SkillMixModelView {
+					SkillMixID = 1,
+					ResourceOld = HISTORICAL_RESOURCE_NAME1,
+					ResourceNew = RESOURCE_NAME1,
+					Included = true,
+					Rationale = Rationale1,
+					ProposedHours = 0
+				},
+				new SkillMixModelView {
+					SkillMixID = 2,
+					ResourceOld = HISTORICAL_RESOURCE_NAME2,
+					ResourceNew = RESOURCE_NAME2,
+					Included = true,
+					Rationale = Rationale1,
+					ProposedHours = 500
+				},
+				new SkillMixModelView {
+					SkillMixID = 3,
+					ResourceOld = HISTORICAL_RESOURCE_NAME3,
+					ResourceNew = RESOURCE_NAME3,
+					Included = true,
+					Rationale = Rationale1,
+					ProposedHours = 500
+				},
+			};
+
+			List<CommonDisclosureModelView> commonDisclosures = new List<CommonDisclosureModelView>
+			{
+				new CommonDisclosureModelView {
+					CommonDisclosureSkillMixID = 1,
+					ResourceID = RESOURCE_NAME1,
+					BusinessResourceID = BRC_RESOURCE_NAME1,
+					ProposedHours = 0,
+					Included = true,
+					Rationale = Rationale2
+				},
+				new CommonDisclosureModelView {
+					CommonDisclosureSkillMixID = 2,
+					ResourceID = RESOURCE_NAME2,
+					BusinessResourceID = BRC_RESOURCE_NAME2,
+					ProposedHours = 500,
+					Included = true,
+					Rationale = Rationale2
+				}
+			};
+
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false);
+
+			// Assert rows that had 0 proposed hours had Included set to No
+			Assert.IsFalse(result.SkillMixRows.FirstOrDefault(x => x.SkillMixID == 1).Included);
+			Assert.IsFalse(result.CommonDisclosureRows.FirstOrDefault(x => x.CommonDisclosureSkillMixID == 1).Included);
+		}
+
+		/// <summary>
 		/// Test Refresh SkillMix Calculation with Historical Hours, Labor Types, Skill Mix Rows, and split BRC Common Disclosure Rows
 		/// </summary>
 		[TestMethod]
@@ -5747,7 +5886,144 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			AssertHelpers.AssertAreEqualEpsilon(40m, result.CommonDisclosureRows.ElementAt(1).HistoricalHours);
 			AssertHelpers.AssertAreEqualEpsilon(result.CommonDisclosureRows.ElementAt(0).HistoricalHours * 100m / result.CommonDisclosureTotals.HistoricalHours, result.CommonDisclosureRows.ElementAt(0).LaborSkillMix);
 			AssertHelpers.AssertAreEqualEpsilon(result.CommonDisclosureRows.ElementAt(1).HistoricalHours * 100m / result.CommonDisclosureTotals.HistoricalHours, result.CommonDisclosureRows.ElementAt(1).LaborSkillMix);
+		}
 
+		/// <summary>
+		/// Test Refresh SkillMix does not zero-out the historical hours for a common disclosure row when the resource type row has 0 hours
+		/// </summary>
+		[TestMethod]
+		public void RefreshSkillMix_CommonDisclosure_HistoricalHoursPreservedWhenNoLaborHours()
+		{
+			BOELaborControllerLogic sut = CreateSystemMST();
+
+			List<MOQTypeSelectionTableDataResourceHoursDTO> hours = new List<MOQTypeSelectionTableDataResourceHoursDTO>
+			{
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 2,
+					ResourceName = HISTORICAL_RESOURCE_NAME2,
+					TotalHours = 40.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 1,
+					ResourceName = HISTORICAL_RESOURCE_NAME1,
+					TotalHours = 100.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 1,
+					MOQTypeSelectionTableDataResourceHoursId = 3,
+					ResourceName = HISTORICAL_RESOURCE_NAME3,
+					TotalHours = 110.0m
+				},
+				new MOQTypeSelectionTableDataResourceHoursDTO
+				{
+					MOQTypeSelectionTableDataId = 2,
+					MOQTypeSelectionTableDataResourceHoursId = 4,
+					ResourceName = HISTORICAL_RESOURCE_NAME1,
+					TotalHours = 50.0m
+				}
+			};
+
+			List<LaborTypeDataModelView> laborTypes = new List<LaborTypeDataModelView>
+			{
+				new LaborTypeDataModelView
+				{
+					ResourceName = RESOURCE_NAME1,
+					BusinessResourceCodeName = BRC_RESOURCE_NAME1,
+					Spreads = new List<LaborSpreadDataModelView> {
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "01/2024",
+							LaborSpreadValue = 0m
+						},
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "12/2032",
+							LaborSpreadValue = 0m
+						}
+					},
+					Deleted = false,
+					HourSpread = 500m,
+					RateType = RateType.Hours
+				},
+				new LaborTypeDataModelView
+				{
+					ResourceName = RESOURCE_NAME2,
+					BusinessResourceCodeName = BRC_RESOURCE_NAME2,
+					Spreads = new List<LaborSpreadDataModelView> {
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "01/2024",
+							LaborSpreadValue = 0m
+						},
+						new LaborSpreadDataModelView
+						{
+							LaborSpreadDate = "12/2032",
+							LaborSpreadValue = 0m
+						}
+					},
+					Deleted = false,
+					HourSpread = 500m,
+					RateType = RateType.Hours
+				}
+			};
+
+			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
+			{
+				new SkillMixModelView {
+					SkillMixID = 1,
+					ResourceOld = HISTORICAL_RESOURCE_NAME1,
+					ResourceNew = RESOURCE_NAME1,
+					Included = true,
+					Rationale = Rationale1,
+					ProposedHours = 0
+				},
+				new SkillMixModelView {
+					SkillMixID = 2,
+					ResourceOld = HISTORICAL_RESOURCE_NAME2,
+					ResourceNew = RESOURCE_NAME2,
+					Included = true,
+					Rationale = Rationale1,
+					ProposedHours = 500
+				},
+				new SkillMixModelView {
+					SkillMixID = 3,
+					ResourceOld = HISTORICAL_RESOURCE_NAME3,
+					ResourceNew = RESOURCE_NAME3,
+					Included = true,
+					Rationale = Rationale1,
+					ProposedHours = 500
+				},
+			};
+
+			List<CommonDisclosureModelView> commonDisclosures = new List<CommonDisclosureModelView>
+			{
+				new CommonDisclosureModelView {
+					CommonDisclosureSkillMixID = 1,
+					ResourceID = RESOURCE_NAME1,
+					BusinessResourceID = BRC_RESOURCE_NAME1,
+					ProposedHours = 0,
+					Included = true,
+					Rationale = Rationale2
+				},
+				new CommonDisclosureModelView {
+					CommonDisclosureSkillMixID = 2,
+					ResourceID = RESOURCE_NAME2,
+					BusinessResourceID = BRC_RESOURCE_NAME2,
+					ProposedHours = 0,
+					Included = true,
+					Rationale = Rationale2
+				}
+			};
+
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false);
+
+			// Assert none of the rows were set to 0 historical hours
+			Assert.IsFalse(result.CommonDisclosureRows.Any(x => x.HistoricalHours == 0.0m));
 		}
 
 		/// <summary>

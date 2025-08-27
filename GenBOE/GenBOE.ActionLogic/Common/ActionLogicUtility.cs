@@ -114,8 +114,6 @@ namespace GenBOE.ActionLogic.Common
 																			.Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
 			IList<CommonDisclosureModelView> commonDisclosureRowsEmptyBoeSkillMixWhenIncluded = commonDisclosures
 																			.Where(x => x.Included && !x.BOESkillMix.HasValue).ToList();
-			IList<CommonDisclosureModelView> commonDisclosureRowsInvalidBoeSkillMixWhenIncluded = commonDisclosures
-																			.Where(x => x.Included && x.BOESkillMix.HasValue && x.BOESkillMix.Value <= 0).ToList();
 			IList<CommonDisclosureModelView> commonDisclosureIncludedHasTrueValue = commonDisclosures.Where(x => x.Included).ToList();
 			decimal totalCommonDisclosureRowsBOESkillMix = commonDisclosures.Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
 
@@ -127,11 +125,6 @@ namespace GenBOE.ActionLogic.Common
 			foreach (string skillMixResourceID in commonDisclosureRowsEmptyBoeSkillMixWhenIncluded.Select(x => x.ResourceID))
 			{
 				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: BOE Skill Mix is missing for {0}.", skillMixResourceID));
-			}
-
-			foreach (string skillMixResourceID in commonDisclosureRowsInvalidBoeSkillMixWhenIncluded.Select(x => x.ResourceID))
-			{
-				errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: BOE skill Mix has invalid value for {0}.", skillMixResourceID));
 			}
 
 			// A task is valid for save if it has no Resource Types and a Resource Type is needed to be marked as Included

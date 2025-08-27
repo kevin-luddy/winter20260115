@@ -211,11 +211,12 @@
 					{
 						ICollection<string> legacyLinkedResourceIds = refreshedModel.SkillMixRows.Where(r => r.ResourceNew == resourceName && r.Included).Select(l => l.ResourceOld).ToList();
 						decimal realHistoricalHours = resourceHours.Where(r => legacyLinkedResourceIds.Contains(r.ResourceName)).Sum(l => l.TotalHours);
-						decimal brcHistoricalHours = 0m;
+						decimal brcHistoricalHours = 1m;
 						if (totalHoursBRCs != 0)
 						{
 							brcHistoricalHours = refreshedRow.ProposedHours / totalHoursBRCs;
 						}
+						
 						refreshedRow.HistoricalHours = realHistoricalHours * brcHistoricalHours;
 					}
 
@@ -717,6 +718,17 @@
 			if (refreshedModel == null)
 			{
 				throw new ArgumentNullException(nameof(refreshedModel));
+			}
+
+			// Set Included to 'No' for rows in both tables if there are no proposed hours
+			foreach (SkillMixModelView row in refreshedModel.SkillMixRows.Where(x => x.Included && x.ProposedHours == 0.0m))
+			{
+				row.Included = false;
+			}
+
+			foreach (CommonDisclosureModelView row in refreshedModel.CommonDisclosureRows.Where(x => x.Included && x.ProposedHours == 0.0m))
+			{
+				row.Included = false;
 			}
 
 			if (isSpace)
