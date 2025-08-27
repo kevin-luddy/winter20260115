@@ -4906,7 +4906,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false);
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false, Utilities.OneLmxStartDate.AddDays(1));
 
 			// Assert rows that had 0 proposed hours had Included set to No
 			Assert.IsFalse(result.SkillMixRows.FirstOrDefault(x => x.SkillMixID == 1).Included);
@@ -6020,7 +6020,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false);
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false, Utilities.OneLmxStartDate.AddDays(1));
 
 			// Assert none of the rows were set to 0 historical hours
 			Assert.IsFalse(result.CommonDisclosureRows.Any(x => x.HistoricalHours == 0.0m));
