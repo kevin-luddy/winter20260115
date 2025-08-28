@@ -664,6 +664,25 @@ namespace GenTRAC.ActionLogic
 
 			this.AddAndDeletePermissions(fullProposalDto, backupPricerPermission, PtmRole.BackupPricer, permissionsToAdd, permissionsToDelete);
 
+			// MSAC POC
+			ProposalPermissionDto msacPOCPermission = null;
+			if (!string.IsNullOrEmpty(proposalUserInfo.MsacPOCNtid))
+			{
+				UserDTO MsacPOC = UserMapper.GetByNtid(proposalUserInfo.MsacPOCNtid);
+				msacPOCPermission = new ProposalPermissionDto()
+				{
+					Id = -1,
+					ProposalID = proposalId,
+					UserId = MsacPOC.Id,
+					Role = PtmRole.MsacPOC,
+					ResourceType = ResourceType.NotSet,
+					Updateable = IES.Common.UpdateType.Upsert,
+					UpdateDate = proposalUserInfo.UpdateDate
+				};
+			}
+
+			this.AddAndDeletePermissions(fullProposalDto, msacPOCPermission, PtmRole.MsacPOC, permissionsToAdd, permissionsToDelete);
+
 			ProposalPermissionDto genBoeWorkspaceCreatorPermission = null;
 			if (!string.IsNullOrEmpty(proposalUserInfo.GenBoeWorkspaceCreatorNtid))
 			{
@@ -834,6 +853,25 @@ namespace GenTRAC.ActionLogic
 			}
 
 			this.AddAndDeletePermissions(fullProposalDto, proposalMgrPermission, PtmRole.ProposalMgr, permissionsToAdd, permissionsToDelete);
+
+			// program mgr
+			ProposalPermissionDto programMgrPermission = null;
+			if (!string.IsNullOrWhiteSpace(proposalUserInfo.ProgramMgrNtid))
+			{
+				UserDTO progamMgr = UserMapper.GetByNtid(proposalUserInfo.ProgramMgrNtid);
+				programMgrPermission = new ProposalPermissionDto()
+				{
+					Id = -1,
+					ProposalID = proposalId,
+					UserId = progamMgr.Id,
+					Role = PtmRole.ProgramMgr,
+					ResourceType = ResourceType.NotSet,
+					Updateable = IES.Common.UpdateType.Upsert,
+					UpdateDate = proposalUserInfo.UpdateDate
+				};
+			}
+
+			this.AddAndDeletePermissions(fullProposalDto, programMgrPermission, PtmRole.ProgramMgr, permissionsToAdd, permissionsToDelete);
 
 			// CoverSheetApprover
 			if (string.IsNullOrWhiteSpace(proposalApprovalsInfo.CoverSheetApproverNtid))
@@ -1761,6 +1799,10 @@ namespace GenTRAC.ActionLogic
 							model.BackupContractsPOCNtId = user.Ntid;
 							model.BackupContractsPOCDisplayName = user.DisplayName;
 							break;
+						case PtmRole.MsacPOC:
+							model.MsacPOCNtid = user.Ntid;
+							model.MsacPOCDisplayName = user.DisplayName;
+							break;
 						case PtmRole.TechLead:
 							model.TechLeadNtid = user.Ntid;
 							model.TechLeadDisplayName = user.DisplayName;
@@ -1768,6 +1810,10 @@ namespace GenTRAC.ActionLogic
 						case PtmRole.ProposalMgr:
 							model.ProposalMgrNtid = user.Ntid;
 							model.ProposalMgrDisplayName = user.DisplayName;
+							break;
+						case PtmRole.ProgramMgr:
+							model.ProgramMgrNtid = user.Ntid;
+							model.ProgramMgrDisplayName = user.DisplayName;
 							break;
 						case PtmRole.GenBoeWorkspaceCreator:
 							model.GenBoeWorkspaceCreatorNtid = user.Ntid;
@@ -1819,7 +1865,7 @@ namespace GenTRAC.ActionLogic
 				}).ToCollection());
 			}
 
-			// Populate Material Leads and backup leads lists
+			// Populate PBOE Preparers and backup leads lists
 			ICollection<UserDTO> materialsUsers = this.GetUsersForSelectList(PtmRole.SupplyChainPOCMatl);
 
 			model.SupplyChainPOCMaterialsLeadsList = materialsUsers?
@@ -1960,8 +2006,9 @@ namespace GenTRAC.ActionLogic
 		/// <param name="proposalApprovalsInfo">the proposal approvals to be verified</param>
 		/// <param name="proposalUserInfo">the proposal users to be verified</param>
 		/// <param name="inValidationErrors">validation errors collection</param>
+		/// <param name="isNss">indicates if LOB is set to National Security Space</param>
 		/// <returns>True if there are invalid users on an update but were not changed, false otherwise.</returns>
-		public bool ValidateUserTypes(int? proposalId, ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, ICollection<ValidationMessage> inValidationErrors)
+		public bool ValidateUserTypes(int? proposalId, ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, ICollection<ValidationMessage> inValidationErrors, bool isNss = false)
 		{
 			if (proposalApprovalsInfo == null)
 			{
@@ -2006,6 +2053,16 @@ namespace GenTRAC.ActionLogic
 			if (string.IsNullOrWhiteSpace(proposalUserInfo.ProposalMgrNtid))
 			{
 				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.PROPOSALMGR_REQUIRED));
+			}
+
+			if (isNss && string.IsNullOrWhiteSpace(proposalUserInfo.ProgramMgrNtid))
+			{
+				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.PROGRAMMGR_REQUIRED));
+			}
+
+			if (isNss && string.IsNullOrWhiteSpace(proposalUserInfo.MsacPOCNtid))
+			{
+				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.MSAC_POC_REQUIRED));
 			}
 
 			if (!invalidContractsPOCNtId && !invalidBackupContractsPOCNtId && (proposalUserInfo.ContractsPOCNtId == proposalUserInfo.BackupContractsPOCNtId))
@@ -2054,7 +2111,9 @@ namespace GenTRAC.ActionLogic
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.ContractsPOCNtId, savedProposalUsers.ContractsPOCNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.CONTRACTS_POC_INVALID_NTID, true, true) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.BackupContractsPOCNtId, savedProposalUsers.BackupContractsPOCNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.BACKUP_CONTRACTS_POC_INVALID_NTID, true, true) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.BackupPricerNtId, savedProposalUsers.BackupPricerNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.BACKUP_PRICER_INVALID_NTID, true, true) && validUnchangedUsers;
+			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.MsacPOCNtid, savedProposalUsers.MsacPOCNtid, inValidationErrors, ValidationConstants.ProposalValidationConstants.MSAC_POC_INVALID_NTID, true, true) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.ProposalMgrNtid, savedProposalUsers.ProposalMgrNtid, inValidationErrors, ValidationConstants.ProposalValidationConstants.PROPOSAL_MANAGER_INVALID_NTID, false, false) && validUnchangedUsers;
+			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.ProgramMgrNtid, savedProposalUsers.ProgramMgrNtid, inValidationErrors, ValidationConstants.ProposalValidationConstants.PROGRAM_MANAGER_INVALID_NTID, false, false) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.TechLeadNtid, savedProposalUsers.TechLeadNtid, inValidationErrors, ValidationConstants.ProposalValidationConstants.TECH_LEAD_INVALID_NTID, true, true) && validUnchangedUsers;
 			validUnchangedUsers = this.ValidateUserType(proposalUserInfo.GenBoeWorkspaceCreatorNtid, savedProposalUsers.GenBoeWorkspaceCreatorNtid, inValidationErrors, ValidationConstants.ProposalValidationConstants.WORKSPACE_CREATOR_INVALID_NTID, false, false) && validUnchangedUsers;
 

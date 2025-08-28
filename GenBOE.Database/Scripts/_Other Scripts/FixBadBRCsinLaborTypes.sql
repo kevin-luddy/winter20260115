@@ -1,4 +1,8 @@
-﻿BEGIN TRANSACTION
+﻿/*
+    This file fixes the issue when BRCs are linked to the wrong Workspace's Resources.  It finds the correct Resource IDs and relinks them inside the BOE Labor Type.
+	Only run if there are errors found with FindBadBRCsinLaborTypes.sql
+*/
+BEGIN TRANSACTION
 
 BEGIN TRY
 

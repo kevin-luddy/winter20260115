@@ -229,6 +229,14 @@
                         <div class="replacedWidgetText">{{model.TaskElementData.EndDate}}</div>
                     </div>
                 </div>
+				<div class="form-row" data-ng-if="showTaskAuthor">
+					<div class="form-label">
+						Task Author **
+					</div>
+					<div class="form-element">
+						<div class="replacedWidgetText">{{getAuthorDisplayName(model.TaskElementData.AuthorUserId)}}</div>
+					</div>
+				</div>
                 <div id="MOQEquationFieldContent">
                     <div class="form-row">
                         <div class="form-label">
@@ -628,7 +636,7 @@
                     </div>
 
                     <!-- Common Disclosure Skill Mix Table -->
-                    <div class="form-label" data-ng-show="IsBRCEnabled">
+                    <div class="form-label" data-ng-show="IsCommonDisclosureEnabled">
                         LM Enterprise Skill Mix Table
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                             {  %>
@@ -639,7 +647,7 @@
                                     <div class="help-icon" data-ng-click="openHelp('RMSLMEnterpriseSkillMixTable');"></div>
                         <%  }  %>
                     </div>
-                    <div class="SkillMixTable skillMixTable" data-ng-show="IsBRCEnabled">
+                    <div class="SkillMixTable skillMixTable" data-ng-show="IsCommonDisclosureEnabled">
                         <table name="currentSkillMix" class="grid editable">
                             <thead>
                                 <tr>

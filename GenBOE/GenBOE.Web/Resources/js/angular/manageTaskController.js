@@ -32,8 +32,9 @@
 	$scope.model.AdjacentItems.NextId = undefined;
 	$scope.SelectedMoqTypes = [];
 	$scope.IsDraftOrDraftLocked = false;
-	$scope.IsBRCEnabled = ManageTaskModel.IsBRCEnabled; // For CDSM table only show if this BRC Enabaled = true 
+	$scope.IsBRCEnabled = ManageTaskModel.IsBRCEnabled; // For CDSM table only show if this BRC Enabled = true 
 	$scope.IsSkillMixEnabled = ManageTaskModel.IsSkillMixEnabled;
+	$scope.IsCommonDisclosureEnabled = false; // this will be calculated after $scope.oneLMXCutoff is created below.  Do we show Common Disclosure table
 	$scope.skillMixRationale = [];
 	$scope.skillMixRationaleLaborTypeSelections = [];
 	$scope.IsUsingTMRatesInTask = false;
@@ -41,6 +42,7 @@
 	$scope.dataLoaded = false;
 	$scope.showUCOT = false;
 	$scope.skillMixHelperText = "";
+	$scope.showTaskAuthor = ManageTaskModel.EnableTaskAuthor;
 
 	// Sets the Selected MOQ Types from the Selected MOQ Types from MoqEuationController.js.
 	$scope.$on('MOQ_TYPE_SELECTION_CHANGED', function (event, selectedMoqTypes) {
@@ -163,7 +165,8 @@
 				laborTypes: laborTypesData,
 				currentSkillMixData: $scope.model.SkillMixData,
 				currentCommonDisclosureData: $scope.model.CommonDisclosureSkillMixData,
-				isManual: $scope.isSkillMixManual()
+				isManual: $scope.isSkillMixManual(),
+				taskEndDate: $scope.model.TaskElementData.EndDate.toDate()
 			};
 
 			return $http({
@@ -518,6 +521,11 @@
 		return text;
 	};
 
+	$scope.getAuthorDisplayName = function (authorId) {
+		let author = $scope.ManageTaskModel.BoeAuthors.find(x => x.UserID == authorId);
+		return author ? author.DisplayName : "";
+	};
+
 	/*
 	 * ******************* NOTE ********************
 	 * Functions below relate to click events
@@ -771,7 +779,7 @@
 		return selectedItem;
 	};
 
-	$scope.recalculateTotals = function () {
+	$scope.recalculateTotals = function (setDirty = true) {
 		var cost = new BigNumber(0.0);
 		var hours = new BigNumber(0.0);
 		var ucotHours = new BigNumber(0.0);
@@ -826,7 +834,7 @@
 		$scope.deltaHours = $scope.getMOQTotal().minus($scope.totalSpreadHours).toString();
 		$scope.validateTotals();
 
-		$scope.refreshSkillMixTables();
+		$scope.refreshSkillMixTables(setDirty);
 	};
 
 	$scope.getMOQTotal = function () {
@@ -845,7 +853,7 @@
 			recalculateAllSpreadsAndTotals();
 			$scope.setDirty();
 		} else {
-			$scope.recalculateTotals();
+			$scope.recalculateTotals(false);
 		}
 	};
 
@@ -1035,32 +1043,12 @@
 			}
 
 			if ($scope.IsUcot(item) && dt.toDate() >= $scope.oneLmxCutOff) {
-				var ucotSpread = item.UcotSpreads.find(function (spreadItem) {
-					return spreadItem.LaborSpreadDate === dt;
-				});
-
-				var precision = $scope.getPrecision(item);
-				var ucotSpreadValue = spreadValue.multipliedBy($scope.ManageTaskModel.UcotFactor).decimalPlaces(precision);
-
-				// set the Ucot spread value in original array from the copy array
-				if (ucotSpread !== undefined && ucotSpread.LaborSpreadValue !== undefined) {
-					delta = ucotSpreadValue.minus(ucotSpread.LaborSpreadValue);
-					ucotSpread.LaborSpreadValue = ucotSpreadValue;
-				} else {
-					// this is a new value for the Ucot Spreads table
-					// Assuming that we do not need these in order
-					ucotSpread = { LaborSpreadDate: dt, LaborSpreadValue: ucotSpreadValue };
-					item.UcotSpreads.push(ucotSpread);
-					delta = ucotSpreadValue;
-				}
-
-				// add delta to labor type object Ucot Hours
-				var ucotHourSpread = delta.plus(item.UcotHours);
-				item.UcotHours = ucotHourSpread.toString();
+				$scope.calculateDiscreteUCOTSpread(item, false);
 			}
-
-			// re-calculate totals
-			$scope.recalculateTotals();
+			else {
+				// re-calculate totals
+				$scope.recalculateTotals();
+			}
 		}
 	};
 
@@ -1286,6 +1274,45 @@
 			$(document).trigger("HIDE_LOADING_BOX");
 		});
 	};
+
+	/* Calculate the discrete UCOT spread for one row */
+	$scope.calculateDiscreteUCOTSpread = function (item, skipReCalc) {
+		$(document).trigger("SHOW_LOADING_BOX");
+
+		var data = { value: item.HourSpread, start: item.StartDate, end: item.EndDate, curve: item.SpreadCurveID, elementOfCost: item.ElementOfCost, rateType: item.RateType, spreads: item.Spreads, ucotSpreads: item.UcotSpreads, percentLocked: item.PercentSpreadLocked, percentSpread: item.PercentSpread, boeTaskELementId: $scope.taskElementId };
+
+		$http({
+			method: 'POST',
+			data: data,
+			url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.calculateDiscreteUCOTSpreadAction, '')
+		}).then(function (response) {
+			var output = response.data;
+			item.UcotSpreads = output.ucotSpreads;
+			item.UcotHours = output.ucotHours;
+
+			if (!skipReCalc) {
+				// remake the spread array
+				$scope.generateSpreadTable();
+				$scope.recalculateTotals();
+			}
+
+			$(document).trigger("HIDE_LOADING_BOX");
+		}, function errorCallback(response) {
+			if (response.data && response.data.MessageList) {
+				$scope.errors = response.data.MessageList;
+			}
+
+			// Recalculate Totals regardless
+			if (!skipReCalc) {
+				// remake the spread array
+				$scope.generateSpreadTable();
+				$scope.recalculateTotals();
+			}
+
+			$(document).trigger("HIDE_LOADING_BOX");
+		});
+	};
+
 	var loadData = function (callback) {
 		$(document).trigger("SHOW_LOADING_BOX");
 		$scope.isLoading = true;
@@ -1315,6 +1342,8 @@
 			if (!$scope.model.LaborTypesData) {
 				$scope.model.LaborTypesData = [];
 			}
+
+			$scope.IsCommonDisclosureEnabled = $scope.IsSkillMixEnabled && $scope.IsBRCEnabled && $scope.model.TaskElementData.EndDate.toDate() >= $scope.oneLmxCutOff;
 
 			$scope.updateShowUcot();
 			$scope.TaskCustomFields = $scope.model.TaskCustomFields;
@@ -1385,7 +1414,7 @@
 			});
 
 			$scope.generateSpreadTable();
-			$scope.recalculateTotals();
+			$scope.recalculateTotals(false);
 
 			if (response.data.ValidationErrors) {
 				$scope.errors = response.data.ValidationErrors;
@@ -2314,21 +2343,8 @@
 		item.Spreads = newSpreads;
 
 		if ($scope.IsUcot(item)) {
-			var newUcotSpreads = [];
-			var ucotTotal = new BigNumber(0);
-			angular.forEach(item.UcotSpreads, function (spread) {
-				var month = spread.LaborSpreadDate.toDate();
-				if (month >= start && month <= end) {
-					newUcotSpreads.push(spread);
-					ucotTotal = ucotTotal.plus(spread.LaborSpreadValue);
-				}
-			});
-
-			item.UcotHours = ucotTotal;
-			item.UcotSpreads = newUcotSpreads;
-		}
-
-		if (!skipRecalc) {
+			$scope.calculateDiscreteUCOTSpread(item, skipRecalc);
+		} else if (!skipRecalc) {
 			$scope.generateSpreadTable();
 			$scope.recalculateTotals();
 		}
@@ -2759,5 +2775,5 @@
 		})) {
 			errorArray.push({ ValidationIssue: error });
 		}
-	}
+	};
 }]); 

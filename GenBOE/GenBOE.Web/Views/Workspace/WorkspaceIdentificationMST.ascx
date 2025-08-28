@@ -14,7 +14,8 @@
 <script type="text/javascript">
 	var formConfigs = [];
     var originalSapConnectionEnabled = false;
-    var onLoadAssignAuthorsValue = '<%:Model.EnableAssignTaskAuthor%>';
+	var onLoadAssignAuthorsValue = '<%:Model.EnableAssignTaskAuthor%>';
+	var workspaceContainsTaskAuthor = '<%:Model.WorkspaceContainsTaskAuthor%>';
 
     formConfigs.push({
         ElementID: 'WorkspaceIdentificationForm',
@@ -234,24 +235,23 @@
     });
 
     // Show the popup if the load value is set to true, but user changes it to false
-    $('#EnableAssignTaskAuthor').change(function () {
+	$('#EnableAssignTaskAuthor').change(function () {
 		var isAuthorsAssignedSetToTrue = $('#EnableAssignTaskAuthor').val() === 'True';
-		if (onLoadAssignAuthorsValue && !isAuthorsAssignedSetToTrue) {
-            Session.confirmDialog(
-                'Delete Assigned Task Authors',
-                'At least one task Author has supplied a value for this field. All values supplied by Authors for the field will be deleted. <br/><br/>Are you sure you want to delete the Assigned Task Authors?',
-                function () {
-                    // This is a confirmation, do nothing
-                    null
-                },
-                // Revert back to Yes if canceled
-                function () {
+		if (onLoadAssignAuthorsValue === 'True' && !isAuthorsAssignedSetToTrue && workspaceContainsTaskAuthor === 'True') {
+			Session.confirmDialog(
+				'Delete Assigned Task Authors',
+				'At least one Task has an Author assigned. All assigned Authors for Tasks will be deleted and the BOEs containing those Tasks will have their Status changed to Draft.<br/><br/>Are you sure you want to delete the Assigned Task Authors?',
+				function () {
+					// This is a confirmation, do nothing
+					null
+				},
+				// Revert back to Yes if canceled
+				function () {
 					$('#EnableAssignTaskAuthor').val('True')
-                }
-            );
+				}
+			);
 		}
-    })
-
+	});
 </script>
 
 <div id="WorkspaceIdentification" class="workspace-identification module ">

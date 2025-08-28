@@ -508,6 +508,17 @@
                             <a id="AdjustTaskDatesLink" style="float: right;">Adjust Dates</a>
                         </div>
                     </div>
+					<div class="form-row" data-ng-if="showTaskAuthor">
+						<div class="form-label">
+							Task Author **
+						</div>
+						<div class="form-element">
+							<select onchange="TaskElementDetailsWidget.setDirty()" class="taskAuthor" data-ng-model="model.TaskElementData.AuthorUserId">
+								<option></option>
+								<option data-ng-repeat="option in ManageTaskModel.BoeAuthors" data-ng-value="option.UserID">{{option.DisplayName}}</option>
+							</select>
+						</div>
+					</div>
                     <div id="MOQEquationFieldContent">
                         <div class="form-row">
                             <div class="form-label">
@@ -1024,7 +1035,7 @@
                     </div>
 					
                     <!-- Common Disclosure Skill Mix Table -->
-                    <div class="form-label" data-ng-show="IsBRCEnabled">
+                    <div class="form-label" data-ng-show="IsCommonDisclosureEnabled">
                         LM Enterprise Skill Mix Table
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 							{  %>
@@ -1035,7 +1046,7 @@
                                     <div class="help-icon" data-ng-click="openHelp('RMSLMEnterpriseSkillMixTable');"></div>
                         <%  }  %>
                     </div>
-                    <div class="SkillMixTable skillMixTable" data-ng-show="IsBRCEnabled">
+                    <div class="SkillMixTable skillMixTable" data-ng-show="IsCommonDisclosureEnabled">
                         <table name="currentSkillMix" class="grid editable" style="width: 100%;">
                             <thead>
                                 <tr>
