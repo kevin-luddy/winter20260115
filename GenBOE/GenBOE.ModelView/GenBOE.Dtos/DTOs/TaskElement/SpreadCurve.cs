@@ -408,9 +408,14 @@ namespace GenBOE.Dtos
         /// <returns>
         /// the spread array with negative values
         /// </returns>
-        private static decimal[] ChangeSign(decimal[] inCurveValues, int firstMonth, int lastMonth)
+        public static decimal[] ChangeSign(decimal[] inCurveValues, int firstMonth, int lastMonth)
         {
-            for (int i = firstMonth; i < lastMonth; i++)
+			if (inCurveValues == null)
+			{
+				throw new ArgumentNullException(nameof(inCurveValues));
+			}
+
+			for (int i = firstMonth; i < lastMonth; i++)
             {
                 inCurveValues[i] = inCurveValues[i] * -1;
             }
