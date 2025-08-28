@@ -465,7 +465,7 @@
                                         <td colspan="3" style="background-color: #EBEBEB; padding: 2px; white-space: nowrap;">UCOT Business Resource Code</td>
                                     </tr>
                                     <tr data-ng-if="showUCOT" data-ng-repeat="item in tableData | filter: { Deleted: false, NewLaborType: false } track by item.BOELaborTypeID">
-                                        <td data-ng-if="item.RateType === ManageTaskModel.RateTypeHours && item.UcotHours > 0" colspan="3" title="{{item.BusinessResourceCodeName}}"><span>{{ item.BusinessResourceCodeName}}</span></td>
+                                        <td data-ng-if="item.RateType === ManageTaskModel.RateTypeHours && item.UcotHours != 0" colspan="3" title="{{item.BusinessResourceCodeName}}"><span>{{ item.BusinessResourceCodeName}}</span></td>
                                     </tr>
                                     <tr id="LaborSpreadHeaderDividerRow" class="subheader">
                                         <td colspan="{{IsBRCEnabled ? 3 : 2}}" style="background-color: #EBEBEB; line-height: 2px; padding: 0px;">&nbsp;</td>
@@ -520,7 +520,7 @@
                                     <tr data-ng-if="showUCOT" class="subheader" colspan="2" style="background-color: #EBEBEB;">
                                         <td colspan="{{model.SpreadDatesFull.length}}" style="border: 0;padding: 2px">&nbsp;</td>
                                     </tr>
-                                    <tr data-ng-if="showUCOT && item.UcotHours > 0" data-ng-repeat="item in tableData | filter: { Deleted: false, NewLaborType: false, RateType: ManageTaskModel.RateTypeHours } track by item.BOELaborTypeID">
+                                    <tr data-ng-if="showUCOT && item.UcotHours != 0" data-ng-repeat="item in tableData | filter: { Deleted: false, NewLaborType: false, RateType: ManageTaskModel.RateTypeHours } track by item.BOELaborTypeID">
                                         <td data-ng-repeat="dt in model.SpreadDatesFull" date="{{dt}}">{{getUcotSpreadMonthText(item, dt)}}</td>
                                     </tr>
                                     <tr id="LaborSpreadDataDividerRow">
@@ -636,7 +636,7 @@
                     </div>
 
                     <!-- Common Disclosure Skill Mix Table -->
-                    <div class="form-label" data-ng-show="IsBRCEnabled">
+                    <div class="form-label" data-ng-show="IsCommonDisclosureEnabled">
                         LM Enterprise Skill Mix Table
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                             {  %>
@@ -647,7 +647,7 @@
                                     <div class="help-icon" data-ng-click="openHelp('RMSLMEnterpriseSkillMixTable');"></div>
                         <%  }  %>
                     </div>
-                    <div class="SkillMixTable skillMixTable" data-ng-show="IsBRCEnabled">
+                    <div class="SkillMixTable skillMixTable" data-ng-show="IsCommonDisclosureEnabled">
                         <table name="currentSkillMix" class="grid editable">
                             <thead>
                                 <tr>

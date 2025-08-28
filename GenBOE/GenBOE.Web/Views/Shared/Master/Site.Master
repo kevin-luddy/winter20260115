@@ -43,22 +43,22 @@
         var piwikTracker3;
     window.piwikAsyncInit = function () {
 	    try {
-            var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 25);                       //<!-- BusApps Rollup -->
+            var piwikTracker = Piwik.getTracker(pkBaseURL + "matomo.php", 25);                       //<!-- BusApps Rollup -->
 		    piwikTracker.setDocumentTitle(document.domain + "/" + document.title);
 		    piwikTracker.trackPageView();
 		    piwikTracker.enableLinkTracking();
 
-		    var piwikTracker1 = Piwik.getTracker(pkBaseURL + "piwik.php", 91);           //<!-- Space Rollup -->
+		    var piwikTracker1 = Piwik.getTracker(pkBaseURL + "matomo.php", 91);           //<!-- Space Rollup -->
 		    piwikTracker1.setDocumentTitle(document.domain + "/" + document.title);
 		    piwikTracker1.trackPageView();
 		    piwikTracker1.enableLinkTracking();
 
-		    var piwikTracker2 = Piwik.getTracker(pkBaseURL + "piwik.php", 94);           //<!-- Space Business Systems -->
+		    var piwikTracker2 = Piwik.getTracker(pkBaseURL + "matomo.php", 94);           //<!-- Space Business Systems -->
 		    piwikTracker2.setDocumentTitle(document.domain + "/" + document.title);
 		    piwikTracker2.trackPageView();
 		    piwikTracker2.enableLinkTracking();
 
-		    piwikTracker3 = Piwik.getTracker(pkBaseURL + "piwik.php", <%:Utilities.PiwikId()%>);          //<!-- BOE  -->
+		    piwikTracker3 = Piwik.getTracker(pkBaseURL + "matomo.php", <%:Utilities.PiwikId()%>);          //<!-- BOE  -->
             // Track each user's visit
             piwikTracker3.setUserId('<%:IES.Common.Utilities.CurrentUser()%>');
             piwikTracker3.setDocumentTitle(document.domain + "/" + document.title);
@@ -70,14 +70,14 @@
     };
     </script>
     <noscript>
-	    <p><img src="<%:Utilities.PiwikUrl()%>piwik.php?idsite=25" style="border:0" alt="Piwik"></p>
-	    <p><img src="<%:Utilities.PiwikUrl()%>piwik.php?idsite=91" style="border:0" alt="Piwik"></p>
-	    <p><img src="<%:Utilities.PiwikUrl()%>piwik.php?idsite=94" style="border:0" alt="Piwik"></p>
-	    <p><img src="<%:Utilities.PiwikUrl()%>piwik.php?idsite=<%:Utilities.PiwikId()%>" style="border:0" alt="Piwik"></p>
+	    <p><img src="<%:Utilities.PiwikUrl()%>matomo.php?idsite=25" style="border:0" alt="Piwik"></p>
+	    <p><img src="<%:Utilities.PiwikUrl()%>matomo.php?idsite=91" style="border:0" alt="Piwik"></p>
+	    <p><img src="<%:Utilities.PiwikUrl()%>matomo.php?idsite=94" style="border:0" alt="Piwik"></p>
+	    <p><img src="<%:Utilities.PiwikUrl()%>matomo.php?idsite=<%:Utilities.PiwikId()%>" style="border:0" alt="Piwik"></p>
     </noscript>
     <script type="text/javascript">
         var pkBaseURL = "<%:Utilities.PiwikUrl()%>";
-        document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+        document.write(unescape("%3Cscript src='" + pkBaseURL + "matomo.js' type='text/javascript'%3E%3C/script%3E"));
     </script>
     <!-- End Piwik Statistics Code -->
     <% } %>

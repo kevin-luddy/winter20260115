@@ -243,7 +243,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 					ICollection<string> errorMessages = new List<string>();
 					errorMessages = ActionLogicUtility.ValidateSkillMixTable(task.SkillMixTable, true);
 
-					if (Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
+					if (Utilities.IsBRCEnabledForWorkspace(ws.Shortname) && task.EndDate >= Utilities.OneLmxStartDate)
 					{
 						errorMessages.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(task.CommonDisclosureTable, true, task.taskElementLabors.Any()));
 					}

@@ -196,7 +196,7 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <returns>filestream</returns>
 		[System.Web.Http.HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public HttpResponseMessage ExportWBSs([FromBody] ExportWBSModelView exportWBSModelView)
+		public HttpResponseMessage ExportWBSs([FromBody] ExportFileModelView exportWBSModelView)
 		{
 			try
 			{
@@ -245,7 +245,7 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <returns>filestream</returns>
 		[System.Web.Http.HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public HttpResponseMessage ExportWBSTemplate([FromBody] ExportWBSModelView exportWBSModelView)
+		public HttpResponseMessage ExportWBSTemplate([FromBody] ExportFileModelView exportWBSModelView)
 		{
 			try
 			{
