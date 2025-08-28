@@ -79,7 +79,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private readonly ITokenService tokenService;
         private readonly Logger logger = new Logger(typeof(BOEControllerLogic));
 		private readonly BOEReportsHttpService boeReportsHttpService = new BOEReportsHttpService();
-		private readonly BoeApproverResponseDTODataLoader _BoeApproverResponseLoader;
 		private readonly ITravelDTODataLoader _TravelDTOLoader;
 		private readonly IMaterialDTODataLoader _MaterialLoader;
 		private readonly IWbsDTODataLoader wbsLoader;
@@ -2467,18 +2466,32 @@ namespace GenBOE.ActionLogic.ControllerLogic
             theModelView.BoeResults = this.GetManageBOEGridData(workspace, workspace.Boes);
         }
 
+		/// <summary>
+		/// Saves a BOE(s) from the Manage BOE page.  There are also many side affects that occur with this save.
+		/// </summary>
+		/// <param name="boes">List of Boes to be saved</param>
+		/// <param name="modelState">Model state</param>
+		/// <param name="ws">Full Workspace</param>
+		/// <returns>ManageBOEModelView</returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <exception cref="GenValidationException"></exception>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-		public void SaveManageBOE(Collection<ManageBOEModelView> boes, FullWorkspace ws)
+		public ManageBOEModelView SaveManageBOE(Collection<ManageBOEModelView> boes, ModelStateDictionary modelState,FullWorkspace ws)
 		{
 			if (boes == null)
 			{
 				throw new ArgumentNullException(nameof(boes));
 			}
+			if (modelState == null)
+			{
+				throw new ArgumentNullException(nameof(modelState));
+			}
 			if (ws == null)
 			{
 				throw new ArgumentNullException(nameof(ws));
 			}
+
 			// we're gonna need the original unmodified boes and clins for later processing so grab them now
 			// we need to make sure to NOT modify the elements in these collections
 			ICollection<FullBoe> originalUnmodifiedBOEs = ws.Boes.ToList().DeepClone();
@@ -2538,10 +2551,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			//----------------------------------------------------------------------------------------------
 			bool requestIsADelete = boes.Any(b => b.Deleted);
 
-			if (boes.Count(b => b.Deleted) == 0)
+			if (!modelState.IsValid && boes.Count(b => b.Deleted) == 0)
 			{
-				//ValidationErrors = Utilities.CreateModelStateValidationErrorList(modelState);
-				ValidationErrors.Add(new ValidationMessage("Something Errors"));
+				ValidationErrors = Utilities.CreateModelStateValidationErrorList(modelState);
 			}
 			else
 			{
@@ -2553,7 +2565,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 											   select mv.BoeID).Distinct().ToCollection();
 
 				// get all approver responses at one time
-				ICollection<BoeApproverResponseDTO> allApproverResponses = this._BoeApproverResponseLoader.GetByBoeIds(allMVboeIds);
+				ICollection<BoeApproverResponseDTO> allApproverResponses = this.boeApproverResponseLoader.GetByBoeIds(allMVboeIds);
 
 				// check state validation before worrying about committing to the database but only if NOT a delete
 				if (!requestIsADelete)
@@ -3049,7 +3061,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					BoeApproverResponseDTO[] boeApproversToSave = boeApproverResponsesToPotentiallySave.Where(x => x.BoeID > 0 && x.Updateable != UpdateType.None).ToArray();
 					if (boeApproversToSave.Any())
 					{
-						this._BoeApproverResponseLoader.Save(new Collection<BoeApproverResponseDTO>(boeApproversToSave));
+						this.boeApproverResponseLoader.Save(new Collection<BoeApproverResponseDTO>(boeApproversToSave));
 					}
 
 					foreach (BOEStateTransition transition in transitionsToPerform)
@@ -3093,7 +3105,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 								boeapprover.BoeID = boeSaveIDDict[boeapprover.BoeID];
 							}
 
-							this._BoeApproverResponseLoader.Save(new Collection<BoeApproverResponseDTO>(boeApproversToSave));
+							this.boeApproverResponseLoader.Save(new Collection<BoeApproverResponseDTO>(boeApproversToSave));
 
 							// Need to see if we need to create a WS level role for the user (if the permissions are being granted via a group)
 							Collection<PermissionsDTO> wsPermissions = this.PermissionsLoader.GetBOEPotentialPermissionsForWorkspace(ws.Id);
@@ -3372,15 +3384,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				#endregion
 
-				if (singleEditMV == null)
+				if (singleEditMV != null)
 				{
-					// Returning a status of true forces the entire BOE grid to be reloaded.
-					//toReturn = this.Json(new { Status = true });
-				}
-				else
-				{
-					// Returning a single model view allows the ui to just update that one BOE entry on the grid rather than forcing a 
-					// reload of the entire BOE grid.
 					// Get the boe
 					int boeToGetID = boeSaveIDDict != null && boeSaveIDDict.ContainsKey(singleEditMV.BoeID) ? boeSaveIDDict[singleEditMV.BoeID] : singleEditMV.BoeID;
 
@@ -3388,9 +3393,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 					// populate the MV
 					singleEditMV = GetManageBOEGridData(ws, new List<FullBoe>() { boe }).First();
-
-					//toReturn = this.Json(singleEditMV);
 				}
+
+				return singleEditMV;
 
 				#endregion
 			}
@@ -3398,6 +3403,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			{
 				throw new GenValidationException(ValidationErrors);
 			}
+
 		}
 
         /// <summary>

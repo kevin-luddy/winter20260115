@@ -18,6 +18,7 @@ namespace GenBOE.Web.Controllers.Backend
 	using GenBOE.Web.ModelView;
 	using IES.Common;
 	using IES.Common.classes;
+	using IES.Common.Exceptions;
 	using IES.Common.PickList;
 	using System;
 	using System.Collections.Generic;
@@ -179,7 +180,7 @@ namespace GenBOE.Web.Controllers.Backend
 
 				theModelView.ManageBoeHeaderInfo = boeControllerLogic.GetCompanySpecificManageBoeHeaderInfo;
 				theModelView.WorkspaceState = ws.WorkspaceState;
-				theModelView.AllowBOEStateChanges = (CheckPermission(SecurityPage.EditBoeLockedState, ws, null) == SecurityAuthorization.CreateReadUpdateDelete);
+				theModelView.AllowBOEStateChanges = CheckPermission(SecurityPage.EditBoeLockedState, ws, null) == SecurityAuthorization.CreateReadUpdateDelete;
 				result.Data = theModelView;
 				result.IsSuccessful = true;
 
@@ -195,9 +196,16 @@ namespace GenBOE.Web.Controllers.Backend
 			return result;
 		}
 
+		/// <summary>
+		/// Saves a BOE(s) from the Manage BOE page.
+		/// </summary>
+		/// <param name="workspace">Workspace name.</param>
+		/// <param name="boes">List of BOEs to be saved.</param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
 		[System.Web.Http.HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESSingleResponse<ManageBOEGridWidgetModelView>SaveManageBOE(string workspace, [FromBody] Collection<ManageBOEModelView> boes)
+		public IESSingleResponse<ManageBOEModelView> SaveManageBOE(string workspace, [FromBody] Collection<ManageBOEModelView> boes)
 		{
 			if (boes == null)
 			{
@@ -205,27 +213,31 @@ namespace GenBOE.Web.Controllers.Backend
 			}
 
 
-			IESSingleResponse<ManageBOEGridWidgetModelView> result = new IESSingleResponse<ManageBOEGridWidgetModelView>();
+			IESSingleResponse<ManageBOEModelView> result = new IESSingleResponse<ManageBOEModelView>();
 
 			try
 			{
 				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
 
+				ModelStateDictionary modelState = new ModelStateDictionary();
+
 				// Initialize Action
 				Stopwatch sw = this.InitializeAction(logger, WebConstants.ACTION_SAVE_MANAGE_BOE, SecurityPage.ManageBOEs, SecurityAuthorization.CreateReadUpdateDelete, new Collection<WorkspaceDTO>() { ws }, null);
 
-				boeControllerLogic.SaveManageBOE(boes, ws);
+				result.Data = boeControllerLogic.SaveManageBOE(boes, modelState, ws);;
+				result.IsSuccessful = true;
 
 
 				// Finalize Action
 				this.FinalizeAction(logger, WebConstants.ACTION_SAVE_MANAGE_BOE, sw);
 
 			}
-			catch (Exception ex)
+			catch (GenValidationException ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown error occurred saving BOE data: {ex.Message}");
+				result.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
+
 			return result;
 		}
 	}
