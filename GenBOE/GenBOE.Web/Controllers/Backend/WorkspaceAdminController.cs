@@ -26,7 +26,6 @@ namespace GenBOE.Web.Controllers.Backend
 	using System.Diagnostics;
 	using System.Linq;
 	using System.Web.Http;
-	using System.Web.Mvc;
 
 	/// <summary>
 	/// Workspace Admin Controller
@@ -76,7 +75,7 @@ namespace GenBOE.Web.Controllers.Backend
 		/// </summary>
 		/// <param name="workspaceShortName"></param>
 		/// <returns></returns>
-		[System.Web.Http.HttpGet]
+		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<ManageCLINGridModelView> GetManageCLINs(string workspaceShortName)
 		{
@@ -122,7 +121,7 @@ namespace GenBOE.Web.Controllers.Backend
         /// </summary>
         /// <param name="workspaceShortName"> the workspace shortname</param>
         /// <returns>The MV for the Manage WBS grid</returns>
-        [System.Web.Http.HttpGet]
+        [HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<ManageWBSGridModelView> GetManageWBS(string workspaceShortName)
 		{
@@ -159,7 +158,7 @@ namespace GenBOE.Web.Controllers.Backend
 		/// </summary>
 		/// <param name="workspaceShortName"> the workspace shortname</param>
 		/// <returns>The MV for the Manage WBS grid</returns>
-		[System.Web.Http.HttpGet]
+		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<ManageBOEGridWidgetModelView> GetManageBOE(string workspaceShortName)
 		{
@@ -203,7 +202,7 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <param name="boes">List of BOEs to be saved.</param>
 		/// <returns></returns>
 		/// <exception cref="ArgumentNullException"></exception>
-		[System.Web.Http.HttpPost]
+		[HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<ManageBOEModelView> SaveManageBOE(string workspace, [FromBody] Collection<ManageBOEModelView> boes)
 		{
@@ -219,7 +218,7 @@ namespace GenBOE.Web.Controllers.Backend
 			{
 				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
 
-				ModelStateDictionary modelState = new ModelStateDictionary();
+				System.Web.Mvc.ModelStateDictionary modelState = new System.Web.Mvc.ModelStateDictionary();
 
 				// Initialize Action
 				Stopwatch sw = this.InitializeAction(logger, WebConstants.ACTION_SAVE_MANAGE_BOE, SecurityPage.ManageBOEs, SecurityAuthorization.CreateReadUpdateDelete, new Collection<WorkspaceDTO>() { ws }, null);
