@@ -32,13 +32,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
-	using System.ComponentModel;
 	using System.Globalization;
 	using System.Linq;
 	using System.Threading.Tasks;
 	using System.Transactions;
 	using System.Web.Configuration;
-	using System.Web.Management;
 	using static IES.Common.Constants;
 
 	public abstract class WorkspaceControllerLogic : IWorkspaceControllerLogic

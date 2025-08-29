@@ -382,7 +382,7 @@
 						var hasPA = pa.length > 0;
 
 						if ($scope.model.IsPLDIntegrated && !hasPA) {
-							Session.confirmDialog("PLD Tracking Number", "A PLD Tracking Number was not set, are you sure you want to continue?",
+							Session.confirmDialog("PA Number", "A PA Number was not set, are you sure you want to continue?",
 								function () { $scope.$apply(function () { $scope.setStepSpecificElements(3); }) },
 								null
 							);
