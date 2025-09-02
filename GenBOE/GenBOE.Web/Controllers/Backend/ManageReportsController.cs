@@ -236,51 +236,5 @@ namespace GenBOE.Web.Controllers
 
 			return result;
 		}
-
-		/// <summary>
-		/// Get BOE Status Report
-		/// Utilizes new Model that holds some of the key values needed for rendering correct table/grid/component
-		/// </summary>
-		/// <param name="workspaceShortname">Workspace Shortname</param>
-		/// <returns>BOE Status Report as a ModelView</returns>
-		[HttpGet]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
-		public IESSingleResponse<FullBOEStatusReportModelView> GetBOEStatusReport(string workspaceShortname)
-		{
-			IESSingleResponse<FullBOEStatusReportModelView> result = new IESSingleResponse<FullBOEStatusReportModelView>();
-			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortname);
-
-			// Start Stopwatch to measure performance
-			Stopwatch sw = InitializeAction(logger, WebConstants.GET_BOE_STATUS_REPORT, SecurityPage.Reports, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, null);
-
-			try
-			{
-				BOETaskUtility.GetBOEAndTaskDataForWorkspace(ws, out List<FullBoe> boes, out List<BoeTaskElementDTO> tasks);
-				BOEExportInputs exportInputs = new BOEExportInputs(boes, boes, tasks, ws);
-				Collection<BOEStatusReportModelView> reports = this.boeStatusReport.GenerateBOEStatusReport(exportInputs);
-
-				result.Data = new FullBOEStatusReportModelView
-				{
-					AllClins = ws.Clins.ToCollection(),
-					AllWbs = ws.WbsElements.ToCollection(),
-					HoursLabel = FullObjectHelper.HoursLabel(ws),
-					IsUCOTEnabledForWorkspace = Utilities.ShowUCOTForWorkspace(ws.CreationDate, workspaceShortname),
-					BOEStatusReports = reports,
-				};
-
-				result.IsSuccessful = true;
-			}
-			catch (Exception ex)
-			{
-				logger.Error(ex);
-				result.Messages.Add(ex.Message);
-			}
-
-			// Finalize Action
-			FinalizeAction(logger, WebConstants.GET_BOE_STATUS_REPORT, sw);
-
-			return result;
-		}
 	}
 }
