@@ -50,12 +50,17 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		private IValidateBOE validateBOE { get; set; }
 
+		/// <summary>
+		/// BOE Status Report Logic
+		/// </summary>
+		private IBOEStatusReport boeStatusReport { get; set; }
+
 
 		/// <summary>
 		/// ctor
 		/// </summary>
 		public ManageReportsController(ISecurityAccess inSecurityAccess, IReportsControllerLogic reportsControllerLogic, IValidateBOE validateBOE,
-			IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader)
+			IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEStatusReport boeStatusReport)
 			: base(inSecurityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.reportsControllerLogic = reportsControllerLogic;
