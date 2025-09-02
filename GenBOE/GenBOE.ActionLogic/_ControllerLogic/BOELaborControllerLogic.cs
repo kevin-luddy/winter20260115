@@ -845,6 +845,17 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							validationErrors.Add(new ValidationMessage(fieldPrefix + "HourSpread", "Hours spread is required."));
 						}
 					}
+					else if (labor.HourSpread.HasValue && labor.HourSpread == 0m)
+					{
+						if (isUsingEP)
+						{
+							validationErrors.Add(new ValidationMessage(fieldPrefix + "HourSpread", "EP spread cannot be zero."));
+						}
+						else
+						{
+							validationErrors.Add(new ValidationMessage(fieldPrefix + "HourSpread", "Hours spread cannot be zero."));
+						}
+					}
 
 					if (labor.RateType == RateType.Cost && !labor.CostSpread.HasValue)
 					{
