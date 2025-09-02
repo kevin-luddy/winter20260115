@@ -214,11 +214,12 @@
 					{
 						ICollection<string> legacyLinkedResourceIds = refreshedModel.SkillMixRows.Where(r => r.ResourceNew == resourceName && r.Included).Select(l => l.ResourceOld).ToList();
 						decimal realHistoricalHours = resourceHours.Where(r => legacyLinkedResourceIds.Contains(r.ResourceName)).Sum(l => l.TotalHours);
-						decimal brcHistoricalHours = 0m;
+						decimal brcHistoricalHours = 1m;
 						if (totalHoursBRCs != 0)
 						{
 							brcHistoricalHours = refreshedRow.ProposedHours / totalHoursBRCs;
 						}
+						
 						refreshedRow.HistoricalHours = realHistoricalHours * brcHistoricalHours;
 					}
 
@@ -752,9 +753,8 @@
 				{
 					if (!distinctCurrentResources.Add(row.ResourceNew))
 					{
-						// Duplicate found - Set proposed hours to 0 and included to false
+						// Duplicate found - Set proposed hours to 0
 						row.ProposedHours = 0;
-						row.Included = false;
 					}
 				}
 			}
