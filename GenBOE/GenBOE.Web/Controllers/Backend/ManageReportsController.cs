@@ -17,7 +17,6 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.ActionLogic._ModelView.Backend;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ControllerLogic;
-	using GenBOE.ActionLogic.IESSAPClient;
 	using GenBOE.ActionLogic.IO.Export;
 	using GenBOE.ActionLogic.ModelView.Backend;
 	using GenBOE.ActionLogic.Reporting;
@@ -50,22 +49,14 @@ namespace GenBOE.Web.Controllers
 		private IValidateBOE validateBOE { get; set; }
 
 		/// <summary>
-		/// BOE Controller Logic
-		/// </summary>
-		private IBOEStatusReport boeStatusReport { get; set; }
-
-		/// <summary>
 		/// ctor
 		/// </summary>
 		public ManageReportsController(ISecurityAccess inSecurityAccess, IReportsControllerLogic reportsControllerLogic, IValidateBOE validateBOE,
-			IBOEStatusReport boeStatusReport,
 			IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader)
 			: base(inSecurityAccess, factory, userLoader, permissionsLoader)
 		{
-			//this.UserLoader = userLoader;
 			this.reportsControllerLogic = reportsControllerLogic;
 			this.validateBOE = validateBOE;
-			this.boeStatusReport = boeStatusReport;
 		}
 
 		/// <summary>
@@ -278,10 +269,6 @@ namespace GenBOE.Web.Controllers
 					Content = new StringContent("unknown error exporting BOE Discrepancy")
 				};
 			}
-
-
-
-
 		}
 	}
 }
