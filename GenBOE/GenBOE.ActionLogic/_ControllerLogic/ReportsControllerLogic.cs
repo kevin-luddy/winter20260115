@@ -9,6 +9,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.IO;
 	using System.Linq;
 	using System.Threading.Tasks;
 	using System.Web;
@@ -429,6 +430,18 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 
 			return theModelViews;
+		}
+
+		/// <summary>
+		/// Generates the BOE Discrepancy Report for genBOE Angular
+		/// </summary>
+		/// <param name="workspaceShortName">workspace shortname</param>
+		/// <param name="boeDiscrepancyData">BOE Discrepancy Data</param>
+		/// <returns>Memory stream of excel sheet</returns>
+		public MemoryStream ExportBOEDiscrepancyReport(string workspaceShortname, ICollection<BoeDiscrepancyReportModelView> boeDiscrepancyReportData)
+		{
+			MemoryStream ms = BOEDiscrepancyExporter.ExportBOEDiscrepancyToExcelFile(workspaceShortname, boeDiscrepancyReportData);
+			return ms;
 		}
 
 		/// <summary>

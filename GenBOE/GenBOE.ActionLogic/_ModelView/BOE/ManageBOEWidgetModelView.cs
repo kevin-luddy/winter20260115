@@ -59,5 +59,10 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// Gets or sets a value indicating whether [contains oci].
         /// </summary>
         public bool ContainsOCI { get; set; }
+
+		/// <summary>
+		/// Is Task Author enabled for the system and workspace?
+		/// </summary>
+		public bool EnableTaskAuthor { get; set; }
     }
 }

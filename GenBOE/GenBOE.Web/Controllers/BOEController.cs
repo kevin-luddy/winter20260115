@@ -165,6 +165,7 @@ namespace GenBOE.Web.Controllers
 					x.ElementOfCostId == (int)ElementOfCostType.Sub ||
 					x.ElementOfCostId == (int)ElementOfCostType.Travel).ToList();
 			ViewData["EnableSAP"] = Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate);
+			this.ViewData["IsSkillMixFeatureEnabled"] = Utilities.IsSkillMixEnabledForSystem;
 			this.ViewData["IsSkillMixEnabled"] = Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.Shortname);
 			this.ViewData["IsUCOTEnabled"] = Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.Shortname);
 
@@ -855,6 +856,7 @@ namespace GenBOE.Web.Controllers
 			theModelView.ManageBoeHeaderInfo = _ControllerLogic.GetCompanySpecificManageBoeHeaderInfo;
 			theModelView.WorkspaceState = ws.WorkspaceState;
 			theModelView.AllowBOEStateChanges = (CheckPermissions(SecurityPage.EditBoeLockedState, ws, null) == SecurityAuthorization.CreateReadUpdateDelete);
+			theModelView.EnableTaskAuthor = Utilities.IsAssignTaskAuthorEnabledForSystem && ws.EnableAssignTaskAuthor;
 
 			// Finalize Action
 			FinalizeAction(_log, WebConstants.ACTION_GET_MANAGE_BOE_MODEL, sw);

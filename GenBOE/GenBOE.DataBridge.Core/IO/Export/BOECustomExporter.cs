@@ -2378,6 +2378,15 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQTypeContainer);
 			}
 
+			if (CommonUtilities.IsAssignTaskAuthorEnabledForSystem && exportInputs.Workspace.EnableAssignTaskAuthor && selectedComponents.Contains(BoeCustomReportComponent.TaskAuthor))
+			{
+				laborTaskHeaderDataValueMappings.Add(BOEExporterConstants.FieldName_TaskAuthor, laborTaskElement.BOETaskAuthor);
+			}
+			else
+			{
+				WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.Container_TaskAuthor);
+			}
+
 			if (selectedComponents.Contains(BoeCustomReportComponent.TaskMOQEquation))
 			{
 				string moqEquationForDisplay = GetMOQEquationToDisplay(laborTaskElement, exportInputs);
@@ -4546,6 +4555,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				BOEExportTaskElement boeExportTaskElement = new BOEExportTaskElement();
 				boeExportTaskElement.BoeID = boeTaskElement.BoeID;
 				boeExportTaskElement.BOETaskDesc = BOEExportConverter.GetRteOverride(boeTaskElement.BoeID, boeTaskElement.Id, boeTaskElement.Description, RteTemplateSource.TaskDescription, exportInputs.RTETemplatesOverrides);
+				boeExportTaskElement.BOETaskAuthor = boeTaskElement.AuthorDisplayName;
 				boeExportTaskElement.BOETaskElementID = boeTaskElement.Id;
 				boeExportTaskElement.BOETaskID = boeTaskElement.BOETaskID;
 				boeExportTaskElement.EndDate = boeTaskElement.EndDate;

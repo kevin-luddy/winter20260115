@@ -39,14 +39,21 @@
             WorkSpaceShortNameURL: window.location.protocol + '//' + window.location.host + '/' + 'default/' +
                 '<%= WebConstants.CONTROLLER_WORKSPACE %>' + '/' + '<%:WebConstants.ACTION_IS_WORKSPACE_SHORT_NAME_AVAILABLE %>',
             TrackingNumber: '<%= Request.QueryString["TrackingNumber"]%>',
+            PLDPANumber: '<%= Request.QueryString["PLDPANumber"]%>',
             IsPTMIntegrated: <%= Utilities.IsPTMIntegrated.ToString().ToLower()%>,
+            IsPLDIntegrated: <%= Utilities.ShowPLDIsIntegrated.ToString().ToLower()%>,
             IsAdmin: <%= Model.IsAdmin.ToString().ToLower()%>,
             PtmTrackingNumberNotRequired: <%= Model.PtmTrackingNumberNotRequired.ToString().ToLower() %>,
             GetNextTrackingNumberRevisionAction: '<%= WebConstants.ACTION_GET_NEXT_TRACKING_NUMBER_REVISION%>',
             IsSAPConnectionEnabled: <%: Model.IsSAPConnectionEnabled.ToString().ToLower() %>,
 			EnableAssignTaskAuthor: <%: Model.IsAuthorAssignableAtTaskLevelEnabled.ToString().ToLower() %>,
-			IsAssignTaskAuthorEnabled: <%: Model.IsAssignTaskAuthorEnabled.ToString().ToLower() %>
+            IsAssignTaskAuthorEnabled: <%: Model.IsAssignTaskAuthorEnabled.ToString().ToLower() %>,
+            SearchPLDProposals: '<%= WebConstants.ACTION_SEARCH_PLD_PROPOSALS %>',
+            GetProposalDetails: '<%= WebConstants.ACTION_GET_PROPOSAL_DETAILS %>',
+            GetNextWorkspaceShortNameFromTrackingNumber: '<%= WebConstants.ACTION_GET_NEXT_WORKSPACE_SHORTNAME_FROM_TRACKING_NUMBER %>'
+
         });
+        
 
         var CreateWorkspace = new Widget("CreateWorkspaceForm");
 
@@ -70,7 +77,7 @@
 
             
         });
-	</script>
+    </script>
 
     <div data-ng-app="genboe" data-ng-controller="createWorkspaceController" id="CreateWorkspaceContent">
         <div class="module create-workspace-form">

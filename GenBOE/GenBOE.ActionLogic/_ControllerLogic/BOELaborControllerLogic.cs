@@ -292,21 +292,20 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			if (ucotSpreadItem.IsValid())
 			{
 				IDictionary<DateTime, decimal> smoothedUCOTSpreads = UCOTUtility.GetUcotSpreads(workspaceData.CreationDate, workspaceData.Shortname, workspaceData.DecimalPrecision, workspaceData.UCOTFactor, ucotSpreadItem.spreads.Select(x => x.ToBoeLaborSpread((int)ucotSpreadItem.rateType)).ToList(), ucotSpreadItem.ElementOfCost.Value, workspaceData.MoqTypeSelections.ToList(), ucotSpreadItem.boeTaskElementId, ucotSpreadItem.rateType.Value);
+				
+				// Clear out existing ucot spreads and add them as new
 				ucotSpreadItem.ucotHours = 0m;
+				ucotSpreadItem.ucotSpreads = new List<LaborSpreadDataModelView>();
 
-				foreach (LaborSpreadDataModelView item in ucotSpreadItem.ucotSpreads)
+				foreach (KeyValuePair<DateTime, decimal> item in smoothedUCOTSpreads)
 				{
-					DateTime convertedDate = DateTime.Parse(item.LaborSpreadDate).Normalize();
+					ucotSpreadItem.ucotSpreads.Add(new LaborSpreadDataModelView()
+					{
+						LaborSpreadDate = item.Key.ToMonthString(),
+						LaborSpreadValue = item.Value
+					});
 
-					if (smoothedUCOTSpreads.TryGetValue(convertedDate, out decimal spreadVal))
-					{
-						item.LaborSpreadValue = spreadVal;
-					}
-					else
-					{
-						item.LaborSpreadValue = 0;
-					}
-					ucotSpreadItem.ucotHours += item.LaborSpreadValue;
+					ucotSpreadItem.ucotHours += item.Value;
 				}
 			}
 			else
@@ -1004,7 +1003,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						validationErrors.Add(new ValidationMessage(string.Format("Total Historical Hours in {0} Skill Mix Table do not match the sum of the Total Relevant Hours.", skillMixTableName)));
 					}
 
-					if (taskElement.CommonDisclosureTable != null && Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
+					if (taskElement.CommonDisclosureTable != null && Utilities.IsBRCEnabledForWorkspace(ws.Shortname) && taskElement.EndDate >= Utilities.OneLmxStartDate)
 					{
 						// Check the Common Disclosure table totals
 						historicalHoursTotals = taskElement.CommonDisclosureTable.Sum(c => c.HistoricalHours);
@@ -1722,8 +1721,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				{
 					decimal nonPrecisionUCOT = dto.LaborSpreadValue * ucotFactor / 100.0m;
 					sumUCOT += nonPrecisionUCOT;
-					decimal precisionUCOT = Utilities.AdjustPrecision(nonPrecisionUCOT, precision);
-
+					decimal precisionUCOT = Math.Abs(Utilities.AdjustPrecision(nonPrecisionUCOT, precision));
+				
 					ucotSpreadsToReturn.Add(new LaborSpreadDataModelView()
 					{
 						LaborSpreadDate = dto.LaborSpreadDate.ToMonthString(),
@@ -1736,8 +1735,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			if (calculateUCOT && ucotSpreadsToReturn.Any())
 			{
-				decimal totalUCOTPrecision = Utilities.AdjustPrecision(sumUCOT, precision);
+				decimal totalUCOTPrecision = Math.Abs(Utilities.AdjustPrecision(sumUCOT, precision));
 				decimal[] ucotSpreadValues = SpreadCurve.Smooth(totalUCOTPrecision, ucotSpreadsToReturn.Select(s => s.LaborSpreadValue ?? 0m).ToArray(), 0, ucotSpreadsToReturn.Count, precision);
+
+				if (sumUCOT < 0)
+				{
+					// if UCOT is negative, then change the sign
+					ucotSpreadValues = SpreadCurve.ChangeSign(ucotSpreadValues, 0, ucotSpreadValues.Length);
+				}
 
 				// Reset the values to the Smooth'ed array to guarantee precision and no loss of rounding values
 				for (int i = 0; i < ucotSpreadsToReturn.Count; i++)

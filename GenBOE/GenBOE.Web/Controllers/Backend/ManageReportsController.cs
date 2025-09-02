@@ -10,11 +10,15 @@ namespace GenBOE.Web.Controllers
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Diagnostics;
+	using System.IO;
+	using System.Net.Http;
+	using System.Net.Http.Headers;
 	using System.Web.Http;
 	using GenBOE.ActionLogic._ModelView.Backend;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ControllerLogic;
-	using GenBOE.ActionLogic.IO.Export.BOE;
+	using GenBOE.ActionLogic.IESSAPClient;
+	using GenBOE.ActionLogic.IO.Export;
 	using GenBOE.ActionLogic.ModelView.Backend;
 	using GenBOE.ActionLogic.Reporting;
 	using GenBOE.ActionLogic.WBS.BOE;
@@ -22,6 +26,7 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
+	using GenBOE.Web.ModelView;
 	using IES.Common;
 
 	/// <summary>
@@ -29,11 +34,6 @@ namespace GenBOE.Web.Controllers
 	/// </summary>
 	public class ManageReportsController : BoeDataBaseAPIController
 	{
-		/// <summary>
-		/// Service for PermissionsController
-		/// </summary>
-		//private IGenBOEControllerLogic inControllerLogic { get; set; }
-
 		/// <summary>
 		/// Logger
 		/// </summary>
@@ -235,6 +235,53 @@ namespace GenBOE.Web.Controllers
 			FinalizeAction(logger, WebConstants.GET_VALIDATE_ALL_BOES_REPORT, sw);
 
 			return result;
+		}
+
+		/// <summary>
+		/// Export BOE Discrepancy Report
+		/// </summary>
+		/// <param name="workspace">workspace shortname</param>
+		/// <returns>filestream</returns>
+		[HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
+		public HttpResponseMessage ExportBOEDiscrepancyReport([FromBody] ExportFileModelView exportBOEDiscrepancyReportModelView)
+		{
+			if (exportBOEDiscrepancyReportModelView == null)
+			{
+				throw new ArgumentNullException(nameof(exportBOEDiscrepancyReportModelView));
+			}
+
+			try
+			{
+				FullWorkspace ws = this.Factory.CreateFullWorkspace(exportBOEDiscrepancyReportModelView.workspaceShortName);
+				Stopwatch sw = this.InitializeAction(this.logger, WebConstants.ACTION_EXPORT_BOE_DISCREPANCY, SecurityPage.Reports, SecurityAuthorization.Read, new Collection<WorkspaceDTO>() { ws }, null);
+
+				ICollection<BoeDiscrepancyReportModelView> theModelViews = reportsControllerLogic.GenerateDataForBoeDiscrepancyReport(ws, true);
+				MemoryStream ms = reportsControllerLogic.ExportBOEDiscrepancyReport(ws.Shortname, theModelViews);
+
+				HttpResponseMessage response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+				response.Content = new StreamContent(ms);
+				response.Content.Headers.ContentType = new MediaTypeHeaderValue(BOEExporterConstants.ContentType_XLSX);
+				response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
+				response.Content.Headers.ContentDisposition.FileName = "BOEDiscrepancyReport.xlsx";
+
+				FinalizeAction(logger, WebConstants.ACTION_EXPORT_BOE_DISCREPANCY, sw);
+
+				return response;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
+				{
+					Content = new StringContent("unknown error exporting BOE Discrepancy")
+				};
+			}
+
+
+
+
 		}
 	}
 }

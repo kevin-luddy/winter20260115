@@ -5,6 +5,8 @@
 	$scope.errors = [];
 	$scope.identificationPageSetup = false; // Has the identification page been setup yet.  Used to make sure the setup code is only run once when Step 3 is shown to user.
 
+
+
 	// model houses the labels, dropdowns, etc for page setup
 	$scope.model = {
 		stepTitle: '',                      // Current Step Title for the page
@@ -34,6 +36,7 @@
 			WorkspaceName: ''
 		}, // json object
 		isPTMIntegrated: CreateWorkspaceModelView.IsPTMIntegrated && CreateWorkspaceModelView.IsSSC,    // SSC only
+		IsPLDIntegrated: CreateWorkspaceModelView.IsPLDIntegrated && !CreateWorkspaceModelView.IsSSC,
 		ptmTrackingNumber: '',                      // SSC only
 		selectedPtmTrackingNumber: '',              // SSC only
 		isAdmin: CreateWorkspaceModelView.IsAdmin,  // SSC only
@@ -42,10 +45,127 @@
 		isSAPConfigurationEnabled: CreateWorkspaceModelView.IsSAPConnectionEnabled,   // This value will be grabbed from Web.config
 		isAssignTaskAuthorEnabled: CreateWorkspaceModelView.IsAssignTaskAuthorEnabled,
 		updatePreviousWorkspace: false,         // Space only
-		openCurrentDialog: false                // Space only
+		openCurrentDialog: false,                // Space only
+		LineOfBusiness: '',		
+		resolveLobIdFromPLD: '',
+		lobIdLookup: '',
+		buildLobIdLookup: ''
 	};
 
-	// data houses the data being saved and sent to the back-end
+
+
+	$scope.model = $scope.model || {};
+	$scope.model.pldSearchTerm = '';
+	$scope.model.PLD_PANumber = '';
+	$scope.model.PLD_PATitle = ''; 
+	$scope.isFromSelection = false;
+
+	$scope.getSantizedUrl = function () {
+		if ($scope.model.IsPLDIntegrated) {
+			const base = ($scope.model.applicationUrl || '').trim();
+			const pa = ($scope.model.PLD_PANumber || '').trim()
+			return base + pa;
+		} else {
+			return ($scope.model.applicationUrl || '').trim();
+		}
+	}
+
+	$scope.tryParsePLDSelection = function () {
+		var text = $scope.model.pldSearchTerm;
+
+		if (!text || text.trim().length === 0) {			
+			return;
+		}
+
+		var cleanedText = text.trim();
+		var parts = cleanedText.split(" - ");
+
+		if (parts.length < 2) {		
+			return;
+		}
+
+		$scope.model.PLD_PANumber = parts[0].trim();
+		$scope.model.PLD_PATitle = parts.slice(1).join(' - ').trim();
+		$scope.model.selectedPtmTrackingNumber = $scope.model.TrackingNumber;
+		$scope.data.TrackingNumber = $scope.model.PLD_PANumber;
+		$scope.data.ProposalTitle = $scope.model.PLD_PATitle;
+
+	};
+
+	$scope.filteredPLDPANumbers = [];
+	let debounceTimer;
+
+	$scope.handleDropdownSelection = function () {
+		$scope.isFromSelection = true;
+		$scope.tryParsePLDSelection();
+	}
+	
+
+	$scope.$watch('model.pldSearchTerm',
+		function (newVal, oldVal) {
+
+			if (!newVal || newVal === oldVal) {
+				return;
+			}
+		
+			const match = $scope.filteredPLDPANumbers.find(x => x.Text.trim().toLowerCase() === newVal.trim().toLowerCase());
+			if (match) {
+				$scope.tryParsePLDSelection();
+				return;
+			}
+		
+			if ($scope.isFromSelection) {
+				$scope.isFromSelection = false;
+				return; 
+			}
+
+			if (!newVal || newVal.length < 2) { 
+				$scope.filteredPLDPANumbers = [];
+				return;
+			}
+
+			clearTimeout(debounceTimer);
+
+		
+			debounceTimer = setTimeout(function () {
+
+				var searchPLDProposals = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.SearchPLDProposals);
+
+				$http({
+					method: 'GET',
+					url: searchPLDProposals,
+					params: { term: newVal }
+				})
+					.then(function (res) {
+						$scope.filteredPLDPANumbers = Array.isArray(res.data) ? res.data : [];
+					})
+					.catch(function (err) {
+						$scope.filteredPLDPANumbers = [];
+					})
+									
+
+			}, 300);  
+			
+	});
+
+	
+
+	function parseDotNetDate(dotNetDate) {
+			
+		if (!dotNetDate || typeof dotNetDate !== 'string')
+			return 'N/A';
+
+		var timestamp = parseInt(dotNetDate.match(/\d+/)[0], 10);
+		if (isNaN(timestamp)) return 'N/A';
+
+		var date = new Date(timestamp);
+		var yyyy = date.getFullYear();
+		var mm = String(date.getMonth() + 1).padStart(2, '0');
+		
+		return `${mm}/${yyyy}`;
+		
+	}
+
 	$scope.data = {};
 
 	$scope.resetData = function () {
@@ -113,6 +233,68 @@
 	};
 
 	$scope.setStepSpecificElements = function (newStep) {
+
+
+		if ($scope.model.IsPLDIntegrated) {
+			$scope.data.TrackingNumber = $scope.model.PLD_PANumber;
+			$scope.data.ProposalTitle = $scope.model.PLD_PATitle;
+		}
+
+
+		if ($scope.model.IsPLDIntegrated && newStep === 5) {
+
+			$scope.data.WorkspaceName = $scope.data.nextRevision + " " + $scope.data.WorkspaceName;
+			$scope.data.Shortname = $scope.data.nextRevision;
+
+		}
+
+
+
+		if ($scope.model.IsPLDIntegrated && newStep === 3) {
+			
+
+			var getProposalDetails = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetProposalDetails);
+
+			$http({
+				method: 'GET',
+				url: getProposalDetails,
+				params: { paNumber: $scope.data.TrackingNumber }
+			})
+				.then(function (res) {
+					const data = res.data;
+					console.log('data', data);
+					const lobName = data.Line_of_Business;
+
+					$scope.model.LineOfBusiness = lobName;
+					$scope.model.LineOfBusinessID = data.Line_of_Business_ID;
+					$scope.data.LineOfBusiness = lobName;
+					$scope.data.LineOfBusinessID = data.Line_of_Business_ID;
+					$scope.model.ContractStartDate = parseDotNetDate(data.Project_Start_Date);
+					$scope.model.ContractEndDate = parseDotNetDate(data.Project_End_Date);
+					$scope.data.ContractStartDate = $scope.model.ContractStartDate;
+					$scope.data.ContractEndDate = $scope.model.ContractEndDate;
+				})
+
+			
+
+			var getNextWorkspaceShortNameFromTrackingNumber = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetNextWorkspaceShortNameFromTrackingNumber);
+
+			$http({
+				method: 'GET',
+				url: getNextWorkspaceShortNameFromTrackingNumber,
+				params: { paNumber: $scope.data.TrackingNumber }
+			})
+				.then(function (res) {
+					const data = res.data;
+
+					$scope.model.nextRevision = data.ShortName;
+					$scope.data.nextRevision = $scope.model.nextRevision;
+				})
+				
+
+		}
+		
+
 		$scope.step = newStep;
 		switch ($scope.step) {
 			case 1:
@@ -174,7 +356,9 @@
 	};
 
 	$scope.next = function () {
+		
 		if (!$scope.nextButtonDisabled()) {
+			
 			$scope.errors = [];
 			$('#urlValidationBox').html('');
 			switch ($scope.step) {
@@ -619,8 +803,11 @@
 		$('#urlValidationBox').html('');
 		$scope.model.showButtonLoader = true;
 
+		
+
 		if ($scope.model.UpdatePreviousWorkspace) {
 			var postURL = GenSession.CreatePostURL($scope.model.workspaceToCopy.ShortName, CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.UpdateCurrentWorkspaceIdentification);
+						
 
 			$http({
 				method: 'POST',
@@ -644,6 +831,7 @@
 		
 		// create the workspace
 		var createUrl = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.CreateWorkspaceAction);
+		
 		$http({
 			method: 'POST',
 			url: createUrl,

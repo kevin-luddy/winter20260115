@@ -118,7 +118,7 @@ namespace GenBOE.ActionLogic.Misc
 					{
 						// Get UCOT Total
 						decimal ucotTotal = spreadsToApplyUcot.Sum(x => x.Value) * (ucotFactor / 100m);
-						ucotTotal = Utilities.AdjustPrecision(ucotTotal, decimalPrecision);
+						decimal absUcotTotal = Math.Abs(Utilities.AdjustPrecision(ucotTotal, decimalPrecision));
 
 						// Calculate UCOT values for spreads
 						IDictionary<DateTime, decimal> ucotSpreads = new Dictionary<DateTime, decimal>();
@@ -128,7 +128,13 @@ namespace GenBOE.ActionLogic.Misc
 						}
 
 						// Get smoothed curve values
-						decimal[] smoothedSpreadValues = SpreadCurve.Smooth(ucotTotal, ucotSpreads.Select(x => x.Value).ToArray(), 0, ucotSpreads.Count, decimalPrecision);
+						decimal[] smoothedSpreadValues = SpreadCurve.Smooth(absUcotTotal, ucotSpreads.Select(x => x.Value).ToArray(), 0, ucotSpreads.Count, decimalPrecision);
+
+						if (ucotTotal < 0)
+						{
+							// if UCOT is negative, then change the sign
+							smoothedSpreadValues = SpreadCurve.ChangeSign(smoothedSpreadValues, 0, smoothedSpreadValues.Length);
+						}
 
 						// Add the smoothed values to the dictionary to apply to spreads later
 						for (int i = 0; i < ucotSpreads.Count; i++)

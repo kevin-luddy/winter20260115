@@ -45,6 +45,7 @@ namespace GenBOE
 	using GenBOE.DataBridge.Reference;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
+	using GenBOE.PLD.Models;
 	using GenBOE.Web;
 	using GenBOE.Web.Common;
 	using GenTRAC.DataBridge.DTO;
@@ -429,7 +430,23 @@ namespace GenBOE
 			GenBOEUnityContainer.Container.RegisterType(typeof(IMSTTravelNonzoneFeesAndCostsDTODataLoader), typeof(MSTTravelNonzoneFeesAndCostsDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IMSTTravelNonzoneFeesAndCostsDTODataLoader>(new InterfaceInterceptor());
 			GenBOEUnityContainer.Container.RegisterType(typeof(IProjectMapSpreadLoader), typeof(ProjectMapSpreadLoader), GetLifetimeManager(), new InjectionMember[] { });
 			GenBOEUnityContainer.Container.RegisterType(typeof(IProjectMapDataLoader), typeof(ProjectMapDataLoader), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IProjectMapSpreadLoader))));
-			GenBOEUnityContainer.Container.RegisterType(typeof(GenTRAC.DataBridge.DTO.IProposalLoader), typeof(GenTRAC.DataBridge.DTO.ProposalLoader), this.GetLifetimeManager(), new InjectionConstructor()).Configure<Interception>().SetInterceptorFor<GenTRAC.DataBridge.DTO.IProposalLoader>(new InterfaceInterceptor());
+			GenBOEUnityContainer.Container.RegisterType(typeof(GenTRAC.DataBridge.DTO.IProposalLoader), 
+				typeof(GenTRAC.DataBridge.DTO.ProposalLoader), 
+				this.GetLifetimeManager(), 
+				new InjectionConstructor())
+				.Configure<Interception>()
+				.SetInterceptorFor<GenTRAC.DataBridge.DTO.IProposalLoader>(new InterfaceInterceptor());
+			
+			GenBOEUnityContainer.Container.RegisterType<PldDBContext>(new HierarchicalLifetimeManager());
+			
+			GenBOEUnityContainer.Container.RegisterType(typeof(GenBOE.DataBridge.DTO.IPldDTODataLoader),
+				typeof(GenBOE.DataBridge.DTO.PldDTODataLoader),
+				this.GetLifetimeManager(),
+				new InjectionConstructor())
+				.Configure<Interception>()
+				.SetInterceptorFor<GenBOE.DataBridge.DTO.IPldDTODataLoader>(new InterfaceInterceptor());
+			
+		
 			GenBOEUnityContainer.Container.RegisterType(typeof(IRequestDataLoader), typeof(RequestDataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IRequestDataLoader>(new InterfaceInterceptor());
 
 
