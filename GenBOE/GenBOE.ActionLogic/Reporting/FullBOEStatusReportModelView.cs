@@ -26,8 +26,14 @@ namespace GenBOE.ActionLogic.Reporting
 			BOEStatusReports = new List<BOEStatusReportModelView>();
 		}
 
+		/// <summary>
+		/// All WBS 
+		/// </summary>
 		public ICollection<FullWbs> AllWbs { get; set; }
 
+		/// <summary>
+		/// All CLINs
+		/// </summary>
 		public ICollection<FullClin> AllClins { get; set; }
 
 		/// <summary>
