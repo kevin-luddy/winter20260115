@@ -155,7 +155,7 @@ namespace GenBOE.Web.Controllers
 						{
 							parentStart = dateShiftable.Parent.StartDate;
 							parentEnd = dateShiftable.Parent.EndDate;
-							parentLevel = Level.CLIN;
+							parentLevel = dateShiftable.Parent.DateShiftLevel;
 						}
 
 						break;

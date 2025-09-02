@@ -105,6 +105,9 @@ namespace GenBOE.Web.Controllers
 		private BoePickListMapper boePickListMapper;
 		private CommentsAndResponsesExporter _commentsAndResponsesExporter = null;
 		private BOECommentsControllerLogic _boeCommentsControllerLogic = null;
+		private readonly GenBOE.DataBridge.DTO.IPldDTODataLoader _pldDTODataLoader;
+		private readonly DataBridge.DTO.LineOfBusinessDataLoader _lineOfBusinessDataLoader;
+
 
 		/// <summary>
 		/// Workspace Exporter
@@ -198,6 +201,8 @@ namespace GenBOE.Web.Controllers
 			IOffloadRatesDTOLoader offloadRatesDTOLoader,
 			IRetriever retriever,
 			GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader,
+			GenBOE.DataBridge.DTO.IPldDTODataLoader pldDTODataLoader,
+			DataBridge.DTO.LineOfBusinessDataLoader lineOfBusinessDataLoader,
 			GenTRAC.DataBridge.Common.Security.ISecurityMapper ptmSecurityMapper,
 			BoePickListMapper boePickListMapper,
 			WorkspaceExporter workspaceExporter,
@@ -251,6 +256,7 @@ namespace GenBOE.Web.Controllers
 			this.offloadRatesDTOLoader = offloadRatesDTOLoader;
 			this.retriever = retriever;
 			this.proposalLoader = proposalLoader;
+			_pldDTODataLoader = pldDTODataLoader;
 			this.ptmSecurityMapper = ptmSecurityMapper;
 			this.boePickListMapper = boePickListMapper;
 			this.workspaceExporter = workspaceExporter;
@@ -260,6 +266,7 @@ namespace GenBOE.Web.Controllers
 			_commentsAndResponsesExporter = commentsAndResponsesExporter;
 			_boeCommentsControllerLogic = boeCommentsControllerLogic;
 			_workspaceSettingsControllerLogic = workspaceSettingsControllerLogic;
+			_lineOfBusinessDataLoader = lineOfBusinessDataLoader;
 		}
 
 		#region Public Methods
@@ -775,7 +782,7 @@ namespace GenBOE.Web.Controllers
 				// retrieve valid tracking numbers for the current user
 				IReadOnlyCollection<GenTRAC.DataBridge.Common.Security.SecurityPermissionsResponse> roles = this.ptmSecurityMapper.GetRolesForLoggedInUser();
 				bool isAdmin = roles.Any(r => r.AuthorizedRole == PtmRole.Admin);
-
+				
 				ICollection<ProposalDto> proposals = (isAdmin ? this.proposalLoader.GetAllSlim() : this.proposalLoader.GetProposalsByUser(this._securityInformation.ActiveUserNTID, true))
 																	.Where(p => !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.NoBid && p.ProposalStatus != ProposalStatus.Revised).ToList();
 
@@ -790,9 +797,10 @@ namespace GenBOE.Web.Controllers
 			}
 
 			model.TrackingNumbers = trackingNumbers;
-
+			
 			IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(this._securityInformation.ActiveUserNTID);
 			model.IsAdmin = permissions.Any(p => p.AuthorizedRole == Role.SystemAdmin);
+			
 			model.PtmTrackingNumberNotRequired = string.IsNullOrEmpty(ConfigurationUtilities.GetAppSetting("CanCreateWorkspaceWithoutPtmTrackingNumber")) ?
 				false :
 				_securityInformation.IsMemberOfADGroupInAppSettingsList(this._securityInformation.ActiveUserNTID, "CanCreateWorkspaceWithoutPtmTrackingNumber");
@@ -805,6 +813,88 @@ namespace GenBOE.Web.Controllers
 			FinalizeAction(_log, "CreateWorkspace", sw);
 			return toReturn;
 		}
+
+		/// <summary>
+		///  Returns Top 50 PLD proposals for the RMS search for pa numbers and pa titles
+		/// </summary>
+		/// <param name="term"></param>
+		/// <returns></returns>
+		public JsonResult SearchPLDProposals(string term)
+		{
+			Stopwatch sw = InitializeAction(_log, "GetProposalDetails", SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
+
+			ICollection<ProposalDTO> matches = _pldDTODataLoader.GetTopProposals(term);
+
+			var results = matches.Select(p => new
+			{
+				Text = p.PA_Number + " - " + p.PA_Title,
+				Value = p.PA_Number
+			});
+
+			FinalizeAction(_log, "GetProposalDetails", sw);
+
+			return Json(results, JsonRequestBehavior.AllowGet);
+				
+		}
+
+
+		/// <summary>
+		///  Get Proposal Detail by paNumber 
+		/// </summary>
+		/// <param name="paNumber"></param>
+		/// <returns></returns>
+		public JsonResult GetProposalDetails(string paNumber)
+		{
+						
+			Stopwatch sw = InitializeAction(_log, "GetProposalDetails", SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
+
+			ProposalDTO result = _pldDTODataLoader.GetProposalDetails(paNumber);
+
+			if (result != null)
+			{
+				ICollection<PickListDto> pickList = _lineOfBusinessDataLoader.GetPickListValues();
+
+				string resolvedLob = LineOfBusinessHelper.Resolve(result.Line_of_Business, pickList);
+				result.Line_of_Business = resolvedLob;
+
+				PickListDto match = pickList.FirstOrDefault(p => string.Equals(p.Text.Trim(), resolvedLob.Trim(), StringComparison.OrdinalIgnoreCase));
+
+				if (match != null)
+				{
+					result.Line_of_Business_ID = match.Id;
+				}
+
+
+			}
+
+			FinalizeAction(_log, "GetProposalDetails", sw);
+
+			return Json(result, JsonRequestBehavior.AllowGet);
+		}
+			
+
+		/// <summary>
+		/// Get Short Name Workspace from Tracking Number  PLD 
+		/// </summary>
+		/// <param name="paNumber"></param>
+		/// <returns></returns>
+		public JsonResult GetNextWorkspaceShortNameFromTrackingNumber(string paNumber)
+		{
+			Stopwatch sw = InitializeAction(_log, "GetProposalDetails", SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
+			
+			ICollection<WorkspaceDTO> workspaces  = this.workspaceLoader.GetAllWsNamesForTrackingNumber(paNumber)
+				.ToList() ?? new List<WorkspaceDTO>();
+
+			Dictionary<string, object> payload = _ControllerLogic.NextTrackingNumber(workspaces, paNumber);
+
+			FinalizeAction(_log, "GetProposalDetails", sw);
+
+			return Json(payload, JsonRequestBehavior.AllowGet);
+			
+		}
+
+
+
 
 		#endregion Views
 
@@ -4754,6 +4844,11 @@ namespace GenBOE.Web.Controllers
 					newWorkspaceDTO.CurrentPTMWorkspace = newWorkspace.CurrentPTMWorkspace;
 					newWorkspaceDTO.EnableAssignTaskAuthor = newWorkspace.EnableAssignTaskAuthor;
 
+					if (Utilities.ShowPLDIsIntegrated)
+					{
+						newWorkspaceDTO.ProposalTitle = newWorkspace.ProposalTitle;
+					}
+
 					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 					{
 						newWorkspaceDTO.ProposalTitle = newWorkspace.ProposalTitle;
@@ -6823,5 +6918,38 @@ namespace GenBOE.Web.Controllers
 	public class SelectListItemWithTitle : SelectListItem
 	{
 		public string Title { get; set; }
+	}
+
+
+	public static class LineOfBusinessHelper
+	{
+		private static readonly Dictionary<string, string> _aliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+			{
+				{ "sac", "Sikorsky" },
+				{ "iwss", "Integrated Warfare Systems and Sensors" },
+				{ "tls", "Training and Logistics Solutions" },
+				{ "new ventures", "new ventures"},
+				{ "c6isr", "c6isr" },
+				{ "cyber ships and advanced technologies", "Cyber, Ships & Advanced Technologies" },
+				{ "cyber, ships & advanced technologies","cyber, ships & advanced technologies" }
+			};
+
+		public static string Resolve(string raw, IEnumerable<PickListDto> pickList)
+		{
+			if (string.IsNullOrWhiteSpace(raw))
+			{
+				return raw;
+			}
+						
+			if (_aliases.TryGetValue(raw.Trim(), out string mapped))
+			{
+				raw = mapped;
+			}
+						
+			PickListDto match = pickList.FirstOrDefault(p =>
+				string.Equals(p.Text, raw, StringComparison.OrdinalIgnoreCase));
+
+			return match?.Text ?? raw;
+		}
 	}
 }

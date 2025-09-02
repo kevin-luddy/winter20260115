@@ -18,11 +18,11 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.ActionLogic._ModelView.Backend;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ControllerLogic;
-	using GenBOE.ActionLogic.IESSAPClient;
 	using GenBOE.ActionLogic.IO.Export;
 	using GenBOE.ActionLogic.IO.Export.BOE;
 	using GenBOE.ActionLogic.ModelView.Backend;
 	using GenBOE.ActionLogic.Reporting;
+	using GenBOE.ActionLogic.WBS.BOE;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
@@ -46,19 +46,20 @@ namespace GenBOE.Web.Controllers
 		private IReportsControllerLogic reportsControllerLogic { get; set; }
 
 		/// <summary>
-		/// BOE Status Report
+		/// Validate BOE Controller Logic
 		/// </summary>
-		private IBOEStatusReport boeStatusReport { get; set; }
+		private IValidateBOE validateBOE { get; set; }
 
 
 		/// <summary>
 		/// ctor
 		/// </summary>
-		public ManageReportsController(ISecurityAccess inSecurityAccess, IReportsControllerLogic reportsControllerLogic,
-			IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEStatusReport boeStatusReport)
+		public ManageReportsController(ISecurityAccess inSecurityAccess, IReportsControllerLogic reportsControllerLogic, IValidateBOE validateBOE,
+			IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader)
 			: base(inSecurityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.reportsControllerLogic = reportsControllerLogic;
+			this.validateBOE = validateBOE;
 			this.boeStatusReport = boeStatusReport;
 		}
 
@@ -75,6 +76,9 @@ namespace GenBOE.Web.Controllers
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			IESSingleResponse<ExportReportViewModel> result = new IESSingleResponse<ExportReportViewModel>();
 
+			// Start Stopwatch to measure performance
+			Stopwatch sw = InitializeAction(logger, WebConstants.GET_EXPORTS, SecurityPage.Reports, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, null);
+
 			try
 			{
 				ExportReportViewModel reportView = reportsControllerLogic.GetDisplayExports(ws);
@@ -86,6 +90,9 @@ namespace GenBOE.Web.Controllers
 				logger.Error(ex);
 				result.Messages.Add(ex.Message);
 			}
+
+			// Finalize Action
+			FinalizeAction(logger, WebConstants.GET_EXPORTS, sw);
 
 			return result;
 		}
@@ -103,6 +110,9 @@ namespace GenBOE.Web.Controllers
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			IESResponse<GeneralReportViewModel> result = new IESResponse<GeneralReportViewModel>();
 
+			// Start Stopwatch to measure performance
+			Stopwatch sw = InitializeAction(logger, WebConstants.GET_GENERAL_REPORT, SecurityPage.Reports, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, null);
+
 			try
 			{
 				ICollection<GeneralReportViewModel> theModelViews = reportsControllerLogic.GetDisplayGeneralReports(ws);
@@ -114,6 +124,9 @@ namespace GenBOE.Web.Controllers
 				logger.Error(ex);
 				result.Messages.Add(ex.Message);
 			}
+
+			// Finalize Action
+			FinalizeAction(logger, WebConstants.GET_GENERAL_REPORT, sw);
 
 			return result;
 		}
@@ -189,6 +202,9 @@ namespace GenBOE.Web.Controllers
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			IESResponse<BoeDiscrepancyReportModelView> result = new IESResponse<BoeDiscrepancyReportModelView>();
 
+			// Start Stopwatch to measure performance
+			Stopwatch sw = InitializeAction(logger, WebConstants.GET_BOE_DISCREPANCY_REPORT, SecurityPage.Reports, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, null);
+
 			try
 			{
 				Stopwatch sw = this.InitializeAction(this.logger, WebConstants.ACTION_DISPLAY_BOE_DISCREPANCY, SecurityPage.Reports, SecurityAuthorization.Read, new Collection<WorkspaceDTO>() { ws }, null);
@@ -204,6 +220,9 @@ namespace GenBOE.Web.Controllers
 				result.Messages.Add(ex.Message);
 			}
 
+			// Finalize Action
+			FinalizeAction(logger, WebConstants.GET_BOE_DISCREPANCY_REPORT, sw);
+
 			return result;
 		}
 
@@ -218,10 +237,13 @@ namespace GenBOE.Web.Controllers
 		public IESSingleResponse<string> GetReportHoursLabel(string workspace)
 		{
 			IESSingleResponse<string> result = new IESSingleResponse<string>();
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			// Start Stopwatch to measure performance
+			Stopwatch sw = InitializeAction(logger, WebConstants.GET_BOE_DISCREPANCY_REPORT_HOURS_LABEL, SecurityPage.Reports, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, null);
 
 			try
 			{
-				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 				string hoursLabel = FullObjectHelper.HoursLabel(ws);
 				result.Data = hoursLabel;
 				result.IsSuccessful = true;
@@ -231,6 +253,42 @@ namespace GenBOE.Web.Controllers
 				logger.Error(ex);
 				result.Messages.Add(ex.Message);
 			}
+
+			// Finalize Action
+			FinalizeAction(logger, WebConstants.GET_BOE_DISCREPANCY_REPORT_HOURS_LABEL, sw);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get Validate All BOEs Report
+		/// </summary>
+		/// <param name="workspaceShortname">Workspace Shortname</param>
+		/// <returns>Validate All BOEs Report as a ModelView</returns>
+		[HttpGet]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
+		public IESSingleResponse<ValidationAllBOEModelView> GetValidateAllBOEsReport(string workspaceShortname)
+		{
+			IESSingleResponse<ValidationAllBOEModelView> result = new IESSingleResponse<ValidationAllBOEModelView>();
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortname);
+
+			// Start Stopwatch to measure performance
+			Stopwatch sw = InitializeAction(logger, WebConstants.GET_VALIDATE_ALL_BOES_REPORT, SecurityPage.Reports, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, null);
+
+			try
+			{
+				result.Data = validateBOE.ValidateAllBOEs(ws);
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add(ex.Message);
+			}
+
+			// Finalize Action
+			FinalizeAction(logger, WebConstants.GET_VALIDATE_ALL_BOES_REPORT, sw);
 
 			return result;
 		}

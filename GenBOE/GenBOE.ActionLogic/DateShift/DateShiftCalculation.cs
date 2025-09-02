@@ -180,7 +180,7 @@ namespace GenBOE.ActionLogic.DateShift
 							bool isManual = !fullWorkspace.EnableSAPConnection || !allAutomaticMOQTypes;
 
 							RefreshSkillMixModelView response = SkillMixUtility.RefreshSkillMixTables(resourceHours,
-								laborTasks.LaborTypesData, task.SkillMixTable, task.CommonDisclosureTable, isBRCEnabled, isManual);
+								laborTasks.LaborTypesData, task.SkillMixTable, task.CommonDisclosureTable, isBRCEnabled, isManual, task.EndDate);
 
 							if (response != null)
 							{
@@ -439,7 +439,7 @@ namespace GenBOE.ActionLogic.DateShift
 			if (dateShiftDTO.StartDate.HasValue && dateShiftDTO.EndDate.HasValue)
 			{
 				// Check for negative duration
-				if (dateShiftDTO.EndDate < dateShiftDTO.StartDate)
+				if (dateShiftDTO.EndDate.Normalize() < dateShiftDTO.StartDate.Normalize())
 				{
 					if (detail.Error1FixSingleMonth == true)
 					{
@@ -462,7 +462,7 @@ namespace GenBOE.ActionLogic.DateShift
 					DateTime? shiftedStartDate = null;
 					DateTime? shiftedEndDate = null;
 
-					if (dateShiftDTO.StartDate < parentStart)
+					if (dateShiftDTO.StartDate.Normalize() < parentStart.Normalize())
 					{
 						if (detail.Error2Handling.HasValue)
 						{
@@ -479,7 +479,7 @@ namespace GenBOE.ActionLogic.DateShift
 									dateShiftDTO.StartDate = parentStart;
 									shiftedStartDate = parentStart.Value;
 
-									if (dateShiftDTO.EndDate < parentStart)
+									if (dateShiftDTO.EndDate.Normalize() < parentStart.Normalize())
 									{
 										dateShiftDTO.EndDate = parentStart;
 										shiftedEndDate = parentStart.Value;
@@ -488,7 +488,7 @@ namespace GenBOE.ActionLogic.DateShift
 								case ChildModificationType.ToEnd:
 									dateShiftDTO.EndDate = parentEnd;
 									shiftedEndDate = parentEnd.Value;
-									if (dateShiftDTO.StartDate > parentEnd)
+									if (dateShiftDTO.StartDate.Normalize() > parentEnd.Normalize())
 									{
 										dateShiftDTO.StartDate = parentEnd;
 										shiftedStartDate = parentEnd.Value;
@@ -512,7 +512,7 @@ namespace GenBOE.ActionLogic.DateShift
 						}
 					}
 
-					if (dateShiftDTO.EndDate > parentEnd)
+					if (dateShiftDTO.EndDate.Normalize() > parentEnd.Normalize())
 					{
 						if (detail.Error2Handling.HasValue)
 						{

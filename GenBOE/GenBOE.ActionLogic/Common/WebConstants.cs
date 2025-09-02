@@ -100,7 +100,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ROUTE_REPORT = "ReportRoute";
 		public static readonly string ROUTE_DEFAULT = "DefaultRoute";
 		public static readonly string ROUTE_BOE = "BoeRoute";
-		
+
 		#endregion URL Routing
 
 		public static readonly string BROWSER_REMINDER = "GenBOEBrowserReminder";
@@ -311,7 +311,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_DISPLAY_BOE_HEADER = "DisplayBOEHeader";
 		public static readonly string ACTION_DISPLAY_BOE_QUICK_SEARCH = "DisplayBOEQuickSearch";
 		public static readonly string ACTION_DISPLAY_BOE_SEARCH = "DisplayBOESearch";
-		public static readonly string ACTION_DISPLAY_PROJECTMAP_BOE_SEARCH = "DisplayProjectMapBOESearch"; 
+		public static readonly string ACTION_DISPLAY_PROJECTMAP_BOE_SEARCH = "DisplayProjectMapBOESearch";
 		public static readonly string ACTION_DISPLAY_BOE_SUBMIT_FOR_REVIEW = "DisplaySubmitForReviewBOEButton";
 		public static readonly string ACTION_DISPLAY_BOE_SUMMARY = "DisplayBOESummary";
 		public static readonly string ACTION_DISPLAY_BOE_VALIDATE = "DisplayValidateBOEButton";
@@ -365,7 +365,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_BOE_CONTAINS_SUM_OF_BOES = "BOEContainsSumOfBOEs";
 		public static readonly string ACTION_BOE_COPY_CONFLICTS = "DisplayCopyBOEConflicts";
 		public static readonly string ACTION_SAVE_COPY_OF_BOE = "SaveCopyOfBOE";
-		public static readonly string ACTION_SAVE_COPY_OF_PROJECTMAP = "SaveCopyOfProjectMap"; 
+		public static readonly string ACTION_SAVE_COPY_OF_PROJECTMAP = "SaveCopyOfProjectMap";
 		public static readonly string ACTION_COPY_MOQ_EQUATION = "CopyMoqEquation";
 		public static readonly string ACTION_DELETE_ALL_BOE_TASK_ELEMENTS = "DeleteAllBOETaskElements";
 		public static readonly string ACTION_SAVE_BULK_ROLE_ASSIGN = "SaveBoeBulkRoles";
@@ -373,7 +373,7 @@ namespace GenBOE.ActionLogic.Common
 		// BOEComments Controller
 		public static readonly string ACTION_DISPLAY_BOE_COMMENTS = "DisplayBOEComments";
 		public static readonly string ACTION_SAVE_BOE_COMMENTS = "SaveBoeComments";
-		
+
 		// BOEHistory Controller
 		public static readonly string ACTION_DISPLAY_BOE_HISTORY = "DisplayBOEHistory";
 
@@ -545,6 +545,17 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_WS_PROPRICER_EXPORT = "ProPricerExport";
 		public static readonly string ACTION_COPY_FORMAT_TO_SYSTEM_LEVEL = "CopyFormatToSystemLevel";
 
+		#region ManageReportsController
+
+		public static readonly string GET_BOE_STATUS_REPORT = "GetBOEStatusReport";
+		public static readonly string GET_VALIDATE_ALL_BOES_REPORT = "GetValidateAllBOEsReport";
+		public static readonly string GET_BOE_DISCREPANCY_REPORT_HOURS_LABEL = "GetBOEDiscrepancyReportHoursLabel";
+		public static readonly string GET_BOE_DISCREPANCY_REPORT = "GetBOEDiscrepancyReport";
+		public static readonly string GET_GENERAL_REPORT = "GetGeneralReport";
+		public static readonly string GET_EXPORTS = "GetExports";
+
+		#endregion ManageReportsController
+
 		#endregion Reports
 
 		#region SHARED
@@ -693,6 +704,12 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_GET_MANAGE_BOE_MODEL = "GetManageBOEGridModel";
 		public static readonly string ACTION_FIND_ADJACENT_BOES = "FindAdjacentBoes";
 		public static readonly string ACTION_GET_WORKSPACE_RECALCULATE_ACTUALS_MODEL = "GetWorkspaceRecalculateActualsModel";
+		public static readonly string ACTION_SEARCH_PLD_PROPOSALS = "SearchPLDProposals";
+		public static readonly string ACTION_GET_PROPOSAL_DETAILS = "GetProposalDetails";
+		public static readonly string ACTION_GET_NEXT_WORKSPACE_SHORTNAME_FROM_TRACKING_NUMBER = "GetNextWorkspaceShortNameFromTrackingNumber";
+
+
+
 
 		#endregion Workspace
 
@@ -734,7 +751,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string EVENT_DISPLAY_TRAVEL_ELEMENT_DETAILS = "DISPLAY_TRAVEL_ELEMENT_DETAILS";
 		public static readonly string EVENT_DISPLAY_ZONE_TRAVEL_ELEMENT_DETAILS = "DISPLAY_ZONE_TRAVEL_ELEMENT_DETAILS";
 		public static readonly string EVENT_DISPLAY_MATERIAL_ELEMENT_DETAILS = "DISPLAY_MATERIAL_ELEMENT_DETAILS";
-		
+
 		#endregion UI EVENTS
 
 		#region VIEWS
@@ -750,7 +767,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string VIEW_MANAGE_DEFAULT_RESOURCES = "ManageDefaultResources";
 		public static readonly string VIEW_MANAGE_DEFAULT_RESOURCES_GRID = "ManageDefaultResourcesGrid";
 		public static readonly string VIEW_MANAGE_BOE_FORMS = "ManageBOEForms";
-		public static readonly string VIEW_MANAGE_BOE_FORMS_GRID = "ManageBOEFormsGrid"; 
+		public static readonly string VIEW_MANAGE_BOE_FORMS_GRID = "ManageBOEFormsGrid";
 		public static readonly string VIEW_MANAGE_TRIPS = "ManageTripsForTravel";
 		public static readonly string VIEW_MANAGE_TRIPS_GRID = "ManageTripsForTravelGrid";
 		public static readonly string VIEW_MANAGE_TRIPS_IMPORT_VERIFICATION = "ManageTripsForTravelImportVerification";
@@ -837,12 +854,12 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string VIEW_ODC_TYPES_GRID = "ODCTypesGrid";
 		public static readonly string VIEW_ODC_SPREAD_GRID = "ODCSpreadGrid";
 		public static readonly string VIEW_ODC_SPREAD = "ODCSpread";
-		
+
 		public static readonly string VIEW_BOE_TRAVEL_GRID = "BOETravelGrid";
 		public static readonly string VIEW_TRAVEL_ELEMENT_DETAILS = "TravelElementDetails";
 		public static readonly string VIEW_TRAVEL_TRIPS = "TravelTrips";
 		public static readonly string VIEW_TRAVEL_TRIPS_GRID = "TravelTripsGrid";
-		
+
 		public static readonly string VIEW_BOE_ZONE_TRAVEL_GRID = "BOEZoneTravelGrid";
 		public static readonly string VIEW_ZONE_TRAVEL_ELEMENT_DETAILS = "ZoneTravelElementDetails";
 		public static readonly string VIEW_ZONE_TRAVEL_TRIPS = "ZoneTravelTrips";

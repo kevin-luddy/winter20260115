@@ -1173,6 +1173,10 @@
       <Project>{8b23113c-48a0-4f65-8ed5-0f725ac170e7}</Project>
       <Name>GenBOE.ActionLogic</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GenBOE.PLD.Models\GenBOE.PLD.Models.csproj">
+      <Project>{F2AB5FFC-459A-4BB1-9CB5-61B4C89C14A0}</Project>
+      <Name>GenBOE.PLD.Models</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GenTRAC.DataBridge\GenTRAC.DataBridge.csproj">
       <Project>{6ebd0376-9273-4a2a-9e23-1912418ddba5}</Project>
       <Name>GenTRAC.DataBridge</Name>

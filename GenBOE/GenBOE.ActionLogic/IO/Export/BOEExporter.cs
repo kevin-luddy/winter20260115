@@ -4830,7 +4830,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						}
 						else
 						{
-							element.RemoveIt();
+							WordUtilities.RemoveTaggedElement(taskContainer.TaskContainer, BOEExporterConstants.Container_TaskAuthor);
 						}
 					}
 					else if (sdtTitle == FieldName_TaskSegregation)
