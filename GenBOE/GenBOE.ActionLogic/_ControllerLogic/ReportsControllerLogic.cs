@@ -115,7 +115,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			this.commonDataMapper = inCommonDataMapper;
 			this.userLoader = inUserLoader;
 			this.permissionsLoader = inPermissionsLoader;
-			
+
 			this.cache = new MemoryCache();
 		}
 
@@ -140,14 +140,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="custom">Flag indicating whether the template file is based on the custom export template</param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "9")]
 		public void PrepareAllBOEsReport(FullWorkspace workspace, bool isSubcontractorUser, string summarizeByCustomField, ICollection<int> selectedBOEs,
-			ViewDataDictionary viewDataDictionary, out bool isCustomExport, out WorkspaceExportFormatDTO wsExportFormatDTO, out BOEExportInputs exportInputs, 
+			ViewDataDictionary viewDataDictionary, out bool isCustomExport, out WorkspaceExportFormatDTO wsExportFormatDTO, out BOEExportInputs exportInputs,
 			out ICollection<BOEExportModelView> boeExportModelViews, out List<BOESummaryGridModelView> boeSummaryGridModelViews, bool custom = false)
 		{
 			if (workspace == null)
 			{
 				throw new ArgumentNullException(nameof(workspace));
 			}
-			
+
 			// Pre-load the RTE data since this is faster than loading all objects in ResourcesUsedInWsBoes property, then later adding RTE data to each object.
 			workspace.LoadBoesAndTaskElementsRTEData();
 			workspace.LoadTravelRTEData();
@@ -374,7 +374,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			if (sortField == (int)ExportSortBOEBy.WBS)
 			{
 				theModelViewNoMulti = new List<BOEExportModelView>((from x in theModelView where x.IsMultiClinWbs == false orderby x.PaddedWbsName, x.PaddedClinName select x).ToList());
-				
+
 			}
 			else if (sortField == (int)ExportSortBOEBy.CLIN)
 			{
@@ -525,7 +525,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		public ICollection<SelectListItem> SummarizeByCustomFieldOptions(IReadOnlyCollection<CustomFieldDTO> customFields)
 		{
 			ICollection<SelectListItem> options = new Collection<SelectListItem>();
-				
+
 			if (customFields != null && customFields.Any(x => x.CustomFieldDisplayID == CustomFieldType.LaborTypeDisplay))
 			{
 				options.Add(new SelectListItem() { Value = BOEExporterConstants.SUMMARIZE_BY_NONE, Text = BOEExporterConstants.SUMMARIZE_BY_NONE, Selected = true });
@@ -561,13 +561,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			if (Utilities.IsPTMIntegrated)
 			{
-				int proposalID = string.IsNullOrEmpty(ws.TrackingNumber)? -1 : this.proposalLoader.GetIdByTrackingNumber(ws.TrackingNumber);
+				int proposalID = string.IsNullOrEmpty(ws.TrackingNumber) ? -1 : this.proposalLoader.GetIdByTrackingNumber(ws.TrackingNumber);
 				if (proposalID > 0)
 				{
 					ProposalDto proposal = this.proposalLoader.GetById(proposalID);
 					if (proposal != null)
 					{
-						if (this.workspaceControllerLogic.ConvertPTMLineOfBusiness(proposal.LineOfBusinessID) != 
+						if (this.workspaceControllerLogic.ConvertPTMLineOfBusiness(proposal.LineOfBusinessID) !=
 							ws.LineOfBusiness.Id)
 						{
 							toReturn.Add("Line of Business");
@@ -626,7 +626,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <returns>BOE Export Inputs</returns>
 		public BOEExportInputs GetExportInputsForStatusAndWbsReports(FullWorkspace ws)
 		{
-			if(ws == null)
+			if (ws == null)
 			{
 				throw new ArgumentNullException(nameof(ws));
 			}
@@ -663,7 +663,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 
 			ICollection<BoeWbsReportModelView> toReturn = new Collection<BoeWbsReportModelView>();
-			
+
 			// Get all BOEs in the Workspace
 			IReadOnlyCollection<BoeDTO> allBOEsInWorkspace = exportInputs.Boes;
 			HashSet<TripDTO> allTravelTrips = new HashSet<TripDTO>(exportInputs.TravelTrips);
@@ -729,7 +729,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			toReturn = toReturn.OrderBy(x => x.WBSNumber).ThenBy(x => x.BOETitle).ToCollection();
 
 			// Get totals
-			toReturn.Add(new BoeWbsReportModelView() {
+			toReturn.Add(new BoeWbsReportModelView()
+			{
 				BOETitle = CommonConstants.SET_AS_BOLD_FOR_EXCEL + "Totals",
 				TotalHours = toReturn.Sum(x => x.TotalHours),
 				TotalUCOTHours = toReturn.Sum(x => x.TotalUCOTHours),
@@ -750,14 +751,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <returns>Report filename</returns>
 		public string ExportWbsBoeReport(FullWorkspace ws, string fileLocation, ICollection<BoeWbsReportModelView> reportModelView, BOEExportInputs exportInputs)
 		{
-			if(ws == null)
+			if (ws == null)
 			{
 				throw new ArgumentNullException(nameof(ws));
 			}
 
 			string toReturn = string.Empty;
 
-			if(reportModelView.Any())
+			if (reportModelView.Any())
 			{
 				// Create rows for the export file
 				ExcelExportWorksheet worksheet = this.GetWbsBoeReportWorksheet(reportModelView, exportInputs);
@@ -784,7 +785,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			string hoursLabelUCOT = "Total UCOT " + FullObjectHelper.HoursLabel(exportInputs.Workspace);
 			string grandTotalHoursLabel = "Grand Total " + FullObjectHelper.HoursLabel(exportInputs.Workspace);
 			bool isUCOTEnabledForWorkspace = Utilities.ShowUCOTForWorkspace(exportInputs.FullWorkspace.CreationDate, exportInputs.FullWorkspace.Shortname);
-			
+
 			if (isUCOTEnabledForWorkspace)
 			{
 				// Add headers

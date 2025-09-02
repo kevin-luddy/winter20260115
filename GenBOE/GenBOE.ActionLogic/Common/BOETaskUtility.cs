@@ -197,5 +197,34 @@ namespace GenBOE.ActionLogic.Common
 
 			return false;
 		}
+
+		/// <summary>
+		/// Refractored Code from Reports Controller => DisplayBOEStatusReport
+		/// </summary>
+		/// <param name="ws">Full Workspace</param>
+		/// <param name="boes">Full BOEs</param>
+		/// <param name="tasks">Task Elements</param>
+		public static void GetBOEAndTaskDataForWorkspace(FullWorkspace ws, out List<FullBoe> boes, out List<BoeTaskElementDTO> tasks)
+		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
+
+			// Call the BL to generate the status report
+			// All BOEs for the workspace as a default
+			boes = ws.Boes.ToList();
+			tasks = ws.TaskElements.ToList();
+			bool isOffloading = ws.ProjectMapType != ProjectMapType.StandardWithoutOffload;
+			if (isOffloading)
+			{
+				OffloadLaborRates offloader = new OffloadLaborRates();
+				List<int> selectedBoeIds = boes.Select(b => b.Id).ToList();
+				OffloadLaborRatesResults results = offloader.OffloadWorkspace(boes.Where(b => selectedBoeIds.Contains(b.Id)).ToList(), ws);
+
+				boes = results.Boes.ToList();
+				tasks = boes.SelectMany(b => b.TaskElements).ToList();
+			}
+		}
 	}
 }
