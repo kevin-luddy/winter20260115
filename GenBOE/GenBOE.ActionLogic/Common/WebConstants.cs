@@ -913,7 +913,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string VIEW_CUSTOMER_REPORTS = "CustomerReports";
 		public static readonly string VIEW_FINANCE_REPORTS = "FinanceReports";
 		public static readonly string VIEW_ADDITIONAL_REPORTS = "AdditionalReports";
-		public static readonly string VIEW_BOE_STATUS_REPORT = "BOEStatusReportView";
+		public static readonly string VIEW_BOE_STATUS_REPORT = "BOEStatusReport";
 		public static readonly string VIEW_WORKSPACE_ACTIVITY_REPORT = "WorkspaceActivityReport";
 		public static readonly string VIEW_BOE_ACTIVITY_REPORT = "BOEActivityReport";
 		public static readonly string VIEW_EXPORT_TO_PROPRICER_INDEX = "ProPricerIndex";
