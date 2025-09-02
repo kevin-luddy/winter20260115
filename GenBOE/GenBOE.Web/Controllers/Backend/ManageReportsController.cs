@@ -148,32 +148,17 @@ namespace GenBOE.Web.Controllers
 		{
 			IESSingleResponse<BOEStatusReportView> result = new IESSingleResponse<BOEStatusReportView>();
 			BOEStatusReportView data = new BOEStatusReportView();
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+			Stopwatch sw = InitializeAction(logger, WebConstants.GET_BOE_STATUS_REPORT, SecurityPage.Reports, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, null);
 
 			try
 			{
-				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-				Stopwatch sw = this.InitializeAction(this.logger, WebConstants.ACTION_DISPLAY_BOE_STATUS_REPORT, SecurityPage.Reports, SecurityAuthorization.Read, new Collection<WorkspaceDTO>() { ws }, null);
-
 				// UCOT check (only need this because the totals are calculated
 				// but the variable for IsUCOTEnabledForWorkspace within the Workspace is not set properly.
 				// Force check here and pass into the Views
 				data.isUCOTEnabledForWorkspace = Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.Shortname);
 
-				// Call the BL to generate the status report
-				// All BOEs for the workspace as a default
-				List<FullBoe> boes = ws.Boes.ToList();
-				List<BoeTaskElementDTO> tasks = ws.TaskElements.ToList();
-
-				bool isOffloading = ws.ProjectMapType != ProjectMapType.StandardWithoutOffload;
-				if (isOffloading)
-				{
-					OffloadLaborRates offloader = new OffloadLaborRates();
-					List<int> selectedBoeIds = boes.Select(b => b.Id).ToList();
-					OffloadLaborRatesResults results = offloader.OffloadWorkspace(boes.Where(b => selectedBoeIds.Contains(b.Id)).ToList(), ws);
-
-					boes = results.Boes.ToList();
-					tasks = boes.SelectMany(b => b.TaskElements).ToList();
-				}
+				BOETaskUtility.GetBOEAndTaskDataForWorkspace(ws, out List<FullBoe> boes, out List<BoeTaskElementDTO> tasks);
 
 				BOEExportInputs exportInputs = new BOEExportInputs(boes, boes, tasks, ws);
 				Collection<BOEStatusReportModelView> reportData = boeStatusReport.GenerateBOEStatusReport(exportInputs);
@@ -181,8 +166,6 @@ namespace GenBOE.Web.Controllers
 				data.boeStatusReportModel = reportGrid;
 
 				result.Data = data;
-
-				FinalizeAction(logger, WebConstants.ACTION_DISPLAY_BOE_STATUS_REPORT, sw);
 				result.IsSuccessful = true;
 			}
 			catch (Exception ex)
@@ -190,6 +173,8 @@ namespace GenBOE.Web.Controllers
 				logger.Error(ex);
 				result.Messages.Add(ex.Message);
 			}
+
+			FinalizeAction(logger, WebConstants.ACTION_DISPLAY_BOE_STATUS_REPORT, sw);
 
 			return result;
 		}
@@ -204,15 +189,12 @@ namespace GenBOE.Web.Controllers
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
 		public IESResponse<BoeDiscrepancyReportModelView> GetBOEDiscrepancyReport(string workspace)
 		{
-			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			IESResponse<BoeDiscrepancyReportModelView> result = new IESResponse<BoeDiscrepancyReportModelView>();
-
-			// Start Stopwatch to measure performance
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			Stopwatch sw = InitializeAction(logger, WebConstants.GET_BOE_DISCREPANCY_REPORT, SecurityPage.Reports, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, null);
 
 			try
 			{
-				Stopwatch sw = this.InitializeAction(this.logger, WebConstants.ACTION_DISPLAY_BOE_DISCREPANCY, SecurityPage.Reports, SecurityAuthorization.Read, new Collection<WorkspaceDTO>() { ws }, null);
 				ICollection<BoeDiscrepancyReportModelView> theModelViews = reportsControllerLogic.GenerateDataForBoeDiscrepancyReport(ws, true);
 				result.Data = theModelViews;
 				result.IsSuccessful = true;
@@ -225,9 +207,7 @@ namespace GenBOE.Web.Controllers
 				result.Messages.Add(ex.Message);
 			}
 
-			// Finalize Action
 			FinalizeAction(logger, WebConstants.GET_BOE_DISCREPANCY_REPORT, sw);
-
 			return result;
 		}
 
