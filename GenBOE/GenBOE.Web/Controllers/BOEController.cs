@@ -1320,6 +1320,7 @@ namespace GenBOE.Web.Controllers
 			} catch (Exception ex)
 			{
 				_log.Error(ex);
+				throw new ValidationException(ex.Message);
 			}
 
 
