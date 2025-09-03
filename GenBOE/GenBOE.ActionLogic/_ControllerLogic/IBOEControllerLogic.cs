@@ -11,7 +11,8 @@ namespace GenBOE.ActionLogic
     using System.Collections.ObjectModel;
     using System.Threading.Tasks;
     using System.Web;
-    using GenBOE.ActionLogic.ModelView;
+	using System.Web.Mvc;
+	using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.ActionLogic.IESSAPClient;
     using GenBOE.DataBridge.DTO;
@@ -19,7 +20,6 @@ namespace GenBOE.ActionLogic
     using GenBOE.Dtos;
     using GenBOE.Objects;
     using IES.Common.Exceptions;
-	using System.Web.Mvc;
 
 	public interface IBOEControllerLogic
     {
@@ -355,7 +355,7 @@ namespace GenBOE.ActionLogic
 		/// <param name="boes">List of Boes to be saved</param>
 		/// <param name="modelState">Model state</param>
 		/// <param name="ws">Full Workspace</param>
-		/// <returns></returns>
+		/// <returns>Saved ManageBOEModelView for the ui</returns>
 		ManageBOEModelView SaveManageBOE(Collection<ManageBOEModelView> boes, ModelStateDictionary modelState, FullWorkspace ws);
 	}
 }

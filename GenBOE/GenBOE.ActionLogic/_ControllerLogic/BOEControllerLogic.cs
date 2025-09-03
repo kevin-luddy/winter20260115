@@ -2473,8 +2473,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="modelState">Model state</param>
 		/// <param name="ws">Full Workspace</param>
 		/// <returns>ManageBOEModelView</returns>
-		/// <exception cref="ArgumentNullException"></exception>
-		/// <exception cref="GenValidationException"></exception>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		public ManageBOEModelView SaveManageBOE(Collection<ManageBOEModelView> boes, ModelStateDictionary modelState,FullWorkspace ws)

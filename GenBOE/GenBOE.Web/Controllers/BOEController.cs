@@ -1319,7 +1319,7 @@ namespace GenBOE.Web.Controllers
 
 			} catch (Exception ex)
 			{
-				throw new GenValidationException($"{ex}");
+				_log.Error(ex);
 			}
 
 

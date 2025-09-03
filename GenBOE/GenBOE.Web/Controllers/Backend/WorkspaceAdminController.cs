@@ -5,6 +5,12 @@
 // -----------------------------------------------------------------------
 namespace GenBOE.Web.Controllers.Backend
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Diagnostics;
+	using System.Linq;
+	using System.Web.Http;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ControllerLogic.Backend;
@@ -20,12 +26,6 @@ namespace GenBOE.Web.Controllers.Backend
 	using IES.Common.classes;
 	using IES.Common.Exceptions;
 	using IES.Common.PickList;
-	using System;
-	using System.Collections.Generic;
-	using System.Collections.ObjectModel;
-	using System.Diagnostics;
-	using System.Linq;
-	using System.Web.Http;
 
 	/// <summary>
 	/// Workspace Admin Controller
