@@ -1808,12 +1808,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			{
 				throw new ArgumentNullException(nameof(workspaces));				
 			}
-
-			if(string.IsNullOrWhiteSpace(paNumber))
-			{
-				throw new ArgumentException("paNumber is required", nameof(paNumber));
-			}
-
+			
 
 			int max = 0;
 			bool anyRelevant = false;

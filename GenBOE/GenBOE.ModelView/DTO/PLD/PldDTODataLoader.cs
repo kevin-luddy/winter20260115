@@ -224,6 +224,7 @@ namespace GenBOE.DataBridge.DTO
 					{
 						PA_Number = p.PA_Number,
 						Line_of_Business = p.Line_of_Business,
+						PA_Description = p.PA_Description,
 						Project_Start_Date = p.Project_Start_Date,
 						Project_End_Date = p.Project_End_Date,
 					})
