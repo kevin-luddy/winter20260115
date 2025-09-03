@@ -252,9 +252,11 @@ namespace GenTRAC.DataBridge.DTO
                         case PtmRole.CoverSheetApprover:
                         case PtmRole.LOBEstLead:
                         case PtmRole.PricingVerification:
-                        case PtmRole.ProposalMgr:
-                        case PtmRole.SystemPricer:
-                        case PtmRole.TechLead:
+						case PtmRole.ProposalMgr:
+						case PtmRole.ProgramMgr:
+						case PtmRole.SystemPricer:
+						case PtmRole.MsacPOC:
+						case PtmRole.TechLead:
                         case PtmRole.BackupPricer:
                         case PtmRole.GenBoeWorkspaceCreator:
                             roleTypeID = null;
@@ -306,9 +308,11 @@ namespace GenTRAC.DataBridge.DTO
                         case PtmRole.CoverSheetApprover:
                         case PtmRole.LOBEstLead:
                         case PtmRole.PricingVerification:
-                        case PtmRole.ProposalMgr:
-                        case PtmRole.SystemPricer:
-                        case PtmRole.TechLead:
+						case PtmRole.ProposalMgr:
+						case PtmRole.ProgramMgr:
+						case PtmRole.SystemPricer:
+						case PtmRole.MsacPOC:
+						case PtmRole.TechLead:
                         case PtmRole.BackupPricer:
                             // these roles do not have a roletype associated with it, the db expects a null
                             roleTypeID = null;

@@ -242,16 +242,28 @@ namespace IES.Common
 		BackupContractsPOC = 22,
 
 		/// <summary>
-		/// Backup Subcontracts Lead
+		/// Backup IBOE Preparer (Subcontracts Lead)
 		/// </summary>
-		[Description("Backup Subcontracts Lead")]
+		[Description("Backup IBOE Preparer")]
 		BackupSubcontractsLead = 23,
 
 		/// <summary>
-		/// Backup Material Lead
+		/// Backup PBOE Preparer (Material Lead)
 		/// </summary>
-		[Description("Backup Material Lead")]
+		[Description("Backup PBOE Preparer")]
 		BackupMaterialLead = 24,
+
+		/// <summary>
+		/// Program Mgr
+		/// </summary>
+		[Description("Program Manager")]
+		ProgramMgr = 25,
+
+		/// <summary>
+		/// MSAC POC (Business Development)
+		/// </summary>
+		[Description("MSAC POC (Business Development)")]
+		MsacPOC = 26,
 
 		/// <summary>
 		/// CAREFUL

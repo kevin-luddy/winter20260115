@@ -26,7 +26,7 @@
 		/// <returns>Refreshed/Recalculated Skill Mix Model View</returns>
 		public static RefreshSkillMixModelView RefreshSkillMixTables(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
 			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData,
-			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isBRCEnabled, bool isManual)
+			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isBRCEnabled, bool isManual, DateTime? taskEndDate)
 		{
 			// null checks 
 			if (resourceHours == null)
@@ -43,6 +43,9 @@
 			{
 				currentCommonDisclosureData = new List<CommonDisclosureModelView>();
 			}
+
+			// Only do Common Disclosure if the task is past the 1LMX start date
+			isBRCEnabled = isBRCEnabled && taskEndDate.HasValue && taskEndDate >= Utilities.OneLmxStartDate;
 
 			RefreshSkillMixModelView refreshedModel = new RefreshSkillMixModelView();
 			laborTypes = laborTypes == null ? new List<LaborTypeDataModelView>() : laborTypes.Where(l => l.RateType == RateType.Hours).ToList();
@@ -129,7 +132,7 @@
 						CreateCommonDisclosureRowsRMS(resourceHours, laborTypes, currentCommonDisclosureData, 
 							refreshedModel, isManual);
 					}
-					}
+				}
 				else
 				{
 					refreshedModel.CommonDisclosureRows?.Clear();
@@ -148,7 +151,7 @@
 				});
 			}
 
-			CleanupData(refreshedModel);
+			CleanupData(refreshedModel, isSpace);
 			CalculateSkillMixTotals(refreshedModel);
 			CalculateBoeSkillMixPercentage(refreshedModel);
 
@@ -211,11 +214,12 @@
 					{
 						ICollection<string> legacyLinkedResourceIds = refreshedModel.SkillMixRows.Where(r => r.ResourceNew == resourceName && r.Included).Select(l => l.ResourceOld).ToList();
 						decimal realHistoricalHours = resourceHours.Where(r => legacyLinkedResourceIds.Contains(r.ResourceName)).Sum(l => l.TotalHours);
-						decimal brcHistoricalHours = 0m;
+						decimal brcHistoricalHours = 1m;
 						if (totalHoursBRCs != 0)
 						{
 							brcHistoricalHours = refreshedRow.ProposedHours / totalHoursBRCs;
 						}
+						
 						refreshedRow.HistoricalHours = realHistoricalHours * brcHistoricalHours;
 					}
 
@@ -711,14 +715,15 @@
 		/// Remove SkillMix and CommonDisclosure rows as needed
 		/// </summary>
 		/// <param name="refreshedModel">The skill mix model view to cleanup</param>
-		private static void CleanupData(RefreshSkillMixModelView refreshedModel)
+		/// <param name="isSpace">Is Space the current company mode?</param>
+		private static void CleanupData(RefreshSkillMixModelView refreshedModel, bool isSpace)
 		{
 			if (refreshedModel == null)
 			{
 				throw new ArgumentNullException(nameof(refreshedModel));
 			}
 
-			if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
+			if (isSpace)
 			{
 				// Remove Skill Mix rows where historical and proposed hours are zero
 				List<SkillMixModelView> skillMixRowsToRemove = refreshedModel.SkillMixRows
@@ -738,6 +743,19 @@
 				foreach (CommonDisclosureModelView item in commonDisclosureRowsToRemove)
 				{
 					refreshedModel.CommonDisclosureRows.Remove(item);
+				}
+			}
+			else
+			{
+				// Check for duplicate Current Resources
+				HashSet<string> distinctCurrentResources = new HashSet<string>();
+				foreach (SkillMixModelView row in refreshedModel.SkillMixRows.Where(x => !string.IsNullOrEmpty(x.ResourceNew)))
+				{
+					if (!distinctCurrentResources.Add(row.ResourceNew))
+					{
+						// Duplicate found - Set proposed hours to 0
+						row.ProposedHours = 0;
+					}
 				}
 			}
 		}

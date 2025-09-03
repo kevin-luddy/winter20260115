@@ -95,5 +95,12 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="userID">ETI User ID</param>
 		/// <returns>List of Message Confirmations for the User</returns>
 		ICollection<ConfirmationMessage> GetMessageConfirmations(int userID);
+
+		/// <summary>
+		/// Get Author and Subcontractor Author UserDTOs for the given BOE ID
+		/// </summary>
+		/// <param name="boeId">BOE ID</param>
+		/// <returns>Collection of UserDTOs for BOE Authors and Subcontractor Authors</returns>
+		ICollection<UserDTO> GetBoeAuthors(int boeId);
 	}
 }

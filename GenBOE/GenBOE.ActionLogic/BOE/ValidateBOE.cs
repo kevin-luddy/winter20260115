@@ -243,7 +243,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 					ICollection<string> errorMessages = new List<string>();
 					errorMessages = ActionLogicUtility.ValidateSkillMixTable(task.SkillMixTable, true);
 
-					if (Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
+					if (Utilities.IsBRCEnabledForWorkspace(ws.Shortname) && task.EndDate >= Utilities.OneLmxStartDate)
 					{
 						errorMessages.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(task.CommonDisclosureTable, true, task.taskElementLabors.Any()));
 					}
@@ -568,6 +568,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 				ValidateTaskMoqText(workspace, inBOE, TaskElementMessages, boeTask);
 				ValidateTaskDescription(workspace, inBOE, TaskElementMessages, boeTask);
+				ValidateTaskAuthor(workspace, inBOE, TaskElementMessages, boeTask);
 
 				if (boeTask.TaskElementType == TaskElementType.Labor)
 				{
@@ -920,6 +921,28 @@ namespace GenBOE.ActionLogic.WBS.BOE
 				if (!taskTemplateWithPrompts.Any() || taskTemplateWithPrompts.Any(t => t.Required && string.IsNullOrEmpty(t.AnswerText)))
 				{
 					TaskElementMessages.Add(this.FormatMOQTextErrorMessage(BoeDTO.TASK_DESCRIPTION_REQUIRED));
+				}
+			}
+		}
+
+		/// <summary>
+		/// Validate Task Author is selected and a valid selection
+		/// </summary>
+		/// <param name="workspace">Workspace</param>
+		/// <param name="inBOE">Full BOE containing Task</param>
+		/// <param name="TaskElementMessages">Task Element validation messages</param>
+		/// <param name="boeTask">Task being validated</param>
+		internal void ValidateTaskAuthor(FullWorkspace workspace, FullBoe inBOE, Collection<string> TaskElementMessages, BoeTaskElementDTO boeTask)
+		{
+			if (Utilities.IsAssignTaskAuthorEnabledForSystem && workspace.EnableAssignTaskAuthor)
+			{
+				if (boeTask.AuthorUserId == null)
+				{
+					TaskElementMessages.Add(ValidationConstants.TASK_AUTHOR_REQUIRED);
+				}
+				else if (!inBOE.AuthorIDs.Contains(boeTask.AuthorUserId.Value) && !inBOE.SubcontractorAuthorIDs.Contains(boeTask.AuthorUserId.Value))
+				{
+					TaskElementMessages.Add(ValidationConstants.TASK_AUTHOR_INVALID);
 				}
 			}
 		}

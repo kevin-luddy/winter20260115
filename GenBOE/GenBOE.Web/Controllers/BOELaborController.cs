@@ -541,14 +541,8 @@ namespace GenBOE.Web.Controllers
 				enableSkillMix = true;
 			}
 			ViewData["IsSkillMixEnabled"] = enableSkillMix;
-			ViewData["EnableCommonDisclosure"] = false;
 			if (Utilities.IsBRCEnabledForWorkspace(workspace) && boe.EndDate >= Utilities.OneLmxStartDate)
 			{
-				//enable the common disclosure table
-				if (enableSkillMix)
-				{
-					ViewData["EnableCommonDisclosure"] = true;
-				}
 				//check if ws contains BRCs, if not, mark moq equation as read only
 				ICollection<ResourceDTO> resources = BRCValidationUtility.GetResourcesBasedOnCompanyMode(ws.ResourcesForWsResourceListId.ToList(), true, workspace);
 				if (resources.Count == 0)
@@ -672,6 +666,61 @@ namespace GenBOE.Web.Controllers
 			this._BoeLaborControllerLogic.RecalculateLaborSpreads(ws, items, moqTotalHours, calculateUCOT && Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.Shortname));
 
 			return this.Json(items);
+		}
+
+		/// <summary>
+		/// Calculates the discrete UCOT spread.
+		/// </summary>
+		/// <param name="items">The items to calculate spread for.</param>
+		/// <param name="calculateUCOT">Whether to calculate UCOT</param>
+		/// <returns></returns>
+		public ActionResult CalculateDiscreteUCOTSpread(string workspace, RecalcSpreadModelView item)
+		{
+			if (item is null)
+			{
+				throw new ArgumentNullException(nameof(item));
+			}
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+			if (item.start == null)
+			{
+				throw new ArgumentException("item's start was null");
+			}
+
+			if (item.end == null)
+			{
+				throw new ArgumentException("Item's end was null");
+			}
+
+			if (item.curve == null)
+			{
+				throw new ArgumentException("Item's curve was null");
+			}
+
+			if (item.value == null)
+			{
+				throw new ArgumentException("Item's spread value was null");
+			}
+
+			if (item.rateType == null)
+			{
+				throw new ArgumentException("Item's rateType was null");
+			}
+
+			if (item.ElementOfCost == null)
+			{
+				throw new ArgumentException("Item's Element of Cost was null");
+			}
+
+			if (item.boeTaskElementId <= 0)
+			{
+				throw new ArgumentException("Item's BOE Task Element ID was not assigned");
+			}
+
+			this._BoeLaborControllerLogic.RecalculateDiscreteUCOTSpreads(ws, item);
+
+			return this.Json(item);
 		}
 
 		/// <summary>
@@ -1594,12 +1643,12 @@ namespace GenBOE.Web.Controllers
 		/// <returns></returns>
 		public ActionResult RefreshSkillMixTables(string workspace, int boeId, ICollection<MoqTypeSelection> selectedMoqTypes,
 			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData,
-			bool isManual)
+			bool isManual, DateTime? taskEndDate)
 		{
 			// Initialize Action
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			bool isBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspace);
+			bool isBRCEnabled = Utilities.IsBRCEnabledForWorkspace(workspace) && taskEndDate >= Utilities.OneLmxStartDate;
 
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_REFRESH_SKILL_MIX_TABLES, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeId);
 
@@ -1610,7 +1659,7 @@ namespace GenBOE.Web.Controllers
 
 			// Call to Controller Logic
 			RefreshSkillMixModelView response = SkillMixUtility.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData, 
-				isBRCEnabled, isManual);
+				isBRCEnabled, isManual, taskEndDate);
 
 			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });
 

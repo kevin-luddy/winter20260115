@@ -16,7 +16,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using System.Web;
 	using System.Web.Configuration;
 	using System.Web.Mvc;
-	using DocumentFormat.OpenXml.Drawing.Charts;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
@@ -25,6 +24,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using GenBOE.ActionLogic.IESSAPClient;
 	using GenBOE.ActionLogic.IO.Export;
 	using GenBOE.ActionLogic.IO.Import;
+	using GenBOE.ActionLogic.Misc;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.BOE;
 	using GenBOE.ActionLogic.ModelView.Workspace;
@@ -272,6 +272,52 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		}
 
 		/// <summary>
+		/// Ralculates the discrete UCOT spread.
+		/// </summary>
+		/// <param name="workspaceData">The workspace data.</param>
+		/// <param name="ucotSpreadItem">The labor tab data.</param>
+		/// <returns>UCOT Spreads with new UCOT Hours calculated</returns>
+		public RecalcSpreadModelView RecalculateDiscreteUCOTSpreads(FullWorkspace workspaceData, RecalcSpreadModelView ucotSpreadItem)
+		{
+			if (workspaceData == null)
+			{
+				throw new ArgumentNullException(nameof(workspaceData));
+			}
+
+			if (ucotSpreadItem == null)
+			{
+				throw new ArgumentNullException(nameof(ucotSpreadItem));
+			}
+
+			if (ucotSpreadItem.IsValid())
+			{
+				IDictionary<DateTime, decimal> smoothedUCOTSpreads = UCOTUtility.GetUcotSpreads(workspaceData.CreationDate, workspaceData.Shortname, workspaceData.DecimalPrecision, workspaceData.UCOTFactor, ucotSpreadItem.spreads.Select(x => x.ToBoeLaborSpread((int)ucotSpreadItem.rateType)).ToList(), ucotSpreadItem.ElementOfCost.Value, workspaceData.MoqTypeSelections.ToList(), ucotSpreadItem.boeTaskElementId, ucotSpreadItem.rateType.Value);
+				
+				// Clear out existing ucot spreads and add them as new
+				ucotSpreadItem.ucotHours = 0m;
+				ucotSpreadItem.ucotSpreads = new List<LaborSpreadDataModelView>();
+
+				foreach (KeyValuePair<DateTime, decimal> item in smoothedUCOTSpreads)
+				{
+					ucotSpreadItem.ucotSpreads.Add(new LaborSpreadDataModelView()
+					{
+						LaborSpreadDate = item.Key.ToMonthString(),
+						LaborSpreadValue = item.Value
+					});
+
+					ucotSpreadItem.ucotHours += item.Value;
+				}
+			}
+			else
+			{
+				ucotSpreadItem.spreads = new List<LaborSpreadDataModelView>();
+				ucotSpreadItem.ucotSpreads = new List<LaborSpreadDataModelView>();
+			}
+
+			return ucotSpreadItem;
+		}
+
+		/// <summary>
 		/// In cases where the total hours DOES NOT divide evenly among the number of percent-locked auto-calculated (non-discrete)
 		/// resource entries, we need to adjust (+/-1) the hour spread values for a subset of those entries so that the overall
 		/// delta is corrected to zero.
@@ -436,8 +482,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				this.CleanupLaborTaskData(ws, modelView);
 
-
-
 				// Validate Task Variables
 				bool addNullValidationError = true;
 				if (modelView.TaskElementData.TaskOrdinaryVariables.Any())
@@ -457,6 +501,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				// Validate Task Details Composite
 				this.ValidateTaskDetails(boe, modelView, validationErrors, ws, moqEquationTotal);
+
+				// Validate Task Author is a valid selection if one was made
+				if (Utilities.IsAssignTaskAuthorEnabledForSystem && ws.EnableAssignTaskAuthor && modelView.TaskElementData.AuthorUserId.HasValue &&
+					!boe.AuthorIDs.Contains(modelView.TaskElementData.AuthorUserId.Value) && !boe.SubcontractorAuthorIDs.Contains(modelView.TaskElementData.AuthorUserId.Value))
+				{
+					validationErrors.Add(new ValidationMessage("Task Author", ValidationConstants.TASK_AUTHOR_INVALID));
+				}
 
 				// Validate Precision
 				if (modelView.LaborTypesData.Any())
@@ -942,7 +993,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, ws.UsingTemplateBOE, ws.EnableSAPConnection, moqTypes, taskElement.Id, modelView.IsUsingTMRatesInTask))
 			{
-				if (ws.EnableSAPConnection && (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST 
+				if (ws.EnableSAPConnection && (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST
 					|| moqTypes.Any(x => x.TableData != null && x.TableData.Any(t => t.RepositoryName == RepositoryName.SapWebi.GetDescription()))))
 				{
 					decimal historicalHoursTotals = taskElement.SkillMixTable.Sum(x => x.HistoricalHours);
@@ -952,7 +1003,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						validationErrors.Add(new ValidationMessage(string.Format("Total Historical Hours in {0} Skill Mix Table do not match the sum of the Total Relevant Hours.", skillMixTableName)));
 					}
 
-					if (taskElement.CommonDisclosureTable != null && Utilities.IsBRCEnabledForWorkspace(ws.Shortname))
+					if (taskElement.CommonDisclosureTable != null && Utilities.IsBRCEnabledForWorkspace(ws.Shortname) && taskElement.EndDate >= Utilities.OneLmxStartDate)
 					{
 						// Check the Common Disclosure table totals
 						historicalHoursTotals = taskElement.CommonDisclosureTable.Sum(c => c.HistoricalHours);
@@ -971,7 +1022,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				if (taskElement.CommonDisclosureTable != null && taskElement.CommonDisclosureTable.Any())
 				{
-					validationErrors.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(taskElement.CommonDisclosureTable, false, 
+					validationErrors.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(taskElement.CommonDisclosureTable, false,
 						taskElement.taskElementLabors.Any(x => x.Updateable != UpdateType.Deleted)).Select(x => new ValidationMessage(x)));
 				}
 			}
@@ -1656,7 +1707,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			ICollection<ResourceSpreadDto> spreadDtos = SpreadCurve.CalculateLaborSpreadsBasedOnCurve(request, precision);
 
 			decimal sumUCOT = 0m;
-			
+
 			// Convert dto to mv
 			foreach (ResourceSpreadDto dto in spreadDtos.OrderBy(s => s.LaborSpreadDate))
 			{
@@ -1774,7 +1825,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			MOQEquationModelView toReturn = new MOQEquationModelView(taskElement, this.VariableSelectBOEtoSumCalculation, workspace);
 			toReturn.MoqTemplateAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(workspace.Id, taskElement.BoeID, taskElement.Id).Where(t => t.SourceId == (int)RteTemplateSource.TaskMOQ).ToList();
-			
+
 			return toReturn;
 		}
 
@@ -1931,6 +1982,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				throw new ArgumentNullException(nameof(ws));
 			}
 
+			decimal? ucotHours = modelview.LaborTypesData.Sum(x => x.UcotHours);
+
+			if (ucotHours == null)
+			{
+				ucotHours = 0;
+			}
+
 			IDictionary<int, MOQTypeModelView> moqTypes = this.CommonDataMapper.getMOQTypeDictionary();
 
 			BoeTaskElementDTO toReturn = new BoeTaskElementDTO
@@ -1952,6 +2010,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			toReturn.WorkspaceVariableIDs = modelview.TaskElementData.WorkspaceVariableIDs;
 			toReturn.TaskElementType = TaskElementType.Labor;
 			toReturn.BOETaskElementOrder = modelview.TaskElementData.BOETaskElementOrder;
+			toReturn.AuthorUserId = modelview.TaskElementData.AuthorUserId;
 
 			if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, ws.UsingTemplateBOE, ws.EnableSAPConnection, modelview.MOQTypes, toReturn.Id, modelview.IsUsingTMRatesInTask))
 			{
@@ -3783,8 +3842,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			return response;
 		}
-			
-				
+
+
 		/// <summary>
 		/// Validates Actuals data for SAP
 		/// </summary>

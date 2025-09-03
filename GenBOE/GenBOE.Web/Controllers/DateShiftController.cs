@@ -123,7 +123,7 @@ namespace GenBOE.Web.Controllers
                 }
 
                 FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
-				DateShiftDTO parentDateShiftDTO = dateShiftDTODataLoader.GetWorkspaceDateShiftDataObject(workspace);
+				DateShiftDTO parentDateShiftDTO = dateShiftDTODataLoader.GetDateShiftObject(Level.Workspace, ws.Id);
 
                 // Initialize Action
                 DateTime? parentStart = ws.StartDate;
@@ -155,7 +155,7 @@ namespace GenBOE.Web.Controllers
 						{
 							parentStart = dateShiftable.Parent.StartDate;
 							parentEnd = dateShiftable.Parent.EndDate;
-							parentLevel = Level.CLIN;
+							parentLevel = dateShiftable.Parent.DateShiftLevel;
 						}
 
 						break;
