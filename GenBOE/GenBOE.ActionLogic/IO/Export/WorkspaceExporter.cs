@@ -435,7 +435,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					if (BOETaskUtility.ShowSkillMixForTask(exportInputs.FullWorkspace, task))
 					{
 						ICollection<MoqTypeSelection> moqTypesForTask = exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).ToList();
-						
+
 						if (moqTypesForTask.Count == 1)
 						{
 							string selectedMOQTypeText = moqTypesForTask.First().SelectedMOQTypeText;
@@ -526,7 +526,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					{
 						ICollection<MoqTypeSelection> moqTypesForTask = exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).ToList();
 
-					
+
 						if (moqTypesForTask.Count == 1)
 						{
 							string selectedMOQTypeText = moqTypesForTask.First().SelectedMOQTypeText;
@@ -811,10 +811,20 @@ namespace GenBOE.ActionLogic.IO.Export
 							}
 						}
 
+						string elementOfCost = sEmpty;
+						if (resourceType.ResourceID.HasValue)
+						{
+							elementOfCost = aResource.ElementOfCost.ToString();
+						}
+						else if (resourceType.BusinessResourceCodeID.HasValue)
+						{
+							elementOfCost = brcResource.ElementOfCost.ToString();
+						}
+
 						row.AddRange(
 							new string[] {
 									this.sEmpty, this.sEmpty,
-									resourceType.ResourceID.HasValue ? aResource.ElementOfCost.ToString() : this.sEmpty,
+									elementOfCost,
 									resourceType.ResourceID.HasValue ? aResource.ResourceDesc : this.sEmpty,
 									resourceType.ResourceID.HasValue ? aResource.SegRegion : this.sEmpty,
 									resourceType.ResourceID.HasValue ? aResource.LaborType : this.sEmpty,
@@ -1783,10 +1793,10 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <returns>
 		/// Excel Export Worksheet with Labor Task data
 		/// </returns>
-		private ExcelExportWorksheet GetLaborSpreadDataforBOEResourceCombo(BOEExportInputs exportInputs, ExcelExportWorksheet toReturn, 
-			BoeDTO boe, ResourceTypeDto resourceType, string[] taskFields1, string[] taskFields2, string[] resFields1, 
-			List<string> resFields2, DateTime currentDate, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, 
-			ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, bool resourceUsesCostValues, 
+		private ExcelExportWorksheet GetLaborSpreadDataforBOEResourceCombo(BOEExportInputs exportInputs, ExcelExportWorksheet toReturn,
+			BoeDTO boe, ResourceTypeDto resourceType, string[] taskFields1, string[] taskFields2, string[] resFields1,
+			List<string> resFields2, DateTime currentDate, IReadOnlyCollection<CustomFieldDTO> workspace_customFields,
+			ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, bool resourceUsesCostValues,
 			ElementOfCostType elementOfCostType, RateType rateType, ICollection<MoqTypeSelection> moqTypes)
 		{
 			IDictionary<DateTime, decimal> smoothedUcotSpreads = UCOTUtility.GetUcotSpreads(exportInputs.Workspace.CreationDate,
@@ -2448,13 +2458,23 @@ namespace GenBOE.ActionLogic.IO.Export
 				}
 			}
 
+			string elementOfCost = sEmpty;
+			if (resourceType.ResourceID.HasValue)
+			{
+				elementOfCost = aResource.ElementOfCost.ToString();
+			}
+			else if (resourceType.BusinessResourceCodeID.HasValue)
+			{
+				elementOfCost = brcResource.ElementOfCost.ToString();
+			}
+
 			List<string> row = new List<string>();
 
 			row.AddRange(
 							new string[] {
 									this.sEmpty, // Total Task Hours
                                     this.sEmpty, // Total Task Cost
-                                    resourceType.ResourceID.HasValue ? aResource.ElementOfCost.ToString() : this.sEmpty,
+                                    elementOfCost,
 									resourceType.ResourceID.HasValue ? aResource.ResourceDesc : this.sEmpty,
 									resourceType.ResourceID.HasValue ? aResource.LaborType : this.sEmpty,
 									resourceType.ResourceID.HasValue ? aResource.ResourceName : this.sEmpty,
