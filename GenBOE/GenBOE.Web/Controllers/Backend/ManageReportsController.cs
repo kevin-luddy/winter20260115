@@ -29,6 +29,7 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.Objects;
 	using GenBOE.Web.ModelView;
 	using IES.Common;
+	using IES.Common.Exceptions;
 
 	/// <summary>
 	/// Manage Permissions Controller for getting workspace home data.
@@ -168,6 +169,11 @@ namespace GenBOE.Web.Controllers
 				result.Data = data;
 				result.IsSuccessful = true;
 			}
+			catch (GenValidationException ex)
+			{
+				logger.Error(ex);
+				result.Messages = ex.GetValidationMessages(ex.ValidationList);
+			}
 			catch (Exception ex)
 			{
 				logger.Error(ex);
@@ -198,8 +204,6 @@ namespace GenBOE.Web.Controllers
 				ICollection<BoeDiscrepancyReportModelView> theModelViews = reportsControllerLogic.GenerateDataForBoeDiscrepancyReport(ws, true);
 				result.Data = theModelViews;
 				result.IsSuccessful = true;
-
-				FinalizeAction(logger, WebConstants.ACTION_DISPLAY_BOE_DISCREPANCY, sw);
 			}
 			catch (Exception ex)
 			{

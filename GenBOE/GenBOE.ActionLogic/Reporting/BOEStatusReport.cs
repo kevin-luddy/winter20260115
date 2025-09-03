@@ -193,6 +193,11 @@ namespace GenBOE.ActionLogic.Reporting
 			return new Collection<BOEStatusReportModelView>(toSortAndReturn.ToArray());
 		}
 
+		/// <summary>
+		/// Mapper function so the original BOEStatusReportModelView cannot be used in the HTTP GET for Angular
+		/// </summary>
+		/// <param name="boeStatusReportModelView">legacy genBOE boeStatusReportModelView</param>
+		/// <returns>Mapped BOEStatusReportGrid List</returns>
 		public ICollection<BOEStatusReportGrid> ConvertBOEStatusData(Collection<BOEStatusReportModelView> boeStatusReportModelView)
 		{
 			if (boeStatusReportModelView == null)
