@@ -211,31 +211,27 @@ namespace GenBOE.Web.Controllers.Backend
 				throw new ArgumentNullException(nameof(boes));
 			}
 
-
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
 			IESSingleResponse<ManageBOEModelView> result = new IESSingleResponse<ManageBOEModelView>();
+
+			// Initialize Action
+			Stopwatch sw = this.InitializeAction(logger, WebConstants.ACTION_SAVE_MANAGE_BOE, SecurityPage.ManageBOEs, SecurityAuthorization.CreateReadUpdateDelete, new Collection<WorkspaceDTO>() { ws }, null);
 
 			try
 			{
-				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
-
 				System.Web.Mvc.ModelStateDictionary modelState = new System.Web.Mvc.ModelStateDictionary();
-
-				// Initialize Action
-				Stopwatch sw = this.InitializeAction(logger, WebConstants.ACTION_SAVE_MANAGE_BOE, SecurityPage.ManageBOEs, SecurityAuthorization.CreateReadUpdateDelete, new Collection<WorkspaceDTO>() { ws }, null);
 
 				result.Data = boeControllerLogic.SaveManageBOE(boes, modelState, ws);;
 				result.IsSuccessful = true;
-
-
-				// Finalize Action
-				this.FinalizeAction(logger, WebConstants.ACTION_SAVE_MANAGE_BOE, sw);
-
 			}
 			catch (GenValidationException ex)
 			{
 				logger.Error(ex);
 				result.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
+
+			// Finalize Action
+			this.FinalizeAction(logger, WebConstants.ACTION_SAVE_MANAGE_BOE, sw);
 
 			return result;
 		}
