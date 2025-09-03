@@ -98,8 +98,10 @@ namespace GenBOE.Web.Controllers
                 {
                     theModelView.isReadOnly = false;
                 }
+
                 theModelView.canCreateWS = CheckPermissions(SecurityPage.CreateWorkspacePermissions, null, null) == SecurityAuthorization.CreateReadUpdateDelete;
-				theModelView.isWorkspaceAuditor = CheckPermissions(SecurityPage.WorkspaceAuditor, null, null) != SecurityAuthorization.None;
+				IReadOnlyCollection<SecurityPermissionsResponse> rolesForUser = Factory.GetPermissionsForUser(currentUser.NTID);
+				theModelView.isWorkspaceAuditor = rolesForUser.Any(x => x.AuthorizedRole == Role.WorkspaceAuditor);
 
 				// Populate Metrics Grid
 				theModelView.workspaceGridRows = _GetHomepageGrid(theModelView.isSysAdmin || theModelView.isWorkspaceAuditor);

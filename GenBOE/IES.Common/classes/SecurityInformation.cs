@@ -133,8 +133,7 @@ namespace IES.Common
         WorkspaceSettingsShareAndAllowSearch = 73,
         RTETemplates = 74,
 		WorkspaceRecalculateActuals = 75,
-		UpdateUCOTFactorMenuOption = 76,
-		WorkspaceAuditor = 77
+		UpdateUCOTFactorMenuOption = 76
 	}
 
     /// <summary>

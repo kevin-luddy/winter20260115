@@ -161,8 +161,10 @@ namespace GenBOE.Web.Controllers
 					{
 						model.isReadOnly = false;
 					}
+
 					model.canCreateWS = CheckPermission(SecurityPage.CreateWorkspacePermissions, null) == SecurityAuthorization.CreateReadUpdateDelete;
-					model.isWorkspaceAuditor = CheckPermission(SecurityPage.WorkspaceAuditor, null, null) != SecurityAuthorization.None;
+					IReadOnlyCollection<SecurityPermissionsResponse> rolesForUser = Factory.GetPermissionsForUser(currentUser.NTID);
+					model.isWorkspaceAuditor = rolesForUser.Any(x => x.AuthorizedRole == Role.WorkspaceAuditor);
 				}
 
 				model.workspaceGridRows = workspaceHomeControllerLogic.GetHomepageGrid(model.isSysAdmin || model.isWorkspaceAuditor, currentUser, UserLoader, PermissionsLoader);

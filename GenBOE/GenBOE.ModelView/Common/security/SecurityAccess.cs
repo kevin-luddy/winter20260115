@@ -539,10 +539,6 @@ namespace GenBOE.DataBridge.Common
 				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.GettingStartedMenuOption },
 					new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
 					SecurityAuthorization.CreateReadUpdateDelete);
-
-				InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.WorkspaceAuditor },
-					new Role[] { Role.WorkspaceAuditor },
-					SecurityAuthorization.Read);
 			} 
             else
             {
@@ -1084,7 +1080,6 @@ namespace GenBOE.DataBridge.Common
                 case SecurityPage.SystemAdmin:
                 case SecurityPage.HistoricalMetricSearch:
                 case SecurityPage.CreateWorkspacePermissions:
-				case SecurityPage.WorkspaceAuditor:
                     wsRequired = false;
                     boeRequired = false;
                     break;
