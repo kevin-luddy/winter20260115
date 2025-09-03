@@ -5,9 +5,16 @@
 // -----------------------------------------------------------------------
 namespace GenBOE.Web.Controllers.Backend
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Diagnostics;
+	using System.Linq;
+	using System.Web.Http;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ControllerLogic.Backend;
+	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.BOE;
 	using GenBOE.ActionLogic.ModelView.Clin;
 	using GenBOE.DataBridge.Common.Interfaces;
@@ -17,13 +24,8 @@ namespace GenBOE.Web.Controllers.Backend
 	using GenBOE.Web.ModelView;
 	using IES.Common;
 	using IES.Common.classes;
+	using IES.Common.Exceptions;
 	using IES.Common.PickList;
-	using System;
-	using System.Collections.Generic;
-	using System.Collections.ObjectModel;
-	using System.Diagnostics;
-	using System.Linq;
-	using System.Web.Http;
 
 	/// <summary>
 	/// Workspace Admin Controller
@@ -177,7 +179,7 @@ namespace GenBOE.Web.Controllers.Backend
 
 				theModelView.ManageBoeHeaderInfo = boeControllerLogic.GetCompanySpecificManageBoeHeaderInfo;
 				theModelView.WorkspaceState = ws.WorkspaceState;
-				theModelView.AllowBOEStateChanges = (CheckPermission(SecurityPage.EditBoeLockedState, ws, null) == SecurityAuthorization.CreateReadUpdateDelete);
+				theModelView.AllowBOEStateChanges = CheckPermission(SecurityPage.EditBoeLockedState, ws, null) == SecurityAuthorization.CreateReadUpdateDelete;
 				result.Data = theModelView;
 				result.IsSuccessful = true;
 
@@ -187,8 +189,49 @@ namespace GenBOE.Web.Controllers.Backend
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown error occurred returning WBS data: {ex.Message}");
+				result.Messages.Add($"Unknown error occurred returning BOE data: {ex.Message}");
 			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Saves a BOE(s) from the Manage BOE page.
+		/// </summary>
+		/// <param name="workspace">Workspace name.</param>
+		/// <param name="boes">List of BOEs to be saved.</param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		[HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<ManageBOEModelView> SaveManageBOE(string workspace, [FromBody] Collection<ManageBOEModelView> boes)
+		{
+			if (boes == null)
+			{
+				throw new ArgumentNullException(nameof(boes));
+			}
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
+			IESSingleResponse<ManageBOEModelView> result = new IESSingleResponse<ManageBOEModelView>();
+
+			// Initialize Action
+			Stopwatch sw = this.InitializeAction(logger, WebConstants.ACTION_SAVE_MANAGE_BOE, SecurityPage.ManageBOEs, SecurityAuthorization.CreateReadUpdateDelete, new Collection<WorkspaceDTO>() { ws }, null);
+
+			try
+			{
+				System.Web.Mvc.ModelStateDictionary modelState = new System.Web.Mvc.ModelStateDictionary();
+
+				result.Data = boeControllerLogic.SaveManageBOE(boes, modelState, ws);;
+				result.IsSuccessful = true;
+			}
+			catch (GenValidationException ex)
+			{
+				logger.Error(ex);
+				result.Messages = ex.GetValidationMessages(ex.ValidationList);
+			}
+
+			// Finalize Action
+			this.FinalizeAction(logger, WebConstants.ACTION_SAVE_MANAGE_BOE, sw);
 
 			return result;
 		}
