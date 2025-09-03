@@ -140,7 +140,7 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Gets the Homepage menu with UserMetrics and list of workspaces associated to user
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>Workspaces available to user for the home page grid</returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<GenBOEHomepageModelView> GetHomePageWorkspace()
@@ -161,10 +161,13 @@ namespace GenBOE.Web.Controllers
 					{
 						model.isReadOnly = false;
 					}
+
 					model.canCreateWS = CheckPermission(SecurityPage.CreateWorkspacePermissions, null) == SecurityAuthorization.CreateReadUpdateDelete;
+					IReadOnlyCollection<SecurityPermissionsResponse> rolesForUser = Factory.GetPermissionsForUser(currentUser.NTID);
+					model.isWorkspaceAuditor = rolesForUser.Any(x => x.AuthorizedRole == Role.WorkspaceAuditor);
 				}
 
-				model.workspaceGridRows = workspaceHomeControllerLogic.GetHomepageGrid(model.isSysAdmin, currentUser, UserLoader, PermissionsLoader);
+				model.workspaceGridRows = workspaceHomeControllerLogic.GetHomepageGrid(model.isSysAdmin || model.isWorkspaceAuditor, currentUser, UserLoader, PermissionsLoader);
 				result.Data = model;
 
 			}
