@@ -1287,17 +1287,18 @@ namespace GenBOE.Web.Controllers
 				throw new ArgumentNullException(nameof(boes));
 			}
 
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
+
+			// Initialize Action
+			Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_SAVE_MANAGE_BOE, SecurityPage.ManageBOEs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+
+			ManageBOEModelView singleEditMV = _ControllerLogic.SaveManageBOE(boes, this.ModelState, ws);
+
+			// Perform Action
+			JsonResult toReturn;
+
 			try
 			{
-				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
-
-				// Initialize Action
-				Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_SAVE_MANAGE_BOE, SecurityPage.ManageBOEs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
-
-				ManageBOEModelView singleEditMV = _ControllerLogic.SaveManageBOE(boes, this.ModelState, ws);
-
-				// Perform Action
-				JsonResult toReturn;
 
 				if (singleEditMV == null)
 				{
@@ -1315,14 +1316,14 @@ namespace GenBOE.Web.Controllers
 				// Finalize Action
 				this.FinalizeAction(this._log, WebConstants.ACTION_SAVE_MANAGE_BOE, sw);
 
-				return toReturn;
 
 			} catch (GenValidationException ex)
 			{
 				_log.Error(ex);
-				throw new GenValidationException(ex.ValidationList); 
+				toReturn = Json(new { status = false, message = ex.Message });
 			}
 
+			return toReturn;
 
 		}
 
