@@ -118,6 +118,7 @@
 				else
 				{
 					CopyMatchingSkillMixRowDataRMS(resourceHours, laborTypes, currentSkillMixData, refreshedModel, isBRCEnabled, isManual);
+					CleanupNewSkillMixRow(currentSkillMixData);
 				}
 
 				if (isBRCEnabled)
@@ -161,7 +162,25 @@
 
 			return refreshedModel;
 		}
-		
+
+		/// <summary>
+		/// Set historical hours to zero for added rows
+		/// </summary>
+		/// <param name="currentSkillMixData">Collection of skillmix data</param>
+		private static void CleanupNewSkillMixRow(ICollection<SkillMixModelView> currentSkillMixData)
+		{
+			List<string> resourceOldList = new List<string>();
+			foreach (SkillMixModelView item in currentSkillMixData)
+			{
+				if(resourceOldList.Contains(item.ResourceOld))
+				{
+					item.HistoricalHours = 0;
+				}
+
+				resourceOldList.Add(item.ResourceOld);
+			}
+		}
+
 		/// <summary>
 		/// Create the Common Disclosure Rows from the data
 		/// </summary>
@@ -324,10 +343,10 @@
 									currentRow.HistoricalHours = realHistoricalHours;
 
 									// For new added row, set the historical hours to 0
-									if (currentRow.BOEID < 0)
-									{
-										currentRow.HistoricalHours = 0;
-									}
+									//if (currentRow.BOEID < 0)
+									//{
+									//	currentRow.HistoricalHours = 0;
+									//}
 								}
 							}
 							else
