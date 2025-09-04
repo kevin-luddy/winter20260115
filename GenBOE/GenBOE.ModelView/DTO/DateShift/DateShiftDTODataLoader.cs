@@ -627,6 +627,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="clinId">clinId</param>
 		/// <param name="getChildren">Should we get children objects?</param>
 		/// <returns>Clin data.</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		public DateShiftDTO GetClinDateShiftDataById(int clinId, bool getChildren)
 		{
 			using (GenBoeEntities gbe = new GenBoeEntities())
@@ -813,6 +814,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="id">id</param>
 		/// <param name="getChildren">Get child objects.</param>
 		/// <returns>Boe data.</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		public DateShiftDTO GetBoeDateShiftDataById(int id, bool getChildren)
 		{
 			using (GenBoeEntities gbe = new GenBoeEntities())
