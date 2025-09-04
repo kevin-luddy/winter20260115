@@ -240,6 +240,7 @@
     <Compile Include="GenBOE.Dtos\ModelView\Reporting\BOEStatusReportGrid.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\Reporting\BOEStatusReportModelView.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\Reporting\BoeWbsReportModelView.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\Reporting\FlattenedValidateAllBOEModelView.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\Reporting\WorkspaceActivityReportModelView.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\WBS\BOE\BOEExportModelView.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\WBS\BOE\BOEExportTaskElement.cs" />

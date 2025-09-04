@@ -9,6 +9,7 @@ namespace GenBOE.Dtos
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Linq;
 
 	/// <summary>
 	/// This model view is used to return any validation messages that need to be shown
@@ -23,5 +24,165 @@ namespace GenBOE.Dtos
         }
         //Collection of each BOE validation method.
         public ICollection<ValidationBOEModelView> AllBOEs { get; set; }
-    }
+
+		/// <summary>
+		/// Flatten the BOEs
+		/// </summary>
+		/// <returns></returns>
+		public ICollection<FlattenedValidateAllBOEModelView> Flatten()
+		{
+			List<FlattenedValidateAllBOEModelView> flattenedValidateAllBOEs = new List<FlattenedValidateAllBOEModelView>();
+			foreach (ValidationBOEModelView boe in AllBOEs)
+			{
+				if (boe.BOEHeaderMsgs != null && boe.BOEHeaderMsgs.Any())
+				{
+					AddMessages(flattenedValidateAllBOEs, boe, boe.BOEHeaderMsgs, "BOE Header");
+				}
+
+				if (boe.BOECustomFieldValidationMessages != null && boe.BOECustomFieldValidationMessages.Any())
+				{
+					AddMessages(flattenedValidateAllBOEs, boe, boe.BOECustomFieldValidationMessages, "BOE Custom Field Validation");
+				}
+
+				if (boe.BOECommentandApprovals != null && boe.BOECommentandApprovals.Any())
+				{
+					AddMessages(flattenedValidateAllBOEs, boe, boe.BOECommentandApprovals, "BOE Comments");
+				}
+
+				if (boe.Tasks != null && boe.Tasks.Any())
+				{
+					AddSectionMessages(flattenedValidateAllBOEs, boe, boe.Tasks, "LM / IWTA / Sub Labor", FlattenedValidateTaskType.Labor);
+				}
+
+				if (boe.Materials != null && boe.Materials.Any())
+				{
+					AddSectionMessages(flattenedValidateAllBOEs, boe, boe.Materials, "Materials", FlattenedValidateTaskType.Material);
+				}
+
+				if (boe.Costs != null && boe.Costs.Any())
+				{
+					AddSectionMessages(flattenedValidateAllBOEs, boe, boe.Costs, "ODC", FlattenedValidateTaskType.ODC);
+				}
+
+				if (boe.Travels != null && boe.Travels.Any())
+				{
+					AddSectionMessages(flattenedValidateAllBOEs, boe, boe.Travels, "Travel", FlattenedValidateTaskType.Travel);
+				}
+			}
+
+			return flattenedValidateAllBOEs;
+		}
+
+		/// <summary>
+		/// Add section messages
+		/// </summary>
+		/// <param name="flattenedValidateAllBOEs">Running list of flattened rows</param>
+		/// <param name="boe">Original BOE</param>
+		/// <param name="sections">Sections to flatten</param>
+		/// <param name="sectionHeader">Section Header</param>
+		/// <param name="taskType">Task Type</param>
+		private void AddSectionMessages(List<FlattenedValidateAllBOEModelView> flattenedValidateAllBOEs, ValidationBOEModelView boe, ICollection<ValidationBOETasks> sections, string sectionHeader, FlattenedValidateTaskType taskType)
+		{
+			FlattenedValidateAllBOEModelView flatHeader = new FlattenedValidateAllBOEModelView
+			{
+				BOEId = boe.BOEID,
+				BOE = boe.BOEName,
+				IsHeader = true,
+				Level = sectionHeader 
+			};
+			flattenedValidateAllBOEs.Add(flatHeader);
+
+			foreach (ValidationBOETasks section in sections)
+			{
+				FlattenedValidateAllBOEModelView flatTask = new FlattenedValidateAllBOEModelView
+				{
+					BOEId = boe.BOEID,
+					BOE = boe.BOEName,
+					TaskId = section.TaskId,
+					TaskType = taskType,
+					Level = section.TaskMessage
+				};
+
+				flattenedValidateAllBOEs.Add(flatTask);
+
+				if (!string.IsNullOrWhiteSpace(section.TaskElementDetails?.TaskElementDetailsHeader))
+				{
+					FlattenedValidateAllBOEModelView taskDetailsHeader = new FlattenedValidateAllBOEModelView
+					{
+						BOEId = boe.BOEID,
+						BOE = boe.BOEName,
+						Section = section.TaskElementDetails.TaskElementDetailsHeader,
+					};
+
+					flattenedValidateAllBOEs.Add(taskDetailsHeader);
+				}
+
+				foreach (string message in section.TaskElementDetails.TaskElementDetailValidationMessages)
+				{
+					FlattenedValidateAllBOEModelView taskMessage = new FlattenedValidateAllBOEModelView
+					{
+						BOEId = boe.BOEID,
+						BOE = boe.BOEName,
+						Message = message
+					};
+
+					flattenedValidateAllBOEs.Add(taskMessage);
+				}
+
+				foreach (ValidationBOELaborType laborType in section.LaborTypes)
+				{
+					FlattenedValidateAllBOEModelView laborHeader = new FlattenedValidateAllBOEModelView
+					{
+						BOEId = boe.BOEID,
+						BOE = boe.BOEName,
+						TaskId = section.TaskId,
+						Section = section.TaskElementDetails.TaskElementDetailsHeader,
+					};
+
+					flattenedValidateAllBOEs.Add(laborHeader);
+
+					foreach (string message in laborType.LaborTypeValidationMsgs)
+					{
+						FlattenedValidateAllBOEModelView laborMessage = new FlattenedValidateAllBOEModelView
+						{
+							BOEId = boe.BOEID,
+							BOE = boe.BOEName,
+							Message = message
+						};
+
+						flattenedValidateAllBOEs.Add(laborMessage);
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Add message rows
+		/// </summary>
+		/// <param name="flattenedValidateAllBOEs"></param>
+		/// <param name="boe"></param>
+		private static void AddMessages(List<FlattenedValidateAllBOEModelView> flattenedValidateAllBOEs, ValidationBOEModelView boe, ICollection<string> messages, string headerName)
+		{
+			FlattenedValidateAllBOEModelView flatHeader = new FlattenedValidateAllBOEModelView
+			{
+				BOEId = boe.BOEID,
+				BOE = boe.BOEName,
+				IsHeader = true,
+				Level = headerName
+			};
+			flattenedValidateAllBOEs.Add(flatHeader);
+
+			foreach (string message in messages)
+			{
+				FlattenedValidateAllBOEModelView flatMessage = new FlattenedValidateAllBOEModelView
+				{
+					BOEId = boe.BOEID,
+					BOE = boe.BOEName,
+					Message = message
+				};
+
+				flattenedValidateAllBOEs.Add(flatMessage);
+			}
+		}
+	}
 }

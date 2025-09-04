@@ -11,7 +11,6 @@ namespace GenBOE.Web.Controllers
 	using System.Collections.ObjectModel;
 	using System.Diagnostics;
 	using System.IO;
-	using System.Linq;
 	using System.Net.Http;
 	using System.Net.Http.Headers;
 	using System.Web.Http;
@@ -257,9 +256,9 @@ namespace GenBOE.Web.Controllers
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
-		public IESSingleResponse<ValidationAllBOEModelView> GetValidateAllBOEsReport(string workspaceShortname)
+		public IESSingleResponse<ICollection<FlattenedValidateAllBOEModelView>> GetValidateAllBOEsReport(string workspaceShortname)
 		{
-			IESSingleResponse<ValidationAllBOEModelView> result = new IESSingleResponse<ValidationAllBOEModelView>();
+			IESSingleResponse<ICollection<FlattenedValidateAllBOEModelView>> result = new IESSingleResponse<ICollection<FlattenedValidateAllBOEModelView>>();
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortname);
 
 			// Start Stopwatch to measure performance
@@ -267,7 +266,8 @@ namespace GenBOE.Web.Controllers
 
 			try
 			{
-				result.Data = validateBOE.ValidateAllBOEs(ws);
+				ValidationAllBOEModelView modelView  = validateBOE.ValidateAllBOEs(ws);
+				result.Data = modelView.Flatten();
 				result.IsSuccessful = true;
 			}
 			catch (Exception ex)
