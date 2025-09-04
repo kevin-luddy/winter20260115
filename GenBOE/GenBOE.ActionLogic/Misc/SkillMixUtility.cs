@@ -328,7 +328,6 @@
 							{
 								// No resource selected, zero out the proposed hours.  BOE Skill Mix % will be 0% auto-calculated later
 								currentRow.ProposedHours = 0m;
-								currentRow.HistoricalHours = refreshedRow.HistoricalHours;
 							}
 
 							if (isBRCEnabled)
