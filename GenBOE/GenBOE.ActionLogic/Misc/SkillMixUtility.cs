@@ -341,12 +341,6 @@
 								{
 									decimal realHistoricalHours = resourceHours.Where(r => r.ResourceName == currentRow.ResourceOld).Sum(l => l.TotalHours);
 									currentRow.HistoricalHours = realHistoricalHours;
-
-									// For new added row, set the historical hours to 0
-									//if (currentRow.BOEID < 0)
-									//{
-									//	currentRow.HistoricalHours = 0;
-									//}
 								}
 							}
 							else
