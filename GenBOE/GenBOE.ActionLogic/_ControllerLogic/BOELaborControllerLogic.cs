@@ -845,7 +845,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							validationErrors.Add(new ValidationMessage(fieldPrefix + "HourSpread", "Hours spread is required."));
 						}
 					}
-					else if (labor.HourSpread.HasValue && labor.HourSpread == 0m)
+					else if (labor.HourSpread.HasValue && labor.HourSpread == 0m && labor.RateType == RateType.Hours)
 					{
 						if (isUsingEP)
 						{
