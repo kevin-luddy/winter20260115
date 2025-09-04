@@ -21,6 +21,7 @@ namespace GenBOE.Web.Controllers.Backend
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
+	using GenBOE.Web.Common;
 	using GenBOE.Web.ModelView;
 	using IES.Common;
 	using IES.Common.classes;
@@ -219,7 +220,16 @@ namespace GenBOE.Web.Controllers.Backend
 
 			try
 			{
-				System.Web.Mvc.ModelStateDictionary modelState = new System.Web.Mvc.ModelStateDictionary();
+				System.Web.Mvc.ModelStateDictionary modelState = ModelState.ToMVC();
+
+				//Removing errors except the boes model
+				foreach (string key in modelState.Keys)
+				{
+					if(key != "boes[0]")
+					{
+						modelState[key].Errors.Clear();
+					}
+				}
 
 				result.Data = boeControllerLogic.SaveManageBOE(boes, modelState, ws);;
 				result.IsSuccessful = true;

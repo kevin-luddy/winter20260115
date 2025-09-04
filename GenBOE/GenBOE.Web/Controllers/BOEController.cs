@@ -1317,10 +1317,10 @@ namespace GenBOE.Web.Controllers
 
 				return toReturn;
 
-			} catch (Exception ex)
+			} catch (GenValidationException ex)
 			{
 				_log.Error(ex);
-				throw new ValidationException(ex.Message);
+				throw new GenValidationException(ex.ValidationList); 
 			}
 
 
