@@ -583,7 +583,7 @@
                     <div class="form-label">
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                             {  %>
-                                    Legacy Skill Mix Table
+                                    Legacy Skill Mix Table (Thru 2028)
                                     <div class="help-icon" data-ng-click="openHelp('SpaceLegacySkillMixTable');"></div>
                         <%  }  %>
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
@@ -640,7 +640,7 @@
                         LM Enterprise Skill Mix Table
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                             {  %>
-                                    <div class="help-icon" data-ng-click="openHelp('SpaceLMEnterpriseSkillMixTable');"></div>
+                                   (2029+) <div class="help-icon" data-ng-click="openHelp('SpaceLMEnterpriseSkillMixTable');"></div>
                         <%  }  %>
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
                             {  %>
