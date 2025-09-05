@@ -129,28 +129,31 @@ namespace GenBOE.Dtos
 					flattenedValidateAllBOEs.Add(taskMessage);
 				}
 
-				foreach (ValidationBOELaborType laborType in section.LaborTypes)
+				if (section.LaborTypes.Any())
 				{
-					FlattenedValidateAllBOEModelView laborHeader = new FlattenedValidateAllBOEModelView
+					foreach (ValidationBOELaborType laborType in section.LaborTypes)
 					{
-						BOEId = boe.BOEID,
-						BOE = boe.BOEName,
-						TaskId = section.TaskId,
-						Section = section.TaskElementDetails.TaskElementDetailsHeader,
-					};
-
-					flattenedValidateAllBOEs.Add(laborHeader);
-
-					foreach (string message in laborType.LaborTypeValidationMsgs)
-					{
-						FlattenedValidateAllBOEModelView laborMessage = new FlattenedValidateAllBOEModelView
+						FlattenedValidateAllBOEModelView laborHeader = new FlattenedValidateAllBOEModelView
 						{
 							BOEId = boe.BOEID,
 							BOE = boe.BOEName,
-							Message = message
+							TaskId = section.TaskId,
+							Section = laborType.LaborTypeHeader,
 						};
 
-						flattenedValidateAllBOEs.Add(laborMessage);
+						flattenedValidateAllBOEs.Add(laborHeader);
+
+						foreach (string message in laborType.LaborTypeValidationMsgs)
+						{
+							FlattenedValidateAllBOEModelView laborMessage = new FlattenedValidateAllBOEModelView
+							{
+								BOEId = boe.BOEID,
+								BOE = boe.BOEName,
+								Message = message
+							};
+
+							flattenedValidateAllBOEs.Add(laborMessage);
+						}
 					}
 				}
 			}

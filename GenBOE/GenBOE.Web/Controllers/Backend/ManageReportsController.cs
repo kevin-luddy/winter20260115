@@ -266,7 +266,7 @@ namespace GenBOE.Web.Controllers
 
 			try
 			{
-				ValidationAllBOEModelView modelView  = validateBOE.ValidateAllBOEs(ws);
+				ValidationAllBOEModelView modelView = validateBOE.ValidateAllBOEs(ws);
 				result.Data = modelView.Flatten();
 				result.IsSuccessful = true;
 			}
