@@ -1721,7 +1721,7 @@ namespace GenBOE.Web.Controllers
 		/// <returns></returns>
 		public ViewResult DisplayBOECustomFieldPerfOrg(string workspace)
 		{
-			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);	// Force a cache clear
 
 			// Initialize Action
 			Stopwatch sw = InitializeAction(_log, "DisplayBOECustomFieldPerfOrg", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
