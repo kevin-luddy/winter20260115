@@ -95,6 +95,11 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 		private BOEStateMachine boeStateMachine { get; set; }
 
 		/// <summary>
+		/// Common data mapper.
+		/// </summary>
+		private ICommonDataMapper commonDataMapper { get; set; }
+
+		/// <summary>
 		/// Ctor
 		/// </summary>
 		/// <param name="workspaceControllerLogic"></param>
@@ -112,7 +117,8 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 			IFullWorkspaceRecalculation fullWSRecalc,
 			BoeMediator boeMediator,
 			BoeTaskElementMediator boeTaskElementMediator,
-			BOEStateMachine boeStateMachine
+			BOEStateMachine boeStateMachine,
+			ICommonDataMapper commonDataMapper
 		)
 		{
 			this._securityInformation = _securityInformation;
@@ -128,6 +134,7 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 			this.boeMediator = boeMediator;
 			this.boeTaskElementMediator = boeTaskElementMediator;
 			this.boeStateMachine = boeStateMachine;
+			this.commonDataMapper = commonDataMapper;
 		}
 
 		/// <summary>
@@ -567,6 +574,44 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 			}
 
 			return nextRevision;
+		}
+
+		/// <summary>
+		/// Data normalization for Workspace Status History
+		/// </summary>
+		/// <param name="ws">Full Workspace</param>
+		/// <returns>Workspace Status History Model View</returns>
+		public ICollection<WorkspaceStatusHistoryModelView> GetWorkspaceStatusHistory(FullWorkspace ws)
+		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
+
+			ICollection<WorkspaceStatusHistoryModelView> theModelViews = new Collection<WorkspaceStatusHistoryModelView>();
+			IDictionary<int, WorkspaceStateModelView> allWorkspaceStates = this.commonDataMapper.getWorkspaceStatesDictionary();
+			IDictionary<int, string> userIdCache = new Dictionary<int, string>();
+
+			// Create a ModelView for each DTO and add it to the View collection
+			foreach (WorkspaceHistoryDTO workspaceHistory in ws.WorkspaceHistory)
+			{
+				if (!userIdCache.ContainsKey(workspaceHistory.PerformedByETIUserId))
+				{
+					string displayName = this.userLoader.GetUserByID(workspaceHistory.PerformedByETIUserId).DisplayName;
+					userIdCache.Add(workspaceHistory.PerformedByETIUserId, displayName);
+				}
+
+				theModelViews.Add(
+					new WorkspaceStatusHistoryModelView
+					{
+						Date = workspaceHistory.Date,
+						OldValue = allWorkspaceStates[(int)workspaceHistory.OldValue].WorkspaceState,
+						NewValue = allWorkspaceStates[(int)workspaceHistory.NewValue].WorkspaceState,
+						PerformedBy = userIdCache[workspaceHistory.PerformedByETIUserId]
+					});
+			}
+
+			return theModelViews.OrderBy(x => x.Date).ToList();
 		}
 	}
 }

@@ -155,8 +155,9 @@ namespace GenBOE.Tests.Common
             UserDTO user = new UserDTO() { NTID = "test4", IsSubcontractor = true };
             memCache.Setup(x => x.Contains(It.IsAny<string>())).Returns(true);
             memCache.Setup(x => x.GetData(It.IsAny<string>())).Returns(true);
+			ConfigurationManager.AppSettings["OverrideSubNonUs"] = "false";
 
-            bool returned = sut.IsSubcontractorUser(user.NTID, user.IsSubcontractor);
+			bool returned = sut.IsSubcontractorUser(user.NTID, user.IsSubcontractor);
             Assert.IsTrue(returned);
             adUtils.Verify(x => x.IsMemberOfADGroup(It.IsAny<string>(), It.IsAny<string>()), Times.Never());
         }
@@ -184,7 +185,8 @@ namespace GenBOE.Tests.Common
             Mock<IActiveDirectoryUtilities> adUtils = new Mock<IActiveDirectoryUtilities>();
             Mock<ICache> memCache = new Mock<ICache>();
             SecurityInformation sut = new SecurityInformation(adUtils.Object, memCache.Object);
-            sut.IsSubcontractorUser("test", null);
+			ConfigurationManager.AppSettings["OverrideSubNonUs"] = "false";
+			sut.IsSubcontractorUser("test", null);
         }
 
         /// <summary>

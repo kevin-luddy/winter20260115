@@ -5,6 +5,7 @@
 // -----------------------------------------------------------------------
 namespace GenBOE.ActionLogic.ControllerLogic.Backend
 {
+	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
@@ -16,8 +17,6 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 	using GenBOE.Objects;
 	using IES.Common;
 	using IES.Common.PickList;
-	using IES.Common.Exceptions;
-	using System;
 
 	/// <summary>
 	/// Workspace Admin Controller Logic
@@ -27,17 +26,17 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 		/// <summary>
 		/// Common Data Loader
 		/// </summary>
-		private ICommonDataLoader commonDataLoader;
+		private readonly ICommonDataLoader commonDataLoader;
 
-        /// <summary>
-        /// wbs Loader
-        /// </summary>
-        private IWbsDTODataLoader wbsLoader;
+		/// <summary>
+		/// wbs Loader
+		/// </summary>
+		private readonly IWbsDTODataLoader wbsLoader;
 
-        /// <summary>
-        /// nested wbs utilities
-        /// </summary>
-		private NestedWBSUtilities nestedWbsUtilities = null;
+		/// <summary>
+		/// nested wbs utilities
+		/// </summary>
+		private readonly NestedWBSUtilities nestedWbsUtilities;
 
 		public WorkspaceAdminControllerLogic(ICommonDataLoader commonDataLoader, NestedWBSUtilities nestedWbsUtilities, IWbsDTODataLoader wbsLoader)
 		{

@@ -9,7 +9,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.IO;
+	using System.Data.Entity.Core.Metadata.Edm;
+	using System.IO;
     using System.Linq;
 	using System.Threading.Tasks;
 	using System.Web;
@@ -46,7 +47,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         Mock<IResourceDTODataLoader> ResourceLoader = new Mock<IResourceDTODataLoader>();
         Mock<IFullObjectFactory> Factory = new Mock<IFullObjectFactory>();
         Mock<IRetriever> _retriever = new Mock<IRetriever>();
-        Mock<IPermissionsDTODataLoader> _perissionsDtoDataLoader = new Mock<IPermissionsDTODataLoader>();
+        Mock<IPermissionsDTODataLoader> _permissionsDtoDataLoader = new Mock<IPermissionsDTODataLoader>();
         Mock<ICommonDataMapper> _commonDataMapper = new Mock<ICommonDataMapper>();
         Mock<RMSZoneTravelRatesFeesDataLoader> _RMSZoneTravelRatesFeesDataLoader;
         Mock<TravelTripCostCalculation> _TravelTripCostCalculator;
@@ -55,13 +56,14 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         Mock<IWorkspaceControllerLogic> workspaceControllerLogic = new Mock<IWorkspaceControllerLogic>();
         Mock<IRteTemplateDataLoader> rteTemplateLoader = new Mock<IRteTemplateDataLoader>();
         Mock<TravelTripCostCalculation> travelTripCostCalculation = new Mock<TravelTripCostCalculation>();
+		Mock<IUserDTODataLoader> _userDtoDataLoader = new Mock<IUserDTODataLoader>();
 
 		[TestInitialize]
         public void Init()
         {
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), Factory.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), _retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _perissionsDtoDataLoader.Object);
+            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissionsDtoDataLoader.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _commonDataMapper.Object);
 			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), new ActiveDirectoryUtilities());
 
@@ -81,7 +83,10 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 this.boeCustomExporter.Object,
                 this.workspaceExportFormatDTOLoader.Object, this.boeDiscrepancyReport.Object,
                 this.proposalLoader.Object,
-                this.workspaceControllerLogic.Object, this.travelTripCostCalculation.Object);			
+                this.workspaceControllerLogic.Object, this.travelTripCostCalculation.Object,
+				this._commonDataMapper.Object,
+				this._permissionsDtoDataLoader.Object, this._userDtoDataLoader.Object
+				);
 		}
 
         #region ExportAllBOEsReport

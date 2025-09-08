@@ -146,9 +146,10 @@ namespace GenBOE.DataBridge.Core.Common
 		/// <summary>
 		/// Get all ProPricer Fields as a dictionary
 		/// </summary>
-		/// <param name="wsProjectMapType"></param>
-		/// <returns>List of fields</returns>
-		IDictionary<int, EnumTypeModelView> GetProPricerFieldsDictionary(bool isProjectMapType);
+		/// <param name="isProjectMapType">Are these fields for a project map workspace?</param>
+		/// <param name="enableTaskAuthor">Is Task Author enabled for system/workspace</param>
+		/// <returns>Dictionary of fields</returns>
+		IDictionary<int, EnumTypeModelView> GetProPricerFieldsDictionary(bool isProjectMapType, bool enableTaskAuthor);
 		#endregion
 
 		#region ProposalStatusTypes

@@ -234,7 +234,7 @@
 		if ($scope.ManageTaskModel.IsSkillMixFeatureEnabled) {
 			if (!$scope.ManageTaskModel.IsSkillMixEnabled) {
 				let skillMixStart = ManageTaskModel.SkillMixStartDate.split(' ')[0].toDate();
-				$scope.skillMixHelperText = "Skill Mix Tables are not showing because Workspace Creation Date is before " + skillMixStart.toLocaleDateString("en-US") + ".";
+				$scope.skillMixHelperText = "Skill Mix Tables are not showing because either Skill Mix is not enabled or blacklisted for this Workspace, or Workspace Creation Date is before " + skillMixStart.toLocaleDateString("en-US") + ".";
 			} else if (!$scope.ManageTaskModel.UsingTemplateBOE) {
 				$scope.skillMixHelperText = "Skill Mix Tables are not showing because Workspace is not setup to use MOQ Templates.";
 			} else if ($scope.ManageTaskModel.IsSpace && !$scope.ManageTaskModel.SapConnectionEnabled) {
@@ -1067,7 +1067,7 @@
 			}
 		});
 
-		angular.forEach($scope.model, function (item, key) {			
+		angular.forEach($scope.model, function (item, key) {
 			if (!item.Deleted) {
 				item.Deleted = true;
 			}
@@ -2100,9 +2100,9 @@
 						return table.RepositoryName === $scope.ManageTaskModel.SapWebiRepository;
 					});
 
- 					// Lastly, check that SAP is enabled
+					// Lastly, check that SAP is enabled
 					return hasBigThreeMoqType && hasSapWebiRepository && $scope.ManageTaskModel.SapConnectionEnabled;
-				// RMS
+					// RMS
 				} else {
 					let hasProperMoqTypes = [5001, 5002, '5001', '5002'].includes($scope.SelectedMoqTypes[0].SelectedMOQType);
 					return $scope.IsSkillMixEnabled && hasProperMoqTypes;
@@ -2138,7 +2138,7 @@
 
 		// Check if there are no MOQ Tables
 		let noMoqTables = $scope.SelectedMoqTypes === undefined || $scope.SelectedMoqTypes.length === 0;
-			
+
 		// Check if any MOQ Table is missing SAP Resource Hours
 		let hasMissingSAPResourceHours = $scope.SelectedMoqTypes.every(x =>
 			x.TableData !== undefined &&

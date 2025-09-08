@@ -30,13 +30,14 @@ namespace GenBOE.DataBridge.Core.Common
 		/// <param name="moqTypeSelections">Workspace MOQType selections</param>
 		/// <param name="hasTMRates">Has T&amp;M Rates</param>
 		/// <param name="task">The Task</param>
+		/// <param name="workspaceShortname">The Workspace shortname</param>
 		/// <returns>Option to show skill mix for task.</returns>
 		public static bool ShowSkillMixForTask(DateTime? workspaceCreationDate, bool workspaceUsingTemplateBOE, bool workspaceEnableSAPConnection,
-			IEnumerable<MoqTypeSelection> moqTypeSelections, int boeTaskElementId, bool hasTMRates)
+			IEnumerable<MoqTypeSelection> moqTypeSelections, int boeTaskElementId, bool hasTMRates, string workspaceShortname)
 		{
 			bool showSkillMixRationale = false;
 
-			if (CommonUtilities.ShowSkillMixForWorkspace(workspaceCreationDate))
+			if (CommonUtilities.ShowSkillMixForWorkspace(workspaceCreationDate, workspaceShortname))
 			{
 				ICollection<MoqTypeSelection> moqTypes = moqTypeSelections.Where(m => m.TaskId == boeTaskElementId).ToList();
 				// Only show SkillMix if there is 1 and only 1 MOQ Type

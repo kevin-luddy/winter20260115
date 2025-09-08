@@ -6,14 +6,7 @@
 
 namespace GenBOE.ActionLogic.ControllerLogic
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Collections.ObjectModel;
-	using System.Globalization;
-	using System.Linq;
-	using System.Threading.Tasks;
-	using System.Transactions;
-	using System.Web.Configuration;
+	using DocumentFormat.OpenXml.Wordprocessing;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
@@ -36,6 +29,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using IES.Common.Exceptions;
 	using IES.Common.PickList;
 	using MoreLinq;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Globalization;
+	using System.Linq;
+	using System.Threading.Tasks;
+	using System.Transactions;
+	using System.Web.Configuration;
 	using static IES.Common.Constants;
 
 	public abstract class WorkspaceControllerLogic : IWorkspaceControllerLogic
@@ -1793,6 +1794,71 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		}
 
 		/// <summary>
+		///  Get Next Tracking Number for PLD
+		/// </summary>
+		/// <param name="workspaces"></param>
+		/// <param name="paNumber"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <exception cref="ArgumentException"></exception>
+		public Dictionary<string, object> NextTrackingNumber(IEnumerable<WorkspaceDTO> workspaces, string paNumber)
+		{
+
+			if(workspaces == null)
+			{
+				throw new ArgumentNullException(nameof(workspaces));				
+			}
+			
+
+			int max = 0;
+			bool anyRelevant = false;
+			string prefix = paNumber + "_";
+
+
+			foreach (WorkspaceDTO ws in workspaces)
+			{
+				string sn = (ws.Shortname ?? string.Empty).Trim();
+
+				if (sn.Equals(paNumber, StringComparison.OrdinalIgnoreCase))
+				{
+					anyRelevant = true;
+					continue;
+				}
+
+				if (sn.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+				{
+					string tail = sn.Substring(prefix.Length);
+					if (int.TryParse(tail, out int n))
+					{
+						if (n > max)
+						{
+							max = n;
+						}
+						anyRelevant = true;
+					}
+				}
+			}
+			string nextShort = !anyRelevant ?
+				paNumber : (max > 0) ?
+				$"{paNumber}_{max + 1:00}" :
+				$"{paNumber}_01";
+						
+
+			return new Dictionary<string, object>
+			{
+				["Id"] = 0,
+				["WorkspaceName"] = "",
+				["ShortName"] = nextShort,
+				["TrackingNumber"] = paNumber
+			};
+
+								
+
+		}
+
+
+
+		/// <summary>
 		/// Calculates (SAP) Actuals for MOQ Types inside a Workspace, then saves the changes to the database, 
 		/// and sets BOE State to Draft and sends out emails (if BOE State needed changed)
 		/// </summary>
@@ -1832,7 +1898,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			if (tables.Any())
 			{
 				Dictionary<int, string> tasks = ws.TaskElements.ToDictionary(t => t.Id, x => x.TaskTitle);
-				List<int> boesUpdated = await RecalculateActualsAcrossWorkspace(result, boes, tasks, tables, tableIdToMoqType, ws.CreationDate);
+				List<int> boesUpdated = await RecalculateActualsAcrossWorkspace(result, boes, tasks, tables, tableIdToMoqType, ws.CreationDate, ws.Shortname);
 				SaveRecalculateActuals(ws, boes, moqTypesToSave, boesUpdated);
 			}
 
@@ -1888,9 +1954,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="tables">Dictionary of MOQ Tables</param>
 		/// <param name="tableIdToMoqType">Dictionary of MOQ Types keyed by Table Id</param>
 		/// <param name="workspaceCreationDate">Workspace Creation Date</param>
-		/// <param name="isUsingTM"
-		/// <returns></returns>
-		private async Task<List<int>> RecalculateActualsAcrossWorkspace(List<WorkspaceCalculateActualsModelView> result, Dictionary<int, FullBoe> boes, Dictionary<int, string> tasks, Dictionary<int, MoqTableData> tables, Dictionary<int, MoqTypeSelection> tableIdToMoqType, DateTime? workspaceCreationDate)
+		/// <param name="workspaceShortname">The workspace short name</param>
+		/// <returns>The BOEs that were updated</returns>
+		private async Task<List<int>> RecalculateActualsAcrossWorkspace(List<WorkspaceCalculateActualsModelView> result, Dictionary<int, FullBoe> boes, Dictionary<int, string> tasks,
+			Dictionary<int, MoqTableData> tables, Dictionary<int, MoqTypeSelection> tableIdToMoqType, DateTime? workspaceCreationDate, string workspaceShortname)
 		{
 			ICollection<MoqTableDataModelView> tableData = tables.Values.Select(t =>
 				new MoqTableDataModelView()
@@ -1907,7 +1974,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			List<int> boesUpdated = new List<int>();
 			// Make one bulk call to SAP
-			if (Utilities.ShowSkillMixForWorkspace(workspaceCreationDate))
+			if (Utilities.ShowSkillMixForWorkspace(workspaceCreationDate, workspaceShortname))
 			{
 				ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>> responses = await this.boeLaborControllerLogic.CalculateAllActualsSapWithSkillMix(tableData);
 				foreach (IESResponse<CalculateActualsWithSkillMixViewModel> response in responses)

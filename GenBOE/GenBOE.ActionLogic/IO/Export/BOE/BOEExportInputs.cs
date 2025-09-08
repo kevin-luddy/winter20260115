@@ -574,7 +574,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// <param name="taskElements">The task elements</param>
 		private void CalculateSkillMix(FullWorkspace ws, bool isBRCEnabled, IEnumerable<BoeTaskElementDTO> taskElements)
 		{
-			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate))
+			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.Shortname))
 			{
 				foreach (BoeTaskElementDTO task in taskElements)
 				{

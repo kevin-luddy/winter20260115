@@ -106,6 +106,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Runtime.Caching" />
@@ -142,6 +143,8 @@
     <Compile Include="DTO\MOQTypes\MoqTypeTableCustomFieldValueXREFLoader.cs" />
     <Compile Include="DTO\MOQTypes\MoqTypeTableDataLabels.cs" />
     <Compile Include="DTO\BOETaskElement\SkillMixModelView.cs" />
+    <Compile Include="DTO\PLD\IPldDTODataLoader.cs" />
+    <Compile Include="DTO\PLD\PldDTODataLoader.cs" />
     <Compile Include="DTO\Request\IRequestDataLoader.cs" />
     <Compile Include="DTO\Request\RequestDataLoader.cs" />
     <Compile Include="DTO\Request\RequestType.cs" />
@@ -199,6 +202,7 @@
     <Compile Include="GenBOE.Dtos\DTOs\PerformingOrgDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\PerformingOrgListDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\PermissionsDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\ProposalDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\ProPricerDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\ProPricerPreview.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\ReportDTO.cs" />
@@ -233,8 +237,10 @@
     <Compile Include="GenBOE.Dtos\ModelView\Admin\ADSyncDeleteUserModelView.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\Admin\MSTZoneTravelOriginModelView.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\Reporting\BOEActivityReportModelView.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\Reporting\BOEStatusReportGrid.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\Reporting\BOEStatusReportModelView.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\Reporting\BoeWbsReportModelView.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\Reporting\FlattenedValidateAllBOEModelView.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\Reporting\WorkspaceActivityReportModelView.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\WBS\BOE\BOEExportModelView.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\WBS\BOE\BOEExportTaskElement.cs" />
@@ -452,6 +458,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GenBOE.PLD.Models\GenBOE.PLD.Models.csproj">
+      <Project>{F2AB5FFC-459A-4BB1-9CB5-61B4C89C14A0}</Project>
+      <Name>GenBOE.PLD.Models</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GenTRAC.Models\GenTRAC.Models.csproj">
       <Project>{2802B2B5-80B1-4447-88D4-CAAD5FC36BA1}</Project>
       <Name>GenTRAC.Models</Name>

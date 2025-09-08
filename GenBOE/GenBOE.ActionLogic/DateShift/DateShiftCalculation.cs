@@ -156,7 +156,7 @@ namespace GenBOE.ActionLogic.DateShift
 
 
 				// Check if we have Skill Mix enabled to adjust Skill Mix table data as needed
-				if (Utilities.ShowSkillMixForWorkspace(fullWorkspace?.CreationDate))
+				if (Utilities.ShowSkillMixForWorkspace(fullWorkspace?.CreationDate, fullWorkspace.Shortname))
 				{
 
 					// Iterate through each task and check for Skill Mix

@@ -68,6 +68,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		ICollection<ResourceDTO> GetFilteredWorkspaceResources(IReadOnlyCollection<ResourceDTO> inWorkspaceResources);
 
 		/// <summary>
+		///  Get the PLD next tracking number
+		/// </summary>
+		/// <param name="workspaces"></param>
+		/// <param name="paNumber"></param>
+		/// <returns></returns>
+		Dictionary<string, object> NextTrackingNumber(IEnumerable<WorkspaceDTO> workspaces, string paNumber);
+
+		/// <summary>
 		/// Gets a filtered list of T&amp;M Resources
 		/// </summary>
 		/// <param name="workspaceResources">The list of resources to filter</param>
