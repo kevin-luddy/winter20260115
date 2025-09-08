@@ -353,14 +353,53 @@ namespace IES.Common
         /// </summary>
         public readonly static string ACTION_EXPORT_REVISION_AS_JSON = "ExportRevisionAsJson";
 
-        #endregion
+		#region ValidateAllBOEs Report Headers
 
-        #region Admin
+		/// <summary>
+		/// Header for BOE Header Messages
+		/// </summary>
+		public static readonly string GET_BOE_HEADER_MSG_HEADER = "BOE Header";
 
-        /// <summary>
-        /// The name for the Admin Controller.
-        /// </summary>
-        public readonly static string CONTROLLER_ADMIN = "Admin";
+		/// <summary>
+		/// Header for BOE Custom Validation Messages
+		/// </summary>
+		public static readonly string GET_BOE_CUSTOM_VALIDATION_HEADER = "BOE Custom Field Validation";
+
+		/// <summary>
+		/// Header for BOE Comment Validation Messages
+		/// </summary>
+		public static readonly string GET_BOE_COMMENTS_HEADER = "BOE Comments";
+
+		/// <summary>
+		/// Header for BOE Task Labor Validation Messages
+		/// </summary>
+		public static readonly string GET_BOE_LABOR_HEADER = "LM / IWTA / Sub Labor";
+
+		/// <summary>
+		/// Header for BOE Cost Validation Messages
+		/// </summary>
+		public static readonly string GET_BOE_COST_HEADER = "ODC";
+
+		/// <summary>
+		/// Header for BOE Material Validation Messages
+		/// </summary>
+		public static readonly string GET_BOE_MATERIAL_HEADER = "Materials";
+
+		/// <summary>
+		/// Header for BOE Travel Validation Messages
+		/// </summary>
+		public static readonly string GET_BOE_TRAVEL_HEADER = "Travel";
+
+		#endregion ValidateAllBOEs Report Headers
+
+		#endregion
+
+		#region Admin
+
+		/// <summary>
+		/// The name for the Admin Controller.
+		/// </summary>
+		public readonly static string CONTROLLER_ADMIN = "Admin";
 
         /// <summary>
         /// The view name for the CobraYearConfiguration index.

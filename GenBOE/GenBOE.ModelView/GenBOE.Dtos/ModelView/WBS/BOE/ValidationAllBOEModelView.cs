@@ -6,6 +6,7 @@
 
 namespace GenBOE.Dtos
 {
+	using IES.Common;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
@@ -28,7 +29,7 @@ namespace GenBOE.Dtos
 		/// <summary>
 		/// Flatten the BOEs
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>Flattened Validation Messages</returns>
 		public ICollection<FlattenedValidateAllBOEModelView> Flatten()
 		{
 			List<FlattenedValidateAllBOEModelView> flattenedValidateAllBOEs = new List<FlattenedValidateAllBOEModelView>();
@@ -36,37 +37,37 @@ namespace GenBOE.Dtos
 			{
 				if (boe.BOEHeaderMsgs != null && boe.BOEHeaderMsgs.Any())
 				{
-					AddMessages(flattenedValidateAllBOEs, boe, boe.BOEHeaderMsgs, "BOE Header");
+					AddMessages(flattenedValidateAllBOEs, boe, boe.BOEHeaderMsgs, IESWebConstants.GET_BOE_HEADER_MSG_HEADER);
 				}
 
 				if (boe.BOECustomFieldValidationMessages != null && boe.BOECustomFieldValidationMessages.Any())
 				{
-					AddMessages(flattenedValidateAllBOEs, boe, boe.BOECustomFieldValidationMessages, "BOE Custom Field Validation");
+					AddMessages(flattenedValidateAllBOEs, boe, boe.BOECustomFieldValidationMessages, IESWebConstants.GET_BOE_CUSTOM_VALIDATION_HEADER);
 				}
 
 				if (boe.BOECommentandApprovals != null && boe.BOECommentandApprovals.Any())
 				{
-					AddMessages(flattenedValidateAllBOEs, boe, boe.BOECommentandApprovals, "BOE Comments");
+					AddMessages(flattenedValidateAllBOEs, boe, boe.BOECommentandApprovals, IESWebConstants.GET_BOE_COMMENTS_HEADER);
 				}
 
 				if (boe.Tasks != null && boe.Tasks.Any())
 				{
-					AddSectionMessages(flattenedValidateAllBOEs, boe, boe.Tasks, "LM / IWTA / Sub Labor", FlattenedValidateTaskType.Labor);
+					AddSectionMessages(flattenedValidateAllBOEs, boe, boe.Tasks, IESWebConstants.GET_BOE_LABOR_HEADER, FlattenedValidateTaskType.Labor);
 				}
 
 				if (boe.Materials != null && boe.Materials.Any())
 				{
-					AddSectionMessages(flattenedValidateAllBOEs, boe, boe.Materials, "Materials", FlattenedValidateTaskType.Material);
+					AddSectionMessages(flattenedValidateAllBOEs, boe, boe.Materials, IESWebConstants.GET_BOE_MATERIAL_HEADER, FlattenedValidateTaskType.Material);
 				}
 
 				if (boe.Costs != null && boe.Costs.Any())
 				{
-					AddSectionMessages(flattenedValidateAllBOEs, boe, boe.Costs, "ODC", FlattenedValidateTaskType.ODC);
+					AddSectionMessages(flattenedValidateAllBOEs, boe, boe.Costs, IESWebConstants.GET_BOE_COST_HEADER, FlattenedValidateTaskType.ODC);
 				}
 
 				if (boe.Travels != null && boe.Travels.Any())
 				{
-					AddSectionMessages(flattenedValidateAllBOEs, boe, boe.Travels, "Travel", FlattenedValidateTaskType.Travel);
+					AddSectionMessages(flattenedValidateAllBOEs, boe, boe.Travels, IESWebConstants.GET_BOE_TRAVEL_HEADER, FlattenedValidateTaskType.Travel);
 				}
 			}
 
@@ -162,8 +163,8 @@ namespace GenBOE.Dtos
 		/// <summary>
 		/// Add message rows
 		/// </summary>
-		/// <param name="flattenedValidateAllBOEs"></param>
-		/// <param name="boe"></param>
+		/// <param name="flattenedValidateAllBOEs">Flattened Validation Messages holder</param>
+		/// <param name="boe">Validate BOE (none flattened model)</param>
 		private static void AddMessages(List<FlattenedValidateAllBOEModelView> flattenedValidateAllBOEs, ValidationBOEModelView boe, ICollection<string> messages, string headerName)
 		{
 			FlattenedValidateAllBOEModelView flatHeader = new FlattenedValidateAllBOEModelView
