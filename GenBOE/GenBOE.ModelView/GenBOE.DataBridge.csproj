@@ -227,6 +227,7 @@
     <Compile Include="GenBOE.Dtos\DTOs\WbsDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\WorkspaceDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\WorkspaceEmailOverride.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\WorkspaceExportFormatNameDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\WorkspaceExportFormatDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\WorkspaceHistoryDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\WorkspaceRMSEscalationRatesDTO.cs" />
