@@ -59,8 +59,9 @@ namespace GenBOE.Objects
 		private ReadOnlyCollection<CustomFieldDTO> customFields;
 		private ReadOnlyCollection<CustomFieldValueDTO> customFieldValues;
 		private ReadOnlyCollection<TMResourceRateDTO> tmResourceRates;
-		private ReadOnlyCollection<WorkspaceExportFormatDTO> workspaceExportFormats;
+		private ReadOnlyCollection<WorkspaceExportFormatNameDTO> workspaceExportFormatNames;
 		private string selectedWorkspaceExportFormatName;
+		private WorkspaceExportFormatDTO workspaceExportFormatTemplate;
 		private ReadOnlyCollection<WorkspaceVersionMetaDataDTO> workspaceVersionMetaData;
 		private ReadOnlyCollection<ProPricerDTO> proPricerExports;
 		private ReadOnlyCollection<PerformingOrgDTO> performingOrgsForWorkspaceList;
@@ -692,15 +693,15 @@ namespace GenBOE.Objects
 			{
 				if (this.selectedWorkspaceExportFormatName == null)
 				{
-					if (this.workspaceExportFormats == null)
+					if (this.workspaceExportFormatNames == null)
 					{
 						// retrieve from the database directly
-						this.selectedWorkspaceExportFormatName = this.retriever.GetWorkspaceExportFormatNameByTemplateId(this.TemplateID);
+						this.selectedWorkspaceExportFormatName = this.retriever.GetWorkspaceExportFormatNameByTemplateId(this.TemplateID)?.ExportFormatName;
 					}
 					else
 					{
 						// retrieve from the property
-						this.selectedWorkspaceExportFormatName = this.WorkspaceExportFormats.FirstOrDefault(f => f.Id == this.TemplateID)?.ExportFormatName;
+						this.selectedWorkspaceExportFormatName = this.WorkspaceExportFormatNames.FirstOrDefault(f => f.Id == this.TemplateID)?.ExportFormatName;
 					}
 				}
 
@@ -711,19 +712,19 @@ namespace GenBOE.Objects
 		/// <summary>
 		/// Workspace Export Format
 		/// </summary>
-		public IReadOnlyCollection<WorkspaceExportFormatDTO> WorkspaceExportFormats
+		public IReadOnlyCollection<WorkspaceExportFormatNameDTO> WorkspaceExportFormatNames
 		{
 			get
 			{
-				if (this.workspaceExportFormats == null)
+				if (this.workspaceExportFormatNames == null)
 				{
-					List<WorkspaceExportFormatDTO> tempWorkspaceExportFormats = this.retriever.GetWorkspaceExportFormatsByWorkspaceId(this.Id).ToList();
+					List<WorkspaceExportFormatNameDTO> tempWorkspaceExportFormats = this.retriever.GetWorkspaceExportFormatNamesByWorkspaceId(this.Id).ToList();
 
 					// Add the template for the Workspace's selected Template ID so a template that has been archived or
 					// switched off available for all will still be available
 					if (!tempWorkspaceExportFormats.Select(x => x.Id).Contains(this.TemplateID))
 					{
-						WorkspaceExportFormatDTO workspaceTemplate = this.retriever.GetWorkspaceExportFormatByTemplateId(this.TemplateID);
+						WorkspaceExportFormatNameDTO workspaceTemplate = this.retriever.GetWorkspaceExportFormatNameByTemplateId(this.TemplateID);
 
 						if (workspaceTemplate != null)
 						{
@@ -731,10 +732,27 @@ namespace GenBOE.Objects
 						}
 					}
 
-					this.workspaceExportFormats = tempWorkspaceExportFormats.AsReadOnly();
+					this.workspaceExportFormatNames = tempWorkspaceExportFormats.AsReadOnly();
 				}
 
-				return this.workspaceExportFormats;
+				return this.workspaceExportFormatNames;
+			}
+		}
+
+		/// <summary>
+		/// Workspace Export Format for the selected Template
+		/// </summary>
+		public WorkspaceExportFormatDTO WorkspaceExportFormatTemplate
+		{
+			get
+			{
+				if (this.workspaceExportFormatTemplate == null)
+				{
+					// retrieve from the database directly
+					this.workspaceExportFormatTemplate = this.retriever.GetWorkspaceExportFormatByTemplateId(this.TemplateID);
+				}
+
+				return this.workspaceExportFormatTemplate;
 			}
 		}
 

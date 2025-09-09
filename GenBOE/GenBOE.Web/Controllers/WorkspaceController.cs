@@ -1349,9 +1349,9 @@ namespace GenBOE.Web.Controllers
 			// gather up output format types
 			List<SelectListItemWithTitle> outputFormatTypes = new List<SelectListItemWithTitle>();
 
-			Collection<WorkspaceExportFormatDTO> exportFormats = ws.WorkspaceExportFormats.ToCollection();
+			Collection<WorkspaceExportFormatNameDTO> exportFormats = ws.WorkspaceExportFormatNames.ToCollection();
 
-			foreach (WorkspaceExportFormatDTO exportFormat in exportFormats.OrderBy(x => x.ExportFormat.TemplateId))
+			foreach (WorkspaceExportFormatNameDTO exportFormat in exportFormats.OrderBy(x => x.ExportFormat.TemplateId))
 			{
 				if (exportFormat.IsActive || ws.TemplateID == exportFormat.ExportFormat.TemplateId)
 				{
@@ -1407,11 +1407,15 @@ namespace GenBOE.Web.Controllers
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "GetOutputFormatTemplate", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_OUTPUT_FORMAT_TEMPLATE, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			FileContentResult toReturn = null;
 
-			WorkspaceExportFormatDTO template = ws.WorkspaceExportFormats.FirstOrDefault(x => x.Id == id.Value);
+			// Retrieving from Workspace first to make sure the workspace has access to this template Id
+			WorkspaceExportFormatNameDTO templateName = ws.WorkspaceExportFormatNames.FirstOrDefault(x => x.Id == id.Value);
+			
+			// Then retrieve from the database
+			WorkspaceExportFormatDTO template = this.retriever.GetWorkspaceExportFormatByTemplateId(templateName.Id);
 
 			// Return the template as a download for the user
 			using (MemoryStream mem = _PackageUtilities.UpdateDocumentVersion(template.FileData, template.PhysicalFilePathCache, template.ExportFormat))
@@ -1421,7 +1425,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "GetOutputFormatTemplate", sw);
+			FinalizeAction(_log, WebConstants.ACTION_GET_OUTPUT_FORMAT_TEMPLATE, sw);
 
 			return toReturn;
 		}
@@ -4948,7 +4952,7 @@ namespace GenBOE.Web.Controllers
 						// Call the BL to copy the workspace
 						finishedWithoutErrors = _WorkspaceCopier.CopyWorkspace(copiedFromWs, newWs, newWorkspace.BOEsToCopy, newWorkspace.CopyPermissions,
 						newWorkspace.CopyTasks, newWorkspace.CopyLaborSpreads);
-						Collection<WorkspaceExportFormatDTO> copiedTemplateTypes = _WorkspaceExportFormatDTOLoader.GetWorkspaceExportFormatsForWorkspace(newWorkspace.WorkspaceToCopyID);
+						Collection<WorkspaceExportFormatNameDTO> copiedTemplateTypes = _WorkspaceExportFormatDTOLoader.GetWorkspaceExportFormatNamesForWorkspace(newWorkspace.WorkspaceToCopyID);
 						_WorkspaceExportFormatDTOLoader.InsertWorkspaceExportFormatsPickList(copiedTemplateTypes, newWorkspaceID);
 					}
 					else
