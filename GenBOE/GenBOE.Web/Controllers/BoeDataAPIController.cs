@@ -453,6 +453,143 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
+		/// Exports all BOEs as a zip file stream
+		/// </summary>
+		/// <param name="workspaceShortName">The workspaceShortName</param>
+		/// <returns>Zip file stream</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
+		[HttpGet]
+		public async Task<IESSingleResponse<Byte[]>> ExportAllBOEsAsStream(string workspaceShortName)
+		{
+			tokenHandler.AuthenticateUserFromAuthorizationToken();
+			IESSingleResponse<Byte[]> response = new IESSingleResponse<Byte[]>();
+
+			try
+			{
+				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
+				MemoryStream stream = new MemoryStream();
+
+				this.reportsControllerLogic.PrepareAllBOEsReport(
+					workspace,
+					this.PermissionsLoader.GetBOEPotentialPermissionsForWorkspace(workspace.Id)
+						.Any(p => p.Role == Role.SubcontractorAuthor && p.ETIUserId == workspace.CurrentActiveUser.UserID),
+					null,
+					null,
+					null,
+					out bool isCustomExport,
+					out WorkspaceExportFormatDTO wsExportFormatDTO,
+					out BOEExportInputs exportInputs,
+					out ICollection<BOEExportModelView> boeExportModelViews,
+					out List<BOESummaryGridModelView> boeSummaryGridModelViews,
+					false);
+
+				if (isCustomExport)
+				{
+					// distinguish between MASTER and legacy templates
+					// if legacy, use original MASTER, otherwise use selected template
+					wsExportFormatDTO = wsExportFormatDTO.ExportFormat.ParentTemplateId < 9001 || wsExportFormatDTO.ExportFormat.ParentTemplateId > 10000 || wsExportFormatDTO.ExportFormat.ParentTemplateId == null ? this.workspaceExportFormatDTOLoader.GetById((int)ExcelReportTemplateType.MASTER) : wsExportFormatDTO;
+				}
+				if (Utilities.IsReportGenerationExternal)
+				{
+					await this.boeReportsHttpService.ExportBOEsToWord(null, null, isCustomExport, wsExportFormatDTO, exportInputs, boeExportModelViews,
+						boeSummaryGridModelViews, true, stream, true);
+				}
+				else if (isCustomExport)
+				{
+					this.boeCustomExporter.ExportBOEsToZipFile(
+						exportInputs,
+						boeExportModelViews,
+						boeSummaryGridModelViews,
+						workspace,
+						null,
+						null,
+						string.Format("genBOEExport-{0}.zip", workspace.WorkspaceName).Replace(",", string.Empty),
+						wsExportFormatDTO,
+						stream,
+						true);
+				}
+				else
+				{
+					this.boeExporter.ExportBOEsToZipFile(
+					exportInputs,
+					boeExportModelViews,
+					boeSummaryGridModelViews,
+					workspace,
+					null,
+					string.Format("genBOEExport-{0}.zip", workspace.WorkspaceName).Replace(",", string.Empty),
+					wsExportFormatDTO.PhysicalFilePathCache,
+					wsExportFormatDTO.ExportFormat.TemplateType,
+					stream,
+					true
+					);
+				}
+
+				response.Data = stream.ToArray();
+				response.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				response.Messages.Add($"Error occured while trying to export all boes as zip file: {ex.Message}");
+			}
+
+			return response;
+		}
+
+		/// <summary>
+		/// Gets BOE looping Data for use in ACV
+		/// </summary>
+		/// <param name="workspaceShortName">The workspace short name</param>
+		/// <returns>List of BOELoopingData</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public IESResponse<BOELoopingData> GetBOELoopingData(string workspaceShortName)
+		{
+			IESResponse<BOELoopingData> result = new IESResponse<BOELoopingData>();
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
+				if (this.HasOciPermission(SecurityPage.ManageBOEs, workspace))
+				{
+					decimal taskElementTotal = 0m;
+					decimal boeTotal = 0m;
+
+					result.Data.AddRange(
+						workspace.Boes.Select(x =>
+						{
+							x.TaskElements.ForEach(t =>
+							{
+								taskElementTotal += t.TotalCost ?? 0;
+							});
+							boeTotal += taskElementTotal;
+
+							return new BOELoopingData
+							{
+								BOEId = x.Id,
+								BOEName = x.Title,
+								WBS = x.Wbs != null ? x.Wbs.WbsTitle : "NO WBS",
+								CLIN = x.Clin != null ? x.Clin.ClinTitle : "NO CLIN",
+								TotalCost = taskElementTotal
+							};
+						})
+					);
+
+					result.IsSuccessful = true;
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occurred returning Workspace BOE data: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Is Service Alive?
 		/// </summary>
 		/// <returns>True/false</returns>
