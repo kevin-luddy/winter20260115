@@ -96,7 +96,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				bool addShading = tag.Contains("NoShading") ? false : true;
 
 				//Create the table
-				Table table = CreateRollupTable(element.Document);
+				Table table = new Table(element.Document); 
 
 				Action<Paragraph> leftPP = p =>
 				{
@@ -152,13 +152,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						NumberFormatter.CurrencySymbol = string.Empty;
 					}
 
-					table.Append(tr);
+					table.AppendChild(tr);
 				}
 
 				// Create the header row
 				List<string> Headers = new List<string>() { "Year", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-				table.Append(CreateRollupHeaderRow(element.Document, Headers, Font, headerFontSize));
-
+				table.AppendChild(CreateRollupHeaderRow(element.Document, Headers, Font, headerFontSize));
+				FormatRollupTable(table, element.Document);
 				bool evenRow = false;
 
 				foreach (LaborRollupByDate item in laborRollup)
@@ -248,12 +248,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		}
 
 		/// <summary>
-		/// Create table for rollup
+		/// Format table for rollup
 		/// </summary>
 		/// <returns>returns rollup table</returns>
-		protected override Table CreateRollupTable(DocumentBase document)
+		protected override void FormatRollupTable(Table table, DocumentBase document)
 		{
-			Table table = new Table(document);
 			TableStyle tableStyle = document.Styles["rolluptableMST"] as TableStyle;
 			if (tableStyle == null)
 			{
@@ -268,12 +267,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				tableStyle.ConditionalStyles[ConditionalStyleType.OddRowBanding].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
 			}
 
-			// TODO TIW 5000 seems very dubious, was TableWidthUnitValues.Pct), Width = "5000"
-			table.PreferredWidth = PreferredWidth.FromPercent(5000);
+			table.PreferredWidth = PreferredWidth.FromPercent(100);
 			table.Style = tableStyle;
-				
-			
-			return table;
 		}
 
 		/// <summary>
@@ -296,7 +291,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				{
 					Action<Cell> tcp = c => {
 						c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-						c.CellFormat.PreferredWidth = PreferredWidth.FromPercent(385); // TableWidthUnitValues.Pct, Width = "385" }
+						c.CellFormat.PreferredWidth = PreferredWidth.FromPercent(385/50);
 					};
 
 					Action<Run> rp = r =>

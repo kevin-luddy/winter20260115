@@ -985,11 +985,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 																if (TableAlias3a != null)
 																{
-																	StructuredDocumentTag element = TableAlias3a;
-																	if (element != null)
-																	{
-																		element.RemoveAllChildren();
-																	}
+																	TableAlias3a.RemoveAllChildren();
 																}
 
 																TableAlias3a.RemoveIt();
@@ -1009,11 +1005,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 																if (TableAlias3a != null)
 																{
-																	StructuredDocumentTag element = TableAlias3a;
-																	if (element != null)
-																	{
-																		element.RemoveAllChildren();
-																	}
+																	TableAlias3a.RemoveAllChildren();
 																}
 
 																TableAlias3a.RemoveIt();
@@ -1320,7 +1312,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 																			element.RemoveAllChildren();
 																		}
 
-																		element.RemoveIt();
+																		// Set Alias/Title to string.Empty
+																		element.Title = string.Empty;
 																	}
 																}
 															}
@@ -1978,7 +1971,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				if (element != null)
 				{
 					PopulateBOELevelSummaryTable(element, boeExportModelView, exportInputs);
-					alias.RemoveIt();
+					// Set the sdtAlias/Title to empty
+					alias.Title = string.Empty;
 				}
 			}
 
@@ -1995,15 +1989,12 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="fieldValues">Field Values</param>
 		private static void SetFieldWithValuePlainText(HashSet<StructuredDocumentTag> boeElements, string fieldName, string[] fieldValues)
 		{
-			StructuredDocumentTag alias = boeElements.LastOrDefault(x => x.Title == fieldName);
-			if (alias != null)
+			StructuredDocumentTag element = boeElements.LastOrDefault(x => x.Title == fieldName);
+			if (element != null)
 			{
-				StructuredDocumentTag element = alias;
-				if (element != null)
-				{
-					WordUtilities.SetElementText(element, fieldValues);
-					alias.RemoveIt();
-				}
+				WordUtilities.SetElementText(element, fieldValues);
+				// Set the sdtAlias/Title to empty
+				element.Title = string.Empty;
 			}
 		}
 
@@ -2016,13 +2007,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		private static void SetFieldWithValuePlainText(HashSet<StructuredDocumentTag> boeElements, string fieldName, string fieldValue)
 		{
 			// this allows us to deal with multiple instances of the same field needing to be filled out w/ data
-			boeElements.Where(x => x.Title == fieldName).ToList().ForEach(alias =>
+			boeElements.Where(x => x.Title == fieldName).ToList().ForEach(element =>
 				{
-					StructuredDocumentTag element = alias;
 					if (element != null)
 					{
 						WordUtilities.SetElementText(element, fieldValue);
-						alias.RemoveIt();
+						// instead of deleting the stdAlias, we are setting title to empty
+						element.Title = string.Empty;
 					}
 				});
 		}
@@ -2036,15 +2027,12 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="fieldValue">Field Values</param>
 		private static void SetFieldWithValueHtmlText(Document mainPart, HashSet<StructuredDocumentTag> boeElements, string fieldName, string fieldValue)
 		{
-			StructuredDocumentTag alias = boeElements.LastOrDefault(x => x.Title == fieldName);
-			if (alias != null)
+			StructuredDocumentTag element = boeElements.LastOrDefault(x => x.Title == fieldName);
+			if (element != null)
 			{
-				StructuredDocumentTag element = alias;
-				if (element != null)
-				{
-					WordUtilities.SetElementTextWithHTML(mainPart, element, fieldValue);
-					alias.RemoveIt();
-				}
+				WordUtilities.SetElementTextWithHTML(mainPart, element, fieldValue);
+				// Set the sdtAlias/Title to empty
+				element.Title = string.Empty;
 			}
 		}
 
@@ -2065,7 +2053,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 														   select s.Category.ToDescription();
 
 			WordUtilities.SetElementText(element, ElementofCostDescriptons.Distinct().OrderBy(x => x).ToArray());
-			SummaryAlias.RemoveIt();
+			// Set the sdtAlias/Title to empty
+			element.Title = string.Empty;
 
 			var Groups = boeSummaryGridModelView.Where(s => s.TotalCost.HasValue).GroupBy(x => x.Category)
 				.Select(g => new { EOC = g.Key, CostSum = g.Sum(x => x.TotalCost), HourSum = g.Sum(x => x.TotalHours) }).OrderBy(x => x.EOC.ToDescription());
@@ -2075,7 +2064,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			{
 				element = SummaryAlias2;
 				WordUtilities.SetElementText(element, Groups.Select(x => CommonUtilities.FormatStringWithPrecision(x.HourSum.Value, WorkspaceDecimalPrecision)).ToArray());
-				SummaryAlias2.RemoveIt();
+				// Set the sdtAlias/Title to empty
+				element.Title = string.Empty;
 			}
 
 			StructuredDocumentTag SummaryAlias3 = boeElements.LastOrDefault(s => s.Title?.Equals(FieldName_SummaryElementofCostCost, StringComparison.CurrentCultureIgnoreCase) ?? false);
@@ -2083,7 +2073,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			{
 				element = SummaryAlias3;
 				WordUtilities.SetElementText(element, Groups.Select(x => x.CostSum.Value.ToString("C0", CurrencyFormatter)).ToArray());
-				SummaryAlias3.RemoveIt();
+				// Set the sdtAlias/Title to empty
+				element.Title = string.Empty;
 			}
 		}
 
@@ -2095,7 +2086,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		{
 			StructuredDocumentTag element = SummaryAlias4;
 			element.RemoveAllChildren();
-			SummaryAlias4.RemoveIt();
+			// Set the sdtAlias/Title to empty
+			element.Title = string.Empty;
 		}
 
 		/// <summary>
@@ -2154,7 +2146,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				}
 			}
 
-			SummaryAlias5.RemoveIt();
+			// Set the sdtAlias/Title to empty
+			SummaryAlias5.Title = string.Empty;
 		}
 
 		/// <summary>
@@ -2196,26 +2189,30 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 				PopulateBoeYearSummaryRollup(element, Rollup, format, CurrencyFormatter, useFont, useFontSize, useHeaderFontSize, SummaryAlias6.Title, ParagraphAlignment.Center);
 
-				SummaryAlias6.RemoveIt();
+				// Set the sdtAlias/Title to empty
+				SummaryAlias6.Title = string.Empty;
 			}
 			else if (boeExportModelView.ExportFormat.TemplateType != ExcelReportTemplateType.LMSI_NISSC_LANDSCAPE_WITH_NON_LABOR_COST && !SummaryAlias6.Title.Contains("MST"))
 			{
 				element.RemoveAllChildren();
-				Table table = CreateRollupTable(element.Document);
+				Table table = new Table(element.Document);
+
 				List<string> Headers = new List<string>() { "Calendar Year", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Total" };
-				table.Append(CreateRollupHeaderRow(table.Document, Headers, useFont, useHeaderFontSize, false));
-				table.Append(CreateTableBlankRow(table.Document, Headers.Count));
-				element.Append(table);
-				SummaryAlias6.RemoveIt();
+				table.AppendChild(CreateRollupHeaderRow(table.Document, Headers, useFont, useHeaderFontSize, false));
+				table.AppendChild(CreateTableBlankRow(table.Document, Headers.Count));
+				// Formatting a table requires a row to be added first
+				FormatRollupTable(table, element.Document);
+				element.AppendChild(table);
+				// Set the sdtAlias/Title to empty
+				SummaryAlias6.Title = string.Empty;
 			}
 			else // remove table and title for LMSI-NISSC template if empty
 			{
-				SummaryAlias6.RemoveIt();
+				// Set the sdtAlias/Title to empty
+				SummaryAlias6.Title = string.Empty;
 				StructuredDocumentTag SummaryAlias7 = boeElements.LastOrDefault(s => s.Title?.Equals(FieldName_SummaryCostByDateContainer, StringComparison.CurrentCultureIgnoreCase) ?? false);
 				if (SummaryAlias7 != null)
 				{
-					StructuredDocumentTag element2 = SummaryAlias7;
-					element2.RemoveIt();
 					SummaryAlias7.RemoveIt();
 				}
 			}
@@ -2285,10 +2282,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				{
 					boeCustomFieldsElement.RemoveIt();
 				}
-			}
-			else
-			{
-				SummaryAlias9.RemoveIt();
 			}
 		}
 
@@ -2438,12 +2431,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		#endregion
 
 		/// <summary>
-		/// Create table for rollup
+		/// Format table for rollup
 		/// </summary>
 		/// <returns>returns rollup table</returns>
-		protected virtual Table CreateRollupTable(DocumentBase document)
+		protected virtual void FormatRollupTable(Table table, DocumentBase document)
 		{
-			Table table = new Table(document);
 			TableStyle tableStyle = document.Styles["rolluptable"] as TableStyle;
 			if (tableStyle == null)
 			{
@@ -2458,11 +2450,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				tableStyle.ConditionalStyles[ConditionalStyleType.OddRowBanding].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
 			}
 
-			table.PreferredWidth = PreferredWidth.FromPercent(4995);
+			table.PreferredWidth = PreferredWidth.FromPercent(4995/50);
 			
 			table.Style = tableStyle;
-				
-			return table;
 		}
 
 		/// <summary>
@@ -2470,9 +2460,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// </summary>
 		/// <param name="autoFitLayout">Table layout value - fixed or auto</param>
 		/// <returns>returns GSMO rollup table</returns>
-		protected virtual Table CreateGSMORollupTable(DocumentBase document, bool autoFitLayout)
+		protected virtual void FormatGSMORollupTable(Table table, DocumentBase document, bool autoFitLayout)
 		{
-			Table table = new Table(document);
 			TableStyle tableStyle = document.Styles["gsmorolluptable"] as TableStyle;
 			if (tableStyle == null)
 			{
@@ -2493,8 +2482,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			table.PreferredWidth = PreferredWidth.FromPoints(730.8 / 20d);
 			
 			table.Style = tableStyle;
-
-			return table;
 		}
 
 		/// <summary>
@@ -3254,7 +3241,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					element.RemoveAllChildren();
 				}
 
-				alias.RemoveIt();
+				// Set the sdtAlias/Title to empty
+				element.Title = string.Empty;
 			}
 		}
 
@@ -3387,23 +3375,29 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				element.RemoveAllChildren();
 
 				// Create the table
-				Table table;
+				Table table = new Table(element.Document);
 				bool noAfterSpacing;
 				if (tag == FieldName_GSMOSummaryHourByDate)
 				{
-					table = CreateGSMORollupTable(element.Document, true);
 					noAfterSpacing = true;
 				}
 				else
 				{
-					table = CreateRollupTable(element.Document);
 					noAfterSpacing = false;
 				}
 
 				// Create the header row
 				List<string> Headers = new List<string>() { "Calendar Year", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Total" };
-				table.Append(CreateRollupHeaderRow(element.Document, Headers, Font, headerFontSize, noAfterSpacing));
-
+				table.AppendChild(CreateRollupHeaderRow(element.Document, Headers, Font, headerFontSize, noAfterSpacing));
+				// Formatting a table requires a row to be added first
+				if (tag == FieldName_GSMOSummaryHourByDate)
+				{
+					FormatGSMORollupTable(table, element.Document, true);
+				}
+				else
+				{
+					FormatRollupTable(table, element.Document);
+				}
 				Action<Paragraph> centerPP = p =>
 				{
 					p.ParagraphFormat.Alignment = ParagraphAlignment.Center;
@@ -3459,7 +3453,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 							NumberFormatter.CurrencySymbol = string.Empty;
 						}
 
-						table.Append(tr2);
+						table.AppendChild(tr2);
 					}
 				}
 
@@ -3492,8 +3486,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					NumberFormatter.CurrencySymbol = string.Empty;
 				}
 
-				table.Append(tr3);
-				element.Append(table);
+				table.AppendChild(tr3);
+				element.AppendChild(table);
 			}
 		}
 
@@ -3526,16 +3520,14 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				element.RemoveAllChildren();
 
 				// Create the table
-				Table table;
+				Table table = new Table(element.Document);
 				bool noAfterSpacing;
 				if (gsmo)
 				{
-					table = CreateGSMORollupTable(element.Document, true);
 					noAfterSpacing = true;
 				}
 				else
 				{
-					table = CreateRollupTable(element.Document);
 					noAfterSpacing = false;
 				}
 
@@ -3549,11 +3541,20 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					Headers.Insert(3, "Perf Org");
 				}
 
-				table.Append(CreateRollupHeaderRow(table.Document, Headers, Font, headerFontSize, noAfterSpacing));
+				table.AppendChild(CreateRollupHeaderRow(table.Document, Headers, Font, headerFontSize, noAfterSpacing));
+
+				if (gsmo)
+				{
+					FormatGSMORollupTable(table, element.Document, true);
+				}
+				else
+				{
+					FormatRollupTable(table, element.Document);
+				}
 
 				if (!taskRollup.Keys.Any())
 				{
-					table.Append(CreateTableBlankRow(table.Document, 15));
+					table.AppendChild(CreateTableBlankRow(table.Document, 15));
 				}
 
 				Action<Paragraph> naPP = p =>
@@ -3612,7 +3613,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						PopulateTableCell(tr2, item2.Total.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, naPP);
 						if (NumberFormatter != null) { NumberFormatter.CurrencySymbol = string.Empty; }
 
-						table.Append(tr2);
+						table.AppendChild(tr2);
 					}
 
 					Row tr3 = new Row(element.Document);
@@ -3642,7 +3643,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					PopulateTableCell(tr3, taskRollup[item].Select(x => x.Total).Sum().ToString(Format, NumberFormatter), Font, FontSize, totalValueCellProperties, naPP);
 					if (NumberFormatter != null) { NumberFormatter.CurrencySymbol = string.Empty; }
 
-					table.Append(tr3);
+					table.AppendChild(tr3);
 
 					// blank row
 					Row tr4 = new Row(element.Document);
@@ -3656,7 +3657,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					Action<Run> blankRunProperties = r => r.Font.Bold = true;
 					PopulateTableCell(tr4, string.Empty, Font, FontSize, blankCellProperties, centerPP, blankRunProperties, includesCompanyAndLocation ? 18 : 15 );
 
-					table.Append(tr4);
+					table.AppendChild(tr4);
 				}
 
 				if (taskRollup.Keys.Any())
@@ -3733,7 +3734,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 							PopulateTableCell(tr5, decSum, Font, FontSize, cellProperties, naPP);
 							PopulateTableCell(tr5, totalSum, Font, FontSize, cellProperties, naPP);
 
-							table.Append(tr5);
+							table.AppendChild(tr5);
 						}
 
 						// Create the totals row
@@ -3798,11 +3799,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						PopulateTableCell(tr6, decTotal, Font, FontSize, tcp, naPP);
 						PopulateTableCell(tr6, totalTotal, Font, FontSize, tcp, naPP);
 
-						table.Append(tr6);
+						table.AppendChild(tr6);
 					}
 				}
 
-				element.Append(table);
+				element.AppendChild(table);
 			}
 		}
 
@@ -3825,7 +3826,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				element.RemoveAllChildren();
 
 				// Create the table
-				Table table = CreateRollupTable(element.Document);
+				Table table = new Table(element.Document); 
 
 				// Create the header row
 				List<string> Headers;
@@ -3838,8 +3839,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					Headers = new List<string>() { "RFP GSMO Labor Category", "Company", "Calendar Year", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Total" };
 				}
 
-				table.Append(CreateRollupHeaderRow(table.Document, Headers, Font, FontSize, true));
-
+				table.AppendChild(CreateRollupHeaderRow(table.Document, Headers, Font, FontSize, true));
+				FormatRollupTable(table, element.Document);
 				PopulateGSMOTaskElementRollupData(element, taskRollup, table, TasksDateRange, Format, NumberFormatter, Font, FontSize, false, ParagraphAlignment.Center);
 			}
 		}
@@ -3862,7 +3863,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				element.RemoveAllChildren();
 
 				// Create the table
-				Table table = CreateGSMORollupTable(element.Document, false);
+				Table table = new Table(element.Document);
 
 				// Create the header row
 				string[] Headers = new string[] { "GSMO Labor Category", "Company", "Calendar Year", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Total" };
@@ -3915,7 +3916,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					}
 				}
 
-				table.Append(tr);
+				table.AppendChild(tr);
+				FormatGSMORollupTable(table, element.Document, false);
 
 				PopulateGSMOTaskElementRollupData(element, taskRollup, table, TasksDateRange, Format, NumberFormatter, Font, FontSize, true, ParagraphAlignment.Right);
 			}
@@ -3940,7 +3942,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				element.RemoveAllChildren();
 
 				// Create the table - can use same method as GSMO
-				Table table = CreateGSMORollupTable(element.Document, false);
+				Table table = new Table(element.Document);
 
 				// Create the header row
 				List<string> Headers = new List<string>() { "RFP SMORS Labor Category", "Calendar Year", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Total" };
@@ -4006,8 +4008,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						);
 					}
 				}
-				table.Append(tr);
-
+				table.AppendChild(tr);
+				FormatGSMORollupTable(table, element.Document, false);
 				PopulateSMORSTaskElementRollupData(element, taskRollup, table, TasksDateRange, Format, NumberFormatter, Font, FontSize, includePerfOrg);
 			}
 		}
@@ -4031,7 +4033,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		{
 			if (!taskRollup.Keys.Any())
 			{
-				table.Append(CreateTableBlankRow(table.Document, 16));
+				table.AppendChild(CreateTableBlankRow(table.Document, 16));
 			}
 
 			CellVerticalAlignment vertAlign = CellVerticalAlignment.Center;
@@ -4091,7 +4093,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						NumberFormatter.CurrencySymbol = string.Empty;
 					}
 
-					table.Append(tr2);
+					table.AppendChild(tr2);
 				}
 
 				if (!removeResourceTotals)
@@ -4129,7 +4131,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						NumberFormatter.CurrencySymbol = string.Empty;
 					}
 
-					table.Append(tr3);
+					table.AppendChild(tr3);
 				}
 
 				// create blank separator row between resources
@@ -4143,7 +4145,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				Action<Run> blankCellRP = r => r.Font.Bold = true;
 				PopulateTableCell(tr4, string.Empty, Font, FontSize, blankCellProperties, centerPP, blankCellRP, 16); // old gridspan value 15
 
-				table.Append(tr4);
+				table.AppendChild(tr4);
 			}
 
 			if (taskRollup.Keys.Any())
@@ -4216,7 +4218,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						PopulateTableCell(tr5, decSum, Font, FontSize, cellProperties, naPP);
 						PopulateTableCell(tr5, total, Font, FontSize, cellProperties, naPP);
 
-						table.Append(tr5);
+						table.AppendChild(tr5);
 					}
 
 					// Create the totals row
@@ -4283,11 +4285,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					PopulateTableCell(tr6, decTotal, Font, FontSize, totalCellProperties, naPP);
 					PopulateTableCell(tr6, totalTotal, Font, FontSize, totalCellProperties, naPP);
 
-					table.Append(tr6);
+					table.AppendChild(tr6);
 				}
 			}
 
-			element.Append(table);
+			element.AppendChild(table);
 		}
 
 		/// <summary>
@@ -4309,7 +4311,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			int numColumns = includesPerfOrg ? 16 : 15;
 			if (!taskRollup.Keys.Any())
 			{
-				table.Append(CreateTableBlankRow(table.Document, numColumns));
+				table.AppendChild(CreateTableBlankRow(table.Document, numColumns));
 			}
 
 			CellVerticalAlignment vertAlign = CellVerticalAlignment.Center;
@@ -4358,7 +4360,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					PopulateTableCell(tr2, item2.December.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, centerPP);
 					PopulateTableCell(tr2, item2.Total.ToString(Format, NumberFormatter), Font, FontSize, cellProperties, centerPP);
 
-					table.Append(tr2);
+					table.AppendChild(tr2);
 				}
 
 				Row tr3 = new Row(element.Document);
@@ -4394,7 +4396,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					NumberFormatter.CurrencySymbol = string.Empty;
 				}
 
-				table.Append(tr3);
+				table.AppendChild(tr3);
 
 				// create blank separator row between resources
 				Row tr4 = new Row(element.Document);
@@ -4408,7 +4410,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				Action<Run> rp = r => r.Font.Bold = true;
 				PopulateTableCell(tr4, string.Empty, Font, FontSize, blankCellProperties, centerPP, rp, numColumns);
 
-				table.Append(tr4);
+				table.AppendChild(tr4);
 			}
 
 			if (taskRollup.Keys.Any())
@@ -4537,11 +4539,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					PopulateTableCell(tr6, decTotal, Font, FontSize, totalCellProperties, centerPP);
 					PopulateTableCell(tr6, totalTotal, Font, FontSize, totalCellProperties, centerPP);
 
-					table.Append(tr6);
+					table.AppendChild(tr6);
 				}
 			}
 
-			element.Append(table);
+			element.AppendChild(table);
 		}
 
 		/// <summary>
@@ -4684,10 +4686,10 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			PopulateTableCell(tr, "Variable", inFont, inFontSize, tcp, pp, rp, 2);
 			PopulateTableCell(tr, "Dependents", inFont, inFontSize, tcp, pp, rp, 3);
 
-			table.Append(tr);
+			table.AppendChild(tr);
 
 			Row tr2 = CreateRollupHeaderRow(table.Document, headers, inFont, inFontSize, false);
-			table.Append(tr2);
+			table.AppendChild(tr2);
 		}
 
 		/// <summary>
@@ -4766,7 +4768,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					this.PopulateTableCell(tr, item2.ClinNumber, Font, FontSize, DependentsTCP, pp);
 					this.PopulateTableCell(tr, item2.Total.ToString(DefaultHoursFormat), Font, FontSize, DependentsTCP, pp);
 
-					table.Append(tr);
+					table.AppendChild(tr);
 					initialpass = false;
 				}
 			}
@@ -4851,8 +4853,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						if (CommonUtilities.IsAssignTaskAuthorEnabledForSystem && exportInputs.Workspace.EnableAssignTaskAuthor)
 						{
 							string value = taskElement.BOETaskAuthor;
-							SetElementText(element, value);
-							alias.RemoveIt();
+							WordUtilities.SetElementText(element, value);
+							// Set sdtAlias/Title to empty
+							element.Title = string.Empty;
 						}
 						else
 						{
@@ -4959,7 +4962,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 								AppendTaskVariableTableHeader(Headers, table, useFont, useFontSize);
 								this.PopulateTaskVariableTable(taskElement.MOQVariableModelViews, table);
-								element.Append(table);
+								element.AppendChild(table);
 							}
 
 							// Set sdtAlias/Title to empty
@@ -5003,7 +5006,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 								}
 								else
 								{
-									WordUtilities.SetElementTextWithHTML(mainPart, element, taskElement.MOQText);
+									WordUtilities.SetElementTextWithHTML(mainPart, element, taskElement.MOQText, false, true);
 								}
 
 								if (wsHasMoqRteTemplate && exportInputs.Workspace.UsingTemplateBOE)
@@ -5259,79 +5262,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			return toReturn;
 		}
-
-		// TODO TIW is this same as WordUtilities.SetElementText?  Not quite, but very close
-		///// <summary>
-		///// Sets the text of a run within a Content Element
-		///// </summary>
-		///// <param name="inElement">The element to set text on</param>
-		///// <param name="inText">The text to set</param>
-		//private static void WordUtilities.SetElementText(CompositeNode inElement, params string[] inText)
-		//{
-		//	if (inText != null)
-		//	{
-		//		inText = (from text in inText
-		//				  where text != null
-		//				  select text).ToArray();
-		//	}
-
-		//	// If the passed array of strings is null, set it to an empty string
-		//	if (inText == null || inText.Length == 0)
-		//	{
-		//		inText = new string[] { string.Empty };
-		//	}
-
-		//	// Break each text value at the line breaks (\n character)
-		//	inText = (from text in inText
-		//			  where text != null
-		//			  from brokenText in text.Split('\n')
-		//			  select brokenText).ToArray();
-
-		//	// Get the first text run in the element
-		//	Run textRun = inElement.GetChild(NodeType.Run, 0, true) as Run;
-
-		//	// If a text run was found
-		//	if (textRun != null)
-		//	{
-		//		// Clone the original text run so we can make copies of it (for multiple input strings)
-		//		Node textRunClone = textRun.Clone(true);
-
-		//		// Get the parent of the run
-		//		Node runParent = textRun.ParentNode;
-
-		//		// Iterate through the given input strings and append each one as a text Run
-		//		for (int ndx = 0; ndx < inText.Length; ndx++)
-		//		{
-		//			// Get the text within the Run
-		//			Text textElement = textRun.Descendants<Text>().FirstOrDefault();
-
-		//			if (textElement == null)
-		//			{
-		//				break;  // if there is no Text node, then we can't write ANYTHING, so exit the method
-		//			}
-		//			else
-		//			{
-		//				// Add the input string ...
-		//				textElement.Text = inText[ndx];
-
-		//				// ... followed by a line-break
-		//				if (ndx < inText.Length - 1)  // (but not after the last one)
-		//				{
-		//					textRun.AppendChild(new Break());  // <br>
-		//				}
-
-		//				// Add the Run to the document
-		//				if (ndx > 0)  // (the original one is already there, so skip it)
-		//				{
-		//					runParent.AppendChild(textRun);
-		//				}
-
-		//				// Create a copy for the next input string
-		//				textRun = textRunClone.Clone(true) as Run;
-		//			}
-		//		}
-		//	}
-		//}
 
 		/// <summary>
 		/// Gets all of the Task Containers available for each BOEExportTaskType
@@ -7187,7 +7117,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					firstRun.Text = text;
 
 					// Append cell to row
-					row.Append(cell);
+					row.AppendChild(cell);
 				}
 			}
 		}

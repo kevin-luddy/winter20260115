@@ -1185,6 +1185,16 @@ namespace IES.Common.Core.Constants
 		public const string P_END_TAG = "</p>";
 
 		/// <summary>
+		/// Start tag for H1
+		/// </summary>
+		public const string H1_START_TAG = "<h1";
+		
+		/// <summary>
+		/// End tag for H1
+		/// </summary>
+		public const string H1_END_TAG = "</h1>";
+
+		/// <summary>
 		/// Start tag for html div
 		/// No closing bracket to not lose attributes
 		/// </summary>

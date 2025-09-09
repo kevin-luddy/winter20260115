@@ -866,7 +866,6 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="table">The table</param>
 		private void AdjustTableBorders(Table table)
 		{
-			// TODO TIW is black correct color?
 			table.SetBorder(BorderType.Bottom, LineStyle.Single, 1.5, Color.Black, true); 
 			table.SetBorder(BorderType.Right, LineStyle.Single, 1.5, Color.Black, true);
 		}
