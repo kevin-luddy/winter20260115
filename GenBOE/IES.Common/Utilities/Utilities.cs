@@ -1155,7 +1155,7 @@ namespace IES.Common
 		/// <summary>
 		/// Private for Skill Mix blacklisted workspaces
 		/// </summary>
-		private static Collection<string> skillMixBlacklistWorkspaces;
+		private static Collection<string> skillMixBlacklistWorkspaces = new Collection<string>();
 
 		/// <summary>
 		/// Update the Skill Mix Blacklist settings--currently utilized by Space only
@@ -1178,7 +1178,7 @@ namespace IES.Common
 		/// <returns>Option to show skill mix for workspace.</returns>
 		public static bool ShowSkillMixForWorkspace(DateTime? workspaceCreationDate, string workspaceShortname)
 		{
-			return IsSkillMixEnabledForSystem && workspaceCreationDate >= skillMixStartDate
+			return IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate
 				&& !skillMixBlacklistWorkspaces.Contains(workspaceShortname);
 		}
 
