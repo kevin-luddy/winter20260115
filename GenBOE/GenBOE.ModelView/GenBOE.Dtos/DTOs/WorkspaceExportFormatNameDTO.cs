@@ -1,16 +1,26 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using IES.Common;
-using System.Web;
-using System.IO;
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2025 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace GenBOE.Dtos
 {
-    [ExcludeFromCodeCoverage]
+	using System;
+	using System.Diagnostics.CodeAnalysis;
+	using IES.Common;
+
+	/// <summary>
+	/// Workspace Export Format Meta Data (Name/Description).  This class does not include the File itself.
+	/// </summary>
+	[ExcludeFromCodeCoverage]
     [Serializable()]
     public class WorkspaceExportFormatNameDTO
     {
-        public WorkspaceExportFormatNameDTO()
+		/// <summary>
+		/// #ctor
+		/// </summary>
+		public WorkspaceExportFormatNameDTO()
         {
             ExportFormat = new ExcelReportTemplate();
             ExportFormatName = string.Empty;

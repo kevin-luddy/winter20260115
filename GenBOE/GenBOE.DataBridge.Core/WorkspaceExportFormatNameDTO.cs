@@ -1,16 +1,25 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using IES.Common;
-using System.Web;
-using System.IO;
-using IES.Common.Core.Models;
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2025 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace GenBOE.DataBridge.Core
 {
-    [ExcludeFromCodeCoverage]
+	using System;
+	using System.Diagnostics.CodeAnalysis;
+	using IES.Common.Core.Models;
+
+	/// <summary>
+	/// Workspace Export Format Meta Data (Name/Description).  This class does not include the File itself.
+	/// </summary>
+	[ExcludeFromCodeCoverage]
     [Serializable()]
     public class WorkspaceExportFormatNameDTO
     {
+		/// <summary>
+		/// #ctor
+		/// </summary>
         public WorkspaceExportFormatNameDTO()
         {
             ExportFormat = new ExcelReportTemplate();
