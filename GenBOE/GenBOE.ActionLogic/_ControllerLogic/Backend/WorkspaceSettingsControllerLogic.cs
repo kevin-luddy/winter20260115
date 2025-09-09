@@ -12,6 +12,7 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 	using System.Linq;
 	using System.Transactions;
 	using System.Web.Mvc;
+	using GenBOE.ActionLogic._ModelView.Backend;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
 	using GenBOE.ActionLogic.Common.Calculations;
@@ -543,40 +544,6 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 		}
 
 		/// <summary>
-		/// Gets the next tracking number
-		/// </summary>
-		/// <param name="trackingNumber"></param>
-		/// <returns></returns>
-		private string GetNextTrackingNumber(string trackingNumber)
-		{
-			string nextRevision = trackingNumber;
-			ICollection<WorkspaceDTO> trackingNameData = this.workspaceDTODataLoader.GetAllWsNamesAndTrackingNumberInfo().Where(w => w.TrackingNumber == trackingNumber || w.Shortname.StartsWith(trackingNumber, StringComparison.InvariantCultureIgnoreCase)).ToList();
-			if (trackingNameData.Any())
-			{
-				// extract revision numbers - short names should be of the format [TrackingNumber] or [TrackingNumber]_XX, where XX is the revision number
-				IList<string> revisionStrings = trackingNameData.Where(x => x.Shortname.StartsWith(nextRevision + "_")).Select(x => x.Shortname.Substring(x.Shortname.IndexOf("_") + 1, 2)).ToList();
-				IList<int> revisions = new List<int>();
-
-				// confirm the extracted values are numbers and convert them to ints
-				foreach (string revision in revisionStrings)
-				{
-					int revisionNumber;
-					if (int.TryParse(revision, out revisionNumber))
-					{
-						revisions.Add(revisionNumber);
-					}
-				}
-
-				// Get highest number or 0 if there are none
-				int highestRevision = revisions.Any() ? revisions.OrderByDescending(x => x).First() : 0;
-
-				nextRevision = nextRevision + "_" + (highestRevision + 1).ToString("00");
-			}
-
-			return nextRevision;
-		}
-
-		/// <summary>
 		/// Data normalization for Workspace Status History
 		/// </summary>
 		/// <param name="ws">Full Workspace</param>
@@ -613,5 +580,54 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 
 			return theModelViews.OrderBy(x => x.Date).ToList();
 		}
+
+		/// <summary>
+		/// Save Workspace Status (Short/Simple method as the inner controller method and parent method of this do all the lifting 
+		/// </summary>
+		/// <param name="workspaceStatusMV">Workspace Status ModelView</param>
+		/// <param name="ws">Full Workspace</param>
+		/// <param name="log">Logger</param>
+		/// <returns>True if Workspace Status is updated Successfully, False otherwise</returns>
+		public bool SaveWorkspaceStatus(WorkspaceStatusModelView workspaceStatusMV, FullWorkspace ws, Logger log)
+		{
+			return this.workspaceControllerLogic.SaveWorkspaceStatus(workspaceStatusMV, ref ws, ref log);
+		}
+
+		#region Private Methods
+
+		/// <summary>
+		/// Gets the next tracking number
+		/// </summary>
+		/// <param name="trackingNumber"></param>
+		/// <returns></returns>
+		private string GetNextTrackingNumber(string trackingNumber)
+		{
+			string nextRevision = trackingNumber;
+			ICollection<WorkspaceDTO> trackingNameData = this.workspaceDTODataLoader.GetAllWsNamesAndTrackingNumberInfo().Where(w => w.TrackingNumber == trackingNumber || w.Shortname.StartsWith(trackingNumber, StringComparison.InvariantCultureIgnoreCase)).ToList();
+			if (trackingNameData.Any())
+			{
+				// extract revision numbers - short names should be of the format [TrackingNumber] or [TrackingNumber]_XX, where XX is the revision number
+				IList<string> revisionStrings = trackingNameData.Where(x => x.Shortname.StartsWith(nextRevision + "_")).Select(x => x.Shortname.Substring(x.Shortname.IndexOf("_") + 1, 2)).ToList();
+				IList<int> revisions = new List<int>();
+
+				// confirm the extracted values are numbers and convert them to ints
+				foreach (string revision in revisionStrings)
+				{
+					if (int.TryParse(revision, out int revisionNumber))
+					{
+						revisions.Add(revisionNumber);
+					}
+				}
+
+				// Get highest number or 0 if there are none
+				int highestRevision = revisions.Any() ? revisions.OrderByDescending(x => x).First() : 0;
+
+				nextRevision = nextRevision + "_" + (highestRevision + 1).ToString("00");
+			}
+
+			return nextRevision;
+		}
+
+		#endregion Private Methods
 	}
 }

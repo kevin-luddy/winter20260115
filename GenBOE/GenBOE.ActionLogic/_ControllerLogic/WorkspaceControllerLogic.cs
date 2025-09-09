@@ -6,8 +6,8 @@
 
 namespace GenBOE.ActionLogic.ControllerLogic
 {
-	using DocumentFormat.OpenXml.Wordprocessing;
 	using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic._ModelView.Backend;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
 	using GenBOE.ActionLogic.Common;
@@ -15,10 +15,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using GenBOE.ActionLogic.IESSAPClient;
 	using GenBOE.ActionLogic.IO.Export;
 	using GenBOE.ActionLogic.IO.Export.BOE;
-	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.Workspace;
 	using GenBOE.ActionLogic.Validation;
+	using GenBOE.ActionLogic.WorkspaceTransitions;
 	using GenBOE.DataBridge.Common;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.DataBridge.Reference;
@@ -58,6 +58,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		private readonly IMoqTypeDataLoader moqTypeLoader;
 		private readonly IBoeMediator boeMediator;
 		private readonly ISystemSettingDTODataLoader systemSettingDTODataLoader;
+		private readonly WorkspaceStateMachine workspaceStateMachine;
 
 		/// <summary>
 		/// Boe State Machine
@@ -161,7 +162,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			IMoqTypeDataLoader moqTypeLoader,
 			IBOEStateMachine boeStateMachine,
 			IBoeMediator boeMediator,
-			ISystemSettingDTODataLoader systemSettingDTODataLoader)
+			ISystemSettingDTODataLoader systemSettingDTODataLoader,
+			WorkspaceStateMachine workspaceStateMachine)
 		{
 			this.WorkspaceLoader = workspaceLoader;
 			this.UserLoader = inuserLoader;
@@ -186,6 +188,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			this.boeStateMachine = boeStateMachine;
 			this.boeMediator = boeMediator;
 			this.systemSettingDTODataLoader = systemSettingDTODataLoader;
+			this.workspaceStateMachine = workspaceStateMachine;
 		}
 
 		#endregion
@@ -707,7 +710,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			#endregion
 		}
-		
+
 		#endregion Workspace Var Additional Checks
 
 		#region Export Actions
@@ -1682,7 +1685,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			// Class Of Cost-> defaults: REC, NRE
 			// Project -> default: USER1
 			// FIELD-A -> default: USER2
-			
+
 			ICollection<CustomFieldDTO> existingCustomFields = this.customFieldLoader.GetByWorkspaceId(wsId);
 			ICollection<CustomFieldValueDTO> customFieldValues = new Collection<CustomFieldValueDTO>();
 
@@ -1804,11 +1807,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		public Dictionary<string, object> NextTrackingNumber(IEnumerable<WorkspaceDTO> workspaces, string paNumber)
 		{
 
-			if(workspaces == null)
+			if (workspaces == null)
 			{
-				throw new ArgumentNullException(nameof(workspaces));				
+				throw new ArgumentNullException(nameof(workspaces));
 			}
-			
+
 
 			int max = 0;
 			bool anyRelevant = false;
@@ -1842,7 +1845,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				paNumber : (max > 0) ?
 				$"{paNumber}_{max + 1:00}" :
 				$"{paNumber}_01";
-						
 
 			return new Dictionary<string, object>
 			{
@@ -1851,12 +1853,82 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				["ShortName"] = nextShort,
 				["TrackingNumber"] = paNumber
 			};
-
-								
-
 		}
 
+		/// <summary>
+		/// Save Workspace Status (Short/Simple method as the inner controller method and parent method of this do all the lifting 
+		/// </summary>
+		/// <param name="workspaceStatusMV">Workspace Status ModelView</param>
+		/// <param name="ws">Full Workspace</param>
+		/// <param name="log">Logger</param>
+		/// <returns>True if Workspace Status is updated Successfully, False otherwise</returns>
+		public bool SaveWorkspaceStatus(WorkspaceStatusModelView workspaceStatusMV, ref FullWorkspace ws, ref Logger log)
+		{
+			if (workspaceStatusMV is null)
+			{
+				throw new ArgumentNullException(nameof(workspaceStatusMV));
+			}
 
+			if (ws is null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
+
+			bool toReturn = false;
+
+			WorkspaceState originalState = ws.WorkspaceState;
+
+			if (!ws.IsProjectMapWorkspace)
+			{
+				string validationMessage = string.Empty;
+
+				// check state validation before worrying about commiting to the database
+				if (!workspaceStateMachine.PerformStateTransitionValidation(ws, originalState, workspaceStatusMV.WorkspaceStatus, out validationMessage))
+				{
+					// not valid ... communicate to user
+					throw new GenValidationException("Error: Unable to change state: " + validationMessage);
+				}
+			}
+
+			// Workspace State
+			ws.WorkspaceState = workspaceStatusMV.WorkspaceStatus;
+			ws.UpdateDate = workspaceStatusMV.UpdateDate;
+
+			try
+			{
+				// Get the user who is saving the BOE(s)
+				int currentUserID = ws.CurrentActiveUser.UserID;
+
+				// Save the workspace
+				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("CopyWorkspaceTransactionTimeout", Constants.DB_COPY_WORKSPACE_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+				{
+					this.WorkspaceLoader.SaveWorkspaceSettings(currentUserID, ws);
+
+					// transition after the save is successful
+					ws = this.factory.CreateFullWorkspace(ws.Shortname, true);
+
+					if (!ws.IsProjectMapWorkspace)
+					{
+						this.TransitionBOEStates(ws, originalState, ws.WorkspaceState);
+						workspaceStateMachine.PerformStateTransitionAction(ws, originalState, ws.WorkspaceState);
+					}
+					this.factory.ClearWorkspaceCache(ws.Shortname);
+					scope.Complete();
+				}
+
+				toReturn = true;
+			}
+			catch (Exception ex)
+			{
+				log.Error(ex);
+				if (ex.InnerException != null)
+				{
+					log.Error(ex.InnerException);
+				}
+			}
+
+			return toReturn;
+		}
 
 		/// <summary>
 		/// Calculates (SAP) Actuals for MOQ Types inside a Workspace, then saves the changes to the database, 
@@ -1940,7 +2012,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			workspace.UCOTFactor = systemUCOTFactor;
 
 			this.WorkspaceLoader.SaveIdentificationAndExportFormat(workspace.CurrentActiveUser.UserID, workspace);
-			
+
 			// Clear the cache after the save of the workspace
 			this.factory.ClearWorkspaceCache(workspace.Shortname);
 		}
@@ -1997,7 +2069,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					resultModel.Task = tasks[moqType.TaskId];
 					resultModel.Order = table.Order;
 					resultModel.IsSuccessful = response.IsSuccessful;
-					
+
 					if (response.IsSuccessful)
 					{
 						if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)
@@ -2022,11 +2094,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						resultModel.TotalRelevantHours = table.TotalRelevantHours;
 
 						table.ResourceHours = model.SkillMixDataTable.Where(s => s.TotalHours != 0.0).Select(skillMix => new MOQTypeSelectionTableDataResourceHoursDTO
-							{ 
-								ResourceName= skillMix.ResourceID, 
-								WbsHours= skillMix.WbsHours.HasValue ? Convert.ToDecimal(skillMix.WbsHours.Value) : default(decimal), 
-								TotalHours= Convert.ToDecimal(skillMix.TotalHours) 
-							}).ToArray();
+						{
+							ResourceName = skillMix.ResourceID,
+							WbsHours = skillMix.WbsHours.HasValue ? Convert.ToDecimal(skillMix.WbsHours.Value) : default(decimal),
+							TotalHours = Convert.ToDecimal(skillMix.TotalHours)
+						}).ToArray();
 
 						// only return to UI if Total Relevant Hours changes
 						if (resultModel.TotalRelevantHours != resultModel.TotalRelevantHoursPrevious)
@@ -2153,6 +2225,68 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 
 			ws.RefreshBoes();
+		}
+
+		/// <summary>
+		/// After a workspace state has been changed, process all of its BOEs to see if they also require state changes.
+		/// </summary>
+		/// <param name="workspace">The workspace we are working on</param>
+		/// <param name="workspaceFromState">Old state of the workspace</param>
+		/// <param name="workspaceToState">New state for the workspace</param>
+		private void TransitionBOEStates(FullWorkspace workspace, WorkspaceState workspaceFromState, WorkspaceState workspaceToState)
+		{
+			foreach (FullBoe boe in workspace.Boes)
+			{
+				BOEState? newBOEState = this.GetBOETransitionState(boe.State, workspaceFromState, workspaceToState);
+				if (newBOEState.HasValue)
+				{
+					string errorMessage = string.Empty;
+
+					if (this.boeStateMachine.PerformStateTransitionValidation(boe, workspace, boe.State, newBOEState.Value, out errorMessage))
+					{
+						// apply the actual state-value update
+						boe.State = newBOEState.Value;
+						boe.Updateable = UpdateType.Upsert;
+
+						this.boeMediator.MediatedSave(workspace, boe);
+
+						this.boeStateMachine.PerformStateTransitionAction(boe, workspace, boe.State, newBOEState.Value);
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Determine the BOE state (if any) that all workspace BOEs will need to transition to if the workspace state is transitioned.
+		/// </summary>
+		/// <param name="current">Current state of the BOE</param>
+		/// <param name="workspaceFromState">Old state of the workspace</param>
+		/// <param name="workspaceToState">New state for the workspace</param>
+		/// <returns>Corresponding BOE state, or null if no BOE state change is required</returns>
+		private BOEState? GetBOETransitionState(BOEState currentBOEState, WorkspaceState workspaceFromState, WorkspaceState workspaceToState)
+		{
+			BOEState? newBOEState = null;
+
+			if (workspaceToState == WorkspaceState.Locked ||
+				workspaceToState == WorkspaceState.Complete ||
+				workspaceToState == WorkspaceState.Closed)
+			{
+				if (currentBOEState == BOEState.Draft)
+				{
+					newBOEState = BOEState.DraftLocked;
+				}
+			}
+			else if (workspaceFromState == WorkspaceState.Locked ||
+				workspaceFromState == WorkspaceState.Complete ||
+				workspaceFromState == WorkspaceState.Closed)
+			{
+				if (currentBOEState == BOEState.DraftLocked)
+				{
+					newBOEState = BOEState.Draft;
+				}
+			}
+
+			return newBOEState;
 		}
 
 		/// <summary>

@@ -1,4 +1,4 @@
-﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<GenBOE.Web.ModelView.WorkspaceStatusModelView>" %>
+﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<GenBOE.ActionLogic._ModelView.Backend.WorkspaceStatusModelView>" %>
 
 <script type="text/javascript">
 

@@ -13,6 +13,7 @@ namespace GenBOE.Web.Controllers.Backend
 	using System.Web.Http;
 	using System.Web.Mvc;
 	using GenBOE.ActionLogic._ControllerLogic.Backend;
+	using GenBOE.ActionLogic._ModelView.Backend;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.Workspace;
@@ -324,6 +325,69 @@ namespace GenBOE.Web.Controllers.Backend
 				result.Messages.Add($"Unkown error returning Workspace Identification: {ex.Message}");
 			}
 
+			return result;
+		}
+
+		/// <summary>
+		/// Get the Workspace Status
+		/// </summary>
+		/// <param name="workspaceShortname">Workspace Shortname</param>
+		/// <returns>Workspace Status</returns>
+		[HttpGet]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
+		public IESSingleResponse<WorkspaceStatusModelView> GetWorkspaceStatus(string workspaceShortname)
+		{
+			IESSingleResponse<WorkspaceStatusModelView> result = new IESSingleResponse<WorkspaceStatusModelView>();
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortname);
+
+			// Initialize Action
+			Stopwatch sw = InitializeAction(logger, "GetWorkspaceStatus", SecurityPage.WorkspaceSettingsStatus, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, null);
+
+			try
+			{
+				result.Data = new WorkspaceStatusModelView(ws);
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add(ex.Message);
+			}
+
+			FinalizeAction(logger, WebConstants.GET_WORKSPACE_STATUS, sw);
+			return result;
+		}
+
+		/// <summary>
+		/// Get the Workspace Status
+		/// </summary>
+		/// <param name="workspaceStatusMV">Workspace Status Model View</param>
+		/// <returns>True if Workspace Status is updated Successfully, False otherwise</returns>
+		[HttpGet]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062: Validate arguments of public methods")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
+		public IESSingleResponse<bool> SaveWorkspaceStatus(WorkspaceStatusModelView workspaceStatusMV)
+		{
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+			FullWorkspace ws = Factory.CreateFullWorkspace(workspaceStatusMV.WorkspaceName);
+
+			// Initialize Action
+			Stopwatch sw = InitializeAction(logger, "GetWorkspaceStatus", SecurityPage.WorkspaceSettingsStatus, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, null);
+
+			try
+			{
+				result.Data = this.workspaceSettingsControllerLogic.SaveWorkspaceStatus(workspaceStatusMV, ws, logger);
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add(ex.Message);
+			}
+
+			FinalizeAction(logger, WebConstants.GET_WORKSPACE_STATUS, sw);
 			return result;
 		}
 	}

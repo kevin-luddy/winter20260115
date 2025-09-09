@@ -778,7 +778,8 @@ namespace GenBOE
 																															  new ResolvedParameter(typeof(IMoqTypeDataLoader)),
 																															  new ResolvedParameter(typeof(IBOEStateMachine)),
 																															  new ResolvedParameter(typeof(IBoeMediator)),
-																															  new ResolvedParameter(typeof(ISystemSettingDTODataLoader))));
+																															  new ResolvedParameter(typeof(ISystemSettingDTODataLoader)),
+																															  new ResolvedParameter(typeof(WorkspaceStateMachine))));
 
 					GenBOEUnityContainer.Container.RegisterType(typeof(IAdminControllerLogic), typeof(AdminControllerLogicMST), GetLifetimeManager(), new InjectionConstructor(
 																															  new ResolvedParameter(typeof(ICommonDataMapper)),
@@ -820,7 +821,8 @@ namespace GenBOE
 																															  new ResolvedParameter(typeof(IMoqTypeDataLoader)),
 																															  new ResolvedParameter(typeof(IBOEStateMachine)),
 																															  new ResolvedParameter(typeof(IBoeMediator)),
-																															  new ResolvedParameter(typeof(ISystemSettingDTODataLoader))));
+																															  new ResolvedParameter(typeof(ISystemSettingDTODataLoader)),
+																															  new ResolvedParameter(typeof(WorkspaceStateMachine))));
 
 					GenBOEUnityContainer.Container.RegisterType(typeof(IHomeControllerLogic), typeof(HomeControllerLogicSpaceSystems), GetLifetimeManager(), new InjectionConstructor(
 																															  new ResolvedParameter(typeof(IActiveDirectoryUtilities))

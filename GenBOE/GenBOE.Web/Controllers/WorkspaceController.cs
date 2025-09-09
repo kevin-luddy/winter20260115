@@ -21,6 +21,7 @@ namespace GenBOE.Web.Controllers
 	using System.Web.Script.Serialization;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic._ControllerLogic.Backend;
+	using GenBOE.ActionLogic._ModelView.Backend;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
 	using GenBOE.ActionLogic.Common;
@@ -3041,56 +3042,61 @@ namespace GenBOE.Web.Controllers
 			JsonResult toReturn = Json(new { Status = false });
 			if (ModelState.IsValid)
 			{
-				WorkspaceState originalState = ws.WorkspaceState;
-
-				if (!ws.IsProjectMapWorkspace)
+				if (this._ControllerLogic.SaveWorkspaceStatus(workspaceStatusMV, ref ws, ref _log))
 				{
-					string validationMessage = string.Empty;
-
-					// check state validation before worrying about commiting to the database
-					if (!_WorkspaceStateMachine.PerformStateTransitionValidation(ws, originalState, workspaceStatusMV.WorkspaceStatus, out validationMessage))
-					{
-						// not valid ... communicate to user
-						throw new GenValidationException("Error: Unable to change state: " + validationMessage);
-					}
-				}
-
-				// Workspace State
-				ws.WorkspaceState = workspaceStatusMV.WorkspaceStatus;
-				ws.UpdateDate = workspaceStatusMV.UpdateDate;
-
-				try
-				{
-					// Get the user who is saving the BOE(s)
-					int currentUserID = ws.CurrentActiveUser.UserID;
-
-					// Save the workspace
-					using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("CopyWorkspaceTransactionTimeout", Constants.DB_COPY_WORKSPACE_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
-					{
-						this.workspaceLoader.SaveWorkspaceSettings(currentUserID, ws);
-
-						// transition after the save is successful
-						ws = this.Factory.CreateFullWorkspace(ws.Shortname, true);
-
-						if (!ws.IsProjectMapWorkspace)
-						{
-							this.TransitionBOEStates(ws, originalState, ws.WorkspaceState);
-							_WorkspaceStateMachine.PerformStateTransitionAction(ws, originalState, ws.WorkspaceState);
-						}
-						this.Factory.ClearWorkspaceCache(ws.Shortname);
-						scope.Complete();
-					}
-
 					toReturn = Json(new { Status = true });
 				}
-				catch (Exception ex)
-				{
-					_log.Error(ex);
-					if (ex.InnerException != null)
-					{
-						_log.Error(ex.InnerException);
-					}
-				}
+
+				//WorkspaceState originalState = ws.WorkspaceState;
+
+				//if (!ws.IsProjectMapWorkspace)
+				//{
+				//	string validationMessage = string.Empty;
+
+				//	// check state validation before worrying about commiting to the database
+				//	if (!_WorkspaceStateMachine.PerformStateTransitionValidation(ws, originalState, workspaceStatusMV.WorkspaceStatus, out validationMessage))
+				//	{
+				//		// not valid ... communicate to user
+				//		throw new GenValidationException("Error: Unable to change state: " + validationMessage);
+				//	}
+				//}
+
+				//// Workspace State
+				//ws.WorkspaceState = workspaceStatusMV.WorkspaceStatus;
+				//ws.UpdateDate = workspaceStatusMV.UpdateDate;
+
+				//try
+				//{
+				//	// Get the user who is saving the BOE(s)
+				//	int currentUserID = ws.CurrentActiveUser.UserID;
+
+				//	// Save the workspace
+				//	using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("CopyWorkspaceTransactionTimeout", Constants.DB_COPY_WORKSPACE_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+				//	{
+				//		this.workspaceLoader.SaveWorkspaceSettings(currentUserID, ws);
+
+				//		// transition after the save is successful
+				//		ws = this.Factory.CreateFullWorkspace(ws.Shortname, true);
+
+				//		if (!ws.IsProjectMapWorkspace)
+				//		{
+				//			this.TransitionBOEStates(ws, originalState, ws.WorkspaceState);
+				//			_WorkspaceStateMachine.PerformStateTransitionAction(ws, originalState, ws.WorkspaceState);
+				//		}
+				//		this.Factory.ClearWorkspaceCache(ws.Shortname);
+				//		scope.Complete();
+				//	}
+
+				//	toReturn = Json(new { Status = true });
+				//}
+				//catch (Exception ex)
+				//{
+				//	_log.Error(ex);
+				//	if (ex.InnerException != null)
+				//	{
+				//		_log.Error(ex.InnerException);
+				//	}
+				//}
 			}
 			else
 			{
