@@ -98,10 +98,13 @@ namespace GenBOE.Web.Controllers
                 {
                     theModelView.isReadOnly = false;
                 }
+
                 theModelView.canCreateWS = CheckPermissions(SecurityPage.CreateWorkspacePermissions, null, null) == SecurityAuthorization.CreateReadUpdateDelete;
-                
-                // Populate Metrics Grid
-                theModelView.workspaceGridRows = _GetHomepageGrid(theModelView.isSysAdmin);
+				IReadOnlyCollection<SecurityPermissionsResponse> rolesForUser = Factory.GetPermissionsForUser(currentUser.NTID);
+				theModelView.isWorkspaceAuditor = rolesForUser.Any(x => x.AuthorizedRole == Role.WorkspaceAuditor);
+
+				// Populate Metrics Grid
+				theModelView.workspaceGridRows = _GetHomepageGrid(theModelView.isSysAdmin || theModelView.isWorkspaceAuditor);
             }
 
             JsonResult toReturn = Json(theModelView);
@@ -335,6 +338,7 @@ namespace GenBOE.Web.Controllers
 
                 toReturn = this._WorkspaceDTODataLoader.GetWsForHomepageGrid(workspaceIdsToWhichUserHasAccess, workspaceIdsWhereTheUserIsAdmin, currentUser.UserID);
             }
+
             return toReturn;
         }
 

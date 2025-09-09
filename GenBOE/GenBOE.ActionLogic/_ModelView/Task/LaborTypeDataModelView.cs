@@ -152,7 +152,7 @@ namespace GenBOE.ActionLogic.ModelView
 							this.UcotSpreads.Add(new LaborSpreadDataModelView()
 							{
 								LaborSpreadDate = dto.LaborSpreadDate.ToMonthString(),
-								LaborSpreadValue = precisionUCOT,
+								LaborSpreadValue = Math.Abs(precisionUCOT),
 								UpdateDate = dto.UpdateDate,
 								UpdateDateLong = dto.UpdateDateLong
 							});
@@ -160,11 +160,18 @@ namespace GenBOE.ActionLogic.ModelView
 					}
 
 					this.UcotHours = Utilities.AdjustPrecision(sumUCOT, precision);
+					decimal absUcotHours = Math.Abs(this.UcotHours ?? 0m);
 
 					// Now smooth the UCOT Hours
 					if (this.UcotSpreads.Any())
 					{
-						decimal[] ucotSpreadValues = SpreadCurve.Smooth(this.UcotHours ?? 0m, this.UcotSpreads.Select(s => s.LaborSpreadValue ?? 0m).ToArray(), 0, this.UcotSpreads.Count, precision);
+						decimal[] ucotSpreadValues = SpreadCurve.Smooth(absUcotHours, this.UcotSpreads.Select(s => s.LaborSpreadValue ?? 0m).ToArray(), 0, this.UcotSpreads.Count, precision);
+
+						if (sumUCOT < 0)
+						{
+							// if UCOT is negative, then change the sign
+							ucotSpreadValues = SpreadCurve.ChangeSign(ucotSpreadValues, 0, ucotSpreadValues.Length);
+						}
 
 						// Reset the values to the Smooth'ed array to guarantee precision and no loss of rounding values
 						for (int i = 0; i < this.UcotSpreads.Count; i++)

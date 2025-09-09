@@ -325,7 +325,8 @@ namespace IES.Common.Core.Enums
 		WorkspaceUser = 7,
 		CreateWorkspacePermissions = 8,
 		SubcontractorAuthor = 9,
-		SubcontractAdmin = 10
+		SubcontractAdmin = 10,
+		WorkspaceAuditor = 11
 	};
 
 	/// <summary>

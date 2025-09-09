@@ -98,6 +98,8 @@
 	$scope.searchText = '';
 	$scope.colSpan = 9;
 
+	$scope.enableTaskAuthor = false;
+
 	// reset current page when a user searches
 	$scope.searchChanged = function () {
 		$scope.currentPage = 0;
@@ -1135,6 +1137,8 @@
 			$scope.LoadFilterFromCookies();
 
 			$scope.sortBulkAssignData();
+
+			$scope.enableTaskAuthor = response.data.EnableTaskAuthor;
 
 			$scope.isLoading = false;
 			firstLoad = false;

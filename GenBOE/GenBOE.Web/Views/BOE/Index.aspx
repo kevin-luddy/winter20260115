@@ -21,7 +21,7 @@
         completeImportAction: '<%: WebConstants.ACTION_COMPLETE_IMPORT_MANAGE_BOE %>',
         bulkAssignRolesAction: '<%: WebConstants.ACTION_SAVE_BULK_ROLE_ASSIGN %>',
         draftState: <%: (int)BOEState.Draft%>,
-        draftLockedState: <%: (int)BOEState.DraftLocked%>
+		draftLockedState: <%: (int)BOEState.DraftLocked%>
     });
     var ManageBOEWidget;
     var BulkAssignWidget;
@@ -129,7 +129,11 @@
                 Assign or Remove users in bulk. Select one or more BOEs, a Role, and one or more Users to assign or remove. <br />
                 Select "Assign" to assign the Users to the Role in the BOEs if they are not already assigned. <br />
                 Select "Remove" to remove the selected Users from the selected Role in the selected BOEs if they are assigned. <br /><br />
-                Note: Only BOEs that are Unassigned or in Draft are available for bulk assignment. Roles are locked for BOEs outside of these statuses.
+                <b>Note:</b> Only BOEs that are Unassigned or in Draft are available for bulk assignment. Roles are locked for BOEs outside of these statuses.
+                <div class="task-author-note" data-ng-show="enableTaskAuthor">
+					<br />
+					<span><b>Note:</b> If an Author or Subcontractor Author is removed from a BOE, any Tasks in that BOE where they were selected as Task Author will have the field cleared.</span>
+                </div>
             </div>
             <div id="BulkAssign" class="form-row" data-ng-show="isBulkAssign">
                 <ul class="validation-box" style="display: none;"></ul>
@@ -401,6 +405,9 @@
             <div class="form-row">
                 <div class="form-label"></div>
                 <div class="form-element">
+                    <div id="TaskAuthorNote" class="task-author-note" data-ng-show="enableTaskAuthor">
+						<span><b>Note:</b> If an Author or Subcontractor Author is removed from this BOE, any Tasks where they were selected as Task Author will have the field cleared.</span>
+                    </div>
                     <div id="OCINote" class="oci-note">
                         <span data-ng-show="gridModel.ContainsOCI"><b>Note:</b> <%: SiteMasterUtilities.GetBannerText(true) %></span>
                         <span data-ng-hide="gridModel.ContainsOCI"><b>Note:</b> <%: SiteMasterUtilities.GetBannerText() %></span>
@@ -415,7 +422,7 @@
             </div>
         </div>
 
-        <div gen-dialog id="ImportBOEDialog" class="import-boe dialog form" data-width="680" data-height="580" data-title="{{ dialog.title }}" data-open="dialog.open">
+        <div gen-dialog id="ImportBOEDialog" class="import-boe dialog form" data-width="680" ng-attr-data-height="601" data-title="{{ dialog.title }}" data-open="dialog.open">
             <div id="ImportInstructions" data-ng-hide="dialog.showImportResults">
                 <span>To import BOEs, follow the steps below.</span>
                 <div class="step one">
@@ -475,7 +482,10 @@
                         <div class="important">
                             IMPORTANT: Do not change the column headings or options in the file. Do not enter a value for genBOE BOE ID in column A. genBOE BOE IDs are unique identifiers for BOEs. One will be automatically generated for each new BOE once the import is complete. Column A and the list of options have been hidden to prevent accidental edits. These need to be unchanged for the import to work.
                         </div>
-                        <div class="important">To delete an existing BOE from the file, enter “Delete” for the BOE’s status.</div>
+                        <div class="important">To delete an existing BOE from the file, enter “Delete” for the BOE’s status.</div>											
+						<div class="task-author-note" data-ng-show="enableTaskAuthor">
+							<span><b>Note:</b> If an Author or Subcontractor Author is removed from a BOE, any Tasks in that BOE where they were selected as Task Author will have the field cleared.</span>
+						</div>
                     </div>
                     <div class="step four">
                         <div class="title">Step 4: Import the updated BOEs template file</div>

@@ -487,10 +487,11 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
 			// Keyed by original resource name to new ucot resource 
 			Dictionary<int, ResourceDTO> ucotResourceBindings = new Dictionary<int, ResourceDTO>();
-			int idCounter = -100;
+			int idCounter = -100000;
 
 			// Now, we loop over all the spreads and add the UCOT factor where needed
 			ICollection<MoqTypeSelection> moqTypes = this.MOQTypes.ToList();
+
 			foreach (ResourceTypeDto labor in taskElementLabors)
 			{
 				if (labor.BusinessResourceCodeID.HasValue)
@@ -548,7 +549,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 							PerformingOrgID = Constants.UCOT_PERF_ORG_ID,
 							TaskElementId = labor.TaskElementId,
 							Id = newLaborTypeId,
-							ValueSpread = spreads.Sum(s => s.LaborSpreadValue)
+							ValueSpread = spreads.Sum(s => s.LaborSpreadValue),
+							CustomFieldValueContainers = labor.CustomFieldValueContainers
 						};
 
 						ucotLabors.Add(ucot);
@@ -572,7 +574,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// <param name="taskElements">The task elements</param>
 		private void CalculateSkillMix(FullWorkspace ws, bool isBRCEnabled, IEnumerable<BoeTaskElementDTO> taskElements)
 		{
-			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate))
+			if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.Shortname))
 			{
 				foreach (BoeTaskElementDTO task in taskElements)
 				{
@@ -610,7 +612,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
 
 						RefreshSkillMixModelView refreshedData = SkillMixUtility.RefreshSkillMixTables(moqResourceHours, laborTypes, task.SkillMixTable, task.CommonDisclosureTable, isBRCEnabled,
-							!ws.EnableSAPConnection);
+							!ws.EnableSAPConnection, task.EndDate);
 
 						// Now reset the data
 						task.SkillMixTable = refreshedData.SkillMixRows;

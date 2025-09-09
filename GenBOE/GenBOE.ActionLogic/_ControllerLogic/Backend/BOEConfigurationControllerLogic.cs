@@ -97,7 +97,7 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 			workspaceSettings.IsSAPEnabled = Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate);
 			workspaceSettings.IsWorkspaceBeforeSAPCutoff = Utilities.IsWorkspaceBeforeSAPCutoff(ws.CreationDate);
 			workspaceSettings.ShowSAPForWorkspace = Utilities.ShowSAPForWorkspace(ws.CreationDate);
-			workspaceSettings.ShowSkillMixForWorkspace = Utilities.ShowSkillMixForWorkspace(ws.CreationDate);
+			workspaceSettings.ShowSkillMixForWorkspace = Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.Shortname);
 			workspaceSettings.IsHistoricalReferenceExplanationRequired = Utilities.IsHistoricalReferenceExplanationRequired(ws.CreationDate);
 
 			if (ws.Id == 0)

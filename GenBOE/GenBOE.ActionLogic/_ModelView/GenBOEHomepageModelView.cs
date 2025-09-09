@@ -41,6 +41,11 @@ namespace GenBOE.ActionLogic.ModelView
         /// </summary>
         public bool canCreateWS { get; set; }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether this user has the Workspace Auditor role
+		/// </summary>
+		public bool isWorkspaceAuditor { get; set; }
+
         /// <summary>
         /// Checks if genBOE is in Read Only mode
         /// </summary>

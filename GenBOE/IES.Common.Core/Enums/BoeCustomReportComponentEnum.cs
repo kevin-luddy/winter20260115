@@ -29,27 +29,29 @@
 		BOESpreadSummaryTables = 9,
 		[Description("BOE - Prepared by/Signature Section")]
 		BOESignatures = 10,
+		[Description("Task - Author")]
+		TaskAuthor = 11,
 		[Description("Task - Custom Field(s)")]
-		TaskCustomFields = 11,
+		TaskCustomFields = 12,
 		[Description("Task - Description")]
-		TaskDescription = 12,
+		TaskDescription = 13,
 		[Description("Task - Method of Quoting Type")]
-		TaskMOQType = 13,
+		TaskMOQType = 14,
 		[Description("Task - Method of Quoting Equation")]
-		TaskMOQEquation = 14,
+		TaskMOQEquation = 15,
 		[Description("Task - Method of Quoting Additional Query Filters")]
-		TaskMOQAdditionalQueryFilters = 15,
+		TaskMOQAdditionalQueryFilters = 16,
 		[Description("Task - Method of Quoting Employee ID Filters")]
-		TaskMOQEmployeeIDFilters = 16,
+		TaskMOQEmployeeIDFilters = 17,
 		[Description("Task - Method of Quoting Rationale")]
-		TaskMOQRationale = 17,
+		TaskMOQRationale = 18,
 		[Description("Task - Skill Mix Tables")]
-		SkillMixTables = 18,
+		SkillMixTables = 19,
 		[Description("Task - Resource Types Summary Table")]
-		TaskResourceTypesSummaryTable = 19,
+		TaskResourceTypesSummaryTable = 20,
 		[Description("Task - Cost/Hours Spread Tables")]
-		TaskSpreadTables = 20,
+		TaskSpreadTables = 21,
 		[Description("Resource - Information and Spread Tables")]
-		ResourceInfoAndSpreadTables = 21
+		ResourceInfoAndSpreadTables = 22
 	}
 }

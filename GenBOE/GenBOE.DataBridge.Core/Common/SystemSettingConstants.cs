@@ -12,6 +12,10 @@ namespace GenBOE.DataBridge.Core.Common
 		public static readonly string JUSTIFYING_PUBLICATION = "JustifyingPublication";
 		public static readonly string SAP_CLIENT_SECRET = "SapClientSecret";
 
+		#region Skill Mix Settings
+		public static readonly string SKILL_MIX_BLACKLIST = "SkillMixBlacklist";
+		#endregion
+
 		/// <summary>
 		/// The value for sorting by Work Breakdown Structure
 		/// </summary>

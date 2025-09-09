@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using IES.Common;
 using GenBOE.DataBridge.Common;
 using GenBOE.DataBridge.DTO;
+using GenBOE.Dtos;
+using IES.Common;
+using IES.Common.classes;
+using Microsoft.Practices.Unity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using GenBOE.Dtos;
 
 namespace GenBOE.Tests.DAL.Other
 {
@@ -125,9 +127,12 @@ namespace GenBOE.Tests.DAL.Other
                 authorizedPermissions.Add(authorizedPermission);
             }
 
-            #endregion
+			#endregion
 
-            SecurityAccess sut = new SecurityAccess(boeLoader.Object);
+			Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), activeDirectoryUtilities.Object);
+
+			SecurityAccess sut = new SecurityAccess(boeLoader.Object);
 
             return sut;
         }
@@ -142,7 +147,8 @@ namespace GenBOE.Tests.DAL.Other
                 Role.WorkspaceReviewer,
                 Role.Approver,
                 Role.WorkspaceAdmin,
-                Role.SystemAdmin};
+                Role.SystemAdmin,
+				Role.WorkspaceAuditor};
 
             _TestExecution(roles, // roles
                            new SecurityPage[] { SecurityPage.Home }, // pages
@@ -191,7 +197,7 @@ namespace GenBOE.Tests.DAL.Other
         public void IsAuthorizedManageClinManageWBSManageBOEs_InitializedWorking_None()
         {
             Role[] roles = new Role[] { Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer,
-                                                        Role.Approver, Role.MetricsAdmin, Role.SubcontractAdmin };
+				Role.Approver, Role.MetricsAdmin, Role.SubcontractAdmin, Role.WorkspaceAuditor };
 
             WorkspaceState[] workspaceStates =
                 new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working };
@@ -233,7 +239,7 @@ namespace GenBOE.Tests.DAL.Other
         public void IsAuthorizedManageClinManageWBSManageBOEs_LockedReviewCompleteClosed_None()
         {
             Role[] roles = new Role[] { Role.WorkspaceUser, Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer,
-                                                        Role.Approver, Role.MetricsAdmin, Role.SubcontractAdmin };
+				Role.Approver, Role.MetricsAdmin, Role.SubcontractAdmin, Role.WorkspaceAuditor };
 
             WorkspaceState[] workspaceStates =
                 new WorkspaceState[] { WorkspaceState.Locked, 
@@ -272,7 +278,7 @@ namespace GenBOE.Tests.DAL.Other
         public void IsAuthorizedWorkspaceAdminPermissions_None()
         {
             Role[] roles = new Role[] { Role.WorkspaceUser, Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer,
-                                                        Role.Approver, Role.MetricsAdmin, Role.SubcontractAdmin };
+				Role.Approver, Role.MetricsAdmin, Role.SubcontractAdmin, Role.WorkspaceAuditor };
 
             SecurityPage[] pages =
                 new SecurityPage[] { SecurityPage.WorkspaceAdminPermissions };
@@ -290,7 +296,7 @@ namespace GenBOE.Tests.DAL.Other
         public void IsAuthorizedEditBOEs_Initialization_InitialiazationAssignedDeleted_Read()
         {
             Role[] roles = new Role[] { Role.WorkspaceUser, Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer,
-                                                        Role.Approver, Role.WorkspaceAdmin, Role.SystemAdmin };
+				Role.Approver, Role.WorkspaceAdmin, Role.SystemAdmin, Role.WorkspaceAuditor };
 
             WorkspaceState[] workspaceStates =
                 new WorkspaceState[] { WorkspaceState.Initialization };
@@ -334,7 +340,7 @@ namespace GenBOE.Tests.DAL.Other
         public void IsAuthorizedEditBOEs_Working_InitializationAwaitingApprovalCompleteDeleted_Read()
         {
             Role[] roles = new Role[] { Role.WorkspaceUser, Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer,
-                                                        Role.Approver, Role.WorkspaceAdmin, Role.SystemAdmin, Role.SubcontractAdmin };
+				Role.Approver, Role.WorkspaceAdmin, Role.SystemAdmin, Role.SubcontractAdmin, Role.WorkspaceAuditor };
 
             WorkspaceState[] workspaceStates =
                 new WorkspaceState[] { WorkspaceState.Working };
@@ -380,7 +386,7 @@ namespace GenBOE.Tests.DAL.Other
         [TestMethod]
         public void IsAuthorizedEditBOEs_Working_Assigned_Read()
         {
-            Role[] roles = new Role[] { Role.WorkspaceUser, Role.WorkspaceReviewer, Role.Approver, Role.SystemAdmin, Role.SubcontractAdmin };
+            Role[] roles = new Role[] { Role.WorkspaceUser, Role.WorkspaceReviewer, Role.Approver, Role.SystemAdmin, Role.SubcontractAdmin, Role.WorkspaceAuditor };
 
             WorkspaceState[] workspaceStates = new WorkspaceState[] { WorkspaceState.Working };
 
@@ -444,7 +450,7 @@ namespace GenBOE.Tests.DAL.Other
         public void IsAuthorizedEditBOEs_LockedReviewCompletedClosed_All_Read()
         {
             Role[] roles = new Role[] { Role.WorkspaceUser, Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer,
-                                                        Role.Approver, Role.WorkspaceAdmin, Role.SystemAdmin, Role.SubcontractAdmin };
+				Role.Approver, Role.WorkspaceAdmin, Role.SystemAdmin, Role.SubcontractAdmin, Role.WorkspaceAuditor };
 
             WorkspaceState[] workspaceStates = new WorkspaceState[] { WorkspaceState.Locked, WorkspaceState.Complete, WorkspaceState.Closed };
 
@@ -487,7 +493,7 @@ namespace GenBOE.Tests.DAL.Other
         public void IsAuthorizedTaskElements_InitializionLockedReviewCompletedClosed_All_Read()
         {
             Role[] roles = new Role[] { Role.WorkspaceUser, Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer,
-                                                        Role.Approver, Role.WorkspaceAdmin, Role.SystemAdmin, Role.SubcontractAdmin };
+				Role.Approver, Role.WorkspaceAdmin, Role.SystemAdmin, Role.SubcontractAdmin, Role.WorkspaceAuditor };
 
             WorkspaceState[] workspaceStates =
                 new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Locked, WorkspaceState.Complete, WorkspaceState.Closed };
@@ -532,7 +538,7 @@ namespace GenBOE.Tests.DAL.Other
         public void IsAuthorizedTaskElements_Working_InitializationAwaitingApprovalCompleteDeleted_Read()
         {
             Role[] roles = new Role[] { Role.WorkspaceUser, Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer,
-                                                        Role.Approver, Role.WorkspaceAdmin, Role.SystemAdmin, Role.SubcontractAdmin };
+				Role.Approver, Role.WorkspaceAdmin, Role.SystemAdmin, Role.SubcontractAdmin, Role.WorkspaceAuditor };
 
             WorkspaceState[] workspaceStates =
                 new WorkspaceState[] { WorkspaceState.Working };
@@ -577,7 +583,7 @@ namespace GenBOE.Tests.DAL.Other
         public void IsAuthorizedTaskElements_Working_Assigned_R()
         {
             Role[] roles = new Role[] { Role.WorkspaceUser, Role.WorkspaceReviewer,
-                                                        Role.Approver, Role.WorkspaceAdmin, Role.SystemAdmin, Role.SubcontractAdmin };
+				Role.Approver, Role.WorkspaceAdmin, Role.SystemAdmin, Role.SubcontractAdmin, Role.WorkspaceAuditor };
 
             WorkspaceState[] workspaceStates =
                 new WorkspaceState[] { WorkspaceState.Working };
@@ -642,7 +648,7 @@ namespace GenBOE.Tests.DAL.Other
         public void IsAuthorizedMetricsAdminPage_All_All_None()
         {
             Role[] roles = new Role[] { Role.WorkspaceUser, Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer,
-                                                        Role.Approver, Role.WorkspaceAdmin, Role.SubcontractAdmin };
+				Role.Approver, Role.WorkspaceAdmin, Role.SubcontractAdmin, Role.WorkspaceAuditor };
 
             WorkspaceState[] workspaceStates = (WorkspaceState[])Enum.GetValues(typeof(WorkspaceState));
 
@@ -685,7 +691,7 @@ namespace GenBOE.Tests.DAL.Other
         public void IsAuthorizedGlobalConfigPage_All_All_None()
         {
             Role[] roles = new Role[] { Role.WorkspaceUser, Role.Author, Role.SubcontractorAuthor, Role.WorkspaceReviewer,
-                                                        Role.Approver, Role.WorkspaceAdmin, Role.MetricsAdmin, Role.SubcontractAdmin };
+				Role.Approver, Role.WorkspaceAdmin, Role.MetricsAdmin, Role.SubcontractAdmin, Role.WorkspaceAuditor };
 
             WorkspaceState[] workspaceStates = (WorkspaceState[])Enum.GetValues(typeof(WorkspaceState));
 
@@ -775,7 +781,7 @@ namespace GenBOE.Tests.DAL.Other
         public void IsAuthorizedSSRSReports_None()
         {
             Role[] roles = new Role[] { Role.Approver, Role.Author, Role.SubcontractAdmin, Role.SubcontractorAuthor,
-                Role.WorkspaceReviewer, Role.WorkspaceUser, Role.None };
+                Role.WorkspaceReviewer, Role.WorkspaceUser, Role.None, Role.WorkspaceAuditor };
 
             WorkspaceState[] workspaceStates = (WorkspaceState[])Enum.GetValues(typeof(WorkspaceState));
 
@@ -834,7 +840,7 @@ namespace GenBOE.Tests.DAL.Other
         public void IsAuthorizedManageBOEForms_All_All_None()
         {
             Role[] roles = new Role[] { Role.MetricsAdmin, Role.Approver, Role.Author, Role.SubcontractorAuthor,
-                Role.WorkspaceReviewer, Role.MetricsAdmin };
+                Role.WorkspaceReviewer, Role.MetricsAdmin, Role.WorkspaceAuditor };
 
             WorkspaceState[] workspaceStates =
                 (WorkspaceState[])Enum.GetValues(typeof(WorkspaceState));
@@ -850,6 +856,42 @@ namespace GenBOE.Tests.DAL.Other
                            null, // boe id
                            SecurityAuthorization.None); // expected authorization
         }
-    }
+
+		[TestMethod]
+		public void IsAuthorized_BOEComment_Reviewer_CRUD()
+		{
+			Role[] roles = new Role[] { Role.WorkspaceReviewer };
+
+			WorkspaceState[] workspaceStates = new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Locked };
+			BOEState[] boeStates = new BOEState[] { BOEState.Draft };
+
+			SecurityPage[] pages = new SecurityPage[] { SecurityPage.BOEComment };
+
+			_TestExecution(roles, // roles
+						   pages, // pages
+						   workspaceStates, // workspace states
+						   boeStates, // boe states
+						   2, // workspace id
+						   1, // boe id
+						   SecurityAuthorization.CreateReadUpdateDelete); // expected authorization
+		}
+
+		[TestMethod]
+		public void IsAuthorized_BOEComment_NonReviewer_None()
+		{
+			Role[] roles = new Role[] { Role.SystemAdmin, Role.CreateWorkspacePermissions, Role.MetricsAdmin, Role.Approver, Role.Author, Role.SubcontractorAuthor,
+				Role.WorkspaceAdmin, Role.None, Role.SubcontractAdmin, Role.WorkspaceAuditor, Role.WorkspaceUser };
+
+			SecurityPage[] pages = new SecurityPage[] { SecurityPage.BOEComment };
+
+			_TestExecution(roles, // roles
+						   pages, // pages
+						   (WorkspaceState[])Enum.GetValues(typeof(WorkspaceState)), // workspace states
+						   (BOEState[])Enum.GetValues(typeof(BOEState)), // boe states
+						   2, // workspace id
+						   1, // boe id
+						   SecurityAuthorization.None); // expected authorization
+		}
+	}
 
 }

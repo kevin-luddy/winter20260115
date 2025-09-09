@@ -4378,58 +4378,6 @@ namespace GenBOE.Tests.ActionLogic
 		}
 
 		/// <summary>
-		/// Test Invalid BOE Skill Mix (<=0) for RMS
-		/// </summary>
-		[TestMethod]
-		public void ValidateSkillMix_InvalidBoeSkillMixfor_RMS()
-		{
-			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
-			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
-			{
-				new SkillMixModelView {
-					ResourceOld = "HISTORICAL_R",
-					HistoricalHours = 100,
-					ResourceNew = "NEW",
-					Included = true,
-					IsUserInput = true,
-					Rationale = "Rationale1",
-					BOESkillMix = 0
-				}
-			};
-
-			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
-			Assert.IsNotNull(messages);
-			Assert.AreEqual(1, messages.Count);
-			Assert.IsTrue(messages.First().Contains($"{Constants.RMS_BOE_SKILL_MIX_COLUMN_NAME} has invalid value"));
-		}
-
-		/// <summary>
-		/// Test Invalid BOE Skill Mix (<=0) for space
-		/// </summary>
-		[TestMethod]
-		public void ValidateSkillMix_InvalidBoeSkillMixfor_Space()
-		{
-			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
-			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
-			{
-				new SkillMixModelView {
-					ResourceOld = "HISTORICAL_R",
-					HistoricalHours = 100,
-					ResourceNew = "NEW",
-					Included = true,
-					IsUserInput = true,
-					Rationale = "Rationale1",
-					BOESkillMix = 0
-				}
-			};
-
-			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
-			Assert.IsNotNull(messages);
-			Assert.AreEqual(1, messages.Count);
-			Assert.IsTrue(messages.First().Contains($"{Constants.SPACE_BOE_SKILL_MIX_COLUMN_NAME} has invalid value"));
-		}
-
-		/// <summary>
 		/// Test Invalid BOE Skill Mix Total for RMS
 		/// </summary>
 		[TestMethod]
@@ -4744,31 +4692,6 @@ namespace GenBOE.Tests.ActionLogic
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("BOE Skill Mix is missing"));
-		}
-
-		/// <summary>
-		/// Test BOE Skill Mix <= 0
-		/// </summary>
-		[TestMethod]
-		public void ValidateCommonDisclosureSkillMix_BoeSkillMixInvalid()
-		{
-			List<CommonDisclosureModelView> skillmix = new List<CommonDisclosureModelView>
-			{
-				new CommonDisclosureModelView {
-					ResourceID = "HISTORICAL_R",
-					HistoricalHours = 100,
-					BusinessResourceID = null,
-					Included = true,
-					IsUserInput = true,
-					Rationale = "Rationale1",
-					BOESkillMix = 0
-				}
-			};
-
-			ICollection<string> messages = ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(skillmix, true, true);
-			Assert.IsNotNull(messages);
-			Assert.AreEqual(1, messages.Count);
-			Assert.IsTrue(messages.First().Contains("BOE skill Mix has invalid value"));
 		}
 
 		/// <summary>

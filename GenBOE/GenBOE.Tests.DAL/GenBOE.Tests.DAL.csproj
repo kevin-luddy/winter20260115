@@ -157,6 +157,7 @@
     <Compile Include="DataLoaders\MoqTypeDataLoaderTest.cs" />
     <Compile Include="DataLoaders\MOQTypeSelectionTableDataResourceHoursDataLoaderTest.cs" />
     <Compile Include="DataLoaders\MoqTypeTableCustomFieldValueXREFLoaderTest.cs" />
+    <Compile Include="DataLoaders\PldDTODataLoaderTest.cs" />
     <Compile Include="DataLoaders\ProjectMapDataLoaderTest.cs" />
     <Compile Include="DataLoaders\RequestDataLoaderTest.cs" />
     <Compile Include="DataLoaders\RteTemplateDataLoaderTest.cs" />
@@ -211,6 +212,10 @@
     <ProjectReference Include="..\GenBOE.ActionLogic\GenBOE.ActionLogic.csproj">
       <Project>{8B23113C-48A0-4F65-8ED5-0F725AC170E7}</Project>
       <Name>GenBOE.ActionLogic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenBOE.PLD.Models\GenBOE.PLD.Models.csproj">
+      <Project>{F2AB5FFC-459A-4BB1-9CB5-61B4C89C14A0}</Project>
+      <Name>GenBOE.PLD.Models</Name>
     </ProjectReference>
     <ProjectReference Include="..\GenTRAC.DataBridge\GenTRAC.DataBridge.csproj">
       <Project>{6ebd0376-9273-4a2a-9e23-1912418ddba5}</Project>

@@ -43,7 +43,9 @@ namespace GenBOE
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.DataBridge.DTO.Request;
 	using GenBOE.DataBridge.Reference;
+	using GenBOE.Dtos;
 	using GenBOE.Objects;
+	using GenBOE.PLD.Models;
 	using GenBOE.Web;
 	using GenBOE.Web.Common;
 	using GenTRAC.DataBridge.DTO;
@@ -428,7 +430,23 @@ namespace GenBOE
 			GenBOEUnityContainer.Container.RegisterType(typeof(IMSTTravelNonzoneFeesAndCostsDTODataLoader), typeof(MSTTravelNonzoneFeesAndCostsDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IMSTTravelNonzoneFeesAndCostsDTODataLoader>(new InterfaceInterceptor());
 			GenBOEUnityContainer.Container.RegisterType(typeof(IProjectMapSpreadLoader), typeof(ProjectMapSpreadLoader), GetLifetimeManager(), new InjectionMember[] { });
 			GenBOEUnityContainer.Container.RegisterType(typeof(IProjectMapDataLoader), typeof(ProjectMapDataLoader), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IProjectMapSpreadLoader))));
-			GenBOEUnityContainer.Container.RegisterType(typeof(GenTRAC.DataBridge.DTO.IProposalLoader), typeof(GenTRAC.DataBridge.DTO.ProposalLoader), this.GetLifetimeManager(), new InjectionConstructor()).Configure<Interception>().SetInterceptorFor<GenTRAC.DataBridge.DTO.IProposalLoader>(new InterfaceInterceptor());
+			GenBOEUnityContainer.Container.RegisterType(typeof(GenTRAC.DataBridge.DTO.IProposalLoader), 
+				typeof(GenTRAC.DataBridge.DTO.ProposalLoader), 
+				this.GetLifetimeManager(), 
+				new InjectionConstructor())
+				.Configure<Interception>()
+				.SetInterceptorFor<GenTRAC.DataBridge.DTO.IProposalLoader>(new InterfaceInterceptor());
+			
+			GenBOEUnityContainer.Container.RegisterType<PldDBContext>(new HierarchicalLifetimeManager());
+			
+			GenBOEUnityContainer.Container.RegisterType(typeof(GenBOE.DataBridge.DTO.IPldDTODataLoader),
+				typeof(GenBOE.DataBridge.DTO.PldDTODataLoader),
+				this.GetLifetimeManager(),
+				new InjectionConstructor())
+				.Configure<Interception>()
+				.SetInterceptorFor<GenBOE.DataBridge.DTO.IPldDTODataLoader>(new InterfaceInterceptor());
+			
+		
 			GenBOEUnityContainer.Container.RegisterType(typeof(IRequestDataLoader), typeof(RequestDataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IRequestDataLoader>(new InterfaceInterceptor());
 
 
@@ -566,7 +584,12 @@ namespace GenBOE
 						new ResolvedParameter(typeof(IMoqTypeDataLoader)),
 						new ResolvedParameter(typeof(IBoeApproverResponseDTODataLoader)),
 						new ResolvedParameter(typeof(GenBOE.ActionLogic.IESSAPClient.IESSAPClient)),
-						new ResolvedParameter(typeof(ITokenService))));
+						new ResolvedParameter(typeof(ITokenService)),
+						new ResolvedParameter(typeof(ICommonDataMapper)),
+						new ResolvedParameter(typeof(IMaterialDTODataLoader)),
+						new ResolvedParameter(typeof(ITravelDTODataLoader)),
+						new ResolvedParameter(typeof(IWorkspaceVersionMetaDataDTODataLoader)),
+						new ResolvedParameter(typeof(IWbsDTODataLoader))));
 					GenBOEUnityContainer.Container.RegisterType(typeof(IBOEOtherDirectCostControllerLogic), typeof(BOEOtherDirectCostControllerLogicMST), GetLifetimeManager(), new InjectionConstructor());
 					GenBOEUnityContainer.Container.RegisterType(typeof(IBOEMaterialControllerLogic), typeof(BOEMaterialControllerLogicMST), GetLifetimeManager(), new InjectionConstructor());
 					GenBOEUnityContainer.Container.RegisterType(typeof(IGenBOEControllerLogic), typeof(GenBOEControllerLogicMST), GetLifetimeManager(), new InjectionMember[] { });
@@ -637,7 +660,12 @@ namespace GenBOE
 						new ResolvedParameter(typeof(IMoqTypeDataLoader)),
 						new ResolvedParameter(typeof(IBoeApproverResponseDTODataLoader)),
 						new ResolvedParameter(typeof(GenBOE.ActionLogic.IESSAPClient.IESSAPClient)),
-						new ResolvedParameter(typeof(ITokenService))));
+						new ResolvedParameter(typeof(ITokenService)),
+						new ResolvedParameter(typeof(ICommonDataMapper)),
+						new ResolvedParameter(typeof(IMaterialDTODataLoader)),
+						new ResolvedParameter(typeof(ITravelDTODataLoader)),
+						new ResolvedParameter(typeof(IWorkspaceVersionMetaDataDTODataLoader)),
+						new ResolvedParameter(typeof(IWbsDTODataLoader))));
 					GenBOEUnityContainer.Container.RegisterType(typeof(IBOEOtherDirectCostControllerLogic), typeof(BOEOtherDirectCostControllerLogicSpaceSystems), GetLifetimeManager(), new InjectionConstructor());
 					GenBOEUnityContainer.Container.RegisterType(typeof(IBOEMaterialControllerLogic), typeof(BOEMaterialControllerLogicSpaceSystems), GetLifetimeManager(), new InjectionConstructor());
 					GenBOEUnityContainer.Container.RegisterType(typeof(IGenBOEControllerLogic), typeof(GenBOEControllerLogic), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(ISystemSettingDTODataLoader))));
@@ -886,7 +914,9 @@ namespace GenBOE
 						new ResolvedParameter(typeof(ICommonDataMapper)),
 						new ResolvedParameter(typeof(IProposalLoader)),
 						new ResolvedParameter(typeof(IWorkspaceControllerLogic)),
-						new ResolvedParameter(typeof(TravelTripCostCalculation))
+						new ResolvedParameter(typeof(TravelTripCostCalculation)),
+						new ResolvedParameter(typeof(IPermissionsDTODataLoader)),
+						new ResolvedParameter(typeof(IUserDTODataLoader))
 						));
 					break;
 				case CompanyConfiguration.SpaceSystems:
@@ -902,7 +932,10 @@ namespace GenBOE
 						new ResolvedParameter(typeof(IInUseDataLoader)),
 						new ResolvedParameter(typeof(IProposalLoader)),
 						new ResolvedParameter(typeof(IWorkspaceControllerLogic)),
-						new ResolvedParameter(typeof(TravelTripCostCalculation))
+						new ResolvedParameter(typeof(TravelTripCostCalculation)),
+						new ResolvedParameter(typeof(ICommonDataMapper)),
+						new ResolvedParameter(typeof(IPermissionsDTODataLoader)),
+						new ResolvedParameter(typeof(IUserDTODataLoader))
 						));
 					break;
 
@@ -1482,6 +1515,14 @@ namespace GenBOE
 			GenBOEUnityContainer.Container.RegisterType(typeof(GenTRAC.DataBridge.DTO.IUserLoader), typeof(GenTRAC.DataBridge.DTO.UserLoader), this.GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IActiveDirectoryUtilities)))).Configure<Interception>().SetInterceptorFor<GenTRAC.DataBridge.DTO.IUserLoader>(new InterfaceInterceptor());
 			GenBOEUnityContainer.Container.RegisterType(typeof(GenTRAC.DataBridge.DTO.IUserMapper), typeof(GenTRAC.DataBridge.DTO.UserMapper), this.GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(GenTRAC.DataBridge.DTO.IUserLoader)), new ResolvedParameter(typeof(CacheDataLoader)), new ResolvedParameter(typeof(ISecurityInformation)), new ResolvedParameter(typeof(IActiveDirectoryUtilities)), new ResolvedParameter(typeof(ICache))));
 			GenBOEUnityContainer.Container.RegisterType(typeof(ISystemSettingDTODataLoader), typeof(SystemSettingDTODataLoader), GetLifetimeManager());
+
+			// Avoid calling the method to get the Skill Mix system settings on every blacklist check - initialize the value on startup (and only update it on every update)
+			ISystemSettingDTODataLoader systemSettingLoader = GenBOEUnityContainer.Resolve<ISystemSettingDTODataLoader>();
+			ICollection<SystemSettingDTO> skillMixSettings = systemSettingLoader.GetSkillMixSettings();
+			Utilities.UpdateSkillMixBlacklistSettings(
+				skillMixSettings.FirstOrDefault(x => x.Key.Equals(Constants.SKILL_MIX_BLACKLIST)) == null ? string.Empty :
+					skillMixSettings.FirstOrDefault(x => x.Key.Equals(Constants.SKILL_MIX_BLACKLIST)).Value);
+
 			GenBOEUnityContainer.Container.RegisterType(typeof(IRteTemplateDataLoader), typeof(RteTemplateDataLoader), GetLifetimeManager());
 			GenBOEUnityContainer.Container.RegisterType(typeof(IMOQTypeSelectionTableDataResourceHoursDTOLoader), typeof(MOQTypeSelectionTableDataResourceHoursDTOLoader), GetLifetimeManager());
 			GenBOEUnityContainer.Container.RegisterType(typeof(IMoqTypeDataLoader), typeof(MoqTypeDataLoader), this.GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IMoqTypeTableCustomFieldValueXREFLoader)), new ResolvedParameter(typeof(IMOQTypeSelectionTableDataResourceHoursDTOLoader)))).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());

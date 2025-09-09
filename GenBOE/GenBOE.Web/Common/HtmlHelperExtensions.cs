@@ -111,5 +111,38 @@ namespace GenBOE.Web.Common
         {
             return new MvcHtmlString(b ? "true" : "false");
         }
-    }
+
+		/// <summary>
+		/// Convert Model Binding from new to old
+		/// </summary>
+		/// <param name="httpModelState">New modelbinding</param>
+		/// <returns>Old MVC model binding</returns>
+		public static System.Web.Mvc.ModelStateDictionary ToMVC(this System.Web.Http.ModelBinding.ModelStateDictionary httpModelState)
+		{
+			if (httpModelState == null)
+			{
+				throw new ArgumentNullException(nameof(httpModelState));
+			}
+
+			System.Web.Mvc.ModelStateDictionary mvcModelState = new System.Web.Mvc.ModelStateDictionary();
+
+			foreach (string key in httpModelState.Keys)
+			{
+				System.Web.Http.ModelBinding.ModelState modelStateEntry = httpModelState[key];
+				foreach (System.Web.Http.ModelBinding.ModelError error in modelStateEntry.Errors)
+				{
+					if (error.Exception != null)
+					{
+						mvcModelState.AddModelError(key, error.Exception);
+					}
+					else if (error.ErrorMessage != null)
+					{
+						mvcModelState.AddModelError(key, error.ErrorMessage);
+					}
+				}
+			}
+
+			return mvcModelState;
+		}
+	}
 }

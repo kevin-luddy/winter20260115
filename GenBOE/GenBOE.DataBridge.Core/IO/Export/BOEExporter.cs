@@ -4846,6 +4846,19 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						// Set sdtAlias/Title to empty
 						element.Title = string.Empty;
 					}
+					else if (sdtTitle == BOEExporterConstants.FieldName_TaskAuthor)
+					{
+						if (CommonUtilities.IsAssignTaskAuthorEnabledForSystem && exportInputs.Workspace.EnableAssignTaskAuthor)
+						{
+							string value = taskElement.BOETaskAuthor;
+							SetElementText(element, value);
+							alias.RemoveIt();
+						}
+						else
+						{
+							WordUtilities.RemoveTaggedElement(taskContainer.TaskContainer, BOEExporterConstants.Container_TaskAuthor);
+						}
+					}
 					else if (sdtTitle == FieldName_TaskSegregation)
 					{
 						string value = string.Empty;
