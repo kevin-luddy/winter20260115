@@ -143,19 +143,21 @@ namespace GenBOE.ActionLogic.IO.Export
             return this.mstExporter.ExportToExcelFile(templateFileLocation, workspace, blankTemplate);
         }
 
-        /// <summary>
-        /// IES-707: Creates individual documents for reach BOE and compresses them into a single zip file.
-        /// </summary>
-        /// <param name="exportInputs">The export inputs</param>
-        /// <param name="boeExportModelViews">Collection of BOE View Models</param>
-        /// <param name="boeSummaryGridModelViews"></param>
-        /// <param name="workSpace">Full workspace</param>
-        /// <param name="response">What will ultimately be the response to the requester</param>
-        /// <param name="returnFilename">File name that will be passed to browser (for download)</param>
-        /// <param name="templatePath">Server path to the export template</param>
-        /// <param name="templateType">Template type</param>
-        /// <exception cref="ArgumentNullException">if response or workspace is null</exception>
-        public void ExportBOEsToZipFile(
+		/// <summary>
+		/// IES-707: Creates individual documents for reach BOE and compresses them into a single zip file.
+		/// </summary>
+		/// <param name="exportInputs">The export inputs</param>
+		/// <param name="boeExportModelViews">Collection of BOE View Models</param>
+		/// <param name="boeSummaryGridModelViews"></param>
+		/// <param name="workSpace">Full workspace</param>
+		/// <param name="response">What will ultimately be the response to the requester</param>
+		/// <param name="returnFilename">File name that will be passed to browser (for download)</param>
+		/// <param name="templatePath">Server path to the export template</param>
+		/// <param name="templateType">Template type</param>
+		/// <param name="stream">The stream</param>
+		/// <param name="useStream">Whether to use the stream or not</param>
+		/// <exception cref="ArgumentNullException">if response or workspace is null</exception>
+		public void ExportBOEsToZipFile(
             BOEExportInputs exportInputs,
             ICollection<BOEExportModelView> boeExportModelViews,
             ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
@@ -163,9 +165,11 @@ namespace GenBOE.ActionLogic.IO.Export
             HttpResponseBase response,
             string returnFilename,
             string templatePath,
-            ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
+            ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet,
+			Stream stream = null,
+			bool useStream = false)
         {
-            AllBOEExportHelper.ExportBOEsToZipFile<bool>(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workSpace, response, returnFilename, templatePath, ExportBOEToWordFileStream);
+            AllBOEExportHelper.ExportBOEsToZipFile<bool>(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workSpace, response, returnFilename, templatePath, ExportBOEToWordFileStream, stream, useStream);
         }
     }
 }

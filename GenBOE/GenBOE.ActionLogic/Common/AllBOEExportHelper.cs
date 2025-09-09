@@ -35,6 +35,8 @@ namespace GenBOE.ActionLogic.Common
 		/// <param name="templatePath">Server path to the export template</param>
 		/// <param name="getWordDocStream">Generic function that will convert the BOE data to a Word document</param>
 		/// <param name="templateType">Template type</param>
+		/// <param name="stream">The stream</param>
+		/// <param name="useStream">Whether to use the stream or not</param>
 		/// <exception cref="ArgumentNullException">if response or workspace is null</exception>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
 		public static void ExportBOEsToZipFile<T>(
@@ -46,12 +48,18 @@ namespace GenBOE.ActionLogic.Common
 			string returnFilename,
 			string templatePath,
 			Func<BOEExportInputs, ICollection<BOEExportModelView>, ICollection<BOESummaryGridModelView>, FullWorkspace, string, Stream, ExcelReportTemplateType, T> getWordDocStream,
-			ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
+			ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet, Stream stream = null, bool useStream = false)
 		{
-			_ = response ?? throw new ArgumentNullException(nameof(response));
+			if (!useStream)
+			{
+				_ = response ?? throw new ArgumentNullException(nameof(response));
+			}
 			_ = workSpace ?? throw new ArgumentNullException(nameof(workSpace));
-			
-			SetResponseProperties(response, returnFilename);
+
+			if (!useStream)
+			{
+				SetResponseProperties(response, returnFilename);
+			}
 
 			Dictionary<string, Stream> zipFiles = new Dictionary<string, Stream>();
 
@@ -77,7 +85,14 @@ namespace GenBOE.ActionLogic.Common
 
 			using (FileStream zipStream = new FileStream(savedZipFile, FileMode.Open))
 			{
-				zipStream.CopyTo(response.OutputStream);
+				if (!useStream)
+				{
+					zipStream.CopyTo(response.OutputStream);
+				}
+				else
+				{
+					zipStream.CopyTo(stream);
+				}
 			}
 
 			// Remove zip from server now that we have the content in the response stream
@@ -105,15 +120,15 @@ namespace GenBOE.ActionLogic.Common
 			FullWorkspace workSpace,
 			HttpResponseBase response,
 			ICollection<BoeCustomReportComponent> selectedComponents,
-			string returnFilename,			
+			string returnFilename,
 			WorkspaceExportFormatDTO exportFormat,
 			Func<BOEExportInputs, ICollection<BOEExportModelView>, ICollection<BOESummaryGridModelView>, FullWorkspace, ICollection<BoeCustomReportComponent>, Stream, WorkspaceExportFormatDTO, T> getWordDocStream)
 		{
 			_ = response ?? throw new ArgumentNullException(nameof(response));
 			_ = workSpace ?? throw new ArgumentNullException(nameof(workSpace));
-			
+
 			SetResponseProperties(response, returnFilename);
-			
+
 			Dictionary<string, Stream> zipFiles = new Dictionary<string, Stream>();
 
 			if (boeExportModelViews != null && getWordDocStream != null)

@@ -5901,7 +5901,9 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="response">What will ultimately be the response to the requester</param>
 		/// <param name="returnFilename">File name that will be passed to browser (for download)</param>
 		/// <param name="exportFormat">Export format DTO</param>
-		public void ExportBOEsToZipFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, FullWorkspace workSpace, ICollection<BoeCustomReportComponent> components, HttpResponseBase response, string returnFilename, WorkspaceExportFormatDTO exportFormat)
+		/// <param name="stream">The stream</param>
+		/// <param name="useStream">Whether to use the stream or not</param>
+		public void ExportBOEsToZipFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, FullWorkspace workSpace, ICollection<BoeCustomReportComponent> components, HttpResponseBase response, string returnFilename, WorkspaceExportFormatDTO exportFormat, Stream stream = null, bool useStream = false)
 		{
 			AllBOEExportHelper.ExportCustomComponentBOEsToZipFile<bool>(
 				exportInputs,
@@ -5912,7 +5914,9 @@ namespace GenBOE.ActionLogic.IO.Export
 				components,
 				Utilities.StripIllegalFileNameCharacters(returnFilename),
 				exportFormat,
-				ExportBOEToWordFileStream);
+				ExportBOEToWordFileStream,
+				stream,
+				useStream);
 		}
 		#endregion
 	}
