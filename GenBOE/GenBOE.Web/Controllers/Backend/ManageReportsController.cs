@@ -288,6 +288,11 @@ namespace GenBOE.Web.Controllers
 			return result;
 		}
 
+		/// <summary>
+		/// Get Confidence Report
+		/// </summary>
+		/// <param name="workspaceShortname">Short Name</param>
+		/// <returns>Confidence Report</returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
