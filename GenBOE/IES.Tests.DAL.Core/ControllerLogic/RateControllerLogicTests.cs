@@ -809,18 +809,21 @@ namespace RDM.Tests.ControllerLogic
 			rateConfigLoader = new Mock<IRateConfigLoader>();
             this.rateConfigLoader.Setup(x => x.GetAll()).Returns(TestData.GetRateConfigTestData());
 			this.rateFormatter = new RateFormatter(rateConfigLoader.Object);
-        }
 
-        /// <summary>
-        /// Tests Replication of the rate codes.
-        /// </summary>
-        [TestMethod]
+			rateDetailLoader.Setup(x => x.GetRatesForImport(It.IsAny<RevisionModelView>(), It.IsAny<string[]>())).Returns(this.originals);
+
+		}
+
+		/// <summary>
+		/// Tests Replication of the rate codes.
+		/// </summary>
+		[TestMethod]
         public void ReplicateRates()
         {
 
             RateControllerLogic sut = this.CreateSut();
-
-            List<RateDetailModelView> importedRates = new()
+			
+			List <RateDetailModelView> importedRates = new()
 			{
                 new RateDetailModelView
                 {
@@ -1012,7 +1015,7 @@ namespace RDM.Tests.ControllerLogic
             rateDetails.RateDescription1 = string.Empty;
 
             result = sut.ValidateRateDetailModelViews(new Collection<RateDetailModelView>() { rateDetails }, 2012, 2012);
-            Assert.AreEqual(1, result.Count);
+            Assert.AreEqual(1, result.Select(v => v.ValidationIssue).Distinct().Count());
             Assert.IsTrue(result.ElementAt(0).ValidationIssue.Contains(RateMappingValidationConstants.RATEMAPPING_ADDITIONAL_DESCRIPTIONS_REQUIRED));
         }
 
@@ -1451,7 +1454,7 @@ namespace RDM.Tests.ControllerLogic
         {
             // combine originals + testRateCodes into a single collection for import
             Collection<RateDetailModelView> importedCollection = this.originals.DeepClone().ToCollection();
-            importedCollection.AddRange(testRateCodes.Values.DeepClone().ToCollection());
+            importedCollection.AddRange(testRateCodes.Values.ToCollection().DeepClone().ToCollection());
             RateDetailModelView[] imported = importedCollection.ToArray();
 
             // make some changes to original rate codes

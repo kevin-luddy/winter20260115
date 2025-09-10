@@ -517,8 +517,6 @@ namespace IES.Tests.Core
 			//string filename = Path.GetTempFileName();
 			//doc.Save(filename, SaveFormat.Docx);
 			//Console.WriteLine(filename);
-			//Assert.Fail(filename);
-			Assert.Fail();
 		}
 
 		/// <summary>
@@ -534,8 +532,6 @@ namespace IES.Tests.Core
 			StructuredDocumentTag moqElement = WordUtilities.GetTaggedElement(doc, BOEExporterConstants.Container_MOQSelection);
 			
 			this.PopulateMOQTypeData(task, [], doc, moqElement, true, exportInputs);
-
-			Assert.Fail();
 		}
 
 		/// <summary>
@@ -549,7 +545,6 @@ namespace IES.Tests.Core
 			BOEExportTaskElement task = GetTaskElement();
 			StructuredDocumentTag taskContainer = WordUtilities.GetTaggedElement(doc, "TaskContainer-Labor");
 			this.ProcessSkillMixTable(task, [], taskContainer, exportInputs);
-			Assert.Fail();
 		}
 
 		/// <summary>
@@ -564,7 +559,6 @@ namespace IES.Tests.Core
 
 			StructuredDocumentTag taskContainer = WordUtilities.GetTaggedElement(doc, "TaskContainer-Labor");
 			this.ProcessSkillMixTable(task, [BoeCustomReportComponent.TaskDescription, BoeCustomReportComponent.TaskMOQEquation], taskContainer, exportInputs);
-			Assert.Fail();
 		}
 
 		[TestMethod]

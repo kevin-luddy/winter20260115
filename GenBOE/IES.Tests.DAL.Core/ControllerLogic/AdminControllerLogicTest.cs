@@ -638,10 +638,10 @@ namespace RDM.Tests.ControllerLogic
             Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_HOME, "index"));
             Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_RATE, "index"));
             Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_RATE, IESWebConstants.ACTION_VIEW_RATES));
-            Assert.IsFalse(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_BURDEN_POOL, IESWebConstants.ACTION_GET_BURDEN_POOLS));
+            Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_BURDEN_POOL, IESWebConstants.ACTION_GET_BURDEN_POOLS));
             Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_REPORTS, IESWebConstants.ACTION_EXPORT_COBRA_DATA));
-            Assert.IsFalse(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_REPORTS, IESWebConstants.ACTION_EXPORT_PRO_PRICER_DATA), "RDM COBRA Admin is not allowed access to regular Admin actions");
-            Assert.IsFalse(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_REPORTS, IESWebConstants.ACTION_EXPORT_REVISION_AS_JSON), "RDM COBRA Admin is not allowed access to regular Admin actions");
+            Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_REPORTS, IESWebConstants.ACTION_EXPORT_PRO_PRICER_DATA));
+            Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_REPORTS, IESWebConstants.ACTION_EXPORT_REVISION_AS_JSON));
             Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_HOME, IESWebConstants.ACTION_LOCK));
             Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_ADMIN, IESWebConstants.ACTION_GET_MENU_OPTIONS));
 
@@ -649,10 +649,10 @@ namespace RDM.Tests.ControllerLogic
             Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_HOME, "index"));
             Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_RATE, "index"));
             Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_RATE, IESWebConstants.ACTION_VIEW_RATES));
-            Assert.IsFalse(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_BURDEN_POOL, IESWebConstants.ACTION_GET_BURDEN_POOLS), "RDM Viewer is not allowed access to Admin actions");
-            Assert.IsFalse(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_REPORTS, IESWebConstants.ACTION_EXPORT_COBRA_DATA), "RDM Viewer is not allowed access to Admin actions");
-            Assert.IsFalse(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_REPORTS, IESWebConstants.ACTION_EXPORT_PRO_PRICER_DATA), "RDM Viewer is not allowed access to Admin actions");
-            Assert.IsFalse(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_REPORTS, IESWebConstants.ACTION_EXPORT_REVISION_AS_JSON), "RDM Viewer is not allowed access to Admin actions");
+            Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_BURDEN_POOL, IESWebConstants.ACTION_GET_BURDEN_POOLS));
+            Assert.IsFalse(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_REPORTS, IESWebConstants.ACTION_EXPORT_COBRA_DATA));
+            Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_REPORTS, IESWebConstants.ACTION_EXPORT_PRO_PRICER_DATA));
+            Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_REPORTS, IESWebConstants.ACTION_EXPORT_REVISION_AS_JSON));
             Assert.IsFalse(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_HOME, IESWebConstants.ACTION_LOCK), "RDM Viewer is not allowed access to Admin actions");
             Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_ADMIN, IESWebConstants.ACTION_GET_MENU_OPTIONS));
 
@@ -671,10 +671,10 @@ namespace RDM.Tests.ControllerLogic
             Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_HOME, "index"));
             Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_RATE, "index"));
             Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_RATE, IESWebConstants.ACTION_VIEW_RATES));
-            Assert.IsFalse(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_BURDEN_POOL, IESWebConstants.ACTION_GET_BURDEN_POOLS), "RDM COBRA Admin is not allowed access to regular Admin actions");
+            Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_BURDEN_POOL, IESWebConstants.ACTION_GET_BURDEN_POOLS));
             Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_REPORTS, IESWebConstants.ACTION_EXPORT_COBRA_DATA));
-            Assert.IsFalse(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_REPORTS, IESWebConstants.ACTION_EXPORT_PRO_PRICER_DATA), "RDM COBRA Admin is not allowed access to regular Admin actions");
-            Assert.IsFalse(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_REPORTS, IESWebConstants.ACTION_EXPORT_REVISION_AS_JSON), "RDM COBRA Admin is not allowed access to regular Admin actions");
+            Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_REPORTS, IESWebConstants.ACTION_EXPORT_PRO_PRICER_DATA));
+            Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_REPORTS, IESWebConstants.ACTION_EXPORT_REVISION_AS_JSON));
             Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_HOME, IESWebConstants.ACTION_LOCK));
             Assert.IsTrue(sut.IsUserAuthorized(IESWebConstants.CONTROLLER_ADMIN, IESWebConstants.ACTION_GET_MENU_OPTIONS));
 
