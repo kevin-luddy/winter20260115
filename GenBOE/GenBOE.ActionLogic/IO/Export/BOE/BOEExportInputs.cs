@@ -296,7 +296,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// <summary>
 		/// Gets the workspace export formats.
 		/// </summary>
-		public IReadOnlyCollection<WorkspaceExportFormatDTO> WorkspaceExportFormats { get { return this.FullWorkspace.WorkspaceExportFormats; } }
+		public IReadOnlyCollection<WorkspaceExportFormatNameDTO> WorkspaceExportFormatNames { get { return this.FullWorkspace.WorkspaceExportFormatNames; } }
 
 		/// <summary>
 		/// Gets the workspace.

@@ -12,8 +12,8 @@ namespace GenBOE.DataBridge.Core.Loaders
 
 	public interface IWorkspaceExportFormatDTODataLoader : IDataLoader<WorkspaceExportFormatDTO>
 	{
-		Collection<WorkspaceExportFormatDTO> GetAllWorkspaceExportFormatIds();
-		Collection<WorkspaceExportFormatDTO> GetWorkspaceExportFormatsForWorkspace(int inWorkspaceId);
+		Collection<WorkspaceExportFormatNameDTO> GetAllWorkspaceExportFormatIds();
+		Collection<WorkspaceExportFormatNameDTO> GetWorkspaceExportFormatNamesForWorkspace(int inWorkspaceId);
 		void InsertWorkspaceExportFormatPicklist(Collection<int> inWorkspaceIds, int inTemplateIdForWorkspaces);
 		void DeleteWorkspaceExportFormatPicklist(Collection<int> inWorkspaceIds, int inTemplateIdForWorkspaces);
 		Collection<int> GetAvailableWorkspaceIdsForExportFormatId(int inExportFormatId);

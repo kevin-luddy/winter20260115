@@ -586,8 +586,10 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 new ResourceTypeDto() { ResourceID = StubbedData.Res2.Id, StartDateValue = new DateTime(2012, 9, 15), EndDateValue = new DateTime(2012, 9, 15) },
                 new ResourceTypeDto() { ResourceID = StubbedData.Res3.Id, StartDateValue = new DateTime(2012, 9, 15), EndDateValue = new DateTime(2012, 9, 15) }
             });
+			this.retriever.Setup(x => x.GetTMResourceRates(It.IsAny<int>())).Returns(StubbedData.TmResourceRateCollection);
 
-            Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+
+			Collection <ValidationMessage> validationErrors = new Collection<ValidationMessage>();
             Collection<int> resourceIdsWithValidTMRates = new Collection<int>();
             FullWorkspace workspace1 = new FullWorkspace() { Id = 1, ContractStartDate = new DateTime(2012, 7, 15), ContractEndDate = new DateTime(2015, 4, 15), IsUsingTM = true};
             sut.ValidateBOEFormsTMResources(validationErrors, resourceIdsWithValidTMRates, workspace1, new Collection<int>() { StubbedData.Iboe.Id }, new Collection<int>() { StubbedData.Pboe.Id });
