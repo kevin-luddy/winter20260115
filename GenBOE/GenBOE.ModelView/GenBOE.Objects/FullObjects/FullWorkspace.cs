@@ -30,13 +30,13 @@ namespace GenBOE.Objects
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
 		[NonSerialized]
 		protected IRetriever retriever;
-		
+
 		[NonSerialized]
 		private ICommonDataMapper commonDataMapper;
 
 		[NonSerialized]
 		private IPermissionsDTODataLoader _PermissionsLoader;
-		
+
 		private string _WorkspaceStateName = null;
 		private ReadOnlyCollection<PermissionsDTO> _WorkspacePermissions = null;
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
@@ -190,7 +190,7 @@ namespace GenBOE.Objects
 				return this.clins;
 			}
 		}
-		
+
 		/// <summary>
 		/// Clins belonging to the Workspace without Multi Clin
 		/// </summary>
@@ -222,7 +222,7 @@ namespace GenBOE.Objects
 				return this.wbsElements;
 			}
 		}
-		
+
 		/// <summary>
 		/// Wbs Elements belonging to the Workspace without Multi
 		/// </summary>
@@ -252,7 +252,7 @@ namespace GenBOE.Objects
 				return this.boes;
 			}
 		}
-		
+
 		/// <summary>
 		/// Loads BOEs into the property.. Used if you want to preload the BOEs ahead of time
 		/// </summary>
@@ -268,8 +268,8 @@ namespace GenBOE.Objects
 		/// Populates RTE data for all Boes
 		/// </summary>
 		public virtual void LoadBoesAndTaskElementsRTEData()
-		{ 
-			if(this.boes == null)
+		{
+			if (this.boes == null)
 			{
 				// Confirming that Task Elements are loaded with RTE data
 				this.LoadTaskElementRTEData();
@@ -278,7 +278,7 @@ namespace GenBOE.Objects
 				this.boes = this.retriever.GetFullBoesByWorkspaceId(this.Id, true, this.TaskElements).ToList().AsReadOnly();
 			}
 			else
-			{ 
+			{
 				// Data was already retrieved, so we are only missing the RTE data, which we'll now load
 				this.retriever.PopulateRTEData(this.boes);
 			}
@@ -434,7 +434,7 @@ namespace GenBOE.Objects
 
 			if (trip == null)
 			{
-			   trip = this.retriever.GetTravelTripById(id, this);
+				trip = this.retriever.GetTravelTripById(id, this);
 			}
 
 			return trip;
@@ -852,7 +852,7 @@ namespace GenBOE.Objects
 			{
 				if (this.laborResourcesMappingWithCustomFieldsValuesAndContainerIds == null)
 				{
-					this.laborResourcesMappingWithCustomFieldsValuesAndContainerIds = this.retriever.GetCustomFieldValueIDsContainerIdsByLaborTypeIds(this.TaskElements.SelectMany(x => x.taskElementLabors).Select(y=>y.Id).ToCollection());
+					this.laborResourcesMappingWithCustomFieldsValuesAndContainerIds = this.retriever.GetCustomFieldValueIDsContainerIdsByLaborTypeIds(this.TaskElements.SelectMany(x => x.taskElementLabors).Select(y => y.Id).ToCollection());
 				}
 
 				return this.laborResourcesMappingWithCustomFieldsValuesAndContainerIds;
@@ -865,7 +865,7 @@ namespace GenBOE.Objects
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public Dictionary<int, ICollection<KeyValuePair<int, int>>> TravelElementsMappingWithCustomFieldsValuesAndContainerIds
 		{
-		   
+
 			get
 			{
 				if (this.travelElementsMappingWithCustomFieldsValuesAndContainerIds == null)
@@ -1154,7 +1154,7 @@ namespace GenBOE.Objects
 			{
 				return WbsElements.FirstOrDefault(w => w.WbsNumber == Constants.UNIQUE_MULTI_NUMBER);
 			}
-		} 
+		}
 		/// <summary>
 		/// Gets the Multi Clin for this workspace.
 		/// </summary>
@@ -1259,7 +1259,7 @@ namespace GenBOE.Objects
 		{
 			get
 			{
-				if(this.rteOverrides == null)
+				if (this.rteOverrides == null)
 				{
 					this.rteOverrides = this.retriever.GetWsRteOverrides(this.Id).ToList().AsReadOnly();
 				}
@@ -1275,7 +1275,7 @@ namespace GenBOE.Objects
 		{
 			get
 			{
-				if(this.templateQuestionsAndAnswers == null)
+				if (this.templateQuestionsAndAnswers == null)
 				{
 					this.templateQuestionsAndAnswers = this.retriever.GetQuestionsAndAnswersByWorkspaceId(this.Id).ToList().AsReadOnly();
 				}
