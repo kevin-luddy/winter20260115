@@ -297,6 +297,7 @@
     <Compile Include="ModelView\AddEditWBSModelView.cs" />
     <Compile Include="ModelView\AddEditCLINModelView.cs" />
     <Compile Include="ModelView\BOEFormMasterModelView.cs" />
+    <Compile Include="ModelView\BOELoopingData.cs" />
     <Compile Include="ModelView\BOEStatusReportView.cs" />
     <Compile Include="ModelView\CompleteWBSImportModelView.cs" />
     <Compile Include="ModelView\ConfidenceReportItem.cs" />

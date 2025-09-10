@@ -440,7 +440,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		public void ExportBOEsToZipFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
             FullWorkspace workSpace, HttpResponseBase response, string returnFilename, string templatePath, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet, Stream stream = null, bool useStream = false)
         {
-            AllBOEExportHelper.ExportBOEsToZipFile<bool>(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workSpace, response, returnFilename, templatePath, ExportBOEToWordFileStream, stream, useStream);
+            AllBOEExportHelper.ExportBOEsToZipFile<bool>(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workSpace, response, returnFilename, templatePath, ExportBOEToWordFileStream, templateType, stream, useStream);
         }
 
         /// <summary>
