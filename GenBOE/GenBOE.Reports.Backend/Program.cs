@@ -4,10 +4,14 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Collections.Generic;
+using System.Linq;
 using GenBOE.DataBridge.Core.Common;
 using GenBOE.DataBridge.Core.Common.Calculations;
+using GenBOE.DataBridge.Core.DTO;
 using GenBOE.DataBridge.Core.IO.Export;
 using GenBOE.DataBridge.Core.Loaders;
+using GenBOE.DataBridge.Core.Loaders.SystemSetting;
 using GenBOE.Reports.Backend.Services;
 using IES.Common.Core;
 using IES.Common.Core.Configuration;
@@ -35,7 +39,7 @@ builder.Services.AddSingleton<ICacheDataLoader, CacheDataLoader>();
 builder.Services.AddScoped<IBoeExportService, BoeExportService>();
 builder.Services.AddSingleton<ICommonDataLoader, CommonDataLoader>();
 builder.Services.AddSingleton<ICommonDataMapper, CommonDataMapper>();
-
+builder.Services.AddSingleton<ISystemSettingDTODataLoader, SystemSettingDTODataLoader>();
 builder.Services.AddSingleton<TravelTripCostCalculation>();
 
 // builder.Services.AddSingleton<IWorkspaceExportFormatDTODataLoader, WorkspaceExportFormatDTODataLoader>();
@@ -68,4 +72,15 @@ else if (companyMode == CompanyConfiguration.MST)
 
 WebApplication app = config.ConfigureAppBuilder(builder);
 IES.Common.Core.Utilities.CommonUtilities.LogEnvironmentSettings(app, app.Configuration, app.Environment);
+
+using (IServiceScope scope = app.Services.CreateScope())
+{
+	// Avoid calling the method to get the Skill Mix system settings on every blacklist check - initialize the value on startup (and only update it on every update)
+	ISystemSettingDTODataLoader systemSettingLoader = scope.ServiceProvider.GetRequiredService<ISystemSettingDTODataLoader>();
+	ICollection<SystemSettingDTO> skillMixSettings = systemSettingLoader.GetSkillMixSettings();
+	CommonUtilities.UpdateSkillMixBlacklistSettings(
+		skillMixSettings.FirstOrDefault(x => x.Key.Equals(SystemSettingConstants.SKILL_MIX_BLACKLIST)) == null ? string.Empty :
+			skillMixSettings.FirstOrDefault(x => x.Key.Equals(SystemSettingConstants.SKILL_MIX_BLACKLIST)).Value);
+}
+
 app.Run();

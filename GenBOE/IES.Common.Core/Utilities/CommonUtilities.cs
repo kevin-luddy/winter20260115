@@ -1082,7 +1082,7 @@ namespace IES.Common.Core.Utilities
 		/// <returns>True to show skill mix</returns>
 		public static bool ShowSkillMixForWorkspace(DateTime? workspaceCreationDate, string workspaceShortname)
 		{
-			return IsSkillMixEnabledForSystem && workspaceCreationDate >= skillMixStartDate
+			return IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate
 				&& !skillMixBlacklistWorkspaces.Contains(workspaceShortname);
 		}
 
