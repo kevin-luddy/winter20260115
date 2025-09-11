@@ -67,7 +67,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         private Mock<ContractTypeLoader> contractTypeLoader;
 		private Mock<IMoqTypeDataLoader> moqTypeDataLoader;
 		private Moq.Mock<ISystemSettingDTODataLoader> systemSettingsLoader;
-		private readonly Mock<WorkspaceStateMachine> workspaceStateMachine;
+		private Mock<WorkspaceStateMachine> workspaceStateMachine;
 
 		private WorkspaceControllerLogicSpaceSystems CreateSystemSpaceSystems()
         {
@@ -183,6 +183,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			this.moqTypeDataLoader = new Mock<IMoqTypeDataLoader>();
 
 			this._permissionLoader.Setup(x => x.GetCreateWorkspaceRolesForPtm(It.IsAny<string>(), It.IsAny<string>())).Returns(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("test", "") });
+			this.workspaceStateMachine = new Mock<WorkspaceStateMachine>();
 
 		}
 
