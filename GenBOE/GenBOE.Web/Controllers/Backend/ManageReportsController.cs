@@ -57,6 +57,11 @@ namespace GenBOE.Web.Controllers
 		private IBOEStatusReport boeStatusReport { get; set; }
 
 		/// <summary>
+		/// Workspace activity report.
+		/// </summary>
+		private WorkspaceActivityReport workspaceActivityReport { get; set; }
+
+		/// <summary>
 		/// BOE Confidence Report
 		/// </summary>
 		private IBOEConfidenceReport boeConfidenceReport { get; set; }
@@ -71,12 +76,13 @@ namespace GenBOE.Web.Controllers
 		/// ctor
 		/// </summary>
 		public ManageReportsController(ISecurityAccess inSecurityAccess, IReportsControllerLogic reportsControllerLogic, IValidateBOE validateBOE,
-			IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEStatusReport boeStatusReport, IBOEConfidenceReport boeConfidenceReport, IBOEConfidenceReportExporter boeConfidenceReportExporter)
+			IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEStatusReport boeStatusReport, WorkspaceActivityReport workspaceActivityReport, IBOEConfidenceReport boeConfidenceReport, IBOEConfidenceReportExporter boeConfidenceReportExporter)
 			: base(inSecurityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.reportsControllerLogic = reportsControllerLogic;
 			this.validateBOE = validateBOE;
 			this.boeStatusReport = boeStatusReport;
+			this.workspaceActivityReport = workspaceActivityReport;
 			this.boeConfidenceReport = boeConfidenceReport;
 			this.boeConfidenceReportExporter = boeConfidenceReportExporter;
 		}
@@ -257,6 +263,41 @@ namespace GenBOE.Web.Controllers
 
 			// Finalize Action
 			FinalizeAction(logger, WebConstants.GET_BOE_DISCREPANCY_REPORT_HOURS_LABEL, sw);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get the Workspace Activity report.
+		/// </summary>
+		/// <param name="workspace">workspace short name</param>
+		/// <returns>Workspace Activity Reports Data</returns>
+		[HttpGet]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
+		public IESSingleResponse<WorkspaceActivityReportModelView> GetWorkspaceActivityReport(string workspace)
+		{
+			IESSingleResponse<WorkspaceActivityReportModelView> result = new IESSingleResponse<WorkspaceActivityReportModelView>();
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+			Stopwatch sw = InitializeAction(logger, WebConstants.VIEW_WORKSPACE_ACTIVITY_REPORT, SecurityPage.Reports, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, null);
+
+			try
+			{
+				result.Data = workspaceActivityReport.GenerateReport(ws);
+				result.IsSuccessful = true;
+			}
+			catch (GenValidationException ex)
+			{
+				logger.Error(ex);
+				result.Messages = ex.GetValidationMessages(ex.ValidationList);
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add(ex.Message);
+			}
+
+			FinalizeAction(logger, WebConstants.VIEW_WORKSPACE_ACTIVITY_REPORT, sw);
 
 			return result;
 		}
