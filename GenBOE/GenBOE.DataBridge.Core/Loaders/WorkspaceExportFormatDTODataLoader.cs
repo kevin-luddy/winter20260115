@@ -35,9 +35,9 @@ namespace GenBOE.DataBridge.Core.Loaders
 		/// </summary>
 		/// <param name="inWorkspaceId">the workspace id of interest</param>
 		/// <returns>the Ids of the export formats for this workspace</returns>
-		public virtual Collection<WorkspaceExportFormatDTO> GetWorkspaceExportFormatsForWorkspace(int inWorkspaceId)
+		public virtual Collection<WorkspaceExportFormatNameDTO> GetWorkspaceExportFormatNamesForWorkspace(int inWorkspaceId)
 		{
-			Collection<WorkspaceExportFormatDTO> toReturn = new Collection<WorkspaceExportFormatDTO>();
+			Collection<WorkspaceExportFormatNameDTO> toReturn = new Collection<WorkspaceExportFormatNameDTO>();
 
 			using (StopwatchTimer sw = new StopwatchTimer(Log))
 			{
@@ -49,7 +49,7 @@ namespace GenBOE.DataBridge.Core.Loaders
 								on t.TemplateID equals s.TemplateID into templateJoin
 								from u in templateJoin.DefaultIfEmpty()
 								where u.WorkspaceID == inWorkspaceId || t.IsAvailableToAllWorkspaces
-								select new WorkspaceExportFormatDTO
+								select new WorkspaceExportFormatNameDTO
 								{
 									ExportFormat = new ExcelReportTemplate
 									{
@@ -57,11 +57,10 @@ namespace GenBOE.DataBridge.Core.Loaders
 										ParentTemplateId = t.ParentTemplateID
 									},
 									Id = t.TemplateID,
+									UpdateDate = t.UpdateDT,
 									ExportFormatName = t.Template,
 									ExportFormatDescription = t.TemplateDescription,
-									FileData = t.TemplateFile,
 									IsActive = t.IsActive,
-									UpdateDate = t.UpdateDT,
 									IsAvailableToAllWorkspaces = t.IsAvailableToAllWorkspaces
 								}).Distinct().ToCollection();
 				}
@@ -73,7 +72,7 @@ namespace GenBOE.DataBridge.Core.Loaders
 				 * and that all prior bad data has been cleaned up.
 				 * 
 				 */
-				foreach (WorkspaceExportFormatDTO exportFormat in toReturn)
+				foreach (WorkspaceExportFormatNameDTO exportFormat in toReturn)
 				{
 					if (exportFormat.ExportFormat.TemplateId == exportFormat.ExportFormat.ParentTemplateId)
 					{
@@ -89,16 +88,16 @@ namespace GenBOE.DataBridge.Core.Loaders
 		/// All the export formats the system knows about (i.e. 'Landscape', 'Portrait', + ALL others for ALL workspaces)
 		/// </summary>
 		/// <returns>the Ids of the export formats known to the system</returns>
-		public virtual Collection<WorkspaceExportFormatDTO> GetAllWorkspaceExportFormatIds()
+		public virtual Collection<WorkspaceExportFormatNameDTO> GetAllWorkspaceExportFormatIds()
 		{
-			Collection<WorkspaceExportFormatDTO> toReturn = null;
+			Collection<WorkspaceExportFormatNameDTO> toReturn = null;
 
 			using (StopwatchTimer sw = new StopwatchTimer(Log))
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
 					toReturn = (from t in gbe.OutputFormatTemplates
-								select new WorkspaceExportFormatDTO
+								select new WorkspaceExportFormatNameDTO
 								{
 									ExportFormat = new ExcelReportTemplate
 									{
@@ -106,11 +105,10 @@ namespace GenBOE.DataBridge.Core.Loaders
 										ParentTemplateId = t.ParentTemplateID
 									},
 									Id = t.TemplateID,
+									UpdateDate = t.UpdateDT,
 									ExportFormatName = t.Template,
 									ExportFormatDescription = t.TemplateDescription,
-									FileData = t.TemplateFile,
 									IsActive = t.IsActive,
-									UpdateDate = t.UpdateDT,
 									IsAvailableToAllWorkspaces = t.IsAvailableToAllWorkspaces
 								}).ToCollection();
 				}

@@ -842,8 +842,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     // Get BOE Summary Grid data for the current BOE. Used for populating the summary grid on the template
                     List<BOESummaryGridModelView> boeSummaryGridModelViews = this._BOESummary.GetBOESummaryGridModelViews(boe, inputs, isSubcontractorUser).ToList();
 
-                    // Get template based on workspace preferences
-                    WorkspaceExportFormatDTO wsExportFormatDTO = ws.WorkspaceExportFormats.First(x => x.Id == ws.TemplateID);
+					// Get template based on workspace preferences
+					WorkspaceExportFormatDTO wsExportFormatDTO = ws.WorkspaceExportFormatTemplate;
 
                     // Get BOE Export Model View for the current BOE. Used for filling in most of the data on the template.
                     BOEExportModelView boeExportModelView;
@@ -930,8 +930,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     // Get BOE Summary Grid data for the current BOE. Used for populating the summary grid on the template
                     ICollection<BOESummaryGridModelView> boeSummaryGridModelViews = this._BOESummary.GetBOESummaryGridModelViews(boe, inputs, isSubcontractorUser);
 
-                    // Get template based on workspace preferences
-                    WorkspaceExportFormatDTO wsExportFormatDTO = ws.WorkspaceExportFormats.First(x => x.Id == ws.TemplateID);
+					// Get template based on workspace preferences
+					WorkspaceExportFormatDTO wsExportFormatDTO = ws.WorkspaceExportFormatTemplate;
 
                     // Get BOE Export Model View for the current BOE. Used for filling in most of the data on the template.
                     BOEExportModelView boeExportModelView;
