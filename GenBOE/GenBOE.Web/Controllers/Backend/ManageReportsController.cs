@@ -55,17 +55,23 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		private IBOEStatusReport boeStatusReport { get; set; }
 
+		/// <summary>
+		/// BOE Confidence Report
+		/// </summary>
+		private IBOEConfidenceReport boeConfidenceReport { get; set; }
+
 
 		/// <summary>
 		/// ctor
 		/// </summary>
 		public ManageReportsController(ISecurityAccess inSecurityAccess, IReportsControllerLogic reportsControllerLogic, IValidateBOE validateBOE,
-			IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEStatusReport boeStatusReport)
+			IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEStatusReport boeStatusReport, IBOEConfidenceReport boeConfidenceReport)
 			: base(inSecurityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.reportsControllerLogic = reportsControllerLogic;
 			this.validateBOE = validateBOE;
 			this.boeStatusReport = boeStatusReport;
+			this.boeConfidenceReport = boeConfidenceReport;
 		}
 
 		/// <summary>
@@ -256,9 +262,9 @@ namespace GenBOE.Web.Controllers
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
-		public IESSingleResponse<ICollection<FlattenedValidateAllBOEModelView>> GetValidateAllBOEsReport(string workspaceShortname)
+		public IESResponse<FlattenedValidateAllBOEModelView> GetValidateAllBOEsReport(string workspaceShortname)
 		{
-			IESSingleResponse<ICollection<FlattenedValidateAllBOEModelView>> result = new IESSingleResponse<ICollection<FlattenedValidateAllBOEModelView>>();
+			IESResponse<FlattenedValidateAllBOEModelView> result = new IESResponse<FlattenedValidateAllBOEModelView>();
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortname);
 
 			// Start Stopwatch to measure performance
@@ -278,6 +284,46 @@ namespace GenBOE.Web.Controllers
 
 			// Finalize Action
 			FinalizeAction(logger, WebConstants.GET_VALIDATE_ALL_BOES_REPORT, sw);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get Confidence Report
+		/// </summary>
+		/// <param name="workspaceShortname">Short Name</param>
+		/// <returns>Confidence Report</returns>
+		[HttpGet]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
+		public IESSingleResponse<ConfidenceReportModelView> GetConfidenceReport(string workspaceShortname)
+		{
+			IESSingleResponse<ConfidenceReportModelView> result = new IESSingleResponse<ConfidenceReportModelView>();
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortname);
+
+			Stopwatch sw = InitializeAction(logger, WebConstants.GET_CONFIDENCE_REPORT, SecurityPage.Reports, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, null);
+
+			try
+			{
+				result.Data = new ConfidenceReportModelView(
+					boeConfidenceReport.GenerateConfidenceReport(ws),
+					ws.WorkspaceName,
+					ws.WorkspaceStateName,
+					ws.ContainsOCI
+				);
+			}
+			catch (GenValidationException ex)
+			{
+				logger.Error(ex);
+				result.Messages = ex.GetValidationMessages(ex.ValidationList);
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add(ex.Message);
+			}
+
+			FinalizeAction(logger, WebConstants.GET_CONFIDENCE_REPORT, sw);
 
 			return result;
 		}

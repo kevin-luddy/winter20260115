@@ -446,13 +446,13 @@ namespace GenBOE.Objects
 		}
 
 		/// <summary>
-		/// Gets workspace export format by workspace Id.
+		/// Gets workspace export format name by workspace Id.
 		/// </summary>
 		/// <param name="wsId">Workspace Id</param>
 		/// <returns>Workspace Export Format DTOs</returns>
-		public ICollection<WorkspaceExportFormatDTO> GetWorkspaceExportFormatsByWorkspaceId(int wsId)
+		public ICollection<WorkspaceExportFormatNameDTO> GetWorkspaceExportFormatNamesByWorkspaceId(int wsId)
 		{
-			return this.workspaceExportFormatLoader.GetWorkspaceExportFormatsForWorkspace(wsId);
+			return this.workspaceExportFormatLoader.GetWorkspaceExportFormatNamesForWorkspace(wsId);
 		}
 
 		/// <summary>
@@ -466,11 +466,11 @@ namespace GenBOE.Objects
 		}
 
 		/// <summary>
-		/// Get the WS Export Format's Name 
+		/// Get the WS Export Format Name 
 		/// </summary>
 		/// <param name="templateID">The template ID of the workspace export format.</param>
-		/// <returns>The name of the WS Export Format</returns>
-		public string GetWorkspaceExportFormatNameByTemplateId(int templateID)
+		/// <returns>The WS Export Format Name</returns>
+		public WorkspaceExportFormatNameDTO GetWorkspaceExportFormatNameByTemplateId(int templateID)
 		{
 			return this.workspaceExportFormatLoader.GetNameById(templateID);
 		}
