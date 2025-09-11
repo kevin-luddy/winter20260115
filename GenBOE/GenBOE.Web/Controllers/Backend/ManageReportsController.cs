@@ -29,6 +29,7 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.Web.ModelView;
 	using IES.Common;
 	using IES.Common.Exceptions;
+	using Microsoft.VisualBasic.Logging;
 
 	/// <summary>
 	/// Manage Permissions Controller for getting workspace home data.
@@ -60,18 +61,24 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		private IBOEConfidenceReport boeConfidenceReport { get; set; }
 
+		/// <summary>
+		/// BOE Confidence Report Exporter
+		/// </summary>
+		private IBOEConfidenceReportExporter boeConfidenceReportExporter { get; set; }
+
 
 		/// <summary>
 		/// ctor
 		/// </summary>
 		public ManageReportsController(ISecurityAccess inSecurityAccess, IReportsControllerLogic reportsControllerLogic, IValidateBOE validateBOE,
-			IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEStatusReport boeStatusReport, IBOEConfidenceReport boeConfidenceReport)
+			IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEStatusReport boeStatusReport, IBOEConfidenceReport boeConfidenceReport, IBOEConfidenceReportExporter boeConfidenceReportExporter)
 			: base(inSecurityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.reportsControllerLogic = reportsControllerLogic;
 			this.validateBOE = validateBOE;
 			this.boeStatusReport = boeStatusReport;
 			this.boeConfidenceReport = boeConfidenceReport;
+			this.boeConfidenceReportExporter = boeConfidenceReportExporter;
 		}
 
 		/// <summary>
@@ -326,6 +333,71 @@ namespace GenBOE.Web.Controllers
 			FinalizeAction(logger, WebConstants.GET_CONFIDENCE_REPORT, sw);
 
 			return result;
+		}
+
+		/// <summary>
+		/// Export Confidence Report
+		/// </summary>
+		/// <param name="exportConfidenceReportModelView">POST payload for confidence report</param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		[HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
+		public HttpResponseMessage ExportConfidenceReport([FromBody] ExportFileModelView exportConfidenceReportModelView)
+		{
+			if (exportConfidenceReportModelView == null)
+			{
+				throw new ArgumentNullException(nameof(exportConfidenceReportModelView));
+			}
+
+			try
+			{
+				FileStream fs = null;
+				FullWorkspace ws = this.Factory.CreateFullWorkspace(exportConfidenceReportModelView.workspaceShortName);
+				Stopwatch sw = this.InitializeAction(logger, WebConstants.ACTION_EXPORT_CONFIDENCE_REPORT, SecurityPage.Reports, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, null);
+
+				ActionLogic.ModelView.ConfidenceReportModelView confidenceReport = boeConfidenceReport.GenerateConfidenceReport(ws);
+
+				string templateDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates", "Export");
+				if (!Directory.Exists(templateDir))
+				{
+					throw new InvalidOperationException($"Template directory '{templateDir}' does not exist.");
+				}
+				string templateFileName = Path.Combine(templateDir, "ConfidenceReport.xlsx");
+				string exportFile = this.boeConfidenceReportExporter.ExportToExcelFile(templateFileName, confidenceReport, exportConfidenceReportModelView.workspaceShortName);
+
+				if (exportFile.Length > 0)
+				{
+					fs = new FileStream(exportFile, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+				}
+
+				HttpResponseMessage response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+				response.Content = new StreamContent(fs);
+				response.Content.Headers.ContentType = new MediaTypeHeaderValue(BOEExporterConstants.ContentType_XLSX);
+				response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
+				response.Content.Headers.ContentDisposition.FileName = "ConfidenceReport.xlsx";
+
+				FinalizeAction(logger, WebConstants.GET_CONFIDENCE_REPORT, sw);
+
+				return response;
+			}
+			catch (GenValidationException ex)
+			{
+				logger.Error(ex);
+				return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
+				{
+					Content = new StringContent("unknown error exporting BOE Discrepancy")
+				};
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				return new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError)
+				{
+					Content = new StringContent("unknown error exporting BOE Discrepancy")
+				};
+			}
 		}
 
 		/// <summary>
