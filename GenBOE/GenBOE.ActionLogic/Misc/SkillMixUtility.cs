@@ -190,6 +190,7 @@
 		/// <param name="refreshedModel">The Refreshed Skill Mix Model</param>
 		private static void CleanUpCommonDisclosureRows(ICollection<SkillMixModelView> currentSkillMixData, RefreshSkillMixModelView refreshedModel)
 		{
+			List<string> resourceIdList = new List<string>();
 			ICollection<string> newLinkedResourceIds = refreshedModel.SkillMixRows.Where(r => !string.IsNullOrWhiteSpace(r.ResourceNew)).Select(l => l.ResourceNew).Distinct().ToList();
 			foreach (CommonDisclosureModelView item in refreshedModel.CommonDisclosureRows)
 			{
@@ -197,6 +198,13 @@
 				{
 					item.HistoricalHours = currentSkillMixData.Where(sm => item.ResourceID == sm.ResourceNew).Sum(l => l.HistoricalHours);
 				}
+
+				if (resourceIdList.Contains(item.ResourceID))
+				{
+					item.HistoricalHours = 0;
+				}
+
+				resourceIdList.Add(item.ResourceID);
 			}
 
 		}
