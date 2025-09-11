@@ -329,7 +329,7 @@ namespace GenBOE.Web.Controllers.Backend
 		}
 
 		/// <summary>
-		/// Get the Workspace Status
+		/// Save the Workspace Status
 		/// </summary>
 		/// <param name="workspaceShortname">Workspace Shortname</param>
 		/// <returns>Workspace Status</returns>
@@ -342,7 +342,7 @@ namespace GenBOE.Web.Controllers.Backend
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortname);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(logger, "GetWorkspaceStatus", SecurityPage.WorkspaceSettingsStatus, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, null);
+			Stopwatch sw = InitializeAction(logger, WebConstants.GET_WORKSPACE_STATUS, SecurityPage.WorkspaceSettingsStatus, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, null);
 
 			try
 			{
@@ -374,7 +374,7 @@ namespace GenBOE.Web.Controllers.Backend
 			FullWorkspace ws = Factory.CreateFullWorkspace(workspaceStatusMV.WorkspaceName);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(logger, "GetWorkspaceStatus", SecurityPage.WorkspaceSettingsStatus, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, null);
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_SAVE_WORKSPACE_STATUS, SecurityPage.WorkspaceSettingsStatus, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, null);
 
 			try
 			{
@@ -387,7 +387,7 @@ namespace GenBOE.Web.Controllers.Backend
 				result.Messages.Add(ex.Message);
 			}
 
-			FinalizeAction(logger, WebConstants.GET_WORKSPACE_STATUS, sw);
+			FinalizeAction(logger, WebConstants.ACTION_SAVE_WORKSPACE_STATUS, sw);
 			return result;
 		}
 	}
