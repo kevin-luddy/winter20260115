@@ -132,6 +132,8 @@
 					{
 						CreateCommonDisclosureRowsRMS(resourceHours, laborTypes, currentCommonDisclosureData, 
 							refreshedModel, isManual);
+						CleanUpCommonDisclosureRows(currentSkillMixData, refreshedModel);
+
 					}
 				}
 				else
@@ -179,6 +181,24 @@
 
 				resourceOldList.Add(item.ResourceOld);
 			}
+		}
+
+		/// <summary>
+		/// Clean up common disclosure rows after adding new rows in skill mix table
+		/// </summary>
+		/// <param name="currentSkillMixData">Collection of skillmix data</param>
+		/// <param name="refreshedModel">The Refreshed Skill Mix Model</param>
+		private static void CleanUpCommonDisclosureRows(ICollection<SkillMixModelView> currentSkillMixData, RefreshSkillMixModelView refreshedModel)
+		{
+			ICollection<string> newLinkedResourceIds = refreshedModel.SkillMixRows.Where(r => !string.IsNullOrWhiteSpace(r.ResourceNew)).Select(l => l.ResourceNew).Distinct().ToList();
+			foreach (CommonDisclosureModelView item in refreshedModel.CommonDisclosureRows)
+			{
+				if (newLinkedResourceIds.Contains(item.ResourceID))
+				{
+					item.HistoricalHours = currentSkillMixData.Where(sm => item.ResourceID == sm.ResourceNew).Sum(l => l.HistoricalHours);
+				}
+			}
+
 		}
 
 		/// <summary>
