@@ -80,7 +80,9 @@ namespace GenBOE.Web.Controllers
 		/// ctor
 		/// </summary>
 		public ManageReportsController(ISecurityAccess inSecurityAccess, IReportsControllerLogic reportsControllerLogic, IValidateBOE validateBOE,
-			IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEStatusReport boeStatusReport, IBOEConfidenceReport boeConfidenceReport, WorkspaceActivityReport workspaceActivityReport, BOEActivityReport boeActivityReport, IBOEConfidenceReportExporter boeConfidenceReportExporter)
+			IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEStatusReport boeStatusReport,
+			IBOEConfidenceReport boeConfidenceReport, WorkspaceActivityReport workspaceActivityReport, BOEActivityReport boeActivityReport,
+			IBOEConfidenceReportExporter boeConfidenceReportExporter)
 			: base(inSecurityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.reportsControllerLogic = reportsControllerLogic;
