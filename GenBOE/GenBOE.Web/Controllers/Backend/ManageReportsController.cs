@@ -29,7 +29,6 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.Web.ModelView;
 	using IES.Common;
 	using IES.Common.Exceptions;
-	using Microsoft.VisualBasic.Logging;
 
 	/// <summary>
 	/// Manage Permissions Controller for getting workspace home data.
@@ -70,7 +69,6 @@ namespace GenBOE.Web.Controllers
 		/// BOE Confidence Report Exporter
 		/// </summary>
 		private IBOEConfidenceReportExporter boeConfidenceReportExporter { get; set; }
-
 
 		/// <summary>
 		/// ctor
