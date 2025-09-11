@@ -185,7 +185,7 @@ namespace IES.ActionLogic.Core.IO.Export
 		{
 			StructuredDocumentTagCollection sdts = document.Range.StructuredDocumentTags;
 
-			foreach (StructuredDocumentTag tag in sdts)
+			foreach (StructuredDocumentTag tag in sdts.ToList())
 			{
 				HeaderFooter headerFooter = tag.GetAncestor(NodeType.HeaderFooter) as HeaderFooter;
 				if (headerFooter != null && headerFooter.HeaderFooterType == HeaderFooterType.HeaderPrimary)
@@ -218,7 +218,7 @@ namespace IES.ActionLogic.Core.IO.Export
 			StructuredDocumentTag historyElement = WordUtilities.GetTaggedChildElement(introductionContainerTemplate,
 				PPRDExporterConstants.FIELDNAME_HISTORY);
 			WordUtilities.SetElementTextWithHTML(document, historyElement,
-				WordUtilities.ReplaceParagraphTags(revision.History), false, true);
+				WordUtilities.ReplaceParagraphTags(revision.History));
 
 			// populate Release Notes
 			StructuredDocumentTag publishDateElement = WordUtilities.GetTaggedChildElement(introductionContainerTemplate,
@@ -230,7 +230,7 @@ namespace IES.ActionLogic.Core.IO.Export
 			if (!string.IsNullOrWhiteSpace(revision.ReleaseNotes))
 			{
 				WordUtilities.SetElementTextWithHTML(document, releaseNotesElement,
-					WordUtilities.ReplaceParagraphTags(revision.ReleaseNotes), false, true);
+					WordUtilities.ReplaceParagraphTags(revision.ReleaseNotes));
 			}
 			else
 			{
@@ -312,7 +312,7 @@ namespace IES.ActionLogic.Core.IO.Export
 
 						if (modelView.ContentType == SectionContentType.Text && textElement != null)
 						{
-							WordUtilities.SetElementTextWithHTML(mainPart, textElement, modelView.TextContent, false, true);
+							WordUtilities.SetElementTextWithHTML(mainPart, textElement, modelView.TextContent);
 
 							if (modelView.IsInternalSection ?? false)
 							{
@@ -485,7 +485,7 @@ namespace IES.ActionLogic.Core.IO.Export
 					string hyperlink = string.Format("<a href=\"{1}\">{0}</a>", attachment.Name, attachment.Link);
 
 					// Set the hyperlink
-					WordUtilities.SetElementTextWithHTML(mainPart, textElement, hyperlink, false, true);
+					WordUtilities.SetElementTextWithHTML(mainPart, textElement, hyperlink);
 
 					// Remove table elements
 					RemoveElement(rateTableElement);

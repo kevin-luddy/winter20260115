@@ -2496,7 +2496,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				}
 				else if (entry.Key == BOEExporterConstants.FieldName_TaskDescription_NoSpacing || entry.Key == BOEExporterConstants.FieldName_MethodOfQuoting_NoSpacing)
 				{
-					WordUtilities.SetElementTextWithHTML(document, headerDataElement, entry.Value, true);
+					WordUtilities.SetElementTextWithHTML(document, headerDataElement, entry.Value, true, false);
 				}
 				else
 				{

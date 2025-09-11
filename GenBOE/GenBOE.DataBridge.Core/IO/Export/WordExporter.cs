@@ -487,7 +487,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_HoursDescriptionLabel), label);
 							WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_HoursDescription),
-								moqType.DescriptionHoursRequired, false, true);
+								moqType.DescriptionHoursRequired);
 							break;
 						case MOQType.SME:
 							if (customExport)
@@ -504,13 +504,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 							}
 
 							WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMEReasons),
-								moqType.SmeReason, false, true);
+								moqType.SmeReason);
 							WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMEHoursLogic),
-								moqType.SmeHoursLogic, false, true);
+								moqType.SmeHoursLogic);
 							WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMEDurationLogic),
-								moqType.SmeDurationLogic, false, true);
+								moqType.SmeDurationLogic);
 							WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMETasks),
-								moqType.SmeTaskEstimates, false, true);
+								moqType.SmeTaskEstimates);
 							break;
 						case MOQType.NonLabor:
 							if (customExport)
@@ -536,7 +536,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					if (moqType.SelectedMOQType != MOQType.SME)
 					{
 						WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_Rationale),
-							moqType.Rationale, false, true);
+							moqType.Rationale);
 					}
 					else if (customExport)
 					{
@@ -550,7 +550,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					if (CommonUtilities.IsHistoricalReferenceExplanationRequired(exportInputs.Workspace.CreationDate) && (moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative))
 					{
 						WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_HistoricalRefExp),
-							moqType.HistoricalReferenceExplanation, false, true);
+							moqType.HistoricalReferenceExplanation);
 					}
 					else if (customExport)
 					{
@@ -565,7 +565,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						exportInputs.Workspace.EnableSAPConnection, laborTaskElement.MOQTypes, laborTaskElement.BOETaskElementID ?? -1, laborTaskElement.HasTMRates, exportInputs.Workspace.Shortname))
 					{
 						WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SkillMix),
-							moqType.SkillMixRationale, false, true);
+							moqType.SkillMixRationale);
 					}
 					else if (customExport)
 					{

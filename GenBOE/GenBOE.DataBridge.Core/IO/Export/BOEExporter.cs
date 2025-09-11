@@ -1633,7 +1633,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="boeExportModelView">Object to hold most of the BOE's data</param>
 		internal void PopulateGeneralContent(Document document, BOEExportModelView boeExportModelView)
 		{
-			foreach (StructuredDocumentTag element in document.Range.StructuredDocumentTags)
+			foreach (StructuredDocumentTag element in document.Range.StructuredDocumentTags.ToList())
 			{
 				// Get the title of this Alias
 				string sdtTitle = element.Title;
@@ -3426,7 +3426,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 						Action<Cell> tcp = c => {
 							c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-							c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO new CellWidth() { Type = TableWidthUnitValues.Pct });
+							c.CellFormat.PreferredWidth = PreferredWidth.Auto;
 							c.CellFormat.Shading.Texture = TextureIndex.TextureNone;
 						}; 
 
@@ -3462,7 +3462,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				Action<Cell> totalLabelProperties = l =>
 				{
 					l.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-					l.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO CellWidth() { Type = TableWidthUnitValues.Pct
+					l.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 					l.CellFormat.Borders.Left.LineStyle = LineStyle.None;
 					l.CellFormat.Borders.Bottom.LineStyle = LineStyle.None;
 				};Action<Run> totalLabelRunProperties = r => r.Font.Bold = true;
@@ -3475,7 +3475,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				Action<Cell> totalValueProperties = c =>
 				{
 					c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-					c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO CellWidth() { Type = TableWidthUnitValues.Pct
+					c.CellFormat.PreferredWidth = PreferredWidth.Auto;
 					c.CellFormat.Borders.Bottom.LineStyle = LineStyle.Single;
 					c.CellFormat.Borders.Bottom.LineWidth = 0.5;
 				}; 
@@ -3584,7 +3584,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						Action<Cell> cellProperties = c =>
 						{
 							c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-							c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO CellWidth() { Type = TableWidthUnitValues.Pct
+							c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 						}; 
 
 						PopulateTableCell(tr2, item2.Resource, Font, FontSize, cellProperties, centerPP);
@@ -3622,7 +3622,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					Action<Cell> totalLabelCellProperties = c =>
 					{
 						c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-						c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO CellWidth() { Type = TableWidthUnitValues.Pct
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 						c.CellFormat.Borders.Bottom.LineStyle = LineStyle.None;
 					};
 
@@ -3634,7 +3634,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					Action<Cell> totalValueCellProperties = c =>
 					{
 						c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-						c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO CellWidth() { Type = TableWidthUnitValues.Pct
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto;
 						c.CellFormat.Borders.Bottom.LineStyle = LineStyle.Single;
 						c.CellFormat.Borders.Bottom.LineWidth = 0.5;
 					}; 
@@ -3650,7 +3650,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					Action<Cell> blankCellProperties = c =>
 					{
 						c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-						c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO CellWidth() { Type = TableWidthUnitValues.Pct
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 						c.CellFormat.Borders.Top.LineStyle = LineStyle.None;
 					};
 
@@ -3674,7 +3674,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 							Action<Cell> shadedCellProperties = c =>
 							{
 								c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-								c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO CellWidth() { Type = TableWidthUnitValues.Pct;
+								c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 								c.CellFormat.Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#BFBFBF");
 								c.CellFormat.Shading.Texture = TextureIndex.TextureNone;
 							};
@@ -3709,7 +3709,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 							Action<Cell> cellProperties = c =>
 							{
 								c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-								c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO CellWidth() { Type = TableWidthUnitValues.Pct
+								c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 							};
 
 							if (includesCompanyAndLocation)
@@ -3744,7 +3744,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						Action<Cell> summaryCellProperties = c =>
 						{
 							c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-							c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO CellWidth() { Type = TableWidthUnitValues.Pct
+							c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 							c.CellFormat.Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#BFBFBF");
 							c.CellFormat.Shading.Texture = TextureIndex.TextureNone;
 						};
@@ -3756,7 +3756,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						Action<Cell> tcp = c =>
 						{
 							c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-							c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO CellWidth() { Type = TableWidthUnitValues.Pct
+							c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 						}; 
 
 						PopulateTableCell(tr6, "Total", Font, FontSize, tcp, centerPP, rpSummaryTotal, includesCompanyAndLocation ? 4 : 1);
@@ -3977,32 +3977,28 @@ namespace GenBOE.DataBridge.Core.IO.Export
 									 cell.CellFormat.Shading.BackgroundPatternColor = System.Drawing.ColorTranslator.FromHtml("#BFBFBF");
 									 cell.CellFormat.Shading.Texture = TextureIndex.TextureNone;
 									 cell.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-									 cell.CellFormat.PreferredWidth = PreferredWidth.FromPoints(3571.0 / 20.0);
-									 //Type = TableWidthUnitValues.Dxa, Width = "3571" }); // 3571 20ths of a point or 2.48 inches
+									 cell.CellFormat.PreferredWidth = PreferredWidth.FromPoints(3571.0 / 20.0); // 3571 20ths of a point or 2.48 inches
 						}
 								 else if (header == "Calendar Year")
 								 {
 									 cell.CellFormat.Shading.BackgroundPatternColor = System.Drawing.ColorTranslator.FromHtml("#BFBFBF");
 									 cell.CellFormat.Shading.Texture = TextureIndex.TextureNone;
 									 cell.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-									 cell.CellFormat.PreferredWidth = PreferredWidth.FromPoints(1022.0 / 20.0);
-									 //  TableWidthUnitValues.Dxa, Width = "1022" }); // 1022 20ths of a point or .71 inches
+									 cell.CellFormat.PreferredWidth = PreferredWidth.FromPoints(1022.0 / 20.0); // 1022 20ths of a point or .71 inches
 								 }
 								 else if (includePerfOrg)
 								 {
 									 cell.CellFormat.Shading.BackgroundPatternColor = System.Drawing.ColorTranslator.FromHtml("#BFBFBF");
 									 cell.CellFormat.Shading.Texture = TextureIndex.TextureNone;
 									 cell.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-									 cell.CellFormat.PreferredWidth = PreferredWidth.FromPoints(720.0 / 20.0);
-									 // TableWidthUnitValues.Dxa, Width = "720" }); // 720 20ths of a point or 0.5 inches
+									 cell.CellFormat.PreferredWidth = PreferredWidth.FromPoints(720.0 / 20.0); // 720 20ths of a point or 0.5 inches
 								 }
 								 else
 								 {
 									 cell.CellFormat.Shading.BackgroundPatternColor = System.Drawing.ColorTranslator.FromHtml("#BFBFBF");
 									 cell.CellFormat.Shading.Texture = TextureIndex.TextureNone;
 									 cell.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-									 cell.CellFormat.PreferredWidth = PreferredWidth.FromPoints(778.0 / 20.0);
-									 // TableWidthUnitValues.Dxa, Width = "778" }); // 778 20ths of a point or 0.54 inches
+									 cell.CellFormat.PreferredWidth = PreferredWidth.FromPoints(778.0 / 20.0); // 778 20ths of a point or 0.54 inches
 								 }
 							 }
 						);
@@ -4335,7 +4331,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					Action<Cell> cellProperties = c =>
 					{
 						c.CellFormat.VerticalAlignment = vertAlign;
-						c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 					};
 
 					// populate the cells
@@ -4369,7 +4365,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				Action<Cell> totalLabelCellProperties = c =>
 				{
 					c.CellFormat.VerticalAlignment = vertAlign;
-					c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+					c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 					c.CellFormat.Borders.Bottom.LineStyle = LineStyle.None;
 				}; 
 				
@@ -4384,7 +4380,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				Action<Cell> totalValueCellProperties = c =>
 				{
 					c.CellFormat.VerticalAlignment = vertAlign;
-					c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+					c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 					c.CellFormat.Borders.Bottom.LineStyle = LineStyle.None;
 					c.CellFormat.Borders.Bottom.LineWidth = 0.5;
 				}; 
@@ -4403,7 +4399,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				Action<Cell>blankCellProperties = c =>
 				{
 					c.CellFormat.VerticalAlignment = vertAlign;
-					c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+					c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 					c.CellFormat.Borders.Top.LineStyle = LineStyle.None;
 				}; 
 
@@ -4428,7 +4424,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						Action<Cell> summaryCellProperties = c =>
 						{
 							c.CellFormat.VerticalAlignment = vertAlign;
-							c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+							c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 							c.CellFormat.Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#BFBFBF");
 							c.CellFormat.Shading.Texture = TextureIndex.TextureNone;
 						}; 
@@ -4453,7 +4449,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						Action<Cell> cellProperties = c =>
 						{
 							c.CellFormat.VerticalAlignment = vertAlign;
-							c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+							c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 						}; 
 
 						// populate the cells
@@ -4487,7 +4483,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					Action<Cell> totalSummaryCellProperties = c =>
 					{
 						c.CellFormat.VerticalAlignment = vertAlign;
-						c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 						c.CellFormat.Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#BFBFBF");
 						c.CellFormat.Shading.Texture = TextureIndex.TextureNone;
 					}; 
@@ -4499,7 +4495,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					Action<Cell> totalCellProperties = c =>
 					{
 						c.CellFormat.VerticalAlignment = vertAlign;
-						c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 					};
 
 					PopulateTableCell(tr6, "Total", Font, FontSize, totalCellProperties, centerPP, rp1);
@@ -4600,6 +4596,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				for (int i = 1; i < gridSpan; i++)
 				{
 					Cell mergedCell = new Cell(tableRow.Document);
+					mergedCell.AppendChild(new Paragraph(tableRow.Document));
+					mergedCell.FirstParagraph.AppendChild(new Run(tableRow.Document, string.Empty));
 					mergedCell.CellFormat.HorizontalMerge = CellMerge.Previous;
 					tableRow.AppendChild(mergedCell);
 				}
@@ -4672,7 +4670,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			Action<Cell> tcp = c =>
 			{
 				c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-				c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+				c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 				c.CellFormat.Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#BFBFBF");
 				c.CellFormat.Shading.Texture = TextureIndex.TextureNone;
 			}; 
@@ -4718,7 +4716,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						VariableTCP = c =>
 						{
 							c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-							c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+							c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 						}; 
 					}
 					else if (initialpass && item.ReferencedBOEs.Count > 1)
@@ -4726,7 +4724,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						VariableTCP = c =>
 						{
 							c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-							c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+							c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 							c.CellFormat.VerticalMerge = CellMerge.First;
 						}; 
 					}
@@ -4735,7 +4733,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						VariableTCP = c =>
 						{
 							c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-							c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+							c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 							c.CellFormat.VerticalMerge = CellMerge.Previous;
 						}; 
 					}
@@ -4761,7 +4759,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					Action<Cell> DependentsTCP = c =>
 					{
 						c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-						c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO  Type = TableWidthUnitValues.Pct });
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 					}; 
 
 					this.PopulateTableCell(tr, CommonUtilities.FormatNumberTitleString(item2.WBSNumber, item2.WBSTitle, " - "), Font, FontSize, DependentsTCP, pp);
@@ -4788,7 +4786,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			Document mainPart, bool wsHasMoqRteTemplate)
 		{
 			// Iterate over all StructuredDocumentTags in the document
-			foreach (StructuredDocumentTag element in taskContainer.TaskContainer.Range.StructuredDocumentTags)
+			foreach (StructuredDocumentTag element in taskContainer.TaskContainer.Range.StructuredDocumentTags.ToList())
 			{
 				// Get the title of this Alias
 				string sdtTitle = element.Title;
@@ -5006,7 +5004,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 								}
 								else
 								{
-									WordUtilities.SetElementTextWithHTML(mainPart, element, taskElement.MOQText, false, true);
+									WordUtilities.SetElementTextWithHTML(mainPart, element, taskElement.MOQText);
 								}
 
 								if (wsHasMoqRteTemplate && exportInputs.Workspace.UsingTemplateBOE)
@@ -5083,7 +5081,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		private void PopulateResourceContent(BOEExportTaskContainer resourceContainer, BOEExportTaskElementLabor resource)
 		{
 			// Iterate over all StructuredDocumentTags in the task container
-			foreach (StructuredDocumentTag alias in resourceContainer.TaskContainer.Range.StructuredDocumentTags)
+			foreach (StructuredDocumentTag alias in resourceContainer.TaskContainer.Range.StructuredDocumentTags.ToList())
 			{
 				// Get the title of this Alias
 				string sdtTitle = alias.Title;

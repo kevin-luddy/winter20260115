@@ -114,10 +114,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				if (tag.Contains("TopTotal")) //if total goes on top of table, add now
 				{
 					Row tr = new Row(table.Document);
+					table.AppendChild(tr);
 
 					Action<Cell> labelTCP = c => {
 						c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-						c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO new CellWidth() { Type = TableWidthUnitValues.Pct });
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 						c.CellFormat.Borders.Bottom.LineStyle = LineStyle.None;
 						c.CellFormat.Borders.Left.LineStyle = LineStyle.None;
 					}; 
@@ -143,7 +144,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					}
 					Action<Cell> totalTCP = c => {
 						c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-						c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO new CellWidth() { Type = TableWidthUnitValues.Pct });						
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto; 						
 					};
 					string total = laborRollup.Select(x => x.Total).Sum().ToString(Format, NumberFormatter);
 					PopulateTableCell(tr, total, Font, 24, totalTCP, leftPP, boldRP, 2);
@@ -151,8 +152,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					{
 						NumberFormatter.CurrencySymbol = string.Empty;
 					}
-
-					table.AppendChild(tr);
 				}
 
 				// Create the header row
@@ -173,7 +172,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						//shaded cell
 						tcp = c => {
 							c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-							c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO new CellWidth() { Type = TableWidthUnitValues.Pct });
+							c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 							c.CellFormat.Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#BFBFBF");
 							c.CellFormat.Shading.Texture = TextureIndex.TextureNone;
 						}; 							
@@ -182,7 +181,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					{
 						tcp = c => {
 							c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-							c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO new CellWidth() { Type = TableWidthUnitValues.Pct });
+							c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 						}; 
 					}
 
@@ -214,7 +213,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 					Action<Cell> labelTCP = c => {
 						c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-						c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO new CellWidth() { Type = TableWidthUnitValues.Pct });						
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto; 						
 						c.CellFormat.Borders.Bottom.LineStyle = LineStyle.None;
 						c.CellFormat.Borders.Left.LineStyle = LineStyle.None;
 					};
@@ -227,7 +226,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					}
 					Action<Cell> totalTCP = c => {
 						c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-						c.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO new CellWidth() { Type = TableWidthUnitValues.Pct });
+						c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 					};
 
 					PopulateTableCell(tr3, laborRollup.Select(x => x.Total).Sum().ToString(Format, NumberFormatter), Font, FontSize, totalTCP, rightPP, boldRP, 2);
@@ -260,8 +259,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				tableStyle.Borders.ClearFormatting();
 				tableStyle.Borders.LineStyle = LineStyle.None;
 				// tableStyle.Borders.LineWidth = 0.5;  If you set line width greater than zero when line style is none, the line style is automatically changed to single line.
-				tableStyle.LeftPadding = 58d / 20d; // TableWidthValues.Dxa), Width = 58 }, //58 20ths of a point = 0.04"
-				tableStyle.RightPadding = 58d / 20d; // TableWidthValues.Dxa), Width = 58 }, //58 20ths of a point = 0.04"
+				tableStyle.LeftPadding = 58d / 20d; // 58 20ths of a point = 0.04"
+				tableStyle.RightPadding = 58d / 20d; //58 20ths of a point = 0.04"
 				tableStyle.ConditionalStyles[ConditionalStyleType.FirstColumn].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
 				tableStyle.ConditionalStyles[ConditionalStyleType.FirstRow].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
 				tableStyle.ConditionalStyles[ConditionalStyleType.OddRowBanding].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
