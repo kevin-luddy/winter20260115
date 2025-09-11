@@ -36,11 +36,13 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 		/// <param name="boeExportModelViews">The Export ModelViews for BOE</param>
 		/// <param name="boeSummaryGridModelViews">The summary grid modelviews for BOE</param>
 		/// <param name="segmentedOutput">Whether this is a segmented output (different files zipped) or not</param>
+		/// <param name="stream">The stream</param>
+		/// <param name="useStream">Whether to use the stream or not</param>[]
 		/// <returns>Async Task used for await</returns>
 		/// <exception cref="GenValidationException"></exception>
 		public async Task ExportBOEsToWord(ICollection<BoeCustomReportComponent> selectedComponents, HttpResponseBase httpResponse, bool isCustomExport,
 			WorkspaceExportFormatDTO wsExportFormatDTO, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, 
-			List<BOESummaryGridModelView> boeSummaryGridModelViews, bool segmentedOutput)
+			List<BOESummaryGridModelView> boeSummaryGridModelViews, bool segmentedOutput, Stream stream = null, bool useStream = false)
 		{
 			ExportBoeWordRequestViewModel model = new ExportBoeWordRequestViewModel(exportInputs)
 			{
@@ -70,13 +72,19 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
 			if (returnStream.IsSuccessful)
 			{
+				if (!useStream)
+				{
+					httpResponse.ContentType = segmentedOutput ? BOEExporter.CONTENT_TYPE_ZIP : BOEExporter.CONTENT_TYPE_DOCX;
+					httpResponse.Clear();
+					httpResponse.BufferOutput = true;
+					httpResponse.AppendHeader("Content-Disposition", $"attachment;filename={returnFilename}");
 
-				httpResponse.ContentType = segmentedOutput ? BOEExporter.CONTENT_TYPE_ZIP : BOEExporter.CONTENT_TYPE_DOCX;
-				httpResponse.Clear();
-				httpResponse.BufferOutput = true;
-				httpResponse.AppendHeader("Content-Disposition", $"attachment;filename={returnFilename}");
-
-				await httpResponse.OutputStream.WriteAsync(returnStream.Data, 0, returnStream.Data.Length);
+					await httpResponse.OutputStream.WriteAsync(returnStream.Data, 0, returnStream.Data.Length);
+				}
+				else
+				{
+					await stream.WriteAsync(returnStream.Data, 0, returnStream.Data.Length);
+				}
 			}
 			else
 			{
