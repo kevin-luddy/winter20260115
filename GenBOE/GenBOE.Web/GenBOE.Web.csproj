@@ -403,7 +403,6 @@
     <Compile Include="ModelView\PermissionRoleModelView.cs" />
     <Compile Include="ModelView\PermissionUserModelView.cs" />
     <Compile Include="ModelView\SavePermissionsModelView.cs" />
-    <Compile Include="ModelView\WorkspaceStatusModelView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
