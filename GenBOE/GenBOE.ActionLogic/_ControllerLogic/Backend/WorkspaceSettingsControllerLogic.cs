@@ -598,8 +598,8 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 		/// <summary>
 		/// Gets the next tracking number
 		/// </summary>
-		/// <param name="trackingNumber"></param>
-		/// <returns></returns>
+		/// <param name="trackingNumber">Tracking Number</param>
+		/// <returns>Tracking Number</returns>
 		private string GetNextTrackingNumber(string trackingNumber)
 		{
 			string nextRevision = trackingNumber;
