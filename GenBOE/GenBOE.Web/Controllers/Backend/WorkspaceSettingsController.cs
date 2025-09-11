@@ -364,11 +364,11 @@ namespace GenBOE.Web.Controllers.Backend
 		/// </summary>
 		/// <param name="workspaceStatusMV">Workspace Status Model View</param>
 		/// <returns>True if Workspace Status is updated Successfully, False otherwise</returns>
-		[HttpGet]
+		[System.Web.Http.HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062: Validate arguments of public methods")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
-		public IESSingleResponse<bool> SaveWorkspaceStatus(WorkspaceStatusModelView workspaceStatusMV)
+		public IESSingleResponse<bool> SaveWorkspaceStatus([FromBody] WorkspaceStatusModelView workspaceStatusMV)
 		{
 			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
 			FullWorkspace ws = Factory.CreateFullWorkspace(workspaceStatusMV.WorkspaceName);

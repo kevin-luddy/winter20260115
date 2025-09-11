@@ -1862,6 +1862,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="ws">Full Workspace</param>
 		/// <param name="log">Logger</param>
 		/// <returns>True if Workspace Status is updated Successfully, False otherwise</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031: Do not catch general exception types")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062: Validate arguments of public methods")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045: Do not pass types by reference")]
 		public bool SaveWorkspaceStatus(WorkspaceStatusModelView workspaceStatusMV, ref FullWorkspace ws, ref Logger log)
 		{
 			if (workspaceStatusMV is null)

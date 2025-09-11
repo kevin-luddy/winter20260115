@@ -40,7 +40,7 @@ namespace GenBOE.ActionLogic._ModelView.Backend
 			WorkspaceStatus = inWorkspaceDTO.WorkspaceState;
 			UpdateDate = inWorkspaceDTO.UpdateDate;
 			WorkspaceName = inWorkspaceDTO.WorkspaceName;
-
+			IsProjectMapWs = inWorkspaceDTO.IsProjectMapWorkspace;
 		}
 
 		/// <summary>
@@ -52,5 +52,10 @@ namespace GenBOE.ActionLogic._ModelView.Backend
 		/// Workspace Name
 		/// </summary>
 		public string WorkspaceName { get; set; }
+
+		/// <summary>
+		/// Is Project Map Workspace
+		/// </summary>
+		public bool IsProjectMapWs { get; set; }
 	}
 }
