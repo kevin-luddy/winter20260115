@@ -378,8 +378,7 @@ namespace GenBOE.Web.Controllers
 		/// Export Confidence Report
 		/// </summary>
 		/// <param name="exportConfidenceReportModelView">POST payload for confidence report</param>
-		/// <returns></returns>
-		/// <exception cref="ArgumentNullException"></exception>
+		/// <returns>Filestream for export file</returns>
 		[HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
