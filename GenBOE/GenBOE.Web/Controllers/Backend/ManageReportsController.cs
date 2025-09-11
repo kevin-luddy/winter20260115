@@ -66,6 +66,12 @@ namespace GenBOE.Web.Controllers
 		private IBOEConfidenceReport boeConfidenceReport { get; set; }
 
 		/// <summary>
+		/// BOE Activity Report Logic
+		/// </summary>
+		private BOEActivityReport boeActivityReport { get; set; }
+
+
+		/// <summary>
 		/// BOE Confidence Report Exporter
 		/// </summary>
 		private IBOEConfidenceReportExporter boeConfidenceReportExporter { get; set; }
@@ -74,7 +80,7 @@ namespace GenBOE.Web.Controllers
 		/// ctor
 		/// </summary>
 		public ManageReportsController(ISecurityAccess inSecurityAccess, IReportsControllerLogic reportsControllerLogic, IValidateBOE validateBOE,
-			IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEStatusReport boeStatusReport, WorkspaceActivityReport workspaceActivityReport, IBOEConfidenceReport boeConfidenceReport, IBOEConfidenceReportExporter boeConfidenceReportExporter)
+			IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEStatusReport boeStatusReport, IBOEConfidenceReport boeConfidenceReport, WorkspaceActivityReport workspaceActivityReport, BOEActivityReport boeActivityReport, IBOEConfidenceReportExporter boeConfidenceReportExporter)
 			: base(inSecurityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.reportsControllerLogic = reportsControllerLogic;
@@ -82,6 +88,7 @@ namespace GenBOE.Web.Controllers
 			this.boeStatusReport = boeStatusReport;
 			this.workspaceActivityReport = workspaceActivityReport;
 			this.boeConfidenceReport = boeConfidenceReport;
+			this.boeActivityReport = boeActivityReport;
 			this.boeConfidenceReportExporter = boeConfidenceReportExporter;
 		}
 
@@ -197,6 +204,45 @@ namespace GenBOE.Web.Controllers
 			}
 
 			FinalizeAction(logger, WebConstants.ACTION_DISPLAY_BOE_STATUS_REPORT, sw);
+
+			return result;
+		}
+
+
+
+		/// <summary>
+		/// Get the BOE Activity Reports Data for Reports Page
+		/// </summary>
+		/// <param name="workspace">workspace short name</param>
+		/// <returns>BOE Activity Reports Data</returns>
+		[HttpGet]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
+		public IESSingleResponse<BOEActivityReportModelView> GetBOEActivityReport(string workspace)
+		{
+			IESSingleResponse<BOEActivityReportModelView> result = new IESSingleResponse<BOEActivityReportModelView>();
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_DISPLAY_BOE_ACTIVITY_REPORT, SecurityPage.Reports, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, null);
+
+			try
+			{
+				BOEActivityReportModelView data = boeActivityReport.GenerateReport(ws);
+
+				result.Data = data;
+				result.IsSuccessful = true;
+			}
+			catch (GenValidationException ex)
+			{
+				logger.Error(ex);
+				result.Messages = ex.GetValidationMessages(ex.ValidationList);
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add(ex.Message);
+			}
+
+			FinalizeAction(logger, WebConstants.ACTION_DISPLAY_BOE_ACTIVITY_REPORT, sw);
 
 			return result;
 		}

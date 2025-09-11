@@ -119,7 +119,7 @@ namespace GenBOE.Tests.DAL.Other
 				null, null, new ProjectMapDataLoader(new ProjectMapSpreadLoader()), new BoePickListMapper(new LineOfBusinessDataLoader(), new ProposalClassLoader(),
 				new ContractTypeLoader()), new GenTRAC.DataBridge.DTO.PtmPickListMapper(new GenTRAC.DataBridge.DTO.ProposalTypeLULoader(), new GenTRAC.DataBridge.DTO.ProposalClassLULoader(),
 				new GenTRAC.DataBridge.DTO.TypeOfRequestLULoader(), new GenTRAC.DataBridge.DTO.LineOfBusinessDataLoader(), new GenTRAC.DataBridge.DTO.ProgramAreaDataLoader(),
-				new GenTRAC.DataBridge.DTO.ContractTypeLULoader(), new GenTRAC.DataBridge.DTO.ContractTypeGroupLULoader()), null, null, null, null, null, null);
+				new GenTRAC.DataBridge.DTO.ContractTypeLULoader(), new GenTRAC.DataBridge.DTO.ContractTypeGroupLULoader()), null, null, null, null, null, null, null);
 		}
 
 
@@ -152,7 +152,7 @@ namespace GenBOE.Tests.DAL.Other
 		private void TestSaving(FullWorkspace ws)
 		{
 			ProjectMapModelView[] data = ProjectMapConverterTest.GetProjectMapModelViews();
-			var sut = this.CreateSystem();
+			IWorkspaceControllerLogic sut = this.CreateSystem();
 			sut.SaveProjectMapData(data, ws);
 
 			// shove the data pulled from the database into a ConvertedProjectMapDTO to re-use assert equality method
@@ -252,7 +252,7 @@ namespace GenBOE.Tests.DAL.Other
 			// reload the workspace
 			ws = this.fullObjectFactory.CreateFullWorkspace(ws.Shortname, true);
 
-			var sut = this.CreateSystem();
+			IWorkspaceControllerLogic sut = this.CreateSystem();
 			sut.SaveProjectMapData(models, ws);
 
 			// reload the workspace
@@ -285,7 +285,7 @@ namespace GenBOE.Tests.DAL.Other
 		[TestMethod]
 		public void TestContractTypeConversion()
 		{
-			var sut = this.CreateSystem();
+			IWorkspaceControllerLogic sut = this.CreateSystem();
 
 			GenTRAC.DataBridge.DTO.PtmPickListMapper mapper = new GenTRAC.DataBridge.DTO.PtmPickListMapper(null, null, null, null, null, new GenTRAC.DataBridge.DTO.ContractTypeLULoader(), new GenTRAC.DataBridge.DTO.ContractTypeGroupLULoader());
 

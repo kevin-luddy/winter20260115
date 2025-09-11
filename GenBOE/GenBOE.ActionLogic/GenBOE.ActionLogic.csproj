@@ -304,6 +304,7 @@
     <Compile Include="_ModelView\Backend\PermissionViewModel.cs" />
     <Compile Include="_ModelView\Backend\ExportReportViewModel.cs" />
     <Compile Include="_ModelView\Backend\WorkspaceSettingsViewModel.cs" />
+    <Compile Include="_ModelView\Backend\WorkspaceStatusModelView.cs" />
     <Compile Include="_ModelView\BOECustomFieldsInUseGridModelView.cs" />
     <Compile Include="_ModelView\ConfidenceReportItem.cs" />
     <Compile Include="_ModelView\ConfidenceReportModelView.cs" />
