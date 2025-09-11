@@ -67,7 +67,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         private Mock<ContractTypeLoader> contractTypeLoader;
 		private Mock<IMoqTypeDataLoader> moqTypeDataLoader;
 		private Moq.Mock<ISystemSettingDTODataLoader> systemSettingsLoader;
-		private Mock<WorkspaceStateMachine> workspaceStateMachine
+		private readonly Mock<WorkspaceStateMachine> workspaceStateMachine;
 
 		private WorkspaceControllerLogicSpaceSystems CreateSystemSpaceSystems()
         {
