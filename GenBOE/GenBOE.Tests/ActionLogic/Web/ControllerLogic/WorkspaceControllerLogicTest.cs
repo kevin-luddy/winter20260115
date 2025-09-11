@@ -128,7 +128,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 this.moqTypeDataLoader.Object,
 				this._boeStateMachine.Object,
 				this._BoeMediator.Object,
-				this.systemSettingsLoader.Object);
+				this.systemSettingsLoader.Object,
+				this.workspaceStateMachine.Object);
 		}
 
         /// <summary>
