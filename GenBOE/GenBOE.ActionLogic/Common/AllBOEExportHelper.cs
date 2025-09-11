@@ -54,13 +54,9 @@ namespace GenBOE.ActionLogic.Common
 			if (!useStream)
 			{
 				_ = response ?? throw new ArgumentNullException(nameof(response));
-			}
-			_ = workSpace ?? throw new ArgumentNullException(nameof(workSpace));
-
-			if (!useStream)
-			{
 				SetResponseProperties(response, returnFilename);
 			}
+			_ = workSpace ?? throw new ArgumentNullException(nameof(workSpace));
 
 			Dictionary<string, Stream> zipFiles = new Dictionary<string, Stream>();
 
@@ -116,7 +112,6 @@ namespace GenBOE.ActionLogic.Common
 		/// <param name="useStream">Whether to use the stream or not</param>
 		/// <typeparam name="T">Generic representing the return value of the passed in function</typeparam>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062: Validate arguments of public methods")]
 		public static void ExportCustomComponentBOEsToZipFile<T>(
 			BOEExportInputs exportInputs,
 			ICollection<BOEExportModelView> boeExportModelViews,
@@ -132,13 +127,9 @@ namespace GenBOE.ActionLogic.Common
 			if (!useStream)
 			{
 				_ = response ?? throw new ArgumentNullException(nameof(response));
-			}
-			_ = workSpace ?? throw new ArgumentNullException(nameof(workSpace));
-
-			if (!useStream)
-			{
 				SetResponseProperties(response, returnFilename);
 			}
+			_ = workSpace ?? throw new ArgumentNullException(nameof(workSpace));
 
 			Dictionary<string, Stream> zipFiles = new Dictionary<string, Stream>();
 
@@ -166,6 +157,7 @@ namespace GenBOE.ActionLogic.Common
 			{
 				if (!useStream)
 				{
+					_ = response ?? throw new ArgumentNullException(nameof(response));
 					zipStream.CopyTo(response.OutputStream);
 				}
 				else
