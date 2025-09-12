@@ -15,6 +15,7 @@ namespace IES.Common.Core.OfficeUtilities
 	using System.Text.RegularExpressions;
 	using Aspose.Words;
 	using Aspose.Words.Drawing;
+	using Aspose.Words.Layout;
 	using Aspose.Words.Markup;
 	using Aspose.Words.Tables;
 	using DocumentFormat.OpenXml;
@@ -369,7 +370,7 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <summary>
 		/// Sets the text element w/ HTML formatted text (from Rich Text Editor) and appends it to the node passed in the element parameter
 		/// </summary>
-		/// <param name="mainPart">Main document part</param>
+		/// <param name="document">Main document part</param>
 		/// <param name="element">Element to set</param>
 		/// <param name="htmlFormattedText">Html</param>
 		/// <param name="removeSpacing">Removes spacing under certain circumstances -> Bool for if the extra spacing before and after paragraphs should be removed</param>
@@ -594,6 +595,41 @@ namespace IES.Common.Core.OfficeUtilities
 
 					shape.Width = newWidth;
 					shape.Height = newHeight;
+				}
+			}
+
+			// make sure all tables are not wider than the page
+			ICollection<Node> tables = wordDocument.GetChildNodes(NodeType.Table, true).ToList();
+			LayoutCollector collector = new LayoutCollector(wordDocument);
+			LayoutEnumerator enumerator = new LayoutEnumerator(wordDocument);
+			foreach (Table table in tables)
+			{
+				// Skip nodes in the header and footer. LayoutCollector Does not work with them.
+				if (table.GetAncestor(NodeType.HeaderFooter) != null)
+					continue;
+
+				// Move to first paragraph in the table
+				enumerator.Current = collector.GetEntity(table.FirstRow.FirstCell.FirstParagraph);
+				// And move to the row entity.
+				while (enumerator.Type != LayoutEntityType.Row)
+					enumerator.MoveParent();
+
+				
+				builder.MoveTo(table);
+				PageSetup ps = builder.CurrentSection.PageSetup;
+				// make sure the Height has extra space for a section header
+				double targetWidth = ps.PageWidth - ps.LeftMargin - ps.RightMargin;
+				
+				// Now we can get the calculated rectangle of the row.
+				if (enumerator.Rectangle.Width > targetWidth)
+				{
+					table.AutoFit(AutoFitBehavior.AutoFitToContents);
+					
+					// resize font to be smaller to fit 
+					foreach (Run run in table.GetChildNodes(NodeType.Run, true))
+					{
+						run.Font.Size = table.Style.Font.Size / 1.5;
+					}
 				}
 			}
 		}
