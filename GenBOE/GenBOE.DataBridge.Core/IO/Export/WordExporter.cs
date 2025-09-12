@@ -366,6 +366,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				StructuredDocumentTag moqTypeContainer = null;
 				Node lastElement = moqTypeContainerTemplate;
 
+				int moqCounter = 1;
 				foreach (MoqTypeSelection moqType in laborTaskElement.MOQTypes)
 				{
 					moqTypeContainer = moqTypeContainerTemplate.Clone(true) as StructuredDocumentTag;
@@ -585,6 +586,22 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					{
 						WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.Container_SkillMixTables);
 					}
+
+					if (moqCounter < laborTaskElement.MOQTypes.Count)
+					{
+						// try to insert a paragraph in between
+						Paragraph paragraph = new Paragraph(mainDocumentPart);
+						try
+						{
+							lastElement = lastElement.ParentNode.InsertAfter(paragraph, lastElement);
+						}
+						catch 
+						{
+							// May not be able to add paragraphs here, so just catch
+						}
+					}
+
+					moqCounter++;
 				}
 
 				// delete template

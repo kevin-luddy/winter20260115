@@ -4595,9 +4595,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				tc.CellFormat.HorizontalMerge = CellMerge.First;
 				for (int i = 1; i < gridSpan; i++)
 				{
-					Cell mergedCell = new Cell(tableRow.Document);
-					mergedCell.AppendChild(new Paragraph(tableRow.Document));
-					mergedCell.FirstParagraph.AppendChild(new Run(tableRow.Document, string.Empty));
+					Cell mergedCell = tc.Clone(true) as Cell;
+					mergedCell.LastParagraph.Remove();
 					mergedCell.CellFormat.HorizontalMerge = CellMerge.Previous;
 					tableRow.AppendChild(mergedCell);
 				}

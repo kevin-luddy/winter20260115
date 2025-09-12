@@ -118,7 +118,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 					Action<Cell> labelTCP = c => {
 						c.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-						c.CellFormat.PreferredWidth = PreferredWidth.Auto; 
+						c.CellFormat.PreferredWidth = PreferredWidth.FromPercent(14); 
 						c.CellFormat.Borders.Bottom.LineStyle = LineStyle.None;
 						c.CellFormat.Borders.Left.LineStyle = LineStyle.None;
 					}; 
@@ -147,7 +147,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						c.CellFormat.PreferredWidth = PreferredWidth.Auto; 						
 					};
 					string total = laborRollup.Select(x => x.Total).Sum().ToString(Format, NumberFormatter);
-					PopulateTableCell(tr, total, Font, 24, totalTCP, leftPP, boldRP, 2);
+					PopulateTableCell(tr, total, Font, 24, totalTCP, leftPP, boldRP, 11);
 					if (NumberFormatter != null)
 					{
 						NumberFormatter.CurrencySymbol = string.Empty;
