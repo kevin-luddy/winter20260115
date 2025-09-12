@@ -4,9 +4,6 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Diagnostics.CodeAnalysis;
-using Aspose.Words;
-
 namespace GenBOE.DataBridge.Core.IO.Export
 {
 	using System;
@@ -16,7 +13,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
 	using System.Linq;
-	using System.Runtime.Intrinsics.X86;
 	using System.Text.RegularExpressions;
 	using Aspose.Words;
 	using Aspose.Words.Markup;
@@ -976,9 +972,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <summary>
 		/// Removes all but one element of the Node Type
 		/// </summary>
-		/// <param name="element"></param>
-		/// <param name="nodeType"></param>
-		/// <param name="removeElementTypeOnly"></param>
+		/// <param name="element">The Node to remove from</param>
+		/// <param name="nodeType">The nodetype to allow 1 of to remain</param>
+		/// <param name="removeElementTypeOnly">whether to remove all children or just the nodetype children but one</param>
 		protected void RemoveAllButOneElement(Node element, NodeType nodeType, bool removeElementTypeOnly = true)
 		{
 			bool found = false;

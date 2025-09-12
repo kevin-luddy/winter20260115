@@ -2683,12 +2683,12 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 						// Note: The template has an indeterminate number of [multiple] Run elements containing "pieces" of the full text.
 						// Delete all but the first Run.
-						RemoveAllButOneElement(customFieldLabel, NodeType.Run);// .GetFirstChild<SdtContentRun>());
+						RemoveAllButOneElement(customFieldLabel, NodeType.Run);
 						if (customFieldID != null)
 						{
-							RemoveAllButOneElement(customFieldID, NodeType.Run);// .GetFirstChild<SdtContentRun>());
+							RemoveAllButOneElement(customFieldID, NodeType.Run);
 						}
-						RemoveAllButOneElement(customFieldDesc, NodeType.Run); // .GetFirstChild<SdtContentRun>());
+						RemoveAllButOneElement(customFieldDesc, NodeType.Run);
 
 						// set values
 						WordUtilities.SetElementText(customFieldLabel, field.CustomFieldName);
@@ -4611,7 +4611,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			{
 				Cell tc = new Cell(document);
 				tc.CellFormat.VerticalAlignment = CellVerticalAlignment.Center;
-				tc.CellFormat.PreferredWidth = PreferredWidth.Auto; // TODO tc.CellFormat.PreferredWidth.Type = PreferredWidthType.Percent; 
+				tc.CellFormat.PreferredWidth = PreferredWidth.Auto; 
 				
 				Paragraph p = new Paragraph(document);
 				p.AppendChild(new Run(document, string.Empty));
@@ -5236,26 +5236,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		{
 			Run toReturn = new Run(document);
 			toReturn.Text = string.Join(ControlChar.LineBreak, text);
-			//for (int ndx = 0; ndx < text.Length; ndx++)
-			//{
-			//	// the task title is the only field in the document that needs to be bolded
-			//	if (inAction<Run> != null)
-			//	{
-			//		// Clone the run properties to avoid errors from using properties elements already in the document
-			//		inAction<Run> = inRunProperties.Clone(true) as RunProperties;
-
-			//		// Append the given run properties to the text run
-			//		toReturn.AppendChild(inRunProperties);
-			//	}
-
-			//	Text t = new Text(text[ndx]);
-			//	toReturn.AppendChild(t);
-
-			//	if (ndx < text.Length - 1)
-			//	{
-			//		toReturn.AppendChild(new Break());
-			//	}
-			//}
 
 			return toReturn;
 		}

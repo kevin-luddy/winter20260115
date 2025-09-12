@@ -258,7 +258,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				tableStyle = (TableStyle)document.Styles.Add(StyleType.Table, "rolluptableMST");
 				tableStyle.Borders.ClearFormatting();
 				tableStyle.Borders.LineStyle = LineStyle.None;
-				// tableStyle.Borders.LineWidth = 0.5;  If you set line width greater than zero when line style is none, the line style is automatically changed to single line.
 				tableStyle.LeftPadding = 58d / 20d; // 58 20ths of a point = 0.04"
 				tableStyle.RightPadding = 58d / 20d; //58 20ths of a point = 0.04"
 				tableStyle.ConditionalStyles[ConditionalStyleType.FirstColumn].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");

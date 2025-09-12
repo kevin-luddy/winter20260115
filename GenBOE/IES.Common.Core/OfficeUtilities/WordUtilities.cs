@@ -27,7 +27,7 @@ namespace IES.Common.Core.OfficeUtilities
 
 		public const char NEWLINE_CHAR = '\n';
 
-		private static Regex CONTROL_CHAR_REPLACE  = new Regex(@"![\P{Cc}\P{Cn}\P{Cs}]"); // new Regex(@"[^\P{C}\n]+");
+		private static Regex CONTROL_CHAR_REPLACE  = new Regex(@"![\P{Cc}\P{Cn}\P{Cs}]");
 
 		#endregion
 
@@ -86,7 +86,7 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <param name="compositeNode">The node to search</param>
 		/// <param name="match">The Title to match</param>
 		/// <param name="comparison">How will the Comparison work</param>
-		/// <returns></returns>
+		/// <returns>The last matching child of the composite node that matches the sdt by Tag or Title.  Or null.</returns>
 		public static StructuredDocumentTag GetLastMatchingChildSDTByTag(this CompositeNode compositeNode, string match, StringComparison comparison = StringComparison.CurrentCulture)
 		{
 			NodeCollection collection = compositeNode.GetChildNodes(NodeType.StructuredDocumentTag, true);
@@ -101,11 +101,11 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <param name="compositeNode">The node to search</param>
 		/// <param name="match">The Title to match</param>
 		/// <param name="comparison">How will the Comparison work</param>
-		/// <returns></returns>
+		/// <returns>True if any child is SDT and matches the title/tag</returns>
 		public static bool AnyMatchingChildContainsSDT(this CompositeNode compositeNode, ICollection<string> match, StringComparison comparison = StringComparison.CurrentCulture)
 		{
 			NodeCollection collection = compositeNode.GetChildNodes(NodeType.StructuredDocumentTag, true);
-			return collection.Any(compositeNode => compositeNode is StructuredDocumentTag sdt && match.Any(m => sdt.Title.Contains(m, comparison)));
+			return collection.Any(compositeNode => compositeNode is StructuredDocumentTag sdt && match.Any(m => (sdt.Title.Contains(m, comparison) || sdt.Tag.Contains(m, comparison))));
 		}
 
 		/// <summary>
@@ -114,11 +114,11 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <param name="compositeNode">The node to search</param>
 		/// <param name="match">The Title to match</param>
 		/// <param name="comparison">How will the Comparison work</param>
-		/// <returns></returns>
+		/// <returns>Gets the last matching child that is SDT</returns>
 		public static StructuredDocumentTag GetLastMatchingChildSDT(this CompositeNode compositeNode, ICollection<string> match, StringComparison comparison)
 		{
 			NodeCollection collection = compositeNode.GetChildNodes(NodeType.StructuredDocumentTag, true);
-			StructuredDocumentTag found = collection.LastOrDefault(compositeNode => compositeNode is StructuredDocumentTag sdt && match.Any(m => sdt.Title.Equals(m, comparison))) as StructuredDocumentTag;
+			StructuredDocumentTag found = collection.LastOrDefault(compositeNode => compositeNode is StructuredDocumentTag sdt && match.Any(m => sdt.Title.Equals(m, comparison) || sdt.Tag.Equals(m, comparison))) as StructuredDocumentTag;
 
 			return found;
 		}
@@ -162,15 +162,7 @@ namespace IES.Common.Core.OfficeUtilities
 			
 			if (tagObj != null)
 			{
-				CompositeNode ancestorElement;
-				if (nodeType == NodeType.StructuredDocumentTag)
-				{
-					ancestorElement = tagObj;
-				}
-				else
-				{
-					ancestorElement = tagObj.GetAncestor(nodeType);
-				}
+				CompositeNode ancestorElement = nodeType == NodeType.StructuredDocumentTag ? tagObj : tagObj.GetAncestor(nodeType);
 
 				if (ancestorElement != null)
 				{

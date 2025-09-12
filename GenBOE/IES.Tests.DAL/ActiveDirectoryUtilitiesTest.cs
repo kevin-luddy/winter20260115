@@ -22,7 +22,9 @@ namespace IES.Tests
 	[TestClass]
     public class ActiveDirectoryUtilitiesTest
     {
-
+		/// <summary>
+		/// Active directory utilities mock
+		/// </summary>
 		private Mock<IActiveDirectoryUtilities> activeDirectoryUtilities = new Mock<IActiveDirectoryUtilities>();
 
         /// <summary>

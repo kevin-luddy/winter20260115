@@ -4451,12 +4451,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			{
 				// Up to three different footers are possible in a section (for first, even and odd pages)
 				// we check and update all of them.
-				HeaderFooter footer = section.HeadersFooters[HeaderFooterType.FooterFirst];
-				SetProprietaryLabelsAndPrintDate(footer, boeExportModelView);
-				footer = section.HeadersFooters[HeaderFooterType.FooterPrimary];
-				SetProprietaryLabelsAndPrintDate(footer, boeExportModelView);
-				footer = section.HeadersFooters[HeaderFooterType.FooterEven];
-				SetProprietaryLabelsAndPrintDate(footer, boeExportModelView);
+				SetProprietaryLabelsAndPrintDate(section.HeadersFooters[HeaderFooterType.FooterFirst], boeExportModelView);
+				SetProprietaryLabelsAndPrintDate(section.HeadersFooters[HeaderFooterType.FooterPrimary], boeExportModelView);
+				SetProprietaryLabelsAndPrintDate(section.HeadersFooters[HeaderFooterType.FooterEven], boeExportModelView);
 			}
 		}
 
