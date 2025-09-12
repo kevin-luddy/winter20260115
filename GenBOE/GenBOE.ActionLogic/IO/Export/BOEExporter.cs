@@ -425,21 +425,23 @@ namespace GenBOE.ActionLogic.IO.Export
             this.ExportBOEToWordFileStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, ws, templatePath, response.OutputStream, templateType);
         }
 
-        /// <summary>
-        /// Export the BOEs as individual files and zip into single download.
-        /// </summary>
-        /// <param name="exportInputs">The export inputs</param>
-        /// <param name="boeExportModelViews">Collection of BOE View Models</param>
-        /// <param name="boeSummaryGridModelViews"></param>
-        /// <param name="ws">Full workspace</param>
-        /// <param name="response">What will ultimately be the response to the requester</param>
-        /// <param name="fileNameToDisplayToBrowser">File name that will be passed to browser (for download)</param>
-        /// <param name="templatePath">Path to the export template</param>
-        /// <param name="templateType">Type of the export template</param>
-        public void ExportBOEsToZipFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
-            FullWorkspace workSpace, HttpResponseBase response, string returnFilename, string templatePath, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
+		/// <summary>
+		/// Export the BOEs as individual files and zip into single download.
+		/// </summary>
+		/// <param name="exportInputs">The export inputs</param>
+		/// <param name="boeExportModelViews">Collection of BOE View Models</param>
+		/// <param name="boeSummaryGridModelViews"></param>
+		/// <param name="ws">Full workspace</param>
+		/// <param name="response">What will ultimately be the response to the requester</param>
+		/// <param name="fileNameToDisplayToBrowser">File name that will be passed to browser (for download)</param>
+		/// <param name="templatePath">Path to the export template</param>
+		/// <param name="templateType">Type of the export template</param>
+		/// <param name="stream">The stream</param>
+		/// <param name="useStream">Whether to use the stream or not</param>
+		public void ExportBOEsToZipFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
+            FullWorkspace workSpace, HttpResponseBase response, string returnFilename, string templatePath, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet, Stream stream = null, bool useStream = false)
         {
-            AllBOEExportHelper.ExportBOEsToZipFile<bool>(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workSpace, response, returnFilename, templatePath, ExportBOEToWordFileStream);
+            AllBOEExportHelper.ExportBOEsToZipFile<bool>(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workSpace, response, returnFilename, templatePath, ExportBOEToWordFileStream, templateType, stream, useStream);
         }
 
         /// <summary>

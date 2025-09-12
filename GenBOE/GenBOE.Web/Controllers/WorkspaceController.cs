@@ -21,6 +21,7 @@ namespace GenBOE.Web.Controllers
 	using System.Web.Script.Serialization;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic._ControllerLogic.Backend;
+	using GenBOE.ActionLogic._ModelView.Backend;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
 	using GenBOE.ActionLogic.Common;
@@ -1349,9 +1350,9 @@ namespace GenBOE.Web.Controllers
 			// gather up output format types
 			List<SelectListItemWithTitle> outputFormatTypes = new List<SelectListItemWithTitle>();
 
-			Collection<WorkspaceExportFormatDTO> exportFormats = ws.WorkspaceExportFormats.ToCollection();
+			Collection<WorkspaceExportFormatNameDTO> exportFormats = ws.WorkspaceExportFormatNames.ToCollection();
 
-			foreach (WorkspaceExportFormatDTO exportFormat in exportFormats.OrderBy(x => x.ExportFormat.TemplateId))
+			foreach (WorkspaceExportFormatNameDTO exportFormat in exportFormats.OrderBy(x => x.ExportFormat.TemplateId))
 			{
 				if (exportFormat.IsActive || ws.TemplateID == exportFormat.ExportFormat.TemplateId)
 				{
@@ -1407,11 +1408,15 @@ namespace GenBOE.Web.Controllers
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "GetOutputFormatTemplate", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_OUTPUT_FORMAT_TEMPLATE, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			FileContentResult toReturn = null;
 
-			WorkspaceExportFormatDTO template = ws.WorkspaceExportFormats.FirstOrDefault(x => x.Id == id.Value);
+			// Retrieving from Workspace first to make sure the workspace has access to this template Id
+			WorkspaceExportFormatNameDTO templateName = ws.WorkspaceExportFormatNames.FirstOrDefault(x => x.Id == id.Value);
+			
+			// Then retrieve from the database
+			WorkspaceExportFormatDTO template = this.retriever.GetWorkspaceExportFormatByTemplateId(templateName.Id);
 
 			// Return the template as a download for the user
 			using (MemoryStream mem = _PackageUtilities.UpdateDocumentVersion(template.FileData, template.PhysicalFilePathCache, template.ExportFormat))
@@ -1421,7 +1426,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "GetOutputFormatTemplate", sw);
+			FinalizeAction(_log, WebConstants.ACTION_GET_OUTPUT_FORMAT_TEMPLATE, sw);
 
 			return toReturn;
 		}
@@ -3041,55 +3046,9 @@ namespace GenBOE.Web.Controllers
 			JsonResult toReturn = Json(new { Status = false });
 			if (ModelState.IsValid)
 			{
-				WorkspaceState originalState = ws.WorkspaceState;
-
-				if (!ws.IsProjectMapWorkspace)
+				if (this._ControllerLogic.SaveWorkspaceStatus(workspaceStatusMV, ref ws, ref _log))
 				{
-					string validationMessage = string.Empty;
-
-					// check state validation before worrying about commiting to the database
-					if (!_WorkspaceStateMachine.PerformStateTransitionValidation(ws, originalState, workspaceStatusMV.WorkspaceStatus, out validationMessage))
-					{
-						// not valid ... communicate to user
-						throw new GenValidationException("Error: Unable to change state: " + validationMessage);
-					}
-				}
-
-				// Workspace State
-				ws.WorkspaceState = workspaceStatusMV.WorkspaceStatus;
-				ws.UpdateDate = workspaceStatusMV.UpdateDate;
-
-				try
-				{
-					// Get the user who is saving the BOE(s)
-					int currentUserID = ws.CurrentActiveUser.UserID;
-
-					// Save the workspace
-					using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("CopyWorkspaceTransactionTimeout", Constants.DB_COPY_WORKSPACE_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
-					{
-						this.workspaceLoader.SaveWorkspaceSettings(currentUserID, ws);
-
-						// transition after the save is successful
-						ws = this.Factory.CreateFullWorkspace(ws.Shortname, true);
-
-						if (!ws.IsProjectMapWorkspace)
-						{
-							this.TransitionBOEStates(ws, originalState, ws.WorkspaceState);
-							_WorkspaceStateMachine.PerformStateTransitionAction(ws, originalState, ws.WorkspaceState);
-						}
-						this.Factory.ClearWorkspaceCache(ws.Shortname);
-						scope.Complete();
-					}
-
 					toReturn = Json(new { Status = true });
-				}
-				catch (Exception ex)
-				{
-					_log.Error(ex);
-					if (ex.InnerException != null)
-					{
-						_log.Error(ex.InnerException);
-					}
 				}
 			}
 			else
@@ -4948,7 +4907,7 @@ namespace GenBOE.Web.Controllers
 						// Call the BL to copy the workspace
 						finishedWithoutErrors = _WorkspaceCopier.CopyWorkspace(copiedFromWs, newWs, newWorkspace.BOEsToCopy, newWorkspace.CopyPermissions,
 						newWorkspace.CopyTasks, newWorkspace.CopyLaborSpreads);
-						Collection<WorkspaceExportFormatDTO> copiedTemplateTypes = _WorkspaceExportFormatDTOLoader.GetWorkspaceExportFormatsForWorkspace(newWorkspace.WorkspaceToCopyID);
+						Collection<WorkspaceExportFormatNameDTO> copiedTemplateTypes = _WorkspaceExportFormatDTOLoader.GetWorkspaceExportFormatNamesForWorkspace(newWorkspace.WorkspaceToCopyID);
 						_WorkspaceExportFormatDTOLoader.InsertWorkspaceExportFormatsPickList(copiedTemplateTypes, newWorkspaceID);
 					}
 					else

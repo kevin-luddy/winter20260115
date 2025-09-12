@@ -553,6 +553,8 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string GET_BOE_DISCREPANCY_REPORT = "GetBOEDiscrepancyReport";
 		public static readonly string GET_GENERAL_REPORT = "GetGeneralReport";
 		public static readonly string GET_EXPORTS = "GetExports";
+		public static readonly string GET_CONFIDENCE_REPORT = "GetConfidenceReport";
+		public static readonly string GET_WORKSPACE_STATUS = "GetWorkspaceStatus";
 
 		#endregion ManageReportsController
 

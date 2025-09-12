@@ -102,7 +102,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             bool writelogstatements = ConfigurationUtilities.GetAppSetting("ExportLoggingEnableInternalMV", false);
 
             // The workspace's export format doesn't have the correct template type if this is a user template so always use the exportFormatDTO
-            WorkspaceExportFormatDTO exportFormatDTO = exportInputs.WorkspaceExportFormats.FirstOrDefault(x => x.Id == exportInputs.Workspace.TemplateID);
+            WorkspaceExportFormatNameDTO exportFormatDTO = exportInputs.WorkspaceExportFormatNames.FirstOrDefault(x => x.Id == exportInputs.Workspace.TemplateID);
 
             CustomFieldDTO boeSegregationCustomField = (from c in exportInputs.CustomFields
                                                         where c.CustomFieldName.Equals(BOEExporterConstants.CustomFieldName_BOESegregation, StringComparison.CurrentCultureIgnoreCase) &&
@@ -218,7 +218,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
         /// </returns>
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         private BOEExportModelView ConvertBoeDTOToExportMV(BoeDTO boe, BOEExportInputs exportInputs,
-            bool writelogstatements, WorkspaceExportFormatDTO exportFormatDTO, CustomFieldDTO boeSegregationCustomField,
+            bool writelogstatements, WorkspaceExportFormatNameDTO exportFormatDTO, CustomFieldDTO boeSegregationCustomField,
             CustomFieldDTO revCodeCustomField, CustomFieldDTO taskSegregationCustomField,
             CustomFieldDTO boePwsCustomField, CustomFieldDTO skillLevelCustomField, CustomFieldDTO siteCustomField,
             CustomFieldDTO skillMixCustomField, CustomFieldDTO stotCustomField, CustomFieldDTO premiumCustomField,
@@ -409,7 +409,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
         [SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals")]
         [SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
         private Collection<BOEExportTaskElement> PopulateLaborAndMissionTasks(BoeDTO boe, BOEExportInputs exportInputs,
-            bool writelogstatements, WorkspaceExportFormatDTO exportFormatDTO,
+            bool writelogstatements, WorkspaceExportFormatNameDTO exportFormatDTO,
             IReadOnlyCollection<CustomFieldDTO> workspaceCustomFields,
             IReadOnlyCollection<CustomFieldValueDTO> workspaceCustomFieldValues, CustomFieldDTO revCodeCustomField,
             CustomFieldDTO taskSegregationCustomField, CustomFieldDTO skillLevelCustomField,

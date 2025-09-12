@@ -202,7 +202,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			bool writelogstatements = ConfigurationUtilities.GetAppSetting<bool>(BOEExporterConstants.CONFIG_SETTING_LOG_VIEW_MODELS, false);
 
 			// The workspace's export format doesn't have the correct template type if this is a user template so always use the exportFormatDTO
-			WorkspaceExportFormatDTO exportFormatDTO = exportInputs.WorkspaceExportFormats.FirstOrDefault(x => x.Id == exportInputs.Workspace.TemplateID);
+			WorkspaceExportFormatNameDTO exportFormatDTO = exportInputs.WorkspaceExportFormatNames.FirstOrDefault(x => x.Id == exportInputs.Workspace.TemplateID);
 
 			CustomFieldDTO BOESegregationCustomField = (from c in exportInputs.CustomFields
 														where c.CustomFieldName.Equals(BOEExporterConstants.CustomFieldName_BOESegregation, StringComparison.CurrentCultureIgnoreCase) &&
@@ -234,7 +234,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// </summary>
 		/// <param name="boe">Full Boe</param>
 		/// <returns>the BOE Export ModelView</returns>
-		private BOEExportModelView ConvertBoeDTOToExportMV(FullBoe boe, BOEExportInputs exportInputs, bool writelogstatements, WorkspaceExportFormatDTO exportFormatDTO, CustomFieldDTO BOESegregationCustomField,
+		private BOEExportModelView ConvertBoeDTOToExportMV(FullBoe boe, BOEExportInputs exportInputs, bool writelogstatements, WorkspaceExportFormatNameDTO exportFormatDTO, CustomFieldDTO BOESegregationCustomField,
 			CustomFieldDTO revCodeCustomField, CustomFieldDTO taskSegregationCustomField)
 		{
 
@@ -4550,7 +4550,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			if (logEnabled) { this._log.Info("Exporting - BOECustomExporter - ProcessLaborTasks - labor tasks begin"); }
 
 			// The workspace's export format doesn't have the correct template type if this is a user template so always use the exportFormatDTO
-			WorkspaceExportFormatDTO exportFormatDTO = exportInputs.WorkspaceExportFormats.FirstOrDefault(x => x.Id == exportInputs.Workspace.TemplateID);
+			WorkspaceExportFormatNameDTO exportFormatDTO = exportInputs.WorkspaceExportFormatNames.FirstOrDefault(x => x.Id == exportInputs.Workspace.TemplateID);
 
 			ICollection<BoeTaskElementDTO> allBoeTaskElements = exportInputs.TaskElements.Where(x => x.BoeID == boe.Id).ToList();
 			IReadOnlyCollection<CustomFieldValueDTO> workspaceCustomFieldValues = exportInputs.CustomFieldValues;
@@ -5901,7 +5901,9 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="response">What will ultimately be the response to the requester</param>
 		/// <param name="returnFilename">File name that will be passed to browser (for download)</param>
 		/// <param name="exportFormat">Export format DTO</param>
-		public void ExportBOEsToZipFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, FullWorkspace workSpace, ICollection<BoeCustomReportComponent> components, HttpResponseBase response, string returnFilename, WorkspaceExportFormatDTO exportFormat)
+		/// <param name="stream">The stream</param>
+		/// <param name="useStream">Whether to use the stream or not</param>
+		public void ExportBOEsToZipFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, FullWorkspace workSpace, ICollection<BoeCustomReportComponent> components, HttpResponseBase response, string returnFilename, WorkspaceExportFormatDTO exportFormat, Stream stream = null, bool useStream = false)
 		{
 			AllBOEExportHelper.ExportCustomComponentBOEsToZipFile<bool>(
 				exportInputs,
@@ -5912,7 +5914,9 @@ namespace GenBOE.ActionLogic.IO.Export
 				components,
 				Utilities.StripIllegalFileNameCharacters(returnFilename),
 				exportFormat,
-				ExportBOEToWordFileStream);
+				ExportBOEToWordFileStream,
+				stream,
+				useStream);
 		}
 		#endregion
 	}

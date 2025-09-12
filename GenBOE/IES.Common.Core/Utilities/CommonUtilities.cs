@@ -1059,7 +1059,7 @@ namespace IES.Common.Core.Utilities
 		/// <summary>
 		/// Private for Skill Mix blacklisted workspaces
 		/// </summary>
-		private static Collection<string> skillMixBlacklistWorkspaces;
+		private static Collection<string> skillMixBlacklistWorkspaces = new Collection<string>();
 
 		/// <summary>
 		/// Update the Skill Mix Blacklist settings--currently utilized by Space only

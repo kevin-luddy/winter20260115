@@ -297,6 +297,7 @@
     <Compile Include="ModelView\AddEditWBSModelView.cs" />
     <Compile Include="ModelView\AddEditCLINModelView.cs" />
     <Compile Include="ModelView\BOEFormMasterModelView.cs" />
+    <Compile Include="ModelView\BOELoopingData.cs" />
     <Compile Include="ModelView\BOEStatusReportView.cs" />
     <Compile Include="ModelView\CompleteWBSImportModelView.cs" />
     <Compile Include="ModelView\ConfidenceReportItem.cs" />
@@ -403,7 +404,6 @@
     <Compile Include="ModelView\PermissionRoleModelView.cs" />
     <Compile Include="ModelView\PermissionUserModelView.cs" />
     <Compile Include="ModelView\SavePermissionsModelView.cs" />
-    <Compile Include="ModelView\WorkspaceStatusModelView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -34,6 +34,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 	using Moq;
 	using UserDTO = GenBOE.Dtos.UserDTO;
 	using IESSAPClient = GenBOE.ActionLogic.IESSAPClient;
+	using GenBOE.ActionLogic.WorkspaceTransitions;
 
 	[TestClass]
     public class WorkspaceControllerLogicTest : MOQObject
@@ -66,6 +67,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         private Mock<ContractTypeLoader> contractTypeLoader;
 		private Mock<IMoqTypeDataLoader> moqTypeDataLoader;
 		private Moq.Mock<ISystemSettingDTODataLoader> systemSettingsLoader;
+		private Mock<WorkspaceStateMachine> workspaceStateMachine;
 
 		private WorkspaceControllerLogicSpaceSystems CreateSystemSpaceSystems()
         {
@@ -93,7 +95,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				this.moqTypeDataLoader.Object,
 				this._boeStateMachine.Object,
 				this._BoeMediator.Object,
-				this.systemSettingsLoader.Object);
+				this.systemSettingsLoader.Object,
+				this.workspaceStateMachine.Object);
         }
 
         private WorkspaceControllerLogicMST CreateSystemMST()
@@ -125,7 +128,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 this.moqTypeDataLoader.Object,
 				this._boeStateMachine.Object,
 				this._BoeMediator.Object,
-				this.systemSettingsLoader.Object);
+				this.systemSettingsLoader.Object,
+				this.workspaceStateMachine.Object);
 		}
 
         /// <summary>
@@ -179,6 +183,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			this.moqTypeDataLoader = new Mock<IMoqTypeDataLoader>();
 
 			this._permissionLoader.Setup(x => x.GetCreateWorkspaceRolesForPtm(It.IsAny<string>(), It.IsAny<string>())).Returns(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("test", "") });
+			this.workspaceStateMachine = new Mock<WorkspaceStateMachine>();
 
 		}
 

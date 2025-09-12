@@ -12,8 +12,8 @@ namespace GenBOE.DataBridge.DTO
 
 	public interface IWorkspaceExportFormatDTODataLoader : IDataLoader<WorkspaceExportFormatDTO>
 	{
-		System.Collections.ObjectModel.Collection<WorkspaceExportFormatDTO> GetAllWorkspaceExportFormatIds();
-		System.Collections.ObjectModel.Collection<WorkspaceExportFormatDTO> GetWorkspaceExportFormatsForWorkspace(int inWorkspaceId);
+		System.Collections.ObjectModel.Collection<WorkspaceExportFormatNameDTO> GetAllWorkspaceExportFormatIds();
+		System.Collections.ObjectModel.Collection<WorkspaceExportFormatNameDTO> GetWorkspaceExportFormatNamesForWorkspace(int inWorkspaceId);
 		void InsertWorkspaceExportFormatPicklist(Collection<int> inWorkspaceIds, int inTemplateIdForWorkspaces);
 		void DeleteWorkspaceExportFormatPicklist(Collection<int> inWorkspaceIds, int inTemplateIdForWorkspaces);
 		Collection<int> GetAvailableWorkspaceIdsForExportFormatId(int inExportFormatId);
@@ -33,10 +33,10 @@ namespace GenBOE.DataBridge.DTO
 		void RestoreTemplate(WorkspaceExportFormatDTO templateDto);
 
 		/// <summary>
-		/// Get the WS Export Format's Name 
+		/// Get the WS Export Format Name 
 		/// </summary>
 		/// <param name="templateID">The template ID of the workspace export format.</param>
-		/// <returns>The name of the WS Export Format</returns>
-		string GetNameById(int templateID);
+		/// <returns>The WS Export Format Name</returns>
+		WorkspaceExportFormatNameDTO GetNameById(int templateID);
 	}
 }

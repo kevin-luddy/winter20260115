@@ -30,14 +30,14 @@ namespace GenBOE.Tests.DAL.DataLoaders
         }
 
         /// <summary>
-        /// Test GetWorkspaceExportFormatsForWorkspace
+        /// Test GetWorkspaceExportFormatNamesForWorkspace
         /// </summary>
         [TestMethod]
         public void L_GetAllWorkspaceExportFormatIdsForWorkspaceId()
         {
             WorkspaceExportFormatDTODataLoader sut = new WorkspaceExportFormatDTODataLoader();
 
-            Collection<WorkspaceExportFormatDTO> exportFormatIdsForWS = sut.GetWorkspaceExportFormatsForWorkspace(GlobalTestCaseSetup.GlobalWorkspaceID);
+            Collection<WorkspaceExportFormatNameDTO> exportFormatIdsForWS = sut.GetWorkspaceExportFormatNamesForWorkspace(GlobalTestCaseSetup.GlobalWorkspaceID);
             Assert.AreEqual(9001, exportFormatIdsForWS.Where(x => x.ExportFormat.TemplateId == 9001).First().ExportFormat.TemplateId); // check Master
             Assert.AreEqual(100001, exportFormatIdsForWS.Where(x => x.ExportFormat.TemplateId == 100001).First().ExportFormat.TemplateId); // check first template based on Master
             Assert.AreEqual(GlobalTestCaseSetup.GlobalWorkspaceTemplateID, // check our custom for this WS
@@ -45,7 +45,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         }
 
         /// <summary>
-        /// Test that a template set to Available to all Workspaces is returned by GetWorkspaceExportFormatsForWorkspace
+        /// Test that a template set to Available to all Workspaces is returned by GetWorkspaceExportFormatNamesForWorkspace
         /// </summary>
         [TestMethod]
         public void L_GetAllWorkspaceExportFormatIdsForWorkspaceId_AvailableToAll()
@@ -63,8 +63,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 scope.Complete();
             }
 
-            ICollection<WorkspaceExportFormatDTO> results =
-                sut.GetWorkspaceExportFormatsForWorkspace(GlobalTestCaseSetup.GlobalWorkspaceID);
+            ICollection<WorkspaceExportFormatNameDTO> results =
+                sut.GetWorkspaceExportFormatNamesForWorkspace(GlobalTestCaseSetup.GlobalWorkspaceID);
 
             // Delete global template
             template = sut.GetById(GlobalTestCaseSetup.GlobalWorkspaceTemplateID);
@@ -166,7 +166,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 scope.Complete();
             }
 
-            Collection<WorkspaceExportFormatDTO> templatesForWS = sut.GetWorkspaceExportFormatsForWorkspace(GlobalTestCaseSetup.GlobalWorkspaceID);
+            Collection<WorkspaceExportFormatNameDTO> templatesForWS = sut.GetWorkspaceExportFormatNamesForWorkspace(GlobalTestCaseSetup.GlobalWorkspaceID);
 
             // baseline, check the GlobalTestCase insertion
             Assert.IsTrue(templatesForWS.Select(x=>x.ExportFormat.TemplateId == GlobalTestCaseSetup.GlobalWorkspaceTemplateID).Any());
@@ -200,7 +200,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             // TEST: associated the new wsExportFormat
             sut.InsertWorkspaceExportFormatPicklist(new Collection<int> { GlobalTestCaseSetup.GlobalWorkspaceID }, newWSExportFormatId);
 
-            Collection<WorkspaceExportFormatDTO> templatesForWS = sut.GetWorkspaceExportFormatsForWorkspace(GlobalTestCaseSetup.GlobalWorkspaceID);
+            Collection<WorkspaceExportFormatNameDTO> templatesForWS = sut.GetWorkspaceExportFormatNamesForWorkspace(GlobalTestCaseSetup.GlobalWorkspaceID);
 
             // baseline, check the GlobalTestCase insertion
             Assert.IsTrue(templatesForWS.Select(x => x.ExportFormat.TemplateId == GlobalTestCaseSetup.GlobalWorkspaceTemplateID).Any());
@@ -211,7 +211,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             // now delete the template
             sut.DeleteWorkspaceExportFormatPicklist(new Collection<int> { GlobalTestCaseSetup.GlobalWorkspaceID }, newWSExportFormatId);
 
-            templatesForWS = sut.GetWorkspaceExportFormatsForWorkspace(GlobalTestCaseSetup.GlobalWorkspaceID);
+            templatesForWS = sut.GetWorkspaceExportFormatNamesForWorkspace(GlobalTestCaseSetup.GlobalWorkspaceID);
 
             // baseline, check the GlobalTestCase insertion
             Assert.IsTrue(templatesForWS.Where(x => x.ExportFormat.TemplateId == GlobalTestCaseSetup.GlobalWorkspaceTemplateID).Any());
