@@ -609,26 +609,33 @@ namespace IES.Common.Core.OfficeUtilities
 					continue;
 
 				// Move to first paragraph in the table
-				enumerator.Current = collector.GetEntity(table.FirstRow.FirstCell.FirstParagraph);
-				// And move to the row entity.
-				while (enumerator.Type != LayoutEntityType.Row)
-					enumerator.MoveParent();
-
-				
-				builder.MoveTo(table);
-				PageSetup ps = builder.CurrentSection.PageSetup;
-				// make sure the Height has extra space for a section header
-				double targetWidth = ps.PageWidth - ps.LeftMargin - ps.RightMargin;
-				
-				// Now we can get the calculated rectangle of the row.
-				if (enumerator.Rectangle.Width > targetWidth)
+				if (table.FirstRow?.FirstCell?.FirstParagraph != null)
 				{
-					table.AutoFit(AutoFitBehavior.AutoFitToContents);
-					
-					// resize font to be smaller to fit 
-					foreach (Run run in table.GetChildNodes(NodeType.Run, true))
+					enumerator.Current = collector.GetEntity(table.FirstRow.FirstCell.FirstParagraph);
+					// And move to the row entity.
+
+					bool foundParent = true;
+					while (enumerator.Type != LayoutEntityType.Row && foundParent)
 					{
-						run.Font.Size = table.Style.Font.Size / 1.5;
+						foundParent = enumerator.MoveParent();
+					}
+
+
+					builder.MoveTo(table);
+					PageSetup ps = builder.CurrentSection.PageSetup;
+					// make sure the Height has extra space for a section header
+					double targetWidth = ps.PageWidth - ps.LeftMargin - ps.RightMargin;
+
+					// Now we can get the calculated rectangle of the row.
+					if (enumerator.Rectangle.Width > targetWidth)
+					{
+						table.AutoFit(AutoFitBehavior.AutoFitToContents);
+
+						// resize font to be smaller to fit 
+						foreach (Run run in table.GetChildNodes(NodeType.Run, true))
+						{
+							run.Font.Size = table.Style.Font.Size / 1.5;
+						}
 					}
 				}
 			}
