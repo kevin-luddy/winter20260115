@@ -1889,14 +1889,24 @@ namespace GenBOE.ActionLogic.IO.Export
 					}
 
 					// Total hours (hours + Ucot hours)
-					if (ucotHours != null)
+					decimal totalHours = 0;
+
+					if (!string.IsNullOrEmpty(hours))
 					{
-						row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + (int.Parse(hours) + int.Parse(ucotHours)).ToString());
+						if (decimal.TryParse(hours, out decimal hoursValue))
+						{
+							totalHours += hoursValue;
+						}
 					}
-					else
+
+					if (!string.IsNullOrEmpty(ucotHours))
 					{
-						row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + hours);
+						if (decimal.TryParse(ucotHours, out decimal ucotHoursValue))
+						{
+							totalHours += ucotHoursValue;
+						}
 					}
+					row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + totalHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
 
 					row.Add(string.Empty);  // Cost column is empty
 				}
