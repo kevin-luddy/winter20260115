@@ -393,10 +393,15 @@ namespace GenTRAC.ActionLogic.Validation
             /// </summary>
             public const string SUPPLY_CHAIN_MATERIAL_REQUIRED = USER_INFO_VALDIATION + "PBOE Preparer is required if Elements of Cost includes Materials.";
 
-            /// <summary>
-            /// supply chain subcontractor is required
-            /// </summary>
-            public const string SUPPLY_CHAIN_SUBS_REQUIRED = USER_INFO_VALDIATION + "IBOE Preparer is required if Elements of Cost includes Subcontractors.";
+			/// <summary>
+			/// supply chain POC is required
+			/// </summary>
+			public const string SUPPLY_CHAIN_SUBS_IWTA_REQUIRED = USER_INFO_VALDIATION + "IBOE Preparer is required if Element of Cost includes IWTA.";
+
+			/// <summary>
+			/// supply chain material subcontractor is required
+			/// </summary>
+			public const string SUPPLY_CHAIN_MATERIAL_SUBS_REQUIRED = USER_INFO_VALDIATION + "PBOE/MPBOE Preparer is required if Element of Cost includes Subcontractors.";
 
             /// <summary>
             /// additonal resource 1 type is required

@@ -2275,9 +2275,15 @@ namespace GenTRAC.ActionLogic
 				}
 
 				if (proposalInfo.CostElements.Contains((int)CostElementType.Subs) &&
+					 string.IsNullOrEmpty(proposalUserInfo.SupplyChainPOCMaterialsNtId))
+				{
+					inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.SUPPLY_CHAIN_MATERIAL_SUBS_REQUIRED));
+				}
+
+				if (proposalInfo.CostElements.Contains((int)CostElementType.IWTA) &&
 					 string.IsNullOrEmpty(proposalUserInfo.SupplyChainPOCSubsNtId))
 				{
-					inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.SUPPLY_CHAIN_SUBS_REQUIRED));
+					inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.SUPPLY_CHAIN_SUBS_IWTA_REQUIRED));
 				}
 
 				if (string.IsNullOrWhiteSpace(proposalApprovalsInfo.LeadEstimatorNtid))
