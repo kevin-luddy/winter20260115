@@ -630,12 +630,6 @@ namespace IES.Common.Core.OfficeUtilities
 					if (enumerator.Rectangle.Width > targetWidth)
 					{
 						table.AutoFit(AutoFitBehavior.AutoFitToContents);
-
-						// resize font to be smaller to fit 
-						foreach (Run run in table.GetChildNodes(NodeType.Run, true))
-						{
-							run.Font.Size = table.Style.Font.Size / 1.5;
-						}
 					}
 				}
 			}
