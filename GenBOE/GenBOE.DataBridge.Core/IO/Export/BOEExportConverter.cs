@@ -454,6 +454,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				boeExportTaskElement.IMS_ID = boeTaskElement.IMS_ID;
 				boeExportTaskElement.BOETaskElementOrder = boeTaskElement.BOETaskElementOrder;
 				boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
+				boeExportTaskElement.BOETaskAuthor = boeTaskElement.AuthorDisplayName;
 
 				if (BOETaskUtility.ShowSkillMixForTask(exportInputs.Workspace.CreationDate, exportInputs.Workspace.UsingTemplateBOE, exportInputs.Workspace.EnableSAPConnection,
 					boeExportTaskElement.MOQTypes, boeExportTaskElement.BOETaskElementID ?? -1, boeTaskElement.HasTMRates, exportInputs.Workspace.Shortname))

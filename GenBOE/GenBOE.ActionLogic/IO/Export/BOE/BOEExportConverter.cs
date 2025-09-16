@@ -6,31 +6,28 @@
 
 namespace GenBOE.ActionLogic.IO.Export.BOE
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-	using System.Diagnostics;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
-    using System.Globalization;
-    using System.Linq;
-    using System.Text;
-    using GenBOE.ActionLogic;
+	using System.Globalization;
+	using System.Linq;
+	using System.Text;
+	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.Common.Calculations;
-	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.DataBridge.Common;
-    using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
-    using GenBOE.Objects;
-    using IES.Common;
-	using IES.Common.classes;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
+	using IES.Common;
 	using IES.Common.OfficeUtilities;
 
-    /// <summary>
-    /// Converts FullWorkspace into ModelViews for export
-    /// </summary>
-    /// <seealso cref="BOEExportUtilities" />
-    public class BOEExportConverter : BOEExportUtilities
+	/// <summary>
+	/// Converts FullWorkspace into ModelViews for export
+	/// </summary>
+	/// <seealso cref="BOEExportUtilities" />
+	public class BOEExportConverter : BOEExportUtilities
     {
         /// <summary>
         /// The common data mapper.
@@ -449,6 +446,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                 boeExportTaskElement.IMS_ID = boeTaskElement.IMS_ID;
                 boeExportTaskElement.BOETaskElementOrder = boeTaskElement.BOETaskElementOrder;
                 boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
+				boeExportTaskElement.BOETaskAuthor = boeTaskElement.AuthorDisplayName;
 
 				if (BOETaskUtility.ShowSkillMixForTask(exportInputs.FullWorkspace, boeTaskElement))
 				{
