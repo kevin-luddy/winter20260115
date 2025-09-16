@@ -132,6 +132,8 @@
 					{
 						CreateCommonDisclosureRowsRMS(resourceHours, laborTypes, currentCommonDisclosureData, 
 							refreshedModel, isManual);
+						CleanUpCommonDisclosureRows(currentSkillMixData, refreshedModel);
+
 					}
 				}
 				else
@@ -170,6 +172,7 @@
 		private static void CleanupNewSkillMixRow(ICollection<SkillMixModelView> currentSkillMixData)
 		{
 			List<string> resourceOldList = new List<string>();
+			currentSkillMixData = currentSkillMixData.OrderBy(sm => sm.ResourceOld).ThenBy(sm => string.IsNullOrWhiteSpace(sm.ResourceNew) ? 1 : 0).ToArray();
 			foreach (SkillMixModelView item in currentSkillMixData)
 			{
 				if(resourceOldList.Contains(item.ResourceOld))
@@ -179,6 +182,35 @@
 
 				resourceOldList.Add(item.ResourceOld);
 			}
+		}
+
+		/// <summary>
+		/// Clean up common disclosure rows after adding new rows in skill mix table
+		/// </summary>
+		/// <param name="currentSkillMixData">Collection of skillmix data</param>
+		/// <param name="refreshedModel">The Refreshed Skill Mix Model</param>
+		private static void CleanUpCommonDisclosureRows(ICollection<SkillMixModelView> currentSkillMixData, RefreshSkillMixModelView refreshedModel)
+		{
+			List<string> resourceIdList = new List<string>();
+			ICollection<string> newLinkedResourceIds = refreshedModel.SkillMixRows.Where(r => !string.IsNullOrWhiteSpace(r.ResourceNew)).Select(l => l.ResourceNew).Distinct().ToList();
+			foreach (CommonDisclosureModelView item in refreshedModel.CommonDisclosureRows)
+			{
+				if (newLinkedResourceIds.Contains(item.ResourceID))
+				{
+					item.HistoricalHours = currentSkillMixData.Where(sm => item.ResourceID == sm.ResourceNew).Sum(l => l.HistoricalHours);
+				} else
+				{
+					item.HistoricalHours = currentSkillMixData.Where(sm => item.ResourceID == sm.ResourceOld && string.IsNullOrWhiteSpace(sm.ResourceNew)).Select(l => l.HistoricalHours).First();
+				}
+
+				if (resourceIdList.Contains(item.ResourceID))
+				{
+					item.HistoricalHours = 0;
+				}
+
+				resourceIdList.Add(item.ResourceID);
+			}
+
 		}
 
 		/// <summary>
