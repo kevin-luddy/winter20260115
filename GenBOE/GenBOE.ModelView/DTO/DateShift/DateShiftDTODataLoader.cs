@@ -253,6 +253,10 @@ namespace GenBOE.DataBridge.DTO
 					throw new NotSupportedException($"Unsupported level: {level}");
 			}
 
+			// Normalize the dates so we don't have issues with time (i.e. 12:00 PM vs 12:01 PM).
+			dateShift.StartDate = dateShift.StartDate.Normalize();
+			dateShift.EndDate = dateShift.EndDate.Normalize();
+
 			return dateShift;
 		}
 
