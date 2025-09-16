@@ -146,18 +146,18 @@ namespace IES.ActionLogic.Core.ControllerLogic
 				modelView.AvailableCompareToVersions.First().Label = CommonConstants.PreviousVersion;
 			}
 
-			// only throw exception when first selection is not the eariest version where it's expected to be null
+			// only throw exception when first selection is not the earliest version where it's expected to be null
 			if (secondSelectedRevision == null && !modelView.IsEarliestVersion)
 			{
 				throw new ArgumentException("Could not find specified revision");
 			}
 
-			int.TryParse(secondSelectedRevision.Revision, out int previousVersionNumber);
+			int.TryParse(secondSelectedRevision?.Revision, out int previousVersionNumber);
 
 			modelView.PreviousVersionNumber = previousVersionNumber;
 			modelView.PreviousVersionNumberDisplay = string.Format("Revision {0}", modelView.PreviousVersionNumber);
 
-			// Don't update second revision and differences for eariest version as neither will exist in that case
+			// Don't update second revision and differences for earliest version as neither will exist in that case
 			if (!modelView.IsEarliestVersion)
 			{
 				modelView.SecondSelectedRevision = modelView.AvailableCompareToVersions.FirstOrDefault(x => x.Id == secondSelectedRevision.Id);

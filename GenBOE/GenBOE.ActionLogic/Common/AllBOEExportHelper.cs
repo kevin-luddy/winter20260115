@@ -177,6 +177,7 @@ namespace GenBOE.ActionLogic.Common
 		/// <param name="returnFilename">File name of the item that will be downloaded</param>
 		private static void SetResponseProperties(HttpResponseBase response, string returnFilename)
 		{
+			returnFilename = Utilities.StripIllegalFileNameCharacters(returnFilename);
 			response.ContentType = BOEExporter.CONTENT_TYPE_ZIP;
 			response.Clear();
 			response.BufferOutput = true;

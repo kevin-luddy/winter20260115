@@ -29,6 +29,8 @@ ApplicationConfigurationBase config = new();
 config.ConfigureBasics<Program>(builder, "BOE_DATABASE");
 config.AddWindowsAuthentication(builder.Services, builder.Configuration);
 
+CommonUtilities.SetLicense();
+
 // Add Custom Services
 builder.Services.AddScoped<ISecurityInformation, SecurityInformation>();
 builder.Services.AddSingleton<ICacheService, CacheService>();

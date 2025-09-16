@@ -37,6 +37,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Aspose.Total.lic">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\IES.ActionLogic.Core\IES.ActionLogic.Core.csproj" />
     <ProjectReference Include="..\IES.Common.Core\IES.Common.Core.csproj" />
     <ProjectReference Include="..\IES.DataBridge.Core\IES.DataBridge.Core.csproj" />

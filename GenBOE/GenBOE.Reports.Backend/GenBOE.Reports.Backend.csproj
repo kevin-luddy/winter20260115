@@ -23,6 +23,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Aspose.Total.lic">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\GenBOE.DataBridge.Core\GenBOE.DataBridge.Core.csproj" />
     <ProjectReference Include="..\IES.Common.Core\IES.Common.Core.csproj" />
   </ItemGroup>

@@ -415,8 +415,9 @@ namespace GenBOE.ActionLogic.IO.Export
                 throw new ArgumentNullException(nameof(response));
             }
 
-            // setup the response correctly with BufferOutput since this is going to be awhile...
-            response.ContentType = CONTENT_TYPE_DOCX;
+			// setup the response correctly with BufferOutput since this is going to be awhile...
+			fileNameToDisplayToBrowser = Utilities.StripIllegalFileNameCharacters(fileNameToDisplayToBrowser); 
+			response.ContentType = CONTENT_TYPE_DOCX;
             response.Clear();
             response.BufferOutput = true;
             response.AppendHeader("Content-Disposition", $"attachment;filename={fileNameToDisplayToBrowser}");
@@ -2412,7 +2413,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 List<BOEExportTaskElementLabor> allExportResourceTypes =
                     boeExportModelView.TaskElements.SelectMany(x => x.taskElementLabors).ToList();
 
-                // Get resouce data from exportInputs
+                // Get resource data from exportInputs
                 List<ResourceTypeDto> resourceInputs = exportInputs.TaskElements.SelectMany(x => x.taskElementLabors)
                     .Where(y => allExportResourceTypes.Select(z => z.ExportFields[FieldName_LaborTypeID])
                         .Contains(y.Id.ToString())).ToList();
