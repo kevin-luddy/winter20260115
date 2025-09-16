@@ -57,5 +57,10 @@ namespace GenBOE.ActionLogic.ModelView.Backend
 		/// Dynamic header for LMPI (and/or OCI).
 		/// </summary>
 		public string Header { get; set; }
+
+		/// <summary>
+		/// Report Hours Label used in Reports
+		/// </summary>
+		public string ReportHoursLabel { get; set; }
 	}
 }

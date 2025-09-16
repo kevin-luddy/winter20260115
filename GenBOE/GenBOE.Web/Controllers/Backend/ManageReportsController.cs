@@ -210,8 +210,6 @@ namespace GenBOE.Web.Controllers
 			return result;
 		}
 
-
-
 		/// <summary>
 		/// Get the BOE Activity Reports Data for Reports Page
 		/// </summary>
@@ -276,40 +274,6 @@ namespace GenBOE.Web.Controllers
 			}
 
 			FinalizeAction(logger, WebConstants.GET_BOE_DISCREPANCY_REPORT, sw);
-			return result;
-		}
-
-		/// <summary>
-		/// Get the Hours Label used in the BOE Discrepancy Report
-		/// </summary>
-		/// <param name="workspace">workspace short name</param>
-		/// <returns>label string</returns>
-		[HttpGet]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
-		public IESSingleResponse<string> GetReportHoursLabel(string workspace)
-		{
-			IESSingleResponse<string> result = new IESSingleResponse<string>();
-			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-
-			// Start Stopwatch to measure performance
-			Stopwatch sw = InitializeAction(logger, WebConstants.GET_BOE_DISCREPANCY_REPORT_HOURS_LABEL, SecurityPage.Reports, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, null);
-
-			try
-			{
-				string hoursLabel = FullObjectHelper.HoursLabel(ws);
-				result.Data = hoursLabel;
-				result.IsSuccessful = true;
-			}
-			catch (Exception ex)
-			{
-				logger.Error(ex);
-				result.Messages.Add(ex.Message);
-			}
-
-			// Finalize Action
-			FinalizeAction(logger, WebConstants.GET_BOE_DISCREPANCY_REPORT_HOURS_LABEL, sw);
-
 			return result;
 		}
 

@@ -465,6 +465,11 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_GET_TRIP_ID = "GetTripID";
 		public static readonly string ACTION_SAVE_EDIT_MATERIAL_DETAILS_COMPOSITE = "SaveEditMaterialDetailsComposite";
 
+		// BOEConfiguration Controller
+		public static readonly string GET_SYSTEM_CONFIGURATION = "GetSystemConfiguration";
+		public static readonly string GET_WORKSPACE_CONFIGURATION = "GetWorkspaceConfiguration";
+		public static readonly string GET_HOME_MASTER_MENU_ITEMS = "GetHomeMasterMenuItems";
+
 		#endregion BOE ACTIONS
 
 		#region CLIN
