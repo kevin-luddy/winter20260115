@@ -170,7 +170,7 @@ namespace RDM.Tests.ControllerLogic
                             }
                         }
                     }
-                }
+				}
             });
         }
 
@@ -237,5 +237,34 @@ namespace RDM.Tests.ControllerLogic
             this.sut.ValidateSections(this.sections, validationErrors);
             Assert.AreEqual(4, validationErrors.Count);
         }
-    }
+
+		/// <summary>
+		/// Only 1 table is allowed per section
+		/// Validate content nodes can't have child nodes
+		/// Validate section content types
+		/// Non compliance and CASB disclosure sections are invalid (core and service)
+		/// Test that there is at least one "included in cover sheet selection" in the address section
+		/// Total 8 errors
+		/// </summary>
+		[TestMethod]
+		public void TestValidateSections_5()
+		{
+			Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+			this.sut.ValidateSections(this.sections, validationErrors);
+			Assert.AreEqual(8, validationErrors.Count);
+
+			//Add IncludeInCoversheet
+			this.sections.First().ChildNodes.Add(new SectionModelView
+			{
+				Title = null,
+				DisplayOrder = 5,
+				ContentType = SectionContentType.Address,
+				IncludeInCoversheet = true
+			});
+
+			validationErrors.Clear();
+			this.sut.ValidateSections(this.sections, validationErrors);
+			Assert.AreEqual(7, validationErrors.Count);
+		}
+	}
 }
