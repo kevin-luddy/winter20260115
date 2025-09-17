@@ -759,10 +759,7 @@ namespace GenBOE.DataBridge.DTO
 				else
 				{
 					// If the dto has no skill mix tables, it's possible they were cleared out, so make sure old data is deleted
-					foreach (BoeTaskElementDTO dto in dtosToSave)
-					{
-						this.skillMixDTOLoader.DeleteSkillMixByBOETaskElementID(dto.Id);
-					}
+					this.skillMixDTOLoader.DeleteSkillMixByBOETaskElementID(inTaskDetail.Id);
 				}
 
 				// Save the Common Disclosure DTOs
@@ -782,10 +779,7 @@ namespace GenBOE.DataBridge.DTO
 				else
 				{
 					// If the dto has no common disclosure tables, it's possible they were cleared out, so make sure old data is deleted
-					foreach (BoeTaskElementDTO dto in dtosToSave)
-					{
-						this.commonDisclosureSMDTODataLoader.DeleteCommonDisclosureSkillMixByBOETaskElementID(dto.Id);
-					}
+					this.commonDisclosureSMDTODataLoader.DeleteCommonDisclosureSkillMixByBOETaskElementID(inTaskDetail.Id);
 				}
 			}
 		}
