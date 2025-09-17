@@ -74,7 +74,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="workspaces"></param>
 		/// <param name="paNumber"></param>
 		/// <returns></returns>
-		Dictionary<string, object> NextTrackingNumber(IEnumerable<WorkspaceDTO> workspaces, string paNumber);
+		Dictionary<string, object> NextPLDTrackingNumber(IEnumerable<WorkspaceDTO> workspaces, string paNumber);
 
 		/// <summary>
 		/// Save Workspace Status (Short/Simple method as the inner controller method and parent method of this do all the lifting 

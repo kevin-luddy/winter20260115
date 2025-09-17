@@ -159,11 +159,7 @@
 		if (isNaN(timestamp)) return 'N/A';
 
 		var date = new Date(timestamp);
-		var yyyy = date.getFullYear();
-		var mm = String(date.getMonth() + 1).padStart(2, '0');
-		
-		return `${mm}/${yyyy}`;
-		
+		return $scope.getDateStringFromDate(date);		
 	}
 
 	$scope.data = {};
@@ -253,37 +249,35 @@
 		if ($scope.model.IsPLDIntegrated && newStep === 3) {
 			
 
-			var getProposalDetails = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetProposalDetails);
+			var getPLDProposalDetails = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetPLDProposalDetails);
 
 			$http({
 				method: 'GET',
-				url: getProposalDetails,
+				url: getPLDProposalDetails,
 				params: { paNumber: $scope.data.TrackingNumber }
 			})
 				.then(function (res) {
 					const data = res.data;
-					console.log('data', data);
-					const lobName = data.Line_of_Business;
 
-					$scope.model.LineOfBusiness = lobName;
-					$scope.model.LineOfBusinessID = data.Line_of_Business_ID;
-					$scope.data.LineOfBusiness = lobName;
-					$scope.data.LineOfBusinessID = data.Line_of_Business_ID;
-					$scope.model.Description = data.PA_Description;
-					$scope.data.Description = data.PA_Description;
-					$scope.model.ContractStartDate = parseDotNetDate(data.Project_Start_Date);
-					$scope.model.ContractEndDate = parseDotNetDate(data.Project_End_Date);
+					$scope.model.LineOfBusiness = data.LineOfBusiness;
+					$scope.model.LineOfBusinessID = data.LineOfBusinessId;
+					$scope.data.LineOfBusiness = data.LineOfBusiness;
+					$scope.data.LineOfBusinessID = data.LineOfBusinessId;
+					$scope.model.Description = data.Description;
+					$scope.data.Description = data.Description;
+					$scope.model.ContractStartDate = parseDotNetDate(data.ProjectStartDate);
+					$scope.model.ContractEndDate = parseDotNetDate(data.ProjectEndDate);
 					$scope.data.ContractStartDate = $scope.model.ContractStartDate;
 					$scope.data.ContractEndDate = $scope.model.ContractEndDate;
 				})
 
 			
 
-			var getNextWorkspaceShortNameFromTrackingNumber = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetNextWorkspaceShortNameFromTrackingNumber);
+			var getNextPLDWorkspaceShortNameFromTrackingNumber = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetNextPLDWorkspaceShortNameFromTrackingNumber);
 
 			$http({
 				method: 'GET',
-				url: getNextWorkspaceShortNameFromTrackingNumber,
+				url: getNextPLDWorkspaceShortNameFromTrackingNumber,
 				params: { paNumber: $scope.data.TrackingNumber }
 			})
 				.then(function (res) {
@@ -292,11 +286,8 @@
 					$scope.model.nextRevision = data.ShortName;
 					$scope.data.nextRevision = $scope.model.nextRevision;
 				})
-				
-
 		}
 		
-
 		$scope.step = newStep;
 		switch ($scope.step) {
 			case 1:

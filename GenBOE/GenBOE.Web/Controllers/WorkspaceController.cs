@@ -107,7 +107,6 @@ namespace GenBOE.Web.Controllers
 		private CommentsAndResponsesExporter _commentsAndResponsesExporter = null;
 		private BOECommentsControllerLogic _boeCommentsControllerLogic = null;
 		private readonly GenBOE.DataBridge.DTO.IPldDTODataLoader _pldDTODataLoader;
-		private readonly DataBridge.DTO.LineOfBusinessDataLoader _lineOfBusinessDataLoader;
 
 
 		/// <summary>
@@ -203,7 +202,6 @@ namespace GenBOE.Web.Controllers
 			IRetriever retriever,
 			GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader,
 			GenBOE.DataBridge.DTO.IPldDTODataLoader pldDTODataLoader,
-			DataBridge.DTO.LineOfBusinessDataLoader lineOfBusinessDataLoader,
 			GenTRAC.DataBridge.Common.Security.ISecurityMapper ptmSecurityMapper,
 			BoePickListMapper boePickListMapper,
 			WorkspaceExporter workspaceExporter,
@@ -267,7 +265,6 @@ namespace GenBOE.Web.Controllers
 			_commentsAndResponsesExporter = commentsAndResponsesExporter;
 			_boeCommentsControllerLogic = boeCommentsControllerLogic;
 			_workspaceSettingsControllerLogic = workspaceSettingsControllerLogic;
-			_lineOfBusinessDataLoader = lineOfBusinessDataLoader;
 		}
 
 		#region Public Methods
@@ -822,17 +819,17 @@ namespace GenBOE.Web.Controllers
 		/// <returns></returns>
 		public JsonResult SearchPLDProposals(string term)
 		{
-			Stopwatch sw = InitializeAction(_log, "GetProposalDetails", SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SEARCH_PLD_PROPOSALS, SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
 
-			ICollection<ProposalDTO> matches = _pldDTODataLoader.GetTopProposals(term);
+			ICollection<PLDProposalDTO> matches = _pldDTODataLoader.GetTopProposals(term);
 
 			var results = matches.Select(p => new
 			{
-				Text = p.PA_Number + " - " + p.PA_Title,
-				Value = p.PA_Number
+				Text = p.PANumber + " - " + p.Title,
+				Value = p.PANumber
 			});
 
-			FinalizeAction(_log, "GetProposalDetails", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SEARCH_PLD_PROPOSALS, sw);
 
 			return Json(results, JsonRequestBehavior.AllowGet);
 				
@@ -844,31 +841,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="paNumber"></param>
 		/// <returns></returns>
-		public JsonResult GetProposalDetails(string paNumber)
+		public JsonResult GetPLDProposalDetails(string paNumber)
 		{
-						
-			Stopwatch sw = InitializeAction(_log, "GetProposalDetails", SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_PLD_PROPOSAL_DETAILS, SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
 
-			ProposalDTO result = _pldDTODataLoader.GetProposalDetails(paNumber);
+			PLDProposalDTO result = _pldDTODataLoader.GetProposalDetails(paNumber);
 
-			if (result != null)
-			{
-				ICollection<PickListDto> pickList = _lineOfBusinessDataLoader.GetPickListValues();
-
-				string resolvedLob = LineOfBusinessHelper.Resolve(result.Line_of_Business, pickList);
-				result.Line_of_Business = resolvedLob;
-
-				PickListDto match = pickList.FirstOrDefault(p => string.Equals(p.Text.Trim(), resolvedLob.Trim(), StringComparison.OrdinalIgnoreCase));
-
-				if (match != null)
-				{
-					result.Line_of_Business_ID = match.Id;
-				}
-
-
-			}
-
-			FinalizeAction(_log, "GetProposalDetails", sw);
+			FinalizeAction(_log, WebConstants.ACTION_GET_PLD_PROPOSAL_DETAILS, sw);
 
 			return Json(result, JsonRequestBehavior.AllowGet);
 		}
@@ -879,23 +858,18 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="paNumber"></param>
 		/// <returns></returns>
-		public JsonResult GetNextWorkspaceShortNameFromTrackingNumber(string paNumber)
+		public JsonResult GetNextPLDWorkspaceShortNameFromTrackingNumber(string paNumber)
 		{
-			Stopwatch sw = InitializeAction(_log, "GetProposalDetails", SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_NEXT_PLD_WORKSPACE_SHORTNAME_FROM_TRACKING_NUMBER, SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
 			
-			ICollection<WorkspaceDTO> workspaces  = this.workspaceLoader.GetAllWsNamesForTrackingNumber(paNumber)
-				.ToList() ?? new List<WorkspaceDTO>();
+			ICollection<WorkspaceDTO> workspaces  = this.workspaceLoader.GetAllWsNamesForTrackingNumber(paNumber);
 
-			Dictionary<string, object> payload = _ControllerLogic.NextTrackingNumber(workspaces, paNumber);
+			Dictionary<string, object> payload = _ControllerLogic.NextPLDTrackingNumber(workspaces, paNumber);
 
-			FinalizeAction(_log, "GetProposalDetails", sw);
+			FinalizeAction(_log, WebConstants.ACTION_GET_NEXT_PLD_WORKSPACE_SHORTNAME_FROM_TRACKING_NUMBER, sw);
 
 			return Json(payload, JsonRequestBehavior.AllowGet);
-			
 		}
-
-
-
 
 		#endregion Views
 
@@ -6877,38 +6851,5 @@ namespace GenBOE.Web.Controllers
 	public class SelectListItemWithTitle : SelectListItem
 	{
 		public string Title { get; set; }
-	}
-
-
-	public static class LineOfBusinessHelper
-	{
-		private static readonly Dictionary<string, string> _aliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-			{
-				{ "sac", "Sikorsky" },
-				{ "iwss", "Integrated Warfare Systems and Sensors" },
-				{ "tls", "Training and Logistics Solutions" },
-				{ "new ventures", "new ventures"},
-				{ "c6isr", "c6isr" },
-				{ "cyber ships and advanced technologies", "Cyber, Ships & Advanced Technologies" },
-				{ "cyber, ships & advanced technologies","cyber, ships & advanced technologies" }
-			};
-
-		public static string Resolve(string raw, IEnumerable<PickListDto> pickList)
-		{
-			if (string.IsNullOrWhiteSpace(raw))
-			{
-				return raw;
-			}
-						
-			if (_aliases.TryGetValue(raw.Trim(), out string mapped))
-			{
-				raw = mapped;
-			}
-						
-			PickListDto match = pickList.FirstOrDefault(p =>
-				string.Equals(p.Text, raw, StringComparison.OrdinalIgnoreCase));
-
-			return match?.Text ?? raw;
-		}
 	}
 }

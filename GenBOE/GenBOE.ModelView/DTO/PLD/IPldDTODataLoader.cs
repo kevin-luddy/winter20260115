@@ -4,9 +4,10 @@ namespace GenBOE.DataBridge.DTO
 {
 	using System.Collections.Generic;
 	using GenBOE.Dtos;
-	using IES.Common;
 
-
+	/// <summary>
+	/// Interface for PLD Proposal Loader
+	/// </summary>
 	public interface IPldDTODataLoader
 	{
 		
@@ -14,22 +15,21 @@ namespace GenBOE.DataBridge.DTO
 		/// Get All Proposals from PLD database view
 		/// </summary>
 		/// <returns></returns>
-		ICollection<ProposalDTO> GetTopProposals(string search = null);
+		ICollection<PLDProposalDTO> GetTopProposals(string search = null);
 
 		/// <summary>
 		///  Get selected proposal with specific pa number
 		/// </summary>
 		/// <param name="paNumber"></param>
 		/// <returns></returns>
-		ProposalDTO GetProposalDetails(string paNumber);
-
+		PLDProposalDTO GetProposalDetails(string paNumber);
 
 		/// <summary>
 		///  Get All Active Proposals
 		/// </summary>
 		/// <param name="active"></param>
 		/// <returns></returns>
-		ICollection<ProposalDTO> GetAllActiveProposals ();
+		ICollection<PLDProposalDTO> GetAllActiveProposals ();
 
 		/// <summary>
 		/// Get All Active Proposals by Name
@@ -37,14 +37,5 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="activeNames"></param>
 		/// <returns></returns>
 		ICollection<string> GetAllActiveProposalNames();
-
-		/// <summary>
-		/// Get Proposal by ID
-		/// </summary>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		ICollection<ProposalDTO> GetByIds(ICollection<string> paNumbers);
-
 	}
-
 }
