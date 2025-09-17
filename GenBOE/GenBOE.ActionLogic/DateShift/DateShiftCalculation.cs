@@ -554,7 +554,7 @@ namespace GenBOE.ActionLogic.DateShift
 					{
 						if (previousStartDate < oneLMXStartDate)
 						{
-							if (shiftedStartDate.HasValue && shiftedStartDate.Value.Normalize() >= oneLMXStartDate.Normalize())
+							if (shiftedStartDate.HasValue && shiftedStartDate.Value.Normalize() >= oneLMXStartDate)
 							{
 								AddResourceTypeError(dateShiftDTO, detail, parentBoeId, "Resource and Business Resource Code", "Start Date", "shifted to the right of");
 							}
@@ -562,7 +562,7 @@ namespace GenBOE.ActionLogic.DateShift
 
 						if (previousEndDate < oneLMXStartDate)
 						{
-							if (shiftedEndDate.HasValue && shiftedEndDate.Value.Normalize() >= oneLMXStartDate.Normalize())
+							if (shiftedEndDate.HasValue && shiftedEndDate.Value.Normalize() >= oneLMXStartDate)
 							{
 								AddResourceTypeError(dateShiftDTO, detail, parentBoeId, "Resource", "End Date", "shifted to the right of");
 							}
@@ -570,7 +570,7 @@ namespace GenBOE.ActionLogic.DateShift
 
 						if (previousStartDate >= oneLMXStartDate)
 						{
-							if (shiftedStartDate.HasValue && shiftedStartDate.Value.Normalize() < oneLMXStartDate.Normalize())
+							if (shiftedStartDate.HasValue && shiftedStartDate.Value.Normalize() < oneLMXStartDate)
 							{
 								AddResourceTypeError(dateShiftDTO, detail, parentBoeId, "Resource and Business Resource Code", "Start Date", "shifted to the left of");
 							}
