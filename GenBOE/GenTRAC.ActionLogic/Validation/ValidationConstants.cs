@@ -389,19 +389,19 @@ namespace GenTRAC.ActionLogic.Validation
             public const string BACKCUP_CONTRACTS_POC_REQUIRED = USER_INFO_VALDIATION + "Backup Contracts POC is required.";
 
             /// <summary>
-            /// supply chain material is required
+            /// PBOE POC is required
             /// </summary>
-            public const string SUPPLY_CHAIN_MATERIAL_REQUIRED = USER_INFO_VALDIATION + "PBOE Preparer is required if Elements of Cost includes Materials.";
+            public const string PBOE_MATERIAL_REQUIRED = USER_INFO_VALDIATION + "PBOE Preparer is required if Elements of Cost includes Materials.";
 
 			/// <summary>
-			/// supply chain POC is required
+			/// IBOE POC is required
 			/// </summary>
-			public const string SUPPLY_CHAIN_SUBS_IWTA_REQUIRED = USER_INFO_VALDIATION + "IBOE Preparer is required if Element of Cost includes IWTA.";
+			public const string IBOE_IWTA_REQUIRED = USER_INFO_VALDIATION + "IBOE Preparer is required if Element of Cost includes IWTA.";
 
 			/// <summary>
-			/// supply chain material subcontractor is required
+			/// PBOE/MPBOE subcontractor is required
 			/// </summary>
-			public const string SUPPLY_CHAIN_MATERIAL_SUBS_REQUIRED = USER_INFO_VALDIATION + "PBOE/MPBOE Preparer is required if Element of Cost includes Subcontractors.";
+			public const string PBOE_MPBOE_POC_REQUIRED = USER_INFO_VALDIATION + "PBOE/MPBOE Preparer is required if Element of Cost includes Subcontractors.";
 
             /// <summary>
             /// additonal resource 1 type is required
@@ -436,22 +436,22 @@ namespace GenTRAC.ActionLogic.Validation
             /// <summary>
             /// PBOE Preparer invalid NTID
             /// </summary>
-            public const string SUPPLY_CHAIN_POC_MATL_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for PBOE Preparer, or the user is not an LM, US based employee.";
+            public const string PBOE_MPBOE_POC_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for PBOE Preparer, or the user is not an LM, US based employee.";
 
 			/// <summary>
 			/// PBOE Preparer invalid NTID
 			/// </summary>
-			public const string SUPPLY_CHAIN_POC_MATL_BACKUP_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Backup PBOE Preparer, or the user is not an LM, US based employee.";
+			public const string PBOE_MPBOE_POC_BACKUP_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Backup PBOE Preparer, or the user is not an LM, US based employee.";
 
 			/// <summary>
 			/// IBOE Preparer invalid NTID
 			/// </summary>
-			public const string SUPPLY_CHAIN_POC_SUBS_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for IBOE Preparer, or the user is not an LM, US based employee.";
+			public const string IBOE_POC_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for IBOE Preparer, or the user is not an LM, US based employee.";
 
 			/// <summary>
 			/// IBOE Preparer invalid NTID
 			/// </summary>
-			public const string SUPPLY_CHAIN_POC_SUBS_BACKUP_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Backup IBOE Preparer, or the user is not an LM, US based employee.";
+			public const string IBOE_POC_BACKUP_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Backup IBOE Preparer, or the user is not an LM, US based employee.";
 
 			/// <summary>
 			/// Backup Lead Estimator invalid NTID
