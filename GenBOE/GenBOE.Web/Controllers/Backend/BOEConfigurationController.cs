@@ -76,12 +76,8 @@ namespace GenBOE.Web.Controllers
 
 			try
 			{
-				Stopwatch sw = InitializeAction(logger, WebConstants.GET_SYSTEM_CONFIGURATION, SecurityPage.WorkspaceHome, SecurityAuthorization.Read, new List<WorkspaceDTO> { null }, null);
-
 				result.Data = BOEConfigurationControllerLogic.GetSystemConfiguration();
 				result.IsSuccessful = true;
-
-				FinalizeAction(logger, WebConstants.GET_SYSTEM_CONFIGURATION, sw);
 			}
 			catch (Exception ex)
 			{
@@ -144,8 +140,6 @@ namespace GenBOE.Web.Controllers
 
 			try
 			{
-				Stopwatch sw = InitializeAction(logger, WebConstants.GET_HOME_MASTER_MENU_ITEMS, SecurityPage.WorkspaceHome, SecurityAuthorization.Read, new List<WorkspaceDTO> { null }, null);
-
 				Collection<GenBOEMasterMenuItemModelView> MenuItems = GenBOEMasterMenuItemModelView.BuildHomeMasterMenuItems();
 
 				GenBOEMasterMenuItemModelView AdminMenuItem = MenuItems.Where(x => x.linkText == "Admin").Single().subMenuItems.Where(y => y.linkText == "Metrics Administration").SingleOrDefault();
@@ -213,7 +207,6 @@ namespace GenBOE.Web.Controllers
 				}
 
 				result.IsSuccessful = true;
-				FinalizeAction(logger, WebConstants.GET_HOME_MASTER_MENU_ITEMS, sw);
 			}
 			catch (Exception ex)
 			{
