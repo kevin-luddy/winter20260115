@@ -167,7 +167,6 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <param name="nonComplianceServiceSections">A list of strings in which we'll keep track of sections that contain non-compliance Service setting; this is necessary to validate that it's only set once</param>
 		private void ValidateSection(SectionModelView section, ICollection<ValidationMessage> validationErrors, ICollection<string> casbCoreSections, ICollection<string> casbServiceSections, ICollection<string> nonComplianceCoreSections, ICollection<string> nonComplianceServiceSections, ref int numOfIncludedInCoverSheet)
 		{
-			//int numOfIncludedInCoverSheet = 0;
 			if (section.ContentType == SectionContentType.Section)
 			{
 				if (string.IsNullOrEmpty(section.Title))
@@ -216,8 +215,6 @@ namespace IES.ActionLogic.Core.ControllerLogic
 
 					ValidateSection(child, validationErrors, casbCoreSections, casbServiceSections, nonComplianceCoreSections, nonComplianceServiceSections, ref numOfIncludedInCoverSheet);  // recursively validate children
 				}
-
-				Console.WriteLine(numOfIncludedInCoverSheet);
 
 				if (numTablesInSection > 1)
 				{

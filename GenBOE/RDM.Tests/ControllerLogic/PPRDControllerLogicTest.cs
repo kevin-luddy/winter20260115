@@ -174,68 +174,82 @@ namespace RDM.Tests.ControllerLogic
             });
         }
 
-        /// <summary>
-        /// Test Tables In Sections
-        /// Only 1 table is allowed per section
-        /// Validate section content types
-        /// Validate content nodes can't have child nodes
-        /// Casb is invalid
-        /// NonCompliance is invalid
-        /// </summary>
-        [TestMethod]
+		/// <summary>
+		/// Test Tables In Sections
+		/// Only 1 table is allowed per section
+		/// Validate section content types
+		/// Validate content nodes can't have child nodes
+		/// Casb is invalid (core & service)
+		/// NonCompliance is invalid (core & service)
+		/// Test that there is at least one "included in cover sheet selection" in the address section invalid
+		/// Total 8 errors
+		/// </summary>
+		[TestMethod]
         public void TestValidateSections()
         {
             Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
             this.sut.ValidateSections(this.sections, validationErrors);
-            Assert.AreEqual(5, validationErrors.Count);
+            Assert.AreEqual(8, validationErrors.Count);
         }
 
-        /// <summary>
-        /// Only 1 table is allowed per section
-        /// Validate section content types
-        /// Validate content nodes can't have child nodes
-        /// CASB valid, non compliance causes an issue
-        /// </summary>
-        [TestMethod]
+		/// <summary>
+		/// Only 1 table is allowed per section
+		/// Validate section content types
+		/// Validate content nodes can't have child nodes
+		/// CASB valid, non compliance causes an issue (core & service)
+		/// Test that there is at least one "included in cover sheet selection" in the address section invalid
+		/// Total 6 errors
+		/// </summary>
+		[TestMethod]
         public void TestValidateSections_2()
         {
             Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
             this.sections.First().SectionContainsCasbDisclosureCore = true;
-            this.sut.ValidateSections(this.sections, validationErrors);
-            Assert.AreEqual(4, validationErrors.Count);
+			this.sections.First().SectionContainsCasbDisclosureService = true;
+			this.sut.ValidateSections(this.sections, validationErrors);
+            Assert.AreEqual(6, validationErrors.Count);
         }
 
-        /// <summary>
-        /// Only 1 table is allowed per section
-        /// Validate section content types
-        /// Validate content nodes can't have child nodes        
-        /// Non compliance and CASB sections are valid
-        /// </summary>
-        [TestMethod]
+		/// <summary>
+		/// Only 1 table is allowed per section
+		/// Validate section content types
+		/// Validate content nodes can't have child nodes        
+		/// Non compliance and CASB sections are valid (no errors)
+		/// Test that there is at least one "included in cover sheet selection" in the address section invalid
+		/// Total 4 errors
+		/// </summary>
+		[TestMethod]
         public void TestValidateSections_3()
         {
             Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
             this.sections.First().SectionContainsCasbDisclosureCore = true;
-            this.sections.Last().SectionContainsNonComplianceCore = true;
-            this.sut.ValidateSections(this.sections, validationErrors);
-            Assert.AreEqual(3, validationErrors.Count);
+			this.sections.First().SectionContainsCasbDisclosureService = true;
+			this.sections.Last().SectionContainsNonComplianceCore = true;
+			this.sections.Last().SectionContainsNonComplianceService = true;
+			this.sut.ValidateSections(this.sections, validationErrors);
+            Assert.AreEqual(4, validationErrors.Count);
         }
 
-        /// <summary>
-        /// Only 1 table is allowed per section
-        /// Validate section content types
-        /// Validate content nodes can't have child nodes
-        /// Test that 2 sections marked as non-compliance cause an error
-        /// </summary>
-        [TestMethod]
+		/// <summary>
+		/// Only 1 table is allowed per section
+		/// Validate section content types
+		/// Validate content nodes can't have child nodes
+		/// Test that 2 sections marked as non-compliance cause an error (core & service)
+		/// Test that there is at least one "included in cover sheet selection" in the address section invalid
+		/// Total 6 errors
+		/// </summary>
+		[TestMethod]
         public void TestValidateSections_4()
         {
             Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
             this.sections.First().SectionContainsCasbDisclosureCore = true;
-            this.sections.First().SectionContainsNonComplianceCore = true;
-            this.sections.First().ChildNodes.First().SectionContainsNonComplianceCore = true;
-            this.sut.ValidateSections(this.sections, validationErrors);
-            Assert.AreEqual(4, validationErrors.Count);
+			this.sections.First().SectionContainsCasbDisclosureService = true;
+			this.sections.First().SectionContainsNonComplianceCore = true;
+			this.sections.First().SectionContainsNonComplianceService = true;
+			this.sections.First().ChildNodes.First().SectionContainsNonComplianceCore = true;
+			this.sections.First().ChildNodes.First().SectionContainsNonComplianceService = true;
+			this.sut.ValidateSections(this.sections, validationErrors);
+            Assert.AreEqual(6, validationErrors.Count);
         }
 
 		/// <summary>
