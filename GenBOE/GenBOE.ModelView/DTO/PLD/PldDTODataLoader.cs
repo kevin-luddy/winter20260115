@@ -121,7 +121,7 @@ namespace GenBOE.DataBridge.DTO
 						LastModifiedDate = p.Last_Modified_Date,
 						LineOfBusiness = p.Line_of_Business,
 						Pricing = p.Pricing,
-						RFP_Number = p.RFP_Number,
+						RFPNumber = p.RFP_Number,
 						ProposalStatus = p.Proposal_Status
 					})
 					.FirstOrDefault();
@@ -165,7 +165,7 @@ namespace GenBOE.DataBridge.DTO
 								LastModifiedDate = p.Last_Modified_Date,
 								LineOfBusiness = p.Line_of_Business,
 								Pricing = p.Pricing,
-								RFP_Number = p.RFP_Number,
+								RFPNumber = p.RFP_Number,
 								ProposalStatus = p.Proposal_Status
 							})
 							.ToList();
@@ -244,7 +244,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <summary>
 		/// Do post processing on the Proposals
 		/// </summary>
-		/// <param name="proposals"></param>
+		/// <param name="proposals">The proposals to post process</param>
 		private void DoPostProcessing(ICollection<PLDProposalDTO> proposals)
 		{
 			foreach (PLDProposalDTO proposal in proposals)

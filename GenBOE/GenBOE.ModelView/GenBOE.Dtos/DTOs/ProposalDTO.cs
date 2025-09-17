@@ -29,7 +29,7 @@ namespace GenBOE.Dtos
 			Pricing = string.Empty;
 			ProjectStartDate = DateTime.MinValue;
 			ProjectEndDate = DateTime.MinValue;
-			RFP_Number = string.Empty;
+			RFPNumber = string.Empty;
 			LastModifiedDate = DateTime.MinValue;
 			ProposalStatus = string.Empty;
 		}
@@ -82,7 +82,7 @@ namespace GenBOE.Dtos
 		/// <summary>
 		///  RFP Number
 		/// </summary>
-		public string RFP_Number { get; set; }
+		public string RFPNumber { get; set; }
 
 		/// <summary>
 		/// Last Modified Date
