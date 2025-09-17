@@ -129,7 +129,6 @@ namespace IES.ActionLogic.Core.ControllerLogic
 				ValidateSection(section, validationErrors, casbCoreSections, casbServiceSections, nonComplianceCoreSections, nonComplianceServiceSections, ref numOfIncludedInCoverSheet);
 				
 			}
-			Console.WriteLine(numOfIncludedInCoverSheet);
 
 			if (casbCoreSections.Count != 1)
 			{
