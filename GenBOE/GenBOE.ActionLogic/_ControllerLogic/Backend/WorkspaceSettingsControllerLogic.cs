@@ -480,23 +480,27 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 						ws.RefreshBoes();
 
 						ICollection<int> boeIdsWithTaskAuthors = ws.TaskElements.Where(x => x.AuthorUserId != null).Select(x => x.BoeID).Distinct().ToCollection();
+						List<BoeTaskElementDTO> updatedTasks = new List<BoeTaskElementDTO>();
 						foreach (FullBoe boe in ws.Boes.Where(x => boeIdsWithTaskAuthors.Contains(x.Id)))
 						{
 							boe.State = BOEState.Draft;
 							boe.Updateable = UpdateType.Upsert;
-
+							
 							// Get the task and remove the author
-							ICollection<BoeTaskElementDTO> editableTasks = (ICollection<BoeTaskElementDTO>)boe.TaskElements;
+							ICollection<BoeTaskElementDTO> editableTasks = ws.TaskElements.Where(x => x.BoeID == boe.Id && x.AuthorUserId.HasValue && x.AuthorUserId > 0).ToList();
 							foreach (BoeTaskElementDTO task in editableTasks)
 							{
 								task.AuthorUserId = null;
 								task.Updateable = UpdateType.Upsert;
 							}
 
-							boeTaskElementMediator.MediatedBulkSaveTaskElements(editableTasks, ws);
+							updatedTasks.AddRange(editableTasks);
 							boeMediator.MediatedSave(ws, boe);
 							boeStateMachine.PerformStateTransitionAction(boe, ws, boe.State, BOEState.Draft);
 						}
+
+						// Save all tasks at once so that the workspace's Task Elements are not refreshed once per BOE
+						boeTaskElementMediator.MediatedBulkSaveTaskElements(updatedTasks, ws);
 					}
 
 					scope.Complete();
