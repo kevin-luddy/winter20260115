@@ -214,8 +214,8 @@ namespace GenBOE.ActionLogic.DateShift
 			// Perform dateshift on this object
 			if (!dateShiftDTO.StartDate.HasValue || !dateShiftDTO.EndDate.HasValue)
 			{
-				dateShiftDTO.StartDate = parentStart;
-				dateShiftDTO.EndDate = parentEnd;
+				dateShiftDTO.StartDate = parentStart.Normalize();
+				dateShiftDTO.EndDate = parentEnd.Normalize();
 			}
 
 			foreach (DateShiftDetailModelView detail in dateShiftModel.Details)
@@ -457,8 +457,8 @@ namespace GenBOE.ActionLogic.DateShift
 				if (parentStart.HasValue && parentEnd.HasValue)
 				{
 					DateTime oneLMXStartDate = Utilities.OneLmxStartDate;
-					DateTime previousStartDate = dateShiftDTO.StartDate.Value;
-					DateTime previousEndDate = dateShiftDTO.EndDate.Value;
+					DateTime previousStartDate = dateShiftDTO.StartDate.Value.Normalize();
+					DateTime previousEndDate = dateShiftDTO.EndDate.Value.Normalize();
 					DateTime? shiftedStartDate = null;
 					DateTime? shiftedEndDate = null;
 
@@ -524,7 +524,7 @@ namespace GenBOE.ActionLogic.DateShift
 								case ChildModificationType.ToEnd:
 									int duration = dateShiftDTO.StartDate.Value.MonthDifference(dateShiftDTO.EndDate.Value);
 									dateShiftDTO.EndDate = parentEnd;
-									shiftedEndDate = parentEnd.Value;
+									shiftedEndDate = parentEnd.Value.Normalize();
 									if (detail.Operation == Operation.Shift)
 									{
 										// only change start date if this is a shift
@@ -535,8 +535,8 @@ namespace GenBOE.ActionLogic.DateShift
 								case ChildModificationType.ToPoP:
 									dateShiftDTO.StartDate = parentStart;
 									dateShiftDTO.EndDate = parentEnd;
-									shiftedStartDate = parentStart.Value;
-									shiftedEndDate = parentEnd.Value;
+									shiftedStartDate = parentStart.Value.Normalize();
+									shiftedEndDate = parentEnd.Value.Normalize();
 									break;
 								default:
 									throw new NotSupportedException("This Child Modification Type is not allowed for Error Child outside the PoP of the Parent: " + detail.Error2Handling.Value.ToDescription());
@@ -554,7 +554,7 @@ namespace GenBOE.ActionLogic.DateShift
 					{
 						if (previousStartDate < oneLMXStartDate)
 						{
-							if (shiftedStartDate.HasValue && shiftedStartDate.Value >= oneLMXStartDate)
+							if (shiftedStartDate.HasValue && shiftedStartDate.Value.Normalize() >= oneLMXStartDate)
 							{
 								AddResourceTypeError(dateShiftDTO, detail, parentBoeId, "Resource and Business Resource Code", "Start Date", "shifted to the right of");
 							}
@@ -562,7 +562,7 @@ namespace GenBOE.ActionLogic.DateShift
 
 						if (previousEndDate < oneLMXStartDate)
 						{
-							if (shiftedEndDate.HasValue && shiftedEndDate.Value >= oneLMXStartDate)
+							if (shiftedEndDate.HasValue && shiftedEndDate.Value.Normalize() >= oneLMXStartDate)
 							{
 								AddResourceTypeError(dateShiftDTO, detail, parentBoeId, "Resource", "End Date", "shifted to the right of");
 							}
@@ -570,7 +570,7 @@ namespace GenBOE.ActionLogic.DateShift
 
 						if (previousStartDate >= oneLMXStartDate)
 						{
-							if (shiftedStartDate.HasValue && shiftedStartDate.Value < oneLMXStartDate)
+							if (shiftedStartDate.HasValue && shiftedStartDate.Value.Normalize() < oneLMXStartDate)
 							{
 								AddResourceTypeError(dateShiftDTO, detail, parentBoeId, "Resource and Business Resource Code", "Start Date", "shifted to the left of");
 							}
@@ -695,8 +695,8 @@ namespace GenBOE.ActionLogic.DateShift
 							{
 								CurveID = labor.SpreadCurveID,
 								HourSpread = 0,
-								StartDate = labor.StartDate.Value,
-								EndDate = labor.EndDate.Value
+								StartDate = labor.StartDate.Value.Normalize(),
+								EndDate = labor.EndDate.Value.Normalize()
 							};
 							int decimalPrecision = labor.SpreadType == SpreadType.Cost ? modelView.Workspace.CostDecimalPrecision : modelView.Workspace.DecimalPrecision;
 							labor.LaborSpreads = SpreadCurve.CalculateLaborSpreadsBasedOnCurve(spreadRequest, decimalPrecision);
