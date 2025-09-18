@@ -113,11 +113,11 @@ namespace IES.ActionLogic.ControllerLogic
             List<string> casbServiceSections = new List<string>();
 			List<string> nonComplianceCoreSections = new List<string>();
 			List<string> nonComplianceServiceSections = new List<string>();
-			int numOfIncludedInCoverSheet = 0;
+			bool coverSheetIncludesCaoTable = false;
 
 			foreach (SectionModelView section in sections)
             {
-                this.ValidateSection(section, validationErrors, casbCoreSections, casbServiceSections, nonComplianceCoreSections, nonComplianceServiceSections, ref numOfIncludedInCoverSheet);
+                this.ValidateSection(section, validationErrors, casbCoreSections, casbServiceSections, nonComplianceCoreSections, nonComplianceServiceSections, ref coverSheetIncludesCaoTable);
             }
 
             if(casbCoreSections.Count != 1)
@@ -140,7 +140,7 @@ namespace IES.ActionLogic.ControllerLogic
 				validationErrors.Add(new ValidationMessage($"Exactly one section should be marked as 'Contains CAS Non-Compliance Service Issues'. The following sections are marked this way: {(nonComplianceServiceSections.Any() ? string.Join(", ", nonComplianceServiceSections) : "none")}"));
 			}
 
-			if (numOfIncludedInCoverSheet == 0)
+			if (!coverSheetIncludesCaoTable)
 			{
 				validationErrors.Add(new ValidationMessage($"RDM has detected that none of the Contract Administrative Office tables has been selected (checked) to be Included in the Cover Sheet Selection. Please navigate to the TOC section that includes the Contract Administrative Office tables and choose one to be Included in the Cover Sheet Selection."));
 			}
@@ -155,7 +155,7 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="casbServiceSections">A list of strings in which we'll keep track of sections that contain CASB Service setting; this is necessary to validate that it's only set once</param>
 		/// <param name="nonComplianceCoreSections">A list of strings in which we'll keep track of sections that contain non-compliance setting; this is necessary to validate that it's only set once</param>
 		/// <param name="nonComplianceServiceSections">A list of strings in which we'll keep track of sections that contain non-compliance setting; this is necessary to validate that it's only set once</param>
-		private void ValidateSection(SectionModelView section, ICollection<ValidationMessage> validationErrors, ICollection<string> casbCoreSections, ICollection<string> casbServiceSections, ICollection<string> nonComplianceCoreSections, ICollection<string> nonComplianceServiceSections, ref int numOfIncludedInCoverSheet)
+		private void ValidateSection(SectionModelView section, ICollection<ValidationMessage> validationErrors, ICollection<string> casbCoreSections, ICollection<string> casbServiceSections, ICollection<string> nonComplianceCoreSections, ICollection<string> nonComplianceServiceSections, ref bool coverSheetIncludesCaoTable)
         {
             if (section.ContentType == SectionContentType.Section)
             {
@@ -199,11 +199,11 @@ namespace IES.ActionLogic.ControllerLogic
 
 						if ((bool)child.IncludeInCoversheet)
 						{
-							numOfIncludedInCoverSheet += 1;
+							coverSheetIncludesCaoTable = true;
 						}
 					}
 
-                    this.ValidateSection(child, validationErrors, casbCoreSections, casbServiceSections, nonComplianceCoreSections, nonComplianceServiceSections, ref numOfIncludedInCoverSheet);  // recursively validate children
+                    this.ValidateSection(child, validationErrors, casbCoreSections, casbServiceSections, nonComplianceCoreSections, nonComplianceServiceSections, ref coverSheetIncludesCaoTable);  // recursively validate children
                 }
 
                 if (numTablesInSection > 1)
