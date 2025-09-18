@@ -1029,7 +1029,7 @@ namespace GenTRAC.Tests.ActionLogic
             proposalUserInfoVM.PboeMpboePOCNtId = string.Empty;
             sut.ValidateProposal(proposalInfoVM, new ProposalGeneralInformationModelView(), proposalApprovalsMV, proposalUserInfoVM, validationMessages, false);
             Assert.AreEqual(1, validationMessages.Count);
-            Assert.IsTrue(validationMessages.First().ValidationIssue.ContainsEquivalent("PBOE Preparer is Required"));
+            Assert.IsTrue(validationMessages.First().ValidationIssue.ContainsEquivalent("PBOE/MPBOE Preparer is Required"));
             validationMessages = new List<ValidationMessage>();
             sut.ValidateProposal(proposalInfoVM, new ProposalGeneralInformationModelView(), proposalApprovalsMV, proposalUserInfoVM, validationMessages, true);
             Assert.AreEqual(0, validationMessages.Count);
@@ -1381,8 +1381,7 @@ namespace GenTRAC.Tests.ActionLogic
             sut.ValidateProposal(proposalInfo, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView() { LeadEstimatorNtid = "fakeId2", CoverSheetApproverNtid = "fakeId", PricingVerificationNtid = "fakeId", IndependentReviewerNtid = "fakeId" }, proposalUserInfo, validationMessages, false);
 
             Assert.AreEqual(5, validationMessages.Count);
-			Assert.AreEqual(2, validationMessages.Where(x => x.ValidationIssue.Contains("PBOE Preparer")).Count());
-			Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains("PBOE/MPBOE Preparer")).Count());
+			Assert.AreEqual(2, validationMessages.Where(x => x.ValidationIssue.Contains("PBOE/MPBOE Preparer")).Count());
 			Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains("IBOE Preparer is required")).Count());
             Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains("Additional Estimating Resource 1")).Count());
             Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains("Additional Estimating Resource 2")).Count());
