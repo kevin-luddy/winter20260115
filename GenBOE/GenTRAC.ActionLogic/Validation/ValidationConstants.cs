@@ -391,7 +391,7 @@ namespace GenTRAC.ActionLogic.Validation
             /// <summary>
             /// PBOE POC is required
             /// </summary>
-            public const string PBOE_MATERIAL_REQUIRED = USER_INFO_VALDIATION + "PBOE Preparer is required if Elements of Cost includes Materials.";
+            public const string PBOE_MATERIAL_REQUIRED = USER_INFO_VALDIATION + "PBOE/MPBOE Preparer is required if Elements of Cost includes Materials.";
 
 			/// <summary>
 			/// IBOE POC is required
