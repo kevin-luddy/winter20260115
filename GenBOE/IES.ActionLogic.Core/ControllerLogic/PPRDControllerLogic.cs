@@ -165,6 +165,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 		/// <param name="casbServiceSections">A list of strings in which we'll keep track of sections that contain CASB Service setting; this is necessary to validate that it's only set once</param>
 		/// <param name="nonComplianceCoreSections">A list of strings in which we'll keep track of sections that contain non-compliance Core setting; this is necessary to validate that it's only set once</param>
 		/// <param name="nonComplianceServiceSections">A list of strings in which we'll keep track of sections that contain non-compliance Service setting; this is necessary to validate that it's only set once</param>
+		/// <param name = "coverSheetIncludesCaoTable">Check if there is one Contact Administrative Office in the cover sheet</param>
 		private void ValidateSection(SectionModelView section, ICollection<ValidationMessage> validationErrors, ICollection<string> casbCoreSections, ICollection<string> casbServiceSections, ICollection<string> nonComplianceCoreSections, ICollection<string> nonComplianceServiceSections, ref bool coverSheetIncludesCaoTable)
 		{
 			if (section.ContentType == SectionContentType.Section)
