@@ -1804,7 +1804,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <returns></returns>
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <exception cref="ArgumentException"></exception>
-		public Dictionary<string, object> NextTrackingNumber(IEnumerable<WorkspaceDTO> workspaces, string paNumber)
+		public Dictionary<string, object> NextPLDTrackingNumber(IEnumerable<WorkspaceDTO> workspaces, string paNumber)
 		{
 
 			if (workspaces == null)
@@ -1841,16 +1841,23 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					}
 				}
 			}
-			string nextShort = !anyRelevant ?
-				paNumber : (max > 0) ?
-				$"{paNumber}_{max + 1:00}" :
-				$"{paNumber}_01";
+			string nextShortName;
+			if (!anyRelevant)
+			{
+				nextShortName = paNumber;
+			}
+			else
+			{
+				nextShortName = (max > 0) ?
+					$"{paNumber}_{max + 1:00}" :
+					$"{paNumber}_01";
+			}
 
 			return new Dictionary<string, object>
 			{
 				["Id"] = 0,
 				["WorkspaceName"] = "",
-				["ShortName"] = nextShort,
+				["ShortName"] = nextShortName,
 				["TrackingNumber"] = paNumber
 			};
 		}

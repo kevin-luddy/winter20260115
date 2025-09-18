@@ -1,16 +1,19 @@
-﻿
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2025 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace GenBOE.DataBridge.DTO
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Configuration;
 	using System.Data.Entity;
 	using System.Linq;
 	using GenBOE.Dtos;
 	using GenBOE.PLD.Models;
 	using IES.Common;
-	
+	using IES.Common.PickList;
 
 	/// <summary>
 	/// PLD DTO Data Loader
@@ -29,151 +32,41 @@ namespace GenBOE.DataBridge.DTO
 		/// boolean for dispose
 		/// </summary>
 		private bool _disposed;
-		
+
 		/// <summary>
 		/// Logger
 		/// </summary> 
-		protected Logger Log { get; set; }
+		private readonly Logger logger;
 
 		/// <summary>
-		/// private cutoff date 
+		/// LOB Picklist
 		/// </summary>
-		private DateTime? _cutoffDate;
-
-
-		/// <summary>
-		/// Get the cutoff date
-		/// </summary>
-		private DateTime CutoffDate
-		{
-			get
-			{
-				if (_cutoffDate.HasValue)
-				{
-					return _cutoffDate.Value;
-				}
-
-				using (StopwatchTimer sw = new StopwatchTimer(Log, nameof(GetCutoffDate)))
-				{
-					try
-					{
-						_cutoffDate = GetCutoffDate();
-						return _cutoffDate.Value;
-					}
-					catch (Exception ex)
-					{
-						Log.Error(ex, nameof(GetCutoffDate));
-						throw;
-					}
-				}
-			}
-		}
-
-		/// <summary>
-		///  Get the config appsetting for pld toppropals cutoffdate
-		/// </summary>
-		/// <returns></returns>
-		/// <exception cref="ConfigurationErrorsException"></exception>
-		private DateTime GetCutoffDate() 
-		{
-
-			string s = ConfigurationManager.AppSettings["Pld.TopProposals.CutoffDate"];
-
-			if (string.IsNullOrWhiteSpace(s))
-			{
-				throw new ConfigurationErrorsException("Missing appsetting pld cutoffdate");
-			}
-
-			if (!DateTime.TryParse(s, out DateTime dt))
-			{
-				throw new ConfigurationErrorsException($"Invalid date format for appsetting  pld.topproposals.cutoffdate");
-			}
-
-			return dt.Date;
-			
-		}
+		private readonly ICollection<PickListDto> lobPickList;
 
 		#endregion
-		
+
 		///
 		// ctr PldDTODataLoader
 		///
-		public PldDTODataLoader()
-		{			
-			this.Log = new Logger(typeof(PldDTODataLoader));
-		}
-
-		/// <summary>
-		/// Helper for newing up context
-		/// </summary>
-		/// <returns></returns>
-		private PldDBContext CreateContext()
+		public PldDTODataLoader(LineOfBusinessDataLoader lineOfBusinessDataLoader)
 		{
-			return new PldDBContext();
-		}
-
-
-		/// <summary>
-		/// Get Proposal by ID   "PA Number" is a string  
-		/// </summary>
-		/// <param name="paNumbers"></param>
-		/// <returns></returns>
-		public ICollection<ProposalDTO> GetByIds(ICollection<string> paNumbers)
-		{
-			List<ProposalDTO> results = new List<ProposalDTO>();
-
-			if(paNumbers == null || paNumbers.Count == 0)
+			if (lineOfBusinessDataLoader == null)
 			{
-				return results;
+				throw new ArgumentNullException(nameof(lineOfBusinessDataLoader));
 			}
 
-			using (StopwatchTimer sw = new StopwatchTimer(Log))
-			{
-				try
-				{
-					using (PldDBContext ctx = CreateContext())
-					{
-
-						ctx.Configuration.AutoDetectChangesEnabled = false;
-
-						results = ctx.Proposals
-							.Where(p => paNumbers.Contains(p.PA_Number))
-							.Select(p => new ProposalDTO
-							{
-								PA_Number = p.PA_Number,
-								PA_Title = p.PA_Title,
-								PA_Description = p.PA_Description,
-								PA_Version = p.PA_Version,
-								Project_Start_Date = p.Project_Start_Date,
-								Project_End_Date = p.Project_End_Date,
-								Last_Modified_Date = p.Last_Modified_Date,
-								Line_of_Business = p.Line_of_Business,
-								Pricing = p.Pricing,
-								RFP_Number = p.RFP_Number,
-								Proposal_Status = p.Proposal_Status
-							})
-							.AsNoTracking()
-							.ToList();
-					}
-				}
-				catch (Exception ex)
-				{
-					Log.Error(ex, "Error getting proposals by IDs");
-					throw;
-				}
-			}
-
-			return results;
+			this.logger = new Logger(typeof(PldDTODataLoader));
+			this.lobPickList = lineOfBusinessDataLoader.GetPickListValues();
 		}
 
 		/// <summary>
 		/// Get All Proposals from PLD database view
 		/// </summary>
 		/// <returns></returns>
-		public ICollection<ProposalDTO> GetTopProposals(string search = null)
+		public ICollection<PLDProposalDTO> GetTopProposals(string search = null)
 		{
 
-			using (PldDBContext ctx = CreateContext())
+			using (PldDBContext ctx = new PldDBContext())
 			{
 				IQueryable<PLD.Models.Models.PLDProposal> query = ctx.Proposals.AsNoTracking();
 
@@ -186,17 +79,15 @@ namespace GenBOE.DataBridge.DTO
 					p.PA_Title.Contains(search));
 				}
 
-				DateTime cutoff = CutoffDate;
-
-				query = query.Where(p => p.Last_Modified_Date >= cutoff)
+				query = query.Where(p => p.Last_Modified_Date >= Utilities.GetPLDCutoffDate())
 					.OrderByDescending(p => p.Last_Modified_Date);
 
 
-				List<ProposalDTO> results = query
-					.Select(p => new ProposalDTO
+				List<PLDProposalDTO> results = query
+					.Select(p => new PLDProposalDTO
 					{
-						PA_Number = p.PA_Number.Trim(),
-						PA_Title = p.PA_Title.Trim(),
+						PANumber = p.PA_Number.Trim(),
+						Title = p.PA_Title.Trim(),
 					})
 					.Take(50)
 					.ToList();
@@ -211,78 +102,83 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="paNumber"></param>
 		/// <returns></returns>
-		public ProposalDTO GetProposalDetails(string paNumber)
+		public PLDProposalDTO GetProposalDetails(string paNumber)
 		{
-
-			using (PldDBContext ctx = CreateContext())
+			using (PldDBContext ctx = new PldDBContext())
 			{
 
-				ProposalDTO result = ctx.Proposals
+				PLDProposalDTO result = ctx.Proposals
 					.AsNoTracking()
 					.Where(p => p.PA_Number == paNumber)
-					.Select(p => new ProposalDTO
+					.Select(p => new PLDProposalDTO
 					{
-						PA_Number = p.PA_Number,
-						Line_of_Business = p.Line_of_Business,
-						PA_Description = p.PA_Description,
-						Project_Start_Date = p.Project_Start_Date,
-						Project_End_Date = p.Project_End_Date,
+						PANumber = p.PA_Number.Trim(),
+						Title = p.PA_Title,
+						Description = p.PA_Description,
+						Version = p.PA_Version,
+						ProjectStartDate = p.Project_Start_Date,
+						ProjectEndDate = p.Project_End_Date,
+						LastModifiedDate = p.Last_Modified_Date,
+						LineOfBusiness = p.Line_of_Business,
+						Pricing = p.Pricing,
+						RFPNumber = p.RFP_Number,
+						ProposalStatus = p.Proposal_Status
 					})
 					.FirstOrDefault();
 
-				
-
-
+				if (result != null)
+				{
+					DoPostProcessing(new PLDProposalDTO[] { result });
+				}
 
 				return result;
 			}
 		}
-
-		
-
 
 		/// <summary>
 		///   Get All Active Proposals
 		/// </summary>
 		/// <param name="active"></param>
 		/// <returns></returns>
-		public ICollection<ProposalDTO> GetAllActiveProposals()
+		public ICollection<PLDProposalDTO> GetAllActiveProposals()
 		{
-			List<ProposalDTO> results = new List<ProposalDTO>();
+			List<PLDProposalDTO> results = new List<PLDProposalDTO>();
 			
-			using (StopwatchTimer sw = new StopwatchTimer(Log))
+			using (StopwatchTimer sw = new StopwatchTimer(logger))
 			{
 				try
 				{
 
-					using (PldDBContext ctx = CreateContext())
+					using (PldDBContext ctx = new PldDBContext())
 					{
 						results = ctx.Proposals
 							.AsNoTracking()
 							.Where(p => ACTIVE_STATUSES.Contains(p.Proposal_Status))
-							.Select(p => new ProposalDTO
+							.Select(p => new PLDProposalDTO
 							{
-								PA_Number = p.PA_Number.Trim(),
-								PA_Title = p.PA_Title,
-								PA_Description = p.PA_Description,
-								PA_Version = p.PA_Version,
-								Project_Start_Date = p.Project_Start_Date,
-								Project_End_Date = p.Project_End_Date,
-								Last_Modified_Date = p.Last_Modified_Date,
-								Line_of_Business = p.Line_of_Business,
+								PANumber = p.PA_Number.Trim(),
+								Title = p.PA_Title,
+								Description = p.PA_Description,
+								Version = p.PA_Version,
+								ProjectStartDate = p.Project_Start_Date,
+								ProjectEndDate = p.Project_End_Date,
+								LastModifiedDate = p.Last_Modified_Date,
+								LineOfBusiness = p.Line_of_Business,
 								Pricing = p.Pricing,
-								RFP_Number = p.RFP_Number,
-								Proposal_Status = p.Proposal_Status
+								RFPNumber = p.RFP_Number,
+								ProposalStatus = p.Proposal_Status
 							})
 							.ToList();
 					}
 				}
 				catch (Exception ex)
 				{
-					Log.Error(ex, "Error getting all active proposals");
+					logger.Error(ex, "Error getting all active proposals");
 					throw;
 				}
 			}
+
+			DoPostProcessing(results);
 
 			return results;
 		}
@@ -296,12 +192,12 @@ namespace GenBOE.DataBridge.DTO
 		{
 			List<string> results = new List<string>();
 
-			using (StopwatchTimer sw = new StopwatchTimer(Log))
+			using (StopwatchTimer sw = new StopwatchTimer(logger))
 			{
 				try
 				{
 
-					using (PldDBContext ctx = CreateContext())
+					using (PldDBContext ctx = new PldDBContext())
 					{
 
 						results = ctx.Proposals.AsNoTracking()
@@ -312,7 +208,7 @@ namespace GenBOE.DataBridge.DTO
 				}
 				catch (Exception ex)
 				{
-					Log.Error(ex, "Error getting all active proposals by name");
+					logger.Error(ex, "Error getting all active proposals by name");
 					throw;
 				}
 			}
@@ -344,6 +240,55 @@ namespace GenBOE.DataBridge.DTO
 			_disposed = true;
 
 		}
-	}
 
+		/// <summary>
+		/// Do post processing on the Proposals
+		/// </summary>
+		/// <param name="proposals">The proposals to post process</param>
+		private void DoPostProcessing(ICollection<PLDProposalDTO> proposals)
+		{
+			foreach (PLDProposalDTO proposal in proposals)
+			{
+				string lobConvertedName = string.Empty;
+
+				switch (proposal.LineOfBusiness.Trim())
+				{
+					case "sac":
+						lobConvertedName = "Sikorsky";
+						break;
+					case "iwss":
+						lobConvertedName = "Integrated Warfare Systems and Sensors";
+						break;
+					case "tls":
+						lobConvertedName = "Training and Logistics Solutions";
+						break;
+					case "new ventures":
+						lobConvertedName = "new ventures";
+						break;
+					case "c6isr":
+						lobConvertedName = "c6isr";
+						break;
+					case "cyber ships and advanced technologies":
+					case "cyber, ships & advanced technologies":
+						lobConvertedName = "Cyber, Ships & Advanced Technologies";
+						break;
+					default:
+						lobConvertedName = string.Empty;
+						break;
+				}				
+
+				PickListDto match = this.lobPickList.FirstOrDefault(p => string.Equals(p.Text.Trim(), lobConvertedName.Trim(), StringComparison.OrdinalIgnoreCase));
+
+				if (match != null)
+				{
+					proposal.LineOfBusiness = match.Text;
+					proposal.LineOfBusinessId = match.Id;
+				}
+				else
+				{
+					proposal.LineOfBusiness = string.Empty;
+				}
+			}
+		}
+	}
 }

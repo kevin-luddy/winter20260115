@@ -49,8 +49,8 @@
 			EnableAssignTaskAuthor: <%: Model.IsAuthorAssignableAtTaskLevelEnabled.ToString().ToLower() %>,
             IsAssignTaskAuthorEnabled: <%: Model.IsAssignTaskAuthorEnabled.ToString().ToLower() %>,
             SearchPLDProposals: '<%= WebConstants.ACTION_SEARCH_PLD_PROPOSALS %>',
-            GetProposalDetails: '<%= WebConstants.ACTION_GET_PROPOSAL_DETAILS %>',
-            GetNextWorkspaceShortNameFromTrackingNumber: '<%= WebConstants.ACTION_GET_NEXT_WORKSPACE_SHORTNAME_FROM_TRACKING_NUMBER %>'
+			GetPLDProposalDetails: '<%= WebConstants.ACTION_GET_PLD_PROPOSAL_DETAILS %>',
+            GetNextPLDWorkspaceShortNameFromTrackingNumber: '<%= WebConstants.ACTION_GET_NEXT_PLD_WORKSPACE_SHORTNAME_FROM_TRACKING_NUMBER %>'
 
         });
         
@@ -77,7 +77,7 @@
 
             
         });
-    </script>
+	</script>
 
     <div data-ng-app="genboe" data-ng-controller="createWorkspaceController" id="CreateWorkspaceContent">
         <div class="module create-workspace-form">

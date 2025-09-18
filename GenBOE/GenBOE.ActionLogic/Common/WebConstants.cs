@@ -712,8 +712,8 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_FIND_ADJACENT_BOES = "FindAdjacentBoes";
 		public static readonly string ACTION_GET_WORKSPACE_RECALCULATE_ACTUALS_MODEL = "GetWorkspaceRecalculateActualsModel";
 		public static readonly string ACTION_SEARCH_PLD_PROPOSALS = "SearchPLDProposals";
-		public static readonly string ACTION_GET_PROPOSAL_DETAILS = "GetProposalDetails";
-		public static readonly string ACTION_GET_NEXT_WORKSPACE_SHORTNAME_FROM_TRACKING_NUMBER = "GetNextWorkspaceShortNameFromTrackingNumber";
+		public static readonly string ACTION_GET_PLD_PROPOSAL_DETAILS = "GetPLDProposalDetails";
+		public static readonly string ACTION_GET_NEXT_PLD_WORKSPACE_SHORTNAME_FROM_TRACKING_NUMBER = "GetNextPLDWorkspaceShortNameFromTrackingNumber";
 
 
 
