@@ -11,7 +11,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
 	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
-	using System.Threading.Tasks;
 	using Common;
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.IO.Import;
@@ -257,7 +256,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 							taskValidation = new ValidationBOETasks() 
 							{
 								TaskId = task.Id,
-								TaskMessage = $"Task: {task.Id} {task.TaskTitle}",
+								TaskMessage = $"Task: {task.BOETaskID} {task.TaskTitle}",
 								TaskElementDetails = new ValidationBOETaskElementDetails() 
 								{
 									TaskElementDetailsHeader = "Task Element Details",
