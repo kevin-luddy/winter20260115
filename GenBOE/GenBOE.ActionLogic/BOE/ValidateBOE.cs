@@ -11,7 +11,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
 	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
-	using System.Threading.Tasks;
 	using Common;
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.IO.Import;
@@ -236,7 +235,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 			this.ValidateTemplateMoqTypes(ws, inBOE, ValidationBOE);
 
-			inBOE.TaskElements.ForEach(task =>
+			foreach (BoeTaskElementDTO task in ws.TaskElements.Where(t => t.BoeID == inBOE.Id))
 			{
 				if (BOETaskUtility.ShowSkillMixForTask(ws, task))
 				{
@@ -254,11 +253,11 @@ namespace GenBOE.ActionLogic.WBS.BOE
 						if (taskValidation == null)
 						{
 							// If this task doesn't currently have validation, add it
-							taskValidation = new ValidationBOETasks() 
+							taskValidation = new ValidationBOETasks()
 							{
 								TaskId = task.Id,
-								TaskMessage = $"Task: {task.Id} {task.TaskTitle}",
-								TaskElementDetails = new ValidationBOETaskElementDetails() 
+								TaskMessage = $"Task: {task.BOETaskID} {task.TaskTitle}",
+								TaskElementDetails = new ValidationBOETaskElementDetails()
 								{
 									TaskElementDetailsHeader = "Task Element Details",
 									TaskElementDetailValidationMessages = errorMessages.ToCollection()
@@ -274,7 +273,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 						}
 					}
 				}
-			});
+			}
 
 			// Setting the name for the WBS - incase we have multiple WBS's we would want to list them out.
 			ValidationBOE.BOEName = (inBOE.Wbs != null ? inBOE.Wbs.WbsString : CommonConstants.Unassigned_WBS_Display_Text) + " " + (inBOE.Clin != null ? inBOE.Clin.ClinString : CommonConstants.Unassigned_CLIN_Display_Text) + " " + inBOE.Title;

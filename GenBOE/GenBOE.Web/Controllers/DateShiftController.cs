@@ -125,11 +125,11 @@ namespace GenBOE.Web.Controllers
                 FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
 				DateShiftDTO parentDateShiftDTO = dateShiftDTODataLoader.GetDateShiftObject(Level.Workspace, ws.Id);
 
-                // Initialize Action
-                DateTime? parentStart = ws.StartDate?.Normalize();
+				// Initialize Action
+				DateTime? parentStart = ws.StartDate?.Normalize();
 				DateTime? parentEnd = parentDateShiftDTO.EndDate?.Normalize();
 
-                dateShiftModel.Workspace = ws;
+				dateShiftModel.Workspace = ws;
 
                 // set error handling for details from base modelview
                 foreach (DateShiftDetailModelView detail in dateShiftModel.Details)
@@ -190,7 +190,7 @@ namespace GenBOE.Web.Controllers
 				}
 
 				this.dateShiftCalculation.PerformDateShift(dateShiftable, dateShiftModel, parentStart?.Normalize(), parentEnd?.Normalize(), validateOnly, parentLevel, workspace, ws);
-                this.Factory.ClearWorkspaceCache(ws.Shortname);
+				this.Factory.ClearWorkspaceCache(ws.Shortname);
             }
             catch (GenValidationException)
             {
