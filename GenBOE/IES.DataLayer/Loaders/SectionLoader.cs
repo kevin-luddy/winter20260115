@@ -574,24 +574,6 @@ namespace IES.DataBridge.Loaders
                         Email = x.Email,
                     }).ToList();
             }
-            else // Use default address
-            {
-                SectionAddressModelView defaultAddress = new SectionAddressModelView
-                {
-                    Id = 0,
-                    Title = "Default Address",
-                    Office = Constants.DEFAULT_ADDRESS_OFFICE,
-                    Agency = Constants.DEFAULT_ADDRESS_AGENCY,
-                    LMBA = Constants.DEFAULT_ADDRESS_LM_BA,
-                    Name = Constants.DEFAULT_ADDRESS_NAME,
-                    Street = Constants.DEFAULT_ADDRESS_STREET,
-                    CityST = Constants.DEFAULT_ADDRESS_CITY_ST,
-                    Phone = Constants.DEFAULT_ADDRESS_PHONE,
-                    Email = Constants.DEFAULT_ADDRESS_EMAIL
-                };
-
-                result.Add(defaultAddress);
-            }
 
             return result;
         }
