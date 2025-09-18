@@ -235,7 +235,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 			this.ValidateTemplateMoqTypes(ws, inBOE, ValidationBOE);
 
-			inBOE.TaskElements.ForEach(task =>
+			foreach(BoeTaskElementDTO task in ws.TaskElements.Where(t => t.BoeID == inBOE.Id))
 			{
 				if (BOETaskUtility.ShowSkillMixForTask(ws, task))
 				{
