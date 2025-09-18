@@ -21,6 +21,7 @@ namespace GenBOE.Web.Controllers
 	using System.Web.Script.Serialization;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic._ControllerLogic.Backend;
+	using GenBOE.ActionLogic._ModelView.Backend;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
 	using GenBOE.ActionLogic.Common;
@@ -106,7 +107,6 @@ namespace GenBOE.Web.Controllers
 		private CommentsAndResponsesExporter _commentsAndResponsesExporter = null;
 		private BOECommentsControllerLogic _boeCommentsControllerLogic = null;
 		private readonly GenBOE.DataBridge.DTO.IPldDTODataLoader _pldDTODataLoader;
-		private readonly DataBridge.DTO.LineOfBusinessDataLoader _lineOfBusinessDataLoader;
 
 
 		/// <summary>
@@ -202,7 +202,6 @@ namespace GenBOE.Web.Controllers
 			IRetriever retriever,
 			GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader,
 			GenBOE.DataBridge.DTO.IPldDTODataLoader pldDTODataLoader,
-			DataBridge.DTO.LineOfBusinessDataLoader lineOfBusinessDataLoader,
 			GenTRAC.DataBridge.Common.Security.ISecurityMapper ptmSecurityMapper,
 			BoePickListMapper boePickListMapper,
 			WorkspaceExporter workspaceExporter,
@@ -266,7 +265,6 @@ namespace GenBOE.Web.Controllers
 			_commentsAndResponsesExporter = commentsAndResponsesExporter;
 			_boeCommentsControllerLogic = boeCommentsControllerLogic;
 			_workspaceSettingsControllerLogic = workspaceSettingsControllerLogic;
-			_lineOfBusinessDataLoader = lineOfBusinessDataLoader;
 		}
 
 		#region Public Methods
@@ -821,17 +819,17 @@ namespace GenBOE.Web.Controllers
 		/// <returns></returns>
 		public JsonResult SearchPLDProposals(string term)
 		{
-			Stopwatch sw = InitializeAction(_log, "GetProposalDetails", SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SEARCH_PLD_PROPOSALS, SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
 
-			ICollection<ProposalDTO> matches = _pldDTODataLoader.GetTopProposals(term);
+			ICollection<PLDProposalDTO> matches = _pldDTODataLoader.GetTopProposals(term);
 
 			var results = matches.Select(p => new
 			{
-				Text = p.PA_Number + " - " + p.PA_Title,
-				Value = p.PA_Number
+				Text = p.PANumber + " - " + p.Title,
+				Value = p.PANumber
 			});
 
-			FinalizeAction(_log, "GetProposalDetails", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SEARCH_PLD_PROPOSALS, sw);
 
 			return Json(results, JsonRequestBehavior.AllowGet);
 				
@@ -843,31 +841,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="paNumber"></param>
 		/// <returns></returns>
-		public JsonResult GetProposalDetails(string paNumber)
+		public JsonResult GetPLDProposalDetails(string paNumber)
 		{
-						
-			Stopwatch sw = InitializeAction(_log, "GetProposalDetails", SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_PLD_PROPOSAL_DETAILS, SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
 
-			ProposalDTO result = _pldDTODataLoader.GetProposalDetails(paNumber);
+			PLDProposalDTO result = _pldDTODataLoader.GetProposalDetails(paNumber);
 
-			if (result != null)
-			{
-				ICollection<PickListDto> pickList = _lineOfBusinessDataLoader.GetPickListValues();
-
-				string resolvedLob = LineOfBusinessHelper.Resolve(result.Line_of_Business, pickList);
-				result.Line_of_Business = resolvedLob;
-
-				PickListDto match = pickList.FirstOrDefault(p => string.Equals(p.Text.Trim(), resolvedLob.Trim(), StringComparison.OrdinalIgnoreCase));
-
-				if (match != null)
-				{
-					result.Line_of_Business_ID = match.Id;
-				}
-
-
-			}
-
-			FinalizeAction(_log, "GetProposalDetails", sw);
+			FinalizeAction(_log, WebConstants.ACTION_GET_PLD_PROPOSAL_DETAILS, sw);
 
 			return Json(result, JsonRequestBehavior.AllowGet);
 		}
@@ -878,23 +858,18 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="paNumber"></param>
 		/// <returns></returns>
-		public JsonResult GetNextWorkspaceShortNameFromTrackingNumber(string paNumber)
+		public JsonResult GetNextPLDWorkspaceShortNameFromTrackingNumber(string paNumber)
 		{
-			Stopwatch sw = InitializeAction(_log, "GetProposalDetails", SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_NEXT_PLD_WORKSPACE_SHORTNAME_FROM_TRACKING_NUMBER, SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
 			
-			ICollection<WorkspaceDTO> workspaces  = this.workspaceLoader.GetAllWsNamesForTrackingNumber(paNumber)
-				.ToList() ?? new List<WorkspaceDTO>();
+			ICollection<WorkspaceDTO> workspaces  = this.workspaceLoader.GetAllWsNamesForTrackingNumber(paNumber);
 
-			Dictionary<string, object> payload = _ControllerLogic.NextTrackingNumber(workspaces, paNumber);
+			Dictionary<string, object> payload = _ControllerLogic.NextPLDTrackingNumber(workspaces, paNumber);
 
-			FinalizeAction(_log, "GetProposalDetails", sw);
+			FinalizeAction(_log, WebConstants.ACTION_GET_NEXT_PLD_WORKSPACE_SHORTNAME_FROM_TRACKING_NUMBER, sw);
 
 			return Json(payload, JsonRequestBehavior.AllowGet);
-			
 		}
-
-
-
 
 		#endregion Views
 
@@ -1349,9 +1324,9 @@ namespace GenBOE.Web.Controllers
 			// gather up output format types
 			List<SelectListItemWithTitle> outputFormatTypes = new List<SelectListItemWithTitle>();
 
-			Collection<WorkspaceExportFormatDTO> exportFormats = ws.WorkspaceExportFormats.ToCollection();
+			Collection<WorkspaceExportFormatNameDTO> exportFormats = ws.WorkspaceExportFormatNames.ToCollection();
 
-			foreach (WorkspaceExportFormatDTO exportFormat in exportFormats.OrderBy(x => x.ExportFormat.TemplateId))
+			foreach (WorkspaceExportFormatNameDTO exportFormat in exportFormats.OrderBy(x => x.ExportFormat.TemplateId))
 			{
 				if (exportFormat.IsActive || ws.TemplateID == exportFormat.ExportFormat.TemplateId)
 				{
@@ -1407,11 +1382,15 @@ namespace GenBOE.Web.Controllers
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "GetOutputFormatTemplate", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_OUTPUT_FORMAT_TEMPLATE, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			FileContentResult toReturn = null;
 
-			WorkspaceExportFormatDTO template = ws.WorkspaceExportFormats.FirstOrDefault(x => x.Id == id.Value);
+			// Retrieving from Workspace first to make sure the workspace has access to this template Id
+			WorkspaceExportFormatNameDTO templateName = ws.WorkspaceExportFormatNames.FirstOrDefault(x => x.Id == id.Value);
+			
+			// Then retrieve from the database
+			WorkspaceExportFormatDTO template = this.retriever.GetWorkspaceExportFormatByTemplateId(templateName.Id);
 
 			// Return the template as a download for the user
 			using (MemoryStream mem = _PackageUtilities.UpdateDocumentVersion(template.FileData, template.PhysicalFilePathCache, template.ExportFormat))
@@ -1421,7 +1400,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "GetOutputFormatTemplate", sw);
+			FinalizeAction(_log, WebConstants.ACTION_GET_OUTPUT_FORMAT_TEMPLATE, sw);
 
 			return toReturn;
 		}
@@ -1721,7 +1700,7 @@ namespace GenBOE.Web.Controllers
 		/// <returns></returns>
 		public ViewResult DisplayBOECustomFieldPerfOrg(string workspace)
 		{
-			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);	// Force a cache clear
 
 			// Initialize Action
 			Stopwatch sw = InitializeAction(_log, "DisplayBOECustomFieldPerfOrg", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
@@ -3041,55 +3020,9 @@ namespace GenBOE.Web.Controllers
 			JsonResult toReturn = Json(new { Status = false });
 			if (ModelState.IsValid)
 			{
-				WorkspaceState originalState = ws.WorkspaceState;
-
-				if (!ws.IsProjectMapWorkspace)
+				if (this._ControllerLogic.SaveWorkspaceStatus(workspaceStatusMV, ref ws, ref _log))
 				{
-					string validationMessage = string.Empty;
-
-					// check state validation before worrying about commiting to the database
-					if (!_WorkspaceStateMachine.PerformStateTransitionValidation(ws, originalState, workspaceStatusMV.WorkspaceStatus, out validationMessage))
-					{
-						// not valid ... communicate to user
-						throw new GenValidationException("Error: Unable to change state: " + validationMessage);
-					}
-				}
-
-				// Workspace State
-				ws.WorkspaceState = workspaceStatusMV.WorkspaceStatus;
-				ws.UpdateDate = workspaceStatusMV.UpdateDate;
-
-				try
-				{
-					// Get the user who is saving the BOE(s)
-					int currentUserID = ws.CurrentActiveUser.UserID;
-
-					// Save the workspace
-					using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("CopyWorkspaceTransactionTimeout", Constants.DB_COPY_WORKSPACE_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
-					{
-						this.workspaceLoader.SaveWorkspaceSettings(currentUserID, ws);
-
-						// transition after the save is successful
-						ws = this.Factory.CreateFullWorkspace(ws.Shortname, true);
-
-						if (!ws.IsProjectMapWorkspace)
-						{
-							this.TransitionBOEStates(ws, originalState, ws.WorkspaceState);
-							_WorkspaceStateMachine.PerformStateTransitionAction(ws, originalState, ws.WorkspaceState);
-						}
-						this.Factory.ClearWorkspaceCache(ws.Shortname);
-						scope.Complete();
-					}
-
 					toReturn = Json(new { Status = true });
-				}
-				catch (Exception ex)
-				{
-					_log.Error(ex);
-					if (ex.InnerException != null)
-					{
-						_log.Error(ex.InnerException);
-					}
 				}
 			}
 			else
@@ -4948,7 +4881,7 @@ namespace GenBOE.Web.Controllers
 						// Call the BL to copy the workspace
 						finishedWithoutErrors = _WorkspaceCopier.CopyWorkspace(copiedFromWs, newWs, newWorkspace.BOEsToCopy, newWorkspace.CopyPermissions,
 						newWorkspace.CopyTasks, newWorkspace.CopyLaborSpreads);
-						Collection<WorkspaceExportFormatDTO> copiedTemplateTypes = _WorkspaceExportFormatDTOLoader.GetWorkspaceExportFormatsForWorkspace(newWorkspace.WorkspaceToCopyID);
+						Collection<WorkspaceExportFormatNameDTO> copiedTemplateTypes = _WorkspaceExportFormatDTOLoader.GetWorkspaceExportFormatNamesForWorkspace(newWorkspace.WorkspaceToCopyID);
 						_WorkspaceExportFormatDTOLoader.InsertWorkspaceExportFormatsPickList(copiedTemplateTypes, newWorkspaceID);
 					}
 					else
@@ -6918,38 +6851,5 @@ namespace GenBOE.Web.Controllers
 	public class SelectListItemWithTitle : SelectListItem
 	{
 		public string Title { get; set; }
-	}
-
-
-	public static class LineOfBusinessHelper
-	{
-		private static readonly Dictionary<string, string> _aliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-			{
-				{ "sac", "Sikorsky" },
-				{ "iwss", "Integrated Warfare Systems and Sensors" },
-				{ "tls", "Training and Logistics Solutions" },
-				{ "new ventures", "new ventures"},
-				{ "c6isr", "c6isr" },
-				{ "cyber ships and advanced technologies", "Cyber, Ships & Advanced Technologies" },
-				{ "cyber, ships & advanced technologies","cyber, ships & advanced technologies" }
-			};
-
-		public static string Resolve(string raw, IEnumerable<PickListDto> pickList)
-		{
-			if (string.IsNullOrWhiteSpace(raw))
-			{
-				return raw;
-			}
-						
-			if (_aliases.TryGetValue(raw.Trim(), out string mapped))
-			{
-				raw = mapped;
-			}
-						
-			PickListDto match = pickList.FirstOrDefault(p =>
-				string.Equals(p.Text, raw, StringComparison.OrdinalIgnoreCase));
-
-			return match?.Text ?? raw;
-		}
 	}
 }

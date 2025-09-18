@@ -16,7 +16,6 @@ namespace IES.Common.Core.Utilities
 	using System.Net.Http;
 	using System.Text;
 	using System.Text.RegularExpressions;
-	using DocumentFormat.OpenXml.InkML;
 	using IES.Common.Core;
 	using IES.Common.Core.Configuration;
 	using IES.Common.Core.Constants;
@@ -1060,7 +1059,7 @@ namespace IES.Common.Core.Utilities
 		/// <summary>
 		/// Private for Skill Mix blacklisted workspaces
 		/// </summary>
-		private static Collection<string> skillMixBlacklistWorkspaces;
+		private static Collection<string> skillMixBlacklistWorkspaces = new Collection<string>();
 
 		/// <summary>
 		/// Update the Skill Mix Blacklist settings--currently utilized by Space only
@@ -1337,6 +1336,15 @@ namespace IES.Common.Core.Utilities
 			string ntIDOnly = splitDomainAndNTID.Length == 2 ? splitDomainAndNTID[1] : splitDomainAndNTID[0];
 
 			return ntIDOnly.ToLower();
+		}
+
+		/// <summary>
+		/// A method to set Aspose licenses
+		/// </summary>
+		public static void SetLicense()
+		{
+			new Aspose.Words.License().SetLicense("Aspose.Total.lic");
+			new Aspose.Cells.License().SetLicense("Aspose.Total.lic");
 		}
 	}
 }

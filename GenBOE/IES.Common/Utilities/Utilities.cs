@@ -50,6 +50,11 @@ namespace IES.Common
 		private static readonly IActiveDirectoryUtilities activeDirectoryUtilities = GenBOEUnityContainer.Resolve<IActiveDirectoryUtilities>();
 		
 		/// <summary>
+		/// Private for PLD Cutoff Date
+		/// </summary>
+		private static DateTime? pldCutoffDate;
+
+		/// <summary>
 		/// Private for UCOT Start Date
 		/// </summary>
 		private static DateTime? ucotStartDate;
@@ -69,6 +74,26 @@ namespace IES.Common
 		public static bool EqualsEpsilon(this decimal actual, decimal expected, decimal epsilon = 0.001m)
 		{
 			return Math.Abs(expected - actual) < epsilon;
+		}
+
+		/// <summary>
+		/// PLD Cutoff date
+		/// </summary>
+		public static DateTime GetPLDCutoffDate()
+		{
+			if (!pldCutoffDate.HasValue)
+			{
+				if (!DateTime.TryParse(ConfigurationUtilities.GetAppSetting("Pld.TopProposals.CutoffDate"), out DateTime cutoffDate))
+				{
+					throw new System.Configuration.ConfigurationException("Missing or invalid date format for appsetting Pld.TopProposals.CutoffDate");
+				}
+				else
+				{
+					pldCutoffDate = cutoffDate;
+				}
+			}
+
+			return pldCutoffDate.Value;
 		}
 
 		/// <summary>
@@ -1155,7 +1180,7 @@ namespace IES.Common
 		/// <summary>
 		/// Private for Skill Mix blacklisted workspaces
 		/// </summary>
-		private static Collection<string> skillMixBlacklistWorkspaces;
+		private static Collection<string> skillMixBlacklistWorkspaces = new Collection<string>();
 
 		/// <summary>
 		/// Update the Skill Mix Blacklist settings--currently utilized by Space only

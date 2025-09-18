@@ -6,12 +6,13 @@
 
 namespace IES.Common.Core.OfficeUtilities
 {
+	using Aspose.Words;
 	using System;
 	using System.IO;
 	using System.Linq;
-	using DocumentFormat.OpenXml.Packaging;
 	using IES.Common.Core.Constants;
 	using IES.Common.Core.Models;
+	using SkiaSharp;
 
 	public class PackageUtilities
 	{
@@ -26,26 +27,9 @@ namespace IES.Common.Core.OfficeUtilities
 			{
 				throw new ArgumentNullException(nameof(stream));
 			}
-			int? parentTemplateId = null;
-			string versionString;
-			lock (CacheConstants.OPEN_XML_LOCK)
-			{
-				using (WordprocessingDocument document =
-					WordprocessingDocument.Open(stream, false))
-				{
-					versionString = document.PackageProperties.Version;
-				}
-			}
-			if (!string.IsNullOrEmpty(versionString))
-			{
-				bool parsed = Int32.TryParse(versionString, out int tempId);
-				if (parsed)
-				{
-					parentTemplateId = tempId;
-				}
-			}
-
-			return parentTemplateId;
+			
+			Document document = new Document(stream);
+			return document.BuiltInDocumentProperties?.Version;
 		}
 
 		/// <summary>
@@ -60,37 +44,37 @@ namespace IES.Common.Core.OfficeUtilities
 		public MemoryStream UpdateDocumentVersion(byte[] fileData, string physicalFilePathCache, ExcelReportTemplate exportFormat)
 		{
 			MemoryStream mem = new();
-			lock (CacheConstants.OPEN_XML_LOCK)
+			byte[] docBytes;
+
+			// if the file is serialized to the DB (.FileData property), then use THAT; otherwise use the physical file
+			if (fileData != null && fileData.Any())
 			{
-				byte[] docBytes;
-
-				// if the file is serialized to the DB (.FileData property), then use THAT; otherwise use the physical file
-				if (fileData != null && fileData.Any())
-				{
-					docBytes = fileData;
-				}
-				else if (!string.IsNullOrEmpty(physicalFilePathCache))
-				{
-					docBytes = System.IO.File.ReadAllBytes(physicalFilePathCache);
-				}
-				else
-				{
-					docBytes = Array.Empty<byte>();
-				}
-
-				mem.Write(docBytes, 0, docBytes.Length);
-
-				if (exportFormat != null)
-				{
-					int parentTemplateId = exportFormat.ParentTemplateId ?? exportFormat.TemplateId;
-
-					using (WordprocessingDocument document =
-						WordprocessingDocument.Open(mem, true))
-					{
-						document.PackageProperties.Version = parentTemplateId.ToString();
-					}
-				}
+				docBytes = fileData;
 			}
+			else if (!string.IsNullOrEmpty(physicalFilePathCache))
+			{
+				docBytes = System.IO.File.ReadAllBytes(physicalFilePathCache);
+			}
+			else
+			{
+				docBytes = Array.Empty<byte>();
+			}
+
+			mem.Write(docBytes, 0, docBytes.Length);
+
+			if (exportFormat != null)
+			{
+				int parentTemplateId = exportFormat.ParentTemplateId ?? exportFormat.TemplateId;
+
+				Document document = new Document(mem);
+				document.BuiltInDocumentProperties.Version = parentTemplateId;
+				
+				mem.Dispose();
+				mem = new MemoryStream(docBytes.Length);
+				document.Save(mem, SaveFormat.Docx);
+				mem.Position = 0;
+			}
+
 			return mem;
 		}
 	}

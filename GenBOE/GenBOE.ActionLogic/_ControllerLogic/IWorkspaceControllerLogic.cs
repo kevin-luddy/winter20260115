@@ -10,6 +10,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Threading.Tasks;
+	using GenBOE.ActionLogic._ModelView.Backend;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.Workspace;
 	using GenBOE.DataBridge.DTO;
@@ -73,7 +74,19 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="workspaces"></param>
 		/// <param name="paNumber"></param>
 		/// <returns></returns>
-		Dictionary<string, object> NextTrackingNumber(IEnumerable<WorkspaceDTO> workspaces, string paNumber);
+		Dictionary<string, object> NextPLDTrackingNumber(IEnumerable<WorkspaceDTO> workspaces, string paNumber);
+
+		/// <summary>
+		/// Save Workspace Status (Short/Simple method as the inner controller method and parent method of this do all the lifting 
+		/// </summary>
+		/// <param name="workspaceStatusMV">Workspace Status ModelView</param>
+		/// <param name="ws">Full Workspace</param>
+		/// <param name="log">Logger</param>
+		/// <returns>True if Workspace Status is updated Successfully, False otherwise</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031: Do not catch general exception types")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062: Validate arguments of public methods")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045: Do not pass types by reference")]
+		bool SaveWorkspaceStatus(WorkspaceStatusModelView workspaceStatusMV, ref FullWorkspace ws, ref Logger log);
 
 		/// <summary>
 		/// Gets a filtered list of T&amp;M Resources

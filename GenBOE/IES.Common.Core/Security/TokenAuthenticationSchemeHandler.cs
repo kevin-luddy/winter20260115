@@ -60,8 +60,6 @@ namespace IES.Common.Core.Security
 		/// <param name="options">The options</param>
 		/// <param name="logger">The logger</param>
 		/// <param name="encoder">Url Encoder</param>
-		/// <param name="clock">System Clock</param>
-		/// <param name="configuration">Configuration</param>
 		public TokenAuthenticationSchemeHandler(
 			IOptionsMonitor<TokenAuthenticationOptions> options,
 			ILoggerFactory logger,

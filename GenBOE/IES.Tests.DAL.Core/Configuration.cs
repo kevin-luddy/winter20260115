@@ -8,6 +8,7 @@ namespace IES.Tests.Core
 {
 	using System;
 	using IES.Common.Core;
+	using IES.Common.Core.Utilities;
 	using Microsoft.AspNetCore.Http;
 	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.DependencyInjection;
@@ -71,6 +72,8 @@ namespace IES.Tests.Core
 			ServiceProvider = services.AddLogging(builder => builder.AddConsole()).BuildServiceProvider();
 
 			testData.Initialize();
+
+			CommonUtilities.SetLicense();
 		}
 
 		/// <summary>

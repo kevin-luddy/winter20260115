@@ -9,7 +9,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
-	using System.IO;
 	using System.Linq;
 	using System.Threading.Tasks;
 	using System.Web;
@@ -430,18 +429,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 
 			return theModelViews;
-		}
-
-		/// <summary>
-		/// Generates the BOE Discrepancy Report for genBOE Angular
-		/// </summary>
-		/// <param name="workspaceShortName">workspace shortname</param>
-		/// <param name="boeDiscrepancyData">BOE Discrepancy Data</param>
-		/// <returns>Memory stream of excel sheet</returns>
-		public MemoryStream ExportBOEDiscrepancyReport(string workspaceShortname, ICollection<BoeDiscrepancyReportModelView> boeDiscrepancyReportData)
-		{
-			MemoryStream ms = BOEDiscrepancyExporter.ExportBOEDiscrepancyToExcelFile(workspaceShortname, boeDiscrepancyReportData);
-			return ms;
 		}
 
 		/// <summary>
@@ -897,7 +884,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 						if (theModelView.ReportID == (int)Reports.AllBOEs)
 						{
-							WorkspaceExportFormatDTO exportFormat = ws.WorkspaceExportFormats.FirstOrDefault(x => x.Id == ws.TemplateID);
+							WorkspaceExportFormatNameDTO exportFormat = ws.WorkspaceExportFormatNames.FirstOrDefault(x => x.Id == ws.TemplateID);
 							theModelView.Description = String.Format(theModelView.Description, exportFormat.ExportFormatName);
 
 							// Do we need to support the special Labor Hours Summary by Custom Field template?
@@ -910,7 +897,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 						if (theModelView.ReportID == (int)Reports.AllBOEsSegmented)
 						{
-							WorkspaceExportFormatDTO exportFormat = ws.WorkspaceExportFormats.FirstOrDefault(x => x.Id == ws.TemplateID);
+							WorkspaceExportFormatNameDTO exportFormat = ws.WorkspaceExportFormatNames.FirstOrDefault(x => x.Id == ws.TemplateID);
 							theModelView.Description = String.Format(theModelView.Description, exportFormat.ExportFormatName);
 
 							// Do we need to support the special Labor Hours Summary by Custom Field template?

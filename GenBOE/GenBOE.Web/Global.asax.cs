@@ -438,15 +438,8 @@ namespace GenBOE
 				.SetInterceptorFor<GenTRAC.DataBridge.DTO.IProposalLoader>(new InterfaceInterceptor());
 			
 			GenBOEUnityContainer.Container.RegisterType<PldDBContext>(new HierarchicalLifetimeManager());
-			
-			GenBOEUnityContainer.Container.RegisterType(typeof(GenBOE.DataBridge.DTO.IPldDTODataLoader),
-				typeof(GenBOE.DataBridge.DTO.PldDTODataLoader),
-				this.GetLifetimeManager(),
-				new InjectionConstructor())
-				.Configure<Interception>()
-				.SetInterceptorFor<GenBOE.DataBridge.DTO.IPldDTODataLoader>(new InterfaceInterceptor());
-			
-		
+
+			GenBOEUnityContainer.Container.RegisterType(typeof(GenBOE.DataBridge.DTO.IPldDTODataLoader), typeof(GenBOE.DataBridge.DTO.PldDTODataLoader), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(GenBOE.DataBridge.DTO.LineOfBusinessDataLoader))));	
 			GenBOEUnityContainer.Container.RegisterType(typeof(IRequestDataLoader), typeof(RequestDataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IRequestDataLoader>(new InterfaceInterceptor());
 
 
@@ -778,7 +771,8 @@ namespace GenBOE
 																															  new ResolvedParameter(typeof(IMoqTypeDataLoader)),
 																															  new ResolvedParameter(typeof(IBOEStateMachine)),
 																															  new ResolvedParameter(typeof(IBoeMediator)),
-																															  new ResolvedParameter(typeof(ISystemSettingDTODataLoader))));
+																															  new ResolvedParameter(typeof(ISystemSettingDTODataLoader)),
+																															  new ResolvedParameter(typeof(WorkspaceStateMachine))));
 
 					GenBOEUnityContainer.Container.RegisterType(typeof(IAdminControllerLogic), typeof(AdminControllerLogicMST), GetLifetimeManager(), new InjectionConstructor(
 																															  new ResolvedParameter(typeof(ICommonDataMapper)),
@@ -820,7 +814,8 @@ namespace GenBOE
 																															  new ResolvedParameter(typeof(IMoqTypeDataLoader)),
 																															  new ResolvedParameter(typeof(IBOEStateMachine)),
 																															  new ResolvedParameter(typeof(IBoeMediator)),
-																															  new ResolvedParameter(typeof(ISystemSettingDTODataLoader))));
+																															  new ResolvedParameter(typeof(ISystemSettingDTODataLoader)),
+																															  new ResolvedParameter(typeof(WorkspaceStateMachine))));
 
 					GenBOEUnityContainer.Container.RegisterType(typeof(IHomeControllerLogic), typeof(HomeControllerLogicSpaceSystems), GetLifetimeManager(), new InjectionConstructor(
 																															  new ResolvedParameter(typeof(IActiveDirectoryUtilities))

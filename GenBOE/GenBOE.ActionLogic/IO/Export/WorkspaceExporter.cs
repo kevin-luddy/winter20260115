@@ -1865,24 +1865,48 @@ namespace GenBOE.ActionLogic.IO.Export
 				}
 				else  // hours
 				{
-					row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + ((spread == null) ? "0" : spread.LaborSpreadValue.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision))));
+					string hours = spread == null ? "0" : spread.LaborSpreadValue.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision));
+					row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + hours);
 
 					// Add the UCOT Factor, if enabled, and is past 1LMX start date
+					string ucotHours = null;
 					if (smoothedUcotSpreads.Any())
 					{
 						if (Utilities.OneLmxStartDate <= spread?.LaborSpreadDate)
 						{
-							row.Add(smoothedUcotSpreads[spread.LaborSpreadDate].ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
+							ucotHours = smoothedUcotSpreads[spread.LaborSpreadDate].ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision));
+							row.Add(ucotHours);
 						}
 						else // Before 1LMX cutoff
 						{
-							row.Add("0");
+							ucotHours = "0";
+							row.Add(ucotHours);
 						}
 					}
 					else
 					{
 						row.Add(string.Empty);  // Empty UCOT Factor if UCOT Factor is not enabled
 					}
+
+					// Total hours (hours + Ucot hours)
+					decimal totalHours = 0;
+
+					if (!string.IsNullOrEmpty(hours))
+					{
+						if (decimal.TryParse(hours, out decimal hoursValue))
+						{
+							totalHours += hoursValue;
+						}
+					}
+
+					if (!string.IsNullOrEmpty(ucotHours))
+					{
+						if (decimal.TryParse(ucotHours, out decimal ucotHoursValue))
+						{
+							totalHours += ucotHoursValue;
+						}
+					}
+					row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + totalHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
 
 					row.Add(string.Empty);  // Cost column is empty
 				}

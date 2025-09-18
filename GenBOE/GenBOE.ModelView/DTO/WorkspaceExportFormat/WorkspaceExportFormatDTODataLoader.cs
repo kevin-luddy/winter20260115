@@ -32,9 +32,9 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="inWorkspaceId">the workspace id of interest</param>
 		/// <returns>the Ids of the export formats for this workspace</returns>
 		[DbQuery]
-		virtual public Collection<WorkspaceExportFormatDTO> GetWorkspaceExportFormatsForWorkspace(int inWorkspaceId)
+		virtual public Collection<WorkspaceExportFormatNameDTO> GetWorkspaceExportFormatNamesForWorkspace(int inWorkspaceId)
 		{
-			Collection<WorkspaceExportFormatDTO> toReturn = new Collection<WorkspaceExportFormatDTO>();
+			Collection<WorkspaceExportFormatNameDTO> toReturn = new Collection<WorkspaceExportFormatNameDTO>();
 
 			using (StopwatchTimer sw = new StopwatchTimer(this._log))
 			{    
@@ -46,7 +46,7 @@ namespace GenBOE.DataBridge.DTO
 								on t.TemplateID equals s.TemplateID into templateJoin
 								from u in templateJoin.DefaultIfEmpty()
 								where u.WorkspaceID == inWorkspaceId || t.IsAvailableToAllWorkspaces
-								select new WorkspaceExportFormatDTO
+								select new WorkspaceExportFormatNameDTO
 								{
 									ExportFormat = new ExcelReportTemplate
 									{
@@ -54,13 +54,12 @@ namespace GenBOE.DataBridge.DTO
 										ParentTemplateId = t.ParentTemplateID
 									},
 									Id = t.TemplateID,
+									UpdateDate = t.UpdateDT,
 									ExportFormatName = t.Template,
 									ExportFormatDescription = t.TemplateDescription,
-									FileData = t.TemplateFile,
 									IsActive = t.IsActive,
-									UpdateDate = t.UpdateDT,
 									IsAvailableToAllWorkspaces = t.IsAvailableToAllWorkspaces
-								}).Distinct().ToCollection<WorkspaceExportFormatDTO>();
+								}).Distinct().ToCollection<WorkspaceExportFormatNameDTO>();
 				}
 
 				/*
@@ -70,7 +69,7 @@ namespace GenBOE.DataBridge.DTO
 				 * and that all prior bad data has been cleaned up.
 				 * 
 				 */
-				foreach (WorkspaceExportFormatDTO exportFormat in toReturn)
+				foreach (WorkspaceExportFormatNameDTO exportFormat in toReturn)
 				{
 					if (exportFormat.ExportFormat.TemplateId == exportFormat.ExportFormat.ParentTemplateId)
 					{
@@ -87,16 +86,16 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <returns>the Ids of the export formats known to the system</returns>
 		[DbQuery]
-		virtual public Collection<WorkspaceExportFormatDTO> GetAllWorkspaceExportFormatIds()
+		virtual public Collection<WorkspaceExportFormatNameDTO> GetAllWorkspaceExportFormatIds()
 		{
-			Collection<WorkspaceExportFormatDTO> toReturn = null;
+			Collection<WorkspaceExportFormatNameDTO> toReturn = null;
 
 			using (StopwatchTimer sw = new StopwatchTimer(this._log))
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
 					toReturn = (from t in gbe.OutputFormatTemplates
-								select new WorkspaceExportFormatDTO
+								select new WorkspaceExportFormatNameDTO
 								{
 									ExportFormat = new ExcelReportTemplate
 									{
@@ -106,11 +105,10 @@ namespace GenBOE.DataBridge.DTO
 									Id = t.TemplateID,
 									ExportFormatName = t.Template,
 									ExportFormatDescription = t.TemplateDescription,
-									FileData = t.TemplateFile,
-									IsActive = t.IsActive,
 									UpdateDate = t.UpdateDT,
+									IsActive = t.IsActive,
 									IsAvailableToAllWorkspaces = t.IsAvailableToAllWorkspaces
-								}).ToCollection<WorkspaceExportFormatDTO>();
+								}).ToCollection<WorkspaceExportFormatNameDTO>();
 				}
 			}
 
@@ -118,14 +116,14 @@ namespace GenBOE.DataBridge.DTO
 		}
 
 		/// <summary>
-		/// Get the WS Export Format's Name 
+		/// Get the WS Export Format Name 
 		/// </summary>
 		/// <param name="templateID">The template ID of the workspace export format.</param>
-		/// <returns>The name of the WS Export Format</returns>
+		/// <returns>The WS Export Format Name</returns>
 		[DbQuery]
-		public string GetNameById(int templateID)
+		public WorkspaceExportFormatNameDTO GetNameById(int templateID)
 		{
-			string exportName;
+			WorkspaceExportFormatNameDTO exportName;
 
 			using (StopwatchTimer sw = new StopwatchTimer(this._log))
 			{
@@ -133,8 +131,20 @@ namespace GenBOE.DataBridge.DTO
 				{
 					exportName = (from t in gbe.OutputFormatTemplates
 								  where t.TemplateID == templateID
-								  select t.Template
-								).FirstOrDefault();
+								  select new WorkspaceExportFormatNameDTO
+								  {
+									  ExportFormat = new ExcelReportTemplate
+									  {
+										  TemplateId = t.TemplateID,
+										  ParentTemplateId = t.ParentTemplateID
+									  },
+									  Id = t.TemplateID,
+									  UpdateDate = t.UpdateDT,
+									  ExportFormatName = t.Template,
+									  ExportFormatDescription = t.TemplateDescription,
+									  IsActive = t.IsActive,
+									  IsAvailableToAllWorkspaces = t.IsAvailableToAllWorkspaces
+								  }).FirstOrDefault();
 				}
 			}
 
@@ -390,7 +400,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="inTemplatesForWorkspaces">The templates being associated to the workspaces</param>
 		/// <param name="inWorkspaceId">The workspace to associate the templates to</param>
-		virtual public void InsertWorkspaceExportFormatsPickList(Collection<WorkspaceExportFormatDTO> inTemplatesForWorkspaces, int inWorkspaceId)
+		virtual public void InsertWorkspaceExportFormatsPickList(Collection<WorkspaceExportFormatNameDTO> inTemplatesForWorkspaces, int inWorkspaceId)
 		{
 			if (inTemplatesForWorkspaces == null)
 			{
@@ -401,7 +411,7 @@ namespace GenBOE.DataBridge.DTO
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
-					foreach (WorkspaceExportFormatDTO inTemplate in inTemplatesForWorkspaces)
+					foreach (WorkspaceExportFormatNameDTO inTemplate in inTemplatesForWorkspaces)
 					{
 						gbe.insertOutputFormatTemplateWorkspace(inWorkspaceId, inTemplate.Id);
 					}

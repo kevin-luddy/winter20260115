@@ -415,8 +415,9 @@ namespace GenBOE.ActionLogic.IO.Export
                 throw new ArgumentNullException(nameof(response));
             }
 
-            // setup the response correctly with BufferOutput since this is going to be awhile...
-            response.ContentType = CONTENT_TYPE_DOCX;
+			// setup the response correctly with BufferOutput since this is going to be awhile...
+			fileNameToDisplayToBrowser = Utilities.StripIllegalFileNameCharacters(fileNameToDisplayToBrowser); 
+			response.ContentType = CONTENT_TYPE_DOCX;
             response.Clear();
             response.BufferOutput = true;
             response.AppendHeader("Content-Disposition", $"attachment;filename={fileNameToDisplayToBrowser}");
@@ -424,21 +425,23 @@ namespace GenBOE.ActionLogic.IO.Export
             this.ExportBOEToWordFileStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, ws, templatePath, response.OutputStream, templateType);
         }
 
-        /// <summary>
-        /// Export the BOEs as individual files and zip into single download.
-        /// </summary>
-        /// <param name="exportInputs">The export inputs</param>
-        /// <param name="boeExportModelViews">Collection of BOE View Models</param>
-        /// <param name="boeSummaryGridModelViews"></param>
-        /// <param name="ws">Full workspace</param>
-        /// <param name="response">What will ultimately be the response to the requester</param>
-        /// <param name="fileNameToDisplayToBrowser">File name that will be passed to browser (for download)</param>
-        /// <param name="templatePath">Path to the export template</param>
-        /// <param name="templateType">Type of the export template</param>
-        public void ExportBOEsToZipFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
-            FullWorkspace workSpace, HttpResponseBase response, string returnFilename, string templatePath, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
+		/// <summary>
+		/// Export the BOEs as individual files and zip into single download.
+		/// </summary>
+		/// <param name="exportInputs">The export inputs</param>
+		/// <param name="boeExportModelViews">Collection of BOE View Models</param>
+		/// <param name="boeSummaryGridModelViews"></param>
+		/// <param name="ws">Full workspace</param>
+		/// <param name="response">What will ultimately be the response to the requester</param>
+		/// <param name="fileNameToDisplayToBrowser">File name that will be passed to browser (for download)</param>
+		/// <param name="templatePath">Path to the export template</param>
+		/// <param name="templateType">Type of the export template</param>
+		/// <param name="stream">The stream</param>
+		/// <param name="useStream">Whether to use the stream or not</param>
+		public void ExportBOEsToZipFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
+            FullWorkspace workSpace, HttpResponseBase response, string returnFilename, string templatePath, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet, Stream stream = null, bool useStream = false)
         {
-            AllBOEExportHelper.ExportBOEsToZipFile<bool>(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workSpace, response, returnFilename, templatePath, ExportBOEToWordFileStream);
+            AllBOEExportHelper.ExportBOEsToZipFile<bool>(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workSpace, response, returnFilename, templatePath, ExportBOEToWordFileStream, templateType, stream, useStream);
         }
 
         /// <summary>
@@ -2410,7 +2413,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 List<BOEExportTaskElementLabor> allExportResourceTypes =
                     boeExportModelView.TaskElements.SelectMany(x => x.taskElementLabors).ToList();
 
-                // Get resouce data from exportInputs
+                // Get resource data from exportInputs
                 List<ResourceTypeDto> resourceInputs = exportInputs.TaskElements.SelectMany(x => x.taskElementLabors)
                     .Where(y => allExportResourceTypes.Select(z => z.ExportFields[FieldName_LaborTypeID])
                         .Contains(y.Id.ToString())).ToList();
