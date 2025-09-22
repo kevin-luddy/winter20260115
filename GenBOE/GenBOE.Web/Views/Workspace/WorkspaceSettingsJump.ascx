@@ -81,10 +81,12 @@
                     Organizational Conflict of Interest (OCI) information, it cannot be shared and searched.
                 </div>
             </div>
-             <div>
+             <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems) { %> 
+            <div>
                 <a id="BackupVersions" href="#BackupVersions">Manage Backup Versions</a>
                 <div>Create, delete and restore versions of the Workspace.</div>
             </div>
+            <% } %>
             <div>
                 <a id="ResourceRatesTM" href="#ResourceRatesTM"><%= Model.WorkspaceResourceRateTMHeadingText %></a>
                 <div><%= Model.WorkspaceResourceRateTMJumpDescription%></div>

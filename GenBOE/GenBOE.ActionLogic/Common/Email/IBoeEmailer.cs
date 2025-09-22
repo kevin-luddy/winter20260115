@@ -206,5 +206,14 @@ namespace GenBOE.ActionLogic.Common.Email
         /// <param name="ws">Workspace</param>
         /// <param name="emailType">Template Email type</param>
         void SendRteTemplateEmail(FullWorkspace ws, EmailTypes emailType);
-    }
+
+		/// <summary>
+		/// Send an email to BOE Authors when a WBS or CLIN was changed on a BOE (or a new BOE).
+		/// </summary>
+		/// <param name="boe">The BOE.</param>
+		/// <param name="clinChanged">if set to <c>true</c> [CLIN changed].</param>
+		/// <param name="wbsChanged">if set to <c>true</c> [WBS changed].</param>
+		/// <param name="isBoeUpdated">True if BOE was updated, false if BOE was created.</param>
+		void SendBOECLINWBSChanged(FullBoe boe, bool clinChanged, bool wbsChanged, bool isBoeUpdated);
+	}
 }

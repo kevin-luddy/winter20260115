@@ -118,6 +118,7 @@
 				else
 				{
 					CopyMatchingSkillMixRowDataRMS(resourceHours, laborTypes, currentSkillMixData, refreshedModel, isBRCEnabled, isManual);
+					CleanupNewSkillMixRow(currentSkillMixData);
 				}
 
 				if (isBRCEnabled)
@@ -131,6 +132,8 @@
 					{
 						CreateCommonDisclosureRowsRMS(resourceHours, laborTypes, currentCommonDisclosureData, 
 							refreshedModel, isManual);
+						CleanUpCommonDisclosureRows(currentSkillMixData, refreshedModel);
+
 					}
 				}
 				else
@@ -161,7 +164,56 @@
 
 			return refreshedModel;
 		}
-		
+
+		/// <summary>
+		/// Set historical hours to zero for added rows
+		/// </summary>
+		/// <param name="currentSkillMixData">Collection of skillmix data</param>
+		private static void CleanupNewSkillMixRow(ICollection<SkillMixModelView> currentSkillMixData)
+		{
+			List<string> resourceOldList = new List<string>();
+			currentSkillMixData = currentSkillMixData.OrderBy(sm => sm.ResourceOld).ThenBy(sm => string.IsNullOrWhiteSpace(sm.ResourceNew) ? 1 : 0).ToArray();
+			foreach (SkillMixModelView item in currentSkillMixData)
+			{
+				if(resourceOldList.Contains(item.ResourceOld))
+				{
+					item.HistoricalHours = 0;
+				}
+
+				resourceOldList.Add(item.ResourceOld);
+			}
+		}
+
+		/// <summary>
+		/// Clean up common disclosure rows after adding new rows in skill mix table
+		/// </summary>
+		/// <param name="currentSkillMixData">Collection of skillmix data</param>
+		/// <param name="refreshedModel">The Refreshed Skill Mix Model</param>
+		private static void CleanUpCommonDisclosureRows(ICollection<SkillMixModelView> currentSkillMixData, RefreshSkillMixModelView refreshedModel)
+		{
+			List<string> resourceIdList = new List<string>();
+			ICollection<string> newLinkedResourceIds = refreshedModel.SkillMixRows.Where(r => !string.IsNullOrWhiteSpace(r.ResourceNew)).Select(l => l.ResourceNew).Distinct().ToList();
+			foreach (CommonDisclosureModelView item in refreshedModel.CommonDisclosureRows)
+			{
+				if (newLinkedResourceIds.Contains(item.ResourceID))
+				{
+					item.HistoricalHours = currentSkillMixData.Where(sm => item.ResourceID == sm.ResourceNew).Sum(l => l.HistoricalHours);
+				} else
+				{
+					IEnumerable<SkillMixModelView> currentData = currentSkillMixData.Where(sm => item.ResourceID == sm.ResourceOld && string.IsNullOrWhiteSpace(sm.ResourceNew));
+					item.HistoricalHours = currentData.Any() ? currentData.Select(l => l.HistoricalHours).First() : item.HistoricalHours;
+				}
+
+				if (resourceIdList.Contains(item.ResourceID))
+				{
+					item.HistoricalHours = 0;
+				}
+
+				resourceIdList.Add(item.ResourceID);
+			}
+
+		}
+
 		/// <summary>
 		/// Create the Common Disclosure Rows from the data
 		/// </summary>
@@ -317,25 +369,37 @@
 
 								// Find the Proposed Hours for this Resource
 								currentRow.ProposedHours = laborTypeDataModelViews.SelectMany(x => x.Spreads).Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) < Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
-
-								if (!isManual)
-								{
-									decimal realHistoricalHours = resourceHours.Where(r => r.ResourceName == currentRow.ResourceOld).Sum(l => l.TotalHours);
-									currentRow.HistoricalHours = realHistoricalHours;
-								}
 							}
 							else
 							{
 								// No resource selected, zero out the proposed hours.  BOE Skill Mix % will be 0% auto-calculated later
 								currentRow.ProposedHours = 0m;
-								currentRow.HistoricalHours = refreshedRow.HistoricalHours;
+							}
+
+							if (!isManual)
+							{
+								decimal realHistoricalHours = resourceHours.Where(r => r.ResourceName == currentRow.ResourceOld).Sum(l => l.TotalHours);
+								currentRow.HistoricalHours = realHistoricalHours;
 							}
 
 							if (isBRCEnabled)
 							{
 								// Create matching rows in Common Disclosures for ResourceNew
 								ICollection<string> brcNames = laborTypeDataModelViews.Where(r => !string.IsNullOrWhiteSpace(r.BusinessResourceCodeName)).Select(l => l.BusinessResourceCodeName).Distinct().ToList();
-								if (brcNames.Any())
+								if (string.IsNullOrWhiteSpace(currentRow.ResourceNew))
+								{
+									// create a Not included row
+									refreshedModel.CommonDisclosureRows.Add(
+											new CommonDisclosureModelView
+											{
+												ResourceID = currentRow.ResourceOld, // Set the ID to the Historical Resource ID
+												BusinessResourceID = string.Empty,
+												Included = false,
+												HistoricalHours = currentRow.HistoricalHours
+											}
+										);
+								}
+								else if (brcNames.Any())
 								{
 									foreach (string brcName in brcNames)
 									{
@@ -352,19 +416,6 @@
 										}
 									}
 								}
-								else if (string.IsNullOrWhiteSpace(currentRow.ResourceNew))
-								{
-									// create a Not included row
-									refreshedModel.CommonDisclosureRows.Add(
-											new CommonDisclosureModelView
-											{
-												ResourceID = currentRow.ResourceOld, // Set the ID to the Historical Resource ID
-												BusinessResourceID = string.Empty,
-												Included = false,
-												HistoricalHours = currentRow.HistoricalHours
-											}
-										);
-								}
 							}
 						}
 
@@ -373,6 +424,20 @@
 							// remove the refreshed row to make way for the currentRows
 							refreshedModel.SkillMixRows.Remove(refreshedRow);
 						}
+					}
+					else if (isBRCEnabled)
+					{
+						// still may need to add to common disclosure
+						// create a Not included row
+						refreshedModel.CommonDisclosureRows.Add(
+								new CommonDisclosureModelView
+								{
+									ResourceID = refreshedRow.ResourceOld, // Set the ID to the Historical Resource ID
+									BusinessResourceID = string.Empty,
+									Included = false,
+									HistoricalHours = refreshedRow.HistoricalHours
+								}
+							);
 					}
 				}
 			}

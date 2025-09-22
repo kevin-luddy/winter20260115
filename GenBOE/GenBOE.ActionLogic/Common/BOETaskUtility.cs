@@ -41,7 +41,7 @@ namespace GenBOE.ActionLogic.Common
 			}
 
 			return BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, ws.UsingTemplateBOE, ws.EnableSAPConnection, task, ws.MoqTypeSelections,
-				ws.ResourcesUsedInWsBoes, ws.TMResourceRatesForWorkspace);
+				ws.ResourcesUsedInWsBoes, ws.TMResourceRatesForWorkspace, ws.Shortname);
 		}
 
 		/// <summary>
@@ -54,14 +54,16 @@ namespace GenBOE.ActionLogic.Common
 		/// <param name="resourcesUsedInBOEs">Resources used in BOEs</param>
 		/// <param name="tmRates">T&amp;M Rates</param>
 		/// <param name="task">The Task</param>
+		/// <param name="workspaceShortname">The Workspace shortname</param>
 		/// <returns>Option to show skill mix for task.</returns>
 		public static bool ShowSkillMixForTask(DateTime? workspaceCreationDate, bool workspaceUsingTemplateBOE, bool workspaceEnableSAPConnection, 
-			BoeTaskElementDTO task, IReadOnlyCollection<MoqTypeSelection> moqTypeSelections, IReadOnlyCollection<ResourceDTO> resourcesUsedInBOEs, IReadOnlyCollection<TMResourceRateDTO> tmRates)
+			BoeTaskElementDTO task, IReadOnlyCollection<MoqTypeSelection> moqTypeSelections, IReadOnlyCollection<ResourceDTO> resourcesUsedInBOEs, IReadOnlyCollection<TMResourceRateDTO> tmRates,
+			string workspaceShortname)
 		{
 			bool hasTMRates = BOETaskUtility.IsUsingTMRates(task, resourcesUsedInBOEs, tmRates);
 
 			return ShowSkillMixForTask(workspaceCreationDate, workspaceUsingTemplateBOE, workspaceEnableSAPConnection,
-				moqTypeSelections, task.Id, hasTMRates);
+				moqTypeSelections, task.Id, hasTMRates, workspaceShortname);
 		}
 
 		/// <summary>
@@ -73,13 +75,14 @@ namespace GenBOE.ActionLogic.Common
 		/// <param name="moqTypeSelections">Workspace MOQType selections</param>
 		/// <param name="hasTMRates">Has T&amp;M Rates</param>
 		/// <param name="task">The Task</param>
+		/// <param name="workspaceShortname">Workspace short name</param>
 		/// <returns>Option to show skill mix for task.</returns>
 		public static bool ShowSkillMixForTask(DateTime? workspaceCreationDate, bool workspaceUsingTemplateBOE, bool workspaceEnableSAPConnection,
-			IEnumerable<MoqTypeSelection> moqTypeSelections, int boeTaskElementId, bool hasTMRates)
+			IEnumerable<MoqTypeSelection> moqTypeSelections, int boeTaskElementId, bool hasTMRates, string workspaceShortname)
 		{
 			bool showSkillMixRationale = false;
 
-			if (Utilities.ShowSkillMixForWorkspace(workspaceCreationDate))
+			if (Utilities.ShowSkillMixForWorkspace(workspaceCreationDate, workspaceShortname))
 			{
 				ICollection<MoqTypeSelection> moqTypes = moqTypeSelections.Where(m => m.TaskId == boeTaskElementId).ToList();
 				// Only show SkillMix if there is 1 and only 1 MOQ Type
@@ -193,6 +196,35 @@ namespace GenBOE.ActionLogic.Common
 			}
 
 			return false;
+		}
+
+		/// <summary>
+		/// Refractored Code from Reports Controller => DisplayBOEStatusReport
+		/// </summary>
+		/// <param name="ws">Full Workspace</param>
+		/// <param name="boes">Full BOEs</param>
+		/// <param name="tasks">Task Elements</param>
+		public static void GetBOEAndTaskDataForWorkspace(FullWorkspace ws, out List<FullBoe> boes, out List<BoeTaskElementDTO> tasks)
+		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
+
+			// Call the BL to generate the status report
+			// All BOEs for the workspace as a default
+			boes = ws.Boes.ToList();
+			tasks = ws.TaskElements.ToList();
+			bool isOffloading = ws.ProjectMapType != ProjectMapType.StandardWithoutOffload;
+			if (isOffloading)
+			{
+				OffloadLaborRates offloader = new OffloadLaborRates();
+				List<int> selectedBoeIds = boes.Select(b => b.Id).ToList();
+				OffloadLaborRatesResults results = offloader.OffloadWorkspace(boes.Where(b => selectedBoeIds.Contains(b.Id)).ToList(), ws);
+
+				boes = results.Boes.ToList();
+				tasks = boes.SelectMany(b => b.TaskElements).ToList();
+			}
 		}
 	}
 }

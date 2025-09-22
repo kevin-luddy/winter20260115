@@ -37,6 +37,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		internal const string Container_TaskSpreadTables = "TaskSpreadTablesContainer";
 		internal const string Container_TaskID = "TaskIDContainer";
 		internal const string Container_Travel = "TravelContainer";
+		internal const string Container_TaskAuthor = "TaskAuthorContainer";
 
 		internal const string CustomFields_BOEContainer = "CustomFields-BOE";
 		internal const string CustomFields_LaborContainer = "CustomFields-Labor";
@@ -107,6 +108,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		internal const string FieldName_MonthsTotal = "MonthsTotal";
 		internal const string FieldName_MOQEquationContainer = "MOQEquationContainer";
 		internal const string FieldName_MOQTypeContainer = "MOQTypeContainer";
+		internal const string FieldName_TaskAuthor = "TaskAuthor";
 		internal const string FieldName_MOQRationaleContainer = "MOQRationaleContainer";
 		internal const string FieldName_MOQSectionLabel = "MOQSectionLabel";
 		internal const string FieldName_MOQEquation = "MOQEquation";

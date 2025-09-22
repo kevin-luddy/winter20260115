@@ -280,6 +280,7 @@
     <Compile Include="Controllers\Backend\CLINController.cs" />
     <Compile Include="Controllers\Backend\ImportController.cs" />
     <Compile Include="Controllers\Backend\ManagePermissionsController.cs" />
+    <Compile Include="Controllers\Backend\ManageReportsController.cs" />
     <Compile Include="Controllers\Backend\WBSController.cs" />
     <Compile Include="Controllers\Backend\WorkspaceAdminController.cs" />
     <Compile Include="Controllers\Backend\WorkspaceHomeController.cs" />
@@ -296,6 +297,7 @@
     <Compile Include="ModelView\AddEditWBSModelView.cs" />
     <Compile Include="ModelView\AddEditCLINModelView.cs" />
     <Compile Include="ModelView\BOEFormMasterModelView.cs" />
+    <Compile Include="ModelView\BOEStatusReportView.cs" />
     <Compile Include="ModelView\CompleteWBSImportModelView.cs" />
     <Compile Include="ModelView\ConfidenceReportItem.cs" />
     <Compile Include="ModelView\ConfidenceReportModelView.cs" />
@@ -306,9 +308,7 @@
     <Compile Include="ModelView\DeleteWBSModelView.cs" />
     <Compile Include="ModelView\EditPermissionsModelView.cs" />
     <Compile Include="ModelView\ErrorModelView.cs" />
-    <Compile Include="ModelView\ExportPermissionModelView.cs" />
-    <Compile Include="ModelView\ExportWBSModelView.cs" />
-    <Compile Include="ModelView\ExportCLINModelView.cs" />
+    <Compile Include="ModelView\ExportFileModelView.cs" />
     <Compile Include="ModelView\FavoriteModelView.cs" />
     <Compile Include="ModelView\IBOEData.cs" />
     <Compile Include="ModelView\ImportCLINModelView.cs" />
@@ -1172,6 +1172,10 @@
     <ProjectReference Include="..\GenBOE.ActionLogic\GenBOE.ActionLogic.csproj">
       <Project>{8b23113c-48a0-4f65-8ed5-0f725ac170e7}</Project>
       <Name>GenBOE.ActionLogic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenBOE.PLD.Models\GenBOE.PLD.Models.csproj">
+      <Project>{F2AB5FFC-459A-4BB1-9CB5-61B4C89C14A0}</Project>
+      <Name>GenBOE.PLD.Models</Name>
     </ProjectReference>
     <ProjectReference Include="..\GenTRAC.DataBridge\GenTRAC.DataBridge.csproj">
       <Project>{6ebd0376-9273-4a2a-9e23-1912418ddba5}</Project>

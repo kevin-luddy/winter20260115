@@ -15,7 +15,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using GenBOE.ActionLogic.IO.Export;
     using GenBOE.ActionLogic.Reporting;
     using GenBOE.ActionLogic.WBS.BOE;
-    using GenBOE.DataBridge.DTO;
+	using GenBOE.DataBridge.Common;
+	using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
     using GenTRAC.DataBridge.DTO;
@@ -57,8 +58,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IInUseDataLoader iInUseDataLoader,
             IProposalLoader proposalLoader,
             IWorkspaceControllerLogic workspaceControllerLogic,
-            TravelTripCostCalculation travelTripCostCalculator)
-            : base(boeExporter, boeSummary, boeCustomExporter, workspaceExportFormatDTOLoader, boeDiscrepancyReport, proposalLoader, workspaceControllerLogic, travelTripCostCalculator)
+            TravelTripCostCalculation travelTripCostCalculator,
+			ICommonDataMapper inCommonDataMapper,
+			IPermissionsDTODataLoader permissionsLoader,
+			IUserDTODataLoader userLoader)
+            : base(boeExporter, boeSummary, boeCustomExporter, workspaceExportFormatDTOLoader, boeDiscrepancyReport, proposalLoader, workspaceControllerLogic, travelTripCostCalculator,
+				  inCommonDataMapper, permissionsLoader, userLoader)
         {
             this.iboeFormDataLoader = iboeFormDataLoader;
             this.pboeFormDataLoader = pboeFormDataLoader;

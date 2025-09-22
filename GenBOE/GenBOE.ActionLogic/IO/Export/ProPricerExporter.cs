@@ -274,7 +274,9 @@ namespace GenBOE.ActionLogic.IO.Export
 				MoqTypes = workspace.MoqTypeSelections.ToCollection(),
 				OneLmxCustomField = oneLmxCF,
 				UCOTFactor = workspace.UCOTFactor,
-				CreationDate = workspace.CreationDate
+				CreationDate = workspace.CreationDate,
+				EnableTaskAuthor = workspace.EnableAssignTaskAuthor,
+				UsersAssociatedWithBoes = workspace.GetUserDataForBoesForWs.ToCollection()
 			};
 
 			if (offloading)
@@ -1181,6 +1183,13 @@ namespace GenBOE.ActionLogic.IO.Export
 								string workspaceUrl = ConfigurationUtilities.GetAppSetting("ServerURL") + "/" + workspaceShortname;
 								newTaskRow.Append(DOUBLE_QUOTE).Append(workspaceUrl.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
 								break;
+							case ProPricerField_Task.TaskAuthor:
+								if (Utilities.IsAssignTaskAuthorEnabledForSystem && wsLevelData.EnableTaskAuthor)
+								{
+									string authorName = wsLevelData.UsersAssociatedWithBoes.FirstOrDefault(user => user.UserID == boeTask.AuthorUserId)?.DisplayName;
+									newTaskRow.Append(DOUBLE_QUOTE).Append(authorName).Append(DOUBLE_QUOTE).Append(END_FIELD);
+								}
+								break;
 						}
 
 						if (taskField?.CustomFieldID != null)
@@ -1539,7 +1548,13 @@ namespace GenBOE.ActionLogic.IO.Export
 						case ProPricerField_Resources.MOQType:
 							newResourceRow.Append(DOUBLE_QUOTE).Append(taskMoqType).Append(DOUBLE_QUOTE).Append(END_FIELD);
 							break;
-
+						case ProPricerField_Resources.TaskAuthor:
+							if (Utilities.IsAssignTaskAuthorEnabledForSystem && wsLevelData.EnableTaskAuthor)
+							{
+								string authorName = wsLevelData.UsersAssociatedWithBoes.FirstOrDefault(user => user.UserID == boeTask.AuthorUserId)?.DisplayName;
+								newResourceRow.Append(DOUBLE_QUOTE).Append(authorName).Append(DOUBLE_QUOTE).Append(END_FIELD);
+							}
+							break;
 					}
 
 					if (taskField.CustomFieldID.HasValue)
@@ -2706,6 +2721,20 @@ namespace GenBOE.ActionLogic.IO.Export
 		public DateTime? CreationDate { get; set; }
 
 		/// <summary>
+		/// Is Task Author enabled for the workspace?
+		/// </summary>
+		public bool EnableTaskAuthor { get; set; }
+
+		/// <summary>
+		/// Users associated with all BOEs in the Workspace
+		/// - all authors
+		/// - all subcontractor authors
+		/// - all approvers with records in the approver responses (in Boe)
+		/// - the user that updated the Boe
+		/// </summary>
+		public ICollection<UserDTO> UsersAssociatedWithBoes { get; set; }
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="WsLevelInputsForExport"/> class.
 		/// </summary>
 		public WsLevelInputsForExport()
@@ -2721,6 +2750,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			this.ItemCounters = new CountersForProPricer();
 			this.TaskElements = new Collection<BoeTaskElementDTO>();
 			this.MoqTypes = new Collection<MoqTypeSelection>();
+			this.UsersAssociatedWithBoes = new Collection<UserDTO>();
 		}
 	}
 

@@ -99,7 +99,7 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <returns>filestream</returns>
 		[System.Web.Http.HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public HttpResponseMessage ExportCLINs([FromBody] ExportCLINModelView exportCLINModelView)
+		public HttpResponseMessage ExportCLINs([FromBody] ExportFileModelView exportCLINModelView)
 		{
 			try
 			{

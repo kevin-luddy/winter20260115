@@ -148,29 +148,33 @@ namespace GenBOE.Tests.ActionLogic
             ppTask21.ListOrder = includeCustomFields ? 21 : 17;
             ppTask21.Task = ProPricerField_Task.TaskID;
 
-            Collection<ProPricerTasks> tasks = includeCustomFields ? new Collection<ProPricerTasks> { ppTask1, ppTask2, ppTask3, ppTask4, ppTask5, ppTask6, customTask, ppTask7, ppTask8, ppTask9, ppTask10, ppTask11, ppTask12, ppTask13,
-                ppTask14, ppTask15, ppTask16, ppTask17, ppTask18, ppTask19, ppTask20, ppTask21 } :
+			ProPricerTasks ppTask22 = new ProPricerTasks();
+			ppTask22.ListOrder = includeCustomFields ? 22 : 18;
+			ppTask22.Task = ProPricerField_Task.TaskAuthor;
+
+			Collection<ProPricerTasks> tasks = includeCustomFields ? new Collection<ProPricerTasks> { ppTask1, ppTask2, ppTask3, ppTask4, ppTask5, ppTask6, customTask, ppTask7, ppTask8, ppTask9, ppTask10, ppTask11, ppTask12, ppTask13,
+                ppTask14, ppTask15, ppTask16, ppTask17, ppTask18, ppTask19, ppTask20, ppTask21, ppTask22 } :
                 new Collection<ProPricerTasks> { ppTask1, ppTask2, ppTask3, ppTask4, ppTask5, ppTask6, ppTask7, ppTask8, ppTask9, ppTask10,
-                ppTask14, ppTask15, ppTask16, ppTask17, ppTask18, ppTask19, ppTask20, ppTask21 };
+                ppTask14, ppTask15, ppTask16, ppTask17, ppTask18, ppTask19, ppTask20, ppTask21, ppTask22 };
 
             if (allCustomFields)
             {
                 //boe level
-                ProPricerTasks ppTask22 = new ProPricerTasks();
+                ProPricerTasks ppTask23 = new ProPricerTasks();
                 ppTask22.CustomFieldID = 3;
-                ppTask22.ListOrder = 22;
+                ppTask22.ListOrder = 23;
                 ppTask22.Selection = ProPricerCustomFieldSelection.CustomFieldDescription;
 
-                ProPricerTasks ppTask23 = new ProPricerTasks();
+                ProPricerTasks ppTask24 = new ProPricerTasks();
                 ppTask23.CustomFieldID = 3;
-                ppTask23.ListOrder = 23;
+                ppTask23.ListOrder = 24;
                 ppTask23.Selection = ProPricerCustomFieldSelection.CustomFieldID;
 
-                tasks.Add(ppTask22);
                 tasks.Add(ppTask23);
+                tasks.Add(ppTask24);
             }
 
-            proPricerExport.ProPricerTasks = tasks;
+			proPricerExport.ProPricerTasks = tasks;
 
             ProPricerResources ppResource = new ProPricerResources();
             ppResource.ListOrder = 0;
@@ -251,52 +255,54 @@ namespace GenBOE.Tests.ActionLogic
             ppResource18.ListOrder = includeCustomFields ? 18 : 16;
             ppResource18.Resource = ProPricerField_Resources.TaskID;
 
+			ProPricerResources ppResource19 = new ProPricerResources();
+			ppResource19.ListOrder = includeCustomFields ? 19 : 17;
+			ppResource19.Resource = ProPricerField_Resources.TaskAuthor;
 
-
-            Collection<ProPricerResources> PPresources = includeCustomFields ? new Collection<ProPricerResources> { ppResource, ppResource2, ppResource3, ppResource4, customResource, customResource2, ppResource6, ppResource7, ppResource8,
-                ppResource9, ppResource10, ppResource11, ppResource12, ppResource13, ppResource14, ppResource15, ppResource16, ppResource17, ppResource18 } :
+			Collection<ProPricerResources> PPresources = includeCustomFields ? new Collection<ProPricerResources> { ppResource, ppResource2, ppResource3, ppResource4, customResource, customResource2, ppResource6, ppResource7, ppResource8,
+                ppResource9, ppResource10, ppResource11, ppResource12, ppResource13, ppResource14, ppResource15, ppResource16, ppResource17, ppResource18, ppResource19 } :
                 new Collection<ProPricerResources> { ppResource, ppResource2, ppResource3, ppResource4, ppResource6, ppResource7, ppResource8,
-                ppResource9, ppResource10, ppResource11, ppResource12, ppResource13, ppResource14, ppResource15, ppResource16, ppResource17, ppResource18 };
+                ppResource9, ppResource10, ppResource11, ppResource12, ppResource13, ppResource14, ppResource15, ppResource16, ppResource17, ppResource18, ppResource19 };
 
             if (useEP)
             {
                 // set using ep config option to true 
                 System.Configuration.ConfigurationManager.AppSettings["ShowEquivalentPersonsOption"] = "true";
-                ProPricerResources ppResource19 = new ProPricerResources();
-                ppResource19.ListOrder = 19;
-                ppResource19.Resource = ProPricerField_Resources.EP;
-                PPresources.Add(ppResource19);
+                ProPricerResources ppResource20 = new ProPricerResources();
+                ppResource20.ListOrder = 20;
+                ppResource20.Resource = ProPricerField_Resources.EP;
+                PPresources.Add(ppResource20);
             }
 
             if (allCustomFields)
             {
                 // task level
-                ProPricerResources ppResource20 = new ProPricerResources();
-                ppResource20.CustomFieldID = 1;
-                ppResource20.ListOrder = 20;
-                ppResource20.Selection = ProPricerCustomFieldSelection.CustomFieldDescription;
-
                 ProPricerResources ppResource21 = new ProPricerResources();
-                ppResource20.CustomFieldID = 1;
-                ppResource20.ListOrder = 21;
-                ppResource20.Selection = ProPricerCustomFieldSelection.CustomFieldID;
-
-                // boe level
-                ProPricerResources ppResource22 = new ProPricerResources();
-                ppResource21.CustomFieldID = 3;
-                ppResource21.ListOrder = 22;
+                ppResource21.CustomFieldID = 1;
+                ppResource21.ListOrder = 21;
                 ppResource21.Selection = ProPricerCustomFieldSelection.CustomFieldDescription;
 
-                ProPricerResources ppResource23 = new ProPricerResources();
-                ppResource22.CustomFieldID = 3;
-                ppResource22.ListOrder = 23;
+                ProPricerResources ppResource22 = new ProPricerResources();
+                ppResource22.CustomFieldID = 1;
+                ppResource22.ListOrder = 22;
                 ppResource22.Selection = ProPricerCustomFieldSelection.CustomFieldID;
 
-                PPresources.Add(ppResource20);
+                // boe level
+                ProPricerResources ppResource23 = new ProPricerResources();
+                ppResource23.CustomFieldID = 3;
+                ppResource23.ListOrder = 23;
+                ppResource23.Selection = ProPricerCustomFieldSelection.CustomFieldDescription;
+
+                ProPricerResources ppResource24 = new ProPricerResources();
+                ppResource24.CustomFieldID = 3;
+                ppResource24.ListOrder = 24;
+                ppResource24.Selection = ProPricerCustomFieldSelection.CustomFieldID;
+
                 PPresources.Add(ppResource21);
                 PPresources.Add(ppResource22);
-                PPresources.Add(ppResource23);
-            }
+				PPresources.Add(ppResource23);
+				PPresources.Add(ppResource24);
+			}
 
             proPricerExport.ProPricerResources = PPresources;
 
@@ -346,7 +352,9 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetClinById(this.Boe1.CLINID.Value)).Returns(this.Clin1);
             this.retriever.Setup(x => x.GetWbsById(this.Wbs.Id)).Returns(this.Wbs);
             this.retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<MoqTypeSelection>());
-            workspace.UsingTemplateBOE = false;
+			this.retriever.Setup(x => x.GetApprovalUserIdsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<int>());
+			this.retriever.Setup(x => x.GetUsersByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<UserDTO>());
+			workspace.UsingTemplateBOE = false;
 
             // setup resources dto mapper
             Collection<ResourceDTO> resources = new Collection<ResourceDTO>();
@@ -440,135 +448,281 @@ namespace GenBOE.Tests.ActionLogic
             FullObjectHelper.RefreshEPForTests();
         }
 
-        [TestMethod, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-        public void BL_ExportProPricer_LaborElementsOnly()
-        {
-            Collection<BoeDTO> toReturn = new Collection<BoeDTO>();
-            toReturn.Add(this.Boe1);
+		[TestMethod, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
+		public void BL_ExportProPricer_LaborElementsOnly()
+		{
+			Collection<BoeDTO> toReturn = new Collection<BoeDTO>();
+			toReturn.Add(this.Boe1);
 
-            CustomFieldDTO customField1 = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.TaskDisplay };
-            CustomFieldDTO customField2 = new CustomFieldDTO { Id = 2, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay };
+			CustomFieldDTO customField1 = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.TaskDisplay };
+			CustomFieldDTO customField2 = new CustomFieldDTO { Id = 2, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay };
 
-            CustomFieldValueDTO cv = new CustomFieldValueDTO();
-            cv.CustomFieldID = customField1.Id;
-            cv.CustomFieldValueID = 1;
-            cv.CustomFieldValueName = "P<br/><BR /><bR/>E";
-            cv.CustomFieldValueDescription = "an exercise<BR /> class";
+			CustomFieldValueDTO cv = new CustomFieldValueDTO();
+			cv.CustomFieldID = customField1.Id;
+			cv.CustomFieldValueID = 1;
+			cv.CustomFieldValueName = "P<br/><BR /><bR/>E";
+			cv.CustomFieldValueDescription = "an exercise<BR /> class";
 
-            CustomFieldValueDTO cv2 = new CustomFieldValueDTO();
-            cv2.CustomFieldID = customField2.Id;
-            cv2.CustomFieldValueID = 2;
-            cv2.CustomFieldValueName = "History";
-            cv2.CustomFieldValueDescription = "where you<br /><BR/><BR><br><br / > learn past events";
+			CustomFieldValueDTO cv2 = new CustomFieldValueDTO();
+			cv2.CustomFieldID = customField2.Id;
+			cv2.CustomFieldValueID = 2;
+			cv2.CustomFieldValueName = "History";
+			cv2.CustomFieldValueDescription = "where you<br /><BR/><BR><br><br / > learn past events";
 
-            DateTime LaborstartDate = Convert.ToDateTime("11/01/2010");
-            DateTime LaborendDate = Convert.ToDateTime("01/01/2011");
+			DateTime LaborstartDate = Convert.ToDateTime("11/01/2010");
+			DateTime LaborendDate = Convert.ToDateTime("01/01/2011");
 
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), commonDataMapper.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionsDataLoader.Object);
-             
-            FullWorkspace workspace = new FullWorkspace(this.Workspace);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), commonDataMapper.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionsDataLoader.Object);
 
-            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
-            this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullWbs>() { new FullWbs(this.Wbs) });
-            this.retriever.Setup(x => x.GetClinsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullClin>() { new FullClin(this.Clin1) });
-            this.retriever.Setup(x => x.GetClinById(this.Boe1.CLINID.Value)).Returns(this.Clin1);
-            this.retriever.Setup(x => x.GetWbsById(this.Wbs.Id)).Returns(this.Wbs);
-            this.retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<MoqTypeSelection>());
-            workspace.UsingTemplateBOE = false;
+			FullWorkspace workspace = new FullWorkspace(this.Workspace);
 
-            // setup resources dto mapper
-            Collection<ResourceDTO> resources = new Collection<ResourceDTO>();
-            resources.Add(this.Resource);
+			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
+			this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullWbs>() { new FullWbs(this.Wbs) });
+			this.retriever.Setup(x => x.GetClinsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullClin>() { new FullClin(this.Clin1) });
+			this.retriever.Setup(x => x.GetClinById(this.Boe1.CLINID.Value)).Returns(this.Clin1);
+			this.retriever.Setup(x => x.GetWbsById(this.Wbs.Id)).Returns(this.Wbs);
+			this.retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<MoqTypeSelection>());
+			this.retriever.Setup(x => x.GetApprovalUserIdsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<int>());
+			this.retriever.Setup(x => x.GetUsersByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<UserDTO>());
+			workspace.UsingTemplateBOE = false;
 
-            this.retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new List<CustomFieldValueDTO>() { cv, cv2 });
-            this.retriever.Setup(x => x.GetPerformingOrgsByIds(It.IsAny<ICollection<int>>())).Returns(new List<PerformingOrgDTO>() { this.Perforg });
-            this.retriever.Setup(x => x.GetResourcesByResourceListId(It.IsAny<int>())).Returns(resources);
-            this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(resources);
-            this.retriever.Setup(x => x.GetFullWorkspaceById(workspace.Id)).Returns(workspace);
-            this.factory.Setup(x => x.CreateFullWorkspace(It.IsAny<int>())).Returns(workspace);
-            this.factory.Setup(x => x.CreateFullBoes(It.IsAny<ICollection<int>>())).Returns(new List<FullBoe>() { new FullBoe(this.Boe1) });
-            foreach (FullBoe boe in workspace.Boes)
-            {
-                boe.Title = "test boe";
-            }
+			// setup resources dto mapper
+			Collection<ResourceDTO> resources = new Collection<ResourceDTO>();
+			resources.Add(this.Resource);
 
-            BoeTaskElementDTO task1 = new BoeTaskElementDTO
-            {
-                BoeID = this.Boe1.Id,
-                Id = 1,
-                BOETaskID = "123",
-                TaskTitle = "MOCK TASK1",
-                Description = "MOCK TASK1",
-                StartDate = this.Boe1.StartDate,
-                EndDate = this.Boe1.EndDate,
-                IMS_ID = "500",
-                MOQType = MOQType.Comparison,
-                CustomFieldValueContainers = new Collection<CustomFieldValueContainer> { new CustomFieldValueContainer { CustomFieldValueID = cv.CustomFieldValueID } },
-                taskElementLabors = new Collection<ResourceTypeDto>{new ResourceTypeDto{Id=1, SpreadType = IES.Common.SpreadType.Hours, StartDateValue=LaborstartDate, EndDateValue=LaborendDate, ResourceID=this.Resource.Id, PerformingOrgID=this.Perforg.Id,SpreadCurveID = SpreadCurves.DiscreteHours,
-                            LaborSpreads=new Collection<ResourceSpreadDto>{new ResourceSpreadDto{Id=1, LaborSpreadDate=Convert.ToDateTime("11/01/2010"), LaborSpreadValue=200 },
+			this.retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new List<CustomFieldValueDTO>() { cv, cv2 });
+			this.retriever.Setup(x => x.GetPerformingOrgsByIds(It.IsAny<ICollection<int>>())).Returns(new List<PerformingOrgDTO>() { this.Perforg });
+			this.retriever.Setup(x => x.GetResourcesByResourceListId(It.IsAny<int>())).Returns(resources);
+			this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(resources);
+			this.retriever.Setup(x => x.GetFullWorkspaceById(workspace.Id)).Returns(workspace);
+			this.factory.Setup(x => x.CreateFullWorkspace(It.IsAny<int>())).Returns(workspace);
+			this.factory.Setup(x => x.CreateFullBoes(It.IsAny<ICollection<int>>())).Returns(new List<FullBoe>() { new FullBoe(this.Boe1) });
+			foreach (FullBoe boe in workspace.Boes)
+			{
+				boe.Title = "test boe";
+			}
+
+			BoeTaskElementDTO task1 = new BoeTaskElementDTO
+			{
+				BoeID = this.Boe1.Id,
+				Id = 1,
+				BOETaskID = "123",
+				TaskTitle = "MOCK TASK1",
+				Description = "MOCK TASK1",
+				StartDate = this.Boe1.StartDate,
+				EndDate = this.Boe1.EndDate,
+				IMS_ID = "500",
+				MOQType = MOQType.Comparison,
+				CustomFieldValueContainers = new Collection<CustomFieldValueContainer> { new CustomFieldValueContainer { CustomFieldValueID = cv.CustomFieldValueID } },
+				taskElementLabors = new Collection<ResourceTypeDto>{new ResourceTypeDto{Id=1, SpreadType = IES.Common.SpreadType.Hours, StartDateValue=LaborstartDate, EndDateValue=LaborendDate, ResourceID=this.Resource.Id, PerformingOrgID=this.Perforg.Id,SpreadCurveID = SpreadCurves.DiscreteHours,
+							LaborSpreads=new Collection<ResourceSpreadDto>{new ResourceSpreadDto{Id=1, LaborSpreadDate=Convert.ToDateTime("11/01/2010"), LaborSpreadValue=200 },
                             //discrete values of 0 are not stored in the db so replicate that here by removing a month
                             new ResourceSpreadDto{Id=3, LaborSpreadDate=Convert.ToDateTime("01/01/2011"), LaborSpreadValue=200 }}
-                        }}
-            };
-            //Two resources for this task to test multiple rows for tasks with multiple resources
-            BoeTaskElementDTO task2 = new BoeTaskElementDTO
-            {
-                BoeID = this.Boe2.Id,
-                Id = 2,
-                BOETaskID = "1234",
-                TaskTitle = "MOCK TASK2",
-                Description = "MOCK TASK2",
-                StartDate = this.Boe1.StartDate,
-                EndDate = this.Boe1.EndDate,
-                MOQType = MOQType.Factor,
-                taskElementLabors = new Collection<ResourceTypeDto>{new ResourceTypeDto{Id=2, SpreadType = IES.Common.SpreadType.Hours, StartDateValue=LaborstartDate, EndDateValue=LaborendDate, ResourceID=this.Resource.Id, PerformingOrgID=this.Perforg.Id,  SpreadCurveID = SpreadCurves.DiscreteHours, CustomFieldValueContainers=new Collection<CustomFieldValueContainer>{new CustomFieldValueContainer{CustomFieldValueID=cv2.CustomFieldValueID}},
-                            LaborSpreads=new Collection<ResourceSpreadDto>{new ResourceSpreadDto{Id=4, LaborSpreadDate=Convert.ToDateTime("11/01/2010"), LaborSpreadValue=150 },
-                            new ResourceSpreadDto{Id=5, LaborSpreadDate=Convert.ToDateTime("12/01/2010"), LaborSpreadValue=150 },
-                            new ResourceSpreadDto{Id=6, LaborSpreadDate=Convert.ToDateTime("01/01/2011"), LaborSpreadValue=150 }}
-                            },new ResourceTypeDto{Id=3, SpreadType = IES.Common.SpreadType.Hours, StartDateValue=LaborstartDate, EndDateValue=LaborendDate, ResourceID=this.Resource.Id, PerformingOrgID=this.Perforg.Id,  SpreadCurveID = SpreadCurves.DiscreteHours, CustomFieldValueContainers=new Collection<CustomFieldValueContainer>{new CustomFieldValueContainer{CustomFieldValueID=cv2.CustomFieldValueID}},
-                            LaborSpreads=new Collection<ResourceSpreadDto>{new ResourceSpreadDto{Id=4, LaborSpreadDate=Convert.ToDateTime("11/01/2010"), LaborSpreadValue=50 },
-                            new ResourceSpreadDto{Id=5, LaborSpreadDate=Convert.ToDateTime("12/01/2010"), LaborSpreadValue=150 },
-                            new ResourceSpreadDto{Id=6, LaborSpreadDate=Convert.ToDateTime("01/01/2011"), LaborSpreadValue=250 }}
-                            }}
-            };
+						}}
+			};
+			//Two resources for this task to test multiple rows for tasks with multiple resources
+			BoeTaskElementDTO task2 = new BoeTaskElementDTO
+			{
+				BoeID = this.Boe2.Id,
+				Id = 2,
+				BOETaskID = "1234",
+				TaskTitle = "MOCK TASK2",
+				Description = "MOCK TASK2",
+				StartDate = this.Boe1.StartDate,
+				EndDate = this.Boe1.EndDate,
+				MOQType = MOQType.Factor,
+				taskElementLabors = new Collection<ResourceTypeDto>{new ResourceTypeDto{Id=2, SpreadType = IES.Common.SpreadType.Hours, StartDateValue=LaborstartDate, EndDateValue=LaborendDate, ResourceID=this.Resource.Id, PerformingOrgID=this.Perforg.Id,  SpreadCurveID = SpreadCurves.DiscreteHours, CustomFieldValueContainers=new Collection<CustomFieldValueContainer>{new CustomFieldValueContainer{CustomFieldValueID=cv2.CustomFieldValueID}},
+							LaborSpreads=new Collection<ResourceSpreadDto>{new ResourceSpreadDto{Id=4, LaborSpreadDate=Convert.ToDateTime("11/01/2010"), LaborSpreadValue=150 },
+							new ResourceSpreadDto{Id=5, LaborSpreadDate=Convert.ToDateTime("12/01/2010"), LaborSpreadValue=150 },
+							new ResourceSpreadDto{Id=6, LaborSpreadDate=Convert.ToDateTime("01/01/2011"), LaborSpreadValue=150 }}
+							},new ResourceTypeDto{Id=3, SpreadType = IES.Common.SpreadType.Hours, StartDateValue=LaborstartDate, EndDateValue=LaborendDate, ResourceID=this.Resource.Id, PerformingOrgID=this.Perforg.Id,  SpreadCurveID = SpreadCurves.DiscreteHours, CustomFieldValueContainers=new Collection<CustomFieldValueContainer>{new CustomFieldValueContainer{CustomFieldValueID=cv2.CustomFieldValueID}},
+							LaborSpreads=new Collection<ResourceSpreadDto>{new ResourceSpreadDto{Id=4, LaborSpreadDate=Convert.ToDateTime("11/01/2010"), LaborSpreadValue=50 },
+							new ResourceSpreadDto{Id=5, LaborSpreadDate=Convert.ToDateTime("12/01/2010"), LaborSpreadValue=150 },
+							new ResourceSpreadDto{Id=6, LaborSpreadDate=Convert.ToDateTime("01/01/2011"), LaborSpreadValue=250 }}
+							}}
+			};
 
-            this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { task1, task2 });
-            this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { });
-            this.retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, false)).Returns(new Collection<MaterialDTO> { });
-            this.retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(It.IsAny<int>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { task1, task2 });
+			this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { });
+			this.retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, false)).Returns(new Collection<MaterialDTO> { });
+			this.retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(It.IsAny<int>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
 
-            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<CustomFieldDTO> { customField1, customField2 });
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<CustomFieldDTO> { customField1, customField2 });
 
 			Mock<TravelTripCostCalculation> TripCalculate = new Mock<TravelTripCostCalculation>();
 			Mock<RMSZoneTravelRatesFeesDataLoader> rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
-            rmsTripCalculate.Setup(x => x.getAllFeesAndCostsByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSTravelNonzoneFeesAndCostsDTO>());
-            rmsTripCalculate.Setup(x => x.getAllEscalationRatesByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSEscalationRatesDTO>());
+			rmsTripCalculate.Setup(x => x.getAllFeesAndCostsByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSTravelNonzoneFeesAndCostsDTO>());
+			rmsTripCalculate.Setup(x => x.getAllEscalationRatesByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSEscalationRatesDTO>());
 
-            ProPricerExporter expReport = new ProPricerExporter(TripCalculate.Object, rmsTripCalculate.Object, this.retriever.Object, this.commonDataMapper.Object);
+			ProPricerExporter expReport = new ProPricerExporter(TripCalculate.Object, rmsTripCalculate.Object, this.retriever.Object, this.commonDataMapper.Object);
 
-            ProPricerDTO proPricerExport = SetUpProPricerDTO(this.Workspace.Id);
+			ProPricerDTO proPricerExport = SetUpProPricerDTO(this.Workspace.Id);
 
-            PpDataReadyForExport result = expReport.ExportProPricer(proPricerExport, workspace);
-            Collection<string> TaskData = result.TaskData.ToCollection();
-            Collection<string> ResourceCost = result.ResourceData.ToCollection();
+			PpDataReadyForExport result = expReport.ExportProPricer(proPricerExport, workspace);
+			Collection<string> TaskData = result.TaskData.ToCollection();
+			Collection<string> ResourceCost = result.ResourceData.ToCollection();
 
-            Assert.IsTrue(TaskData != null, "Task Data is not null");
-            Assert.IsTrue(ResourceCost != null, "Resource Cost data is not null");
+			Assert.IsTrue(TaskData != null, "Task Data is not null");
+			Assert.IsTrue(ResourceCost != null, "Resource Cost data is not null");
 
-            //  there is no other way to verify the results other than hard coding string values
-            Assert.AreEqual("LIDN000001,112005,,TOTAL,1.1,012006,\"PE\",\"MOCK TASK1\",\"mock clin1 title\",\"mock wbs title\",2.2,\"an exercise class\",,,\"BBBBBBB\",\"KristinePO\",\"Comparison\",20,1,1,\"test boe\",\"123\",", TaskData[0], "The first task did not match this value");
-            Assert.AreEqual("LIDN000002,112005,,TOTAL,,012006,,\"MOCK TASK2\",\"\",\"mock wbs title\",2.2,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Factor\",21,2,2,\"test boe\",\"1234\",", TaskData[1], "The second task (first resource) did not match this value");
-            Assert.AreEqual("LIDN000003,112005,,TOTAL,,012006,,\"MOCK TASK2\",\"\",\"mock wbs title\",2.2,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Factor\",21,2,3,\"test boe\",\"1234\",", TaskData[2], "The second task (second resource) did not match this value");
+			//  there is no other way to verify the results other than hard coding string values
+			Assert.AreEqual("LIDN000001,112005,,TOTAL,1.1,012006,\"PE\",\"MOCK TASK1\",\"mock clin1 title\",\"mock wbs title\",2.2,\"an exercise class\",,,\"BBBBBBB\",\"KristinePO\",\"Comparison\",20,1,1,\"test boe\",\"123\",", TaskData[0], "The first task did not match this value");
+			Assert.AreEqual("LIDN000002,112005,,TOTAL,,012006,,\"MOCK TASK2\",\"\",\"mock wbs title\",2.2,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Factor\",21,2,2,\"test boe\",\"1234\",", TaskData[1], "The second task (first resource) did not match this value");
+			Assert.AreEqual("LIDN000003,112005,,TOTAL,,012006,,\"MOCK TASK2\",\"\",\"mock wbs title\",2.2,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Factor\",21,2,3,\"test boe\",\"1234\",", TaskData[2], "The second task (second resource) did not match this value");
 
-            Assert.AreEqual("500,\"BBBBBBB\",LIDN000001,2.2,,,,D,1.1,\"mock clin1 title\",112010,\"mock wbs title\",20,1,1,\"test boe\",\"KristinePO\",\"MOCK TASK1\",\"123\",200,0,200,", ResourceCost[0], "The first resource did not match this value");
-            Assert.AreEqual(",\"BBBBBBB\",LIDN000002,2.2,\"where you learn past events\",\"History\",,D,,\"\",112010,\"mock wbs title\",21,2,2,\"test boe\",\"KristinePO\",\"MOCK TASK2\",\"1234\",150,150,150,", ResourceCost[1], "The second resource did not match this value");
-            Assert.AreEqual(",\"BBBBBBB\",LIDN000003,2.2,\"where you learn past events\",\"History\",,D,,\"\",112010,\"mock wbs title\",21,2,3,\"test boe\",\"KristinePO\",\"MOCK TASK2\",\"1234\",50,150,250,", ResourceCost[2], "The third resource did not match this value");
-        }
+			Assert.AreEqual("500,\"BBBBBBB\",LIDN000001,2.2,,,,D,1.1,\"mock clin1 title\",112010,\"mock wbs title\",20,1,1,\"test boe\",\"KristinePO\",\"MOCK TASK1\",\"123\",200,0,200,", ResourceCost[0], "The first resource did not match this value");
+			Assert.AreEqual(",\"BBBBBBB\",LIDN000002,2.2,\"where you learn past events\",\"History\",,D,,\"\",112010,\"mock wbs title\",21,2,2,\"test boe\",\"KristinePO\",\"MOCK TASK2\",\"1234\",150,150,150,", ResourceCost[1], "The second resource did not match this value");
+			Assert.AreEqual(",\"BBBBBBB\",LIDN000003,2.2,\"where you learn past events\",\"History\",,D,,\"\",112010,\"mock wbs title\",21,2,3,\"test boe\",\"KristinePO\",\"MOCK TASK2\",\"1234\",50,150,250,", ResourceCost[2], "The third resource did not match this value");
+		}
 
-        [TestMethod, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
+		/// <summary>
+		/// Test ExportProPricer properly populates Task Author when it's enabled for the system and workspace
+		/// </summary>
+		[TestMethod, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
+		public void BL_ExportProPricer_LaborElementsOnly_TaskAuthorEnabled()
+		{
+			try
+			{
+				Utilities.IsAssignTaskAuthorEnabledForSystem = true;
+
+				CustomFieldDTO customField1 = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.TaskDisplay };
+				CustomFieldDTO customField2 = new CustomFieldDTO { Id = 2, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay };
+
+				CustomFieldValueDTO cv = new CustomFieldValueDTO();
+				cv.CustomFieldID = customField1.Id;
+				cv.CustomFieldValueID = 1;
+				cv.CustomFieldValueName = "P<br/><BR /><bR/>E";
+				cv.CustomFieldValueDescription = "an exercise<BR /> class";
+
+				CustomFieldValueDTO cv2 = new CustomFieldValueDTO();
+				cv2.CustomFieldID = customField2.Id;
+				cv2.CustomFieldValueID = 2;
+				cv2.CustomFieldValueName = "History";
+				cv2.CustomFieldValueDescription = "where you<br /><BR/><BR><br><br / > learn past events";
+
+				DateTime LaborstartDate = Convert.ToDateTime("11/01/2010");
+				DateTime LaborendDate = Convert.ToDateTime("01/01/2011");
+
+				GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+				GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+				GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), commonDataMapper.Object);
+				GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionsDataLoader.Object);
+
+				FullWorkspace workspace = new FullWorkspace(this.Workspace);
+
+				this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(this.Workspace.Id, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(new Collection<FullBoe>() { new FullBoe(this.Boe1), new FullBoe(this.Boe2) });
+				this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullWbs>() { new FullWbs(this.Wbs) });
+				this.retriever.Setup(x => x.GetClinsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullClin>() { new FullClin(this.Clin1) });
+				this.retriever.Setup(x => x.GetClinById(this.Boe1.CLINID.Value)).Returns(this.Clin1);
+				this.retriever.Setup(x => x.GetWbsById(this.Wbs.Id)).Returns(this.Wbs);
+				this.retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<MoqTypeSelection>());
+				this.retriever.Setup(x => x.GetApprovalUserIdsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<int>());
+				this.retriever.Setup(x => x.GetUsersByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<UserDTO>() { new UserDTO() { UserID = 1, DisplayName = "Test User (US)" } });
+				workspace.UsingTemplateBOE = false;
+				workspace.EnableAssignTaskAuthor = true;
+
+				// setup resources dto mapper
+				Collection<ResourceDTO> resources = new Collection<ResourceDTO>
+				{
+					this.Resource
+				};
+
+				this.retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new List<CustomFieldValueDTO>() { cv, cv2 });
+				this.retriever.Setup(x => x.GetPerformingOrgsByIds(It.IsAny<ICollection<int>>())).Returns(new List<PerformingOrgDTO>() { this.Perforg });
+				this.retriever.Setup(x => x.GetResourcesByResourceListId(It.IsAny<int>())).Returns(resources);
+				this.retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(resources);
+				this.retriever.Setup(x => x.GetFullWorkspaceById(workspace.Id)).Returns(workspace);
+				this.factory.Setup(x => x.CreateFullWorkspace(It.IsAny<int>())).Returns(workspace);
+				this.factory.Setup(x => x.CreateFullBoes(It.IsAny<ICollection<int>>())).Returns(new List<FullBoe>() { new FullBoe(this.Boe1) });
+				foreach (FullBoe boe in workspace.Boes)
+				{
+					boe.Title = "test boe";
+				}
+
+				BoeTaskElementDTO task1 = new BoeTaskElementDTO
+				{
+					BoeID = this.Boe1.Id,
+					Id = 1,
+					BOETaskID = "123",
+					TaskTitle = "MOCK TASK1",
+					Description = "MOCK TASK1",
+					StartDate = this.Boe1.StartDate,
+					EndDate = this.Boe1.EndDate,
+					IMS_ID = "500",
+					MOQType = MOQType.Comparison,
+					CustomFieldValueContainers = new Collection<CustomFieldValueContainer> { new CustomFieldValueContainer { CustomFieldValueID = cv.CustomFieldValueID } },
+					taskElementLabors = new Collection<ResourceTypeDto>{new ResourceTypeDto{Id=1, SpreadType = IES.Common.SpreadType.Hours, StartDateValue=LaborstartDate, EndDateValue=LaborendDate, ResourceID=this.Resource.Id, PerformingOrgID=this.Perforg.Id,SpreadCurveID = SpreadCurves.DiscreteHours,
+							LaborSpreads=new Collection<ResourceSpreadDto>{new ResourceSpreadDto{Id=1, LaborSpreadDate=Convert.ToDateTime("11/01/2010"), LaborSpreadValue=200 },
+                            //discrete values of 0 are not stored in the db so replicate that here by removing a month
+                            new ResourceSpreadDto{Id=3, LaborSpreadDate=Convert.ToDateTime("01/01/2011"), LaborSpreadValue=200 }}
+						}},
+					AuthorUserId = 1
+				};
+				//Two resources for this task to test multiple rows for tasks with multiple resources
+				BoeTaskElementDTO task2 = new BoeTaskElementDTO
+				{
+					BoeID = this.Boe2.Id,
+					Id = 2,
+					BOETaskID = "1234",
+					TaskTitle = "MOCK TASK2",
+					Description = "MOCK TASK2",
+					StartDate = this.Boe1.StartDate,
+					EndDate = this.Boe1.EndDate,
+					MOQType = MOQType.Factor,
+					taskElementLabors = new Collection<ResourceTypeDto>{new ResourceTypeDto{Id=2, SpreadType = IES.Common.SpreadType.Hours, StartDateValue=LaborstartDate, EndDateValue=LaborendDate, ResourceID=this.Resource.Id, PerformingOrgID=this.Perforg.Id,  SpreadCurveID = SpreadCurves.DiscreteHours, CustomFieldValueContainers=new Collection<CustomFieldValueContainer>{new CustomFieldValueContainer{CustomFieldValueID=cv2.CustomFieldValueID}},
+							LaborSpreads=new Collection<ResourceSpreadDto>{new ResourceSpreadDto{Id=4, LaborSpreadDate=Convert.ToDateTime("11/01/2010"), LaborSpreadValue=150 },
+							new ResourceSpreadDto{Id=5, LaborSpreadDate=Convert.ToDateTime("12/01/2010"), LaborSpreadValue=150 },
+							new ResourceSpreadDto{Id=6, LaborSpreadDate=Convert.ToDateTime("01/01/2011"), LaborSpreadValue=150 }}
+							},new ResourceTypeDto{Id=3, SpreadType = IES.Common.SpreadType.Hours, StartDateValue=LaborstartDate, EndDateValue=LaborendDate, ResourceID=this.Resource.Id, PerformingOrgID=this.Perforg.Id,  SpreadCurveID = SpreadCurves.DiscreteHours, CustomFieldValueContainers=new Collection<CustomFieldValueContainer>{new CustomFieldValueContainer{CustomFieldValueID=cv2.CustomFieldValueID}},
+							LaborSpreads=new Collection<ResourceSpreadDto>{new ResourceSpreadDto{Id=4, LaborSpreadDate=Convert.ToDateTime("11/01/2010"), LaborSpreadValue=50 },
+							new ResourceSpreadDto{Id=5, LaborSpreadDate=Convert.ToDateTime("12/01/2010"), LaborSpreadValue=150 },
+							new ResourceSpreadDto{Id=6, LaborSpreadDate=Convert.ToDateTime("01/01/2011"), LaborSpreadValue=250 }}
+							}},
+					AuthorUserId = 1
+				};
+
+				this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { task1, task2 });
+				this.retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, false)).Returns(new Collection<TravelDTO> { });
+				this.retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, false)).Returns(new Collection<MaterialDTO> { });
+				this.retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(It.IsAny<int>(), false)).Returns(new Collection<OtherDirectCostDTO> { });
+
+				retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<CustomFieldDTO> { customField1, customField2 });
+
+				Mock<TravelTripCostCalculation> TripCalculate = new Mock<TravelTripCostCalculation>();
+				Mock<RMSZoneTravelRatesFeesDataLoader> rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
+				rmsTripCalculate.Setup(x => x.getAllFeesAndCostsByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSTravelNonzoneFeesAndCostsDTO>());
+				rmsTripCalculate.Setup(x => x.getAllEscalationRatesByWorkspace(workspace.Id)).Returns(new Collection<WorkspaceRMSEscalationRatesDTO>());
+
+				ProPricerExporter expReport = new ProPricerExporter(TripCalculate.Object, rmsTripCalculate.Object, this.retriever.Object, this.commonDataMapper.Object);
+
+				ProPricerDTO proPricerExport = SetUpProPricerDTO(this.Workspace.Id);
+
+				PpDataReadyForExport result = expReport.ExportProPricer(proPricerExport, workspace);
+				Collection<string> TaskData = result.TaskData.ToCollection();
+				Collection<string> ResourceCost = result.ResourceData.ToCollection();
+
+				Assert.IsTrue(TaskData != null, "Task Data is not null");
+				Assert.IsTrue(ResourceCost != null, "Resource Cost data is not null");
+
+				//  there is no other way to verify the results other than hard coding string values
+				Assert.AreEqual("LIDN000001,112005,,TOTAL,1.1,012006,\"PE\",\"MOCK TASK1\",\"mock clin1 title\",\"mock wbs title\",2.2,\"an exercise class\",,,\"BBBBBBB\",\"KristinePO\",\"Comparison\",20,1,1,\"test boe\",\"123\",\"Test User (US)\",", TaskData[0], "The first task did not match this value");
+				Assert.AreEqual("LIDN000002,112005,,TOTAL,,012006,,\"MOCK TASK2\",\"\",\"mock wbs title\",2.2,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Factor\",21,2,2,\"test boe\",\"1234\",\"Test User (US)\",", TaskData[1], "The second task (first resource) did not match this value");
+				Assert.AreEqual("LIDN000003,112005,,TOTAL,,012006,,\"MOCK TASK2\",\"\",\"mock wbs title\",2.2,,\"where you learn past events\",\"History\",\"BBBBBBB\",\"KristinePO\",\"Factor\",21,2,3,\"test boe\",\"1234\",\"Test User (US)\",", TaskData[2], "The second task (second resource) did not match this value");
+
+				Assert.AreEqual("500,\"BBBBBBB\",LIDN000001,2.2,,,,D,1.1,\"mock clin1 title\",112010,\"mock wbs title\",20,1,1,\"test boe\",\"KristinePO\",\"MOCK TASK1\",\"123\",\"Test User (US)\",200,0,200,", ResourceCost[0], "The first resource did not match this value");
+				Assert.AreEqual(",\"BBBBBBB\",LIDN000002,2.2,\"where you learn past events\",\"History\",,D,,\"\",112010,\"mock wbs title\",21,2,2,\"test boe\",\"KristinePO\",\"MOCK TASK2\",\"1234\",\"Test User (US)\",150,150,150,", ResourceCost[1], "The second resource did not match this value");
+				Assert.AreEqual(",\"BBBBBBB\",LIDN000003,2.2,\"where you learn past events\",\"History\",,D,,\"\",112010,\"mock wbs title\",21,2,3,\"test boe\",\"KristinePO\",\"MOCK TASK2\",\"1234\",\"Test User (US)\",50,150,250,", ResourceCost[2], "The third resource did not match this value");
+			}
+			finally
+			{
+				Utilities.IsAssignTaskAuthorEnabledForSystem = false;
+			}
+		}
+
+		[TestMethod, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
         public void BL_ExportProPricer_TravelTrips()
         {
             DateTime LaborstartDate = Convert.ToDateTime("11/01/2010");
@@ -587,9 +741,11 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetWbsById(this.Wbs.Id)).Returns(this.Wbs);
             PerformingOrgDTO Perforg2 = new PerformingOrgDTO() { Id = 2, IsSystemPerfOrg = true, PerformingOrgDesc = "test2", PerformingOrgName = "test2", Updateable = UpdateType.None };
             this.retriever.Setup(x => x.GetPerformingOrgsByIds(It.IsAny<ICollection<int>>())).Returns(new List<PerformingOrgDTO> { this.Perforg, Perforg2 });
+			this.retriever.Setup(x => x.GetApprovalUserIdsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<int>());
+			this.retriever.Setup(x => x.GetUsersByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<UserDTO>());
 
-            // setup resources dto mapper
-            Collection<ResourceDTO> resources = new Collection<ResourceDTO>();
+			// setup resources dto mapper
+			Collection<ResourceDTO> resources = new Collection<ResourceDTO>();
             ResourceDTO Laborresource = new ResourceDTO { Id = 2, ResourceName = "BBBBBBB", ResourceDesc = "Lots of Bs", SegRegion = "BB", LaborType = "BBBB", ElementOfCost = ElementOfCostType.LMLabor };
             ResourceDTO TravelResource = new ResourceDTO { Id = 7, ResourceName = "TT", ResourceDesc = "Lots of Ts", SegRegion = "TT", LaborType = "TT", ElementOfCost = ElementOfCostType.Travel, Segment = SegmentType.TS };
             ResourceDTO TravelResource2 = new ResourceDTO { Id = 8, ResourceName = "TD", ResourceDesc = "Lots of TDs", SegRegion = "TD", LaborType = "TD", ElementOfCost = ElementOfCostType.Travel, Segment = SegmentType.DS };
@@ -1042,6 +1198,8 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetOdcCollectionByWorkspaceId(workspace.Id, false)).Returns(new Collection<OtherDirectCostDTO> { });
             this.retriever.Setup(x => x.GetMaterialsByWorkspaceId(workspace.Id, false)).Returns(new Collection<MaterialDTO> { });
             this.retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<MoqTypeSelection>());
+			this.retriever.Setup(x => x.GetApprovalUserIdsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<int>());
+			this.retriever.Setup(x => x.GetUsersByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<UserDTO>());
             workspace.UsingTemplateBOE = false;
             
             foreach (FullBoe boe in workspace.Boes)
@@ -1181,7 +1339,9 @@ namespace GenBOE.Tests.ActionLogic
             factory.Setup(x => x.CreateFullBoe(this.Boe1.Id)).Returns(new FullBoe() { Title = "Labor/Material BOE" });
             factory.Setup(x => x.CreateFullBoe(this.Boe2.Id)).Returns(new FullBoe() { Title = "Travel/ODC BOE" });
             this.retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<MoqTypeSelection>());
-            workspace.UsingTemplateBOE = false;
+			this.retriever.Setup(x => x.GetApprovalUserIdsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<int>());
+			this.retriever.Setup(x => x.GetUsersByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<UserDTO>());
+			workspace.UsingTemplateBOE = false;
 
 			Mock<TravelTripCostCalculation> TripCalculate = new Mock<TravelTripCostCalculation>();
 			Mock<RMSZoneTravelRatesFeesDataLoader> rmsTripCalculate = new Mock<RMSZoneTravelRatesFeesDataLoader>();
@@ -1220,11 +1380,12 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullClin>() { new FullClin(this.Clin1) });
             this.retriever.Setup(x => x.GetClinById(this.Boe1.CLINID.Value)).Returns(this.Clin1);
             this.retriever.Setup(x => x.GetWbsById(this.Wbs.Id)).Returns(this.Wbs);
-
             this.retriever.Setup(x => x.GetPerformingOrgsByIds(It.IsAny<ICollection<int>>())).Returns(new List<PerformingOrgDTO> { this.Perforg });
+			this.retriever.Setup(x => x.GetApprovalUserIdsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<int>());
+			this.retriever.Setup(x => x.GetUsersByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<UserDTO>());
 
-            // setup resources dto mapper
-            Collection<ResourceDTO> resources = new Collection<ResourceDTO>();
+			// setup resources dto mapper
+			Collection<ResourceDTO> resources = new Collection<ResourceDTO>();
             ResourceDTO LaborResource1 = new ResourceDTO { Id = 2, ResourceName = "BBBBBBB", ResourceDesc = "Lots of Bs", SegRegion = "BB", LaborType = "BBBB", ElementOfCost = ElementOfCostType.LMLabor };
             ResourceDTO LaborResource2 = new ResourceDTO { Id = 9, ResourceName = "EEEEEEE", ResourceDesc = "Lots of Es", SegRegion = "EE", LaborType = "EEEE", ElementOfCost = ElementOfCostType.LMLabor };
             ResourceDTO LaborResource3 = new ResourceDTO { Id = 36, ResourceName = "IIIIIII", ResourceDesc = "Lots of Is", SegRegion = "II", LaborType = "IIII", ElementOfCost = ElementOfCostType.LMLabor };
@@ -1729,7 +1890,9 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetClinById(this.Boe1.CLINID.Value)).Returns(this.Clin1);
             this.retriever.Setup(x => x.GetWbsById(this.Wbs.Id)).Returns(this.Wbs);
             this.retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<MoqTypeSelection>());
-            workspace.UsingTemplateBOE = false;
+			this.retriever.Setup(x => x.GetApprovalUserIdsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<int>());
+			this.retriever.Setup(x => x.GetUsersByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<UserDTO>());
+			workspace.UsingTemplateBOE = false;
 
             // setup resources dto mapper
             Collection<ResourceDTO> resources = new Collection<ResourceDTO>();
@@ -1857,7 +2020,9 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetClinById(this.Boe1.CLINID.Value)).Returns(this.Clin1);
             this.retriever.Setup(x => x.GetWbsById(this.Wbs.Id)).Returns(this.Wbs);
             this.retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<MoqTypeSelection>());
-            workspace.UsingTemplateBOE = false;
+			this.retriever.Setup(x => x.GetApprovalUserIdsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<int>());
+			this.retriever.Setup(x => x.GetUsersByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<UserDTO>());
+			workspace.UsingTemplateBOE = false;
 
             // setup resources dto mapper
             Collection<ResourceDTO> resources = new Collection<ResourceDTO>();
@@ -1970,8 +2135,11 @@ namespace GenBOE.Tests.ActionLogic
 
         [TestMethod]
         public void BL_ExportProPricer_LaborElementsOnly_Offloaded()
-        {
-            PpDataReadyForExport result = this.RunProPricerExportProjectMap();
+		{
+			this.retriever.Setup(x => x.GetApprovalUserIdsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<int>());
+			this.retriever.Setup(x => x.GetUsersByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<UserDTO>());
+
+			PpDataReadyForExport result = this.RunProPricerExportProjectMap();
 
             //  there is no other way to verify the results other than hard coding string values
             //  Removed MOQ and Custom Fields from the hard-coded strings since ProjectMap doesn't save/use them
@@ -2023,9 +2191,11 @@ namespace GenBOE.Tests.ActionLogic
 
             projectMapLoader.Setup(x => x.GetByWorkspaceId(this.Workspace.Id)).Returns(modelsWorkspace1);
             this.retriever.Setup(x => x.GetProjectMapDataByWorkspaceId(this.Workspace.Id)).Returns(modelsWorkspace1);
+			this.retriever.Setup(x => x.GetApprovalUserIdsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<int>());
+			this.retriever.Setup(x => x.GetUsersByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<UserDTO>());
 
-            // setup resources dto mapper
-            Collection<ResourceDTO> resources = new Collection<ResourceDTO>();
+			// setup resources dto mapper
+			Collection<ResourceDTO> resources = new Collection<ResourceDTO>();
             resources.Add(this.Resource);
             ResourceDTO subResource = new ResourceDTO()
             {
@@ -2227,8 +2397,10 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(this.Workspace.Id)).Returns(new Collection<FullClin>() { new FullClin(this.Clin1) });
             this.retriever.Setup(x => x.GetClinById(this.Boe1.CLINID.Value)).Returns(this.Clin1);
             this.retriever.Setup(x => x.GetWbsById(this.Wbs.Id)).Returns(this.Wbs);
+			this.retriever.Setup(x => x.GetApprovalUserIdsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<int>());
+			this.retriever.Setup(x => x.GetUsersByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<UserDTO>());
 
-            ICollection<MoqTypeSelection> moqTypes = new Collection<MoqTypeSelection>()
+			ICollection<MoqTypeSelection> moqTypes = new Collection<MoqTypeSelection>()
             {
                 new MoqTypeSelection() { TaskId = 1, SelectedMOQType = MOQType.SOW },
                 new MoqTypeSelection() { TaskId = 2, SelectedMOQType = MOQType.LOE },
