@@ -158,13 +158,27 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			List<BoeTaskElementDTO> tasks = workspace.TaskElements.ToList();
 			boeSummaryGridModelViews = new List<BOESummaryGridModelView>();
 
+			if (selectedBOEs != null && selectedBOEs.Any())
+			{
+				// This seems silly, but we need to order the BOEs for the export the way they were requested..
+				List<FullBoe> selectedAndOrderedBoes = new List<FullBoe>();
+
+				foreach (int boeId in selectedBOEs)
+				{
+					selectedAndOrderedBoes.Add(boes.Single(x => x.Id == boeId));
+				}
+
+				boes = selectedAndOrderedBoes;
+				tasks = tasks.Where(t => selectedBOEs.Contains(t.BoeID)).ToList();
+			}
+
 			// Validate for UCOT and multiple MOQ tasks - Space only
 			if (Utilities.ShowUCOTForWorkspace(workspace.CreationDate, workspace.TrackingNumber))
 			{
 				IList<MultiMOQTypeResult> multiMoqResults = new List<MultiMOQTypeResult>();
 				IList<string> allTasks = new List<string>();
 
-				foreach (FullBoe boe in workspace.Boes)
+				foreach (FullBoe boe in boes)
 				{
 					multiMoqResults.Add(MultiMOQTypeUtility.DoTasksHaveMultipleMOQTypes(boe, workspace.CreationDate, workspace.Shortname));
 				}
