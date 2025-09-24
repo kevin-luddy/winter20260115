@@ -52,6 +52,12 @@ namespace GenBOE.Web.Controllers.Backend
 			this.boeControllerLogic = boeControllerLogic;
 		}
 
+		/// <summary>
+		/// Get BOE Headers
+		/// </summary>
+		/// <param name="workspaceShortname">Workspace Short Name</param>
+		/// <param name="boeId">BOE ID</param>
+		/// <returns>BOEHeaderModelView</returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
