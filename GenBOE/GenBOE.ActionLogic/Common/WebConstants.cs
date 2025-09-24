@@ -470,6 +470,9 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string GET_WORKSPACE_CONFIGURATION = "GetWorkspaceConfiguration";
 		public static readonly string GET_HOME_MASTER_MENU_ITEMS = "GetHomeMasterMenuItems";
 
+		// BOE Controller
+		public static readonly string GET_BOE_HEADER = "GetBOEHeader";
+
 		#endregion BOE ACTIONS
 
 		#region CLIN
