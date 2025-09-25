@@ -75,10 +75,16 @@ namespace GenBOE.DataBridge.DTO
         /// <returns>Fully Loaded Boe Task Element DTOs</returns>
         ICollection<BoeTaskElementDTO> GetByWorkspaceId(int wsId, bool includeRTEFields, int hoursPrecision, int costPrecision);
 
-        /// <summary>
-        /// Pulls RTE fields for the DTOs, and updates them as needed
-        /// </summary>
-        /// <param name="dtos">DTOs that whose RTE fields will be loaded, if they are null</param>
-        void LoadRTEFields(ICollection<BoeTaskElementDTO> dtos);
-    }
+		/// <summary>
+		/// Pulls RTE fields for the DTOs, and updates them as needed
+		/// </summary>
+		/// <param name="dtos">DTOs that whose RTE fields will be loaded, if they are null</param>
+		void LoadRTEFields(ICollection<BoeTaskElementDTO> dtos);
+
+		/// <summary>
+		/// Checks if any Tasks contain authors
+		/// </summary>
+		/// <param name="id">workspace id</param>
+		bool CheckIfTaskContainsAuthors(int workspaceId);
+	}
 }

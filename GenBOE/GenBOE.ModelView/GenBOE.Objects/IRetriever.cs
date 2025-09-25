@@ -612,5 +612,11 @@ namespace GenBOE.Objects
 		/// <param name="loadRteData">Indicate whether RTE data should be loaded automatically</param>
 		/// <returns>Other direct Costs associated with the Workspace.</returns>
 		ICollection<OtherDirectCostDTO> GetOdcCollectionByWorkspaceId(int workspaceId, bool loadRteData);
+
+		/// <summary>
+		/// Checks if any Tasks contain authors
+		/// </summary>
+		/// <param name="id">workspace id</param>
+		bool CheckIfTaskContainsAuthors(int workspaceId);
 	}
 }
