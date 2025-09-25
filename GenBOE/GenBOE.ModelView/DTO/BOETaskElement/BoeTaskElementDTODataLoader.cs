@@ -350,6 +350,23 @@ namespace GenBOE.DataBridge.DTO
 			});
 		}
 
+		/// <summary>
+		/// Checks if any Tasks contain authors
+		/// </summary>
+		/// <param name="id">workspace id</param>
+		public bool CheckIfTaskContainsAuthors(int workspaceId)
+		{
+			bool result = false;
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
+
+				result = gbe.BOETaskElements.Where(bT => bT.BOE.WorkspaceID == workspaceId && bT.AuthorUserId != null).Any();
+			}
+
+			return result;
+		}
+
 		#region RTE Load Methods
 
 		/// <summary>

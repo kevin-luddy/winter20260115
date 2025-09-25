@@ -1301,6 +1301,25 @@ namespace GenBOE.Objects
 		}
 
 		/// <summary>
+		/// Returns whether any Task has Authors assigned
+		/// </summary>
+		public bool WorkspaceContainsTaskAuthor
+		{
+			get
+			{
+				if (this.taskElements != null)
+				{
+					return this.TaskElements.Any(x => x.AuthorUserId != null);
+				}
+				else
+				{
+					// pull from database
+					return this.retriever.CheckIfTaskContainsAuthors(this.Id);
+				}
+			}
+		}
+
+		/// <summary>
 		/// Convert from Full Object to DTO
 		/// </summary>
 		/// <returns>DTO version of this FullObject</returns>

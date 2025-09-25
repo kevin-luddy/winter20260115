@@ -802,6 +802,15 @@ namespace GenBOE.Objects
 		}
 
 		/// <summary>
+		/// Checks if any Tasks contain authors
+		/// </summary>
+		/// <param name="id">workspace id</param>
+		public bool CheckIfTaskContainsAuthors(int workspaceId)
+		{
+			return this.taskElementLoader.CheckIfTaskContainsAuthors(workspaceId);
+		}
+
+		/// <summary>
 		/// Gets all FullBoe objects that belong to the workspace
 		/// </summary>
 		/// <param name="workspaceId">Workspace Id</param>
