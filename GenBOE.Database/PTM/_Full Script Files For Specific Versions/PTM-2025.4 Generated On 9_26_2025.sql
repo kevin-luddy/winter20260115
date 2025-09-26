@@ -1,6 +1,6 @@
 PRINT '###### SCRIPT IS STARTING ######';
 /*
-    This file was auto-generated for Release: 2025.4, on 9/17/2025.
+    This file was auto-generated for Release: 2025.4, on 9/26/2025.
     It contains all of the Release specific scripts, modifying data/tables as well as all of the Stored Procedures and User Defined Table Types.
 */
 
@@ -34,7 +34,7 @@ BEGIN
 	WHERE SortOrder = @q16SortOrder AND ColumnOrder = 2 AND ProposalAdequacyReviewID = @newChecklistId;
 
 	UPDATE [dbo].[PARChecklistContent] 
-	SET ChecklistText = '<p>Subcontractor Proposals (If S/C proposal >= $20M or if S/C proposal > CCoPD threshold and 10% of the Prime Proposal price) Must be included with proposal or include statement how the subcontracts are submitted.</p><br /><p>Note: This includes material suppliers as well; NA for actuals that have previously been definitized.</p><p><a href=''__BASE_URL__Instruction_16.docx'' target=''_blank''>Additional Instructions</a></p>' 
+	SET ChecklistText = '<p>Subcontractor Proposals (If S/C proposal >= $20M* or if S/C proposal > CCoPD threshold and 10% of the Prime Proposal price) Must be included with proposal or include statement how the subcontracts are submitted.</p><br /><p>Note: This includes material suppliers as well; NA for actuals that have previously been definitized.</p><br/><p>*Refer to the Additional Instructions link below regarding the applicability of the threshold change on an existing contract.</p><p><a href=''__BASE_URL__Instruction_16.docx'' target=''_blank''>Additional Instructions</a></p>' 
 	WHERE PARChecklistContentId = @q16InstructionsId;
 END
 
