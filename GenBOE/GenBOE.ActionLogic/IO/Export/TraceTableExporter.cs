@@ -372,7 +372,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						string summaryFieldValue = "UCOT";
 						if (resourceId != ucotResourceId)
 						{
-							summaryFieldValue = workspace.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == resourceId)?.ResourceDesc ?? "NO RESOURCE DESCRIPTION";
+							summaryFieldValue = workspace.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == resourceId)?.ResourceName ?? "NO RESOURCE NAME";
 						}
 
 						TraceTableBoeDataGroup newChild = new TraceTableBoeDataGroup()
@@ -392,7 +392,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						string summaryFieldValue = "UCOT";
 						if (resourceId != ucotResourceId)
 						{
-							summaryFieldValue = workspace.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == resourceId)?.ResourceName ?? "NO RESOURCE NAME";
+							summaryFieldValue = workspace.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == resourceId)?.ResourceDesc ?? "NO RESOURCE DESCRIPTION";
 						}
 
 						TraceTableBoeDataGroup newChild = new TraceTableBoeDataGroup()
