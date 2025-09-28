@@ -372,7 +372,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						string summaryFieldValue = "UCOT";
 						if (resourceId != ucotResourceId)
 						{
-							summaryFieldValue = workspace.ResourcesUsedInWsBoes..FirstOrDefault(x => x.Id == resourceId)?.ResourceName ?? "NO RESOURCE NAME";
+							summaryFieldValue = workspace.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == resourceId)?.ResourceName ?? "NO RESOURCE NAME";
 						}
 
 						TraceTableBoeDataGroup newChild = new TraceTableBoeDataGroup()
