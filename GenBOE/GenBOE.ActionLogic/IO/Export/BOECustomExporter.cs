@@ -9,7 +9,6 @@ namespace GenBOE.ActionLogic.IO.Export
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
-	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Globalization;
 	using System.IO;
@@ -23,12 +22,10 @@ namespace GenBOE.ActionLogic.IO.Export
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.IO.Export.BOE;
-	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.DataBridge.Common;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
-	using GenTRAC.Objects;
 	using IES.Common;
 	using IES.Common.classes;
 	using IES.Common.Exceptions;
@@ -4290,7 +4287,6 @@ namespace GenBOE.ActionLogic.IO.Export
 				this.SetCantSplit(templateDataRow);
 				TableRow currentInsertionRow = templateDataRow;
 
-
 				// accumulate totals
 				decimal costTotal = 0m;
 				decimal hoursTotal = 0m;
@@ -4350,6 +4346,13 @@ namespace GenBOE.ActionLogic.IO.Export
 
 					SdtElement roundingNoticeAsterisk = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.FieldName_RoundingNoticeAsterisk);
 					this.RemoveElement(roundingNoticeAsterisk);
+				}
+
+				// Add UCOT text if there are any Resources with the UCOT label
+				// These resources are only added if UCOT is enabled for the workspace, so no need to pass the FullWorkspace all the way to this method to check additionally
+				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && rollupData.Any(x => x.ResourceName.EndsWith($"-{Constants.UCOT_LABEL}")))
+				{
+					WordUtilities.AddUcotLabelToContainer(tableContainerElement);
 				}
 
 				// remove template rows
