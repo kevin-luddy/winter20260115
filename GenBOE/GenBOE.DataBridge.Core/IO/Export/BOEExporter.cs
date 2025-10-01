@@ -3034,7 +3034,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 					// Add UCOT text if there are any Resources with the UCOT label
 					// These resources are only added if UCOT is enabled for the workspace, so no need to pass the FullWorkspace all the way to this method to check additionally
-					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && rollupData.Any(x => x.ResourceName.EndsWith($"-{CommonConstants.UCOT_LABEL}")))
+					if (CommonUtilities.IsUCOTEnabledForSystem && rollupData.Any(x => x.ResourceName.EndsWith($"-{CommonConstants.UCOT_LABEL}")))
 					{
 						WordUtilities.AddUcotLabelToContainer(element);
 					}

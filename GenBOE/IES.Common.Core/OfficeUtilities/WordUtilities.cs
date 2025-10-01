@@ -260,26 +260,24 @@ namespace IES.Common.Core.OfficeUtilities
 			if (containerElement != null)
 			{
 				Document doc = (Document)containerElement.GetAncestor(typeof(Document));
-				// DocumentBuilder builder = new DocumentBuilder(doc);
 
-				Run lastRun = containerElement.GetChildNodes<Run>(NodeType.Run, true).LastOrDefault();
+				Font font = containerElement.GetChildNodes<Run>(NodeType.Run, true).LastOrDefault()?.Font;
 
-				if (lastRun == null)
+				if (font == null)
 				{
-					// If no run, get font from the document
-					lastRun = new Run(doc);
+					// If there was no run to get the font from, get font from the document
 					DocumentBuilder builder = new DocumentBuilder(doc);
-					SetRunFont(lastRun, builder.Font, false);
+					font = builder.Font;
 				}
 
 				Run openingRun = new Run(doc, OPENING_UCOT_LABEL_TEXT);
-				SetRunFont(openingRun, lastRun.Font, false);
+				SetRunFont(openingRun, font, false);
 
 				Run boldRun = new Run(doc, BOLD_UCOT_LABEL_TEXT);
-				SetRunFont(boldRun, lastRun.Font, true);
+				SetRunFont(boldRun, font, true);
 
 				Run closingRun = new Run(doc, CLOSING_UCOT_LABEL_TEXT);
-				SetRunFont(closingRun, lastRun.Font, false);
+				SetRunFont(closingRun, font, false);
 
 				Paragraph paragraph = containerElement.AppendChild(new Paragraph(doc)) as Paragraph;
 				paragraph.AppendChild(openingRun);

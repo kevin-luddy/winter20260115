@@ -3239,7 +3239,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
 					// Add UCOT text if there are any Resources with the UCOT label
 					// These resources are only added if UCOT is enabled for the workspace, so no need to pass the FullWorkspace all the way to this method to check additionally
-					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && rollupData.Any(x => x.ResourceName.EndsWith($"-{Constants.UCOT_LABEL}")))
+					if (Utilities.IsUCOTEnabledForSystem && rollupData.Any(x => x.ResourceName.EndsWith($"-{Constants.UCOT_LABEL}")))
 					{
 						WordUtilities.AddUcotLabelToContainer(element);
 					}
@@ -7155,7 +7155,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     // Set the cell, paragraph, and run properties
                     TableCellProperties cellProperties = new TableCellProperties(templateCell.TableCellProperties.CloneNode(true));
                     ParagraphProperties paraProperties = templateCell.Descendants<ParagraphProperties>().FirstOrDefault();
-                    RunProperties runProperties = templateCell.Descendants<RunProperties>().FirstOrDefault(); // see this
+                    RunProperties runProperties = templateCell.Descendants<RunProperties>().FirstOrDefault();
 
                     // Set the text and cell properties
                     TableCell cell = new TableCell();
