@@ -891,7 +891,7 @@ namespace IES.Common.Core.Utilities
 		/// <summary>
 		/// Is UCOT/Uncompensated Overtime enabled?
 		/// </summary>
-		private static bool IsUCOTEnabledForSystem
+		public static bool IsUCOTEnabledForSystem
 		{
 			get
 			{

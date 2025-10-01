@@ -3237,8 +3237,15 @@ namespace GenBOE.ActionLogic.IO.Export
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalsRow, BOEExporterConstants.FieldName_OtherCostTotal), otherCostTotal.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, this.CurrencyFormatter));
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalsRow, BOEExporterConstants.FieldName_CostTotal), costTotal.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, this.CurrencyFormatter));
 
-                    // remove template rows
-                    templateDataRow.RemoveIt();
+					// Add UCOT text if there are any Resources with the UCOT label
+					// These resources are only added if UCOT is enabled for the workspace, so no need to pass the FullWorkspace all the way to this method to check additionally
+					if (Utilities.IsUCOTEnabledForSystem && rollupData.Any(x => x.ResourceName.EndsWith($"-{Constants.UCOT_LABEL}")))
+					{
+						WordUtilities.AddUcotLabelToContainer(element);
+					}
+
+					// remove template rows
+					templateDataRow.RemoveIt();
                 }
             }
             else
