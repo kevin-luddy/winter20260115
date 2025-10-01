@@ -6,6 +6,7 @@
 
 namespace GenBOE.DataBridge.DTO
 {
+	using GenBOE.DataBridge.DTO.SkillMixSummary;
 	using GenBOE.Dtos;
 	using GenBOE.Models;
 	using IES.Common;
@@ -37,6 +38,11 @@ namespace GenBOE.DataBridge.DTO
 		private readonly ICommonDisclosureSMDTODataLoader commonDisclosureLoader;
 
 		/// <summary>
+		/// Skill mix summary loader.
+		/// </summary>
+		private readonly ISkillMixSummaryDTOLoader skillMixSummaryLoader;
+
+		/// <summary>
 		/// The workspace version data loader.
 		/// </summary>
 		private readonly IWorkspaceVersionMetaDataDTODataLoader workspaceVersionMetaDataDTODataLoader;
@@ -44,12 +50,13 @@ namespace GenBOE.DataBridge.DTO
 		/// <summary>
 		/// Default constructor
 		/// </summary>
-		public DateShiftDTODataLoader(IResourceSpreadLoader resourceSpreadLoader, ISkillMixDTOLoader skillMixLoader, ICommonDisclosureSMDTODataLoader commonDisclosureLoader, IWorkspaceVersionMetaDataDTODataLoader workspaceVersionMetaDataDTODataLoader)
+		public DateShiftDTODataLoader(IResourceSpreadLoader resourceSpreadLoader, ISkillMixDTOLoader skillMixLoader, ICommonDisclosureSMDTODataLoader commonDisclosureLoader, ISkillMixSummaryDTOLoader skillMixSummaryDTOLoader, IWorkspaceVersionMetaDataDTODataLoader workspaceVersionMetaDataDTODataLoader)
 		{
 			this.Log = new Logger(typeof(DateShiftDTODataLoader));
 			this.resourceSpreadLoader = resourceSpreadLoader;
 			this.skillMixLoader = skillMixLoader;
 			this.commonDisclosureLoader = commonDisclosureLoader;
+			this.skillMixSummaryLoader = skillMixSummaryDTOLoader;
 			this.workspaceVersionMetaDataDTODataLoader = workspaceVersionMetaDataDTODataLoader;
 		}
 
@@ -120,6 +127,26 @@ namespace GenBOE.DataBridge.DTO
 					{
 						// If the dto has no common disclosure tables, it's possible they were cleared out, so make sure old data is deleted
 						this.commonDisclosureLoader.DeleteCommonDisclosureSkillMixByBOETaskElementID(dateShiftDTOtoUpdate.Id);
+					}
+
+					// Save the Skill Mix Summary DTOs
+					if (dateShiftDTOtoUpdate.SkillMixSummaryTable != null && dateShiftDTOtoUpdate.SkillMixSummaryTable.Any())
+					{
+						List<SkillMixSummaryDTO> dtos = new List<SkillMixSummaryDTO>();
+						foreach (SkillMixSummaryModelView skillMixSummary in dateShiftDTOtoUpdate.SkillMixSummaryTable)
+						{
+							SkillMixSummaryDTO dto = skillMixSummary.ToDto();
+							dto.BOEID = dateShiftDTOtoUpdate.BoeId;
+							dto.BOETaskElementID = dateShiftDTOtoUpdate.BOETaskElementId.Value;
+							dtos.Add(dto);
+						}
+
+						this.skillMixSummaryLoader.InsertSkillMixSummary(dtos);
+					}
+					else
+					{
+						// If the dto has no skill mix summary tables, it's possible they were cleared out, so make sure old data is deleted
+						this.skillMixSummaryLoader.DeleteSkillMixSummaryByBOETaskElementID(dateShiftDTOtoUpdate.Id);
 					}
 				}
 			}
@@ -315,6 +342,11 @@ namespace GenBOE.DataBridge.DTO
 													where b.WorkspaceID == workspaceId
 													select cd).ToList();
 
+				List<Models.SkillMixSummary> skillMixSummaries = (from cd in gbe.SkillMixSummaries
+																	join b in gbe.BOEs on cd.BOEID equals b.BOEID
+																	where b.WorkspaceID == workspaceId
+																	select cd).ToList();
+
 				List<BOELaborType> boeLaborTypes = (from blt in gbe.BOELaborTypes
 													join te in gbe.BOETaskElements on blt.BOETaskElementID equals te.BOETaskElementID
 													join b in gbe.BOEs on te.BOEID equals b.BOEID
@@ -434,9 +466,31 @@ namespace GenBOE.DataBridge.DTO
 
 								DoPostProcessing(taskElementCommonDisclosures);
 
-								// Assign the skill mix and common disclosure
+								List<SkillMixSummaryDTO> taskElementSkillMixSummaries = skillMixSummaries.Where(cdsm => cdsm.BOETaskElementID == te.BOETaskElementID)
+									.Select(sms => new SkillMixSummaryDTO
+									{
+										SkillMixSummaryID = sms.SkillMixSummaryID,
+										Rationale = sms.Rationale,
+										Included = sms.Included,
+										ProposedHours = sms.ProposedHours,
+										HistoricalHours = sms.HistoricalHours,
+										ResourceHours = sms.ResourceHours,
+										BusinessResourceHours = sms.BusinessResourceHours,
+										BOESkillMix = sms.BOESkillMix,
+										LaborSkillMix = sms.LaborSkillMix,
+										ResourceID = sms.ResourceID,
+										BusinessResourceID = sms.BusinessResourceID,
+										BOEID = sms.BOEID,
+										BOETaskElementID = sms.BOETaskElementID,
+										IsUserInput = sms.IsUserInput
+									}).ToList();
+
+								DoPostProcessing(taskElementSkillMixSummaries);
+
+								// Assign the skill mix, skill mix summary and common disclosure
 								taskElementDateShift.SkillMixTable = taskElementSkillMixes.Select(dto => new SkillMixModelView(dto)).ToList();
 								taskElementDateShift.CommonDisclosureTable = taskElementCommonDisclosures.Select(dto => new CommonDisclosureModelView(dto)).ToList();
+								taskElementDateShift.SkillMixSummaryTable = taskElementSkillMixSummaries.Select(dto => new SkillMixSummaryModelView(dto)).ToList();
 
 								// Get resource types for task element labors.
 								Collection<ResourceTypeDto> taskElementLabors = boeLaborTypes.Where(lT => lT.BOETaskElementID == te.BOETaskElementID)
@@ -565,9 +619,31 @@ namespace GenBOE.DataBridge.DTO
 
 							DoPostProcessing(taskElementCommonDisclosures);
 
-							// Assign the skill mix and common disclosure
+							List<SkillMixSummaryDTO> taskElementSkillMixSummaries = skillMixSummaries.Where(cdsm => cdsm.BOETaskElementID == te.BOETaskElementID)
+								.Select(sms => new SkillMixSummaryDTO
+								{
+									SkillMixSummaryID = sms.SkillMixSummaryID,
+									Rationale = sms.Rationale,
+									Included = sms.Included,
+									ProposedHours = sms.ProposedHours,
+									HistoricalHours = sms.HistoricalHours,
+									ResourceHours = sms.ResourceHours,
+									BusinessResourceHours = sms.BusinessResourceHours,
+									BOESkillMix = sms.BOESkillMix,
+									LaborSkillMix = sms.LaborSkillMix,
+									ResourceID = sms.ResourceID,
+									BusinessResourceID = sms.BusinessResourceID,
+									BOEID = sms.BOEID,
+									BOETaskElementID = sms.BOETaskElementID,
+									IsUserInput = sms.IsUserInput
+								}).ToList();
+
+							DoPostProcessing(taskElementSkillMixSummaries);
+
+							// Assign the skill mix, skill mix summary and common disclosure
 							taskElementDateShift.SkillMixTable = taskElementSkillMixes.Select(dto => new SkillMixModelView(dto)).ToList();
 							taskElementDateShift.CommonDisclosureTable = taskElementCommonDisclosures.Select(dto => new CommonDisclosureModelView(dto)).ToList();
+							taskElementDateShift.SkillMixSummaryTable = taskElementSkillMixSummaries.Select(dto => new SkillMixSummaryModelView(dto)).ToList();
 
 							// Get resource types for task element labors.
 							Collection<ResourceTypeDto> taskElementLabors = boeLaborTypes.Where(lT => lT.BOETaskElementID == te.BOETaskElementID)
@@ -645,6 +721,11 @@ namespace GenBOE.DataBridge.DTO
 
 				List<CommonDisclosureSkillMix> commonDisclosures = (from cd in gbe.CommonDisclosureSkillMixes
 																	join cl in gbe.WBS_CLIN_BOE_XREF on cd.BOEID equals cl.BOEID
+																	where cl.CLINID == clinId
+																	select cd).ToList();
+
+				List<Models.SkillMixSummary> skillMixSummaries = (from cd in gbe.SkillMixSummaries
+																  join cl in gbe.WBS_CLIN_BOE_XREF on cd.BOEID equals cl.BOEID
 																	where cl.CLINID == clinId
 																	select cd).ToList();
 
@@ -751,9 +832,31 @@ namespace GenBOE.DataBridge.DTO
 
 								DoPostProcessing(taskElementCommonDisclosures);
 
-								// Assign the skill mix and common disclosure
+								List<SkillMixSummaryDTO> taskElementSkillMixSummaries = skillMixSummaries.Where(cdsm => cdsm.BOETaskElementID == te.BOETaskElementID)
+									.Select(sms => new SkillMixSummaryDTO
+									{
+										SkillMixSummaryID = sms.SkillMixSummaryID,
+										Rationale = sms.Rationale,
+										Included = sms.Included,
+										ProposedHours = sms.ProposedHours,
+										HistoricalHours = sms.HistoricalHours,
+										ResourceHours = sms.ResourceHours,
+										BusinessResourceHours = sms.BusinessResourceHours,
+										BOESkillMix = sms.BOESkillMix,
+										LaborSkillMix = sms.LaborSkillMix,
+										ResourceID = sms.ResourceID,
+										BusinessResourceID = sms.BusinessResourceID,
+										BOEID = sms.BOEID,
+										BOETaskElementID = sms.BOETaskElementID,
+										IsUserInput = sms.IsUserInput
+									}).ToList();
+
+								DoPostProcessing(taskElementSkillMixSummaries);
+
+								// Assign the skill mix, skill mix summary and common disclosure
 								taskElementDateShift.SkillMixTable = taskElementSkillMixes.Select(dto => new SkillMixModelView(dto)).ToList();
 								taskElementDateShift.CommonDisclosureTable = taskElementCommonDisclosures.Select(dto => new CommonDisclosureModelView(dto)).ToList();
+								taskElementDateShift.SkillMixSummaryTable = taskElementSkillMixSummaries.Select(dto => new SkillMixSummaryModelView(dto)).ToList();
 
 								// Get resource types for task element labors.
 								Collection<ResourceTypeDto> taskElementLabors = boeLaborTypes.Where(lT => lT.BOETaskElementID == te.BOETaskElementID)
@@ -831,6 +934,10 @@ namespace GenBOE.DataBridge.DTO
 
 				List<CommonDisclosureSkillMix> commonDisclosures = (from cd in gbe.CommonDisclosureSkillMixes
 																	where cd.BOEID == id
+																	select cd).ToList();
+
+				List<Models.SkillMixSummary> skillMixSummaries = (from cd in gbe.SkillMixSummaries
+																  where cd.BOEID == id
 																	select cd).ToList();
 
 				List<BOELaborType> boeLaborTypes = (from blt in gbe.BOELaborTypes
@@ -918,9 +1025,31 @@ namespace GenBOE.DataBridge.DTO
 
 						DoPostProcessing(taskElementCommonDisclosures);
 
-						// Assign the skill mix and common disclosure
+						List<SkillMixSummaryDTO> taskElementSkillMixSummaries = skillMixSummaries.Where(cdsm => cdsm.BOETaskElementID == te.BOETaskElementID)
+							.Select(cdsm => new SkillMixSummaryDTO
+							{
+								SkillMixSummaryID = cdsm.SkillMixSummaryID,
+								Rationale = cdsm.Rationale,
+								Included = cdsm.Included,
+								ProposedHours = cdsm.ProposedHours,
+								HistoricalHours = cdsm.HistoricalHours,
+								ResourceHours = cdsm.ResourceHours,
+								BusinessResourceHours = cdsm.BusinessResourceHours,
+								BOESkillMix = cdsm.BOESkillMix,
+								LaborSkillMix = cdsm.LaborSkillMix,
+								ResourceID = cdsm.ResourceID,
+								BusinessResourceID = cdsm.BusinessResourceID,
+								BOEID = cdsm.BOEID,
+								BOETaskElementID = cdsm.BOETaskElementID,
+								IsUserInput = cdsm.IsUserInput
+							}).ToList();
+
+						DoPostProcessing(taskElementSkillMixSummaries);
+
+						// Assign the skill mix, skill mix summary and common disclosure
 						taskElementDateShift.SkillMixTable = taskElementSkillMixes.Select(dto => new SkillMixModelView(dto)).ToList();
 						taskElementDateShift.CommonDisclosureTable = taskElementCommonDisclosures.Select(dto => new CommonDisclosureModelView(dto)).ToList();
+						taskElementDateShift.SkillMixSummaryTable = taskElementSkillMixSummaries.Select(dto => new SkillMixSummaryModelView(dto)).ToList();
 
 						// Get resource types for task element labors.
 						Collection<ResourceTypeDto> taskElementLabors = boeLaborTypes.Where(lT => lT.BOETaskElementID == te.BOETaskElementID)
@@ -996,6 +1125,10 @@ namespace GenBOE.DataBridge.DTO
 																	where cd.BOETaskElementID == taskId
 																	select cd).ToList();
 
+				List<Models.SkillMixSummary> skillMixSummaries = (from cd in gbe.SkillMixSummaries
+																  where cd.BOETaskElementID == taskId
+																	select cd).ToList();
+
 				List<BOELaborType> boeLaborTypes = (from blt in gbe.BOELaborTypes
 													where blt.BOETaskElementID == taskId
 													select blt).ToList();
@@ -1058,9 +1191,31 @@ namespace GenBOE.DataBridge.DTO
 
 				DoPostProcessing(taskElementCommonDisclosures);
 
-				// Assign the skill mix and common disclosure
+				List<SkillMixSummaryDTO> taskElementSkillMixSummaries = skillMixSummaries.Where(cdsm => cdsm.BOETaskElementID == boeTaskElementDateShift.Id)
+					.Select(sms => new SkillMixSummaryDTO
+					{
+						SkillMixSummaryID = sms.SkillMixSummaryID,
+						Rationale = sms.Rationale,
+						Included = sms.Included,
+						ProposedHours = sms.ProposedHours,
+						HistoricalHours = sms.HistoricalHours,
+						ResourceHours = sms.ResourceHours,
+						BusinessResourceHours = sms.BusinessResourceHours,
+						BOESkillMix = sms.BOESkillMix,
+						LaborSkillMix = sms.LaborSkillMix,
+						ResourceID = sms.ResourceID,
+						BusinessResourceID = sms.BusinessResourceID,
+						BOEID = sms.BOEID,
+						BOETaskElementID = sms.BOETaskElementID,
+						IsUserInput = sms.IsUserInput
+					}).ToList();
+
+				DoPostProcessing(taskElementSkillMixSummaries);
+
+				// Assign the skill mix, skill mix summary and common disclosure
 				boeTaskElementDateShift.SkillMixTable = taskElementSkillMixes.Select(dto => new SkillMixModelView(dto)).ToList();
 				boeTaskElementDateShift.CommonDisclosureTable = taskElementCommonDisclosures.Select(dto => new CommonDisclosureModelView(dto)).ToList();
+				boeTaskElementDateShift.SkillMixSummaryTable = taskElementSkillMixSummaries.Select(dto => new SkillMixSummaryModelView(dto)).ToList();
 
 				// Get resource types for task element labors.
 				Collection<ResourceTypeDto> taskElementLabors = boeLaborTypes.Where(lT => lT.BOETaskElementID == boeTaskElementDateShift.Id)
@@ -1151,6 +1306,28 @@ namespace GenBOE.DataBridge.DTO
 				if (totalGroupHours != 0m)
 				{
 					foreach (CommonDisclosureSkillMixDTO dto in grouping)
+					{
+						dto.LaborSkillMix = dto.HistoricalHours * 100m / totalGroupHours;
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Do post processing on the skill mix summaries.
+		/// </summary>
+		/// <param name="skillMixSummaries">Skill Mix Summaries.</param>
+		private void DoPostProcessing(ICollection<SkillMixSummaryDTO> skillMixSummaries)
+		{
+			IEnumerable<IGrouping<int, SkillMixSummaryDTO>> groupedResourceHours =
+				skillMixSummaries.GroupBy(r => r.BOETaskElementID);
+
+			foreach (IGrouping<int, SkillMixSummaryDTO> grouping in groupedResourceHours)
+			{
+				decimal totalGroupHours = grouping.Sum(g => g.HistoricalHours);
+				if (totalGroupHours != 0m)
+				{
+					foreach (SkillMixSummaryDTO dto in grouping)
 					{
 						dto.LaborSkillMix = dto.HistoricalHours * 100m / totalGroupHours;
 					}

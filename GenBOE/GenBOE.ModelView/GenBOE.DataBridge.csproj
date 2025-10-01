@@ -129,6 +129,7 @@
     <Compile Include="Common\Delegates.cs" />
     <Compile Include="Common\Interfaces\ISecurityUserAuthorizationsDataLoader.cs" />
     <Compile Include="Common\security\SecurityAccessSpaceSystems.cs" />
+    <Compile Include="DTO\BOETaskElement\SkillMixSummaryModelView.cs" />
     <Compile Include="DTO\DateShift\DateShiftDTODataLoader.cs" />
     <Compile Include="DTO\DateShift\IDateShiftDTODataLoader.cs" />
     <Compile Include="DTO\MOQTypeSelectionTableDataResourceHours\IMOQTypeSelectionTableDataResourceHoursDTOLoader.cs" />
@@ -150,6 +151,8 @@
     <Compile Include="DTO\Request\RequestType.cs" />
     <Compile Include="DTO\RteTemplate\IRteTemplateDataLoader.cs" />
     <Compile Include="DTO\RteTemplate\RteTemplateDataLoader.cs" />
+    <Compile Include="DTO\SkillMixSummary\ISkillMixSummaryDTOLoader.cs" />
+    <Compile Include="DTO\SkillMixSummary\SkillMixSummaryDTOLoader.cs" />
     <Compile Include="DTO\SkillMix\ISkillMixDTOLoader.cs" />
     <Compile Include="DTO\SkillMix\SkillMixDTOLoader.cs" />
     <Compile Include="DTO\CommonDisclosureSkillMix\ICommonDisclosureSMDTODataLoader.cs" />
@@ -170,6 +173,7 @@
     <Compile Include="GenBOE.Dtos\DTOs\BOESearchResultDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\BoeVersionDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\ClinDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\SkillMixSummaryDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\ConfidenceReportMathResultDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\ConfidenceReportPoPResultDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\CustomFieldDTO.cs" />

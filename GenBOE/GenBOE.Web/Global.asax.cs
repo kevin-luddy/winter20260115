@@ -42,6 +42,7 @@ namespace GenBOE
 	using GenBOE.DataBridge.Common.security;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.DataBridge.DTO.Request;
+	using GenBOE.DataBridge.DTO.SkillMixSummary;
 	using GenBOE.DataBridge.Reference;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
@@ -466,6 +467,7 @@ namespace GenBOE
 					new ResolvedParameter(typeof(IEscalationRatesDTOLoader)),
 					new ResolvedParameter(typeof(IMSTTravelNonzoneFeesAndCostsDTODataLoader)))).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
 			GenBOEUnityContainer.Container.RegisterType(typeof(ISkillMixDTOLoader), typeof(SkillMixDTOLoader), GetLifetimeManager(), new InjectionMember[] { });
+			GenBOEUnityContainer.Container.RegisterType(typeof(ISkillMixSummaryDTOLoader), typeof(SkillMixSummaryDTOLoader), GetLifetimeManager(), new InjectionMember[] { });
 			GenBOEUnityContainer.Container.RegisterType(typeof(ICommonDisclosureSMDTODataLoader), typeof(CommonDisclosureSMDTODataLoader), GetLifetimeManager(), new InjectionMember[] { });
 
 			switch (SysConfig.CompanyMode)
