@@ -2040,12 +2040,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			// Assume that "Templates" is a subdirectory of your application's root directory
 			//string templateFileName = Server.MapPath("~/Templates/Export/BOEs.xlsm");
 			string templateDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates", "Export");
-			string templateFileName = Path.Combine(templateDir, "BOEs.xlsm");
 
 			if (!Directory.Exists(templateDir))
 			{
-
+				throw new InvalidOperationException($"Template directory '{templateDir}' does not exist.");
 			}
+
+			string templateFileName = Path.Combine(templateDir, "BOEs.xlsm");
 
 			//BOEExcelExportInputs exportInputs = new BOEExcelExportInputs(ws, templateFileName, blankTemplate,
 			//		this.UserLoader, this._ADUtils, this.PermissionsLoader);

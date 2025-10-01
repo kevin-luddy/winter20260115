@@ -278,7 +278,7 @@ namespace GenBOE.Web.Controllers.Backend
 					response.Content = new StreamContent(fs);
 					response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 					response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
-					response.Content.Headers.ContentDisposition.FileName = "BOEs.xlsx";
+					response.Content.Headers.ContentDisposition.FileName = "BOEs.xlsm";
 
 					return response;
 				}
