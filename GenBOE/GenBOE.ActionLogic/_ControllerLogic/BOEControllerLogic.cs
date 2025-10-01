@@ -9,6 +9,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.IO;
 	using System.Linq;
 	using System.Threading.Tasks;
 	using System.Transactions;
@@ -2021,6 +2022,41 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			
         }
 
+		/// <summary>
+		/// Export BOEs for a given workspace as an Excel doc
+		/// </summary>
+		/// <param name="ws">The full workspace</param>
+		/// <param name="blankTemplate">Should the downloadable template be blank?</param>
+		/// <returns>FileStream of the exported BOEs template</returns>
+		public FileStream ExportBOEs(FullWorkspace ws, bool blankTemplate)
+		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
+
+			FileStream fs = null;
+			// Get the BOE template file name
+			// Assume that "Templates" is a subdirectory of your application's root directory
+			//string templateFileName = Server.MapPath("~/Templates/Export/BOEs.xlsm");
+			string templateDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates", "Export");
+			string templateFileName = Path.Combine(templateDir, "BOEs.xlsm");
+
+			if (!Directory.Exists(templateDir))
+			{
+
+			}
+
+			//BOEExcelExportInputs exportInputs = new BOEExcelExportInputs(ws, templateFileName, blankTemplate,
+			//		this.UserLoader, this._ADUtils, this.PermissionsLoader);
+			//string exportedFileName = this.boeReportsHttpService.ExportManageBoesToExcel(exportInputs);
+			string exportedFileName = this._BOEExporter.ExportToExcelFile(templateFileName, ws, blankTemplate);
+
+			fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+			return fs;
+		}
+
         /// <summary>
         /// Performs actions to start import of BOEs on the Manage BOEs page
         /// </summary>
@@ -2145,6 +2181,97 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             return theModelViews;
         }
+
+		/// <summary>
+		/// Import BOEs on the Manage BOEs page - for the Angular UI Rewrite
+		/// </summary>
+		/// <param name="ws">Full workspace</param>
+		//public Collection<ImportedBoe> ImportBOEs(FullWorkspace ws, Stream inputStream)
+		//{
+		//	if (ws == null)
+		//	{
+		//		throw new ArgumentNullException(nameof(ws));
+		//	}
+
+		//	Collection<ImportedBoe> results = new Collection<ImportedBoe>();
+		//	Collection<ImportedBoe> importResults = this._BOEImporter.ImportBoeFromExcelFile(inputStream, ws);
+		//	List<ImportedBoe> updatedBOEs = importResults.Where(w => w.ImportTypes.Contains(BoeImportResult.UpdateBoe)).ToList();
+		//	VariableCircularReferenceCheckerCache cache = new VariableCircularReferenceCheckerCache();
+
+		//	// Check updated BOEs
+		//	foreach (ImportedBoe updatedBOE in updatedBOEs)
+		//	{
+		//		if (updatedBOE.Id > 0)
+		//		{
+		//			bool circularReferenceFound = false;
+		//			FullBoe boe = this.Factory.CreateFullBoe(updatedBOE);
+
+		//			if (updatedBOE.WBSID.HasValue)
+		//			{
+		//				FullWbs wbs = ws.WbsElements.First(i => i.Id == updatedBOE.WBSID.Value);
+
+		//				// Validate chosen WBS for circular references
+		//				if (this._VariableCircularReferenceChecker.BOEWBSMoveCreatesCircularReference(cache, boe, wbs, updatedBOEs.ToList<BoeDTO>(), ws))
+		//				{
+		//					circularReferenceFound = true;
+		//				}
+		//			}
+
+		//			if (updatedBOE.CLINID.HasValue)
+		//			{
+		//				ClinDTO clin = ws.Clins.First(i => i.Id == updatedBOE.CLINID.Value);
+		//				// Validate chosen CLINs for circular references
+		//				if (this._VariableCircularReferenceChecker.BOECLINMoveCreatesCircularReference(ws, cache, boe, clin, updatedBOEs.ToList<BoeDTO>()))
+		//				{
+		//					circularReferenceFound = true;
+		//				}
+		//			}
+
+		//			if (circularReferenceFound)
+		//			{
+		//				updatedBOE.ImportTypes.Remove(BoeImportResult.UpdateBoe);
+		//				updatedBOE.ImportTypes.Add(BoeImportResult.CircularReferences);
+		//			}
+		//		}
+		//	}
+
+		//	// New BOEs
+		//	foreach (ImportedBoe importResult in importResults)
+		//	{
+		//		if (ws.WorkspaceState == WorkspaceState.Initialization)
+		//		{
+		//			if (importResult.State == BOEState.Approved || importResult.State == BOEState.AwaitingApproval)
+		//			{
+		//				importResult.ImportTypes.Remove(BoeImportResult.UpdateBoe);
+		//				importResult.ImportTypes.Remove(BoeImportResult.CreateBoe);
+		//				importResult.ImportTypes.Add(BoeImportResult.WorkspaceNotInWorkingState);
+		//			}
+		//		}
+
+		//		foreach (BoeImportResult resultType in importResult.ImportTypes)
+		//		{
+		//			results.Add(new ImportedBoe()
+		//			{
+		//				BoeID = importResult.Id,
+		//				BOETitle = importResult.Title,
+		//				ImportType = (int)resultType,
+		//				WbsID = importResult.WBSID,
+		//				WbsString = importResult.WbsString,
+		//				ClinID = importResult.CLINID,
+		//				ClinString = importResult.ClinString,
+		//				AuthorIDs = importResult.AuthorIDs,
+		//				SubcontractorAuthorIDs = importResult.SubcontractorAuthorIDs,
+		//				ApproverIDs = importResult.ApproverIDs,
+		//				Status = (int)importResult.State,
+		//				BoeXrefID = importResult.WCBID,
+		//				isMaterial = importResult.isMaterial,
+		//				IsMultiClinWbs = importResult.IsMultiClinWbs
+		//			});
+		//		}
+		//	}
+
+		//	return importResults;
+		//}
 
         /// <summary>
         /// Determines if there are any conflicts when copying a BOE
