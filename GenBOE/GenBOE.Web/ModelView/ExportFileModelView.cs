@@ -34,5 +34,10 @@ namespace GenBOE.Web.ModelView
 		/// workspace shortname
 		/// </summary>
 		public string workspaceShortName { get; set; }
+
+		/// <summary>
+		/// Should the downloadable template be a blank copy?
+		/// </summary>
+		public bool isBlankTemplate { get; set; } = false;
 	}
 }

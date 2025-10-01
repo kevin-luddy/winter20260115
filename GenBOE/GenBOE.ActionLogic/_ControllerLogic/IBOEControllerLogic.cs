@@ -6,20 +6,21 @@
 
 namespace GenBOE.ActionLogic
 {
+    using GenBOE.ActionLogic.IESSAPClient;
+	using GenBOE.ActionLogic.ModelView;
+    using GenBOE.ActionLogic.ModelView.BOE;
+    using GenBOE.DataBridge.DTO;
+    using GenBOE.Dtos;
+    using GenBOE.Objects;
+    using IES.Common;
+    using IES.Common.Exceptions;
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+	using System.IO;
     using System.Threading.Tasks;
     using System.Web;
 	using System.Web.Mvc;
-	using GenBOE.ActionLogic.ModelView;
-    using GenBOE.ActionLogic.ModelView.BOE;
-    using GenBOE.ActionLogic.IESSAPClient;
-    using GenBOE.DataBridge.DTO;
-    using IES.Common;
-    using GenBOE.Dtos;
-    using GenBOE.Objects;
-    using IES.Common.Exceptions;
 
 	public interface IBOEControllerLogic
     {
@@ -223,16 +224,24 @@ namespace GenBOE.ActionLogic
         /// <returns>exported file name and formatted filename in an array</returns>
         Task<string[]> ExportManageBOE(FullWorkspace ws, string templateFileName, bool blankTemplate);
 
-        /// <summary>
-        /// Performs actions to start import of BOEs on the Manage BOEs page
-        /// </summary>
-        /// <param name="ws">Workspace containing BOEs</param>
-        /// <param name="Request">current HTTP request</param>
-        /// <param name="dataToSave">(output) Data to be saved by import</param>
-        /// <param name="errorsOccurred">(output) bool noting if any errors occurred</param>
-        /// <param name="exception">(output) Exception if any occurred</param>
-        /// <returns>Modelview of the import results</returns>
-        Collection<ImportBoeResultsModelView> ImportManageBOE(FullWorkspace ws, HttpRequestBase Request, out ICollection<ImportBoeResultsModelView> dataToSave, out bool errorsOccurred, out Exception exception);
+		/// <summary>
+		/// Export BOEs for a given workspace as an Excel doc
+		/// </summary>
+		/// <param name="ws">The full workspace</param>
+		/// <param name="blankTemplate">Should the downloadable template be blank?</param>
+		/// <returns>FileStream of the exported BOEs template</returns>
+		FileStream ExportBOEs(FullWorkspace ws, bool blankTemplate);
+
+		/// <summary>
+		/// Performs actions to start import of BOEs on the Manage BOEs page
+		/// </summary>
+		/// <param name="ws">Workspace containing BOEs</param>
+		/// <param name="Request">current HTTP request</param>
+		/// <param name="dataToSave">(output) Data to be saved by import</param>
+		/// <param name="errorsOccurred">(output) bool noting if any errors occurred</param>
+		/// <param name="exception">(output) Exception if any occurred</param>
+		/// <returns>Modelview of the import results</returns>
+		Collection<ImportBoeResultsModelView> ImportManageBOE(FullWorkspace ws, HttpRequestBase Request, out ICollection<ImportBoeResultsModelView> dataToSave, out bool errorsOccurred, out Exception exception);
 
         //TODO: CompleteImportManageBOE once logic is moved to controllerlogic
         //WI 32107

@@ -5,15 +5,11 @@
 // -----------------------------------------------------------------------
 namespace GenBOE.Web.Controllers.Backend
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Collections.ObjectModel;
-	using System.Diagnostics;
-	using System.Linq;
-	using System.Web.Http;
 	using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic._ControllerLogic.Backend;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ControllerLogic.Backend;
+	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.BOE;
 	using GenBOE.ActionLogic.ModelView.Clin;
@@ -23,10 +19,25 @@ namespace GenBOE.Web.Controllers.Backend
 	using GenBOE.Objects;
 	using GenBOE.Web.Common;
 	using GenBOE.Web.ModelView;
+	using Glimpse.AspNet.Tab;
 	using IES.Common;
 	using IES.Common.classes;
 	using IES.Common.Exceptions;
 	using IES.Common.PickList;
+	using Microsoft.VisualBasic.Logging;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Diagnostics;
+	using System.IO;
+	using System.Linq;
+	using System.Net;
+	using System.Net.Http;
+	using System.Net.Http.Headers;
+	using System.Threading.Tasks;
+	using System.Web;
+	using System.Web.Http;
+	using System.Web.Mvc;
 
 	/// <summary>
 	/// Workspace Admin Controller
@@ -76,7 +87,7 @@ namespace GenBOE.Web.Controllers.Backend
 		/// </summary>
 		/// <param name="workspaceShortName"></param>
 		/// <returns></returns>
-		[HttpGet]
+		[System.Web.Http.HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<ManageCLINGridModelView> GetManageCLINs(string workspaceShortName)
 		{
@@ -122,7 +133,7 @@ namespace GenBOE.Web.Controllers.Backend
         /// </summary>
         /// <param name="workspaceShortName"> the workspace shortname</param>
         /// <returns>The MV for the Manage WBS grid</returns>
-        [HttpGet]
+        [System.Web.Http.HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<ManageWBSGridModelView> GetManageWBS(string workspaceShortName)
 		{
@@ -159,7 +170,7 @@ namespace GenBOE.Web.Controllers.Backend
 		/// </summary>
 		/// <param name="workspaceShortName"> the workspace shortname</param>
 		/// <returns>The MV for the Manage WBS grid</returns>
-		[HttpGet]
+		[System.Web.Http.HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<ManageBOEGridWidgetModelView> GetManageBOE(string workspaceShortName)
 		{
@@ -203,7 +214,7 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <param name="boes">List of BOEs to be saved.</param>
 		/// <returns></returns>
 		/// <exception cref="ArgumentNullException"></exception>
-		[HttpPost]
+		[System.Web.Http.HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<ManageBOEModelView> SaveManageBOE(string workspace, [FromBody] Collection<ManageBOEModelView> boes)
 		{
@@ -245,5 +256,77 @@ namespace GenBOE.Web.Controllers.Backend
 
 			return result;
 		}
+
+		// ExportManageBOE in BOEController.cs
+		/// <summary>
+		/// Perform actions to export BOEs from Manage BOEs page
+		/// </summary>
+		/// <param name="workspace">Workspace containing BOEs</param>
+		/// <returns></returns>
+		[System.Web.Http.HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public HttpResponseMessage ExportBOEs([FromBody] ExportFileModelView exportBOEModelView)
+		{
+			try
+			{
+				if (exportBOEModelView != null)
+				{
+					FullWorkspace ws = this.Factory.CreateFullWorkspace(exportBOEModelView.workspaceShortName);
+					FileStream fs = this.boeControllerLogic.ExportBOEs(ws, exportBOEModelView.isBlankTemplate);
+
+					HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+					response.Content = new StreamContent(fs);
+					response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+					response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
+					response.Content.Headers.ContentDisposition.FileName = "BOEs.xlsx";
+
+					return response;
+				}
+				else
+				{
+					return new HttpResponseMessage(HttpStatusCode.BadRequest)
+					{
+						Content = new StringContent("Invalid request body")
+					};
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				return new HttpResponseMessage(HttpStatusCode.InternalServerError)
+				{
+					Content = new StringContent("Unknown error exporting BOEs")
+				};
+			}
+		}
+
+		/// <summary>
+		/// Import BOEs to get confirmation response
+		/// </summary>
+		/// <returns>List of BOEs with types</returns>
+		//[System.Web.Http.HttpPost]
+		//[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		//public IESResponse<ImportedBoe> ImportBOEs()
+		//{
+		//	IESResponse<ImportedBoe> result = new IESResponse<ImportedBoe>();
+
+		//	try
+		//	{
+		//		string workspaceShortName = HttpContext.Current.Request.Form["workspaceShortName"];
+		//		Stream importFile = HttpContext.Current.Request.Files[0].InputStream;
+
+		//		FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortName);
+
+		//		result.Data = boeControllerLogic.ImportBOEs(ws, importFile);
+		//		result.IsSuccessful = true;
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		logger.Error(ex);
+		//		result.Messages.Add($"Unknown error occurred importing CLIN data: {ex.Message}");
+		//	}
+
+		//	return result;
+		//}
 	}
 }
