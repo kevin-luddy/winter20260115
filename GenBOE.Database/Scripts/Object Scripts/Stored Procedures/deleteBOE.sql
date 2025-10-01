@@ -8,7 +8,7 @@ GO
 SET QUOTED_IDENTIFIER OFF
 GO
 
-CREATE PROCEDURE [dbo].[deleteBOE]
+CREATE OR ALTER PROCEDURE [dbo].[deleteBOE]
 (
 @BOEID int,
 @UpdateDT datetime2
@@ -38,6 +38,7 @@ AS
 **		10/29/20	Dusan				BOEJ-4924 - MOQ Type Selection data
 **		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
 **		7/17/2024	e405721				PROPH-2163: Update for Skill Mix, Common Disclosure Skill Mix, MOQ Type Selection Table Data Resource Hours
+**		9/30/25		e378233				PROPH-3302 Updated for Skill Mix Summary
 *****************************************************************************/
 SET NOCOUNT ON 
 
@@ -190,6 +191,10 @@ SET NOCOUNT ON
 			DELETE sm
 					FROM dbo.[SkillMix] sm
 			WHERE sm.BOEID = @BOEID
+
+			DELETE sms
+					FROM dbo.SkillMixSummary sms
+			WHERE sms.BOEID = @BOEID
 
 			DELETE FROM dbo.MOQTypeSelection
 				FROM dbo.MOQTypeSelection s

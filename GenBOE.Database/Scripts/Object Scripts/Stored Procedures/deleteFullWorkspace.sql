@@ -7,7 +7,7 @@ GO
 SET QUOTED_IDENTIFIER OFF
 GO
 
-CREATE PROCEDURE [dbo].[deleteFullWorkspace]
+CREATE OR ALTER PROCEDURE [dbo].[deleteFullWorkspace]
 (
 @WorkspaceID int 
 )
@@ -42,6 +42,7 @@ AS
 **		12/6/2021	Dusan				IES-666: Issue w/ order of deletions, failing due to FK constraints w/ MoqTypeTableCustomFieldValueXREF
 **		10/04/2023	hrafiqzadah			PROPH-1031: Update to delete from ProjectMapSpread
 **		7/18/2024	e405721				PROPH-2165: Update Delete Full Workspace for Skill Mix, Common Disclosure, and MOQ Type Resource Hours Table Data
+**		9/30/25		e378233				PROPH-3302 Updated for Skill Mix Summary
 *******************************************************************************/
 SET NOCOUNT ON 
 	IF @WorkspaceID IS NULL
@@ -199,6 +200,10 @@ SET NOCOUNT ON
 		DELETE FROM dbo.[SkillMix]
 			FROM dbo.[SkillMix] SM
 			INNER JOIN dbo.BOE B ON SM.BOEID = B.BOEID
+			INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
+		DELETE FROM dbo.[SkillMixSummary]
+			FROM dbo.[SkillMixSummary] SMS
+			INNER JOIN dbo.BOE B ON SMS.BOEID = B.BOEID
 			INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
 		DELETE FROM dbo.MOQTypeSelection
 			FROM dbo.MOQTypeSelection M

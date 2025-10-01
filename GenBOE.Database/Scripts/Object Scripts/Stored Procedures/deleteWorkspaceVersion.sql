@@ -8,7 +8,7 @@ GO
 SET QUOTED_IDENTIFIER OFF
 GO
 
-CREATE  PROCEDURE [dbo].[deleteWorkspaceVersion]
+CREATE OR ALTER  PROCEDURE [dbo].[deleteWorkspaceVersion]
 (
 @WorkspaceID int,
 @VersionID int
@@ -42,6 +42,7 @@ CREATE  PROCEDURE [dbo].[deleteWorkspaceVersion]
 **		9/15/20		ranzalon			BOEJ-4776/4825 - MOQ Types update
 **		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF; additional cleanup
 **		7/11/2024	e405721				PROPH-2136: Update for Skill Mix, Common Disclosure, and MOQ Type Selection Table Data Resource Hours
+**		9/30/25		e378233				PROPH-3302 Updated for Skill Mix Summary
 *******************************************************************************/
 AS
 SET NOCOUNT ON
@@ -84,6 +85,7 @@ BEGIN
 	DELETE FROM [version].[MOQTypeSelectionTableData] WHERE VersionID = @VersionID
 	DELETE FROM [version].[CommonDisclosureSkillMix] WHERE VersionID = @VersionID
 	DELETE FROM [version].[SkillMix] WHERE VersionID = @VersionID
+	DELETE FROM [version].[SkillMixSummary] WHERE VersionID = @VersionID
 	DELETE FROM [version].[MOQTypeSelection] WHERE VersionID = @VersionID
 	DELETE FROM [version].[ODCSpread] WHERE VersionID = @VersionID
 	DELETE FROM [version].[ODCTaskElement] WHERE VersionID = @VersionID

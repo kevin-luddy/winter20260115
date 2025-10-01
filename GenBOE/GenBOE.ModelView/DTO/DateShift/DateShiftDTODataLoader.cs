@@ -332,34 +332,6 @@ namespace GenBOE.DataBridge.DTO
 											   }
 											   ).ToList();
 
-				List<Models.SkillMix> skillMixes = (from sm in gbe.SkillMixes
-													join b in gbe.BOEs on sm.BOEID equals b.BOEID
-													where b.WorkspaceID == workspaceId
-													select sm).ToList();
-
-				List<CommonDisclosureSkillMix> commonDisclosures = (from cd in gbe.CommonDisclosureSkillMixes
-														   join b in gbe.BOEs on cd.BOEID equals b.BOEID
-													where b.WorkspaceID == workspaceId
-													select cd).ToList();
-
-				List<Models.SkillMixSummary> skillMixSummaries = (from cd in gbe.SkillMixSummaries
-																	join b in gbe.BOEs on cd.BOEID equals b.BOEID
-																	where b.WorkspaceID == workspaceId
-																	select cd).ToList();
-
-				List<BOELaborType> boeLaborTypes = (from blt in gbe.BOELaborTypes
-													join te in gbe.BOETaskElements on blt.BOETaskElementID equals te.BOETaskElementID
-													join b in gbe.BOEs on te.BOEID equals b.BOEID
-													where b.WorkspaceID == workspaceId
-													select blt).ToList();
-
-				List<BOELaborSpread> boeLaborSpreads = (from bls in gbe.BOELaborSpreads
-														join blt in gbe.BOELaborTypes on bls.BOELaborTypeID equals blt.BOELaborTypeID
-														join te in gbe.BOETaskElements on blt.BOETaskElementID equals te.BOETaskElementID
-														join b in gbe.BOEs on te.BOEID equals b.BOEID
-														where b.WorkspaceID == workspaceId
-														select bls).ToList(); 
-
 				// Construct DateShiftDTO hierarchy
 				DateShiftDTO workspaceDateShift = new DateShiftDTO
 				{
@@ -372,6 +344,34 @@ namespace GenBOE.DataBridge.DTO
 
 				if (getChildren)
 				{
+					List<Models.SkillMix> skillMixes = (from sm in gbe.SkillMixes
+														join b in gbe.BOEs on sm.BOEID equals b.BOEID
+														where b.WorkspaceID == workspaceId
+														select sm).ToList();
+
+					List<CommonDisclosureSkillMix> commonDisclosures = (from cd in gbe.CommonDisclosureSkillMixes
+																		join b in gbe.BOEs on cd.BOEID equals b.BOEID
+																		where b.WorkspaceID == workspaceId
+																		select cd).ToList();
+
+					List<Models.SkillMixSummary> skillMixSummaries = (from cd in gbe.SkillMixSummaries
+																	  join b in gbe.BOEs on cd.BOEID equals b.BOEID
+																	  where b.WorkspaceID == workspaceId
+																	  select cd).ToList();
+
+					List<BOELaborType> boeLaborTypes = (from blt in gbe.BOELaborTypes
+														join te in gbe.BOETaskElements on blt.BOETaskElementID equals te.BOETaskElementID
+														join b in gbe.BOEs on te.BOEID equals b.BOEID
+														where b.WorkspaceID == workspaceId
+														select blt).ToList();
+
+					List<BOELaborSpread> boeLaborSpreads = (from bls in gbe.BOELaborSpreads
+															join blt in gbe.BOELaborTypes on bls.BOELaborTypeID equals blt.BOELaborTypeID
+															join te in gbe.BOETaskElements on blt.BOETaskElementID equals te.BOETaskElementID
+															join b in gbe.BOEs on te.BOEID equals b.BOEID
+															where b.WorkspaceID == workspaceId
+															select bls).ToList();
+
 					// Add CLINs as workspace children
 					foreach (CLIN clin in clinData)
 					{
@@ -714,33 +714,6 @@ namespace GenBOE.DataBridge.DTO
 			{
 				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
 
-				List<Models.SkillMix> skillMixes = (from sm in gbe.SkillMixes
-													join cl in gbe.WBS_CLIN_BOE_XREF on sm.BOEID equals cl.BOEID
-													where cl.CLINID == clinId 
-													select sm).ToList();
-
-				List<CommonDisclosureSkillMix> commonDisclosures = (from cd in gbe.CommonDisclosureSkillMixes
-																	join cl in gbe.WBS_CLIN_BOE_XREF on cd.BOEID equals cl.BOEID
-																	where cl.CLINID == clinId
-																	select cd).ToList();
-
-				List<Models.SkillMixSummary> skillMixSummaries = (from cd in gbe.SkillMixSummaries
-																  join cl in gbe.WBS_CLIN_BOE_XREF on cd.BOEID equals cl.BOEID
-																	where cl.CLINID == clinId
-																	select cd).ToList();
-
-				List<BOELaborType> boeLaborTypes = (from blt in gbe.BOELaborTypes
-													join te in gbe.BOETaskElements on blt.BOETaskElementID equals te.BOETaskElementID
-													join cl in gbe.WBS_CLIN_BOE_XREF on te.BOEID equals cl.BOEID
-													where cl.CLINID == clinId
-													select blt).ToList();
-
-				List<BOELaborSpread> boeLaborSpreads = (from bls in gbe.BOELaborSpreads
-														join blt in gbe.BOELaborTypes on bls.BOELaborTypeID equals blt.BOELaborTypeID
-														join te in gbe.BOETaskElements on blt.BOETaskElementID equals te.BOETaskElementID
-														join cl in gbe.WBS_CLIN_BOE_XREF on te.BOEID equals cl.BOEID
-														where cl.CLINID == clinId
-														select bls).ToList();
 
 				DateShiftDTO clinDateShift = (from c in gbe.CLINs
 											  where c.CLINID == clinId
@@ -754,9 +727,35 @@ namespace GenBOE.DataBridge.DTO
 												  DateShiftLevel = Level.CLIN,
 												  ParentId = c.WorkspaceID,
 											  }).FirstOrDefault();
-
 				if (getChildren)
 				{
+					List<Models.SkillMix> skillMixes = (from sm in gbe.SkillMixes
+														join cl in gbe.WBS_CLIN_BOE_XREF on sm.BOEID equals cl.BOEID
+														where cl.CLINID == clinId
+														select sm).ToList();
+
+					List<CommonDisclosureSkillMix> commonDisclosures = (from cd in gbe.CommonDisclosureSkillMixes
+																		join cl in gbe.WBS_CLIN_BOE_XREF on cd.BOEID equals cl.BOEID
+																		where cl.CLINID == clinId
+																		select cd).ToList();
+
+					List<Models.SkillMixSummary> skillMixSummaries = (from cd in gbe.SkillMixSummaries
+																	  join cl in gbe.WBS_CLIN_BOE_XREF on cd.BOEID equals cl.BOEID
+																	  where cl.CLINID == clinId
+																	  select cd).ToList();
+
+					List<BOELaborType> boeLaborTypes = (from blt in gbe.BOELaborTypes
+														join te in gbe.BOETaskElements on blt.BOETaskElementID equals te.BOETaskElementID
+														join cl in gbe.WBS_CLIN_BOE_XREF on te.BOEID equals cl.BOEID
+														where cl.CLINID == clinId
+														select blt).ToList();
+
+					List<BOELaborSpread> boeLaborSpreads = (from bls in gbe.BOELaborSpreads
+															join blt in gbe.BOELaborTypes on bls.BOELaborTypeID equals blt.BOELaborTypeID
+															join te in gbe.BOETaskElements on blt.BOETaskElementID equals te.BOETaskElementID
+															join cl in gbe.WBS_CLIN_BOE_XREF on te.BOEID equals cl.BOEID
+															where cl.CLINID == clinId
+															select bls).ToList();
 					// Add BOEs as CLIN children
 					foreach (WBS_CLIN_BOE_XREF xRef in gbe.WBS_CLIN_BOE_XREF.Where(x => x.CLINID == clinDateShift.Id))
 					{
@@ -928,28 +927,6 @@ namespace GenBOE.DataBridge.DTO
 			{
 				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
 
-				List<Models.SkillMix> skillMixes = (from sm in gbe.SkillMixes
-													where sm.BOEID == id
-													select sm).ToList();
-
-				List<CommonDisclosureSkillMix> commonDisclosures = (from cd in gbe.CommonDisclosureSkillMixes
-																	where cd.BOEID == id
-																	select cd).ToList();
-
-				List<Models.SkillMixSummary> skillMixSummaries = (from cd in gbe.SkillMixSummaries
-																  where cd.BOEID == id
-																	select cd).ToList();
-
-				List<BOELaborType> boeLaborTypes = (from blt in gbe.BOELaborTypes
-													join te in gbe.BOETaskElements on blt.BOETaskElementID equals te.BOETaskElementID
-													where te.BOEID == id
-													select blt).ToList();
-
-				List<BOELaborSpread> boeLaborSpreads = (from bls in gbe.BOELaborSpreads
-														join blt in gbe.BOELaborTypes on bls.BOELaborTypeID equals blt.BOELaborTypeID
-														join te in gbe.BOETaskElements on blt.BOETaskElementID equals te.BOETaskElementID
-														where te.BOEID == id
-														select bls).ToList();
 
 				DateShiftDTO boeDateShift = (from b in gbe.BOEs
 											 where b.BOEID == id
@@ -971,6 +948,28 @@ namespace GenBOE.DataBridge.DTO
 
 				if (getChildren)
 				{
+					List<Models.SkillMix> skillMixes = (from sm in gbe.SkillMixes
+														where sm.BOEID == id
+														select sm).ToList();
+
+					List<CommonDisclosureSkillMix> commonDisclosures = (from cd in gbe.CommonDisclosureSkillMixes
+																		where cd.BOEID == id
+																		select cd).ToList();
+
+					List<Models.SkillMixSummary> skillMixSummaries = (from cd in gbe.SkillMixSummaries
+																	  where cd.BOEID == id
+																	  select cd).ToList();
+
+					List<BOELaborType> boeLaborTypes = (from blt in gbe.BOELaborTypes
+														join te in gbe.BOETaskElements on blt.BOETaskElementID equals te.BOETaskElementID
+														where te.BOEID == id
+														select blt).ToList();
+
+					List<BOELaborSpread> boeLaborSpreads = (from bls in gbe.BOELaborSpreads
+															join blt in gbe.BOELaborTypes on bls.BOELaborTypeID equals blt.BOELaborTypeID
+															join te in gbe.BOETaskElements on blt.BOETaskElementID equals te.BOETaskElementID
+															where te.BOEID == id
+															select bls).ToList();
 					// Add BOE Task Elements as BOE children
 					foreach (BOETaskElement te in gbe.BOETaskElements.Where(t => t.BOEID == boeDateShift.Id))
 					{

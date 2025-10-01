@@ -46,6 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Object Scripts\Stored Procedures\copyWorkspace - Copy.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteBOETaskElementviaTableParameter.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteWorkspace.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertSkillMixSummaryviaTableParameter.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteSkillMixSummary.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteAllRequest.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteRequest.sql" />
     <Content Include="Object Scripts\Stored Procedures\insertRequest.sql" />
@@ -417,6 +422,7 @@
     <Content Include="_Full Script Files For Specific Versions\Older\ClassifiedRelease2024.12\BOE - 2024.09 Generated On 5_7_2024.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\ClassifiedRelease2025.15\BOE - 2025.04 Generated On 2_4_2025.sql" />
     <Content Include="_Full Script Files For Specific Versions\Sql Script For Release 2025.10 Generated On 7_29_2025.sql" />
+    <Content Include="_Full Script Files For Specific Versions\BOE - 2025.14 Generated On 10_1_2025.sql" />
     <Content Include="_Other Scripts\Classified Helpers\genBOE - Insert Application Administrator.sql" />
     <Content Include="_Other Scripts\Classified Helpers\genBOE - Scrub database data.sql" />
     <Content Include="_Other Scripts\Classified Helpers\genTrac - Insert Application Administrator.sql" />

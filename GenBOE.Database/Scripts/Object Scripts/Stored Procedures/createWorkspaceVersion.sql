@@ -8,7 +8,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE PROCEDURE [dbo].[createWorkspaceVersion]
+CREATE OR ALTER PROCEDURE [dbo].[createWorkspaceVersion]
 (
 @VersionName varchar(50),
 @CreatedByETIUserID int,
@@ -56,6 +56,7 @@ AS
 **		10/15/24	e405721				PROPH-2392: Update for Skill Mix V2
 **		1/14/25		twilson3			PROPH-2596 - Add UCOT Factor
 **		1/15/25		e309214				PROPH-1854 Database Changes for Assign Author
+**		9/30/25		e378233				PROPH-3302 Updated for Skill Mix Summary
 *******************************************************************************/
 SET NOCOUNT ON 
 --BEGIN TRANSACTION 
@@ -1288,6 +1289,44 @@ CD.[BOEID],
 FROM [dbo].[CommonDisclosureSkillMix] CD
 INNER JOIN dbo.BOE B ON CD.BOEID = B.BOEID
 INNER JOIN dbo.BOETaskElement T on CD.[BOETaskElementID] = T.[BOETaskElementID]
+WHERE B.WorkspaceID = @WorkspaceID
+
+/** [dbo].[SkillMixSummary] **/
+INSERT INTO [version].[SkillMixSummary]
+([SkillMixSummaryID],
+[Rationale],
+[Included],
+[ProposedHours],
+[HistoricalHours],
+[ResourceHours],
+[BusinessResourceHours],
+[BOESkillMix],
+[LaborSkillMix],
+[ResourceID],
+[BusinessResourceID],
+[BOETaskElementID],
+[IsUserInput],
+[BOEID],
+[VersionId]
+)
+SELECT SMS.[SkillMixSummaryID],
+SMS.[Rationale],
+SMS.[Included],
+SMS.[ProposedHours],
+SMS.[HistoricalHours],
+SMS.[ResourceHours],
+SMS.[BusinessResourceHours],
+SMS.[BOESkillMix],
+SMS.[LaborSkillMix],
+SMS.[ResourceID],
+SMS.[BusinessResourceID],
+SMS.[BOETaskElementID],
+SMS.[IsUserInput],
+SMS.[BOEID],
+@VersionID
+FROM [dbo].[SkillMixSummary] SMS
+INNER JOIN dbo.BOE B ON SMS.BOEID = B.BOEID
+INNER JOIN dbo.BOETaskElement T on SMS.[BOETaskElementID] = T.[BOETaskElementID]
 WHERE B.WorkspaceID = @WorkspaceID
 
 /** [dbo].[MOQTypeSelectionTableDataResourceHours] **/

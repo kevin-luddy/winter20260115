@@ -7,7 +7,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE  PROCEDURE [dbo].[copyWorkspace]
+CREATE OR ALTER  PROCEDURE [dbo].[copyWorkspace]
 (
 @WorkspaceID int ,
 @WorkspaceName varchar (115),
@@ -52,6 +52,7 @@ AS
 **		10/15/24	e405721				PROPH-2392: Update for Skill Mix V2
 **		1/14/25		twilson3			PROPH-2596 - Add UCOT Factor
 **		1/15/25		e309214				PROPH-1854 Database Changes for Assign Author
+**		9/30/25		e378233				PROPH-3302 Updated Copy Workspace for Skill Mix Summary
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -1867,6 +1868,92 @@ WHERE CommonDisclosureSkillMixID = @CommonDisclosureSkillMixID
 
 END
 
+/** [dbo].[SkillMixSummary] **/
+DECLARE @SkillMixSummary TABLE
+(
+	[SkillMixSummaryID] [int] NOT NULL,
+	[Rationale] varchar(255) NOT NULL,
+	[Included] [bit] NOT NULL,
+	[ProposedHours] decimal(11,2) NOT NULL,
+	[HistoricalHours] decimal(11,2) NOT NULL,
+	[ResourceHours] decimal(11,2) NOT NULL,
+	[BusinessResourceHours] decimal(11,2) NOT NULL,
+	[BOESkillMix] decimal(5,2) NOT NULL,
+	[LaborSkillMix] decimal(5,2) NOT NULL,
+    [ResourceID] varchar(20) NOT NULL,
+    [BusinessResourceID] varchar(20) NOT NULL,
+    [BOEID] [int] NOT NULL,
+    [BOETaskElementID] [int] NOT NULL,
+	[IsUserInput] bit NOT NULL,
+	Processed bit,
+    NewBOEID int,
+    NewBOETaskElementID int
+)
+INSERT INTO @SkillMixSummary
+SELECT
+	SMS.[SkillMixSummaryID],
+	SMS.[Rationale],
+	SMS.[Included],
+	SMS.[ProposedHours],
+	SMS.[HistoricalHours],
+	SMS.[ResourceHours],
+	SMS.[BusinessResourceHours],
+	SMS.[BOESkillMix],
+	SMS.[LaborSkillMix],
+    SMS.[ResourceID],
+    SMS.[BusinessResourceID],
+    SMS.[BOEID],
+    SMS.[BOETaskElementID],
+	SMS.[IsUserInput],
+	0,
+    B.[NewBOEID],
+    T.[NewBOETaskElementID]
+FROM [dbo].[SkillMixSummary] SMS
+INNER JOIN @BOE B ON SMS.BOEID = B.BOEID
+INNER JOIN @BOETaskElement T on T.[BOETaskElementID] = SMS.[BOETaskElementID]
+
+DECLARE @SkillMixSummaryID int
+WHILE EXISTS (SELECT 1 FROM @SkillMixSummary WHERE Processed = 0)
+BEGIN
+SELECT TOP 1 @SkillMixSummaryID = SkillMixSummaryID FROM @SkillMixSummary WHERE Processed = 0
+INSERT INTO [dbo].[SkillMixSummary]
+			([Rationale],
+			[Included],
+			[ProposedHours],
+			[HistoricalHours],
+			[ResourceHours],
+			[BusinessResourceHours],
+			[BOESkillMix],
+			[LaborSkillMix],
+            [ResourceID],
+            [BusinessResourceID],
+            [BOEID],
+            [BOETaskElementID],
+			[IsUserInput]
+			)
+SELECT
+	[Rationale],
+	[Included],
+	[ProposedHours],
+	[HistoricalHours],
+	[ResourceHours],
+	[BusinessResourceHours],
+	[BOESkillMix],
+	[LaborSkillMix],
+    [ResourceID],
+    [BusinessResourceID],
+    [NewBOEID],
+    [NewBOETaskElementID],
+	[IsUserInput]
+FROM @SkillMixSummary
+WHERE SkillMixSummaryID = @SkillMixSummaryID
+
+UPDATE @SkillMixSummary
+SET Processed = 1
+WHERE SkillMixSummaryID = @SkillMixSummaryID
+
+END
+
 /** [dbo].[MOQTypeSelectionTableDataResourceHours] **/
 DECLARE @MOQTypeSelectionTableDataResourceHours TABLE
 (
@@ -2772,7 +2859,7 @@ BEGIN CATCH
  --       ,ERROR_STATE() AS ErrorState  
  --       ,ERROR_PROCEDURE() AS ErrorProcedure  
  --       ,ERROR_LINE() AS ErrorLine  
- --       ,ERROR_MESSAGE() AS ErrorMessage; 
+ --       ,ERROR_MESSAGE() AS ErrorMessage;
  
 	DECLARE @ErrorMessage varchar (500)
 	SELECT @ErrorMessage = ERROR_MESSAGE()
