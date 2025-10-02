@@ -218,12 +218,22 @@ namespace GenTRAC.Tests.ActionLogic
 				FinalNegotiatedValue = 3,
 				NegotiationsSubmitted = DateTime.Now,
 				EppDelegationAuthority = 3,
+				PlannedBidEppDate = DateTime.Now,
 				PlannedProgramEppDate = DateTime.Now,
 				PlannedLobEppDate = DateTime.Now,
 				PlannedPreSpaceEppDate = DateTime.Now,
 				PlannedSpaceEppDate = DateTime.Now,
 				PlannedPreCorporateEppDate = DateTime.Now,
 				PlannedCorporateEppDate = DateTime.Now,
+				PlannedMissionSegmentEppDate = DateTime.Now,
+				ScheduledBidEppDate = DateTime.Now,
+				ScheduledProgramEppDate = DateTime.Now,
+				ScheduledLobEppDate = DateTime.Now,
+				ScheduledPreSpaceEppDate = DateTime.Now,
+				ScheduledSpaceEppDate = DateTime.Now,
+				ScheduledPreCorporateEppDate = DateTime.Now,
+				ScheduledCorporateEppDate = DateTime.Now,
+				ScheduledMissionSegmentEppDate = DateTime.Now,
 				EppRosDelegationNotes = "Test EppRosDelegationNotes",
 				LmWon = false,
 				ModCompletedDate = DateTime.Now,
@@ -275,12 +285,22 @@ namespace GenTRAC.Tests.ActionLogic
 			Assert.AreEqual(contractDto.PreviouslySubmittedROM.ToString(), contractsModelView.PreviouslySubmittedRoms.ElementAtOrDefault(0).Value);
 			Assert.AreEqual(contractDto.PreviouslySubmittedROM, contractsModelView.PreviouslySubmittedROM);
 			Assert.AreEqual(contractDto.EppDelegationAuthority, (int)contractsModelView.EppDelegationAuthority);
-			Assert.AreEqual(contractDto.PlannedProgramEppDate, contractsModelView.ProgramEppDate);
-			Assert.AreEqual(contractDto.PlannedLobEppDate, contractsModelView.LobEppDate);
-			Assert.AreEqual(contractDto.PlannedPreSpaceEppDate, contractsModelView.PreSpaceEppDate);
-			Assert.AreEqual(contractDto.PlannedSpaceEppDate, contractsModelView.SpaceEppDate);
-			Assert.AreEqual(contractDto.PlannedPreCorporateEppDate, contractsModelView.PreCorporateEppDate);
-			Assert.AreEqual(contractDto.PlannedCorporateEppDate, contractsModelView.CorporateEppDate);
+			Assert.AreEqual(contractDto.PlannedBidEppDate, contractsModelView.PlannedBidEppDate);
+			Assert.AreEqual(contractDto.PlannedProgramEppDate, contractsModelView.PlannedProgramEppDate);
+			Assert.AreEqual(contractDto.PlannedLobEppDate, contractsModelView.PlannedLobEppDate);
+			Assert.AreEqual(contractDto.PlannedPreSpaceEppDate, contractsModelView.PlannedPreSpaceEppDate);
+			Assert.AreEqual(contractDto.PlannedSpaceEppDate, contractsModelView.PlannedSpaceEppDate);
+			Assert.AreEqual(contractDto.PlannedPreCorporateEppDate, contractsModelView.PlannedPreCorporateEppDate);
+			Assert.AreEqual(contractDto.PlannedCorporateEppDate, contractsModelView.PlannedCorporateEppDate);
+			Assert.AreEqual(contractDto.PlannedMissionSegmentEppDate, contractsModelView.PlannedMissionSegmentEppDate);
+			Assert.AreEqual(contractDto.ScheduledBidEppDate, contractsModelView.ScheduledBidEppDate);
+			Assert.AreEqual(contractDto.ScheduledProgramEppDate, contractsModelView.ScheduledProgramEppDate);
+			Assert.AreEqual(contractDto.ScheduledLobEppDate, contractsModelView.ScheduledLobEppDate);
+			Assert.AreEqual(contractDto.ScheduledPreSpaceEppDate, contractsModelView.ScheduledPreSpaceEppDate);
+			Assert.AreEqual(contractDto.ScheduledSpaceEppDate, contractsModelView.ScheduledSpaceEppDate);
+			Assert.AreEqual(contractDto.ScheduledPreCorporateEppDate, contractsModelView.ScheduledPreCorporateEppDate);
+			Assert.AreEqual(contractDto.ScheduledCorporateEppDate, contractsModelView.ScheduledCorporateEppDate);
+			Assert.AreEqual(contractDto.ScheduledMissionSegmentEppDate, contractsModelView.ScheduledMissionSegmentEppDate);
 			Assert.AreEqual(contractDto.EppRosDelegationNotes, contractsModelView.EppRosDelegationNotes);
 			Assert.AreEqual(contractDto.LmWon, contractsModelView.LmWon);
 			Assert.AreEqual(contractDto.ModCompletedDate, contractsModelView.ModCompletedDate);
