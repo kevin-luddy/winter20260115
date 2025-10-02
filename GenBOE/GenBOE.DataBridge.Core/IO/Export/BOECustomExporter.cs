@@ -4270,7 +4270,6 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				this.SetCantSplit(templateDataRow);
 				Row currentInsertionRow = templateDataRow;
 
-
 				// accumulate totals
 				decimal costTotal = 0m;
 				decimal hoursTotal = 0m;
@@ -4331,6 +4330,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 					StructuredDocumentTag roundingNoticeAsterisk = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.FieldName_RoundingNoticeAsterisk);
 					this.RemoveElement(roundingNoticeAsterisk);
+				}
+
+				// Add UCOT text if there are any Resources with the UCOT label
+				// These resources are only added if UCOT is enabled for the workspace, so no need to pass the FullWorkspace all the way to this method to check additionally
+				if (CommonUtilities.IsUCOTEnabledForSystem && rollupData.Any(x => x.ResourceName.EndsWith($"-{CommonConstants.UCOT_LABEL}")))
+				{
+					WordUtilities.AddUcotLabelToContainer(tableContainerElement);
 				}
 
 				// remove template rows

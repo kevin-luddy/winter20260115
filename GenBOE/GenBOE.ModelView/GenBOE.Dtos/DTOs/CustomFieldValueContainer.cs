@@ -62,6 +62,11 @@ namespace GenBOE.Dtos
         {
             ContainerID = newParentId;
         }
+
+		/// <summary>
+		/// Used internally for retrieval from database to link to a DTO
+		/// </summary>
+		internal int DtoId { get; set; }
     }
 
     /// <summary>
