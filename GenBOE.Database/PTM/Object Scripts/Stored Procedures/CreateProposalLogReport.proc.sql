@@ -49,7 +49,7 @@ AS
 **		11/21/24	twilson3			proph-2357 Add Insurance fields
 **		02/27/25	Carlos				PROPH-2642 Added SupplierMilestoneDatesResponse field
 **		05/13/25	ranzalon			PROPH-3038 Added Bid and Mission Segment EPP Dates
-**		10/02/25	e403038				Additional EPP Dates (Original to Planned and add Scheduled)
+**		10/02/25	e403038				PROPH-2994 Additional EPP Dates (Original to Planned and add Scheduled)
 *******************************************************************************/
 
 SET NOCOUNT ON

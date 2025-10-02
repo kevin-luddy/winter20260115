@@ -64,7 +64,7 @@ AS
 **		02/22/23	ranzalon			Add CustomerDueDate
 **		11/12/24	twilson3			Add Insurance fields
 **		05/12/25	ranzalon			Add Bid and Mission Segment EPP Dates
-**		10/02/25	e403038				Additional EPP Dates (Original to Planned and add Scheduled)
+**		10/02/25	e403038				PROPH-2994 Additional EPP Dates (Original to Planned and add Scheduled)
 *******************************************************************************/
 SET NOCOUNT ON
 

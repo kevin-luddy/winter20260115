@@ -32,7 +32,7 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 **		12/3/24		twilson3			proph-2544 Add SetupComments, Backup Estimator Name
 **		02/27/25	Carlos				PROPH-2642 Add checklist question 11 to log report
 **		05/13/25	ranzalon			PROPH-3038 Added Bid and Mission Segment EPP Dates
-**		10/02/25	e403038				Additional EPP Dates (Original to Planned and add Scheduled)
+**		10/02/25	e403038				PROPH-2994 Additional EPP Dates (Original to Planned and add Scheduled)
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
