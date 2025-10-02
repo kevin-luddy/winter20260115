@@ -316,8 +316,8 @@ namespace GenBOE.DataBridge.DTO
 				if (getChildren)
 				{
 					List<CLIN> clinData = (from c in gbe.CLINs
-									   where c.WorkspaceID == workspaceId
-									   select c).ToList();
+										   where c.WorkspaceID == workspaceId
+										   select c).ToList();
 
 					var boeData = (from b in gbe.BOEs
 								   where b.WorkspaceID == workspaceId
@@ -332,30 +332,17 @@ namespace GenBOE.DataBridge.DTO
 								   }).ToList();
 
 					var teData = (from te in gbe.BOETaskElements
-												   join b in gbe.BOEs on te.BOEID equals b.BOEID
-												   where b.WorkspaceID == workspaceId
-												   select new 
-												   {
-													   te.BOETaskElementID,
-													   te.BOEID,
-													   te.TaskStartDate,
-													   te.TaskEndDate,
-													   te.UpdateDT
-												   }
-												   ).ToList();
+								  join b in gbe.BOEs on te.BOEID equals b.BOEID
+								  where b.WorkspaceID == workspaceId
+								  select new
+								  {
+									  te.BOETaskElementID,
+									  te.BOEID,
+									  te.TaskStartDate,
+									  te.TaskEndDate,
+									  te.UpdateDT
+								  }).ToList();
 
-				// Construct DateShiftDTO hierarchy
-				DateShiftDTO workspaceDateShift = new DateShiftDTO
-				{
-					Id = workspace.WorkspaceID,
-					StartDate = workspace.ContractStartDate,
-					EndDate = workspace.ContractEndDate,
-					UpdateDate = workspace.UpdateDT,
-					DateShiftLevel = Level.Workspace,
-				};
-
-				if (getChildren)
-				{
 					List<Models.SkillMix> skillMixes = (from sm in gbe.SkillMixes
 														join b in gbe.BOEs on sm.BOEID equals b.BOEID
 														where b.WorkspaceID == workspaceId
@@ -702,7 +689,6 @@ namespace GenBOE.DataBridge.DTO
 						}
 					}
 				}
-
 				return workspaceDateShift;
 			}
 		}
@@ -838,7 +824,7 @@ namespace GenBOE.DataBridge.DTO
 
 								DoPostProcessing(taskElementCommonDisclosures);
 
-								List<SkillMixSummaryDTO> taskElementSkillMixSummaries = skillMixSummaries.Where(cdsm => cdsm.BOETaskElementID == te.BOETaskElementID)
+								List<SkillMixSummaryDTO> taskElementSkillMixSummaries = skillMixSummaries.Where(cdsm => cdsm.BOETaskElementID == te.Id)
 									.Select(sms => new SkillMixSummaryDTO
 									{
 										SkillMixSummaryID = sms.SkillMixSummaryID,
@@ -1029,7 +1015,7 @@ namespace GenBOE.DataBridge.DTO
 
 						DoPostProcessing(taskElementCommonDisclosures);
 
-						List<SkillMixSummaryDTO> taskElementSkillMixSummaries = skillMixSummaries.Where(cdsm => cdsm.BOETaskElementID == te.BOETaskElementID)
+						List<SkillMixSummaryDTO> taskElementSkillMixSummaries = skillMixSummaries.Where(cdsm => cdsm.BOETaskElementID == te.Id)
 							.Select(cdsm => new SkillMixSummaryDTO
 							{
 								SkillMixSummaryID = cdsm.SkillMixSummaryID,
