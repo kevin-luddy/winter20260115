@@ -111,6 +111,8 @@ namespace GenBOE.DataBridge.DTO
 			{
 				List<BoeTaskElementDTO> result;
 				List<OrdinaryVariableDto> ordinaryVariables;
+				List<Tuple<int, int>> workspaceVariableIds;
+				List<CustomFieldValueContainer> customFieldValueContainers;
 				List<ResourceTypeDto> taskElementLabors;
 				List<SkillMixDTO> skillMixDTOs = null;
 				List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = null;
@@ -142,28 +144,17 @@ namespace GenBOE.DataBridge.DTO
 									  UpdateDate = bT.UpdateDT,
 									  BoeID = bT.BOEID,
 									  TaskElementType = (TaskElementType)bT.TaskElementTypeID,
-									  BOETaskElementOrder = bT.SortOrderID,
-
-									  CustomFieldValueContainersIEnum = bT.BOETaskElementCustomFieldValueXREFs
-											 .Select(cf => new CustomFieldValueContainer
-											 {
-												 ContainerID = cf.BTECFVID,
-												 CustomFieldValueID = cf.CustomFieldValueID,
-												 CustomFieldID = cf.CustomFieldValue.CustomFieldID,
-												 UpdateDate = cf.UpdateDT,
-												 IsOpenEnded = cf.CustomFieldValue.CustomField.IsOpenEnded,
-												 OpenEndedValue = cf.CustomFieldValue.CustomFieldValueDescription
-											 }),
-
-									  WorkspaceVariableIDsIEnum = bT.BOETaskElementWorkspaceVariableXREFs.Select(wsV => wsV.WorkspaceVariableID)
+									  BOETaskElementOrder = bT.SortOrderID
 								  }).ToList();
 
+					customFieldValueContainers = GetCustomFieldValueContainers(ids, gbe);
+					workspaceVariableIds = GetWorkspaceVariables(ids, gbe);
 					ordinaryVariables = GetOrdinaryVariables(ids, gbe);
 					taskElementLabors = GetTaskLabors(ids, gbe);
 					this.LoadSikorskyFields(gbe, result);
 				}
 
-				DoPostProcessing(result, ordinaryVariables, taskElementLabors, hoursPrecision, costPrecision, skillMixDTOs, commonDisclosureSkillMixDTOs, skillMixDTOLoader, commonDisclosureSMDTODataLoader);
+				DoPostProcessing(result, ordinaryVariables, workspaceVariableIds, customFieldValueContainers, taskElementLabors, hoursPrecision, costPrecision, skillMixDTOs, commonDisclosureSkillMixDTOs, skillMixDTOLoader, commonDisclosureSMDTODataLoader);
 				return result;
 			}
 		}
@@ -185,6 +176,8 @@ namespace GenBOE.DataBridge.DTO
 			using (StopwatchTimer sw = new StopwatchTimer(this.log))
 			{
 				List<BoeTaskElementDTO> result;
+				List<Tuple<int, int>> workspaceVariableIds;
+				List<CustomFieldValueContainer> customFieldValueContainers;
 				List<OrdinaryVariableDto> ordinaryVariables;
 				List<ResourceTypeDto> taskElementLabors;
 				ICollection<SkillMixDTO> skillMixDTOs = this.skillMixDTOLoader.GetByBOEIDs(boeIds);
@@ -217,30 +210,19 @@ namespace GenBOE.DataBridge.DTO
 									  UpdateDate = bT.UpdateDT,
 									  BoeID = bT.BOEID,
 									  TaskElementType = (TaskElementType)bT.TaskElementTypeID,
-									  BOETaskElementOrder = bT.SortOrderID,
-
-									  CustomFieldValueContainersIEnum = bT.BOETaskElementCustomFieldValueXREFs
-											 .Select(cf => new CustomFieldValueContainer
-											 {
-												 ContainerID = cf.BTECFVID,
-												 CustomFieldValueID = cf.CustomFieldValueID,
-												 CustomFieldID = cf.CustomFieldValue.CustomFieldID,
-												 UpdateDate = cf.UpdateDT,
-												 IsOpenEnded = cf.CustomFieldValue.CustomField.IsOpenEnded,
-												 OpenEndedValue = cf.CustomFieldValue.CustomFieldValueDescription
-											 }),
-
-									  WorkspaceVariableIDsIEnum = bT.BOETaskElementWorkspaceVariableXREFs.Select(wsV => wsV.WorkspaceVariableID)
+									  BOETaskElementOrder = bT.SortOrderID
 								  }).ToList();
 
 					List<int> ids = result.Select(bT => bT.Id).ToList();
 
+					customFieldValueContainers = GetCustomFieldValueContainers(ids, gbe);
+					workspaceVariableIds = GetWorkspaceVariables(ids, gbe);
 					ordinaryVariables = GetOrdinaryVariables(ids, gbe);
 					taskElementLabors = GetTaskLabors(ids, gbe);
 					this.LoadSikorskyFields(gbe, result);
 				}
 
-				DoPostProcessing(result, ordinaryVariables, taskElementLabors, hoursPrecision, costPrecision, skillMixDTOs, commonDisclosureSkillMixDTOs, skillMixDTOLoader, commonDisclosureSMDTODataLoader);
+				DoPostProcessing(result, ordinaryVariables, workspaceVariableIds, customFieldValueContainers, taskElementLabors, hoursPrecision, costPrecision, skillMixDTOs, commonDisclosureSkillMixDTOs, skillMixDTOLoader, commonDisclosureSMDTODataLoader);
 
 				return result;
 			}
@@ -261,6 +243,8 @@ namespace GenBOE.DataBridge.DTO
 			using (StopwatchTimer sw = new StopwatchTimer(this.log))
 			{
 				List<BoeTaskElementDTO> result;
+				List<Tuple<int, int>> workspaceVariableIds;
+				List<CustomFieldValueContainer> customFieldValueContainers;
 				List<OrdinaryVariableDto> ordinaryVariables;
 				List<ResourceTypeDto> taskElementLabors;
 				ICollection<SkillMixDTO> skillMixDTOs = this.skillMixDTOLoader.GetByWorkspaceId(wsId);
@@ -293,30 +277,19 @@ namespace GenBOE.DataBridge.DTO
 									  UpdateDate = bT.UpdateDT,
 									  BoeID = bT.BOEID,
 									  TaskElementType = (TaskElementType)bT.TaskElementTypeID,
-									  BOETaskElementOrder = bT.SortOrderID,
-
-									  CustomFieldValueContainersIEnum = bT.BOETaskElementCustomFieldValueXREFs
-											 .Select(cf => new CustomFieldValueContainer
-											 {
-												 ContainerID = cf.BTECFVID,
-												 CustomFieldValueID = cf.CustomFieldValueID,
-												 CustomFieldID = cf.CustomFieldValue.CustomFieldID,
-												 UpdateDate = cf.UpdateDT,
-												 IsOpenEnded = cf.CustomFieldValue.CustomField.IsOpenEnded,
-												 OpenEndedValue = cf.CustomFieldValue.CustomFieldValueDescription
-											 }),
-
-									  WorkspaceVariableIDsIEnum = bT.BOETaskElementWorkspaceVariableXREFs.Select(wsV => wsV.WorkspaceVariableID)
+									  BOETaskElementOrder = bT.SortOrderID
 								  }).ToList();
 
 					List<int> ids = result.Select(bT => bT.Id).ToList();
 
+					customFieldValueContainers = GetCustomFieldValueContainers(ids, gbe);
+					workspaceVariableIds = GetWorkspaceVariables(ids, gbe);
 					ordinaryVariables = GetOrdinaryVariables(ids, gbe);
 					taskElementLabors = GetTaskLabors(ids, gbe);
 					this.LoadSikorskyFields(gbe, result);
 				}
 
-				DoPostProcessing(result, ordinaryVariables, taskElementLabors, hoursPrecision, costPrecision, skillMixDTOs, commonDisclosureSkillMixDTOs, skillMixDTOLoader, commonDisclosureSMDTODataLoader);
+				DoPostProcessing(result, ordinaryVariables, workspaceVariableIds, customFieldValueContainers, taskElementLabors, hoursPrecision, costPrecision, skillMixDTOs, commonDisclosureSkillMixDTOs, skillMixDTOLoader, commonDisclosureSMDTODataLoader);
 
 				return result;
 			}
@@ -1314,6 +1287,83 @@ namespace GenBOE.DataBridge.DTO
 		#region Private Helpers
 
 		/// <summary>
+		/// Gets the labor spreads for a list of boe task element ids
+		/// </summary>
+		/// <param name="ids">The list of boe task element Ids to retrieve the variables against.</param>
+		/// <param name="gbe">The database context.</param>
+		/// <returns>List of labor spreads for the task element ids</returns>
+		internal static List<ResourceSpreadDto> GetLaborSpreads(ICollection<int> ids, GenBoeEntities gbe)
+		{
+			return gbe.BOELaborSpreads.Where(s => ids.Contains(s.BOELaborType.BOETaskElementID))
+				.Select(lS => new ResourceSpreadDto
+				{
+					Id = lS.BOELaborSpreadID,
+					LaborSpreadDate = lS.LaborSpreadDate,
+					LaborSpreadValue = lS.LaborSpreadValue ?? 0,
+					LaborTypeId = lS.BOELaborTypeID
+				}).ToList();
+		}
+
+		/// <summary>
+		/// Gets Custom Field Value Containers based on ids
+		/// </summary>
+		/// <param name="ids">The list of labor type Ids to retrieve the variables against.</param>
+		/// <param name="gbe">The database context.</param>
+		/// <returns>A list of Custom Field Value Containers for each labor type id.</returns>
+		private static List<CustomFieldValueContainer> GetCustomFieldValueContainersLabors(ICollection<int> ids, GenBoeEntities gbe)
+		{
+			return gbe.BOELaborTypeCustomFieldValueXREFs.Where(x => ids.Contains(x.BOELaborTypeID))
+					.Select(cf => new CustomFieldValueContainer
+					{
+						ContainerID = cf.BLTCFVID,
+						CustomFieldValueID = cf.CustomFieldValueID,
+						CustomFieldID = cf.CustomFieldValue.CustomFieldID,
+						UpdateDate = cf.UpdateDT,
+						IsOpenEnded = cf.CustomFieldValue.CustomField.IsOpenEnded,
+						OpenEndedValue = cf.CustomFieldValue.CustomFieldValueDescription,
+						DtoId = cf.BOELaborTypeID
+					}).ToList();
+		}
+
+		/// <summary>
+		/// Gets Custom Field Value Containers based on ids
+		/// </summary>
+		/// <param name="ids">The list of boe task element Ids to retrieve the variables against.</param>
+		/// <param name="gbe">The database context.</param>
+		/// <returns>A list of Custom Field Value Containers for each task id.</returns>
+		private static List<CustomFieldValueContainer> GetCustomFieldValueContainers(ICollection<int> ids, GenBoeEntities gbe)
+		{
+			return gbe.BOETaskElementCustomFieldValueXREFs.Where(x => ids.Contains(x.BOETaskElementID))
+				.Select(cf => new CustomFieldValueContainer
+				{
+					ContainerID = cf.BTECFVID,
+					CustomFieldValueID = cf.CustomFieldValueID,
+					CustomFieldID = cf.CustomFieldValue.CustomFieldID,
+					UpdateDate = cf.UpdateDT,
+					IsOpenEnded = cf.CustomFieldValue.CustomField.IsOpenEnded,
+					OpenEndedValue = cf.CustomFieldValue.CustomFieldValueDescription,
+					DtoId = cf.BOETaskElementID
+				}).ToList();
+		}
+
+		/// <summary>
+		/// Gets the workspace variable ids attached to the ids listed
+		/// </summary>
+		/// <param name="ids">The list of boe task element Ids to retrieve the ordinary variables against.</param>
+		/// <param name="gbe">The database context.</param>
+		/// <returns>A list of Workspace Variables for each task id.</returns>
+		private static List<Tuple<int, int>> GetWorkspaceVariables(ICollection<int> ids, GenBoeEntities gbe)
+		{
+			return gbe.BOETaskElementWorkspaceVariableXREFs.Where(wV => ids.Contains(wV.BOETaskElementID))
+									 .Select(wV => new 
+									 {
+										 wV.BOETaskElementID, 
+										 wV.WorkspaceVariableID
+									 }).ToList()
+									 .Select(v => new Tuple<int, int>(v.BOETaskElementID, v.WorkspaceVariableID)).ToList();
+		}
+
+		/// <summary>
 		/// Gets the Task Ordinary Variables.
 		/// </summary>
 		/// <param name="ids">The list of boe task element Ids to retrieve the ordinary variables against.</param>
@@ -1376,26 +1426,20 @@ namespace GenBOE.DataBridge.DTO
 															CLINID = lT.CLINID,
 															SpreadType = lT.SpreadTypeID.HasValue ? (SpreadType)lT.SpreadTypeID.Value : SpreadType.NotSet,
 															CanOffload = lT.CanOffload ?? false,
-															LaborTypeOrder = lT.LaborSortId,
-															LaborSpreadsIEnum = lT.BOELaborSpreads
-																.Select(lS => new ResourceSpreadDto
-																{
-																	Id = lS.BOELaborSpreadID,
-																	LaborSpreadDate = lS.LaborSpreadDate,
-																	LaborSpreadValue = lS.LaborSpreadValue ?? 0,
-																	LaborTypeId = lS.BOELaborTypeID
-																}),
-															CustomFieldValueContainersIEnum = lT.BOELaborTypeCustomFieldValueXREFs
-																.Select(cf => new CustomFieldValueContainer
-																{
-																	ContainerID = cf.BLTCFVID,
-																	CustomFieldValueID = cf.CustomFieldValueID,
-																	CustomFieldID = cf.CustomFieldValue.CustomFieldID,
-																	UpdateDate = cf.UpdateDT,
-																	IsOpenEnded = cf.CustomFieldValue.CustomField.IsOpenEnded,
-																	OpenEndedValue = cf.CustomFieldValue.CustomFieldValueDescription
-																})
+															LaborTypeOrder = lT.LaborSortId
 														}).ToList();
+
+			// retrieve labor spreads by task element ids
+			List<ResourceSpreadDto> laborSpreads = GetLaborSpreads(ids, gbe);
+
+			// retrieve labor custom containers by labor type ids
+			List<CustomFieldValueContainer> boeLaborCustomFieldContainers = GetCustomFieldValueContainersLabors(toReturn.Select(r => r.Id).ToList(), gbe);
+
+			foreach (ResourceTypeDto rt in toReturn)
+			{
+				rt.CustomFieldValueContainers = boeLaborCustomFieldContainers.Where(c => c.DtoId == rt.Id).ToCollection();
+				rt.LaborSpreads = laborSpreads.Where(l => l.LaborTypeId == rt.Id).ToCollection();
+			}
 
 			ResourceTypeLoader.LoadSikorskyFields(gbe, toReturn);
 
@@ -1410,13 +1454,14 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="taskElementLabors">Task Element Labors</param>
 		/// <param name="costPrecision">The Cost precision for the workspace.</param>
 		/// <param name="hoursPrecision">The Hours precision for the workspace.</param>
-		private static void DoPostProcessing(List<BoeTaskElementDTO> result, List<OrdinaryVariableDto> ordinaryVariables, List<ResourceTypeDto> taskElementLabors, int hoursPrecision, int costPrecision, ICollection<SkillMixDTO> skillMix, ICollection<CommonDisclosureSkillMixDTO> commonDisclosures, ISkillMixDTOLoader skillMixDTOLoader, ICommonDisclosureSMDTODataLoader commonDisclosureSMDTODataLoader)
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
+		private static void DoPostProcessing(List<BoeTaskElementDTO> result, List<OrdinaryVariableDto> ordinaryVariables, List<Tuple<int, int>> workspaceVariableIds, List<CustomFieldValueContainer> customFieldValueContainers, List<ResourceTypeDto> taskElementLabors, int hoursPrecision, int costPrecision, ICollection<SkillMixDTO> skillMix, ICollection<CommonDisclosureSkillMixDTO> commonDisclosures, ISkillMixDTOLoader skillMixDTOLoader, ICommonDisclosureSMDTODataLoader commonDisclosureSMDTODataLoader)
 		{
 			result.AsParallel().ForAll(
 				bT =>
 				{
-					bT.CustomFieldValueContainers = bT.CustomFieldValueContainersIEnum.ToCollection(); bT.CustomFieldValueContainersIEnum = null;
-					bT.WorkspaceVariableIDs = bT.WorkspaceVariableIDsIEnum.ToCollection(); bT.WorkspaceVariableIDsIEnum = null;
+					bT.CustomFieldValueContainers = customFieldValueContainers.Where(c => c.DtoId == bT.Id).ToCollection();
+					bT.WorkspaceVariableIDs = workspaceVariableIds.Where(ws => ws.Item1 == bT.Id).Select(ws => ws.Item2).ToCollection();
 
 					bT.OrdinaryVariables = ordinaryVariables.Where(oV => bT.Id == oV.TaskElementId).ToCollection();
 					bT.OrdinaryVariables.ToList().ForEach(oV =>
@@ -1429,13 +1474,7 @@ namespace GenBOE.DataBridge.DTO
 					bT.taskElementLabors = taskElementLabors.Where(lT => bT.Id == lT.TaskElementId).ToCollection();
 					bT.taskElementLabors.ToList().ForEach(tL =>
 					{
-						tL.CustomFieldValueContainers = tL.CustomFieldValueContainersIEnum.ToCollection(); tL.CustomFieldValueContainersIEnum = null;
-
-						if (tL.SpreadCurveID == SpreadCurves.DiscreteCost || tL.SpreadCurveID == SpreadCurves.DiscreteHours)
-						{
-							tL.LaborSpreads = tL.LaborSpreadsIEnum.ToCollection();
-						}
-						else
+						if (tL.SpreadCurveID != SpreadCurves.DiscreteCost && tL.SpreadCurveID != SpreadCurves.DiscreteHours)
 						{
 							// auto-generate the Spreads
 							if (tL.StartDate.HasValue && tL.EndDate.HasValue && tL.SpreadCurveID.HasValue)
@@ -1459,9 +1498,6 @@ namespace GenBOE.DataBridge.DTO
 								}
 							}
 						}
-
-						// Always clear out the enumeration
-						tL.LaborSpreadsIEnum = null;
 
 						tL.LaborSpreads.ToList().ForEach(tS =>
 						{
