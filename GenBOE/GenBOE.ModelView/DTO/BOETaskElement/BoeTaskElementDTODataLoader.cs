@@ -1291,7 +1291,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="ids">The list of boe task element Ids to retrieve the variables against.</param>
 		/// <param name="gbe">The database context.</param>
-		/// <returns></returns>
+		/// <returns>List of labor spreads for the task element ids</returns>
 		internal static List<ResourceSpreadDto> GetLaborSpreads(ICollection<int> ids, GenBoeEntities gbe)
 		{
 			return gbe.BOELaborSpreads.Where(s => ids.Contains(s.BOELaborType.BOETaskElementID))
