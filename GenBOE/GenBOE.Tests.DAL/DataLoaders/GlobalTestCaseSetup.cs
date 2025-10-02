@@ -6,18 +6,19 @@
 
 namespace GenBOE.Tests.DAL.DataLoaders
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Data.SqlClient;
-    using System.Linq;
-	using System.Net.NetworkInformation;
-	using System.Transactions;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Models;
     using IES.Common;
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+	using System.Data.Entity.Validation;
+	using System.Data.SqlClient;
+    using System.Linq;
+	using System.Net.NetworkInformation;
+	using System.Transactions;
 
     /*
      * GlobalTestCaseSetup sets up the most commonly used IDs  for test cases. 
@@ -124,6 +125,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
 		private static int _GlobalMOQTypeSelectionTableDataResourceHours = 0;
 		// Global Common Disclosure Skill Mix ID
 		private static int _GlobalCommonDisclosureSkillMixId = 0;
+		// Global Skill Mix Summary ID
+		private static int _GlobalSkillMixSummaryId = 0;
 		// Global Skill Mix ID
 		private static int _GlobalSkillMixId = 0;
 
@@ -747,6 +750,14 @@ namespace GenBOE.Tests.DAL.DataLoaders
 			if (_GlobalCommonDisclosureSkillMixId == 0)
 			{
 				_GlobalCommonDisclosureSkillMixId = _CreateCommonDisclosureSkillMix();
+			}
+		}
+
+		public static void CreateSkillMixSummary()
+		{
+			if (_GlobalSkillMixSummaryId == 0)
+			{
+				_GlobalSkillMixSummaryId = _CreateSkillMixSummary();
 			}
 		}
 
@@ -2118,7 +2129,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
 			{
 				string rat = "Mock" + Guid.NewGuid().ToString().Substring(0, 5);
 				string resource = "resourceMock" + Guid.NewGuid().ToString().Substring(0, 5);
-				string businessResource = "businessResourceMock" + Guid.NewGuid().ToString().Substring(0, 5);
+				string businessResource = "brcMock" + Guid.NewGuid().ToString().Substring(0, 5);
 				Models.CommonDisclosureSkillMix cdsm = new CommonDisclosureSkillMix();
 				cdsm.CommonDisclosureSkillMixID = -1;
 				cdsm.Included = false;
@@ -2140,6 +2151,41 @@ namespace GenBOE.Tests.DAL.DataLoaders
 			return commonDisclosureSkillMixId;
 		}
 
+		/// <summary>
+		/// Mock Create Skill Mix
+		/// </summary>
+		/// <returns></returns>
+		private static int _CreateSkillMixSummary()
+		{
+			int skillMixSummaryId = 0;
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				string rat = "Mock" + Guid.NewGuid().ToString().Substring(0, 5);
+				string resource = "resourceMock" + Guid.NewGuid().ToString().Substring(0, 5);
+				string businessResource = "BrcMock" + Guid.NewGuid().ToString().Substring(0, 5);
+				Models.SkillMixSummary cdsm = new SkillMixSummary();
+				cdsm.SkillMixSummaryID = -1;
+				cdsm.Included = false;
+				cdsm.Rationale = rat;
+				cdsm.ProposedHours = 100;
+				cdsm.HistoricalHours = 100;
+				cdsm.ResourceHours = 100;
+				cdsm.BusinessResourceHours = 100;
+				cdsm.BOESkillMix = 100;
+				cdsm.LaborSkillMix = 100;
+				cdsm.ResourceID = resource;
+				cdsm.BusinessResourceID = businessResource;
+				cdsm.BOEID = GlobalBOEID;
+				cdsm.BOETaskElementID = GlobalTaskElementID;
+				gbe.SkillMixSummaries.Add(cdsm);
+				gbe.SaveChanges();
+
+				skillMixSummaryId = (from s in gbe.SkillMixSummaries
+									 where s.Rationale == rat
+											  select s.SkillMixSummaryID).FirstOrDefault();
+			}
+			return skillMixSummaryId;
+		}
 		/// <summary>
 		/// Mock Create MOQ Type Selection Table Data Resource Hours.
 		/// </summary>

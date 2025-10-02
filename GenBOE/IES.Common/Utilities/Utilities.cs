@@ -47,8 +47,10 @@ namespace IES.Common
 		private static DateTime? datepickerRestrictionRMS;
 		private static DateTime? historicalReferenceExplanationStartDate;
 		private static DateTime? showINLCutoffDate;
-		private static readonly IActiveDirectoryUtilities activeDirectoryUtilities = GenBOEUnityContainer.Resolve<IActiveDirectoryUtilities>();
-		
+		private static readonly Lazy<IActiveDirectoryUtilities> activeDirectoryUtilities = new Lazy<IActiveDirectoryUtilities>(() =>
+	GenBOEUnityContainer.Resolve<IActiveDirectoryUtilities>()
+);
+
 		/// <summary>
 		/// Private for PLD Cutoff Date
 		/// </summary>
@@ -174,7 +176,7 @@ namespace IES.Common
 			{
 				currentUserNtid = currentUserNtid.Split('\\').Last();
 			}
-			return activeDirectoryUtilities.GetUserByQualifiedAccount(currentUserNtid, false);
+			return activeDirectoryUtilities.Value.GetUserByQualifiedAccount(currentUserNtid, false);
 		}
 
 		/// <summary>
