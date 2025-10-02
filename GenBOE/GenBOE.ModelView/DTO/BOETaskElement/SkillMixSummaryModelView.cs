@@ -9,6 +9,9 @@ namespace GenBOE.DataBridge.DTO
 	using System;
 	using GenBOE.Dtos;
 
+	/// <summary>
+	/// Model view associated with the skill mix summary DTO
+	/// </summary>
 	[Serializable]
 	public class SkillMixSummaryModelView : SkillMixSummaryDTO
 	{

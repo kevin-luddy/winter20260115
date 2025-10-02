@@ -35,14 +35,14 @@ namespace GenBOE.DataBridge.DTO.SkillMixSummary
 		/// <summary>
 		/// Get Skill Mix Summary by certain values
 		/// </summary>
-		/// <param name="skillMixSummaryIDs"></param>
+		/// <param name="skillMixSummaryIDs">IDs of skill mix summaries to retrieve</param>
 		/// <returns>List of Skill Mix Summaries</returns>
 		ICollection<SkillMixSummaryDTO> GetByIds(ICollection<int> skillMixSummaryIDs);
 
 		/// <summary>
 		/// Get Skill Mix Summary value by a specific primary key
 		/// </summary>
-		/// <param name="skillMixSummaryID"></param>
+		/// <param name="skillMixSummaryID">ID of skill mix summary to retrieve</param>
 		/// <returns>Skill Mix Summary</returns>
 		SkillMixSummaryDTO GetById(int skillMixSummaryID);
 
@@ -56,7 +56,7 @@ namespace GenBOE.DataBridge.DTO.SkillMixSummary
 		/// <summary>
 		/// Insert Skill Mix Summary with Kill/Fill procedure
 		/// </summary>
-		/// <param name="SkillMixSummaryDTO">SkillMixSumaaryDTO</param>
+		/// <param name="SkillMixSummaryDTO">SkillMixSummaryDTO to insert</param>
 		/// <returns>Num rows that were inserted</returns>
 		int? InsertSkillMixSummary(ICollection<SkillMixSummaryDTO> skillMixSummaries);
 	}

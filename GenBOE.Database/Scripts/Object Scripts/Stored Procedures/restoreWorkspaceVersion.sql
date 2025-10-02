@@ -8,7 +8,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE OR ALTER  PROCEDURE [dbo].[restoreWorkspaceVersion] (@VersionID int, @ETIUserID int, @WorkspaceID int)
+CREATE PROCEDURE [dbo].[restoreWorkspaceVersion] (@VersionID int, @ETIUserID int, @WorkspaceID int)
 AS
 /******************************************************************************
 **		 

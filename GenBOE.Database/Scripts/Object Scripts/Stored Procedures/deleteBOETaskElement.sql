@@ -8,7 +8,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE OR ALTER PROCEDURE [dbo].[deleteBOETaskElement]
+CREATE PROCEDURE [dbo].[deleteBOETaskElement]
 (
 @BOETaskElementID int,
 @UpdateDT datetime2

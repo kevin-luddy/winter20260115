@@ -8,7 +8,7 @@ GO
 SET QUOTED_IDENTIFIER OFF
 GO
 
-CREATE OR ALTER PROCEDURE [dbo].[deleteBOE]
+CREATE PROCEDURE [dbo].[deleteBOE]
 (
 @BOEID int,
 @UpdateDT datetime2

@@ -1,6 +1,6 @@
 PRINT '###### SCRIPT IS STARTING ######';
 /*
-    This file was auto-generated for Release: 2025.14, on 10/1/2025.
+    This file was auto-generated for Release: 2025.14, on 10/2/2025.
     It contains all of the Release specific scripts, modifying data/tables as well as all of the Stored Procedures and User Defined Table Types.
 */
 
@@ -74,32 +74,6 @@ BEGIN
 
 	ALTER TABLE [version].[SkillMixSummary] ADD  DEFAULT ((0)) FOR [Included]
 END
-GO
-
--- Drop/Create TT_SkillMixSummary
-IF EXISTS (
-    SELECT 1 FROM sys.types WHERE is_table_type = 1 AND name = 'TT_SkillMixSummary' AND schema_id = SCHEMA_ID('dbo')
-)
-    DROP TYPE [dbo].[TT_SkillMixSummary];
-GO
-
-/****** Object:  UserDefinedTableType [dbo].[TT_SkillMixSummary]    Script Date: 9/30/2025 10:28:15 PM ******/
-CREATE TYPE [dbo].[TT_SkillMixSummary] AS TABLE(
-	[Rationale] [varchar](255) NOT NULL,
-	[Included] [bit] NOT NULL DEFAULT ((0)),
-	[ProposedHours] [decimal](11, 2) NOT NULL,
-	[HistoricalHours] [decimal](11, 2) NOT NULL,
-	[ResourceHours] [decimal](11, 2) NOT NULL,
-	[BusinessResourceHours] [decimal](11, 2) NOT NULL,
-	[BOESkillMix] [decimal](5, 2) NOT NULL,
-	[LaborSkillMix] [decimal](5, 2) NOT NULL,
-	[ResourceID] [varchar](20) NOT NULL,
-	[BusinessResourceID] [varchar](20) NOT NULL,
-	[BOEID] [int] NOT NULL,
-	[BOETaskElementID] [int] NOT NULL,
-	[IsUserInput] [bit] NOT NULL,
-	[OrderID] [int] NOT NULL
-)
 GO
 
 /*
@@ -383,7 +357,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE OR ALTER  PROCEDURE [dbo].[copyWorkspace]
+CREATE PROCEDURE [dbo].[copyWorkspace]
 (
 @WorkspaceID int ,
 @WorkspaceName varchar (115),
@@ -3257,7 +3231,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE OR ALTER PROCEDURE [dbo].[copyWorkspaceVersion]
+CREATE PROCEDURE [dbo].[copyWorkspaceVersion]
 (
 @WorkspaceID int,
 @WorkspaceName varchar (115),
@@ -6983,7 +6957,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE OR ALTER PROCEDURE [dbo].[createWorkspaceVersion]
+CREATE PROCEDURE [dbo].[createWorkspaceVersion]
 (
 @VersionName varchar(50),
 @CreatedByETIUserID int,
@@ -9443,7 +9417,7 @@ GO
 SET QUOTED_IDENTIFIER OFF
 GO
 
-CREATE OR ALTER PROCEDURE [dbo].[deleteBOE]
+CREATE PROCEDURE [dbo].[deleteBOE]
 (
 @BOEID int,
 @UpdateDT datetime2
@@ -10636,7 +10610,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE OR ALTER PROCEDURE [dbo].[deleteBOETaskElement]
+CREATE PROCEDURE [dbo].[deleteBOETaskElement]
 (
 @BOETaskElementID int,
 @UpdateDT datetime2
@@ -11038,226 +11012,6 @@ SET NOCOUNT ON
  
 		END
 
-GO
-
-/*
-    File: \Stored Procedures\deleteBOETaskElementviaTableParameter.sql
-*/
-PRINT '### Starting file: \Stored Procedures\deleteBOETaskElementviaTableParameter.sql';
-CREATE OR ALTER PROCEDURE [dbo].[deleteBOETaskElementviaTableParameter]
-(
-@BOETaskElement [dbo].[TT_BOETaskElement] READONLY
-)
-AS
-/******************************************************************************
-**		 
-**		Name: [deleteBOETaskElementviaTableParameter]
-**		Desc: Delete Flag set in LM Task Element Section of BOE and all sub-elements (Labor Types and Labor Spread)
-**			
-**		
-**
-**		Auth: Don Canuso
-**		Date: 8/2010
-*******************************************************************************
-**		Change History
-*******************************************************************************
-**		Date:		Author:				Description:
-**		--------	--------			-------------------------------------------
-**      6/24/16     twilson3            Fix In-Use Flag for Custom Fields
-**		1/16/18		twilson3			BOEJ-2887 Remove Historical Metrics
-**		4/2/18		ranzalon			BOEJ-3268 - Update for Open Ended Custom Fields
-**		6/5/20		ranzalon			BOEJ-4658 - Update for RTE Template Answers
-**		3/6/25		e405721				PROPH-2895 - Update Delete for Skill Mix and Common Disclosure
-**		9/30/25		e378233				PROPH-3302 - Update Delete for Skill Mix Summary
-*******************************************************************************/
-SET NOCOUNT ON 
-
-			-- Delete RTE Template Answers
-			DELETE FROM dbo.[RteTemplateAnswer]
-			WHERE TaskID IN
-				(
-					SELECT BOETaskElementID
-					FROM @BOETaskElement
-				)
-
-			DELETE FROM dbo.BOELaborSpread
-				FROM dbo.BOELaborSpread LS
-				INNER JOIN dbo.BOELaborType LT ON LS.BOELaborTypeID = LT.BOELaborTypeID
-				INNER JOIN dbo.BOETaskElement TE ON LT.BOETaskElementID = TE.BOETaskElementID
-				INNER JOIN @BOETaskElement TT ON 
-					TE.BOETaskElementID = TT.BOETaskElementID AND
-					TE.UpdateDT = TT.UpdateDT
-			
-			--Get Custom Field Value IDs before the xrefs are deleted
-			DECLARE @LaborTypeCustomFieldXrefs TABLE (CustomFieldValueID int)
-
-			INSERT INTO @LaborTypeCustomFieldXrefs
-			SELECT CustomFieldValueID
-			FROM dbo.BOELaborTypeCustomFieldValueXREF
-			WHERE BOELaborTypeID IN
-				(
-					SELECT BOELaborTypeID
-					FROM dbo.BOELaborType LT
-					INNER JOIN @BOETaskElement TT ON 
-					LT.BOETaskElementID = TT.BOETaskElementID
-				)	
-			
-			DELETE FROM dbo.BOELaborTypeCustomFieldValueXREF
-			FROM dbo.BOELaborTypeCustomFieldValueXREF X
-				INNER JOIN dbo.BOELaborType LT ON X.BOELaborTypeID = LT.BOELaborTypeID
-				INNER JOIN dbo.BOETaskElement TE ON LT.BOETaskElementID = TE.BOETaskElementID
-				INNER JOIN @BOETaskElement TT ON 
-					TE.BOETaskElementID = TT.BOETaskElementID AND
-					TE.UpdateDT = TT.UpdateDT
-				
-			--Delete Custom Field Values for deleted Open Ended Custom Fields
-			DELETE FROM dbo.CustomFieldValue
-			WHERE CustomFieldValueID in
-			(
-				SELECT x.CustomFieldValueID
-				FROM @LaborTypeCustomFieldXrefs x
-				JOIN dbo.CustomFieldValue v on x.CustomFieldValueID = v.CustomFieldValueID
-				JOIN dbo.CustomField c on v.CustomFieldId = c.CustomFieldID
-				WHERE c.IsOpenEnded = 1
-			)
-				
-			DELETE FROM dbo.BOETaskElementWorkspaceVariableXREF
-			FROM dbo.BOETaskElementWorkspaceVariableXREF X  
-				INNER JOIN dbo.BOETaskElement TE ON X.BOETaskElementID = TE.BOETaskElementID
-				INNER JOIN @BOETaskElement TT ON 
-					TE.BOETaskElementID = TT.BOETaskElementID AND
-					TE.UpdateDT = TT.UpdateDT
-
-				
-			DELETE FROM dbo.SumOfBOE_OrdinaryVariableXREF
-			FROM  dbo.SumOfBOE_OrdinaryVariableXREF X
-				INNER JOIN dbo.OrdinaryVariable OV ON X.OrdinaryVariableID = OV.OrdinaryVariableID
-				INNER JOIN  dbo.BOETaskElement TE ON OV.BOETaskElementID = TE.BOETaskElementID
-				INNER JOIN @BOETaskElement TT ON 
-					TE.BOETaskElementID = TT.BOETaskElementID AND
-					TE.UpdateDT = TT.UpdateDT
-
-			
-
-			DELETE FROM dbo.OrdinaryVariableSumVariableResourceTypeXREF
-			FROM dbo.OrdinaryVariableSumVariableResourceTypeXREF X
-				INNER JOIN dbo.OrdinaryVariable OV ON X.OrdinaryVariableID = OV.OrdinaryVariableID
-				INNER JOIN  dbo.BOETaskElement TE ON OV.BOETaskElementID = TE.BOETaskElementID
-							INNER JOIN @BOETaskElement TT ON 
-					TE.BOETaskElementID = TT.BOETaskElementID AND
-					TE.UpdateDT = TT.UpdateDT
-
-
-				
-
-			DELETE FROM dbo.OrdinaryVariable
-			FROM dbo.OrdinaryVariable OV
-				INNER JOIN dbo.BOETaskElement TE ON OV.BOETaskElementID = TE.BOETaskElementID
-				INNER JOIN @BOETaskElement TT ON 
-					TE.BOETaskElementID = TT.BOETaskElementID AND
-					TE.UpdateDT = TT.UpdateDT
-
-			--Get Custom Field Value IDs before the xrefs are deleted
-			DECLARE @TaskCustomFieldXrefs TABLE (CustomFieldValueID int)
-
-			INSERT INTO @TaskCustomFieldXrefs
-			SELECT CustomFieldValueID
-			FROM dbo.BOETaskElementCustomFieldValueXREF
-			WHERE BOETaskElementID IN
-			(
-				SELECT BOETaskElementID
-				FROM @BOETaskElement
-			)
-				
-			DELETE FROM dbo.BOETaskElementCustomFieldValueXREF
-			FROM dbo.BOETaskElementCustomFieldValueXREF X 
-				INNER JOIN dbo.BOETaskElement TE ON X.BOETaskElementID = TE.BOETaskElementID 
-				INNER JOIN @BOETaskElement TT ON 
-					TE.BOETaskElementID = TT.BOETaskElementID AND
-					TE.UpdateDT = TT.UpdateDT
-
-			--Delete Custom Field Values for deleted Open Ended Custom Fields
-			DELETE FROM dbo.CustomFieldValue
-			WHERE CustomFieldValueID in
-			(
-				SELECT x.CustomFieldValueID
-				FROM @TaskCustomFieldXrefs x
-				JOIN dbo.CustomFieldValue v on x.CustomFieldValueID = v.CustomFieldValueID
-				JOIN dbo.CustomField c on v.CustomFieldId = c.CustomFieldID
-				WHERE c.IsOpenEnded = 1
-			)
-			
-			DELETE FROM [dbo].[BOETaskElementMetricDetailXREF]
-				FROM [dbo].[BOETaskElementMetricDetailXREF] X 
-				INNER JOIN dbo.BOETaskElement TE ON X.BOETaskElementID = TE.BOETaskElementID 
-				INNER JOIN @BOETaskElement TT ON 
-					TE.BOETaskElementID = TT.BOETaskElementID AND
-					TE.UpdateDT = TT.UpdateDT
-
-
-			
- 
-			DELETE FROM dbo.BOELaborType
-				FROM dbo.BOELaborType LT
-				INNER JOIN dbo.BOETaskElement TE ON LT.BOETaskElementID = TE.BOETaskElementID
-				INNER JOIN @BOETaskElement TT ON 
-					TE.BOETaskElementID = TT.BOETaskElementID AND
-					TE.UpdateDT = TT.UpdateDT
-
-				
-				
-			DECLARE @WorkspaceID int
-			SELECT @WorkspaceID = WorkspaceID 
-			FROM dbo.BOE B
-				INNER JOIN dbo.BOETaskElement TE ON B.BOEID = TE.BOEID
-				INNER JOIN @BOETaskElement TT ON 
-					TE.BOETaskElementID = TT.BOETaskElementID AND
-					TE.UpdateDT = TT.UpdateDT
-
-
-			DELETE FROM dbo.CommonDisclosureSkillMix
-				FROM dbo.CommonDisclosureSkillMix CS
-					INNER JOIN dbo.BOETaskElement TE ON CS.BOETaskElementID = TE.BOETaskElementID
-					INNER JOIN @BOETaskElement TT ON 
-						TE.BOETaskElementID = TT.BOETaskElementID AND
-						TE.UpdateDT = TT.UpdateDT
-
-
-			DELETE FROM dbo.SkillMixSummary
-				FROM dbo.SkillMixSummary SMS
-					INNER JOIN dbo.BOETaskElement TE ON SMS.BOETaskElementID = TE.BOETaskElementID
-					INNER JOIN @BOETaskElement TT ON 
-						TE.BOETaskElementID = TT.BOETaskElementID AND
-						TE.UpdateDT = TT.UpdateDT
-
-			DELETE FROM dbo.SkillMix
-				FROM dbo.SkillMix S
-					INNER JOIN dbo.BOETaskElement TE ON S.BOETaskElementID = TE.BOETaskElementID
-					INNER JOIN @BOETaskElement TT ON 
-						TE.BOETaskElementID = TT.BOETaskElementID AND
-						TE.UpdateDT = TT.UpdateDT
-			
-			
-			DELETE FROM [dbo].[BOETaskElement]
-			FROM [dbo].[BOETaskElement] TE
-				INNER JOIN @BOETaskElement TT ON 
-					TE.BOETaskElementID = TT.BOETaskElementID AND
-					TE.UpdateDT = TT.UpdateDT
-
-
-
-IF @@ERROR <> 0
-BEGIN
-DECLARE @ErrorMessage varchar (500)
-SET @ErrorMessage =   'The BOE Task Element(s) has been updated and is out of sync with the data in your browser.  Please refresh your data.'
-			RAISERROR (
-					@ErrorMessage, -- Message text.
-					11, -- Severity,/*Severity Changed to 11*/
-					1 -- State,
-					)
-			RETURN
- 
-		END
 GO
 
 /*
@@ -11668,7 +11422,7 @@ GO
 SET QUOTED_IDENTIFIER OFF
 GO
 
-CREATE OR ALTER PROCEDURE [dbo].[deleteFullWorkspace]
+CREATE PROCEDURE [dbo].[deleteFullWorkspace]
 (
 @WorkspaceID int 
 )
@@ -14729,7 +14483,16 @@ GO
     File: \Stored Procedures\deleteSkillMixSummary.sql
 */
 PRINT '### Starting file: \Stored Procedures\deleteSkillMixSummary.sql';
-CREATE OR ALTER PROCEDURE [dbo].[deleteSkillMixSummary]
+IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[deleteSkillMixSummary]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[deleteSkillMixSummary];
+GO
+
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER OFF
+GO
+
+CREATE PROCEDURE [dbo].[deleteSkillMixSummary]
 (
 	@BOETaskElementID int
 )
@@ -16244,7 +16007,16 @@ GO
     File: \Stored Procedures\deleteWorkspace.sql
 */
 PRINT '### Starting file: \Stored Procedures\deleteWorkspace.sql';
-CREATE OR ALTER PROCEDURE [dbo].[deleteWorkspace]
+IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[deleteWorkspace]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[deleteWorkspace];
+GO
+
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER OFF
+GO
+
+CREATE PROCEDURE [dbo].[deleteWorkspace]
 (
 @WorkspaceID int,
 @UpdateDT datetime2
@@ -16886,7 +16658,7 @@ GO
 SET QUOTED_IDENTIFIER OFF
 GO
 
-CREATE OR ALTER  PROCEDURE [dbo].[deleteWorkspaceVersion]
+CREATE PROCEDURE [dbo].[deleteWorkspaceVersion]
 (
 @WorkspaceID int,
 @VersionID int
@@ -20854,77 +20626,6 @@ SET @NewRequestID = SCOPE_IDENTITY();
 GO
 
 /*
-    File: \Stored Procedures\insertSkillMixSummaryviaTableParameter.sql
-*/
-PRINT '### Starting file: \Stored Procedures\insertSkillMixSummaryviaTableParameter.sql';
-CREATE OR ALTER PROCEDURE [dbo].[insertSkillMixSummaryviaTableParameter]
-(
-	@skillMixSummaryTableParameter [dbo].[TT_SkillMixSummary] READONLY
-)
-AS
-/******************************************************************************
-**		 
-**		Name: [insertSkillMixSummaryviaTableParameter]
-**		Desc: Insert/Update data into SkillMix Summary Table
-**			
-**		
-**
-**		Auth: Oyetoro Oyeyemi
-**		Date: 9/2025
-*******************************************************************************
-**		Change History
-*******************************************************************************
-**		Date:		Author:				Description:
-**		--------	--------			-------------------------------------------
-**      9/24/25		e378233 			PROPH-3302 Skill Mix Summary DB Table
-*****************************************************************************/
-BEGIN
-	DECLARE @DistinctBOETaskElementID int
-	SELECT @DistinctBOETaskElementID = BOETaskElementID
-	FROM (
-		SELECT DISTINCT BOETaskElementID
-		FROM @SkillMixSummaryTableParameter
-	) AS temp_SkillMixSummary
-
-	DELETE FROM [dbo].[SkillMixSummary]
-	WHERE [BOETaskElementID] = @DistinctBOETaskElementID
-
-	INSERT INTO [dbo].[SkillMixSummary]
-		([Rationale]
-		 ,[Included]
-		 ,[ProposedHours]
-		 ,[HistoricalHours]
-		 ,[ResourceHours]
-		 ,[BusinessResourceHours]
-		 ,[BOESkillMix]
-		 ,[LaborSkillMix]
-		 ,[ResourceID]
-		 ,[BusinessResourceID]
-		 ,[BOEID]
-		 ,[BOETaskElementID]
-		 ,[IsUserInput]
-		)
-	SELECT T.[Rationale]
-		 ,T.[Included]
-		 ,T.[ProposedHours]
-		 ,T.[HistoricalHours]
-		 ,T.[ResourceHours]
-		 ,T.[BusinessResourceHours]
-		 ,T.[BOESkillMix]
-		 ,T.[LaborSkillMix]
-		 ,T.[ResourceID]
-		 ,T.[BusinessResourceID]
-		 ,T.[BOEID]
-		 ,T.[BOETaskElementID]
-		 ,T.[IsUserInput]
-	FROM @SkillMixSummaryTableParameter T
-END
-
-IF @@ERROR = 0
-	SELECT COUNT(*) FROM @SkillMixSummaryTableParameter
-GO
-
-/*
     File: \Stored Procedures\insertSumOfBOE_OrdinaryVariable.sql
 */
 PRINT '### Starting file: \Stored Procedures\insertSumOfBOE_OrdinaryVariable.sql';
@@ -22107,7 +21808,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE OR ALTER  PROCEDURE [dbo].[restoreWorkspaceVersion] (@VersionID int, @ETIUserID int, @WorkspaceID int)
+CREATE PROCEDURE [dbo].[restoreWorkspaceVersion] (@VersionID int, @ETIUserID int, @WorkspaceID int)
 AS
 /******************************************************************************
 **		 
@@ -38303,6 +38004,109 @@ WHERE SystemResourceID IS NOT NULL
 GO
 
 /*
+    File: \Table Based Processing\SkillMixSummaryViaTable.sql
+*/
+PRINT '### Starting file: \Table Based Processing\SkillMixSummaryViaTable.sql';
+IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[insertSkillMixSummaryviaTableParameter]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[insertSkillMixSummaryviaTableParameter];
+GO
+
+-- Drop type
+IF  EXISTS (SELECT 1 FROM sys.types st JOIN sys.schemas ss ON st.schema_id = ss.schema_id WHERE st.name = N'TT_SkillMixSummary' AND ss.name = N'dbo')
+	DROP TYPE [dbo].[TT_SkillMixSummary];
+GO
+
+CREATE TYPE [dbo].[TT_SkillMixSummary] AS TABLE(
+	[Rationale] [varchar](255) NOT NULL,
+	[Included] [bit] NOT NULL DEFAULT ((0)),
+	[ProposedHours] [decimal](11, 2) NOT NULL,
+	[HistoricalHours] [decimal](11, 2) NOT NULL,
+	[ResourceHours] [decimal](11, 2) NOT NULL,
+	[BusinessResourceHours] [decimal](11, 2) NOT NULL,
+	[BOESkillMix] [decimal](5, 2) NOT NULL,
+	[LaborSkillMix] [decimal](5, 2) NOT NULL,
+	[ResourceID] [varchar](20) NOT NULL,
+	[BusinessResourceID] [varchar](20) NOT NULL,
+	[BOEID] [int] NOT NULL,
+	[BOETaskElementID] [int] NOT NULL,
+	[IsUserInput] [bit] NOT NULL,
+	[OrderID] [int] NOT NULL
+)
+GO
+
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER OFF
+GO
+
+CREATE PROCEDURE [dbo].[insertSkillMixSummaryviaTableParameter]
+(
+	@skillMixSummaryTableParameter [dbo].[TT_SkillMixSummary] READONLY
+)
+AS
+/******************************************************************************
+**		 
+**		Name: [insertSkillMixSummaryviaTableParameter]
+**		Desc: Insert/Update data into SkillMix Summary Table
+**			
+**		
+**
+**		Auth: Oyetoro Oyeyemi
+**		Date: 9/2025
+*******************************************************************************
+**		Change History
+*******************************************************************************
+**		Date:		Author:				Description:
+**		--------	--------			-------------------------------------------
+**      9/24/25		e378233 			PROPH-3302 Skill Mix Summary DB Table
+*****************************************************************************/
+BEGIN
+	DECLARE @DistinctBOETaskElementID int
+	SELECT @DistinctBOETaskElementID = BOETaskElementID
+	FROM (
+		SELECT DISTINCT BOETaskElementID
+		FROM @SkillMixSummaryTableParameter
+	) AS temp_SkillMixSummary
+
+	DELETE FROM [dbo].[SkillMixSummary]
+	WHERE [BOETaskElementID] = @DistinctBOETaskElementID
+
+	INSERT INTO [dbo].[SkillMixSummary]
+		([Rationale]
+		 ,[Included]
+		 ,[ProposedHours]
+		 ,[HistoricalHours]
+		 ,[ResourceHours]
+		 ,[BusinessResourceHours]
+		 ,[BOESkillMix]
+		 ,[LaborSkillMix]
+		 ,[ResourceID]
+		 ,[BusinessResourceID]
+		 ,[BOEID]
+		 ,[BOETaskElementID]
+		 ,[IsUserInput]
+		)
+	SELECT T.[Rationale]
+		 ,T.[Included]
+		 ,T.[ProposedHours]
+		 ,T.[HistoricalHours]
+		 ,T.[ResourceHours]
+		 ,T.[BusinessResourceHours]
+		 ,T.[BOESkillMix]
+		 ,T.[LaborSkillMix]
+		 ,T.[ResourceID]
+		 ,T.[BusinessResourceID]
+		 ,T.[BOEID]
+		 ,T.[BOETaskElementID]
+		 ,T.[IsUserInput]
+	FROM @SkillMixSummaryTableParameter T
+END
+
+IF @@ERROR = 0
+	SELECT COUNT(*) FROM @SkillMixSummaryTableParameter
+GO
+
+/*
     File: \Table Based Processing\SkillMixViaTable.sql
 */
 PRINT '### Starting file: \Table Based Processing\SkillMixViaTable.sql';
@@ -39018,6 +38822,7 @@ AS
 **		4/2/18		ranzalon			BOEJ-3268 - Update for Open Ended Custom Fields
 **		6/5/20		ranzalon			BOEJ-4658 - Update for RTE Template Answers
 **		3/6/25		e405721				PROPH-2895 - Update Delete for Skill Mix and Common Disclosure
+**		9/30/25		e378233				PROPH-3302 - Update Delete for Skill Mix Summary
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -39171,14 +38976,22 @@ SET NOCOUNT ON
 						TE.BOETaskElementID = TT.BOETaskElementID AND
 						TE.UpdateDT = TT.UpdateDT
 
+
+			DELETE FROM dbo.SkillMixSummary
+				FROM dbo.SkillMixSummary SMS
+					INNER JOIN dbo.BOETaskElement TE ON SMS.BOETaskElementID = TE.BOETaskElementID
+					INNER JOIN @BOETaskElement TT ON 
+						TE.BOETaskElementID = TT.BOETaskElementID AND
+						TE.UpdateDT = TT.UpdateDT
+
 			DELETE FROM dbo.SkillMix
 				FROM dbo.SkillMix S
 					INNER JOIN dbo.BOETaskElement TE ON S.BOETaskElementID = TE.BOETaskElementID
 					INNER JOIN @BOETaskElement TT ON 
 						TE.BOETaskElementID = TT.BOETaskElementID AND
 						TE.UpdateDT = TT.UpdateDT
-
-
+			
+			
 			DELETE FROM [dbo].[BOETaskElement]
 			FROM [dbo].[BOETaskElement] TE
 				INNER JOIN @BOETaskElement TT ON 

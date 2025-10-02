@@ -1,4 +1,13 @@
-﻿CREATE OR ALTER PROCEDURE [dbo].[deleteSkillMixSummary]
+﻿IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[deleteSkillMixSummary]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[deleteSkillMixSummary];
+GO
+
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER OFF
+GO
+
+CREATE PROCEDURE [dbo].[deleteSkillMixSummary]
 (
 	@BOETaskElementID int
 )

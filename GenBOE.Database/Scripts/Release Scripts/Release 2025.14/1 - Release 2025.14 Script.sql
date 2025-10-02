@@ -65,29 +65,3 @@ BEGIN
 	ALTER TABLE [version].[SkillMixSummary] ADD  DEFAULT ((0)) FOR [Included]
 END
 GO
-
--- Drop/Create TT_SkillMixSummary
-IF EXISTS (
-    SELECT 1 FROM sys.types WHERE is_table_type = 1 AND name = 'TT_SkillMixSummary' AND schema_id = SCHEMA_ID('dbo')
-)
-    DROP TYPE [dbo].[TT_SkillMixSummary];
-GO
-
-/****** Object:  UserDefinedTableType [dbo].[TT_SkillMixSummary]    Script Date: 9/30/2025 10:28:15 PM ******/
-CREATE TYPE [dbo].[TT_SkillMixSummary] AS TABLE(
-	[Rationale] [varchar](255) NOT NULL,
-	[Included] [bit] NOT NULL DEFAULT ((0)),
-	[ProposedHours] [decimal](11, 2) NOT NULL,
-	[HistoricalHours] [decimal](11, 2) NOT NULL,
-	[ResourceHours] [decimal](11, 2) NOT NULL,
-	[BusinessResourceHours] [decimal](11, 2) NOT NULL,
-	[BOESkillMix] [decimal](5, 2) NOT NULL,
-	[LaborSkillMix] [decimal](5, 2) NOT NULL,
-	[ResourceID] [varchar](20) NOT NULL,
-	[BusinessResourceID] [varchar](20) NOT NULL,
-	[BOEID] [int] NOT NULL,
-	[BOETaskElementID] [int] NOT NULL,
-	[IsUserInput] [bit] NOT NULL,
-	[OrderID] [int] NOT NULL
-)
-GO

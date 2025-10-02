@@ -7,7 +7,7 @@ GO
 SET QUOTED_IDENTIFIER OFF
 GO
 
-CREATE OR ALTER PROCEDURE [dbo].[deleteFullWorkspace]
+CREATE PROCEDURE [dbo].[deleteFullWorkspace]
 (
 @WorkspaceID int 
 )

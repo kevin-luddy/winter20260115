@@ -1,4 +1,13 @@
-﻿CREATE OR ALTER PROCEDURE [dbo].[deleteWorkspace]
+﻿IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[deleteWorkspace]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[deleteWorkspace];
+GO
+
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER OFF
+GO
+
+CREATE PROCEDURE [dbo].[deleteWorkspace]
 (
 @WorkspaceID int,
 @UpdateDT datetime2

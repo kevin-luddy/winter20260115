@@ -8,7 +8,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE OR ALTER PROCEDURE [dbo].[createWorkspaceVersion]
+CREATE PROCEDURE [dbo].[createWorkspaceVersion]
 (
 @VersionName varchar(50),
 @CreatedByETIUserID int,

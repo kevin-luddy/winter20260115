@@ -7,7 +7,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE OR ALTER  PROCEDURE [dbo].[copyWorkspace]
+CREATE PROCEDURE [dbo].[copyWorkspace]
 (
 @WorkspaceID int ,
 @WorkspaceName varchar (115),

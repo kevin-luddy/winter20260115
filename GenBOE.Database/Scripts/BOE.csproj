@@ -47,9 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Object Scripts\Stored Procedures\copyWorkspace - Copy.sql" />
-    <Content Include="Object Scripts\Stored Procedures\deleteBOETaskElementviaTableParameter.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteWorkspace.sql" />
-    <Content Include="Object Scripts\Stored Procedures\insertSkillMixSummaryviaTableParameter.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteSkillMixSummary.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteAllRequest.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteRequest.sql" />
@@ -261,6 +259,7 @@
     <Content Include="Object Scripts\Stored Procedures\upsertWorkspaceRMSTravelEscalationRate.sql" />
     <Content Include="Object Scripts\Stored Procedures\upsertWorkspaceRMSTravelNonzoneFeesAndCosts.sql" />
     <Content Include="Object Scripts\Stored Procedures\upsertWorkspaceVariable.sql" />
+    <Content Include="Object Scripts\Table Based Processing\SkillMixSummaryViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\CommonDisclosureSkillMixViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\LaborSpreadViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\LaborTypeCustomFieldViaTable.sql" />
@@ -364,6 +363,7 @@
     <Content Include="Release Scripts\Release 2025.14\1 - Release 2025.14 Script.sql" />
     <Content Include="Release Scripts\Release 2025.13\1 - Release 2025.13 Script.sql" />
     <Content Include="_Full Script Files For Specific Versions\BOE - 2025.11 Generated On 8_6_2025.sql" />
+    <Content Include="_Full Script Files For Specific Versions\BOE - 2025.14 Generated On 10_1_2025.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\ClassifiedRelease2025.15\BOE - 2025.05 Generated On 3_10_2025.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\ClassifiedRelease2025.15\BOE - 2025.06 Generated On 4_22_2025.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\ClassifiedRelease2025.15\BOE - 2025.07 Generated On 4_24_2025.sql" />
@@ -422,7 +422,6 @@
     <Content Include="_Full Script Files For Specific Versions\Older\ClassifiedRelease2024.12\BOE - 2024.09 Generated On 5_7_2024.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\ClassifiedRelease2025.15\BOE - 2025.04 Generated On 2_4_2025.sql" />
     <Content Include="_Full Script Files For Specific Versions\Sql Script For Release 2025.10 Generated On 7_29_2025.sql" />
-    <Content Include="_Full Script Files For Specific Versions\BOE - 2025.14 Generated On 10_1_2025.sql" />
     <Content Include="_Other Scripts\Classified Helpers\genBOE - Insert Application Administrator.sql" />
     <Content Include="_Other Scripts\Classified Helpers\genBOE - Scrub database data.sql" />
     <Content Include="_Other Scripts\Classified Helpers\genTrac - Insert Application Administrator.sql" />
