@@ -1468,6 +1468,25 @@
 		$scope.laborSpreadErrors = [];
 	});
 
+	$scope.autoMatchResources = function () {
+		$scope.model.SkillMixData.forEach(x => {
+			// Skip over any rows that already have a current resource selected
+			if (!$scope.checkEmptyString(x.ResourceNew)) {
+				return;
+			}
+
+			var match = $scope.skillMixRationaleLaborTypeSelections.find(function (res) {
+				return res == x.ResourceOld;
+			});
+
+			if (match) {
+				x.ResourceNew = match;
+			}
+		});
+
+		$scope.refreshSkillMixTables();
+	};
+
 	/*
 	 * ******************* NOTE ********************
 	 * Functions below relate to the Edit Logic
