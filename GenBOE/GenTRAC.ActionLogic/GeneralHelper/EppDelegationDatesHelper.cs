@@ -31,25 +31,25 @@ namespace GenTRAC.ActionLogic.GeneralHelper
         public EppDelegationDatesHelper()
         {
             // Property-Enum mapping
-            Add(EppDelegationAuthority.Corporate, nameof(ContractsDto.CorporateEppDate));
-            Add(EppDelegationAuthority.Corporate, nameof(ContractsDto.PreCorporateEppDate));
-            Add(EppDelegationAuthority.Space, nameof(ContractsDto.SpaceEppDate));
-            Add(EppDelegationAuthority.Space, nameof(ContractsDto.PreSpaceEppDate));
-            Add(EppDelegationAuthority.LoB, nameof(ContractsDto.LobEppDate));
-			Add(EppDelegationAuthority.MissionSegment, nameof(ContractsDto.MissionSegmentEppDate));
-            Add(EppDelegationAuthority.Program, nameof(ContractsDto.ProgramEppDate));
+            Add(EppDelegationAuthority.Corporate, nameof(ContractsDto.PlannedCorporateEppDate));
+            Add(EppDelegationAuthority.Corporate, nameof(ContractsDto.PlannedPreCorporateEppDate));
+            Add(EppDelegationAuthority.Space, nameof(ContractsDto.PlannedSpaceEppDate));
+            Add(EppDelegationAuthority.Space, nameof(ContractsDto.PlannedPreSpaceEppDate));
+            Add(EppDelegationAuthority.LoB, nameof(ContractsDto.PlannedLobEppDate));
+			Add(EppDelegationAuthority.MissionSegment, nameof(ContractsDto.PlannedMissionSegmentEppDate));
+            Add(EppDelegationAuthority.Program, nameof(ContractsDto.PlannedProgramEppDate));
 
 			// Property-Friendly name mapping
 			EppDateNames = new Dictionary<string, string>
             {
-                { nameof(ContractsDto.CorporateEppDate), "Corporate EPP Date" },
-                { nameof(ContractsDto.PreCorporateEppDate), "Pre-Corporate EPP Date" },
-                { nameof(ContractsDto.SpaceEppDate), "Space EPP Date" },
-                { nameof(ContractsDto.PreSpaceEppDate), "Pre-Space EPP Date" },
-                { nameof(ContractsDto.LobEppDate), "Line of Business EPP Date" },
-				{ nameof(ContractsDto.MissionSegmentEppDate), "Mission Segment EPP Date" },
-                { nameof(ContractsDto.ProgramEppDate), "Program EPP Date" },
-				{ nameof(ContractsDto.BidEppDate), "Bid EPP Date" }
+                { nameof(ContractsDto.PlannedCorporateEppDate), "Corporate EPP Date" },
+                { nameof(ContractsDto.PlannedPreCorporateEppDate), "Pre-Corporate EPP Date" },
+                { nameof(ContractsDto.PlannedSpaceEppDate), "Space EPP Date" },
+                { nameof(ContractsDto.PlannedPreSpaceEppDate), "Pre-Space EPP Date" },
+                { nameof(ContractsDto.PlannedLobEppDate), "Line of Business EPP Date" },
+				{ nameof(ContractsDto.PlannedMissionSegmentEppDate), "Mission Segment EPP Date" },
+                { nameof(ContractsDto.PlannedProgramEppDate), "Program EPP Date" },
+				{ nameof(ContractsDto.PlannedBidEppDate), "Bid EPP Date" }
 			};
         }
 
@@ -109,7 +109,7 @@ namespace GenTRAC.ActionLogic.GeneralHelper
             List<string> requiredDates = this.GetRequiredEppDatesForDelegation(EppDelegationAuthority.Corporate);
 
 			// Bid EPP date is never required, but if it is entered then it must be sequential so it's added here
-			requiredDates.Add(nameof(ContractsDto.BidEppDate));
+			requiredDates.Add(nameof(ContractsDto.PlannedBidEppDate));
 
             // now get a list of the date names that have actually been provided
             List<string> givenDates = requiredDates.Where(x => dto.GetType().GetProperty(x).GetValue(dto, null) != null).ToList();
@@ -148,10 +148,10 @@ namespace GenTRAC.ActionLogic.GeneralHelper
             
             List<string> requiredDates = this.GetRequiredEppDatesForDelegation((EppDelegationAuthority?)dto?.EppDelegationAuthority);
 
-			if (!isNss && requiredDates.Contains(nameof(ContractsDto.MissionSegmentEppDate)))
+			if (!isNss && requiredDates.Contains(nameof(ContractsDto.PlannedMissionSegmentEppDate)))
 			{
 				// Mission Segment EPP Date is only required if the Proposal's LOB is National Security Space
-				requiredDates.Remove(nameof(ContractsDto.MissionSegmentEppDate));
+				requiredDates.Remove(nameof(ContractsDto.PlannedMissionSegmentEppDate));
 			}
 
             if (requiredDates.Any(x => dto.GetType().GetProperty(x).GetValue(dto, null) == null))

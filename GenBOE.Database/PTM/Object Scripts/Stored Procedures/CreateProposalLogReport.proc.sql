@@ -49,6 +49,7 @@ AS
 **		11/21/24	twilson3			proph-2357 Add Insurance fields
 **		02/27/25	Carlos				PROPH-2642 Added SupplierMilestoneDatesResponse field
 **		05/13/25	ranzalon			PROPH-3038 Added Bid and Mission Segment EPP Dates
+**		10/02/25	e403038				Additional EPP Dates (Original to Planned and add Scheduled)
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -326,17 +327,25 @@ SELECT V.[ProposalID]
 	 ,V.ContractsFinalNegotiatedValue
 	 ,V.ContractsFinalNegotiatedDate
 	 ,V.ContractsEppDelegationAuthority
- 	 ,V.ContractsProgramEppDate
-	 ,V.ContractsLobEppDate
-	 ,V.ContractsPreSpaceEppDate
-	 ,V.ContractsSpaceEppDate
-	 ,V.ContractsPreCorporateEppDate
-	 ,V.ContractsCorporateEppDate
+ 	 ,V.ContractsPlannedProgramEppDate
+	 ,V.ContractsPlannedLobEppDate
+	 ,V.ContractsPlannedPreSpaceEppDate
+	 ,V.ContractsPlannedSpaceEppDate
+	 ,V.ContractsPlannedPreCorporateEppDate
+	 ,V.ContractsPlannedCorporateEppDate
 	 ,V.ContractsEppRosDelegationNotes
 	 ,V.ContractsLmWon
 	 ,V.ContractsModCompletedDate
-	 ,V.ContractsBidEppDate
-	 ,V.ContractsMissionSegmentEppDate
+	 ,V.ContractsPlannedBidEppDate
+	 ,V.ContractsPlannedMissionSegmentEppDate
+	 ,V.ContractsScheduledProgramEppDate
+	 ,V.ContractsScheduledLobEppDate
+	 ,V.ContractsScheduledPreSpaceEppDate
+	 ,V.ContractsScheduledSpaceEppDate
+	 ,V.ContractsScheduledPreCorporateEppDate
+	 ,V.ContractsScheduledCorporateEppDate
+	 ,V.ContractsScheduledBidEppDate
+	 ,V.ContractsScheduledMissionSegmentEppDate
 	 -- end of Proposal Contract Data
 	 ,V.CageCode
 	 ,V.ContractActionType

@@ -218,12 +218,12 @@ namespace GenTRAC.Tests.ActionLogic
 				FinalNegotiatedValue = 3,
 				NegotiationsSubmitted = DateTime.Now,
 				EppDelegationAuthority = 3,
-				ProgramEppDate = DateTime.Now,
-				LobEppDate = DateTime.Now,
-				PreSpaceEppDate = DateTime.Now,
-				SpaceEppDate = DateTime.Now,
-				PreCorporateEppDate = DateTime.Now,
-				CorporateEppDate = DateTime.Now,
+				PlannedProgramEppDate = DateTime.Now,
+				PlannedLobEppDate = DateTime.Now,
+				PlannedPreSpaceEppDate = DateTime.Now,
+				PlannedSpaceEppDate = DateTime.Now,
+				PlannedPreCorporateEppDate = DateTime.Now,
+				PlannedCorporateEppDate = DateTime.Now,
 				EppRosDelegationNotes = "Test EppRosDelegationNotes",
 				LmWon = false,
 				ModCompletedDate = DateTime.Now,
@@ -275,12 +275,12 @@ namespace GenTRAC.Tests.ActionLogic
 			Assert.AreEqual(contractDto.PreviouslySubmittedROM.ToString(), contractsModelView.PreviouslySubmittedRoms.ElementAtOrDefault(0).Value);
 			Assert.AreEqual(contractDto.PreviouslySubmittedROM, contractsModelView.PreviouslySubmittedROM);
 			Assert.AreEqual(contractDto.EppDelegationAuthority, (int)contractsModelView.EppDelegationAuthority);
-			Assert.AreEqual(contractDto.ProgramEppDate, contractsModelView.ProgramEppDate);
-			Assert.AreEqual(contractDto.LobEppDate, contractsModelView.LobEppDate);
-			Assert.AreEqual(contractDto.PreSpaceEppDate, contractsModelView.PreSpaceEppDate);
-			Assert.AreEqual(contractDto.SpaceEppDate, contractsModelView.SpaceEppDate);
-			Assert.AreEqual(contractDto.PreCorporateEppDate, contractsModelView.PreCorporateEppDate);
-			Assert.AreEqual(contractDto.CorporateEppDate, contractsModelView.CorporateEppDate);
+			Assert.AreEqual(contractDto.PlannedProgramEppDate, contractsModelView.ProgramEppDate);
+			Assert.AreEqual(contractDto.PlannedLobEppDate, contractsModelView.LobEppDate);
+			Assert.AreEqual(contractDto.PlannedPreSpaceEppDate, contractsModelView.PreSpaceEppDate);
+			Assert.AreEqual(contractDto.PlannedSpaceEppDate, contractsModelView.SpaceEppDate);
+			Assert.AreEqual(contractDto.PlannedPreCorporateEppDate, contractsModelView.PreCorporateEppDate);
+			Assert.AreEqual(contractDto.PlannedCorporateEppDate, contractsModelView.CorporateEppDate);
 			Assert.AreEqual(contractDto.EppRosDelegationNotes, contractsModelView.EppRosDelegationNotes);
 			Assert.AreEqual(contractDto.LmWon, contractsModelView.LmWon);
 			Assert.AreEqual(contractDto.ModCompletedDate, contractsModelView.ModCompletedDate);
@@ -561,7 +561,7 @@ namespace GenTRAC.Tests.ActionLogic
 
 			dates = edh.GetRequiredEppDatesForDelegation(EppDelegationAuthority.Program);
 
-			Assert.AreEqual("ProgramEppDate", dates.First());
+			Assert.AreEqual("PlannedProgramEppDate", dates.First());
 			Assert.AreEqual(1, dates.Count);
 		}
 
@@ -576,13 +576,13 @@ namespace GenTRAC.Tests.ActionLogic
 
 			dates = edh.GetRequiredEppDatesForDelegation(EppDelegationAuthority.Corporate);
 
-			Assert.AreEqual(nameof(ContractsDto.CorporateEppDate), dates.First());
-			Assert.AreEqual(nameof(ContractsDto.PreCorporateEppDate), dates.ElementAt(1));
-			Assert.AreEqual(nameof(ContractsDto.SpaceEppDate), dates.ElementAt(2));
-			Assert.AreEqual(nameof(ContractsDto.PreSpaceEppDate), dates.ElementAt(3));
-			Assert.AreEqual(nameof(ContractsDto.LobEppDate), dates.ElementAt(4));
-			Assert.AreEqual(nameof(ContractsDto.MissionSegmentEppDate), dates.ElementAt(5));
-			Assert.AreEqual(nameof(ContractsDto.ProgramEppDate), dates.Last());
+			Assert.AreEqual(nameof(ContractsDto.PlannedCorporateEppDate), dates.First());
+			Assert.AreEqual(nameof(ContractsDto.PlannedPreCorporateEppDate), dates.ElementAt(1));
+			Assert.AreEqual(nameof(ContractsDto.PlannedSpaceEppDate), dates.ElementAt(2));
+			Assert.AreEqual(nameof(ContractsDto.PlannedPreSpaceEppDate), dates.ElementAt(3));
+			Assert.AreEqual(nameof(ContractsDto.PlannedLobEppDate), dates.ElementAt(4));
+			Assert.AreEqual(nameof(ContractsDto.PlannedMissionSegmentEppDate), dates.ElementAt(5));
+			Assert.AreEqual(nameof(ContractsDto.PlannedProgramEppDate), dates.Last());
 			Assert.AreEqual(7, dates.Count);
 		}
 
@@ -600,10 +600,10 @@ namespace GenTRAC.Tests.ActionLogic
 				PreviouslySubmittedROM = 12345,
 				ContractsCorrespondenceLogNumber = "XYZ123",
 				EppDelegationAuthority = (int)EppDelegationAuthority.Space,
-				SpaceEppDate = DateTime.Now,
-				PreSpaceEppDate = DateTime.Now,
-				ProgramEppDate = DateTime.Now,
-				LobEppDate = DateTime.Now
+				PlannedSpaceEppDate = DateTime.Now,
+				PlannedPreSpaceEppDate = DateTime.Now,
+				PlannedProgramEppDate = DateTime.Now,
+				PlannedLobEppDate = DateTime.Now
 			};
 
 			bool isValid = edh.AreRequiredDatesPopulated(dto, errors);
@@ -626,9 +626,9 @@ namespace GenTRAC.Tests.ActionLogic
 				PreviouslySubmittedROM = 12345,
 				ContractsCorrespondenceLogNumber = "XYZ123",
 				EppDelegationAuthority = (int)EppDelegationAuthority.Space,
-				SpaceEppDate = DateTime.Now,
-				PreSpaceEppDate = DateTime.Now,
-				ProgramEppDate = DateTime.Now
+				PlannedSpaceEppDate = DateTime.Now,
+				PlannedPreSpaceEppDate = DateTime.Now,
+				PlannedProgramEppDate = DateTime.Now
 			};
 
 			bool isValid = edh.AreRequiredDatesPopulated(dto, errors);
@@ -651,11 +651,11 @@ namespace GenTRAC.Tests.ActionLogic
 				PreviouslySubmittedROM = 12345,
 				ContractsCorrespondenceLogNumber = "XYZ123",
 				EppDelegationAuthority = (int)EppDelegationAuthority.Space,
-				PreCorporateEppDate = new DateTime(2022, 04, 06),
-				SpaceEppDate = new DateTime(2022, 04, 8),
-				PreSpaceEppDate = new DateTime(2022, 04, 07),
-				LobEppDate = new DateTime(2022, 04, 06),
-				ProgramEppDate = new DateTime(2022, 04, 05),
+				PlannedPreCorporateEppDate = new DateTime(2022, 04, 06),
+				PlannedSpaceEppDate = new DateTime(2022, 04, 8),
+				PlannedPreSpaceEppDate = new DateTime(2022, 04, 07),
+				PlannedLobEppDate = new DateTime(2022, 04, 06),
+				PlannedProgramEppDate = new DateTime(2022, 04, 05),
 			};
 
 			bool pass = edh.AreEnteredDatesSequential(dto, errors);
@@ -679,11 +679,11 @@ namespace GenTRAC.Tests.ActionLogic
 				PreviouslySubmittedROM = 12345,
 				ContractsCorrespondenceLogNumber = "XYZ123",
 				EppDelegationAuthority = (int)EppDelegationAuthority.Space,
-				SpaceEppDate = DateTime.Now,
-				PreSpaceEppDate = DateTime.Now,
-				ProgramEppDate = DateTime.Now.AddHours(-2),
+				PlannedSpaceEppDate = DateTime.Now,
+				PlannedPreSpaceEppDate = DateTime.Now,
+				PlannedProgramEppDate = DateTime.Now.AddHours(-2),
 				CageCode = "ABC123",
-				LobEppDate = DateTime.Now.AddHours(-1),
+				PlannedLobEppDate = DateTime.Now.AddHours(-1),
 				CustomerDueDate = DateTime.Now,
 				IsInsuranceDirect = TripleBooleanState.Yes,
 				InsuranceType = InsuranceType.Space,
@@ -727,11 +727,11 @@ namespace GenTRAC.Tests.ActionLogic
 				PreviouslySubmittedROM = 12345,
 				ContractsCorrespondenceLogNumber = "XYZ123",
 				EppDelegationAuthority = (int)EppDelegationAuthority.Space,
-				SpaceEppDate = DateTime.Now,
-				PreSpaceEppDate = DateTime.Now,
-				ProgramEppDate = DateTime.Now,
+				PlannedSpaceEppDate = DateTime.Now,
+				PlannedPreSpaceEppDate = DateTime.Now,
+				PlannedProgramEppDate = DateTime.Now,
 				CageCode = "ABC123",
-				LobEppDate = DateTime.Now,
+				PlannedLobEppDate = DateTime.Now,
 				FinalNegotiatedValue = 0,
 				ModCompletedDate = DateTime.Now,
 				NegotiationsSubmitted = DateTime.Now,
@@ -977,13 +977,13 @@ namespace GenTRAC.Tests.ActionLogic
 				CustomerSubmittalDate = DateTime.Now.AddDays(1),
 				NegotiationsSubmitted = DateTime.Now,
 				EppDelegationAuthority = (int)EppDelegationAuthority.Corporate,
-				ProgramEppDate = DateTime.Now,
-				MissionSegmentEppDate = null,
-				LobEppDate = DateTime.Now,
-				PreSpaceEppDate = DateTime.Now,
-				SpaceEppDate = DateTime.Now,
-				PreCorporateEppDate = DateTime.Now,
-				CorporateEppDate = DateTime.Now,
+				PlannedProgramEppDate = DateTime.Now,
+				PlannedMissionSegmentEppDate = null,
+				PlannedLobEppDate = DateTime.Now,
+				PlannedPreSpaceEppDate = DateTime.Now,
+				PlannedSpaceEppDate = DateTime.Now,
+				PlannedPreCorporateEppDate = DateTime.Now,
+				PlannedCorporateEppDate = DateTime.Now,
 				PreviouslySubmittedROM = 12345,
 				ContractsCorrespondenceLogNumber = "XYZ123",
 				CageCode = "ABC123",
@@ -1102,8 +1102,8 @@ namespace GenTRAC.Tests.ActionLogic
 				PreviouslySubmittedROM = 12345,
 				ContractsCorrespondenceLogNumber = "XYZ123",
 				EppDelegationAuthority = (int)EppDelegationAuthority.MissionSegment,
-				MissionSegmentEppDate = DateTime.Now,
-				ProgramEppDate = DateTime.Now
+				PlannedMissionSegmentEppDate = DateTime.Now,
+				PlannedProgramEppDate = DateTime.Now
 			};
 
 			// With the date populated, this should be valid wether or not the LOB is NSS
@@ -1132,8 +1132,8 @@ namespace GenTRAC.Tests.ActionLogic
 				PreviouslySubmittedROM = 12345,
 				ContractsCorrespondenceLogNumber = "XYZ123",
 				EppDelegationAuthority = (int)EppDelegationAuthority.MissionSegment,
-				MissionSegmentEppDate = null,
-				ProgramEppDate = DateTime.Now
+				PlannedMissionSegmentEppDate = null,
+				PlannedProgramEppDate = DateTime.Now
 			};
 
 			bool isValid = edh.AreRequiredDatesPopulated(dto, errors, false);
@@ -1164,8 +1164,8 @@ namespace GenTRAC.Tests.ActionLogic
 				PreviouslySubmittedROM = 12345,
 				ContractsCorrespondenceLogNumber = "XYZ123",
 				EppDelegationAuthority = (int)EppDelegationAuthority.Space,
-				BidEppDate = DateTime.Now,
-				ProgramEppDate = DateTime.Now.AddDays(1)
+				PlannedBidEppDate = DateTime.Now,
+				PlannedProgramEppDate = DateTime.Now.AddDays(1)
 			};
 
 			bool pass = edh.AreEnteredDatesSequential(dto, errors);
@@ -1173,15 +1173,15 @@ namespace GenTRAC.Tests.ActionLogic
 			Assert.IsTrue(pass);
 			Assert.IsFalse(errors.Any());
 
-			dto.BidEppDate = DateTime.Now.AddDays(2);
+			dto.PlannedBidEppDate = DateTime.Now.AddDays(2);
 			pass = edh.AreEnteredDatesSequential(dto, errors);
 
 			Assert.IsFalse(pass);
 			Assert.IsTrue(errors.First().Contains("Bid EPP Date must be before Program EPP Date"));
 
 			// Test once more with several blank dates between Bid Epp Date and the next entered date
-			dto.ProgramEppDate = null;
-			dto.CorporateEppDate = DateTime.Now;
+			dto.PlannedProgramEppDate = null;
+			dto.PlannedCorporateEppDate = DateTime.Now;
 			errors.Clear();
 
 			pass = edh.AreEnteredDatesSequential(dto, errors);
@@ -1204,8 +1204,8 @@ namespace GenTRAC.Tests.ActionLogic
 				PreviouslySubmittedROM = 12345,
 				ContractsCorrespondenceLogNumber = "XYZ123",
 				EppDelegationAuthority = (int)EppDelegationAuthority.Space,
-				MissionSegmentEppDate = DateTime.Now,
-				LobEppDate = DateTime.Now.AddDays(1)
+				PlannedMissionSegmentEppDate = DateTime.Now,
+				PlannedLobEppDate = DateTime.Now.AddDays(1)
 			};
 
 			bool pass = edh.AreEnteredDatesSequential(dto, errors);
@@ -1213,7 +1213,7 @@ namespace GenTRAC.Tests.ActionLogic
 			Assert.IsTrue(pass);
 			Assert.IsFalse(errors.Any());
 
-			dto.MissionSegmentEppDate = DateTime.Now.AddDays(2);
+			dto.PlannedMissionSegmentEppDate = DateTime.Now.AddDays(2);
 			pass = edh.AreEnteredDatesSequential(dto, errors);
 
 			Assert.IsFalse(pass);
