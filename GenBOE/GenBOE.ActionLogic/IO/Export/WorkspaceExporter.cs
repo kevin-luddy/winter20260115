@@ -129,7 +129,6 @@ namespace GenBOE.ActionLogic.IO.Export
 
 			this.SetAutofilterRange(toReturn);
 
-
 			bool usingSkillMix = Utilities.ShowSkillMixForWorkspace(exportInputs.Workspace.CreationDate, exportInputs.Workspace.Shortname);
 			if (!exportInputs.Workspace.UsingTemplateBOE)
 			{
@@ -172,14 +171,8 @@ namespace GenBOE.ActionLogic.IO.Export
 				}
 			}
 
-			if (exportInputs.FullWorkspace.TaskElements.Any() && !Utilities.IsAssignTaskAuthorEnabledForSystem && !exportInputs.FullWorkspace.EnableAssignTaskAuthor)
-			{
-				// hide task author column on report boe resource combo if assign task author is disabled
-				using (SpreadsheetDocument document = SpreadsheetDocument.Open(toReturn, true))
-				{
-					ExcelUtilities.HideColumns(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE_RESOURCE_COMBO, new List<int>() { 7 });
-				}
-			}
+			HandleTaskAuthorColumns(toReturn, exportInputs);
+
 			return toReturn;
 		}
 
@@ -354,12 +347,29 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="exportInputs">The export inputs.</param>
 		private void HandleRationaleColumns(string templateFileLocation, BOEExportInputs exportInputs)
 		{
-			using (SpreadsheetDocument document = SpreadsheetDocument.Open(templateFileLocation, true))
+			if (exportInputs.Workspace.UsingTemplateBOE)
 			{
-				if (exportInputs.Workspace.UsingTemplateBOE)
+				using (SpreadsheetDocument document = SpreadsheetDocument.Open(templateFileLocation, true))
 				{
-					ExcelUtilities.RemoveColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE_RESOURCE_COMBO, "MOQ Rationale");
-					ExcelUtilities.RemoveColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE, "MOQ Rationale");
+					ExcelUtilities.RemoveColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE_RESOURCE_COMBO, CommonConstants.WORKSPACE_REPORT_COLUMN_MOQ_RATIONALE);
+					ExcelUtilities.RemoveColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE, CommonConstants.WORKSPACE_REPORT_COLUMN_MOQ_RATIONALE);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Hide the Task Author columns in BOE Resource Combo and BOEs tabs if assign task author is disabled at system or workspace level
+		/// </summary>
+		/// <param name="templateFileLocation">The template file location</param>
+		/// <param name="exportInputs">The export inputs</param>
+		private void HandleTaskAuthorColumns(string templateFileLocation, BOEExportInputs exportInputs)
+		{
+			if (!Utilities.IsAssignTaskAuthorEnabledForSystem || !exportInputs.FullWorkspace.EnableAssignTaskAuthor)
+			{
+				using (SpreadsheetDocument document = SpreadsheetDocument.Open(templateFileLocation, true))
+				{
+					ExcelUtilities.RemoveColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE_RESOURCE_COMBO, CommonConstants.WORKSPACE_REPORT_COLUMN_TASK_AUTHOR);
+					ExcelUtilities.RemoveColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE, CommonConstants.WORKSPACE_REPORT_COLUMN_TASK_AUTHOR);
 				}
 			}
 		}
@@ -713,6 +723,7 @@ namespace GenBOE.ActionLogic.IO.Export
 							taskID,
 							task.TaskTitle,
 							taskDescription,
+							task.AuthorDisplayName,
 							this.GetMOQEquation(task, exportInputs),
 							this.GetTaskMoqType(task, exportInputs)
 					}.Concat(exportInputs.Workspace.UsingTemplateBOE ? new string[0] : new string[] { taskMOQText }).ToArray()
