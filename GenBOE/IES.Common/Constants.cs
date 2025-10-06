@@ -7,8 +7,6 @@
 namespace IES.Common
 {
     using System;
-	using System.Collections.Generic;
-	using System.Collections.ObjectModel;
 
 	/// <summary>
 	/// The constants class, containing shared constants to be used across the entire solution.
@@ -454,6 +452,99 @@ namespace IES.Common
 		/// Name of the National Security Space Line of Business
 		/// </summary>
 		public const string NSS_LOB_NAME = "National Security Space";
+
+		#region EPP Date Display Strings
+
+		/// <summary>
+		/// Bid EPP Date Display string
+		/// </summary>
+		public const string BID_EPP_DATE_DISPLAY_STRING = "Bid EPP Date";
+
+		/// <summary>
+		/// Program EPP Date Display string
+		/// </summary>
+		public const string PROGRAM_EPP_DATE_DISPLAY_STRING = "Program EPP Date";
+
+		/// <summary>
+		/// Mission Segment EPP Date Display string
+		/// </summary>
+		public const string MISSION_SEGMENT_EPP_DATE_DISPLAY_STRING = "Mission Segment EPP Date";
+
+		/// <summary>
+		/// Line of Business EPP Date Display string
+		/// </summary>
+		public const string LOB_EPP_DATE_DISPLAY_STRING = "Line of Business EPP Date";
+
+		/// <summary>
+		/// Pre-Space EPP Date Display string
+		/// </summary>
+		public const string PRE_SPACE_EPP_DATE_DISPLAY_STRING = "Pre-Space EPP Date";
+
+		/// <summary>
+		/// Space EPP Date Display string
+		/// </summary>
+		public const string SPACE_EPP_DATE_DISPLAY_STRING = "Space EPP Date";
+
+		/// <summary>
+		/// Pre-Corporate EPP Date Display string
+		/// </summary>
+		public const string PRE_CORPORATE_EPP_DATE_DISPLAY_STRING = "Pre-Corporate EPP Date";
+
+		/// <summary>
+		/// Corporate EPP Date Display string
+		/// </summary>
+		public const string CORPORATE_EPP_DATE_DISPLAY_STRING = "Corporate EPP Date";
+
+		#endregion
+
+		#region EPP Date Validation Messages
+
+		/// <summary>
+		/// Message when no Planned EPP Date selection is made
+		/// </summary>
+		public const string INVALID_EPP_PLANNED_DATE_MISSING = "At least one Planned EPP Date selection is required.";
+
+		/// <summary>
+		/// Scheduled Bid EPP Date is missing
+		/// </summary>
+		public const string INVALID_SCHEDULED_BID_EPP_DATE = "Scheduled Bid EPP Date selection required.";
+
+		/// <summary>
+		/// Scheduled Mission Segment EPP Date is missing
+		/// </summary>
+		public const string INVALID_SCHEDULED_MISSION_SEGMENT_EPP_DATE = "Scheduled Mission Segment EPP Date selection required.";
+
+		/// <summary>
+		/// Scheduled Line of Business EPP Date is missing
+		/// </summary>
+		public const string INVALID_SCHEDULED_LOB_EPP_DATE = "Scheduled Line of Business EPP Date selection required.";
+
+		/// <summary>
+		/// Scheduled Pre-Space EPP Date is missing
+		/// </summary>
+		public const string INVALID_SCHEDULED_PRE_SPACE_EPP_DATE = "Scheduled Pre-Space EPP Date selection required.";
+
+		/// <summary>
+		/// Scheduled Space EPP Date is missing
+		/// </summary>
+		public const string INVALID_SCHEDULED_SPACE_EPP_DATE = "Scheduled Space EPP Date selection required.";
+
+		/// <summary>
+		/// Scheduled Pre-Corporate EPP Date is missing
+		/// </summary>
+		public const string INVALID_SCHEDULED_PRE_CORPORATE_EPP_DATE = "Scheduled Pre-Corporate EPP Date selection required.";
+
+		/// <summary>
+		/// Scheduled Corporate EPP Date is missing
+		/// </summary>
+		public const string INVALID_SCHEDULED_CORPORATE_EPP_DATE = "Scheduled Corporate EPP Date selection required.";
+
+		/// <summary>
+		/// Scheduled Program EPP Date is missing
+		/// </summary>
+		public const string INVALID_SCHEDULED_PROGRAM_EPP_DATE = "Scheduled Program EPP Date selection required.";
+
+		#endregion
 
 		#region MOQ Type Text Field Lengths
 

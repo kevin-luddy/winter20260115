@@ -394,6 +394,11 @@ namespace GenTRAC.ActionLogic.ModelView
 		public bool IsRomNte { get; set; }
 
 		/// <summary>
+		/// Is the Proposal Line of Business of type National Security Space?
+		/// </summary>
+		public bool IsNSS { get; set; }
+
+		/// <summary>
 		/// Button text for No Bid button
 		/// </summary>
 		public string NoBidButtonText

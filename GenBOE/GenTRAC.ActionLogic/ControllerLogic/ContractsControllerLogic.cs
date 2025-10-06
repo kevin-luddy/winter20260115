@@ -155,6 +155,7 @@ namespace GenTRAC.ActionLogic
 			model.HasAccessToSetNoBid = this.IsContractsUser(fullProposal.CurrentUser.Id, fullProposal.Permissions) || this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null);
 			model.IsReadOnly = fullProposal.ProposalStatus == ProposalStatus.Completed || highestAccess == SecurityAuthorization.Read;
 			model.IsRomNte = fullProposal.IsRomNte;
+			model.IsNSS = IsProposalNSS(fullProposal);
 
 			// Load additional values
 			model.PreviouslySubmittedRoms = this.ProposalLoader.GetRomProposalOptions(model.PreviouslySubmittedROM);
@@ -266,6 +267,63 @@ namespace GenTRAC.ActionLogic
 			{
 				validationMessages.Add(Constants.INVALID_NEGOTIATIONS_SUBMITTED);
 			}
+
+			#region National Security Space Validation
+
+			// Run Validation for EPP Dates only when Line of Business is of type: National Security Space
+			bool isNss = IsProposalNSS(proposal);
+			if (isNss)
+			{
+				if (!model.PlannedPreCorporateEppDate.HasValue && !model.PlannedCorporateEppDate.HasValue
+					&& !model.PlannedBidEppDate.HasValue && !model.PlannedMissionSegmentEppDate.HasValue
+					&& !model.PlannedPreSpaceEppDate.HasValue && !model.PlannedSpaceEppDate.HasValue
+					&& !model.PlannedProgramEppDate.HasValue && !model.PlannedLobEppDate.HasValue)
+				{
+					validationMessages.Add(Constants.INVALID_EPP_PLANNED_DATE_MISSING);
+				}
+
+				if (model.PlannedBidEppDate.HasValue && !model.ScheduledBidEppDate.HasValue)
+				{
+					validationMessages.Add(Constants.INVALID_SCHEDULED_BID_EPP_DATE);
+				}
+
+				if (model.PlannedMissionSegmentEppDate.HasValue && !model.ScheduledMissionSegmentEppDate.HasValue)
+				{
+					validationMessages.Add(Constants.INVALID_SCHEDULED_MISSION_SEGMENT_EPP_DATE);
+				}
+
+				if (model.PlannedLobEppDate.HasValue && !model.ScheduledLobEppDate.HasValue)
+				{
+					validationMessages.Add(Constants.INVALID_SCHEDULED_LOB_EPP_DATE);
+				}
+
+				if (model.PlannedProgramEppDate.HasValue && !model.ScheduledProgramEppDate.HasValue)
+				{
+					validationMessages.Add(Constants.INVALID_SCHEDULED_PROGRAM_EPP_DATE);
+				}
+
+				if (model.PlannedPreSpaceEppDate.HasValue && !model.ScheduledPreSpaceEppDate.HasValue)
+				{
+					validationMessages.Add(Constants.INVALID_SCHEDULED_PRE_SPACE_EPP_DATE);
+				}
+
+				if (model.PlannedSpaceEppDate.HasValue && !model.ScheduledSpaceEppDate.HasValue)
+				{
+					validationMessages.Add(Constants.INVALID_SCHEDULED_SPACE_EPP_DATE);
+				}
+
+				if (model.PlannedPreCorporateEppDate.HasValue && !model.ScheduledPreCorporateEppDate.HasValue)
+				{
+					validationMessages.Add(Constants.INVALID_SCHEDULED_PRE_CORPORATE_EPP_DATE);
+				}
+
+				if (model.PlannedCorporateEppDate.HasValue && !model.ScheduledCorporateEppDate.HasValue)
+				{
+					validationMessages.Add(Constants.INVALID_SCHEDULED_CORPORATE_EPP_DATE);
+				}
+			}
+
+			#endregion
 
 			return validationMessages;
 		}
@@ -776,11 +834,7 @@ namespace GenTRAC.ActionLogic
 				case EppDelegationAuthority.Space:
 				case EppDelegationAuthority.Corporate:
 				case EppDelegationAuthority.MissionSegment:
-					// LOBs don't have consistent IDs between dev/uat/prod so we need to get the LOB picklist to get the NSS ID
-					// in order to pass if the proposal has NSS as its LOB to the helper method
-					ICollection<SelectListItem> lobList = pickListMapper.GetSelectListPickList(PickListEnum.LineOfBusiness);
-					SelectListItem nssLob = lobList.FirstOrDefault(x => x.Text == Constants.NSS_LOB_NAME);
-					bool isNss = nssLob != null && fullProposal.LineOfBusinessID.ToString() == nssLob.Value;
+					bool isNss = IsProposalNSS(fullProposal);
 
 					if (!edc.AreRequiredDatesPopulated(dto, messages, isNss))
 					{
@@ -878,6 +932,21 @@ namespace GenTRAC.ActionLogic
 			}
 
 			return isValid;
+		}
+
+		/// <summary>
+		/// Is the Proposal Line of Business of type: National Security Space?
+		/// </summary>
+		/// <param name="fullProposal">Full Proposal</param>
+		/// <returns>True if Line of Business is National Security Space, False otherwise</returns>
+		private bool IsProposalNSS(FullProposal fullProposal)
+		{
+			// LOBs don't have consistent IDs between dev/uat/prod so we need to get the LOB picklist to get the NSS ID
+			// in order to pass if the proposal has NSS as its LOB to the helper method
+			ICollection<SelectListItem> lobList = pickListMapper.GetSelectListPickList(PickListEnum.LineOfBusiness);
+			SelectListItem nssLob = lobList.FirstOrDefault(x => x.Text == Constants.NSS_LOB_NAME);
+			bool isNss = nssLob != null && fullProposal.LineOfBusinessID.ToString() == nssLob.Value;
+			return isNss;
 		}
 
 		/// <summary>

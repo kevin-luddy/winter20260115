@@ -1026,6 +1026,39 @@ div.create-workspace.buttons.full
     margin-top: 3px;
 }
 
+.epp-date-container {
+	display: flex;
+}
+
+.date-container {
+	width: 40% !important;
+	display: flex;
+	flex-direction: column;
+}
+
+.planned-label {
+	margin: auto;
+    margin-right: 40px;
+	margin-top: 3px;
+}
+
+.date-container-label {
+	padding-bottom: 10px;
+}
+
+.header-row {
+	display: flex;
+	margin-bottom: unset; /* Unsetting margin from form-element class */
+}
+
+/*.planned-date {
+	margin-right: 50px;
+}*/
+
+.scheduled-date {
+	width: 15% !important;
+}
+
 div.psa-content div.form-label {
     min-width: 240px;
 }
