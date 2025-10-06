@@ -2115,6 +2115,114 @@ namespace IES.Common.OfficeUtilities
         }
 
 		/// <summary>
+		/// Hides the specified columns in the given worksheet.
+		/// NOTE: Be careful to use the proper indexes when using this method in case they are variable due to things like Custom Fields
+		/// </summary>
+		/// <param name="spreadsheet">The spreadsheet document.</param>
+		/// <param name="sheetName">The name of the worksheet.</param>
+		/// <param name="columnIndexesToHide">A list of 1-based column indexes to hide (e.g., 1 = A, 2 = B).</param>
+		public static void HideColumns(SpreadsheetDocument spreadsheet, string sheetName, IList<int> columnIndexesToHide)
+		{
+			if (spreadsheet == null)
+			{
+				throw new ArgumentNullException(nameof(spreadsheet));
+			}
+
+			if (string.IsNullOrWhiteSpace(sheetName))
+			{
+				throw new ArgumentNullException(nameof(sheetName));
+			}
+
+			if (columnIndexesToHide == null || columnIndexesToHide.Count == 0)
+			{
+				return;
+			}
+
+			// Get the target worksheet
+			Sheet sheet = spreadsheet.WorkbookPart.Workbook.Sheets.Elements<Sheet>()
+							  .FirstOrDefault(s => s.Name == sheetName);
+
+			if (sheet == null)
+			{
+				throw new ArgumentException($"Sheet '{sheetName}' not found.");
+			}
+
+			WorksheetPart worksheetPart = (WorksheetPart)(spreadsheet.WorkbookPart.GetPartById(sheet.Id));
+			Worksheet worksheet = worksheetPart.Worksheet;
+
+			Columns columns = worksheet.GetFirstChild<Columns>();
+			if (columns == null)
+			{
+				throw new InvalidOperationException($"Worksheet '{sheetName}' has no column to hide.");
+			}
+
+			foreach (int oneBasedIndex in columnIndexesToHide)
+			{
+				uint colIndex = (uint)oneBasedIndex;
+
+				Column matching = columns.Elements<Column>().FirstOrDefault(c => c.Min <= colIndex && c.Max >= colIndex);
+
+				if (matching != null)
+				{
+					if (matching.Min == colIndex && matching.Max == colIndex)
+					{
+						// Exact match, just hide it
+						matching.Hidden = true;
+						matching.Width = 0;
+						matching.CustomWidth = true;
+					}
+					else
+					{
+						// Split the column range into before, target, and after
+						List<Column> newColumns = new List<Column>();
+
+						if (matching.Min < colIndex)
+						{
+							newColumns.Add(new Column
+							{
+								Min = matching.Min,
+								Max = colIndex - 1,
+								Width = matching.Width,
+								CustomWidth = matching.CustomWidth,
+								Hidden = matching.Hidden
+							});
+						}
+
+						newColumns.Add(new Column
+						{
+							Min = colIndex,
+							Max = colIndex,
+							Width = 0,
+							CustomWidth = true,
+							Hidden = true
+						});
+
+						if (matching.Max > colIndex)
+						{
+							newColumns.Add(new Column
+							{
+								Min = colIndex + 1,
+								Max = matching.Max,
+								Width = matching.Width,
+								CustomWidth = matching.CustomWidth,
+								Hidden = matching.Hidden
+							});
+						}
+
+						// Replace the original multi-column definition with the split ones
+						columns.RemoveChild(matching);
+						foreach (Column col in newColumns)
+						{
+							columns.Append(col);
+						}
+					}
+				}
+			}
+
+			worksheet.Save();
+		}
+
+		/// <summary>
 		/// Remove all Table Definition Parts and worksheet data rows/cells.
 		/// </summary>
 		/// <param name="worksheetPart">The worksheet part.</param>
