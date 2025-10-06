@@ -478,15 +478,15 @@ namespace GenBOE.ActionLogic.IO.Export
 						new string[]
 							{
 								laborType.Id.ToString(),
-								thisResource != null ? thisResource.ResourceDesc : string.Empty
+								thisResource != null ? thisResource.ResourceName : string.Empty
 							});
 
 					if (Utilities.IsBRCEnabledForWorkspace(inWorkspace.Shortname))
 					{
-						row.Add(thisBusinessResourceCode != null ? thisBusinessResourceCode.ResourceDesc : string.Empty);
+						row.Add(thisBusinessResourceCode != null ? thisBusinessResourceCode.ResourceName : string.Empty);
 					}
 
-					row.Add(thisPerfOrg != null ? thisPerfOrg.PerformingOrgName + " - " + thisPerfOrg.PerformingOrgDesc : string.Empty);
+					row.Add(thisPerfOrg != null ? thisPerfOrg.PerformingOrgName : string.Empty);
 
 					ICollection<string> customFieldValues = CreateCustomFieldRowValues(laborType, customFieldDictionary, laborTypeCustomFieldValueIdMappings, workspaceCustomFields);
 					row.AddRange(customFieldValues);
@@ -670,13 +670,13 @@ namespace GenBOE.ActionLogic.IO.Export
 						string resourceName = string.Empty;
 						if (resource != null)
 						{
-							resourceName = $"{resource.ResourceName} - {resource.ResourceDesc}";
+							resourceName = resource.ResourceName;
 						}
 
 						string performingOrgName = string.Empty;
 						if (performingOrg != null)
 						{
-							performingOrgName = $"{performingOrg.PerformingOrgName} - {performingOrg.PerformingOrgDesc}";
+							performingOrgName = performingOrg.PerformingOrgName;
 						}
 
 						log.Warn(
