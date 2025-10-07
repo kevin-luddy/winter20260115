@@ -143,7 +143,7 @@ namespace GenTRAC.ActionLogic
 				ProposalId = proposalId,
 			};
 			SecurityAuthorization highestAccess = this.SecurityAccess.IsAuthorized(perms, out _);
-			
+
 			// populate calculated properties
 			model.EppOptions = this.GetEppSelectOptions(model.EppDelegationAuthority);
 			model.InsuranceProposedDirectOptions = this.GetInsuranceProposedOptions(model.IsInsuranceDirect);
@@ -170,7 +170,7 @@ namespace GenTRAC.ActionLogic
 				model.previousROMDt = previousRomDateAndValue?.Item1;
 				model.PreviousROMValueDecimal = previousRomDateAndValue?.Item2;
 			}
-			if(this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null))
+			if (this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null))
 			{
 				model.IsReadOnly = false;
 			}
@@ -274,53 +274,7 @@ namespace GenTRAC.ActionLogic
 			bool isNss = IsProposalNSS(proposal);
 			if (isNss)
 			{
-				if (!model.PlannedPreCorporateEppDate.HasValue && !model.PlannedCorporateEppDate.HasValue
-					&& !model.PlannedBidEppDate.HasValue && !model.PlannedMissionSegmentEppDate.HasValue
-					&& !model.PlannedPreSpaceEppDate.HasValue && !model.PlannedSpaceEppDate.HasValue
-					&& !model.PlannedProgramEppDate.HasValue && !model.PlannedLobEppDate.HasValue)
-				{
-					validationMessages.Add(Constants.INVALID_EPP_PLANNED_DATE_MISSING);
-				}
-
-				if (model.PlannedBidEppDate.HasValue && !model.ScheduledBidEppDate.HasValue)
-				{
-					validationMessages.Add(Constants.INVALID_SCHEDULED_BID_EPP_DATE);
-				}
-
-				if (model.PlannedMissionSegmentEppDate.HasValue && !model.ScheduledMissionSegmentEppDate.HasValue)
-				{
-					validationMessages.Add(Constants.INVALID_SCHEDULED_MISSION_SEGMENT_EPP_DATE);
-				}
-
-				if (model.PlannedLobEppDate.HasValue && !model.ScheduledLobEppDate.HasValue)
-				{
-					validationMessages.Add(Constants.INVALID_SCHEDULED_LOB_EPP_DATE);
-				}
-
-				if (model.PlannedProgramEppDate.HasValue && !model.ScheduledProgramEppDate.HasValue)
-				{
-					validationMessages.Add(Constants.INVALID_SCHEDULED_PROGRAM_EPP_DATE);
-				}
-
-				if (model.PlannedPreSpaceEppDate.HasValue && !model.ScheduledPreSpaceEppDate.HasValue)
-				{
-					validationMessages.Add(Constants.INVALID_SCHEDULED_PRE_SPACE_EPP_DATE);
-				}
-
-				if (model.PlannedSpaceEppDate.HasValue && !model.ScheduledSpaceEppDate.HasValue)
-				{
-					validationMessages.Add(Constants.INVALID_SCHEDULED_SPACE_EPP_DATE);
-				}
-
-				if (model.PlannedPreCorporateEppDate.HasValue && !model.ScheduledPreCorporateEppDate.HasValue)
-				{
-					validationMessages.Add(Constants.INVALID_SCHEDULED_PRE_CORPORATE_EPP_DATE);
-				}
-
-				if (model.PlannedCorporateEppDate.HasValue && !model.ScheduledCorporateEppDate.HasValue)
-				{
-					validationMessages.Add(Constants.INVALID_SCHEDULED_CORPORATE_EPP_DATE);
-				}
+				EppDateValidations(model, validationMessages);
 			}
 
 			#endregion
@@ -958,6 +912,54 @@ namespace GenTRAC.ActionLogic
 		private bool IsContractsUser(int userId, ICollection<ProposalPermissionDto> propPermissions)
 		{
 			return propPermissions.Any(x => (x.Role == PtmRole.ContractsPOC || x.Role == PtmRole.BackupContractsPOC) && x.UserId == userId);
+		}
+
+		/// <summary>
+		/// Validate EPP Dates
+		/// </summary>
+		/// <param name="model">Contracts View Model</param>
+		/// <param name="validationMessages">Validation Messages Collection</param>
+		private static void EppDateValidations(ContractsModelView model, ICollection<string> validationMessages)
+		{
+			if (model.ScheduledBidEppDate.HasValue && !model.PlannedBidEppDate.HasValue)
+			{
+				validationMessages.Add(Constants.INVALID_PLANNED_BID_EPP_DATE);
+			}
+
+			if (model.ScheduledMissionSegmentEppDate.HasValue && !model.PlannedMissionSegmentEppDate.HasValue)
+			{
+				validationMessages.Add(Constants.INVALID_PLANNED_MISSION_SEGMENT_EPP_DATE);
+			}
+
+			if (model.ScheduledLobEppDate.HasValue && !model.PlannedLobEppDate.HasValue)
+			{
+				validationMessages.Add(Constants.INVALID_PLANNED_LOB_EPP_DATE);
+			}
+
+			if (model.ScheduledProgramEppDate.HasValue && !model.PlannedProgramEppDate.HasValue)
+			{
+				validationMessages.Add(Constants.INVALID_PLANNED_PROGRAM_EPP_DATE);
+			}
+
+			if (model.ScheduledPreSpaceEppDate.HasValue && !model.PlannedPreSpaceEppDate.HasValue)
+			{
+				validationMessages.Add(Constants.INVALID_PLANNED_PRE_SPACE_EPP_DATE);
+			}
+
+			if (model.ScheduledSpaceEppDate.HasValue && !model.PlannedSpaceEppDate.HasValue)
+			{
+				validationMessages.Add(Constants.INVALID_PLANNED_SPACE_EPP_DATE);
+			}
+
+			if (model.ScheduledPreCorporateEppDate.HasValue && !model.PlannedPreCorporateEppDate.HasValue)
+			{
+				validationMessages.Add(Constants.INVALID_PLANNED_PRE_CORPORATE_EPP_DATE);
+			}
+
+			if (model.ScheduledCorporateEppDate.HasValue && !model.PlannedCorporateEppDate.HasValue)
+			{
+				validationMessages.Add(Constants.INVALID_PLANNED_CORPORATE_EPP_DATE);
+			}
 		}
 
 		#endregion Contract Validate / Save
