@@ -770,7 +770,7 @@ namespace GenBOE.Web.Controllers
 					if (validationError.FieldName.ContainsEquivalent("Spreads["))
 					{
 						int idx = validationError.FieldName.GetIndex();
-						if (laborTypesArray[idx].Deleted)
+						if (idx >= 0 && idx < laborTypesArray.Length && laborTypesArray[idx].Deleted)
 						{
 							include = false;
 						}
@@ -782,7 +782,7 @@ namespace GenBOE.Web.Controllers
 					else if (validationError.FieldName.ContainsEquivalent("LaborTypes[") || validationError.FieldName.ContainsEquivalent("LaborTypesData["))
 					{
 						int idx = validationError.FieldName.GetIndex();
-						if (laborTypesArray[idx].Deleted)
+						if (idx >= 0 && idx < laborTypesArray.Length && laborTypesArray[idx].Deleted)
 						{
 							include = false;
 						}
