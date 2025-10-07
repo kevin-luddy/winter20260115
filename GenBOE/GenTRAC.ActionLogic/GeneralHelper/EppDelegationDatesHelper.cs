@@ -164,10 +164,18 @@ namespace GenTRAC.ActionLogic.GeneralHelper
             
             List<string> requiredDates = this.GetRequiredEppDatesForDelegation((EppDelegationAuthority?)dto?.EppDelegationAuthority);
 
-			if (!isNss && requiredDates.Contains(nameof(ContractsDto.PlannedMissionSegmentEppDate)))
+			if (!isNss)
 			{
 				// Mission Segment EPP Date is only required if the Proposal's LOB is National Security Space
-				requiredDates.Remove(nameof(ContractsDto.PlannedMissionSegmentEppDate));
+				if (requiredDates.Contains(nameof(ContractsDto.PlannedMissionSegmentEppDate)))
+				{
+					requiredDates.Remove(nameof(ContractsDto.PlannedMissionSegmentEppDate));
+				}
+
+				if (requiredDates.Contains(nameof(ContractsDto.ScheduledMissionSegmentEppDate)))
+				{
+					requiredDates.Remove(nameof(ContractsDto.ScheduledMissionSegmentEppDate));
+				}
 			}
 
             if (requiredDates.Any(x => dto.GetType().GetProperty(x).GetValue(dto, null) == null))
