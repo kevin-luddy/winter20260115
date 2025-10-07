@@ -38,18 +38,33 @@ namespace GenTRAC.ActionLogic.GeneralHelper
             Add(EppDelegationAuthority.LoB, nameof(ContractsDto.PlannedLobEppDate));
 			Add(EppDelegationAuthority.MissionSegment, nameof(ContractsDto.PlannedMissionSegmentEppDate));
             Add(EppDelegationAuthority.Program, nameof(ContractsDto.PlannedProgramEppDate));
+			Add(EppDelegationAuthority.Corporate, nameof(ContractsDto.ScheduledCorporateEppDate));
+            Add(EppDelegationAuthority.Corporate, nameof(ContractsDto.ScheduledPreCorporateEppDate));
+            Add(EppDelegationAuthority.Space, nameof(ContractsDto.ScheduledSpaceEppDate));
+            Add(EppDelegationAuthority.Space, nameof(ContractsDto.ScheduledPreSpaceEppDate));
+            Add(EppDelegationAuthority.LoB, nameof(ContractsDto.ScheduledLobEppDate));
+			Add(EppDelegationAuthority.MissionSegment, nameof(ContractsDto.ScheduledMissionSegmentEppDate));
+            Add(EppDelegationAuthority.Program, nameof(ContractsDto.ScheduledProgramEppDate));
 
 			// Property-Friendly name mapping
 			EppDateNames = new Dictionary<string, string>
             {
-                { nameof(ContractsDto.PlannedCorporateEppDate), "Corporate EPP Date" },
-                { nameof(ContractsDto.PlannedPreCorporateEppDate), "Pre-Corporate EPP Date" },
-                { nameof(ContractsDto.PlannedSpaceEppDate), "Space EPP Date" },
-                { nameof(ContractsDto.PlannedPreSpaceEppDate), "Pre-Space EPP Date" },
-                { nameof(ContractsDto.PlannedLobEppDate), "Line of Business EPP Date" },
-				{ nameof(ContractsDto.PlannedMissionSegmentEppDate), "Mission Segment EPP Date" },
-                { nameof(ContractsDto.PlannedProgramEppDate), "Program EPP Date" },
-				{ nameof(ContractsDto.PlannedBidEppDate), "Bid EPP Date" }
+                { nameof(ContractsDto.PlannedCorporateEppDate), "Planned Corporate EPP Date" },
+                { nameof(ContractsDto.PlannedPreCorporateEppDate), "Planned Pre-Corporate EPP Date" },
+                { nameof(ContractsDto.PlannedSpaceEppDate), "Planned Space EPP Date" },
+                { nameof(ContractsDto.PlannedPreSpaceEppDate), "Planned Pre-Space EPP Date" },
+                { nameof(ContractsDto.PlannedLobEppDate), "Planned Line of Business EPP Date" },
+				{ nameof(ContractsDto.PlannedMissionSegmentEppDate), "Planned Mission Segment EPP Date" },
+                { nameof(ContractsDto.PlannedProgramEppDate), "Planned Program EPP Date" },
+				{ nameof(ContractsDto.PlannedBidEppDate), "Planned Bid EPP Date" },
+				{ nameof(ContractsDto.ScheduledCorporateEppDate), "Scheduled Corporate EPP Date" },
+                { nameof(ContractsDto.ScheduledPreCorporateEppDate), "Scheduled Pre-Corporate EPP Date" },
+                { nameof(ContractsDto.ScheduledSpaceEppDate), "Scheduled Space EPP Date" },
+                { nameof(ContractsDto.ScheduledPreSpaceEppDate), "Scheduled Pre-Space EPP Date" },
+                { nameof(ContractsDto.ScheduledLobEppDate), "Scheduled Line of Business EPP Date" },
+				{ nameof(ContractsDto.ScheduledMissionSegmentEppDate), "Scheduled Mission Segment EPP Date" },
+                { nameof(ContractsDto.ScheduledProgramEppDate), "Scheduled Program EPP Date" },
+				{ nameof(ContractsDto.ScheduledBidEppDate), "Scheduled Bid EPP Date" }
 			};
         }
 
@@ -110,9 +125,10 @@ namespace GenTRAC.ActionLogic.GeneralHelper
 
 			// Bid EPP date is never required, but if it is entered then it must be sequential so it's added here
 			requiredDates.Add(nameof(ContractsDto.PlannedBidEppDate));
+			requiredDates.Add(nameof(ContractsDto.ScheduledBidEppDate));
 
-            // now get a list of the date names that have actually been provided
-            List<string> givenDates = requiredDates.Where(x => dto.GetType().GetProperty(x).GetValue(dto, null) != null).ToList();
+			// now get a list of the date names that have actually been provided
+			List<string> givenDates = requiredDates.Where(x => dto.GetType().GetProperty(x).GetValue(dto, null) != null).ToList();
             givenDates.Reverse();
 
             // make sure the provided dates are sequential

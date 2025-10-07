@@ -271,8 +271,7 @@ namespace GenTRAC.ActionLogic
 			#region National Security Space Validation
 
 			// Run Validation for EPP Dates only when Line of Business is of type: National Security Space
-			bool isNss = IsProposalNSS(proposal);
-			if (isNss)
+			if (IsProposalNSS(proposal))
 			{
 				EppDateValidations(model, validationMessages);
 			}
