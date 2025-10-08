@@ -1247,7 +1247,7 @@ namespace GenTRAC.Tests.ActionLogic
 		public void ContractDataValidForCompleteProposalSave_IsInsuranceDirectValidation()
 		{
 			ContractsControllerLogic sut = this.CreateSystem();
-			
+
 			// Initial test - Proposed and Negotiated insurance required when IsInsuranceDirect is Yes
 			ContractsDto dto = new ContractsDto
 			{
@@ -1283,6 +1283,113 @@ namespace GenTRAC.Tests.ActionLogic
 			Assert.IsFalse(result);
 			Assert.IsTrue(messages.Contains(Constants.INVALID_PROPOSED_INSURANCE_BLANK));
 			Assert.IsTrue(messages.Contains(Constants.INVALID_NEGOTIATED_INSURANCE_BLANK));
+		}
+
+		/// <summary>
+		/// Test EppDateValidations Method in the ValidateContractViewModel
+		/// </summary>
+		[TestMethod]
+		public void EppDateValidationsViaValidateContractViewModelTest()
+		{
+			ICollection<string> validationMessages = new HashSet<string>();
+
+			ContractsControllerLogic sut = this.CreateSystem();
+			ProposalDto proposalDto = new ProposalDto();
+			FullProposal proposal = new FullProposal(proposalDto);
+
+			// Set arbitrary ID for the Line of Business
+			proposal.LineOfBusinessID = 15;
+
+			// Now set the Proposal's LoB to NSS - This will allow our validation to run
+			pickListMapper.Setup(x => x.GetSelectListPickList(PickListEnum.LineOfBusiness, null, true, false))
+				.Returns(new Collection<SelectListItem>()
+				{
+					new SelectListItem() {
+						Text = Constants.NSS_LOB_NAME,
+						Value = proposal.LineOfBusinessID.ToString()
+					}
+				});
+
+			ContractsModelView contractsModelView = new ContractsModelView();
+
+			contractsModelView.ScheduledBidEppDate = DateTime.Now;
+			contractsModelView.ScheduledMissionSegmentEppDate = DateTime.Now;
+			contractsModelView.ScheduledLobEppDate = DateTime.Now;
+			contractsModelView.ScheduledProgramEppDate = DateTime.Now;
+			contractsModelView.ScheduledPreSpaceEppDate = DateTime.Now;
+			contractsModelView.ScheduledSpaceEppDate = DateTime.Now;
+			contractsModelView.ScheduledPreCorporateEppDate = DateTime.Now;
+			contractsModelView.ScheduledCorporateEppDate = DateTime.Now;
+
+			validationMessages = sut.ValidateContractModelView(contractsModelView, proposal);
+
+			Assert.IsTrue(validationMessages.Count == 8);
+			Assert.IsTrue(validationMessages.Contains(Constants.INVALID_PLANNED_BID_EPP_DATE));
+			Assert.IsTrue(validationMessages.Contains(Constants.INVALID_PLANNED_MISSION_SEGMENT_EPP_DATE));
+			Assert.IsTrue(validationMessages.Contains(Constants.INVALID_PLANNED_LOB_EPP_DATE));
+			Assert.IsTrue(validationMessages.Contains(Constants.INVALID_PLANNED_PROGRAM_EPP_DATE));
+			Assert.IsTrue(validationMessages.Contains(Constants.INVALID_PLANNED_PRE_SPACE_EPP_DATE));
+			Assert.IsTrue(validationMessages.Contains(Constants.INVALID_PLANNED_SPACE_EPP_DATE));
+			Assert.IsTrue(validationMessages.Contains(Constants.INVALID_PLANNED_PRE_CORPORATE_EPP_DATE));
+			Assert.IsTrue(validationMessages.Contains(Constants.INVALID_PLANNED_CORPORATE_EPP_DATE));
+
+			// Now lets one by one add the planned dates and see that the messages should dwindle to 0
+			contractsModelView.PlannedBidEppDate = DateTime.Now;
+			validationMessages = sut.ValidateContractModelView(contractsModelView, proposal);
+			Assert.IsTrue(validationMessages.Count == 7);
+
+			contractsModelView.PlannedMissionSegmentEppDate = DateTime.Now;
+			validationMessages = sut.ValidateContractModelView(contractsModelView, proposal);
+			Assert.IsTrue(validationMessages.Count == 6);
+
+			contractsModelView.PlannedLobEppDate = DateTime.Now;
+			validationMessages = sut.ValidateContractModelView(contractsModelView, proposal);
+			Assert.IsTrue(validationMessages.Count == 5);
+
+			contractsModelView.PlannedProgramEppDate = DateTime.Now;
+			validationMessages = sut.ValidateContractModelView(contractsModelView, proposal);
+			Assert.IsTrue(validationMessages.Count == 4);
+
+			contractsModelView.PlannedPreSpaceEppDate = DateTime.Now;
+			validationMessages = sut.ValidateContractModelView(contractsModelView, proposal);
+			Assert.IsTrue(validationMessages.Count == 3);
+
+			contractsModelView.PlannedSpaceEppDate = DateTime.Now;
+			validationMessages = sut.ValidateContractModelView(contractsModelView, proposal);
+			Assert.IsTrue(validationMessages.Count == 2);
+
+			contractsModelView.PlannedPreCorporateEppDate = DateTime.Now;
+			validationMessages = sut.ValidateContractModelView(contractsModelView, proposal);
+			Assert.IsTrue(validationMessages.Count == 1);
+
+			contractsModelView.PlannedCorporateEppDate = DateTime.Now;
+			validationMessages = sut.ValidateContractModelView(contractsModelView, proposal);
+			Assert.IsTrue(validationMessages.Count == 0);
+
+			// Now set NSS LoB to something - This will skip validation of the EPPDateValidations Method
+			pickListMapper.Setup(x => x.GetSelectListPickList(PickListEnum.LineOfBusiness, null, true, false))
+				.Returns(new Collection<SelectListItem>()
+				{
+					new SelectListItem() {
+						Text = Constants.NSS_LOB_NAME,
+						Value = "1"
+					}
+				});
+
+			// Going to unset all the planned dates and because the LoB is now not NSS, the Scheduled dates that are set, should not matter
+			contractsModelView.PlannedBidEppDate = null;
+			contractsModelView.PlannedMissionSegmentEppDate = null;
+			contractsModelView.PlannedLobEppDate = null;
+			contractsModelView.PlannedProgramEppDate = null;
+			contractsModelView.PlannedPreSpaceEppDate = null;
+			contractsModelView.PlannedSpaceEppDate = null;
+			contractsModelView.PlannedPreCorporateEppDate = null;
+			contractsModelView.PlannedCorporateEppDate = null;
+
+			// Lets run the validation again
+			validationMessages = sut.ValidateContractModelView(contractsModelView, proposal);
+
+			Assert.IsTrue(validationMessages.Count == 0);
 		}
 	}
 }

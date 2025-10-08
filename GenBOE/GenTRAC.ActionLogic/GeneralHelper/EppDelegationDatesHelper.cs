@@ -125,7 +125,6 @@ namespace GenTRAC.ActionLogic.GeneralHelper
 
 			// Bid EPP date is never required, but if it is entered then it must be sequential so it's added here
 			requiredDates.Add(nameof(ContractsDto.PlannedBidEppDate));
-			requiredDates.Add(nameof(ContractsDto.ScheduledBidEppDate));
 
 			// now get a list of the date names that have actually been provided
 			List<string> givenDates = requiredDates.Where(x => dto.GetType().GetProperty(x).GetValue(dto, null) != null).ToList();

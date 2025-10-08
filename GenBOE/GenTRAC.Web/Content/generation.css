@@ -1051,10 +1051,6 @@ div.create-workspace.buttons.full
 	margin-bottom: unset; /* Unsetting margin from form-element class */
 }
 
-/*.planned-date {
-	margin-right: 50px;
-}*/
-
 .scheduled-date {
 	width: 15% !important;
 }
