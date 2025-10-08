@@ -3623,7 +3623,7 @@ div#LaborTypeWarningFlag .warning-message
 .boe-details .composite .buttons-left,
 .boe-details .composite .buttons-right
 {
-	height: 112px;
+	height: 132px;
 }
 
 .composite .buttons-left,
@@ -3648,7 +3648,7 @@ div#LaborTypeWarningFlag .warning-message
 
 .boe-details .composite .buttons
 {
-	height: 92px;
+	height: 112px;
 	padding: 10px 40px;
 	margin: 0px;
 }
