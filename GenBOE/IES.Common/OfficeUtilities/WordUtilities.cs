@@ -204,18 +204,11 @@ namespace IES.Common.OfficeUtilities
 
 				if (containerContentBlock != null)
 				{
-					// get last paragraph to append to
+					// get last paragraph to pull run properties from
 					Paragraph lastParagraph = containerContentBlock.Descendants<Paragraph>().LastOrDefault();
 
-					if (lastParagraph == null)
-					{
-						// add new paragraph if none found
-						lastParagraph = new Paragraph();
-						containerContentBlock.Append(lastParagraph);
-					}
-
 					// Pull run properties to get font, font size, etc
-					RunProperties runProperties = lastParagraph.Descendants<RunProperties>().FirstOrDefault();
+					RunProperties runProperties = lastParagraph?.Descendants<RunProperties>().FirstOrDefault();
 
 					if (runProperties == null)
 					{
@@ -226,41 +219,67 @@ namespace IES.Common.OfficeUtilities
 					// Because some of the text is bolded, the label needs to be split into 3 separate runs
 					Run openingRun = new Run();
 					openingRun.Append(new Text(OPENING_UCOT_LABEL_TEXT) { Space = SpaceProcessingModeValues.Preserve });
-					OpenXmlElement openingRunProperties = runProperties != null ? runProperties.CloneNode(true) : new RunProperties();
-					if (openingRunProperties.Descendants<Bold>().Any())
-					{
-						// remove bolding if it exists
-						Bold bold = openingRunProperties.Descendants<Bold>().First();
-						bold.Val = new OnOffValue(false);
-					}
+					OpenXmlElement openingRunProperties = GetAndProcessRunProperties(runProperties, false);
 					openingRun.PrependChild(openingRunProperties);
 
 					// create the run for the bolded text
 					Run boldRun = new Run();
 					boldRun.Append(new Text(BOLD_UCOT_LABEL_TEXT) { Space = SpaceProcessingModeValues.Preserve });
-					OpenXmlElement boldRunProperties = runProperties != null ? runProperties.CloneNode(true) : new RunProperties();
-					boldRunProperties.Append(new Bold());
+					OpenXmlElement boldRunProperties = GetAndProcessRunProperties(runProperties, true);
 					boldRun.PrependChild(boldRunProperties);
 
 					// create the run for the remaining text
 					Run closingRun = new Run();
 					closingRun.Append(new Text(CLOSING_UCOT_LABEL_TEXT) { Space = SpaceProcessingModeValues.Preserve });
-					OpenXmlElement closingRunProperties = runProperties != null ? runProperties.CloneNode(true) : new RunProperties();
-					if (closingRunProperties.Descendants<Bold>().Any())
-					{
-						// remove bolding if it exists
-						Bold bold = closingRunProperties.Descendants<Bold>().First();
-						bold.Val = new OnOffValue(false);
-					}
+					OpenXmlElement closingRunProperties = GetAndProcessRunProperties(runProperties, false);
 					closingRun.PrependChild(closingRunProperties);
 
-					// append all the runs to the paragraph
-					lastParagraph.Append(new Break());
-					lastParagraph.Append(openingRun);
-					lastParagraph.Append(boldRun);
-					lastParagraph.Append(closingRun);
+					// append all the runs to a new paragraph and append to the content block
+					Paragraph labelParagraph = new Paragraph();
+					labelParagraph.Append(openingRun);
+					labelParagraph.Append(boldRun);
+					labelParagraph.Append(closingRun);
+					containerContentBlock.Append(labelParagraph);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Copy the given run properties and handle font stylings like bold, italics, and underline
+		/// </summary>
+		/// <param name="runProperties">Run properties to clone</param>
+		/// <param name="isBold">If font should be bold</param>
+		private static OpenXmlElement GetAndProcessRunProperties(RunProperties runProperties, bool isBold)
+		{
+			// clone the properties
+			OpenXmlElement newRunProperties = runProperties != null ? runProperties.CloneNode(true) : new RunProperties();
+
+			// remove or add bolding based on isBold
+			if (newRunProperties.Descendants<Bold>().Any() && !isBold)
+			{
+				Bold bold = newRunProperties.Descendants<Bold>().First();
+				bold.Val = new OnOffValue(false);
+			}
+			else if (isBold)
+			{
+				newRunProperties.Append(new Bold());
+			}
+
+			// remove italics
+			if (newRunProperties.Descendants<Italic>().Any())
+			{
+				Italic italic = newRunProperties.Descendants<Italic>().First();
+				italic.Val = new OnOffValue(false);
+			}
+
+			// remove underline
+			if (newRunProperties.Descendants<Underline>().Any())
+			{
+				Underline underline = newRunProperties.Descendants<Underline>().First();
+				underline.Val = UnderlineValues.None;
+			}
+
+			return newRunProperties;
 		}
 
         #endregion
