@@ -93,6 +93,12 @@ namespace GenBOE.Web.Controllers.Backend
 			return result;
 		}
 
+		/// <summary>
+		/// Get Task Element Grid
+		/// </summary>
+		/// <param name="workspaceShortname">Workspace shortname string</param>
+		/// <param name="boeId">BOE Id</param>
+		/// <returns></returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
