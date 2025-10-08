@@ -368,17 +368,6 @@
 									</li>
 								}
 							</ul>
-							@*<ul class="@(attachment.EeppProposals.Count > 1 ? "eepp-attachments" : "single-eepp-attachment")">
-				@foreach (EeppProposal eeppProposal in attachment.EeppProposals)
-				{
-					<li>
-						<a id="filenameLink-@attachmentIdentifier" href="/@WebConstants.Controller.PSA/@WebConstants.Action.DOWNLOAD_ATTACHMENT/id/@Model.ProposalId/?fileId=@eeppProposal.Id&isFromeEPP=True">
-							@attachment.Name (@eeppProposal.EppLevel.GetDescription())
-						</a>
-						<span>- @eeppProposal.Status</span>
-					</li>
-				}
-			</ul>*@
 						}
 						else
 						{
