@@ -124,13 +124,12 @@ namespace GenBOE.Web.Controllers.Backend
 					.ForAll(z => z.FailedValidation = true);
 
 				// ReadOnly check is for being able to delete a Task Element
-				bool readOnly = false;
-				if (SiteMasterUtilities.IsReadOnly())
+				bool readOnly = true;
+				// if the entire site is not readonly
+				if (!SiteMasterUtilities.IsReadOnly())
 				{
-					if (CheckPermission(SecurityPage.BOELaborGrid, ws, boeId) != SecurityAuthorization.CreateReadUpdateDelete)
-					{
-						readOnly = true;
-					}
+					// check the users permission
+					readOnly = CheckPermission(SecurityPage.BOELaborGrid, ws, boeId) != SecurityAuthorization.CreateReadUpdateDelete;
 				}
 				result.Data.IsReadOnly = readOnly;
 
