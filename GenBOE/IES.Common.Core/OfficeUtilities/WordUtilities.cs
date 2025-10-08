@@ -162,7 +162,9 @@ namespace IES.Common.Core.OfficeUtilities
 		/// <param name="tag">The matching tag</param>
 		public static void RemoveTaggedElement(Node element, string tag)
 		{
-			RemoveTaggedElementAncestor(element, tag, NodeType.StructuredDocumentTag);
+			StructuredDocumentTag tagObj = element.Range.StructuredDocumentTags.GetByTag(tag) as StructuredDocumentTag;
+			tagObj?.RemoveAllChildren();
+			tagObj?.Remove();
 		}
 
 		/// <summary>
