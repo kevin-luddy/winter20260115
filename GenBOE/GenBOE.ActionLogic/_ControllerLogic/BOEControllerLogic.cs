@@ -210,25 +210,49 @@ namespace GenBOE.ActionLogic.ControllerLogic
             return new BOEHeaderISGSModelView(boe, answers);
         }
 
-        #endregion Get Actions
+		/// <summary>
+		/// Get BOE Header Description Model View
+		/// </summary>
+		/// <param name="boe">BOE containing BOE Summary</param>
+		/// <param name="ws">Workspace containing the BOE</param>
+		/// <returns>ModelView for the description in BOE Header</returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		public BOEHeaderDescriptionModelView GetBOEHeaderDescriptionMv(FullBoe boe, FullWorkspace ws)
+		{
+			if (boe == null)
+			{
+				throw new ArgumentNullException(nameof(boe));
+			}
 
-        #region Display
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
 
-        #region Views
+			ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateAnswers = this.rteTemplateDataLoader.GetByBoeId(ws.Id, boe.Id).Where(t => t.SourceId == (int)RteTemplateSource.BoeDescription).OrderBy(r => r.SortOrder).ToList();
+			BOEHeaderDescriptionModelView description = new BOEHeaderDescriptionModelView(boe, rteTemplateAnswers);
+			return description;
+		}
 
-        #endregion
+		#endregion Get Actions
 
-        #region Partial Views
+		#region Display
 
-        #region Edit BOE
+		#region Views
 
-        /// <summary>
-        /// Gets the model view for the BOE task element grid
-        /// </summary>
-        /// <param name="boe">BOE containing the task element grid</param>
-        /// <param name="ws">Workspace the BOE exists in</param>
-        /// <returns>model view for the BOE task element grid</returns>
-        public GenericTaskElementGridModelView GetTaskGridModelView(FullBoe boe, FullWorkspace ws)
+		#endregion
+
+		#region Partial Views
+
+		#region Edit BOE
+
+		/// <summary>
+		/// Gets the model view for the BOE task element grid
+		/// </summary>
+		/// <param name="boe">BOE containing the task element grid</param>
+		/// <param name="ws">Workspace the BOE exists in</param>
+		/// <returns>model view for the BOE task element grid</returns>
+		public GenericTaskElementGridModelView GetTaskGridModelView(FullBoe boe, FullWorkspace ws)
         {
             if (boe == null)
             {
@@ -423,6 +447,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IBOEHeaderModelView theModelView = this.GetCreateBOEHeaderMV(boe, answers);
 
             theModelView.WBS = boe.Wbs != null ? boe.Wbs.WbsString : CommonConstants.Unassigned_WBS_Display_Text;
+			theModelView.State = boe.State;
             
             // get the clin
             ClinDTO clin = boe.Clin;
@@ -471,12 +496,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
             return theModelView;
         }
 
-        /// <summary>
-        /// Gets model views for custom fields in the BOE Header
-        /// </summary>
-        /// <param name="ws">workspace containing the BOE/Custom fields</param>
-        /// <returns>model views for custom fields in the BOE Header</returns>
-        public Collection<BOECustomFieldModelView> GetCustomFieldModelViews(FullWorkspace ws)
+		/// <summary>
+		/// Gets model views for custom fields in the BOE Header
+		/// </summary>
+		/// <param name="ws">workspace containing the BOE/Custom fields</param>
+		/// <returns>model views for custom fields in the BOE Header</returns>
+		public Collection<BOECustomFieldModelView> GetCustomFieldModelViews(FullWorkspace ws)
         {
             if (ws == null)
             {

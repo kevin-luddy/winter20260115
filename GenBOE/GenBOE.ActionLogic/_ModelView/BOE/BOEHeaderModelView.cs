@@ -66,7 +66,28 @@ namespace GenBOE.ActionLogic.ModelView.BOE
 
         public string WBS { get; set; }
 
-        public bool HistoricMetricDisclosureChecked { get; set; }
+		public BOEState State { get; set; }
+
+		public string Status
+		{
+			get
+			{
+				if (this.State == BOEState.None)
+				{
+					return string.Empty;
+				}
+				else if (this.State == BOEState.DraftLocked)
+				{
+					return BOEState.Draft.GetDescription();
+				}
+				else
+				{
+					return this.State.GetDescription();
+				}
+			}
+		}
+
+		public bool HistoricMetricDisclosureChecked { get; set; }
 
         public Collection<CustomFieldSelectionModelView> CustomFieldValues { get; set; }
 
