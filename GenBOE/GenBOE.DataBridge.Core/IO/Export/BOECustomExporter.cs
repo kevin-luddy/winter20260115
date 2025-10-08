@@ -906,6 +906,15 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			}
 			else if (selectedComponents.Contains(BoeCustomReportComponent.BOESignatures))
 			{
+				// Enable auto‑fit so the signature (if made a table in the template) expands to the full window width.
+				Table table = boeSignaturesTableElement.GetChild(NodeType.Table, 0, true) as Table;
+
+				if (table != null)
+				{
+					table.AllowAutoFit = true;
+					table.AutoFit(AutoFitBehavior.AutoFitToWindow);
+				}
+
 				string proposalSubmittalDate = boeExportModelView.ProposalSubmittalDate.HasValue ? boeExportModelView.ProposalSubmittalDate.Value.ToString(BOEExporterConstants.DATE_FORMAT_STANDARD) : string.Empty;
 				WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.FieldName_BOEDatePrepared), proposalSubmittalDate);
 
