@@ -21,6 +21,7 @@ namespace GenBOE.Web.Controllers.Backend
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
+	using GenBOE.Web.Common;
 	using IES.Common;
 	using Microsoft.VisualBasic.Logging;
 
@@ -117,10 +118,22 @@ namespace GenBOE.Web.Controllers.Backend
 				result.Data.TaskElements = theModelView.TaskElements.OrderBy(teOrder => teOrder.BOETaskElementOrder).ThenBy(teOrder => teOrder.TaskElementDetailID).ToCollection();
 
 				ICollection<int> invalidTaskElementIds = this.taskElementValidation.GetInvalidTaskElementIds(ws, boe.TaskElements);
-				theModelView.TaskElements
+				result.Data.TaskElements
 					.AsParallel()
 					.Where(x => x.TaskElementDetailID.HasValue && invalidTaskElementIds.Contains(x.TaskElementDetailID.Value))
 					.ForAll(z => z.FailedValidation = true);
+
+				// ReadOnly check is for being able to delete a Task Element
+				bool readOnly = false;
+				if (SiteMasterUtilities.IsReadOnly())
+				{
+					if (CheckPermission(SecurityPage.BOELaborGrid, ws, boeId) != SecurityAuthorization.CreateReadUpdateDelete)
+					{
+						readOnly = true;
+					}
+				}
+				result.Data.IsReadOnly = readOnly;
+
 				result.IsSuccessful = true;
 			}
 			catch (Exception ex)
