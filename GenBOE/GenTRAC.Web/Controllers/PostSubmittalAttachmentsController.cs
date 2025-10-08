@@ -118,9 +118,9 @@ namespace GenTRAC.Web.Controllers
 
 							// Process the response
 							string stringResult = await response.Content.ReadAsStringAsync();
-							Result<EeppProposal> deserializedResult = JsonConvert.DeserializeObject<Result<EeppProposal>>(stringResult);
+							Result<ICollection<EeppProposal>> deserializedResult = JsonConvert.DeserializeObject<Result<ICollection<EeppProposal>>>(stringResult);
 
-							if (deserializedResult != null && deserializedResult.Data != null && deserializedResult.Data.Id != -1)
+							if (deserializedResult != null && deserializedResult.Data != null && deserializedResult.Data.Count > 0)
 							{
 								AttachmentDto doaDoc = model.PostSubmittalAttachments.FirstOrDefault(x => x.AttachmentType == AttachmentType.DelegationOfAuthority);
 								if (doaDoc != null)
@@ -128,11 +128,7 @@ namespace GenTRAC.Web.Controllers
 									doaDoc.Name = WebConstants.ATTACHMENT_FROM_EEPP;
 									doaDoc.UploadedBy = WebConstants.ATTACHMENT_UPLOADED_BY_EEPP;
 									doaDoc.IsAttachmentFromeEPP = true;
-
-									// We need this to bypass the FileHasBeenUploaded flag in the UI
-									// We'll also utilize the Id field to send over to eEPP for the proposal ID there
-									doaDoc.Id = deserializedResult.Data.Id;
-									doaDoc.EeppStatus = deserializedResult.Data.Status;
+									doaDoc.EeppProposals = deserializedResult.Data;
 								}
 							}
 							// Do nothing (let the user upload a file) if there is no eEPP data with the tracking number
