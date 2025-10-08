@@ -2830,9 +2830,3 @@ div.fake-cell
 .eepp-attachments {
 	padding-left: 14px;
 }
-
-/* todo remove*/
-.single-eepp-attachment {
-	list-style-type: none;
-	padding-left: 0px;
-}
