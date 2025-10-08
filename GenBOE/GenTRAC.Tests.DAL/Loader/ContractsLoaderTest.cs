@@ -72,17 +72,17 @@ namespace GenTRAC.Tests.DAL.Loader
 			testContractActual.FinalNegotiatedValue = 201;
 			testContractActual.NegotiationsSubmitted = DateTime.Now.AddDays(1);
 			testContractActual.EppDelegationAuthority = (int)EppDelegationAuthority.MissionSegment;
-			testContractActual.ProgramEppDate = DateTime.Now.AddDays(1);
-			testContractActual.LobEppDate = DateTime.Now.AddDays(1);
-			testContractActual.PreSpaceEppDate = DateTime.Now.AddDays(1);
-			testContractActual.SpaceEppDate = DateTime.Now.AddDays(1);
-			testContractActual.PreCorporateEppDate = DateTime.Now.AddDays(1);
-			testContractActual.CorporateEppDate = DateTime.Now.AddDays(1);
+			testContractActual.PlannedProgramEppDate = DateTime.Now.AddDays(1);
+			testContractActual.PlannedLobEppDate = DateTime.Now.AddDays(1);
+			testContractActual.PlannedPreSpaceEppDate = DateTime.Now.AddDays(1);
+			testContractActual.PlannedSpaceEppDate = DateTime.Now.AddDays(1);
+			testContractActual.PlannedPreCorporateEppDate = DateTime.Now.AddDays(1);
+			testContractActual.PlannedCorporateEppDate = DateTime.Now.AddDays(1);
 			testContractActual.EppRosDelegationNotes = "Test EppRosDelegationNotes2";
 			testContractActual.LmWon = true;
 			testContractActual.ModCompletedDate = DateTime.Now.AddDays(1);
-			testContractActual.BidEppDate =	DateTime.Now.AddDays(1);
-			testContractActual.MissionSegmentEppDate = DateTime.Now.AddDays(1);
+			testContractActual.PlannedBidEppDate =	DateTime.Now.AddDays(1);
+			testContractActual.PlannedMissionSegmentEppDate = DateTime.Now.AddDays(1);
 
 			contractId = sut.Save(testContractActual);
 			Assert.IsNotNull(contractId);
@@ -112,17 +112,17 @@ namespace GenTRAC.Tests.DAL.Loader
 				FinalNegotiatedValue = 222L,
 				NegotiationsSubmitted = DateTime.Now,
 				EppDelegationAuthority = (int)EppDelegationAuthority.Space,
-				ProgramEppDate = DateTime.Now,
-				LobEppDate = DateTime.Now,
-				PreSpaceEppDate = DateTime.Now,
-				SpaceEppDate = DateTime.Now,
-				PreCorporateEppDate = DateTime.Now,
-				CorporateEppDate = DateTime.Now,
+				PlannedProgramEppDate = DateTime.Now,
+				PlannedLobEppDate = DateTime.Now,
+				PlannedPreSpaceEppDate = DateTime.Now,
+				PlannedSpaceEppDate = DateTime.Now,
+				PlannedPreCorporateEppDate = DateTime.Now,
+				PlannedCorporateEppDate = DateTime.Now,
 				EppRosDelegationNotes = "Test EppRosDelegationNotes",
 				LmWon = false,
 				ModCompletedDate = DateTime.Now,
-				BidEppDate = DateTime.Now,
-				MissionSegmentEppDate = DateTime.Now
+				PlannedBidEppDate = DateTime.Now,
+				PlannedMissionSegmentEppDate = DateTime.Now
 			};
 		}
 
@@ -142,17 +142,17 @@ namespace GenTRAC.Tests.DAL.Loader
 			Assert.AreEqual(expected.FinalNegotiatedValue, actual.FinalNegotiatedValue);
 			Assert.AreEqual(expected.NegotiationsSubmitted.Value.Date, actual.NegotiationsSubmitted.Value.Date);
 			Assert.AreEqual(expected.EppDelegationAuthority, actual.EppDelegationAuthority);
-			Assert.AreEqual(expected.ProgramEppDate.Value.Date, actual.ProgramEppDate.Value.Date);
-			Assert.AreEqual(expected.LobEppDate.Value.Date, actual.LobEppDate.Value.Date);
-			Assert.AreEqual(expected.PreSpaceEppDate.Value.Date, actual.PreSpaceEppDate.Value.Date);
-			Assert.AreEqual(expected.SpaceEppDate.Value.Date, actual.SpaceEppDate.Value.Date);
-			Assert.AreEqual(expected.PreCorporateEppDate.Value.Date, actual.PreCorporateEppDate.Value.Date);
-			Assert.AreEqual(expected.CorporateEppDate.Value.Date, actual.CorporateEppDate.Value.Date);
+			Assert.AreEqual(expected.PlannedProgramEppDate.Value.Date, actual.PlannedProgramEppDate.Value.Date);
+			Assert.AreEqual(expected.PlannedLobEppDate.Value.Date, actual.PlannedLobEppDate.Value.Date);
+			Assert.AreEqual(expected.PlannedPreSpaceEppDate.Value.Date, actual.PlannedPreSpaceEppDate.Value.Date);
+			Assert.AreEqual(expected.PlannedSpaceEppDate.Value.Date, actual.PlannedSpaceEppDate.Value.Date);
+			Assert.AreEqual(expected.PlannedPreCorporateEppDate.Value.Date, actual.PlannedPreCorporateEppDate.Value.Date);
+			Assert.AreEqual(expected.PlannedCorporateEppDate.Value.Date, actual.PlannedCorporateEppDate.Value.Date);
 			Assert.AreEqual(expected.EppRosDelegationNotes, actual.EppRosDelegationNotes);
 			Assert.AreEqual(expected.LmWon, actual.LmWon);
 			Assert.AreEqual(expected.ModCompletedDate.Value.Date, actual.ModCompletedDate.Value.Date);
-			Assert.AreEqual(expected.BidEppDate.Value.Date, actual.BidEppDate.Value.Date);
-			Assert.AreEqual(expected.MissionSegmentEppDate.Value.Date, actual.MissionSegmentEppDate.Value.Date);
+			Assert.AreEqual(expected.PlannedBidEppDate.Value.Date, actual.PlannedBidEppDate.Value.Date);
+			Assert.AreEqual(expected.PlannedMissionSegmentEppDate.Value.Date, actual.PlannedMissionSegmentEppDate.Value.Date);
 		}
 
 		/// <summary>

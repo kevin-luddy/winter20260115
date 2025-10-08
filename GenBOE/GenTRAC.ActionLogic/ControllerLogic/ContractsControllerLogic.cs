@@ -143,7 +143,7 @@ namespace GenTRAC.ActionLogic
 				ProposalId = proposalId,
 			};
 			SecurityAuthorization highestAccess = this.SecurityAccess.IsAuthorized(perms, out _);
-			
+
 			// populate calculated properties
 			model.EppOptions = this.GetEppSelectOptions(model.EppDelegationAuthority);
 			model.InsuranceProposedDirectOptions = this.GetInsuranceProposedOptions(model.IsInsuranceDirect);
@@ -155,6 +155,7 @@ namespace GenTRAC.ActionLogic
 			model.HasAccessToSetNoBid = this.IsContractsUser(fullProposal.CurrentUser.Id, fullProposal.Permissions) || this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null);
 			model.IsReadOnly = fullProposal.ProposalStatus == ProposalStatus.Completed || highestAccess == SecurityAuthorization.Read;
 			model.IsRomNte = fullProposal.IsRomNte;
+			model.IsNSS = IsProposalNSS(fullProposal);
 
 			// Load additional values
 			model.PreviouslySubmittedRoms = this.ProposalLoader.GetRomProposalOptions(model.PreviouslySubmittedROM);
@@ -169,7 +170,7 @@ namespace GenTRAC.ActionLogic
 				model.previousROMDt = previousRomDateAndValue?.Item1;
 				model.PreviousROMValueDecimal = previousRomDateAndValue?.Item2;
 			}
-			if(this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null))
+			if (this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null))
 			{
 				model.IsReadOnly = false;
 			}
@@ -266,6 +267,16 @@ namespace GenTRAC.ActionLogic
 			{
 				validationMessages.Add(Constants.INVALID_NEGOTIATIONS_SUBMITTED);
 			}
+
+			#region National Security Space Validation
+
+			// Run Validation for EPP Dates only when Line of Business is of type: National Security Space
+			if (IsProposalNSS(proposal))
+			{
+				EppDateValidations(model, validationMessages);
+			}
+
+			#endregion
 
 			return validationMessages;
 		}
@@ -413,14 +424,22 @@ namespace GenTRAC.ActionLogic
 			dto.NegotiationsSubmitted = model.NegotiationsSubmitted == null ? (DateTime?)null : DateTime.Parse(model.NegotiationsSubmitted);
 			dto.UpdateDateLong = model.LastUpdatedDateLong;
 			dto.EppDelegationAuthority = model.EppDelegationAuthority == null ? (int?)null : (int)model.EppDelegationAuthority;
-			dto.BidEppDate = model.BidEppDate;
-			dto.ProgramEppDate = model.ProgramEppDate;
-			dto.MissionSegmentEppDate = model.MissionSegmentEppDate;
-			dto.LobEppDate = model.LobEppDate;
-			dto.PreSpaceEppDate = model.PreSpaceEppDate;
-			dto.SpaceEppDate = model.SpaceEppDate;
-			dto.PreCorporateEppDate = model.PreCorporateEppDate;
-			dto.CorporateEppDate = model.CorporateEppDate;
+			dto.PlannedBidEppDate = model.PlannedBidEppDate;
+			dto.PlannedProgramEppDate = model.PlannedProgramEppDate;
+			dto.PlannedMissionSegmentEppDate = model.PlannedMissionSegmentEppDate;
+			dto.PlannedLobEppDate = model.PlannedLobEppDate;
+			dto.PlannedPreSpaceEppDate = model.PlannedPreSpaceEppDate;
+			dto.PlannedSpaceEppDate = model.PlannedSpaceEppDate;
+			dto.PlannedPreCorporateEppDate = model.PlannedPreCorporateEppDate;
+			dto.PlannedCorporateEppDate = model.PlannedCorporateEppDate;
+			dto.ScheduledBidEppDate = model.ScheduledBidEppDate;
+			dto.ScheduledProgramEppDate = model.ScheduledProgramEppDate;
+			dto.ScheduledMissionSegmentEppDate = model.ScheduledMissionSegmentEppDate;
+			dto.ScheduledLobEppDate = model.ScheduledLobEppDate;
+			dto.ScheduledPreSpaceEppDate = model.ScheduledPreSpaceEppDate;
+			dto.ScheduledSpaceEppDate = model.ScheduledSpaceEppDate;
+			dto.ScheduledPreCorporateEppDate = model.ScheduledPreCorporateEppDate;
+			dto.ScheduledCorporateEppDate = model.ScheduledCorporateEppDate;
 			dto.EppRosDelegationNotes = model.EppRosDelegationNotes;
 			dto.LmWon = model.LmWon;
 			dto.ModCompletedDate = model.ModCompletedDate;
@@ -462,14 +481,22 @@ namespace GenTRAC.ActionLogic
 			model.NegotiationsSubmittedDt = dto.NegotiationsSubmitted;
 			model.LastUpdatedDateLong = dto.UpdateDateLong;
 			model.EppDelegationAuthority = dto.EppDelegationAuthority == null ? (EppDelegationAuthority?)null : (EppDelegationAuthority)dto.EppDelegationAuthority;
-			model.BidEppDate = dto.BidEppDate;
-			model.ProgramEppDate = dto.ProgramEppDate;
-			model.MissionSegmentEppDate = dto.MissionSegmentEppDate;
-			model.LobEppDate = dto.LobEppDate;
-			model.PreSpaceEppDate = dto.PreSpaceEppDate;
-			model.SpaceEppDate = dto.SpaceEppDate;
-			model.PreCorporateEppDate = dto.PreCorporateEppDate;
-			model.CorporateEppDate = dto.CorporateEppDate;
+			model.PlannedBidEppDate = dto.PlannedBidEppDate;
+			model.PlannedProgramEppDate = dto.PlannedProgramEppDate;
+			model.PlannedMissionSegmentEppDate = dto.PlannedMissionSegmentEppDate;
+			model.PlannedLobEppDate = dto.PlannedLobEppDate;
+			model.PlannedPreSpaceEppDate = dto.PlannedPreSpaceEppDate;
+			model.PlannedSpaceEppDate = dto.PlannedSpaceEppDate;
+			model.PlannedPreCorporateEppDate = dto.PlannedPreCorporateEppDate;
+			model.PlannedCorporateEppDate = dto.PlannedCorporateEppDate;
+			model.ScheduledBidEppDate = dto.ScheduledBidEppDate;
+			model.ScheduledProgramEppDate = dto.ScheduledProgramEppDate;
+			model.ScheduledMissionSegmentEppDate = dto.ScheduledMissionSegmentEppDate;
+			model.ScheduledLobEppDate = dto.ScheduledLobEppDate;
+			model.ScheduledPreSpaceEppDate = dto.ScheduledPreSpaceEppDate;
+			model.ScheduledSpaceEppDate = dto.ScheduledSpaceEppDate;
+			model.ScheduledPreCorporateEppDate = dto.ScheduledPreCorporateEppDate;
+			model.ScheduledCorporateEppDate = dto.ScheduledCorporateEppDate;
 			model.EppRosDelegationNotes = dto.EppRosDelegationNotes;
 			model.LmWon = dto.LmWon;
 			model.ModCompletedDate = dto.ModCompletedDate;
@@ -760,11 +787,7 @@ namespace GenTRAC.ActionLogic
 				case EppDelegationAuthority.Space:
 				case EppDelegationAuthority.Corporate:
 				case EppDelegationAuthority.MissionSegment:
-					// LOBs don't have consistent IDs between dev/uat/prod so we need to get the LOB picklist to get the NSS ID
-					// in order to pass if the proposal has NSS as its LOB to the helper method
-					ICollection<SelectListItem> lobList = pickListMapper.GetSelectListPickList(PickListEnum.LineOfBusiness);
-					SelectListItem nssLob = lobList.FirstOrDefault(x => x.Text == Constants.NSS_LOB_NAME);
-					bool isNss = nssLob != null && fullProposal.LineOfBusinessID.ToString() == nssLob.Value;
+					bool isNss = IsProposalNSS(fullProposal);
 
 					if (!edc.AreRequiredDatesPopulated(dto, messages, isNss))
 					{
@@ -865,6 +888,21 @@ namespace GenTRAC.ActionLogic
 		}
 
 		/// <summary>
+		/// Is the Proposal Line of Business of type: National Security Space?
+		/// </summary>
+		/// <param name="fullProposal">Full Proposal</param>
+		/// <returns>True if Line of Business is National Security Space, False otherwise</returns>
+		private bool IsProposalNSS(FullProposal fullProposal)
+		{
+			// LOBs don't have consistent IDs between dev/uat/prod so we need to get the LOB picklist to get the NSS ID
+			// in order to pass if the proposal has NSS as its LOB to the helper method
+			ICollection<SelectListItem> lobList = pickListMapper.GetSelectListPickList(PickListEnum.LineOfBusiness);
+			SelectListItem nssLob = lobList.FirstOrDefault(x => x.Text == Constants.NSS_LOB_NAME);
+			bool isNss = nssLob != null && fullProposal.LineOfBusinessID.ToString() == nssLob.Value;
+			return isNss;
+		}
+
+		/// <summary>
 		/// Is the userId in the proposal's permissions as a Contracts administrator (lead/back-up)
 		/// </summary>
 		/// <param name="userId">User Id</param>
@@ -873,6 +911,54 @@ namespace GenTRAC.ActionLogic
 		private bool IsContractsUser(int userId, ICollection<ProposalPermissionDto> propPermissions)
 		{
 			return propPermissions.Any(x => (x.Role == PtmRole.ContractsPOC || x.Role == PtmRole.BackupContractsPOC) && x.UserId == userId);
+		}
+
+		/// <summary>
+		/// Validate EPP Dates
+		/// </summary>
+		/// <param name="model">Contracts View Model</param>
+		/// <param name="validationMessages">Validation Messages Collection</param>
+		private static void EppDateValidations(ContractsModelView model, ICollection<string> validationMessages)
+		{
+			if (model.ScheduledBidEppDate.HasValue && !model.PlannedBidEppDate.HasValue)
+			{
+				validationMessages.Add(Constants.INVALID_PLANNED_BID_EPP_DATE);
+			}
+
+			if (model.ScheduledMissionSegmentEppDate.HasValue && !model.PlannedMissionSegmentEppDate.HasValue)
+			{
+				validationMessages.Add(Constants.INVALID_PLANNED_MISSION_SEGMENT_EPP_DATE);
+			}
+
+			if (model.ScheduledLobEppDate.HasValue && !model.PlannedLobEppDate.HasValue)
+			{
+				validationMessages.Add(Constants.INVALID_PLANNED_LOB_EPP_DATE);
+			}
+
+			if (model.ScheduledProgramEppDate.HasValue && !model.PlannedProgramEppDate.HasValue)
+			{
+				validationMessages.Add(Constants.INVALID_PLANNED_PROGRAM_EPP_DATE);
+			}
+
+			if (model.ScheduledPreSpaceEppDate.HasValue && !model.PlannedPreSpaceEppDate.HasValue)
+			{
+				validationMessages.Add(Constants.INVALID_PLANNED_PRE_SPACE_EPP_DATE);
+			}
+
+			if (model.ScheduledSpaceEppDate.HasValue && !model.PlannedSpaceEppDate.HasValue)
+			{
+				validationMessages.Add(Constants.INVALID_PLANNED_SPACE_EPP_DATE);
+			}
+
+			if (model.ScheduledPreCorporateEppDate.HasValue && !model.PlannedPreCorporateEppDate.HasValue)
+			{
+				validationMessages.Add(Constants.INVALID_PLANNED_PRE_CORPORATE_EPP_DATE);
+			}
+
+			if (model.ScheduledCorporateEppDate.HasValue && !model.PlannedCorporateEppDate.HasValue)
+			{
+				validationMessages.Add(Constants.INVALID_PLANNED_CORPORATE_EPP_DATE);
+			}
 		}
 
 		#endregion Contract Validate / Save
