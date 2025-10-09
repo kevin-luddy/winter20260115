@@ -66,6 +66,8 @@ namespace GenBOE.ActionLogic.ModelView.BOE
 
         public string WBS { get; set; }
 
+		public int RteFieldSize { get; set; }
+
 		public BOEState State { get; set; }
 
 		public string Status

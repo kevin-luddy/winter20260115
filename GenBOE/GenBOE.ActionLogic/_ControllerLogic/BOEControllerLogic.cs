@@ -448,9 +448,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             theModelView.WBS = boe.Wbs != null ? boe.Wbs.WbsString : CommonConstants.Unassigned_WBS_Display_Text;
 			theModelView.State = boe.State;
-            
-            // get the clin
-            ClinDTO clin = boe.Clin;
+			theModelView.RteFieldSize = ws.RteSizeLimit ?? Constants.MAX_RTE_LENGTH;
+
+			// get the clin
+			ClinDTO clin = boe.Clin;
             theModelView.CLIN = clin != null ? clin.ClinString : CommonConstants.Unassigned_CLIN_Display_Text;
 
             if (boe.StartDate.ToString("MM/yyyy") == DateTime.MinValue.ToString("MM/yyyy"))
