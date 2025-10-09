@@ -66,10 +66,19 @@ namespace GenBOE.ActionLogic.ModelView.BOE
 
         public string WBS { get; set; }
 
+		/// <summary>
+		/// RTE field size character limit
+		/// </summary>
 		public int RteFieldSize { get; set; }
 
+		/// <summary>
+		/// Gets or sets the BOE state
+		/// </summary>
 		public BOEState State { get; set; }
 
+		/// <summary>
+		/// Gets the status
+		/// </summary>
 		public string Status
 		{
 			get

@@ -31,6 +31,9 @@ namespace GenBOE.ActionLogic._ModelView.BOE
 		/// </summary>
 		string StartDate { get; set; }
 
+		/// <summary>
+		/// Gets or sets the RTE Custom Template Answers at BOE level.
+		/// </summary>
 		ICollection<RTECustomTemplateQuestionAnswerModelView> RteTemplateAnswers { get; }
 
 	}
