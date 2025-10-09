@@ -371,7 +371,7 @@
 						}
 						else
 						{
-							<a id="filenameLink-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded ? "" : "display:none")" href="/@WebConstants.Controller.PSA/@WebConstants.Action.DOWNLOAD_ATTACHMENT/id/@Model.ProposalId/?fileId=@attachment.Id&isFromeEPP=@attachment.IsAttachmentFromeEPP.ToString()">
+							<a id="filenameLink-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded ? "" : "display:none")" href="/@WebConstants.Controller.PSA/@WebConstants.Action.DOWNLOAD_ATTACHMENT/id/@Model.ProposalId/?fileId=@attachment.Id&isFromeEPP=False">
 								@(attachment.IsRevisionReference ? @referencePrefix : string.Empty) @attachment.Name
 							</a>
 						}
