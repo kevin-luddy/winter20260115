@@ -304,29 +304,30 @@ namespace GenBOE.Web.Controllers.Backend
 		/// Import BOEs to get confirmation response
 		/// </summary>
 		/// <returns>List of BOEs with types</returns>
-		//[System.Web.Http.HttpPost]
-		//[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		//public IESResponse<ImportedBoe> ImportBOEs()
-		//{
-		//	IESResponse<ImportedBoe> result = new IESResponse<ImportedBoe>();
+		[System.Web.Http.HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESResponse<ImportedBoe> ImportBOEs()
+		{
+			IESResponse<ImportedBoe> result = new IESResponse<ImportedBoe>();
 
-		//	try
-		//	{
-		//		string workspaceShortName = HttpContext.Current.Request.Form["workspaceShortName"];
-		//		Stream importFile = HttpContext.Current.Request.Files[0].InputStream;
+			try
+			{
+				string workspaceShortName = HttpContext.Current.Request.Form["workspaceShortName"];
+				Stream importFile = HttpContext.Current.Request.Files[0].InputStream;
 
-		//		FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortName);
+				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortName);
 
-		//		result.Data = boeControllerLogic.ImportBOEs(ws, importFile);
-		//		result.IsSuccessful = true;
-		//	}
-		//	catch (Exception ex)
-		//	{
-		//		logger.Error(ex);
-		//		result.Messages.Add($"Unknown error occurred importing CLIN data: {ex.Message}");
-		//	}
+				result.Data = boeControllerLogic.ImportBOEs(ws, importFile);
+				//result.Data = new Collection<ImportedBoe>();
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occurred importing CLIN data: {ex.Message}");
+			}
 
-		//	return result;
-		//}
+			return result;
+		}
 	}
 }

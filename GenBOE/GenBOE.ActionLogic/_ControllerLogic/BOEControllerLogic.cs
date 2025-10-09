@@ -2073,10 +2073,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 
 			string templateFileName = Path.Combine(templateDir, "BOEs.xlsm");
-
-			//BOEExcelExportInputs exportInputs = new BOEExcelExportInputs(ws, templateFileName, blankTemplate,
-			//		this.UserLoader, this._ADUtils, this.PermissionsLoader);
-			//string exportedFileName = this.boeReportsHttpService.ExportManageBoesToExcel(exportInputs);
 			string exportedFileName = this._BOEExporter.ExportToExcelFile(templateFileName, ws, blankTemplate);
 
 			fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
@@ -2213,102 +2209,103 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// Import BOEs on the Manage BOEs page - for the Angular UI Rewrite
 		/// </summary>
 		/// <param name="ws">Full workspace</param>
-		//public Collection<ImportedBoe> ImportBOEs(FullWorkspace ws, Stream inputStream)
-		//{
-		//	if (ws == null)
-		//	{
-		//		throw new ArgumentNullException(nameof(ws));
-		//	}
+		public Collection<ImportedBoe> ImportBOEs(FullWorkspace ws, Stream inputStream)
+		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
 
-		//	Collection<ImportedBoe> results = new Collection<ImportedBoe>();
-		//	Collection<ImportedBoe> importResults = this._BOEImporter.ImportBoeFromExcelFile(inputStream, ws);
-		//	List<ImportedBoe> updatedBOEs = importResults.Where(w => w.ImportTypes.Contains(BoeImportResult.UpdateBoe)).ToList();
-		//	VariableCircularReferenceCheckerCache cache = new VariableCircularReferenceCheckerCache();
+			Collection<ImportedBoe> results = new Collection<ImportedBoe>();
+			Collection<ImportedBoe> importResults = this._BOEImporter.ImportBoeFromExcelFile(inputStream, ws);
+			List<ImportedBoe> updatedBOEs = importResults.Where(w => w.ImportTypes.Contains(BoeImportResult.UpdateBoe)).ToList();
+			VariableCircularReferenceCheckerCache cache = new VariableCircularReferenceCheckerCache();
 
-		//	// Check updated BOEs
-		//	foreach (ImportedBoe updatedBOE in updatedBOEs)
-		//	{
-		//		if (updatedBOE.Id > 0)
-		//		{
-		//			bool circularReferenceFound = false;
-		//			FullBoe boe = this.Factory.CreateFullBoe(updatedBOE);
+			// Check updated BOEs
+			foreach (ImportedBoe updatedBOE in updatedBOEs)
+			{
+				if (updatedBOE.Id > 0)
+				{
+					bool circularReferenceFound = false;
+					FullBoe boe = this.Factory.CreateFullBoe(updatedBOE);
 
-		//			if (updatedBOE.WBSID.HasValue)
-		//			{
-		//				FullWbs wbs = ws.WbsElements.First(i => i.Id == updatedBOE.WBSID.Value);
+					if (updatedBOE.WBSID.HasValue)
+					{
+						FullWbs wbs = ws.WbsElements.First(i => i.Id == updatedBOE.WBSID.Value);
 
-		//				// Validate chosen WBS for circular references
-		//				if (this._VariableCircularReferenceChecker.BOEWBSMoveCreatesCircularReference(cache, boe, wbs, updatedBOEs.ToList<BoeDTO>(), ws))
-		//				{
-		//					circularReferenceFound = true;
-		//				}
-		//			}
+						// Validate chosen WBS for circular references
+						if (this._VariableCircularReferenceChecker.BOEWBSMoveCreatesCircularReference(cache, boe, wbs, updatedBOEs.ToList<BoeDTO>(), ws))
+						{
+							circularReferenceFound = true;
+						}
+					}
 
-		//			if (updatedBOE.CLINID.HasValue)
-		//			{
-		//				ClinDTO clin = ws.Clins.First(i => i.Id == updatedBOE.CLINID.Value);
-		//				// Validate chosen CLINs for circular references
-		//				if (this._VariableCircularReferenceChecker.BOECLINMoveCreatesCircularReference(ws, cache, boe, clin, updatedBOEs.ToList<BoeDTO>()))
-		//				{
-		//					circularReferenceFound = true;
-		//				}
-		//			}
+					if (updatedBOE.CLINID.HasValue)
+					{
+						ClinDTO clin = ws.Clins.First(i => i.Id == updatedBOE.CLINID.Value);
+						// Validate chosen CLINs for circular references
+						if (this._VariableCircularReferenceChecker.BOECLINMoveCreatesCircularReference(ws, cache, boe, clin, updatedBOEs.ToList<BoeDTO>()))
+						{
+							circularReferenceFound = true;
+						}
+					}
 
-		//			if (circularReferenceFound)
-		//			{
-		//				updatedBOE.ImportTypes.Remove(BoeImportResult.UpdateBoe);
-		//				updatedBOE.ImportTypes.Add(BoeImportResult.CircularReferences);
-		//			}
-		//		}
-		//	}
+					if (circularReferenceFound)
+					{
+						updatedBOE.ImportTypes.Remove(BoeImportResult.UpdateBoe);
+						updatedBOE.ImportTypes.Add(BoeImportResult.CircularReferences);
+					}
+				}
+			}
 
-		//	// New BOEs
-		//	foreach (ImportedBoe importResult in importResults)
-		//	{
-		//		if (ws.WorkspaceState == WorkspaceState.Initialization)
-		//		{
-		//			if (importResult.State == BOEState.Approved || importResult.State == BOEState.AwaitingApproval)
-		//			{
-		//				importResult.ImportTypes.Remove(BoeImportResult.UpdateBoe);
-		//				importResult.ImportTypes.Remove(BoeImportResult.CreateBoe);
-		//				importResult.ImportTypes.Add(BoeImportResult.WorkspaceNotInWorkingState);
-		//			}
-		//		}
+			// New BOEs
+			foreach (ImportedBoe importResult in importResults)
+			{
+				if (ws.WorkspaceState == WorkspaceState.Initialization)
+				{
+					if (importResult.State == BOEState.Approved || importResult.State == BOEState.AwaitingApproval)
+					{
+						importResult.ImportTypes.Remove(BoeImportResult.UpdateBoe);
+						importResult.ImportTypes.Remove(BoeImportResult.CreateBoe);
+						importResult.ImportTypes.Add(BoeImportResult.WorkspaceNotInWorkingState);
+					}
+				}
 
-		//		foreach (BoeImportResult resultType in importResult.ImportTypes)
-		//		{
-		//			results.Add(new ImportedBoe()
-		//			{
-		//				BoeID = importResult.Id,
-		//				BOETitle = importResult.Title,
-		//				ImportType = (int)resultType,
-		//				WbsID = importResult.WBSID,
-		//				WbsString = importResult.WbsString,
-		//				ClinID = importResult.CLINID,
-		//				ClinString = importResult.ClinString,
-		//				AuthorIDs = importResult.AuthorIDs,
-		//				SubcontractorAuthorIDs = importResult.SubcontractorAuthorIDs,
-		//				ApproverIDs = importResult.ApproverIDs,
-		//				Status = (int)importResult.State,
-		//				BoeXrefID = importResult.WCBID,
-		//				isMaterial = importResult.isMaterial,
-		//				IsMultiClinWbs = importResult.IsMultiClinWbs
-		//			});
-		//		}
-		//	}
+				foreach (BoeImportResult resultType in importResult.ImportTypes)
+				{
+					results.Add(new ImportedBoe()
+					{
+						Id = importResult.Id,
+						Title = importResult.Title,
+						//ImportType = (int)resultType,
+						ImportType = (int)resultType,
+						WBSID = importResult.WBSID,
+						WbsString = importResult.WbsString,
+						CLINID = importResult.CLINID,
+						ClinString = importResult.ClinString,
+						AuthorIDs = importResult.AuthorIDs,
+						SubcontractorAuthorIDs = importResult.SubcontractorAuthorIDs,
+						ApproverIDs = importResult.ApproverIDs,
+						State = importResult.State,
+						WCBID = importResult.WCBID,
+						isMaterial = importResult.isMaterial,
+						IsMultiClinWbs = importResult.IsMultiClinWbs
+					});
+				}
+			}
 
-		//	return importResults;
-		//}
+			return importResults;
+		}
 
-        /// <summary>
-        /// Determines if there are any conflicts when copying a BOE
-        /// </summary>
-        /// <param name="ws">Workspace containing BOE</param>
-        /// <param name="boeID">ID of BOE being copied to</param>
-        /// <param name="copyBOEID">ID of BOE being copied</param>
-        /// <param name="taskElementsToCopy">Task elements being copied</param>
-        /// <returns>Modelview of copy BOE conflicts</returns>
-        public BOECopyConflictsModelView DisplayCopyBOEConflicts(FullWorkspace ws, int boeID, int copyBOEID, ICollection<int> taskElementsToCopy, ICollection<int> travelElementsToCopy)
+		/// <summary>
+		/// Determines if there are any conflicts when copying a BOE
+		/// </summary>
+		/// <param name="ws">Workspace containing BOE</param>
+		/// <param name="boeID">ID of BOE being copied to</param>
+		/// <param name="copyBOEID">ID of BOE being copied</param>
+		/// <param name="taskElementsToCopy">Task elements being copied</param>
+		/// <returns>Modelview of copy BOE conflicts</returns>
+		public BOECopyConflictsModelView DisplayCopyBOEConflicts(FullWorkspace ws, int boeID, int copyBOEID, ICollection<int> taskElementsToCopy, ICollection<int> travelElementsToCopy)
         {
             if (ws == null)
             {

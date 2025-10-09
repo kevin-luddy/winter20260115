@@ -7,6 +7,7 @@
 namespace GenBOE.ActionLogic
 {
     using GenBOE.ActionLogic.IESSAPClient;
+	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.DataBridge.DTO;
@@ -243,19 +244,37 @@ namespace GenBOE.ActionLogic
 		/// <returns>Modelview of the import results</returns>
 		Collection<ImportBoeResultsModelView> ImportManageBOE(FullWorkspace ws, HttpRequestBase Request, out ICollection<ImportBoeResultsModelView> dataToSave, out bool errorsOccurred, out Exception exception);
 
-        //TODO: CompleteImportManageBOE once logic is moved to controllerlogic
-        //WI 32107
 
-        /// <summary>
-        /// Determines if there are any conflicts when copying a BOE
-        /// </summary>
-        /// <param name="ws">Workspace containing BOE</param>
-        /// <param name="boeID">ID of BOE being copied to</param>
-        /// <param name="copyBOEID">ID of BOE being copied</param>
-        /// <param name="taskElementsToCopy">Task elements being copied</param>
-        /// <param name="travelElementsToCopy">Travel elements being copied</param>
-        /// <returns>Modelview of copy BOE conflicts</returns>
-        BOECopyConflictsModelView DisplayCopyBOEConflicts(FullWorkspace ws, int boeID, int copyBOEID, ICollection<int> taskElementsToCopy, ICollection<int> travelElementsToCopy);
+		/// <summary>
+		/// Initial import for BOEs
+		/// </summary>
+		/// <param name="ws">The full workspace</param>
+		/// <param name="inputStream">The (file) stream of the import</param>
+		/// <returns>A collection of the BOEs to be imported</returns>
+		Collection<ImportedBoe> ImportBOEs(FullWorkspace ws, Stream inputStream);
+
+
+		/// <summary>
+		/// Completed import for BOEs
+		/// </summary>
+		/// <param name="ws">The full workspace</param>
+		/// <param name="importResults">The results of the BOE import</param>
+		//void CompleteImportBOEs(FullWorkspace ws, ICollection<ImportBoeResultsModelView> importResults);
+
+
+		//TODO: CompleteImportManageBOE once logic is moved to controllerlogic
+		//WI 32107
+
+		/// <summary>
+		/// Determines if there are any conflicts when copying a BOE
+		/// </summary>
+		/// <param name="ws">Workspace containing BOE</param>
+		/// <param name="boeID">ID of BOE being copied to</param>
+		/// <param name="copyBOEID">ID of BOE being copied</param>
+		/// <param name="taskElementsToCopy">Task elements being copied</param>
+		/// <param name="travelElementsToCopy">Travel elements being copied</param>
+		/// <returns>Modelview of copy BOE conflicts</returns>
+		BOECopyConflictsModelView DisplayCopyBOEConflicts(FullWorkspace ws, int boeID, int copyBOEID, ICollection<int> taskElementsToCopy, ICollection<int> travelElementsToCopy);
 
         /// <summary>
         /// Calculates the defaults for the Manage BOE page
