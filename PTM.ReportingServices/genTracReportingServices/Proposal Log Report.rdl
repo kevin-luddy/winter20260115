@@ -9,7 +9,7 @@
       <am:Name>SSDTRS</am:Name>
       <am:Version>17.14.36518.9</am:Version>
     </am:UpdatedBy>
-    <am:LastModifiedTimestamp>2025-10-06T22:19:46.6049979Z</am:LastModifiedTimestamp>
+    <am:LastModifiedTimestamp>2025-10-08T15:29:35.7917768Z</am:LastModifiedTimestamp>
   </am:AuthoringMetadata>
   <AutoRefresh>0</AutoRefresh>
   <DataSources>
@@ -4498,7 +4498,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Planned Program EPP Date</Value>
+                                  <Value>Scheduled Program EPP Date</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -8321,6 +8321,7 @@
                                   <Value>=Fields!ContractsScheduledBidEppDate.Value</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
+                                    <Format>d</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -8386,6 +8387,7 @@
                                   <Value>=Fields!ContractsScheduledProgramEppDate.Value</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
+                                    <Format>d</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -8451,6 +8453,7 @@
                                   <Value>=Fields!ContractsScheduledMissionSegmentEppDate.Value</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
+                                    <Format>d</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -8516,6 +8519,7 @@
                                   <Value>=Fields!ContractsScheduledLobEppDate.Value</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
+                                    <Format>d</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -8581,6 +8585,7 @@
                                   <Value>=Fields!ContractsScheduledPreSpaceEppDate.Value</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
+                                    <Format>d</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -8646,6 +8651,7 @@
                                   <Value>=Fields!ContractsScheduledSpaceEppDate.Value</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
+                                    <Format>d</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -8711,6 +8717,7 @@
                                   <Value>=Fields!ContractsScheduledPreCorporateEppDate.Value</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
+                                    <Format>d</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -8776,6 +8783,7 @@
                                   <Value>=Fields!ContractsScheduledCorporateEppDate.Value</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
+                                    <Format>d</Format>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -8794,6 +8802,7 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
+                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
