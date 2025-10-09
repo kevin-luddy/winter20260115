@@ -520,18 +520,18 @@ namespace GenBOE.Tests.Objects
             FullWorkspace fullWorkspace = new FullWorkspace(_workspaceDto);
             fullWorkspace.TemplateID = 3;
 
-            Collection<WorkspaceExportFormatDTO> export = new Collection<WorkspaceExportFormatDTO>();
-            export.Add(new WorkspaceExportFormatDTO { Id = 1 });
-            export.Add(new WorkspaceExportFormatDTO { Id = 2 });
+            Collection<WorkspaceExportFormatNameDTO> export = new Collection<WorkspaceExportFormatNameDTO>();
+            export.Add(new WorkspaceExportFormatNameDTO { Id = 1 });
+            export.Add(new WorkspaceExportFormatNameDTO { Id = 2 });
 
-            this._retriever.Setup(i => i.GetWorkspaceExportFormatsByWorkspaceId(fullWorkspace.Id)).Returns(export);
+            this._retriever.Setup(i => i.GetWorkspaceExportFormatNamesByWorkspaceId(fullWorkspace.Id)).Returns(export);
             this._retriever.Setup(x => x.GetWorkspaceExportFormatByTemplateId(fullWorkspace.TemplateID))
                 .Returns(new WorkspaceExportFormatDTO() {Id = 3});
 
-            IReadOnlyCollection<WorkspaceExportFormatDTO> returnedExports = fullWorkspace.WorkspaceExportFormats;
+            IReadOnlyCollection<WorkspaceExportFormatNameDTO> returnedExports = fullWorkspace.WorkspaceExportFormatNames;
             // Call a second time. Ensure it does not go to the DB again to retrieve.
-            returnedExports = fullWorkspace.WorkspaceExportFormats;
-            this._retriever.Verify(x => x.GetWorkspaceExportFormatsByWorkspaceId(fullWorkspace.Id), Times.Exactly(1));
+            returnedExports = fullWorkspace.WorkspaceExportFormatNames;
+            this._retriever.Verify(x => x.GetWorkspaceExportFormatNamesByWorkspaceId(fullWorkspace.Id), Times.Exactly(1));
             Assert.IsTrue(returnedExports.Count == 3);
             Assert.AreEqual(export[0].Id, returnedExports.First().Id);
             Assert.AreEqual(export[1].Id, returnedExports.ElementAt(1).Id);

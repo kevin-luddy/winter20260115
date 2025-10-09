@@ -60,19 +60,21 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <returns>true if successful</returns>
         bool ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, FullWorkspace ws,
             ICollection<BoeCustomReportComponent> components, Stream returnStream, WorkspaceExportFormatDTO exportFormat);
-        
-        /// <summary>
-        /// IES-707: Creates individual word documents for each BOE and compresses them into a single zip file.
-        /// </summary>
-        /// <param name="exportInputs">The export inputs</param>
-        /// <param name="boeExportModelViews">Collection of BOE View Models</param>
-        /// <param name="boeSummaryGridModelViews"></param>
-        /// <param name="workSpace">Full workspace</param>
-        /// <param name="selectedComponents">Custom components</param>
-        /// <param name="httpResponse">What will ultimately be the response to the requester</param>
-        /// <param name="returnFilename">File name that will be passed to browser (for download)</param>
-        /// <param name="exportFormat">Export parameters</param>
-        void ExportBOEsToZipFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
-            FullWorkspace workSpace, ICollection<BoeCustomReportComponent> components, HttpResponseBase response, string returnFilename, WorkspaceExportFormatDTO exportFormat);
+
+		/// <summary>
+		/// IES-707: Creates individual word documents for each BOE and compresses them into a single zip file.
+		/// </summary>
+		/// <param name="exportInputs">The export inputs</param>
+		/// <param name="boeExportModelViews">Collection of BOE View Models</param>
+		/// <param name="boeSummaryGridModelViews"></param>
+		/// <param name="workSpace">Full workspace</param>
+		/// <param name="selectedComponents">Custom components</param>
+		/// <param name="httpResponse">What will ultimately be the response to the requester</param>
+		/// <param name="returnFilename">File name that will be passed to browser (for download)</param>
+		/// <param name="exportFormat">Export parameters</param>
+		/// <param name="stream">The stream</param>
+		/// <param name="useStream">Whether to use the stream or not</param>
+		void ExportBOEsToZipFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
+            FullWorkspace workSpace, ICollection<BoeCustomReportComponent> components, HttpResponseBase response, string returnFilename, WorkspaceExportFormatDTO exportFormat, Stream stream = null, bool useStream = false);
     }
 }

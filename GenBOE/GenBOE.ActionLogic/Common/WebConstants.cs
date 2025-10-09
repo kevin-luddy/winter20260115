@@ -465,6 +465,15 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_GET_TRIP_ID = "GetTripID";
 		public static readonly string ACTION_SAVE_EDIT_MATERIAL_DETAILS_COMPOSITE = "SaveEditMaterialDetailsComposite";
 
+		// BOEConfiguration Controller
+		public static readonly string GET_SYSTEM_CONFIGURATION = "GetSystemConfiguration";
+		public static readonly string GET_WORKSPACE_CONFIGURATION = "GetWorkspaceConfiguration";
+		public static readonly string GET_HOME_MASTER_MENU_ITEMS = "GetHomeMasterMenuItems";
+
+		// BOE Controller
+		public static readonly string GET_BOE_HEADER = "GetBOEHeader";
+		public static readonly string GET_TASK_ELEMENT_GRID = "GetTaskElementGrid";
+
 		#endregion BOE ACTIONS
 
 		#region CLIN
@@ -553,6 +562,8 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string GET_BOE_DISCREPANCY_REPORT = "GetBOEDiscrepancyReport";
 		public static readonly string GET_GENERAL_REPORT = "GetGeneralReport";
 		public static readonly string GET_EXPORTS = "GetExports";
+		public static readonly string GET_CONFIDENCE_REPORT = "GetConfidenceReport";
+		public static readonly string GET_WORKSPACE_STATUS = "GetWorkspaceStatus";
 
 		#endregion ManageReportsController
 
@@ -705,8 +716,8 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_FIND_ADJACENT_BOES = "FindAdjacentBoes";
 		public static readonly string ACTION_GET_WORKSPACE_RECALCULATE_ACTUALS_MODEL = "GetWorkspaceRecalculateActualsModel";
 		public static readonly string ACTION_SEARCH_PLD_PROPOSALS = "SearchPLDProposals";
-		public static readonly string ACTION_GET_PROPOSAL_DETAILS = "GetProposalDetails";
-		public static readonly string ACTION_GET_NEXT_WORKSPACE_SHORTNAME_FROM_TRACKING_NUMBER = "GetNextWorkspaceShortNameFromTrackingNumber";
+		public static readonly string ACTION_GET_PLD_PROPOSAL_DETAILS = "GetPLDProposalDetails";
+		public static readonly string ACTION_GET_NEXT_PLD_WORKSPACE_SHORTNAME_FROM_TRACKING_NUMBER = "GetNextPLDWorkspaceShortNameFromTrackingNumber";
 
 
 

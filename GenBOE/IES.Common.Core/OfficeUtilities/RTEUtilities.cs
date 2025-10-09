@@ -13,8 +13,7 @@ namespace IES.Common.Core.OfficeUtilities
 	using System.Linq;
 	using System.Text;
 	using System.Text.RegularExpressions;
-	using DocumentFormat.OpenXml;
-	using DocumentFormat.OpenXml.Packaging;
+	using Aspose.Words;
 	using HtmlAgilityPack;
 	using HtmlToOpenXml;
 	using IES.Common.Core.Configuration;
@@ -77,50 +76,17 @@ namespace IES.Common.Core.OfficeUtilities
 
 			if (htmlToProcess.Any())
 			{
-				lock (CacheConstants.OPEN_XML_LOCK)
+				foreach (string html in htmlToProcess)
 				{
-					using (MemoryStream ms = new())
-					{
-						using (WordprocessingDocument document = WordprocessingDocument.Create(ms, WordprocessingDocumentType.Document))
-						{
-							document.AddMainDocumentPart();
-
-							HtmlConverter converter = new(document.MainDocumentPart);
-							StringBuilder temp = new();
-
-							foreach (string html in htmlToProcess)
-							{
-								IList<OpenXmlCompositeElement> paragraphs;
-
-								try
-								{
-									paragraphs = converter.Parse(html);
-								}
-								catch
-								{
-									/*
-                                     * If a user enters rich-text that HtmlConverter cannot handle, the converter will throw an exception.
-                                     * The error handling for HtmlConverter does not seem very robust, so the set of possible exceptions
-                                     * is fairly indeterminate (e.g. in one case, a null-argument exception was thrown).
-                                     * 
-                                     * As a work-around remedy, just strip out the markup tags here and returning the raw text.
-                                     * 
-                                     */
-									HtmlDocument htmldoc = new();
-									htmldoc.LoadHtml(html);
-									paragraphs = converter.Parse(htmldoc.DocumentNode.InnerText);
-								}
-
-								for (int i = 0; i < paragraphs.Count; i++)
-								{
-									temp.Append(paragraphs[i].InnerText);
-								}
-
-								plainTextFromHtml.Add(temp.ToString());
-								temp.Clear();
-							}
-						}
-					}
+					Document doc = new Document();
+					DocumentBuilder builder = new DocumentBuilder(doc);
+					builder.InsertHtml(html);
+					MemoryStream ms = new MemoryStream();
+					doc.Save(ms, SaveFormat.Text);
+					ms.Position = 0;
+					StreamReader sr = new StreamReader(ms);
+					string plainText = sr.ReadToEnd();
+					plainTextFromHtml.Add(plainText);
 				}
 			}
 
@@ -475,112 +441,6 @@ namespace IES.Common.Core.OfficeUtilities
 		#endregion
 
 		#region Helpers to extract formatting from the XML/Elements
-
-		/// <summary>
-		/// Attempts to figure out the font size for the field into which we are going to insert the HTML, based on the XML element
-		/// </summary>
-		/// <param name="element">Element into which we are inserting the data</param>
-		/// <returns>Font size (if any) specified, to be used to correctly deal with the HTML formatted text</returns>
-		public static decimal? GetFontSizeBasedOnWordElementXml(OpenXmlElement element)
-		{
-			if (element == null) { return null; }
-
-			return GetFontSizeBasedOnWordElementXml(element.InnerXml);
-		}
-
-		/// <summary>
-		/// Attempts to figure out the font size for the field into which we are going to insert the HTML, based on the innerXml of an element
-		/// This was needed for testing purposes
-		/// </summary>
-		/// <param name="innerXml">Inner Xml from an Element into which we are inserting the data</param>
-		/// <returns>Font size (if any) specified, to be used to correctly deal with the HTML formatted text</returns>
-		internal static decimal? GetFontSizeBasedOnWordElementXml(string innerXml)
-		{
-			decimal? result = null;
-
-			// need to figure out the correct font size, so we can set it for the entire html document..
-			// if we do get anything, the size in the word document is stored as "half points", so 20 actually means a font size of 10.
-
-			string sizeElementConstant = "<w:sz w:val=\"";
-			string sizeCsElementConstant = "<w:szCs w:val=\"";
-
-			int sizeIndex = innerXml.LastIndexOf(sizeElementConstant);
-			int sizeCsIndex = innerXml.LastIndexOf(sizeCsElementConstant);
-
-			if (sizeIndex == sizeCsIndex) { return result; } // they are both not present
-
-			string pickedElement = sizeIndex > sizeCsIndex ? sizeElementConstant : sizeCsElementConstant;
-
-			string sizeElementValue = GetValueFromXml(innerXml, pickedElement, "\"");
-
-			if (decimal.TryParse(sizeElementValue, out decimal decimalSize)) { result = decimalSize / 2; }
-
-			return result;
-		}
-
-		/// <summary>
-		/// Attempts to figure out the font families for the field into which we are going to insert the HTML, based on the XML element
-		/// </summary>
-		/// <param name="element">Element into which we are inserting the data</param>
-		/// <returns>Font families (if any) specified, to be used to correctly deal with the HTML formatted text</returns>
-		public static ICollection<string> GetFontFamiliesBasedOnElementXml(OpenXmlElement element)
-		{
-			if (element == null) { return new List<string>(); }
-
-			return GetFontFamiliesBasedOnElementXml(element.InnerXml);
-		}
-
-		/// <summary>
-		/// Attempts to figure out the font families for the field into which we are going to insert the HTML, based on the innerXml of an element
-		/// This was needed for testing purposes
-		/// </summary>
-		/// <param name="innerXml">Inner Xml from an Element into which we are inserting the data</param>
-		/// <returns>Font families (if any) specified, to be used to correctly deal with the HTML formatted text</returns>
-		internal static ICollection<string> GetFontFamiliesBasedOnElementXml(string innerXml)
-		{
-			// there are multiple ways the font families are specified, based on the encoding, so we need to look for all
-			string asciiFont = GetValueFromXml(innerXml, "w:ascii=\"", "\"");
-			string hAnsiFont = GetValueFromXml(innerXml, "w:hAnsi=\"", "\"");
-			string complexScriptFont = GetValueFromXml(innerXml, "w:cs=\"", "\"");
-
-			// want to remove any empty strings (no fonts specified), and duplicates (same font specified under different categories)
-			List<string> result = new List<string>() { asciiFont, hAnsiFont, complexScriptFont }.Where(x => !string.IsNullOrEmpty(x)).Distinct().ToList();
-
-			return result;
-		}
-
-		/// <summary>
-		/// Gets spacing data from XML
-		/// </summary>
-		/// <param name="element">Element to process</param>
-		/// <returns>A list of spacing items, above spacing first, below spacing next</returns>
-		internal static SpacingDetailsForRTEWordExports GetSpacingFromXml(OpenXmlElement element)
-		{
-			if (element == null) { return new SpacingDetailsForRTEWordExports(); }
-
-			return GetSpacingFromXml(element.InnerXml);
-		}
-
-		/// <summary>
-		/// Gets spacing data from XML
-		/// </summary>
-		/// <param name="innerXml">InnerXML to process</param>
-		/// <returns>A list of spacing items, above spacing first, below spacing next</returns>
-		internal static SpacingDetailsForRTEWordExports GetSpacingFromXml(string innerXml)
-		{
-			// doing replace of spaces because sometimes these can be as w:before, other times they can be w : before, same with = signs
-			string aboveSpacing = GetValueFromXml(innerXml.Replace(" ", string.Empty), "w:before=\"", "\"");
-			string belowSpacing = GetValueFromXml(innerXml.Replace(" ", string.Empty), "w:after=\"", "\"");
-			string lineIndent = GetValueFromXml(innerXml.Replace(" ", string.Empty), "w:firstLine=\"", "\"");
-
-			SpacingDetailsForRTEWordExports spacingOptions = new();
-
-			if (int.TryParse(aboveSpacing, out int value)) { spacingOptions.Above = value; }
-			if (int.TryParse(belowSpacing, out value)) { spacingOptions.Below = value; }
-			if (int.TryParse(lineIndent, out value)) { spacingOptions.FirstLineIndent = value; }
-
-			return spacingOptions;
-		}
 
 		/// <summary>
 		/// A private helper to cut down on code reuse. Simply extracts a substring based on the start and end strings

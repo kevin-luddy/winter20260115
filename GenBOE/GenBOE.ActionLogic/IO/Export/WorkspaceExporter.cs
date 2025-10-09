@@ -11,6 +11,7 @@ namespace GenBOE.ActionLogic.IO.Export
 	using System.Collections.ObjectModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
+	using System.Threading.Tasks;
 	using DocumentFormat.OpenXml.Packaging;
 	using DocumentFormat.OpenXml.Spreadsheet;
 	using GenBOE.ActionLogic.Common;
@@ -128,7 +129,6 @@ namespace GenBOE.ActionLogic.IO.Export
 
 			this.SetAutofilterRange(toReturn);
 
-
 			bool usingSkillMix = Utilities.ShowSkillMixForWorkspace(exportInputs.Workspace.CreationDate, exportInputs.Workspace.Shortname);
 			if (!exportInputs.Workspace.UsingTemplateBOE)
 			{
@@ -171,14 +171,8 @@ namespace GenBOE.ActionLogic.IO.Export
 				}
 			}
 
-			if (exportInputs.FullWorkspace.TaskElements.Any() && !Utilities.IsAssignTaskAuthorEnabledForSystem && !exportInputs.FullWorkspace.EnableAssignTaskAuthor)
-			{
-				// hide task author column on report boe resource combo if assign task author is disabled
-				using (SpreadsheetDocument document = SpreadsheetDocument.Open(toReturn, true))
-				{
-					ExcelUtilities.HideColumns(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE_RESOURCE_COMBO, new List<int>() { 7 });
-				}
-			}
+			HandleTaskAuthorColumns(toReturn, exportInputs);
+
 			return toReturn;
 		}
 
@@ -353,12 +347,29 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="exportInputs">The export inputs.</param>
 		private void HandleRationaleColumns(string templateFileLocation, BOEExportInputs exportInputs)
 		{
-			using (SpreadsheetDocument document = SpreadsheetDocument.Open(templateFileLocation, true))
+			if (exportInputs.Workspace.UsingTemplateBOE)
 			{
-				if (exportInputs.Workspace.UsingTemplateBOE)
+				using (SpreadsheetDocument document = SpreadsheetDocument.Open(templateFileLocation, true))
 				{
-					ExcelUtilities.RemoveColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE_RESOURCE_COMBO, "MOQ Rationale");
-					ExcelUtilities.RemoveColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE, "MOQ Rationale");
+					ExcelUtilities.RemoveColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE_RESOURCE_COMBO, CommonConstants.WORKSPACE_REPORT_COLUMN_MOQ_RATIONALE);
+					ExcelUtilities.RemoveColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE, CommonConstants.WORKSPACE_REPORT_COLUMN_MOQ_RATIONALE);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Hide the Task Author columns in BOE Resource Combo and BOEs tabs if assign task author is disabled at system or workspace level
+		/// </summary>
+		/// <param name="templateFileLocation">The template file location</param>
+		/// <param name="exportInputs">The export inputs</param>
+		private void HandleTaskAuthorColumns(string templateFileLocation, BOEExportInputs exportInputs)
+		{
+			if (!Utilities.IsAssignTaskAuthorEnabledForSystem || !exportInputs.FullWorkspace.EnableAssignTaskAuthor)
+			{
+				using (SpreadsheetDocument document = SpreadsheetDocument.Open(templateFileLocation, true))
+				{
+					ExcelUtilities.RemoveColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE_RESOURCE_COMBO, CommonConstants.WORKSPACE_REPORT_COLUMN_TASK_AUTHOR);
+					ExcelUtilities.RemoveColumn(document, CommonConstants.WORKSPACE_REPORT_WORKSHEET_BOE, CommonConstants.WORKSPACE_REPORT_COLUMN_TASK_AUTHOR);
 				}
 			}
 		}
@@ -712,6 +723,7 @@ namespace GenBOE.ActionLogic.IO.Export
 							taskID,
 							task.TaskTitle,
 							taskDescription,
+							task.AuthorDisplayName,
 							this.GetMOQEquation(task, exportInputs),
 							this.GetTaskMoqType(task, exportInputs)
 					}.Concat(exportInputs.Workspace.UsingTemplateBOE ? new string[0] : new string[] { taskMOQText }).ToArray()
@@ -1642,7 +1654,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				toReturn = this.GetLaborTaskDataforBOEResourceCombo(exportInputs, toReturn, boe, laborTasks, workspace_customFields, workspaceCustomFieldValues, allWbs, allClins, workspaceResources, allSpreadCurves, perfOrgsFromDb);
 
 				// ODC Tasks
-				toReturn = this.GetODCTaskDataforBOEResourceCombo(exportInputs, toReturn, boe, ODCs, allWbs, allClins, workspace_customFields, allOdcSpreadCurves);
+				toReturn = this.GetODCTaskDataforBOEResourceCombo(exportInputs, toReturn, boe, ODCs, allWbs, allClins, workspace_customFields, workspaceCustomFieldValues, allOdcSpreadCurves);
 			}
 
 			return toReturn;
@@ -1684,9 +1696,9 @@ namespace GenBOE.ActionLogic.IO.Export
 				row.Add(this.sEmpty); // Segment Region
 				row.AddRange(this.GetBoeWbsClinTitleAndDateFields(boe, allWbs, allClins));
 
-				// Add blanks for BOE-level CFs
-				this.AddBlankCustomFieldCells(row, workspace_customFields, CustomFieldType.BoeDisplay);
-
+				// Add BOE-level CFs
+				this.GetBoeCustomFields(row, boe, workspace_customFields, workspaceCustomFieldValues);
+				
 				string[] taskFields2 = this.GetTaskDescriptionMetricsAndDateFields(boe, task, exportInputs);
 				row.AddRange(taskFields2);
 
@@ -1747,13 +1759,13 @@ namespace GenBOE.ActionLogic.IO.Export
 				string[] resFields1 = this.GetResourceWbsClinAndBoeFields(resourceType, aResource, allWbs, allClins, boe);
 				row.AddRange(resFields1);
 
-				// Empty cells for BOE level CFs
-				this.AddBlankCustomFieldCells(row, workspace_customFields, CustomFieldType.BoeDisplay);
+				// Add BOE-level CFs
+				this.GetBoeCustomFields(row, boe, workspace_customFields, workspaceCustomFieldValues);
 
 				row.AddRange(taskFields2);
 
-				// Empty cells for Task level CFs
-				this.AddBlankCustomFieldCells(row, workspace_customFields, CustomFieldType.TaskDisplay);
+				// Add cells for Task level CFs
+				this.GetTaskCustomFields(row, task, workspace_customFields, workspaceCustomFieldValues);
 
 				List<string> resFields2 = this.GetResourceTypeDetails(resourceType, aResource, brcResource, task, perfOrgsFromDb, allSpreadCurves, exportInputs);
 				row.AddRange(resFields2);
@@ -1765,7 +1777,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				toReturn.Add(row);
 
 				// Labor Resource Spreads
-				toReturn = this.GetLaborSpreadDataforBOEResourceCombo(exportInputs, toReturn, boe, resourceType, taskFields1, taskFields2, resFields1, resFields2, currentDate, workspace_customFields, workspaceCustomFieldValues, resourceUsesCostValues, brcResource?.ElementOfCost ?? ElementOfCostType.NotSet, brcResource?.RateType ?? RateType.NotSet, moqTypes);
+				toReturn = this.GetLaborSpreadDataforBOEResourceCombo(exportInputs, toReturn, boe, task, resourceType, taskFields1, taskFields2, resFields1, resFields2, currentDate, workspace_customFields, workspaceCustomFieldValues, resourceUsesCostValues, brcResource?.ElementOfCost ?? ElementOfCostType.NotSet, brcResource?.RateType ?? RateType.NotSet, moqTypes);
 
 			}
 
@@ -1794,7 +1806,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// Excel Export Worksheet with Labor Task data
 		/// </returns>
 		private ExcelExportWorksheet GetLaborSpreadDataforBOEResourceCombo(BOEExportInputs exportInputs, ExcelExportWorksheet toReturn,
-			BoeDTO boe, ResourceTypeDto resourceType, string[] taskFields1, string[] taskFields2, string[] resFields1,
+			BoeDTO boe, BoeTaskElementDTO task, ResourceTypeDto resourceType, string[] taskFields1, string[] taskFields2, string[] resFields1,
 			List<string> resFields2, DateTime currentDate, IReadOnlyCollection<CustomFieldDTO> workspace_customFields,
 			ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, bool resourceUsesCostValues,
 			ElementOfCostType elementOfCostType, RateType rateType, ICollection<MoqTypeSelection> moqTypes)
@@ -1823,13 +1835,13 @@ namespace GenBOE.ActionLogic.IO.Export
 				row.AddRange(taskFields1);
 				row.AddRange(resFields1);
 
-				// Empty cells for BOE level CFs
-				this.AddBlankCustomFieldCells(row, workspace_customFields, CustomFieldType.BoeDisplay);
+				// Add BOE-level CFs
+				this.GetBoeCustomFields(row, boe, workspace_customFields, workspaceCustomFieldValues);
 
 				row.AddRange(taskFields2);
 
-				// Empty cells for Task level CFs
-				this.AddBlankCustomFieldCells(row, workspace_customFields, CustomFieldType.TaskDisplay);
+				// Add cells for Task level CFs
+				this.GetTaskCustomFields(row, task, workspace_customFields, workspaceCustomFieldValues);
 
 				row.AddRange(resFields2);
 
@@ -1865,24 +1877,48 @@ namespace GenBOE.ActionLogic.IO.Export
 				}
 				else  // hours
 				{
-					row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + ((spread == null) ? "0" : spread.LaborSpreadValue.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision))));
+					string hours = spread == null ? "0" : spread.LaborSpreadValue.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision));
+					row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + hours);
 
 					// Add the UCOT Factor, if enabled, and is past 1LMX start date
+					string ucotHours = null;
 					if (smoothedUcotSpreads.Any())
 					{
 						if (Utilities.OneLmxStartDate <= spread?.LaborSpreadDate)
 						{
-							row.Add(smoothedUcotSpreads[spread.LaborSpreadDate].ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
+							ucotHours = smoothedUcotSpreads[spread.LaborSpreadDate].ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision));
+							row.Add(ucotHours);
 						}
 						else // Before 1LMX cutoff
 						{
-							row.Add("0");
+							ucotHours = "0";
+							row.Add(ucotHours);
 						}
 					}
 					else
 					{
 						row.Add(string.Empty);  // Empty UCOT Factor if UCOT Factor is not enabled
 					}
+
+					// Total hours (hours + Ucot hours)
+					decimal totalHours = 0;
+
+					if (!string.IsNullOrEmpty(hours))
+					{
+						if (decimal.TryParse(hours, out decimal hoursValue))
+						{
+							totalHours += hoursValue;
+						}
+					}
+
+					if (!string.IsNullOrEmpty(ucotHours))
+					{
+						if (decimal.TryParse(ucotHours, out decimal ucotHoursValue))
+						{
+							totalHours += ucotHoursValue;
+						}
+					}
+					row.Add(CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + totalHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)));
 
 					row.Add(string.Empty);  // Cost column is empty
 				}
@@ -1905,9 +1941,13 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="allWbs">All WBS</param>
 		/// <param name="allClins">All CLINs</param>
 		/// <param name="workspace_customFields">Workspace Custom Fields</param>
+		/// <param name="exportInputs">The export inputs</param>
+		/// <param name="workspaceCustomFieldValues">The workspace custom field Values collection</param>
 		/// <param name="allOdcSpreadCurves">All ODC Spread Curves</param>
 		/// <returns>Excel Export Worksheet with ODC Task data</returns>
-		private ExcelExportWorksheet GetODCTaskDataforBOEResourceCombo(BOEExportInputs exportInputs, ExcelExportWorksheet toReturn, BoeDTO boe, ICollection<OtherDirectCostDTO> ODCs, HashSet<WbsDTO> allWbs, HashSet<ClinDTO> allClins, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, IDictionary<int, OtherDirectCostSpreadCurveModelView> allOdcSpreadCurves)
+		private ExcelExportWorksheet GetODCTaskDataforBOEResourceCombo(BOEExportInputs exportInputs, ExcelExportWorksheet toReturn, BoeDTO boe, 
+			ICollection<OtherDirectCostDTO> ODCs, HashSet<WbsDTO> allWbs, HashSet<ClinDTO> allClins, IReadOnlyCollection<CustomFieldDTO> workspace_customFields,
+			ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, IDictionary<int, OtherDirectCostSpreadCurveModelView> allOdcSpreadCurves)
 		{
 			foreach (OtherDirectCostDTO odc in ODCs)
 			{
@@ -1932,8 +1972,8 @@ namespace GenBOE.ActionLogic.IO.Export
 
 				row.AddRange(this.GetBoeWbsClinTitleAndDateFields(boe, allWbs, allClins));
 
-				// Add blanks for BOE-level CFs
-				this.AddBlankCustomFieldCells(row, workspace_customFields, CustomFieldType.BoeDisplay);
+				// Add BOE-level CFs
+				this.GetBoeCustomFields(row, boe, workspace_customFields, workspaceCustomFieldValues);
 
 				// Create variable for reuse in resource row
 				string[] taskfields = new string[]
@@ -1959,7 +1999,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				HashSet<ResourceDTO> odcResourcesFromDb = new HashSet<ResourceDTO>(exportInputs.ResourcesUsedInWsBoes);
 				HashSet<PerformingOrgDTO> odcPerfOrgsFromDb = new HashSet<PerformingOrgDTO>(exportInputs.PerformingOrgsUsedInBoes);
 
-				toReturn = this.GetODCResourceTypeDataforBOEResourceCombo(toReturn, boe, odc, odcResourcesFromDb, odcPerfOrgsFromDb, MOQText, allWbs, allClins, workspace_customFields, taskfields, allOdcSpreadCurves);
+				toReturn = this.GetODCResourceTypeDataforBOEResourceCombo(toReturn, boe, odc, odcResourcesFromDb, odcPerfOrgsFromDb, MOQText, allWbs, allClins, workspace_customFields, workspaceCustomFieldValues, taskfields, allOdcSpreadCurves);
 			}
 
 			return toReturn;
@@ -1978,10 +2018,11 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="allWbs">All WBS</param>
 		/// <param name="allClins">All CLINs</param>
 		/// <param name="workspace_customFields">Workspace Custom Fields</param>
+		/// <param name="workspaceCustomFieldValues">The workspace custom field Values</param>
 		/// <param name="taskfields">Task field data for row</param>
 		/// <param name="allOdcSpreadCurves">All ODC Spread Curves</param>
 		/// <returns>Excel Export Worksheet with ODC Task data</returns>
-		private ExcelExportWorksheet GetODCResourceTypeDataforBOEResourceCombo(ExcelExportWorksheet toReturn, BoeDTO boe, OtherDirectCostDTO odc, HashSet<ResourceDTO> odcResourcesFromDb, HashSet<PerformingOrgDTO> odcPerfOrgsFromDb, string MOQText, HashSet<WbsDTO> allWbs, HashSet<ClinDTO> allClins, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, string[] taskfields, IDictionary<int, OtherDirectCostSpreadCurveModelView> allOdcSpreadCurves)
+		private ExcelExportWorksheet GetODCResourceTypeDataforBOEResourceCombo(ExcelExportWorksheet toReturn, BoeDTO boe, OtherDirectCostDTO odc, HashSet<ResourceDTO> odcResourcesFromDb, HashSet<PerformingOrgDTO> odcPerfOrgsFromDb, string MOQText, HashSet<WbsDTO> allWbs, HashSet<ClinDTO> allClins, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, string[] taskfields, IDictionary<int, OtherDirectCostSpreadCurveModelView> allOdcSpreadCurves)
 		{
 			foreach (OtherDirectCostType odcType in odc.ODCTypes)
 			{
@@ -2011,8 +2052,8 @@ namespace GenBOE.ActionLogic.IO.Export
 
 				row.AddRange(this.GetBoeWbsClinTitleAndDateFields(boe, allWbs, allClins));
 
-				// Empty cells for BOE level CFs
-				this.AddBlankCustomFieldCells(row, workspace_customFields, CustomFieldType.BoeDisplay);
+				// Add BOE-level CFs
+				this.GetBoeCustomFields(row, boe, workspace_customFields, workspaceCustomFieldValues);
 
 				row.AddRange(taskfields);
 
@@ -2050,7 +2091,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
 				toReturn.Add(row);
 
-				toReturn = this.GetODCResourceSpreadDataforBOEResourceCombo(toReturn, boe, odcType, currentDate, taskfields, odcFields1, odcFields2, workspace_customFields, allWbs, allClins);
+				toReturn = this.GetODCResourceSpreadDataforBOEResourceCombo(toReturn, boe, odcType, currentDate, taskfields, odcFields1, odcFields2, workspace_customFields, workspaceCustomFieldValues, allWbs, allClins);
 			}
 
 			return toReturn;
@@ -2067,10 +2108,11 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="odcFields1">odc resource field data for row (part 1)</param>
 		/// <param name="odcFields2">odc resource field data for row (part 2)</param>
 		/// <param name="workspace_customFields">Workspace Custom Fields</param>
+		/// <param name="workspaceCustomFieldValues">Workspace Custom Field Values</param>
 		/// <param name="allWbs">All WBS</param>
 		/// <param name="allClins">All CLINs</param>
 		/// <returns>Excel Export Worksheet with ODC Task data</returns>
-		private ExcelExportWorksheet GetODCResourceSpreadDataforBOEResourceCombo(ExcelExportWorksheet toReturn, BoeDTO boe, OtherDirectCostType odcType, DateTime currentDate, string[] taskfields, string[] odcFields1, List<string> odcFields2, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, HashSet<WbsDTO> allWbs, HashSet<ClinDTO> allClins)
+		private ExcelExportWorksheet GetODCResourceSpreadDataforBOEResourceCombo(ExcelExportWorksheet toReturn, BoeDTO boe, OtherDirectCostType odcType, DateTime currentDate, string[] taskfields, string[] odcFields1, List<string> odcFields2, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, HashSet<WbsDTO> allWbs, HashSet<ClinDTO> allClins)
 		{
 			while (currentDate <= odcType.EndDate.Value)
 			{
@@ -2086,8 +2128,8 @@ namespace GenBOE.ActionLogic.IO.Export
 				row.AddRange(odcFields1);
 				row.AddRange(this.GetBoeWbsClinTitleAndDateFields(boe, allWbs, allClins));
 
-				// Empty cells for BOE level CFs
-				this.AddBlankCustomFieldCells(row, workspace_customFields, CustomFieldType.BoeDisplay);
+				// Add BOE-level CFs
+				this.GetBoeCustomFields(row, boe, workspace_customFields, workspaceCustomFieldValues);
 
 				row.AddRange(taskfields);
 

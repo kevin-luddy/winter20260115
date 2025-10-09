@@ -71,64 +71,76 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         public ICollection<SelectListItem> AdditionalPricingResourceTypeList { get; set; }
 
 		/// <summary>
-		/// Gets or sets Supply Chain POC Materials Display Name
+		/// Gets or sets PBOE/MPBOE POC Display Name
+		/// Previously named SupplyChainPOCMaterialsDisplayName
 		/// </summary>
-		public string SupplyChainPOCMaterialsDisplayName { get; set; }
+		public string PboeMpboePOCDisplayName { get; set; }
 
 		/// <summary>
-		/// Gets or sets Supply Chain POC Materials NT id
+		/// Gets or sets PBOE/MPBOE POC NT id
+		/// Previously named SupplyChainPOCMaterialsNtId
 		/// </summary>
-		public string SupplyChainPOCMaterialsNtId { get; set; }
+		public string PboeMpboePOCNtId { get; set; }
 
 		/// <summary>
-		/// Gets or sets the list of Supply Chain POC PBOE Preparer
+		/// Gets or sets the list of PBOE/MPBOE Preparer
+		/// Previously named SupplyChainPOCMaterialsLeadsList
 		/// </summary>
-		public List<SelectListItem> SupplyChainPOCMaterialsLeadsList { get; set; }
+		public List<SelectListItem> PboeMpboePOCLeadsList { get; set; }
 
 		/// <summary>
-		/// Gets or sets Supply Chain POC Materials Backup Display Name
+		/// Gets or sets PBOE/MPBOE POC Backup Display Name
+		/// Previously named SupplyChainPOCMaterialsBackupDisplayName
 		/// </summary>
-		public string SupplyChainPOCMaterialsBackupDisplayName { get; set; }
+		public string PboeMpboePOCBackupDisplayName { get; set; }
 
 		/// <summary>
-		/// Gets or sets Supply Chain POC Materials Backup NT id
+		/// Gets or sets PBOE/MPBOE POC Backup NT id
+		/// Previously named SupplyChainPOCMaterialsBackupNtId
 		/// </summary>
-		public string SupplyChainPOCMaterialsBackupNtId { get; set; }
+		public string PboeMpboePOCBackupNtId { get; set; }
 
 		/// <summary>
-		/// Gets or sets the list of Supply Chain POC Materials Backup Leads
+		/// Gets or sets the list of PBOE/MPBOE POC Backup Leads
+		/// Previously named SupplyChainPOCMaterialsBackupLeadsList
 		/// </summary>
-		public List<SelectListItem> SupplyChainPOCMaterialsBackupLeadsList { get; set; }
+		public List<SelectListItem> PboeMpboePOCBackupLeadsList { get; set; }
 
 		/// <summary>
-		/// Gets or sets Supply Chain POC Subs Display Name
+		/// Gets or sets IBOE POC Display Name
+		/// Previously named SupplyChainPOCSubsDisplayName
 		/// </summary>
-		public string SupplyChainPOCSubsDisplayName { get; set; }
+		public string IboePOCDisplayName { get; set; }
 
 		/// <summary>
-		/// Gets or sets Supply Chain POC Subs NT id
+		/// Gets or sets IBOE POC NT id
+		/// Previously named SupplyChainPOCSubsNtId
 		/// </summary>
-		public string SupplyChainPOCSubsNtId { get; set; }
+		public string IboePOCNtId { get; set; }
 
 		/// <summary>
-		/// Gets or sets the list of Supply Chain POC Subs Leads
+		/// Gets or sets the list of IBOE POC Leads
+		/// Previously named SupplyChainPOCSubsLeadsList
 		/// </summary>
-		public List<SelectListItem> SupplyChainPOCSubsLeadsList { get; set; }
+		public List<SelectListItem> IboePOCLeadsList { get; set; }
 
 		/// <summary>
-		/// Gets or sets Supply Chain POC Subs Backup Display Name
+		/// Gets or sets IBOE POC Backup Display Name
+		/// Previously named SupplyChainPOCSubsBackupDisplayName
 		/// </summary>
-		public string SupplyChainPOCSubsBackupDisplayName { get; set; }
+		public string IboePOCBackupDisplayName { get; set; }
 
 		/// <summary>
-		/// Gets or sets Supply Chain POC Subs Backup NT id
+		/// Gets or sets IBOE POC Backup NT id
+		/// Previously named SupplyChainPOCSubsBackupNtId
 		/// </summary>
-		public string SupplyChainPOCSubsBackupNtId { get; set; }
+		public string IboePOCBackupNtId { get; set; }
 
 		/// <summary>
-		/// Gets or sets the list of Supply Chain POC Subs Backup Leads
+		/// Gets or sets the list of IBOE POC Backup Leads
+		/// Previously named SupplyChainPOCSubsBackupLeadsList
 		/// </summary>
-		public List<SelectListItem> SupplyChainPOCSubsBackupLeadsList { get; set; }
+		public List<SelectListItem> IboePOCBackupLeadsList { get; set; }
 
 		/// <summary>
 		/// Gets or sets Contracts POC Display name

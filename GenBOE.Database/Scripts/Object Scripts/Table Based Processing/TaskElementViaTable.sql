@@ -132,6 +132,7 @@ AS
 **		4/2/18		ranzalon			BOEJ-3268 - Update for Open Ended Custom Fields
 **		6/5/20		ranzalon			BOEJ-4658 - Update for RTE Template Answers
 **		3/6/25		e405721				PROPH-2895 - Update Delete for Skill Mix and Common Disclosure
+**		9/30/25		e378233				PROPH-3302 - Update Delete for Skill Mix Summary
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -285,14 +286,22 @@ SET NOCOUNT ON
 						TE.BOETaskElementID = TT.BOETaskElementID AND
 						TE.UpdateDT = TT.UpdateDT
 
+
+			DELETE FROM dbo.SkillMixSummary
+				FROM dbo.SkillMixSummary SMS
+					INNER JOIN dbo.BOETaskElement TE ON SMS.BOETaskElementID = TE.BOETaskElementID
+					INNER JOIN @BOETaskElement TT ON 
+						TE.BOETaskElementID = TT.BOETaskElementID AND
+						TE.UpdateDT = TT.UpdateDT
+
 			DELETE FROM dbo.SkillMix
 				FROM dbo.SkillMix S
 					INNER JOIN dbo.BOETaskElement TE ON S.BOETaskElementID = TE.BOETaskElementID
 					INNER JOIN @BOETaskElement TT ON 
 						TE.BOETaskElementID = TT.BOETaskElementID AND
 						TE.UpdateDT = TT.UpdateDT
-
-
+			
+			
 			DELETE FROM [dbo].[BOETaskElement]
 			FROM [dbo].[BOETaskElement] TE
 				INNER JOIN @BOETaskElement TT ON 

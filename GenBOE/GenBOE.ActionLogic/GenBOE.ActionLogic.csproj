@@ -260,7 +260,6 @@
     <Compile Include="DateShift\SpreadHandling.cs" />
     <Compile Include="DateShift\Operation.cs" />
     <Compile Include="IO\Export\BOEConfidenceReportExporter.cs" />
-    <Compile Include="IO\Export\BOEDiscrepancyExporter.cs" />
     <Compile Include="IO\Export\BOE\BOEExcelExportInputs.cs" />
     <Compile Include="IO\Export\BOE\BOEExportConverter.cs" />
     <Compile Include="IO\Export\BOE\BOEExportInputs.cs" />
@@ -304,6 +303,7 @@
     <Compile Include="_ModelView\Backend\PermissionViewModel.cs" />
     <Compile Include="_ModelView\Backend\ExportReportViewModel.cs" />
     <Compile Include="_ModelView\Backend\WorkspaceSettingsViewModel.cs" />
+    <Compile Include="_ModelView\Backend\WorkspaceStatusModelView.cs" />
     <Compile Include="_ModelView\BOECustomFieldsInUseGridModelView.cs" />
     <Compile Include="_ModelView\ConfidenceReportItem.cs" />
     <Compile Include="_ModelView\ConfidenceReportModelView.cs" />

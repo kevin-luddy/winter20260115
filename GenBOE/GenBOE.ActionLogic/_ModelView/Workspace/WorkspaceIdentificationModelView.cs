@@ -85,7 +85,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 				this.CurrentPTMWorkspace = workspaceDTO.CurrentPTMWorkspace;
 				if (this.EnableAssignTaskAuthor)
 				{
-					this.WorkspaceContainsTaskAuthor = workspaceDTO.TaskElements.Any(x => x.AuthorUserId != null);
+					this.WorkspaceContainsTaskAuthor = workspaceDTO.WorkspaceContainsTaskAuthor;
 				}
 			}
 			if (costVolumeLeadDTO != null)

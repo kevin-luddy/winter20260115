@@ -116,6 +116,11 @@ namespace GenBOE.Dtos
 		public ICollection<CommonDisclosureModelView> CommonDisclosureTable { get; set; } = new List<CommonDisclosureModelView>();
 
 		/// <summary>
+		/// Skill Mix Summary table
+		/// </summary>
+		public ICollection<SkillMixSummaryModelView> SkillMixSummaryTable { get; set; } = new List<SkillMixSummaryModelView>();
+
+		/// <summary>
 		/// The task element labors associated with the task.
 		/// </summary>
 		public Collection<ResourceTypeDto> TaskElementLabors { get; set; }

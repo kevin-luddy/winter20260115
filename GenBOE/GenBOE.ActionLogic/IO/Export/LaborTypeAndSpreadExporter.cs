@@ -478,15 +478,15 @@ namespace GenBOE.ActionLogic.IO.Export
 						new string[]
 							{
 								laborType.Id.ToString(),
-								thisResource != null ? thisResource.ResourceDesc : string.Empty
+								thisResource != null ? thisResource.ResourceName : string.Empty
 							});
 
 					if (Utilities.IsBRCEnabledForWorkspace(inWorkspace.Shortname))
 					{
-						row.Add(thisBusinessResourceCode != null ? thisBusinessResourceCode.ResourceDesc : string.Empty);
+						row.Add(thisBusinessResourceCode != null ? thisBusinessResourceCode.ResourceName : string.Empty);
 					}
 
-					row.Add(thisPerfOrg != null ? thisPerfOrg.PerformingOrgName + " - " + thisPerfOrg.PerformingOrgDesc : string.Empty);
+					row.Add(thisPerfOrg != null ? thisPerfOrg.PerformingOrgName : string.Empty);
 
 					ICollection<string> customFieldValues = CreateCustomFieldRowValues(laborType, customFieldDictionary, laborTypeCustomFieldValueIdMappings, workspaceCustomFields);
 					row.AddRange(customFieldValues);
@@ -670,13 +670,13 @@ namespace GenBOE.ActionLogic.IO.Export
 						string resourceName = string.Empty;
 						if (resource != null)
 						{
-							resourceName = $"{resource.ResourceName} - {resource.ResourceDesc}";
+							resourceName = resource.ResourceName;
 						}
 
 						string performingOrgName = string.Empty;
 						if (performingOrg != null)
 						{
-							performingOrgName = $"{performingOrg.PerformingOrgName} - {performingOrg.PerformingOrgDesc}";
+							performingOrgName = performingOrg.PerformingOrgName;
 						}
 
 						log.Warn(
@@ -777,8 +777,8 @@ namespace GenBOE.ActionLogic.IO.Export
 			{
 				List<string> optionValues = new List<string>
 				{
-					allResourceTypes.Count > i ? allResourceTypes.ElementAt(i).ResourceDesc : string.Empty,
-					allPerformingOrgs.Count > i ? allPerformingOrgs.ElementAt(i).PerformingOrgName + " - " + allPerformingOrgs.ElementAt(i).PerformingOrgDesc : string.Empty,
+					allResourceTypes.Count > i ? allResourceTypes.ElementAt(i).ResourceName : string.Empty,
+					allPerformingOrgs.Count > i ? allPerformingOrgs.ElementAt(i).PerformingOrgName : string.Empty,
 					allCurves.Count > i ? allCurves.ElementAt(i).SpreadCurveName.Replace("Hours", FullObjectHelper.HoursLabel(inWorkspace)) : string.Empty,
 					workspaceWBSs.Count > i ? workspaceWBSs.ElementAt(i).WbsString : string.Empty,
 					workspaceClins.Count > i ? workspaceClins.ElementAt(i).ClinString : string.Empty,
@@ -787,7 +787,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
 				if (Utilities.IsBRCEnabledForWorkspace(inWorkspace.Shortname))
 				{
-					optionValues.Add(allBusinessResourceCodes.Count > i ? allBusinessResourceCodes.ElementAt(i).ResourceDesc : string.Empty);
+					optionValues.Add(allBusinessResourceCodes.Count > i ? allBusinessResourceCodes.ElementAt(i).ResourceName : string.Empty);
 				}
 
 				// include custom field values

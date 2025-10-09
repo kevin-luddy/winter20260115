@@ -164,13 +164,7 @@ namespace GenBOE.DataBridge.DTO
         // the ordinary variables within the MOQ equation
         public Collection<OrdinaryVariableDto> OrdinaryVariables { get; set; }
 
-		/// <summary>
-		/// These are used for data load.. During the load the data is stored here temporarily, then it's placed into the public property and cleared out
-		/// </summary>
-		[JsonIgnore]
-		internal IEnumerable<int> WorkspaceVariableIDsIEnum { get; set; }
-
-        // the workspace variable IDs currently associated with the MOQ equation
+		// the workspace variable IDs currently associated with the MOQ equation
         public Collection<int> WorkspaceVariableIDs { get; set; }
 
         // the MOQ Type ID
@@ -198,13 +192,7 @@ namespace GenBOE.DataBridge.DTO
 
         public string IMS_ID { get; set; }
 
-		/// <summary>
-		/// These are used for data load.. During the load the data is stored here temporarily, then it's placed into the public property and cleared out
-		/// </summary>
-		[JsonIgnore]
-		internal IEnumerable<CustomFieldValueContainer> CustomFieldValueContainersIEnum { get; set; }
-
-        //BOE Task Element Custom Fields
+		//BOE Task Element Custom Fields
         public Collection<CustomFieldValueContainer> CustomFieldValueContainers { get; set; }
 
         // the task element type

@@ -9,7 +9,8 @@ namespace IES.Tests
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Data.Entity.Core;
+	using System.Configuration;
+	using System.Data.Entity.Core;
     using System.Diagnostics;
     using System.Linq;
     using System.Security.Principal;
@@ -23,12 +24,14 @@ namespace IES.Tests
     using GenTRAC.DataBridge.Common.Security;
     using GenTRAC.DataBridge.DTO;
     using IES.Common;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Models;
+	using IES.Common.classes;
+	using Microsoft.Practices.Unity;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using Models;
 
-    /// <summary>
-    /// Test Class for Document Controller Logic and Document Loader.
-    /// </summary>
+	/// <summary>
+	/// Test Class for Document Controller Logic and Document Loader.
+	/// </summary>
     [TestClass]
     public class DocumentControllerLogicTest
     {
@@ -53,10 +56,13 @@ namespace IES.Tests
         [TestInitialize]
         public void TestSetup()
         {
-            this.AD = new IES.Common.ActiveDirectoryUtilities(300);
+			ConfigurationManager.AppSettings["oAuthDomain"] = "https://localhost";
+
+			this.AD = new IES.Common.ActiveDirectoryUtilities(300);
             Common.MemoryCache c = new Common.MemoryCache();
             this.securityInformation = new SecurityInformation(AD, c);
-            Common.CacheDataLoader cache = new Common.CacheDataLoader(c, 500);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IActiveDirectoryUtilities), this.AD);
+			Common.CacheDataLoader cache = new Common.CacheDataLoader(c, 500);
             UserMapper um = new UserMapper(new UserLoader(AD), cache, this.securityInformation, AD, c);
             this.securityMapper = new SecurityMapper(new SecurityUserAuthorizationsDataLoader(AD), this.securityInformation, um);
             this.revisionLoader = new RevisionLoader();

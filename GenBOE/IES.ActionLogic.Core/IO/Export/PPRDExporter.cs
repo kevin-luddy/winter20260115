@@ -9,21 +9,21 @@ namespace IES.ActionLogic.Core.IO.Export
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.Drawing;
 	using System.IO;
 	using System.Linq;
+	using Aspose.Words;
+	using Aspose.Words.Markup;
+	using Aspose.Words.Tables;
 	using Common;
-	using DocumentFormat.OpenXml;
-	using DocumentFormat.OpenXml.Packaging;
-	using DocumentFormat.OpenXml.Wordprocessing;
-	using IES.DataBridge.ModelViews;
 	using IES.Common.Core;
-	using IES.Common.Core.OfficeUtilities;
-	using Microsoft.AspNetCore.Mvc;
-	using IES.Common.Core.Enums;
 	using IES.Common.Core.Constants;
-	using IES.Common.Core.Services;
-	using Microsoft.Extensions.Logging;
+	using IES.Common.Core.Enums;
 	using IES.Common.Core.Interfaces;
+	using IES.Common.Core.OfficeUtilities;
+	using IES.DataBridge.ModelViews;
+	using Microsoft.AspNetCore.Mvc;
+	using Microsoft.Extensions.Logging;
 
 	/// <summary>
 	/// The PPRD Exporter.
@@ -75,10 +75,8 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
 		public async Task<IActionResult> ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, int refNumberPrefixLevel, bool? portionMarkingRequired)
 		{
-			ChunkCounter counters = new();
-
 			Stream stream = new MemoryStream(32000);
-			await Export(serverFileName, (document) => { PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel); }, stream, portionMarkingRequired, tokenService);
+			await Export(serverFileName, (document) => { PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, refNumberPrefixLevel); }, stream, portionMarkingRequired, tokenService);
 			stream.Position = 0;
 			return new FileStreamResult(stream, ExportFileDownloadBase.ContentType_DOCX)
 			{
@@ -101,11 +99,9 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="portionMarkingRequired">Is Portion Marking Required</param>
 		public async Task ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, Stream stream, int refNumberPrefixLevel, bool includeDocumentDetails = true, bool portionMarkingRequired = false)
 		{
-			ChunkCounter counters = new();
-
 			int rateTableYears = rddDocument.EndYear - rddDocument.StartYear;
 
-			await Export(serverFileName, (document) => { PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel, rddDocument, includeDocumentDetails); }, stream, portionMarkingRequired, tokenService);
+			await Export(serverFileName, (document) => { PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, refNumberPrefixLevel, rddDocument, includeDocumentDetails); }, stream, portionMarkingRequired, tokenService);
 		}
 
 		#region Populate Methods
@@ -119,11 +115,12 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="fileAttachments">Collection of File Attachment MVs</param>
 		/// <param name="revision">Revision modelview</param>
 		/// <param name="rateTableYears">Number of years to include in the rate tables</param>
-		/// <param name="counters">The chunk counters</param>
 		/// <param name="rddDocument">The RDD document model view.</param>
 		/// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
 		/// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
-		private void PopulatePPRDExport(WordprocessingDocument document, ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, RevisionModelView revision, int rateTableYears, ref ChunkCounter counters, int refNumberPrefixLevel, DocumentDetailModelView rddDocument = null, bool includeDocumentDetails = true)
+		private void PopulatePPRDExport(Document document, ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, 
+			ICollection<FileAttachmentRowModelView> fileAttachments, RevisionModelView revision, int rateTableYears, int refNumberPrefixLevel, 
+			DocumentDetailModelView rddDocument = null, bool includeDocumentDetails = true)
 		{
 			// Populate the header
 			PopulatePPRDHeader(document, revision);
@@ -131,7 +128,7 @@ namespace IES.ActionLogic.Core.IO.Export
 			if (includeDocumentDetails)
 			{
 				// Populate introduction text
-				PopulateIntroduction(document, revision, ref counters);
+				PopulateIntroduction(document, revision);
 			}
 			else
 			{
@@ -140,9 +137,9 @@ namespace IES.ActionLogic.Core.IO.Export
 			}
 
 			// Get the section container template to begin the process of populating the body of the document
-			SdtElement sectionContainerTemplate = WordUtilities.GetTaggedElement(document, PPRDExporterConstants.CONTAINER_SECTION);
+			StructuredDocumentTag sectionContainerTemplate = WordUtilities.GetTaggedElement(document, PPRDExporterConstants.CONTAINER_SECTION);
 
-			OpenXmlElement lastElement = sectionContainerTemplate;
+			Node lastElement = sectionContainerTemplate;
 
 			// get the published year - use current year if not published
 			int publishYear = revision.DatePublished == null
@@ -158,7 +155,7 @@ namespace IES.ActionLogic.Core.IO.Export
 			SectionModelView lastSection = sections.LastOrDefault();
 
 			// Add File Attachments that do not have sections
-			PopulateFileAttachments(fileAttachments, sectionContainerTemplate, lastElement, document.MainDocumentPart, ref counters, lastSection, refNumberPrefixLevel);
+			PopulateFileAttachments(fileAttachments, sectionContainerTemplate, lastElement, document, lastSection, refNumberPrefixLevel);
 
 			int firstSectionId = sections.FirstOrDefault() == null ? -1 : sections.First().Id;
 
@@ -166,7 +163,7 @@ namespace IES.ActionLogic.Core.IO.Export
 			foreach (SectionModelView section in sections.Reverse())
 			{
 				PopulateSectionContainer(section, rates, fileAttachments, publishYear, rateTableYears, 0, sectionContainerTemplate,
-					lastElement, document.MainDocumentPart, ref counters, rddDocument, section.Id == firstSectionId, refNumberPrefixLevel);
+					lastElement, document, rddDocument, section.Id == firstSectionId, refNumberPrefixLevel);
 			}
 
 			if (sectionContainerTemplate != null)
@@ -184,33 +181,25 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// </summary>
 		/// <param name="document">Document</param>
 		/// <param name="revision">Revision ModelView</param>
-		private void PopulatePPRDHeader(WordprocessingDocument document, RevisionModelView revision)
+		private void PopulatePPRDHeader(Document document, RevisionModelView revision)
 		{
-			ICollection<SdtAlias> headerElements = (from headerPart in document.MainDocumentPart.HeaderParts
-													from sdtElement in headerPart.Header.Descendants<SdtAlias>()
-													select sdtElement).ToCollection();
+			StructuredDocumentTagCollection sdts = document.Range.StructuredDocumentTags;
 
-			// Populate the revision number
-			SdtAlias revNumberAlias = headerElements.FirstOrDefault(x => x.Val.Value == PPRDExporterConstants.FIELDNAME_REVISIONNUMBER);
-			if (revNumberAlias != null)
+			foreach (StructuredDocumentTag tag in sdts.ToList())
 			{
-				SdtElement revNumberElement = revNumberAlias.Ancestors<SdtElement>().FirstOrDefault();
-				if (revNumberElement != null)
+				HeaderFooter headerFooter = tag.GetAncestor(NodeType.HeaderFooter) as HeaderFooter;
+				if (headerFooter != null && headerFooter.HeaderFooterType == HeaderFooterType.HeaderPrimary)
 				{
-					WordUtilities.SetElementText(revNumberElement, revision.Revision);
-					revNumberAlias.Remove();
-				}
-			}
-
-			// Populate the publish date
-			SdtAlias publishDateAlias = headerElements.FirstOrDefault(x => x.Val.Value == PPRDExporterConstants.FIELDNAME_PUBLISHDATE);
-			if (publishDateAlias != null)
-			{
-				SdtElement publishDateElement = publishDateAlias.Ancestors<SdtElement>().FirstOrDefault();
-				if (publishDateElement != null)
-				{
-					WordUtilities.SetElementText(publishDateElement, revision.RevisionPublishedInfo);
-					publishDateAlias.Remove();
+					if (tag.Title == PPRDExporterConstants.FIELDNAME_REVISIONNUMBER)
+					{
+						WordUtilities.SetElementText(tag, revision.Revision);
+						tag.Title = string.Empty;
+					}
+					else if (tag.Title == PPRDExporterConstants.FIELDNAME_PUBLISHDATE)
+					{
+						WordUtilities.SetElementText(tag, revision.RevisionPublishedInfo);
+						tag.Title = string.Empty;
+					}
 				}
 			}
 		}
@@ -220,29 +209,28 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// </summary>
 		/// <param name="document">The document</param>
 		/// <param name="revision">Revision modelview</param>
-		/// <param name="counters">The chunk counters</param>
-		private void PopulateIntroduction(WordprocessingDocument document, RevisionModelView revision, ref ChunkCounter counters)
+		private void PopulateIntroduction(Document document, RevisionModelView revision)
 		{
 			// Get container element
-			SdtElement introductionContainerTemplate = WordUtilities.GetTaggedElement(document, PPRDExporterConstants.CONTAINER_INTRODUCTION);
+			StructuredDocumentTag introductionContainerTemplate = WordUtilities.GetTaggedElement(document, PPRDExporterConstants.CONTAINER_INTRODUCTION);
 
 			// populate History
-			SdtElement historyElement = WordUtilities.GetTaggedChildElement(introductionContainerTemplate,
+			StructuredDocumentTag historyElement = WordUtilities.GetTaggedChildElement(introductionContainerTemplate,
 				PPRDExporterConstants.FIELDNAME_HISTORY);
-			WordUtilities.SetElementTextWithHTML(document.MainDocumentPart, historyElement,
-				ReplaceParagraphTags(revision.History), ref counters);
+			WordUtilities.SetElementTextWithHTML(document, historyElement,
+				WordUtilities.ReplaceParagraphTags(revision.History));
 
 			// populate Release Notes
-			SdtElement publishDateElement = WordUtilities.GetTaggedChildElement(introductionContainerTemplate,
+			StructuredDocumentTag publishDateElement = WordUtilities.GetTaggedChildElement(introductionContainerTemplate,
 				PPRDExporterConstants.FIELDNAME_PUBLISHDATE);
 			WordUtilities.SetElementText(publishDateElement, revision.RevisionPublishedInfo);
 
-			SdtElement releaseNotesElement = WordUtilities.GetTaggedChildElement(introductionContainerTemplate,
+			StructuredDocumentTag releaseNotesElement = WordUtilities.GetTaggedChildElement(introductionContainerTemplate,
 				PPRDExporterConstants.FIELDNAME_RELEASENOTES);
 			if (!string.IsNullOrWhiteSpace(revision.ReleaseNotes))
 			{
-				WordUtilities.SetElementTextWithHTML(document.MainDocumentPart, releaseNotesElement,
-					ReplaceParagraphTags(revision.ReleaseNotes), ref counters);
+				WordUtilities.SetElementTextWithHTML(document, releaseNotesElement,
+					WordUtilities.ReplaceParagraphTags(revision.ReleaseNotes));
 			}
 			else
 			{
@@ -262,28 +250,31 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="sectionContainerTemplate">The Section Container Template</param>
 		/// <param name="lastElement">Last Element</param>
 		/// <param name="mainPart">The main document part</param>
-		/// <param name="counters">The chunk counters</param>
 		/// <param name="rddDocument">The RDD document to create from.  If null, then export full PPRD.</param>
 		/// <param name="firstSection">Bool noting if this is the first section</param>
 		/// <param name="refNumberPrefixLevel">The prefix level for the Reference Numbers.</param>
-		private void PopulateSectionContainer(SectionModelView section, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, int publishYear, int rateTableYears, int subsectionLevel, SdtElement sectionContainerTemplate, OpenXmlElement lastElement, MainDocumentPart mainPart, ref ChunkCounter counters, DocumentDetailModelView rddDocument, bool firstSection, int refNumberPrefixLevel)
+		private void PopulateSectionContainer(SectionModelView section, ICollection<RateDetailModelView> rates, 
+			ICollection<FileAttachmentRowModelView> fileAttachments, int publishYear, int rateTableYears, int subsectionLevel, 
+			StructuredDocumentTag sectionContainerTemplate, Node lastElement, Document mainPart,
+			DocumentDetailModelView rddDocument, bool firstSection, int refNumberPrefixLevel)
 		{
 			if (rddDocument == null || rddDocument.SelectedSectionIds.Contains(section.Id))
 			{
 				// only show internals for full PPRD
 				bool showInternals = rddDocument == null;
 				// clone the main container
-				SdtElement sectionContainer = sectionContainerTemplate.CloneNode(true) as SdtElement;
-				lastElement = lastElement.InsertAfterSelf(sectionContainer);
+				StructuredDocumentTag sectionContainer = sectionContainerTemplate.Clone(true) as StructuredDocumentTag;
+				lastElement = lastElement.ParentNode.InsertAfter(sectionContainer, lastElement);
 
 				// Insert a page break if section is a main section (2.0, 3.0, etc)
 				// Page break is not needed for The first section because it will already be on a new page
 				if (subsectionLevel == 0 && !firstSection)
 				{
-					SdtElement pageBreakElement =
+					StructuredDocumentTag pageBreakElement =
 						WordUtilities.GetTaggedChildElement(sectionContainer, PPRDExporterConstants.PAGE_BREAK);
-					Paragraph pageBreak = new(new Run(new Break() { Type = BreakValues.Page }));
-					pageBreakElement.Append(pageBreak);
+					Paragraph pageBreak = pageBreakElement.GetChild(NodeType.Paragraph, 0, true) as Paragraph;
+					Run run = new Run(mainPart, ControlChar.PageBreak);
+					pageBreak.AppendChild(run);
 				}
 
 				// Populate the section number and title
@@ -298,9 +289,9 @@ namespace IES.ActionLogic.Core.IO.Export
 					section.ChildNodes.Where(x => x.ContentType == SectionContentType.Section).ToCollection();
 
 				// Get the container template
-				SdtElement textAndTableContainerTemplate =
+				StructuredDocumentTag textAndTableContainerTemplate =
 					WordUtilities.GetTaggedChildElement(sectionContainer, PPRDExporterConstants.CONTAINER_TEXTANDTABLES);
-				OpenXmlElement lastTextTableElement = textAndTableContainerTemplate;
+				Node lastTextTableElement = textAndTableContainerTemplate;
 
 				// Populate text element(s) and table
 				foreach (SectionModelView modelView in textAndTableMVs)
@@ -308,20 +299,25 @@ namespace IES.ActionLogic.Core.IO.Export
 					if (showInternals || !modelView.IsInternalSection.Value)
 					{
 						// clone the main container
-						SdtElement textAndTableContainer = textAndTableContainerTemplate.CloneNode(true) as SdtElement;
-						lastTextTableElement = lastTextTableElement.InsertAfterSelf(textAndTableContainer);
+						StructuredDocumentTag textAndTableContainer = textAndTableContainerTemplate.Clone(true) as StructuredDocumentTag;
+						lastTextTableElement = lastTextTableElement.ParentNode.InsertAfter(textAndTableContainer, lastTextTableElement);
 
 						// Get text and table elements
-						SdtElement textElement = WordUtilities.GetTaggedChildElement(textAndTableContainer,
+						StructuredDocumentTag textElement = WordUtilities.GetTaggedChildElement(textAndTableContainer,
 							PPRDExporterConstants.FIELDNAME_TEXTELEMENT);
-						SdtElement rateTableElement =
+						StructuredDocumentTag rateTableElement =
 							WordUtilities.GetTaggedChildElement(textAndTableContainer, PPRDExporterConstants.TABLE_RATES);
-						SdtElement addressTableElement =
+						StructuredDocumentTag addressTableElement =
 							WordUtilities.GetTaggedChildElement(textAndTableContainer, PPRDExporterConstants.TABLE_ADDRESS);
 
 						if (modelView.ContentType == SectionContentType.Text && textElement != null)
 						{
-							WordUtilities.SetElementTextWithHTML(mainPart, textElement, modelView.TextContent, ref counters, false, modelView.IsInternalSection ?? false);
+							WordUtilities.SetElementTextWithHTML(mainPart, textElement, modelView.TextContent);
+
+							if (modelView.IsInternalSection ?? false)
+							{
+								ApplyInternalSectionFormatting(textElement);
+							}
 
 							// Remove table elements
 							RemoveElement(rateTableElement);
@@ -357,8 +353,8 @@ namespace IES.ActionLogic.Core.IO.Export
 							else
 							{
 								// Make duplicate/template of table element
-								SdtElement templateTableElement = rateTableElement;
-								SdtElement currentInsertionElement = templateTableElement;
+								StructuredDocumentTag templateTableElement = rateTableElement;
+								StructuredDocumentTag currentInsertionElement = templateTableElement;
 
 								// Get starting years for each version of the table
 								ICollection<int> startYears = new Collection<int>();
@@ -371,7 +367,8 @@ namespace IES.ActionLogic.Core.IO.Export
 								// Populate the tables
 								foreach (int startYear in startYears)
 								{
-									SdtElement tableElement = templateTableElement.CloneNode(true) as SdtElement;
+									StructuredDocumentTag tableElement = templateTableElement.Clone(true) as StructuredDocumentTag;
+									currentInsertionElement.ParentNode.InsertAfter(tableElement, currentInsertionElement);
 
 									// Number of years will be the max for all tables but the last, which will be the remaining number of years
 									int years = startYear == startYears.Last()
@@ -381,7 +378,6 @@ namespace IES.ActionLogic.Core.IO.Export
 									PopulateRateTable(tableElement, sectionRates, startYear, years,
 										modelView.DisplayRateCode);
 
-									currentInsertionElement.InsertAfterSelf(tableElement);
 									currentInsertionElement = tableElement;
 								}
 
@@ -396,36 +392,36 @@ namespace IES.ActionLogic.Core.IO.Export
 						else if (modelView.ContentType == SectionContentType.Address && addressTableElement != null)  //new address table code here
 						{
 							// Populate Address Table
-							SdtElement addressOffice = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSOFFICE);
+							StructuredDocumentTag addressOffice = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSOFFICE);
 							WordUtilities.SetElementText(addressOffice, modelView.Office);
 
-							SdtElement addressAgency = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSAGENCY);
+							StructuredDocumentTag addressAgency = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSAGENCY);
 							WordUtilities.SetElementText(addressAgency, modelView.Agency);
 
-							SdtElement addressLMBA = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSLMBA);
+							StructuredDocumentTag addressLMBA = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSLMBA);
 							WordUtilities.SetElementText(addressLMBA, modelView.LMBA);
 
-							SdtElement addressName = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSNAME);
+							StructuredDocumentTag addressName = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSNAME);
 							WordUtilities.SetElementText(addressName, modelView.Name);
 
-							SdtElement addressStreet = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSSTREET);
+							StructuredDocumentTag addressStreet = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSSTREET);
 							WordUtilities.SetElementText(addressStreet, modelView.Street);
 
-							SdtElement addressCity = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSCITY);
+							StructuredDocumentTag addressCity = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSCITY);
 							WordUtilities.SetElementText(addressCity, modelView.CityST);
 
-							SdtElement addressPhone = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSPHONE);
+							StructuredDocumentTag addressPhone = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSPHONE);
 							WordUtilities.SetElementText(addressPhone, modelView.Phone);
 
-							SdtElement addressEmail = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSEMAIL);
+							StructuredDocumentTag addressEmail = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSEMAIL);
 							WordUtilities.SetElementText(addressEmail, modelView.Email);
 
-							SdtElement addressOther = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSOTHER);
+							StructuredDocumentTag addressOther = WordUtilities.GetTaggedChildElement(addressTableElement, PPRDExporterConstants.FIELDNAME_ADDRESSOTHER);
 							WordUtilities.SetElementText(addressOther, modelView.Other);
 
 
 							// Adjust bottom border thickness
-							Table addressTable = addressTableElement.Descendants<Table>().FirstOrDefault();
+							Table addressTable = addressTableElement.GetChild(NodeType.Table, 0, true) as Table;
 							AdjustTableBorders(addressTable);
 
 							// Remove the text element
@@ -444,7 +440,7 @@ namespace IES.ActionLogic.Core.IO.Export
 
 				// Get the file attachments for this section
 				ICollection<FileAttachmentRowModelView> sectionFileAttachments = fileAttachments.Where(f => f.SectionId == section.Id).ToList();
-				AddFileAttachments(mainPart, ref counters, textAndTableContainerTemplate, ref lastTextTableElement, sectionFileAttachments);
+				AddFileAttachments(mainPart, textAndTableContainerTemplate, ref lastTextTableElement, sectionFileAttachments);
 
 				// Remove the template element
 				RemoveElement(textAndTableContainerTemplate);
@@ -455,7 +451,7 @@ namespace IES.ActionLogic.Core.IO.Export
 				foreach (SectionModelView subsectionElement in subsectionMVs.Reverse())
 				{
 					// Recursive call to populate subsections
-					PopulateSectionContainer(subsectionElement, rates, fileAttachments, publishYear, rateTableYears, subsectionLevel, sectionContainerTemplate, lastElement, mainPart, ref counters, rddDocument, firstSection, refNumberPrefixLevel);
+					PopulateSectionContainer(subsectionElement, rates, fileAttachments, publishYear, rateTableYears, subsectionLevel, sectionContainerTemplate, lastElement, mainPart, rddDocument, firstSection, refNumberPrefixLevel);
 				}
 			}
 		}
@@ -464,33 +460,32 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// Adds the file attachments to a clone of the specified template.
 		/// </summary>
 		/// <param name="mainPart">The main part.</param>
-		/// <param name="counters">The counters.</param>
 		/// <param name="textAndTableContainerTemplate">The text and table container template.</param>
 		/// <param name="lastTextTableElement">The last text table element.</param>
 		/// <param name="sectionFileAttachments">The section file attachments.</param>
-		private void AddFileAttachments(MainDocumentPart mainPart, ref ChunkCounter counters, SdtElement textAndTableContainerTemplate, ref OpenXmlElement lastTextTableElement, ICollection<FileAttachmentRowModelView> sectionFileAttachments)
+		private void AddFileAttachments(Document mainPart, StructuredDocumentTag textAndTableContainerTemplate, ref Node lastTextTableElement, ICollection<FileAttachmentRowModelView> sectionFileAttachments)
 		{
 			if (sectionFileAttachments.Any())
 			{
 				foreach (FileAttachmentRowModelView attachment in sectionFileAttachments)
 				{
 					// clone the main container
-					SdtElement textAndTableContainer = textAndTableContainerTemplate.CloneNode(true) as SdtElement;
-					lastTextTableElement = lastTextTableElement.InsertAfterSelf(textAndTableContainer);
+					StructuredDocumentTag textAndTableContainer = textAndTableContainerTemplate.Clone(true) as StructuredDocumentTag;
+					lastTextTableElement = lastTextTableElement.ParentNode.InsertAfter(textAndTableContainer, lastTextTableElement);
 
 					// Get text and table elements
-					SdtElement textElement = WordUtilities.GetTaggedChildElement(textAndTableContainer,
+					StructuredDocumentTag textElement = WordUtilities.GetTaggedChildElement(textAndTableContainer,
 						PPRDExporterConstants.FIELDNAME_TEXTELEMENT);
-					SdtElement rateTableElement =
+					StructuredDocumentTag rateTableElement =
 						WordUtilities.GetTaggedChildElement(textAndTableContainer, PPRDExporterConstants.TABLE_RATES);
-					SdtElement addressTableElement =
+					StructuredDocumentTag addressTableElement =
 							WordUtilities.GetTaggedChildElement(textAndTableContainer, PPRDExporterConstants.TABLE_ADDRESS);
 
 					// Create the hyperlink text
 					string hyperlink = string.Format("<a href=\"{1}\">{0}</a>", attachment.Name, attachment.Link);
 
 					// Set the hyperlink
-					WordUtilities.SetElementTextWithHTML(mainPart, textElement, hyperlink, ref counters, false, false);
+					WordUtilities.SetElementTextWithHTML(mainPart, textElement, hyperlink);
 
 					// Remove table elements
 					RemoveElement(rateTableElement);
@@ -506,14 +501,14 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="section">Section ModelView</param>
 		/// <param name="subsectionLevel">Section level - 0 for top-level, 1 for subsection, etc</param>
 		/// <param name="refNumberPrefixLevel">The prefix level for the Reference Numbers.</param>
-		private void PopulateSectionTitle(SdtElement sectionContainer, SectionModelView section, int subsectionLevel, int refNumberPrefixLevel)
+		private void PopulateSectionTitle(StructuredDocumentTag sectionContainer, SectionModelView section, int subsectionLevel, int refNumberPrefixLevel)
 		{
 			// Get section title container elements
-			SdtElement sectionTitleContainerElement =
+			StructuredDocumentTag sectionTitleContainerElement =
 				WordUtilities.GetTaggedChildElement(sectionContainer, PPRDExporterConstants.CONTAINER_SECTIONTITLE);
-			SdtElement subsectionTitleContainerElement =
+			StructuredDocumentTag subsectionTitleContainerElement =
 				WordUtilities.GetTaggedChildElement(sectionContainer, PPRDExporterConstants.CONTAINER_SUBSECTIONTITLE);
-			SdtElement subsubsectionTitleContainerElement =
+			StructuredDocumentTag subsubsectionTitleContainerElement =
 				WordUtilities.GetTaggedChildElement(sectionContainer, PPRDExporterConstants.CONTAINER_SUBSUBSECTIONTITLE);
 
 			if (subsectionLevel + refNumberPrefixLevel == 0)
@@ -522,7 +517,7 @@ namespace IES.ActionLogic.Core.IO.Export
 				if (sectionTitleContainerElement != null)
 				{
 					// Populate Section number and title
-					SdtElement sectionNumberElement = WordUtilities.GetTaggedChildElement(sectionTitleContainerElement,
+					StructuredDocumentTag sectionNumberElement = WordUtilities.GetTaggedChildElement(sectionTitleContainerElement,
 						PPRDExporterConstants.FIELDNAME_SECTIONNUMBER);
 					if (sectionNumberElement != null)
 					{
@@ -534,11 +529,11 @@ namespace IES.ActionLogic.Core.IO.Export
 						}
 					}
 
-					SdtElement sectionTitleElement = WordUtilities.GetTaggedChildElement(sectionTitleContainerElement,
+					StructuredDocumentTag sectionTitleElement = WordUtilities.GetTaggedChildElement(sectionTitleContainerElement,
 						PPRDExporterConstants.FIELDNAME_SECTIONTITLE);
 					if (sectionTitleElement != null)
 					{
-						WordUtilities.SetElementText(sectionTitleElement, section.Title);
+						WordUtilities.SetElementText(sectionTitleElement, section.Title + ControlChar.LineBreak);
 
 						if (section.IsInternalSection == true)
 						{
@@ -557,7 +552,7 @@ namespace IES.ActionLogic.Core.IO.Export
 				if (subsectionTitleContainerElement != null)
 				{
 					// Populate Section number and title
-					SdtElement subsectionNumberElement = WordUtilities.GetTaggedChildElement(subsectionTitleContainerElement,
+					StructuredDocumentTag subsectionNumberElement = WordUtilities.GetTaggedChildElement(subsectionTitleContainerElement,
 						PPRDExporterConstants.FIELDNAME_SUBSECTIONNUMBER);
 					if (subsectionNumberElement != null)
 					{
@@ -569,11 +564,11 @@ namespace IES.ActionLogic.Core.IO.Export
 						}
 					}
 
-					SdtElement subsectionTitleElement = WordUtilities.GetTaggedChildElement(subsectionTitleContainerElement,
+					StructuredDocumentTag subsectionTitleElement = WordUtilities.GetTaggedChildElement(subsectionTitleContainerElement,
 						PPRDExporterConstants.FIELDNAME_SUBSECTIONTITLE);
 					if (subsectionTitleElement != null)
 					{
-						WordUtilities.SetElementText(subsectionTitleElement, section.Title);
+						WordUtilities.SetElementText(subsectionTitleElement, section.Title + ControlChar.LineBreak);
 
 						if (section.IsInternalSection == true)
 						{
@@ -592,7 +587,7 @@ namespace IES.ActionLogic.Core.IO.Export
 				if (subsubsectionTitleContainerElement != null)
 				{
 					// Populate Section number and title
-					SdtElement subsubsectionNumberElement = WordUtilities.GetTaggedChildElement(subsubsectionTitleContainerElement,
+					StructuredDocumentTag subsubsectionNumberElement = WordUtilities.GetTaggedChildElement(subsubsectionTitleContainerElement,
 						PPRDExporterConstants.FIELDNAME_SUBSUBSECTIONNUMBER);
 					if (subsubsectionNumberElement != null)
 					{
@@ -604,11 +599,11 @@ namespace IES.ActionLogic.Core.IO.Export
 						}
 					}
 
-					SdtElement subsubsectionTitleElement = WordUtilities.GetTaggedChildElement(subsubsectionTitleContainerElement,
+					StructuredDocumentTag subsubsectionTitleElement = WordUtilities.GetTaggedChildElement(subsubsectionTitleContainerElement,
 						PPRDExporterConstants.FIELDNAME_SUBSUBSECTIONTITLE);
 					if (subsubsectionTitleElement != null)
 					{
-						WordUtilities.SetElementText(subsubsectionTitleElement, section.Title);
+						WordUtilities.SetElementText(subsubsectionTitleElement, section.Title + ControlChar.LineBreak);
 
 						if (section.IsInternalSection == true)
 						{
@@ -631,10 +626,10 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="startYear">First year for table</param>
 		/// <param name="years">Number of years to include in the table in addition to first year</param>
 		/// <param name="showRateCode">Bool noting if rate code column should be included</param>
-		private void PopulateRateTable(SdtElement rateTableElement, ICollection<RateDetailModelView> rates, int startYear, int years, bool? showRateCode)
+		private void PopulateRateTable(StructuredDocumentTag rateTableElement, ICollection<RateDetailModelView> rates, int startYear, int years, bool? showRateCode)
 		{
 			// Populate header row labels
-			SdtElement firstYearLabel = WordUtilities.GetTaggedChildElement(rateTableElement, PPRDExporterConstants.LABEL_YEAR);
+			StructuredDocumentTag firstYearLabel = WordUtilities.GetTaggedChildElement(rateTableElement, PPRDExporterConstants.LABEL_YEAR);
 			if (firstYearLabel != null)
 			{
 				WordUtilities.SetElementText(firstYearLabel, startYear);
@@ -643,11 +638,11 @@ namespace IES.ActionLogic.Core.IO.Export
 			// Remove Rate Code Table if needed and adjust cell widths
 			if (showRateCode == false)
 			{
-				SdtElement rateCodeColumn = WordUtilities.GetTaggedChildElement(rateTableElement, PPRDExporterConstants.LABEL_RATECODE);
-				SdtElement descriptionColumn = WordUtilities.GetTaggedChildElement(rateTableElement, PPRDExporterConstants.LABEL_DESCRIPTION);
-				TableCell descriptionHeaderCell = descriptionColumn.Ancestors<TableCell>().FirstOrDefault();
+				StructuredDocumentTag rateCodeColumn = WordUtilities.GetTaggedChildElement(rateTableElement, PPRDExporterConstants.LABEL_RATECODE);
+				StructuredDocumentTag descriptionColumn = WordUtilities.GetTaggedChildElement(rateTableElement, PPRDExporterConstants.LABEL_DESCRIPTION);
+				Cell descriptionHeaderCell = descriptionColumn.GetAncestor(NodeType.Cell) as Cell;
 
-				WordUtilities.removeColumnFromTable(rateCodeColumn);
+				WordUtilities.RemoveColumnFromTable(rateCodeColumn);
 
 				if (descriptionHeaderCell != null)
 				{
@@ -655,14 +650,14 @@ namespace IES.ActionLogic.Core.IO.Export
 				}
 			}
 
-			Table rateTable = rateTableElement.Descendants<Table>().FirstOrDefault();
+			Table rateTable = rateTableElement.GetChild(NodeType.Table, 0, true) as Table;
 			if (rateTable != null)
 			{
 				// Make sure preferred table width is not set
 				RemoveTablePreferredWidth(rateTable);
 
 				// Set header row property to keep header between page breaks
-				TableRow headerRow = rateTable.Descendants<TableRow>().First();
+				Row headerRow = rateTable.FirstRow;
 				SetHeaderRow(headerRow);
 				AdjustRowBorders(headerRow);
 
@@ -673,26 +668,26 @@ namespace IES.ActionLogic.Core.IO.Export
 				}
 
 				// Initialize "insertion" row
-				TableRow templateDataRow = rateTable.Descendants<TableRow>().ElementAt(1);
+				Row templateDataRow = rateTable.Rows[1];
 				SetCannotSplit(templateDataRow);
-				TableRow currentInsertionRow = templateDataRow;
+				Row currentInsertionRow = templateDataRow;
 
 				foreach (RateDetailModelView rate in rates)
 				{
 					// Create new row in the table
-					TableRow row = CloneMarkedTemplateRow(templateDataRow);
+					Row row = CloneMarkedTemplateRow(templateDataRow);
 
 					// Populate the row
-					SdtElement rateDescription = WordUtilities.GetTaggedChildElement(row, PPRDExporterConstants.FIELDNAME_RATECODEDESCRIPTION);
+					StructuredDocumentTag rateDescription = WordUtilities.GetTaggedChildElement(row, PPRDExporterConstants.FIELDNAME_RATECODEDESCRIPTION);
 
 					if (showRateCode == true)
 					{
-						SdtElement rateCode = WordUtilities.GetTaggedChildElement(row, PPRDExporterConstants.FIELDNAME_RATECODE);
+						StructuredDocumentTag rateCode = WordUtilities.GetTaggedChildElement(row, PPRDExporterConstants.FIELDNAME_RATECODE);
 						WordUtilities.SetElementText(rateCode, rate.RateCode);
 					}
 					else
 					{
-						TableCell rateDescriptionCell = rateDescription.Descendants<TableCell>().FirstOrDefault();
+						Cell rateDescriptionCell = rateDescription.GetChild(NodeType.Cell, 0, true) as Cell;
 						if (rateDescriptionCell != null)
 						{
 							SetCellWidth(rateDescriptionCell, PPRDExporterConstants.DESCRIPTION_NO_RATE_CODE_COLUMN_WIDTH);
@@ -701,7 +696,7 @@ namespace IES.ActionLogic.Core.IO.Export
 
 					WordUtilities.SetElementText(rateDescription, rate.Description);
 
-					SdtElement initialYear = WordUtilities.GetTaggedChildElement(row, PPRDExporterConstants.FIELDNAME_RATECODEVALUE);
+					StructuredDocumentTag initialYear = WordUtilities.GetTaggedChildElement(row, PPRDExporterConstants.FIELDNAME_RATECODEVALUE);
 					RateYearModelView initialRateYearMV = rate.Values.FirstOrDefault(x => x.Year == startYear) ?? new RateYearModelView();
 					string initialYearValue = rateFormatter.FormatRate(RateTarget.PPRD, rate.RateCategoryDescription, initialRateYearMV.Value);
 					WordUtilities.SetElementText(initialYear, initialYearValue);
@@ -719,7 +714,7 @@ namespace IES.ActionLogic.Core.IO.Export
 					// Add the row to the table (unless the row is empty, i.e. all values are "N/A")
 					if (!isRowEmpty)
 					{
-						currentInsertionRow.InsertAfterSelf(row);
+						currentInsertionRow.ParentNode.InsertAfter(row, currentInsertionRow);
 						currentInsertionRow = row;
 					}
 				}
@@ -738,19 +733,20 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="fileAttachments">The file attachments.</param>
 		/// <param name="sectionContainerTemplate">The section container template.</param>
 		/// <param name="lastElement">The last element.</param>
-		/// <param name="mainDocumentPart">The main document part.</param>
-		/// <param name="counters">The counters.</param>
+		/// <param name="Document">The main document part.</param>
 		/// <param name="lastSection">The last section of the document (if one exists).</param>
 		/// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
-		private void PopulateFileAttachments(ICollection<FileAttachmentRowModelView> fileAttachments, SdtElement sectionContainerTemplate, OpenXmlElement lastElement, MainDocumentPart mainDocumentPart, ref ChunkCounter counters, SectionModelView lastSection, int refNumberPrefixLevel)
+		private void PopulateFileAttachments(ICollection<FileAttachmentRowModelView> fileAttachments, 
+			StructuredDocumentTag sectionContainerTemplate, Node lastElement, Document Document, SectionModelView lastSection, 
+			int refNumberPrefixLevel)
 		{
 			ICollection<FileAttachmentRowModelView> attachments = fileAttachments.Where(f => f.SectionId == 0).ToList();
 
 			if (attachments.Any())
 			{
 				// clone the main container
-				SdtElement sectionContainer = sectionContainerTemplate.CloneNode(true) as SdtElement;
-				lastElement = lastElement.InsertAfterSelf(sectionContainer);
+				StructuredDocumentTag sectionContainer = sectionContainerTemplate.Clone(true) as StructuredDocumentTag;
+				lastElement = lastElement.ParentNode.InsertAfter(sectionContainer, lastElement);
 
 				// Create the ReferenceNumber
 				string referenceNumber = FIRST_SECTION_REFERENCE_NUMBER;
@@ -773,12 +769,12 @@ namespace IES.ActionLogic.Core.IO.Export
 				PopulateSectionTitle(sectionContainer, attachmentSection, 0, refNumberPrefixLevel);
 
 				// Get the container template
-				SdtElement textAndTableContainerTemplate =
+				StructuredDocumentTag textAndTableContainerTemplate =
 					WordUtilities.GetTaggedChildElement(sectionContainer, PPRDExporterConstants.CONTAINER_TEXTANDTABLES);
-				OpenXmlElement lastTextTableElement = textAndTableContainerTemplate;
+				Node lastTextTableElement = textAndTableContainerTemplate;
 
 				// Add the file attachments
-				AddFileAttachments(mainDocumentPart, ref counters, textAndTableContainerTemplate, ref lastTextTableElement, attachments);
+				AddFileAttachments(Document, textAndTableContainerTemplate, ref lastTextTableElement, attachments);
 
 				// Remove the template element
 				RemoveElement(textAndTableContainerTemplate);
@@ -793,26 +789,11 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// Perform the final cleanup of the document
 		/// </summary>
 		/// <param name="document">the document to clean</param>
-		private void PerformFinalDocumentCleanup(WordprocessingDocument document)
+		private void PerformFinalDocumentCleanup(Document document)
 		{
 			// Set View to Print layout
-			if (document.MainDocumentPart.DocumentSettingsPart == null)
-			{
-				document.MainDocumentPart.AddNewPart<DocumentSettingsPart>();
-			}
-
-			if (document.MainDocumentPart.DocumentSettingsPart.Settings == null)
-			{
-				document.MainDocumentPart.DocumentSettingsPart.Settings = new Settings();
-			}
-
-			if (document.MainDocumentPart.DocumentSettingsPart.Settings.View == null)
-			{
-				document.MainDocumentPart.DocumentSettingsPart.Settings.View = new View();
-			}
-
-			document.MainDocumentPart.DocumentSettingsPart.Settings.View.Val = ViewValues.Print;
-
+			document.ViewOptions.ViewType = Aspose.Words.Settings.ViewType.PageLayout;
+			
 			// Remove content controls
 			WordUtilities.RemoveContentControls(document);
 
@@ -824,58 +805,48 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// Apply formatting for Internal Sections - blue, italic text
 		/// </summary>
 		/// <param name="element">element to apply formatting to</param>
-		private void ApplyInternalSectionFormatting(SdtElement element)
+		private void ApplyInternalSectionFormatting(StructuredDocumentTag element)
 		{
-			RunProperties runProperties = new();
-
-			Italic italic = new() { Val = OnOffValue.FromBoolean(true) };
-			Color color = new() { Val = PPRDExporterConstants.INTERNALSECTIONTEXTCOLOR }; // blue
-
-			runProperties.Append(italic);
-			runProperties.Append(color);
-
-			if (element.GetFirstChild<SdtContentRun>() != null && element.GetFirstChild<SdtContentRun>().GetFirstChild<Run>() != null)
+			HashSet<Run> runs = element.GetChildNodes<Run>(NodeType.Run, true);
+			
+			if (runs.Any())
 			{
-				element.GetFirstChild<SdtContentRun>().GetFirstChild<Run>().PrependChild(runProperties);
+				foreach (Run run in runs)
+				{
+					run.Font.Italic = true;
+					run.Font.Color = ColorTranslator.FromHtml("#" + PPRDExporterConstants.INTERNALSECTIONTEXTCOLOR); // blue
+				}
 			}
 		}
 
 		/// <summary>
-		/// Append cell to the end of a row, using the formatting and properites of that row
+		/// Append cell to the end of a row, using the formatting and properties of that row
 		/// </summary>
 		/// <param name="row">Row to append cell to</param>
 		/// <param name="text">Text for cell</param>
-		private void AppendCellToRow(TableRow row, string text)
+		private void AppendCellToRow(Row row, string text)
 		{
 			if (row != null)
 			{
 				// Get cell to use as template for properties - match with last cell in row, the one it will go next to
-				TableCell templateCell = row.Descendants<TableCell>().LastOrDefault();
+				Cell templateCell = row.LastCell;
 
 				if (templateCell != null)
 				{
-					// Set the cell, paragraph, and run properties
-					TableCellProperties cellProperties = new(templateCell.TableCellProperties.CloneNode(true));
-					ParagraphProperties paraProperties = templateCell.Descendants<ParagraphProperties>().FirstOrDefault();
-					RunProperties runProperties = templateCell.Descendants<RunProperties>().FirstOrDefault();
-
 					// Set the text and cell properties
-					TableCell cell = new();
-					Text cellText = new() { Text = text };
-					cell.PrependChild(cellProperties);
-
+					Cell cell = templateCell.Clone(false) as Cell;
+					
 					// Add text and run properties to run
-					Run run = new();
-					run.Append(cellText);
-					run.PrependChild(runProperties != null ? runProperties.CloneNode(true) : new RunProperties());
+					Run run = new(row.Document);
+					run.Text = text;
 
 					// Add run and paragraph properties to paragraph, add paragraph to cell
-					Paragraph paragraph = new(run);
-					paragraph.PrependChild(paraProperties != null ? paraProperties.CloneNode(true) : new ParagraphProperties());
-					cell.Append(paragraph);
+					Paragraph paragraph = new(row.Document);
+					paragraph.AppendChild(run);
+					cell.AppendChild(paragraph);
 
 					// Append cell to row
-					row.Append(cell);
+					row.AppendChild(cell);
 				}
 			}
 		}
@@ -884,14 +855,9 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// Set the header row property so header will show between page breaks
 		/// </summary>
 		/// <param name="headerRow">Row to set as header</param>
-		private void SetHeaderRow(TableRow headerRow)
+		private void SetHeaderRow(Row headerRow)
 		{
-			if (headerRow.TableRowProperties == null)
-			{
-				headerRow.TableRowProperties = new TableRowProperties();
-			}
-
-			headerRow.TableRowProperties.AppendChild(new TableHeader());
+			headerRow.RowFormat.HeadingFormat = true;
 		}
 
 		/// <summary>
@@ -900,37 +866,20 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="table">The table</param>
 		private void AdjustTableBorders(Table table)
 		{
-			TableProperties tableProperties = table.Descendants<TableProperties>().FirstOrDefault();
-			if (tableProperties != null && tableProperties.TableBorders != null)
-			{
-				if (tableProperties.TableBorders.BottomBorder != null)
-				{
-					tableProperties.TableBorders.BottomBorder.Size = 12U; // 1.5 point border
-				}
-
-				if (tableProperties.TableBorders.RightBorder != null)
-				{
-					tableProperties.TableBorders.RightBorder.Size = 12U; // 1.5 point border
-				}
-			}
+			table.SetBorder(BorderType.Bottom, LineStyle.Single, 1.5, Color.Black, true); 
+			table.SetBorder(BorderType.Right, LineStyle.Single, 1.5, Color.Black, true);
 		}
 
 		/// <summary>
 		/// Adjust the bottom border of the row to 1.5pt
 		/// </summary>
 		/// <param name="row">The row</param>
-		private void AdjustRowBorders(TableRow row)
+		private void AdjustRowBorders(Row row)
 		{
 			// There are no border properties for rows, so need to apply to each cell in the row
-			ICollection<TableCell> cells = row.Descendants<TableCell>().ToCollection();
-			foreach (TableCell cell in cells)
+			foreach (Cell cell in row.Cells)
 			{
-				TableCellProperties cellProperties = cell.Descendants<TableCellProperties>().FirstOrDefault();
-				if (cellProperties != null && cellProperties.TableCellBorders != null &&
-					cellProperties.TableCellBorders.BottomBorder != null)
-				{
-					cellProperties.TableCellBorders.BottomBorder.Size = 12U; // 1.5 point border
-				}
+				cell.CellFormat.Borders.Bottom.LineWidth = 1.5; // 1.5 point border
 			}
 		}
 
@@ -939,17 +888,13 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// </summary>
 		/// <param name="cell">Cell to adjust</param>
 		/// <param name="width">Width to set (inches)</param>
-		private void SetCellWidth(TableCell cell, decimal width)
+		private void SetCellWidth(Cell cell, double width)
 		{
-			// Convert width from inches to 20ths of a point
-			// points = inches*72, 20ths of a point = points*20
-			decimal convertedWidth = width * 72 * 20;
+			// Convert width from inches to points
+			// points = inches*72 
+			double convertedWidth = width * 72d;
 
-			TableCellProperties cellProperties = cell.Descendants<TableCellProperties>().FirstOrDefault();
-			if (cellProperties != null)
-			{
-				cellProperties.TableCellWidth = new TableCellWidth() { Width = convertedWidth.ToString(), Type = TableWidthUnitValues.Dxa };
-			}
+			cell.CellFormat.PreferredWidth = PreferredWidth.FromPoints(convertedWidth);
 		}
 
 		/// <summary>
@@ -958,22 +903,7 @@ namespace IES.ActionLogic.Core.IO.Export
 		/// <param name="table">Table to adjust</param>
 		private void RemoveTablePreferredWidth(Table table)
 		{
-			TableProperties tableProperties = table.Descendants<TableProperties>().FirstOrDefault();
-			if (tableProperties != null)
-			{
-				tableProperties.TableWidth = new TableWidth() { Type = TableWidthUnitValues.Nil };
-			}
-		}
-
-		/// <summary>
-		/// Replaces paragraph tags in html text with div tags
-		/// Fixes line spacing issues in export
-		/// </summary>
-		/// <param name="htmlText">HTML text to replace tags in</param>
-		/// <returns>string with paragraph tags replaced with div tags</returns>
-		internal string ReplaceParagraphTags(string htmlText)
-		{
-			return htmlText.Replace(PPRDExporterConstants.P_START_TAG, PPRDExporterConstants.DIV_START_TAG).Replace(PPRDExporterConstants.P_END_TAG, PPRDExporterConstants.DIV_END_TAG);
+			table.PreferredWidth = null;
 		}
 
 		#endregion

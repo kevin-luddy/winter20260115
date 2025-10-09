@@ -70,13 +70,13 @@
             }
         });
 
-        $('#supplyChainPOCMaterialsDisplayName').lookupUser({
-            accountNameElementId: 'supplyChainPOCMaterialsNtId',
-            accountNameInitial: '@Model.SupplyChainPOCMaterialsNtId',
-            accountDisplayNameInitial: '@Html.Encode(HttpUtility.JavaScriptStringEncode(@Model.SupplyChainPOCMaterialsDisplayName))',
+        $('#pboeMpboePOCDisplayName').lookupUser({
+            accountNameElementId: 'pboeMpboePOCNtId',
+            accountNameInitial: '@Model.PboeMpboePOCNtId',
+            accountDisplayNameInitial: '@Html.Encode(HttpUtility.JavaScriptStringEncode(@Model.PboeMpboePOCDisplayName))',
             enabled: true,
             allowGroups: true,
-            fieldDisplayName: 'Supply Chain POC (Matl)',
+            fieldDisplayName: 'PBOE/MPBOE POC',
             checkNameCallbackHandler: function (valid) {
                 if (valid) {
                     ProposalIndexWidget.refreshModule();
@@ -84,13 +84,13 @@
             }
         });
 
-		$('#supplyChainPOCMaterialsBackupDisplayName').lookupUser({
-			accountNameElementId: 'supplyChainPOCMaterialsBackupNtId',
-            accountNameInitial: '@Model.SupplyChainPOCMaterialsBackupNtId',
-            accountDisplayNameInitial: '@Html.Encode(HttpUtility.JavaScriptStringEncode(@Model.SupplyChainPOCMaterialsBackupDisplayName))',
+        $('#pboeMpboePOCBackupDisplayName').lookupUser({
+            accountNameElementId: 'pboeMpboePOCBackupNtId',
+            accountNameInitial: '@Model.PboeMpboePOCBackupNtId',
+            accountDisplayNameInitial: '@Html.Encode(HttpUtility.JavaScriptStringEncode(@Model.PboeMpboePOCBackupDisplayName))',
             enabled: true,
             allowGroups: true,
-			fieldDisplayName: 'Supply Chain POC (Matl Backup)',
+			fieldDisplayName: 'PBOE/MPBOE POC (Backup)',
             checkNameCallbackHandler: function (valid) {
                 if (valid) {
                     ProposalIndexWidget.refreshModule();
@@ -98,13 +98,13 @@
             }
         });
 
-        $('#supplyChainPOCSubsDisplayName').lookupUser({
-            accountNameElementId: 'supplyChainPOCSubsNtId',
-            accountNameInitial: '@Model.SupplyChainPOCSubsNtId',
-            accountDisplayNameInitial: '@Html.Encode(HttpUtility.JavaScriptStringEncode(Model.SupplyChainPOCSubsDisplayName))',
+        $('#iboePOCDisplayName').lookupUser({
+            accountNameElementId: 'iboePOCSubsNtId',
+            accountNameInitial: '@Model.IboePOCNtId',
+            accountDisplayNameInitial: '@Html.Encode(HttpUtility.JavaScriptStringEncode(Model.IboePOCDisplayName))',
             enabled: true,
             allowGroups: true,
-            fieldDisplayName: 'Supply Chain POC (Subs)',
+            fieldDisplayName: 'IBOE POC (Subs)',
             checkNameCallbackHandler: function (valid) {
                 if (valid) {
                     ProposalIndexWidget.refreshModule();
@@ -112,13 +112,13 @@
             }
 		});
 
-		$('#supplyChainPOCSubsBackupDisplayName').lookupUser({
-			accountNameElementId: 'supplyChainPOCSubsBackupNtId',
-            accountNameInitial: '@Model.SupplyChainPOCSubsBackupNtId',
-            accountDisplayNameInitial: '@Html.Encode(HttpUtility.JavaScriptStringEncode(Model.SupplyChainPOCSubsBackupDisplayName))',
+        $('#iboePOCBackupDisplayName').lookupUser({
+            accountNameElementId: 'iboePOCSubsBackupNtId',
+            accountNameInitial: '@Model.IboePOCBackupNtId',
+            accountDisplayNameInitial: '@Html.Encode(HttpUtility.JavaScriptStringEncode(Model.IboePOCBackupDisplayName))',
             enabled: true,
             allowGroups: true,
-			fieldDisplayName: 'Supply Chain POC (Subs Backup)',
+			fieldDisplayName: 'IBOE POC (Subs Backup)',
             checkNameCallbackHandler: function (valid) {
                 if (valid) {
                     ProposalIndexWidget.refreshModule();
@@ -290,28 +290,28 @@
                 <div class="form-label">PBOE/MPBOE Preparer</div>
                 <div class="form-element"></div>
                 <div class="form-element">
-                    @Html.DropDownListFor(model => model.SupplyChainPOCMaterialsNtId, Model.SupplyChainPOCMaterialsLeadsList, new { name = "SupplyChainPOCMatl", @class = "UserInformationDropDown" })
+                    @Html.DropDownListFor(model => model.PboeMpboePOCNtId, Model.PboeMpboePOCLeadsList, new { name = "SupplyChainPOCMatl", @class = "UserInformationDropDown" })
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-label">Backup PBOE/MPBOE Preparer</div>
                 <div class="form-element"></div>
                 <div class="form-element">
-                    @Html.DropDownListFor(model => model.SupplyChainPOCMaterialsBackupNtId, Model.SupplyChainPOCMaterialsBackupLeadsList, new { name = "BackupMaterialLead", @class = "UserInformationDropDown" })
+                    @Html.DropDownListFor(model => model.PboeMpboePOCBackupNtId, Model.PboeMpboePOCBackupLeadsList, new { name = "BackupMaterialLead", @class = "UserInformationDropDown" })
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-label">IBOE Preparer</div>
                 <div class="form-element"></div>
                 <div class="form-element">
-                    @Html.DropDownListFor(model => model.SupplyChainPOCSubsNtId, Model.SupplyChainPOCSubsLeadsList, new { name = "SupplyChainPOCSubs", @class = "UserInformationDropDown" })
+                    @Html.DropDownListFor(model => model.IboePOCNtId, Model.IboePOCLeadsList, new { name = "SupplyChainPOCSubs", @class = "UserInformationDropDown" })
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-label">Backup IBOE Preparer</div>
                 <div class="form-element"></div>
                 <div class="form-element">
-                    @Html.DropDownListFor(model => model.SupplyChainPOCSubsBackupNtId, Model.SupplyChainPOCSubsBackupLeadsList, new { name = "BackupSubcontractsLead", @class = "UserInformationDropDown" })
+                    @Html.DropDownListFor(model => model.IboePOCBackupNtId, Model.IboePOCBackupLeadsList, new { name = "BackupSubcontractsLead", @class = "UserInformationDropDown" })
                 </div>
             </div>
             <div class="form-row">

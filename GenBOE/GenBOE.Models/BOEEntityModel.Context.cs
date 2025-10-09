@@ -177,6 +177,7 @@ namespace GenBOE.Models
         public virtual DbSet<SkillMix> SkillMixes { get; set; }
         public virtual DbSet<CurrentRequest> CurrentRequest { get; set; }
         public virtual DbSet<RequestTypeLU> RequestTypeLU { get; set; }
+        public virtual DbSet<SkillMixSummary> SkillMixSummaries { get; set; }
     
         [DbFunction("GenBoeEntities", "SplitString")]
         public virtual IQueryable<SplitString_Result> SplitString(string list, string delimiter, string emptyListItem)
@@ -4794,6 +4795,20 @@ namespace GenBOE.Models
                 new ObjectParameter("Ntid", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertRequest", requestTypeIDParameter, ntidParameter, newRequestID);
+        }
+    
+        public virtual ObjectResult<Nullable<int>> deleteSkillMixSummary(Nullable<int> bOETaskElementID)
+        {
+            var bOETaskElementIDParameter = bOETaskElementID.HasValue ?
+                new ObjectParameter("BOETaskElementID", bOETaskElementID) :
+                new ObjectParameter("BOETaskElementID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("deleteSkillMixSummary", bOETaskElementIDParameter);
+        }
+    
+        public virtual int insertSkillMixSummaryviaTableParameter()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertSkillMixSummaryviaTableParameter");
         }
     }
 }
