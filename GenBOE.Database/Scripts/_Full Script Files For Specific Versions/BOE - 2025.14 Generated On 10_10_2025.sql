@@ -1,6 +1,6 @@
 PRINT '###### SCRIPT IS STARTING ######';
 /*
-    This file was auto-generated for Release: 2025.14, on 10/2/2025.
+    This file was auto-generated for Release: 2025.14, on 10/10/2025.
     It contains all of the Release specific scripts, modifying data/tables as well as all of the Stored Procedures and User Defined Table Types.
 */
 
@@ -6584,6 +6584,7 @@ AS
 **		Date:		Author:				Description:
 **		--------	--------			---------------------------------------
 **		7/11/23		twilson3			PROPH-911 Add PTM Number and LOB
+**      10/10/25	twilson3			proph-3024 Add Current Workspace
 *******************************************************************************/
 SET NOCOUNT ON
 
@@ -6631,6 +6632,10 @@ SELECT
 	  ,BOECount.[Number of BOEs]
 
 	  ,TaskCount.[Total Tasks] AS [Number of Tasks]
+	  ,CASE
+	     WHEN W.CurrentPTMWorkspace = 1 THEN 'Yes'
+		 ELSE 'No' 
+	   END AS [CurrentWorkspace]
 
 FROM [dbo].[Workspace] W 
 	INNER JOIN dbo.WorkspaceStateLU S ON W.WorkspaceStateID = S.WorkspaceStateID
@@ -6743,6 +6748,10 @@ SELECT
 	  ,IsNull(TaskCount.[Total Tasks], 0) AS [Number of Tasks]
 	  ,W.[TrackingNumber]
 	  ,L.[LineOfBusinessName]
+	  ,CASE
+	     WHEN W.CurrentPTMWorkspace = 1 THEN 'Yes'
+		 ELSE 'No' 
+	   END AS [CurrentWorkspace]
 	  
 FROM [dbo].[Workspace] W 
 	INNER JOIN dbo.WorkspaceStateLU S ON W.WorkspaceStateID = S.WorkspaceStateID
