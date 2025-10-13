@@ -144,5 +144,37 @@ namespace GenBOE.Web.Controllers.Backend
 			FinalizeAction(logger, WebConstants.GET_TASK_ELEMENT_GRID, sw);
 			return result;
 		}
+
+		/// <summary>
+		/// Get BOE Headers Description
+		/// </summary>
+		/// <param name="workspaceShortname">Workspace Short Name</param>
+		/// <param name="boeId">BOE ID</param>
+		/// <returns>BOEHeaderDescriptionModelView</returns>
+		[HttpGet]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
+		public IESSingleResponse<BOEHeaderDescriptionModelView> GetBOEHeaderDescription(string workspaceShortname, int boeId)
+		{
+			IESSingleResponse<BOEHeaderDescriptionModelView> result = new IESSingleResponse<BOEHeaderDescriptionModelView>();
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortname);
+			FullBoe boe = ws.Boes.First(x => x.Id == boeId);
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_DISPLAY_BOE_HEADER_DESCRIPTION, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, boeId);
+
+			try
+			{
+				result.Data = boeControllerLogic.GetBOEHeaderDescriptionMv(boe, ws);
+				result.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add(ex.Message);
+			}
+
+			FinalizeAction(logger, WebConstants.GET_BOE_HEADER, sw);
+			return result;
+		}
 	}
 }

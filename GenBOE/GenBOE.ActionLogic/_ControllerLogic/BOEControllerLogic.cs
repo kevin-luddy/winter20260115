@@ -210,6 +210,30 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			return new BOEHeaderISGSModelView(boe, answers);
 		}
 
+		/// <summary>
+		/// Get BOE Header Description Model View
+		/// </summary>
+		/// <param name="boe">BOE containing BOE Summary</param>
+		/// <param name="ws">Workspace containing the BOE</param>
+		/// <returns>ModelView for the description in BOE Header</returns>
+		/// <exception cref="ArgumentNullException"></exception>
+		public BOEHeaderDescriptionModelView GetBOEHeaderDescriptionMv(FullBoe boe, FullWorkspace ws)
+		{
+			if (boe == null)
+			{
+				throw new ArgumentNullException(nameof(boe));
+			}
+
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
+
+			ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateAnswers = this.rteTemplateDataLoader.GetByBoeId(ws.Id, boe.Id).Where(t => t.SourceId == (int)RteTemplateSource.BoeDescription).OrderBy(r => r.SortOrder).ToList();
+			BOEHeaderDescriptionModelView description = new BOEHeaderDescriptionModelView(boe, rteTemplateAnswers);
+			return description;
+		}
+
 		#endregion Get Actions
 
 		#region Display
@@ -422,11 +446,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			// Perform Action
 			IBOEHeaderModelView theModelView = this.GetCreateBOEHeaderMV(boe, answers);
 
-			theModelView.WBS = boe.Wbs != null ? boe.Wbs.WbsString : CommonConstants.Unassigned_WBS_Display_Text;
+            theModelView.WBS = boe.Wbs != null ? boe.Wbs.WbsString : CommonConstants.Unassigned_WBS_Display_Text;
+			theModelView.State = boe.State;
+			theModelView.RteFieldSize = ws.RteSizeLimit ?? Constants.MAX_RTE_LENGTH;
 
 			// get the clin
 			ClinDTO clin = boe.Clin;
-			theModelView.CLIN = clin != null ? clin.ClinString : CommonConstants.Unassigned_CLIN_Display_Text;
+            theModelView.CLIN = clin != null ? clin.ClinString : CommonConstants.Unassigned_CLIN_Display_Text;
 
 			if (boe.StartDate.ToString("MM/yyyy") == DateTime.MinValue.ToString("MM/yyyy"))
 			{

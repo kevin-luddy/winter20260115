@@ -305,6 +305,7 @@
     <Compile Include="_ModelView\Backend\WorkspaceSettingsViewModel.cs" />
     <Compile Include="_ModelView\Backend\WorkspaceStatusModelView.cs" />
     <Compile Include="_ModelView\BOECustomFieldsInUseGridModelView.cs" />
+    <Compile Include="_ModelView\BOE\IBOEHeaderDescriptionModelView.cs" />
     <Compile Include="_ModelView\ConfidenceReportItem.cs" />
     <Compile Include="_ModelView\ConfidenceReportModelView.cs" />
     <Compile Include="_ModelView\ImportWbsResultsModelView.cs" />
