@@ -331,6 +331,7 @@
     <Compile Include="Enums\BoeCustomReportSortBy.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Enums\ConfirmationMessage.cs" />
+    <Compile Include="Enums\EPPLevel.cs" />
     <Compile Include="Enums\PoPMatchResult.cs" />
     <Compile Include="Enums\MOQType.cs" />
     <Compile Include="Enums\RDMChangeType.cs" />

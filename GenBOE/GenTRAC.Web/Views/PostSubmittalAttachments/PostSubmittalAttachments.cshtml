@@ -334,11 +334,11 @@
 
 				<tr>
 					@if (Model.PsaVisibility == SecurityAuthorization.CreateReadUpdateDelete)
-                    {
+					{
 						<td style="text-align: center;">
 							@if (Model.IsEPPIntegrationEnabled && attachment.IsAttachmentFromeEPP)
 							{
-                                <img id="deleteDisabled-@attachmentIdentifier" style="display:none" class="disabled" src="~/Content/images/Cancel_16x.png" />
+								<img id="deleteDisabled-@attachmentIdentifier" style="display:none" class="disabled" src="~/Content/images/Cancel_16x.png" />
 							}
 							else
 							{
@@ -347,25 +347,40 @@
 								</a>
 								<img id="deleteDisabled-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded || this.ViewBag.ReadOnly ? "display:none" : "")" class="disabled" src="~/Content/images/Cancel_16x.png" />
 							}
-						</td>						
+						</td>
+
 					}
 					<td>@Html.Raw(attachment.AttachmentTypeDisplayString)</td>
 					<td>
 						@Html.Hidden("IsRevisionReference-" + attachmentIdentifier, attachment.IsRevisionReference, new { id = "IsRevisionReference-" + attachmentIdentifier })
-						<a id="filenameLink-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded ? "" : "display:none")" href="/@WebConstants.Controller.PSA/@WebConstants.Action.DOWNLOAD_ATTACHMENT/id/@Model.ProposalId/?fileId=@attachment.Id&isFromeEPP=@attachment.IsAttachmentFromeEPP.ToString()">
-							@(attachment.IsRevisionReference ? @referencePrefix : string.Empty) @attachment.Name
-						</a>
-						<!-- Show eEPP status if it exists -->
-						@if (Model.IsEPPIntegrationEnabled && attachment.IsAttachmentFromeEPP)
+
+						@if (Model.IsEPPIntegrationEnabled && attachment.IsAttachmentFromeEPP && attachment.EeppProposals.Any())
 						{
-							<span>&nbsp; - @attachment.EeppStatus</span>
+							@attachment.Name
+							<ul class="eepp-attachments">
+								@foreach (EeppProposal eeppProposal in attachment.EeppProposals)
+								{
+									<li>
+										<a id="filenameLink-@attachmentIdentifier" href="/@WebConstants.Controller.PSA/@WebConstants.Action.DOWNLOAD_ATTACHMENT/id/@Model.ProposalId/?fileId=@eeppProposal.Id&isFromeEPP=True">
+											@eeppProposal.EppLevel.GetDescription()
+										</a>
+										<span>- @eeppProposal.Status</span>
+									</li>
+								}
+							</ul>
 						}
-						<span id="filenameLabel-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded ? "display:none" : "")">Select File</span>
+						else
+						{
+							<a id="filenameLink-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded ? "" : "display:none")" href="/@WebConstants.Controller.PSA/@WebConstants.Action.DOWNLOAD_ATTACHMENT/id/@Model.ProposalId/?fileId=@attachment.Id&isFromeEPP=False">
+								@(attachment.IsRevisionReference ? @referencePrefix : string.Empty) @attachment.Name
+							</a>
+							<span id="filenameLabel-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded ? "display:none" : "")">Select File</span>
+						}
 					</td>
-                    @if (Model.IsEPPIntegrationEnabled && attachment.IsAttachmentFromeEPP)
-                    {
-                        <td></td>
-                    }
+					@if (Model.IsEPPIntegrationEnabled && attachment.IsAttachmentFromeEPP)
+					{
+						<td></td>
+					}
 					else if (!this.ViewBag.ReadOnly && Model.PsaVisibility == SecurityAuthorization.CreateReadUpdateDelete)
 					{
 						<td style="text-align: center;">
@@ -383,7 +398,7 @@
 					<td id="uploadedBy-@attachmentIdentifier">@attachment.UploadedBy</td>
 					@if (Model.IsEPPIntegrationEnabled && attachment.IsAttachmentFromeEPP)
 					{
-                        <td id="uploadDate-@attachmentIdentifier">N/A</td>
+						<td id="uploadDate-@attachmentIdentifier">N/A</td>
 					}
 					else
 					{
