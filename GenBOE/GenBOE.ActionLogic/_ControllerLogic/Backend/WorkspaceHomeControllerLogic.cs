@@ -10,6 +10,7 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 	using System.Collections.Generic;
 	using System.Linq;
 	using System.Transactions;
+	using GenBOE.ActionLogic._ModelView;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
@@ -45,11 +46,16 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 		private readonly IWorkspaceControllerLogic workspaceLogic;
 
 		/// <summary>
+		/// BOE metric loader
+		/// </summary>
+		private readonly IGenBOEMetricsDataLoader boeMetricsLoader;
+
+		/// <summary>
 		/// ActiveDirectoryUtilities
 		/// </summary>
 		private ActiveDirectoryUtilities adUtils { get; set; }
 
-		public WorkspaceHomeControllerLogic(IWorkspaceControllerLogic workspaceLogic, IWorkspaceDTODataLoader workspaceDTODataLoader, GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader, IUserDTODataLoader userLoader, IFullObjectFactory factory, ActiveDirectoryUtilities adUtils)
+		public WorkspaceHomeControllerLogic(IWorkspaceControllerLogic workspaceLogic, IWorkspaceDTODataLoader workspaceDTODataLoader, GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader, IUserDTODataLoader userLoader, IFullObjectFactory factory, ActiveDirectoryUtilities adUtils, IGenBOEMetricsDataLoader boeMetricsLoader)
 		{
 			this.workspaceLogic = workspaceLogic;
 			this.workspaceDTODataLoader = workspaceDTODataLoader;
@@ -57,6 +63,7 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 			this.userLoader = userLoader;
 			this.adUtils = adUtils;
 			this.factory = factory;
+			this.boeMetricsLoader = boeMetricsLoader;
 		}
 
 		/// <summary>
@@ -69,12 +76,12 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 		/// <returns></returns>
 		public ICollection<GenBOEHomepageWorkspaceRowModelView> GetHomepageGrid(bool isSystemAdmin, UserDTO currentUser, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader)
 		{
-			if (currentUser == null) 
+			if (currentUser == null)
 			{
 				throw new ArgumentNullException(nameof(currentUser));
 			}
 
-			if (userLoader == null) 
+			if (userLoader == null)
 			{
 				throw new ArgumentNullException(nameof(userLoader));
 			}
@@ -263,6 +270,17 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 			}
 
 			return result;
+		}
+
+		/// <summary>
+		/// Sets up the inital display of "Who's online?".
+		/// </summary>
+		/// <returns>results for display</returns>
+		public WhosOnlineGridModelView DisplayWhosOnline()
+		{
+			GenBOEUsersOnlineDTO systemMetricInfo = boeMetricsLoader.GetOnlineUserDetails();
+			WhosOnlineGridModelView viewModel = new WhosOnlineGridModelView(systemMetricInfo);
+			return viewModel;
 		}
 	}
 }

@@ -30,7 +30,7 @@
             controller: '<%: WebConstants.CONTROLLER_ADMIN %>',
             importOverdueTrainingAction: '<%: WebConstants.ACTION_IMPORT_OVERDUE_TRAINING %>'
         });
-    
+
         SystemAdmin.LoadSystemAdminJump = function () {
             SystemAdmin.RetrievePage(CreateSystemAdminPostURL(
                     '<%: WebConstants.CONTROLLER_ADMIN %>',
@@ -141,15 +141,15 @@
 
         SystemAdmin.LoadManageSystemProPricerExports = function () {
             SystemAdmin.RetrievePage(CreateSystemAdminPostURL(
-                    '<%: WebConstants.CONTROLLER_ADMIN %>',
+                '<%: WebConstants.CONTROLLER_ADMIN %>',
                 '<%: WebConstants.ACTION_DISPLAY_SYSTEM_PROPRICER_EXPORTS %>'), "MANAGE_SYSTEM_PROPRICER_EXPORTS_LOADED");
         }
 
 		SystemAdmin.LoadManageUCOT = function () {
 			SystemAdmin.RetrievePage(CreateSystemAdminPostURL(
-                    '<%: WebConstants.CONTROLLER_ADMIN %>',
+                '<%: WebConstants.CONTROLLER_ADMIN %>',
 				'<%: WebConstants.ACTION_DISPLAY_MANAGE_UCOT %>'), "MANAGE_UCOT_LOADED");
-		};
+        };
 
         SystemAdmin.RetrievePage = function (actionURL, trigger) {
             ShowLoadingBox();
@@ -160,7 +160,6 @@
                 success: function (response) {
                     HideLoadingBox();
                     SystemAdmin.Content.html(response);
-
                     SystemAdmin.Content.each(function () {
                         var content = $(this);
                         angular.element(document).injector().invoke(
@@ -171,7 +170,6 @@
                             }
                         ]);
                     });
-
                     $(document).trigger(trigger);
                 }
             });
@@ -260,7 +258,7 @@
                         break;
 					case "ManageUCOT":
 						SystemAdmin.LoadManageUCOT();
-						break;
+                        break;
                     default:
                         SystemAdmin.LoadSystemAdminJump();
                 }

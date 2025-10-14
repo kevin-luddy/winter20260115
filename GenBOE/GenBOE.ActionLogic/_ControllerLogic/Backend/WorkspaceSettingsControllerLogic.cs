@@ -95,6 +95,11 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 		private BOEStateMachine boeStateMachine { get; set; }
 
 		/// <summary>
+		/// Common data mapper.
+		/// </summary>
+		private ICommonDataMapper commonDataMapper { get; set; }
+
+		/// <summary>
 		/// Ctor
 		/// </summary>
 		/// <param name="workspaceControllerLogic"></param>
@@ -112,7 +117,8 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 			IFullWorkspaceRecalculation fullWSRecalc,
 			BoeMediator boeMediator,
 			BoeTaskElementMediator boeTaskElementMediator,
-			BOEStateMachine boeStateMachine
+			BOEStateMachine boeStateMachine,
+			ICommonDataMapper commonDataMapper
 		)
 		{
 			this._securityInformation = _securityInformation;
@@ -128,6 +134,7 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 			this.boeMediator = boeMediator;
 			this.boeTaskElementMediator = boeTaskElementMediator;
 			this.boeStateMachine = boeStateMachine;
+			this.commonDataMapper = commonDataMapper;
 		}
 
 		/// <summary>
@@ -472,23 +479,27 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 						ws.RefreshBoes();
 
 						ICollection<int> boeIdsWithTaskAuthors = ws.TaskElements.Where(x => x.AuthorUserId != null).Select(x => x.BoeID).Distinct().ToCollection();
+						List<BoeTaskElementDTO> updatedTasks = new List<BoeTaskElementDTO>();
 						foreach (FullBoe boe in ws.Boes.Where(x => boeIdsWithTaskAuthors.Contains(x.Id)))
 						{
 							boe.State = BOEState.Draft;
 							boe.Updateable = UpdateType.Upsert;
-
+							
 							// Get the task and remove the author
-							ICollection<BoeTaskElementDTO> editableTasks = (ICollection<BoeTaskElementDTO>)boe.TaskElements;
+							ICollection<BoeTaskElementDTO> editableTasks = ws.TaskElements.Where(x => x.BoeID == boe.Id && x.AuthorUserId.HasValue && x.AuthorUserId > 0).ToList();
 							foreach (BoeTaskElementDTO task in editableTasks)
 							{
 								task.AuthorUserId = null;
 								task.Updateable = UpdateType.Upsert;
 							}
 
-							boeTaskElementMediator.MediatedBulkSaveTaskElements(editableTasks, ws);
+							updatedTasks.AddRange(editableTasks);
 							boeMediator.MediatedSave(ws, boe);
 							boeStateMachine.PerformStateTransitionAction(boe, ws, boe.State, BOEState.Draft);
 						}
+
+						// Save all tasks at once so that the workspace's Task Elements are not refreshed once per BOE
+						boeTaskElementMediator.MediatedBulkSaveTaskElements(updatedTasks, ws);
 					}
 
 					scope.Complete();
@@ -567,6 +578,44 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 			}
 
 			return nextRevision;
+		}
+
+		/// <summary>
+		/// Data normalization for Workspace Status History
+		/// </summary>
+		/// <param name="ws">Full Workspace</param>
+		/// <returns>Workspace Status History Model View</returns>
+		public ICollection<WorkspaceStatusHistoryModelView> GetWorkspaceStatusHistory(FullWorkspace ws)
+		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
+
+			ICollection<WorkspaceStatusHistoryModelView> theModelViews = new Collection<WorkspaceStatusHistoryModelView>();
+			IDictionary<int, WorkspaceStateModelView> allWorkspaceStates = this.commonDataMapper.getWorkspaceStatesDictionary();
+			IDictionary<int, string> userIdCache = new Dictionary<int, string>();
+
+			// Create a ModelView for each DTO and add it to the View collection
+			foreach (WorkspaceHistoryDTO workspaceHistory in ws.WorkspaceHistory)
+			{
+				if (!userIdCache.ContainsKey(workspaceHistory.PerformedByETIUserId))
+				{
+					string displayName = this.userLoader.GetUserByID(workspaceHistory.PerformedByETIUserId).DisplayName;
+					userIdCache.Add(workspaceHistory.PerformedByETIUserId, displayName);
+				}
+
+				theModelViews.Add(
+					new WorkspaceStatusHistoryModelView
+					{
+						Date = workspaceHistory.Date,
+						OldValue = allWorkspaceStates[(int)workspaceHistory.OldValue].WorkspaceState,
+						NewValue = allWorkspaceStates[(int)workspaceHistory.NewValue].WorkspaceState,
+						PerformedBy = userIdCache[workspaceHistory.PerformedByETIUserId]
+					});
+			}
+
+			return theModelViews.OrderBy(x => x.Date).ToList();
 		}
 	}
 }

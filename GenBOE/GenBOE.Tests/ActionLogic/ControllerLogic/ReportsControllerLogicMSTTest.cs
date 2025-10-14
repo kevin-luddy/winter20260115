@@ -36,7 +36,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         Mock<IWorkspaceExportFormatDTODataLoader> workspaceExportFormatDTOLoader = new Mock<IWorkspaceExportFormatDTODataLoader>();
         Mock<IFullObjectFactory> Factory = new Mock<IFullObjectFactory>();
         Mock<IRetriever> _retriever = new Mock<IRetriever>();
-        Mock<IPermissionsDTODataLoader> _perissionsDtoDataLoader = new Mock<IPermissionsDTODataLoader>();
+        Mock<IPermissionsDTODataLoader> _permissionsDtoDataLoader = new Mock<IPermissionsDTODataLoader>();
         Mock<ICommonDataMapper> _commonDataMapper = new Mock<ICommonDataMapper>();
 
         Mock<TravelTripCostCalculation> _TravelTripCostCalculator;
@@ -45,13 +45,14 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
         Mock<GenTRAC.DataBridge.DTO.IProposalLoader> proposalLoader = new Mock<GenTRAC.DataBridge.DTO.IProposalLoader>();
         Mock<IWorkspaceControllerLogic> workspaceControllerLogic = new Mock<IWorkspaceControllerLogic>();
+		Mock<IUserDTODataLoader> _userDtoDataLoader = new Mock<IUserDTODataLoader>();
 
-        [TestInitialize]
+		[TestInitialize]
         public void Init()
         {
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), Factory.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), _retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _perissionsDtoDataLoader.Object);
+            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissionsDtoDataLoader.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _commonDataMapper.Object);
 
             _TravelTripCostCalculator = new Mock<TravelTripCostCalculation>();
@@ -68,7 +69,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         {
             return new ReportsControllerLogicMST(boeExporter.Object, boeSummary.Object, boeCustomeExporter.Object,
                 workspaceExportFormatDTOLoader.Object, boeDiscrepancyReport.Object,
-                _commonDataMapper.Object, this.proposalLoader.Object, this.workspaceControllerLogic.Object, null);
+                _commonDataMapper.Object, this.proposalLoader.Object, this.workspaceControllerLogic.Object, null,
+				_permissionsDtoDataLoader.Object, _userDtoDataLoader.Object);
         }
 
         #region Project Map Reports

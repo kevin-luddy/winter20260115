@@ -16,6 +16,7 @@ namespace GenBOE.ActionLogic.IO.Export
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Objects;
+	using IES.Common.classes;
 	using IES.Common.OfficeUtilities;
 
 	[ExcludeFromCodeCoverage]
@@ -63,7 +64,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 throw new ArgumentNullException(nameof(exportInputs));
             }
 
-			ExcelExportWorksheet toReturn = new ExcelExportWorksheet("Workspace Identification");
+			ExcelExportWorksheet toReturn = new ExcelExportWorksheet(CommonConstants.WORKSPACE_REPORT_WORKSHEET_WORKSPACE_IDENTIFICATION);
 
 			Dtos.WorkspaceDTO workspace = exportInputs.Workspace;
 

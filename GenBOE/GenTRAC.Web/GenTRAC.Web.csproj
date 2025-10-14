@@ -353,7 +353,6 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="ModelView\AcvPtmAuthors.cs" />
-    <Compile Include="ModelView\EeppProposal.cs" />
     <Compile Include="ModelView\PBOEData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\WebApiConfig.cs" />

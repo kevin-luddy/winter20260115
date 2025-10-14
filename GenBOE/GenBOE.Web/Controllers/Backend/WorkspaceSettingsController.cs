@@ -292,5 +292,39 @@ namespace GenBOE.Web.Controllers.Backend
 
 			return result;
 		}
+
+		/// <summary>
+		/// Get the Workspace Status History Grid
+		/// </summary>
+		/// <param name="workspaceShortName">workspace shortname string</param>
+		/// <returns>Workspace Status History Grid</returns>
+		[HttpGet]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESResponse<WorkspaceStatusHistoryModelView> GetWorkspaceStatusHistory(string workspace)
+		{
+			IESResponse<WorkspaceStatusHistoryModelView> result = new IESResponse<WorkspaceStatusHistoryModelView>();
+
+			try
+			{
+				FullWorkspace ws = Factory.CreateFullWorkspace(workspace);
+
+				// Initialize Action
+				Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_DISPLAY_WORKSPACE_STATUS_HISTORY_GRID, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, new Collection<WorkspaceDTO>() { ws }, null);
+
+				ICollection<WorkspaceStatusHistoryModelView> workspaceStatusHistoryGrid = workspaceSettingsControllerLogic.GetWorkspaceStatusHistory(ws);
+				result.Data = workspaceStatusHistoryGrid;
+				result.IsSuccessful = true;
+
+				// Finalize Action
+				FinalizeAction(logger, WebConstants.ACTION_DISPLAY_WORKSPACE_STATUS_HISTORY_GRID, sw);
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unkown error returning Workspace Identification: {ex.Message}");
+			}
+
+			return result;
+		}
 	}
 }

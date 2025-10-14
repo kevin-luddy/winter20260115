@@ -131,5 +131,52 @@ namespace IES.Common.classes
         /// </summary>
         public static readonly string AUTO_SYSTEM_BACKUP_TEMPLATE_PROMPT_DELETE = "[SYS TEMPLATE PROMPT DEL]";
 
-    }
+		#region Workspace data report sheets
+		/// <summary>
+		/// The workspace data report BOE & Resouce Combo worksheet
+		/// </summary>
+		public static readonly string WORKSPACE_REPORT_WORKSHEET_BOE_RESOURCE_COMBO = "BOE & Resource Combo";
+
+		/// <summary>
+		/// The workspace data report BOEs worksheet
+		/// </summary>
+		public static readonly string WORKSPACE_REPORT_WORKSHEET_BOE = "BOEs";
+
+		/// <summary>
+		/// The workspace data report BOE Status worksheet
+		/// </summary>
+		public static readonly string WORKSPACE_REPORT_WORKSHEET_BOE_STATUS = "BOE Status";
+
+		/// <summary>
+		/// The workspace data report Resource Spreads worksheet
+		/// </summary>
+		public static readonly string WORKSPACE_REPORT_WORKSHEET_RESOURCE_SPREADS = "Resource Spreads";
+
+		/// <summary>
+		/// The workspace data report Legacy Skill Mix worksheet
+		/// </summary>
+		public static readonly string WORKSPACE_REPORT_WORKSHEET_LEGACY_SKILL_MIX = "Legacy Skill Mix";
+
+		/// <summary>
+		/// The workspace data report LM Enterprise Skill Mix worksheet
+		/// </summary>
+		public static readonly string WORKSPACE_REPORT_WORKSHEET_ENTERPRISE_SKILL_MIX = "LM Enterprise Skill Mix";
+
+		/// <summary>
+		/// The workspace data report WBS worksheet
+		/// </summary>
+		public static readonly string WORKSPACE_REPORT_WORKSHEET_WBS = "WBS";
+
+		/// <summary>
+		/// The workspace data report User Permissions worksheet
+		/// </summary>
+		public static readonly string WORKSPACE_REPORT_WORKSHEET_USER_PERMISSIONS = "User Permissions";
+
+		/// <summary>
+		/// The workspace data report Workspace Identification worksheet
+		/// </summary>
+		public static readonly string WORKSPACE_REPORT_WORKSHEET_WORKSPACE_IDENTIFICATION = "Workspace Identification";
+		#endregion
+
+	}
 }

@@ -958,11 +958,18 @@
                     <div class="form-label"><p>The SAP MOQ Actuals have not been calculated.  Please ensure all MOQ Tables are updated to enable Skill Mix.</p><br />&nbsp;</div>
                 </div>
                 <div class="form-element" data-ng-if="!isSkillMixDisabled() && skillMixHelperText.length === 0">
+					<!-- AutoMatch Button -->
+                        <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+                            {  %>
+                                    <div class="autoMatchBtn">
+                                        <button data-ng-disabled="isLoading || isExporting" data-ng-click="autoMatchResources()" id="AutoMatchButton" class="ies-action" type="button">Auto Match Resources</button>
+                                    </div>
+                        <%  }  %>
                     <!-- Skill Mix Table -->
                     <div class="form-label">
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                             {  %>
-                                    Legacy Skill Mix Table
+                                    Legacy Skill Mix Table (Thru 2028)
                                     <div class="help-icon" data-ng-click="openHelp('SpaceLegacySkillMixTable');"></div>
                         <%  }  %>
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
@@ -1039,7 +1046,7 @@
                         LM Enterprise Skill Mix Table
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 							{  %>
-                                    <div class="help-icon" data-ng-click="openHelp('SpaceLMEnterpriseSkillMixTable');"></div>
+                                   (2029+) <div class="help-icon" data-ng-click="openHelp('SpaceLMEnterpriseSkillMixTable');"></div>
                         <%  }  %>
                         <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
                             {  %>

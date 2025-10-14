@@ -11,14 +11,15 @@ namespace GenBOE.ActionLogic
     using System.Collections.ObjectModel;
     using System.Threading.Tasks;
     using System.Web;
-    using GenBOE.ActionLogic.ModelView;
+	using System.Web.Mvc;
+	using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.ActionLogic.IESSAPClient;
     using GenBOE.DataBridge.DTO;
     using IES.Common;
     using GenBOE.Dtos;
     using GenBOE.Objects;
-    using IES.Common.Exceptions;	
+    using IES.Common.Exceptions;
 
 	public interface IBOEControllerLogic
     {
@@ -347,5 +348,14 @@ namespace GenBOE.ActionLogic
 		/// <returns>Collection of view model fields</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		Task<ICollection<QueryFieldViewModel>> GetAllFields();
-    }
+
+		/// <summary>
+		/// Saves a BOE(s) from the Manage BOE page.
+		/// </summary>
+		/// <param name="boes">List of Boes to be saved</param>
+		/// <param name="modelState">Model state</param>
+		/// <param name="ws">Full Workspace</param>
+		/// <returns>Saved ManageBOEModelView for the ui</returns>
+		ManageBOEModelView SaveManageBOE(Collection<ManageBOEModelView> boes, ModelStateDictionary modelState, FullWorkspace ws);
+	}
 }

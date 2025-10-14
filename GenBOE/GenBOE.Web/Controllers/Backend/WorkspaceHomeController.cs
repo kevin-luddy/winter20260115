@@ -26,6 +26,7 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.Web.ModelView;
 	using IES.Common;
 	using IES.Common.Exceptions;
+	using WhosOnlineGridModelView = ActionLogic._ModelView.WhosOnlineGridModelView;
 
 	/// <summary>
 	/// Workspace Home Controller for getting workspace home data.
@@ -139,7 +140,7 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Gets the Homepage menu with UserMetrics and list of workspaces associated to user
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>Workspaces available to user for the home page grid</returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<GenBOEHomepageModelView> GetHomePageWorkspace()
@@ -160,10 +161,13 @@ namespace GenBOE.Web.Controllers
 					{
 						model.isReadOnly = false;
 					}
+
 					model.canCreateWS = CheckPermission(SecurityPage.CreateWorkspacePermissions, null) == SecurityAuthorization.CreateReadUpdateDelete;
+					IReadOnlyCollection<SecurityPermissionsResponse> rolesForUser = Factory.GetPermissionsForUser(currentUser.NTID);
+					model.isWorkspaceAuditor = rolesForUser.Any(x => x.AuthorizedRole == Role.WorkspaceAuditor);
 				}
 
-				model.workspaceGridRows = workspaceHomeControllerLogic.GetHomepageGrid(model.isSysAdmin, currentUser, UserLoader, PermissionsLoader);
+				model.workspaceGridRows = workspaceHomeControllerLogic.GetHomepageGrid(model.isSysAdmin || model.isWorkspaceAuditor, currentUser, UserLoader, PermissionsLoader);
 				result.Data = model;
 
 			}
@@ -226,13 +230,13 @@ namespace GenBOE.Web.Controllers
 				// Initialize Action
 				Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_HOME_DELETE_WORKSPACES, SecurityPage.WorkspaceDelete, SecurityAuthorization.CreateReadUpdateDelete, GetFullWorkspaces(toBeDeleted), null);
 
-                result.Data = workspaceHomeControllerLogic.DeleteWorkspaces(toBeDeleted); 
+				result.Data = workspaceHomeControllerLogic.DeleteWorkspaces(toBeDeleted);
 				result.IsSuccessful = true;
 
 				// Finalize Action
 				FinalizeAction(logger, WebConstants.ACTION_HOME_DELETE_WORKSPACES, sw);
-            }
-            catch (Exception ex)
+			}
+			catch (Exception ex)
 			{
 				logger.Error(ex);
 				result.Messages.Add(ex.Message);
@@ -261,7 +265,7 @@ namespace GenBOE.Web.Controllers
 			{
 				// Initialize Action
 				Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_HOME_RESTORE_PTM_WORKSPACE, SecurityPage.WorkspaceRestore, SecurityAuthorization.CreateReadUpdateDelete, GetFullWorkspaces(new[] { toBeRestored }), null);
-				
+
 				result.Data = workspaceHomeControllerLogic.RestorePtmWorkspace(toBeRestored);
 				result.IsSuccessful = true;
 
@@ -297,10 +301,10 @@ namespace GenBOE.Web.Controllers
 			{
 				// Initialize Action
 				Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_HOME_RESTORE_WORKSPACE, SecurityPage.WorkspaceRestore, SecurityAuthorization.CreateReadUpdateDelete, GetFullWorkspaces(new[] { toBeRestored }), null);
-				
+
 				result.Data = workspaceHomeControllerLogic.RestoreWorkspace(toBeRestored);
-				result.IsSuccessful = true;             
-				
+				result.IsSuccessful = true;
+
 				// Finalize Action
 				FinalizeAction(logger, WebConstants.ACTION_HOME_RESTORE_WORKSPACE, sw);
 			}
@@ -310,6 +314,20 @@ namespace GenBOE.Web.Controllers
 				result.Messages.Add(ex.Message);
 			}
 
+			return result;
+		}
+
+
+		/// <summary>
+		/// Set up the inital display of "Who's online?".
+		/// </summary>
+		/// <returns>results for display</returns>
+		[System.Web.Http.HttpGet]
+		public IESSingleResponse<WhosOnlineGridModelView> DisplayWhosOnline()
+		{
+			IESSingleResponse<WhosOnlineGridModelView> result = new IESSingleResponse<WhosOnlineGridModelView>();
+			result.Data = workspaceHomeControllerLogic.DisplayWhosOnline();
+			result.IsSuccessful = true;
 			return result;
 		}
 

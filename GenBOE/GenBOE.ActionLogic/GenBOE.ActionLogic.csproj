@@ -260,6 +260,7 @@
     <Compile Include="DateShift\SpreadHandling.cs" />
     <Compile Include="DateShift\Operation.cs" />
     <Compile Include="IO\Export\BOEConfidenceReportExporter.cs" />
+    <Compile Include="IO\Export\BOEDiscrepancyExporter.cs" />
     <Compile Include="IO\Export\BOE\BOEExcelExportInputs.cs" />
     <Compile Include="IO\Export\BOE\BOEExportConverter.cs" />
     <Compile Include="IO\Export\BOE\BOEExportInputs.cs" />
@@ -287,6 +288,7 @@
     <Compile Include="Misc\UCOTUtility.cs" />
     <Compile Include="Reporting\BOEConfidenceReport.cs" />
     <Compile Include="Reporting\ConfidenceReportConstants.cs" />
+    <Compile Include="Reporting\FullBOEStatusReportModelView.cs" />
     <Compile Include="Reporting\IBOEConfidenceReport.cs" />
     <Compile Include="_ControllerLogic\Backend\BOEConfigurationControllerLogic.cs" />
     <Compile Include="_ControllerLogic\Backend\CLINControllerLogic.cs" />
@@ -295,10 +297,12 @@
     <Compile Include="_ControllerLogic\Backend\WorkspaceSettingsControllerLogic.cs" />
     <Compile Include="_ControllerLogic\Backend\WorkspaceHomeControllerLogic.cs" />
     <Compile Include="_ModelView\Backend\BOEConfigurationViewModel.cs" />
+    <Compile Include="_ModelView\Backend\GeneralReportViewModel.cs" />
     <Compile Include="_ModelView\Backend\PermissionRoleViewModel.cs" />
     <Compile Include="_ModelView\Backend\PermissionsGridViewModel.cs" />
     <Compile Include="_ModelView\Backend\PermissionUserViewModel.cs" />
     <Compile Include="_ModelView\Backend\PermissionViewModel.cs" />
+    <Compile Include="_ModelView\Backend\ExportReportViewModel.cs" />
     <Compile Include="_ModelView\Backend\WorkspaceSettingsViewModel.cs" />
     <Compile Include="_ModelView\BOECustomFieldsInUseGridModelView.cs" />
     <Compile Include="_ModelView\ConfidenceReportItem.cs" />
@@ -444,7 +448,6 @@
     <Compile Include="_ModelView\BOE\BOEZoneTravelTripsGridModelView.cs" />
     <Compile Include="_ModelView\Admin\EscalationRateModelView.cs" />
     <Compile Include="_ModelView\DownloadReportModelView.cs" />
-    <Compile Include="_ModelView\ExportsModelView.cs" />
     <Compile Include="_ModelView\GenBOEHomepageModelView.cs" />
     <Compile Include="_ModelView\ImportMoqTableResultsModelView.cs" />
     <Compile Include="_ModelView\LaborTabDataModelView.cs" />
@@ -510,6 +513,7 @@
     <Compile Include="_ModelView\Task\TaskElementOrder.cs" />
     <Compile Include="_ModelView\Task\TaskElementOrderCollection.cs" />
     <Compile Include="_ModelView\UsageMetricsModelView.cs" />
+    <Compile Include="_ModelView\WhosOnlineGridModelView.cs" />
     <Compile Include="_ModelView\WorkspaceVariableModelView.cs" />
     <Compile Include="_ModelView\Workspace\CreateWorkspacePageModelView.cs" />
     <Compile Include="_ModelView\Workspace\HomeWorkspaceGridApproverModelView.cs" />

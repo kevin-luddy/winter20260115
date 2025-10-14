@@ -130,6 +130,7 @@
     <Compile Include="DTO\Approvals\IApprovalsLoader.cs" />
     <Compile Include="DTO\Attachment\AttachmentDto.cs" />
     <Compile Include="DTO\Attachment\AttachmentLoader.cs" />
+    <Compile Include="DTO\Attachment\EeppProposal.cs" />
     <Compile Include="DTO\Attachment\IAttachmentLoader.cs" />
     <Compile Include="DTO\BulkArchive\BulkArchiveDto.cs" />
     <Compile Include="DTO\BulkArchive\BulkArchiveLoader.cs" />

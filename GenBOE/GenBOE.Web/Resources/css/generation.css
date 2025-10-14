@@ -1684,9 +1684,10 @@ button.ui-datepicker-trigger
     *zoom: 1;
 }
 
-.oci-note
+.oci-note,
+.task-author-note 
 {
-    margin-bottom: 10px;
+	margin-bottom: 10px;
 }
 
 .read-only-applied .oci-note

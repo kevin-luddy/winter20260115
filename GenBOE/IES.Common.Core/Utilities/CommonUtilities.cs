@@ -1058,13 +1058,33 @@ namespace IES.Common.Core.Utilities
 		}
 
 		/// <summary>
+		/// Private for Skill Mix blacklisted workspaces
+		/// </summary>
+		private static Collection<string> skillMixBlacklistWorkspaces;
+
+		/// <summary>
+		/// Update the Skill Mix Blacklist settings--currently utilized by Space only
+		/// </summary>
+		/// <param name="blackListWorkspaces">Comma-separated string of blacklisted workspaces (by short name)</param>
+		public static void UpdateSkillMixBlacklistSettings(string blackListWorkspaces)
+		{
+			// Update the list of blacklisted Skill Mix workspaces (short name)
+			if (blackListWorkspaces != null)
+			{
+				skillMixBlacklistWorkspaces = blackListWorkspaces.Split(',').ToCollection();
+			}
+		}
+
+		/// <summary>
 		/// Is Skill Mix connection shown to the user for this workspace
 		/// </summary>
 		/// <param name="workspaceCreationDate">Workspace creation date</param>
+		/// <param name="workspaceShortname">The Workspace shortname</param>
 		/// <returns>True to show skill mix</returns>
-		public static bool ShowSkillMixForWorkspace(DateTime? workspaceCreationDate)
+		public static bool ShowSkillMixForWorkspace(DateTime? workspaceCreationDate, string workspaceShortname)
 		{
-			return IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate;
+			return IsSkillMixEnabledForSystem && workspaceCreationDate >= SkillMixStartDate
+				&& !skillMixBlacklistWorkspaces.Contains(workspaceShortname);
 		}
 
 		/// <summary>

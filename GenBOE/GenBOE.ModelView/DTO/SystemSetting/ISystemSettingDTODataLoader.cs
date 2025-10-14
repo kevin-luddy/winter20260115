@@ -29,5 +29,11 @@
         /// </summary>
         /// <param name="key">system setting key to clear</param>
         void ClearSystemSetting(string key);
+
+		/// <summary>
+		/// Get Skill Mix setting DTOs only
+		/// </summary>
+		/// <returns>All Skill Mix settings</returns>
+		ICollection<SystemSettingDTO> GetSkillMixSettings();
     }
 }

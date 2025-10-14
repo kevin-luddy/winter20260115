@@ -53,6 +53,7 @@ namespace GenBOE.DataBridge.DTO
             this.WasDescriptionSet = false;
             this.preventRteDbLoad = false;
 			this.AuthorUserId = null;
+			this.AuthorDisplayName = string.Empty;
         }
 
         #region RTE Fields
@@ -224,6 +225,11 @@ namespace GenBOE.DataBridge.DTO
 		/// Gets or sets the Author User Id, referenced from the ETIUser table
 		/// </summary>
 		public int? AuthorUserId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Author display name
+		/// </summary>
+		public string AuthorDisplayName { get; set; }
 
 		/// <summary>
 		/// Gets the children that can be shifted.

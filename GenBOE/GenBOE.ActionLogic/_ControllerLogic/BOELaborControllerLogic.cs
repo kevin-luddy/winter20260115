@@ -845,6 +845,17 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							validationErrors.Add(new ValidationMessage(fieldPrefix + "HourSpread", "Hours spread is required."));
 						}
 					}
+					else if (labor.HourSpread.HasValue && labor.HourSpread == 0m && labor.RateType == RateType.Hours)
+					{
+						if (isUsingEP)
+						{
+							validationErrors.Add(new ValidationMessage(fieldPrefix + "HourSpread", "EP spread cannot be zero."));
+						}
+						else
+						{
+							validationErrors.Add(new ValidationMessage(fieldPrefix + "HourSpread", "Hours spread cannot be zero."));
+						}
+					}
 
 					if (labor.RateType == RateType.Cost && !labor.CostSpread.HasValue)
 					{
@@ -991,7 +1002,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 			#endregion
 
-			if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, ws.UsingTemplateBOE, ws.EnableSAPConnection, moqTypes, taskElement.Id, modelView.IsUsingTMRatesInTask))
+			if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, ws.UsingTemplateBOE, ws.EnableSAPConnection, moqTypes, taskElement.Id, modelView.IsUsingTMRatesInTask, ws.Shortname))
 			{
 				if (ws.EnableSAPConnection && (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST
 					|| moqTypes.Any(x => x.TableData != null && x.TableData.Any(t => t.RepositoryName == RepositoryName.SapWebi.GetDescription()))))
@@ -2012,7 +2023,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			toReturn.BOETaskElementOrder = modelview.TaskElementData.BOETaskElementOrder;
 			toReturn.AuthorUserId = modelview.TaskElementData.AuthorUserId;
 
-			if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, ws.UsingTemplateBOE, ws.EnableSAPConnection, modelview.MOQTypes, toReturn.Id, modelview.IsUsingTMRatesInTask))
+			if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, ws.UsingTemplateBOE, ws.EnableSAPConnection, modelview.MOQTypes, toReturn.Id, modelview.IsUsingTMRatesInTask, ws.Shortname))
 			{
 				// Space will get the total moq total relevant hours if it is from a Sap Webi moq table data.
 				if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
@@ -3453,7 +3464,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				if (validRows.Any())
 				{
 					// Make one bulk call to SAP
-					if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate))
+					if (Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.Shortname))
 					{
 						ICollection<IESResponse<CalculateActualsWithSkillMixViewModel>> responses = await this.CalculateAllActualsSapWithSkillMix(validRows);
 						foreach (IESResponse<CalculateActualsWithSkillMixViewModel> response in responses)
@@ -4297,7 +4308,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				}
 
 				bool showSkillMixTable = BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, ws.UsingTemplateBOE, ws.EnableSAPConnection, taskData.MOQTypes, boeTaskElementId,
-					 taskData.IsUsingTMRatesInTask);
+					 taskData.IsUsingTMRatesInTask, ws.Shortname);
 				ICollection<string> taskErrors = this.validateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws, false, moqEquationTotal, showSkillMixTable);
 				errors.AddRange(taskErrors.Select(error => new ValidationMessage(error)));
 			}

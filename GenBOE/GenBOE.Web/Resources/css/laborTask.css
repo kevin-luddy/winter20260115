@@ -38,6 +38,10 @@
     width: 38px;
 }
 
+.autoMatchBtn {
+    margin-bottom: 5px;
+}
+
 /*Space Only*/
 .ucotCol {
     width: 62px;

@@ -6,16 +6,6 @@
 
 namespace GenBOE.Web.Controllers
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Collections.ObjectModel;
-	using System.Diagnostics;
-	using System.IO;
-	using System.Linq;
-	using System.Threading.Tasks;
-	using System.Transactions;
-	using System.Web.Mvc;
-	using System.Web.Script.Serialization;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
@@ -41,16 +31,23 @@ namespace GenBOE.Web.Controllers
 	using IES.Common.classes;
 	using IES.Common.Exceptions;
 	using IES.Common.OfficeUtilities;
-	using Microsoft.VisualBasic.Logging;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Diagnostics;
+	using System.IO;
+	using System.Linq;
+	using System.Threading.Tasks;
+	using System.Transactions;
+	using System.Web.Mvc;
+	using System.Web.Script.Serialization;
 
 	public class BOEController : GenBOEController
 	{
 		private Logger _log = new Logger(typeof(BOEController));
 		private BoeEmailer _emailer = null;
 		private BOEStateMachine _boeStateMachine = null;
-		private WorkspaceVariableDTODataLoader _workspaceVariableLoader = null;
 		private IValidateBOE _validateBOE = null;
-		private IVariableSelectBOEtoSumCalculation _variableSelectBOEtoSumCalculation = null;
 		private BoeTaskElementRecalculation _BoeTaskElementRecalculation = null;
 		private VariableCircularReferenceChecker _VariableCircularReferenceChecker = null;
 		private ActionLogic.CopyBOE.BOECopier _BOECopier = null;
@@ -60,7 +57,6 @@ namespace GenBOE.Web.Controllers
 		private BoeMediator _BoeMediator = null;
 		private IBOEControllerLogic _ControllerLogic = null;
 		private IBOELaborControllerLogic _BoeLaborControllerLogic = null;
-		private IWbsDTODataLoader wbsLoader;
 		private ITravelControllerLogic _TravelControllerLogic = null;
 		private ITravelDTODataLoader _TravelDTOLoader = null;
 		private readonly IRteTemplateDataLoader rteTemplateDataLoader;
@@ -89,9 +85,7 @@ namespace GenBOE.Web.Controllers
 			IPermissionsDTODataLoader inPermissionsLoader,
 			BOEStateMachine inBoeStateMachine,
 			BoeEmailer inEmailer,
-			WorkspaceVariableDTODataLoader inWorkspaceVariabledDTODataLoader,
 			IValidateBOE inValidateBOE,
-			IVariableSelectBOEtoSumCalculation inVariableSelectBOEtoSumCalculation,
 			BoeTaskElementRecalculation inBoeTaskElementRecalculation,
 			VariableCircularReferenceChecker inVariableCircularReferenceChecker,
 			ActionLogic.CopyBOE.BOECopier inBOECopier,
@@ -104,7 +98,6 @@ namespace GenBOE.Web.Controllers
 			IBOELaborControllerLogic inBoeLaborControllerLogic,
 			IFullObjectFactory factory,
 			IReportsControllerLogic inReportsControllerLogic,
-			IWbsDTODataLoader wbsLoader,
 			IGenBOEControllerLogic inControllerLogic,
 			ITravelControllerLogic inTravelControllerLogic,
 			TaskElementValidation taskElementValidation,
@@ -115,9 +108,7 @@ namespace GenBOE.Web.Controllers
 		{
 			_emailer = inEmailer;
 			_boeStateMachine = inBoeStateMachine;
-			_workspaceVariableLoader = inWorkspaceVariabledDTODataLoader;
 			_validateBOE = inValidateBOE;
-			_variableSelectBOEtoSumCalculation = inVariableSelectBOEtoSumCalculation;
 			_BoeTaskElementRecalculation = inBoeTaskElementRecalculation;
 			_VariableCircularReferenceChecker = inVariableCircularReferenceChecker;
 			_BOECopier = inBOECopier;
@@ -128,7 +119,6 @@ namespace GenBOE.Web.Controllers
 			_ControllerLogic = inBOEControllerLogic;
 			_BoeLaborControllerLogic = inBoeLaborControllerLogic;
 			this.reportsControllerLogic = inReportsControllerLogic;
-			this.wbsLoader = wbsLoader;
 			this._TravelControllerLogic = inTravelControllerLogic;
 			this.taskElementValidation = taskElementValidation;
 			this._TravelDTOLoader = travelLoader;
@@ -167,7 +157,7 @@ namespace GenBOE.Web.Controllers
 					x.ElementOfCostId == (int)ElementOfCostType.Travel).ToList();
 			ViewData["EnableSAP"] = Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate);
 			this.ViewData["IsSkillMixFeatureEnabled"] = Utilities.IsSkillMixEnabledForSystem;
-			this.ViewData["IsSkillMixEnabled"] = Utilities.ShowSkillMixForWorkspace(ws.CreationDate);
+			this.ViewData["IsSkillMixEnabled"] = Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.Shortname);
 			this.ViewData["IsUCOTEnabled"] = Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.Shortname);
 
 			// Additional Controls for SkillMixHelperText
@@ -857,6 +847,7 @@ namespace GenBOE.Web.Controllers
 			theModelView.ManageBoeHeaderInfo = _ControllerLogic.GetCompanySpecificManageBoeHeaderInfo;
 			theModelView.WorkspaceState = ws.WorkspaceState;
 			theModelView.AllowBOEStateChanges = (CheckPermissions(SecurityPage.EditBoeLockedState, ws, null) == SecurityAuthorization.CreateReadUpdateDelete);
+			theModelView.EnableTaskAuthor = Utilities.IsAssignTaskAuthorEnabledForSystem && ws.EnableAssignTaskAuthor;
 
 			// Finalize Action
 			FinalizeAction(_log, WebConstants.ACTION_GET_MANAGE_BOE_MODEL, sw);
@@ -1301,897 +1292,13 @@ namespace GenBOE.Web.Controllers
 			// Initialize Action
 			Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_SAVE_MANAGE_BOE, SecurityPage.ManageBOEs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
-			// we're gonna need the original unmodified boes and clins for later processing so grab them now
-			// we need to make sure to NOT modify the elements in these collections
-			ICollection<FullBoe> originalUnmodifiedBOEs = ws.Boes.ToList().DeepClone();
-			ICollection<ClinDTO> originalUnmodifiedCLINs = ws.Clins.ToList<ClinDTO>().DeepClone();
-			ICollection<WbsDTO> originalUnmodifiedWbses = (from w in ws.WbsElements select new WbsDTO(w)).ToCollection().DeepClone();
-
-			// grab the ids of all original boes that have been modified in some way
-			ICollection<int> originalModifiedBoeIds = (from b in boes
-													   where b.BoeID > 0 && !b.Deleted
-													   select b.BoeID).ToCollection();
-
-			// grab all the original boe permissions for each original boe that has been modified
-			ICollection<PermissionsDTO> boePermissions = this.PermissionsLoader.GetBOEPermissions(originalModifiedBoeIds);
-			Collection<int> BoeIdsEffectedByMulti = new Collection<int>();
-			#region memberVariables
-
-			// Create an authorID and approver collection that will keep track of previous author
-			// and removed approvers, in case these were changed on the BOE
-			Dictionary<int, Collection<UserDTO>> AuthorsChangeDictionary = new Dictionary<int, Collection<UserDTO>>();
-			Dictionary<int, Collection<UserDTO>> ApproversChangeDictionary = new Dictionary<int, Collection<UserDTO>>();
-
-			// create a dictionary that will keep track of the BOE ID and its original state before a save
-			Dictionary<int, BOEState> BoeStateDictionary = new Dictionary<int, BOEState>();
-
-			// BOE's Labor Spread values that need to be recalculated because of any changes made during this save
-			List<BoeTaskElementDTO> boeTaskElementsToRecalculate = new List<BoeTaskElementDTO>();
-
-			//keep track of BOE IDs that have had its WBS or CLIN changed
-			Dictionary<int, Collection<FieldChanged>> BoeFieldsChanged = new Dictionary<int, Collection<FieldChanged>>();
-
-			Collection<int> ClinIDsToRecalculateLaborSpread = new Collection<int>();
-			ICollection<int> WbsIDsToRecalculateLaborSpread = new Collection<int>();
-			List<BoeApproverResponseDTO> boeApproverResponsesToPotentiallySave = new List<BoeApproverResponseDTO>();
-			Collection<BOEStateTransition> transitionsToPerform = new Collection<BOEStateTransition>();
-
-			Collection<BoeDTO> boesToSave = new Collection<BoeDTO>();
-			ICollection<FullBoe> BoesToBeDeleted = new Collection<FullBoe>();
-			Collection<BoeDTO> NewMaterialBoes = new Collection<BoeDTO>();
-
-			Collection<BoeTaskElementDTO> laborElementsUpdated = new Collection<BoeTaskElementDTO>();
-			Collection<TravelDTO> travelElementsUpdated = new Collection<TravelDTO>();
-
-			Dictionary<BoeDTO, Collection<int>> boeInformationCollection = new Dictionary<BoeDTO, Collection<int>>();
-			// This holds the current MV if we're just editing a single row.  This way we can return the changes to the UI.
-			ManageBOEModelView singleEditMV = null;
-
-			#endregion
-
-			// get the user
-			UserDTO activeUser = ws.CurrentActiveUser;
-
-			#region Validation
-			Collection<ValidationMessage> ValidationErrors = new Collection<ValidationMessage>();
-
-			// can't mix together boe edits and boe deletes cause the ManageBOEs page won't allow it. They are on separate pages
-			// so we can leverage that information to skip processing for single edits that don't apply to a boe delete
-			//----------------------------------------------------------------------------------------------
-			bool requestIsADelete = boes.Any(b => b.Deleted);
-
-			if (!this.ModelState.IsValid && boes.Count(b => b.Deleted) == 0)
-			{
-				ValidationErrors = Utilities.CreateModelStateValidationErrorList(this.ModelState);
-			}
-			else
-			{
-				// create a dictionary of all the BOEs so we can reference them in the loop rather than getting one at a time.
-				// it's ok if these elements are modified later in the logic
-				IDictionary<int, FullBoe> workspaceBoeDictionary = ws.Boes.ToDictionary(x => x.Id);
-
-				Collection<int> allMVboeIds = (from mv in boes
-											   select mv.BoeID).Distinct().ToCollection();
-
-				// get all approver responses at one time
-				ICollection<BoeApproverResponseDTO> allApproverResponses = this._BoeApproverResponseLoader.GetByBoeIds(allMVboeIds);
-
-				// check state validation before worrying about committing to the database but only if NOT a delete
-				if (!requestIsADelete)
-				{
-					this._ControllerLogic.ValidateSaveManageBOE(boes, ws, boePermissions, BoeStateDictionary, ValidationErrors, workspaceBoeDictionary);
-				}
-
-				#region MV to DTO conversion
-
-				// create a dictionary so we can lookup the permissions easily
-				ILookup<int, PermissionsDTO> boePermissionsLookup = boePermissions.ToLookup(x => x.BOEId.Value);
-
-				//Convert to use BOE DTOs
-				foreach (ManageBOEModelView boeMV in boes)
-				{
-					FullBoe originalBoe;
-					Collection<FieldChanged> changed = new Collection<FieldChanged>();
-
-					// If the BOE is is not new, grab it from the DB or create an empty BOE to hold the new data from the user.
-					#region
-					if (boeMV.BoeID > 0)
-					{
-						originalBoe = workspaceBoeDictionary[boeMV.BoeID];
-						DataRelationshipVerifier.VerifyDataRelation(originalBoe, ws.Id);
-
-						if (boes.Count == 1 && boeMV.Deleted == false)
-						{
-							singleEditMV = boeMV;
-						}
-					}
-					else
-					{
-						originalBoe = this.Factory.CreateFullBoe();
-						originalBoe.Id = boeMV.BoeID;
-					}
-					#endregion
-
-					// if DELETE or the BOE's CLIN was changed, need to recalculate labor spread for any other BOE that had either the old CLIN or the new CLIN referenced
-					#region
-					if (requestIsADelete || boeMV.ClinID != originalBoe.CLINID)
-					{
-						if (boeMV.ClinID.HasValue)
-						{
-							ClinIDsToRecalculateLaborSpread.Add(boeMV.ClinID.Value);
-						}
-
-						// if this is a new CLIN association, no need to recalculate
-						// only if the values are different..
-						if (originalBoe.CLINID.HasValue && boeMV.ClinID != originalBoe.CLINID)
-						{
-							ClinIDsToRecalculateLaborSpread.Add(originalBoe.CLINID.Value);
-						}
-
-						changed.Add(new FieldChanged
-						{
-							Field = "CLIN",
-							OldValue = originalBoe.CLINID.HasValue ? (from c in originalUnmodifiedCLINs where c.Id == originalBoe.CLINID select c.ClinString).First() : CommonConstants.Unassigned_CLIN_Display_Text,
-							NewValue = boeMV.ClinID.HasValue ? ws.Clins.First(c => c.Id == boeMV.ClinID.Value).ClinString : CommonConstants.Unassigned_CLIN_Display_Text
-						});
-					}
-					#endregion
-
-					// if the boe already existed, and its going from a non multi boe to a multi boe we'll need to update the resources.
-					if (boeMV.BoeID > 0 && boeMV.IsMultiClinWbs && !originalBoe.IsMultiClinWbs)
-					{
-						originalBoe.TaskElements.SelectMany(t => t.taskElementLabors.Select(l => { l.Updateable = UpdateType.Upsert; l.WBSID = originalBoe.WBSID; l.CLINID = originalBoe.CLINID; return l; })).ToCollection();
-						laborElementsUpdated = originalBoe.TaskElements.ToCollection();
-						//delete the travel and odc elements
-						travelElementsUpdated = originalBoe.Travels.Select(t => { t.Updateable = UpdateType.Deleted; return t; }).ToCollection();
-						BoeIdsEffectedByMulti.Add(boeMV.BoeID);
-
-					}
-					else if (boeMV.BoeID > 0 && !boeMV.IsMultiClinWbs && originalBoe.IsMultiClinWbs)
-					{
-						// if the boe already existed, and its going from a multi boe to a non multi boe we'll need to update the resources.
-						originalBoe.TaskElements.SelectMany(t => t.taskElementLabors.Select(l => { l.Updateable = UpdateType.Upsert; l.WBSID = null; l.CLINID = null; return l; })).ToCollection();
-						laborElementsUpdated = originalBoe.TaskElements.ToCollection();
-					}
-					originalBoe.IsMultiClinWbs = boeMV.IsMultiClinWbs;
-					originalBoe.CLINID = boeMV.ClinID;
-
-					if (boeMV.WbsID.HasValue && boeMV.WbsID < 0)
-					{
-						boeMV.WbsID = null;
-					}
-
-					// if the BOE's WBS was changed, need to recalculate labor spread for any other BOE that had either the old WBS or the new WBS referenced
-					#region
-					if (requestIsADelete || boeMV.WbsID != originalBoe.WBSID)
-					{
-						if (boeMV.WbsID.HasValue)
-						{
-							WbsIDsToRecalculateLaborSpread.Add(boeMV.WbsID.Value);
-						}
-
-						// if this is a new WBS association, no need to recalculate
-						// only if the values are different..
-						if (originalBoe.WBSID.HasValue && boeMV.WbsID != originalBoe.WBSID)
-						{
-							WbsIDsToRecalculateLaborSpread.Add(originalBoe.WBSID.Value);
-						}
-
-						changed.Add(new FieldChanged
-						{
-							Field = "WBS",
-							OldValue = (originalBoe.WBSID.HasValue && originalBoe.WBSID > 0) ? (from w in originalUnmodifiedWbses where w.Id == originalBoe.WBSID.Value select w.WbsString).First() : CommonConstants.Unassigned_WBS_Display_Text,
-							NewValue = (boeMV.WbsID.HasValue && boeMV.WbsID > 0) ? (from w in ws.WbsElements where w.Id == boeMV.WbsID.Value select w.WbsString).First() : CommonConstants.Unassigned_WBS_Display_Text
-						});
-					}
-					#endregion
-
-					originalBoe.WBSID = boeMV.WbsID;
-					originalBoe.WCBID = boeMV.BoeXrefID;
-
-
-
-					if (!(boeMV.State == BOEState.Unassigned || boeMV.State == BOEState.None))
-					{
-						if (changed.Count() != 0)
-						{
-							BoeFieldsChanged[originalBoe.Id] = changed;
-						}
-					}
-
-					// If NOT a DELETE and the BOE State is unassigned but authors and/or subcontractor authors were added and non-approver fields were changed, 
-					// automatically change state to draft.  Otherwise, the state is selected by the dropdown from the model view.
-					#region
-					if (!requestIsADelete
-						&& (boeMV.BoeID > 0 && (boeMV.Authors.Any() || boeMV.SubcontractorAuthors.Any()) && (
-						boeMV.WbsID != originalBoe.WBSID ||
-						boeMV.ClinID != originalBoe.CLINID ||
-						boeMV.isMaterial != originalBoe.isMaterial ||
-						boeMV.IsMultiClinWbs != originalBoe.IsMultiClinWbs ||
-						(!Enumerable.SequenceEqual(boeMV.Authors, originalBoe.AuthorIDs)) ||
-						(!Enumerable.SequenceEqual(boeMV.SubcontractorAuthors, originalBoe.SubcontractorAuthorIDs)))))
-					{
-						originalBoe.State = BOEState.Draft;
-					}
-					else if (boeMV.BoeID < 0 && (boeMV.Authors.Any() || boeMV.SubcontractorAuthors.Any()))
-					{
-						originalBoe.State = BOEState.Draft;
-					}
-					else
-					{
-						originalBoe.State = boeMV.State;
-					}
-					#endregion
-
-					// Set the start and end dates for new BOEs
-					#region
-					if (boeMV.BoeID < 0)
-					{
-						this._ControllerLogic.setDefaultBoeDates(ws, originalBoe, boeMV.ClinID);
-					}
-					#endregion
-
-					// Get Employee Authors
-					originalBoe.AuthorIDs = boeMV.Authors.Any() ? boeMV.Authors : null;
-
-					// Get the Subcontractor Authors
-					originalBoe.SubcontractorAuthorIDs = boeMV.SubcontractorAuthors.Any() ? boeMV.SubcontractorAuthors : null;
-
-					// If NOT a DELETE request && the authors were changed, we need to save the old list of authors to pass to our email function
-					#region
-					if (!requestIsADelete && originalBoe.Id > 0)
-					{
-						ICollection<PermissionsDTO> permissionsForThisBoe = boePermissionsLookup[boeMV.BoeID].ToList();
-
-						// retrieve the Authors on the BOE before any reassignments were performed
-						ICollection<PermissionsDTO> authors = permissionsForThisBoe.Where(x => x.Role == Role.Author).ToList();
-
-						// set a count of any Authors that were reassigned (removed)
-						int authorsReassigned = authors.Count(a => !boeMV.Authors.Contains(a.ETIUserId));
-
-						// set a count of any Authors that were added
-						int authorsAdded = boeMV.Authors.Count(id => !authors.Select(a => a.ETIUserId).Contains(id));
-
-						// set a count of any Authors that were reassigned, to include both removed and added
-						authorsReassigned += authorsAdded;
-
-						// retrieve the Subcontractor Authors on the BOE before any reassignments were performed
-						ICollection<PermissionsDTO> subcontractorAuthors = permissionsForThisBoe.Where(x => x.Role == Role.SubcontractorAuthor).ToList();
-
-						// set a count of any Subcontractor Authors that were reassigned (removed)
-						int subcontractorAuthorsReassigned = subcontractorAuthors.Count(a => !boeMV.SubcontractorAuthors.Contains(a.ETIUserId));
-
-						// set a count of any Subcontractor Authors that were reassigned, to include both removed and added
-						int subcontractorAuthorsAdded = boeMV.SubcontractorAuthors.Count(id => !subcontractorAuthors.Select(a => a.ETIUserId).Contains(id));
-
-						// set a count of any Subcontractor Authors that were reassigned, to include both removed and added
-						subcontractorAuthorsReassigned += subcontractorAuthorsAdded;
-
-						// total up the additions and removals for both Authors and Subcontractor Authors
-						int totalAuthorChanges = authorsReassigned + subcontractorAuthorsReassigned;
-
-						// if there have been any removals or additions of either Subcontractor Authors or Authors, update the counts and send emails
-						if (totalAuthorChanges > 0)
-						{
-							// collect the old authors and combine them into 1 user collection
-							ICollection<UserDTO> oldAuthors = authors.Select(a => this.UserLoader.GetUserByID(a.ETIUserId)).ToList();
-							ICollection<UserDTO> oldSubcontractorAuthors = subcontractorAuthors.Select(a => this.UserLoader.GetUserByID(a.ETIUserId)).ToList();
-							oldAuthors = oldAuthors.Union(oldSubcontractorAuthors).ToList();
-
-							AuthorsChangeDictionary[boeMV.BoeID] = new Collection<UserDTO>(oldAuthors.ToArray());
-
-							// increment the reassigned number in the BOE
-							originalBoe.NumAuthorReassigned += authorsReassigned;
-							originalBoe.NumAuthorReassigned += subcontractorAuthorsReassigned;
-						}
-					}
-
-					PermissionsDTO[] Approvers = boePermissionsLookup[originalBoe.Id].Where(x => x.Role == Role.Approver).Select(x => x).ToArray();
-					bool approversRemoved = (from removedApprover in Approvers
-											 where !boeMV.Approvers.Contains(removedApprover.ETIUserId)
-											 select removedApprover).Any();
-
-					bool approversAdded = (from addedApprover in boeMV.Approvers
-										   where !(Approvers.Select(a => a.ETIUserId).Contains(addedApprover))
-										   select addedApprover).Any();
-
-					if (approversRemoved || approversAdded)
-					{
-						IEnumerable<UserDTO> oldApprovers = from oldApprover in Approvers
-															select this.UserLoader.GetUserByID(oldApprover.ETIUserId);
-
-						ApproversChangeDictionary[originalBoe.Id] = new Collection<UserDTO>(oldApprovers.ToArray());
-					}
-
-					// Get Approvers
-					// grab all approver ids for the boe MVs and get them all at once
-					int insertNewApproverIndex = -1;
-					foreach (int BoeApproverID in boeMV.Approvers)
-					{
-
-						BoeApproverResponseDTO boeApprover = allApproverResponses.FirstOrDefault(a => a.BoeID == boeMV.BoeID && a.ETIUserID == BoeApproverID);
-
-						if (boeApprover == null)
-						{
-							// create a new one
-							boeApprover = new BoeApproverResponseDTO();
-							boeApprover.Id = insertNewApproverIndex;
-							boeApprover.ETIUserID = BoeApproverID;
-							boeApprover.BoeID = boeMV.BoeID;
-							boeApprover.Updateable = UpdateType.Upsert;
-							boeApprover.CurrentUserETIUserID = activeUser.UserID;
-							insertNewApproverIndex--;
-						}
-						boeApproverResponsesToPotentiallySave.Add(boeApprover);
-					}
-
-					// if NOT a DELETE request && any approvers were deleted, mark them as such
-					if (!requestIsADelete && originalBoe.Id > 0)
-					{
-						ICollection<BoeApproverResponseDTO> approversThatWereRemoved = allApproverResponses.Where(approvers => approvers.BoeID == boeMV.BoeID && !boeMV.Approvers.Contains(approvers.ETIUserID)).ToCollection<BoeApproverResponseDTO>();
-
-						if (approversThatWereRemoved.Any())
-						{
-							foreach (BoeApproverResponseDTO boeApprover in approversThatWereRemoved)
-							{
-								boeApprover.Updateable = UpdateType.Deleted;
-								boeApprover.CurrentUserETIUserID = activeUser.UserID;
-								boeApproverResponsesToPotentiallySave.Add(boeApprover);
-							}
-						}
-					}
-					#endregion
-
-					originalBoe.WorkspaceID = ws.Id;
-					originalBoe.UpdateDate = boeMV.UpdateDate;
-
-					if (requestIsADelete)
-					{
-						originalBoe.Updateable = UpdateType.Deleted;
-						BoesToBeDeleted.Add(originalBoe);
-						boeInformationCollection[originalBoe] = boeMV.Approvers;
-					}
-					else
-					{
-						originalBoe.Updateable = UpdateType.Upsert;
-					}
-
-					// if NOT a DELETE request && user is changing boe to a material boe, keep track of it
-					if (!requestIsADelete && originalBoe.isMaterial == false && boeMV.isMaterial)
-					{
-						NewMaterialBoes.Add(originalBoe);
-					}
-					originalBoe.isMaterial = boeMV.isMaterial;
-
-					boesToSave.Add(originalBoe);
-				}
-
-				#endregion
-
-				// if NOT a DELETE then transition any states
-				#region
-				if (!requestIsADelete)
-				{
-					foreach (BoeDTO boe in boesToSave)
-					{
-						BoeDTO oldBoe = null;
-						if (boe.Id > 0)
-						{
-							oldBoe = originalUnmodifiedBOEs.FirstOrDefault(b => b.Id == boe.Id);
-						}
-
-						if (oldBoe != null)
-						{
-							// if all approvers have approved, change state to Approved
-							if (oldBoe.State == boe.State && boe.State == BOEState.AwaitingApproval)
-							{
-								IEnumerable<BoeApproverResponseDTO> responses = boeApproverResponsesToPotentiallySave.Where(x => x.BoeID == boe.Id && x.Updateable != UpdateType.Deleted);
-
-								if (responses.Any() && responses.Count(x => x.ApproverResponse == ApproverReponseType.Approved) ==
-									responses.Count())
-								{
-									boe.State = BOEState.Approved;
-								}
-							}
-
-							// if the CLIN association changed, put the BOE back to draft
-
-							if (boe.CLINID != oldBoe.CLINID)
-							{
-								if (boe.State == BOEState.AwaitingApproval || boe.State == BOEState.Approved || boe.State == BOEState.DraftLocked)
-								{
-									boe.State = BOEState.Draft;
-								}
-							}
-
-							if (boe.IsMultiClinWbs != oldBoe.IsMultiClinWbs)
-							{
-								if (boe.State == BOEState.AwaitingApproval || boe.State == BOEState.Approved || boe.State == BOEState.DraftLocked)
-								{
-									boe.State = BOEState.Draft;
-								}
-							}
-
-							if (oldBoe.State != boe.State)
-							{
-								// Validate the Awaiting Approval or Approved to Draft state transition
-								string validationMessage;
-								if (!this._boeStateMachine.PerformStateTransitionValidation(this.Factory.CreateFullBoe(boe), ws, oldBoe.State, boe.State, out validationMessage))
-								{
-									// not valid ... communicate to user
-									ValidationErrors.Add(new ValidationMessage("Something", validationMessage));
-								}
-
-								// Perform common state transition actions
-								transitionsToPerform.Add(new BOEStateTransition() { ID = boe.Id, OldState = oldBoe.State, NewState = boe.State });
-							}
-						}
-					}
-				}
-				#endregion
-
-			}
-
-			#endregion
+			ManageBOEModelView singleEditMV = _ControllerLogic.SaveManageBOE(boes, this.ModelState, ws);
 
 			// Perform Action
 			JsonResult toReturn;
 
-			if (!ValidationErrors.Any())
+			try
 			{
-				// BOEJ-4000: If too many are being deleted, do a backup first
-				if (BoesToBeDeleted.Count >= CommonConstants.AUTO_SYSTEM_BACKUP_DELETION_BOES_THRESHOLD)
-				{
-					WorkspaceVersionMetaDataDTO backup = new WorkspaceVersionMetaDataDTO()
-					{
-						VersionID = -1,
-						CreatedByID = ws.CurrentActiveUser.UserID,
-						Updateable = UpdateType.Upsert,
-						VersionName = $"{CommonConstants.AUTO_SYSTEM_BACKUP_DELETION_BOES} {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}",
-						VersionState = ws.WorkspaceState,
-						WorkspaceID = ws.Id
-					};
-
-					// backup
-					versionLoader.Upsert(backup, backup.WorkspaceID);
-				}
-
-				#region moreDataManipulationAndThenTheSave
-
-				List<WorkspaceVariableDTO> workspaceVariablesEffectedByDelete = new List<WorkspaceVariableDTO>();
-
-				// Dictionary to keep track of workspace variable IDs that need to be updated and their old variable total
-				Dictionary<int, decimal> WorkspaceVarOldValueID = new Dictionary<int, decimal>();
-
-				// grab the clins that need to be recalculated
-				ICollection<ClinDTO> clinsToRecalculate = (from c in ws.Clins
-														   where ClinIDsToRecalculateLaborSpread.Contains(c.Id)
-														   select c).ToCollection<ClinDTO>();
-
-				// update BOE sums based on the workspace variables associated with each clin to recalculate
-				#region
-				foreach (ClinDTO clinObject in clinsToRecalculate)
-				{
-					ICollection<WorkspaceVariableDTO> workspaceVariablesForThisClin = FullWorkspaceHelper.GetWorkspaceVariablesAssociatedWithClin(clinObject.Id, ws);
-
-					if (workspaceVariablesForThisClin.Any())
-					{
-						foreach (WorkspaceVariableDTO workspaceVar in workspaceVariablesForThisClin)
-						{
-							DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
-							data.FillData(null, new List<WorkspaceVariableDTO>() { workspaceVar }, ws);
-
-							decimal oldTotalValue = this._variableSelectBOEtoSumCalculation.GetWorkspaceVarLabelTotal(workspaceVar, data);
-							WorkspaceVarOldValueID[workspaceVar.Id] = oldTotalValue;
-
-							workspaceVariablesEffectedByDelete.Add(workspaceVar);
-						}
-					}
-				}
-				#endregion
-
-
-				// for BOEs to be deleted, grab the workspace variables they're using and update the BOE sums for the remaining BOEs
-				#region
-
-				foreach (FullBoe boeDeleted in BoesToBeDeleted)
-				{
-					ICollection<WorkspaceVariableDTO> workspaceVariablesForThisBoe = FullWorkspaceHelper.GetWorkspaceVariablesAssociatedWithBoe(boeDeleted.Id, ws);
-
-					foreach (WorkspaceVariableDTO workspaceVariable in workspaceVariablesForThisBoe)
-					{
-						DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
-						data.FillData(null, new List<WorkspaceVariableDTO>() { workspaceVariable }, ws);
-
-						decimal oldTotalValue = this._variableSelectBOEtoSumCalculation.GetWorkspaceVarLabelTotal(workspaceVariable, data);
-						WorkspaceVarOldValueID[workspaceVariable.Id] = oldTotalValue;
-					}
-				}
-
-				#endregion
-
-				// variables that were effected by a BOE delete
-				List<OrdinaryVariableDto> taskVariablesEffectedByDelete = new List<OrdinaryVariableDto>();
-				List<int> WorkspaceVarIdsEffectedByDelete = new List<int>();
-
-				List<int> BoeIdsEffectedByDelete = new List<int>();
-				// variables that were effected by a BOE to Multi
-				List<OrdinaryVariableDto> taskVariablesEffectedByMulti = new List<OrdinaryVariableDto>();
-				List<WorkspaceVariableDTO> workspaceVariablesEffectedByMulti = new List<WorkspaceVariableDTO>();
-
-				IDictionary<int, int> boeSaveIDDict;
-				_ = ws.MoqTypeSelections; // preload the data prior to transaction
-
-				using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
-				{
-					// save all workspace variables
-					if (BoeIdsEffectedByMulti.Any())
-					{
-						this._ControllerLogic.RemoveMultiBOEReferenceWorkspaceVar(ws, workspaceVariablesEffectedByMulti, BoeIdsEffectedByMulti);
-						foreach (int boeID in BoeIdsEffectedByMulti)
-						{
-							taskVariablesEffectedByMulti.AddRange(FullWorkspaceHelper.GetTaskVariablesAssociatedWithBoe(boeID, ws));
-						}
-					}
-
-					// if BOEs were marked to be deleted, get all the task elements that would be effected by this delete before it's actually deleted
-					#region
-					ICollection<int> boeIdsToBeDeleted = (from b in BoesToBeDeleted select b.Id).ToCollection();
-					foreach (FullBoe boe in BoesToBeDeleted)
-					{
-						taskVariablesEffectedByDelete.AddRange(FullWorkspaceHelper.GetTaskVariablesAssociatedWithBoe(boe.Id, ws));
-						workspaceVariablesEffectedByDelete.AddRange(FullWorkspaceHelper.GetWorkspaceVariablesAssociatedWithBoe(boe.Id, ws));
-						WorkspaceVarIdsEffectedByDelete.AddRange(workspaceVariablesEffectedByDelete.Select(i => i.Id));
-						BoeIdsEffectedByDelete.AddRange(FullWorkspaceHelper.GetBoeIdsImpactedByDeletedBoe(boe.Id, ws, boeIdsToBeDeleted));
-
-
-						if (boe.WBSID.HasValue)
-						{
-							ICollection<WbsDTO> parentWbs = FullWorkspaceHelper.GetAllParentWBS(ws.WbsElements.FirstOrDefault(x => x.Id == boe.WBSID), ws);
-
-							if (parentWbs.Any())
-							{
-								foreach (int wbsId in parentWbs.Select(a => a.Id))
-								{
-									WbsIDsToRecalculateLaborSpread.Add(wbsId);
-								}
-							}
-						}
-
-						// if the approver response is mapped to a deleted BOE, then we shouldn't bother with saving them
-						boeApproverResponsesToPotentiallySave.RemoveAll(x => x.BoeID == boe.Id);
-					}
-					#endregion
-
-					// We don't need to recompute any boes that are going to be deleted
-					BoeIdsEffectedByDelete.RemoveAll(x => boeIdsToBeDeleted.Contains(x));
-
-					// Save approvers for existing BOEs so they can be copied correctly in the mediator.
-					BoeApproverResponseDTO[] boeApproversToSave = boeApproverResponsesToPotentiallySave.Where(x => x.BoeID > 0 && x.Updateable != UpdateType.None).ToArray();
-					if (boeApproversToSave.Any())
-					{
-						this._BoeApproverResponseLoader.Save(new Collection<BoeApproverResponseDTO>(boeApproversToSave));
-					}
-
-					foreach (BOEStateTransition transition in transitionsToPerform)
-					{
-						this._boeStateMachine.PerformStateTransitionAction(this.Factory.CreateFullBoe(originalUnmodifiedBOEs.FirstOrDefault(x => x.Id == transition.ID)), ws, transition.OldState, transition.NewState);
-					}
-
-					// This method can save boes and task elements. If they are saved, the ws is updated so that any subsequent
-					// calls to the TaskElements and/or BOEs will result in a re-read from the db. 
-					//need to update travel and odc elements if we are creating a multi boe from a non multi boe
-					//need to update the labor resources 
-					this._TravelDTOLoader.SaveTravels(travelElementsUpdated);
-					this._BoeTaskElementMediator.MediatedSaveTaskElements(laborElementsUpdated, ws);
-					this._ControllerLogic.DeleteMoqTypesForBoe(ws, BoesToBeDeleted.Select(x => x.Id).ToList());
-					boeSaveIDDict = this._BoeMediator.MediatedSaveBOEs(ws, boesToSave);
-
-					if (!requestIsADelete)
-					{
-						int newMaterialID = -1;
-						foreach (BoeDTO boe in NewMaterialBoes)
-						{
-							int boeId = boeSaveIDDict.ContainsKey(boe.Id) ? boeSaveIDDict[boe.Id] : -1;
-							// add a Material Task Element.
-							MaterialDTO MaterialDTOtoSave = new MaterialDTO();
-							MaterialDTOtoSave.BoeID = boeId;
-							MaterialDTOtoSave.Id = newMaterialID;
-							MaterialDTOtoSave.TaskTitle = "Material";
-							MaterialDTOtoSave.Updateable = UpdateType.Upsert;
-
-							newMaterialID--;
-
-							this._MaterialLoader.SaveMaterials(new Collection<MaterialDTO> { MaterialDTOtoSave });
-						}
-
-						// Save Boe Approvers for new BOEs
-						boeApproversToSave = boeApproverResponsesToPotentiallySave.Where(x => x.BoeID < 0).ToArray();
-						if (boeApproversToSave.Any())
-						{
-							foreach (BoeApproverResponseDTO boeapprover in boeApproversToSave)
-							{
-								boeapprover.BoeID = boeSaveIDDict[boeapprover.BoeID];
-							}
-
-							this._BoeApproverResponseLoader.Save(new Collection<BoeApproverResponseDTO>(boeApproversToSave));
-
-							// Need to see if we need to create a WS level role for the user (if the permissions are being granted via a group)
-							Collection<PermissionsDTO> wsPermissions = this.PermissionsLoader.GetBOEPotentialPermissionsForWorkspace(ws.Id);
-
-							foreach (BoeApproverResponseDTO boeapprover in boeApproversToSave)
-							{
-								Collection<PermissionsDTO> wsApproverPermissionsForUser = wsPermissions.Where(x => x.ETIUserId == boeapprover.ETIUserID && x.Role == Role.Approver).ToCollection();
-
-								if (!wsApproverPermissionsForUser.Any())
-								{
-									PermissionsDTO permission = new PermissionsDTO();
-
-									// need to insert a potential WS permission based on the permission dto
-									permission.Id = -1;
-									permission.Role = Role.Approver;
-									permission.Updateable = UpdateType.Upsert;
-									permission.BOEId = null;
-									permission.WorkspaceId = ws.Id;
-									permission.PermissionId = -1;
-									permission.ETIUserId = boeapprover.ETIUserID;
-
-									this.PermissionsLoader.SavePermission(permission);
-								}
-							}
-						}
-					}
-
-					// need to get the BOE task elements that were effected by the above BOE save
-					ICollection<ClinDTO> clinObjectsToRecalulateLaborSpread = (from c in originalUnmodifiedCLINs where ClinIDsToRecalculateLaborSpread.Contains(c.Id) select c).ToCollection();
-					foreach (ClinDTO clinObject in clinObjectsToRecalulateLaborSpread)
-					{
-						FullClin fullClin = this.Factory.CreateFullClin(clinObject);
-						boeTaskElementsToRecalculate.AddRange(this._BoeTaskElementRecalculation.RecalculateLaborWithClin(fullClin, VariableType.Task, ws));
-						boeTaskElementsToRecalculate.AddRange(this._BoeTaskElementRecalculation.RecalculateLaborWithClin(fullClin, VariableType.Workspace, ws));
-					}
-
-					if (boeTaskElementsToRecalculate.Any())
-					{
-						boeTaskElementsToRecalculate = boeTaskElementsToRecalculate.Distinct().ToList();
-						this._BoeTaskElementMediator.MediatedBulkSaveTaskElements(new Collection<BoeTaskElementDTO>(boeTaskElementsToRecalculate), ws);
-
-						this._ControllerLogic.AdjustStateOfTaskElements(ws, boeTaskElementsToRecalculate.ToCollection());
-					}
-
-					boeTaskElementsToRecalculate.Clear();
-
-					ICollection<FullWbs> WbsObjectsToRecalculateSpread = (from w in ws.WbsElements
-																		  where WbsIDsToRecalculateLaborSpread.Contains(w.Id)
-																		  select w).ToCollection();
-					foreach (FullWbs wbsObject in WbsObjectsToRecalculateSpread)
-					{
-						boeTaskElementsToRecalculate.AddRange(this._BoeTaskElementRecalculation.RecalculateLaborWithWBS(wbsObject, VariableType.Task, ws));
-						boeTaskElementsToRecalculate.AddRange(this._BoeTaskElementRecalculation.RecalculateLaborWithWBS(wbsObject, VariableType.Workspace, ws));
-					}
-
-					// If the BOE that contains the variable has been removed, we don't need to recalculate it.. So only recalculate task elements that have active BOEs.
-					ws.RefreshBoes();
-
-					taskVariablesEffectedByDelete = taskVariablesEffectedByDelete.Where(x => ws.Boes.Select(z => z.Id).Contains(x.BoeID)).ToList();
-					if (taskVariablesEffectedByDelete.Any())
-					{
-						// A Boe was deleted that was part of a sum of boe task variable. Refresh the task elements so when
-						// they are re-retrieved, they will contain updated ordinary variables.
-						ws.RefreshTaskElements();
-					}
-
-					// check if any task elements need to be recalculated that were effected by a delete boe.
-					// check task variables and workspace variables separately
-					foreach (OrdinaryVariableDto taskVar in taskVariablesEffectedByDelete)
-					{
-						boeTaskElementsToRecalculate.AddRange(from t in this._BoeTaskElementRecalculation.RecalculateLaborWithVariable(taskVar.Id, VariableType.Task, ws)
-															  where !(from o in boeTaskElementsToRecalculate
-																	  select o.Id).Contains(t.Id)
-															  select t);
-					}
-
-					Collection<BoeTaskElementDTO> taskEffectedByMutliBOE = new Collection<BoeTaskElementDTO>(this._ControllerLogic.RemoveMultiBOEReferenceTaskVar(ws, BoeIdsEffectedByMulti));
-					// check if any task elements need to be recalculated that were effected by a multi boe being changed
-					// check task variables and workspace variables separately
-					foreach (OrdinaryVariableDto taskVar in taskVariablesEffectedByMulti)
-					{
-
-						boeTaskElementsToRecalculate.AddRange(from t in this._BoeTaskElementRecalculation.RecalculateLaborWithVariable(taskVar.Id, VariableType.Task, ws, taskEffectedByMutliBOE)
-															  where !(from o in boeTaskElementsToRecalculate
-																	  select o.Id).Contains(t.Id)
-															  select t);
-					}
-					// Task elements and workspace variables may have been updated as part of a side affect of saving Boes.
-					ws.RefreshTaskElements();
-					ws.RefreshWorkspaceVariables();
-
-					// save all workspace variables
-					Collection<int> WSIds = new Collection<int>(WorkspaceVarIdsEffectedByDelete.Union(WorkspaceVarOldValueID.Keys).ToArray());
-					if (WSIds.Any())
-					{
-						ICollection<WorkspaceVariableDTO> workspaceVariables = (from v in ws.WorkspaceVariables
-																				where WSIds.Contains(v.Id)
-																				select v).ToCollection();
-
-						Collection<WorkspaceVariableDTO> workspaceVarToSave = new Collection<WorkspaceVariableDTO>();
-						foreach (WorkspaceVariableDTO workspaceVar in workspaceVariables)
-						{
-							DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
-							data.FillData(null, new List<WorkspaceVariableDTO>() { workspaceVar }, ws);
-
-							workspaceVar.WorkspaceVariableValue = this._variableSelectBOEtoSumCalculation.GetWorkspaceVarLabelTotal(workspaceVar, data);
-							workspaceVar.Updateable = UpdateType.Upsert;
-							workspaceVarToSave.Add(workspaceVar);
-						}
-						this._workspaceVariableLoader.SaveWorkspaceVariables(workspaceVarToSave);
-
-						ws.RefreshWorkspaceVariables();
-					}
-
-					ws.RefreshBoes();
-					ws.RefreshTaskElements();
-
-					workspaceVariablesEffectedByDelete = workspaceVariablesEffectedByDelete.Where(x => x.ValueType == VarValueType.SumOfBOEs && ws.TaskElements.SelectMany(z => z.WorkspaceVariableIDs).Contains(x.Id)).Distinct().ToList();
-
-					foreach (WorkspaceVariableDTO workspaceVar in workspaceVariablesEffectedByDelete)
-					{
-						boeTaskElementsToRecalculate.AddRange(from t in this._BoeTaskElementRecalculation.RecalculateLaborWithVariable(workspaceVar.Id, VariableType.Workspace, ws)
-															  where !(from o in boeTaskElementsToRecalculate
-																	  select o.Id).Contains(t.Id)
-															  select t);
-					}
-
-					workspaceVariablesEffectedByMulti = workspaceVariablesEffectedByMulti.Where(x => ws.TaskElements.SelectMany(z => z.WorkspaceVariableIDs).Contains(x.Id)).ToList();
-
-					foreach (WorkspaceVariableDTO workspaceVar in workspaceVariablesEffectedByMulti)
-					{
-						boeTaskElementsToRecalculate.AddRange(from t in this._BoeTaskElementRecalculation.RecalculateLaborWithVariable(workspaceVar.Id, VariableType.Workspace, ws)
-															  where !(from o in boeTaskElementsToRecalculate
-																	  select o.Id).Contains(t.Id)
-															  select t);
-					}
-
-					// save all the task elements that were effected by a BOE deletion or a CLIN/WBS remapping
-					if (boeTaskElementsToRecalculate.Any())
-					{
-						boeTaskElementsToRecalculate = boeTaskElementsToRecalculate.Distinct().ToList();
-						this._BoeTaskElementMediator.MediatedSaveTaskElements(new Collection<BoeTaskElementDTO>(boeTaskElementsToRecalculate), ws);
-
-						// refresh the task elements
-						ws.RefreshTaskElements();
-					}
-
-					// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-					// Now that the first layer has been recalculated, cause a recalculation of everything else.
-					ICollection<BoeDTO> boesEffectedByDelete = (from b in ws.Boes
-																where BoeIdsEffectedByDelete.Contains(b.Id)
-																select b as BoeDTO).ToCollection();
-
-					foreach (BoeDTO boe in boesEffectedByDelete)
-					{
-						ICollection<BoeTaskElementDTO> taskElements = (from te in ws.TaskElements
-																	   where te.BoeID == boe.Id
-																	   select te).ToCollection();
-
-						this._BoeLaborControllerLogic.CalculateLinkedTaskElements(ValidationErrors, taskElements, new Collection<BoeTaskElementDTO>(), ws);
-					}
-
-					if (boeTaskElementsToRecalculate.Any())
-					{
-						this._ControllerLogic.AdjustStateOfTaskElements(ws, boeTaskElementsToRecalculate.ToCollection());
-					}
-
-					// Now we need to see if the Wbs had a variable mapped to it. if it did, remap to BOEs created for it
-					// only do this if there are workspace variables
-					if (ws.WorkspaceVariables.Any())
-					{
-						foreach (BoeDTO boe in boesToSave)
-						{
-							if (boe.WBSID.HasValue)
-							{
-								this.wbsLoader.RemapTaskAndWorkspaceVariablesFromWbsToBoe(boe.WBSID.Value, boe.Id);
-							}
-						}
-					}
-
-					scope.Complete();
-				}
-
-				#region emailing
-
-				IDictionary<int, BOEStateModelView> boeStateNameDictionary = this._CommonDataMapper.getBOEStatesDictionary();
-
-				// emails need to be sent after the save
-				foreach (BoeDTO boe in boesToSave)
-				{
-					// if the boe has just been deleted, need to send BOE Deleted email to
-					// approvers, author, and workspace admins
-					if (boe.Updateable == UpdateType.Deleted)
-					{
-						foreach (KeyValuePair<BoeDTO, Collection<int>> keyValuePair in boeInformationCollection)
-						{
-							BoeDTO boeMarkedForDelete = keyValuePair.Key;
-							Collection<int> approverIds = keyValuePair.Value;
-							WbsDTO wbsAssociatedWithBoe = ws.WbsElements.FirstOrDefault(w => w.Id == boeMarkedForDelete.WBSID);
-							ClinDTO clinAssociatedWithBoe = ws.Clins.FirstOrDefault(c => c.Id == boeMarkedForDelete.CLINID);
-
-							if (boeMarkedForDelete.Id == boe.Id)
-							{
-								this._emailer.SendBOEDeleted(boeMarkedForDelete, activeUser, approverIds, wbsAssociatedWithBoe, clinAssociatedWithBoe, ws, boeStateNameDictionary);
-							}
-
-						}
-					}
-					else
-					{
-						if (BoeStateDictionary.ContainsKey(boe.Id))
-						{
-							using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
-							{
-								this._boeStateMachine.PerformStateTransitionAction(this.Factory.CreateFullBoe(boe), ws, BoeStateDictionary[boe.Id], boe.State);
-								scope.Complete();
-							}
-						}
-
-						// If the BOE has been put in draft mode, send BOE author email opened for edit.
-						// else Send the 'Author Changed' email
-						if (ws.WorkspaceState == WorkspaceState.Working)
-						{
-							if (AuthorsChangeDictionary.ContainsKey(boe.Id))
-							{
-								if (boe.State == BOEState.Draft && BoeStateDictionary[boe.Id] == BOEState.Unassigned)
-								{
-									this._emailer.SendBOEAuthorsEmailOpenedForEdit(this.Factory.CreateFullBoe(boe), ws);
-								}
-								else
-								{
-									this._emailer.SendBOEAuthorsChanged(AuthorsChangeDictionary[boe.Id], this.Factory.CreateFullBoe(boe));
-								}
-
-							}
-
-							// Send BOE Author email when Author and Approver are selected during BOE Creation
-							// BOE is assigned Draft State and skips Unassigned State.
-							if (boe.State == BOEState.Draft && !(BoeStateDictionary.ContainsKey(boe.Id)))
-							{
-								this._emailer.SendBOEAuthorsEmailOpenedForEdit(this.Factory.CreateFullBoe(boe), ws);
-							}
-						}
-
-						// Send the 'Approvers Changed' email, if applicable
-						if (ApproversChangeDictionary.ContainsKey(boe.Id) && boe.State == BOEState.AwaitingApproval)
-						{
-							this._emailer.SendBOEApproversChanged(ApproversChangeDictionary[boe.Id], this.Factory.CreateFullBoe(boe));
-						}
-
-						// Send CLIN/WBS updated email, if applicable (not sending for new MultiCLIN or for updating MultiCLIN boe to MultiCLIN boe)
-						BoeDTO originalBOE = originalUnmodifiedBOEs.FirstOrDefault(b => b.Id == boe.Id);
-						if (originalBOE != null)
-						{
-							bool clinChanged = originalBOE.CLINID != boe.CLINID;
-							bool wbsChanged = originalBOE.WBSID != boe.WBSID;
-							bool notMultiOrChanged = !boe.IsMultiClinWbs || !originalBOE.IsMultiClinWbs;
-							if (notMultiOrChanged && (clinChanged || wbsChanged))
-							{
-								FullBoe fullBoe = this.Factory.CreateFullBoe(boe);
-
-								// It is an updated BOE, and either CLIN or WBS was changed
-								this._emailer.SendBOECLINWBSChanged(fullBoe, clinChanged, wbsChanged, false);
-							}
-						}
-						else if (!boe.IsMultiClinWbs && boe.CLINID.HasValue || boe.WBSID.HasValue)
-						{
-							int boeToGetID = boeSaveIDDict[boe.Id];
-							FullBoe fullBoe = this.Factory.CreateFullBoe(boeToGetID);
-
-							// It is a new BOE, and either CLIN or WBS was set 
-							this._emailer.SendBOECLINWBSChanged(fullBoe, fullBoe.CLINID.HasValue, fullBoe.WBSID.HasValue, false);
-						}
-					}
-				}
-
-				#endregion
 
 				if (singleEditMV == null)
 				{
@@ -2203,26 +1310,21 @@ namespace GenBOE.Web.Controllers
 					// Returning a single model view allows the ui to just update that one BOE entry on the grid rather than forcing a 
 					// reload of the entire BOE grid.
 					// Get the boe
-					int boeToGetID = boeSaveIDDict != null && boeSaveIDDict.ContainsKey(singleEditMV.BoeID) ? boeSaveIDDict[singleEditMV.BoeID] : singleEditMV.BoeID;
-
-					FullBoe boe = this.Factory.CreateFullBoe(boeToGetID);
-
-					// populate the MV
-					singleEditMV = this._ControllerLogic.GetManageBOEGridData(ws, new List<FullBoe>() { boe }).First();
-
 					toReturn = this.Json(singleEditMV);
 				}
 
-				#endregion
-			}
-			else
+				// Finalize Action
+				this.FinalizeAction(this._log, WebConstants.ACTION_SAVE_MANAGE_BOE, sw);
+
+
+			} catch (GenValidationException ex)
 			{
-				throw new GenValidationException(ValidationErrors);
+				_log.Error(ex);
+				toReturn = Json(new { status = false, message = ex.Message });
 			}
 
-			// Finalize Action
-			this.FinalizeAction(this._log, WebConstants.ACTION_SAVE_MANAGE_BOE, sw);
 			return toReturn;
+
 		}
 
 
@@ -3494,12 +2596,6 @@ namespace GenBOE.Web.Controllers
 
 			return response;
 		}
-	}
 
-	internal class BOEStateTransition
-	{
-		public int ID { get; set; }
-		public BOEState OldState { get; set; }
-		public BOEState NewState { get; set; }
 	}
 }
