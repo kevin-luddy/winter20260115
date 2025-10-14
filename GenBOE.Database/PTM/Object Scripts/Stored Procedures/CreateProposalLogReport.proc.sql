@@ -49,6 +49,8 @@ AS
 **		11/21/24	twilson3			proph-2357 Add Insurance fields
 **		02/27/25	Carlos				PROPH-2642 Added SupplierMilestoneDatesResponse field
 **		05/13/25	ranzalon			PROPH-3038 Added Bid and Mission Segment EPP Dates
+**		07/21/25	e378233				PROPH-2835/2836 Added MSAC POC and Program Manager
+**		10/13/25	ranzalon			PROPH-3375 PPR Questions 13 and 14
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -211,8 +213,10 @@ SELECT V.[ProposalID]
 	  ,V.CoverSheetApproverName
 	  ,V.LOBMgrName
 	  ,V.ProposalMgrName
+	  ,V.ProgramMgrName
 	  ,V.TechLeadName
 	  ,V.LeadEstimatorName
+	  ,V.[MSAC POC]
       ,V.[Cost Volume Lead]
       ,V.[Additional Pricing Resource 1]
       ,V.[Additional Pricing Resource 2]
@@ -344,6 +348,8 @@ SELECT V.[ProposalID]
 	 ,V.CustomerDueDate
 	 ,V.NlfResponse
 	 ,V.SupplierMilestoneDatesResponse
+	 ,V.ScopeVerifiedThru2028Response
+	 ,V.ScopeVerified2029BeyondResponse
 	 ,AdditionalClassification =
 		CASE V.[AdditionalClassification]
 			WHEN 1 THEN 'Yes'
