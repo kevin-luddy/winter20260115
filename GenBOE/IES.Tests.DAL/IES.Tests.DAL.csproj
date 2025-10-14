@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{6A05410F-AB54-499E-BFCF-9AD0561EFBD7}</ProjectGuid>
     <OutputType>Library</OutputType>
-	  <Nullable>disable</Nullable>
+    <Nullable>disable</Nullable>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>IES.Tests</RootNamespace>
     <AssemblyName>IES.Tests</AssemblyName>
@@ -73,6 +73,7 @@
     <Reference Include="Microsoft.Practices.EnterpriseLibrary.Logging.Service">
       <HintPath>..\libraries\Microsoft.Practices.EnterpriseLibrary.Logging.Service.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Practices.Unity, Version=2.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Moq">
       <HintPath>..\libraries\Moq.dll</HintPath>

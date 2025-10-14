@@ -1601,11 +1601,11 @@ namespace GenBOE.Web.Controllers
             Stopwatch sw = this.InitializeAction(this._log, "ManageOutputFormatTemplatesGrid", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             // get the actual export format DTOs and order by their template name
-            List<WorkspaceExportFormatDTO> exportFormats = this._WorkspaceExportFormatDTOLoader.GetAllWorkspaceExportFormatIds().Where(x => x.IsActive == getActiveTemplates).OrderBy(x => x.ExportFormatName).ToList();
+            List<WorkspaceExportFormatNameDTO> exportFormats = this._WorkspaceExportFormatDTOLoader.GetAllWorkspaceExportFormatIds().Where(x => x.IsActive == getActiveTemplates).OrderBy(x => x.ExportFormatName).ToList();
             
             ManageOutputFormatTemplatesModelView mv = new ManageOutputFormatTemplatesModelView();
             mv.GridRows = new Collection<ManageOutputFormatTemplatesModelViewRow>();
-            foreach (WorkspaceExportFormatDTO exportFormat in exportFormats)
+            foreach (WorkspaceExportFormatNameDTO exportFormat in exportFormats)
             {
                 mv.PagedIndexes.Add(exportFormat.ExportFormat.TemplateId);
                 if (mv.GridRows.Count < mv.ResultsPerPage)

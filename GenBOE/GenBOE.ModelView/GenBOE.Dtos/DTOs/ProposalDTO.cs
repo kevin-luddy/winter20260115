@@ -1,65 +1,68 @@
-﻿
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2025 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace GenBOE.Dtos
 {
-	using IES.Common;
 	using System;
 	using System.Diagnostics.CodeAnalysis;
 
 	/// <summary>
-	/// Proposal DTO 
+	/// PLD Proposal DTO 
 	/// </summary>
 	[ExcludeFromCodeCoverage]
 	[Serializable()]
-	public class ProposalDTO
+	public class PLDProposalDTO
 	{
 		/// <summary>
 		/// Default ctor
 		/// </summary>
-		public ProposalDTO()
+		public PLDProposalDTO()
 		{
-			PA_Number = string.Empty;
-			PA_Version = -1;
-			PA_Title = string.Empty;
-			PA_Description = string.Empty;
-			Line_of_Business = string.Empty;
+			PANumber = string.Empty;
+			Version = -1;
+			Title = string.Empty;
+			Description = string.Empty;
+			LineOfBusiness = string.Empty;
 			Pricing = string.Empty;
-			Project_Start_Date = DateTime.MinValue;
-			Project_End_Date = DateTime.MinValue;
-			RFP_Number = string.Empty;
-			Last_Modified_Date = DateTime.MinValue;
-			Proposal_Status = string.Empty;
+			ProjectStartDate = DateTime.MinValue;
+			ProjectEndDate = DateTime.MinValue;
+			RFPNumber = string.Empty;
+			LastModifiedDate = DateTime.MinValue;
+			ProposalStatus = string.Empty;
 		}
 
 		/// <summary>
 		/// Line of Business ID
 		/// </summary>
-		public int? Line_of_Business_ID { get; set; }
+		public int? LineOfBusinessId { get; set; }
 
 		/// <summary>
 		///  PA Number 
 		/// </summary>
-		public string PA_Number { get; set; }
+		public string PANumber { get; set; }
 
 		/// <summary>
 		/// PA Version
 		/// </summary>
-		public short PA_Version { get; set; }
+		public short Version { get; set; }
 
 		/// <summary>
 		/// PA Title
 		/// </summary>
-		public string PA_Title { get; set; }
+		public string Title { get; set; }
 
 		/// <summary>
 		/// PA Description
 		/// </summary>
-		public string PA_Description { get; set; }
+		public string Description { get; set; }
 
 		/// <summary>
 		///  Line of Business
 		/// </summary>
-		public string Line_of_Business { get; set; }
+		public string LineOfBusiness { get; set; }
 
 		/// <summary>
 		/// Price  - by Name
@@ -69,27 +72,27 @@ namespace GenBOE.Dtos
 		/// <summary>
 		///  Project Start Date
 		/// </summary>
-		public DateTime? Project_Start_Date { get; set; }
+		public DateTime? ProjectStartDate { get; set; }
 
 		/// <summary>
 		/// Project End Date
 		/// </summary>
-		public DateTime? Project_End_Date { get; set; }
+		public DateTime? ProjectEndDate { get; set; }
 
 		/// <summary>
 		///  RFP Number
 		/// </summary>
-		public string RFP_Number { get; set; }
+		public string RFPNumber { get; set; }
 
 		/// <summary>
 		/// Last Modified Date
 		/// </summary>
-		public DateTime? Last_Modified_Date { get; set; }
+		public DateTime? LastModifiedDate { get; set; }
 
 		/// <summary>
 		/// Proposal Status
 		/// </summary>
-		public string Proposal_Status { get; set; }
+		public string ProposalStatus { get; set; }
 
 	}
 }

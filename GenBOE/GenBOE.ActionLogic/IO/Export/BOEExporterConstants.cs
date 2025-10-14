@@ -466,8 +466,8 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// </summary>
 		public const string EMPLOYEE_ID_FILTERS_LABEL = "Employee ID";
 
-        #endregion
+		#endregion
 
-        #endregion
-    }
+		#endregion
+	}
 }

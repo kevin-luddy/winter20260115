@@ -189,10 +189,10 @@ namespace GenTRAC.Tests.ActionLogic
                         BackupContractsPOCNtId = "n22222",
 						ProposalMgrNtid = "n00000",
 						ProgramMgrNtid = "n00001",
-						SupplyChainPOCMaterialsNtId = "n00000",
-                        SupplyChainPOCMaterialsBackupNtId = "n00000",
-                        SupplyChainPOCSubsNtId = "n00000",
-                        SupplyChainPOCSubsBackupNtId = "n00000"
+						PboeMpboePOCNtId = "n00000",
+                        PboeMpboePOCBackupNtId = "n00000",
+                        IboePOCNtId = "n00000",
+                        IboePOCBackupNtId = "n00000"
                     };
                 }
             }
@@ -309,10 +309,10 @@ namespace GenTRAC.Tests.ActionLogic
                 ContractsPOCNtId = ntid,
                 BackupContractsPOCNtId = ntid,
                 CostVolumeLeadNtid = ntid,
-                SupplyChainPOCMaterialsNtId = ntid,
-                SupplyChainPOCMaterialsBackupNtId = ntid,
-                SupplyChainPOCSubsNtId = ntid,
-                SupplyChainPOCSubsBackupNtId = ntid
+                PboeMpboePOCNtId = ntid,
+                PboeMpboePOCBackupNtId = ntid,
+                IboePOCNtId = ntid,
+                IboePOCBackupNtId = ntid
             };
 
             ProposalCommentsModelView proposalComments = new ProposalCommentsModelView()
@@ -382,10 +382,10 @@ namespace GenTRAC.Tests.ActionLogic
                 ContractsPOCNtId = ntid,
                 BackupContractsPOCNtId = ntid,
                 CostVolumeLeadNtid = ntid,
-                SupplyChainPOCMaterialsNtId = ntid,
-                SupplyChainPOCMaterialsBackupNtId = ntid,
-                SupplyChainPOCSubsNtId = ntid,
-                SupplyChainPOCSubsBackupNtId = ntid
+                PboeMpboePOCNtId = ntid,
+                PboeMpboePOCBackupNtId = ntid,
+                IboePOCNtId = ntid,
+                IboePOCBackupNtId = ntid
             };
 
             ProposalCommentsModelView proposalComments = new ProposalCommentsModelView()
@@ -522,10 +522,10 @@ namespace GenTRAC.Tests.ActionLogic
                 ContractsPOCNtId = ntid,
                 BackupContractsPOCNtId = ntid,
                 CostVolumeLeadNtid = ntid,
-                SupplyChainPOCMaterialsNtId = ntid,
-                SupplyChainPOCMaterialsBackupNtId = ntid,
-                SupplyChainPOCSubsNtId = ntid,
-                SupplyChainPOCSubsBackupNtId = ntid
+                PboeMpboePOCNtId = ntid,
+                PboeMpboePOCBackupNtId = ntid,
+                IboePOCNtId = ntid,
+                IboePOCBackupNtId = ntid
             };
 
             ProposalCommentsModelView proposalComments = new ProposalCommentsModelView()
@@ -587,10 +587,10 @@ namespace GenTRAC.Tests.ActionLogic
                 ContractsPOCNtId = ntid,
                 BackupContractsPOCNtId = ntid,
                 CostVolumeLeadNtid = ntid,
-                SupplyChainPOCMaterialsNtId = ntid,
-                SupplyChainPOCMaterialsBackupNtId = ntid,
-                SupplyChainPOCSubsNtId = ntid,
-                SupplyChainPOCSubsBackupNtId = ntid
+                PboeMpboePOCNtId = ntid,
+                PboeMpboePOCBackupNtId = ntid,
+                IboePOCNtId = ntid,
+                IboePOCBackupNtId = ntid
             };
 
             this.proposalLoader.Setup(x => x.IsProposalTitleUnique(It.IsAny<int>(), It.IsAny<string>())).Returns(true);
@@ -625,15 +625,15 @@ namespace GenTRAC.Tests.ActionLogic
 
             this.proposalLoader.Setup(x => x.IsProposalTitleUnique(It.IsAny<int>(), It.IsAny<string>())).Returns(true);
 
-            sut.ValidateProposal(proposalInfo, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView() { LeadEstimatorNtid = "fakeId2", CoverSheetApproverNtid = "fakeId", PricingVerificationNtid = "fakeId", IndependentReviewerNtid = "fakeId" }, new ProposalUserInformationModelView(), validationMessages, false);
+            sut.ValidateProposal(proposalInfo, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView() { LeadEstimatorNtid = "fakeId2", CoverSheetApproverNtid = "fakeId", PricingVerificationNtid = "fakeId", IndependentReviewerNtid = "fakeId" }, new ProposalUserInformationModelView() { PboeMpboePOCNtId = "fakeId", IboePOCNtId = "fakeId" }, validationMessages, false);
 
             Assert.AreEqual(4, validationMessages.Count);
             Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains(ValidationConstants.ProposalValidationConstants.REVISED_SUBMITTAL_DATE_FORMAT)).Count());
             Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains(ValidationConstants.ProposalValidationConstants.ANTICIPATED_DELIVERY_DATE_FORMAT)).Count());
             Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains(ValidationConstants.ProposalValidationConstants.RFP_ISSUED_DATE_FORMAT)).Count());
-            Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains(ValidationConstants.ProposalValidationConstants.RFP_RECEIVED_DATE_FORMAT)).Count());
+			Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains(ValidationConstants.ProposalValidationConstants.RFP_RECEIVED_DATE_FORMAT)).Count());
 
-            validationMessages.Clear();
+			validationMessages.Clear();
             sut.ValidateProposal(proposalInfo, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView() { LeadEstimatorNtid = "fakeId2", CoverSheetApproverNtid = "fakeId", PricingVerificationNtid = "fakeId", IndependentReviewerNtid = "fakeId" }, new ProposalUserInformationModelView(), validationMessages, true);
             Assert.AreEqual(1, validationMessages.Count);
             Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains(ValidationConstants.ProposalValidationConstants.ANTICIPATED_DELIVERY_DATE_FORMAT)).Count());
@@ -666,7 +666,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             this.proposalLoader.Setup(x => x.IsProposalTitleUnique(It.IsAny<int>(), It.IsAny<string>())).Returns(false);
 
-            sut.ValidateProposal(proposalInfo, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView() { LeadEstimatorNtid = "fakeid2", CoverSheetApproverNtid = "fakeId", PricingVerificationNtid = "fakeId", IndependentReviewerNtid = "fakeId" }, new ProposalUserInformationModelView(), validationMessages, false);
+            sut.ValidateProposal(proposalInfo, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView() { LeadEstimatorNtid = "fakeid2", CoverSheetApproverNtid = "fakeId", PricingVerificationNtid = "fakeId", IndependentReviewerNtid = "fakeId" }, new ProposalUserInformationModelView() { PboeMpboePOCNtId = "fakeId", IboePOCNtId = "fakeId" }, validationMessages, false);
 
             Assert.AreEqual(1, validationMessages.Count);
             Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains(ValidationConstants.ProposalValidationConstants.PROPOSAL_TITLE_MUST_BE_UNIQUE)).Count());
@@ -705,7 +705,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             this.proposalLoader.Setup(x => x.IsProposalTitleUnique(It.IsAny<int>(), It.IsAny<string>())).Returns(true);
 
-            sut.ValidateProposal(proposalInfo, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView() { LeadEstimatorNtid = "fakeid2", CoverSheetApproverNtid = "fakeId", PricingVerificationNtid = "fakeId", IndependentReviewerNtid = "fakeId" }, new ProposalUserInformationModelView(), validationMessages, false);
+            sut.ValidateProposal(proposalInfo, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView() { LeadEstimatorNtid = "fakeid2", CoverSheetApproverNtid = "fakeId", PricingVerificationNtid = "fakeId", IndependentReviewerNtid = "fakeId" }, new ProposalUserInformationModelView() { PboeMpboePOCNtId = "fakeId", IboePOCNtId = "fakeId"}, validationMessages, false);
 
             Assert.AreEqual(0, validationMessages.Count);
         }
@@ -736,7 +736,7 @@ namespace GenTRAC.Tests.ActionLogic
                 RequestType = 0
             };
 
-            sut.ValidateProposal(proposalInfo, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView() { LeadEstimatorNtid = "fakeid2", CoverSheetApproverNtid = "fakeId", PricingVerificationNtid = "fakeId", IndependentReviewerNtid = "fakeId" }, new ProposalUserInformationModelView(), validationMessages, false);
+            sut.ValidateProposal(proposalInfo, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView() { LeadEstimatorNtid = "fakeid2", CoverSheetApproverNtid = "fakeId", PricingVerificationNtid = "fakeId", IndependentReviewerNtid = "fakeId" }, new ProposalUserInformationModelView() { PboeMpboePOCNtId = "fakeId", IboePOCNtId = "fakeId" }, validationMessages, false);
 
             Assert.AreEqual(0, validationMessages.Count);
         }
@@ -1026,10 +1026,10 @@ namespace GenTRAC.Tests.ActionLogic
             // CASE: PBOE Preparer not set
             validationMessages = new List<ValidationMessage>();
             proposalInfoVM.CostElements = new Collection<int> { (int)CostElementType.Materials };
-            proposalUserInfoVM.SupplyChainPOCMaterialsNtId = string.Empty;
+            proposalUserInfoVM.PboeMpboePOCNtId = string.Empty;
             sut.ValidateProposal(proposalInfoVM, new ProposalGeneralInformationModelView(), proposalApprovalsMV, proposalUserInfoVM, validationMessages, false);
             Assert.AreEqual(1, validationMessages.Count);
-            Assert.IsTrue(validationMessages.First().ValidationIssue.ContainsEquivalent("PBOE Preparer is Required"));
+            Assert.IsTrue(validationMessages.First().ValidationIssue.ContainsEquivalent("PBOE/MPBOE Preparer is Required"));
             validationMessages = new List<ValidationMessage>();
             sut.ValidateProposal(proposalInfoVM, new ProposalGeneralInformationModelView(), proposalApprovalsMV, proposalUserInfoVM, validationMessages, true);
             Assert.AreEqual(0, validationMessages.Count);
@@ -1037,10 +1037,25 @@ namespace GenTRAC.Tests.ActionLogic
 			// CASE: PBOE Preparer is set
 			validationMessages = new List<ValidationMessage>();
             proposalInfoVM.CostElements = new Collection<int> { (int)CostElementType.Materials };
-            proposalUserInfoVM.SupplyChainPOCMaterialsNtId = "n00000";
+            proposalUserInfoVM.PboeMpboePOCNtId = "n00000";
             sut.ValidateProposal(proposalInfoVM, new ProposalGeneralInformationModelView(), proposalApprovalsMV, proposalUserInfoVM, validationMessages, false);
             Assert.AreEqual(0, validationMessages.Count);
-        }
+
+			// CASE:  
+			validationMessages = new List<ValidationMessage>();
+			proposalInfoVM.CostElements = new Collection<int> { (int)CostElementType.Subs };
+			proposalUserInfoVM.PboeMpboePOCNtId = string.Empty;
+			sut.ValidateProposal(proposalInfoVM, new ProposalGeneralInformationModelView(), proposalApprovalsMV, proposalUserInfoVM, validationMessages, false);
+			Assert.AreEqual(1, validationMessages.Count);
+			Assert.IsTrue(validationMessages.First().ValidationIssue.ContainsEquivalent(ValidationConstants.ProposalValidationConstants.PBOE_MPBOE_POC_REQUIRED));
+
+			// CASE:  
+			validationMessages = new List<ValidationMessage>();
+			proposalInfoVM.CostElements = new Collection<int> { (int)CostElementType.Subs };
+			proposalUserInfoVM.PboeMpboePOCNtId = "n00000";
+			sut.ValidateProposal(proposalInfoVM, new ProposalGeneralInformationModelView(), proposalApprovalsMV, proposalUserInfoVM, validationMessages, false);
+			Assert.AreEqual(0, validationMessages.Count);
+		}
 
         /// <summary>
         /// Tests IndepdnentReviewer Validation
@@ -1056,19 +1071,19 @@ namespace GenTRAC.Tests.ActionLogic
 
             // CASE:  
             validationMessages = new List<ValidationMessage>();
-            proposalInfoVM.CostElements = new Collection<int> { (int)CostElementType.Subs };
-            proposalUserInfoVM.SupplyChainPOCSubsNtId = string.Empty;
+            proposalInfoVM.CostElements = new Collection<int> { (int)CostElementType.IWTA };
+            proposalUserInfoVM.IboePOCNtId = string.Empty;
             sut.ValidateProposal(proposalInfoVM, new ProposalGeneralInformationModelView(), proposalApprovalsMV, proposalUserInfoVM, validationMessages, false);
             Assert.AreEqual(1, validationMessages.Count);
-            // Assert.IsTrue(validationMessages.First().ValidationIssue.ContainsEquivalent("Independent Reviewer is Required"));
+            Assert.IsTrue(validationMessages.First().ValidationIssue.ContainsEquivalent(ValidationConstants.ProposalValidationConstants.IBOE_IWTA_REQUIRED));
 
             // CASE:  
             validationMessages = new List<ValidationMessage>();
-            proposalInfoVM.CostElements = new Collection<int> { (int)CostElementType.Subs };
-            proposalUserInfoVM.SupplyChainPOCSubsNtId = "n00000";
+            proposalInfoVM.CostElements = new Collection<int> { (int)CostElementType.IWTA };
+            proposalUserInfoVM.IboePOCNtId = "n00000";
             sut.ValidateProposal(proposalInfoVM, new ProposalGeneralInformationModelView(), proposalApprovalsMV, proposalUserInfoVM, validationMessages, false);
             Assert.AreEqual(0, validationMessages.Count);
-        }
+		}
 
         /// <summary>
         /// This test verifies that this constraint does not apply when creating a new proposal with null proposal permissions
@@ -1328,7 +1343,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             this.proposalLoader.Setup(x => x.IsProposalTitleUnique(It.IsAny<int>(), It.IsAny<string>())).Returns(true);
 
-            sut.ValidateProposal(proposalInfo, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView() { LeadEstimatorNtid = "fakeid2", CoverSheetApproverNtid = "fakeId", PricingVerificationNtid = "fakeId", IndependentReviewerNtid = "fakeId" }, new ProposalUserInformationModelView(), validationMessages, false);
+            sut.ValidateProposal(proposalInfo, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView() { LeadEstimatorNtid = "fakeid2", CoverSheetApproverNtid = "fakeId", PricingVerificationNtid = "fakeId", IndependentReviewerNtid = "fakeId" }, new ProposalUserInformationModelView() { PboeMpboePOCNtId = "fakeId", IboePOCNtId = "fakeId" }, validationMessages, false);
 
             Assert.AreEqual(0, validationMessages.Count);
         }
@@ -1345,7 +1360,7 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalInformationModelView proposalInfo = new ProposalInformationModelView()
             {
                 ContractType = new List<int>() { 1 },
-                CostElements = new List<int>() { 3, 5 },
+                CostElements = new List<int>() { 1, 3, 5 },
                 IsScheduleProposal = false,
                 RFPNumber = "rfp",
                 RFPIssuedDate = "11/11/2018",
@@ -1365,9 +1380,9 @@ namespace GenTRAC.Tests.ActionLogic
 
             sut.ValidateProposal(proposalInfo, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView() { LeadEstimatorNtid = "fakeId2", CoverSheetApproverNtid = "fakeId", PricingVerificationNtid = "fakeId", IndependentReviewerNtid = "fakeId" }, proposalUserInfo, validationMessages, false);
 
-            Assert.AreEqual(4, validationMessages.Count);
-            Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains("PBOE Preparer")).Count());
-            Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains("IBOE Preparer is required")).Count());
+            Assert.AreEqual(5, validationMessages.Count);
+			Assert.AreEqual(2, validationMessages.Where(x => x.ValidationIssue.Contains("PBOE/MPBOE Preparer")).Count());
+			Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains("IBOE Preparer is required")).Count());
             Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains("Additional Estimating Resource 1")).Count());
             Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains("Additional Estimating Resource 2")).Count());
 
@@ -1403,10 +1418,10 @@ namespace GenTRAC.Tests.ActionLogic
             string ntid = "myNtid";
             ProposalUserInformationModelView proposalUserInfo = new ProposalUserInformationModelView()
             {
-                SupplyChainPOCMaterialsNtId = ntid,
-                SupplyChainPOCMaterialsBackupNtId = ntid,
-                SupplyChainPOCSubsNtId = ntid,
-                SupplyChainPOCSubsBackupNtId = ntid,
+                PboeMpboePOCNtId = ntid,
+                PboeMpboePOCBackupNtId = ntid,
+                IboePOCNtId = ntid,
+                IboePOCBackupNtId = ntid,
                 AdditionalPricingResource1NtId = ntid,
                 AdditionalPricingResource1Type = ResourceType.Pricer,
                 AdditionalPricingResource2NtId = ntid,
@@ -1444,10 +1459,10 @@ namespace GenTRAC.Tests.ActionLogic
             string ntid = "myNtid";
             ProposalUserInformationModelView proposalUserInfo = new ProposalUserInformationModelView()
             {
-                SupplyChainPOCMaterialsNtId = ntid,
-                SupplyChainPOCMaterialsBackupNtId = ntid,
-                SupplyChainPOCSubsNtId = ntid,
-                SupplyChainPOCSubsBackupNtId = ntid,
+                PboeMpboePOCNtId = ntid,
+                PboeMpboePOCBackupNtId = ntid,
+                IboePOCNtId = ntid,
+                IboePOCBackupNtId = ntid,
                 AdditionalPricingResource1NtId = ntid,
                 AdditionalPricingResource1Type = ResourceType.Pricer,
                 AdditionalPricingResource2NtId = ntid,
@@ -1486,7 +1501,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             this.proposalLoader.Setup(x => x.IsProposalTitleUnique(It.IsAny<int>(), It.IsAny<string>())).Returns(true);
 
-            sut.ValidateProposal(proposalInfo, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView() { LeadEstimatorNtid = "fakeid2", CoverSheetApproverNtid = "fakeId", PricingVerificationNtid = "fakeId", IndependentReviewerNtid = "fakeId" }, new ProposalUserInformationModelView(), validationMessages, false);
+            sut.ValidateProposal(proposalInfo, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView() { LeadEstimatorNtid = "fakeid2", CoverSheetApproverNtid = "fakeId", PricingVerificationNtid = "fakeId", IndependentReviewerNtid = "fakeId" }, new ProposalUserInformationModelView() { PboeMpboePOCBackupNtId ="fakeId", IboePOCNtId = "fakeId"}, validationMessages, false);
 
             Assert.AreEqual(1, validationMessages.Count);
             Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains(ValidationConstants.ProposalValidationConstants.SSC_ROLE_REQUIRED)).Count());
@@ -1891,10 +1906,10 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(user.DisplayName, proposalUserInfo.BackupContractsPOCDisplayName);
             Assert.AreEqual(user.DisplayName, proposalUserInfo.CostVolumeLeadDisplayName);
             Assert.AreEqual(user.DisplayName, proposalApprovalsInfo.LeadEstimatorDisplayName);
-            Assert.AreEqual(user.DisplayName, proposalUserInfo.SupplyChainPOCMaterialsDisplayName);
-            Assert.AreEqual(user.DisplayName, proposalUserInfo.SupplyChainPOCMaterialsBackupDisplayName);
-            Assert.AreEqual(user.DisplayName, proposalUserInfo.SupplyChainPOCSubsDisplayName);
-            Assert.AreEqual(user.DisplayName, proposalUserInfo.SupplyChainPOCSubsBackupDisplayName);
+            Assert.AreEqual(user.DisplayName, proposalUserInfo.PboeMpboePOCDisplayName);
+            Assert.AreEqual(user.DisplayName, proposalUserInfo.PboeMpboePOCBackupDisplayName);
+            Assert.AreEqual(user.DisplayName, proposalUserInfo.IboePOCDisplayName);
+            Assert.AreEqual(user.DisplayName, proposalUserInfo.IboePOCBackupDisplayName);
             Assert.AreEqual(user.DisplayName, proposalUserInfo.GenBoeWorkspaceCreatorDisplayName);
             Assert.AreEqual(user.Ntid, proposalUserInfo.AdditionalPricingResource1NtId);
             Assert.AreEqual(user.Ntid, proposalUserInfo.AdditionalPricingResource2NtId);
@@ -1904,10 +1919,10 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(user.Ntid, proposalUserInfo.BackupContractsPOCNtId);
             Assert.AreEqual(user.Ntid, proposalUserInfo.CostVolumeLeadNtid);
             Assert.AreEqual(user.Ntid, proposalApprovalsInfo.LeadEstimatorNtid);
-            Assert.AreEqual(user.Ntid, proposalUserInfo.SupplyChainPOCMaterialsNtId);
-            Assert.AreEqual(user.Ntid, proposalUserInfo.SupplyChainPOCMaterialsBackupNtId);
-            Assert.AreEqual(user.Ntid, proposalUserInfo.SupplyChainPOCSubsNtId);
-            Assert.AreEqual(user.Ntid, proposalUserInfo.SupplyChainPOCSubsBackupNtId);
+            Assert.AreEqual(user.Ntid, proposalUserInfo.PboeMpboePOCNtId);
+            Assert.AreEqual(user.Ntid, proposalUserInfo.PboeMpboePOCBackupNtId);
+            Assert.AreEqual(user.Ntid, proposalUserInfo.IboePOCNtId);
+            Assert.AreEqual(user.Ntid, proposalUserInfo.IboePOCBackupNtId);
             Assert.AreEqual(user.Ntid, proposalUserInfo.GenBoeWorkspaceCreatorNtid);
             Assert.AreEqual(ResourceType.Pricer, proposalUserInfo.AdditionalPricingResource1Type);
             Assert.AreEqual(ResourceType.Strategist, proposalUserInfo.AdditionalPricingResource2Type);
@@ -2762,28 +2777,28 @@ namespace GenTRAC.Tests.ActionLogic
 
             validationErrors.Clear();
             // CASE: PBOE Preparer and Backup are the same
-            proposalUserInfo.SupplyChainPOCMaterialsBackupNtId = user.Ntid;
+            proposalUserInfo.PboeMpboePOCBackupNtId = user.Ntid;
             sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
             Assert.IsTrue(validationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.MATERIAL_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL));
 
-            proposalUserInfo.SupplyChainPOCMaterialsBackupNtId = user2.Ntid;
+            proposalUserInfo.PboeMpboePOCBackupNtId = user2.Ntid;
             validationErrors.Clear();
             // CASE: IBOE Preparer and Backup are the same
-            proposalUserInfo.SupplyChainPOCSubsBackupNtId = user.Ntid;
+            proposalUserInfo.IboePOCBackupNtId = user.Ntid;
             sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
             Assert.IsTrue(validationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.SUBCONTRACTS_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL));
 
-            proposalUserInfo.SupplyChainPOCSubsBackupNtId = user2.Ntid;
+            proposalUserInfo.IboePOCBackupNtId = user2.Ntid;
             validationErrors.Clear();
             // CASE: Backup PBOE Preparer with no PBOE Preparer
-            proposalUserInfo.SupplyChainPOCMaterialsNtId = null;
+            proposalUserInfo.PboeMpboePOCNtId = null;
             sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
             Assert.IsTrue(validationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.MATERIAL_LEAD_BACKUP_REQUIRES_LEAD));
 
-            proposalUserInfo.SupplyChainPOCMaterialsNtId = user.Ntid;
+            proposalUserInfo.PboeMpboePOCNtId = user.Ntid;
             validationErrors.Clear();
             // CASE: Backup IBOE Preparer with no PBOE Preparer
-            proposalUserInfo.SupplyChainPOCSubsNtId = null;
+            proposalUserInfo.IboePOCNtId = null;
             sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
 			Assert.IsTrue(validationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.SUBCONTRACTS_LEAD_BACKUP_REQUIRES_LEAD));
 		}
@@ -2984,17 +2999,17 @@ namespace GenTRAC.Tests.ActionLogic
             userInfo.AdditionalPricingResource2DisplayName = user.DisplayName;
             userInfo.AdditionalPricingResource2Type = ResourceType.Pricer;
 
-            userInfo.SupplyChainPOCMaterialsNtId = user.Ntid;
-            userInfo.SupplyChainPOCSubsDisplayName = user.DisplayName;
+            userInfo.PboeMpboePOCNtId = user.Ntid;
+            userInfo.IboePOCDisplayName = user.DisplayName;
 
-            userInfo.SupplyChainPOCMaterialsBackupNtId = user2.Ntid;
-            userInfo.SupplyChainPOCSubsBackupDisplayName = user2.DisplayName;
+            userInfo.PboeMpboePOCBackupNtId = user2.Ntid;
+            userInfo.IboePOCBackupDisplayName = user2.DisplayName;
 
-            userInfo.SupplyChainPOCSubsNtId = user.Ntid;
-            userInfo.SupplyChainPOCSubsDisplayName = user.DisplayName;
+            userInfo.IboePOCNtId = user.Ntid;
+            userInfo.IboePOCDisplayName = user.DisplayName;
 
-            userInfo.SupplyChainPOCSubsBackupNtId = user2.Ntid;
-            userInfo.SupplyChainPOCSubsBackupDisplayName = user2.DisplayName;
+            userInfo.IboePOCBackupNtId = user2.Ntid;
+            userInfo.IboePOCBackupDisplayName = user2.DisplayName;
 
             userInfo.ContractsPOCNtId = user.Ntid;
             userInfo.ContractsPOCDisplayName = user.DisplayName;

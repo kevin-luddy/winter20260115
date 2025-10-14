@@ -33,6 +33,7 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 **		02/27/25	Carlos				PROPH-2642 Add checklist question 11 to log report
 **		05/13/25	ranzalon			PROPH-3038 Added Bid and Mission Segment EPP Dates
 **		07/21/25	e378233				PROPH-2835/2836 Added MSAC POC and Program Manager
+**		10/02/25	e403038				PROPH-2994 Additional EPP Dates (Original to Planned and add Scheduled)
 **		10/13/25	ranzalon			PROPH-3375 PPR Questions 13 and 14
 *******************************************************************************/
 SELECT	
@@ -185,12 +186,12 @@ SELECT
 	pCD.FinalNegotiatedValue AS ContractsFinalNegotiatedValue,
 	pCD.FinalNegotiatedDate AS ContractsFinalNegotiatedDate,
 	eppLU.Text AS ContractsEppDelegationAuthority,
-	pCD.ProgramEppDate AS ContractsProgramEppDate,
-	pCD.LobEppDate AS ContractsLobEppDate,
-	pCD.PreSpaceEppDate AS ContractsPreSpaceEppDate,
-	pCD.SpaceEppDate AS ContractsSpaceEppDate,
-	pCD.PreCorporateEppDate AS ContractsPreCorporateEppDate,
-	pCD.CorporateEppDate AS ContractsCorporateEppDate,
+	pCD.PlannedProgramEppDate AS ContractsPlannedProgramEppDate,
+	pCD.PlannedLobEppDate AS ContractsPlannedLobEppDate,
+	pCD.PlannedPreSpaceEppDate AS ContractsPlannedPreSpaceEppDate,
+	pCD.PlannedSpaceEppDate AS ContractsPlannedSpaceEppDate,
+	pCD.PlannedPreCorporateEppDate AS ContractsPlannedPreCorporateEppDate,
+	pCD.PlannedCorporateEppDate AS ContractsPlannedCorporateEppDate,
 	pCD.EppRosDelegationNotes AS ContractsEppRosDelegationNotes,
 	pCD.CustomerDueDate AS CustomerDueDate,
 	CASE
@@ -199,8 +200,16 @@ SELECT
 		ELSE NULL
 	END AS ContractsLmWon,
 	pCD.ModCompletedDate AS ContractsModCompletedDate,
-	pCD.BidEppDate AS ContractsBidEppDate,
-	pCD.MissionSegmentEppDate AS ContractsMissionSegmentEppDate,
+	pCD.PlannedBidEppDate AS ContractsPlannedBidEppDate,
+	pCD.PlannedMissionSegmentEppDate AS ContractsPlannedMissionSegmentEppDate,
+	pCD.ScheduledProgramEppDate AS ContractsScheduledProgramEppDate,
+	pCD.ScheduledLobEppDate AS ContractsScheduledLobEppDate,
+	pCD.ScheduledPreSpaceEppDate AS ContractsScheduledPreSpaceEppDate,
+	pCD.ScheduledSpaceEppDate AS ContractsScheduledSpaceEppDate,
+	pCD.ScheduledPreCorporateEppDate AS ContractsScheduledPreCorporateEppDate,
+	pCD.ScheduledCorporateEppDate AS ContractsScheduledCorporateEppDate,
+	pCD.ScheduledBidEppDate AS ContractsScheduledBidEppDate,
+	pCD.ScheduledMissionSegmentEppDate AS ContractsScheduledMissionSegmentEppDate,
 	-- end of Proposal Contract Data
 	pCD.CageCode,
 	CASE

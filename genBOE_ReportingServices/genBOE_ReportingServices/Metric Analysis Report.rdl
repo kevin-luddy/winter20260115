@@ -24,7 +24,7 @@
         </Paragraphs>
         <rd:DefaultName>textbox1</rd:DefaultName>
         <Height>0.33in</Height>
-        <Width>20.75001in</Width>
+        <Width>21.75001in</Width>
         <Style>
           <PaddingLeft>2pt</PaddingLeft>
           <PaddingRight>2pt</PaddingRight>
@@ -40,6 +40,9 @@
             </TablixColumn>
             <TablixColumn>
               <Width>1.45833in</Width>
+            </TablixColumn>
+            <TablixColumn>
+              <Width>1in</Width>
             </TablixColumn>
             <TablixColumn>
               <Width>1.25in</Width>
@@ -131,6 +134,42 @@
                         </Paragraph>
                       </Paragraphs>
                       <rd:DefaultName>textbox6</rd:DefaultName>
+                      <Style>
+                        <Border>
+                          <Color>DimGray</Color>
+                          <Style>Solid</Style>
+                        </Border>
+                        <BackgroundColor>#1c3a70</BackgroundColor>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="Textbox18">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>Current Workspace</Value>
+                              <Style>
+                                <FontFamily>Tahoma</FontFamily>
+                                <FontSize>11pt</FontSize>
+                                <FontWeight>Bold</FontWeight>
+                                <Color>White</Color>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style />
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>Textbox18</rd:DefaultName>
                       <Style>
                         <Border>
                           <Color>DimGray</Color>
@@ -544,6 +583,38 @@
                 </TablixCell>
                 <TablixCell>
                   <CellContents>
+                    <Textbox Name="CurrentWorkspace1">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Fields!CurrentWorkspace.Value</Value>
+                              <Style>
+                                <FontFamily>Tahoma</FontFamily>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style />
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>CurrentWorkspace1</rd:DefaultName>
+                      <Style>
+                        <Border>
+                          <Color>DimGray</Color>
+                          <Style>Solid</Style>
+                        </Border>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                </TablixCell>
+                <TablixCell>
+                  <CellContents>
                     <Textbox Name="TrackingNumber">
                       <CanGrow>true</CanGrow>
                       <KeepTogether>true</KeepTogether>
@@ -849,6 +920,7 @@
             <TablixMember />
             <TablixMember />
             <TablixMember />
+            <TablixMember />
           </TablixMembers>
         </TablixColumnHierarchy>
         <TablixRowHierarchy>
@@ -874,7 +946,7 @@
         <DataSetName>DataSet1</DataSetName>
         <Top>1.455in</Top>
         <Height>0.66083in</Height>
-        <Width>20.75001in</Width>
+        <Width>21.75001in</Width>
         <ZIndex>1</ZIndex>
         <Style />
       </Tablix>
@@ -1146,7 +1218,7 @@
     <Height>2.11583in</Height>
     <Style />
   </Body>
-  <Width>20.75001in</Width>
+  <Width>21.75001in</Width>
   <Page>
     <LeftMargin>1in</LeftMargin>
     <RightMargin>1in</RightMargin>
@@ -1154,6 +1226,17 @@
     <BottomMargin>1in</BottomMargin>
     <Style />
   </Page>
+  <am:AuthoringMetadata xmlns:am="http://schemas.microsoft.com/sqlserver/reporting/authoringmetadata">
+    <am:CreatedBy>
+      <am:Name>SSDTRS</am:Name>
+      <am:Version>17.14.36511.14</am:Version>
+    </am:CreatedBy>
+    <am:UpdatedBy>
+      <am:Name>SSDTRS</am:Name>
+      <am:Version>17.14.36511.14</am:Version>
+    </am:UpdatedBy>
+    <am:LastModifiedTimestamp>2025-10-10T16:48:21.0858632Z</am:LastModifiedTimestamp>
+  </am:AuthoringMetadata>
   <AutoRefresh>0</AutoRefresh>
   <DataSources>
     <DataSource Name="genBOE">
@@ -1170,13 +1253,25 @@
         <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
+        <Field Name="Total_Workspaces">
+          <DataField>Total Workspaces</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
         <Field Name="WorkspaceName">
           <DataField>WorkspaceName</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
+        <Field Name="Total_BOEs">
+          <DataField>Total BOEs</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
         <Field Name="WorkspaceShortName">
           <DataField>WorkspaceShortName</DataField>
           <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Total_Tasks">
+          <DataField>Total Tasks</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
         <Field Name="Latest_Activity_Date">
           <DataField>Latest Activity Date</DataField>
@@ -1213,6 +1308,10 @@
         <Field Name="LineOfBusinessName">
           <DataField>LineOfBusinessName</DataField>
           <rd:UserDefined>true</rd:UserDefined>
+        </Field>
+        <Field Name="CurrentWorkspace">
+          <DataField>CurrentWorkspace</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
         </Field>
       </Fields>
     </DataSet>

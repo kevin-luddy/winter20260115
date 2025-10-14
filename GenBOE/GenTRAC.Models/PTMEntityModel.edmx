@@ -447,12 +447,12 @@
           <Property Name="FinalNegotiatedValue" Type="bigint" />
           <Property Name="FinalNegotiatedDate" Type="date" />
           <Property Name="EppDelegationAuthority" Type="int" />
-          <Property Name="ProgramEppDate" Type="date" />
-          <Property Name="LobEppDate" Type="date" />
-          <Property Name="PreSpaceEppDate" Type="date" />
-          <Property Name="SpaceEppDate" Type="date" />
-          <Property Name="PreCorporateEppDate" Type="date" />
-          <Property Name="CorporateEppDate" Type="date" />
+          <Property Name="PlannedProgramEppDate" Type="date" />
+          <Property Name="PlannedLobEppDate" Type="date" />
+          <Property Name="PlannedPreSpaceEppDate" Type="date" />
+          <Property Name="PlannedSpaceEppDate" Type="date" />
+          <Property Name="PlannedPreCorporateEppDate" Type="date" />
+          <Property Name="PlannedCorporateEppDate" Type="date" />
           <Property Name="EppRosDelegationNotes" Type="varchar" MaxLength="1000" />
           <Property Name="LmWon" Type="bit" />
           <Property Name="ModCompletedDate" Type="date" />
@@ -462,8 +462,16 @@
           <Property Name="InsuranceType" Type="int" />
           <Property Name="ProposedInsurance" Type="bigint" />
           <Property Name="NegotiatedInsurance" Type="bigint" />
-          <Property Name="BidEppDate" Type="date" />
-          <Property Name="MissionSegmentEppDate" Type="date" />
+          <Property Name="PlannedBidEppDate" Type="date" />
+          <Property Name="PlannedMissionSegmentEppDate" Type="date" />
+          <Property Name="ScheduledProgramEppDate" Type="date" />
+          <Property Name="ScheduledLobEppDate" Type="date" />
+          <Property Name="ScheduledPreSpaceEppDate" Type="date" />
+          <Property Name="ScheduledSpaceEppDate" Type="date" />
+          <Property Name="ScheduledPreCorporateEppDate" Type="date" />
+          <Property Name="ScheduledCorporateEppDate" Type="date" />
+          <Property Name="ScheduledBidEppDate" Type="date" />
+          <Property Name="ScheduledMissionSegmentEppDate" Type="date" />
         </EntityType>
         <EntityType Name="ProposalContractTypeXREF">
           <Key>
@@ -1870,14 +1878,22 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
           <Parameter Name="FinalNegotiatedValue" Type="bigint" Mode="In" />
           <Parameter Name="FinalNegotiatedDate" Type="date" Mode="In" />
           <Parameter Name="EppDelegationAuthority" Type="int" Mode="In" />
-          <Parameter Name="BidEppDate" Type="date" Mode="In" />
-          <Parameter Name="ProgramEppDate" Type="date" Mode="In" />
-          <Parameter Name="MissionSegmentEppDate" Type="date" Mode="In" />
-          <Parameter Name="LobEppDate" Type="date" Mode="In" />
-          <Parameter Name="PreSpaceEppDate" Type="date" Mode="In" />
-          <Parameter Name="SpaceEppDate" Type="date" Mode="In" />
-          <Parameter Name="PreCorporateEppDate" Type="date" Mode="In" />
-          <Parameter Name="CorporateEppDate" Type="date" Mode="In" />
+          <Parameter Name="PlannedBidEppDate" Type="date" Mode="In" />
+          <Parameter Name="PlannedProgramEppDate" Type="date" Mode="In" />
+          <Parameter Name="PlannedMissionSegmentEppDate" Type="date" Mode="In" />
+          <Parameter Name="PlannedLobEppDate" Type="date" Mode="In" />
+          <Parameter Name="PlannedPreSpaceEppDate" Type="date" Mode="In" />
+          <Parameter Name="PlannedSpaceEppDate" Type="date" Mode="In" />
+          <Parameter Name="PlannedPreCorporateEppDate" Type="date" Mode="In" />
+          <Parameter Name="PlannedCorporateEppDate" Type="date" Mode="In" />
+          <Parameter Name="ScheduledBidEppDate" Type="date" Mode="In" />
+          <Parameter Name="ScheduledProgramEppDate" Type="date" Mode="In" />
+          <Parameter Name="ScheduledMissionSegmentEppDate" Type="date" Mode="In" />
+          <Parameter Name="ScheduledLobEppDate" Type="date" Mode="In" />
+          <Parameter Name="ScheduledPreSpaceEppDate" Type="date" Mode="In" />
+          <Parameter Name="ScheduledSpaceEppDate" Type="date" Mode="In" />
+          <Parameter Name="ScheduledPreCorporateEppDate" Type="date" Mode="In" />
+          <Parameter Name="ScheduledCorporateEppDate" Type="date" Mode="In" />
           <Parameter Name="EppRosDelegationNotes" Type="varchar" Mode="In" />
           <Parameter Name="LmWon" Type="bit" Mode="In" />
           <Parameter Name="ModCompletedDate" Type="date" Mode="In" />
@@ -3372,14 +3388,22 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
             <Parameter Name="FinalNegotiatedValue" Mode="In" Type="Int64" />
             <Parameter Name="FinalNegotiatedDate" Mode="In" Type="DateTime" />
             <Parameter Name="EppDelegationAuthority" Mode="In" Type="Int32" />
-            <Parameter Name="BidEppDate" Mode="In" Type="DateTime" />
-            <Parameter Name="ProgramEppDate" Mode="In" Type="DateTime" />
-            <Parameter Name="MissionSegmentEppDate" Mode="In" Type="DateTime" />
-            <Parameter Name="LobEppDate" Mode="In" Type="DateTime" />
-            <Parameter Name="PreSpaceEppDate" Mode="In" Type="DateTime" />
-            <Parameter Name="SpaceEppDate" Mode="In" Type="DateTime" />
-            <Parameter Name="PreCorporateEppDate" Mode="In" Type="DateTime" />
-            <Parameter Name="CorporateEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="PlannedBidEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="PlannedProgramEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="PlannedMissionSegmentEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="PlannedLobEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="PlannedPreSpaceEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="PlannedSpaceEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="PlannedPreCorporateEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="PlannedCorporateEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="ScheduledBidEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="ScheduledProgramEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="ScheduledMissionSegmentEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="ScheduledLobEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="ScheduledPreSpaceEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="ScheduledSpaceEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="ScheduledPreCorporateEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="ScheduledCorporateEppDate" Mode="In" Type="DateTime" />
             <Parameter Name="EppRosDelegationNotes" Mode="In" Type="String" />
             <Parameter Name="LmWon" Mode="In" Type="Boolean" />
             <Parameter Name="ModCompletedDate" Mode="In" Type="DateTime" />
@@ -4118,12 +4142,6 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
           <Property Name="FinalNegotiatedValue" Type="Int64" />
           <Property Name="FinalNegotiatedDate" Type="DateTime" Precision="0" />
           <Property Name="EppDelegationAuthority" Type="Int32" />
-          <Property Name="ProgramEppDate" Type="DateTime" Precision="0" />
-          <Property Name="LobEppDate" Type="DateTime" Precision="0" />
-          <Property Name="PreSpaceEppDate" Type="DateTime" Precision="0" />
-          <Property Name="SpaceEppDate" Type="DateTime" Precision="0" />
-          <Property Name="PreCorporateEppDate" Type="DateTime" Precision="0" />
-          <Property Name="CorporateEppDate" Type="DateTime" Precision="0" />
           <Property Name="EppRosDelegationNotes" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
           <Property Name="LmWon" Type="Boolean" />
           <Property Name="ModCompletedDate" Type="DateTime" Precision="0" />
@@ -4138,8 +4156,22 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
           <Property Name="ProposedInsurance" Type="Int64" />
           <Property Name="NegotiatedInsurance" Type="Int64" />
           <NavigationProperty Name="InsuranceTypeLU" Relationship="genTRACModel.FK_Contracts_InsuranceType" FromRole="ProposalContractsData" ToRole="InsuranceTypeLU" />
-          <Property Name="BidEppDate" Type="DateTime" Precision="0" />
-          <Property Name="MissionSegmentEppDate" Type="DateTime" Precision="0" />
+          <Property Name="PlannedProgramEppDate" Type="DateTime" Precision="0" />
+          <Property Name="PlannedLobEppDate" Type="DateTime" Precision="0" />
+          <Property Name="PlannedPreSpaceEppDate" Type="DateTime" Precision="0" />
+          <Property Name="PlannedSpaceEppDate" Type="DateTime" Precision="0" />
+          <Property Name="PlannedPreCorporateEppDate" Type="DateTime" Precision="0" />
+          <Property Name="PlannedCorporateEppDate" Type="DateTime" Precision="0" />
+          <Property Name="PlannedBidEppDate" Type="DateTime" Precision="0" />
+          <Property Name="PlannedMissionSegmentEppDate" Type="DateTime" Precision="0" />
+          <Property Name="ScheduledProgramEppDate" Type="DateTime" Precision="0" />
+          <Property Name="ScheduledLobEppDate" Type="DateTime" Precision="0" />
+          <Property Name="ScheduledPreSpaceEppDate" Type="DateTime" Precision="0" />
+          <Property Name="ScheduledSpaceEppDate" Type="DateTime" Precision="0" />
+          <Property Name="ScheduledPreCorporateEppDate" Type="DateTime" Precision="0" />
+          <Property Name="ScheduledCorporateEppDate" Type="DateTime" Precision="0" />
+          <Property Name="ScheduledBidEppDate" Type="DateTime" Precision="0" />
+          <Property Name="ScheduledMissionSegmentEppDate" Type="DateTime" Precision="0" />
           </EntityType>
         <Association Name="FK__ProposalC__EPPDe__02925FBF">
           <End Type="genTRACModel.EppDelegationAuthorityLU" Role="EppDelegationAuthorityLU" Multiplicity="0..1" />
@@ -5416,8 +5448,22 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
           <EntitySetMapping Name="ProposalContractsDatas">
             <EntityTypeMapping TypeName="genTRACModel.ProposalContractsData">
               <MappingFragment StoreEntitySet="ProposalContractsData">
-                <ScalarProperty Name="MissionSegmentEppDate" ColumnName="MissionSegmentEppDate" />
-                <ScalarProperty Name="BidEppDate" ColumnName="BidEppDate" />
+                <ScalarProperty Name="ScheduledMissionSegmentEppDate" ColumnName="ScheduledMissionSegmentEppDate" />
+                <ScalarProperty Name="ScheduledBidEppDate" ColumnName="ScheduledBidEppDate" />
+                <ScalarProperty Name="ScheduledCorporateEppDate" ColumnName="ScheduledCorporateEppDate" />
+                <ScalarProperty Name="ScheduledPreCorporateEppDate" ColumnName="ScheduledPreCorporateEppDate" />
+                <ScalarProperty Name="ScheduledSpaceEppDate" ColumnName="ScheduledSpaceEppDate" />
+                <ScalarProperty Name="ScheduledPreSpaceEppDate" ColumnName="ScheduledPreSpaceEppDate" />
+                <ScalarProperty Name="ScheduledLobEppDate" ColumnName="ScheduledLobEppDate" />
+                <ScalarProperty Name="ScheduledProgramEppDate" ColumnName="ScheduledProgramEppDate" />
+                <ScalarProperty Name="PlannedMissionSegmentEppDate" ColumnName="PlannedMissionSegmentEppDate" />
+                <ScalarProperty Name="PlannedBidEppDate" ColumnName="PlannedBidEppDate" />
+                <ScalarProperty Name="PlannedCorporateEppDate" ColumnName="PlannedCorporateEppDate" />
+                <ScalarProperty Name="PlannedPreCorporateEppDate" ColumnName="PlannedPreCorporateEppDate" />
+                <ScalarProperty Name="PlannedSpaceEppDate" ColumnName="PlannedSpaceEppDate" />
+                <ScalarProperty Name="PlannedPreSpaceEppDate" ColumnName="PlannedPreSpaceEppDate" />
+                <ScalarProperty Name="PlannedLobEppDate" ColumnName="PlannedLobEppDate" />
+                <ScalarProperty Name="PlannedProgramEppDate" ColumnName="PlannedProgramEppDate" />
                 <ScalarProperty Name="NegotiatedInsurance" ColumnName="NegotiatedInsurance" />
                 <ScalarProperty Name="ProposedInsurance" ColumnName="ProposedInsurance" />
                 <ScalarProperty Name="InsuranceType" ColumnName="InsuranceType" />
@@ -5427,12 +5473,6 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
                 <ScalarProperty Name="ModCompletedDate" ColumnName="ModCompletedDate" />
                 <ScalarProperty Name="LmWon" ColumnName="LmWon" />
                 <ScalarProperty Name="EppRosDelegationNotes" ColumnName="EppRosDelegationNotes" />
-                <ScalarProperty Name="CorporateEppDate" ColumnName="CorporateEppDate" />
-                <ScalarProperty Name="PreCorporateEppDate" ColumnName="PreCorporateEppDate" />
-                <ScalarProperty Name="SpaceEppDate" ColumnName="SpaceEppDate" />
-                <ScalarProperty Name="PreSpaceEppDate" ColumnName="PreSpaceEppDate" />
-                <ScalarProperty Name="LobEppDate" ColumnName="LobEppDate" />
-                <ScalarProperty Name="ProgramEppDate" ColumnName="ProgramEppDate" />
                 <ScalarProperty Name="EppDelegationAuthority" ColumnName="EppDelegationAuthority" />
                 <ScalarProperty Name="FinalNegotiatedDate" ColumnName="FinalNegotiatedDate" />
                 <ScalarProperty Name="FinalNegotiatedValue" ColumnName="FinalNegotiatedValue" />

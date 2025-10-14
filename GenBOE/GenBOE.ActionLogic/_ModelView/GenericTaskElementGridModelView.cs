@@ -19,6 +19,11 @@ namespace GenBOE.ActionLogic.ModelView
 		public bool ContainsOCI { get; set; }
 		public bool IsUCOTEnabledForWorkspace { get; set; }
         public Collection<GenericTaskElementGridRow> TaskElements { get; set; }
+
+		/// <summary>
+		/// Read Only mode for Task Element Grid Rows delete permissions
+		/// </summary>
+		public bool IsReadOnly { get; set; }
     }
 
     public class GenericTaskElementGridRow : PersistedDataModelView

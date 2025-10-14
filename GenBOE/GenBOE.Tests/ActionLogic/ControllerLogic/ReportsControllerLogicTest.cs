@@ -107,11 +107,16 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             ViewDataDictionary viewDataDictionary = new ViewDataDictionary();
             Mock<HttpResponseBase> httpResponse = new Mock<HttpResponseBase>();
 
-            wsExportFormatDTOCollection = new Collection<WorkspaceExportFormatDTO>(){
-                new WorkspaceExportFormatDTO(){ Id = 1, ExportFormat = new ExcelReportTemplate() { TemplateId = 1, ParentTemplateId = 2001 }},
-                new WorkspaceExportFormatDTO(){ Id = 2, ExportFormat = new ExcelReportTemplate() { TemplateId = 2, ParentTemplateId = 9001 }},
-                new WorkspaceExportFormatDTO(){ Id = 3, ExportFormat = new ExcelReportTemplate() { TemplateId = 3, ParentTemplateId = 2002 }}};
-            WorkspaceExportFormatDTO wsExportFormatDTO = wsExportFormatDTOCollection.FirstOrDefault(x => x.ExportFormat.TemplateId == oftid2.Value);
+            wsExportFormatDTOCollection = new Collection<WorkspaceExportFormatNameDTO>(){
+                new WorkspaceExportFormatNameDTO(){ Id = 1, ExportFormat = new ExcelReportTemplate() { TemplateId = 1, ParentTemplateId = 2001 }},
+                new WorkspaceExportFormatNameDTO(){ Id = 2, ExportFormat = new ExcelReportTemplate() { TemplateId = 2, ParentTemplateId = 9001 }},
+                new WorkspaceExportFormatNameDTO(){ Id = 3, ExportFormat = new ExcelReportTemplate() { TemplateId = 3, ParentTemplateId = 2002 }}};
+			WorkspaceExportFormatDTO wsExportFormatDTO = new WorkspaceExportFormatDTO()
+			{
+				Id = 2,
+				ExportFormat = new ExcelReportTemplate() { TemplateId = 2, ParentTemplateId = 9001 }
+			};
+
             boes = new Collection<FullBoe>(){
                 new FullBoe() { Id = 1, CLINID = 1 },
                 new FullBoe() { Id = 2 },
@@ -152,7 +157,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             listOfBOEs.AddRange(boeSummaryGridModelViewsRange3);
 
             //Setup
-            _retriever.Setup(x => x.GetWorkspaceExportFormatsByWorkspaceId(1)).Returns(wsExportFormatDTOCollection);
+            _retriever.Setup(x => x.GetWorkspaceExportFormatNamesByWorkspaceId(1)).Returns(wsExportFormatDTOCollection);
             _retriever.Setup(x => x.GetFullBoesByWorkspaceId(1, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boes);
             _retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(1, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(TaskElementsID);
             _retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(2, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new List<BoeTaskElementDTO>());
@@ -241,12 +246,16 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             ViewDataDictionary viewDataDictionary = new ViewDataDictionary();
             Mock<HttpResponseBase> httpResponse = new Mock<HttpResponseBase>();
 
-            wsExportFormatDTOCollection = new Collection<WorkspaceExportFormatDTO>(){
-                new WorkspaceExportFormatDTO("Test"){ Id = 1, ExportFormat = new ExcelReportTemplate() { TemplateId = 1, ParentTemplateId = 9001 }, FileData = new byte[2]},
-                new WorkspaceExportFormatDTO("Test"){ Id = 2, ExportFormat = new ExcelReportTemplate() { TemplateId = 2, ParentTemplateId = 2001 }, FileData = new byte[2]},
-                new WorkspaceExportFormatDTO("Test"){ Id = 3, ExportFormat = new ExcelReportTemplate() { TemplateId = 3, ParentTemplateId = 7 }, FileData = new byte[2]}};
-            WorkspaceExportFormatDTO wsExportFormatDTO = wsExportFormatDTOCollection.FirstOrDefault(x => x.ExportFormat.TemplateId == workspace.TemplateID);
-            boes = new Collection<FullBoe>(){
+            wsExportFormatDTOCollection = new Collection<WorkspaceExportFormatNameDTO>(){
+				new WorkspaceExportFormatNameDTO{ Id = 1, ExportFormat = new ExcelReportTemplate() { TemplateId = 1, ParentTemplateId = 9001 }},
+				new WorkspaceExportFormatNameDTO{ Id = 2, ExportFormat = new ExcelReportTemplate() { TemplateId = 2, ParentTemplateId = 2001 }},
+				new WorkspaceExportFormatNameDTO{ Id = 3, ExportFormat = new ExcelReportTemplate() { TemplateId = 3, ParentTemplateId = 7 }} };
+			WorkspaceExportFormatDTO wsExportFormatDTO = new WorkspaceExportFormatDTO()
+			{
+				Id = 2, 
+				ExportFormat = new ExcelReportTemplate() { TemplateId = 2, ParentTemplateId = 2001 }
+			};
+			boes = new Collection<FullBoe>(){
                 new FullBoe() { Id = 1 },
                 new FullBoe() { Id = 2 },
                 new FullBoe() { Id = 3 }};
@@ -281,7 +290,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             listOfBOEs.AddRange(boeSummaryGridModelViewsRange2);
 
             //Setup
-            _retriever.Setup(x => x.GetWorkspaceExportFormatsByWorkspaceId(1)).Returns(wsExportFormatDTOCollection);
+            _retriever.Setup(x => x.GetWorkspaceExportFormatNamesByWorkspaceId(1)).Returns(wsExportFormatDTOCollection);
             _retriever.Setup(x => x.GetFullBoesByWorkspaceId(1, It.IsAny<bool>(), It.IsAny<IEnumerable<BoeTaskElementDTO>>())).Returns(boes);
             _retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(1, false, It.IsAny<int>(), It.IsAny<int>())).Returns(TaskElementsID);
             _retriever.Setup(x => x.GetQuestionsAndAnswersByWorkspaceId(workspace.Id)).Returns(new List<RTECustomTemplateQuestionAnswerModelView>());
@@ -876,7 +885,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
         //Global local Value Declarations 
         private ICollection<FullBoe> boes;
-        private ICollection<WorkspaceExportFormatDTO> wsExportFormatDTOCollection;
+        private ICollection<WorkspaceExportFormatNameDTO> wsExportFormatDTOCollection;
         private ICollection<BoeTaskElementDTO> TaskElementsID;
         private ICollection<OtherDirectCostDTO> dtoID;
         private ICollection<MaterialDTO> MaterialID;

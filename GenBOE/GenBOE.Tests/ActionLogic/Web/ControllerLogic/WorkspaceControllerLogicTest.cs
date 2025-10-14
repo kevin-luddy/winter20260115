@@ -34,6 +34,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 	using Moq;
 	using UserDTO = GenBOE.Dtos.UserDTO;
 	using IESSAPClient = GenBOE.ActionLogic.IESSAPClient;
+	using GenBOE.ActionLogic.WorkspaceTransitions;
 
 	[TestClass]
     public class WorkspaceControllerLogicTest : MOQObject
@@ -66,6 +67,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         private Mock<ContractTypeLoader> contractTypeLoader;
 		private Mock<IMoqTypeDataLoader> moqTypeDataLoader;
 		private Moq.Mock<ISystemSettingDTODataLoader> systemSettingsLoader;
+		private Mock<WorkspaceStateMachine> workspaceStateMachine;
 
 		private WorkspaceControllerLogicSpaceSystems CreateSystemSpaceSystems()
         {
@@ -93,7 +95,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				this.moqTypeDataLoader.Object,
 				this._boeStateMachine.Object,
 				this._BoeMediator.Object,
-				this.systemSettingsLoader.Object);
+				this.systemSettingsLoader.Object,
+				null);
         }
 
         private WorkspaceControllerLogicMST CreateSystemMST()
@@ -125,7 +128,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 this.moqTypeDataLoader.Object,
 				this._boeStateMachine.Object,
 				this._BoeMediator.Object,
-				this.systemSettingsLoader.Object);
+				this.systemSettingsLoader.Object,
+				this.workspaceStateMachine.Object);
 		}
 
         /// <summary>
@@ -179,6 +183,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			this.moqTypeDataLoader = new Mock<IMoqTypeDataLoader>();
 
 			this._permissionLoader.Setup(x => x.GetCreateWorkspaceRolesForPtm(It.IsAny<string>(), It.IsAny<string>())).Returns(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("test", "") });
+			this.workspaceStateMachine = new Mock<WorkspaceStateMachine>();
 
 		}
 
@@ -2365,10 +2370,10 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         }
 
 		/// <summary>
-		/// NextTrackingNumber When No Existing Matches then Returns a Base PaNumber
+		/// NextPLDTrackingNumber When No Existing Matches then Returns a Base PaNumber
 		/// </summary>
 		[TestMethod]
-		public void NextTrackingNumber_WhenNoExistingMatches_ReturnsBasePaNumber()
+		public void NextPLDTrackingNumber_WhenNoExistingMatches_ReturnsBasePaNumber()
 		{
 			
 			WorkspaceControllerLogicSpaceSystems sut = this.CreateSystemSpaceSystems();
@@ -2379,7 +2384,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			};
 			string paNumber = "PA";
 
-			Dictionary<string, object> result = sut.NextTrackingNumber(workspaces, paNumber);
+			Dictionary<string, object> result = sut.NextPLDTrackingNumber(workspaces, paNumber);
 
 			Assert.IsNotNull(result);
 			Assert.IsTrue(result.ContainsKey("ShortName"));
@@ -2393,7 +2398,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		/// Next TrackingNumber  -- When Existing Suffixes Returns Incremented Suffix
 		/// </summary>
 		[TestMethod]
-		public void NextTrackingNumber_WhenExistingSuffixes_ReturnsIncrementedSuffix()
+		public void NextPLDTrackingNumber_WhenExistingSuffixes_ReturnsIncrementedSuffix()
 		{
 			
 			WorkspaceControllerLogicSpaceSystems sut = this.CreateSystemSpaceSystems();
@@ -2408,7 +2413,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			string paNumber = "PA";
 
 			
-			Dictionary<string, object> result = sut.NextTrackingNumber(workspaces, paNumber);
+			Dictionary<string, object> result = sut.NextPLDTrackingNumber(workspaces, paNumber);
 
 			
 			Assert.IsNotNull(result);
@@ -2421,7 +2426,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		/// </summary>
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
-		public void NextTrackingNumber_WhenWorkspacesIsNull_Throws()
+		public void NextPLDTrackingNumber_WhenWorkspacesIsNull_Throws()
 		{
 
 			WorkspaceControllerLogicSpaceSystems sut = this.CreateSystemSpaceSystems();
@@ -2429,7 +2434,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			string paNumber = "PA";
 
 			
-			sut.NextTrackingNumber(workspaces, paNumber);
+			sut.NextPLDTrackingNumber(workspaces, paNumber);
 
 			
 		}
@@ -2439,7 +2444,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		/// </summary>
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentException))]
-		public void NextTrackingNumber_WhenPaNumberBlank_Throws()
+		public void NextPLDTrackingNumber_WhenPaNumberBlank_Throws()
 		{
 
 			WorkspaceControllerLogicSpaceSystems sut = this.CreateSystemSpaceSystems();
@@ -2447,7 +2452,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			string paNumber = "  ";
 
 			
-			sut.NextTrackingNumber(workspaces, paNumber);
+			sut.NextPLDTrackingNumber(workspaces, paNumber);
 
 			
 		}
