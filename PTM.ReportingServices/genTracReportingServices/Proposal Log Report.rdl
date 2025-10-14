@@ -7,9 +7,9 @@
     </am:CreatedBy>
     <am:UpdatedBy>
       <am:Name>SSDTRS</am:Name>
-      <am:Version>17.14.36221.1</am:Version>
+      <am:Version>17.14.36518.9</am:Version>
     </am:UpdatedBy>
-    <am:LastModifiedTimestamp>2025-07-21T02:52:50.6997748Z</am:LastModifiedTimestamp>
+    <am:LastModifiedTimestamp>2025-10-14T15:13:15.8077631Z</am:LastModifiedTimestamp>
   </am:AuthoringMetadata>
   <AutoRefresh>0</AutoRefresh>
   <DataSources>
@@ -484,8 +484,16 @@
           <DataField>NlfResponse</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
+        <Field Name="ScopeVerifiedThru2028Response">
+          <DataField>ScopeVerifiedThru2028Response</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
         <Field Name="SupplierMilestoneDatesResponse">
           <DataField>SupplierMilestoneDatesResponse</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ScopeVerified2029BeyondResponse">
+          <DataField>ScopeVerified2029BeyondResponse</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="AdditionalClassification">
@@ -825,6 +833,12 @@
                 </TablixColumn>
                 <TablixColumn>
                   <Width>1.55208in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.20833in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.32292in</Width>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>4.24222in</Width>
@@ -3659,6 +3673,82 @@
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>Textbox82</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#1c3a70</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox112">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Scope Verified thru 2028</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox112</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BackgroundColor>#1c3a70</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox115">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Scope Verified - 2029 &amp; Beyond</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <FontSize>11pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                    <Color>White</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox115</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>DimGray</Color>
@@ -7105,7 +7195,6 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
-                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
@@ -7352,6 +7441,70 @@
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>NlfResponse</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ScopeVerifiedThru2028Response">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!ScopeVerifiedThru2028Response.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>ScopeVerifiedThru2028Response</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ScopeVerified2029BeyondResponse">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!ScopeVerified2029BeyondResponse.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>ScopeVerified2029BeyondResponse</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>DimGray</Color>
@@ -8620,6 +8773,8 @@
                 <TablixMember />
                 <TablixMember />
                 <TablixMember />
+                <TablixMember />
+                <TablixMember />
               </TablixMembers>
             </TablixColumnHierarchy>
             <TablixRowHierarchy>
@@ -8645,7 +8800,7 @@
             <DataSetName>createProposalLogReport_StoredProcedure</DataSetName>
             <Top>2.705in</Top>
             <Height>1.22167in</Height>
-            <Width>144.51463in</Width>
+            <Width>147.04588in</Width>
             <Style />
           </Tablix>
           <Textbox Name="textbox1">
@@ -8946,7 +9101,7 @@
         <Height>3.92667in</Height>
         <Style />
       </Body>
-      <Width>144.51463in</Width>
+      <Width>147.04588in</Width>
       <Page>
         <LeftMargin>1in</LeftMargin>
         <RightMargin>1in</RightMargin>

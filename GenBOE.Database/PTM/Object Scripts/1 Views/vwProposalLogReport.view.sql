@@ -32,6 +32,8 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 **		12/3/24		twilson3			proph-2544 Add SetupComments, Backup Estimator Name
 **		02/27/25	Carlos				PROPH-2642 Add checklist question 11 to log report
 **		05/13/25	ranzalon			PROPH-3038 Added Bid and Mission Segment EPP Dates
+**		07/21/25	e378233				PROPH-2835/2836 Added MSAC POC and Program Manager
+**		10/13/25	ranzalon			PROPH-3375 PPR Questions 13 and 14
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
@@ -66,6 +68,8 @@ SELECT
 	CoverSheetApprover.DisplayName AS [CoverSheetApproverName],
 	LOBMgr.DisplayName AS [LOBMgrName],
 	ProposalMgr.DisplayName AS [ProposalMgrName],
+	ProgramMgr.DisplayName AS [ProgramMgrName],
+	MsacPoc.DisplayName AS [MSAC POC],
 	TechLead.DisplayName AS [TechLeadName],
 	LeadEstimator.DisplayName AS [LeadEstimatorName],
     PC.[LMLaborHours] AS [LMLaborHours],
@@ -206,6 +210,8 @@ SELECT
 	PC.CostThroughCom,
 	ppr.Response AS NlfResponse,
 	ppr11.Response AS SupplierMilestoneDatesResponse,
+	ppr13.Response AS ScopeVerifiedThru2028Response,
+	ppr14.Response AS ScopeVerified2029BeyondResponse,
 	P.IsSupportDefinitizingUCA,
 	CASE
 		WHEN pCD.IsInsuranceDirect = 1 THEN 'Yes'
@@ -298,6 +304,18 @@ SELECT
 	(
 		SELECT PUR.ProposalID,	U.DisplayName, U.UserID, U.NTID
 			FROM ProposalUserRole PUR JOIN genTRACUser U ON PUR.UserID = U.UserID
+			WHERE PUR.RoleID = 25
+	) ProgramMgr ON P.ProposalID = ProgramMgr.ProposalID
+	LEFT OUTER JOIN
+	(
+		SELECT PUR.ProposalID,	U.DisplayName, U.UserID, U.NTID
+			FROM ProposalUserRole PUR JOIN genTRACUser U ON PUR.UserID = U.UserID
+			WHERE PUR.RoleID = 26
+	) MsacPoc ON P.ProposalID = MsacPoc.ProposalID
+	LEFT OUTER JOIN
+	(
+		SELECT PUR.ProposalID,	U.DisplayName, U.UserID, U.NTID
+			FROM ProposalUserRole PUR JOIN genTRACUser U ON PUR.UserID = U.UserID
 			WHERE PUR.RoleID = 17
 	) ProposalMgr ON P.ProposalID = ProposalMgr.ProposalID
 	LEFT OUTER JOIN
@@ -367,4 +385,16 @@ SELECT
 					INNER JOIN PPRChecklistContent ppr ON (xref.PPRChecklistContentID = ppr.PPRChecklistContentID AND ppr.ChecklistText LIKE '%Does the proposal include subcontractors of any dollar value or material supplier > CCoPD threshold with planned dates that go beyond proposal submittal%')) AS ppr11
 			ON ppr11.ProposalId = p.ProposalId 
 	LEFT OUTER JOIN [CcopdReasonsNo] cNo ON P.ReasonCcopdNo = cNO.Id
+	LEFT OUTER JOIN
+			(SELECT xref.ProposalID, ppr.SortOrder, ppr.ChecklistText, r.Response
+				FROM ProposalPPRChecklistXREF xref 
+					INNER JOIN ResponseLU r ON r.ResponseID = xref.ResponseID
+					INNER JOIN PPRChecklistContent ppr ON (xref.PPRChecklistContentID = ppr.PPRChecklistContentID AND ppr.ChecklistText LIKE '%scope through 2028%')) AS ppr13
+			ON ppr13.ProposalId = p.ProposalId 
+	LEFT OUTER JOIN
+			(SELECT xref.ProposalID, ppr.SortOrder, ppr.ChecklistText, r.Response
+				FROM ProposalPPRChecklistXREF xref 
+					INNER JOIN ResponseLU r ON r.ResponseID = xref.ResponseID
+					INNER JOIN PPRChecklistContent ppr ON (xref.PPRChecklistContentID = ppr.PPRChecklistContentID AND ppr.ChecklistText LIKE '%scope in 2029 and beyond%')) AS ppr14
+			ON ppr14.ProposalId = p.ProposalId 
 GO
