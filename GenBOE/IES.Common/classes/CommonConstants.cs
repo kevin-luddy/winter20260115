@@ -178,5 +178,18 @@ namespace IES.Common.classes
 		public static readonly string WORKSPACE_REPORT_WORKSHEET_WORKSPACE_IDENTIFICATION = "Workspace Identification";
 		#endregion
 
+		#region Workspace data report columns
+
+		/// <summary>
+		/// Column header text for Task Author column
+		/// </summary>
+		public static readonly string WORKSPACE_REPORT_COLUMN_TASK_AUTHOR = "Task Author";
+
+		/// <summary>
+		/// Column header text for MOQ Rationale column
+		/// </summary>
+		public static readonly string WORKSPACE_REPORT_COLUMN_MOQ_RATIONALE = "MOQ Rationale";
+
+		#endregion
 	}
 }

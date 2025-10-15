@@ -30,11 +30,19 @@ namespace GenBOE.ActionLogic
         /// <returns>the populated <see cref="BOEHeaderISGSModelView"/></returns>
         IBOEHeaderModelView GetCreateBOEHeaderMV(BoeDTO boe, ICollection<RTECustomTemplateQuestionAnswerModelView> answers);
 
-        /// <summary>
-        /// Populates properties with company specific data
-        /// </summary>
-        /// <param name="theModel">the <see cref="BOEAdvancedSearchModelView"/> to populate</param>
-        void PopulateCompanySpecificProperties(BOEAdvancedSearchModelView theModel);
+		/// <summary>
+		/// Get BOE Header Description ModelView
+		/// </summary>
+		/// <param name="boe">BOE containing BOE Summary</param>
+		/// <param name="ws">Workspace containing the BOE</param>
+		/// <returns>ModelView for the description in BOE Header</returns>
+		BOEHeaderDescriptionModelView GetBOEHeaderDescriptionMv(FullBoe boe, FullWorkspace ws);
+
+		/// <summary>
+		/// Populates properties with company specific data
+		/// </summary>
+		/// <param name="theModel">the <see cref="BOEAdvancedSearchModelView"/> to populate</param>
+		void PopulateCompanySpecificProperties(BOEAdvancedSearchModelView theModel);
 
         /// <summary>
         /// Gets the model view for the BOE task element grid

@@ -17,6 +17,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using GenBOE.ActionLogic.IO.Export;
 	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.ModelView.Workspace;
+	using GenBOE.ActionLogic.WorkspaceTransitions;
 	using GenBOE.DataBridge.Common;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.DataBridge.Reference;
@@ -91,7 +92,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			IMoqTypeDataLoader moqTypeLoader,
 			IBOEStateMachine boeStateMachine,
 			IBoeMediator boeMediator,
-			ISystemSettingDTODataLoader systemSettingDTODataLoader
+			ISystemSettingDTODataLoader systemSettingDTODataLoader,
+			WorkspaceStateMachine workspaceStateMachine
 			)
 			: base(
 				workspaceLoader,
@@ -116,7 +118,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				moqTypeLoader,
 				boeStateMachine,
 				boeMediator,
-				systemSettingDTODataLoader
+				systemSettingDTODataLoader,
+				workspaceStateMachine
 		)
 		{
 			this.zoneTravelRatesFeesLoader = zoneTravelRatesFeesLoader;

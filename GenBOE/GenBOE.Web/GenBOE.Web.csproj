@@ -277,6 +277,7 @@
     <Compile Include="Common\StringNonPrintableCharRemovalModelBinder.cs" />
     <Compile Include="Common\WorkspaceIdentificationModelBinder.cs" />
     <Compile Include="Controllers\Backend\BOEConfigurationController.cs" />
+    <Compile Include="Controllers\Backend\BOEController.cs" />
     <Compile Include="Controllers\Backend\CLINController.cs" />
     <Compile Include="Controllers\Backend\ImportController.cs" />
     <Compile Include="Controllers\Backend\ManagePermissionsController.cs" />
@@ -297,6 +298,7 @@
     <Compile Include="ModelView\AddEditWBSModelView.cs" />
     <Compile Include="ModelView\AddEditCLINModelView.cs" />
     <Compile Include="ModelView\BOEFormMasterModelView.cs" />
+    <Compile Include="ModelView\BOELoopingData.cs" />
     <Compile Include="ModelView\BOEStatusReportView.cs" />
     <Compile Include="ModelView\CompleteWBSImportModelView.cs" />
     <Compile Include="ModelView\ConfidenceReportItem.cs" />
@@ -403,7 +405,6 @@
     <Compile Include="ModelView\PermissionRoleModelView.cs" />
     <Compile Include="ModelView\PermissionUserModelView.cs" />
     <Compile Include="ModelView\SavePermissionsModelView.cs" />
-    <Compile Include="ModelView\WorkspaceStatusModelView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

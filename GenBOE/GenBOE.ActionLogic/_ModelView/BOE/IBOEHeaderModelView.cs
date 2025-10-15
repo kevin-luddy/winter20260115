@@ -60,11 +60,26 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// </summary>
         string WBS { get; set; }
 
-        // methods from parent class PersistedDataModelView
-        /// <summary>
-        /// Gets/sets UpdateDate
-        /// </summary>
-        DateTime UpdateDate { get; set; }
+		/// <summary>
+		/// Gets/sets RteFieldSize
+		/// </summary>
+		int RteFieldSize { get; set; }
+
+		/// <summary>
+		/// Get/sets Status
+		/// </summary>
+		string Status { get; }
+
+		/// <summary>
+		/// Get/sets State
+		/// </summary>
+		BOEState State { get; set; }
+
+		// methods from parent class PersistedDataModelView
+		/// <summary>
+		/// Gets/sets UpdateDate
+		/// </summary>
+		DateTime UpdateDate { get; set; }
 
         /// <summary>
         /// Gets/sets UpdateDateLong

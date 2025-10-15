@@ -26,6 +26,7 @@ namespace GenBOE.Models
             this.OrdinaryVariables = new HashSet<OrdinaryVariable>();
             this.RteTemplateAnswers = new HashSet<RteTemplateAnswer>();
             this.SkillMixes = new HashSet<SkillMix>();
+            this.SkillMixSummaries = new HashSet<SkillMixSummary>();
         }
     
         public int BOETaskElementID { get; set; }
@@ -68,5 +69,7 @@ namespace GenBOE.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SkillMix> SkillMixes { get; set; }
         public virtual ETIuser ETIuser { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<SkillMixSummary> SkillMixSummaries { get; set; }
     }
 }

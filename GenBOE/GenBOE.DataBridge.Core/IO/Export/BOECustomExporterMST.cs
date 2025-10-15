@@ -14,7 +14,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Threading.Tasks;
-	using DocumentFormat.OpenXml.Wordprocessing;
+	using Aspose.Words;
+	using Aspose.Words.Markup;
+	using Aspose.Words.Tables;
 	using GenBOE.DataBridge.Core.Common;
 	using GenBOE.DataBridge.Core.Common.Calculations;
 	using GenBOE.DataBridge.Core.DTO;
@@ -65,7 +67,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// </summary>
 		/// <param name="tableContainerElement">container element for the table</param>
 		/// <param name="boeExportModelView">Model View for the BOE Export with the resources to use</param>
-		protected override void PopulateResourceSummaryByResourceIDTable(SdtElement tableContainerElement, BOEExportModelView boeExportModelView)
+		protected override void PopulateResourceSummaryByResourceIDTable(StructuredDocumentTag tableContainerElement, BOEExportModelView boeExportModelView)
 		{
 			if (boeExportModelView != null)
 			{
@@ -108,19 +110,19 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// </summary>
 		/// <param name="tableContainerElement">container element for the table</param>
 		/// <param name="rollupData">rollup data to be displayed in the table</param>
-		protected override void PopulateResourceSummaryTable(SdtElement tableContainerElement, ICollection<ResourceSummaryRowData> rollupData)
+		protected override void PopulateResourceSummaryTable(StructuredDocumentTag tableContainerElement, ICollection<ResourceSummaryRowData> rollupData)
 		{
 			if (rollupData != null && rollupData.Any())
 			{
 				// locate the table markers
-				SdtElement dataRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_DataRow);
-				SdtElement dataTotalsRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_TotalsRow);
+				StructuredDocumentTag dataRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_DataRow);
+				StructuredDocumentTag dataTotalsRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_TotalsRow);
 
 				// initialize the "insertion" row
-				TableRow templateDataRow = dataRowMarkerTag.Ancestors<TableRow>().FirstOrDefault();
+				Row templateDataRow = dataRowMarkerTag.GetAncestor(Aspose.Words.NodeType.Row) as Row;
 				if (templateDataRow != null)
 				{
-					TableRow currentInsertionRow = templateDataRow;
+					Row currentInsertionRow = templateDataRow;
 
 					// accumulate totals
 					decimal matSubIwtaCostTotal = 0m;
@@ -132,13 +134,15 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					{
 						//create a new summary data row in the table
 						//clone marked template row
-						TableRow tableRow = templateDataRow.CloneNode(true) as TableRow;
-						Parallel.ForEach(tableRow.Descendants(), descendant =>
+						Row tableRow = templateDataRow.Clone(true) as Row;
+
+						//add the row to the table
+						currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
+
+						Parallel.ForEach(tableRow.GetChildNodes(NodeType.StructuredDocumentTag, true), descendant =>
 						{
-							if (descendant is SdtId || descendant is SdtPlaceholder)
-							{
-								descendant.RemoveIt();
-							}
+							StructuredDocumentTag tag = descendant as StructuredDocumentTag;
+							tag.Placeholder?.RemoveIt();
 						}
 						);
 
@@ -171,13 +175,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_OtherCost), otherCost.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, _CurrencyFormatter));
 						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Cost), cost.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, _CurrencyFormatter));
 
-						//add the row to the table
-						currentInsertionRow.InsertAfterSelf(tableRow);
 						currentInsertionRow = tableRow;
 					}
 
 					//total row doesn't need to be cloned
-					TableRow totalsRow = dataTotalsRowMarkerTag.Ancestors<TableRow>().FirstOrDefault();
+					Row totalsRow = dataTotalsRowMarkerTag.GetAncestor(NodeType.Row) as Row;
 
 					if (totalsRow != null)
 					{
@@ -201,13 +203,13 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <summary>
 		/// Prepare data for the Labor Task Resource Table before populating it
 		/// </summary>
-		/// <param name="tableElement">SdtElement for the Labor Task Resource Table</param>
+		/// <param name="tableElement">StructuredDocumentTag for the Labor Task Resource Table</param>
 		/// <param name="laborTaskElement">Element for the labor task</param>
 		/// <param name="allLaborTaskElements">All task elements for the BOE</param>
 		/// <param name="allWorkspaceCustomFields">All custom fields in the current workspace</param>
 		/// <param name="exportInputs">The export inputs.</param>
 		/// <exception cref="ArgumentNullException">laborTaskElement</exception>
-		protected override void PrepareLaborTaskResourceTableData(SdtElement tableElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, IReadOnlyCollection<CustomFieldDTO> allWorkspaceCustomFields, BOEExportInputs exportInputs)
+		protected override void PrepareLaborTaskResourceTableData(StructuredDocumentTag tableElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, IReadOnlyCollection<CustomFieldDTO> allWorkspaceCustomFields, BOEExportInputs exportInputs)
 		{
 			if (laborTaskElement == null)
 			{
@@ -251,7 +253,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="useGfy">Should Government Fiscal Years be used</param>
 		/// <param name="byQuarter">If table is by quarter</param>
 		/// <exception cref="ArgumentNullException">templateElement</exception>
-		protected override void PrepareLaborTaskHoursRollupTableData(SdtElement templateElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, BOEExportModelView boeExportModelView, bool useGfy, bool byQuarter)
+		protected override void PrepareLaborTaskHoursRollupTableData(StructuredDocumentTag templateElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, BOEExportModelView boeExportModelView, bool useGfy, bool byQuarter)
 		{
 			if (templateElement == null)
 			{
@@ -262,7 +264,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			ICollection<BoeTaskElementDTO> currentLaborTaskElementAsICollection = new Collection<BoeTaskElementDTO>();
 			currentLaborTaskElementAsICollection.Add(currentLaborTaskElement);
 
-			SdtElement currentInsertionElement = templateElement;
+			StructuredDocumentTag currentInsertionElement = templateElement;
 
 			List<LaborRollupByDateNew> laborRollupData = this.GetRollupByYear(currentLaborTaskElementAsICollection, null, RateType.Hours, useGfy);
 			IList<RollupSummaryByYearTableRowData> laborHoursSummaryRollupData = laborRollupData.Convert();
@@ -273,10 +275,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				YearlyData = laborHoursSummaryRollupData
 			};
 
-			SdtElement HourRollupTableElement = templateElement.CloneNode(true) as SdtElement;
+			StructuredDocumentTag HourRollupTableElement = templateElement.Clone(true) as StructuredDocumentTag;
 			if (PopulateRollupSummaryByYearTable(HourRollupTableElement, null, laborRollupTableData, DefaultHoursFormat, byQuarter, useGfy))
 			{
-				currentInsertionElement.InsertAfterSelf(HourRollupTableElement);
+				// This is adding the Node to the document after Setting Element Text, which should be ok.  Fails if adding Element Text as Html
+				currentInsertionElement.ParentNode.InsertAfter(HourRollupTableElement, currentInsertionElement);
 				currentInsertionElement = HourRollupTableElement;
 			}
 
@@ -294,7 +297,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="selectedComponents">Components selected for the output</param>
 		/// <param name="useGfy">Should Government Fiscal Years be used</param>
 		/// <exception cref="ArgumentNullException">selectedComponents</exception>
-		protected override void ProcessLaborTaskCostSpreadRollupTable(SdtElement containerElement, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents, bool useGfy)
+		protected override void ProcessLaborTaskCostSpreadRollupTable(StructuredDocumentTag containerElement, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents, bool useGfy)
 		{
 			if (selectedComponents == null)
 			{
@@ -303,7 +306,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region Cost Spread Rollup Table
 
-			SdtElement costSpreadRollupTableTemplateElement = WordUtilities.GetTaggedChildElement(containerElement,
+			StructuredDocumentTag costSpreadRollupTableTemplateElement = WordUtilities.GetTaggedChildElement(containerElement,
 				useGfy ? BOEExporterConstants.Table_GfyCostSpreadRollup : BOEExporterConstants.Table_CostSpreadRollup);
 
 			bool byQuarter = false;
@@ -321,7 +324,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					ICollection<BoeTaskElementDTO> currentLaborTaskElementAsICollection = new Collection<BoeTaskElementDTO>();
 					currentLaborTaskElementAsICollection.Add(currentLaborTaskElement);
 
-					SdtElement currentInsertionElement = costSpreadRollupTableTemplateElement;
+					StructuredDocumentTag currentInsertionElement = costSpreadRollupTableTemplateElement;
 
 					List<LaborRollupByDateNew> laborRollupData = GetTaskCostRollup(currentLaborTaskElementAsICollection, exportInputs, null, useGfy);
 					IList<RollupSummaryByYearTableRowData> laborCostSummaryRollupData = laborRollupData.Convert();
@@ -332,11 +335,12 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						YearlyData = laborCostSummaryRollupData
 					};
 
-					SdtElement CostRollupTableElement = costSpreadRollupTableTemplateElement.CloneNode(true) as SdtElement;
+					StructuredDocumentTag CostRollupTableElement = costSpreadRollupTableTemplateElement.Clone(true) as StructuredDocumentTag;
 
 					if (PopulateRollupSummaryByYearTable(CostRollupTableElement, null, laborRollupTableData, DefaultCurrencyFormat, byQuarter, useGfy))
 					{
-						currentInsertionElement = currentInsertionElement.InsertAfterSelf(CostRollupTableElement);
+						// This is adding the Node to the document after Setting Element Text, which should be ok.  Fails if adding Element Text as Html
+						currentInsertionElement = currentInsertionElement.ParentNode.InsertAfter(CostRollupTableElement, currentInsertionElement);
 					}
 				}
 				this.RemoveElement(costSpreadRollupTableTemplateElement);
@@ -357,7 +361,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// or
 		/// exportInputs
 		/// </exception>
-		protected override void ProcessODCTaskDirectCostRollupTable(SdtElement containerElement, BOEExportTaskElement odcTaskElement, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, bool useGfy)
+		protected override void ProcessODCTaskDirectCostRollupTable(StructuredDocumentTag containerElement, BOEExportTaskElement odcTaskElement, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, bool useGfy)
 		{
 			if (selectedComponents == null)
 			{
@@ -371,7 +375,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region ODC Cost Rollup Table
 
-			SdtElement costSpreadRollupTableTemplateElement = WordUtilities.GetTaggedChildElement(containerElement,
+			StructuredDocumentTag costSpreadRollupTableTemplateElement = WordUtilities.GetTaggedChildElement(containerElement,
 				useGfy ? BOEExporterConstants.Table_GfyDirectCostRollup : BOEExporterConstants.Table_DirectCostRollup);
 
 			bool byQuarter = false;
@@ -385,7 +389,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			{
 				if (selectedComponents.Contains(BoeCustomReportComponent.TaskSpreadTables))
 				{
-					SdtElement currentInsertionElement = costSpreadRollupTableTemplateElement;
+					StructuredDocumentTag currentInsertionElement = costSpreadRollupTableTemplateElement;
 
 					OtherDirectCostDTO currentODCTaskElement = exportInputs.Odcs.First(x => x.Id == odcTaskElement.BOETaskElementID.Value);
 					List<LaborRollupByDateNew> ODCRollupData = GetODCCostRollup(currentODCTaskElement, useGfy);
@@ -397,11 +401,12 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						YearlyData = ODCCostSummaryRollupData
 					};
 
-					SdtElement CostRollupTableElement = costSpreadRollupTableTemplateElement.CloneNode(true) as SdtElement;
+					StructuredDocumentTag CostRollupTableElement = costSpreadRollupTableTemplateElement.Clone(true) as StructuredDocumentTag;
 
 					if (PopulateRollupSummaryByYearTable(CostRollupTableElement, null, ODCRollupTableData, DefaultCurrencyFormat, byQuarter, useGfy))
 					{
-						currentInsertionElement = currentInsertionElement.InsertAfterSelf(CostRollupTableElement);
+						// This is adding the Node to the document after Setting Element Text, which should be ok.  Fails if adding Element Text as Html
+						currentInsertionElement = currentInsertionElement.ParentNode.InsertAfter(CostRollupTableElement, currentInsertionElement);
 					}
 				}
 				this.RemoveElement(costSpreadRollupTableTemplateElement);
@@ -429,7 +434,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// or
 		/// exportInputs
 		/// </exception>
-		protected override void ProcessLaborTaskResources(SdtElement containerElement, BOEExportInputs exportInputs, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents, bool multiBoe)
+		protected override void ProcessLaborTaskResources(StructuredDocumentTag containerElement, BOEExportInputs exportInputs, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents, bool multiBoe)
 		{
 			if (selectedComponents == null)
 			{
@@ -448,7 +453,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region Resource Container
 
-			SdtElement laborResourceContainerTemplateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.ResourceContainerPrefix + BOEExporterConstants.TaskType_Labor);
+			StructuredDocumentTag laborResourceContainerTemplateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.ResourceContainerPrefix + BOEExporterConstants.TaskType_Labor);
 
 			if (laborResourceContainerTemplateElement != null)
 			{
@@ -474,18 +479,18 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						.ThenBy(p => p.ExportFields[BOEExporterConstants.FieldName_PerformingOrgID]);
 					}
 
-					SdtElement currentInsertionPoint = laborResourceContainerTemplateElement;
+					StructuredDocumentTag currentInsertionPoint = laborResourceContainerTemplateElement;
 
 					foreach (BOEExportTaskElementLabor resourceElement in orderedResources)
 					{
-						SdtElement laborResourceContainerElement = CloneContainerTemplate(laborResourceContainerTemplateElement);
+						StructuredDocumentTag laborResourceContainerElement = CloneContainerTemplate(laborResourceContainerTemplateElement);
+						currentInsertionPoint.ParentNode.InsertAfter(laborResourceContainerElement, currentInsertionPoint);
 
 						ProcessResourceHeader(laborResourceContainerElement, resourceElement);
 						this.ProcessResourceCustomFields(laborResourceContainerElement, resourceElement, exportInputs.CustomFields, exportInputs);
 						ProcessResourceHoursRollupTable(laborResourceContainerElement, resourceElement, allLaborTaskElements, laborTaskElement);
 						ProcessResourceCostRollupTable(laborResourceContainerElement, resourceElement, allLaborTaskElements, laborTaskElement);
 
-						currentInsertionPoint.InsertAfterSelf(laborResourceContainerElement);
 						currentInsertionPoint = laborResourceContainerElement;
 					}
 
@@ -514,7 +519,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// or
 		/// exportInputs
 		/// </exception>
-		protected override void ProcessODCTaskResources(SdtElement containerElement, BOEExportInputs exportInputs, BOEExportTaskElement odcTaskElement, ICollection<BoeCustomReportComponent> selectedComponents)
+		protected override void ProcessODCTaskResources(StructuredDocumentTag containerElement, BOEExportInputs exportInputs, BOEExportTaskElement odcTaskElement, ICollection<BoeCustomReportComponent> selectedComponents)
 		{
 			if (selectedComponents == null)
 			{
@@ -533,7 +538,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region Resource Container
 
-			SdtElement odcResourceContainerTemplateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.ResourceContainerPrefix + BOEExporterConstants.TaskType_ODC);
+			StructuredDocumentTag odcResourceContainerTemplateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.ResourceContainerPrefix + BOEExporterConstants.TaskType_ODC);
 
 			if (odcResourceContainerTemplateElement != null)
 			{
@@ -548,7 +553,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 					HashSet<ResourceDTO> resourcesForOdcs = new HashSet<ResourceDTO>(exportInputs.ResourcesUsedInWsBoes);
 					HashSet<PerformingOrgDTO> performingOrgsFromDb = new HashSet<PerformingOrgDTO>(exportInputs.PerformingOrgsUsedInBoes);
-					SdtElement currentInsertionPoint = odcResourceContainerTemplateElement;
+					StructuredDocumentTag currentInsertionPoint = odcResourceContainerTemplateElement;
 
 					foreach (OtherDirectCostType odcType in ODCTypes)
 					{
@@ -591,12 +596,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						boeExportLabor.EndDate = odcType.EndDate;
 
 
-						SdtElement odcResourceContainerElement = CloneContainerTemplate(odcResourceContainerTemplateElement);
+						StructuredDocumentTag odcResourceContainerElement = CloneContainerTemplate(odcResourceContainerTemplateElement);
+						currentInsertionPoint.ParentNode.InsertAfter(odcResourceContainerElement, currentInsertionPoint);
 
 						ProcessResourceHeader(odcResourceContainerElement, boeExportLabor);
 						ProcessODCResourceCostRollupTable(odcResourceContainerElement, odcTaskElement, odcType);
-
-						currentInsertionPoint.InsertAfterSelf(odcResourceContainerElement);
 						currentInsertionPoint = odcResourceContainerElement;
 					}
 					this.RemoveElement(odcResourceContainerTemplateElement);
@@ -771,7 +775,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="containerElement">Container element for the table</param>
 		/// <param name="travelTaskElement">BOE Export Task Element for the Travel Task</param>
 		/// <param name="selectedComponents">Selected components for the custom export</param>
-		protected override void ProcessTravelTaskResourceTable(SdtElement containerElement, BOEExportTaskElement travelTaskElement, ICollection<BoeCustomReportComponent> selectedComponents)
+		protected override void ProcessTravelTaskResourceTable(StructuredDocumentTag containerElement, BOEExportTaskElement travelTaskElement, ICollection<BoeCustomReportComponent> selectedComponents)
 		{
 			if (travelTaskElement == null) { throw new ArgumentNullException(nameof(travelTaskElement)); }
 			if (selectedComponents == null) { throw new ArgumentNullException(nameof(selectedComponents)); }
@@ -779,12 +783,12 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			#region Resource Types Table
 
 			//table elements
-			SdtElement resourceTypesTableElement_Zone = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_ResourceTypes_ZoneTravel);
-			SdtElement resourceTypesTableElement_Nonzone = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_ResourceTypes_NonzoneTravel);
+			StructuredDocumentTag resourceTypesTableElement_Zone = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_ResourceTypes_ZoneTravel);
+			StructuredDocumentTag resourceTypesTableElement_Nonzone = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_ResourceTypes_NonzoneTravel);
 
 			//table label elements
-			SdtElement resourceTypesTableLabelElement_Zone = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.FieldName_ZoneSummaryLabel);
-			SdtElement resourceTypesTableLabelElement_Nonzone = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.FieldName_NonzoneSummaryLabel);
+			StructuredDocumentTag resourceTypesTableLabelElement_Zone = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.FieldName_ZoneSummaryLabel);
+			StructuredDocumentTag resourceTypesTableLabelElement_Nonzone = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.FieldName_NonzoneSummaryLabel);
 
 			bool isMulti = travelTaskElement.taskElementLabors.Any(x => x.ExportFields.ContainsKey(BOEExporterConstants.FieldName_MultiLabel));
 
@@ -845,7 +849,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// or
 		/// exportInputs
 		/// </exception>
-		protected override void ProcessTravelTaskDirectCostRollupTable(SdtElement containerElement, BOEExportTaskElement travelTaskElement, Collection<ResourceDTO> travelResources, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, bool useGfy)
+		protected override void ProcessTravelTaskDirectCostRollupTable(StructuredDocumentTag containerElement, BOEExportTaskElement travelTaskElement, Collection<ResourceDTO> travelResources, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, bool useGfy)
 		{
 			if (selectedComponents == null)
 			{
@@ -859,7 +863,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			#region Travel Direct Cost Rollup Table
 
-			SdtElement travelCostRollupTableElement = WordUtilities.GetTaggedChildElement(containerElement,
+			StructuredDocumentTag travelCostRollupTableElement = WordUtilities.GetTaggedChildElement(containerElement,
 				useGfy ? BOEExporterConstants.Table_GfyDirectCostRollup : BOEExporterConstants.Table_DirectCostRollup);
 
 			bool byQuarter = false;
@@ -890,7 +894,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// </summary>
 		/// <param name="wsHasMoqRteTemplate">Whether Worksace has RTE Templates for MOQ Rationale</param>
 		/// <param name="containerElement">The container template</param>
-		protected override void RemoveNonTemplateBoeContainers(bool wsHasMoqRteTemplate, SdtElement containerElement)
+		protected override void RemoveNonTemplateBoeContainers(bool wsHasMoqRteTemplate, StructuredDocumentTag containerElement)
 		{
 			if (!wsHasMoqRteTemplate)
 			{
@@ -958,7 +962,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// </summary>
 		/// <param name="containerElement">Container element for the resource</param>
 		/// <param name="ResourceElement">Resource with data to populate the header</param>
-		private void ProcessResourceHeader(SdtElement containerElement, BOEExportTaskElementLabor ResourceElement)
+		private void ProcessResourceHeader(StructuredDocumentTag containerElement, BOEExportTaskElementLabor ResourceElement)
 		{
 			IDictionary<string, string> resourceHeaderDataValueMappings = new Dictionary<string, string>
 			{
@@ -986,7 +990,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			foreach (KeyValuePair<string, string> entry in resourceHeaderDataValueMappings)
 			{
-				SdtElement headerDataElement = WordUtilities.GetTaggedChildElement(containerElement, entry.Key);
+				StructuredDocumentTag headerDataElement = WordUtilities.GetTaggedChildElement(containerElement, entry.Key);
 				WordUtilities.SetElementText(headerDataElement, entry.Value);
 			}
 		}
@@ -998,9 +1002,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="ResourceElement">Resource with the data to populate the table</param>
 		/// <param name="allLaborTaskElements">All labor task elements in the workspace</param>
 		/// <param name="currentLaborTaskElement">Labor task element containing the resource</param>
-		private void ProcessResourceHoursRollupTable(SdtElement containerElement, BOEExportTaskElementLabor ResourceElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, BOEExportTaskElement currentLaborTaskElement)
+		private void ProcessResourceHoursRollupTable(StructuredDocumentTag containerElement, BOEExportTaskElementLabor ResourceElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, BOEExportTaskElement currentLaborTaskElement)
 		{
-			SdtElement resourceHoursTableElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_ResourceHoursRollup);
+			StructuredDocumentTag resourceHoursTableElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_ResourceHoursRollup);
 
 			if (resourceHoursTableElement != null)
 			{
@@ -1045,9 +1049,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="ResourceElement">Resource with the data to populate the table</param>
 		/// <param name="allLaborTaskElements">All labor task elements in the workspace</param>
 		/// <param name="currentLaborTaskElement">Labor task element containing the resource</param>
-		private void ProcessResourceCostRollupTable(SdtElement containerElement, BOEExportTaskElementLabor ResourceElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, BOEExportTaskElement currentLaborTaskElement)
+		private void ProcessResourceCostRollupTable(StructuredDocumentTag containerElement, BOEExportTaskElementLabor ResourceElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, BOEExportTaskElement currentLaborTaskElement)
 		{
-			SdtElement resourceCostTableElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_ResourceCostRollup);
+			StructuredDocumentTag resourceCostTableElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_ResourceCostRollup);
 
 			if (resourceCostTableElement != null)
 			{
@@ -1116,7 +1120,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="tableLabelElement">Container element for the table label</param>
 		/// <param name="data">data to populate the table with</param>
 		/// <param name="isZone">bool noting if trip is zone (true) or nonzone (false)</param>
-		private void PopulateTravelTripsTable(SdtElement tableContainerElement, SdtElement tableLabelElement, RMSTravelResourceTypesTableData data, bool isZone)
+		private void PopulateTravelTripsTable(StructuredDocumentTag tableContainerElement, StructuredDocumentTag tableLabelElement, RMSTravelResourceTypesTableData data, bool isZone)
 		{
 			if (data.ResourcesData.Any())
 			{
@@ -1141,44 +1145,45 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// </summary>
 		/// <param name="tableContainerElement">Container element for the table</param>
 		/// <param name="resourcesData">The resources data.</param>
-		private void PopulateZoneTravelTripsTable(SdtElement tableContainerElement, ICollection<RMSTravelResourceTypesTableRowData> resourcesData)
+		private void PopulateZoneTravelTripsTable(StructuredDocumentTag tableContainerElement, ICollection<RMSTravelResourceTypesTableRowData> resourcesData)
 		{
 			if (resourcesData.Any())
 			{
 				// different columns for both data and totals rows - logic will check for existence of tags to determine how to populate
 
 				// locate the table markers
-				SdtElement dataRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_DataRow);
+				StructuredDocumentTag dataRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_DataRow);
 
 				// initialize the "insertion" row
-				TableRow templateDataRow = dataRowMarkerTag.Ancestors<TableRow>().FirstOrDefault();
+				Row templateDataRow = dataRowMarkerTag.GetAncestor(Aspose.Words.NodeType.Row) as Row;
 				this.SetCantSplit(templateDataRow);
-				TableRow currentInsertionRow = templateDataRow;
+				Row currentInsertionRow = templateDataRow;
 
 				foreach (RMSTravelResourceTypesTableRowData rowData in resourcesData)
 				{
 					// create a new data row in the table
-					TableRow tableRow = this.CloneMarkedTemplateRow(templateDataRow);
+					Row tableRow = this.CloneMarkedTemplateRow(templateDataRow);
+
+					// add the row to the table
+					currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
 
 					// populate the row with the data
 					PopulateZoneTravelTripsTableRow(tableRow, rowData, false);
 
-					// add the row to the table
-					currentInsertionRow.InsertAfterSelf(tableRow);
 					currentInsertionRow = tableRow;
 
 					// Add second row for airfare resource for airfare trips
 					if (rowData.IsAirfareTrip)
 					{
 						tableRow = this.CloneMarkedTemplateRow(templateDataRow);
+						currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
 						PopulateZoneTravelTripsTableRow(tableRow, rowData, true);
-						currentInsertionRow.InsertAfterSelf(tableRow);
 						currentInsertionRow = tableRow;
 					}
 				}
 
 				// remove template rows
-				templateDataRow.Remove();
+				templateDataRow.RemoveIt();
 			}
 			else
 			{
@@ -1192,7 +1197,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="tableRow">Row to be populated</param>
 		/// <param name="rowData">Data to populate the row with</param>
 		/// <param name="isAirfareResource">Bool noting if resource is Airfare (true) or Per Diem (false)</param>
-		private void PopulateZoneTravelTripsTableRow(TableRow tableRow, RMSTravelResourceTypesTableRowData rowData, bool isAirfareResource)
+		private void PopulateZoneTravelTripsTableRow(Row tableRow, RMSTravelResourceTypesTableRowData rowData, bool isAirfareResource)
 		{
 			WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_GroupID), rowData.GroupID);
 			WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_ResourceName), isAirfareResource ? rowData.SecondaryResourceName : rowData.ResourceName);
@@ -1212,24 +1217,27 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// </summary>
 		/// <param name="tableContainerElement">Container element for the table</param>
 		/// <param name="resourcesData">The resources data.</param>
-		private void PopulateNonzoneTravelTripsTable(SdtElement tableContainerElement, ICollection<RMSTravelResourceTypesTableRowData> resourcesData)
+		private void PopulateNonzoneTravelTripsTable(StructuredDocumentTag tableContainerElement, ICollection<RMSTravelResourceTypesTableRowData> resourcesData)
 		{
 			if (resourcesData.Any())
 			{
 				// different columns for both data and totals rows - logic will check for existence of tags to determine how to populate
 
 				// locate the table markers
-				SdtElement dataRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_DataRow);
+				StructuredDocumentTag dataRowMarkerTag = WordUtilities.GetTaggedChildElement(tableContainerElement, BOEExporterConstants.Marker_DataRow);
 
 				// initialize the "insertion" row
-				TableRow templateDataRow = dataRowMarkerTag.Ancestors<TableRow>().FirstOrDefault();
+				Row templateDataRow = dataRowMarkerTag.GetAncestor(Aspose.Words.NodeType.Row) as Row;
 				this.SetCantSplit(templateDataRow);
-				TableRow currentInsertionRow = templateDataRow;
+				Row currentInsertionRow = templateDataRow;
 
 				foreach (RMSTravelResourceTypesTableRowData rowData in resourcesData)
 				{
 					// create a new data row in the table
-					TableRow tableRow = this.CloneMarkedTemplateRow(templateDataRow);
+					Row tableRow = this.CloneMarkedTemplateRow(templateDataRow);
+
+					// add the row to the table
+					currentInsertionRow.ParentNode.InsertAfter(tableRow, currentInsertionRow);
 
 					// populate the row with the data
 					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_GroupID), rowData.GroupID);
@@ -1242,13 +1250,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Days), rowData.Days.ToString());
 					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Cars), rowData.Cars.ToString());
 
-					// add the row to the table
-					currentInsertionRow.InsertAfterSelf(tableRow);
 					currentInsertionRow = tableRow;
 				}
 
 				// remove template rows
-				templateDataRow.Remove();
+				templateDataRow.RemoveIt();
 			}
 			else
 			{
@@ -1263,20 +1269,20 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// <param name="tableLabelElement">Container element for the table label</param>
 		/// <param name="travelTaskElementLabors">BOE Export Task Element for the Travel Task Labors (trips), filtered for zone or nonzone trips</param>
 		/// <param name="isZone">bool noting is trip is zone (true) or nonzone (false)</param>
-		private void populateTravelTripsTableForMultiBOEs(SdtElement tableElement, SdtElement tableLabelElement, Collection<BOEExportTaskElementLabor> travelTaskElementLabors, bool isZone)
+		private void populateTravelTripsTableForMultiBOEs(StructuredDocumentTag tableElement, StructuredDocumentTag tableLabelElement, Collection<BOEExportTaskElementLabor> travelTaskElementLabors, bool isZone)
 		{
-			SdtElement currentTable = tableElement;
+			StructuredDocumentTag currentTable = tableElement;
 			IEnumerable<IGrouping<string, BOEExportTaskElementLabor>> multiGroups = travelTaskElementLabors.GroupBy(x => x.ExportFields[BOEExporterConstants.FieldName_MultiLabel]);
 			foreach (IGrouping<string, BOEExportTaskElementLabor> group in multiGroups)
 			{
-				SdtElement clonedTable = tableElement.CloneNode(true) as SdtElement;
-				WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(clonedTable, BOEExporterConstants.FieldName_MultiLabel), group.First().ExportFields[BOEExporterConstants.FieldName_MultiLabel]);
+				StructuredDocumentTag clonedTable = tableElement.Clone(true) as StructuredDocumentTag;
 				RMSTravelResourceTypesTableData travelTableData = group.ToCollection().ConvertRMSTravel();
-				PopulateTravelTripsTable(clonedTable, tableLabelElement, travelTableData, isZone);
 				if (travelTableData.ResourcesData.Any())
 				{
-					currentTable.InsertAfterSelf(clonedTable);
+					currentTable.ParentNode.InsertAfter(clonedTable, currentTable);
 					currentTable = clonedTable;
+					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(clonedTable, BOEExporterConstants.FieldName_MultiLabel), group.First().ExportFields[BOEExporterConstants.FieldName_MultiLabel]);
+					PopulateTravelTripsTable(clonedTable, tableLabelElement, travelTableData, isZone);
 				}
 			}
 			this.RemoveElement(tableElement);

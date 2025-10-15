@@ -362,6 +362,9 @@
         <EntityTypeShape EntityType="GenBOE.Models.CurrentRequest" Width="1.5" PointX="19.625" PointY="7.875" />
         <EntityTypeShape EntityType="GenBOE.Models.RequestTypeLU" Width="1.5" PointX="17.375" PointY="8.125" />
         <AssociationConnector Association="GenBOE.Models.FK_CurrentRequest_RequestTypeLU" />
+        <EntityTypeShape EntityType="GenBOE.Models.SkillMixSummary" Width="1.5" PointX="27.75" PointY="89.75" />
+        <AssociationConnector Association="GenBOE.Models.FK_SkillMixSummary_BOE" />
+        <AssociationConnector Association="GenBOE.Models.FK_SkillMixSummary_BOETaskElement" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

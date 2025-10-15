@@ -56,7 +56,7 @@ AS
 **		1/14/25		twilson3			PROPH-2596 - Add UCOT Factor
 **		1/15/25		e309214				PROPH-1854 Database Changes for Assign Author
 **		2/4/2025	twilson3			PROPH-2786 Link BRCs to new workspace, not old workspace
-**      7/22/2025	twilson3			PROPH-3214 Fix BRC linkage to new BRCs
+**		9/30/25		e378233				PROPH-3302 Updated Copy Workspace Version for Skill Mix Summary
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -2133,6 +2133,94 @@ BEGIN TRY
 	UPDATE @CommonDisclosureSkillMix
 	SET Processed = 1
 	WHERE CommonDisclosureSkillMixID = @CommonDisclosureSkillMixID
+	
+	END
+	
+
+	/** [dbo].[SkillMixSummary] **/
+	DECLARE @SkillMixSummary TABLE
+	(
+		[SkillMixSUmmaryID] [int] NOT NULL,
+		[Rationale] varchar(255) NOT NULL,
+		[Included] [bit] NOT NULL,
+		[ProposedHours] decimal(11,2) NOT NULL,
+		[HistoricalHours] decimal(11,2) NOT NULL,
+		[ResourceHours] decimal(11,2) NOT NULL,
+		[BusinessResourceHours] decimal(11,2) NOT NULL,
+		[BOESkillMix] decimal(5,2) NOT NULL,
+		[LaborSkillMix] decimal(5,2) NOT NULL,
+		[ResourceID] varchar(20) NOT NULL,
+		[BusinessResourceID] varchar(20) NOT NULL,
+	    [BOEID] [int] NOT NULL,
+	    [BOETaskElementID] [int] NOT NULL,
+		[IsUserInput] bit NOT NULL,
+		Processed bit,
+	    NewBOEID int,
+	    NewBOETaskElementID int
+	)
+	INSERT INTO @SkillMixSummary
+	SELECT
+		SMS.[SkillMixSummaryID],
+		SMS.[Rationale],
+		SMS.[Included],
+		SMS.[ProposedHours],
+		SMS.[HistoricalHours],
+		SMS.[ResourceHours],
+		SMS.[BusinessResourceHours],
+		SMS.[BOESkillMix],
+		SMS.[LaborSkillMix],
+	    SMS.[ResourceID],
+	    SMS.[BusinessResourceID],
+	    SMS.[BOEID],
+	    SMS.[BOETaskElementID],
+		SMS.[IsUserInput],
+		0,
+	    B.[NewBOEID],
+	    T.[NewBOETaskElementID]
+	FROM [version].[SkillMixSummary] SMS
+	INNER JOIN @BOE B ON SMS.BOEID = B.BOEID
+	INNER JOIN @BOETaskElement T on T.[BOETaskElementID] = SMS.[BOETaskElementID]
+	WHERE SMS.VersionId = @VersionID
+	
+	DECLARE @SkillMixSummaryID int
+	WHILE EXISTS (SELECT 1 FROM @SkillMixSummary WHERE Processed = 0)
+	BEGIN
+	SELECT TOP 1 @SkillMixSummaryID = SkillMixSummaryID FROM @SkillMixSummary WHERE Processed = 0
+	INSERT INTO [dbo].[SkillMixSummary]
+				([Rationale],
+				[Included],
+				[ProposedHours],
+				[HistoricalHours],
+				[ResourceHours],
+				[BusinessResourceHours],
+				[BOESkillMix],
+				[LaborSkillMix],
+	            [ResourceID],
+	            [BusinessResourceID],
+	            [BOEID],
+	            [BOETaskElementID],
+				[IsUserInput]
+				)
+	SELECT
+		[Rationale],
+		[Included],
+		[ProposedHours],
+		[HistoricalHours],
+		[ResourceHours],
+		[BusinessResourceHours],
+		[BOESkillMix],
+		[LaborSkillMix],
+	    [ResourceID],
+	    [BusinessResourceID],
+	    [NewBOEID],
+	    [NewBOETaskElementID],
+		[IsUserInput]
+	FROM @SkillMixSummary
+	WHERE SkillMixSummaryID = @SkillMixSummaryID
+	
+	UPDATE @SkillMixSummary
+	SET Processed = 1
+	WHERE SkillMixSummaryID = @SkillMixSummaryID
 	
 	END
 	

@@ -6,21 +6,20 @@
 
 namespace IES.Common.OfficeUtilities
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Diagnostics.CodeAnalysis;
-    using System.Globalization;
-    using System.IO;
-    using System.Linq;
-    using System.Runtime.Serialization;
-    using System.Text.RegularExpressions;
-    using DocumentFormat.OpenXml;
-    using DocumentFormat.OpenXml.Packaging;
-    using DocumentFormat.OpenXml.Spreadsheet;
-    using IES.Common.classes;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Diagnostics.CodeAnalysis;
+	using System.IO;
+	using System.Linq;
+	using System.Runtime.Serialization;
+	using System.Text.RegularExpressions;
+	using DocumentFormat.OpenXml;
+	using DocumentFormat.OpenXml.Packaging;
+	using DocumentFormat.OpenXml.Spreadsheet;
+	using IES.Common.classes;
 
-    [ExcludeFromCodeCoverage]
+	[ExcludeFromCodeCoverage]
     public static class ExcelUtilities
     {
         private const double NEW_COLUMN_WIDTH = 9;
@@ -2117,6 +2116,7 @@ namespace IES.Common.OfficeUtilities
 
 		/// <summary>
 		/// Hides the specified columns in the given worksheet.
+		/// NOTE: Be careful to use the proper indexes when using this method in case they are variable due to things like Custom Fields
 		/// </summary>
 		/// <param name="spreadsheet">The spreadsheet document.</param>
 		/// <param name="sheetName">The name of the worksheet.</param>
@@ -2221,7 +2221,6 @@ namespace IES.Common.OfficeUtilities
 
 			worksheet.Save();
 		}
-
 
 		/// <summary>
 		/// Remove all Table Definition Parts and worksheet data rows/cells.

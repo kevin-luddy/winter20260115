@@ -2146,5 +2146,47 @@ namespace IES.Tests.Core
 
             return word;
         }
-    }
+
+		/// <summary>
+		/// Generates Rate Config test data.
+		/// </summary>
+		/// <returns>Collection of RateConfigModelViews similar to that returned by RateConfigLoader.GetAll method.</returns>
+		public static ICollection<RateConfigModelView> GetRateConfigTestData()
+		{
+			return new Collection<RateConfigModelView> {
+				new() { Id = 1, RateTarget = "PPRD", Precision = 6 },
+				new() { Id = 2, RateTarget = "PPRD", RateCategory = RateCategory.DirectLabor, Prefix = "$", Precision = 2 },
+				new() { Id = 3, RateTarget = "PPRD", RateCategory = RateCategory.Fccom, Suffix = "%", Precision = 6, Multiplier = 100 },
+				new() { Id = 4, RateTarget = "PPRD", RateCategory = RateCategory.Fringe, Suffix = "%", Precision = 6, Multiplier = 100 },
+				new() { Id = 5, RateTarget = "PPRD", RateCategory = RateCategory.GA, Suffix = "%", Precision = 6, Multiplier = 100 },
+				new() { Id = 6, RateTarget = "PPRD", RateCategory = RateCategory.LaborEscalationFactor, Precision = 4 },
+				new() { Id = 7, RateTarget = "PPRD", RateCategory = RateCategory.LaborEscalationPercentage, Suffix = "%", Precision = 4, Multiplier = 100 },
+				new() { Id = 8, RateTarget = "PPRD", RateCategory = RateCategory.NonLaborEscalationFactor, Precision = 4 },
+				new() { Id = 9, RateTarget = "PPRD", RateCategory = RateCategory.NonLaborEscalationPercentage, Suffix = "%", Precision = 4, Multiplier = 100 },
+				new() { Id = 10, RateTarget = "PPRD", RateCategory = RateCategory.Overhead, Suffix = "%", Precision = 6, Multiplier = 100 },
+				new() { Id = 11, RateTarget = "PPRD", RateCategory = RateCategory.SMConv, Precision = 0 },
+				new() { Id = 12, RateTarget = "PPRD", RateCategory = RateCategory.ServiceCenter, Prefix = "$", Precision = 2 },
+				new() { Id = 13, RateTarget = "PPRD", RateCategory = RateCategory.TravelFee, Prefix = "$", Precision = 2 },
+				new() { Id = 14, RateTarget = "PPRD", RateCategory = RateCategory.TravelMlge, Prefix = "$", Precision = 3 },
+				new() { Id = 15, RateTarget = "PPRD", RateCategory = RateCategory.TravelOtc, Prefix = "$", Precision = 2 },
+				new() { Id = 16, RateTarget = "PPRD", RateCategory = RateCategory.TravelRc, Prefix = "$", Precision = 2 },
+				new() { Id = 17, RateTarget = "Rate", Precision = 6 },
+				new() { Id = 18, RateTarget = "Rate", RateCategory = RateCategory.DirectLabor, Prefix = "$", Precision = 2 },
+				new() { Id = 19, RateTarget = "Rate", RateCategory = RateCategory.Fccom, Precision = 6 },
+				new() { Id = 20, RateTarget = "Rate", RateCategory = RateCategory.Fringe, Precision = 6 },
+				new() { Id = 21, RateTarget = "Rate", RateCategory = RateCategory.GA, Precision = 6 },
+				new() { Id = 22, RateTarget = "Rate", RateCategory = RateCategory.LaborEscalationFactor, Precision = 4 },
+				new() { Id = 23, RateTarget = "Rate", RateCategory = RateCategory.LaborEscalationPercentage, Precision = 4 },
+				new() { Id = 24, RateTarget = "Rate", RateCategory = RateCategory.NonLaborEscalationFactor, Precision = 4 },
+				new() { Id = 25, RateTarget = "Rate", RateCategory = RateCategory.NonLaborEscalationPercentage, Precision = 4 },
+				new() { Id = 26, RateTarget = "Rate", RateCategory = RateCategory.Overhead, Precision = 6 },
+				new() { Id = 27, RateTarget = "Rate", RateCategory = RateCategory.SMConv, Precision = 0 },
+				new() { Id = 28, RateTarget = "Rate", RateCategory = RateCategory.ServiceCenter, Prefix = "$", Precision = 2 },
+				new() { Id = 29, RateTarget = "Rate", RateCategory = RateCategory.TravelFee, Prefix = "$", Precision = 2 },
+				new() { Id = 30, RateTarget = "Rate", RateCategory = RateCategory.TravelMlge, Prefix = "$", Precision = 3 },
+				new() { Id = 31, RateTarget = "Rate", RateCategory = RateCategory.TravelOtc, Prefix = "$", Precision = 2 },
+				new() { Id = 32, RateTarget = "Rate", RateCategory = RateCategory.TravelRc, Prefix = "$", Precision = 2 }
+			};
+		}
+	}
 }

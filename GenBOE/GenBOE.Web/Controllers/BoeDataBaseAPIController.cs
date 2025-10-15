@@ -125,7 +125,7 @@ namespace GenBOE.Web.Controllers
 			if ((bool)isUsPerson)
 			{
 				authorizationForUser = SecurityAccess.IsAuthorized(
-					new SecurityPermissionsRequested { PageToCheck = page, WorkspaceId = wsId }, workspace, rolesForUser);
+					new SecurityPermissionsRequested { PageToCheck = page, WorkspaceId = wsId, BOEId = inBOEId }, workspace, rolesForUser);
 			}
 			else
 			{

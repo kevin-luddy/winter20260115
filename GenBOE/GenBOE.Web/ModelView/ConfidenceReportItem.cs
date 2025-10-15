@@ -17,7 +17,7 @@ namespace GenBOE.Web.ModelView
 		/// ctor
 		/// </summary>
 		public ConfidenceReportItem()
-		{			
+		{
 		}
 
 		/// <summary>
