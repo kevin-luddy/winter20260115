@@ -5,8 +5,6 @@
 	$scope.errors = [];
 	$scope.identificationPageSetup = false; // Has the identification page been setup yet.  Used to make sure the setup code is only run once when Step 3 is shown to user.
 
-
-
 	// model houses the labels, dropdowns, etc for page setup
 	$scope.model = {
 		stepTitle: '',                      // Current Step Title for the page
@@ -44,6 +42,7 @@
 		nextRevision: '', // SSC only, the next revision of the PTM tracking number
 		isSAPConfigurationEnabled: CreateWorkspaceModelView.IsSAPConnectionEnabled,   // This value will be grabbed from Web.config
 		isAssignTaskAuthorEnabled: CreateWorkspaceModelView.IsAssignTaskAuthorEnabled,
+		isLmNavigatorEnabled: CreateWorkspaceModelView.IsLmNavigatorEnabled,
 		updatePreviousWorkspace: false,         // Space only
 		openCurrentDialog: false,                // Space only
 		LineOfBusiness: '',		
@@ -51,8 +50,6 @@
 		lobIdLookup: '',
 		buildLobIdLookup: ''
 	};
-
-
 
 	$scope.model = $scope.model || {};
 	$scope.model.pldSearchTerm = '';
@@ -165,7 +162,6 @@
 	$scope.data = {};
 
 	$scope.resetData = function () {
-
 		// reset all of the data
 		$scope.model.workspaceToCopy = { WorkspaceName: '' };
 		$scope.model.nextRevision = '';
@@ -208,7 +204,9 @@
 			EnableSAPConnection: false,
 			CurrentPTMWorkspace: false,
 			EnableAssignTaskAuthor: false,
-			isAssignTaskAuthorEnabled: CreateWorkspaceModelView.IsAssignTaskAuthorEnabled
+			isAssignTaskAuthorEnabled: CreateWorkspaceModelView.IsAssignTaskAuthorEnabled,
+			EnableLmNavigator: CreateWorkspaceModelView.IsLmNavigatorEnabled ? true : false,
+			isLmNavigatorEnabled: CreateWorkspaceModelView.IsLmNavigatorEnabled
 		};
 	};
 
@@ -229,26 +227,18 @@
 	};
 
 	$scope.setStepSpecificElements = function (newStep) {
-
-
 		if ($scope.model.IsPLDIntegrated) {
 			$scope.data.TrackingNumber = $scope.model.PLD_PANumber;
 			$scope.data.ProposalTitle = $scope.model.PLD_PATitle;
 		}
 
-
 		if ($scope.model.IsPLDIntegrated && newStep === 5) {
 
 			$scope.data.WorkspaceName = $scope.data.nextRevision + " " + $scope.data.WorkspaceName;
 			$scope.data.Shortname = $scope.data.nextRevision;
-
 		}
 
-
-
 		if ($scope.model.IsPLDIntegrated && newStep === 3) {
-			
-
 			var getPLDProposalDetails = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetPLDProposalDetails);
 
 			$http({
@@ -271,8 +261,6 @@
 					$scope.data.ContractEndDate = $scope.model.ContractEndDate;
 				})
 
-			
-
 			var getNextPLDWorkspaceShortNameFromTrackingNumber = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetNextPLDWorkspaceShortNameFromTrackingNumber);
 
 			$http({
@@ -280,12 +268,12 @@
 				url: getNextPLDWorkspaceShortNameFromTrackingNumber,
 				params: { paNumber: $scope.data.TrackingNumber }
 			})
-				.then(function (res) {
-					const data = res.data;
+			.then(function (res) {
+				const data = res.data;
 
-					$scope.model.nextRevision = data.ShortName;
-					$scope.data.nextRevision = $scope.model.nextRevision;
-				})
+				$scope.model.nextRevision = data.ShortName;
+				$scope.data.nextRevision = $scope.model.nextRevision;
+			})
 		}
 		
 		$scope.step = newStep;
@@ -348,8 +336,7 @@
 		;
 	};
 
-	$scope.next = function () {
-		
+	$scope.next = function () {		
 		if (!$scope.nextButtonDisabled()) {
 			
 			$scope.errors = [];
@@ -761,7 +748,6 @@
 
 	// When doing an Exact copy, copy the details so that they are shown on the Verify Page
 	$scope.copyExactDetails = function (nextStep, isCurrentWorkspace = false) {
-
 		// retrieve exact copy details from server for duplicate name and cost volume pricer display name
 		var deferred = $q.defer();
 		var getExactDetailsUrl = CreateSystemAdminWithParmsPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetExactCopyDataAction, $scope.model.workspaceToCopy.WorkspaceID);
@@ -807,8 +793,6 @@
 		$scope.errors = [];
 		$('#urlValidationBox').html('');
 		$scope.model.showButtonLoader = true;
-
-		
 
 		if ($scope.model.UpdatePreviousWorkspace) {
 			var postURL = GenSession.CreatePostURL($scope.model.workspaceToCopy.ShortName, CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.UpdateCurrentWorkspaceIdentification);
@@ -1139,9 +1123,14 @@
 
 			if (CreateWorkspaceModelView.IsAssignTaskAuthorEnabled) {
 				$scope.data.EnableAssignTaskAuthor = result.EnableAssignTaskAuthor;
-			}
-			else {
+			} else {
 				$scope.data.EnableAssignTaskAuthor = false;
+			}
+
+			if (CreateWorkspaceModelView.IsLmNavigatorEnabled) {
+				$scope.data.EnableLmNavigator = result.EnableLmNavigator;
+			} else {
+				$scope.data.EnableLmNavigator = false;
 			}
 				
 			if ($scope.data.WSExactCopy) {

@@ -805,6 +805,7 @@ namespace GenBOE.Web.Controllers
 
 			model.IsSAPConnectionEnabled = Utilities.IsSAPEnabledForSystem;
 			model.IsAssignTaskAuthorEnabled = Utilities.IsAssignTaskAuthorEnabledForSystem;
+			model.IsLmNavigatorEnabled = Utilities.IsLmNavigatorRteLinkEnabledForSystem;
 
 			ViewResult toReturn = View(WebConstants.VIEW_HOME_CREATE_WORKSPACE, model);
 
@@ -4776,6 +4777,7 @@ namespace GenBOE.Web.Controllers
 					newWorkspaceDTO.EnableSAPConnection = newWorkspace.EnableSAPConnection;
 					newWorkspaceDTO.CurrentPTMWorkspace = newWorkspace.CurrentPTMWorkspace;
 					newWorkspaceDTO.EnableAssignTaskAuthor = newWorkspace.EnableAssignTaskAuthor;
+					newWorkspaceDTO.EnableLmNavigator = newWorkspace.EnableLmNavigator;
 
 					if (Utilities.ShowPLDIsIntegrated)
 					{
@@ -5260,6 +5262,7 @@ namespace GenBOE.Web.Controllers
 					EnableSAPConnection = workspace.EnableSAPConnection,
 					CurrentPTMWorkspace = workspace.CurrentPTMWorkspace,
 					EnableAssignTaskAuthor = workspace.EnableAssignTaskAuthor,
+					EnableLmNavigator = workspace.EnableLmNavigator
 				};
 
 				toReturn = Json(modelView);

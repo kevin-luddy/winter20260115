@@ -82,6 +82,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 				this.CreatedPriorToBoeTemplates = !workspaceDTO.CreationDate.HasValue || workspaceDTO.CreationDate < DateTime.Parse(ConfigurationUtilities.GetAppSetting("MoqTemplateStartDate"));
 				this.EnableSAPConnection = workspaceDTO.EnableSAPConnection;
 				this.EnableAssignTaskAuthor = workspaceDTO.EnableAssignTaskAuthor;
+				this.EnableLmNavigator = workspaceDTO.EnableLmNavigator;
 				this.CurrentPTMWorkspace = workspaceDTO.CurrentPTMWorkspace;
 				if (this.EnableAssignTaskAuthor)
 				{
@@ -266,5 +267,10 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// True if at least one Task in the Workspace has an author assigned
 		/// </summary>
 		public bool WorkspaceContainsTaskAuthor { get; set; }
+
+		/// <summary>
+		/// Enable the link to LM Naviagator in RTEs
+		/// </summary>
+		public bool EnableLmNavigator { get; set; }
 	}
 }

@@ -52,7 +52,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 			this.EnableSAPConnection = true;
 			this.CurrentPTMWorkspace = false;
 			this.EnableAssignTaskAuthor = false;
-
+			this.EnableLmNavigator = true;
 		}
 
 		public override string ToString()
@@ -272,5 +272,11 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// </summary>
 		[Required(ErrorMessage = "Enable assign task author is required.")]
 		public bool EnableAssignTaskAuthor { get; set; }
+
+		/// <summary>
+		/// Get/set whether Enable LM Navigator is selected.
+		/// </summary>
+		[Required(ErrorMessage = "Enable LM Navigator is required.")]
+		public bool EnableLmNavigator { get; set; }
 	}
 }
