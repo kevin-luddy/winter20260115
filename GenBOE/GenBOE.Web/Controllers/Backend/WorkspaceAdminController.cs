@@ -329,5 +329,32 @@ namespace GenBOE.Web.Controllers.Backend
 
 			return result;
 		}
+
+		/// <summary>
+		/// Finalize importing the BOEs into the workspace
+		/// </summary>
+		/// <param name="importBoeResults">The POST body with the workspace shortname and imported BOE metadata</param>
+		/// <returns>Success or failure</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESResponse<bool> CompleteImportBOEs([FromBody] ImportBOEModelView importBoeResults)
+		{
+			IESResponse<bool> result = new IESResponse<bool>();
+
+			try
+			{
+				if (importBoeResults != null)
+				{
+					FullWorkspace ws = this.Factory.CreateFullWorkspace(importBoeResults.workspaceShortName);
+					boeControllerLogic.CompleteImportBOEs(ws, importBoeResults.importedBOEs);
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error completing import for BOE data: {ex.Message}");
+			}
+
+			return result;
+		}
 	}
 }
