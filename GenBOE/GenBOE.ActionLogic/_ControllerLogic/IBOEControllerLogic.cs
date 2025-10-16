@@ -251,8 +251,7 @@ namespace GenBOE.ActionLogic
 		/// </summary>
 		/// <param name="ws">The full workspace</param>
 		/// <param name="importResults">The results of the BOE import</param>
-		//void CompleteImportBOEs(FullWorkspace ws, ICollection<ImportBoeResultsModelView> importResults);
-
+		void CompleteImportBOEs(FullWorkspace ws, ICollection<ImportBoeResultsModelView> importResults);
 
 		//TODO: CompleteImportManageBOE once logic is moved to controllerlogic
 		//WI 32107

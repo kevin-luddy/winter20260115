@@ -27,5 +27,10 @@ namespace GenBOE.ActionLogic.ModelView
                 
         // This needs to stay an "int" and not a "ImportResult" in order to translate correctly during model binding.
         public int ImportType { get; set; }
+
+		/// <summary>
+		/// The Workspace shortname
+		/// </summary>
+		public string WorkspaceShortName { get; set; }
     }
 }

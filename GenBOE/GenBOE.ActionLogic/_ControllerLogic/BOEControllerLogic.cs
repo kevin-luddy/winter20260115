@@ -2272,6 +2272,637 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		}
 
 		/// <summary>
+		/// Complete the import for BOEs
+		/// </summary>
+		/// <param name="ws">The full workspace</param>
+		/// <param name="importResults">The imported BOE results from the prior step</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public void CompleteImportBOEs(FullWorkspace ws, ICollection<ImportBoeResultsModelView> importResults)
+		{
+			try
+			{
+				Collection<ImportBoeResultsModelView> updatedBOEs = new Collection<ImportBoeResultsModelView>(importResults.Where(x => x.ImportType != (int)BoeImportResult.DeleteBoe).ToArray());
+				Collection<BoeDTO> NewMaterialBoes = new Collection<BoeDTO>();
+
+				// create a dictionary that will keep track of the BOE ID and its original state before a save
+				Dictionary<int, BOEState> BoeStateDictionary = new Dictionary<int, BOEState>();
+
+				// Create an authorID and approver collection that will keep track of previous author
+				// and removed approvers, in case these were changed on the BOE
+				Dictionary<int, Collection<UserDTO>> AuthorsChangeDictionary = new Dictionary<int, Collection<UserDTO>>();
+				Dictionary<int, Collection<UserDTO>> ApproversChangeDictionary = new Dictionary<int, Collection<UserDTO>>();
+
+				// BOE's Labor Spread values that need to be recalculated because of any changes made during this save
+				List<BoeTaskElementDTO> boeTaskElementsToRecalculate = new List<BoeTaskElementDTO>();
+
+				// check state validation before worrying about committing to the database 
+
+				ICollection<FullBoe> importedBoes = this.Factory.CreateFullBoes(updatedBOEs.Select(x => x.BoeID).ToList());
+				ICollection<BoeDTO> originalUnmodifiedBoes = new Collection<BoeDTO>();
+				UserDTO activeUser = ws?.CurrentActiveUser;
+				List<FullBoe> BoeIdsEffectedByMulti = new List<FullBoe>();
+				Collection<int> multiBOEIDsWorkspaceVar = new Collection<int>();
+
+				WbsDTO MultiWbs = ws?.MultiBOEWbs;
+				ClinDTO MultiClin = ws?.MultiBOEClin;
+
+				List<OrdinaryVariableDto> taskVariablesEffectedByMulti = new List<OrdinaryVariableDto>();
+				List<WorkspaceVariableDTO> workspaceVariablesEffectedByMulti = new List<WorkspaceVariableDTO>();
+
+
+
+				foreach (ImportBoeResultsModelView boeImportResult in updatedBOEs)
+				{
+					//Check to verify if an author is assigned that an approver is also assigned.
+					if (boeImportResult.AuthorIDs.Any() || boeImportResult.SubcontractorAuthorIDs.Any())
+					{
+						if (boeImportResult.ApproverIDs == null || boeImportResult.ApproverIDs.Count == 0)
+						{
+							throw new ValidationException("Author assigned, however no approver was assigned.");
+						}
+					}
+					else // an author is required if the boe has been created before or if an approver exists
+					{
+						if (boeImportResult.BoeID != -1 && boeImportResult.ApproverIDs.Count > 0)
+						{
+							throw new ValidationException("An author is required.");
+						}
+					}
+
+					// no point in checking state if it's a new BOE
+					if (boeImportResult.BoeID > 0 && ws != null)
+					{
+						FullBoe originalBOE = importedBoes.First(x => x.Id == boeImportResult.BoeID);
+						originalUnmodifiedBoes.Add(originalBOE.DeepClone());
+						DataRelationshipVerifier.VerifyDataRelation(originalBOE, ws.Id);
+
+						// move state back to draft
+						if (boeImportResult.AuthorIDs.Any() || boeImportResult.SubcontractorAuthorIDs.Any())
+						{
+							boeImportResult.Status = (int)BOEState.Draft;
+						}
+
+						string errorMessage;
+						if (!this._boeStateMachine.PerformStateTransitionValidation(originalBOE, ws, originalBOE.State, (BOEState)boeImportResult.Status, out errorMessage))
+						{
+							// not valid ... communicate to user
+							throw new ValidationException(errorMessage);
+						}
+						else // add to boe state dictionary
+						{
+							BoeStateDictionary[boeImportResult.BoeID] = originalBOE.State;
+						}
+
+					}
+				}
+
+				Collection<BoeDTO> boesToSave = new Collection<BoeDTO>();
+				Collection<int> ClinIDsToRecalculateLaborSpread = new Collection<int>();
+				Collection<int> WbsIDsToRecalculateLaborSpread = new Collection<int>();
+				Collection<BoeDTO> BoesToBeDeleted = new Collection<BoeDTO>();
+				Dictionary<BoeDTO, Collection<int>> boeInformationCollection = new Dictionary<BoeDTO, Collection<int>>();
+				List<BoeApproverResponseDTO> boeApproverResponses = new List<BoeApproverResponseDTO>();
+				Collection<BoeTaskElementDTO> laborElementsUpdated = new Collection<BoeTaskElementDTO>();
+				Collection<TravelDTO> travelElementsUpdated = new Collection<TravelDTO>();
+
+				//Convert to use BOE DTOs
+
+				int insertApproverId = -1;
+				if (importResults != null && ws != null)
+				{
+					foreach (ImportBoeResultsModelView boeImportResult in importResults)
+					{
+						FullBoe boe;
+						if (boeImportResult.BoeID >= 0 && boeImportResult.ImportType == (int)BoeImportResult.UpdateBoe)
+						{
+							boe = importedBoes.First(x => x.Id == boeImportResult.BoeID);
+						}
+						else
+						{
+							boe = this.Factory.CreateFullBoe();
+							boe.Id = boeImportResult.BoeID;
+							boe.Title = boeImportResult.BOETitle;
+							setDefaultBoeDates(ws, boe, boeImportResult.ClinID);
+						}
+
+						//if the BOE's CLIN was changed, need to recalculate labor spread for any other BOE that had either the old CLIN or the new CLIN referenced
+						if (boeImportResult.ClinID != boe.CLINID)
+						{
+							if (boeImportResult.ClinID.HasValue)
+							{
+								ClinIDsToRecalculateLaborSpread.Add(boeImportResult.ClinID.Value);
+							}
+
+							// if this is a new CLIN association, no need to recalculate
+							if (boe.CLINID.HasValue)
+							{
+								ClinIDsToRecalculateLaborSpread.Add(boe.CLINID.Value);
+							}
+						}
+						boe.CLINID = boeImportResult.ClinID;
+						// if the BOE's WBS was changed, need to recalculate labor spread for any other BOE that had either the old WBS or the new WBS referenced
+						if (boeImportResult.WbsID != boe.WBSID && boeImportResult.WbsID.HasValue)
+						{
+							WbsIDsToRecalculateLaborSpread.Add(boeImportResult.WbsID.Value);
+
+							// if this is a new WBS association, no need to recalculate
+							if (boe.WBSID.HasValue)
+							{
+								WbsIDsToRecalculateLaborSpread.Add(boe.WBSID.Value);
+							}
+						}
+						boe.WBSID = boeImportResult.WbsID;
+						boe.WCBID = boeImportResult.BoeXrefID;
+
+
+						if (boeImportResult.IsMultiClinWbs)
+						{
+							//if this is a boe and wasnt a multi we'll default the resources to the old values
+							if (boe.Id > 0 && !boe.IsMultiClinWbs)
+							{
+								boe.TaskElements.SelectMany(t => t.taskElementLabors.Select(l => { l.Updateable = UpdateType.Upsert; l.WBSID = boe.WBSID; l.CLINID = boe.CLINID; return l; })).ToCollection();
+								laborElementsUpdated = laborElementsUpdated.Concat(boe.TaskElements).ToCollection();
+								//delete the travel and odc elements
+								travelElementsUpdated = travelElementsUpdated.Concat(boe.Travels.Select(t => { t.Updateable = UpdateType.Deleted; return t; })).ToCollection();
+
+								multiBOEIDsWorkspaceVar.Add(boe.Id);
+								BoeIdsEffectedByMulti.Add(boe);
+							}
+
+							boe.WBSID = ws.MultiBOEWbs.Id;
+							boe.CLINID = ws.MultiBOEClin.Id;
+							boe.IsMultiClinWbs = boeImportResult.IsMultiClinWbs;
+
+
+						}
+						//the boe is not a multi
+						else
+						{
+							//this is not a multi boe, but a user may have selected either a multi wbs/clin or both.. this is extra validation.
+							if (boeImportResult.WbsID == MultiWbs.Id && boeImportResult.ClinID == MultiClin.Id)
+							{
+								if (boe.Id > 0)
+								{
+									boe.TaskElements.SelectMany(t => t.taskElementLabors.Select(l => { l.Updateable = UpdateType.Upsert; l.WBSID = boe.WBSID; l.CLINID = boe.CLINID; return l; })).ToCollection();
+									laborElementsUpdated = laborElementsUpdated.Concat(boe.TaskElements).ToCollection();
+									//delete the travel and odc elements
+									travelElementsUpdated = travelElementsUpdated.Concat(boe.Travels.Select(t => { t.Updateable = UpdateType.Deleted; return t; })).ToCollection();
+
+									multiBOEIDsWorkspaceVar.Add(boe.Id);
+									BoeIdsEffectedByMulti.Add(boe);
+								}
+								//user set both clin and wbs to multi. this is a multi boe
+								boeImportResult.IsMultiClinWbs = true;
+								boe.WBSID = ws.MultiBOEWbs.Id;
+								boe.CLINID = ws.MultiBOEClin.Id;
+							}
+							else if (boeImportResult.ClinID == MultiClin.Id)
+							{//if import is trying to get a multi clin in, null it out.
+								boe.CLINID = null;
+							}
+							else if (boeImportResult.WbsID == MultiWbs.Id)
+							{
+								//if its not a multi boe and the clin is not a multi clin then null out the wbs.
+								boe.WBSID = null;
+							}
+
+							//if the boe is not a multi and an existing boe we need to see if the old boe was a multi boe
+							if (boe.Id > 0 && boe.IsMultiClinWbs)
+							{
+								//lets set all the task elements in the boe with null wbs and clins on the resource level.
+								boe.TaskElements.SelectMany(t => t.taskElementLabors.Select(l => { l.Updateable = UpdateType.Upsert; l.WBSID = null; l.CLINID = null; return l; })).ToCollection();
+								laborElementsUpdated = laborElementsUpdated.Concat(boe.TaskElements).ToCollection();
+
+							}
+						}
+
+						boe.IsMultiClinWbs = boeImportResult.IsMultiClinWbs;
+
+						// If the BOE State is unassigned but an author was added, automatically change state to draft.
+						// Otherwise, the state is selected by the dropdown from the model view.
+						if (((BOEState)boeImportResult.Status == BOEState.Unassigned || boeImportResult.BoeID < 0) && (boeImportResult.AuthorIDs.Any() || boeImportResult.SubcontractorAuthorIDs.Any()))
+						{
+							boe.State = BOEState.Draft;
+						}
+						else
+						{
+							boe.State = (BOEState)boeImportResult.Status;
+						}
+
+						boe.AuthorIDs = boeImportResult.AuthorIDs.Any() ? boeImportResult.AuthorIDs : null;
+						boe.SubcontractorAuthorIDs = boeImportResult.SubcontractorAuthorIDs.Any() ? boeImportResult.SubcontractorAuthorIDs : null;
+
+
+						// If the authors were changed, we need to save the old list of authors to pass to our email function
+						if (boe.Id >= 0)
+						{
+
+							ICollection<PermissionsDTO> permissionData = this.PermissionsLoader.GetBOEPermissions(new List<int>() { boe.Id });
+							ICollection<PermissionsDTO> Authors = permissionData.Where(x => x.Role == Role.Author || x.Role == Role.SubcontractorAuthor).ToArray();
+							ICollection<PermissionsDTO> BoeApprovers = permissionData.Where(x => x.Role == Role.Approver).ToArray();
+
+							Collection<int> userIds = Authors.Select(x => x.ETIUserId).Union(BoeApprovers.Select(x => x.ETIUserId)).Distinct().ToCollection();
+							ICollection<UserDTO> userData = this.UserLoader.GetByIds(userIds);
+
+							bool authorsRemoved = false;
+							bool authorsAdded = false;
+
+							if (boe.AuthorIDs != null)
+							{
+								authorsRemoved = (from removedAuthor in Authors
+												  where !boe.AuthorIDs.Contains(removedAuthor.ETIUserId)
+												  select removedAuthor).Any();
+
+								authorsAdded = (from addedAuthor in boe.AuthorIDs
+												where !(Authors.Select(a => a.ETIUserId).Contains(addedAuthor))
+												select addedAuthor).Any();
+							}
+
+							if (authorsRemoved || authorsAdded)
+							{
+								IEnumerable<UserDTO> oldAuthors = from oldAuthor in Authors
+																  select userData.First(x => x.UserID == oldAuthor.ETIUserId);
+
+								AuthorsChangeDictionary[boe.Id] = new Collection<UserDTO>(oldAuthors.ToArray());
+							}
+
+							bool approversRemoved = (from removedApprover in BoeApprovers
+													 where !boeImportResult.ApproverIDs.Contains(removedApprover.ETIUserId)
+													 select removedApprover).Any();
+
+							bool approversAdded = (from addedApprover in boeImportResult.ApproverIDs
+												   where !(BoeApprovers.Select(a => a.ETIUserId).Contains(addedApprover))
+												   select addedApprover).Any();
+
+							if (approversRemoved || approversAdded)
+							{
+								IEnumerable<UserDTO> oldApprovers = from oldApprover in BoeApprovers
+																	select userData.First(x => x.UserID == oldApprover.ETIUserId);
+
+								ApproversChangeDictionary[boe.Id] = new Collection<UserDTO>(oldApprovers.ToArray());
+							}
+						}
+
+						// Get Approvers
+						foreach (int BoeApproverID in boeImportResult.ApproverIDs)
+						{
+							BoeApproverResponseDTO boeApprover = new BoeApproverResponseDTO();
+							BoeApproverResponseDTO originalBoeApprover = boe.ApproverResponses.FirstOrDefault(a => a.ETIUserID == BoeApproverID);
+							int approvalID = originalBoeApprover == null ? insertApproverId : originalBoeApprover.Id;
+							boeApprover.Id = approvalID;
+							boeApprover.ETIUserID = BoeApproverID;
+							boeApprover.BoeID = boeImportResult.BoeID;
+							boeApprover.UpdateDate = originalBoeApprover != null ? originalBoeApprover.UpdateDate : new DateTime();
+							boeApprover.Updateable = UpdateType.Upsert;
+							boeApprover.CurrentUserETIUserID = activeUser.UserID;
+							boeApproverResponses.Add(boeApprover);
+							insertApproverId--;
+						}
+
+						// if any approvers were deleted, mark them as such
+						if (boe.Id > 0)
+						{
+							ICollection<BoeApproverResponseDTO> approversRemoved = boe.ApproverResponses.Where(approvers => !boeImportResult.ApproverIDs.Contains(approvers.ETIUserID)).ToCollection();
+
+							if (approversRemoved.Any())
+							{
+								foreach (BoeApproverResponseDTO approver in approversRemoved)
+								{
+
+									approver.Updateable = UpdateType.Deleted;
+									approver.CurrentUserETIUserID = activeUser.UserID;
+									boeApproverResponses.Add(approver);
+								}
+							}
+						}
+
+						boe.WorkspaceID = ws.Id;
+
+						if (boeImportResult.ImportType == (int)BoeImportResult.DeleteBoe)
+						{
+							boe.Updateable = UpdateType.Deleted;
+							boe.UpdateDate = ws.Boes.First(i => i.Id == boe.Id).UpdateDate;
+							BoesToBeDeleted.Add(boe);
+							boeInformationCollection[boe] = boeImportResult.ApproverIDs;
+						}
+						else
+						{
+							boe.Updateable = UpdateType.Upsert;
+						}
+						boe.isMaterial = boeImportResult.isMaterial;
+
+						// only add new material boes to list
+						if (boeImportResult.isMaterial && boe.Id < 0)
+						{
+							NewMaterialBoes.Add(boe);
+						}
+						boesToSave.Add(boe);
+					}
+
+					// Check for circular references before saving
+					VariableCircularReferenceCheckerCache cache = new VariableCircularReferenceCheckerCache();
+
+					Collection<FullClin> clinsForBoesToSave = ws.Clins.Where(z => boesToSave.Where(x => x.CLINID.HasValue).Select(x => x.CLINID.Value).Contains(z.Id)).ToCollection();
+					Collection<FullWbs> wbsElementsForBoesToSave = ws.WbsElements.Where(z => boesToSave.Where(x => x.WBSID.HasValue).Select(x => x.WBSID.Value).Contains(z.Id)).ToCollection();
+					ICollection<FullBoe> fullBoesToSave = new List<FullBoe>();
+
+					foreach (BoeDTO boe in boesToSave)
+					{
+						fullBoesToSave.Add(this.Factory.CreateFullBoe(boe));
+					}
+
+					foreach (FullBoe updatedBOE in fullBoesToSave)
+					{
+						if (updatedBOE.Id > 0)
+						{
+							bool circularReferenceFound = false;
+
+							if (updatedBOE.WBSID.HasValue)
+							{
+								FullWbs wbs = wbsElementsForBoesToSave.First(x => x.Id == updatedBOE.WBSID.Value);
+
+								// Validate chosen WBS for circular references
+								if (this._VariableCircularReferenceChecker.BOEWBSMoveCreatesCircularReference(cache, updatedBOE, wbs, boesToSave, ws))
+								{
+									circularReferenceFound = true;
+								}
+							}
+
+							if (updatedBOE.CLINID.HasValue)
+							{
+								ClinDTO clin = clinsForBoesToSave.First(x => x.Id == updatedBOE.CLINID.Value);
+
+								// Validate chosen CLINs for circular references
+								if (this._VariableCircularReferenceChecker.BOECLINMoveCreatesCircularReference(ws, cache, updatedBOE, clin, boesToSave))
+								{
+									circularReferenceFound = true;
+								}
+							}
+
+							// If a circular reference is found, don't save the offending BOE
+							if (circularReferenceFound)
+							{
+								updatedBOE.Updateable = UpdateType.None;
+							}
+						}
+					}
+
+					Collection<int> BoeIDs = new Collection<int>();
+					IDictionary<int, int> boeSaveIDDict;
+					_ = ws.MoqTypeSelections; // preload the data prior to transaction
+
+					using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+					{
+						if (travelElementsUpdated.Any())
+						{
+							//updating travels that need to be deleted and odc.
+							this._TravelDTOLoader.SaveTravels(travelElementsUpdated);
+						}
+						if (laborElementsUpdated.Any())
+						{
+							//updating resource types that need to change. 
+							this._BoeTaskElementMediator.MediatedSaveTaskElements(laborElementsUpdated, ws);
+
+							ws.RefreshTaskElements();
+						}
+						// if BOEs were marked to be deleted, get all the task elements that would be effected by this delete before it's actually deleted
+						foreach (BoeDTO boe in BoesToBeDeleted)
+						{
+							FullBoe boeObject = this.Factory.CreateFullBoe(boe);
+
+							boeTaskElementsToRecalculate.AddRange(
+								this._BoeTaskElementRecalculation.RecalculateLaborWithBoe(boeObject, VariableType.Task, ws)
+								.Where(recalculatedTask => boeTaskElementsToRecalculate.Count(task => task.Id == recalculatedTask.Id) == 0));
+
+							// if the approver response is mapped to a deleted BOE, then we shouldn't bother with saving them
+							boeApproverResponses.RemoveAll(x => x.BoeID == boe.Id);
+						}
+
+						foreach (FullBoe boe in BoeIdsEffectedByMulti)
+						{
+							RemoveMultiBOEReferenceWorkspaceVar(ws, workspaceVariablesEffectedByMulti, BoeIdsEffectedByMulti.Select(b => b.Id).ToCollection());
+							taskVariablesEffectedByMulti.AddRange(FullWorkspaceHelper.GetTaskVariablesAssociatedWithBoe(boe.Id, ws));
+						}
+						foreach (WorkspaceVariableDTO workspaceVar in workspaceVariablesEffectedByMulti)
+						{
+							boeTaskElementsToRecalculate.AddRange(from t in this._BoeTaskElementRecalculation.RecalculateLaborWithVariable(workspaceVar.Id, VariableType.Workspace, ws)
+																  where !(from o in boeTaskElementsToRecalculate
+																		  select o.Id).Contains(t.Id)
+																  select t);
+						}
+						Collection<BoeTaskElementDTO> taskAffectedByMutliBOE = new Collection<BoeTaskElementDTO>(RemoveMultiBOEReferenceTaskVar(ws, BoeIdsEffectedByMulti.Select(b => b.Id).ToList()));
+						// check if any task elements need to be recalculated that were effected by a multi boe being changed
+						// check task variables and workspace variables separately
+						foreach (OrdinaryVariableDto taskVar in taskVariablesEffectedByMulti)
+						{
+
+							boeTaskElementsToRecalculate.AddRange(from t in this._BoeTaskElementRecalculation.RecalculateLaborWithVariable(taskVar.Id, VariableType.Task, ws, taskAffectedByMutliBOE)
+																  where !(from o in boeTaskElementsToRecalculate
+																		  select o.Id).Contains(t.Id)
+																  select t);
+						}
+
+						// Save approvers for existing BOEs so they can be copied correctly in the mediator.
+						BoeApproverResponseDTO[] boeApproversToSave = boeApproverResponses.Where(x => x.BoeID > 0).ToArray();
+						this.boeApproverResponseLoader.Save(new Collection<BoeApproverResponseDTO>(boeApproversToSave));
+
+						// Need to see if we need to create a WS level role for the user (if the permissions are being granted via a group)
+						Collection<PermissionsDTO> wsPermissions = this.PermissionsLoader.GetBOEPotentialPermissionsForWorkspace(ws.Id);
+
+						foreach (BoeApproverResponseDTO boeapprover in boeApproverResponses)
+						{
+							Collection<PermissionsDTO> wsApproverPermissionsForUser = wsPermissions.Where(x => x.ETIUserId == boeapprover.ETIUserID && x.Role == Role.Approver).ToCollection();
+
+							if (!wsApproverPermissionsForUser.Any())
+							{
+								PermissionsDTO permission = new PermissionsDTO();
+
+								// need to insert a potential WS permission based on the permission dto
+								permission.Id = -1;
+								permission.Role = Role.Approver;
+								permission.Updateable = UpdateType.Upsert;
+								permission.BOEId = null;
+								permission.WorkspaceId = ws.Id;
+								permission.PermissionId = -1;
+								permission.ETIUserId = boeapprover.ETIUserID;
+
+								this.PermissionsLoader.SavePermission(permission);
+							}
+						}
+
+						DeleteMoqTypesForBoe(ws, BoesToBeDeleted.Select(x => x.Id).ToList());
+
+						boeSaveIDDict = this._BoeMediator.MediatedSaveBOEs(ws, boesToSave);
+
+						// Create material task elements for new material boes
+						int newMaterialID = -1;
+						foreach (BoeDTO boe in NewMaterialBoes)
+						{
+							// add a Material Task Element.
+							MaterialDTO MaterialDTOtoSave = new MaterialDTO();
+							MaterialDTOtoSave.BoeID = boeSaveIDDict[boe.Id];
+							MaterialDTOtoSave.Id = newMaterialID;
+							MaterialDTOtoSave.TaskTitle = "Material";
+							MaterialDTOtoSave.Updateable = UpdateType.Upsert;
+
+							newMaterialID--;
+
+							this._MaterialLoader.SaveMaterials(new Collection<MaterialDTO> { MaterialDTOtoSave });
+						}
+
+						//Save Boe Approvers for new BOEs
+						boeApproversToSave = boeApproverResponses.Where(x => x.BoeID < 0).ToArray();
+						int count = 0;
+						foreach (BoeApproverResponseDTO boeapprover in boeApproversToSave)
+						{
+							// need to make sure the negative ids are unique
+							boeapprover.Id = boeapprover.Id - count;
+							count++;
+							boeapprover.BoeID = boeSaveIDDict[boeapprover.BoeID];
+						}
+
+						this.boeApproverResponseLoader.Save(new Collection<BoeApproverResponseDTO>(boeApproversToSave));
+
+						// need to get the BOE task elements that were effected by the above BOE save
+
+						ICollection<FullClin> clinsEffected = this.Factory.CreateFullClins(ClinIDsToRecalculateLaborSpread.Distinct().ToList());
+						foreach (FullClin clin in clinsEffected)
+						{
+							boeTaskElementsToRecalculate.AddRange(
+								this._BoeTaskElementRecalculation.RecalculateLaborWithClin(clin, VariableType.Task, ws)
+								.Where(recalculatedTask => boeTaskElementsToRecalculate.Count(task => task.Id == recalculatedTask.Id) == 0));
+						}
+
+						ICollection<FullWbs> wbsEffected = this.Factory.CreateFullWbses(WbsIDsToRecalculateLaborSpread.Distinct().ToList());
+						foreach (FullWbs wbsObject in wbsEffected)
+						{
+							boeTaskElementsToRecalculate.AddRange(this._BoeTaskElementRecalculation.RecalculateLaborWithWBS(wbsObject, VariableType.Task, ws)
+								.Where(recalculatedTask => boeTaskElementsToRecalculate.Count(task => task.Id == recalculatedTask.Id) == 0));
+						}
+
+						// get the unique BOE IDs from boeTaskElementsToRecalculate so we can set their state back to Draft
+						Collection<int> BoeIDsToCheck = new Collection<int>(boeTaskElementsToRecalculate.Where(x => x.BoeID > 0).Select(x => x.BoeID).ToList());
+						ICollection<FullBoe> fullBoes = this.Factory.CreateFullBoes(BoeIDsToCheck);
+
+						foreach (FullBoe boe in fullBoes)
+						{
+							BOEState oldBOEState = boe.State;
+							if (boe.State == BOEState.Approved || boe.State == BOEState.AwaitingApproval || boe.State == BOEState.DraftLocked)
+							{
+								BoeIDs.Add(boe.Id);
+
+								BOEState newBOEState = BOEState.Draft;
+
+								// Validate the Awaiting Approval or Approved to Draft state transition
+								string validationMessage;
+								if (!this._boeStateMachine.PerformStateTransitionValidation(boe, ws, boe.State, newBOEState, out validationMessage))
+								{
+									// not valid ... communicate to user
+									throw new ValidationException(validationMessage);
+								}
+
+								// If the transition is valid, set the BOE to Draft and save it
+								boe.Updateable = UpdateType.Upsert;
+								boe.State = newBOEState;
+								this._BoeMediator.MediatedSave(ws, boe);
+
+								// Perform common state transition actions
+								this._boeStateMachine.PerformStateTransitionAction(boe, ws, oldBOEState, boe.State);
+							}
+						}
+
+						// save all the task elements that were effected by a BOE deletion or a CLIN/WBS remapping
+						boeTaskElementsToRecalculate = boeTaskElementsToRecalculate.Distinct().ToList();
+						this._BoeTaskElementMediator.MediatedSaveTaskElements(new Collection<BoeTaskElementDTO>(boeTaskElementsToRecalculate), ws);
+						scope.Complete();
+					}
+
+					IDictionary<int, BOEStateModelView> boeStateDictionary = this._CommonDataMapper.getBOEStatesDictionary();
+
+					// emails need to be sent after the save
+					foreach (FullBoe fullBoe in fullBoesToSave)
+					{
+						// if the boe has just been deleted, need to send BOE Deleted email to
+						// approvers, author, and workspace admins
+						if (fullBoe.Updateable == UpdateType.Deleted)
+						{
+							foreach (KeyValuePair<BoeDTO, Collection<int>> keyValuePair in boeInformationCollection)
+							{
+								BoeDTO boeMarkedForDelete = keyValuePair.Key;
+								Collection<int> approverIds = keyValuePair.Value;
+								WbsDTO wbsAssociatedWithBoe = ws.WbsElements.FirstOrDefault(w => w.Id == boeMarkedForDelete.WBSID);
+								ClinDTO clinAssociatedwithBoe = ws.Clins.FirstOrDefault(c => c.Id == boeMarkedForDelete.CLINID);
+
+								if (boeMarkedForDelete.Id == fullBoe.Id)
+								{
+									this._emailer.SendBOEDeleted(boeMarkedForDelete, activeUser, approverIds, wbsAssociatedWithBoe, clinAssociatedwithBoe, ws, boeStateDictionary);
+								}
+							}
+						}
+						else
+						{
+
+							if (BoeStateDictionary.ContainsKey(fullBoe.Id))
+							{
+								this._boeStateMachine.PerformStateTransitionAction(fullBoe, ws, BoeStateDictionary[fullBoe.Id], fullBoe.State);
+							}
+
+							// If the BOE has been put in draft mode, send BOE author email opened for edit.
+							// else Send the 'Author Changed' email
+							// only send these emails if the workspace is in working
+							if (ws.WorkspaceState == WorkspaceState.Working)
+							{
+								if (AuthorsChangeDictionary.ContainsKey(fullBoe.Id))
+								{
+									if (fullBoe.State == BOEState.Draft && BoeStateDictionary[fullBoe.Id] == BOEState.Unassigned)
+									{
+										this._emailer.SendBOEAuthorsEmailOpenedForEdit(fullBoe, ws);
+									}
+									else
+									{
+										this._emailer.SendBOEAuthorsChanged(AuthorsChangeDictionary[fullBoe.Id], fullBoe);
+									}
+								}
+							}
+
+							// Send the 'Approvers Changed' email, if applicable
+							if (ApproversChangeDictionary.ContainsKey(fullBoe.Id) && fullBoe.State == BOEState.AwaitingApproval && ws.WorkspaceState == WorkspaceState.Working)
+							{
+								this._emailer.SendBOEApproversChanged(ApproversChangeDictionary[fullBoe.Id], fullBoe);
+							}
+
+							// Send CLIN/WBS updated email, if applicable
+							BoeDTO originalBOE = originalUnmodifiedBoes.FirstOrDefault(b => b.Id == fullBoe.Id);
+							if (originalBOE != null)
+							{
+								bool clinChanged = originalBOE.CLINID != fullBoe.CLINID;
+								bool wbsChanged = originalBOE.WBSID != fullBoe.WBSID;
+								bool notMultiOrChanged = !fullBoe.IsMultiClinWbs || !originalBOE.IsMultiClinWbs;
+								if (notMultiOrChanged && (clinChanged || wbsChanged))
+								{
+									// It is an updated BOE, and either CLIN or WBS was changed
+									this._emailer.SendBOECLINWBSChanged(fullBoe, clinChanged, wbsChanged, false);
+								}
+							}
+							else if (fullBoe.CLINID.HasValue || fullBoe.WBSID.HasValue)
+							{
+								int realBoeId = boeSaveIDDict[fullBoe.Id];
+								FullBoe boe = this.Factory.CreateFullBoe(realBoeId);
+								// It is a new BOE, and either CLIN or WBS was set 
+								this._emailer.SendBOECLINWBSChanged(boe, boe.CLINID.HasValue, boe.WBSID.HasValue, false);
+							}
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error("Error: " + ex.Message);
+			}
+		}
+
+		/// <summary>
 		/// Determines if there are any conflicts when copying a BOE
 		/// </summary>
 		/// <param name="ws">Workspace containing BOE</param>
