@@ -145,6 +145,34 @@ namespace GenBOE.Web.Controllers.Backend
 			return result;
 		}
 
+		[HttpDelete]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
+		public IESSingleResponse<bool> DeleteTaskElement(string workspaceShortname, int boeId, GenericTaskElementGridRow deletedTask)
+		{
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortname);
+			FullBoe boe = ws.Boes.First(x => x.Id == boeId);
+			Stopwatch sw = InitializeAction(logger, WebConstants.DELETE_TASK_ELEMENT, SecurityPage.BOELaborGrid, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, boeId);
+
+			try
+			{
+				boeControllerLogic.DeleteTaskElement(ws, boe, deletedTask);
+				result.IsSuccessful = true;
+				result.Data = true;
+
+				FinalizeAction(logger, WebConstants.DELETE_TASK_ELEMENT, sw);
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add(ex.Message);
+			}
+
+			return result;
+		}
+
 		/// <summary>
 		/// Get BOE Headers Description
 		/// </summary>

@@ -473,6 +473,7 @@ namespace GenBOE.ActionLogic.Common
 		// BOE Controller
 		public static readonly string GET_BOE_HEADER = "GetBOEHeader";
 		public static readonly string GET_TASK_ELEMENT_GRID = "GetTaskElementGrid";
+		public static readonly string DELETE_TASK_ELEMENT = "DeleteTaskElement";
 
 		#endregion BOE ACTIONS
 
