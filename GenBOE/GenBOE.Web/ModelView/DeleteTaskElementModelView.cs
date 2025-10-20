@@ -14,6 +14,9 @@ namespace GenBOE.Web.ModelView
 	[Serializable]
 	public class DeleteTaskElementModelView
 	{
+		/// <summary>
+		/// Ctor
+		/// </summary>
 		public DeleteTaskElementModelView()
 		{
 			this.workspaceShortName = String.Empty;
@@ -21,6 +24,9 @@ namespace GenBOE.Web.ModelView
 			this.deletedTask = null;
 		}
 
+		/// <summary>
+		/// Ctor
+		/// </summary>
 		public DeleteTaskElementModelView(string workspaceShortName, int boeId, GenericTaskElementGridRow deletedTask)
 		{
 			this.workspaceShortName = workspaceShortName;
