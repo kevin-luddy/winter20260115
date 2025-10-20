@@ -174,12 +174,38 @@ namespace GenBOE.Web.Controllers.Backend
 			return result;
 		}
 
+		/// <summary>
+		/// Save the new order of the Labor Task Elements
+		/// </summary>
+		/// <param name="sortedTaskElementModelView">HTTP POST Body</param>
+		/// <returns></returns>
 		[HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
-		public IESSingleResponse<bool> SaveSortedLaborTaskElements([FromBody])
+		public IESSingleResponse<bool> SaveSortedTaskElements([FromBody] SortedTaskElementModelView sortedTaskElementModelView)
 		{
 			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(sortedTaskElementModelView.workspaceShortName);
+			FullBoe boe = ws.Boes.First(x => x.Id == sortedTaskElementModelView.boeId);
+
+			TaskElementOrderCollection taskElementOrderCollection = new TaskElementOrderCollection();
+			taskElementOrderCollection.BOETaskElements = (System.Collections.ObjectModel.Collection<TaskElementOrder>)sortedTaskElementModelView.taskElementOrders;
+
+			try
+			{
+				Stopwatch sw = InitializeAction(logger, WebConstants.SAVE_SORTED_TASK_ELEMENTS, SecurityPage.BOELaborGrid, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, sortedTaskElementModelView.boeId);
+				boeControllerLogic.ReOrderTaskElementOrder(ws, boe, taskElementOrderCollection);
+				result.IsSuccessful = true;
+				result.Data = true;
+
+				FinalizeAction(logger, WebConstants.SAVE_SORTED_TASK_ELEMENTS, sw);
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add(ex.Message);
+			}
 
 			return result;
 		}
