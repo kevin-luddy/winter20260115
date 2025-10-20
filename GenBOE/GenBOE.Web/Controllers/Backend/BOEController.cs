@@ -146,6 +146,11 @@ namespace GenBOE.Web.Controllers.Backend
 			return result;
 		}
 
+		/// <summary>
+		/// Delete Labor Task Element from Grid
+		/// </summary>
+		/// <param name="deleteTaskElementModelView">Labor Task to be Deleted</param>
+		/// <returns>Successful boolean check</returns>
 		[HttpDelete]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
