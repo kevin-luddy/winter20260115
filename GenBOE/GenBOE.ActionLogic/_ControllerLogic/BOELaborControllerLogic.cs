@@ -1979,7 +1979,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				toReturn.LaborTypesData.Add(laborToAdd);
 			}
 
-			if (calculateUCOT)
+			if (calculateUCOT && BOETaskUtility.ShowSkillMixForTask(ws, dto))
 			{
 				PopulateUCOT(ws, dto.taskElementLabors, toReturn.SkillMixSummaryData, resourcesFromDb);
 			}
@@ -1995,36 +1995,39 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="currentSkillMixData">Collection of skillmix data</param>
 		private void PopulateUCOT(FullWorkspace workspace, ICollection<ResourceTypeDto> taskElementLabors, ICollection<SkillMixSummaryModelView> SkillMixSummaryTable, HashSet<ResourceDTO> resourcesFromDb)
 		{
-			Dictionary<int, ElementOfCostType> laborToElementOfCost = new Dictionary<int, ElementOfCostType>();
-			Dictionary<int, RateType> laborToRateType = new Dictionary<int, RateType>();
-			foreach (ResourceTypeDto labor in taskElementLabors)
+			if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems && SkillMixSummaryTable != null && SkillMixSummaryTable.Any())
 			{
-				ResourceDTO resource = resourcesFromDb.FirstOrDefault(x => x.Id == labor.ResourceID);
-
-				laborToElementOfCost[labor.Id] = resource?.ElementOfCost ?? ElementOfCostType.NotSet;
-				laborToRateType[labor.Id] = resource?.RateType ?? RateType.NotSet;
-			}
-			foreach (ResourceTypeDto labor in taskElementLabors)
-			{
-				if (labor.BusinessResourceCodeID.HasValue && labor.ResourceID.HasValue)
+				Dictionary<int, ElementOfCostType> laborToElementOfCost = new Dictionary<int, ElementOfCostType>();
+				Dictionary<int, RateType> laborToRateType = new Dictionary<int, RateType>();
+				foreach (ResourceTypeDto labor in taskElementLabors)
 				{
-					ResourceDTO resource = resourcesFromDb.FirstOrDefault(x => x.Id == labor.ResourceID.Value);
-					ResourceDTO brcResource = resourcesFromDb.FirstOrDefault(x => x.Id == labor.BusinessResourceCodeID.Value);
-					if (resource == null && brcResource == null)
-					{
-						continue;
-					}
+					ResourceDTO resource = resourcesFromDb.FirstOrDefault(x => x.Id == labor.ResourceID);
 
-					SkillMixSummaryModelView matchingSummaryRow = SkillMixSummaryTable.FirstOrDefault(r => r.ResourceID.NullEmptyEquals(resource?.ResourceName) && r.BusinessResourceID.NullEmptyEquals(brcResource?.ResourceName));
-					if (matchingSummaryRow != null)
+					laborToElementOfCost[labor.Id] = resource?.ElementOfCost ?? ElementOfCostType.NotSet;
+					laborToRateType[labor.Id] = resource?.RateType ?? RateType.NotSet;
+				}
+				foreach (ResourceTypeDto labor in taskElementLabors)
+				{
+					if (labor.BusinessResourceCodeID.HasValue && labor.ResourceID.HasValue)
 					{
-						IDictionary<DateTime, decimal> ucotSpreads = UCOTUtility.GetUcotSpreads(workspace.CreationDate, workspace.Shortname, workspace.DecimalPrecision, workspace.UCOTFactor,
-								labor.LaborSpreads, laborToElementOfCost[labor.Id], workspace.MoqTypeSelections, labor.TaskElementId, laborToRateType[labor.Id]);
-
-						if (ucotSpreads.Any())
+						ResourceDTO resource = resourcesFromDb.FirstOrDefault(x => x.Id == labor.ResourceID.Value);
+						ResourceDTO brcResource = resourcesFromDb.FirstOrDefault(x => x.Id == labor.BusinessResourceCodeID.Value);
+						if (resource == null && brcResource == null)
 						{
-							decimal totalUcotHours = ucotSpreads.Values.Sum();
-							matchingSummaryRow.UCOTHours += totalUcotHours;
+							continue;
+						}
+
+						SkillMixSummaryModelView matchingSummaryRow = SkillMixSummaryTable.FirstOrDefault(r => r.ResourceID.NullEmptyEquals(resource?.ResourceName) && r.BusinessResourceID.NullEmptyEquals(brcResource?.ResourceName));
+						if (matchingSummaryRow != null)
+						{
+							IDictionary<DateTime, decimal> ucotSpreads = UCOTUtility.GetUcotSpreads(workspace.CreationDate, workspace.Shortname, workspace.DecimalPrecision, workspace.UCOTFactor,
+									labor.LaborSpreads, laborToElementOfCost[labor.Id], workspace.MoqTypeSelections, labor.TaskElementId, laborToRateType[labor.Id]);
+
+							if (ucotSpreads.Any())
+							{
+								decimal totalUcotHours = ucotSpreads.Values.Sum();
+								matchingSummaryRow.UCOTHours += totalUcotHours;
+							}
 						}
 					}
 				}

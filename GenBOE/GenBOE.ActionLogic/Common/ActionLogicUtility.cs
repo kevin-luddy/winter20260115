@@ -252,7 +252,7 @@ namespace GenBOE.ActionLogic.Common
 		}
 
 		/// <summary>
-		/// Validate  each Resource and BRC combo is unique in the Common Disclosure Table
+		/// Validate each Resource and BRC combo is unique in the Skill Mix Summary Table
 		/// </summary>
 		/// <param name="skillMixSummaries">Collection of Common Disclosure Data</param>
 		/// <param name="errorMessages">Error Messages</param>

@@ -715,7 +715,7 @@
 						skillMixSummaryModel.LaborSkillMix = 0m;
 					}
 
-					if (!isSpace && !string.IsNullOrWhiteSpace(skillMixSummaryModel.BusinessResourceID) && !brcs.Contains(skillMixSummaryModel.BusinessResourceID))
+					if (!string.IsNullOrWhiteSpace(skillMixSummaryModel.BusinessResourceID) && !brcs.Contains(skillMixSummaryModel.BusinessResourceID))
 					{
 						// this skill mix summary model is pointing towards a missing Resource, remove the resource name
 						skillMixSummaryModel.BusinessResourceID = string.Empty;

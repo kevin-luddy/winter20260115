@@ -75,6 +75,9 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		public decimal GrandTotalHours => this.TotalProposedHours + this.UCOTHours;
 
+		/// <summary>
+		/// Total Proposed Hours (resource + BRC Hours), Space only
+		/// </summary>
 		public decimal TotalProposedHours => this.ResourceHours + this.BusinessResourceHours;
 	}
 }

@@ -2911,7 +2911,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		public void GetLaborTaskDataTest()
 		{
 			BOELaborControllerLogic sut = CreateSystem();
-			List<MoqTypeSelection> moqs = new List<MoqTypeSelection>() { new MoqTypeSelection { SelectedMOQType = MOQType.Historical, Id = 1, TaskId = 1 } };
+			List<MoqTypeSelection> moqs = new List<MoqTypeSelection>() { new MoqTypeSelection { SelectedMOQType = MOQType.Historical, Id = 1, TaskId = 1, TableData = new List<MoqTableData>() { new MoqTableData {  RepositoryName = RepositoryName.SapWebi.GetDescription() } } } };
 			FullWorkspace testWorkspace = new FullWorkspace() { WorkspaceName = "Test Workspace", CostDecimalPrecision = 2, ResourceDecimalPrecision = 2, CreationDate = DateTime.Today, Shortname = "testShortName", UCOTFactor = 1 };
 
 			ResourceSpreadDto testSpread = new ResourceSpreadDto { BoeID = this.Boe1.Id, Id = 1, LaborSpreadDate = DateTime.Today.AddYears(5), LaborSpreadValue = 5000 };
@@ -3005,7 +3005,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new List<CustomFieldValueDTO>());
 			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(this.Boe1.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new List<BoeTaskElementDTO> { testTask });
 			retriever.Setup(x => x.GetFullWorkspaceById(It.IsAny<int>())).Returns(testWorkspace);
-
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new List<BoeTaskElementDTO> { testTask });
 			retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(moqs);
 			retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(this.Boe1.Id)).Returns(moqs);
 
