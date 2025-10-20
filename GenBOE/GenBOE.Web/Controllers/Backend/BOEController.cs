@@ -174,6 +174,16 @@ namespace GenBOE.Web.Controllers.Backend
 			return result;
 		}
 
+		[HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
+		public IESSingleResponse<bool> SaveSortedLaborTaskElements([FromBody])
+		{
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+
+			return result;
+		}
+
 		/// <summary>
 		/// Get BOE Headers Description
 		/// </summary>
