@@ -26,13 +26,23 @@
 		public decimal ProposedHours { get; set; }
 
 		/// <summary>
+		/// BRC Proposed Hours Totals
+		/// </summary>
+		public decimal BRCProposedHours { get; set; }
+
+		/// <summary>
 		/// UCOT Hours Totals, Space only
 		/// </summary>
 		public decimal UCOTHours { get; set; }
 
 		/// <summary>
-		/// Grand Total Hours (Sum UCOT + Proposed Hours), Space only
+		/// Grand Total Hours (Sum UCOT + total Proposed Hours), Space only
 		/// </summary>
-		public decimal GrandTotalHours { get; set; }
+		public decimal GrandTotalHours => UCOTHours + TotalProposedHours;
+
+		/// <summary>
+		/// Total proposed hours (BRC + proposed hours)
+		/// </summary>
+		public decimal TotalProposedHours => BRCProposedHours + ProposedHours;
 	}
 }

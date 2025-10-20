@@ -21,12 +21,13 @@
 		/// <param name="currentCommonDisclosureData">Current Common Disclosure data</param>
 		/// <param name="resourceHours">MOQ Table Resource Hours</param>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
+		/// <param name="currentSkillMixSummaryData">The current skill mix summary data</param>
 		/// <param name="isBRCEnabled">Is BRC Enabled for CD row check.</param>
 		/// <param name="isManual">If the Historical Resource/Hours are Manually input or not</param>
 		/// <returns>Refreshed/Recalculated Skill Mix Model View</returns>
 		public static RefreshSkillMixModelView RefreshSkillMixTables(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours,
 			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData,
-			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, bool isBRCEnabled, bool isManual, DateTime? taskEndDate)
+			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData, bool isBRCEnabled, bool isManual, DateTime? taskEndDate)
 		{
 			// null checks 
 			if (resourceHours == null)
@@ -42,6 +43,11 @@
 			if (currentCommonDisclosureData == null)
 			{
 				currentCommonDisclosureData = new List<CommonDisclosureModelView>();
+			}
+
+			if (currentSkillMixSummaryData == null)
+			{
+				currentSkillMixSummaryData = new List<SkillMixSummaryModelView>();
 			}
 
 			// Only do Common Disclosure if the task is past the 1LMX start date
@@ -63,7 +69,7 @@
 				bool addBlankRow = !isSpace;
 
 				// filter out bad data in currentSkillMixData
-				FilterBadData(laborTypes, currentSkillMixData, currentCommonDisclosureData, resourceHours, isManual, isSpace);
+				FilterBadData(laborTypes, currentSkillMixData, currentCommonDisclosureData, currentSkillMixSummaryData, resourceHours, isManual, isSpace);
 
 				if (isManual)
 				{
@@ -643,11 +649,12 @@
 		/// </summary>
 		/// <param name="currentSkillMixData">The current skill mix data</param>
 		/// <param name="currentCommonDisclosureData">Current Common Disclosure data</param>
+		/// <param name="currentSkillMixSummaryData">Current Skill Mix Summary data</param>
 		/// <param name="resourceHours">The Resource Hours</param>
 		/// <param name="isManual">If the Historical Resource/Hours are Manually input or not</param>
 		/// <param name="isSpace">Whether this is Space or not</param>
 		private static void FilterBadData(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData,
-			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, bool isManual, bool isSpace)
+			ICollection<CommonDisclosureModelView> currentCommonDisclosureData, ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData, ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, bool isManual, bool isSpace)
 		{
 			if (laborTypes.Any())
 			{
@@ -696,6 +703,40 @@
 						commonDisclosureModel.Included = false;
 					}
 				}
+
+				foreach (SkillMixSummaryModelView skillMixSummaryModel in currentSkillMixSummaryData.ToList())
+				{
+					// Remove bad resources
+					if (!string.IsNullOrWhiteSpace(skillMixSummaryModel.ResourceID) && !resources.Contains(skillMixSummaryModel.ResourceID) && !historicalResources.Contains(skillMixSummaryModel.ResourceID))
+					{
+						skillMixSummaryModel.ResourceID = string.Empty;
+						skillMixSummaryModel.HistoricalHours = 0m;
+						skillMixSummaryModel.ResourceHours = 0m;
+						skillMixSummaryModel.LaborSkillMix = 0m;
+					}
+
+					if (!isSpace && !string.IsNullOrWhiteSpace(skillMixSummaryModel.BusinessResourceID) && !brcs.Contains(skillMixSummaryModel.BusinessResourceID))
+					{
+						// this skill mix summary model is pointing towards a missing Resource, remove the resource name
+						skillMixSummaryModel.BusinessResourceID = string.Empty;
+						skillMixSummaryModel.ProposedHours = 0m;
+						skillMixSummaryModel.BusinessResourceHours = 0m;
+						skillMixSummaryModel.BOESkillMix = 0m;
+						skillMixSummaryModel.Included = false;
+					}
+
+					// if the row does not have resource or BRC set, then blank it out.
+					if (string.IsNullOrEmpty(skillMixSummaryModel.ResourceID) && string.IsNullOrEmpty(skillMixSummaryModel.BusinessResourceID))
+					{
+						skillMixSummaryModel.HistoricalHours = 0m;
+						skillMixSummaryModel.LaborSkillMix = 0m;
+						skillMixSummaryModel.ProposedHours = 0m;
+						skillMixSummaryModel.ResourceHours = 0m;
+						skillMixSummaryModel.BusinessResourceHours = 0m;
+						skillMixSummaryModel.BOESkillMix = 0m;
+						skillMixSummaryModel.Included = false;
+					}
+				}
 			}
 			else if (isManual)
 			{
@@ -710,11 +751,15 @@
 
 				// Clear out the common disclosure data
 				currentCommonDisclosureData.Clear();
+
+				// Clear out the skill mix summary data
+				currentSkillMixSummaryData.Clear();
 			}
 			else
 			{
 				currentSkillMixData.Clear();
 				currentCommonDisclosureData.Clear();
+				currentSkillMixSummaryData.Clear();
 			}
 		}
 
@@ -773,7 +818,13 @@
 			refreshedModel.CommonDisclosureTotals.LaborSkillMix = 100.0m;
 			refreshedModel.CommonDisclosureTotals.ProposedHours = refreshedModel.CommonDisclosureRows.Where(d => d.Included).Sum(s => s.ProposedHours);
 			refreshedModel.CommonDisclosureTotals.UCOTHours = refreshedModel.CommonDisclosureRows.Sum(s => s.UCOTHours);
-			refreshedModel.CommonDisclosureTotals.GrandTotalHours = refreshedModel.CommonDisclosureTotals.ProposedHours + refreshedModel.CommonDisclosureTotals.UCOTHours;
+
+			// Skill Mix Summary Totals
+			refreshedModel.SkillMixSummaryTotals.HistoricalHours = refreshedModel.SkillMixSummaryRows.Sum(s => s.ResourceHours);
+			refreshedModel.SkillMixSummaryTotals.LaborSkillMix = 100.0m;
+			refreshedModel.SkillMixSummaryTotals.ProposedHours = refreshedModel.SkillMixSummaryRows.Where(d => d.Included).Sum(s => s.ResourceHours);
+			refreshedModel.SkillMixSummaryTotals.BRCProposedHours = refreshedModel.SkillMixSummaryRows.Where(d => d.Included).Sum(s => s.BusinessResourceHours);
+			refreshedModel.SkillMixSummaryTotals.UCOTHours = refreshedModel.SkillMixSummaryRows.Sum(s => s.UCOTHours);
 		}
 
 		/// <summary>

@@ -1004,37 +1004,46 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			if (BOETaskUtility.ShowSkillMixForTask(ws.CreationDate, ws.UsingTemplateBOE, ws.EnableSAPConnection, moqTypes, taskElement.Id, modelView.IsUsingTMRatesInTask, ws.Shortname))
 			{
-				if (ws.EnableSAPConnection && (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST
-					|| moqTypes.Any(x => x.TableData != null && x.TableData.Any(t => t.RepositoryName == RepositoryName.SapWebi.GetDescription()))))
+				if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
 				{
-					decimal historicalHoursTotals = taskElement.SkillMixTable.Sum(x => x.HistoricalHours);
-					if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
+
+					if (taskElement.SkillMixSummaryTable != null && taskElement.SkillMixSummaryTable.Any())
 					{
-						string skillMixTableName = SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST ? "Current" : "Legacy";
-						validationErrors.Add(new ValidationMessage(string.Format("Total Historical Hours in {0} Skill Mix Table do not match the sum of the Total Relevant Hours.", skillMixTableName)));
+						validationErrors.AddRange(ActionLogicUtility.ValidateSkillMixSummaryTable(taskElement, ws.EnableSAPConnection, false).Select(x => new ValidationMessage(x)));
 					}
-
-					if (taskElement.CommonDisclosureTable != null && Utilities.IsBRCEnabledForWorkspace(ws.Shortname) && taskElement.EndDate >= Utilities.OneLmxStartDate)
+				}
+				else
+				{
+					if (ws.EnableSAPConnection)
 					{
-						// Check the Common Disclosure table totals
-						historicalHoursTotals = taskElement.CommonDisclosureTable.Sum(c => c.HistoricalHours);
-
-						if (!historicalHoursTotals.EqualsEpsilon(taskElement.MOQTotalRelevantHours, Convert.ToDecimal(Math.Pow(10, -1.0 * Convert.ToDouble(ws.DecimalPrecision)))))
+						decimal historicalHoursTotals = taskElement.SkillMixTable.Sum(x => x.HistoricalHours);
+						if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
 						{
-							validationErrors.Add(new ValidationMessage("Total Historical Hours in LM Enterprise Skill Mix Table do not match the sum of the Total Relevant Hours."));
+							validationErrors.Add(new ValidationMessage("Total Historical Hours in Current Skill Mix Table do not match the sum of the Total Relevant Hours."));
+						}
+
+						if (taskElement.CommonDisclosureTable != null && Utilities.IsBRCEnabledForWorkspace(ws.Shortname) && taskElement.EndDate >= Utilities.OneLmxStartDate)
+						{
+							// Check the Common Disclosure table totals
+							historicalHoursTotals = taskElement.CommonDisclosureTable.Sum(c => c.HistoricalHours);
+
+							if (!historicalHoursTotals.EqualsEpsilon(taskElement.MOQTotalRelevantHours, Convert.ToDecimal(Math.Pow(10, -1.0 * Convert.ToDouble(ws.DecimalPrecision)))))
+							{
+								validationErrors.Add(new ValidationMessage("Total Historical Hours in LM Enterprise Skill Mix Table do not match the sum of the Total Relevant Hours."));
+							}
 						}
 					}
-				}
 
-				if (taskElement.SkillMixTable != null && taskElement.SkillMixTable.Any())
-				{
-					validationErrors.AddRange(ActionLogicUtility.ValidateSkillMixTable(taskElement.SkillMixTable, false).Select(x => new ValidationMessage(x)));
-				}
+					if (taskElement.SkillMixTable != null && taskElement.SkillMixTable.Any())
+					{
+						validationErrors.AddRange(ActionLogicUtility.ValidateSkillMixTable(taskElement.SkillMixTable, false).Select(x => new ValidationMessage(x)));
+					}
 
-				if (taskElement.CommonDisclosureTable != null && taskElement.CommonDisclosureTable.Any())
-				{
-					validationErrors.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(taskElement.CommonDisclosureTable, false,
-						taskElement.taskElementLabors.Any(x => x.Updateable != UpdateType.Deleted)).Select(x => new ValidationMessage(x)));
+					if (taskElement.CommonDisclosureTable != null && taskElement.CommonDisclosureTable.Any())
+					{
+						validationErrors.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(taskElement.CommonDisclosureTable, false,
+							taskElement.taskElementLabors.Any(x => x.Updateable != UpdateType.Deleted)).Select(x => new ValidationMessage(x)));
+					}
 				}
 			}
 
@@ -1900,7 +1909,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				LaborCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.LaborTypes),
 				MOQTypes = boe?.MoqTypeSelections.Where(x => x.TaskId == dto.Id).ToList(),
 				SkillMixData = dto.SkillMixTable.ToList(),
-				CommonDisclosureSkillMixData = dto.CommonDisclosureTable.ToList()
+				CommonDisclosureSkillMixData = dto.CommonDisclosureTable.ToList(),
+				SkillMixSummaryData = dto.SkillMixSummaryTable.ToList()
 			};
 
 			if (dto.CustomFieldValueContainers != null)
@@ -1969,9 +1979,56 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				toReturn.LaborTypesData.Add(laborToAdd);
 			}
 
+			if (calculateUCOT)
+			{
+				PopulateUCOT(ws, dto.taskElementLabors, toReturn.SkillMixSummaryData, resourcesFromDb);
+			}
+
 			toReturn.ContainsDiscrete = toReturn.LaborTypesData.Select(x => x.SpreadCurveID).Any(x => x.Value == SpreadCurves.DiscreteCost || x.Value == SpreadCurves.DiscreteHours);
 
 			return toReturn;
+		}
+
+		/// <summary>
+		/// Set UCOT values for skill mix summary rows
+		/// </summary>
+		/// <param name="currentSkillMixData">Collection of skillmix data</param>
+		private void PopulateUCOT(FullWorkspace workspace, ICollection<ResourceTypeDto> taskElementLabors, ICollection<SkillMixSummaryModelView> SkillMixSummaryTable, HashSet<ResourceDTO> resourcesFromDb)
+		{
+			Dictionary<int, ElementOfCostType> laborToElementOfCost = new Dictionary<int, ElementOfCostType>();
+			Dictionary<int, RateType> laborToRateType = new Dictionary<int, RateType>();
+			foreach (ResourceTypeDto labor in taskElementLabors)
+			{
+				ResourceDTO resource = resourcesFromDb.FirstOrDefault(x => x.Id == labor.ResourceID);
+
+				laborToElementOfCost[labor.Id] = resource?.ElementOfCost ?? ElementOfCostType.NotSet;
+				laborToRateType[labor.Id] = resource?.RateType ?? RateType.NotSet;
+			}
+			foreach (ResourceTypeDto labor in taskElementLabors)
+			{
+				if (labor.BusinessResourceCodeID.HasValue && labor.ResourceID.HasValue)
+				{
+					ResourceDTO resource = resourcesFromDb.FirstOrDefault(x => x.Id == labor.ResourceID.Value);
+					ResourceDTO brcResource = resourcesFromDb.FirstOrDefault(x => x.Id == labor.BusinessResourceCodeID.Value);
+					if (resource == null && brcResource == null)
+					{
+						continue;
+					}
+
+					SkillMixSummaryModelView matchingSummaryRow = SkillMixSummaryTable.FirstOrDefault(r => r.ResourceID.NullEmptyEquals(resource?.ResourceName) && r.BusinessResourceID.NullEmptyEquals(brcResource?.ResourceName));
+					if (matchingSummaryRow != null)
+					{
+						IDictionary<DateTime, decimal> ucotSpreads = UCOTUtility.GetUcotSpreads(workspace.CreationDate, workspace.Shortname, workspace.DecimalPrecision, workspace.UCOTFactor,
+								labor.LaborSpreads, laborToElementOfCost[labor.Id], workspace.MoqTypeSelections, labor.TaskElementId, laborToRateType[labor.Id]);
+
+						if (ucotSpreads.Any())
+						{
+							decimal totalUcotHours = ucotSpreads.Values.Sum();
+							matchingSummaryRow.UCOTHours += totalUcotHours;
+						}
+					}
+				}
+			}
 		}
 
 		/// <summary>
@@ -2037,6 +2094,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				toReturn.SkillMixTable = modelview.SkillMixData;
 				toReturn.CommonDisclosureTable = modelview.CommonDisclosureSkillMixData;
+				toReturn.SkillMixSummaryTable = modelview.SkillMixSummaryData;
 			}
 
 			//if the taskelement is new we will save the order id with 2000. This is so the taskelement always goes to the bottom of the page.
