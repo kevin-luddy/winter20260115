@@ -330,7 +330,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
 
             Assert.AreEqual(workspaces.Count, results.Count);
 
-            foreach (var result in results)
+            foreach (WorkspaceDTO result in results)
             {
                 Workspace workspace = workspaces.First(x => x.WorkspaceID == result.Id);
                 // 0
@@ -396,10 +396,12 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 // 50
                 Assert.AreEqual(workspace.WorkspaceCreationDate, result.CreationDate);
                 Assert.AreEqual(workspace.EnableSAPConnection, result.EnableSAPConnection);
+				Assert.AreEqual(workspace.EnableAssignTaskAuthor, result.EnableAssignTaskAuthor);
+				Assert.AreEqual(workspace.EnableLmNavigator, result.EnableLmNavigator);
             }
             Type dtoType = typeof(WorkspaceDTO);
             int numProperties = dtoType.GetProperties().Count();
-            Assert.AreEqual(52, numProperties, "Untested properties exist in the Workspace DTO");
+            Assert.AreEqual(54, numProperties, "Untested properties exist in the Workspace DTO");
         }
 
         [TestMethod]
