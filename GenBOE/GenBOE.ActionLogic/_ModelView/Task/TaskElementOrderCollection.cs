@@ -11,10 +11,10 @@ namespace GenBOE.ActionLogic.ModelView
 	/// A collection of TaskElementOrders that come in from the UI. 
 	/// </summary>
 	public class TaskElementOrderCollection
-    {
-        /// <summary>
-        /// Collection of TaskElements that contain orders.
-        /// </summary>
-        public Collection<TaskElementOrder> BOETaskElements { get; set; }
-    }
+	{
+		/// <summary>
+		/// Collection of TaskElements that contain orders.
+		/// </summary>
+		public Collection<TaskElementOrder> BOETaskElements { get; set; }
+	}
 }
