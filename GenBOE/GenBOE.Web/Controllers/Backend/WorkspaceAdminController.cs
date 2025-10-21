@@ -333,6 +333,7 @@ namespace GenBOE.Web.Controllers.Backend
 		/// </summary>
 		/// <param name="importBoeResults">The POST body with the workspace shortname and imported BOE metadata</param>
 		/// <returns>Success or failure</returns>
+		[System.Web.Http.HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESResponse<bool> CompleteImportBOEs([FromBody] ImportBOEModelView importBoeResults)
 		{

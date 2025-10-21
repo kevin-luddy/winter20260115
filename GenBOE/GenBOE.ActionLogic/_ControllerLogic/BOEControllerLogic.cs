@@ -2064,7 +2064,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			FileStream fs = null;
 			// Get the BOE template file name
 			// Assume that "Templates" is a subdirectory of your application's root directory
-			//string templateFileName = Server.MapPath("~/Templates/Export/BOEs.xlsm");
 			string templateDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates", "Export");
 
 			if (!Directory.Exists(templateDir))
