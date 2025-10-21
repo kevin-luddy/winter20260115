@@ -22,17 +22,17 @@ namespace GenBOE.Web.ModelView
 		{
 			this.workspaceShortName = String.Empty;
 			this.boeId = -1;
-			this.taskElementOrders = new List<TaskElementOrder>();
+			this.sortedTaskElements = new List<GenericTaskElementGridRow>();
 		}
 
 		/// <summary>
 		/// Ctor
 		/// </summary>
-		public SortedTaskElementModelView(string workspaceShortName, int boeId, ICollection<TaskElementOrder> taskElementOrders)
+		public SortedTaskElementModelView(string workspaceShortName, int boeId, ICollection<GenericTaskElementGridRow> sortedTaskElements)
 		{
 			this.workspaceShortName = workspaceShortName;
 			this.boeId = boeId;
-			this.taskElementOrders = taskElementOrders;
+			this.sortedTaskElements = sortedTaskElements;
 		}
 
 		/// <summary>
@@ -48,6 +48,6 @@ namespace GenBOE.Web.ModelView
 		/// <summary>
 		/// order of task elements
 		/// </summary>
-		public ICollection<TaskElementOrder> taskElementOrders { get; set; }
+		public ICollection<GenericTaskElementGridRow> sortedTaskElements { get; set; }
 	}
 }

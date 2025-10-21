@@ -187,15 +187,23 @@ namespace GenBOE.Web.Controllers.Backend
 		[HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
-		public IESSingleResponse<bool> SaveSortedTaskElements([FromBody] SortedTaskElementModelView sortedTaskElementModelView)
+		public IESSingleResponse<bool> SaveTaskElementOrder([FromBody] SortedTaskElementModelView sortedTaskElementModelView)
 		{
 			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(sortedTaskElementModelView.workspaceShortName);
 			FullBoe boe = ws.Boes.First(x => x.Id == sortedTaskElementModelView.boeId);
 
-			TaskElementOrderCollection taskElementOrderCollection = new TaskElementOrderCollection();
-			taskElementOrderCollection.BOETaskElements = (System.Collections.ObjectModel.Collection<TaskElementOrder>)sortedTaskElementModelView.taskElementOrders;
+			System.Collections.ObjectModel.Collection<TaskElementOrder> sortedTaskElements = new System.Collections.ObjectModel.Collection<TaskElementOrder>(sortedTaskElementModelView.sortedTaskElements
+				.Select(x => new TaskElementOrder
+				{
+					TaskID = (int)x.TaskElementDetailID,
+					ListOrder = x.BOETaskElementOrder
+				}).ToList());
+			TaskElementOrderCollection taskElementOrderCollection = new TaskElementOrderCollection()
+			{
+				BOETaskElements = sortedTaskElements
+			};
 
 			try
 			{
