@@ -257,12 +257,11 @@ namespace GenBOE.Web.Controllers.Backend
 			return result;
 		}
 
-		// ExportManageBOE in BOEController.cs
 		/// <summary>
 		/// Perform actions to export BOEs from Manage BOEs page
 		/// </summary>
 		/// <param name="workspace">Workspace containing BOEs</param>
-		/// <returns></returns>
+		/// <returns>An Excel file export of the BOEs for given workspace</returns>
 		[System.Web.Http.HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public HttpResponseMessage ExportBOEs([FromBody] ExportFileModelView exportBOEModelView)
