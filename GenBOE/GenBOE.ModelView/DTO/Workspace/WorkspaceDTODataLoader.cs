@@ -301,7 +301,8 @@ namespace GenBOE.DataBridge.DTO
 									CurrentPTMWorkspace = w.CurrentPTMWorkspace,
 									CreationDate = w.WorkspaceCreationDate,
 									UCOTFactor = w.UCOTFactor,
-									EnableAssignTaskAuthor = w.EnableAssignTaskAuthor
+									EnableAssignTaskAuthor = w.EnableAssignTaskAuthor,
+									EnableLmNavigator = w.EnableLmNavigator
 								}).ToCollection();
 
 					toReturn.ToList().ForEach(w =>
@@ -398,7 +399,8 @@ namespace GenBOE.DataBridge.DTO
 										CurrentPTMWorkspace = w.CurrentPTMWorkspace,
 										CreationDate = w.WorkspaceCreationDate,
 										UCOTFactor = w.UCOTFactor,
-										EnableAssignTaskAuthor = w.EnableAssignTaskAuthor
+										EnableAssignTaskAuthor = w.EnableAssignTaskAuthor,
+										EnableLmNavigator = w.EnableLmNavigator
 									}).FirstOrDefault();
 
 						if (toReturn != null)
@@ -1333,7 +1335,8 @@ namespace GenBOE.DataBridge.DTO
 						wsToSave.EnableSAPConnection,
 						wsToSave.CurrentPTMWorkspace,
 						wsToSave.UCOTFactor,
-						wsToSave.EnableAssignTaskAuthor).FirstOrDefault());
+						wsToSave.EnableAssignTaskAuthor,
+						wsToSave.EnableLmNavigator).FirstOrDefault());
 
 					// if the result ID is not a positive number, something bad went wrong so Log it
 					if (resultID <= 0)

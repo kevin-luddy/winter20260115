@@ -54,7 +54,8 @@ CREATE  PROCEDURE [dbo].[upsertWorkspace]
 @EnableSAPConnection bit,
 @CurrentPTMWorkspace bit,
 @UCOTFactor decimal(7,2),
-@EnableAssignTaskAuthor bit
+@EnableAssignTaskAuthor bit,
+@EnableLmNavigator bit
 )
 AS
 /******************************************************************************
@@ -90,6 +91,7 @@ AS
 **          2/28/24     e374897                 PROPH-1674 - Remove CurrentPTMWorkspace logic
 **			1/14/25		twilson3				PROPH-2596 - Add UCOT Factor
 **			1/15/25		e309214					PROPH-1854 Database Changes for Assign Author
+**			10/14/25	ranzalon			PROPH-3286 Enable LM Nav Workspace Setting
 *******************************************************************************/
 
 /*
@@ -202,6 +204,7 @@ IF @WorkspaceID  < 0  /*Insert Record*/
 		   ,[CurrentPTMWorkspace]
 		   ,[UCOTFactor]
 		   ,[EnableAssignTaskAuthor]
+		   ,[EnableLmNavigator]
 		   )
 	 OUTPUT inserted.WorkspaceID INTO @InsertedWorkspace           
 	 VALUES
@@ -247,6 +250,7 @@ IF @WorkspaceID  < 0  /*Insert Record*/
 		   ,@CurrentPTMWorkspace
 		   ,@UCOTFactor
 		   ,@EnableAssignTaskAuthor
+		   ,@EnableLmNavigator
 		   )
 
 	  SELECT @WorkspaceID = WorkspaceID FROM @InsertedWorkspace
@@ -394,6 +398,7 @@ ELSE
 									,[CurrentPTMWorkspace] = @CurrentPTMWorkspace
 									,[UCOTFactor] = @UCOTFactor
 									,[EnableAssignTaskAuthor] = @EnableAssignTaskAuthor
+									,[EnableLmNavigator] = @EnableLmNavigator
 						WHERE 
 							  WorkspaceID = @WorkspaceID
 							  
