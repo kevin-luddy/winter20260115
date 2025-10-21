@@ -11,6 +11,7 @@ namespace GenBOE.DataBridge.DTO
     using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+	using GenBOE.DataBridge.DTO.SkillMixSummary;
 	using GenBOE.Dtos;
 	using IES.Common;
     using IES.Common.Interfaces;
@@ -46,7 +47,7 @@ namespace GenBOE.DataBridge.DTO
             this.TaskElementType = TaskElementType.Labor;
 
             if (loader == null) { loader = new BoeTaskElementDTODataLoader(new ResourceTypeLoader(), new ResourceSpreadLoader(), new OrdinaryVariableLoader(),
-                                                    new BoeTaskElementCustomFieldValueXREFLoader(), new LaborTypeCustomFieldValueXREFLoader(), new SkillMixDTOLoader(), new CommonDisclosureSMDTODataLoader()); }
+                                                    new BoeTaskElementCustomFieldValueXREFLoader(), new LaborTypeCustomFieldValueXREFLoader(), new SkillMixDTOLoader(), new SkillMixSummaryDTOLoader(), new CommonDisclosureSMDTODataLoader()); }
             this.description = null;
             this.moqText = null;
             this.WasMoqTextSet = false;
@@ -208,6 +209,11 @@ namespace GenBOE.DataBridge.DTO
 		/// Common Disclosure table
 		/// </summary>
 		public ICollection<CommonDisclosureModelView> CommonDisclosureTable { get; set; } = new List<CommonDisclosureModelView>();
+
+		/// <summary>
+		/// Skill Mix Summary table
+		/// </summary>
+		public ICollection<SkillMixSummaryModelView> SkillMixSummaryTable { get; set; } = new List<SkillMixSummaryModelView>();
 
 		/// <summary>
 		/// Gets or sets the Author User Id, referenced from the ETIUser table
