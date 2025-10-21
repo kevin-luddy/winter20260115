@@ -22,6 +22,7 @@ namespace GenBOE.Web.Controllers.Backend
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using GenBOE.Web.Common;
+	using GenBOE.Web.ModelView;
 	using IES.Common;
 	using Microsoft.VisualBasic.Logging;
 
@@ -142,6 +143,39 @@ namespace GenBOE.Web.Controllers.Backend
 			}
 
 			FinalizeAction(logger, WebConstants.GET_TASK_ELEMENT_GRID, sw);
+			return result;
+		}
+
+		/// <summary>
+		/// Delete Labor Task Element from Grid
+		/// </summary>
+		/// <param name="deleteTaskElementModelView">Labor Task to be Deleted</param>
+		/// <returns>Successful boolean check</returns>
+		[HttpDelete]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
+		public IESSingleResponse<bool> DeleteTaskElement([FromBody] DeleteTaskElementModelView deleteTaskElementModelView)
+		{
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(deleteTaskElementModelView.workspaceShortName);
+			FullBoe boe = ws.Boes.First(x => x.Id == deleteTaskElementModelView.boeId);
+
+			try
+			{
+				Stopwatch sw = InitializeAction(logger, WebConstants.DELETE_TASK_ELEMENT, SecurityPage.BOELaborGrid, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, deleteTaskElementModelView.boeId);
+				boeControllerLogic.DeleteTaskElement(ws, boe, deleteTaskElementModelView.deletedTask);
+				result.IsSuccessful = true;
+				result.Data = true;
+
+				FinalizeAction(logger, WebConstants.DELETE_TASK_ELEMENT, sw);
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add(ex.Message);
+			}
+
 			return result;
 		}
 
