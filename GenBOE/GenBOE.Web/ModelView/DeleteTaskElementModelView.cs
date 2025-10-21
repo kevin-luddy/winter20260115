@@ -25,8 +25,11 @@ namespace GenBOE.Web.ModelView
 		}
 
 		/// <summary>
-		/// Ctor
+		/// Ctir
 		/// </summary>
+		/// <param name="workspaceShortName">workspace shortname string</param>
+		/// <param name="boeId">boe id where labor task is being deleted from</param>
+		/// <param name="deletedTask">labor task about to be deleted</param>
 		public DeleteTaskElementModelView(string workspaceShortName, int boeId, GenericTaskElementGridRow deletedTask)
 		{
 			this.workspaceShortName = workspaceShortName;
