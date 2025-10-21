@@ -156,6 +156,8 @@ namespace GenBOE.Web.Controllers.Backend
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
 		public IESSingleResponse<bool> DeleteTaskElement([FromBody] DeleteTaskElementModelView deleteTaskElementModelView)
 		{
+			_ = deleteTaskElementModelView ?? throw new ArgumentNullException(nameof(deleteTaskElementModelView));
+
 			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(deleteTaskElementModelView.workspaceShortName);
@@ -189,6 +191,8 @@ namespace GenBOE.Web.Controllers.Backend
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
 		public IESSingleResponse<bool> SaveTaskElementOrder([FromBody] SortedTaskElementModelView sortedTaskElementModelView)
 		{
+			_ = sortedTaskElementModelView ?? throw new ArgumentNullException(nameof(sortedTaskElementModelView));
+
 			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(sortedTaskElementModelView.workspaceShortName);
