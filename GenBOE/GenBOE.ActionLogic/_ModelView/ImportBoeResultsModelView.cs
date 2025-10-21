@@ -32,5 +32,10 @@ namespace GenBOE.ActionLogic.ModelView
 		/// The Workspace shortname
 		/// </summary>
 		public string WorkspaceShortName { get; set; }
+
+		/// <summary>
+		/// The WCB ID (WBS/CLIN/BOE association ID)
+		/// </summary>
+		public int? WCBID { get; set; }
     }
 }

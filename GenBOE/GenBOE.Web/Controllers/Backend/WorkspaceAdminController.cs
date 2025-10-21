@@ -303,7 +303,7 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <summary>
 		/// Import BOEs to get confirmation response
 		/// </summary>
-		/// <returns>List of BOEs with types</returns>
+		/// <returns>List of imported BOEs</returns>
 		[System.Web.Http.HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESResponse<ImportedBoe> ImportBOEs()
@@ -318,7 +318,6 @@ namespace GenBOE.Web.Controllers.Backend
 				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortName);
 
 				result.Data = boeControllerLogic.ImportBOEs(ws, importFile);
-				//result.Data = new Collection<ImportedBoe>();
 				result.IsSuccessful = true;
 			}
 			catch (Exception ex)
