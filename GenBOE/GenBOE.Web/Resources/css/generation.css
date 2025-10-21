@@ -229,6 +229,17 @@ label.disabled {
 	pointer-events: none;
 }
 
+.notification-bar-fixed {
+	word-spacing: -1em;
+	display: block;
+	position: fixed;
+	text-align: center;
+	width: 1400px;
+	top: 100px;
+	z-index: 940 !important;
+	pointer-events: none;
+}
+
 .notification
 {    
 	display: inline-block;
