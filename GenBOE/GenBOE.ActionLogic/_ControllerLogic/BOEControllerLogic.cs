@@ -2080,6 +2080,38 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			return fs;
 		}
 
+		/// <summary>
+		/// Export BOEs for a given workspace as an Excel doc
+		/// </summary>
+		/// <param name="ws">The full workspace</param>
+		/// <param name="blankTemplate">Should the downloadable template be blank?</param>
+		/// <returns>FileStream of the exported BOEs template</returns>
+		public FileStream ExportBOEs(FullWorkspace ws, bool blankTemplate)
+		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
+
+			FileStream fs = null;
+			// Get the BOE template file name
+			// Assume that "Templates" is a subdirectory of your application's root directory
+			//string templateFileName = Server.MapPath("~/Templates/Export/BOEs.xlsm");
+			string templateDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Templates", "Export");
+
+			if (!Directory.Exists(templateDir))
+			{
+				throw new InvalidOperationException($"Template directory '{templateDir}' does not exist.");
+			}
+
+			string templateFileName = Path.Combine(templateDir, "BOEs.xlsm");
+			string exportedFileName = this._BOEExporter.ExportToExcelFile(templateFileName, ws, blankTemplate);
+
+			fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+
+			return fs;
+		}
+
         /// <summary>
         /// Performs actions to start import of BOEs on the Manage BOEs page
         /// </summary>
