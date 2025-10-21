@@ -77,7 +77,7 @@ namespace GenBOE.Web.Controllers.Backend
 			IESSingleResponse<IBOEHeaderModelView> result = new IESSingleResponse<IBOEHeaderModelView>();
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortname);
-			FullBoe boe = ws.Boes.First(x => x.Id == boeId);
+			FullBoe boe = this.Factory.CreateFullBoe(boeId);
 			Stopwatch sw = InitializeAction(logger, WebConstants.GET_BOE_HEADER, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, boeId);
 
 			try
@@ -109,7 +109,7 @@ namespace GenBOE.Web.Controllers.Backend
 			IESSingleResponse<GenericTaskElementGridModelView> result = new IESSingleResponse<GenericTaskElementGridModelView>();
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortname);
-			FullBoe boe = ws.Boes.First(x => x.Id == boeId);
+			FullBoe boe = this.Factory.CreateFullBoe(boeId);
 			Stopwatch sw = InitializeAction(logger, WebConstants.GET_TASK_ELEMENT_GRID, SecurityPage.BOELaborGrid, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, boeId);
 
 			try
@@ -159,7 +159,7 @@ namespace GenBOE.Web.Controllers.Backend
 			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(deleteTaskElementModelView.workspaceShortName);
-			FullBoe boe = ws.Boes.First(x => x.Id == deleteTaskElementModelView.boeId);
+			FullBoe boe = this.Factory.CreateFullBoe(deleteTaskElementModelView.boeId);
 
 			try
 			{
@@ -192,7 +192,7 @@ namespace GenBOE.Web.Controllers.Backend
 			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(sortedTaskElementModelView.workspaceShortName);
-			FullBoe boe = ws.Boes.First(x => x.Id == sortedTaskElementModelView.boeId);
+			FullBoe boe = this.Factory.CreateFullBoe(sortedTaskElementModelView.boeId);
 
 			System.Collections.ObjectModel.Collection<TaskElementOrder> sortedTaskElements = new System.Collections.ObjectModel.Collection<TaskElementOrder>(sortedTaskElementModelView.sortedTaskElements
 				.Select(x => new TaskElementOrder
@@ -237,7 +237,7 @@ namespace GenBOE.Web.Controllers.Backend
 			IESSingleResponse<BOEHeaderDescriptionModelView> result = new IESSingleResponse<BOEHeaderDescriptionModelView>();
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortname);
-			FullBoe boe = ws.Boes.First(x => x.Id == boeId);
+			FullBoe boe = this.Factory.CreateFullBoe(boeId);
 			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_DISPLAY_BOE_HEADER_DESCRIPTION, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, boeId);
 
 			try
