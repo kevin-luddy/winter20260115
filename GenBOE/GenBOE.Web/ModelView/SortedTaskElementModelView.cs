@@ -28,6 +28,9 @@ namespace GenBOE.Web.ModelView
 		/// <summary>
 		/// Ctor
 		/// </summary>
+		/// <param name="workspaceShortName">Workspace Short name</param>
+		/// <param name="boeId">BOE Id the boe labor tasks are being sorted</param>
+		/// <param name="sortedTaskElements">list of sorted task elements</param>
 		public SortedTaskElementModelView(string workspaceShortName, int boeId, ICollection<GenericTaskElementGridRow> sortedTaskElements)
 		{
 			this.workspaceShortName = workspaceShortName;
