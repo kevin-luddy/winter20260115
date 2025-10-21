@@ -31,8 +31,6 @@ namespace GenBOE.Dtos
 			this.BOEID = -1;
 			this.BOETaskElementID = -1;
 			this.IsUserInput = false;
-			this.UCOTHours = 0m;
-			this.GrandTotalHours = 0m;
 		}
 
 		/// <summary>
@@ -104,15 +102,5 @@ namespace GenBOE.Dtos
 		/// Is this data User Input
 		/// </summary>
 		public bool IsUserInput { get; set; }
-
-		/// <summary>
-		/// UCOT Hours, Space only
-		/// </summary>
-		public decimal UCOTHours { get; set; }
-
-		/// <summary>
-		/// Grand Total Hours (proposed + UCOT Hours), Space only
-		/// </summary>
-		public decimal GrandTotalHours { get; set; }
 	}
 }

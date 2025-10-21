@@ -180,7 +180,7 @@ namespace GenBOE.ActionLogic.DateShift
 							bool isManual = !fullWorkspace.EnableSAPConnection || !allAutomaticMOQTypes;
 
 							RefreshSkillMixModelView response = SkillMixUtility.RefreshSkillMixTables(resourceHours,
-								laborTasks.LaborTypesData, task.SkillMixTable, task.CommonDisclosureTable, isBRCEnabled, isManual, task.EndDate);
+								laborTasks.LaborTypesData, task.SkillMixTable, task.CommonDisclosureTable, task.SkillMixSummaryTable, isBRCEnabled, isManual, task.EndDate);
 
 							if (response != null)
 							{
