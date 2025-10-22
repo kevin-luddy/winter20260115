@@ -70,6 +70,8 @@ namespace GenBOE.Web.Controllers.Backend
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<ManageCLINModelView> SaveClin([FromBody] AddEditCLINModelView addEditCLINModelView)
 		{
+			_ = addEditCLINModelView ?? throw new ArgumentNullException(nameof(addEditCLINModelView));
+
 			IESSingleResponse<ManageCLINModelView> result = new IESSingleResponse<ManageCLINModelView>();
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(addEditCLINModelView.workspaceShortName);
@@ -107,6 +109,8 @@ namespace GenBOE.Web.Controllers.Backend
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public HttpResponseMessage ExportCLINs([FromBody] ExportFileModelView exportCLINModelView)
 		{
+			_ = exportCLINModelView ?? throw new ArgumentNullException(nameof(exportCLINModelView));
+
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(exportCLINModelView.workspaceShortName);
 			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_EXPORT_CLINS, SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, null);
 
@@ -182,6 +186,8 @@ namespace GenBOE.Web.Controllers.Backend
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<bool> CompleteImportCLINs([FromBody] ImportCLINModelView importCLINModelView)
 		{
+			_ = importCLINModelView ?? throw new ArgumentNullException(nameof(importCLINModelView));
+
 			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(importCLINModelView.workspaceShortName);
@@ -215,6 +221,8 @@ namespace GenBOE.Web.Controllers.Backend
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<bool> DeleteCLINs(ManageCLINModelView[] clinsToDelete)
 		{
+			_ = clinsToDelete ?? throw new ArgumentNullException(nameof(clinsToDelete));
+
 			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(clinsToDelete[0].WorkSpaceID);

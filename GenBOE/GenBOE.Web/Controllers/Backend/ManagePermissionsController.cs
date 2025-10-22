@@ -161,6 +161,8 @@ namespace GenBOE.Web.Controllers
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<bool> SaveNewPermissions([FromBody] SaveNewPermissionsModelView saveNewPermissionsModelView)
 		{
+			_ = saveNewPermissionsModelView ?? throw new ArgumentNullException(nameof(saveNewPermissionsModelView));
+
 			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(saveNewPermissionsModelView.workspaceShortName);
@@ -200,6 +202,8 @@ namespace GenBOE.Web.Controllers
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public HttpResponseMessage ExportPermissions([FromBody] ExportFileModelView exportPermissionModelView)
 		{
+			_ = exportPermissionModelView ?? throw new ArgumentNullException(nameof(exportPermissionModelView));
+
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(exportPermissionModelView.workspaceShortName);
 			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_EXPORT_PERMISSIONS, SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, null);
 
@@ -296,6 +300,8 @@ namespace GenBOE.Web.Controllers
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<bool> EditPermissions([FromBody] EditPermissionsModelView editPermissionsModelView)
 		{
+			_ = editPermissionsModelView ?? throw new ArgumentNullException(nameof(editPermissionsModelView));
+
 			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(editPermissionsModelView.workspaceShortName);
