@@ -180,5 +180,20 @@ namespace GenBOE.ActionLogic.ModelView.Backend
 		/// Comma separated list of workspaces that should not have UCOT enabled
 		/// </summary>
 		public string UcotExcludedWorkspaces { get; set; }
+
+		/// <summary>
+		/// Is Task Author feature enabled for the system?
+		/// </summary>
+		public bool IsTaskAuthorEnabled { get; set; }
+
+		/// <summary>
+		/// Is the LM Navigator RTE Button feature enabled for the system?
+		/// </summary>
+		public bool IsLmNavigatorEnabled { get; set; }
+
+		/// <summary>
+		/// URL for LM Navigator
+		/// </summary>
+		public string LmNavigatorUrl { get; set; }
 	}
 }
