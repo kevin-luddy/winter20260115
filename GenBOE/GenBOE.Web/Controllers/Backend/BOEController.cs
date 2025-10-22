@@ -24,7 +24,6 @@ namespace GenBOE.Web.Controllers.Backend
 	using GenBOE.Web.Common;
 	using GenBOE.Web.ModelView;
 	using IES.Common;
-	using Microsoft.VisualBasic.Logging;
 
 	/// <summary>
 	/// BOEController used for /boe/editboeindex/boe/
@@ -77,11 +76,11 @@ namespace GenBOE.Web.Controllers.Backend
 			IESSingleResponse<IBOEHeaderModelView> result = new IESSingleResponse<IBOEHeaderModelView>();
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortname);
-			FullBoe boe = this.Factory.CreateFullBoe(boeId);
 			Stopwatch sw = InitializeAction(logger, WebConstants.GET_BOE_HEADER, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, boeId);
 
 			try
 			{
+				FullBoe boe = this.Factory.CreateFullBoe(boeId);
 				result.Data = boeControllerLogic.CreateBOEHeaderMV(boe, ws);
 				result.IsSuccessful = true;
 			}
@@ -109,11 +108,11 @@ namespace GenBOE.Web.Controllers.Backend
 			IESSingleResponse<GenericTaskElementGridModelView> result = new IESSingleResponse<GenericTaskElementGridModelView>();
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortname);
-			FullBoe boe = this.Factory.CreateFullBoe(boeId);
 			Stopwatch sw = InitializeAction(logger, WebConstants.GET_TASK_ELEMENT_GRID, SecurityPage.BOELaborGrid, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, boeId);
 
 			try
 			{
+				FullBoe boe = this.Factory.CreateFullBoe(boeId);
 				GenericTaskElementGridModelView theModelView = boeControllerLogic.GetTaskGridModelView(boe, ws);
 				result.Data = theModelView;
 				result.Data.TaskElements = theModelView.TaskElements.OrderBy(teOrder => teOrder.BOETaskElementOrder).ThenBy(teOrder => teOrder.TaskElementDetailID).ToCollection();
@@ -161,16 +160,14 @@ namespace GenBOE.Web.Controllers.Backend
 			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(deleteTaskElementModelView.workspaceShortName);
-			FullBoe boe = this.Factory.CreateFullBoe(deleteTaskElementModelView.boeId);
+			Stopwatch sw = InitializeAction(logger, WebConstants.DELETE_TASK_ELEMENT, SecurityPage.BOELaborGrid, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, deleteTaskElementModelView.boeId);
 
 			try
 			{
-				Stopwatch sw = InitializeAction(logger, WebConstants.DELETE_TASK_ELEMENT, SecurityPage.BOELaborGrid, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, deleteTaskElementModelView.boeId);
+				FullBoe boe = this.Factory.CreateFullBoe(deleteTaskElementModelView.boeId);
 				boeControllerLogic.DeleteTaskElement(ws, boe, deleteTaskElementModelView.deletedTask);
 				result.IsSuccessful = true;
 				result.Data = true;
-
-				FinalizeAction(logger, WebConstants.DELETE_TASK_ELEMENT, sw);
 			}
 			catch (Exception ex)
 			{
@@ -178,6 +175,7 @@ namespace GenBOE.Web.Controllers.Backend
 				result.Messages.Add(ex.Message);
 			}
 
+			FinalizeAction(logger, WebConstants.DELETE_TASK_ELEMENT, sw);
 			return result;
 		}
 
@@ -196,27 +194,26 @@ namespace GenBOE.Web.Controllers.Backend
 			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(sortedTaskElementModelView.workspaceShortName);
-			FullBoe boe = this.Factory.CreateFullBoe(sortedTaskElementModelView.boeId);
+			Stopwatch sw = InitializeAction(logger, WebConstants.SAVE_SORTED_TASK_ELEMENTS, SecurityPage.BOELaborGrid, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, sortedTaskElementModelView.boeId);
 
-			System.Collections.ObjectModel.Collection<TaskElementOrder> sortedTaskElements = new System.Collections.ObjectModel.Collection<TaskElementOrder>(sortedTaskElementModelView.sortedTaskElements
+			try
+			{
+				FullBoe boe = this.Factory.CreateFullBoe(sortedTaskElementModelView.boeId);
+
+				System.Collections.ObjectModel.Collection<TaskElementOrder> sortedTaskElements = new System.Collections.ObjectModel.Collection<TaskElementOrder>(sortedTaskElementModelView.sortedTaskElements
 				.Select(x => new TaskElementOrder
 				{
 					TaskID = (int)x.TaskElementDetailID,
 					ListOrder = x.BOETaskElementOrder
 				}).ToList());
-			TaskElementOrderCollection taskElementOrderCollection = new TaskElementOrderCollection()
-			{
-				BOETaskElements = sortedTaskElements
-			};
+				TaskElementOrderCollection taskElementOrderCollection = new TaskElementOrderCollection()
+				{
+					BOETaskElements = sortedTaskElements
+				};
 
-			try
-			{
-				Stopwatch sw = InitializeAction(logger, WebConstants.SAVE_SORTED_TASK_ELEMENTS, SecurityPage.BOELaborGrid, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, sortedTaskElementModelView.boeId);
 				boeControllerLogic.ReOrderTaskElementOrder(ws, boe, taskElementOrderCollection);
 				result.IsSuccessful = true;
 				result.Data = true;
-
-				FinalizeAction(logger, WebConstants.SAVE_SORTED_TASK_ELEMENTS, sw);
 			}
 			catch (Exception ex)
 			{
@@ -224,6 +221,7 @@ namespace GenBOE.Web.Controllers.Backend
 				result.Messages.Add(ex.Message);
 			}
 
+			FinalizeAction(logger, WebConstants.SAVE_SORTED_TASK_ELEMENTS, sw);
 			return result;
 		}
 
@@ -241,11 +239,11 @@ namespace GenBOE.Web.Controllers.Backend
 			IESSingleResponse<BOEHeaderDescriptionModelView> result = new IESSingleResponse<BOEHeaderDescriptionModelView>();
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortname);
-			FullBoe boe = this.Factory.CreateFullBoe(boeId);
 			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_DISPLAY_BOE_HEADER_DESCRIPTION, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, boeId);
 
 			try
 			{
+				FullBoe boe = this.Factory.CreateFullBoe(boeId);
 				result.Data = boeControllerLogic.GetBOEHeaderDescriptionMv(boe, ws);
 				result.IsSuccessful = true;
 			}
