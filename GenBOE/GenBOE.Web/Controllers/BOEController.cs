@@ -807,6 +807,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace Shortname</param>
 		/// <param name="boeID">BOE ID</param>
 		/// <returns>ViewResult for Confidence Report Button</returns>
+		[ChildActionOnly]
 		public ViewResult DisplayConfidenceReportButton(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);

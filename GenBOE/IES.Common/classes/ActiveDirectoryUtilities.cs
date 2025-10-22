@@ -101,7 +101,8 @@ namespace IES.Common
 
             UserData currentAccount = null;
 
-            string cacheKey = inNtid;
+			string sanitizedString = SanitizeInput(inNtid);
+			string cacheKey = sanitizedString;
 
             if (this.cache.Contains(cacheKey))
             {
@@ -115,7 +116,7 @@ namespace IES.Common
                 // Try to query AD to get the user data.
                 int tries = 0;
                 bool finished = false;
-                while (++tries < MAX_AD_TRIES && !string.IsNullOrEmpty(inNtid))
+                while (++tries < MAX_AD_TRIES && !string.IsNullOrEmpty(sanitizedString))
                 {
                     try
                     {
@@ -123,10 +124,10 @@ namespace IES.Common
                         {
                             directoryEntry.AuthenticationType = AuthenticationTypes.Secure;
 
-                            string filter = "(&(objectClass=user)(|(cn=" + inNtid + ")(sAMAccountName=" + inNtid + ")))";
+                            string filter = "(&(objectClass=user)(|(cn=" + sanitizedString + ")(sAMAccountName=" + sanitizedString + ")))";
                             if (isGroup)
                             {
-                                filter = string.Format("(&(objectClass=group)(|(cn=" + inNtid + ")(dn=" + inNtid + ")(samAccountName=" + inNtid + ")))");
+                                filter = string.Format("(&(objectClass=group)(|(cn=" + sanitizedString + ")(dn=" + sanitizedString + ")(samAccountName=" + sanitizedString + ")))");
                             }
 
                             using (DirectorySearcher ds = new DirectorySearcher(directoryEntry, filter))
@@ -161,7 +162,7 @@ namespace IES.Common
                                 
                                 DirectoryEntry user = searchResult.GetDirectoryEntry();
 
-                                if (!user.Properties["sAMAccountName"][0].ToString().ToLower().Equals(inNtid.ToLower().Replace(" ", string.Empty)))
+                                if (!user.Properties["sAMAccountName"][0].ToString().ToLower().Equals(sanitizedString.ToLower().Replace(" ", string.Empty)))
                                 {
                                     // This is a weird case that came out of a bug 2935. In this case we were searching for a user with ntid "silva". There was another
                                     // account with ntid "silva$", which is what is returned by FindOne above. So if the NTIDs don't match, we do a longer search
@@ -173,7 +174,7 @@ namespace IES.Common
                                     {
                                         DirectoryEntry aDirEntry = aSearchResult.GetDirectoryEntry();
 
-                                        if (aDirEntry.Properties["sAMAccountName"][0].ToString().ToLower().Equals(inNtid.ToLower()))
+                                        if (aDirEntry.Properties["sAMAccountName"][0].ToString().ToLower().Equals(sanitizedString.ToLower()))
                                         {
                                             user = aDirEntry;
                                             break;
@@ -195,7 +196,7 @@ namespace IES.Common
                                         LastName = Utilities.TryGetPropertyValue(user.Properties, "sn"),
                                         DisplayName = Utilities.TryGetPropertyValue(user.Properties, "displayname"),
                                         Email = Utilities.TryGetPropertyValue(user.Properties, "mail"),
-                                        Ntid = inNtid,
+                                        Ntid = sanitizedString,
                                         Phone = Utilities.GetUserPhoneNumber(user.Properties),
                                         IsUsPerson =user.Properties.Contains("lmcUSAPersonIndicator") ? (bool?)(user.Properties["lmcUSAPersonIndicator"][0].ToString().ToUpper() == "Y") : null,
                                         IsSubcontractor = user.Properties.Contains("employeeType") ? (bool?)(user.Properties["employeeType"][0].ToString().ToUpper() != "E") : null,
@@ -208,8 +209,8 @@ namespace IES.Common
                                     currentAccount = new UserData
                                     {
                                         DisplayName = user.Properties["name"][0].ToString(),
-                                        Ntid = inNtid
-                                    };
+                                        Ntid = sanitizedString
+									};
                                 }
 
                                 finished = true;
@@ -253,7 +254,9 @@ namespace IES.Common
                 throw new ArgumentNullException(nameof(inNtid));
             }
 
-            string cacheKey = inNtid + "-UsersGroups";
+			string sanitizedString = SanitizeInput(inNtid);
+
+			string cacheKey = sanitizedString + "-UsersGroups";
 
             object fromCache = this.cache.GetData(cacheKey);
             if (fromCache == null)
@@ -270,7 +273,7 @@ namespace IES.Common
                             domainConnection.AuthenticationType = AuthenticationTypes.Secure;
 
                             // token Group searcher
-                            using (DirectorySearcher ds = new DirectorySearcher(domainConnection, string.Format("(&(objectClass=user)(samAccountName={0}))", inNtid)))
+                            using (DirectorySearcher ds = new DirectorySearcher(domainConnection, string.Format("(&(objectClass=user)(samAccountName={0}))", sanitizedString)))
                             {
                                 if (CLIENT_TIMEOUT_SECONDS > 0)
                                 {
@@ -373,7 +376,9 @@ namespace IES.Common
             ReturnType returnType, string objectName)
         {
             string distinguishedName = string.Empty;
-            using (DirectoryEntry entry = new DirectoryEntry(this.activeDirectoryPath))
+
+			string sanitizedString = SanitizeInput(objectName);
+			using (DirectoryEntry entry = new DirectoryEntry(this.activeDirectoryPath))
             {
                 using (DirectorySearcher mySearcher = new DirectorySearcher(entry))
                 {
@@ -385,17 +390,17 @@ namespace IES.Common
                     switch (objectClass)
                     {
                         case ObjectClass.user:
-                            mySearcher.Filter = "(&(objectClass=user)(|(cn=" + objectName + ")(sAMAccountName=" + objectName + ")))";
+                            mySearcher.Filter = "(&(objectClass=user)(|(cn=" + sanitizedString + ")(sAMAccountName=" + sanitizedString + ")))";
                             // TODO This code is never used, if we do use it in the future then test out the performance fix below
                             // mySearcher.PropertiesToLoad.Add("sAMAccountName");
                             // mySearcher.PropertiesToLoad.Add("distinguishedName");
                             break;
                         case ObjectClass.group:
-                            mySearcher.Filter = string.Format("(&(objectClass=group)(|(cn=" + objectName + ")(dn=" + objectName + ")(samAccountName=" + objectName + ")))");
+                            mySearcher.Filter = string.Format("(&(objectClass=group)(|(cn=" + sanitizedString + ")(dn=" + sanitizedString + ")(samAccountName=" + objectName + ")))");
                             mySearcher.PropertyNamesOnly = true;
                             break;
                         case ObjectClass.computer:
-                            mySearcher.Filter = "(&(objectClass=computer)(|(cn=" + objectName + ")(dn=" + objectName + ")))";
+                            mySearcher.Filter = "(&(objectClass=computer)(|(cn=" + sanitizedString + ")(dn=" + sanitizedString + ")))";
                             // TODO This code is never used, if we do use it in the future then test out the performance fix below
                             // mySearcher.PropertyNamesOnly = true;
                             break;
@@ -794,7 +799,8 @@ namespace IES.Common
             }
             else
             {
-                using (DirectoryEntry activeDirectoryRoot = new DirectoryEntry(this.activeDirectoryPath))
+				string sanitizedString = SanitizeInput(groupSearchString);
+				using (DirectoryEntry activeDirectoryRoot = new DirectoryEntry(this.activeDirectoryPath))
                 {
                     using (DirectorySearcher search = new DirectorySearcher(activeDirectoryRoot, "(objectCategory=group)"))
                     {
@@ -808,14 +814,14 @@ namespace IES.Common
                         // Modify groupSearchString (if necessary) according to the appropriate ActiveDirectoryMatchType.
                         if (matchBy == ActiveDirectoryMatchType.StartsWith)
                         {
-                            groupSearchString = $"{groupSearchString}*";
+							sanitizedString = $"{sanitizedString}*";
                         }
                         else if (matchBy == ActiveDirectoryMatchType.Contains)
                         {
-                            groupSearchString = $"*{groupSearchString}*";
+							sanitizedString = $"*{sanitizedString}*";
                         }
 
-                        search.Filter = $"(&(objectClass=group)(|(cn={groupSearchString})(dn={groupSearchString})(samAccountName={groupSearchString})))";
+                        search.Filter = $"(&(objectClass=group)(|(cn={sanitizedString})(dn={sanitizedString})(samAccountName={sanitizedString})))";
 
                         return search.FindAll();
                     }
@@ -1030,7 +1036,7 @@ namespace IES.Common
         {
             if (string.IsNullOrEmpty(unsafeInput)) { return string.Empty; }
 
-            // besides letters and numbers, we also allow a space, a period, a comma, an appostrophy a dash and a slash (when domains are included)
+            // besides letters and numbers, we also allow a space, a period, a comma, an apostrophe a dash and a slash (when domains are included)
             List<char> allowedSpecialChars = new List<char>() { ' ', '.', ',', '\'', '-', '\\' };
 
             string result = new String(unsafeInput.Where(x => Char.IsLetterOrDigit(x) || allowedSpecialChars.Contains(x)).ToArray());

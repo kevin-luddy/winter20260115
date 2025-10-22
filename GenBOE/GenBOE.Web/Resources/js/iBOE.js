@@ -569,12 +569,13 @@ Widget.prototype.ajaxRequest = function (options, button) {
 		contentType: 'application/json; charset=utf-8',
 		dataType: dataTypeResolved,  // see: ajaxUpdatedRequest (above)
 		data: options.data,
+		responseType: 'json',
 		success: options.success,
 		error: function (jqXHR, textStatus, errorThrown) {
 			var response = jqXHR.responseText;
 			var error = {};
 			if (!(response.indexOf('{') < 0 || response.indexOf('{') > 2)) {
-				error = $.parseJSON(response);
+				error = jqXHR.responseJSON;
 
 				if (error.ReturnType == "GenValidationException") {
 					that.processValidationErrors(error.MessageList, button);
