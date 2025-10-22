@@ -295,7 +295,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							optionstoAdd.Add(new BOECustomFieldOptionModelView(option));
 						}
 
-						//theModelView.CustomFieldValues.Where(c => c.CustomFieldID == customField.C)
 						foreach (BOECustomFieldViewModel customFieldValue in theModelView.CustomFieldValues)
 						{
 							if (customFieldValue.CustomFieldID == options.Select(o => o.CustomFieldID).First())
