@@ -10,6 +10,7 @@ namespace GenBOE.DataBridge.DTO
 	using GenBOE.Dtos;
 	using GenBOE.Models;
 	using IES.Common;
+	using IES.Common.classes;
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
@@ -90,63 +91,69 @@ namespace GenBOE.DataBridge.DTO
 				// Update any skill mixes and common disclosure for BOE Task Elements.
 				if (dateShiftDTOtoUpdate.BOETaskElementId != null && dateShiftDTOtoUpdate.DateShiftLevel == Level.Task)
 				{
-					if (dateShiftDTOtoUpdate.SkillMixTable != null && dateShiftDTOtoUpdate.SkillMixTable.Any())
+					if(SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 					{
-						List<SkillMixDTO> dtos = new List<SkillMixDTO>();
-						foreach (SkillMixModelView skillMixModelView in dateShiftDTOtoUpdate.SkillMixTable)
+						// Save the Skill Mix Summary DTOs
+						if (dateShiftDTOtoUpdate.SkillMixSummaryTable != null && dateShiftDTOtoUpdate.SkillMixSummaryTable.Any())
 						{
-							SkillMixDTO dto = skillMixModelView.ToDto();
-							dto.BOEID = dateShiftDTOtoUpdate.BoeId;
-							dto.BOETaskElementID = dateShiftDTOtoUpdate.BOETaskElementId.Value;
-							dtos.Add(dto);
-						}
+							List<SkillMixSummaryDTO> dtos = new List<SkillMixSummaryDTO>();
+							foreach (SkillMixSummaryModelView skillMixSummary in dateShiftDTOtoUpdate.SkillMixSummaryTable)
+							{
+								SkillMixSummaryDTO dto = skillMixSummary.ToDto();
+								dto.BOEID = dateShiftDTOtoUpdate.BoeId;
+								dto.BOETaskElementID = dateShiftDTOtoUpdate.BOETaskElementId.Value;
+								dtos.Add(dto);
+							}
 
-						this.skillMixLoader.InsertSkillMix(dtos);
+							this.skillMixSummaryLoader.InsertSkillMixSummary(dtos);
+						}
+						else
+						{
+							// If the dto has no skill mix summary tables, it's possible they were cleared out, so make sure old data is deleted
+							this.skillMixSummaryLoader.DeleteSkillMixSummaryByBOETaskElementID(dateShiftDTOtoUpdate.Id);
+						}
 					}
 					else
 					{
-						// If the dto has no skill mix tables, it's possible they were cleared out, so make sure old data is deleted
-						this.skillMixLoader.DeleteSkillMixByBOETaskElementID(dateShiftDTOtoUpdate.BOETaskElementId.Value);
-					}
-
-					// Save the Common Disclosure DTOs
-					if (dateShiftDTOtoUpdate.CommonDisclosureTable != null && dateShiftDTOtoUpdate.CommonDisclosureTable.Any())
-					{
-						List<CommonDisclosureSkillMixDTO> dtos = new List<CommonDisclosureSkillMixDTO>();
-						foreach (CommonDisclosureModelView commonDisclosure in dateShiftDTOtoUpdate.CommonDisclosureTable)
+						// Save the Skill Mix DTOs
+						if (dateShiftDTOtoUpdate.SkillMixTable != null && dateShiftDTOtoUpdate.SkillMixTable.Any())
 						{
-							CommonDisclosureSkillMixDTO dto = commonDisclosure.ToDto();
-							dto.BOEID = dateShiftDTOtoUpdate.BoeId;
-							dto.BOETaskElementID = dateShiftDTOtoUpdate.BOETaskElementId.Value;
-							dtos.Add(dto);
+							List<SkillMixDTO> dtos = new List<SkillMixDTO>();
+							foreach (SkillMixModelView skillMixModelView in dateShiftDTOtoUpdate.SkillMixTable)
+							{
+								SkillMixDTO dto = skillMixModelView.ToDto();
+								dto.BOEID = dateShiftDTOtoUpdate.BoeId;
+								dto.BOETaskElementID = dateShiftDTOtoUpdate.BOETaskElementId.Value;
+								dtos.Add(dto);
+							}
+
+							this.skillMixLoader.InsertSkillMix(dtos);
+						}
+						else
+						{
+							// If the dto has no skill mix tables, it's possible they were cleared out, so make sure old data is deleted
+							this.skillMixLoader.DeleteSkillMixByBOETaskElementID(dateShiftDTOtoUpdate.BOETaskElementId.Value);
 						}
 
-						this.commonDisclosureLoader.InsertCommonDisclosureSM(dtos);
-					}
-					else
-					{
-						// If the dto has no common disclosure tables, it's possible they were cleared out, so make sure old data is deleted
-						this.commonDisclosureLoader.DeleteCommonDisclosureSkillMixByBOETaskElementID(dateShiftDTOtoUpdate.Id);
-					}
-
-					// Save the Skill Mix Summary DTOs
-					if (dateShiftDTOtoUpdate.SkillMixSummaryTable != null && dateShiftDTOtoUpdate.SkillMixSummaryTable.Any())
-					{
-						List<SkillMixSummaryDTO> dtos = new List<SkillMixSummaryDTO>();
-						foreach (SkillMixSummaryModelView skillMixSummary in dateShiftDTOtoUpdate.SkillMixSummaryTable)
+						// Save the Common Disclosure DTOs
+						if (dateShiftDTOtoUpdate.CommonDisclosureTable != null && dateShiftDTOtoUpdate.CommonDisclosureTable.Any())
 						{
-							SkillMixSummaryDTO dto = skillMixSummary.ToDto();
-							dto.BOEID = dateShiftDTOtoUpdate.BoeId;
-							dto.BOETaskElementID = dateShiftDTOtoUpdate.BOETaskElementId.Value;
-							dtos.Add(dto);
-						}
+							List<CommonDisclosureSkillMixDTO> dtos = new List<CommonDisclosureSkillMixDTO>();
+							foreach (CommonDisclosureModelView commonDisclosure in dateShiftDTOtoUpdate.CommonDisclosureTable)
+							{
+								CommonDisclosureSkillMixDTO dto = commonDisclosure.ToDto();
+								dto.BOEID = dateShiftDTOtoUpdate.BoeId;
+								dto.BOETaskElementID = dateShiftDTOtoUpdate.BOETaskElementId.Value;
+								dtos.Add(dto);
+							}
 
-						this.skillMixSummaryLoader.InsertSkillMixSummary(dtos);
-					}
-					else
-					{
-						// If the dto has no skill mix summary tables, it's possible they were cleared out, so make sure old data is deleted
-						this.skillMixSummaryLoader.DeleteSkillMixSummaryByBOETaskElementID(dateShiftDTOtoUpdate.Id);
+							this.commonDisclosureLoader.InsertCommonDisclosureSM(dtos);
+						}
+						else
+						{
+							// If the dto has no common disclosure tables, it's possible they were cleared out, so make sure old data is deleted
+							this.commonDisclosureLoader.DeleteCommonDisclosureSkillMixByBOETaskElementID(dateShiftDTOtoUpdate.Id);
+						}
 					}
 				}
 			}
@@ -342,21 +349,29 @@ namespace GenBOE.DataBridge.DTO
 									  te.TaskEndDate,
 									  te.UpdateDT
 								  }).ToList();
+					List<Models.SkillMix> skillMixes = new List<Models.SkillMix>();
+					List<CommonDisclosureSkillMix> commonDisclosures = new List<CommonDisclosureSkillMix>();
+					List<Models.SkillMixSummary> skillMixSummaries = new List<Models.SkillMixSummary>();
+					
+					if(SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+					{
+						skillMixSummaries = (from cd in gbe.SkillMixSummaries
+											 join b in gbe.BOEs on cd.BOEID equals b.BOEID
+											 where b.WorkspaceID == workspaceId
+											 select cd).ToList();
+					}
+					else
+					{
+						skillMixes = (from sm in gbe.SkillMixes
+									  join b in gbe.BOEs on sm.BOEID equals b.BOEID
+									  where b.WorkspaceID == workspaceId
+									  select sm).ToList();
 
-					List<Models.SkillMix> skillMixes = (from sm in gbe.SkillMixes
-														join b in gbe.BOEs on sm.BOEID equals b.BOEID
-														where b.WorkspaceID == workspaceId
-														select sm).ToList();
-
-					List<CommonDisclosureSkillMix> commonDisclosures = (from cd in gbe.CommonDisclosureSkillMixes
-																		join b in gbe.BOEs on cd.BOEID equals b.BOEID
-																		where b.WorkspaceID == workspaceId
-																		select cd).ToList();
-
-					List<Models.SkillMixSummary> skillMixSummaries = (from cd in gbe.SkillMixSummaries
-																	  join b in gbe.BOEs on cd.BOEID equals b.BOEID
-																	  where b.WorkspaceID == workspaceId
-																	  select cd).ToList();
+						commonDisclosures = (from cd in gbe.CommonDisclosureSkillMixes
+											 join b in gbe.BOEs on cd.BOEID equals b.BOEID
+											 where b.WorkspaceID == workspaceId
+											 select cd).ToList();
+					}
 
 					List<BOELaborType> boeLaborTypes = (from blt in gbe.BOELaborTypes
 														join te in gbe.BOETaskElements on blt.BOETaskElementID equals te.BOETaskElementID
@@ -721,20 +736,29 @@ namespace GenBOE.DataBridge.DTO
 											  }).FirstOrDefault();
 				if (getChildren)
 				{
-					List<Models.SkillMix> skillMixes = (from sm in gbe.SkillMixes
-														join cl in gbe.WBS_CLIN_BOE_XREF on sm.BOEID equals cl.BOEID
-														where cl.CLINID == clinId
-														select sm).ToList();
+					List<Models.SkillMix> skillMixes = new List<Models.SkillMix>();
+					List<CommonDisclosureSkillMix> commonDisclosures = new List<CommonDisclosureSkillMix>();
+					List<Models.SkillMixSummary> skillMixSummaries = new List<Models.SkillMixSummary>();
 
-					List<CommonDisclosureSkillMix> commonDisclosures = (from cd in gbe.CommonDisclosureSkillMixes
-																		join cl in gbe.WBS_CLIN_BOE_XREF on cd.BOEID equals cl.BOEID
-																		where cl.CLINID == clinId
-																		select cd).ToList();
+					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+					{
+						skillMixSummaries = (from cd in gbe.SkillMixSummaries
+											 join cl in gbe.WBS_CLIN_BOE_XREF on cd.BOEID equals cl.BOEID
+											 where cl.CLINID == clinId
+											 select cd).ToList();
+					}
+					else
+					{
+						skillMixes = (from sm in gbe.SkillMixes
+									  join cl in gbe.WBS_CLIN_BOE_XREF on sm.BOEID equals cl.BOEID
+									  where cl.CLINID == clinId
+									  select sm).ToList();
 
-					List<Models.SkillMixSummary> skillMixSummaries = (from cd in gbe.SkillMixSummaries
-																	  join cl in gbe.WBS_CLIN_BOE_XREF on cd.BOEID equals cl.BOEID
-																	  where cl.CLINID == clinId
-																	  select cd).ToList();
+						commonDisclosures = (from cd in gbe.CommonDisclosureSkillMixes
+											 join cl in gbe.WBS_CLIN_BOE_XREF on cd.BOEID equals cl.BOEID
+											 where cl.CLINID == clinId
+											 select cd).ToList();
+					}
 
 					List<BOELaborType> boeLaborTypes = (from blt in gbe.BOELaborTypes
 														join te in gbe.BOETaskElements on blt.BOETaskElementID equals te.BOETaskElementID
@@ -937,17 +961,26 @@ namespace GenBOE.DataBridge.DTO
 
 				if (getChildren)
 				{
-					List<Models.SkillMix> skillMixes = (from sm in gbe.SkillMixes
-														where sm.BOEID == id
-														select sm).ToList();
+					List<Models.SkillMix> skillMixes = new List<Models.SkillMix>();
+					List<CommonDisclosureSkillMix> commonDisclosures = new List<CommonDisclosureSkillMix>();
+					List<Models.SkillMixSummary> skillMixSummaries = new List<Models.SkillMixSummary>();
 
-					List<CommonDisclosureSkillMix> commonDisclosures = (from cd in gbe.CommonDisclosureSkillMixes
-																		where cd.BOEID == id
-																		select cd).ToList();
+					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+					{
+						skillMixSummaries = (from cd in gbe.SkillMixSummaries
+											 where cd.BOEID == id
+											 select cd).ToList();
+					}
+					else
+					{
+						skillMixes = (from sm in gbe.SkillMixes
+									  where sm.BOEID == id
+									  select sm).ToList();
 
-					List<Models.SkillMixSummary> skillMixSummaries = (from cd in gbe.SkillMixSummaries
-																	  where cd.BOEID == id
-																	  select cd).ToList();
+						commonDisclosures = (from cd in gbe.CommonDisclosureSkillMixes
+											 where cd.BOEID == id
+											 select cd).ToList();
+					}
 
 					List<BOELaborType> boeLaborTypes = (from blt in gbe.BOELaborTypes
 														join te in gbe.BOETaskElements on blt.BOETaskElementID equals te.BOETaskElementID
@@ -1104,17 +1137,26 @@ namespace GenBOE.DataBridge.DTO
 			{
 				gbe.Database.CommandTimeout = 360;  // give queries enough time to execute
 
-				List<Models.SkillMix> skillMixes = (from sm in gbe.SkillMixes
-													where sm.BOETaskElementID == taskId
-													select sm).ToList();
+				List<Models.SkillMix> skillMixes = new List<Models.SkillMix>();
+				List<CommonDisclosureSkillMix> commonDisclosures = new List<CommonDisclosureSkillMix>();
+				List<Models.SkillMixSummary> skillMixSummaries = new List<Models.SkillMixSummary>();
 
-				List<CommonDisclosureSkillMix> commonDisclosures = (from cd in gbe.CommonDisclosureSkillMixes
-																	where cd.BOETaskElementID == taskId
-																	select cd).ToList();
+				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+				{
+					skillMixSummaries = (from cd in gbe.SkillMixSummaries
+										 where cd.BOETaskElementID == taskId
+										 select cd).ToList();
+				}
+				else
+				{
+					skillMixes = (from sm in gbe.SkillMixes
+								  where sm.BOETaskElementID == taskId
+								  select sm).ToList();
 
-				List<Models.SkillMixSummary> skillMixSummaries = (from cd in gbe.SkillMixSummaries
-																  where cd.BOETaskElementID == taskId
-																	select cd).ToList();
+					commonDisclosures = (from cd in gbe.CommonDisclosureSkillMixes
+										 where cd.BOETaskElementID == taskId
+										 select cd).ToList();
+				}
 
 				List<BOELaborType> boeLaborTypes = (from blt in gbe.BOELaborTypes
 													where blt.BOETaskElementID == taskId

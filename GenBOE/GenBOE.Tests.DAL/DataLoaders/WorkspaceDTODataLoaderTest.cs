@@ -14,7 +14,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
     using GenBOE.ActionLogic.ControllerLogic;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
+	using GenBOE.DataBridge.DTO.SkillMixSummary;
+	using GenBOE.Dtos;
     using GenBOE.Models;
     using GenBOE.Objects;
     using GenBOE.Tests.ActionLogic;
@@ -1128,7 +1129,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             WorkspaceVariableDTODataLoader wsVarLoader = new WorkspaceVariableDTODataLoader();
             RteTemplateDataLoader rteLoader = new RteTemplateDataLoader();
             ProPricerDTODataLoader ppLoader = new ProPricerDTODataLoader();
-            BoeTaskElementDTODataLoader taskLoader = new BoeTaskElementDTODataLoader(new ResourceTypeLoader(), new ResourceSpreadLoader(), new OrdinaryVariableLoader(), new BoeTaskElementCustomFieldValueXREFLoader(), new LaborTypeCustomFieldValueXREFLoader(), new SkillMixDTOLoader(), new CommonDisclosureSMDTODataLoader());
+            BoeTaskElementDTODataLoader taskLoader = new BoeTaskElementDTODataLoader(new ResourceTypeLoader(), new ResourceSpreadLoader(), new OrdinaryVariableLoader(), new BoeTaskElementCustomFieldValueXREFLoader(), new LaborTypeCustomFieldValueXREFLoader(), new SkillMixDTOLoader(), new SkillMixSummaryDTOLoader(), new CommonDisclosureSMDTODataLoader());
             IRetriever retriever = new Retriever(null, null, wsLoader, null, null, null, null, null, null, taskLoader, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
             FullObjectFactory fullObjectFactory = new FullObjectFactory(null, null, null, null, null, null, null, null, null, null, null, null);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever);

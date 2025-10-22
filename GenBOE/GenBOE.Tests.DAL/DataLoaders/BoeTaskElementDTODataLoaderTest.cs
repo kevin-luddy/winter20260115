@@ -13,7 +13,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
     using System.Linq;
     using System.Transactions;
     using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
+	using GenBOE.DataBridge.DTO.SkillMixSummary;
+	using GenBOE.Dtos;
     using GenBOE.Models;
     using IES.Common;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -56,8 +57,9 @@ namespace GenBOE.Tests.DAL.DataLoaders
             ILaborTypeCustomFieldValueXREFLoader laborTypeCustomFieldLoader = new LaborTypeCustomFieldValueXREFLoader();
 			ISkillMixDTOLoader skillMixDTOLoader = new SkillMixDTOLoader();
 			ICommonDisclosureSMDTODataLoader commonDisclosureSMDTODataLoader = new CommonDisclosureSMDTODataLoader();
+			ISkillMixSummaryDTOLoader skillMixSummaryDTODataLoader = new SkillMixSummaryDTOLoader();
 
-            return new BoeTaskElementDTODataLoader(resourceTypeLoader, resourceSpreadLoader, ordinaryVariableLoader, taskElementCustomFieldLoader, laborTypeCustomFieldLoader, skillMixDTOLoader, commonDisclosureSMDTODataLoader);
+			return new BoeTaskElementDTODataLoader(resourceTypeLoader, resourceSpreadLoader, ordinaryVariableLoader, taskElementCustomFieldLoader, laborTypeCustomFieldLoader, skillMixDTOLoader, skillMixSummaryDTODataLoader, commonDisclosureSMDTODataLoader);
         }
            
         [TestMethod]
@@ -218,8 +220,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
 
             string guidstring = string.Empty;
 
-            // create a task element to associate the new labor type to
-            var TaskElement = new BoeTaskElementDTO();
+			// create a task element to associate the new labor type to
+			BoeTaskElementDTO TaskElement = new BoeTaskElementDTO();
             TaskElement.Id = -1;
             TaskElement.StartDate = Convert.ToDateTime("09/01/2010");
             TaskElement.EndDate = Convert.ToDateTime("11/01/2010");
@@ -319,10 +321,10 @@ namespace GenBOE.Tests.DAL.DataLoaders
             // Arrange
             BoeTaskElementDTODataLoader sut = this.CreateTestLoader();
 
-            // Act
+			// Act
 
-            // Create a new task element
-            var TaskElement = new BoeTaskElementDTO();
+			// Create a new task element
+			BoeTaskElementDTO TaskElement = new BoeTaskElementDTO();
             TaskElement.Id = -1;
             TaskElement.StartDate = Convert.ToDateTime("09/01/2010");
             TaskElement.EndDate = Convert.ToDateTime("11/01/2010");
@@ -764,10 +766,10 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.IsNotNull(editTaskResults);
 
             Assert.IsTrue(editTaskResults.OrdinaryVariables.Count == 3, "There weren't 3 ordinary vars");
-            var selectBoeVar = (from t in editTaskResults.OrdinaryVariables
+            OrdinaryVariableDto selectBoeVar = (from t in editTaskResults.OrdinaryVariables
                                 where t.OrdinaryVariableName == "Employee"
                                 select t).First();
-            var boeID = (from s in selectBoeVar.SelectedBOEsToSum
+            int? boeID = (from s in selectBoeVar.SelectedBOEsToSum
                          select s.BoeID).First();
 
             Assert.IsTrue(selectBoeVar.ValueType == VarValueType.SumOfBOEs, "Value Type was not sum of boe");
@@ -957,7 +959,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.IsNotNull(toEditTask);
             Assert.IsTrue(toEditTask.taskElementLabors.First().LaborSpreads.Any(), "The labor spreads did not get saved and retrieved correctly");
             // get labor type ID to delete
-            var laborTypeID = (from t in toEditTask.taskElementLabors
+            int laborTypeID = (from t in toEditTask.taskElementLabors
                                select t.Id).FirstOrDefault();
 
             sut.DeleteLMLaborSpreadsByLaborTypeID(laborTypeID);
@@ -1386,7 +1388,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         public void TestingRteLoadChanges()
         {
             BoeTaskElementDTODataLoader loader = new BoeTaskElementDTODataLoader(new ResourceTypeLoader(), new ResourceSpreadLoader(), new OrdinaryVariableLoader(),
-                                                    new BoeTaskElementCustomFieldValueXREFLoader(), new LaborTypeCustomFieldValueXREFLoader(), new SkillMixDTOLoader(), new CommonDisclosureSMDTODataLoader());
+                                                    new BoeTaskElementCustomFieldValueXREFLoader(), new LaborTypeCustomFieldValueXREFLoader(), new SkillMixDTOLoader(), new SkillMixSummaryDTOLoader(), new CommonDisclosureSMDTODataLoader());
 
             int id = -1;
             using (GenBoeEntities gbe = new GenBoeEntities())

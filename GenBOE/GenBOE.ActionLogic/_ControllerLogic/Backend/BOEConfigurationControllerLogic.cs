@@ -73,6 +73,9 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 			configurationData.ShowCompanyConfiguration = ConfigurationUtilities.GetAppSetting<bool>("ShowCompanyConfiguration");
 			configurationData.ActiveApp = ConfigurationUtilities.GetAppSetting("ActiveApp");
 			configurationData.ServiceCentralLink = Utilities.ServiceCentralLink();
+			configurationData.EnableUCOT = ConfigurationUtilities.GetAppSetting<bool>("EnableUCOT");
+			configurationData.UCOTStartDate = ConfigurationUtilities.GetAppSetting("UCOTStartDate");
+			configurationData.UcotExcludedWorkspaces = ConfigurationUtilities.GetAppSetting("UcotExcludedWorkspaces");
 			configurationData.IsTaskAuthorEnabled = Utilities.IsAssignTaskAuthorEnabledForSystem;
 			configurationData.IsLmNavigatorEnabled = Utilities.IsLmNavigatorRteLinkEnabledForSystem;
 			configurationData.LmNavigatorUrl = Utilities.LmNavigatorAgentUrl;
