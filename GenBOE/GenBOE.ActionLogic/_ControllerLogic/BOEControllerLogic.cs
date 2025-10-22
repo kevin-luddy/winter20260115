@@ -15,6 +15,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using System.Transactions;
 	using System.Web;
 	using System.Web.Mvc;
+	using GenBOE.ActionLogic._ModelView.Backend;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
 	using GenBOE.ActionLogic.Common;
@@ -209,6 +210,104 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		public virtual IBOEHeaderModelView GetCreateBOEHeaderMV(BoeDTO boe, ICollection<RTECustomTemplateQuestionAnswerModelView> answers)
 		{
 			return new BOEHeaderISGSModelView(boe, answers);
+		}
+
+		public BOEHeaderViewModel GetBOEHeaderViewModel(FullBoe boe, FullWorkspace ws)
+		{
+
+			if (boe == null)
+			{
+				throw new ArgumentNullException(nameof(boe));
+			}
+
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
+
+			ICollection<RTECustomTemplateQuestionAnswerModelView> answers = this.rteTemplateDataLoader.GetByBoeId(ws.Id, boe.Id);
+			BOEHeaderViewModel theModelView = new BOEHeaderViewModel(boe, answers);
+
+			theModelView.WBS = boe.Wbs != null ? boe.Wbs.WbsString : CommonConstants.Unassigned_WBS_Display_Text;
+			theModelView.State = boe.State;
+			theModelView.RteFieldSize = ws.RteSizeLimit ?? Constants.MAX_RTE_LENGTH;
+
+			// get the clin
+			ClinDTO clin = boe.Clin;
+			theModelView.CLIN = clin != null ? clin.ClinString : CommonConstants.Unassigned_CLIN_Display_Text;
+
+			if (boe.StartDate.ToString("MM/yyyy") == DateTime.MinValue.ToString("MM/yyyy"))
+			{
+				if (clin?.StartDate != null)
+				{
+					theModelView.StartDate = clin.StartDate;
+				}
+				else
+				{
+					theModelView.StartDate = ws.ContractStartDate;
+				}
+			}
+
+			if (boe.EndDate.ToString("MM/yyyy") == DateTime.MinValue.ToString("MM/yyyy"))
+			{
+				if (clin?.EndDate != null)
+				{
+					theModelView.EndDate = clin.EndDate;
+				}
+				else
+				{
+					theModelView.EndDate = ws.ContractEndDate;
+				}
+			}
+
+			//Get the description
+			theModelView.Description = GetBOEHeaderDescriptionMv(boe, ws);
+
+			//Load the customFields
+			Collection<BOECustomFieldViewModel> selectedOptionsMV = new Collection<BOECustomFieldViewModel>();
+			ICollection<CustomFieldValueContainer> selectedOptions = boe.CustomFieldValueContainers;
+
+			if (selectedOptions != null)
+			{
+				foreach (CustomFieldValueContainer xrefSelection in selectedOptions)
+				{
+					selectedOptionsMV.Add(new BOECustomFieldViewModel() { CustomFieldValueID = xrefSelection.CustomFieldValueID, SelectionID = xrefSelection.ContainerID, UpdateDate = xrefSelection.UpdateDate, OpenEndedValue = xrefSelection.OpenEndedValue, CustomFieldID = xrefSelection.CustomFieldID, IsOpenEnded = xrefSelection.IsOpenEnded });
+				}
+
+				theModelView.CustomFieldValues = selectedOptionsMV;
+			}
+
+			if (ws.CustomFields.Any())
+			{
+				IReadOnlyCollection<CustomFieldValueDTO> allCustomFieldValues = ws.CustomFieldValues;
+
+				foreach (CustomFieldDTO customField in ws.CustomFields)
+				{
+					BOECustomFieldsInUseGridModelView metadata = new BOECustomFieldsInUseGridModelView(customField);
+					Collection<CustomFieldValueDTO> options = allCustomFieldValues.Where(i => i.CustomFieldID == customField.Id).ToCollection();
+
+					if (metadata.CustomFieldDisplayID == CustomFieldType.BoeDisplay)
+					{
+						Collection<BOECustomFieldOptionModelView> optionstoAdd = new Collection<BOECustomFieldOptionModelView>();
+
+						foreach (CustomFieldValueDTO option in options)
+						{
+							optionstoAdd.Add(new BOECustomFieldOptionModelView(option));
+						}
+
+						foreach (BOECustomFieldViewModel customFieldValue in theModelView.CustomFieldValues)
+						{
+							if (customFieldValue.CustomFieldID == options.Select(o => o.CustomFieldID).First())
+							{
+								customFieldValue.FieldName = metadata.FieldName;
+								customFieldValue.CustomFieldOptions = optionstoAdd;
+							}
+						}
+					}
+				}
+			}
+
+			return theModelView;
 		}
 
 		/// <summary>

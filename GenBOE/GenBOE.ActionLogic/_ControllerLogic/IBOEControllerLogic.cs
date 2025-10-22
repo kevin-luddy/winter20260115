@@ -6,22 +6,23 @@
 
 namespace GenBOE.ActionLogic
 {
-    using GenBOE.ActionLogic.IESSAPClient;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.IO;
+	using System.Threading.Tasks;
+	using System.Web;
+	using System.Web.Mvc;
+	using GenBOE.ActionLogic.IESSAPClient;
 	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
-    using GenBOE.DataBridge.DTO;
+	using GenBOE.ActionLogic._ModelView.Backend;
+	using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
     using IES.Common;
     using IES.Common.Exceptions;
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-	using System.IO;
-    using System.Threading.Tasks;
-    using System.Web;
-	using System.Web.Mvc;
 
 	public interface IBOEControllerLogic
     {
@@ -31,6 +32,14 @@ namespace GenBOE.ActionLogic
         /// <param name="boe">The <see cref="BoeDTO"/> used to populate the <see cref="BOEHeaderISGSModelView"/></param>
         /// <returns>the populated <see cref="BOEHeaderISGSModelView"/></returns>
         IBOEHeaderModelView GetCreateBOEHeaderMV(BoeDTO boe, ICollection<RTECustomTemplateQuestionAnswerModelView> answers);
+
+		/// <summary>
+		/// Get Boe Header View Model for new Angular
+		/// </summary>
+		/// <param name="boe">BOE containing the header data</param>
+		/// <param name="ws">Workspace the BOE exists in</param>
+		/// <returns></returns>
+		BOEHeaderViewModel GetBOEHeaderViewModel(FullBoe boe, FullWorkspace ws);
 
 		/// <summary>
 		/// Get BOE Header Description ModelView
