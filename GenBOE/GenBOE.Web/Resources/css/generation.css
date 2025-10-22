@@ -7779,10 +7779,9 @@ div.ui-grid-cell input {
 	margin-top: -8px;
 }
 
-.create-oci-note {
-	position: relative;
-	left: 650px;
-	width: 350px;
+.oci-container {
+	display: flex;
+	justify-content: center;
 }
 
 #CreateWorkspace {
