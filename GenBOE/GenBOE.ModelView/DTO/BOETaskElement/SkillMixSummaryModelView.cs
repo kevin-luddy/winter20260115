@@ -37,8 +37,6 @@ namespace GenBOE.DataBridge.DTO
 				this.BusinessResourceID = disclosureDTO.BusinessResourceID;
 				this.ResourceID = disclosureDTO.ResourceID;
 				this.IsUserInput = disclosureDTO.IsUserInput;
-				this.UCOTHours = disclosureDTO.UCOTHours;
-				this.GrandTotalHours = disclosureDTO.GrandTotalHours;
 			}
 		}
 
@@ -64,9 +62,22 @@ namespace GenBOE.DataBridge.DTO
 				BOEID = this.BOEID,
 				BOETaskElementID = this.BOETaskElementID,
 				IsUserInput = this.IsUserInput,
-				UCOTHours = this.UCOTHours,
-				GrandTotalHours = this.GrandTotalHours
 			};
 		}
+
+		/// <summary>
+		/// UCOT Hours, Space only
+		/// </summary>
+		public decimal UCOTHours { get; set; }
+
+		/// <summary>
+		/// Grand Total Hours (proposed + UCOT Hours), Space only
+		/// </summary>
+		public decimal GrandTotalHours => this.TotalProposedHours + this.UCOTHours;
+
+		/// <summary>
+		/// Total Proposed Hours (resource + BRC Hours), Space only
+		/// </summary>
+		public decimal TotalProposedHours => this.ResourceHours + this.BusinessResourceHours;
 	}
 }

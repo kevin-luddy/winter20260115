@@ -928,7 +928,9 @@ namespace GenBOE.ActionLogic.IO.Import
 
         public string WbsString { get; set; }
         public string ClinString { get; set; }
-        public Collection<int> ApproverIDs { get; set; }
+		// This needs to stay an "int" and not a "ImportResult" in order to translate correctly during model binding.
+		public int ImportType { get; set; }
+		public Collection<int> ApproverIDs { get; set; }
         public Collection<BoeImportResult> ImportTypes { get; set; }
     }
 }

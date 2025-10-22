@@ -240,11 +240,20 @@ namespace GenBOE.ActionLogic.WBS.BOE
 				if (BOETaskUtility.ShowSkillMixForTask(ws, task))
 				{
 					ICollection<string> errorMessages = new List<string>();
-					errorMessages = ActionLogicUtility.ValidateSkillMixTable(task.SkillMixTable, true);
 
-					if (Utilities.IsBRCEnabledForWorkspace(ws.Shortname) && task.EndDate >= Utilities.OneLmxStartDate)
+					if(SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 					{
-						errorMessages.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(task.CommonDisclosureTable, true, task.taskElementLabors.Any()));
+						errorMessages.AddRange(ActionLogicUtility.ValidateSkillMixSummaryTable(task, ws.EnableSAPConnection, task.taskElementLabors.Any()));
+					}
+
+					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+					{
+						errorMessages = ActionLogicUtility.ValidateSkillMixTable(task.SkillMixTable, true);
+
+						if (Utilities.IsBRCEnabledForWorkspace(ws.Shortname) && task.EndDate >= Utilities.OneLmxStartDate)
+						{
+							errorMessages.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(task.CommonDisclosureTable, true, task.taskElementLabors.Any()));
+						}
 					}
 
 					if (errorMessages.Any())

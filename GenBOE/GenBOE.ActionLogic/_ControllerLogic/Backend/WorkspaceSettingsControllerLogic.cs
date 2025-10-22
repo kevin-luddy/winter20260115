@@ -364,6 +364,7 @@ namespace GenBOE.ActionLogic._ControllerLogic.Backend
 			ws.UsingTemplateBOE = workspaceDetails.UsingTemplateBoe;
 			ws.EnableSAPConnection = workspaceDetails.EnableSAPConnection;
 			ws.CurrentPTMWorkspace = workspaceDetails.CurrentPTMWorkspace;
+			ws.EnableLmNavigator = workspaceDetails.EnableLmNavigator;
 
 			// Keep track of the previous value of Enable Assign Task Author
 			bool previousValueEnableAssignTaskAuthor = ws.EnableAssignTaskAuthor;

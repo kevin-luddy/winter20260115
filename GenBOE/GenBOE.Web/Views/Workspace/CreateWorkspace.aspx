@@ -47,11 +47,12 @@
             GetNextTrackingNumberRevisionAction: '<%= WebConstants.ACTION_GET_NEXT_TRACKING_NUMBER_REVISION%>',
             IsSAPConnectionEnabled: <%: Model.IsSAPConnectionEnabled.ToString().ToLower() %>,
 			EnableAssignTaskAuthor: <%: Model.IsAuthorAssignableAtTaskLevelEnabled.ToString().ToLower() %>,
-            IsAssignTaskAuthorEnabled: <%: Model.IsAssignTaskAuthorEnabled.ToString().ToLower() %>,
+			IsAssignTaskAuthorEnabled: <%: Model.IsAssignTaskAuthorEnabled.ToString().ToLower() %>,
+			EnableLmNavigator: <%: Model.LmNavigatorEnabled.ToString().ToLower() %>,
+			IsLmNavigatorEnabled: <%: Model.IsLmNavigatorEnabled.ToString().ToLower() %>,
             SearchPLDProposals: '<%= WebConstants.ACTION_SEARCH_PLD_PROPOSALS %>',
 			GetPLDProposalDetails: '<%= WebConstants.ACTION_GET_PLD_PROPOSAL_DETAILS %>',
             GetNextPLDWorkspaceShortNameFromTrackingNumber: '<%= WebConstants.ACTION_GET_NEXT_PLD_WORKSPACE_SHORTNAME_FROM_TRACKING_NUMBER %>'
-
         });
         
 

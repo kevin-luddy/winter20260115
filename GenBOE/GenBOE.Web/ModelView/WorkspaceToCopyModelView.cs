@@ -101,5 +101,10 @@ namespace GenBOE.Web.ModelView
 		/// Gets or sets a value indicating whether or not authors are assignable at task level
 		/// </summary>
 		public bool EnableAssignTaskAuthor { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Enable LM Navigator setting
+		/// </summary>
+		public bool EnableLmNavigator { get; set; }
 	}
 }
