@@ -98,15 +98,15 @@ namespace GenBOE.Web.Controllers
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<bool> DeleteUserPermissions(string workspace, string inUserID)
 		{
-			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
-
-			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_DELETE_USER_PERMISSIONS, SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, null);
-
 			if (inUserID == null || !inUserID.Any())
 			{
 				throw new ArgumentNullException(nameof(inUserID));
 			}
+
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_DELETE_USER_PERMISSIONS, SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, null);
 
 			try
 			{
