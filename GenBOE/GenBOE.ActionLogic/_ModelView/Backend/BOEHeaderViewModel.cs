@@ -1,4 +1,10 @@
-﻿namespace GenBOE.ActionLogic._ModelView.Backend
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2025 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
+
+namespace GenBOE.ActionLogic._ModelView.Backend
 {
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.Validation;
@@ -19,8 +25,6 @@
 			this.CLIN = string.Empty;
 			this.WBS = string.Empty;
 			this.CustomFieldValues = new Collection<BOECustomFieldViewModel>();
-			//this.CustomFields = new Collection<BOECustomFieldViewModel>();
-			//this.CustomFieldOptions = new Collection<BOECustomFieldOptionModelView>();
 			this.HeaderRteTemplateAnswers = new List<RTECustomTemplateQuestionAnswerModelView>();
 			this.DataSource = string.Empty;
 			this.HistoricMetricDisclosureChecked = false;
@@ -47,22 +51,40 @@
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the RTE Custom Template Answers at BOE level.
+		/// </summary>
 		public ICollection<RTECustomTemplateQuestionAnswerModelView> HeaderRteTemplateAnswers { get; }
 
+		/// <summary>
+		/// Get or sets Clin
+		/// </summary>
 		public string CLIN { get; set; }
 
+		/// <summary>
+		/// Get or sets Start date
+		/// </summary>
 		[DisplayFormat(DataFormatString = "{0:MM/yyyy}")]
 		public DateTime? StartDate { get; set; }
 
+		/// <summary>
+		/// Get or sets StaEndrt date
+		/// </summary>
 		[DisplayFormat(DataFormatString = "{0:MM/yyyy}")]
 		public DateTime? EndDate { get; set; }
 
+		/// <summary>
+		/// Get or sets BOE Id
+		/// </summary>
 		public int BOEID { get; set; }
 
+		/// <summary>
+		/// Get or sets WBS
+		/// </summary>
 		public string WBS { get; set; }
 
 		/// <summary>
-		/// RTE field size character limit
+		/// Get or set RTE field size character limit
 		/// </summary>
 		public int RteFieldSize { get; set; }
 
@@ -93,8 +115,14 @@
 			}
 		}
 
+		/// <summary>
+		/// Get or sets Historic Metric Disclosure Checked
+		/// </summary>
 		public bool HistoricMetricDisclosureChecked { get; set; }
 
+		/// <summary>
+		/// Gets or sets Custom Field Values
+		/// </summary>
 		public Collection<BOECustomFieldViewModel> CustomFieldValues { get; set; }
 
 		/// <summary>

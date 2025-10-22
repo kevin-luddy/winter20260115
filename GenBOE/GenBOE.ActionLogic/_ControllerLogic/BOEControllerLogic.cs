@@ -226,12 +226,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 
 			ICollection<RTECustomTemplateQuestionAnswerModelView> answers = this.rteTemplateDataLoader.GetByBoeId(ws.Id, boe.Id);
-			// Perform Action
-			IBOEHeaderModelView theIModelView = this.GetCreateBOEHeaderMV(boe, answers);
-			if (theIModelView.Title != null)
-			{
-				Console.WriteLine("Empty");
-			}
 			BOEHeaderViewModel theModelView = new BOEHeaderViewModel(boe, answers);
 
 			theModelView.WBS = boe.Wbs != null ? boe.Wbs.WbsString : CommonConstants.Unassigned_WBS_Display_Text;
@@ -270,8 +264,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			theModelView.Description = GetBOEHeaderDescriptionMv(boe, ws);
 
 			//Load the customFields
-			//theModelView.CustomFieldValues = GetCustomFieldModelViews(ws);
-
 			Collection<BOECustomFieldViewModel> selectedOptionsMV = new Collection<BOECustomFieldViewModel>();
 			ICollection<CustomFieldValueContainer> selectedOptions = boe.CustomFieldValueContainers;
 
@@ -285,11 +277,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				theModelView.CustomFieldValues = selectedOptionsMV;
 			}
 
-			//Collection<BOECustomFieldViewModel> customFieldModelViews = new Collection<BOECustomFieldViewModel>();
 			if (ws.CustomFields.Any())
 			{
 				IReadOnlyCollection<CustomFieldValueDTO> allCustomFieldValues = ws.CustomFieldValues;
-				//Collection<BOECustomFieldOptionModelView> optionsss = new Collection<BOECustomFieldOptionModelView>();
 
 				foreach (CustomFieldDTO customField in ws.CustomFields)
 				{
@@ -314,18 +304,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 								customFieldValue.CustomFieldOptions = optionstoAdd;
 							}
 						}
-						//{
-						//	CustomFieldMetaData = metadata,
-						//	CustomFieldOptions = optionstoAdd
-						//});
 					}
 				}
 			}
-
-
-
-			//ICollection<int> ids = new Collection<int>();
-			//ids.Add(boe.Id);
 
 			return theModelView;
 		}
