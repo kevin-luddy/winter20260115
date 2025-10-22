@@ -164,5 +164,20 @@ namespace GenBOE.ActionLogic.ModelView.Backend
 		/// Service Central Link
 		/// </summary>
 		public string ServiceCentralLink { get; set; }
+
+		/// <summary>
+		/// Is Task Author feature enabled for the system?
+		/// </summary>
+		public bool IsTaskAuthorEnabled { get; set; }
+
+		/// <summary>
+		/// Is the LM Navigator RTE Button feature enabled for the system?
+		/// </summary>
+		public bool IsLmNavigatorEnabled { get; set; }
+
+		/// <summary>
+		/// URL for LM Navigator
+		/// </summary>
+		public string LmNavigatorUrl { get; set; }
 	}
 }

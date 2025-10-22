@@ -73,6 +73,9 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 			configurationData.ShowCompanyConfiguration = ConfigurationUtilities.GetAppSetting<bool>("ShowCompanyConfiguration");
 			configurationData.ActiveApp = ConfigurationUtilities.GetAppSetting("ActiveApp");
 			configurationData.ServiceCentralLink = Utilities.ServiceCentralLink();
+			configurationData.IsTaskAuthorEnabled = Utilities.IsAssignTaskAuthorEnabledForSystem;
+			configurationData.IsLmNavigatorEnabled = Utilities.IsLmNavigatorRteLinkEnabledForSystem;
+			configurationData.LmNavigatorUrl = Utilities.LmNavigatorAgentUrl;
 
 			return configurationData;
 		}
@@ -99,6 +102,7 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 			workspaceSettings.ShowSAPForWorkspace = Utilities.ShowSAPForWorkspace(ws.CreationDate);
 			workspaceSettings.ShowSkillMixForWorkspace = Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.Shortname);
 			workspaceSettings.IsHistoricalReferenceExplanationRequired = Utilities.IsHistoricalReferenceExplanationRequired(ws.CreationDate);
+			workspaceSettings.IsLmNavigatorEnabled = Utilities.IsLmNavigatorRteLinkEnabledForSystem && ws.EnableLmNavigator;
 
 			if (ws.Id == 0)
 			{
