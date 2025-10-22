@@ -31,7 +31,6 @@ namespace GenBOE.Web.Controllers.Backend
 	using IES.Common.Exceptions;
 	using IES.Common.OfficeUtilities;
 	using Microsoft.Ajax.Utilities;
-	using Microsoft.VisualBasic.Logging;
 
 	public class ImportController : BoeDataBaseAPIController
 	{
