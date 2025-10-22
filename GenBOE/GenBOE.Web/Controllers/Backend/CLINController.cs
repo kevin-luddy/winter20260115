@@ -136,7 +136,6 @@ namespace GenBOE.Web.Controllers.Backend
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				FinalizeAction(logger, WebConstants.ACTION_EXPORT_CLINS, sw);
 				return new HttpResponseMessage(HttpStatusCode.InternalServerError)
 				{
 					Content = new StringContent("Unknown error exporting CLINs")
