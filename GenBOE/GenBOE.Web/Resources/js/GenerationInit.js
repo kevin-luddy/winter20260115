@@ -187,7 +187,7 @@ $(function () {
                 error.Title = "Application Error";
             }
             else {
-                error = $.parseJSON(request.responseText);
+                error = request.responseJSON;
             }
 
             if (error.ReturnType != "GenValidationException") {
