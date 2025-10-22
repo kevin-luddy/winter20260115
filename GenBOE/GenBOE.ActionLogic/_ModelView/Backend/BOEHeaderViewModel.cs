@@ -17,6 +17,9 @@ namespace GenBOE.ActionLogic._ModelView.Backend
 	using System.Collections.ObjectModel;
 	using System.ComponentModel.DataAnnotations;
 
+	/// <summary>
+	/// BOE Header View Model for new Angular
+	/// </summary>
 	public class BOEHeaderViewModel: PersistedDataModelView
 	{
 		public BOEHeaderViewModel()

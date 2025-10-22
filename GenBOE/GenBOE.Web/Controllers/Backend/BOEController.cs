@@ -75,10 +75,10 @@ namespace GenBOE.Web.Controllers.Backend
 		{
 			IESSingleResponse<BOEHeaderViewModel> result = new IESSingleResponse<BOEHeaderViewModel>();
 
+			Stopwatch sw = InitializeAction(logger, WebConstants.GET_BOE_HEADER, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, boeId);
+
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortname);
 			FullBoe boe = ws.Boes.First(x => x.Id == boeId);
-
-			Stopwatch sw = InitializeAction(logger, WebConstants.GET_BOE_HEADER, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, boeId);
 
 			try
 			{

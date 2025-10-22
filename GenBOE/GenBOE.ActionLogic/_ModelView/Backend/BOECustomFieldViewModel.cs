@@ -28,6 +28,9 @@ namespace GenBOE.ActionLogic.ModelView
 			this.CustomFieldOptions = new Collection<BOECustomFieldOptionModelView>();
 		}
 
+		/// <summary>
+		/// get/sets custom field options
+		/// </summary>
 		public Collection<BOECustomFieldOptionModelView> CustomFieldOptions { get; set; }
 
 		/// <summary>
