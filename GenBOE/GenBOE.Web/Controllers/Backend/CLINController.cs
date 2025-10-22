@@ -114,24 +114,22 @@ namespace GenBOE.Web.Controllers.Backend
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(exportCLINModelView.workspaceShortName);
 			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_EXPORT_CLINS, SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, null);
 
+			HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+
 			try
 			{
 				if (exportCLINModelView != null)
 				{
 					FileStream fs = this._clinControllerLogic.ExportCLINs(ws);
 
-					HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
 					response.Content = new StreamContent(fs);
 					response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 					response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
 					response.Content.Headers.ContentDisposition.FileName = "CLINs.xlsx";
-
-					return response;
 				}
 				else
 				{
-					FinalizeAction(logger, WebConstants.ACTION_EXPORT_CLINS, sw);
-					return new HttpResponseMessage(HttpStatusCode.BadRequest)
+					response = new HttpResponseMessage(HttpStatusCode.BadRequest)
 					{
 						Content = new StringContent("Invalid request body")
 					};
@@ -140,11 +138,14 @@ namespace GenBOE.Web.Controllers.Backend
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				return new HttpResponseMessage(HttpStatusCode.InternalServerError)
+				response = new HttpResponseMessage(HttpStatusCode.InternalServerError)
 				{
 					Content = new StringContent("Unknown error exporting CLINs")
 				};
 			}
+
+			FinalizeAction(logger, WebConstants.ACTION_EXPORT_CLINS, sw);
+			return response;
 		}
 
 		/// <summary>

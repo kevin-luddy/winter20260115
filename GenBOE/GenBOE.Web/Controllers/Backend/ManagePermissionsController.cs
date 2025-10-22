@@ -207,24 +207,21 @@ namespace GenBOE.Web.Controllers
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(exportPermissionModelView.workspaceShortName);
 			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_EXPORT_PERMISSIONS, SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, null);
 
+			HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+
 			try
 			{
 				if (exportPermissionModelView != null)
 				{
 					FileStream fs = this.PermissionControllerLogic.ExportPermissions(ws);
-
-					HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
 					response.Content = new StreamContent(fs);
 					response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 					response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
 					response.Content.Headers.ContentDisposition.FileName = "Permissions.xlsx";
-
-					return response;
 				}
 				else
 				{
-					FinalizeAction(logger, WebConstants.ACTION_EXPORT_PERMISSIONS, sw);
-					return new HttpResponseMessage(HttpStatusCode.BadRequest)
+					response = new HttpResponseMessage(HttpStatusCode.BadRequest)
 					{
 						Content = new StringContent("Invalid request body")
 					};
@@ -233,11 +230,14 @@ namespace GenBOE.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				return new HttpResponseMessage(HttpStatusCode.InternalServerError)
+				response = new HttpResponseMessage(HttpStatusCode.InternalServerError)
 				{
 					Content = new StringContent("Unknown error exporting Permissions")
 				};
 			}
+
+			FinalizeAction(logger, WebConstants.ACTION_EXPORT_PERMISSIONS, sw);
+			return response;
 		}
 
 		/// <summary>
