@@ -128,9 +128,11 @@
                         <button name="next-button" class="ies-action" data-ng-class="{'disabled':nextButtonDisabled()}" data-ng-show="!model.showButtonLoader && model.showNextButton" data-ng-click="next()" type="button">Next</button>
                         <button name="cancel-button" class="ies left-margin" data-ng-click="cancel()" type="button">Cancel</button>
                     </div>
-                    <div data-ng-show="model.showOCINote" class="create-oci-note">
-                        <b>Note:</b> Information on this form <%: SiteMasterUtilities.GetBannerText() %>
-                    </div>
+					<div data-ng-show="model.showOCINote" class="oci-container">
+						<div>
+							<b>Note:</b> Information on this form <%: SiteMasterUtilities.GetBannerText() %>
+						</div>
+					</div>
                     <% Html.EndForm(); %>
                 </div>
             </div>
