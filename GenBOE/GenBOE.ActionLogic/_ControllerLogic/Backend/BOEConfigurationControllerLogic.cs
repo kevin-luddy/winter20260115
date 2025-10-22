@@ -102,6 +102,7 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 			workspaceSettings.ShowSAPForWorkspace = Utilities.ShowSAPForWorkspace(ws.CreationDate);
 			workspaceSettings.ShowSkillMixForWorkspace = Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.Shortname);
 			workspaceSettings.IsHistoricalReferenceExplanationRequired = Utilities.IsHistoricalReferenceExplanationRequired(ws.CreationDate);
+			workspaceSettings.EnableTaskAuthors = Utilities.IsAssignTaskAuthorEnabledForSystem && ws.EnableAssignTaskAuthor;
 
 			if (ws.Id == 0)
 			{

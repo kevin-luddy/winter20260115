@@ -62,5 +62,10 @@ namespace GenBOE.ActionLogic.ModelView.Backend
 		/// Report Hours Label used in Reports
 		/// </summary>
 		public string ReportHoursLabel { get; set; }
+
+		/// <summary>
+		/// Is Enable Task Authors for Workspace configured
+		/// </summary>
+		public bool EnableTaskAuthors { get; set; }
 	}
 }
