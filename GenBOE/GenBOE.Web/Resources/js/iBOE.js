@@ -2209,7 +2209,6 @@ function InitializeRTE(elementName, options, widget, skipInitialClean) {
 				});
 
 				ed.addCommand('openLmNav', function () {
-					// if can't send text, copy it to clipboard
 					getRteText(this, function (rteText) {
 						if (rteText != '' && rteText != undefined) {
 							navigator.clipboard.writeText(rteText);
