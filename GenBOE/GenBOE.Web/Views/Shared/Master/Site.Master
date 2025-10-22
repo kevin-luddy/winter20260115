@@ -297,7 +297,7 @@
             $(document).bind('DISPLAY_NOTIFICATION', function (event, text) {
                 $('#Notification div.text').html(text);
                 $('#Notification').removeClass('display-none');
-                //$('html, body').animate({ scrollTop: $("#Notification").offset().top }, 200);
+                $('html, body').animate({ scrollTop: $("#Notification").offset().top }, 200);
             });
 
             $('#MessageClose').click(function () {
