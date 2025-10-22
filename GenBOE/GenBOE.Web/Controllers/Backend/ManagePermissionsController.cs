@@ -87,7 +87,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		///<param name="workspace">The workspace to delete permissions from.</param>
 		///<param name="inUserID">The User ID to delete permissions from.</param>
-		/// <returns>Object to indicate if operation is successfull</returns>
+		/// <returns>Object to indicate if operation is successful</returns>
 		[HttpDelete]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<bool> DeleteUserPermissions(string workspace, string inUserID)
