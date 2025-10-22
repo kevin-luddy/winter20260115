@@ -13,9 +13,9 @@ namespace GenBOE.Web.Controllers.Backend
 	using System.Web.Http;
 	using System.Web.Http.Cors;
 	using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic._ModelView.Backend;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ModelView;
-	using GenBOE.ActionLogic.ModelView.BOE;
 	using GenBOE.ActionLogic.Validation;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
@@ -71,9 +71,9 @@ namespace GenBOE.Web.Controllers.Backend
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
-		public IESSingleResponse<IBOEHeaderModelView> GetBOEHeader(string workspaceShortname, int boeId)
+		public IESSingleResponse<BOEHeaderViewModel> GetBOEHeader(string workspaceShortname, int boeId)
 		{
-			IESSingleResponse<IBOEHeaderModelView> result = new IESSingleResponse<IBOEHeaderModelView>();
+			IESSingleResponse<BOEHeaderViewModel> result = new IESSingleResponse<BOEHeaderViewModel>();
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortname);
 			FullBoe boe = ws.Boes.First(x => x.Id == boeId);
@@ -81,7 +81,7 @@ namespace GenBOE.Web.Controllers.Backend
 
 			try
 			{
-				result.Data = boeControllerLogic.CreateBOEHeaderMV(boe, ws);
+				result.Data = boeControllerLogic.GetBOEHeaderViewModel(boe, ws);
 				result.IsSuccessful = true;
 			}
 			catch (Exception ex)

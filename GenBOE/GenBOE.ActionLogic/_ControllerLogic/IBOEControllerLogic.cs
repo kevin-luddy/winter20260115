@@ -20,6 +20,7 @@ namespace GenBOE.ActionLogic
     using GenBOE.Dtos;
     using GenBOE.Objects;
     using IES.Common.Exceptions;
+	using GenBOE.ActionLogic._ModelView.Backend;
 
 	public interface IBOEControllerLogic
     {
@@ -29,6 +30,14 @@ namespace GenBOE.ActionLogic
         /// <param name="boe">The <see cref="BoeDTO"/> used to populate the <see cref="BOEHeaderISGSModelView"/></param>
         /// <returns>the populated <see cref="BOEHeaderISGSModelView"/></returns>
         IBOEHeaderModelView GetCreateBOEHeaderMV(BoeDTO boe, ICollection<RTECustomTemplateQuestionAnswerModelView> answers);
+
+		/// <summary>
+		/// Get Boe Header View Model for new Angular
+		/// </summary>
+		/// <param name="boe">BOE containing the header data</param>
+		/// <param name="ws">Workspace the BOE exists in</param>
+		/// <returns></returns>
+		BOEHeaderViewModel GetBOEHeaderViewModel(FullBoe boe, FullWorkspace ws);
 
 		/// <summary>
 		/// Get BOE Header Description ModelView
