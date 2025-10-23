@@ -8,6 +8,8 @@
 namespace GenBOE.Web.Controllers.Backend
 {
 	using System;
+	using System.Collections.Generic;
+	using System.Diagnostics;
 	using System.IO;
 	using System.Linq;
 	using System.Net;
@@ -16,10 +18,12 @@ namespace GenBOE.Web.Controllers.Backend
 	using System.Web;
 	using System.Web.Http;
 	using GenBOE.ActionLogic._ControllerLogic.Backend;
+	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.ModelView.Clin;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using GenBOE.Web.ModelView;
 	using IES.Common;
@@ -64,16 +68,19 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <returns>Newly upserted CLIN</returns>
 		[System.Web.Http.HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-
 		public IESSingleResponse<ManageCLINModelView> SaveClin([FromBody] AddEditCLINModelView addEditCLINModelView)
 		{
+			_ = addEditCLINModelView ?? throw new ArgumentNullException(nameof(addEditCLINModelView));
+
 			IESSingleResponse<ManageCLINModelView> result = new IESSingleResponse<ManageCLINModelView>();
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(addEditCLINModelView.workspaceShortName);
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_SAVE_CLIN, SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, null);
 
 			try
 			{
 				if (addEditCLINModelView != null)
 				{
-					FullWorkspace ws = this.Factory.CreateFullWorkspace(addEditCLINModelView.workspaceShortName);
 					result.Data = this._clinControllerLogic.SaveCLIN(ws, addEditCLINModelView.clin);
 					result.IsSuccessful = true;
 				}
@@ -89,6 +96,7 @@ namespace GenBOE.Web.Controllers.Backend
 				result.Messages.Add($"Unknown error saving CLIN: {ex.Message}");
 			}
 
+			FinalizeAction(logger, WebConstants.ACTION_SAVE_CLIN, sw);
 			return result;
 		}
 
@@ -101,24 +109,27 @@ namespace GenBOE.Web.Controllers.Backend
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public HttpResponseMessage ExportCLINs([FromBody] ExportFileModelView exportCLINModelView)
 		{
+			_ = exportCLINModelView ?? throw new ArgumentNullException(nameof(exportCLINModelView));
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(exportCLINModelView.workspaceShortName);
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_EXPORT_CLINS, SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, null);
+
+			HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+
 			try
 			{
 				if (exportCLINModelView != null)
 				{
-					FullWorkspace ws = this.Factory.CreateFullWorkspace(exportCLINModelView.workspaceShortName);
 					FileStream fs = this._clinControllerLogic.ExportCLINs(ws);
 
-					HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
 					response.Content = new StreamContent(fs);
 					response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 					response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
 					response.Content.Headers.ContentDisposition.FileName = "CLINs.xlsx";
-
-					return response;
 				}
 				else
 				{
-					return new HttpResponseMessage(HttpStatusCode.BadRequest)
+					response = new HttpResponseMessage(HttpStatusCode.BadRequest)
 					{
 						Content = new StringContent("Invalid request body")
 					};
@@ -127,11 +138,14 @@ namespace GenBOE.Web.Controllers.Backend
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				return new HttpResponseMessage(HttpStatusCode.InternalServerError)
+				response = new HttpResponseMessage(HttpStatusCode.InternalServerError)
 				{
 					Content = new StringContent("Unknown error exporting CLINs")
 				};
 			}
+
+			FinalizeAction(logger, WebConstants.ACTION_EXPORT_CLINS, sw);
+			return response;
 		}
 
 		/// <summary>
@@ -144,13 +158,13 @@ namespace GenBOE.Web.Controllers.Backend
 		{
 			IESResponse<ImportedClin> result = new IESResponse<ImportedClin>();
 
+			string workspaceShortName = HttpContext.Current.Request.Form["workspaceShortName"];
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortName);
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_IMPORT_CLINS, SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, null);
+
 			try
 			{
-				string workspaceShortName = HttpContext.Current.Request.Form["workspaceShortName"];
 				Stream importFile = HttpContext.Current.Request.Files[0].InputStream;
-
-				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortName);
-
 				result.Data = _clinControllerLogic.ImportCLINs(ws, importFile);
 				result.IsSuccessful = true;
 			}
@@ -160,6 +174,7 @@ namespace GenBOE.Web.Controllers.Backend
 				result.Messages.Add($"Unknown error occurred importing CLIN data: {ex.Message}");
 			}
 
+			FinalizeAction(logger, WebConstants.ACTION_IMPORT_CLINS, sw);
 			return result;
 		}
 
@@ -172,13 +187,17 @@ namespace GenBOE.Web.Controllers.Backend
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<bool> CompleteImportCLINs([FromBody] ImportCLINModelView importCLINModelView)
 		{
+			_ = importCLINModelView ?? throw new ArgumentNullException(nameof(importCLINModelView));
+
 			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(importCLINModelView.workspaceShortName);
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_COMPLETE_IMPORT_CLINS, SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, null);
+
 			try
 			{
 				if (importCLINModelView != null)
 				{
-					FullWorkspace ws = this.Factory.CreateFullWorkspace(importCLINModelView.workspaceShortName);
-
 					_clinControllerLogic.CompleteImportCLIN(ws, importCLINModelView.importedCLINs);
 					result.IsSuccessful = true;
 					result.Data = true;
@@ -190,6 +209,7 @@ namespace GenBOE.Web.Controllers.Backend
 				result.Messages.Add($"Unknown error occured completing import for CLIN data: {ex.Message}");
 			}
 
+			FinalizeAction(logger, WebConstants.ACTION_COMPLETE_IMPORT_CLINS, sw);
 			return result;
 		}
 
@@ -202,14 +222,17 @@ namespace GenBOE.Web.Controllers.Backend
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<bool> DeleteCLINs(ManageCLINModelView[] clinsToDelete)
 		{
+			_ = clinsToDelete ?? throw new ArgumentNullException(nameof(clinsToDelete));
+
 			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(clinsToDelete[0].WorkSpaceID);
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_DELETE_CLINS, SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, null);
 
 			try
 			{
 				if (clinsToDelete != null && clinsToDelete.Any())
 				{
-					FullWorkspace ws = this.Factory.CreateFullWorkspace(clinsToDelete[0].WorkSpaceID);
-
 					foreach (ManageCLINModelView clin in clinsToDelete)
 					{
 						// Only delete CLINs that have positive IDs
@@ -230,6 +253,7 @@ namespace GenBOE.Web.Controllers.Backend
 				result.Messages.Add($"Unknown error occurred deleting CLIN data: {ex.Message}");
 			}
 
+			FinalizeAction(logger, WebConstants.ACTION_DELETE_CLINS, sw);
 			return result;
 		}
 	}

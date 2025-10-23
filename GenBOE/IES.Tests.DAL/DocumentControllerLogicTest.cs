@@ -391,7 +391,7 @@ namespace IES.Tests
 
             detail.SelectedSectionIds = new int[] { 0 };
             messages = sut.ValidateDocumentDetailModelView(detail);
-            Assert.AreEqual(1, messages.Count);
+            Assert.AreEqual(2, messages.Count);
         }
 
         /// <summary>

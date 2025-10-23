@@ -6,20 +6,10 @@
 
 namespace GenBOE.Web.Controllers.Backend
 {
-	using GenBOE.ActionLogic;
-	using GenBOE.ActionLogic.IO.Import;
-	using GenBOE.ActionLogic.ModelView;
-	using GenBOE.DataBridge.Common.Interfaces;
-	using GenBOE.DataBridge.DTO;
-	using GenBOE.Objects;
-	using GenBOE.Web.Common;
-	using IES.Common;
-	using IES.Common.Exceptions;
-	using IES.Common.OfficeUtilities;
-	using Microsoft.Ajax.Utilities;
 	using System;
 	using System.Collections.Generic;
 	using System.Data.Entity.Core;
+	using System.Diagnostics;
 	using System.IO;
 	using System.Linq;
 	using System.Net;
@@ -28,6 +18,19 @@ namespace GenBOE.Web.Controllers.Backend
 	using System.Web;
 	using System.Web.Http;
 	using System.Web.UI.WebControls;
+	using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.IO.Import;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.DataBridge.Common.Interfaces;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
+	using GenBOE.Web.Common;
+	using IES.Common;
+	using IES.Common.Exceptions;
+	using IES.Common.OfficeUtilities;
+	using Microsoft.Ajax.Utilities;
 
 	public class ImportController : BoeDataBaseAPIController
 	{
@@ -86,20 +89,24 @@ namespace GenBOE.Web.Controllers.Backend
 
 			// Perform Action
 			string errorMessage = string.Empty;
+
+			string root = HttpContext.Current.Server.MapPath("~/App_Data");
+			MultipartFormDataStreamProvider provider = new MultipartFormDataStreamProvider(root);
+			await Request.Content.ReadAsMultipartAsync(provider);
+
+			// Provider has the content with the files being part of FileData
+			// We parse out FileData and Content individually to reduce complexity
+			// Parse out the HTTP Content that is the object: ImportViewModel
+			Utilities.GetModelValuesFromContent(provider.Contents.Where(x => x.Headers.ContentDisposition.Name != "\"files\"").ToList(), keyValuePairs);
+
+			// Now that the dictionary has been populated, lets populate our model
+			Utilities.PopulateModel<ImportViewModel>(importViewModel, keyValuePairs);
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(importViewModel.Workspace);
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_IMPORT_PERMISSIONS, SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, null);
+
 			try
 			{
-				string root = HttpContext.Current.Server.MapPath("~/App_Data");
-				MultipartFormDataStreamProvider provider = new MultipartFormDataStreamProvider(root);
-				await Request.Content.ReadAsMultipartAsync(provider);
-
-				// Provider has the content with the files being part of FileData
-				// We parse out FileData and Content individually to reduce complexity
-				// Parse out the HTTP Content that is the object: ImportViewModel
-				Utilities.GetModelValuesFromContent(provider.Contents.Where(x => x.Headers.ContentDisposition.Name != "\"files\"").ToList(), keyValuePairs);
-
-				// Now that the dictionary has been populated, lets populate our model
-				Utilities.PopulateModel<ImportViewModel>(importViewModel, keyValuePairs);
-
 				// Parse out the File data
 				foreach (MultipartFileData file in provider.FileData)
 				{
@@ -172,6 +179,7 @@ namespace GenBOE.Web.Controllers.Backend
 				result.Messages.Add(errorMessage);
 			}
 
+			FinalizeAction(logger, WebConstants.ACTION_IMPORT_PERMISSIONS, sw);
 			return result;
 		}
 	}

@@ -90,6 +90,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="validateOnly">If this should only validate the dateshift.</param>
         /// <returns>JsonResult of the success or failure.</returns>
         /// <exception cref="System.NotImplementedException">Not implemented</exception>
+		[HttpPost]
         public JsonResult ApplyDateShift(string workspace, int id, Level dateShiftLevel, DateShiftModelView dateShiftModel, bool validateOnly)
         {
             Stopwatch sw;

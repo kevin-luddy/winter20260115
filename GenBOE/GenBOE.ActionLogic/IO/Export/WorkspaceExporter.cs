@@ -1862,8 +1862,9 @@ namespace GenBOE.ActionLogic.IO.Export
 
 				if (resourceUsesCostValues)
 				{
-					row.Add(string.Empty);  // Hours column is empty
-					row.Add(string.Empty);  // UCOT Hours column is empty
+					row.Add(string.Empty); // Hours column is empty
+					row.Add(string.Empty); // UCOT Hours column is empty
+					row.Add(string.Empty); // Total Hours column is empty
 
 					if (spread == null)
 					{
