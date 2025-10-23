@@ -41,7 +41,7 @@
 		public decimal GrandTotalHours => UCOTHours + TotalProposedHours;
 
 		/// <summary>
-		/// Total proposed hours (BRC + proposed hours)
+		/// Total proposed hours (BRC + resource hours)
 		/// </summary>
 		public decimal TotalProposedHours => BRCProposedHours + ProposedHours;
 	}
