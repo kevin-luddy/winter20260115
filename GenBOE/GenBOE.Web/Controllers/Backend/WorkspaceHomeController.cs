@@ -325,9 +325,11 @@ namespace GenBOE.Web.Controllers
 		[System.Web.Http.HttpGet]
 		public IESSingleResponse<WhosOnlineGridModelView> DisplayWhosOnline()
 		{
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_DISPLAY_WHOS_ONLINE, SecurityPage.SystemAdmin, SecurityAuthorization.Read);
 			IESSingleResponse<WhosOnlineGridModelView> result = new IESSingleResponse<WhosOnlineGridModelView>();
 			result.Data = workspaceHomeControllerLogic.DisplayWhosOnline();
 			result.IsSuccessful = true;
+			FinalizeAction(logger, WebConstants.ACTION_DISPLAY_WHOS_ONLINE, sw);
 			return result;
 		}
 

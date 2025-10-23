@@ -511,6 +511,7 @@ namespace GenBOE
 					new ResolvedParameter(typeof(IBoeTaskElementCustomFieldValueXREFLoader)),
 					new ResolvedParameter(typeof(ILaborTypeCustomFieldValueXREFLoader)),
 					new ResolvedParameter(typeof(ISkillMixDTOLoader)),
+					new ResolvedParameter(typeof(ISkillMixSummaryDTOLoader)),
 					new ResolvedParameter(typeof(ICommonDisclosureSMDTODataLoader)))).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
 
 			GenBOEUnityContainer.Container.RegisterType(typeof(IProPricerDTODataLoader), typeof(ProPricerDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());

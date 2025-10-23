@@ -1963,6 +1963,11 @@ function RaiseNotification(text) {
 	$(document).trigger("DISPLAY_NOTIFICATION", text);
 }
 
+// Raise a Notification in a fixed position in the window, will scroll with the user
+function RaiseFixedNotification(text) {
+	$(document).trigger("DISPLAY_NOTIFICATION_FIXED", text);
+}
+
 function ShowLoadingBox(id) {
 	if (typeof id === 'undefined') {
 		$(document).trigger("SHOW_LOADING_BOX");
@@ -2043,6 +2048,27 @@ function updateRTECharacterCount(mce, options, callbackFunction) {
 	});
 }
 
+/*
+* Get the Text from an RTE without the HTML
+*/
+function getRteText(mce, callbackFunction) {
+	var richTextEncoded = '{ "html" : "' + encodeURI(mce.getContent()) + '" }';
+
+	$.ajax({
+		type: 'POST',
+		url: '/default/GenBOE/ConvertHtmlToText?returnConvertedText=true',
+		data: richTextEncoded,
+		contentType: 'application/json; charset=utf-8',
+		dataType: 'json',
+		success: function (result) {
+			callbackFunction(result.Text);
+		},
+		error: function () {
+			callbackFunction();
+		}
+	});
+}
+
 //
 // Initializes the Tiny MCE RichText Editor
 // @param elementName: name of the text field which will be replaced by the editor
@@ -2054,6 +2080,14 @@ function updateRTECharacterCount(mce, options, callbackFunction) {
 function InitializeRTE(elementName, options, widget, skipInitialClean) {
 	var maxlen = options.maxlen;
 	var enableCharCounting = options.enableCharCounting || false;
+	var enableLmNav = BOEDetails.EnableLmNavigator;
+	var lmNavUrl = BOEDetails.LmNavigatorUrl;
+	var toolbar = "insertfile undo redo | styleselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | preview fullpage | forecolor backcolor | table" /*+ " | code"*/;
+
+	// Add LM Navigator button to the toolbar if it's enabled
+	if (enableLmNav) {
+		toolbar += ' | lmNavButton';
+	}
 
 	// Remove any existing editor with the same ID (elementName).  If we don't, it will sometimes cause problems during partial page refreshes.
 	tinymce.EditorManager.execCommand('mceRemoveEditor', true, elementName);
@@ -2074,14 +2108,14 @@ function InitializeRTE(elementName, options, widget, skipInitialClean) {
 		],
 		content_css: "/Resources/css/tinymce.css",
 		menu: {
-			edit: {title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall | searchreplace'},  
-			insert: {title: 'Insert', items: 'image link | charmap hr anchor pagebreak insertdatetime nonbreaking'},  
-			view: {title: 'View', items: 'visualchars visualblocks | preview fullscreen'},  
-			format: {title: 'Format', items: 'bold italic underline strikethrough superscript subscript | formats | removeformat'},  
+			edit: { title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall | searchreplace' },
+			insert: { title: 'Insert', items: 'image link | charmap hr anchor pagebreak insertdatetime nonbreaking' },
+			view: { title: 'View', items: 'visualchars visualblocks | preview fullscreen' },
+			format: { title: 'Format', items: 'bold italic underline strikethrough superscript subscript | formats | removeformat' },
 			table: { title: 'Table', items: 'inserttable tableprops deletetable cell row column' }
 			//,tools: {title: 'Tools', items: 'code'} //uncomment this and code in toolbar string to add a tool to view the html code for debugging
 		},
-		toolbar: "insertfile undo redo | styleselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | preview fullpage | forecolor backcolor | table" /*+ " | code"*/,
+		toolbar: toolbar,
 		browser_spellcheck: true,
 		file_picker_types: 'image',
 		file_picker_callback: function (cb, value, meta) {
@@ -2093,9 +2127,9 @@ function InitializeRTE(elementName, options, widget, skipInitialClean) {
 			// Make the 'Source' textbox readonly so that the blobUri cannot be edited.
 			$('.mce-has-open .mce-textbox').attr('readonly', 'true');
 
-			input.onchange = function() {
+			input.onchange = function () {
 				var file = this.files[0];
-	  
+
 				var reader = new FileReader();
 				reader.readAsDataURL(file);
 				reader.onload = function () {
@@ -2103,7 +2137,7 @@ function InitializeRTE(elementName, options, widget, skipInitialClean) {
 					// registry. In the next release this part hopefully won't be
 					// necessary, as they are looking to handle it internally.
 					var id = 'blobid' + (new Date()).getTime();
-					var blobCache =  tinymce.activeEditor.editorUpload.blobCache;
+					var blobCache = tinymce.activeEditor.editorUpload.blobCache;
 					var base64 = reader.result.split(',')[1];
 					var blobInfo = blobCache.create(id, file, base64);
 					blobCache.add(blobInfo);
@@ -2112,7 +2146,7 @@ function InitializeRTE(elementName, options, widget, skipInitialClean) {
 					cb(blobInfo.blobUri(), { alt: file.name });
 				};
 			};
-	
+
 			input.click();
 		},
 		//fontselect fontsizeselect emoticons | 
@@ -2122,22 +2156,26 @@ function InitializeRTE(elementName, options, widget, skipInitialClean) {
 		paste_block_drop: false,
 		paste_retain_style_properties: 'all',
 		paste_word_valid_elements: '@[style],-strong/b,-em/i,-span,-p,-ol,-ul,-li,-h1,-h2,-h3,-h4,-h5,-h6,' +
-						'-table,-tr,-td[colspan|rowspan],-th,-thead,-tfoot,-tbody,-a[href|name],-font[color],sub,sup,strike,br,u',
-		style_formats: [ 
-		{title: 'Inline', items: [
-			{title: 'Bold', icon: 'bold', format: 'bold'},
-			{title: 'Italic', icon: 'italic', format: 'italic'},
-			{title: 'Underline', icon: 'underline', format: 'underline'},
-			{title: 'Strikethrough', icon: 'strikethrough', format: 'strikethrough'},
-			{title: 'Superscript', icon: 'superscript', format: 'superscript'},
-			{title: 'Subscript', icon: 'subscript', format: 'subscript'}
-			]},
-		{title: 'Alignment', items: [
-			{title: 'Left', icon: 'alignleft', format: 'alignleft'},
-			{title: 'Center', icon: 'aligncenter', format: 'aligncenter'},
-			{title: 'Right', icon: 'alignright', format: 'alignright'},
-			{title: 'Justify', icon: 'alignjustify', format: 'alignjustify'}
-			]}
+			'-table,-tr,-td[colspan|rowspan],-th,-thead,-tfoot,-tbody,-a[href|name],-font[color],sub,sup,strike,br,u',
+		style_formats: [
+			{
+				title: 'Inline', items: [
+					{ title: 'Bold', icon: 'bold', format: 'bold' },
+					{ title: 'Italic', icon: 'italic', format: 'italic' },
+					{ title: 'Underline', icon: 'underline', format: 'underline' },
+					{ title: 'Strikethrough', icon: 'strikethrough', format: 'strikethrough' },
+					{ title: 'Superscript', icon: 'superscript', format: 'superscript' },
+					{ title: 'Subscript', icon: 'subscript', format: 'subscript' }
+				]
+			},
+			{
+				title: 'Alignment', items: [
+					{ title: 'Left', icon: 'alignleft', format: 'alignleft' },
+					{ title: 'Center', icon: 'aligncenter', format: 'aligncenter' },
+					{ title: 'Right', icon: 'alignright', format: 'alignright' },
+					{ title: 'Justify', icon: 'alignjustify', format: 'alignjustify' }
+				]
+			}
 		],
 		visual: false, // turns off visual aid that draws dotted lines around tables with no borders.  With this on pasted in tables from Excel don't display an outer border
 		setup: function (ed) {
@@ -2161,6 +2199,28 @@ function InitializeRTE(elementName, options, widget, skipInitialClean) {
 
 			// set the location so that plug-ins load correctly
 			ed.editorManager.AddOnManager.baseURL = '/Scripts/tinymce';
+
+			// Add LM Nav button if enabled
+			if (enableLmNav) {
+				ed.addButton('lmNavButton', {
+					image: '/Resources/css/images/IconsForTinyMce/LmNavigatorIcon.png',
+					tooltip: 'Open LM Navigator',
+					enabled: true,
+					cmd: 'openLmNav'
+				});
+
+				ed.addCommand('openLmNav', function () {
+					getRteText(this, function (rteText) {
+						if (rteText != '' && rteText != undefined) {
+							navigator.clipboard.writeText(rteText);
+							RaiseFixedNotification("Text copied to clipboard");
+						}
+
+						// brief timeout to give the user time to see the notification
+						setTimeout(() => { window.open(lmNavUrl, '_blank').focus(); }, 500);
+					});
+				});
+			}
 		},
 		// This does the stripping of rich text during a paste
 		paste_preprocess: function (plugin, args) {

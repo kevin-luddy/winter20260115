@@ -294,7 +294,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_SEARCH_RESOURCES = "SearchResources";
 		public static readonly string ACTION_SYSTEM_ADMIN = "SystemAdmin";
 		public static readonly string ACTION_EXPORT_DEFAULT_RESOURCES_TEMPLATE = "ExportDefaultResourcesTemplate";
-		public static readonly string ACTION_DISPLAY_WHOS_ONELINE = "WhosOnline";
+		public static readonly string ACTION_DISPLAY_WHOS_ONLINE = "WhosOnline";
 		public static readonly string ACTION_CONVERT_HTML_TO_TEXT = "ConvertHtmlToText";
 		public static readonly string ACTION_DISPLAY_MANAGE_UCOT = "DisplayManageUCOT";
 
@@ -473,6 +473,8 @@ namespace GenBOE.ActionLogic.Common
 		// BOE Controller
 		public static readonly string GET_BOE_HEADER = "GetBOEHeader";
 		public static readonly string GET_TASK_ELEMENT_GRID = "GetTaskElementGrid";
+		public static readonly string DELETE_TASK_ELEMENT = "DeleteTaskElement";
+		public static readonly string SAVE_SORTED_TASK_ELEMENTS = "SaveSortedTaskElements";
 
 		#endregion BOE ACTIONS
 

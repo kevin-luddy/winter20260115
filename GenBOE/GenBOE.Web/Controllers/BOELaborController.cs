@@ -1657,8 +1657,11 @@ namespace GenBOE.Web.Controllers
 				.SelectMany(tableData => tableData.ResourceHours)?
 				.ToList();
 
+			// TODO: Set as param later
+			ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData = new List<SkillMixSummaryModelView>();
+
 			// Call to Controller Logic
-			RefreshSkillMixModelView response = SkillMixUtility.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData, 
+			RefreshSkillMixModelView response = SkillMixUtility.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData, currentSkillMixSummaryData,
 				isBRCEnabled, isManual, taskEndDate);
 
 			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });

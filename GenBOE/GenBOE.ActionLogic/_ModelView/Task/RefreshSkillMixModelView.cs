@@ -16,6 +16,11 @@
 		public ICollection<CommonDisclosureModelView> CommonDisclosureRows { get; set; } = new List<CommonDisclosureModelView>();
 
 		/// <summary>
+		/// Skill Mix Summary Rows
+		/// </summary>
+		public ICollection<SkillMixSummaryModelView> SkillMixSummaryRows { get; set; } = new List<SkillMixSummaryModelView>();
+
+		/// <summary>
 		/// Skill Mix Totals row
 		/// </summary>
 		public SkillMixTotalsModelView SkillMixTotals { get; set; } = new SkillMixTotalsModelView();
@@ -24,5 +29,10 @@
 		/// Common Disclosure Totals row
 		/// </summary>
 		public SkillMixTotalsModelView CommonDisclosureTotals { get; set; } = new SkillMixTotalsModelView();
+
+		/// <summary>
+		/// Skill Mix Summary Totals row
+		/// </summary>
+		public SkillMixTotalsModelView SkillMixSummaryTotals { get; set; } = new SkillMixTotalsModelView();
 	}
 }

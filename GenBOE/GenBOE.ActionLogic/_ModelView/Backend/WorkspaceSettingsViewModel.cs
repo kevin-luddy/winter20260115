@@ -62,5 +62,10 @@ namespace GenBOE.ActionLogic.ModelView.Backend
 		/// Report Hours Label used in Reports
 		/// </summary>
 		public string ReportHoursLabel { get; set; }
+
+		/// <summary>
+		/// Enable LM Navigator for the workspace
+		/// </summary>
+		public bool IsLmNavigatorEnabled { get; set; }
 	}
 }

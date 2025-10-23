@@ -307,12 +307,14 @@
     <Compile Include="ModelView\CustomFieldImportModelView.cs" />
     <Compile Include="ModelView\DateShiftIndexModelView.cs" />
     <Compile Include="ModelView\BOEBulkSubmitModelView.cs" />
+    <Compile Include="ModelView\DeleteTaskElementModelView.cs" />
     <Compile Include="ModelView\DeleteWBSModelView.cs" />
     <Compile Include="ModelView\EditPermissionsModelView.cs" />
     <Compile Include="ModelView\ErrorModelView.cs" />
     <Compile Include="ModelView\ExportFileModelView.cs" />
     <Compile Include="ModelView\FavoriteModelView.cs" />
     <Compile Include="ModelView\IBOEData.cs" />
+    <Compile Include="ModelView\ImportBOEModelView.cs" />
     <Compile Include="ModelView\ImportCLINModelView.cs" />
     <Compile Include="ModelView\ImportLaborSpreadModelView.cs" />
     <Compile Include="ModelView\ManageOffloadRatesGridModelView.cs" />
@@ -327,6 +329,7 @@
     <Compile Include="ModelView\SaveNewPermissionsModelView.cs" />
     <Compile Include="ModelView\SendToProPricerModelView.cs" />
     <Compile Include="ModelView\BOEFormData.cs" />
+    <Compile Include="ModelView\SortedTaskElementModelView.cs" />
     <Compile Include="ModelView\TrackingNumberRevisionModelView.cs" />
     <Compile Include="ModelView\UpdateWorkspaceResourceRateTMModelView.cs" />
     <Compile Include="ModelView\WhosOnlineGridModelView.cs" />
@@ -437,6 +440,7 @@
     <Content Include="Content\ui-grid.svg" />
     <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="Resources\css\images\homepage\LM-logo-White.png" />
+    <Content Include="Resources\css\images\IconsForTinyMce\LmNavigatorIcon.png" />
     <Content Include="Resources\css\laborTask.css" />
     <Content Include="Resources\DateShiftStep5.html" />
     <Content Include="Resources\DateShiftStep3.html" />

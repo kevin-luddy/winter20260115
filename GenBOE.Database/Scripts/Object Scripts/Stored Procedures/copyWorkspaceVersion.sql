@@ -57,6 +57,7 @@ AS
 **		1/15/25		e309214				PROPH-1854 Database Changes for Assign Author
 **		2/4/2025	twilson3			PROPH-2786 Link BRCs to new workspace, not old workspace
 **		9/30/25		e378233				PROPH-3302 Updated Copy Workspace Version for Skill Mix Summary
+**		10/14/25	ranzalon			PROPH-3286 Enable LM Nav Workspace Setting
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -137,6 +138,7 @@ BEGIN TRY
 			   ,[EnableSAPConnection]
 			   ,[UCOTFactor]
 			   ,[EnableAssignTaskAuthor]
+			   ,[EnableLmNavigator]
 			   )
 		SELECT [UpdateDT]
 		  ,@WorkspaceName
@@ -185,6 +187,7 @@ BEGIN TRY
 		  ,[EnableSAPConnection]
 		  ,[UCOTFactor]
 		  ,[EnableAssignTaskAuthor]
+		  ,[EnableLmNavigator]
 	  FROM [version].[Workspace]
 	WHERE WorkspaceID = @WorkspaceID AND VersionID = @VersionID
 
