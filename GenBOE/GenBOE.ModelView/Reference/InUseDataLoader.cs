@@ -29,7 +29,7 @@ namespace GenBOE.DataBridge.Reference
         /// <param name="inUseDataType">data type/DTO</param>
         /// <param name="inID">data type/DTO ID</param>
         /// <returns></returns>
-        virtual public bool GetInUse(InUseDataType inUseDataType, int inID, int? inParentID)
+        public virtual bool GetInUse(InUseDataType inUseDataType, int inID, int? inParentID)
         {
             bool inUse = false;
             switch (inUseDataType)
@@ -55,7 +55,7 @@ namespace GenBOE.DataBridge.Reference
         /// <param name="inResourceListID">resource list ID</param>
         /// <returns></returns>
         [DbQuery]
-        virtual public bool GetWorkspaceResourceInUse(int inID, int inResourceListID)
+        public virtual bool GetWorkspaceResourceInUse(int inID, int inResourceListID)
         {
             bool inUse = false;
 
@@ -84,7 +84,7 @@ namespace GenBOE.DataBridge.Reference
         /// <param name="inID">resource ID</param>
         /// <returns>true if in use, false if not</returns>
         [DbQuery]
-        virtual public bool GetSystemResourceInUse(int inID)
+        public virtual bool GetSystemResourceInUse(int inID)
         {
             bool inUse = false;
 
@@ -113,7 +113,7 @@ namespace GenBOE.DataBridge.Reference
         /// <param name="inResourceListID">resource list id</param>
         /// <returns>collection of in use resource ids</returns>
         [DbQuery]
-        virtual public HashSet<int> GetWorkspaceResourceIDsInUseByListID(int inResourceListID)
+        public virtual HashSet<int> GetWorkspaceResourceIDsInUseByListID(int inResourceListID)
         {
             HashSet<int> toReturn = null;
 
@@ -140,7 +140,7 @@ namespace GenBOE.DataBridge.Reference
         /// </summary>
         /// <param name="inResourceListID">resource list id</param>
         /// <returns>collection of in use resource ids</returns>
-        virtual public HashSet<int> GetWorkspaceResourceInUseByMultipleResources(ICollection<int> inMultipleResourceIDs, int inResourceListID)
+        public virtual HashSet<int> GetWorkspaceResourceInUseByMultipleResources(ICollection<int> inMultipleResourceIDs, int inResourceListID)
         {
             HashSet<int> toReturn = null;
 
@@ -173,7 +173,7 @@ namespace GenBOE.DataBridge.Reference
         /// </summary>
         /// <returns>collection of in use system resource IDs </returns>
         [DbQuery]
-        virtual public HashSet<int> GetSystemResourceIDsInUse()
+        public virtual HashSet<int> GetSystemResourceIDsInUse()
         {
             HashSet<int> toReturn = null;
 
@@ -197,7 +197,7 @@ namespace GenBOE.DataBridge.Reference
         /// <param name="inPerfOrgListID">performing org list id</param>
         /// <returns>collection of in use performing org ids</returns>
         [DbQuery]
-        virtual public HashSet<int> GetWorkspacePerfOrgIDsInUseByPerfOrgListID(int inPerfOrgListID)
+        public virtual HashSet<int> GetWorkspacePerfOrgIDsInUseByPerfOrgListID(int inPerfOrgListID)
         {
             HashSet<int> toReturn = null;
 

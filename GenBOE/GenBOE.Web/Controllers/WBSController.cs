@@ -290,7 +290,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="workspace"></param>
         /// <param name="inManageWBSModelView"></param>
         /// <returns></returns>
-        virtual public JsonResult SaveManageWBSUpdates(string workspace, Collection<ManageWBSModelView> wbsCollection)
+        public virtual JsonResult SaveManageWBSUpdates(string workspace, Collection<ManageWBSModelView> wbsCollection)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 

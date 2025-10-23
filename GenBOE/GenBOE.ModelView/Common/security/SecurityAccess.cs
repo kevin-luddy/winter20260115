@@ -1031,7 +1031,7 @@ namespace GenBOE.DataBridge.Common
 		/// </summary>
 		/// <param name="inPermissions">The roles to determine and see if user has any of these roles in the system</param>
 		/// <returns>Return true if the user has any of the roles passed in, false otherwise</returns>
-		virtual public SecurityAuthorization IsAuthorized(SecurityPermissionsRequested inPermissions, WorkspaceDTO workspace, IReadOnlyCollection<SecurityPermissionsResponse> rolesForUser)
+		public virtual SecurityAuthorization IsAuthorized(SecurityPermissionsRequested inPermissions, WorkspaceDTO workspace, IReadOnlyCollection<SecurityPermissionsResponse> rolesForUser)
 		{
 			if (inPermissions == null)
 			{

@@ -28,7 +28,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="isAirfare">bool to note if Airfare mode or not</param>
         /// <returns>Resource DTO for resource with the given origin and zone</returns>
         [DbQuery]
-        virtual public MSTZoneTravelResourceDTO GetResourceByOriginZoneAndMode(int inOriginID, int inZone, bool inIsAirfare)
+        public virtual MSTZoneTravelResourceDTO GetResourceByOriginZoneAndMode(int inOriginID, int inZone, bool inIsAirfare)
         {
             MSTZoneTravelResourceDTO toReturn = new MSTZoneTravelResourceDTO();
 

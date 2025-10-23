@@ -32,7 +32,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="userIds">User Id</param>
         /// <returns>All WS Permissions for that user</returns>
         [DbQuery]
-        virtual public Collection<int> GetWorkspaceIdsThatUsersHaveAccessTo(ICollection<int> userIds)
+        public virtual Collection<int> GetWorkspaceIdsThatUsersHaveAccessTo(ICollection<int> userIds)
         {
             Collection<int> toReturn = null;
 
@@ -63,7 +63,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="userIds">User Ids</param>
         /// <returns>Workspace Ids</returns>
         [DbQuery]
-        virtual public Collection<int> GetWorkspaceIdsWhereUserIsWorkspaceAdmin(ICollection<int> userIds)
+        public virtual Collection<int> GetWorkspaceIdsWhereUserIsWorkspaceAdmin(ICollection<int> userIds)
         {
             Collection<int> toReturn = null;
 
@@ -87,7 +87,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <returns></returns>
         [DbQuery]
-        virtual public Collection<PermissionsDTO> GetAllBOEPermissions()
+        public virtual Collection<PermissionsDTO> GetAllBOEPermissions()
         {
             Collection<PermissionsDTO> toReturn = null;
 
@@ -120,7 +120,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <returns></returns>
         [DbQuery]
-        virtual public Collection<PermissionsDTO> GetAllBOEPotentialPermissions()
+        public virtual Collection<PermissionsDTO> GetAllBOEPotentialPermissions()
         {
             Collection<PermissionsDTO> toReturn = null;
 
@@ -151,7 +151,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inWorkspaceShortName">the workspace id</param>
         /// <returns>a collection of permissions DTOs for the given workspace, only the workspace subset of Role</returns>
         [DbQuery]
-        virtual public Collection<PermissionsDTO> GetWorkspacePermissions(int inWorkspaceId)
+        public virtual Collection<PermissionsDTO> GetWorkspacePermissions(int inWorkspaceId)
         {
             Collection<PermissionsDTO> toReturn = null;
 
@@ -184,7 +184,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inBoeID">boe id to retrieve workspace permissions for</param>
         /// <returns>the workspace permissions</returns>
         [DbQuery]
-        virtual public Collection<PermissionsDTO> GetWorkspacePermissionsByBoeID(int inBoeId)
+        public virtual Collection<PermissionsDTO> GetWorkspacePermissionsByBoeID(int inBoeId)
         {
             Collection<PermissionsDTO> toReturn = null;
 
@@ -218,7 +218,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <returns>Admin permissions for system, only the admin subset of Role</returns>
         [DbQuery]
-        virtual public Collection<PermissionsDTO> GetAdminPermissions()
+        public virtual Collection<PermissionsDTO> GetAdminPermissions()
         {
             Collection<PermissionsDTO> toReturn = null;
 
@@ -248,7 +248,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <returns>Create workspace permissions for system, only the create workspace subset of Role</returns>
         [DbQuery]
-        virtual public Collection<PermissionsDTO> GetCreateWorkspacePermissions()
+        public virtual Collection<PermissionsDTO> GetCreateWorkspacePermissions()
         {
             Collection<PermissionsDTO> toReturn = null;
 
@@ -342,7 +342,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <returns>Get all of a user's system permissions</returns>
         [DbQuery]
-        virtual public Collection<PermissionsDTO> GetUserPermissions(UserDTO User)
+        public virtual Collection<PermissionsDTO> GetUserPermissions(UserDTO User)
         {
             if (User == null)
             {
@@ -377,7 +377,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inBOEId">The boe ID to get permissions for</param>
         /// <returns>BOE permissions for the boe of interest, only the BOE subset of SecurityRole</returns>
         [DbQuery]
-        virtual public Collection<PermissionsDTO> GetBOEPermissions(ICollection<int> inBOEIds)
+        public virtual Collection<PermissionsDTO> GetBOEPermissions(ICollection<int> inBOEIds)
         {
             Collection<PermissionsDTO> toReturn = null;
 
@@ -412,7 +412,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inWorkspaceId">The workspace ID to get permissions for</param>
         /// <returns>BOE permissions for the workspace of interest, only the BOE subset of SecurityRole</returns>
         [DbQuery]
-        virtual public Collection<PermissionsDTO> GetBOEPotentialPermissionsForWorkspace(int inWorkspaceId)
+        public virtual Collection<PermissionsDTO> GetBOEPotentialPermissionsForWorkspace(int inWorkspaceId)
         {
             Collection<PermissionsDTO> toReturn = null;
 
@@ -451,7 +451,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="wsId">Workspace Id</param>
         /// <returns>WS Permissions</returns>
         [DbQuery]
-        virtual public Collection<PermissionsDTO> GetPermissionsForGridData(int wsId)
+        public virtual Collection<PermissionsDTO> GetPermissionsForGridData(int wsId)
         {
             Collection<PermissionsDTO> toReturn = null;
 
@@ -486,7 +486,7 @@ namespace GenBOE.DataBridge.DTO
             return toReturn;
         }
 
-        virtual public int? Delete(PermissionsDTO inPermission)
+        public virtual int? Delete(PermissionsDTO inPermission)
         {
             int? toReturn;
             if (inPermission == null)
@@ -546,7 +546,7 @@ namespace GenBOE.DataBridge.DTO
             return toReturn;
         }
 
-        virtual public int? Upsert(PermissionsDTO inPermission)
+        public virtual int? Upsert(PermissionsDTO inPermission)
         {
             int? toReturn;
             if (inPermission == null)
@@ -635,7 +635,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <param name="dtoToSave">Dto to save.</param>
         /// <returns>Wbs Id for the saved item, or null if save failed.</returns>
-        virtual public void SavePermission(PermissionsDTO dtoToSave)
+        public virtual void SavePermission(PermissionsDTO dtoToSave)
         {
             if (dtoToSave == null)
             {
@@ -667,7 +667,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <param name="dtosToSave">collection of Dtos</param>
         /// <returns>Dictionary of saved object ids</returns>
-        virtual public void SavePermissions(Collection<PermissionsDTO> dtosToSave)
+        public virtual void SavePermissions(Collection<PermissionsDTO> dtosToSave)
         {
             if (dtosToSave == null)
             {
@@ -684,7 +684,7 @@ namespace GenBOE.DataBridge.DTO
         /// Save the workspace admin's preference on hiding the workspace help
         /// </summary>
         /// <param name="inPermission"></param>
-        virtual public void SaveWorkspaceHideHelp(PermissionsDTO inPermission)
+        public virtual void SaveWorkspaceHideHelp(PermissionsDTO inPermission)
         {
             if (inPermission == null)
             {

@@ -397,7 +397,7 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="boeFormsVM">Collection of BOE Forms marked for deletion</param>
         /// <returns>If successful,empty string is return. Otherwise, exception error text to be handled in the post:error </returns>
-        virtual public JsonResult DeleteBOEForms(string workspace, Collection<BOEFormModelView> boeFormsVM)
+        public virtual JsonResult DeleteBOEForms(string workspace, Collection<BOEFormModelView> boeFormsVM)
         {
             if (boeFormsVM == null)
             {

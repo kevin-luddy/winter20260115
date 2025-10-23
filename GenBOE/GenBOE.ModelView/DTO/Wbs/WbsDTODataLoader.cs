@@ -87,7 +87,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="workspaceId">Id of the workspace</param>
         /// <returns>Collection of WbsDTOs</returns>
         [DbQuery]
-        virtual public ICollection<WbsDTO> GetByWorkspaceId(int workspaceId)
+        public virtual ICollection<WbsDTO> GetByWorkspaceId(int workspaceId)
         {
             List<WbsDTO> toReturn = new List<WbsDTO>();
 
@@ -132,7 +132,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inWorkspaceID">workspace iD</param>
         /// <returns>true if unique, false if not</returns>
         [DbQuery]
-        virtual public bool IsWbsNumberUnique(string inWbsNumber, int inWorkspaceID, int? inWbsID)
+        public virtual bool IsWbsNumberUnique(string inWbsNumber, int inWorkspaceID, int? inWbsID)
         {
             bool isUnique = true;
 
@@ -163,7 +163,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inWbsID">WBS ID</param>
         /// <returns>task variable IDs</returns>
         [DbQuery]
-        virtual public ICollection<int> GetTaskVariableIdsById(int inWbsID)
+        public virtual ICollection<int> GetTaskVariableIdsById(int inWbsID)
         {
             ICollection<int> toReturn = new Collection<int>();
 
@@ -186,7 +186,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inWbsID">WBS ID</param>
         /// <returns>workspace variable IDs</returns>
         [DbQuery]
-        virtual public ICollection<int> GetWorkspaceVariableIdsById(int inWbsID)
+        public virtual ICollection<int> GetWorkspaceVariableIdsById(int inWbsID)
         {
             ICollection<int> toReturn = new Collection<int>();
 
@@ -209,7 +209,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inWbsID">WBS id</param>
         /// <returns>bool</returns>
         [DbQuery]
-        virtual public bool IsWbsTiedToMaterialBoe(int inBoeID, int inWbsID)
+        public virtual bool IsWbsTiedToMaterialBoe(int inBoeID, int inWbsID)
         {
             bool IsWbsTiedToMaterialBoe = false;
 
@@ -237,7 +237,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inClinID">CLIN id</param>
         /// <returns>bool</returns>
         [DbQuery]
-        virtual public bool IsWbsTiedToMaterialBoeAndClin(int inBoeID, int inWbsID, int inClinID)
+        public virtual bool IsWbsTiedToMaterialBoeAndClin(int inBoeID, int inWbsID, int inClinID)
         {
             bool IsWbsTiedToMaterialBoe = false;
 
@@ -268,7 +268,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="wbsNumber">The WBS number to find parents of</param>
         /// <returns>A collection of WBS elements, ordered by Level</returns>
         [DbQuery]
-        virtual public ICollection<WbsDTO> GetAllParentWbs(int workspaceId, string wbsNumber)
+        public virtual ICollection<WbsDTO> GetAllParentWbs(int workspaceId, string wbsNumber)
         {
             List<WbsDTO> toReturn = new List<WbsDTO>();
 
@@ -318,7 +318,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="wbsNumber">The WBS number to find children of</param>
         /// <returns>A collection of WBS elements, ordered by Level</returns>
         [DbQuery]
-        virtual public ICollection<WbsDTO> GetAllChildWbs(int workspaceId, string wbsNumber)
+        public virtual ICollection<WbsDTO> GetAllChildWbs(int workspaceId, string wbsNumber)
         {
             List<WbsDTO> toReturn;
 
@@ -368,7 +368,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="wbsId">Wbs Id</param>
         /// <returns>A collection of Boe Ids</returns>
         [DbQuery]
-        virtual public ICollection<int> GetBoeIdsForWbsIdWithNesting(int wbsId)
+        public virtual ICollection<int> GetBoeIdsForWbsIdWithNesting(int wbsId)
         {
             ICollection<int> result = new Collection<int>(); ;
 
@@ -448,7 +448,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <param name="wbsId">Wbs Id</param>
         /// <param name="boeId">Boe Id</param>
-        virtual public void RemapTaskAndWorkspaceVariablesFromWbsToBoe(int wbsId, int boeId)
+        public virtual void RemapTaskAndWorkspaceVariablesFromWbsToBoe(int wbsId, int boeId)
         {
             using (StopwatchTimer sw = new StopwatchTimer(this.Log))
             {
