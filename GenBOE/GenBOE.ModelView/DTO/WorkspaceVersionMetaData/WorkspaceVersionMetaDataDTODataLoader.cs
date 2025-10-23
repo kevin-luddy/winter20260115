@@ -293,8 +293,8 @@ namespace GenBOE.DataBridge.DTO
                 throw new ArgumentNullException(nameof(inWorkspaceVersion));
             }
 
-            // If there was an error, the linqResults will contain a string with why it was unsuccessfull
-            // if the string is empty, restore was successfull
+            // If there was an error, the linqResults will contain a string with why it was unsuccessful
+            // if the string is empty, restore was successful
             using (GenBoeEntities gbe = new GenBoeEntities())
              {
                  gbe.Database.CommandTimeout = 1800;

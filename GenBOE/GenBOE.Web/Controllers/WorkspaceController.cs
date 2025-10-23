@@ -1378,6 +1378,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">the name of the workspace we are in</param>
 		/// <param name="id">the template id from the database</param>
 		/// <returns>The word file, complete with correct content type</returns>
+		[HttpGet]
 		public FileContentResult GetOutputFormatTemplate(string workspace, int? id)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
