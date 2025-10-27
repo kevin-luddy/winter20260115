@@ -589,13 +589,11 @@
                             <thead>
                                 <tr>
                                     <th class="resourceCol">Resource</th>
-                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="currentResourceCol">Current Resource</th>
+                                    <th class="currentResourceCol">Current Resource</th>
                                     <th class="historicalHoursCol">Historical Hours</th>
-                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="laborSkillMixCol">Labor Skill Mix</th>
-                                    <th data-ng-if="ManageTaskModel.IsSpace" class="historicalSkillMixCol">Historical Skill Mix</th>
-                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="includedCol">Included</th>
-                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="boeSkillMixCol">BOE Skill Mix</th>
-                                    <th data-ng-if="ManageTaskModel.IsSpace" class="proposedSkillMixCol">Proposed Skill Mix</th>
+                                    <th class="laborSkillMixCol">Labor Skill Mix</th>
+                                    <th class="includedCol">Included</th>
+                                    <th class="boeSkillMixCol">BOE Skill Mix</th>
                                     <th class="proposedHoursCol">Proposed Hours</th>
                                     <th>Rationale**</th>
                                 </tr>
@@ -604,10 +602,10 @@
                                 <!-- Display the data for each of the Skill Mix Table rows. -->
                                 <tr ng-repeat="row in skillMixRationale.data.SkillMixRows">
                                     <td>{{row.ResourceOld}}</td>
-                                    <td data-ng-if="!ManageTaskModel.IsSpace">{{row.ResourceNew}}</td>
+                                    <td>{{row.ResourceNew}}</td>
                                     <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
-                                    <td data-ng-if="!ManageTaskModel.IsSpace">{{row.Included | yesNo}}</td>
+                                    <td>{{row.Included | yesNo}}</td>
                                     <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{row.ProposedHours}}</td>
                                     <td>{{row.Rationale}}</td>
@@ -615,10 +613,10 @@
                                 <!-- Display the Skill Mix Totals row. -->
                                 <tr>
                                     <td>Totals</td>
-                                    <td data-ng-if="!ManageTaskModel.IsSpace"></td>
+                                    <td></td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.LaborSkillMix | number:1}}%</td>
-                                    <td data-ng-if="!ManageTaskModel.IsSpace"></td>
+                                    <td></td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.BoeSkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.ProposedHours}}</td>
                                     <td></td>
@@ -639,17 +637,10 @@
                                     <th class="resourceCol">Resource</th>
                                     <th class="brcCol">Business Resource Code</th>
                                     <th class="historicalHoursCol">Historical Hours</th>
-                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="laborSkillMixCol">Labor Skill Mix</th>
-                                    <th data-ng-if="ManageTaskModel.IsSpace" class="historicalSkillMixCol">Historical Skill Mix</th>
-                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="includedCol">Included</th>
-                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="boeSkillMixCol">BOE Skill Mix</th>
-                                    <th data-ng-if="ManageTaskModel.IsSpace" class="proposedSkillMixCol">Proposed Skill Mix</th>
+                                    <th class="laborSkillMixCol">Labor Skill Mix</th>
+                                    <th class="includedCol">Included</th>
+                                    <th class="boeSkillMixCol">BOE Skill Mix</th>
                                     <th class="proposedHoursCol">Proposed Hours</th>
-                                    <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-                                        {  %>
-                                        <th class="ucotCol">UCOT Hours</th>
-                                        <th class="ucotGrandTotalCol">Grand Total Hours</th>
-                                    <% } %>
                                     <th>Rationale**</th>
                                 </tr>
                             </thead>
@@ -660,14 +651,9 @@
                                     <td>{{row.BusinessResourceID}}</td>
                                     <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
-                                    <td data-ng-if="!ManageTaskModel.IsSpace">{{row.Included | yesNo}}</td>
+                                    <td>{{row.Included | yesNo}}</td>
                                     <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{row.ProposedHours}}</td>
-                                    <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-                                    {  %>
-                                        <td style="text-align: right">{{row.UCOTHours}}</td>
-                                        <td style="text-align: right">{{row.GrandTotalHours}}</td>
-                                    <% } %>
                                     <td>{{row.Rationale}}</td>
                                 </tr>
                                 <!-- Display the Common Disclosure Totals row. -->
@@ -676,14 +662,9 @@
                                     <td></td>
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.LaborSkillMix | number:1}}%</td>
-                                    <td data-ng-if="!ManageTaskModel.IsSpace"></td>
+                                    <td></td>
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.BoeSkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.ProposedHours}}</td>
-                                    <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-                                        {  %>
-                                        <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.UCOTHours}}</td>
-                                        <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.GrandTotalHours}}</td>
-                                    <% } %>
                                     <td></td>
                                 </tr>
                             </tbody>
@@ -718,11 +699,11 @@
                                     <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{row.BOESkillMix | number:2}}</td>
-                                    <td style="text-align: right">{{row.ProposedHours | number:1}}%</td>
-                                    <td style="text-align: right">{{row.BusinessResourceHours | number:1}}</td>
-                                    <td style="text-align: right">{{row.TotalProposedHours | number:1}}</td>
-                                    <td style="text-align: right">{{row.UCOTHours | number:1}}</td>
-                                    <td style="text-align: right">{{row.GrandTotalHours | number:1}}</td>
+                                    <td style="text-align: right">{{row.ProposedHours}}%</td>
+                                    <td style="text-align: right">{{row.BusinessResourceHours}}</td>
+                                    <td style="text-align: right">{{row.TotalProposedHours}}</td>
+                                    <td style="text-align: right">{{row.UCOTHours}}</td>
+                                    <td style="text-align: right">{{row.GrandTotalHours}}</td>
                                     <td>{{row.Rationale}}</td>
                                 </tr>
                                 <!-- Display the SKill Mix Summary Totals row. -->
@@ -732,11 +713,11 @@
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.LaborSkillMix | number:2}}%</td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.BoeSkillMix | number:2}}%</td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.ProposedHours | number:2}}</td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.BRCProposedHours | number:2}}</td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.TotalProposedHours | number:2}}</td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.UCOTHours | number:2}}</td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.GrandTotalHours | number:2}}</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.ProposedHours}}</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.BRCProposedHours}}</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.TotalProposedHours}}</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.UCOTHours}}</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.GrandTotalHours}}</td>
                                     <td></td>
                                 </tr>
                             </tbody>
