@@ -131,13 +131,13 @@
 				{
 					if (isSpace)
 					{
-						CreateCommonDisclosureRowsSpace(resourceHours, laborTypes, currentCommonDisclosureData, 
+						CreateCommonDisclosureRowsSpace(resourceHours, laborTypes, currentCommonDisclosureData,
 							refreshedModel);
 					}
 					else
 					{
-						CreateCommonDisclosureRowsRMS(resourceHours, laborTypes, currentCommonDisclosureData, 
-							refreshedModel, isManual);
+						CreateCommonDisclosureRowsRMS(resourceHours, laborTypes, currentCommonDisclosureData,
+								refreshedModel, isManual);
 						CleanUpCommonDisclosureRows(currentSkillMixData, refreshedModel);
 
 					}
@@ -160,6 +160,35 @@
 				});
 			}
 
+			//TDOD: Replace in next story
+			refreshedModel.SkillMixSummaryRows.Add(new SkillMixSummaryModelView
+			{
+				ResourceID = "RRR",
+				BusinessResourceID = "BBRRCC",
+				HistoricalHours = 1000m,
+				ResourceHours = 6m,
+				LaborSkillMix = 7,
+				BusinessResourceHours = 3m,
+				ProposedHours = 30,
+				BOESkillMix = 90m,
+				UCOTHours = 2,
+				Included = true,
+				Rationale = "This is rational"
+			});
+			refreshedModel.SkillMixSummaryRows.Add(
+			new SkillMixSummaryModelView
+			{
+				ResourceID = "TRRR",
+				BusinessResourceID = "BBRRCC2",
+				HistoricalHours = 842.2m,
+				ResourceHours = 9m,
+				LaborSkillMix = 93,
+				ProposedHours = 30,
+				BOESkillMix = 10m,
+				UCOTHours = 4,
+				Included = true,
+			});
+
 			CleanupData(refreshedModel, isSpace);
 			CalculateSkillMixTotals(refreshedModel);
 			CalculateBoeSkillMixPercentage(refreshedModel);
@@ -167,7 +196,8 @@
 			// reorder the lists
 			refreshedModel.SkillMixRows = refreshedModel.SkillMixRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceOld)).ThenBy(r => r.ResourceOld).ToList();
 			refreshedModel.CommonDisclosureRows = refreshedModel.CommonDisclosureRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceID)).ThenBy(r => r.ResourceID).ThenBy(s => s.BusinessResourceID).ToList();
-
+			refreshedModel.SkillMixSummaryRows = refreshedModel.SkillMixSummaryRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceID)).ThenBy(r => r.ResourceID).ThenBy(s => s.BusinessResourceID).ToList();
+			
 			return refreshedModel;
 		}
 
@@ -820,10 +850,10 @@
 			refreshedModel.CommonDisclosureTotals.UCOTHours = refreshedModel.CommonDisclosureRows.Sum(s => s.UCOTHours);
 
 			// Skill Mix Summary Totals
-			refreshedModel.SkillMixSummaryTotals.HistoricalHours = refreshedModel.SkillMixSummaryRows.Sum(s => s.ResourceHours);
+			refreshedModel.SkillMixSummaryTotals.HistoricalHours = refreshedModel.SkillMixSummaryRows.Sum(s => s.HistoricalHours);
 			refreshedModel.SkillMixSummaryTotals.LaborSkillMix = 100.0m;
-			refreshedModel.SkillMixSummaryTotals.ProposedHours = refreshedModel.SkillMixSummaryRows.Where(d => d.Included).Sum(s => s.ResourceHours);
-			refreshedModel.SkillMixSummaryTotals.BRCProposedHours = refreshedModel.SkillMixSummaryRows.Where(d => d.Included).Sum(s => s.BusinessResourceHours);
+			refreshedModel.SkillMixSummaryTotals.ProposedHours = refreshedModel.SkillMixSummaryRows.Sum(s => s.ProposedHours);
+			refreshedModel.SkillMixSummaryTotals.BRCProposedHours = refreshedModel.SkillMixSummaryRows.Sum(s => s.BusinessResourceHours);
 			refreshedModel.SkillMixSummaryTotals.UCOTHours = refreshedModel.SkillMixSummaryRows.Sum(s => s.UCOTHours);
 		}
 

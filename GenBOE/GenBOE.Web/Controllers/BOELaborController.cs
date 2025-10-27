@@ -1642,7 +1642,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="isManual">If the Historical Resource/Hours are Manually input or not</param>
 		/// <returns></returns>
 		public ActionResult RefreshSkillMixTables(string workspace, int boeId, ICollection<MoqTypeSelection> selectedMoqTypes,
-			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData,
+			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData,
 			bool isManual, DateTime? taskEndDate)
 		{
 			// Initialize Action
@@ -1656,9 +1656,6 @@ namespace GenBOE.Web.Controllers
 				.SelectMany(moqType => moqType.TableData)?
 				.SelectMany(tableData => tableData.ResourceHours)?
 				.ToList();
-
-			// TODO: Set as param later
-			ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData = new List<SkillMixSummaryModelView>();
 
 			// Call to Controller Logic
 			RefreshSkillMixModelView response = SkillMixUtility.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData, currentSkillMixSummaryData,
