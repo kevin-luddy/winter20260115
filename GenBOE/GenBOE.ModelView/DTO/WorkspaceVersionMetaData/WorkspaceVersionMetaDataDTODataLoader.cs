@@ -65,7 +65,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inWorkspaceID">workspace ID</param>
         /// <returns>workspace version IDs</returns>
         [DbQuery]
-        virtual public Collection<WorkspaceVersionMetaDataDTO> GetByWorkspaceID(int inWorkspaceID)
+        public virtual Collection<WorkspaceVersionMetaDataDTO> GetByWorkspaceID(int inWorkspaceID)
         {
             Collection<WorkspaceVersionMetaDataDTO> toReturn = new Collection<WorkspaceVersionMetaDataDTO>();
 
@@ -99,7 +99,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="workspaceID">Workspace ID</param>
         /// <returns>BOEs for the previous version of the Workspace</returns>
         [DbQuery]
-        virtual public ICollection<BoeVersionDTO> GetBoesByVersionID(int versionID, int workspaceID)
+        public virtual ICollection<BoeVersionDTO> GetBoesByVersionID(int versionID, int workspaceID)
         {
             ICollection<BoeVersionDTO> toReturn = new Collection<BoeVersionDTO>();
 
@@ -135,7 +135,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="wsIds">The ws identifiers.</param>
         /// <returns></returns>
         [DbQuery]
-        virtual public Collection<WorkspaceVersionMetaDataDTO> GetForAutoBackupGeneration(ICollection<int> wsIds)
+        public virtual Collection<WorkspaceVersionMetaDataDTO> GetForAutoBackupGeneration(ICollection<int> wsIds)
         {
             Collection<WorkspaceVersionMetaDataDTO> toReturn = new Collection<WorkspaceVersionMetaDataDTO>();
 
@@ -164,7 +164,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <returns></returns>
         [DbQuery]
-        virtual public Collection<WorkspaceVersionMetaDataDTO> GetAllWorkspaceVersions()
+        public virtual Collection<WorkspaceVersionMetaDataDTO> GetAllWorkspaceVersions()
         {
             Collection<WorkspaceVersionMetaDataDTO> toReturn = new Collection<WorkspaceVersionMetaDataDTO>();
 
@@ -199,7 +199,7 @@ namespace GenBOE.DataBridge.DTO
         /// Save the workspace versions
         /// </summary>
         /// <param name="inWorkspaceVersions">workspace verisons to save</param>
-        virtual public void Save(Collection<WorkspaceVersionMetaDataDTO> inWorkspaceVersions, int inWorkspaceID)
+        public virtual void Save(Collection<WorkspaceVersionMetaDataDTO> inWorkspaceVersions, int inWorkspaceID)
         {
             if (inWorkspaceVersions == null)
             {
@@ -224,7 +224,7 @@ namespace GenBOE.DataBridge.DTO
         /// Upsert the workspace version
         /// </summary>
         /// <param name="inSaveWorkspaceVersion">the workspace version meta data to update</param>
-        virtual public void Upsert(WorkspaceVersionMetaDataDTO inSaveWorkspaceVersion, int inWorkspaceID)
+        public virtual void Upsert(WorkspaceVersionMetaDataDTO inSaveWorkspaceVersion, int inWorkspaceID)
         {
             if (inSaveWorkspaceVersion == null)
             {
@@ -260,7 +260,7 @@ namespace GenBOE.DataBridge.DTO
         /// The workspace version meta data to delete
         /// </summary>
         /// <param name="inDeleteWorkspaceVersion">workspace version meta data to delete</param>
-        virtual public void Delete(WorkspaceVersionMetaDataDTO inDeleteWorkspaceVersion, int inWorkspaceID)
+        public virtual void Delete(WorkspaceVersionMetaDataDTO inDeleteWorkspaceVersion, int inWorkspaceID)
         {
             if (inDeleteWorkspaceVersion == null)
             {
@@ -284,7 +284,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inWorkspaceVersion"></param>
         /// <returns></returns>
 
-        virtual public string Restore(WorkspaceVersionMetaDataDTO inWorkspaceVersion, int inRestoredVersionBy)
+        public virtual string Restore(WorkspaceVersionMetaDataDTO inWorkspaceVersion, int inRestoredVersionBy)
         {
             string restoreFailureString = string.Empty;
 

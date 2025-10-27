@@ -412,7 +412,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <returns>task variable data (no BOE)</returns>
 		[DbQuery]
 		[Obsolete("This is only used by unit tests")]
-		virtual public OrdinaryVariableDto GetTaskVariableByTaskVariableID(int inTaskVariableID)
+		public virtual OrdinaryVariableDto GetTaskVariableByTaskVariableID(int inTaskVariableID)
 		{
 			return this.ordinaryVariableLoader.GetById(inTaskVariableID);
 		}
@@ -816,7 +816,7 @@ namespace GenBOE.DataBridge.DTO
 		/// takes in a collection
 		/// </summary>
 		/// <param name="inBoeTaskElementDTOs">BOE Task Element DTOs to save</param>
-		virtual public Dictionary<int, int> SaveBoeTaskElements(Collection<BoeTaskElementDTO> inBoeTaskElementDTOs)
+		public virtual Dictionary<int, int> SaveBoeTaskElements(Collection<BoeTaskElementDTO> inBoeTaskElementDTOs)
 		{
 			if (inBoeTaskElementDTOs == null) { throw new ArgumentNullException(nameof(inBoeTaskElementDTOs)); }
 
@@ -978,7 +978,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="inTaskDetail">the element to save</param>
 		/// <returns>the task element details</returns>
-		virtual public int CreateOrSaveTaskElementDetail(int BoeID, BoeTaskElementDTO inTaskDetail)
+		public virtual int CreateOrSaveTaskElementDetail(int BoeID, BoeTaskElementDTO inTaskDetail)
 		{
 			if (inTaskDetail == null)
 			{
@@ -1108,7 +1108,7 @@ namespace GenBOE.DataBridge.DTO
 		/// delete the task element detail
 		/// </summary>
 		/// <param name="inTaskElementDetail">task element detail</param>
-		virtual public void DeleteTaskElementDetail(BoeTaskElementDTO inTaskElementDetail)
+		public virtual void DeleteTaskElementDetail(BoeTaskElementDTO inTaskElementDetail)
 		{
 			using (StopwatchTimer sw = new StopwatchTimer(this.log))
 			{
@@ -1140,7 +1140,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="inWorkspaceVars">workspace variable IDs</param>
 		/// <param name="inTaskElementID">the task element ID</param>
-		virtual public void SaveWorkspaceVariables(Collection<int> inWorkspaceVars, int inTaskElementID, GenBoeEntities gbe)
+		public virtual void SaveWorkspaceVariables(Collection<int> inWorkspaceVars, int inTaskElementID, GenBoeEntities gbe)
 		{
 			using (StopwatchTimer sw = new StopwatchTimer(this.log))
 			{
@@ -1172,7 +1172,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="inBOETaskElementID"></param>
 		/// <param name="inLaborTypeWarningFlag"></param>
-		virtual public void SaveBOETaskElementLaborTypeWarning(int inBOETaskElementID, bool inLaborTypeWarningFlag)
+		public virtual void SaveBOETaskElementLaborTypeWarning(int inBOETaskElementID, bool inLaborTypeWarningFlag)
 		{
 			using (StopwatchTimer sw = new StopwatchTimer(this.log))
 			{
@@ -1193,7 +1193,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="inLMLaborType"></param>
 		/// <returns>a single LM void Type</returns>
-		virtual public int CreateorSaveLMLaborType(int TaskElementID, ResourceTypeDto inSaveLMLaborType)
+		public virtual int CreateorSaveLMLaborType(int TaskElementID, ResourceTypeDto inSaveLMLaborType)
 		{
 			// HACK: This is only in place until the Full Object is complete.
 			if (inSaveLMLaborType == null)
@@ -1208,7 +1208,7 @@ namespace GenBOE.DataBridge.DTO
 		/// Delete a selected LM Labor type
 		/// </summary>
 		/// <param name="inLMLaborTypeID">the LM Labor type to delete</param>
-		virtual public void DeleteLMLaborType(ResourceTypeDto inDeleteLaborType)
+		public virtual void DeleteLMLaborType(ResourceTypeDto inDeleteLaborType)
 		{
 			// HACK: This is only in place until the Full Object is complete.
 			this.resourceTypeLoader.Save(inDeleteLaborType);
@@ -1218,7 +1218,7 @@ namespace GenBOE.DataBridge.DTO
 		/// Save BOE Labor Type Custom Field Containers
 		/// </summary>
 		/// <param name="inBOELaborTypeCustomFieldValueContainers"></param>
-		virtual public void SaveBOELaborTypeCustomFieldValueContainers(Collection<CustomFieldValueContainer> inBOELaborTypeCustomFieldValueContainers, int inLaborTypeID)
+		public virtual void SaveBOELaborTypeCustomFieldValueContainers(Collection<CustomFieldValueContainer> inBOELaborTypeCustomFieldValueContainers, int inLaborTypeID)
 		{
 			using (StopwatchTimer sw = new StopwatchTimer(this.log))
 			{
@@ -1238,7 +1238,7 @@ namespace GenBOE.DataBridge.DTO
 		/// Save a single BOE Labor Type Field Container
 		/// </summary>
 		/// <param name="inCustomFieldValueXrefDTO"></param>
-		virtual public void SaveBOELaborTypeCustomFieldValueXref(CustomFieldValueContainer inCustomFieldValueXrefDTO, int inLaborTypeID)
+		public virtual void SaveBOELaborTypeCustomFieldValueXref(CustomFieldValueContainer inCustomFieldValueXrefDTO, int inLaborTypeID)
 		{
 			using (StopwatchTimer sw = new StopwatchTimer(this.log))
 			{
@@ -1262,7 +1262,7 @@ namespace GenBOE.DataBridge.DTO
 		/// Upsert a BOE Labor Type Custom Field Value Container
 		/// </summary>
 		/// <param name="inCustomFieldValueContainer"></param>
-		virtual public void UpdateBoeLaborTypeCustomFieldValueContainer(CustomFieldValueContainer inCustomFieldValueContainer, int inLaborTypeID)
+		public virtual void UpdateBoeLaborTypeCustomFieldValueContainer(CustomFieldValueContainer inCustomFieldValueContainer, int inLaborTypeID)
 		{
 			using (StopwatchTimer sw = new StopwatchTimer(this.log))
 			{
@@ -1289,7 +1289,7 @@ namespace GenBOE.DataBridge.DTO
 		/// Delete a BOE Labor Type custom field container
 		/// </summary>
 		/// <param name="inCustomFieldValueContainer"></param>
-		virtual public void DeleteBoeLaborTypeCustomFieldValueContainer(CustomFieldValueContainer inCustomFieldValueContainer, int inLaborTypeID)
+		public virtual void DeleteBoeLaborTypeCustomFieldValueContainer(CustomFieldValueContainer inCustomFieldValueContainer, int inLaborTypeID)
 		{
 			using (StopwatchTimer sw = new StopwatchTimer(this.log))
 			{
@@ -1314,7 +1314,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="inSaveLaborSpread">Labor Spread Id</param>
 		/// <returns>Labor Spread ID Created or Saved</returns>
-		virtual public int CreateOrSaveLMLaborSpread(int LaborTypeID, ResourceSpreadDto inSaveLaborSpread)
+		public virtual int CreateOrSaveLMLaborSpread(int LaborTypeID, ResourceSpreadDto inSaveLaborSpread)
 		{
 			// HACK: This is only in place until the Full Object is complete.
 			if (inSaveLaborSpread == null)
@@ -1330,7 +1330,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="inSaveLaborSpread">Labor Spread Id</param>
 		/// <returns>Labor Spread ID Created or Saved</returns>
-		virtual public int DeleteLMLaborSpreadsByLaborTypeID(int LaborTypeID)
+		public virtual int DeleteLMLaborSpreadsByLaborTypeID(int LaborTypeID)
 		{
 			// HACK: This is only in place until the Full Object is complete.
 			return this.resourceSpreadLoader.DeleteByResourceTypeId(LaborTypeID);

@@ -38,7 +38,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="listId">performing organization list ID</param>
         /// <returns>collection of Performing Organizations</returns>
         [DbQuery]
-        virtual public Collection<PerformingOrgDTO> GetByListId(int listId)
+        public virtual Collection<PerformingOrgDTO> GetByListId(int listId)
         {
             Collection<PerformingOrgDTO> toReturn = null;
             using (StopwatchTimer sw = new StopwatchTimer(this._log))
@@ -70,7 +70,7 @@ namespace GenBOE.DataBridge.DTO
         /// Get the GLOBAL performing organizations
         /// </summary>
         /// <returns>collection of Performing Organizations</returns>
-        virtual public Collection<PerformingOrgDTO> GetGlobalPerformingOrgs()
+        public virtual Collection<PerformingOrgDTO> GetGlobalPerformingOrgs()
         {
             return this.GetByListId(SYSTEM_PERF_ORG_LIST_ID);
         }
@@ -80,7 +80,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <param name="inPerfOrgID">perf org ID</param>
         /// <returns>perf org data</returns>
-        virtual public PerformingOrgDTO GetById(int inPerfOrgID)
+        public virtual PerformingOrgDTO GetById(int inPerfOrgID)
         {
             return this.GetByIds(new List<int>() { inPerfOrgID }).FirstOrDefault();
         }
@@ -91,7 +91,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="ids">Perf Org Ids</param>
         /// <returns>perf org data</returns>
         [DbQuery]
-        virtual public Collection<PerformingOrgDTO> GetByIds(ICollection<int> ids)
+        public virtual Collection<PerformingOrgDTO> GetByIds(ICollection<int> ids)
         {
             if (ids == null)
             {
@@ -117,7 +117,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="searchTerm">search term</param>
         /// <returns>performing org IDs</returns>
         [DbQuery]
-        virtual public Collection<PerformingOrgDTO> GetByListIdAndPartialNameOrDescription(int listId, string searchTerm)
+        public virtual Collection<PerformingOrgDTO> GetByListIdAndPartialNameOrDescription(int listId, string searchTerm)
         {
             Collection<PerformingOrgDTO> toReturn = null;
 
@@ -155,7 +155,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="name">name</param>
         /// <returns>performing org IDs</returns>
         [DbQuery]
-        virtual public PerformingOrgDTO GetByListIdAndName(int listId, string name)
+        public virtual PerformingOrgDTO GetByListIdAndName(int listId, string name)
         {
             PerformingOrgDTO toReturn = null;
             using (StopwatchTimer sw = new StopwatchTimer(this._log))
@@ -190,7 +190,7 @@ namespace GenBOE.DataBridge.DTO
         /// Save Performing Organizations
         /// </summary>
         /// <param name="inDefaultPerformingOrg">default performing org</param>
-        virtual public Dictionary<int, int> SaveSystemPerformingOrgs(Collection<PerformingOrgDTO> inPerformingOrgs)
+        public virtual Dictionary<int, int> SaveSystemPerformingOrgs(Collection<PerformingOrgDTO> inPerformingOrgs)
         {
             if (inPerformingOrgs == null)
             {
@@ -230,7 +230,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <param name="inPerformingOrgs">workspace performing orgs</param>
         /// <param name="inWorkspacePerfOrgListID">workspace performing org list ID</param>
-        virtual public Dictionary<int, int> SaveWorkspacePerformingOrgs(Collection<PerformingOrgDTO> inPerformingOrgs, int inWorkspacePerfOrgListID)
+        public virtual Dictionary<int, int> SaveWorkspacePerformingOrgs(Collection<PerformingOrgDTO> inPerformingOrgs, int inWorkspacePerfOrgListID)
         {
             if (inPerformingOrgs == null)
             {
@@ -269,7 +269,7 @@ namespace GenBOE.DataBridge.DTO
         /// Delete a system Performing Org
         /// </summary>
         /// <param name="inDeletePerformingOrg">Performing Org entry to delete</param>
-        virtual public void DeleteSystemPerformingOrg(PerformingOrgDTO inDeletePerformingOrg)
+        public virtual void DeleteSystemPerformingOrg(PerformingOrgDTO inDeletePerformingOrg)
         {
             if (inDeletePerformingOrg == null)
             {
@@ -296,7 +296,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <param name="inDeletePerformingOrg">Performing Org entry to delete</param>
         /// <param name="inWorkspacePerfOrgListID">workspace performing org list id</param>
-        virtual public void DeleteWorkspacePerformingOrg(PerformingOrgDTO inDeletePerformingOrg, int inWorkspacePerfOrgListID)
+        public virtual void DeleteWorkspacePerformingOrg(PerformingOrgDTO inDeletePerformingOrg, int inWorkspacePerfOrgListID)
         {
             if (inDeletePerformingOrg == null)
             {

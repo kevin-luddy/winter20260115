@@ -29,7 +29,7 @@ namespace GenBOE.DataBridge.DTO
 		}
 
 		[DbQuery]
-		virtual public ICollection<ResourceTypeDto> GetByBoeId(int boeId)
+		public virtual ICollection<ResourceTypeDto> GetByBoeId(int boeId)
 		{
 			List<ResourceTypeDto> toReturn = null;
 

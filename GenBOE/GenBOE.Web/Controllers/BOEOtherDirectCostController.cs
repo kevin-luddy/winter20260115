@@ -62,7 +62,7 @@ namespace GenBOE.Web.Controllers
             this.perfOrgLoader = perfOrgLoader;
         }
 
-        virtual public ViewResult DisplayBOEOtherDirectCostComposite(string workspace, int boeID, int? odcElementID)
+        public virtual ViewResult DisplayBOEOtherDirectCostComposite(string workspace, int boeID, int? odcElementID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -401,7 +401,7 @@ namespace GenBOE.Web.Controllers
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        virtual public ActionResult ExportODCSpread(string workspace, int boeID, int odcElementID)
+        public virtual ActionResult ExportODCSpread(string workspace, int boeID, int odcElementID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -435,7 +435,7 @@ namespace GenBOE.Web.Controllers
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        virtual public ActionResult ExportODCType(string workspace, int boeID, int odcElementID)
+        public virtual ActionResult ExportODCType(string workspace, int boeID, int odcElementID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -472,7 +472,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="workspace">workspace </param>
         /// <param name="boeID">current boeid</param>
         /// <returns></returns>
-        virtual public JsonResult SaveReorderODCTaskElements(TaskElementOrderCollection theModelView, string workspace, int boeID)
+        public virtual JsonResult SaveReorderODCTaskElements(TaskElementOrderCollection theModelView, string workspace, int boeID)
         {
             throw new GenValidationException("ODC Tasks can no longer be reordered");
         }

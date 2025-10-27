@@ -57,7 +57,7 @@ namespace GenTRAC.DataBridge.DTO
         ///  Get All Lines of Business
         /// </summary>
         /// <returns>Collection of LineOfBusiness</returns>
-        virtual public ICollection<PickListDto> GetAllLinesOfBusiness()
+        public virtual ICollection<PickListDto> GetAllLinesOfBusiness()
         {
             ICollection<PickListDto> toReturn = null;
 
@@ -74,7 +74,7 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="id">theLine of Business Id</param>
         /// <returns>LineOfBusinessDTO with data</returns>
-        virtual public PickListDto GetLineOfBusinessById(int id)
+        public virtual PickListDto GetLineOfBusinessById(int id)
         {
             return this.LineOfBusinessLoader.GetById(id);
         }
@@ -84,7 +84,7 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="ids">Collection of Lines of Business</param>
         /// <returns>Collection of Line of Business Dtos</returns>
-        virtual public ICollection<PickListDto> GetLineOfBusinessById(ICollection<int> ids)
+        public virtual ICollection<PickListDto> GetLineOfBusinessById(ICollection<int> ids)
         {
             return this.LineOfBusinessLoader.GetByIds(ids);
         }
@@ -98,7 +98,7 @@ namespace GenTRAC.DataBridge.DTO
         ///  Get All ProgramArea
         /// </summary>
         /// <returns>Collection of ProgramAreas</returns>
-        virtual public ICollection<PickListDto> GetAllProgramAreas()
+        public virtual ICollection<PickListDto> GetAllProgramAreas()
         {
             ICollection<PickListDto> toReturn = null;
 
@@ -115,7 +115,7 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="id">the Program AreaId</param>
         /// <returns>The ProgramAreaDTO</returns>
-        virtual public PickListDto GetProgramAreaById(int id)
+        public virtual PickListDto GetProgramAreaById(int id)
         {
             return this.ProgramAreaLoader.GetById(id);
         }
@@ -125,7 +125,7 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="ids">Collection of ProgramAreas</param>
         /// <returns>Collection of ProgramArea Dtos</returns>
-        virtual public ICollection<PickListDto> GetProgramAreaById(ICollection<int> ids)
+        public virtual ICollection<PickListDto> GetProgramAreaById(ICollection<int> ids)
         {
             return this.ProgramAreaLoader.GetByIds(ids);
         }
@@ -160,7 +160,7 @@ namespace GenTRAC.DataBridge.DTO
         /// Create the dynamic Program Area help text for active and inactive Program Areas
         /// </summary>
         /// <returns>String to display as help text for the Program Area field</returns>
-        virtual public string GetProgramAreaDynamicHelpText()
+        public virtual string GetProgramAreaDynamicHelpText()
         {
             ICollection<PickListDto> linesOfBusiness = this.GetAllLinesOfBusiness();
             ICollection<PickListDto> programAreas = this.GetAllProgramAreas();
