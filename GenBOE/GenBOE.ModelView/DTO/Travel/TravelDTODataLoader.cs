@@ -39,7 +39,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inTravelID">Travel Id.</param>
         /// <param name="includeRTEFields">Indicates whether RTE fields should be retrieved as a part of the data pull</param>
         /// <returns>Travel Dto for given Id.</returns>
-        virtual public TravelDTO GetById(int inTravelID, bool includeRTEFields = false)
+        public virtual TravelDTO GetById(int inTravelID, bool includeRTEFields = false)
         {
             return this.GetByIds(new Collection<int> { inTravelID }).FirstOrDefault();
         }
@@ -51,7 +51,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="includeRTEFields">Indicates whether RTE fields should be retrieved as a part of the data pull</param>
         /// <returns>Corresponding data</returns>
         [DbQuery]
-        virtual public ICollection<TravelDTO> GetByIds(ICollection<int> ids, bool includeRTEFields = false)
+        public virtual ICollection<TravelDTO> GetByIds(ICollection<int> ids, bool includeRTEFields = false)
         {
             List<TravelDTO> travels = new List<TravelDTO>();
 
@@ -136,7 +136,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="includeRTEFields">Indicates whether RTE fields should be retrieved as a part of the data pull</param>
         /// <returns>Corresponding data</returns>
         [DbQuery]
-        virtual public ICollection<TravelDTO> GetByWorkspaceId(int wsId, bool includeRTEFields = false)
+        public virtual ICollection<TravelDTO> GetByWorkspaceId(int wsId, bool includeRTEFields = false)
         {
             List<TravelDTO> travels = new List<TravelDTO>();
 
@@ -222,7 +222,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="includeRTEFields">Indicates whether RTE fields should be retrieved as a part of the data pull</param>
         /// <returns>Corresponding data</returns>
         [DbQuery]
-        virtual public ICollection<TravelDTO> GetByBoeIds(ICollection<int> boeIds, bool includeRTEFields = false)
+        public virtual ICollection<TravelDTO> GetByBoeIds(ICollection<int> boeIds, bool includeRTEFields = false)
         {
             List<TravelDTO> travels = new List<TravelDTO>();
             using (StopwatchTimer sw = new StopwatchTimer(this._log))
@@ -356,7 +356,7 @@ namespace GenBOE.DataBridge.DTO
         /// Save all the travels and their travel trips
         /// </summary>
         /// <param name="inTravels">Collection of Travel elements to save.</param>
-        virtual public Dictionary<int, int> SaveTravels(ICollection<TravelDTO> inTravels)
+        public virtual Dictionary<int, int> SaveTravels(ICollection<TravelDTO> inTravels)
         {
             if (inTravels == null)
             {

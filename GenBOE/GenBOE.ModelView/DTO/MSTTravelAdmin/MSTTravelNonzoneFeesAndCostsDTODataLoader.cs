@@ -27,7 +27,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="modeID">Travel Mode ID</param>
         /// <returns>DTO for the Mode ID</returns>
         [DbQuery]
-        virtual public MSTTravelNonzoneFeesAndCostsDTO getFeesAndCostsByModeID(int modeID)
+        public virtual MSTTravelNonzoneFeesAndCostsDTO getFeesAndCostsByModeID(int modeID)
         {
             MSTTravelNonzoneFeesAndCostsDTO toReturn = new MSTTravelNonzoneFeesAndCostsDTO();
 
@@ -53,7 +53,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <returns>Collection of all Fees and Costs DTOs</returns>
         [DbQuery]
-        virtual public ICollection<MSTTravelNonzoneFeesAndCostsDTO> getAllFeesAndCosts()
+        public virtual ICollection<MSTTravelNonzoneFeesAndCostsDTO> getAllFeesAndCosts()
         {
             ICollection<MSTTravelNonzoneFeesAndCostsDTO> toReturn = new Collection<MSTTravelNonzoneFeesAndCostsDTO>();
 
@@ -78,7 +78,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <param name="feeAndCost">Fee And Cost DTO to be saved</param>
         [DbQuery]
-        virtual public void saveFeesAndCosts(MSTTravelNonzoneFeesAndCostsDTO feeAndCost)
+        public virtual void saveFeesAndCosts(MSTTravelNonzoneFeesAndCostsDTO feeAndCost)
         {
             if (feeAndCost == null)
             {

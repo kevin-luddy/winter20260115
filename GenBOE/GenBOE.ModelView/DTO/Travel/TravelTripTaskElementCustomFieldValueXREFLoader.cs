@@ -127,7 +127,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <param name="inBOETravelElementCustomFieldValueContainers">Collection of custom field values to save </param>
         /// <param name="inBoeTravelElementID">travel element id</param>
-         virtual public void SaveTravelTripTaskElementCustomFieldValueContainers(Collection<CustomFieldValueContainer> inBOETravelElementCustomFieldValueContainers, int inBoeTravelElementID)
+         public virtual void SaveTravelTripTaskElementCustomFieldValueContainers(Collection<CustomFieldValueContainer> inBOETravelElementCustomFieldValueContainers, int inBoeTravelElementID)
          {
              using (StopwatchTimer sw = new StopwatchTimer(this._log))
              {
@@ -148,7 +148,7 @@ namespace GenBOE.DataBridge.DTO
          /// </summary>
          /// <param name="inCustomFieldValueContainer">custom field value to save</param>
          /// <param name="inBoeTravelElementID">travel element id</param>
-         virtual public void SaveTravelTripTaskElementCustomFieldValueContainer(CustomFieldValueContainer inCustomFieldValueContainer, int inBoeTravelElementID)
+         public virtual void SaveTravelTripTaskElementCustomFieldValueContainer(CustomFieldValueContainer inCustomFieldValueContainer, int inBoeTravelElementID)
          {
              using (StopwatchTimer sw = new StopwatchTimer(this._log))
              {

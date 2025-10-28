@@ -287,18 +287,19 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">workspace short name.</param>
 		/// <returns>View.</returns>
+		[HttpGet]
 		public ViewResult WorkspaceSettings(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Action Init
-			Stopwatch sw = InitializeAction(_log, "WorkspaceSettings", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_WORKSPACE_SETTINGS, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			// Perform Action
 			ViewResult toReturn = GetMasterView(WebConstants.VIEW_WORKSPACE_SETTINGS, workspace);
 
 			// Action Finalize
-			FinalizeAction(_log, "WorkspaceSettings", sw);
+			FinalizeAction(_log, WebConstants.ACTION_WORKSPACE_SETTINGS, sw);
 
 			return toReturn;
 		}
@@ -308,12 +309,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">workspace short name.</param>
 		/// <returns>basic View.</returns>
+		[HttpGet]
 		public ViewResult Index(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Action Initialize
-			Stopwatch sw = InitializeAction(_log, "Index", SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_INDEX, SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, null);
 
 			if (ws.IsProjectMapWorkspace)
 			{
@@ -351,7 +353,7 @@ namespace GenBOE.Web.Controllers
 			ViewBag.DollarsPrecision = ws.CostDecimalPrecision;
 
 			// Action Finalize
-			FinalizeAction(_log, "Index", sw);
+			FinalizeAction(_log, WebConstants.ACTION_INDEX, sw);
 
 			return toReturn;
 		}
@@ -362,6 +364,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The workspace short name.</param>
 		/// <param name="page">The page number of data to return.  If not set, then return all data</param>
 		/// <returns>project map data in json format.</returns>
+		[HttpGet]
 		public ActionResult GetProjectMapData(string workspace, int? page)
 		{
 			FullProjectMapWorkspace ws = this.Factory.CreateFullProjectMapWorkspace(workspace);
@@ -397,12 +400,13 @@ namespace GenBOE.Web.Controllers
 		/// <returns>Download Result for the Project Map Data.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.")]
+		[HttpGet]
 		public ActionResult ExportProjectMapData(string workspace, bool offload)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Action Initialize
-			Stopwatch sw = InitializeAction(_log, "ExportProjectMapData", SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_PROJECT_MAP, SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, null);
 
 			ActionResult result = new EmptyResult();
 			try
@@ -451,7 +455,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "ExportProjectMapData", sw);
+			FinalizeAction(_log, WebConstants.ACTION_EXPORT_PROJECT_MAP, sw);
 			return result;
 		}
 
@@ -461,12 +465,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace Short Name</param>
 		/// <returns>Download Result for the excel sheet.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.")]
+		[HttpGet]
 		public ActionResult ExportWorkspaceCommentsAndResponses(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Action Initialize
-			Stopwatch sw = InitializeAction(_log, "ExportWorkspaceCommentsAndResponses", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_WORKSPACE_COMMENTS_AND_RESPONSES, SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
 
 			ActionResult result = new EmptyResult();
 			try
@@ -489,7 +494,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "ExportWorkspaceCommentsAndResponses", sw);
+			FinalizeAction(_log, WebConstants.ACTION_EXPORT_WORKSPACE_COMMENTS_AND_RESPONSES, sw);
 			return result;
 		}
 
@@ -499,6 +504,7 @@ namespace GenBOE.Web.Controllers
 		/// Note:  This is RMS-specific, will need to be reworked to support Space.
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpPost]
 		public ContentResult ImportProjectMapData(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -594,63 +600,6 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
-		/// Converts the message validations to a string.
-		/// </summary>
-		/// <param name="validationList">The validation list.</param>
-		/// <param name="rowOffset">For Excel add 2 (header row counts) for the grid add 1 (header row does not count)</param>
-		/// <returns>A joined string of all validation messages.</returns>
-		private static string ConvertValidationsToString(IList<ValidationMessage> validationList, ProjectMapValidationOffset rowOffset)
-		{
-			string message = string.Empty;
-			if (validationList != null && validationList.Any())
-			{
-				Dictionary<string, List<int>> validationsByRows = new Dictionary<string, List<int>>();
-				foreach (ValidationMessage vm in validationList)
-				{
-					string vmMessage = vm.ValidationIssue;
-					if (!string.IsNullOrEmpty(vm.FieldName))
-					{
-						vmMessage += ": " + vm.FieldName;
-					}
-
-					if (!validationsByRows.ContainsKey(vmMessage))
-					{
-						validationsByRows.Add(vmMessage, new List<int>());
-					}
-
-					if (vm.RowIndex.HasValue)
-					{
-						// rowOffset should be +2 for Excel import because the data starts in row 2, which translates to index 0
-						// and +1 for the grid because data starts in row 1
-						validationsByRows[vmMessage].Add(vm.RowIndex.Value + (int)rowOffset);
-					}
-				}
-
-				StringBuilder sb = new StringBuilder();
-				foreach (KeyValuePair<string, List<int>> kvp in validationsByRows)
-				{
-					sb.Append(kvp.Key);
-
-					if (kvp.Value.Any())
-					{
-						if (rowOffset == ProjectMapValidationOffset.GridSave)
-						{
-							sb.Append(". Grid Row(s): ");
-						}
-						else if (rowOffset == ProjectMapValidationOffset.ExcelImport)
-						{
-							sb.Append(". Excel Row(s): ");
-						}
-						sb.Append(string.Join(", ", kvp.Value.Select(r => r.ToString())));
-					}
-					sb.AppendLine();
-				}
-				message = sb.ToString();
-			}
-			return message;
-		}
-
-		/// <summary>
 		/// RESTful endpoint to save project map grid data for workspace.
 		/// </summary>
 		/// <param name="projectMapData"></param>
@@ -693,41 +642,17 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
-		/// Saves the project map data.
-		/// </summary>
-		/// <param name="projectMapData">The project map data.</param>
-		/// <returns>Collection of validation warnings.</returns>
-		private Collection<ValidationMessage> SaveProjectMapData(ICollection<ProjectMapModelView> projectMapData, FullWorkspace ws, Collection<ValidationMessage> additionalErrors = null)
-		{
-			ProjectMapValidator validator = new ProjectMapValidator(projectMapData.ToArray(), ws);
-			validator.Validate();
-
-			Collection<ValidationMessage> result = additionalErrors ?? new Collection<ValidationMessage>();
-			result.AddRange(validator.ValidationMessages);
-
-			if (result.Any(vm => !vm.TreatAsWarning))
-			{
-				throw new GenValidationException(result);
-			}
-
-			this._ControllerLogic.SaveProjectMapData(projectMapData, ws);
-
-			// Clear the cache after the project map has been saved since it is a kill/fill
-			this.Factory.ClearWorkspaceCache(ws.Shortname);
-
-			return result;
-		}
-
-		/// <summary>
 		/// Displays Import IMS page
 		/// </summary>
 		/// <returns></returns>
+		[Obsolete("Not in use")]
+		[HttpPost]
 		public ViewResult DisplayIMSImportPage(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Action Initialize
-			Stopwatch sw = InitializeAction(_log, "DisplayIMSImportPage", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_IMS_IMPORT_PAGE, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			ICollection<int> IDs = ws.WbsElements.Select(x => x.Id).ToList();
 			ICollection<int> boeIDs = ws.Boes.Select(x => x.Id).ToList();
@@ -739,7 +664,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = GetMasterView(WebConstants.VIEW_FOR_IMS_IMPORT_PAGE, workspace);
 
 			// Action Finalize
-			FinalizeAction(_log, "DisplayIMSImportPage", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_IMS_IMPORT_PAGE, sw);
 
 			return toReturn;
 		}
@@ -748,9 +673,10 @@ namespace GenBOE.Web.Controllers
 		/// Returns the CreateWorkspace View in the Home Folder
 		/// </summary>
 		/// <returns></returns>
+		[HttpGet]
 		public ViewResult CreateWorkspace()
 		{
-			Stopwatch sw = InitializeAction(_log, "CreateWorkspace", SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_CREATE_WORKSPACE, SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
 			CreateWorkspacePageModelView model = new CreateWorkspacePageModelView();
 
@@ -809,7 +735,7 @@ namespace GenBOE.Web.Controllers
 
 			ViewResult toReturn = View(WebConstants.VIEW_HOME_CREATE_WORKSPACE, model);
 
-			FinalizeAction(_log, "CreateWorkspace", sw);
+			FinalizeAction(_log, WebConstants.ACTION_CREATE_WORKSPACE, sw);
 			return toReturn;
 		}
 
@@ -818,6 +744,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="term"></param>
 		/// <returns></returns>
+		[HttpGet]
 		public JsonResult SearchPLDProposals(string term)
 		{
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SEARCH_PLD_PROPOSALS, SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
@@ -842,6 +769,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="paNumber"></param>
 		/// <returns></returns>
+		[HttpGet]
 		public JsonResult GetPLDProposalDetails(string paNumber)
 		{
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_PLD_PROPOSAL_DETAILS, SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
@@ -852,13 +780,13 @@ namespace GenBOE.Web.Controllers
 
 			return Json(result, JsonRequestBehavior.AllowGet);
 		}
-			
 
 		/// <summary>
 		/// Get Short Name Workspace from Tracking Number  PLD 
 		/// </summary>
 		/// <param name="paNumber"></param>
 		/// <returns></returns>
+		[HttpGet]
 		public JsonResult GetNextPLDWorkspaceShortNameFromTrackingNumber(string paNumber)
 		{
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_NEXT_PLD_WORKSPACE_SHORTNAME_FROM_TRACKING_NUMBER, SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
@@ -880,6 +808,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">The workspace.</param>
 		/// <returns>The view for the email preferences</returns>
+		[HttpPost]
 		public virtual ActionResult DisplayEmailPreferences(string workspace)
 		{
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_EMAIL_PREFERENCES, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, Factory.CreateFullWorkspace(workspace), null);
@@ -1066,6 +995,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public ViewResult DisplayWorkspaceSettingsJump(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1090,12 +1020,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">workspace shortname</param>
 		/// <returns>partial view</returns>
+		[HttpPost]
 		public ViewResult DisplayWorkspaceIdentification(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Action Initialize
-			Stopwatch sw = InitializeAction(_log, "DisplayWorkspaceIdentification", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_IDENTIFICATION, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			// Perform Action
 			IWorkspaceIdentificationModelView workspaceModelView = this._ControllerLogic.GetWorkspaceIdentificationModelView(ws);
@@ -1136,7 +1067,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = this.View(_ControllerLogic.WorkspaceIdentificationViewName, workspaceModelView);
 
 			// Action Finalize
-			FinalizeAction(_log, "DisplayWorkspaceIdentification", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_IDENTIFICATION, sw);
 
 			return toReturn;
 		}
@@ -1206,12 +1137,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">workspace shortname</param>
 		/// <returns>partial view</returns>
+		[HttpPost]
 		public ViewResult DisplayWorkspaceSumofBOEVariables(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayWorkspaceSumofBOEVariables", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_SUM_OF_BOE_VARIABLES, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			ViewData["WorkspaceID"] = ws.Id;
 
@@ -1228,7 +1160,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_WORKSPACE_SUM_OF_BOE_VARIABLES, theModelViews);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayWorkspaceSumofBOEVariables", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_SUM_OF_BOE_VARIABLES, sw);
 
 			return toReturn;
 		}
@@ -1238,12 +1170,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">workspace shortname</param>
 		/// <returns>partial view</returns>
+		[HttpPost]
 		public ViewResult DisplayWorkspaceDiscreteVariables(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayWorkspaceDiscreteVariables", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_DISCRETE_VARIABLES, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			ViewData["WorkspaceID"] = ws.Id;
 
@@ -1260,7 +1193,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_WORKSPACE_DISCRETE_VARIABLES, theModelViews);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayWorkspaceDiscreteVariables", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_DISCRETE_VARIABLES, sw);
 
 			return toReturn;
 		}
@@ -1314,12 +1247,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">workspace shortname</param>
 		/// <returns>partial view</returns>
+		[HttpPost]
 		public ViewResult DisplayWorkspaceOutputFormat(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayWorkspaceOutputFormat", SecurityPage.WorkspaceSettingsOutputFormatTemplate, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_OUTPUT_FORMAT, SecurityPage.WorkspaceSettingsOutputFormatTemplate, SecurityAuthorization.Read, ws, null);
 
 			// Perform Action
 			// gather up output format types
@@ -1367,7 +1301,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_WORKSPACE_OUTPUT_FORMAT, mv);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayWorkspaceOutputFormat", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_OUTPUT_FORMAT, sw);
 
 			return toReturn;
 		}
@@ -1378,6 +1312,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">the name of the workspace we are in</param>
 		/// <param name="id">the template id from the database</param>
 		/// <returns>The word file, complete with correct content type</returns>
+		[HttpGet]
 		public FileContentResult GetOutputFormatTemplate(string workspace, int? id)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1411,12 +1346,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		///<param name="workspace">the workspace to use in the system</param>
 		/// <returns>partial view</returns>
+		[HttpPost]
 		public ViewResult DisplayWorkspaceStatus(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayWorkspaceStatus", SecurityPage.WorkspaceSettingsStatus, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_STATUS, SecurityPage.WorkspaceSettingsStatus, SecurityAuthorization.Read, ws, null);
 
 			// Perform Action
 			ViewResult toReturn = View(WebConstants.VIEW_WORKSPACE_STATUS, new WorkspaceStatusModelView(ws));
@@ -1424,7 +1360,7 @@ namespace GenBOE.Web.Controllers
 			ViewBag.IsProjectMapWs = ws.IsProjectMapWorkspace;
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayWorkspaceStatus", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_STATUS, sw);
 
 			return toReturn;
 		}
@@ -1434,6 +1370,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public ActionResult DisplayWorkspaceStatusHistoryGrid(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1466,12 +1403,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public ViewResult DisplayBOECustomFieldsGrid(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayBOECustomFieldsGrid", SecurityPage.BoeCustomFields, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CUSTOM_FIELD_GRID, SecurityPage.BoeCustomFields, SecurityAuthorization.Read, ws, null);
 
 			ICollection<CustomFieldDTO> customFields = ws.CustomFields.ToCollection();
 
@@ -1493,7 +1431,7 @@ namespace GenBOE.Web.Controllers
 
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayBOECustomFieldsGrid", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CUSTOM_FIELD_GRID, sw);
 
 			return toReturn;
 		}
@@ -1557,12 +1495,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public ViewResult DisplayBOECustomFieldResource(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayBOECustomFieldResource", SecurityPage.BoeCustomFieldResource, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CUSTOM_FIELD_RESOURCE, SecurityPage.BoeCustomFieldResource, SecurityAuthorization.Read, ws, null);
 
 			ResourceListDTO systemList = _ResourceListLoader.GetResourceList(_ResourceLoader.GlobalListID);
 			ViewData["SYSTEM_LIST_NAME"] = systemList.ResourceListName;
@@ -1590,7 +1529,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_CUSTOM_FIELD_RESOURCE);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayBOECustomFieldResource", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CUSTOM_FIELD_RESOURCE, sw);
 
 			return toReturn;
 		}
@@ -1645,17 +1584,18 @@ namespace GenBOE.Web.Controllers
 			return toReturn;
 		}
 
+		[HttpPost]
 		public ViewResult DisplayBackupVersions(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayBackupVersions", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BACKUP_VERSIONS, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			// Finalize Action
 			ViewResult toReturn = View(WebConstants.VIEW_BACKUP_VERSIONS);
 
-			FinalizeAction(_log, "DisplayBackupVersions", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BACKUP_VERSIONS, sw);
 
 			return toReturn;
 		}
@@ -1699,12 +1639,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public ViewResult DisplayBOECustomFieldPerfOrg(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);	// Force a cache clear
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayBOECustomFieldPerfOrg", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CUSTOM_FIELD_PERFORMING_ORG, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			ViewData["PERFORMING_ORGS_CHANGED"] = ws.PerfOrgsChanged;
 			PerformingOrgListDTO systemList = _PerformingOrgListLoader.GetPerfOrgList(CommonConstants.GLOBAL_PERFORMING_ORG_LIST_ID);
@@ -1717,7 +1658,7 @@ namespace GenBOE.Web.Controllers
 			// Finalize Action
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_CUSTOM_FIELD_PERFORMING_ORG);
 
-			FinalizeAction(_log, "DisplayBOECustomFieldPerfOrg", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CUSTOM_FIELD_PERFORMING_ORG, sw);
 
 			return toReturn;
 		}
@@ -1727,11 +1668,12 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public ViewResult DisplayBOECustomFieldPerfOrgGrid(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			Stopwatch sw = InitializeAction(_log, "DisplayBOECustomFieldPerfOrgGrid", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CUSTOM_FIELD_PERFORMING_ORG_GRID, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 			if (ws.WorkspaceState == WorkspaceState.Closed)
 			{
 				ViewData["READONLY"] = "true";
@@ -1774,7 +1716,7 @@ namespace GenBOE.Web.Controllers
 			// Finalize Action
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_CUSTOM_FIELD_PERFORMING_ORG_GRID, theModelView);
 
-			FinalizeAction(_log, "DisplayBOECustomFieldPerfOrgGrid", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CUSTOM_FIELD_PERFORMING_ORG_GRID, sw);
 
 			return toReturn;
 		}
@@ -1784,12 +1726,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public ViewResult DisplayBOECustomFieldPerfOrgViewDefault(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayBOECustomFieldPerfOrgViewDefault", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CUSTOM_FIELD_PERFORMING_ORG_VIEW_DEFAULT, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 			if (ws.WorkspaceState == WorkspaceState.Closed)
 			{
 				ViewData["READONLY"] = "true";
@@ -1805,17 +1748,18 @@ namespace GenBOE.Web.Controllers
 			// Finalize Action
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_CUSTOM_FIELD_PERFORMING_ORG_VIEW_DEFAULT, theModelViews);
 
-			FinalizeAction(_log, "DisplayBOECustomFieldPerfOrgViewDefault", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CUSTOM_FIELD_PERFORMING_ORG_VIEW_DEFAULT, sw);
 
 			return toReturn;
 		}
 
+		[HttpPost]
 		public ViewResult DisplayWorkspaceAllowSearch(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayWorkspaceAllowSearch", SecurityPage.WorkspaceSettingsShareAndAllowSearch, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_ALLOW_SEARCH, SecurityPage.WorkspaceSettingsShareAndAllowSearch, SecurityAuthorization.Read, ws, null);
 
 			// Perform Action
 			if (ws.ContainsOCI == true)
@@ -1826,7 +1770,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_WORKSPACE_ALLOW_SEARCH_FORMAT, new WorkspaceAllowSearchModelView(ws));
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayWorkspaceAllowSearch", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_ALLOW_SEARCH, sw);
 
 			return toReturn;
 		}
@@ -1836,12 +1780,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
+		[ChildActionOnly]
 		public ViewResult DisplayWorkspaceHomeHelp(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Action Initialize
-			Stopwatch sw = InitializeAction(_log, "DisplayWorkspaceHomeHelp", SecurityPage.Help, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_HOME_HELP, SecurityPage.Help, SecurityAuthorization.Read, ws, null);
 
 			// Check to see if WS admin
 			UserDTO user = ws.CurrentActiveUser;
@@ -1878,7 +1823,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_WORKSPACE_HOME_HELP, theModelView);
 
 			// Action Finalize
-			FinalizeAction(_log, "DisplayWorkspaceHomeHelp", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_HOME_HELP, sw);
 
 			return toReturn;
 		}
@@ -1889,12 +1834,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
+		[HttpGet]
 		public ViewResult DisplayWorkspaceShowGettingStartedHelp(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Action Initialize
-			Stopwatch sw = InitializeAction(_log, "DisplayWorkspaceShowGettingStartedHelp", SecurityPage.Help, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_SHOW_GETTING_STARTED_HELP, SecurityPage.Help, SecurityAuthorization.Read, ws, null);
 
 			// Perform Action
 			UserDTO user = ws.CurrentActiveUser;
@@ -1919,18 +1865,19 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Action Finalize
-			FinalizeAction(_log, "DisplayWorkspaceShowGettingStartedHelp", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_SHOW_GETTING_STARTED_HELP, sw);
 
 			// redirect the workspace admin to the home page
 			return Index(workspace);
 		}
 
+		[HttpPost]
 		public ActionResult UpdateZoneTravelRates(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "UpdateZoneTravelRates", SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_UPDATE_ZONE_TRAVEL_RATES, SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			this._ControllerLogic.CopySystemZoneTravelRates(ws.Id);
 
@@ -1940,7 +1887,7 @@ namespace GenBOE.Web.Controllers
 			System.Web.HttpContext.Current.Response.Cookies.Add(cookie);
 
 			// Finalize Action
-			FinalizeAction(_log, "UpdateZoneTravelRates", sw);
+			FinalizeAction(_log, WebConstants.ACTION_UPDATE_ZONE_TRAVEL_RATES, sw);
 
 			return Json(new { Status = true });
 		}
@@ -1950,12 +1897,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">workspace</param>
 		/// <returns>action result</returns>
+		[HttpPost]
 		public ActionResult UpdateOffloadRates(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "UpdateOffloadRates", SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_UPDATE_OFFLOAD_RATES, SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			this.offloadRatesDTOLoader.CopySystemDefaultOffloadRates(ws.Id);
 
@@ -1965,7 +1913,7 @@ namespace GenBOE.Web.Controllers
 			System.Web.HttpContext.Current.Response.Cookies.Add(cookie);
 
 			// Finalize Action
-			FinalizeAction(_log, "UpdateOffloadRates", sw);
+			FinalizeAction(_log, WebConstants.ACTION_UPDATE_OFFLOAD_RATES, sw);
 
 			return Json(new { Status = true });
 		}
@@ -1975,6 +1923,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">workspace</param>
 		/// <returns>action result</returns>
+		[HttpPost]
 		public ActionResult UpdateUCOTFactor(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1997,13 +1946,14 @@ namespace GenBOE.Web.Controllers
 			return Json(new { Status = true });
 		}
 
-		virtual public ContentResult ImportWorkspaceResourceRatesTM(ICollection<ImportedTMResourceRate> imported, string importTypeString, string workspace)
+		[HttpPost]
+		public virtual ContentResult ImportWorkspaceResourceRatesTM(ICollection<ImportedTMResourceRate> imported, string importTypeString, string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Perform Action
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "ImportWorkspaceResourceRatesTM", SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_IMPORT_WORKSPACE_RESOURCE_RATES_TM, SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			if (imported != null)
 			{
@@ -2036,18 +1986,19 @@ namespace GenBOE.Web.Controllers
 
 			// Perform Action
 			ContentResult toReturn = null;
-			FinalizeAction(_log, "ImportWorkspaceResourceRatesTM", sw);
+			FinalizeAction(_log, WebConstants.ACTION_IMPORT_WORKSPACE_RESOURCE_RATES_TM, sw);
 			return toReturn;
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpPost]
 		public ActionResult ImportPreviewResultsForWorkspaceResourceRatesTM(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Perform Action
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "ImportPreviewResultsForWorkspaceResourceRatesTM", SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_IMPORT_PREVIEW_WORKSPACE_RESOURCE_RATES_TM, SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			List<String> errors = new List<string>();
 			ICollection<ImportedTMResourceRate> results = new List<ImportedTMResourceRate>();
@@ -2159,17 +2110,18 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "ImportPreviewResultsForWorkspaceResourceRatesTM", sw);
+			FinalizeAction(_log, WebConstants.ACTION_IMPORT_PREVIEW_WORKSPACE_RESOURCE_RATES_TM, sw);
 			return View(WebConstants.ACTION_DISPLAY_IMPORT_PREVIEW_WORKSPACE_RESOURCE_RATES_TM, results);
 		}
 
 		/// <summary>
 		/// Render the Workspace selection dropdown box and button
+		/// Currently both HttpPost and HttpGet
 		/// </summary>
 		/// <returns>The Choose Workspace Partial View</returns>
 		public ViewResult DisplayChooseWorkspace(int? workspaceStatus)
 		{
-			Stopwatch sw = InitializeAction(_log, "DisplayChooseWorkspace", SecurityPage.Home, SecurityAuthorization.Read, null, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_CHOOSE_WORKSPACE, SecurityPage.Home, SecurityAuthorization.Read, null, null);
 
 			// Figure out if the current user is System Admin
 			bool isSystemAdmin = CheckPermissions(SecurityPage.SystemAdmin, null, null) != SecurityAuthorization.None;
@@ -2190,23 +2142,7 @@ namespace GenBOE.Web.Controllers
 			// Render the workspace dropdown menu with the filtered workspace list
 			ViewResult toReturn = View(WebConstants.VIEW_HOME_CHOOSE_WORKSPACE, wsModelViews);
 
-			FinalizeAction(_log, "DisplayChooseWorkspace", sw);
-			return toReturn;
-		}
-
-		/// <summary>
-		/// Displays the div tag if the user is not a foreign user
-		/// </summary>
-		/// <returns></returns>
-		public ViewResult DisplayCreateWorkspaceDiv()
-		{
-			Stopwatch sw = InitializeAction(_log, "DisplayCreateWorkspaceDiv", SecurityPage.Home, SecurityAuthorization.Read, null, null);
-
-			CreateWorkspaceModelDivView theModelView = new CreateWorkspaceModelDivView();
-
-			ViewResult toReturn = View(WebConstants.VIEW_HOME_CREATE_WORKSPACE_DIV, theModelView);
-
-			FinalizeAction(_log, "DisplayCreateWorkspaceDiv", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_CHOOSE_WORKSPACE, sw);
 			return toReturn;
 		}
 
@@ -2214,9 +2150,10 @@ namespace GenBOE.Web.Controllers
 		/// Displays the Search for Workspace to Copy dialog
 		/// </summary>
 		/// <returns></returns>
+		[ChildActionOnly]
 		public ViewResult DisplayWorkspaceSearch()
 		{
-			Stopwatch sw = InitializeAction(_log, "DisplayWorkspaceSearch", SecurityPage.Home, SecurityAuthorization.Read, null, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_SEARCH, SecurityPage.Home, SecurityAuthorization.Read, null, null);
 
 			Collection<SelectListItem> projectMapTypes = new Collection<SelectListItem>();
 
@@ -2242,7 +2179,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_HOME_WORKSPACE_SEARCH, theModelView);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayWorkspaceSearch", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_SEARCH, sw);
 			return toReturn;
 		}
 
@@ -2250,6 +2187,7 @@ namespace GenBOE.Web.Controllers
 		/// Displays the resource rates main page
 		/// </summary>
 		/// <returns></returns>
+		[HttpPost]
 		public ViewResult DisplayWorkspaceResourceRatesTM(string workspace)
 		{
 			return CreateWorkspaceResourceRatesTM(workspace, CreateWorkspaceResourceRateTMModelView());
@@ -2259,11 +2197,11 @@ namespace GenBOE.Web.Controllers
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			Stopwatch sw = InitializeAction(_log, "DisplayWorkspaceResourceRatesTM", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_RESOURCE_RATES_TM, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			ViewResult toReturn = View(WebConstants.VIEW_WORKSPACE_RESOURCE_RATES_TM, inModel);
 
-			FinalizeAction(_log, "DisplayWorkspaceResourceRatesTM", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_RESOURCE_RATES_TM, sw);
 			return toReturn;
 		}
 
@@ -2272,17 +2210,18 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public ViewResult DisplayWorkspaceResourceRatesGridTM(string workspace, WorkspaceResourceRateGridTMModelView modelView)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			Stopwatch sw = InitializeAction(_log, "DisplayWorkspaceResourceRatesGridTM", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_RESOURCE_RATES_GRID_TM, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			WorkspaceResourceRateGridTMModelView theModelView = _ControllerLogic.GetWorkspaceResourceRateGridTMModelView(ws, modelView);
 
 			ViewResult toReturn = View(WebConstants.VIEW_WORKSPACE_RESOURCE_RATES_GRID_TM, theModelView);
 
-			FinalizeAction(_log, "DisplayWorkspaceResourceRatesGridTM", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_RESOURCE_RATES_GRID_TM, sw);
 			return toReturn;
 		}
 
@@ -2292,11 +2231,12 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace"></param>
 		/// <param name="workspaceResourceRateID"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public ViewResult DisplayAddWorkspaceResourceRateTM(string workspace, int? workspaceResourceRateID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			Stopwatch sw = InitializeAction(_log, "DisplayAddWorkspaceResourceRateTM", SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_ADD_WORKSPACE_RESOURCE_RATE_TM, SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			ViewData["WORKSPACE_RATES"] = ConvertToWorkspaceResourceRateOptionList(_ControllerLogic.GetWorkspaceResourcesForWorkspaceResourceRateTM(ws));
 
@@ -2310,7 +2250,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_ADD_WORKSPACE_RESOURCE_RATE_TM, modelView);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayAddWorkspaceResourceRateTM", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_ADD_WORKSPACE_RESOURCE_RATE_TM, sw);
 			return toReturn;
 		}
 
@@ -2328,6 +2268,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="predicate">The sort predicate.</param>
 		/// <param name="sortOrder">The sort order.</param>
 		/// <returns></returns>
+		[HttpPost]
 		public JsonResult FindAdjacentBoes(string workspace, int boeId, string[] predicate, string sortOrder)
 		{
 			if (string.IsNullOrEmpty(sortOrder))
@@ -2371,6 +2312,7 @@ namespace GenBOE.Web.Controllers
 		/// Gets the Workspace email preferences.
 		/// </summary>
 		/// <returns>Json result of the Workspace email preferences.</returns>
+		[HttpPost]
 		public JsonResult GetWorkspaceEmailPreferences(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -2390,6 +2332,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="emails">The emails.</param>
 		/// <returns>A Json value</returns>
+		[HttpPost]
 		public JsonResult SaveWorkspaceEmailPreferences(string workspace, ICollection<WorkspaceEmailOverrideModelView> emails)
 		{
 			if (emails == null)
@@ -2424,12 +2367,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		///<param name="workspace">the workspace to use in the system</param>
 		/// <returns>model data returned as json</returns>
+		[HttpPost]
 		public JsonResult GetWorkspaceHomeModel(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Action Initialize
-			Stopwatch sw = InitializeAction(_log, "GetWorkspaceHomeModel", SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_WORKSPACE_HOME_MODEL, SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, null);
 
 			// get all data
 			HomeWorkspaceGridModelView theModelView = _GetHomeWorkspaceGridData(ws);
@@ -2442,7 +2386,7 @@ namespace GenBOE.Web.Controllers
 			};
 
 			// Action Finalize
-			FinalizeAction(_log, "GetWorkspaceHomeModel", sw);
+			FinalizeAction(_log, WebConstants.ACTION_GET_WORKSPACE_HOME_MODEL, sw);
 
 			return Json(theModelView);
 		}
@@ -2454,6 +2398,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="to">state the workspace wants to change to</param>
 		/// <param name="from">state the workspace is currently in</param>
 		/// <returns>Passed/Fail JSON</returns>
+		[HttpPost]
 		public JsonResult WorkspaceStatusChangeValidation(string workspace, WorkspaceState to, WorkspaceState from)
 		{
 			JsonResult toReturn = Json(new { Status = true });
@@ -2496,12 +2441,13 @@ namespace GenBOE.Web.Controllers
 		/// <returns>Passed/Fail JSON</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
+		[HttpPost]
 		public JsonResult SaveCustomFields(string workspace, BOECustomFieldModelView customFieldsMV)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "SaveCustomFields", SecurityPage.BoeCustomFields, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_CUSTOM_FIELDS, SecurityPage.BoeCustomFields, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			if (customFieldsMV == null)
 			{
@@ -2814,17 +2760,18 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "SaveCustomFields", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SAVE_CUSTOM_FIELDS, sw);
 
 			return result;
 		}
 
+		[HttpPost]
 		public JsonResult DeleteCustomField(string workspace, BOECustomFieldsGridModelView customFieldsMV)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DeleteCustomField", SecurityPage.BoeCustomFields, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DELETE_CUSTOM_FIELD, SecurityPage.BoeCustomFields, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			if (customFieldsMV == null)
 			{
@@ -2883,7 +2830,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "DeleteCustomField", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DELETE_CUSTOM_FIELD, sw);
 
 			return Json(new { Status = true });
 		}
@@ -2899,12 +2846,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">workspace shortname</param>
 		/// <param name="workspaceDetails">Workspace Identification Model View</param>
 		/// <returns>JSON true/false</returns>
+		[HttpPost]
 		public ActionResult SaveWorkspaceIdentification(string workspace, [WorkspaceIdentificationBinder] IWorkspaceIdentificationModelView workspaceDetails)
 		{
 			_ = workspaceDetails ?? throw new ArgumentNullException(nameof(workspaceDetails));
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
-			Stopwatch sw = InitializeAction(_log, "SaveWorkspaceIdentification", SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_WORKSPACE_IDENTIFICATION, SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			string returnMessage = string.Empty;
 
@@ -2918,7 +2866,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "SaveWorkspaceIdentification", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SAVE_WORKSPACE_IDENTIFICATION, sw);
 
 			return Json(new { Status = true, Message = returnMessage });
 		}
@@ -2930,12 +2878,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">workspace short name</param>
 		/// <returns></returns>
 		/// <exception cref="ArgumentNullException"></exception>
+		[HttpPost]
 		public ActionResult UpdateCurrentWorkspaceIdentification(string workspace)
 		{
 			_ = workspace ?? throw new ArgumentNullException(nameof(workspace));
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
-			Stopwatch sw = InitializeAction(_log, "UpdateCurrentWorkspaceIdentification", SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_UPDATE_CURRENT_WORKSPACE_IDENTIFICATION, SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			// Get the user who is saving the BOE(s)
 			int currentUserID = ws.CurrentActiveUser.UserID;
@@ -2953,7 +2902,7 @@ namespace GenBOE.Web.Controllers
 
 			this.Factory.ClearWorkspaceCache(workspace);
 
-			FinalizeAction(_log, "UpdateCurrentWorkspaceIdentification", sw);
+			FinalizeAction(_log, WebConstants.ACTION_UPDATE_CURRENT_WORKSPACE_IDENTIFICATION, sw);
 
 			return Json(new { Status = true });
 		}
@@ -2964,12 +2913,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">workspace shortname</param>
 		/// <param name="inOutputFormatId">The id of the template selected</param>
 		/// <returns>JSON true/false</returns>
+		[HttpPost]
 		public ActionResult SaveWorkspaceOutputFormat(string workspace, int inOutputFormatId, int inSortById)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "SaveWorkspaceOutputFormat", SecurityPage.WorkspaceSettingsOutputFormatTemplate, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_WORKSPACE_OUTPUT_FORMAT, SecurityPage.WorkspaceSettingsOutputFormatTemplate, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			JsonResult toReturn = Json(new { Status = true });
 			if (ModelState.IsValid)
@@ -2994,7 +2944,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "SaveWorkspaceOutputFormat", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SAVE_WORKSPACE_OUTPUT_FORMAT, sw);
 
 			return toReturn;
 		}
@@ -3006,12 +2956,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspaceState">The selected workspace status</param>
 		/// <returns>JSON true/false</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpPost]
 		public ActionResult SaveWorkspaceStatus(string workspace, WorkspaceStatusModelView workspaceStatusMV)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "SaveWorkspaceStatus", SecurityPage.WorkspaceSettingsStatus, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_WORKSPACE_STATUS, SecurityPage.WorkspaceSettingsStatus, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			if (workspaceStatusMV == null)
 			{
@@ -3032,7 +2983,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "SaveWorkspaceStatus", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SAVE_WORKSPACE_STATUS, sw);
 
 			return toReturn;
 		}
@@ -3105,12 +3056,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace containing Sum of BOE Variables to be deleted</param>
 		/// <param name="valueType">Value type of variables to be deleted - Sum of BOEs or Discrete</param>
 		/// <returns>Json result</returns>
+		[HttpPost]
 		public JsonResult DeleteAllWorkspaceVariables(string workspace, VarValueType valueType)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DeleteAllWorkspaceVariables", SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DELETE_ALL_WORKSPACE_VARIABLES, SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			Collection<WorkspaceVariableDTO> allVars = ws.WorkspaceVariables.Where(x => x.ValueType == valueType).ToCollection<WorkspaceVariableDTO>();
 
@@ -3119,7 +3071,7 @@ namespace GenBOE.Web.Controllers
 			JsonResult toReturn = Json(new { Status = true });
 
 			// Finalize Action
-			FinalizeAction(_log, "DeleteAllWorkspaceVariables", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DELETE_ALL_WORKSPACE_VARIABLES, sw);
 
 			return toReturn;
 		}
@@ -3131,17 +3083,18 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspaceVariables">The modified workspace variable model views</param>
 		/// <returns>JSON true/false</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
+		[HttpPost]
 		public ActionResult SaveWorkspaceVariables(string workspace, Collection<WorkspaceVariableModelView> workspaceVariables)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
+			// Initialize Action
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_WORKSPACE_VARIABLES, SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 			HashSet<BoeDTO> originalWsBoes = new HashSet<BoeDTO>(ws.Boes.ToList<BoeDTO>().DeepClone());
 			HashSet<BoeTaskElementDTO> tasksToSave = new HashSet<BoeTaskElementDTO>();
 			HashSet<WorkspaceVariableDTO> workspaceVariablesToSave = new HashSet<WorkspaceVariableDTO>();
 			HashSet<FullBoe> boesToTransition = new HashSet<FullBoe>();
 			WorkspaceState originalWsState = ws.WorkspaceState;
 			int currentUserID = ws.CurrentActiveUser.UserID;
-			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "SaveWorkspaceVariables", SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			JsonResult toReturn = Json(new { Status = false });
 
@@ -3329,11 +3282,12 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "SaveWorkspaceVariables", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SAVE_WORKSPACE_VARIABLES, sw);
 
 			return toReturn;
 		}
 
+		[HttpPost]
 		public ActionResult DeleteWorkspaceVersions(string workspace, Collection<WorkspaceVersionModelView> inVersions)
 		{
 			if (inVersions == null)
@@ -3347,7 +3301,7 @@ namespace GenBOE.Web.Controllers
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			Stopwatch sw = InitializeAction(_log, "DeleteWorkspaceVersions", SecurityPage.WorkspaceSettingsStatus, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DELETE_WORKSPACE_VERSIONS, SecurityPage.WorkspaceSettingsStatus, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			JsonResult toReturn = Json(new { Status = false });
 			if (ModelState.IsValid)
@@ -3378,10 +3332,11 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "DeleteWorkspaceVersions", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DELETE_WORKSPACE_VERSIONS, sw);
 			return toReturn;
 		}
 
+		[HttpPost]
 		public ActionResult SaveWorkspaceVersion(string workspace, String versionName)
 		{
 			if (versionName == null)
@@ -3396,7 +3351,7 @@ namespace GenBOE.Web.Controllers
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "SaveWorkspaceVersion", SecurityPage.SaveVersion, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_WORKSPACE_VERSION, SecurityPage.SaveVersion, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			JsonResult toReturn = Json(new { Status = false });
 
@@ -3446,7 +3401,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "SaveWorkspaceVersion", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SAVE_WORKSPACE_VERSION, sw);
 
 			return toReturn;
 		}
@@ -3457,12 +3412,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace"></param>
 		/// <param name="workspaceAllowSearchMV"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public ActionResult SaveWorkspaceAllowSearch(string workspace, WorkspaceAllowSearchModelView workspaceAllowSearchMV)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "SaveWorkspaceAllowSearch", SecurityPage.WorkspaceSettingsShareAndAllowSearch, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_WORKSPACE_ALLOW_SEARCH, SecurityPage.WorkspaceSettingsShareAndAllowSearch, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			if (workspaceAllowSearchMV == null)
 			{
@@ -3497,19 +3453,20 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "SaveWorkspaceAllowSearch", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SAVE_WORKSPACE_ALLOW_SEARCH, sw);
 
 			return toReturn;
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
+		[HttpPost]
 		public JsonResult SaveCustomFieldResources(string workspace, Collection<BOECustomFieldResourceModelView> resources)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "SaveCustomFieldResources", SecurityPage.BoeCustomFieldResource, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_CUSTOM_FIELD_RESOURCES, SecurityPage.BoeCustomFieldResource, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			if (resources == null)
 			{
@@ -3712,7 +3669,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "SaveCustomFieldResources", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SAVE_CUSTOM_FIELD_RESOURCES, sw);
 
 			return toReturn;
 		}
@@ -3723,12 +3680,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace"></param>
 		/// <param name="performingOrgs"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public JsonResult SaveCustomFieldPerformingOrgs(string workspace, Collection<BOECustomFieldOptionModelView> performingOrgs)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "SaveCustomFieldPerformingOrgs", SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_CUSTOM_FIELD_PERFORMING_ORGS, SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			if (performingOrgs == null)
 			{
@@ -3851,7 +3809,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "SaveCustomFieldPerformingOrgs", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SAVE_CUSTOM_FIELD_PERFORMING_ORGS, sw);
 
 			return toReturn;
 		}
@@ -3861,12 +3819,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">workspace</param>
 		/// <returns>Perf Org restore view result</returns>
+		[HttpPost]
 		public ViewResult RestoreCustomFieldPerformingOrganizations(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "RestoreCustomFieldPerformingOrganizations", SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_RESTORE_CUSTOM_FIELD_PERFORMING_ORGANIZATIONS, SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			RestoreOptionData restoreResults = null;
 
@@ -3888,7 +3847,7 @@ namespace GenBOE.Web.Controllers
 				throw new GenValidationException(Utilities.CreateModelStateValidationErrorList(ModelState));
 			}
 			// Finalize Action
-			FinalizeAction(_log, "RestoreCustomFieldPerformingOrganizations", sw);
+			FinalizeAction(_log, WebConstants.ACTION_RESTORE_CUSTOM_FIELD_PERFORMING_ORGANIZATIONS, sw);
 
 			return toReturn;
 		}
@@ -3898,12 +3857,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">workspace</param>
 		/// <returns>Resource Retore view result</returns>
+		[HttpPost]
 		public ViewResult RestoreCustomFieldResources(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "RestoreCustomFieldResources", SecurityPage.BoeCustomFieldResource, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_RESTORE_CUSTOM_FIELD_RESOURCES, SecurityPage.BoeCustomFieldResource, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			RestoreOptionData restoreResults = null;
 			ViewResult toReturn = null;
@@ -3925,7 +3885,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "RestoreCustomFieldResources", sw);
+			FinalizeAction(_log, WebConstants.ACTION_RESTORE_CUSTOM_FIELD_RESOURCES, sw);
 
 			return toReturn;
 		}
@@ -3935,6 +3895,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public JsonResult RestoreWorkspaceVersion(string workspace, int VersionID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -3943,7 +3904,7 @@ namespace GenBOE.Web.Controllers
 			string initialShortName = ws.Shortname;
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "RestoreWorkspaceVersion", SecurityPage.WorkspaceSettingsStatus, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_RESTORE_WORKSPACE_VERSION, SecurityPage.WorkspaceSettingsStatus, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			bool RestoreSuccess = false;
 
@@ -4021,7 +3982,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "RestoreWorkspaceVersion", sw);
+			FinalizeAction(_log, WebConstants.ACTION_RESTORE_WORKSPACE_VERSION, sw);
 
 			return toReturn;
 		}
@@ -4036,11 +3997,14 @@ namespace GenBOE.Web.Controllers
 		/// <returns>Report</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
 		public ActionResult ExportWorkspaceVersion(string workspace, int versionId, bool exportAllBoes, ICollection<int> boesToExport)
 		{
 			ActionResult toReturn = new EmptyResult();
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+			// Initialize Action
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_WORKSPACE_VERSION, SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			string versionName = this._WorkspaceVersionMetaDataDTODataLoader.GetByIds(new Collection<int>() { versionId }).FirstOrDefault()?.VersionName;
 
@@ -4110,6 +4074,9 @@ namespace GenBOE.Web.Controllers
 				_log.Error(e);
 			}
 
+			// Finalize Action
+			FinalizeAction(_log, WebConstants.ACTION_EXPORT_WORKSPACE_VERSION, sw);
+			
 			return toReturn;
 		}
 
@@ -4119,12 +4086,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace"></param>
 		/// <param name="searchText"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public ViewResult SearchCustomFieldPerformingOrganizations(string workspace, string searchText)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "SearchCustomFieldPerformingOrganizations", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SEARCH_CUSTOM_FIELD_PERFORMING_ORGANIZATIONS, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			if (searchText == null)
 			{
@@ -4154,7 +4122,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_CUSTOM_FIELD_PERFORMING_ORG_GRID, theModelView);
 
 			// Finalize Action
-			FinalizeAction(_log, "SearchCustomFieldPerformingOrganizations", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SEARCH_CUSTOM_FIELD_PERFORMING_ORGANIZATIONS, sw);
 
 			return toReturn;
 		}
@@ -4165,12 +4133,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace"></param>
 		/// <param name="searchText"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public ViewResult SearchCustomFieldResources(string workspace, string searchText, bool showLabor, bool showIWTA, bool showSub, bool showODC, bool showTravel, bool showMaterials)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "SearchCustomFieldResources", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SEARCH_CUSTOM_FIELD_RESOURCES, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			BOECustomFieldResourceGridModelView theModelView = _GetAndFilterCustomFieldResources(workspace, searchText, showLabor, showIWTA, showSub, showODC, showTravel, showMaterials);
 
@@ -4178,7 +4147,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_CUSTOM_FIELD_RESOURCE_GRID, theModelView);
 
 			// Finalize Action
-			FinalizeAction(_log, "SearchCustomFieldResources", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SEARCH_CUSTOM_FIELD_RESOURCES, sw);
 
 			return toReturn;
 		}
@@ -4189,11 +4158,12 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace"></param>
 		/// <param name="resources"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public ViewResult PageCustomFieldResources(string workspace, BOECustomFieldResourceGridModelView resources)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			Stopwatch sw = InitializeAction(_log, "PageCustomFieldResources", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_PAGE_CUSTOM_FIELD_RESOURCES, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			if (resources == null)
 			{
@@ -4240,7 +4210,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_CUSTOM_FIELD_RESOURCE_GRID, resources);
 
 			// Finalize Action
-			FinalizeAction(_log, "PageCustomFieldResources", sw);
+			FinalizeAction(_log, WebConstants.ACTION_PAGE_CUSTOM_FIELD_RESOURCES, sw);
 			return toReturn;
 		}
 
@@ -4250,11 +4220,12 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace"></param>
 		/// <param name="performingOrgs"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public ViewResult PageCustomFieldPerformingOrgs(string workspace, BOECustomFieldPerformingOrgGridModelView performingOrgs)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			Stopwatch sw = InitializeAction(_log, "PageCustomFieldPerformingOrgs", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_PAGE_CUSTOM_FIELD_PERFORMING_ORGS, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			if (performingOrgs == null)
 			{
@@ -4301,7 +4272,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_CUSTOM_FIELD_PERFORMING_ORG_GRID, performingOrgs);
 
 			// Finalize Action
-			FinalizeAction(_log, "PageCustomFieldPerformingOrgs", sw);
+			FinalizeAction(_log, WebConstants.ACTION_PAGE_CUSTOM_FIELD_PERFORMING_ORGS, sw);
 			return toReturn;
 		}
 
@@ -4310,6 +4281,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public ActionResult SaveHideGettingStartedHelpMenu(string workspace, GettingStartedHelpModelView helpModel)
 		{
 			if (helpModel == null)
@@ -4319,7 +4291,7 @@ namespace GenBOE.Web.Controllers
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "SaveHideGettingStartedHelpMenu", SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_HIDE_GETTING_STARTED_HELP_MENU, SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			JsonResult toReturn = Json(new { Status = true });
 			/** Valid Model Check */
@@ -4356,17 +4328,20 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "SaveHideGettingStartedHelpMenu", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SAVE_HIDE_GETTING_STARTED_HELP_MENU, sw);
 
 			return toReturn;
 		}
 
+		[HttpPost]
 		public JsonResult ValidateCreateWorkspaceStepOne([CreateWorkspaceStepOneBinder] ICreateWorkspaceStepOneModelView data)
 		{
 			if (data == null)
 			{
 				throw new ArgumentNullException(nameof(data));
 			}
+
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_HIDE_GETTING_STARTED_HELP_MENU, SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
 			List<ValidationMessage> errors = new List<ValidationMessage>();
 
@@ -4419,6 +4394,8 @@ namespace GenBOE.Web.Controllers
 				throw new GenValidationException(errors);
 			}
 
+			FinalizeAction(_log, WebConstants.ACTION_SAVE_HIDE_GETTING_STARTED_HELP_MENU, sw);
+
 			return Json(new { Status = true });
 		}
 
@@ -4427,6 +4404,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="trackingNumber">The tracking number.</param>
 		/// <returns>The next tracking number revision sequence.</returns>
+		[HttpPost]
 		public JsonResult GetNextTrackingNumberRevision(string trackingNumber)
 		{
 			string nextRevision = this.GetNextTrackingNumber(trackingNumber);
@@ -4556,10 +4534,13 @@ namespace GenBOE.Web.Controllers
 			return nextRevision;
 		}
 
-
+		[HttpPost]
 		public JsonResult GetExactCopyData(int WorkspaceToCopyID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(WorkspaceToCopyID);
+
+			// TODO Does this need to initialize against the original workspace to verify user has permissions?
+			// WebConstants.ACTION_GET_EXACT_COPY_DATA
 
 			String newWsName = null;
 			String newWsShortName = null;
@@ -4600,6 +4581,7 @@ namespace GenBOE.Web.Controllers
 			return Json(new { Name = newWsName, ShortName = newWsShortName, DisplayName = LeadPricer.DisplayName, CostVolumeLeadPricerNTID = LeadPricer.NTID, LOBId = ws.LineOfBusiness.Id, ProposalClass = (ws.ProposalClass.Id).ToString(), ContractTypes = selectedContractTypes });
 		}
 
+		[HttpPost]
 		public JsonResult IsWorkspaceNameAvailable(String value)
 		{
 			bool result = false;
@@ -4614,6 +4596,7 @@ namespace GenBOE.Web.Controllers
 			return Json(new { Status = result });
 		}
 
+		[HttpPost]
 		public JsonResult IsWorkspaceShortNameAvailable(String value)
 		{
 			return Json(new { Status = IsWorkspaceShortNameAvailableBool(value) });
@@ -4631,6 +4614,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="newWorkspace"></param>
 		/// <returns></returns>
 		[MaxDbQuery(-1)]
+		[HttpPost]
 		public JsonResult SaveNewWorkspace([CreateWorkspaceBinder] ICreateWorkspaceModelView newWorkspace)
 		{
 			_ = newWorkspace ?? throw new ArgumentNullException(nameof(newWorkspace));
@@ -4638,7 +4622,7 @@ namespace GenBOE.Web.Controllers
 			bool finishedWithoutErrors = true;
 
 			HttpContext.Items["IgnoreWorkspaceFullObjectCache"] = true;
-			Stopwatch sw = InitializeAction(_log, "SaveNewWorkspace", SecurityPage.Home, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_NEW_WORKSPACE, SecurityPage.Home, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 			List<ValidationMessage> errors = new List<ValidationMessage>();
 			bool decimalPrecisionChanged = false;
 			bool costDecimalPrecisionChanged = false;
@@ -4920,7 +4904,7 @@ namespace GenBOE.Web.Controllers
 			// Clear permissions cache so the user's new permissions to the new workspace show up
 			this.Factory.ClearPermissionsCache(this._securityInformation.ActiveUserNTID);
 
-			FinalizeAction(_log, "SaveNewWorkspace", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SAVE_NEW_WORKSPACE, sw);
 			return toReturn;
 		}
 
@@ -4929,6 +4913,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">A workspace to create the fields inside.</param>
 		/// <returns>Success or failure.</returns>
+		[HttpPost]
 		public JsonResult CreateSikorskyCustomFields(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -4955,6 +4940,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">A workspace to create the fields inside.</param>
 		/// <returns>Success or failure.</returns>
+		[HttpPost]
 		public JsonResult CreatePropricerCustomFields(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -5067,13 +5053,14 @@ namespace GenBOE.Web.Controllers
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly")]
+		[HttpPost]
 		public JsonResult ValidateWorkspaceSearch(WorkspaceSearchModelView workspaceSearch)
 		{
 
-			Stopwatch sw = InitializeAction(_log, "ValidateWorkspaceSearch", SecurityPage.Home, SecurityAuthorization.Read, null, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_VALIDATE_WORKSPACE_SEARCH, SecurityPage.Home, SecurityAuthorization.Read, null, null);
 			if (workspaceSearch == null)
 			{
-				throw new ArgumentNullException(nameof(workspaceSearch), "workspaceAllowSearchMV is null");
+				throw new ArgumentNullException(nameof(workspaceSearch), "Workspace Search Model View is null");
 			}
 
 			JsonResult toReturn = Json(new { Status = true });
@@ -5109,13 +5096,14 @@ namespace GenBOE.Web.Controllers
 				toReturn = Json(new { Status = false });
 				throw new GenValidationException(ValidationErrors);
 			}
-			FinalizeAction(_log, "ValidateWorkspaceSearch", sw);
+			FinalizeAction(_log, WebConstants.ACTION_VALIDATE_WORKSPACE_SEARCH, sw);
 			return toReturn;
 		}
 
+		[HttpPost]
 		public ViewResult PageWorkspaceSearchResults(WorkspaceSearchResultModelView workspaceSearchResults)
 		{
-			Stopwatch sw = InitializeAction(_log, "PageWorkspaceSearchResults", SecurityPage.Home, SecurityAuthorization.Read, null, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_PAGE_WORKSPACE_SEARCH_RESULTS, SecurityPage.Home, SecurityAuthorization.Read, null, null);
 
 			if (workspaceSearchResults == null)
 			{
@@ -5144,13 +5132,14 @@ namespace GenBOE.Web.Controllers
 			_ControllerLogic.PopulateCompanySpecificProperties(workspaceSearchResults);
 			ViewResult toReturn = View(WebConstants.VIEW_HOME_WORKSPACE_SEARCH_RESULTS, workspaceSearchResults);
 
-			FinalizeAction(_log, "PageWorkspaceSearchResults", sw);
+			FinalizeAction(_log, WebConstants.ACTION_PAGE_WORKSPACE_SEARCH_RESULTS, sw);
 			return toReturn;
 		}
 
+		[HttpPost]
 		public ViewResult PerformWorkspaceSearch(WorkspaceSearchModelView workspaceSearch)
 		{
-			Stopwatch sw = InitializeAction(_log, "PerformWorkspaceSearch", SecurityPage.Home, SecurityAuthorization.Read, null, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_PERFORM_WORKSPACE_SEARCH, SecurityPage.Home, SecurityAuthorization.Read, null, null);
 
 			if (workspaceSearch == null)
 			{
@@ -5221,13 +5210,14 @@ namespace GenBOE.Web.Controllers
 			_ControllerLogic.PopulateCompanySpecificProperties(theModelView);
 			ViewResult toReturn = View(WebConstants.VIEW_HOME_WORKSPACE_SEARCH_RESULTS, theModelView);
 
-			FinalizeAction(_log, "PerformWorkspaceSearch", sw);
+			FinalizeAction(_log, WebConstants.ACTION_PERFORM_WORKSPACE_SEARCH, sw);
 			return toReturn;
 		}
 
+		[HttpPost]
 		public ActionResult GetDetailsForWorkspaceToCopy(int workspaceID)
 		{
-			Stopwatch sw = InitializeAction(_log, "GetDetailsForWorkspaceToCopy", SecurityPage.Home, SecurityAuthorization.Read, null, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_DETAILS_FOR_WORKSPACE_TO_COPY, SecurityPage.Home, SecurityAuthorization.Read, null, null);
 
 			FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceID);
 
@@ -5272,13 +5262,14 @@ namespace GenBOE.Web.Controllers
 				throw new GenValidationException(Utilities.CreateModelStateValidationErrorList(ModelState));
 			}
 
-			FinalizeAction(_log, "GetDetailsForWorkspaceToCopy", sw);
+			FinalizeAction(_log, WebConstants.ACTION_GET_DETAILS_FOR_WORKSPACE_TO_COPY, sw);
 			return toReturn;
 		}
 
+		[HttpPost]
 		public ViewResult GetBOEsForWorkspaceToCopy(int workspaceID)
 		{
-			Stopwatch sw = InitializeAction(_log, "GetBOEsForWorkspaceToCopy", SecurityPage.Home, SecurityAuthorization.Read, null, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_BOES_FOR_WORKSPACE_TO_COPY, SecurityPage.Home, SecurityAuthorization.Read, null, null);
 			FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceID);
 
 			Collection<WorkspaceToCopyBOEListModelView> modelViews = new Collection<WorkspaceToCopyBOEListModelView>();
@@ -5298,7 +5289,7 @@ namespace GenBOE.Web.Controllers
 
 			ViewResult toReturn = View(WebConstants.VIEW_HOME_WORKSPACE_SEARCH_BOE_LIST, modelViews);
 
-			FinalizeAction(_log, "GetBOEsForWorkspaceToCopy", sw);
+			FinalizeAction(_log, WebConstants.ACTION_GET_BOES_FOR_WORKSPACE_TO_COPY, sw);
 			return toReturn;
 		}
 
@@ -5308,12 +5299,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace"></param>
 		/// <param name="tmWorkspaceResourceRates"></param>
 		/// <returns>JsonResult</returns>
+		[HttpPost]
 		public JsonResult SaveWorkspaceResourceRateTM(string workspace, Collection<WorkspaceResourceRateTMModelView> tmWorkspaceResourceRates)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize
-			Stopwatch sw = InitializeAction(_log, "SaveWorkspaceResourceRateTM", SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_WORKSPACE_RESOURCE_RATE_TM, SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			if (tmWorkspaceResourceRates == null)
 			{
@@ -5362,7 +5354,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize
-			FinalizeAction(_log, "SaveWorkspaceResourceRateTM", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SAVE_WORKSPACE_RESOURCE_RATE_TM, sw);
 			return toReturn;
 		}
 
@@ -5382,12 +5374,13 @@ namespace GenBOE.Web.Controllers
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "WBSs"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "TaskElements"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "BOEs"),
 		System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		virtual public ContentResult ImportIMSArtemis(string workspace)
+		[HttpPost]
+		public virtual ContentResult ImportIMSArtemis(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "ImportIMSArtemis", SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_IMPORT_ARTEMIS_IMS, SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			// Perform Action
 			ContentResult toReturn = null;
@@ -5466,17 +5459,18 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "ImportIMSArtemis", sw);
+			FinalizeAction(_log, WebConstants.ACTION_IMPORT_ARTEMIS_IMS, sw);
 			return toReturn;
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpPost]
 		public ContentResult ImportIMSProject(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "ImportIMSProject", SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_IMPORT_PROJECT_IMS, SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			// Perform Action
 			ContentResult toReturn = null;
@@ -5575,7 +5569,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "ImportIMSProject", sw);
+			FinalizeAction(_log, WebConstants.ACTION_IMPORT_PROJECT_IMS, sw);
 			return toReturn;
 		}
 
@@ -5586,12 +5580,13 @@ namespace GenBOE.Web.Controllers
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"),
 		System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes"),
 		System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults")]
+		[HttpPost]
 		public ContentResult ImportBOECustomFieldResource(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "ImportBOECustomFieldResource", SecurityPage.WorkspaceResource, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_IMPORT_BOE_CUSTOM_FIELD_RESOURCE, SecurityPage.WorkspaceResource, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			// Perform Action
 			ContentResult toReturn = null;
@@ -5846,7 +5841,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "ImportBOECustomFieldResource", sw);
+			FinalizeAction(_log, WebConstants.ACTION_IMPORT_BOE_CUSTOM_FIELD_RESOURCE, sw);
 			return toReturn;
 		}
 
@@ -5857,12 +5852,13 @@ namespace GenBOE.Web.Controllers
 		/// <returns>A special ActionResult that generates a file download for the user to download the
 		/// populated Excel template.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		[HttpGet]
 		public ActionResult ExportBOECustomFieldResource(string workspace, bool showLabor, bool showIWTA, bool showSub, bool showODC, bool showTravel, bool showMaterials, string searchText)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "ExportBOECustomFieldResource", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_BOE_CUSTOM_FIELD_RESOURCE, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			// Perform Action
 			// if the search text came in as null, then no string was inputted so set to empty string not null. this saves the url from being /""
@@ -5885,7 +5881,7 @@ namespace GenBOE.Web.Controllers
 			FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
 			// Finalize Action
-			FinalizeAction(_log, "ExportBOECustomFieldResource", sw);
+			FinalizeAction(_log, WebConstants.ACTION_EXPORT_BOE_CUSTOM_FIELD_RESOURCE, sw);
 
 			return File(
 				fileStream: fs,
@@ -5905,12 +5901,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="searchText"></param>
 		/// <returns></returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		[HttpGet]
 		public ActionResult ExportBOECustomFieldResourceTemplate(string workspace, string searchText)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "ExportBOECustomFieldResourceTemplate", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_BOE_CUSTOM_FIELD_RESOURCE_TEMPLATE, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			// Perform Action
 
@@ -5932,7 +5929,7 @@ namespace GenBOE.Web.Controllers
 			FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
 			// Finalize Action
-			FinalizeAction(_log, "ExportBOECustomFieldResourceTemplate", sw);
+			FinalizeAction(_log, WebConstants.ACTION_EXPORT_BOE_CUSTOM_FIELD_RESOURCE_TEMPLATE, sw);
 
 			return File(
 				fileStream: fs,
@@ -5942,12 +5939,13 @@ namespace GenBOE.Web.Controllers
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults")]
+		[HttpPost]
 		public ActionResult ExportWorkspaceResourceRatesTM(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "ExportWorkspaceResourceRatesTM", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_RESOURCE_RATES_TM, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			// Get T&M Resource Rates template file name
 			string templateFileName = Server.MapPath("~/Templates/Export/TMResourceRates.xlsx");
@@ -5971,7 +5969,7 @@ namespace GenBOE.Web.Controllers
 			FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
 			// Finalize Action
-			FinalizeAction(_log, "ExportWorkspaceResourceRatesTM", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_RESOURCE_RATES_TM, sw);
 
 			return File(
 				fileStream: fs,
@@ -5981,12 +5979,13 @@ namespace GenBOE.Web.Controllers
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults")]
+		[HttpPost]
 		public ActionResult ExportBlankWorkspaceResourceRatesTM(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "ExportBlankWorkspaceResourceRatesTM", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_BLANK_WORKSPACE_RESOURCE_RATES_TM, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			// Get T&M Resource Rates template file name
 			string templateFileName = Server.MapPath("~/Templates/Export/TMResourceRates.xlsx");
@@ -6006,7 +6005,7 @@ namespace GenBOE.Web.Controllers
 			FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
 			// Finalize Action
-			FinalizeAction(_log, "ExportBlankWorkspaceResourceRatesTM", sw);
+			FinalizeAction(_log, WebConstants.ACTION_EXPORT_BLANK_WORKSPACE_RESOURCE_RATES_TM, sw);
 
 			return File(
 				fileStream: fs,
@@ -6019,12 +6018,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <returns>A string indicating the result of the import operation.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpPost]
 		public ContentResult ImportBOECustomFieldPerfOrg(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "ImportBOECustomFieldPerfOrg", SecurityPage.WorkspacePerfOrg, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_IMPORT_BOE_CUSTOM_FIELD_PERFORMING_ORG, SecurityPage.WorkspacePerfOrg, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			// Perform Action
 			ContentResult toReturn = null;
@@ -6208,7 +6208,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "ImportBOECustomFieldPerfOrg", sw);
+			FinalizeAction(_log, WebConstants.ACTION_IMPORT_BOE_CUSTOM_FIELD_PERFORMING_ORG, sw);
 			return toReturn;
 		}
 
@@ -6219,12 +6219,13 @@ namespace GenBOE.Web.Controllers
 		/// <returns>A special ActionResult that generates a file download for the user to download the
 		/// populated Excel template.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		[HttpGet]
 		public ActionResult ExportBOECustomFieldPerfOrg(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "ExportBOECustomFieldPerfOrg", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_BOE_CUSTOM_FIELD_PERFORMING_ORG, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			// Perform Action
 
@@ -6242,7 +6243,7 @@ namespace GenBOE.Web.Controllers
 			FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
 			// Finalize Action
-			FinalizeAction(_log, "ExportBOECustomFieldPerfOrg", sw);
+			FinalizeAction(_log, WebConstants.ACTION_EXPORT_BOE_CUSTOM_FIELD_PERFORMING_ORG, sw);
 
 			return File(
 				fileStream: fs,
@@ -6255,12 +6256,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <returns>A string indicating the result of the import operation.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpPost]
 		public ContentResult ImportBOECustomField(string workspace, int customFieldID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "ImportBOECustomField", SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_IMPORT_BOE_CUSTOM_FIELD, SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			// Perform Action
 			ContentResult toReturn = null;
@@ -6385,7 +6387,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "ImportBOECustomField", sw);
+			FinalizeAction(_log, WebConstants.ACTION_IMPORT_BOE_CUSTOM_FIELD, sw);
 			return toReturn;
 		}
 
@@ -6396,12 +6398,13 @@ namespace GenBOE.Web.Controllers
 		/// <returns>A special ActionResult that generates a file download for the user to download the
 		/// populated Excel template.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		[HttpGet]
 		public ActionResult ExportBOECustomField(string workspace, int customFieldID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "ExportBOECustomField", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_BOE_CUSTOM_FIELD, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			// refresh in use flag
 			_CustomFieldValueLoader.RefreshCustomFieldInUseByWorkspaceID(ws.Id);
@@ -6429,7 +6432,7 @@ namespace GenBOE.Web.Controllers
 			FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
 			// Finalize Action
-			FinalizeAction(_log, "ExportBOECustomField", sw);
+			FinalizeAction(_log, WebConstants.ACTION_EXPORT_BOE_CUSTOM_FIELD, sw);
 
 			return File(
 				fileStream: fs,
@@ -6442,6 +6445,89 @@ namespace GenBOE.Web.Controllers
 		#endregion Public Methods
 
 		#region Private Methods
+
+		/// <summary>
+		/// Saves the project map data.
+		/// </summary>
+		/// <param name="projectMapData">The project map data.</param>
+		/// <returns>Collection of validation warnings.</returns>
+		private Collection<ValidationMessage> SaveProjectMapData(ICollection<ProjectMapModelView> projectMapData, FullWorkspace ws, Collection<ValidationMessage> additionalErrors = null)
+		{
+			ProjectMapValidator validator = new ProjectMapValidator(projectMapData.ToArray(), ws);
+			validator.Validate();
+
+			Collection<ValidationMessage> result = additionalErrors ?? new Collection<ValidationMessage>();
+			result.AddRange(validator.ValidationMessages);
+
+			if (result.Any(vm => !vm.TreatAsWarning))
+			{
+				throw new GenValidationException(result);
+			}
+
+			this._ControllerLogic.SaveProjectMapData(projectMapData, ws);
+
+			// Clear the cache after the project map has been saved since it is a kill/fill
+			this.Factory.ClearWorkspaceCache(ws.Shortname);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Converts the message validations to a string.
+		/// </summary>
+		/// <param name="validationList">The validation list.</param>
+		/// <param name="rowOffset">For Excel add 2 (header row counts) for the grid add 1 (header row does not count)</param>
+		/// <returns>A joined string of all validation messages.</returns>
+		private static string ConvertValidationsToString(IList<ValidationMessage> validationList, ProjectMapValidationOffset rowOffset)
+		{
+			string message = string.Empty;
+			if (validationList != null && validationList.Any())
+			{
+				Dictionary<string, List<int>> validationsByRows = new Dictionary<string, List<int>>();
+				foreach (ValidationMessage vm in validationList)
+				{
+					string vmMessage = vm.ValidationIssue;
+					if (!string.IsNullOrEmpty(vm.FieldName))
+					{
+						vmMessage += ": " + vm.FieldName;
+					}
+
+					if (!validationsByRows.ContainsKey(vmMessage))
+					{
+						validationsByRows.Add(vmMessage, new List<int>());
+					}
+
+					if (vm.RowIndex.HasValue)
+					{
+						// rowOffset should be +2 for Excel import because the data starts in row 2, which translates to index 0
+						// and +1 for the grid because data starts in row 1
+						validationsByRows[vmMessage].Add(vm.RowIndex.Value + (int)rowOffset);
+					}
+				}
+
+				StringBuilder sb = new StringBuilder();
+				foreach (KeyValuePair<string, List<int>> kvp in validationsByRows)
+				{
+					sb.Append(kvp.Key);
+
+					if (kvp.Value.Any())
+					{
+						if (rowOffset == ProjectMapValidationOffset.GridSave)
+						{
+							sb.Append(". Grid Row(s): ");
+						}
+						else if (rowOffset == ProjectMapValidationOffset.ExcelImport)
+						{
+							sb.Append(". Excel Row(s): ");
+						}
+						sb.Append(string.Join(", ", kvp.Value.Select(r => r.ToString())));
+					}
+					sb.AppendLine();
+				}
+				message = sb.ToString();
+			}
+			return message;
+		}
 
 		/// <summary>
 		/// Verify custom field level has been selected

@@ -156,42 +156,42 @@ namespace IES.Common
 			this.cache = memCache;
 		}
 
-		/// <summary>
-		/// Returns .Net System.Security.WindowsIdentity object for the resource account running the application
-		/// (ex. acct04\genboed) - Always returns resource account name
-		/// </summary>
-		virtual public string ResourceAccount
-		{
-			get
-			{
-				return WindowsIdentity.GetCurrent().Name.ToLower();
-			}
-		}
+        /// <summary>
+        /// Returns .Net System.Security.WindowsIdentity object for the resource account running the application
+        /// (ex. acct04\genboed) - Always returns resource account name
+        /// </summary>
+        public virtual string ResourceAccount
+        {
+            get
+            {
+                return WindowsIdentity.GetCurrent().Name.ToLower();
+            }
+        }
 
-		/// <summary>
-		/// Query the AD for more detailed information.  This method is slower and less performant than just 
-		/// retrieving the username via the ActiveUserNTID method.
-		/// </summary>
-		virtual public UserData ActiveUserData
-		{
-			get
-			{
-				return _ADUtils.GetUserByQualifiedAccount(this.ActiveUserNTID, false);
-			}
-		}
+        /// <summary>
+        /// Query the AD for more detailed information.  This method is slower and less performant than just 
+        /// retrieving the username via the ActiveUserNTID method.
+        /// </summary>
+        public virtual UserData ActiveUserData
+        {
+            get
+            {
+                return _ADUtils.GetUserByQualifiedAccount(this.ActiveUserNTID, false);
+            }
+        }
 
-		/// <summary>
-		/// Returns the name of the currently logged on user (ex. jsmith)
-		/// </summary>
-		virtual public string ActiveUserNTID
-		{
-			get
-			{
-				// split the ntid and just pass in the ntid
-				if (string.IsNullOrEmpty(ActiveUserNTIDWithDomain))
-				{
-					return "";
-				}
+        /// <summary>
+        /// Returns the name of the currently logged on user (ex. jsmith)
+        /// </summary>
+        public virtual string ActiveUserNTID
+        {
+            get
+            {
+                // split the ntid and just pass in the ntid
+                if (string.IsNullOrEmpty(ActiveUserNTIDWithDomain))
+                {
+                    return "";
+                }
 
 				string[] splitDomainAndNTID = ActiveUserNTIDWithDomain.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
 				string ntIDOnly = splitDomainAndNTID.Count() == 2 ? splitDomainAndNTID[1] : splitDomainAndNTID[0];
@@ -211,33 +211,33 @@ namespace IES.Common
 			}
 		}
 
-		/// <summary>
-		/// Helper function to return roles as string
-		/// </summary>
-		/// <param name="inRoles">roles to emit</param>
-		/// <returns>comma separated flat string</returns>
-		virtual public string GetRoleAsString(Collection<Role> inRoles)
-		{
-			if (inRoles == null)
-			{
-				return "<none>";
-			}
+        /// <summary>
+        /// Helper function to return roles as string
+        /// </summary>
+        /// <param name="inRoles">roles to emit</param>
+        /// <returns>comma separated flat string</returns>
+        public virtual string GetRoleAsString(Collection<Role> inRoles)
+        {
+            if (inRoles == null)
+            {
+                return "<none>";
+            }
 			System.Collections.Generic.IEnumerable<string> toReturn = from role in inRoles select role.ToString();
 
 			return String.Join(",", toReturn.ToArray());
 		}
 
-		/// <summary>
-		/// Determine if the logged on user is a memeber of the us domestic user group
-		/// </summary>
-		/// <param name="inPrincipal">User ID</param>
-		/// <returns></returns>
-		virtual public Boolean IsDomesticUser(IPrincipal inPrincipal)
-		{
-			if (inPrincipal == null)
-			{
-				throw new ArgumentNullException(nameof(inPrincipal));
-			}
+        /// <summary>
+        /// Determine if the logged on user is a memeber of the us domestic user group
+        /// </summary>
+        /// <param name="inPrincipal">User ID</param>
+        /// <returns></returns>
+        public virtual Boolean IsDomesticUser(IPrincipal inPrincipal)
+        {
+            if (inPrincipal == null)
+            {
+                throw new ArgumentNullException(nameof(inPrincipal));
+            }
 
 			String DomesticUsersGroup = ConfigurationUtilities.GetAppSetting("DomesticUsersGroup");
 
@@ -253,21 +253,21 @@ namespace IES.Common
 				}
 			}
 
-			return approved;
-		}
-
-		/// <summary>
-		/// Determines if user is a subcontractor (and not overridden)
-		/// </summary>
-		/// <param name="ntid">NTID</param>
-		/// <param name="isSubcontractor">bool from db if user is subcontractor</param>
-		/// <returns>true if user is a subcontractor and not overridden</returns>
-		virtual public Boolean IsSubcontractorUser(string ntid, bool? isSubcontractor)
-		{
-			if (string.IsNullOrEmpty(ntid))
-			{
-				throw new ArgumentNullException(nameof(ntid));
-			}
+            return approved;
+        }
+        
+        /// <summary>
+        /// Determines if user is a subcontractor (and not overridden)
+        /// </summary>
+        /// <param name="ntid">NTID</param>
+        /// <param name="isSubcontractor">bool from db if user is subcontractor</param>
+        /// <returns>true if user is a subcontractor and not overridden</returns>
+        public virtual Boolean IsSubcontractorUser(string ntid, bool? isSubcontractor)
+        {
+            if (string.IsNullOrEmpty(ntid))
+            {
+                throw new ArgumentNullException(nameof(ntid));
+            }
 
 			string overrideSubString = ConfigurationUtilities.GetAppSetting("OverrideSubNonUs");
 			bool overrideSub = string.IsNullOrEmpty(overrideSubString) ? false : overrideSubString.ToLower() == "true";
@@ -308,17 +308,17 @@ namespace IES.Common
 			return isSub;
 		}
 
-		/// <summary>
-		/// Determine if the specified user is a member of the RDM Admin group(s)
-		/// </summary>
-		/// <param name="inUserName">The NTID of the user trying to gain access</param>
-		/// <returns>true if user is a member of one of the RDM Admin groups; false otherwise</returns>
-		virtual public Boolean IsRdmAdminUser(string inUserName)
-		{
-			if (inUserName == null)
-			{
-				throw new ArgumentNullException(nameof(inUserName));
-			}
+        /// <summary>
+        /// Determine if the specified user is a member of the RDM Admin group(s)
+        /// </summary>
+        /// <param name="inUserName">The NTID of the user trying to gain access</param>
+        /// <returns>true if user is a member of one of the RDM Admin groups; false otherwise</returns>
+        public virtual Boolean IsRdmAdminUser(string inUserName)
+        {
+            if (inUserName == null)
+            {
+                throw new ArgumentNullException(nameof(inUserName));
+            }
 
 			bool? resultFromCache = this.IsUserInCacheCheck(inUserName, this.cacheKeyIsRdmAdminByUserName);
 			if (resultFromCache.HasValue)
@@ -331,17 +331,17 @@ namespace IES.Common
 			return isRDMAdminUser;
 		}
 
-		/// <summary>
-		/// Determine if the specified user is a member of the RDM COBRA Admin group(s)
-		/// </summary>
-		/// <param name="inUserName">The NTID of the user trying to gain access</param>
-		/// <returns>true if user is a member of one of the RDM COBRA Admin groups; false otherwise</returns>
-		virtual public Boolean IsRdmCobraAdminUser(string inUserName)
-		{
-			if (inUserName == null)
-			{
-				throw new ArgumentNullException(nameof(inUserName));
-			}
+        /// <summary>
+        /// Determine if the specified user is a member of the RDM COBRA Admin group(s)
+        /// </summary>
+        /// <param name="inUserName">The NTID of the user trying to gain access</param>
+        /// <returns>true if user is a member of one of the RDM COBRA Admin groups; false otherwise</returns>
+        public virtual Boolean IsRdmCobraAdminUser(string inUserName)
+        {
+            if (inUserName == null)
+            {
+                throw new ArgumentNullException(nameof(inUserName));
+            }
 
 			bool? resultFromCache = this.IsUserInCacheCheck(inUserName, this.cacheKeyIsRdmCobraAdminByUserName);
 			if (resultFromCache.HasValue)
@@ -349,22 +349,22 @@ namespace IES.Common
 				return resultFromCache.Value;
 			}
 
-			bool isRDMCobraAdminUser = this.IsMemberOfADGroupInAppSettingsList(inUserName, "RDMCobraAdminGroups");
-			this.AddResultToCache(inUserName, this.cacheKeyIsRdmCobraAdminByUserName, this.secondsToCacheIsRdmCobraAdmin, isRDMCobraAdminUser);
-			return isRDMCobraAdminUser;
-		}
-
-		/// <summary>
-		/// Determine if the specified user is a member of the IES Portal Admin group(s)
-		/// </summary>
-		/// <param name="inUserName">The NTID of the user trying to gain access</param>
-		/// <returns>true if user is a member of one of the IES Portal Admin groups; false otherwise</returns>
-		virtual public Boolean IsIESPortalAdminUser(string inUserName)
-		{
-			if (inUserName == null)
-			{
-				throw new ArgumentNullException(nameof(inUserName));
-			}
+            bool isRDMCobraAdminUser = this.IsMemberOfADGroupInAppSettingsList(inUserName, "RDMCobraAdminGroups");
+            this.AddResultToCache(inUserName, this.cacheKeyIsRdmCobraAdminByUserName, this.secondsToCacheIsRdmCobraAdmin, isRDMCobraAdminUser);
+            return isRDMCobraAdminUser;
+        }
+        
+        /// <summary>
+         /// Determine if the specified user is a member of the IES Portal Admin group(s)
+         /// </summary>
+         /// <param name="inUserName">The NTID of the user trying to gain access</param>
+         /// <returns>true if user is a member of one of the IES Portal Admin groups; false otherwise</returns>
+        public virtual Boolean IsIESPortalAdminUser(string inUserName)
+        {
+            if (inUserName == null)
+            {
+                throw new ArgumentNullException(nameof(inUserName));
+            }
 
 			bool? resultFromCache = this.IsUserInCacheCheck(inUserName, this.cacheKeyIsIESPortalAdminByUserName);
 			if (resultFromCache.HasValue)
@@ -377,17 +377,17 @@ namespace IES.Common
 			return isIESPortalAdminUser;
 		}
 
-		/// <summary>
-		/// Determine if the specified user is a member of the RDM Viewer group(s)
-		/// </summary>
-		/// <param name="inUserName">The NTID of the user trying to gain access</param>
-		/// <returns>true if user is a member of one of the RDM Viewer groups; false otherwise</returns>
-		virtual public Boolean IsRdmViewerUser(string inUserName)
-		{
-			if (inUserName == null)
-			{
-				throw new ArgumentNullException(nameof(inUserName));
-			}
+        /// <summary>
+        /// Determine if the specified user is a member of the RDM Viewer group(s)
+        /// </summary>
+        /// <param name="inUserName">The NTID of the user trying to gain access</param>
+        /// <returns>true if user is a member of one of the RDM Viewer groups; false otherwise</returns>
+        public virtual Boolean IsRdmViewerUser(string inUserName)
+        {
+            if (inUserName == null)
+            {
+                throw new ArgumentNullException(nameof(inUserName));
+            }
 
 			bool? resultFromCache = this.IsUserInCacheCheck(inUserName, this.cacheKeyIsRdmViewerByUserName);
 			if (resultFromCache.HasValue)
@@ -400,17 +400,17 @@ namespace IES.Common
 			return isRDMViewerUser;
 		}
 
-		/// <summary>
-		/// Determine if the specified user is allowed to access the ProPricer Export
-		/// </summary>
-		/// <param name="userName"></param>
-		/// <returns></returns>
-		virtual public Boolean IsAllowedProPricerAccess(string userName)
-		{
-			if (userName == null)
-			{
-				throw new ArgumentNullException(nameof(userName));
-			}
+        /// <summary>
+        /// Determine if the specified user is allowed to access the ProPricer Export
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        public virtual Boolean IsAllowedProPricerAccess(string userName)
+        {
+            if (userName == null)
+            {
+                throw new ArgumentNullException(nameof(userName));
+            }
 
 			bool? resultFromCache = this.IsUserInCacheCheck(userName, this.cacheKeyIsAllowedProPricerAccess);
 			if (resultFromCache.HasValue)
@@ -424,17 +424,17 @@ namespace IES.Common
 			return isAllowedProPricerAccess;
 		}
 
-		/// <summary>
-		/// Determine if the specified user is a system or subcontract admin based on the AD groups
-		/// </summary>
-		/// <param name="userName"></param>
-		/// <returns></returns>
-		virtual public Boolean IsSystemOrSubcontractAdmin(string userName)
-		{
-			if (userName == null)
-			{
-				throw new ArgumentNullException(nameof(userName));
-			}
+        /// <summary>
+        /// Determine if the specified user is a system or subcontract admin based on the AD groups
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        public virtual Boolean IsSystemOrSubcontractAdmin(string userName)
+        {
+            if (userName == null)
+            {
+                throw new ArgumentNullException(nameof(userName));
+            }
 
 			bool? resultFromCache = this.IsUserInCacheCheck(userName, this.cacheKeyIsSystemOrSubcontractAdmin);
 			if (resultFromCache.HasValue)

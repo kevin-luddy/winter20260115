@@ -367,7 +367,6 @@
     <Compile Include="ModelView\BOEMaterialGridModelView.cs" />
     <Compile Include="ModelView\BOEOtherDirectCostGridModelView.cs" />
     <Compile Include="ModelView\ChooseWorkspaceModelView.cs" />
-    <Compile Include="ModelView\CreateWorkspaceModelDivView.cs" />
     <Compile Include="ModelView\ImportLaborTypeModelView.cs" />
     <Compile Include="ModelView\ImportTripResultsModelView.cs" />
     <Compile Include="ModelView\ManageTripsForTravelGridModelView.cs" />
@@ -984,7 +983,6 @@
     <Content Include="Views\Shared\RteTemplate.ascx" />
     <Content Include="Views\WorkspaceRecalculateActuals\Index.aspx" />
     <Content Include="Views\Workspace\AddWorkspaceResourceRateTM.ascx" />
-    <Content Include="Views\Workspace\CreateWorkspaceDiv.ascx" />
     <Content Include="Views\Workspace\DiscreteWorkspaceVariables.ascx" />
     <Content Include="Views\Admin\ManageUCOT.ascx" />
     <Content Include="Views\Workspace\WorkspaceIdentificationMST.ascx" />
