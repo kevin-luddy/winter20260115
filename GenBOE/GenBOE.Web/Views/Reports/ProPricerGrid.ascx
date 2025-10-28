@@ -3,6 +3,8 @@
 <%
     bool enableSendDirectly = (bool) ViewData["EnableSendDirectly"];
     bool isSystemAdmin = (bool)ViewData["IsSystemAdmin"];
+    bool enableProPricer = (bool)ViewData["EnableProPricer"];
+
     SendToProPricerModelView sendData = (SendToProPricerModelView)ViewData["SendToProPricerData"];
     JavaScriptSerializer serializer = new JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };
 %>
@@ -125,11 +127,12 @@
         Controller: '<%= WebConstants.CONTROLLER_REPORTS%>',
         Workspace: '<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
         CopyToSystemFormatAction: '<%= WebConstants.ACTION_COPY_FORMAT_TO_SYSTEM_LEVEL %>',
+		EnableProPricer: <%= Convert.ToBoolean(enableProPricer).ToString().ToLower() %>
     });
 </script>
 <div id="ProPricerController" data-ng-controller="ProPricerController">
     <gen-validation data-errors="errors"></gen-validation>
-    <table id="ExportToProPricerGrid" class="export-to-propricer-grid readonly grid full-width">
+    <table data-ng-show="enableProPricer" id="ExportToProPricerGrid" class="export-to-propricer-grid readonly grid full-width">
         <thead>
             <tr>
                 <th class="select-checkbox"><input type="checkbox" class="checkbox" id="SelectAllCheckbox" /></th>

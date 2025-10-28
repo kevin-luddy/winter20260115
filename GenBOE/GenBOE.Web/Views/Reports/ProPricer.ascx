@@ -1,6 +1,7 @@
 ﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<ExportToProPricerModelView>" %>
 <%
-    var enableSendDirectly = (bool) ViewData["EnableSendDirectly"];
+    var enableSendDirectly = (bool)ViewData["EnableSendDirectly"];
+    var enableProPricer = (bool)ViewData["EnableProPricer"];
 %>
 <script type="text/javascript">
     var ExportToProPricerWidget = new Widget('ExportToProPricer');
@@ -48,7 +49,9 @@
     ExportToProPricerWidget.BindEvents = function () {
         // Object Events
 
-        $('#ExportToProPricer-Add').click(ExportToProPricerWidget.AddNewExportFormat);
+        <% if (enableProPricer) { %>
+			$('#ExportToProPricer-Add').click(ExportToProPricerWidget.AddNewExportFormat);
+        <% } %>
         $('#ExportToProPricerElementDialog-Cancel').click(function () {
             ExportToProPricerWidget.CloseDialog(ExportToProPricerWidget.ExportToProPricerElementDialog);
         });
@@ -602,7 +605,7 @@
         <br />
         <div class="buttons">
             <button class="ies-action disabled" name="delete-button" type="button" id="ExportToProPricer-Delete">Delete</button>
-            <button class="ies-action" id="ExportToProPricer-Add" type="button">+ Add</button>
+            <button class="ies-action" data-ng-class="{disabled: !enableProPricer }" id="ExportToProPricer-Add" type="button">+ Add</button>
         </div>
         <div id="ProPricerGridContent" class="clear" >
             <% Html.RenderAction(
