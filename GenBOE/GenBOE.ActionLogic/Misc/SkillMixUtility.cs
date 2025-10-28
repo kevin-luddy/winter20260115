@@ -218,6 +218,12 @@
 			Dictionary<Tuple<string, string>, ICollection<LaborTypeDataModelView>> groupedLaborTypes = new Dictionary<Tuple<string, string>, ICollection<LaborTypeDataModelView>>();
 			foreach (LaborTypeDataModelView labor in laborTypes)
 			{
+				if (string.IsNullOrEmpty(labor.ResourceName) && string.IsNullOrEmpty(labor.BusinessResourceCodeName))
+				{
+					// skip this row, no resource set
+					continue;
+				}
+
 				Tuple<string, string> key = groupedLaborTypes.Keys.FirstOrDefault(g => g.Item1.NullEmptyEquals(labor.ResourceName) && g.Item2.NullEmptyEquals(labor.BusinessResourceCodeName));
 				if (key == null)
 				{
@@ -251,6 +257,7 @@
 				summary.ProposedHours = totalHours;
 				summary.BusinessResourceHours = totalHoursBRCs;
 				summary.UCOTHours = totalUCOTHours;
+				summary.Included = true;
 			}
 		}
 
@@ -675,8 +682,17 @@
 			HashSet<string> brcs = laborTypes.Select(l => l.BusinessResourceCodeName).Distinct().ToHashSet();
 			HashSet<string> historicalResources = resourceHours.Select(r => r.ResourceName).Distinct().ToHashSet();
 
+			// Keep track of used combinations
+			List<Tuple<string, string>> usedCombos = new List<Tuple<string, string>>();
+
 			foreach (SkillMixSummaryModelView skillMixSummaryModel in currentSkillMixSummaryData.ToList())
 			{
+				// reset Included status, hours at the start, this will be set later on
+				skillMixSummaryModel.Included = false;
+				skillMixSummaryModel.ProposedHours = 0m;
+				skillMixSummaryModel.BusinessResourceHours = 0m;
+				skillMixSummaryModel.UCOTHours = 0m;
+
 				// Remove bad resource
 				if (!string.IsNullOrWhiteSpace(skillMixSummaryModel.ResourceID) && !resources.Contains(skillMixSummaryModel.ResourceID))
 				{
@@ -710,9 +726,17 @@
 				{
 					currentSkillMixSummaryData.Remove(skillMixSummaryModel);
 				}
+				else if (usedCombos.Any(c => c.Item1 == skillMixSummaryModel.ResourceID && c.Item2 == skillMixSummaryModel.BusinessResourceID))
+				{
+					// this is a duplicate row, delete it
+					currentSkillMixSummaryData.Remove(skillMixSummaryModel);
+				}
+				else
+				{
+					usedCombos.Add(new Tuple<string, string>(skillMixSummaryModel.ResourceID, skillMixSummaryModel.BusinessResourceID));
+				}
 			}
 		}
-
 
 		/// <summary>
 		/// Calculates the BOESkillMix Percentage
