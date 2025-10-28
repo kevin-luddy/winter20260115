@@ -58,6 +58,7 @@ AS
 **		1/15/25		e309214				PROPH-1854 Database Changes for Assign Author
 **		9/30/25		e378233				PROPH-3302 Updated for Skill Mix Summary
 **		10/14/25	ranzalon			PROPH-3286 Enable LM Nav Workspace Setting
+**		10/28/2025	twilson3			proph-3411 ALways set PerformingOrganizationChangeFlag to true (1) to fix any false negatives
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -533,7 +534,7 @@ BEGIN
 			,[AllowSearch] = vW.[AllowSearch]
 			,[ResourceListID]=RL.[ResourceListID]
 			,[PerformingOrganizationListID]=PL.[PerformingOrganizationListID]
-			,[PerformingOrganizationChangeFlag] = vW.[PerformingOrganizationChangeFlag]
+			,[PerformingOrganizationChangeFlag] = 1
 			,[TrackingNumber] = vW.[TrackingNumber]
 			,[ContainsTemplate] = vW.[ContainsTemplate]
 			,[NumProPricerExport] = vW.[NumProPricerExport]
