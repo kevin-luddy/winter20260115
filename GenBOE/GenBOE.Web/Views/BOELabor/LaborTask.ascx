@@ -1109,11 +1109,11 @@
                                     <td>{{row.ResourceID}}</td>
                                     <td>{{row.BusinessResourceID}}</td>
                                     <td data-ng-if="!isSkillMixManual()" style="text-align: right">{{row.HistoricalHours | number:2}}</td>
-                                    <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
-                                    <td style="text-align: right">{{row.BOESkillMix | number:2}}</td>
-                                    <td style="text-align: right">{{row.ProposedHours}}</td>
-                                    <td style="text-align: right">{{row.BusinessResourceHours}}</td>
-                                    <td style="text-align: right">{{row.TotalProposedHours}}</td>
+                                    <td style="text-align: right">{{row.HistoricalSkillMix | number:1}}%</td>
+                                    <td style="text-align: right">{{row.ProposedSkillMix | number:2}}%</td>
+                                    <td style="text-align: right">{{row.ProposedLegacyResource}}</td>
+                                    <td style="text-align: right">{{row.ProposedBrc}}</td>
+                                    <td style="text-align: right">{{row.TotalProposedLegacyBrc}}</td>
                                     <td style="text-align: right">{{row.UCOTHours}}</td>
                                     <td style="text-align: right">{{row.GrandTotalHours}}</td>
                                     <td>
@@ -1127,11 +1127,11 @@
                                     <td>Totals</td>
                                     <td></td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.HistoricalHours | number:2}}</td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.LaborSkillMix | number:2}}%</td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.BoeSkillMix | number:2}}%</td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.ProposedHours}}</td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.BRCProposedHours}}</td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.TotalProposedHours}}</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.HistoricalSkillMix | number:2}}%</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.ProposedSkillMix | number:2}}%</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.ProposedLegacyResource}}</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.ProposedBrc}}</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.TotalProposedLegacyBrc}}</td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.UCOTHours}}</td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.GrandTotalHours}}</td>
                                     <td></td>

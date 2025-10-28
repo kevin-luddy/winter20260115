@@ -254,8 +254,8 @@
 				}
 
 				// update the historical hours from the Resource Hours calculated in SAP
-				summary.ProposedHours = totalHours;
-				summary.BusinessResourceHours = totalHoursBRCs;
+				summary.ProposedLegacyResource = totalHours;
+				summary.ProposedBrc = totalHoursBRCs;
 				summary.UCOTHours = totalUCOTHours;
 				summary.Included = true;
 			}
@@ -697,7 +697,7 @@
 				if (!string.IsNullOrWhiteSpace(skillMixSummaryModel.ResourceID) && !resources.Contains(skillMixSummaryModel.ResourceID))
 				{
 					skillMixSummaryModel.ResourceHours = 0m;
-					skillMixSummaryModel.LaborSkillMix = 0m;
+					skillMixSummaryModel.HistoricalSkillMix = 0m;
 				}
 
 				// Remove bad historical resource
@@ -716,9 +716,9 @@
 				{
 					// this skill mix summary model is pointing towards a missing Resource, remove the resource name
 					skillMixSummaryModel.BusinessResourceID = string.Empty;
-					skillMixSummaryModel.BusinessResourceHours = 0m;
+					skillMixSummaryModel.ProposedBrc = 0m;
 					skillMixSummaryModel.UCOTHours = 0m;
-					skillMixSummaryModel.BOESkillMix = 0m;
+					skillMixSummaryModel.ProposedSkillMix = 0m;
 				}
 
 				// if the row does not have resource or BRC set, then delete it
@@ -748,9 +748,9 @@
 			foreach (SkillMixModelView row in refreshedModel.SkillMixRows)
 			{
 				row.LaborSkillMix = refreshedModel.SkillMixTotals.HistoricalHours == 0m ? 0m : row.HistoricalHours * 100.0m / refreshedModel.SkillMixTotals.HistoricalHours;
-				if (row.Included && refreshedModel.SkillMixTotals.ProposedHours != 0.0m)
+				if (row.Included && refreshedModel.SkillMixTotals.ProposedLegacyResource != 0.0m)
 				{
-					row.BOESkillMix = row.ProposedHours * 100.0m / refreshedModel.SkillMixTotals.ProposedHours;
+					row.BOESkillMix = row.ProposedHours * 100.0m / refreshedModel.SkillMixTotals.ProposedLegacyResource;
 				}
 				else
 				{
@@ -762,9 +762,9 @@
 			foreach (CommonDisclosureModelView row in refreshedModel.CommonDisclosureRows)
 			{
 				row.LaborSkillMix = refreshedModel.CommonDisclosureTotals.HistoricalHours == 0m ? 0m : row.HistoricalHours * 100.0m / refreshedModel.CommonDisclosureTotals.HistoricalHours;
-				if (row.Included && refreshedModel.CommonDisclosureTotals.ProposedHours != 0.0m)
+				if (row.Included && refreshedModel.CommonDisclosureTotals.ProposedLegacyResource != 0.0m)
 				{
-					row.BOESkillMix = row.ProposedHours * 100.0m / refreshedModel.CommonDisclosureTotals.ProposedHours;
+					row.BOESkillMix = row.ProposedHours * 100.0m / refreshedModel.CommonDisclosureTotals.ProposedLegacyResource;
 				}
 				else
 				{
@@ -775,21 +775,21 @@
 			// Set BOE Skill Mix Percent on Skill Mix Summary table
 			foreach (SkillMixSummaryModelView row in refreshedModel.SkillMixSummaryRows)
 			{
-				row.LaborSkillMix = refreshedModel.SkillMixSummaryTotals.HistoricalHours == 0m ? 0m : row.HistoricalHours * 100.0m / refreshedModel.SkillMixSummaryTotals.HistoricalHours;
-				if (refreshedModel.SkillMixSummaryTotals.ProposedHours != 0.0m)
+				row.HistoricalSkillMix = refreshedModel.SkillMixSummaryTotals.HistoricalHours == 0m ? 0m : row.HistoricalHours * 100.0m / refreshedModel.SkillMixSummaryTotals.HistoricalHours;
+				if (refreshedModel.SkillMixSummaryTotals.ProposedLegacyResource != 0.0m)
 				{
-					row.BOESkillMix = row.ProposedHours * 100.0m / refreshedModel.SkillMixSummaryTotals.ProposedHours;
+					row.ProposedSkillMix = row.ProposedLegacyResource * 100.0m / refreshedModel.SkillMixSummaryTotals.ProposedLegacyResource;
 				}
 				else
 				{
-					row.BOESkillMix = 0.0m;
+					row.ProposedSkillMix = 0.0m;
 				}
 			}
 
 			// BoeSkillMix Totals
-			refreshedModel.SkillMixTotals.BoeSkillMix = refreshedModel.SkillMixRows.Where(d => d.Included).Sum(s => s.BOESkillMix ?? 0.0m);
-			refreshedModel.CommonDisclosureTotals.BoeSkillMix = refreshedModel.CommonDisclosureRows.Where(d => d.Included).Sum(s => s.BOESkillMix ?? 0.0m);
-			refreshedModel.SkillMixSummaryTotals.BoeSkillMix = refreshedModel.SkillMixSummaryRows.Sum(s => s.BOESkillMix ?? 0.0m);
+			refreshedModel.SkillMixTotals.ProposedSkillMix = refreshedModel.SkillMixRows.Where(d => d.Included).Sum(s => s.BOESkillMix ?? 0.0m);
+			refreshedModel.CommonDisclosureTotals.ProposedSkillMix = refreshedModel.CommonDisclosureRows.Where(d => d.Included).Sum(s => s.BOESkillMix ?? 0.0m);
+			refreshedModel.SkillMixSummaryTotals.ProposedSkillMix = refreshedModel.SkillMixSummaryRows.Sum(s => s.ProposedSkillMix ?? 0.0m);
 		}
 
 		/// <summary>
@@ -800,20 +800,20 @@
 		{
 			// Skill Mix Totals
 			refreshedModel.SkillMixTotals.HistoricalHours = refreshedModel.SkillMixRows.Sum(s => s.HistoricalHours);
-			refreshedModel.SkillMixTotals.LaborSkillMix = 100.0m;
-			refreshedModel.SkillMixTotals.ProposedHours = refreshedModel.SkillMixRows.Where(d => d.Included).Sum(s => s.ProposedHours);
+			refreshedModel.SkillMixTotals.HistoricalSkillMix = 100.0m;
+			refreshedModel.SkillMixTotals.ProposedLegacyResource = refreshedModel.SkillMixRows.Where(d => d.Included).Sum(s => s.ProposedHours);
 
 			// Common Disclosure Totals
 			refreshedModel.CommonDisclosureTotals.HistoricalHours = refreshedModel.CommonDisclosureRows.Sum(s => s.HistoricalHours);
-			refreshedModel.CommonDisclosureTotals.LaborSkillMix = 100.0m;
-			refreshedModel.CommonDisclosureTotals.ProposedHours = refreshedModel.CommonDisclosureRows.Where(d => d.Included).Sum(s => s.ProposedHours);
+			refreshedModel.CommonDisclosureTotals.HistoricalSkillMix = 100.0m;
+			refreshedModel.CommonDisclosureTotals.ProposedLegacyResource = refreshedModel.CommonDisclosureRows.Where(d => d.Included).Sum(s => s.ProposedHours);
 			refreshedModel.CommonDisclosureTotals.UCOTHours = refreshedModel.CommonDisclosureRows.Sum(s => s.UCOTHours);
 
 			// Skill Mix Summary Totals
 			refreshedModel.SkillMixSummaryTotals.HistoricalHours = refreshedModel.SkillMixSummaryRows.Sum(s => s.HistoricalHours);
-			refreshedModel.SkillMixSummaryTotals.LaborSkillMix = 100.0m;
-			refreshedModel.SkillMixSummaryTotals.ProposedHours = refreshedModel.SkillMixSummaryRows.Sum(s => s.ProposedHours);
-			refreshedModel.SkillMixSummaryTotals.BRCProposedHours = refreshedModel.SkillMixSummaryRows.Sum(s => s.BusinessResourceHours);
+			refreshedModel.SkillMixSummaryTotals.HistoricalSkillMix = 100.0m;
+			refreshedModel.SkillMixSummaryTotals.ProposedLegacyResource = refreshedModel.SkillMixSummaryRows.Sum(s => s.ProposedLegacyResource);
+			refreshedModel.SkillMixSummaryTotals.ProposedBrc = refreshedModel.SkillMixSummaryRows.Sum(s => s.ProposedBrc);
 			refreshedModel.SkillMixSummaryTotals.UCOTHours = refreshedModel.SkillMixSummaryRows.Sum(s => s.UCOTHours);
 		}
 
