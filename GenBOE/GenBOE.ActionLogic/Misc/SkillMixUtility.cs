@@ -736,10 +736,7 @@
 					usedCombos.Add(new Tuple<string, string>(skillMixSummaryModel.ResourceID, skillMixSummaryModel.BusinessResourceID));
 				}
 			}
-
-			// Now look for duplicate rows
 		}
-
 
 		/// <summary>
 		/// Calculates the BOESkillMix Percentage
