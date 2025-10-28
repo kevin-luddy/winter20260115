@@ -7,16 +7,20 @@
 namespace GenBOE.Web.Controllers
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.Diagnostics;
 	using System.Linq;
 	using System.Web.Http;
 	using System.Web.Http.Cors;
 	using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ControllerLogic.Backend;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.Backend;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using IES.Common;
 
@@ -100,16 +104,20 @@ namespace GenBOE.Web.Controllers
 				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortname);
 				SecurityAuthorization permission = this.CheckPermission(SecurityPage.WorkspaceHome, ws);
 
+				Stopwatch sw = InitializeAction(logger, WebConstants.GET_WORKSPACE_CONFIGURATION, SecurityPage.WorkspaceHome, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, null);
+
 				// Only return data if the permissions is at a read level or above.
 				if (permission >= SecurityAuthorization.Read)
 				{
 					result.Data = BOEConfigurationControllerLogic.GetWorkspaceConfiguration(ws, workspaceShortname);
+					result.Data.ReportHoursLabel = FullObjectHelper.HoursLabel(ws);
 					result.IsSuccessful = true;
 				}
 				else
 				{
 					result.Messages.Add($"Insufficient permissions for returning the Workspace data.");
 				}
+				FinalizeAction(logger, WebConstants.GET_WORKSPACE_CONFIGURATION, sw);
 			}
 			catch (Exception ex)
 			{

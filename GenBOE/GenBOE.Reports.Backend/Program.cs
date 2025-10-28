@@ -4,10 +4,14 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Collections.Generic;
+using System.Linq;
 using GenBOE.DataBridge.Core.Common;
 using GenBOE.DataBridge.Core.Common.Calculations;
+using GenBOE.DataBridge.Core.DTO;
 using GenBOE.DataBridge.Core.IO.Export;
 using GenBOE.DataBridge.Core.Loaders;
+using GenBOE.DataBridge.Core.Loaders.SystemSetting;
 using GenBOE.Reports.Backend.Services;
 using IES.Common.Core;
 using IES.Common.Core.Configuration;
@@ -16,6 +20,7 @@ using IES.Common.Core.Interfaces;
 using IES.Common.Core.Loaders;
 using IES.Common.Core.Security;
 using IES.Common.Core.Services;
+using IES.Common.Core.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -23,6 +28,8 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 ApplicationConfigurationBase config = new();
 config.ConfigureBasics<Program>(builder, "BOE_DATABASE");
 config.AddWindowsAuthentication(builder.Services, builder.Configuration);
+
+CommonUtilities.SetLicense();
 
 // Add Custom Services
 builder.Services.AddScoped<ISecurityInformation, SecurityInformation>();
@@ -32,7 +39,7 @@ builder.Services.AddSingleton<ICacheDataLoader, CacheDataLoader>();
 builder.Services.AddScoped<IBoeExportService, BoeExportService>();
 builder.Services.AddSingleton<ICommonDataLoader, CommonDataLoader>();
 builder.Services.AddSingleton<ICommonDataMapper, CommonDataMapper>();
-
+builder.Services.AddSingleton<ISystemSettingDTODataLoader, SystemSettingDTODataLoader>();
 builder.Services.AddSingleton<TravelTripCostCalculation>();
 
 // builder.Services.AddSingleton<IWorkspaceExportFormatDTODataLoader, WorkspaceExportFormatDTODataLoader>();
@@ -65,4 +72,15 @@ else if (companyMode == CompanyConfiguration.MST)
 
 WebApplication app = config.ConfigureAppBuilder(builder);
 IES.Common.Core.Utilities.CommonUtilities.LogEnvironmentSettings(app, app.Configuration, app.Environment);
+
+using (IServiceScope scope = app.Services.CreateScope())
+{
+	// Avoid calling the method to get the Skill Mix system settings on every blacklist check - initialize the value on startup (and only update it on every update)
+	ISystemSettingDTODataLoader systemSettingLoader = scope.ServiceProvider.GetRequiredService<ISystemSettingDTODataLoader>();
+	ICollection<SystemSettingDTO> skillMixSettings = systemSettingLoader.GetSkillMixSettings();
+	CommonUtilities.UpdateSkillMixBlacklistSettings(
+		skillMixSettings.FirstOrDefault(x => x.Key.Equals(SystemSettingConstants.SKILL_MIX_BLACKLIST)) == null ? string.Empty :
+			skillMixSettings.FirstOrDefault(x => x.Key.Equals(SystemSettingConstants.SKILL_MIX_BLACKLIST)).Value);
+}
+
 app.Run();

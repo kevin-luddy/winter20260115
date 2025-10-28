@@ -149,20 +149,10 @@ namespace GenBOE.Dtos
 			}
 		}
 
-		/// <summary>
-		/// These are used for data load.. During the load the data is stored here temporarily, then it's placed into the public property and cleared out
-		/// </summary>
-		internal IEnumerable<ResourceSpreadDto> LaborSpreadsIEnum { get; set; }
-
 		// the labor spreads associated with a labor type
 		public Collection<ResourceSpreadDto> LaborSpreads { get; set; }
 
 		public int BoeID { get; set; }
-
-		/// <summary>
-		/// These are used for data load.. During the load the data is stored here temporarily, then it's placed into the public property and cleared out
-		/// </summary>
-		internal IEnumerable<CustomFieldValueContainer> CustomFieldValueContainersIEnum { get; set; }
 
 		//Labor Type custom fields
 		public Collection<CustomFieldValueContainer> CustomFieldValueContainers { get; set; }

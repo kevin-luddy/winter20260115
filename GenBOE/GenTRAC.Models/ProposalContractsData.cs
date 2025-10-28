@@ -23,12 +23,6 @@ namespace GenTRAC.Models
         public Nullable<long> FinalNegotiatedValue { get; set; }
         public Nullable<System.DateTime> FinalNegotiatedDate { get; set; }
         public Nullable<int> EppDelegationAuthority { get; set; }
-        public Nullable<System.DateTime> ProgramEppDate { get; set; }
-        public Nullable<System.DateTime> LobEppDate { get; set; }
-        public Nullable<System.DateTime> PreSpaceEppDate { get; set; }
-        public Nullable<System.DateTime> SpaceEppDate { get; set; }
-        public Nullable<System.DateTime> PreCorporateEppDate { get; set; }
-        public Nullable<System.DateTime> CorporateEppDate { get; set; }
         public string EppRosDelegationNotes { get; set; }
         public Nullable<bool> LmWon { get; set; }
         public Nullable<System.DateTime> ModCompletedDate { get; set; }
@@ -38,8 +32,22 @@ namespace GenTRAC.Models
         public Nullable<int> InsuranceType { get; set; }
         public Nullable<long> ProposedInsurance { get; set; }
         public Nullable<long> NegotiatedInsurance { get; set; }
-        public Nullable<System.DateTime> BidEppDate { get; set; }
-        public Nullable<System.DateTime> MissionSegmentEppDate { get; set; }
+        public Nullable<System.DateTime> PlannedProgramEppDate { get; set; }
+        public Nullable<System.DateTime> PlannedLobEppDate { get; set; }
+        public Nullable<System.DateTime> PlannedPreSpaceEppDate { get; set; }
+        public Nullable<System.DateTime> PlannedSpaceEppDate { get; set; }
+        public Nullable<System.DateTime> PlannedPreCorporateEppDate { get; set; }
+        public Nullable<System.DateTime> PlannedCorporateEppDate { get; set; }
+        public Nullable<System.DateTime> PlannedBidEppDate { get; set; }
+        public Nullable<System.DateTime> PlannedMissionSegmentEppDate { get; set; }
+        public Nullable<System.DateTime> ScheduledProgramEppDate { get; set; }
+        public Nullable<System.DateTime> ScheduledLobEppDate { get; set; }
+        public Nullable<System.DateTime> ScheduledPreSpaceEppDate { get; set; }
+        public Nullable<System.DateTime> ScheduledSpaceEppDate { get; set; }
+        public Nullable<System.DateTime> ScheduledPreCorporateEppDate { get; set; }
+        public Nullable<System.DateTime> ScheduledCorporateEppDate { get; set; }
+        public Nullable<System.DateTime> ScheduledBidEppDate { get; set; }
+        public Nullable<System.DateTime> ScheduledMissionSegmentEppDate { get; set; }
     
         public virtual EppDelegationAuthorityLU EppDelegationAuthorityLU { get; set; }
         public virtual Proposal Proposal { get; set; }

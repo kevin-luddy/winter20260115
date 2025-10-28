@@ -36,6 +36,7 @@ namespace GenBOE.Models
             this.SumOfBOE_WorkspaceVariableXREF = new HashSet<SumOfBOE_WorkspaceVariableXREF>();
             this.TravelTripTaskElements = new HashSet<TravelTripTaskElement>();
             this.WBS_CLIN_BOE_XREF = new HashSet<WBS_CLIN_BOE_XREF>();
+            this.SkillMixSummaries = new HashSet<SkillMixSummary>();
         }
     
         public int BOEID { get; set; }
@@ -92,5 +93,7 @@ namespace GenBOE.Models
         public virtual ICollection<TravelTripTaskElement> TravelTripTaskElements { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<WBS_CLIN_BOE_XREF> WBS_CLIN_BOE_XREF { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<SkillMixSummary> SkillMixSummaries { get; set; }
     }
 }

@@ -30,13 +30,13 @@ namespace GenBOE.Objects
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
 		[NonSerialized]
 		protected IRetriever retriever;
-		
+
 		[NonSerialized]
 		private ICommonDataMapper commonDataMapper;
 
 		[NonSerialized]
 		private IPermissionsDTODataLoader _PermissionsLoader;
-		
+
 		private string _WorkspaceStateName = null;
 		private ReadOnlyCollection<PermissionsDTO> _WorkspacePermissions = null;
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
@@ -59,8 +59,9 @@ namespace GenBOE.Objects
 		private ReadOnlyCollection<CustomFieldDTO> customFields;
 		private ReadOnlyCollection<CustomFieldValueDTO> customFieldValues;
 		private ReadOnlyCollection<TMResourceRateDTO> tmResourceRates;
-		private ReadOnlyCollection<WorkspaceExportFormatDTO> workspaceExportFormats;
+		private ReadOnlyCollection<WorkspaceExportFormatNameDTO> workspaceExportFormatNames;
 		private string selectedWorkspaceExportFormatName;
+		private WorkspaceExportFormatDTO workspaceExportFormatTemplate;
 		private ReadOnlyCollection<WorkspaceVersionMetaDataDTO> workspaceVersionMetaData;
 		private ReadOnlyCollection<ProPricerDTO> proPricerExports;
 		private ReadOnlyCollection<PerformingOrgDTO> performingOrgsForWorkspaceList;
@@ -189,7 +190,7 @@ namespace GenBOE.Objects
 				return this.clins;
 			}
 		}
-		
+
 		/// <summary>
 		/// Clins belonging to the Workspace without Multi Clin
 		/// </summary>
@@ -221,7 +222,7 @@ namespace GenBOE.Objects
 				return this.wbsElements;
 			}
 		}
-		
+
 		/// <summary>
 		/// Wbs Elements belonging to the Workspace without Multi
 		/// </summary>
@@ -251,7 +252,7 @@ namespace GenBOE.Objects
 				return this.boes;
 			}
 		}
-		
+
 		/// <summary>
 		/// Loads BOEs into the property.. Used if you want to preload the BOEs ahead of time
 		/// </summary>
@@ -267,8 +268,8 @@ namespace GenBOE.Objects
 		/// Populates RTE data for all Boes
 		/// </summary>
 		public virtual void LoadBoesAndTaskElementsRTEData()
-		{ 
-			if(this.boes == null)
+		{
+			if (this.boes == null)
 			{
 				// Confirming that Task Elements are loaded with RTE data
 				this.LoadTaskElementRTEData();
@@ -277,7 +278,7 @@ namespace GenBOE.Objects
 				this.boes = this.retriever.GetFullBoesByWorkspaceId(this.Id, true, this.TaskElements).ToList().AsReadOnly();
 			}
 			else
-			{ 
+			{
 				// Data was already retrieved, so we are only missing the RTE data, which we'll now load
 				this.retriever.PopulateRTEData(this.boes);
 			}
@@ -433,7 +434,7 @@ namespace GenBOE.Objects
 
 			if (trip == null)
 			{
-			   trip = this.retriever.GetTravelTripById(id, this);
+				trip = this.retriever.GetTravelTripById(id, this);
 			}
 
 			return trip;
@@ -692,15 +693,15 @@ namespace GenBOE.Objects
 			{
 				if (this.selectedWorkspaceExportFormatName == null)
 				{
-					if (this.workspaceExportFormats == null)
+					if (this.workspaceExportFormatNames == null)
 					{
 						// retrieve from the database directly
-						this.selectedWorkspaceExportFormatName = this.retriever.GetWorkspaceExportFormatNameByTemplateId(this.TemplateID);
+						this.selectedWorkspaceExportFormatName = this.retriever.GetWorkspaceExportFormatNameByTemplateId(this.TemplateID)?.ExportFormatName;
 					}
 					else
 					{
 						// retrieve from the property
-						this.selectedWorkspaceExportFormatName = this.WorkspaceExportFormats.FirstOrDefault(f => f.Id == this.TemplateID)?.ExportFormatName;
+						this.selectedWorkspaceExportFormatName = this.WorkspaceExportFormatNames.FirstOrDefault(f => f.Id == this.TemplateID)?.ExportFormatName;
 					}
 				}
 
@@ -711,19 +712,19 @@ namespace GenBOE.Objects
 		/// <summary>
 		/// Workspace Export Format
 		/// </summary>
-		public IReadOnlyCollection<WorkspaceExportFormatDTO> WorkspaceExportFormats
+		public IReadOnlyCollection<WorkspaceExportFormatNameDTO> WorkspaceExportFormatNames
 		{
 			get
 			{
-				if (this.workspaceExportFormats == null)
+				if (this.workspaceExportFormatNames == null)
 				{
-					List<WorkspaceExportFormatDTO> tempWorkspaceExportFormats = this.retriever.GetWorkspaceExportFormatsByWorkspaceId(this.Id).ToList();
+					List<WorkspaceExportFormatNameDTO> tempWorkspaceExportFormats = this.retriever.GetWorkspaceExportFormatNamesByWorkspaceId(this.Id).ToList();
 
 					// Add the template for the Workspace's selected Template ID so a template that has been archived or
 					// switched off available for all will still be available
 					if (!tempWorkspaceExportFormats.Select(x => x.Id).Contains(this.TemplateID))
 					{
-						WorkspaceExportFormatDTO workspaceTemplate = this.retriever.GetWorkspaceExportFormatByTemplateId(this.TemplateID);
+						WorkspaceExportFormatNameDTO workspaceTemplate = this.retriever.GetWorkspaceExportFormatNameByTemplateId(this.TemplateID);
 
 						if (workspaceTemplate != null)
 						{
@@ -731,10 +732,27 @@ namespace GenBOE.Objects
 						}
 					}
 
-					this.workspaceExportFormats = tempWorkspaceExportFormats.AsReadOnly();
+					this.workspaceExportFormatNames = tempWorkspaceExportFormats.AsReadOnly();
 				}
 
-				return this.workspaceExportFormats;
+				return this.workspaceExportFormatNames;
+			}
+		}
+
+		/// <summary>
+		/// Workspace Export Format for the selected Template
+		/// </summary>
+		public WorkspaceExportFormatDTO WorkspaceExportFormatTemplate
+		{
+			get
+			{
+				if (this.workspaceExportFormatTemplate == null)
+				{
+					// retrieve from the database directly
+					this.workspaceExportFormatTemplate = this.retriever.GetWorkspaceExportFormatByTemplateId(this.TemplateID);
+				}
+
+				return this.workspaceExportFormatTemplate;
 			}
 		}
 
@@ -834,7 +852,7 @@ namespace GenBOE.Objects
 			{
 				if (this.laborResourcesMappingWithCustomFieldsValuesAndContainerIds == null)
 				{
-					this.laborResourcesMappingWithCustomFieldsValuesAndContainerIds = this.retriever.GetCustomFieldValueIDsContainerIdsByLaborTypeIds(this.TaskElements.SelectMany(x => x.taskElementLabors).Select(y=>y.Id).ToCollection());
+					this.laborResourcesMappingWithCustomFieldsValuesAndContainerIds = this.retriever.GetCustomFieldValueIDsContainerIdsByLaborTypeIds(this.TaskElements.SelectMany(x => x.taskElementLabors).Select(y => y.Id).ToCollection());
 				}
 
 				return this.laborResourcesMappingWithCustomFieldsValuesAndContainerIds;
@@ -847,7 +865,7 @@ namespace GenBOE.Objects
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public Dictionary<int, ICollection<KeyValuePair<int, int>>> TravelElementsMappingWithCustomFieldsValuesAndContainerIds
 		{
-		   
+
 			get
 			{
 				if (this.travelElementsMappingWithCustomFieldsValuesAndContainerIds == null)
@@ -1136,7 +1154,7 @@ namespace GenBOE.Objects
 			{
 				return WbsElements.FirstOrDefault(w => w.WbsNumber == Constants.UNIQUE_MULTI_NUMBER);
 			}
-		} 
+		}
 		/// <summary>
 		/// Gets the Multi Clin for this workspace.
 		/// </summary>
@@ -1241,7 +1259,7 @@ namespace GenBOE.Objects
 		{
 			get
 			{
-				if(this.rteOverrides == null)
+				if (this.rteOverrides == null)
 				{
 					this.rteOverrides = this.retriever.GetWsRteOverrides(this.Id).ToList().AsReadOnly();
 				}
@@ -1257,7 +1275,7 @@ namespace GenBOE.Objects
 		{
 			get
 			{
-				if(this.templateQuestionsAndAnswers == null)
+				if (this.templateQuestionsAndAnswers == null)
 				{
 					this.templateQuestionsAndAnswers = this.retriever.GetQuestionsAndAnswersByWorkspaceId(this.Id).ToList().AsReadOnly();
 				}
@@ -1279,6 +1297,25 @@ namespace GenBOE.Objects
 				}
 
 				return this.moqTypeSelections;
+			}
+		}
+
+		/// <summary>
+		/// Returns whether any Task has Authors assigned
+		/// </summary>
+		public bool WorkspaceContainsTaskAuthor
+		{
+			get
+			{
+				if (this.taskElements != null)
+				{
+					return this.TaskElements.Any(x => x.AuthorUserId != null);
+				}
+				else
+				{
+					// pull from database
+					return this.retriever.CheckIfTaskContainsAuthors(this.Id);
+				}
 			}
 		}
 

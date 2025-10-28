@@ -132,11 +132,11 @@ namespace GenBOE.Objects
 		ICollection<ProPricerDTO> GetProPricerExportsByWorkspaceId(int workspaceId);
 
 		/// <summary>
-		/// Gets workspace export format by workspace Id.
+		/// Gets workspace export format name by workspace Id.
 		/// </summary>
 		/// <param name="wsId">Workspace Id</param>
-		/// <returns>Workspace Export Format DTOs</returns>
-		ICollection<WorkspaceExportFormatDTO> GetWorkspaceExportFormatsByWorkspaceId(int wsId);
+		/// <returns>Workspace Export Format Name DTOs</returns>
+		ICollection<WorkspaceExportFormatNameDTO> GetWorkspaceExportFormatNamesByWorkspaceId(int wsId);
 
 		/// <summary>
 		/// Get Workspace Export Format DTO by the template ID
@@ -589,13 +589,13 @@ namespace GenBOE.Objects
 		/// <param name="boeId">Boe Id</param>
 		/// <returns>Selected MOQ Types with data</returns>
 		ICollection<MoqTypeSelection> GetMoqTypeSelectionsByBoeId(int boeId);
-		
+
 		/// <summary>
-		/// Get the WS Export Format's Name 
+		/// Get the WS Export Format Name 
 		/// </summary>
 		/// <param name="templateID">The template ID of the workspace export format.</param>
-		/// <returns>The name of the WS Export Format</returns>
-		string GetWorkspaceExportFormatNameByTemplateId(int templateID);
+		/// <returns>The WS Export Format Name</returns>
+		WorkspaceExportFormatNameDTO GetWorkspaceExportFormatNameByTemplateId(int templateID);
 
 		/// <summary>
 		/// Get Materials for the Workspace with the given ID
@@ -612,5 +612,11 @@ namespace GenBOE.Objects
 		/// <param name="loadRteData">Indicate whether RTE data should be loaded automatically</param>
 		/// <returns>Other direct Costs associated with the Workspace.</returns>
 		ICollection<OtherDirectCostDTO> GetOdcCollectionByWorkspaceId(int workspaceId, bool loadRteData);
+
+		/// <summary>
+		/// Checks if any Tasks contain authors
+		/// </summary>
+		/// <param name="id">workspace id</param>
+		bool CheckIfTaskContainsAuthors(int workspaceId);
 	}
 }

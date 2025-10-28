@@ -10,8 +10,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.Linq;
-	using DocumentFormat.OpenXml;
-	using DocumentFormat.OpenXml.Wordprocessing;
+	using Aspose.Words;
+	using Aspose.Words.Tables;
 	using GenBOE.DataBridge.Core.DTO.Export.BOE;
 	using GenBOE.DataBridge.Core.IO.Export;
 	using IES.Common.Core;
@@ -344,8 +344,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 	/// </summary>
 	public class BOEExportTaskContainer
 	{
-		public OpenXmlElement TaskContainer { get; set; }
-		public TableRow TaskTypeRow { get; set; }
+		public CompositeNode TaskContainer { get; set; }
+		public Row TaskTypeRow { get; set; }
 		public bool Duplicated { get; set; }
 
 		public BOEExportTaskContainer()
@@ -355,7 +355,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			Duplicated = false;
 		}
 
-		public BOEExportTaskContainer(OpenXmlElement taskContainer)
+		public BOEExportTaskContainer(CompositeNode taskContainer)
 			: this()
 		{
 			if (taskContainer == null)
@@ -366,7 +366,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 			TaskContainer = taskContainer;
 		}
 
-		public BOEExportTaskContainer(OpenXmlElement taskContainer, TableRow taskTypeRow)
+		public BOEExportTaskContainer(CompositeNode taskContainer, Row taskTypeRow)
 			: this(taskContainer)
 		{
 			if (taskTypeRow == null)

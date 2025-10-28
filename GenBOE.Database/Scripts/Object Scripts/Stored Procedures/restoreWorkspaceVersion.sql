@@ -8,7 +8,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE  PROCEDURE [dbo].[restoreWorkspaceVersion] (@VersionID int, @ETIUserID int, @WorkspaceID int)
+CREATE PROCEDURE [dbo].[restoreWorkspaceVersion] (@VersionID int, @ETIUserID int, @WorkspaceID int)
 AS
 /******************************************************************************
 **		 
@@ -56,6 +56,8 @@ AS
 **		10/15/24	e405721				PROPH-2392: Update for Skill Mix V2
 **		1/14/25		twilson3			PROPH-2596 - Add UCOT Factor
 **		1/15/25		e309214				PROPH-1854 Database Changes for Assign Author
+**		9/30/25		e378233				PROPH-3302 Updated for Skill Mix Summary
+**		10/28/2025	twilson3			proph-3411 ALways set PerformingOrganizationChangeFlag to true (1) to fix any false negatives
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -237,6 +239,10 @@ BEGIN
 		DELETE FROM [dbo].[SkillMix]
 			FROM [dbo].[SkillMix] SM
 			INNER JOIN dbo.BOE B ON SM.BOEID  = B.BOEID
+			WHERE B.WorkspaceID = @WorkspaceID
+		DELETE FROM [dbo].[SkillMixSummary]
+			FROM [dbo].[SkillMixSummary] SMS
+			INNER JOIN dbo.BOE B ON SMS.BOEID  = B.BOEID
 			WHERE B.WorkspaceID = @WorkspaceID
 		DELETE FROM [dbo].[MOQTypeSelection]
 			FROM [dbo].[MOQTypeSelection] M
@@ -527,7 +533,7 @@ BEGIN
 			,[AllowSearch] = vW.[AllowSearch]
 			,[ResourceListID]=RL.[ResourceListID]
 			,[PerformingOrganizationListID]=PL.[PerformingOrganizationListID]
-			,[PerformingOrganizationChangeFlag] = vW.[PerformingOrganizationChangeFlag]
+			,[PerformingOrganizationChangeFlag] = 1
 			,[TrackingNumber] = vW.[TrackingNumber]
 			,[ContainsTemplate] = vW.[ContainsTemplate]
 			,[NumProPricerExport] = vW.[NumProPricerExport]
@@ -2643,6 +2649,46 @@ BEGIN
 
 		END
 
+		/** [dbo].[SkillMixSummary] **/
+		IF EXISTS (SELECT 1 FROM [version].[SkillMixSummary] WHERE VersionID = @VersionID)
+		BEGIN
+		SET IDENTITY_INSERT [dbo].[SkillMixSummary] ON
+		INSERT INTO [dbo].[SkillMixSummary]
+		([SkillMixSummaryID],
+		[Rationale],
+		[Included],
+		[ProposedHours],
+		[HistoricalHours],
+		[ResourceHours],
+		[BusinessResourceHours],
+		[BOESkillMix],
+		[LaborSkillMix],
+		[ResourceID],
+		[BusinessResourceID],
+		[BOEID],
+		[BOETaskElementID]
+		)
+		SELECT SMS.[SkillMixSummaryID],
+			SMS.[Rationale],
+			SMS.[Included],
+			SMS.[ProposedHours],
+			SMS.[HistoricalHours],
+			SMS.[ResourceHours],
+			SMS.[BusinessResourceHours],
+			SMS.[BOESkillMix],
+			SMS.[LaborSkillMix],
+			SMS.[ResourceID],
+			SMS.[BusinessResourceID],
+			SMS.[BOEID],
+			SMS.[BOETaskElementID]
+		FROM [version].[SkillMixSummary] SMS
+		WHERE 
+		SMS.VersionId = @VersionID
+
+		SET IDENTITY_INSERT [dbo].[SkillMixSummary] OFF
+
+		END
+
 		/** [dbo].[MOQTypeSelectionTableDataResourceHours] **/
 		IF EXISTS (SELECT 1 FROM [version].[MOQTypeSelectionTableDataResourceHours] WHERE VersionID = @VersionID)
 		BEGIN
@@ -3168,6 +3214,7 @@ BEGIN
 		SET IDENTITY_INSERT [dbo].[MOQTypeSelectionTableData] OFF
 		SET IDENTITY_INSERT [dbo].[SkillMix] OFF
 		SET IDENTITY_INSERT [dbo].[CommonDisclosureSkillMix] OFF
+		SET IDENTITY_INSERT [dbo].[SkillMixSummary] OFF
 		SET IDENTITY_INSERT [dbo].[MOQTypeSelectionTableDataResourceHours] OFF
 		SET IDENTITY_INSERT [dbo].[MoqTypeTableCustomFieldValueXREF] OFF
 		SET IDENTITY_INSERT [dbo].[ODCSpread] OFF

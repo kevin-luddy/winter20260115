@@ -806,7 +806,7 @@ namespace GenBOE.ActionLogic.IO.Import
 			else
 			{
 				IReadOnlyCollection<PerformingOrgDTO> POlist = inWorkspace.PerformingOrgsForWsList;
-				PerformingOrgDTO PO = (from poToGet in POlist where importfromfile[PERFORMING_ORG_COL] == (poToGet.PerformingOrgName + " - " + poToGet.PerformingOrgDesc) select poToGet).FirstOrDefault();
+				PerformingOrgDTO PO = (from poToGet in POlist where importfromfile[PERFORMING_ORG_COL] == poToGet.PerformingOrgName select poToGet).FirstOrDefault();
 
 				if (PO != null)
 				{
@@ -1226,7 +1226,7 @@ namespace GenBOE.ActionLogic.IO.Import
 		/// <returns>ResourceDTO representing Resource selected in import file</returns>
 		private static ResourceDTO PopulateResource(Dictionary<string, string> importfromfile, ImportedLaborType toReturn, ICollection<ResourceDTO> resourcelist)
 		{
-			ResourceDTO resource = (from resourceToGet in resourcelist where importfromfile[ImportExportConstants.RESOURCE_COLUMN_HEADER] == resourceToGet.ResourceDesc select resourceToGet).FirstOrDefault();
+			ResourceDTO resource = (from resourceToGet in resourcelist where importfromfile[ImportExportConstants.RESOURCE_COLUMN_HEADER] == resourceToGet.ResourceName select resourceToGet).FirstOrDefault();
 
 			if (resource != null)
 			{
@@ -1250,7 +1250,7 @@ namespace GenBOE.ActionLogic.IO.Import
 		/// <returns>ResourceDTO representing Business Resource Code selected in import file</returns>
 		private static ResourceDTO PopulateBusinessResourceCode(Dictionary<string, string> importfromfile, ImportedLaborType toReturn, ICollection<ResourceDTO> businessResourceList)
 		{
-			ResourceDTO businessResourceCode = (from brcToGet in businessResourceList where importfromfile[ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER] == brcToGet.ResourceDesc select brcToGet).FirstOrDefault();
+			ResourceDTO businessResourceCode = (from brcToGet in businessResourceList where importfromfile[ImportExportConstants.BUSINESS_RESOURCE_CODE_COLUMN_HEADER] == brcToGet.ResourceName select brcToGet).FirstOrDefault();
 
 			if (businessResourceCode != null)
 			{

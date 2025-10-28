@@ -70,44 +70,84 @@ namespace GenTRAC.DataBridge.DTO
 		public int? EppDelegationAuthority { get; set; }
 
 		/// <summary>
-		/// Bid EPP Date
+		/// Planned Bid EPP Date
 		/// </summary>
-		public DateTime? BidEppDate { get; set; }
+		public DateTime? PlannedBidEppDate { get; set; }
 
 		/// <summary>
-		/// Program EPP Date
+		/// Scheduled Bid EPP Date
 		/// </summary>
-		public DateTime? ProgramEppDate { get; set; }
+		public DateTime? ScheduledBidEppDate { get; set; }
 
 		/// <summary>
-		/// Mission Segment EPP Date
+		/// Planned Program EPP Date
 		/// </summary>
-		public DateTime? MissionSegmentEppDate { get; set; }
+		public DateTime? PlannedProgramEppDate { get; set; }
 
 		/// <summary>
-		/// LOB EPP Date
+		/// Scheduled Program EPP Date
 		/// </summary>
-		public DateTime? LobEppDate { get; set; }
+		public DateTime? ScheduledProgramEppDate { get; set; }
 
 		/// <summary>
-		/// Pre Space EPP Date
+		/// Planned Mission Segment EPP Date
 		/// </summary>
-		public DateTime? PreSpaceEppDate { get; set; }
+		public DateTime? PlannedMissionSegmentEppDate { get; set; }
 
 		/// <summary>
-		/// Space EPP Date
+		/// Scheduled Mission Segment EPP Date
 		/// </summary>
-		public DateTime? SpaceEppDate { get; set; }
+		public DateTime? ScheduledMissionSegmentEppDate { get; set; }
 
 		/// <summary>
-		/// Pre Corporate EPP Date
+		/// Planned LOB EPP Date
 		/// </summary>
-		public DateTime? PreCorporateEppDate { get; set; }
+		public DateTime? PlannedLobEppDate { get; set; }
 
 		/// <summary>
-		/// Corporate Epp Date
+		/// Scheduled LOB EPP Date
 		/// </summary>
-		public DateTime? CorporateEppDate { get; set; }
+		public DateTime? ScheduledLobEppDate { get; set; }
+
+		/// <summary>
+		/// Planned Pre Space EPP Date
+		/// </summary>
+		public DateTime? PlannedPreSpaceEppDate { get; set; }
+
+		/// <summary>
+		/// Scheduled Pre Space EPP Date
+		/// </summary>
+		public DateTime? ScheduledPreSpaceEppDate { get; set; }
+
+		/// <summary>
+		/// Planned Space EPP Date
+		/// </summary>
+		public DateTime? PlannedSpaceEppDate { get; set; }
+
+		/// <summary>
+		/// Scheduled Space EPP Date
+		/// </summary>
+		public DateTime? ScheduledSpaceEppDate { get; set; }
+
+		/// <summary>
+		/// Planned Pre Corporate EPP Date
+		/// </summary>
+		public DateTime? PlannedPreCorporateEppDate { get; set; }
+
+		/// <summary>
+		/// Scheduled Pre Corporate EPP Date
+		/// </summary>
+		public DateTime? ScheduledPreCorporateEppDate { get; set; }
+
+		/// <summary>
+		/// Planned Corporate Epp Date
+		/// </summary>
+		public DateTime? PlannedCorporateEppDate { get; set; }
+
+		/// <summary>
+		/// Scheduled Corporate Epp Date
+		/// </summary>
+		public DateTime? ScheduledCorporateEppDate { get; set; }
 
 		/// <summary>
 		/// EPP ROS Delegation Notes
