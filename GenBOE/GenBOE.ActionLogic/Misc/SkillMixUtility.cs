@@ -183,7 +183,7 @@
 		}
 
 		/// <summary>
-		/// Refresh Skill Mix for SPace
+		/// Refresh Skill Mix for Space
 		/// </summary>
 		/// <param name="laborTypes">The labor type/spreads data</param>
 		/// <param name="resourceHours">MOQ Table Resource Hours</param>
