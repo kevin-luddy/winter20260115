@@ -182,44 +182,49 @@
 
 				// Set ManuallySetIncluded (flag to show dropdown) to true for rows where Included is false and ResourceNew is false.
 				let sumHours = 0;
-				$scope.skillMixRationale.data.SkillMixRows.forEach(function (row) {
-					if (row.Included === false || row.ResourceNew === '') {
-						row.metadata = {
-							ManuallySetIncluded: true
-						};
-					} else {
-						row.metadata = {
-							ManuallySetIncluded: false
-						};
-						sumHours += row.ProposedHours;
-					}
-				});
+				if (!$scope.ManageTaskModel.IsSpace)
+				{
+					$scope.skillMixRationale.data.SkillMixRows.forEach(function (row) {
+						if (row.Included === false || row.ResourceNew === '') {
+							row.metadata = {
+								ManuallySetIncluded: true
+							};
+						} else {
+							row.metadata = {
+								ManuallySetIncluded: false
+							};
+							sumHours += row.ProposedHours;
+						}
+					});
 
-				$scope.skillMixRationale.data.CommonDisclosureRows.forEach(function (row) {
-					if (row.Included === false || row.BusinessResourceID === '' || row.BusinessResourceID === null) {
-						row.metadata = {
-							ManuallySetIncluded: true
-						};
-					} else {
-						row.metadata = {
-							ManuallySetIncluded: false
-						};
-						sumHours += row.ProposedHours;
-					}
-				});
-
-				$scope.skillMixRationale.data.SkillMixSummaryRows.forEach(function (row) {
-					if (row.Included === false || row.BusinessResourceID === '' || row.BusinessResourceID === null) {
-						row.metadata = {
-							ManuallySetIncluded: true
-						};
-					} else {
-						row.metadata = {
-							ManuallySetIncluded: false
-						};
-						sumHours += row.ProposedHours;
-					}
-				});
+					$scope.skillMixRationale.data.CommonDisclosureRows.forEach(function (row) {
+						if (row.Included === false || row.BusinessResourceID === '' || row.BusinessResourceID === null) {
+							row.metadata = {
+								ManuallySetIncluded: true
+							};
+						} else {
+							row.metadata = {
+								ManuallySetIncluded: false
+							};
+							sumHours += row.ProposedHours;
+						}
+					});
+				}
+				else
+				{
+					$scope.skillMixRationale.data.SkillMixSummaryRows.forEach(function (row) {
+						if (row.Included === false || row.BusinessResourceID === '' || row.BusinessResourceID === null) {
+							row.metadata = {
+								ManuallySetIncluded: true
+							};
+						} else {
+							row.metadata = {
+								ManuallySetIncluded: false
+							};
+							sumHours += row.ProposedHours + row.BusinessResourceHours;
+						}
+					});
+				}
 
 				$scope.totalSkillMixHours = sumHours;
 				$scope.deltaSkillMixHours = $scope.getMOQTotal().minus($scope.totalSkillMixHours).toString();
