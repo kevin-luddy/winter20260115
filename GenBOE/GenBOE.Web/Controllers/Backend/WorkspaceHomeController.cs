@@ -214,7 +214,7 @@ namespace GenBOE.Web.Controllers
 		/// Delete workspaces
 		/// </summary>
 		/// <param name="toBeDeleted">workspaces to be deleted</param>
-		/// <returns>bool to indicate if operation is successfull</returns>
+		/// <returns>bool to indicate if operation is successful</returns>
 		[HttpDelete]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<bool> DeleteWorkspaces(GenBOEHomepageWorkspaceRowModelView[] toBeDeleted)
@@ -249,7 +249,7 @@ namespace GenBOE.Web.Controllers
 		/// Restore workspace when PTM integrated
 		/// </summary>
 		/// <param name="toBeRestored">workspace to be restored</param>
-		/// <returns>bool to indicate if operation is successfull</returns>
+		/// <returns>bool to indicate if operation is successful</returns>
 		[HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<bool> RestorePtmWorkspace(GenBOEHomepageWorkspaceRowModelView toBeRestored)
@@ -285,7 +285,7 @@ namespace GenBOE.Web.Controllers
 		/// Restore workspace when not PTM integrated
 		/// </summary>
 		/// <param name="toBeRestored">workspace to be restored</param>
-		/// <returns>bool to indicate if operation is successfull</returns>
+		/// <returns>bool to indicate if operation is successful</returns>
 		[HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<bool> RestoreWorkspace(GenBOEHomepageWorkspaceRowModelView toBeRestored)
@@ -325,9 +325,11 @@ namespace GenBOE.Web.Controllers
 		[System.Web.Http.HttpGet]
 		public IESSingleResponse<WhosOnlineGridModelView> DisplayWhosOnline()
 		{
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_DISPLAY_WHOS_ONLINE, SecurityPage.SystemAdmin, SecurityAuthorization.Read);
 			IESSingleResponse<WhosOnlineGridModelView> result = new IESSingleResponse<WhosOnlineGridModelView>();
 			result.Data = workspaceHomeControllerLogic.DisplayWhosOnline();
 			result.IsSuccessful = true;
+			FinalizeAction(logger, WebConstants.ACTION_DISPLAY_WHOS_ONLINE, sw);
 			return result;
 		}
 

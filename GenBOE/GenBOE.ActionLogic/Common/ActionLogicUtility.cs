@@ -153,6 +153,77 @@ namespace GenBOE.ActionLogic.Common
 			return errorMessages;
 		}
 
+		/// <summary>
+		/// Validate the Skill Mix Summary Table for any errors
+		/// </summary>
+		/// <param name="taskElement">Task Element</param>
+		/// <param name="isEnableSAPConnection">Indicates whether SAP connection is enabled </param>
+		/// <param name="onButtonPress">True if this validation is being performed as part of the Validate BOE button</param>
+		/// <returns>A collection of validation errors/messages</returns>
+		public static ICollection<string> ValidateSkillMixSummaryTable(BoeTaskElementDTO taskElement, bool isEnableSAPConnection, bool onButtonPress)
+		{
+			if (taskElement == null)
+			{
+				throw new ArgumentNullException(nameof(taskElement));
+			}
+
+			bool hasResourceTypes = taskElement.taskElementLabors.Any(x => x.Updateable != UpdateType.Deleted);
+			ICollection<SkillMixSummaryModelView> skillMixSummary = taskElement.SkillMixSummaryTable;
+			ICollection<string> errorMessages = new Collection<string>();
+
+			IList<SkillMixSummaryModelView> skillMixSummaryRowsExceedChars = skillMixSummary
+																			.Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
+			IList<SkillMixSummaryModelView> skillMixSummaryRowsEmptyBoeSkillMixWhenIncluded = skillMixSummary
+																			.Where(x => x.Included && !x.BOESkillMix.HasValue).ToList();
+			IList<SkillMixSummaryModelView> skillMixSummaryIncludedHasTrueValue = skillMixSummary.Where(x => x.Included).ToList();
+
+
+			decimal totalSkillMixSummaryRowsBOESkillMix = skillMixSummary.Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
+			if (isEnableSAPConnection)
+			{
+				decimal historicalHoursTotals = skillMixSummary.Sum(x => x.HistoricalHours);
+				if (historicalHoursTotals != taskElement.MOQTotalRelevantHours)
+				{
+					errorMessages.Add("Total Historical Hours in Skill Mix Summary Table do not match the sum of the Total Relevant Hours.");
+				}
+			}
+
+			foreach (string skillMixResourceID in skillMixSummaryRowsExceedChars.Select(x => x.ResourceID))
+			{
+				errorMessages.Add(string.Format("Skill Mix Summary Table: The maximum length of the Rationale field for {0} is {1} characters.", skillMixResourceID, 255));
+			}
+
+			foreach (string skillMixResourceID in skillMixSummaryRowsEmptyBoeSkillMixWhenIncluded.Select(x => x.ResourceID))
+			{
+				errorMessages.Add(string.Format("Skill Mix Summary Table: BOE Skill Mix is missing for {0}.", skillMixResourceID));
+			}
+
+			// A task is valid for save if it has no Resource Types and a Resource Type is needed to be marked as Included
+			// So only perform this validation if there are Resource Types
+			if (hasResourceTypes && skillMixSummaryIncludedHasTrueValue.Count <= 0)
+			{
+				errorMessages.Add("Skill Mix Summary Table: At least one Resource has to be included");
+			}
+
+			if (!totalSkillMixSummaryRowsBOESkillMix.EqualsEpsilon(100) && !totalSkillMixSummaryRowsBOESkillMix.EqualsEpsilon(0))
+			{
+				errorMessages.Add("Skill Mix Summary Table: BOE Skill Mix total must be either 0% or 100%");
+			}
+
+			ValidateResourceAndBRCCombos(skillMixSummary, errorMessages);
+
+			if (onButtonPress)
+			{
+				IList<SkillMixSummaryModelView> skillMixSummaryRowsMissingRationale = skillMixSummary.Where(x => string.IsNullOrEmpty(x.Rationale)).ToList();
+				foreach (string skillMixResourceID in skillMixSummaryRowsMissingRationale.Select(x => x.ResourceID))
+				{
+					errorMessages.Add($"Skill Mix Summary Table: The Rationale field for {skillMixResourceID} is required.");
+				}
+			}
+
+			return errorMessages;
+		}
+
 		#region Private Methods
 
 		/// <summary>
@@ -176,6 +247,31 @@ namespace GenBOE.ActionLogic.Common
 				if (!isUnique)
 				{
 					errorMessages.Add(string.Format("LM Enterprise Skill Mix Table: Each BRC must be unique for Resource {0}.", pair.Key));
+				}
+			});
+		}
+
+		/// <summary>
+		/// Validate each Resource and BRC combo is unique in the Skill Mix Summary Table
+		/// </summary>
+		/// <param name="skillMixSummaries">Collection of Common Disclosure Data</param>
+		/// <param name="errorMessages">Error Messages</param>
+		private static void ValidateResourceAndBRCCombos(ICollection<SkillMixSummaryModelView> skillMixSummaries, ICollection<String> errorMessages)
+		{
+			// Create Dictionary of list for Dropdown
+			Dictionary<string, List<SkillMixSummaryModelView>> resourceToCDRowMap = skillMixSummaries?.Where(cd => cd.ResourceID != null)
+				?.GroupBy(cd => cd.ResourceID)
+				?.ToDictionary(g => g.Key, g => g.ToList());
+
+			resourceToCDRowMap.ForEach(pair =>
+			{
+				//don't need to count the null ones - that validation is checked above
+				List<SkillMixSummaryModelView> brcsForResource = pair.Value.Where(x => !string.IsNullOrEmpty(x.BusinessResourceID)).ToList();
+				int brcsForResourceCount = brcsForResource.Count();
+				bool isUnique = brcsForResource.Select(x => x.BusinessResourceID).Distinct().ToList().Count() == brcsForResourceCount;
+				if (!isUnique)
+				{
+					errorMessages.Add(string.Format("Skill Mix Summary Table: Each BRC must be unique for Resource {0}.", pair.Key));
 				}
 			});
 		}

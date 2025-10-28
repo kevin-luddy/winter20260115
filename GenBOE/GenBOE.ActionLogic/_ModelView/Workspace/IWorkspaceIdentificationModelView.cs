@@ -170,6 +170,11 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// </summary>
 		bool CurrentPTMWorkspace { get; set; }
 
+		/// <summary>
+		/// Enable the link to LM Naviagator in RTEs
+		/// </summary>
+		bool EnableLmNavigator { get; set; }
+
 		#region new genBOE UI
 		/// <summary>
 		/// Hours Label depending on system and workpace preferences

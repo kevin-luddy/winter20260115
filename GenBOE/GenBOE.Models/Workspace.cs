@@ -94,6 +94,7 @@ namespace GenBOE.Models
         public bool CurrentPTMWorkspace { get; set; }
         public decimal UCOTFactor { get; set; }
         public bool EnableAssignTaskAuthor { get; set; }
+        public bool EnableLmNavigator { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BOEPotentialRole> BOEPotentialRoles { get; set; }

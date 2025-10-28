@@ -47,11 +47,12 @@
             GetNextTrackingNumberRevisionAction: '<%= WebConstants.ACTION_GET_NEXT_TRACKING_NUMBER_REVISION%>',
             IsSAPConnectionEnabled: <%: Model.IsSAPConnectionEnabled.ToString().ToLower() %>,
 			EnableAssignTaskAuthor: <%: Model.IsAuthorAssignableAtTaskLevelEnabled.ToString().ToLower() %>,
-            IsAssignTaskAuthorEnabled: <%: Model.IsAssignTaskAuthorEnabled.ToString().ToLower() %>,
+			IsAssignTaskAuthorEnabled: <%: Model.IsAssignTaskAuthorEnabled.ToString().ToLower() %>,
+			EnableLmNavigator: <%: Model.LmNavigatorEnabled.ToString().ToLower() %>,
+			IsLmNavigatorEnabled: <%: Model.IsLmNavigatorEnabled.ToString().ToLower() %>,
             SearchPLDProposals: '<%= WebConstants.ACTION_SEARCH_PLD_PROPOSALS %>',
 			GetPLDProposalDetails: '<%= WebConstants.ACTION_GET_PLD_PROPOSAL_DETAILS %>',
             GetNextPLDWorkspaceShortNameFromTrackingNumber: '<%= WebConstants.ACTION_GET_NEXT_PLD_WORKSPACE_SHORTNAME_FROM_TRACKING_NUMBER %>'
-
         });
         
 
@@ -127,9 +128,11 @@
                         <button name="next-button" class="ies-action" data-ng-class="{'disabled':nextButtonDisabled()}" data-ng-show="!model.showButtonLoader && model.showNextButton" data-ng-click="next()" type="button">Next</button>
                         <button name="cancel-button" class="ies left-margin" data-ng-click="cancel()" type="button">Cancel</button>
                     </div>
-                    <div data-ng-show="model.showOCINote" class="create-oci-note">
-                        <b>Note:</b> Information on this form <%: SiteMasterUtilities.GetBannerText() %>
-                    </div>
+					<div data-ng-show="model.showOCINote" class="oci-container">
+						<div>
+							<b>Note:</b> Information on this form <%: SiteMasterUtilities.GetBannerText() %>
+						</div>
+					</div>
                     <% Html.EndForm(); %>
                 </div>
             </div>

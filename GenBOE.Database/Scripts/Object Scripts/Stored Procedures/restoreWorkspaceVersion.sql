@@ -57,6 +57,7 @@ AS
 **		1/14/25		twilson3			PROPH-2596 - Add UCOT Factor
 **		1/15/25		e309214				PROPH-1854 Database Changes for Assign Author
 **		9/30/25		e378233				PROPH-3302 Updated for Skill Mix Summary
+**		10/14/25	ranzalon			PROPH-3286 Enable LM Nav Workspace Setting
 **		10/28/2025	twilson3			proph-3411 ALways set PerformingOrganizationChangeFlag to true (1) to fix any false negatives
 *******************************************************************************/
 SET NOCOUNT ON 
@@ -568,6 +569,7 @@ BEGIN
 			,[EnableSAPConnection] = vW.[EnableSAPConnection]
 			,[UCOTFactor] = vW.[UCOTFactor]
 			,[EnableAssignTaskAuthor] = vW.[EnableAssignTaskAuthor]
+			,[EnableLmNavigator] = vW.[EnableLmNavigator]
 		FROM [dbo].[Workspace] W
 			INNER JOIN [version].[Workspace] vW ON W.WorkspaceID = vW.WorkspaceID
 			LEFT OUTER JOIN [dbo].[ResourceList] RL ON vW.ResourceListID = RL.ResourceListID

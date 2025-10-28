@@ -805,6 +805,7 @@ namespace GenBOE.Web.Controllers
 
 			model.IsSAPConnectionEnabled = Utilities.IsSAPEnabledForSystem;
 			model.IsAssignTaskAuthorEnabled = Utilities.IsAssignTaskAuthorEnabledForSystem;
+			model.IsLmNavigatorEnabled = Utilities.IsLmNavigatorRteLinkEnabledForSystem;
 
 			ViewResult toReturn = View(WebConstants.VIEW_HOME_CREATE_WORKSPACE, model);
 
@@ -1377,6 +1378,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">the name of the workspace we are in</param>
 		/// <param name="id">the template id from the database</param>
 		/// <returns>The word file, complete with correct content type</returns>
+		[HttpGet]
 		public FileContentResult GetOutputFormatTemplate(string workspace, int? id)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -4776,6 +4778,7 @@ namespace GenBOE.Web.Controllers
 					newWorkspaceDTO.EnableSAPConnection = newWorkspace.EnableSAPConnection;
 					newWorkspaceDTO.CurrentPTMWorkspace = newWorkspace.CurrentPTMWorkspace;
 					newWorkspaceDTO.EnableAssignTaskAuthor = newWorkspace.EnableAssignTaskAuthor;
+					newWorkspaceDTO.EnableLmNavigator = newWorkspace.EnableLmNavigator;
 
 					if (Utilities.ShowPLDIsIntegrated)
 					{
@@ -5260,6 +5263,7 @@ namespace GenBOE.Web.Controllers
 					EnableSAPConnection = workspace.EnableSAPConnection,
 					CurrentPTMWorkspace = workspace.CurrentPTMWorkspace,
 					EnableAssignTaskAuthor = workspace.EnableAssignTaskAuthor,
+					EnableLmNavigator = workspace.EnableLmNavigator
 				};
 
 				toReturn = Json(modelView);

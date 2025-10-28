@@ -229,6 +229,17 @@ label.disabled {
 	pointer-events: none;
 }
 
+.notification-bar-fixed {
+	word-spacing: -1em;
+	display: block;
+	position: fixed;
+	text-align: center;
+	width: 1400px;
+	top: 100px;
+	z-index: 940 !important;
+	pointer-events: none;
+}
+
 .notification
 {    
 	display: inline-block;
@@ -7779,10 +7790,9 @@ div.ui-grid-cell input {
 	margin-top: -8px;
 }
 
-.create-oci-note {
-	position: relative;
-	left: 650px;
-	width: 350px;
+.oci-container {
+	display: flex;
+	justify-content: center;
 }
 
 #CreateWorkspace {

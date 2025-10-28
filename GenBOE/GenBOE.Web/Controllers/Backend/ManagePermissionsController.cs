@@ -8,6 +8,7 @@ namespace GenBOE.Web.Controllers
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
 	using System.Linq;
@@ -17,10 +18,12 @@ namespace GenBOE.Web.Controllers
 	using System.Web;
 	using System.Web.Http;
 	using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.Backend;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using GenBOE.Web.ModelView;
 	using IES.Common;
@@ -50,7 +53,7 @@ namespace GenBOE.Web.Controllers
 		/// ctor
 		/// </summary>
 		public ManagePermissionsController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, PermissionControllerLogic PermissionControllerLogic
-			,IActiveDirectoryUtilities inADUtils)
+			, IActiveDirectoryUtilities inADUtils)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.PermissionControllerLogic = PermissionControllerLogic;
@@ -67,9 +70,11 @@ namespace GenBOE.Web.Controllers
 		{
 			IESSingleResponse<PermissionViewModel> result = new IESSingleResponse<PermissionViewModel>();
 
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_MANAGE_PERMISSIONS, SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, null);
+
 			try
 			{
-				FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 				result.Data = PermissionControllerLogic._GetPermissionsGrid(ws);
 				result.IsSuccessful = true;
 			}
@@ -79,6 +84,7 @@ namespace GenBOE.Web.Controllers
 				result.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
+			FinalizeAction(logger, WebConstants.ACTION_MANAGE_PERMISSIONS, sw);
 			return result;
 		}
 
@@ -87,17 +93,20 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		///<param name="workspace">The workspace to delete permissions from.</param>
 		///<param name="inUserID">The User ID to delete permissions from.</param>
-		/// <returns>Object to indicate if operation is successfull</returns>
+		/// <returns>Object to indicate if operation is successful</returns>
 		[HttpDelete]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<bool> DeleteUserPermissions(string workspace, string inUserID)
 		{
-			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
-
 			if (inUserID == null || !inUserID.Any())
 			{
 				throw new ArgumentNullException(nameof(inUserID));
 			}
+
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_DELETE_USER_PERMISSIONS, SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, null);
 
 			try
 			{
@@ -110,6 +119,7 @@ namespace GenBOE.Web.Controllers
 				result.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
+			FinalizeAction(logger, WebConstants.ACTION_DELETE_USER_PERMISSIONS, sw);
 			return result;
 		}
 
@@ -151,7 +161,13 @@ namespace GenBOE.Web.Controllers
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<bool> SaveNewPermissions([FromBody] SaveNewPermissionsModelView saveNewPermissionsModelView)
 		{
+			_ = saveNewPermissionsModelView ?? throw new ArgumentNullException(nameof(saveNewPermissionsModelView));
+
 			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(saveNewPermissionsModelView.workspaceShortName);
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_SAVE_PERMISSIONS, SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, null);
+
 			try
 			{
 				if (saveNewPermissionsModelView != null)
@@ -173,6 +189,7 @@ namespace GenBOE.Web.Controllers
 				result.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
+			FinalizeAction(logger, WebConstants.ACTION_SAVE_PERMISSIONS, sw);
 			return result;
 		}
 
@@ -185,24 +202,26 @@ namespace GenBOE.Web.Controllers
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public HttpResponseMessage ExportPermissions([FromBody] ExportFileModelView exportPermissionModelView)
 		{
+			_ = exportPermissionModelView ?? throw new ArgumentNullException(nameof(exportPermissionModelView));
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(exportPermissionModelView.workspaceShortName);
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_EXPORT_PERMISSIONS, SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, null);
+
+			HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+
 			try
 			{
 				if (exportPermissionModelView != null)
 				{
-					FullWorkspace ws = this.Factory.CreateFullWorkspace(exportPermissionModelView.workspaceShortName);
 					FileStream fs = this.PermissionControllerLogic.ExportPermissions(ws);
-
-					HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
 					response.Content = new StreamContent(fs);
 					response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 					response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
 					response.Content.Headers.ContentDisposition.FileName = "Permissions.xlsx";
-
-					return response;
 				}
 				else
 				{
-					return new HttpResponseMessage(HttpStatusCode.BadRequest)
+					response = new HttpResponseMessage(HttpStatusCode.BadRequest)
 					{
 						Content = new StringContent("Invalid request body")
 					};
@@ -211,11 +230,14 @@ namespace GenBOE.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				return new HttpResponseMessage(HttpStatusCode.InternalServerError)
+				response = new HttpResponseMessage(HttpStatusCode.InternalServerError)
 				{
 					Content = new StringContent("Unknown error exporting Permissions")
 				};
 			}
+
+			FinalizeAction(logger, WebConstants.ACTION_EXPORT_PERMISSIONS, sw);
+			return response;
 		}
 
 		/// <summary>
@@ -228,6 +250,10 @@ namespace GenBOE.Web.Controllers
 		public IESSingleResponse<bool> ImportPermissions(string workspace)
 		{
 			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_IMPORT_PERMISSIONS, SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, null);
+
 			try
 			{
 				//FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -261,6 +287,7 @@ namespace GenBOE.Web.Controllers
 				result.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
+			FinalizeAction(logger, WebConstants.ACTION_IMPORT_PERMISSIONS, sw);
 			return result;
 		}
 
@@ -273,12 +300,17 @@ namespace GenBOE.Web.Controllers
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<bool> EditPermissions([FromBody] EditPermissionsModelView editPermissionsModelView)
 		{
+			_ = editPermissionsModelView ?? throw new ArgumentNullException(nameof(editPermissionsModelView));
+
 			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(editPermissionsModelView.workspaceShortName);
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_EDIT_PERMISSIONS, SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, null);
+
 			try
 			{
 				if (editPermissionsModelView != null)
 				{
-					FullWorkspace ws = this.Factory.CreateFullWorkspace(editPermissionsModelView.workspaceShortName);
 					PermissionControllerLogic.EditPermissions(ws, new System.Collections.ObjectModel.Collection<IES.Common.Role>(editPermissionsModelView.roles.ToList()), EntityType.User, editPermissionsModelView.entityId);
 					result.Data = true;
 					result.IsSuccessful = true;
@@ -290,6 +322,7 @@ namespace GenBOE.Web.Controllers
 				result.Messages = ex.GetValidationMessages(ex.ValidationList);
 			}
 
+			FinalizeAction(logger, WebConstants.ACTION_EDIT_PERMISSIONS, sw);
 			return result;
 		}
 	}
