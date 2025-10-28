@@ -218,6 +218,12 @@
 			Dictionary<Tuple<string, string>, ICollection<LaborTypeDataModelView>> groupedLaborTypes = new Dictionary<Tuple<string, string>, ICollection<LaborTypeDataModelView>>();
 			foreach (LaborTypeDataModelView labor in laborTypes)
 			{
+				if (string.IsNullOrEmpty(labor.ResourceName) && string.IsNullOrEmpty(labor.BusinessResourceCodeName))
+				{
+					// skip this row, no resource set
+					continue;
+				}
+
 				Tuple<string, string> key = groupedLaborTypes.Keys.FirstOrDefault(g => g.Item1.NullEmptyEquals(labor.ResourceName) && g.Item2.NullEmptyEquals(labor.BusinessResourceCodeName));
 				if (key == null)
 				{
