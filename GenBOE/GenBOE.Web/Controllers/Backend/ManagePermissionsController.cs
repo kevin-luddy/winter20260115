@@ -8,6 +8,7 @@ namespace GenBOE.Web.Controllers
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
@@ -17,6 +18,7 @@ namespace GenBOE.Web.Controllers
 	using System.Net.Http.Headers;
 	using System.Web;
 	using System.Web.Http;
+	using System.Web.Security;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ModelView;
@@ -126,18 +128,18 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Gets Members of Group
 		/// </summary>
-		///<param name="groupName">The AD group name.</param>
+		///<param name="workspace">The AD group name.</param>
 		/// <returns>Group Members</returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public IESSingleResponse<ICollection<UserData>> GetGroupMembers(string groupName)
+		public IESSingleResponse<ICollection<UserData>> GetGroupMembers(string workspace)
 		{
 			IESSingleResponse<ICollection<UserData>> result = new IESSingleResponse<ICollection<UserData>>();
 
 			try
 			{
-				ICollection<UserData> members = ADUtils.GetAdGroupUsers(groupName);
+				ICollection<UserData> members = ADUtils.GetAdGroupUsers(workspace);
 				ICollection<UserData> orderedMembers = members.OrderBy(m => m.DisplayName).ToList();
 
 				result.Data = orderedMembers;
@@ -245,7 +247,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">The workspace name</param>
 		/// <returns>boolean</returns>
-		[System.Web.Http.HttpPost]
+		[HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes"), SuppressMessage("Microsoft.Design", "CA1011: Consider passing base types as parameters")]
 		public IESSingleResponse<bool> ImportPermissions(string workspace)
 		{
@@ -323,6 +325,47 @@ namespace GenBOE.Web.Controllers
 			}
 
 			FinalizeAction(logger, WebConstants.ACTION_EDIT_PERMISSIONS, sw);
+			return result;
+		}
+
+		/// <summary>
+		/// Gets Users for Bulk Assign Page "Users" Dropdown List
+		/// </summary>
+		///<param name="workspaceShortName">The Workspace to get users for</param>
+		/// <returns>List of Users</returns>
+		[HttpGet]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		public IESResponse<Tuple<Role, Collection<System.Web.Mvc.SelectListItem>>> GetUsersForDropdown(string workspaceShortName)
+		{
+			// Adding the full reference for "SelectListItem" because there will end up being ambiguity between .Mvc and .Http for the "HttpGet" "HttpPost" and etc attributes
+			IESResponse<Tuple<Role, Collection<System.Web.Mvc.SelectListItem>>> result = new IESResponse<Tuple<Role, Collection<System.Web.Mvc.SelectListItem>>>();
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortName);
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_GET_DROPDOWN_USERS_BULK_ASSIGN, SecurityPage.ManageBOEs, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, null);
+
+			try
+			{
+				ICollection<Tuple<Role, Collection<System.Web.Mvc.SelectListItem>>> roles  = this.PermissionControllerLogic.GetDropdownUsers(ws.Id);
+
+				if (roles.Count > 0)
+				{
+					result.Data = roles;
+					result.IsSuccessful = true;
+				}
+				else
+				{
+					result.Messages.Add("Failed to get Users for Dropdown List");
+					result.IsSuccessful = false;
+				}
+			}
+			catch (GenValidationException ex)
+			{
+				logger.Error(ex);
+				result.Messages = ex.GetValidationMessages(ex.ValidationList);
+			}
+
+			FinalizeAction(logger, WebConstants.ACTION_GET_DROPDOWN_USERS_BULK_ASSIGN, sw);
 			return result;
 		}
 	}

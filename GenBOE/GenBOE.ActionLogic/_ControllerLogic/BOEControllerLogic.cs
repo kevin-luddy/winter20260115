@@ -752,77 +752,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 		}
 
-		/// <summary>
-		/// Creates the select list for authors/approvers when creating/managing a BOE
-		/// </summary>
-		/// <param name="inUserIds">UserIDs for the select list</param>
-		/// <param name="isSubcontractors">True if the list is for subcontractors</param>
-		/// <returns>select list for authors/approvers</returns>
-		private Collection<SelectListItem> CreateUserSelectList(Collection<int> inUserIds, bool isSubcontractors)
-		{
-			if (inUserIds == null)
-			{
-				throw new ArgumentNullException(nameof(inUserIds));
-			}
-
-			Collection<SelectListItem> returnList = new Collection<SelectListItem>();
-
-			ICollection<UserDTO> allUsers = this.UserLoader.GetByIds(inUserIds);
-
-			foreach (int user in inUserIds)
-			{
-				UserDTO selectedUser = allUsers.First(x => x.UserID == user);
-				string userDisplayName = selectedUser.DisplayName;
-
-				if (selectedUser.NTID.Contains('.')) // AD group name
-				{
-					ICollection<UserData> members = this._ADUtils.GetAdGroupUsers(userDisplayName);
-
-					List<UserData> orderedMembers = members.OrderBy(m => m.DisplayName).ToList();
-					foreach (UserData member in orderedMembers)
-					{
-						// Load the user's information.  If the user does not currently exist in the database, create it and use its new ID.
-						UserDTO userInfo = this.UserLoader.GetOrCreateUserByNtid(member.Ntid);
-						returnList.Add(new SelectListItem
-						{
-							Value = userInfo.UserID.ToString(),
-							Text = userInfo.DisplayName
-						});
-					}
-				}
-				else
-				{
-					if (isSubcontractors)
-					{
-						returnList.Add(new SelectListItem
-						{
-							Text = selectedUser.DisplayName + CommonConstants.SUBCONTRACTOR_AUTHOR_SUFFIX,
-							Value = selectedUser.UserID.ToString()
-						});
-					}
-					else
-					{
-						returnList.Add(new SelectListItem
-						{
-							Text = selectedUser.DisplayName,
-							Value = selectedUser.UserID.ToString()
-						});
-					}
-				}
-
-				returnList = (from a in returnList
-							  group a by new { Selected = a.Selected, Value = a.Value, Text = a.Text } into g
-							  select new SelectListItem
-							  {
-								  Value = g.Key.Value,
-								  Text = g.Key.Text,
-								  Selected = g.Key.Selected
-							  }).ToCollection();
-			}
-
-			return returnList;
-		}
-
 		#endregion
 
 		#endregion
@@ -3200,19 +3129,19 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			IEnumerable<int> approverIDs = (from p in potentialBOEPermissions
 											where p.Role == Role.Approver
 											select p.ETIUserId).Distinct();
-			Collection<SelectListItem> approvers = this.CreateUserSelectList(approverIDs.ToCollection(), false);
+			Collection<SelectListItem> approvers = ActionLogicUtility.CreateUserSelectList(approverIDs.ToCollection(), false, UserLoader, _ADUtils);
 
 			// Author Names
 			IEnumerable<int> authorIDs = (from p in potentialBOEPermissions
 										  where p.Role == Role.Author
 										  select p.ETIUserId).Distinct();
-			Collection<SelectListItem> authors = this.CreateUserSelectList(authorIDs.ToCollection(), false);
+			Collection<SelectListItem> authors = ActionLogicUtility.CreateUserSelectList(authorIDs.ToCollection(), false, UserLoader, _ADUtils);
 
 			// Subcontractor Author Names
 			IEnumerable<int> subcontractorAuthorIDs = (from p in potentialBOEPermissions
 													   where p.Role == Role.SubcontractorAuthor
 													   select p.ETIUserId).Distinct();
-			Collection<SelectListItem> subcontractorAuthors = this.CreateUserSelectList(subcontractorAuthorIDs.ToCollection(), true);
+			Collection<SelectListItem> subcontractorAuthors = ActionLogicUtility.CreateUserSelectList(subcontractorAuthorIDs.ToCollection(), true, UserLoader, _ADUtils);
 
 			theModelView.DefaultStartDate = workspace.ContractStartDate.ToString("MM/yyyy");
 			theModelView.DefaultEndDate = workspace.ContractEndDate.ToString("MM/yyyy");
