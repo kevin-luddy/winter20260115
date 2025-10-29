@@ -8,6 +8,9 @@ PRINT '###### SCRIPT IS STARTING ######';
     File: \Release 2025.7\1 - Release 2025.7 Script.sql
 */
 PRINT '### Starting file: \Release 2025.7\1 - Release 2025.7 Script.sql';
+EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2025.7';
+GO
+
 IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[getMyProposals]') AND type in (N'P', N'PC'))
 	DROP PROCEDURE [dbo].[getMyProposals];
 GO
