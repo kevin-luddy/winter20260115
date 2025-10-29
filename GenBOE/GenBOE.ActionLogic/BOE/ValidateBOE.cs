@@ -338,48 +338,58 @@ namespace GenBOE.ActionLogic.WBS.BOE
 				throw new ArgumentNullException(nameof(ws));
 			}
 
-			ws.LoadBoesAndTaskElementsRTEData();
-			ws.LoadODCsRTEData();
-
-			// Check BOE falls within the CLIN Start Date and End Date
-			foreach (FullBoe boe in ws.Boes)
+			DateTime wsStartDate = GenBOEUtilities.AdjustDateTimePrecision(ws.ContractStartDate, DateTimePrecision.Day);
+			DateTime wsStartMonth = GenBOEUtilities.AdjustDateTimePrecision(ws.ContractStartDate, DateTimePrecision.Month);
+			DateTime wsEndDate = GenBOEUtilities.AdjustDateTimePrecision(ws.ContractEndDate, DateTimePrecision.Day);
+			DateTime wsEndMonth = GenBOEUtilities.AdjustDateTimePrecision(ws.ContractEndDate, DateTimePrecision.Month);
+			foreach (FullClin clin in ws.Clins)
 			{
-				if (boe.Clin != null)
-				{
-					ClinDTO clin = boe.Clin;
-					if (clin.StartDate.HasValue && clin.EndDate.HasValue)
-					{
-						if (boe.StartDate < clin.StartDate || boe.EndDate > clin.EndDate)
-						{
-							return false;
-						}
-					}
-				}
-
-				// Check if the BOE falls within the Workspace Constact Start Date and End Date        
-				if (GenBOEUtilities.AdjustDateTimePrecision(boe.StartDate, DateTimePrecision.Month) < GenBOEUtilities.AdjustDateTimePrecision(ws.ContractStartDate, DateTimePrecision.Month) || GenBOEUtilities.AdjustDateTimePrecision(boe.EndDate, DateTimePrecision.Month) > GenBOEUtilities.AdjustDateTimePrecision(ws.ContractEndDate, DateTimePrecision.Month))
+				DateTime? clinStartDate = clin.StartDate.HasValue ? GenBOEUtilities.AdjustDateTimePrecision((DateTime)clin.StartDate, DateTimePrecision.Day) : clin.StartDate;
+				DateTime? clinEndDate = clin.EndDate.HasValue ? GenBOEUtilities.AdjustDateTimePrecision((DateTime)clin.EndDate, DateTimePrecision.Day) : clin.EndDate;
+				// Check CLIN falls within the Workspace Start and End Date
+				if (clinStartDate < wsStartDate || clinEndDate > wsEndDate)
 				{
 					return false;
 				}
 
-				#region Validate dates for Travel Task Elements
-				if (ws.Travels.Any(x => x.BoeID == boe.Id))
+				// Check BOE falls within the CLIN Start Date and End Date
+				foreach (FullBoe boe in clin.Boes)
 				{
-					List<TravelDTO> travelTaskElements = ws.Travels.Where(x => x.BoeID == boe.Id).ToList();
-					// For Space
-					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+					DateTime boeStartDate = GenBOEUtilities.AdjustDateTimePrecision(boe.StartDate, DateTimePrecision.Day);
+					DateTime boeStartMonth = GenBOEUtilities.AdjustDateTimePrecision(boe.StartDate, DateTimePrecision.Month);
+					DateTime boeEndDate = GenBOEUtilities.AdjustDateTimePrecision(boe.EndDate, DateTimePrecision.Day);
+					DateTime boeEndMonth = GenBOEUtilities.AdjustDateTimePrecision(boe.EndDate, DateTimePrecision.Month);
+
+					// Check if the BOE falls within the Workspace Start Date and End Date        
+					if (boeStartMonth < wsStartMonth || boeEndMonth > wsEndMonth)
 					{
-						foreach (TravelDTO travelTask in travelTaskElements)
+						return false;
+					}
+
+					if (boeStartDate < clinStartDate || boeEndDate > clinEndDate)
+					{
+						return false;
+					}
+
+					// Validate dates for Labor Task Elements
+					if (ws.TaskElements.Any(x => x.BoeID == boe.Id))
+					{
+						IEnumerable<BoeTaskElementDTO> boeTaskElements = ws.TaskElements.Where(x => x.BoeID == boe.Id);
+						foreach (BoeTaskElementDTO boeTask in boeTaskElements)
 						{
-							if (!this._ValidateTaskElementStartDateComparedToBOEStartDate(boe.StartDate, travelTask.StartDate.Value) || !this._ValidateTaskElementEndDateComparedToBOEStartDate(boe.EndDate, travelTask.EndDate.Value))
+							if (boeTask.TaskElementType == TaskElementType.Labor)
 							{
-								return false;
+								Collection<string> returnedMessages = this._ValidateStartAndEndDates(boe.StartDate, boe.EndDate, boe, boeTask.StartDate, boeTask.EndDate, ws);
+								if (returnedMessages.Count() > 0)
+								{
+									return false;
+								}
 							}
 
-							// validate LT Start/End Date
-							foreach (TravelTripType travel in travelTask.TravelTrips)
+							// Validate Resource Types
+							foreach (ResourceTypeDto labor in boeTask.taskElementLabors)
 							{
-								Collection<string> returnedMessages = this._ValidateTravelTripDate(travelTask, travel, ws, boe);
+								Collection<string> returnedMessages = this._ValidateStartAndEndDates(boeTask.StartDate, boeTask.EndDate, boe, labor.StartDate, labor.EndDate, ws);
 								if (returnedMessages.Count() > 0)
 								{
 									return false;
@@ -387,104 +397,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 							}
 						}
 					}
-					// For RMS
-					else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-					{
-						foreach (TravelDTO travelTask in travelTaskElements)
-						{
-							StartEndDateTypeValidator validator = new StartEndDateTypeValidator(boe.StartDate, boe.EndDate, "BOE", "Task", true);
-							ICollection<IStartEndDates> toValidate = new List<IStartEndDates> { travelTask };
-							Collection<string> returnedMessages = validator.validation(toValidate, (Collection<Dictionary<string, string>>)null);
-							if (returnedMessages.Count() > 0)
-							{
-								return false;
-							}
-
-							foreach (MSTTravelTripType msttravel in travelTask.MSTTravelTrips)
-							{
-								if (GenBOEUtilities.AdjustDateTimePrecision(msttravel.TripDate, DateTimePrecision.Month) < GenBOEUtilities.AdjustDateTimePrecision((travelTask.StartDate ?? boe.StartDate), DateTimePrecision.Month) && msttravel.Updateable != UpdateType.Deleted)
-								{
-									return false;
-								}
-
-								if (GenBOEUtilities.AdjustDateTimePrecision(msttravel.TripDate, DateTimePrecision.Month) > GenBOEUtilities.AdjustDateTimePrecision((travelTask.EndDate ?? boe.EndDate), DateTimePrecision.Month) && msttravel.Updateable != UpdateType.Deleted)
-								{
-									return false;
-								}
-
-								if (msttravel.ModeID == MSTTravelMode.NonZoneDomestic || msttravel.ModeID == MSTTravelMode.NonZoneInternational)
-								{
-									if (GenBOEUtilities.AdjustDateTimePrecision(msttravel.EstimateDate, DateTimePrecision.Month) > GenBOEUtilities.AdjustDateTimePrecision((msttravel.TripDate), DateTimePrecision.Month) && msttravel.Updateable != UpdateType.Deleted)
-									{
-										return false;
-									}
-
-									if (GenBOEUtilities.AdjustDateTimePrecision(msttravel.EstimateDate, DateTimePrecision.Month) > GenBOEUtilities.AdjustDateTimePrecision((travelTask.EndDate ?? boe.EndDate), DateTimePrecision.Month) && msttravel.Updateable != UpdateType.Deleted)
-									{
-										return false;
-									}
-								}
-							}
-						}
-					}
 				}
-				#endregion
-
-				// Material does not have any start and end dates to validate
-
-				#region Validate dates for Labor Task Elements
-				if (ws.TaskElements.Any(x => x.BoeID == boe.Id))
-				{
-					IEnumerable<BoeTaskElementDTO> boeTaskElements = ws.TaskElements.Where(x => x.BoeID == boe.Id);
-					foreach (BoeTaskElementDTO boeTask in boeTaskElements)
-					{
-						if (boeTask.TaskElementType == TaskElementType.Labor)
-						{
-							Collection<string> returnedMessages = this._ValidateStartAndEndDates(boe.StartDate, boe.EndDate, boe, boeTask.StartDate, boeTask.EndDate, ws);
-							if (returnedMessages.Count() > 0)
-							{
-								return false;
-							}
-						}
-
-						// Validate Resource Types
-						foreach (ResourceTypeDto labor in boeTask.taskElementLabors)
-						{
-							Collection<string> returnedMessages = this._ValidateStartAndEndDates(boeTask.StartDate, boeTask.EndDate, boe, labor.StartDate, labor.EndDate, ws);
-							if (returnedMessages.Count() > 0)
-							{
-								return false;
-							}
-						}
-					}
-				}
-				#endregion
-
-				#region Validate dates for Other Direct Cost Task Elements
-				if (ws.Odcs.Any(x => x.BoeID == boe.Id))
-				{
-					IEnumerable<OtherDirectCostDTO> odcs = ws.Odcs.Where(x => x.BoeID == boe.Id);
-					foreach (OtherDirectCostDTO odc in odcs)
-					{
-						// Validate Task Element
-						Collection<string> odcValidationMessages = this._ValidateStartAndEndDates(boe.StartDate, boe.EndDate, boe, odc.StartDate, odc.EndDate, ws);
-						if (odcValidationMessages.Count() > 0)
-						{
-							return false;
-						}
-
-						// Validate Resource Types
-						foreach (OtherDirectCostType type in odc.ODCTypes)
-						{
-							Collection<string> odcTypeValidationMessages = this._ValidateStartAndEndDates(odc.StartDate, odc.EndDate, boe, type.StartDate, type.EndDate, ws);
-							if (odcTypeValidationMessages.Count() > 0)
-							{
-								return false;
-							}
-						}
-					}
-				}
-				#endregion
 			}
 
 			return true;
