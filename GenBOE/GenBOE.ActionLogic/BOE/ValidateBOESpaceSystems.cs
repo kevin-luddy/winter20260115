@@ -49,9 +49,9 @@ namespace GenBOE.ActionLogic.WBS.BOE
 		/// <param name="ws">Full WS</param>
 		/// <param name="validateSkillMix">Validate Skill Mix (PROP-3389)</param>
 		/// <returns>all possible validation messages</returns>
-		public override ValidationBOEModelView ValidateBOE_OnValidateBtnClick(FullBoe inBOE, FullWorkspace ws, bool validateSkillMix = true)
+		public override ValidationBOEModelView ValidateBOE_OnValidateBtnClick(FullBoe inBOE, FullWorkspace ws)
 		{
-			ValidationBOEModelView toReturn = base.ValidateBOE_OnValidateBtnClick(inBOE, ws, validateSkillMix);
+			ValidationBOEModelView toReturn = base.ValidateBOE_OnValidateBtnClick(inBOE, ws);
 
 			// validate BOE title
 			if (String.IsNullOrEmpty(inBOE.Title))

@@ -67,10 +67,9 @@ namespace GenBOE.ActionLogic.WBS.BOE
 		/// </summary>
 		/// <param name="inBOE">the BOE DTO to validate</param>
 		/// <param name="ws">Full WS</param>
-		/// <param name="validateSkillMix">Validate Skill Mix (PROP-3389)</param>
 		/// <returns>all possible validation messages</returns>
 		/// Suppressed the following messages because 1) I do use BoeLabor just not in the way the code analysis wants me too and 2) if you can make this less complex, go for it!
-		public virtual ValidationBOEModelView ValidateBOE_OnValidateBtnClick(FullBoe inBOE, FullWorkspace ws, bool validateSkillMix = true)
+		public virtual ValidationBOEModelView ValidateBOE_OnValidateBtnClick(FullBoe inBOE, FullWorkspace ws)
 		{
 			// See wireframes for what should be checked on "Validate" button click.
 			// Basically, we're checking for MIA required fields that are not verified upon a Save
@@ -238,54 +237,50 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 			this.ValidateTemplateMoqTypes(ws, inBOE, ValidationBOE);
 
-			// (PROPH-3389) Validate Skill Mix data only when needed to
-			if (validateSkillMix)
+			foreach (BoeTaskElementDTO task in ws.TaskElements.Where(t => t.BoeID == inBOE.Id))
 			{
-				foreach (BoeTaskElementDTO task in ws.TaskElements.Where(t => t.BoeID == inBOE.Id))
+				if (BOETaskUtility.ShowSkillMixForTask(ws, task))
 				{
-					if (BOETaskUtility.ShowSkillMixForTask(ws, task))
+					ICollection<string> errorMessages = new List<string>();
+
+					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 					{
-						ICollection<string> errorMessages = new List<string>();
+						errorMessages.AddRange(ActionLogicUtility.ValidateSkillMixSummaryTable(task, ws.EnableSAPConnection, task.taskElementLabors.Any()));
+					}
 
-						if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+					{
+						errorMessages = ActionLogicUtility.ValidateSkillMixTable(task.SkillMixTable, true);
+
+						if (Utilities.IsBRCEnabledForWorkspace(ws.Shortname) && task.EndDate >= Utilities.OneLmxStartDate)
 						{
-							errorMessages.AddRange(ActionLogicUtility.ValidateSkillMixSummaryTable(task, ws.EnableSAPConnection, task.taskElementLabors.Any()));
+							errorMessages.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(task.CommonDisclosureTable, true, task.taskElementLabors.Any()));
 						}
+					}
 
-						if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+					if (errorMessages.Any())
+					{
+						ValidationBOETasks taskValidation = ValidationBOE.Tasks.FirstOrDefault(x => x.TaskId == task.Id);
+						if (taskValidation == null)
 						{
-							errorMessages = ActionLogicUtility.ValidateSkillMixTable(task.SkillMixTable, true);
-
-							if (Utilities.IsBRCEnabledForWorkspace(ws.Shortname) && task.EndDate >= Utilities.OneLmxStartDate)
+							// If this task doesn't currently have validation, add it
+							taskValidation = new ValidationBOETasks()
 							{
-								errorMessages.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(task.CommonDisclosureTable, true, task.taskElementLabors.Any()));
-							}
-						}
-
-						if (errorMessages.Any())
-						{
-							ValidationBOETasks taskValidation = ValidationBOE.Tasks.FirstOrDefault(x => x.TaskId == task.Id);
-							if (taskValidation == null)
-							{
-								// If this task doesn't currently have validation, add it
-								taskValidation = new ValidationBOETasks()
+								TaskId = task.Id,
+								TaskMessage = $"Task: {task.BOETaskID} {task.TaskTitle}",
+								TaskElementDetails = new ValidationBOETaskElementDetails()
 								{
-									TaskId = task.Id,
-									TaskMessage = $"Task: {task.BOETaskID} {task.TaskTitle}",
-									TaskElementDetails = new ValidationBOETaskElementDetails()
-									{
-										TaskElementDetailsHeader = "Task Element Details",
-										TaskElementDetailValidationMessages = errorMessages.ToCollection()
-									}
-								};
+									TaskElementDetailsHeader = "Task Element Details",
+									TaskElementDetailValidationMessages = errorMessages.ToCollection()
+								}
+							};
 
-								ValidationBOE.Tasks.Add(taskValidation);
-							}
-							else
-							{
-								// If this task already has validation, add the errors to it
-								taskValidation.TaskElementDetails.TaskElementDetailValidationMessages.AddRange(errorMessages);
-							}
+							ValidationBOE.Tasks.Add(taskValidation);
+						}
+						else
+						{
+							// If this task already has validation, add the errors to it
+							taskValidation.TaskElementDetails.TaskElementDetailValidationMessages.AddRange(errorMessages);
 						}
 					}
 				}
@@ -304,7 +299,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 		/// </summary>
 		/// <param name="ws">Full Ws</param>
 		/// <returns>Validation Data</returns>
-		public virtual ValidationAllBOEModelView ValidateAllBOEs(FullWorkspace ws, bool validateSkillMix = true)
+		public virtual ValidationAllBOEModelView ValidateAllBOEs(FullWorkspace ws)
 		{
 			// Make sure the workspace is not null
 			if (ws == null)
@@ -321,11 +316,22 @@ namespace GenBOE.ActionLogic.WBS.BOE
 			// For every BOE
 			foreach (FullBoe boe in ws.Boes)
 			{
-				CollectionOfErrors.AllBOEs.Add(this.ValidateBOE_OnValidateBtnClick(boe, ws, validateSkillMix));
+				CollectionOfErrors.AllBOEs.Add(this.ValidateBOE_OnValidateBtnClick(boe, ws));
 			}
 
 			// return the collection of error messages.
 			return CollectionOfErrors;
+		}
+
+		/// <summary>
+		/// Validation of all Child objects (i.e. CLIN, BOE, Task, Resource) of a workspace
+		/// For ProPricer Export Report
+		/// </summary>
+		/// <param name="ws">Full Workspace</param>
+		/// <returns>boolean value to check if is valid</returns>
+		public virtual bool ValidateWorkspacePoP(FullWorkspace ws)
+		{
+
 		}
 
 		/// <summary>
