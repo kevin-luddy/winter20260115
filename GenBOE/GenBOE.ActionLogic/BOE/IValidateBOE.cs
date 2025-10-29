@@ -42,5 +42,13 @@ namespace GenBOE.ActionLogic.WBS.BOE
 		/// <param name="showSkillMixTable">Variable that determines whether the skill mix table is shown or not</param>
 		/// <returns>Errors, if any</returns>
 		ICollection<string> ValidateTemplateMoqForTask(ICollection<MoqTypeSelection> moqTypesForTask, FullWorkspace ws, bool onButtonPress, decimal? moqEquationTotal = null, bool showSkillMixTable = false);
+
+		/// <summary>
+		/// Validation of all Child objects (i.e. CLIN, BOE, Task, Resource) to be within the PoP of a workspace
+		/// For ProPricer Export Report
+		/// </summary>
+		/// <param name="ws">Full Workspace</param>
+		/// <returns>boolean value to check if is valid</returns>
+		bool ValidateWorkspacePoP(FullWorkspace ws);
 	}
 }

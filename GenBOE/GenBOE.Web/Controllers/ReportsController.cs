@@ -781,8 +781,8 @@ namespace GenBOE.Web.Controllers
 
 			// PROP-3389: Check if workspace's children objects are valid before ProPricer is visible
 			// Check if ProPricer should even be enabled from validation
-			ValidationAllBOEModelView validationAllBOEModelView = this.validateBOE.ValidateAllBOEs(ws);
-			ViewData["EnableProPricer"] = validationAllBOEModelView.AllBOEs.All(x => x.isValid);
+			bool isWorkspacePoPValid = this.validateBOE.ValidateWorkspacePoP(ws);
+			ViewData["EnableProPricer"] = isWorkspacePoPValid;
 
 			this.ViewData["EnableSendDirectly"] = !ws.IsProjectMapWorkspace && ConfigurationUtilities.GetAppSetting<bool>("EnableSendToProPricerDirectly", false);
 
