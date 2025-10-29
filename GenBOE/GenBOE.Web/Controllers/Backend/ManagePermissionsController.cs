@@ -18,7 +18,6 @@ namespace GenBOE.Web.Controllers
 	using System.Net.Http.Headers;
 	using System.Web;
 	using System.Web.Http;
-	using System.Web.Security;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ModelView;
@@ -128,18 +127,18 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Gets Members of Group
 		/// </summary>
-		///<param name="workspace">The AD group name.</param>
+		///<param name="groupName">The AD group name.</param>
 		/// <returns>Group Members</returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public IESSingleResponse<ICollection<UserData>> GetGroupMembers(string workspace)
+		public IESSingleResponse<ICollection<UserData>> GetGroupMembers(string groupName)
 		{
 			IESSingleResponse<ICollection<UserData>> result = new IESSingleResponse<ICollection<UserData>>();
 
 			try
 			{
-				ICollection<UserData> members = ADUtils.GetAdGroupUsers(workspace);
+				ICollection<UserData> members = ADUtils.GetAdGroupUsers(groupName);
 				ICollection<UserData> orderedMembers = members.OrderBy(m => m.DisplayName).ToList();
 
 				result.Data = orderedMembers;
