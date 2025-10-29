@@ -76,6 +76,9 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 			configurationData.EnableUCOT = ConfigurationUtilities.GetAppSetting<bool>("EnableUCOT");
 			configurationData.UCOTStartDate = ConfigurationUtilities.GetAppSetting("UCOTStartDate");
 			configurationData.UcotExcludedWorkspaces = ConfigurationUtilities.GetAppSetting("UcotExcludedWorkspaces");
+			configurationData.IsTaskAuthorEnabled = Utilities.IsAssignTaskAuthorEnabledForSystem;
+			configurationData.IsLmNavigatorEnabled = Utilities.IsLmNavigatorRteLinkEnabledForSystem;
+			configurationData.LmNavigatorUrl = Utilities.LmNavigatorAgentUrl;
 
 			return configurationData;
 		}
@@ -102,6 +105,7 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 			workspaceSettings.ShowSAPForWorkspace = Utilities.ShowSAPForWorkspace(ws.CreationDate);
 			workspaceSettings.ShowSkillMixForWorkspace = Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.Shortname);
 			workspaceSettings.IsHistoricalReferenceExplanationRequired = Utilities.IsHistoricalReferenceExplanationRequired(ws.CreationDate);
+			workspaceSettings.IsLmNavigatorEnabled = Utilities.IsLmNavigatorRteLinkEnabledForSystem && ws.EnableLmNavigator;
 			workspaceSettings.EnableTaskAuthors = Utilities.IsAssignTaskAuthorEnabledForSystem && ws.EnableAssignTaskAuthor;
 
 			if (ws.Id == 0)

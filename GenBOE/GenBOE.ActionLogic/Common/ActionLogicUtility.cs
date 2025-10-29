@@ -176,11 +176,11 @@ namespace GenBOE.ActionLogic.Common
 			IList<SkillMixSummaryModelView> skillMixSummaryRowsExceedChars = skillMixSummary
 																			.Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
 			IList<SkillMixSummaryModelView> skillMixSummaryRowsEmptyBoeSkillMixWhenIncluded = skillMixSummary
-																			.Where(x => x.Included && !x.BOESkillMix.HasValue).ToList();
+																			.Where(x => x.Included && !x.ProposedSkillMix.HasValue).ToList();
 			IList<SkillMixSummaryModelView> skillMixSummaryIncludedHasTrueValue = skillMixSummary.Where(x => x.Included).ToList();
 
 
-			decimal totalSkillMixSummaryRowsBOESkillMix = skillMixSummary.Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
+			decimal totalSkillMixSummaryRowsBOESkillMix = skillMixSummary.Where(p => p.ProposedSkillMix.HasValue).Sum(p => p.ProposedSkillMix.Value);
 			if (isEnableSAPConnection)
 			{
 				decimal historicalHoursTotals = skillMixSummary.Sum(x => x.HistoricalHours);

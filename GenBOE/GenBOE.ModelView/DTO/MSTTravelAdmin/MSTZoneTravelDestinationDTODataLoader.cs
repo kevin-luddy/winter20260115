@@ -30,7 +30,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="destinationID">ID of the destination</param>
         /// <returns>Destination DTO of the Destination with the given ID</returns>
         [DbQuery]
-        virtual public MSTZoneTravelDestinationDTO GetDestinationByDestinationID(int destinationID)
+        public virtual MSTZoneTravelDestinationDTO GetDestinationByDestinationID(int destinationID)
         {
             return this.GetByIDs(new Collection<int>() { destinationID }).FirstOrDefault();
         }
@@ -41,7 +41,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="destinationIDs">IDs of the destinations</param>
         /// <returns>Collection of DTOs for the Destinations with the given IDs</returns>
         [DbQuery]
-        virtual public ICollection<MSTZoneTravelDestinationDTO> GetByIDs(ICollection<int> destinationIDs)
+        public virtual ICollection<MSTZoneTravelDestinationDTO> GetByIDs(ICollection<int> destinationIDs)
         {
             ICollection<MSTZoneTravelDestinationDTO> toReturn = new Collection<MSTZoneTravelDestinationDTO>();
 
@@ -66,7 +66,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <returns>Collection of DTOs for all Destinations</returns>
         [DbQuery]
-        virtual public ICollection<MSTZoneTravelDestinationDTO> GetAllDestinations()
+        public virtual ICollection<MSTZoneTravelDestinationDTO> GetAllDestinations()
         {
             ICollection<MSTZoneTravelDestinationDTO> toReturn = new Collection<MSTZoneTravelDestinationDTO>();
 
@@ -89,7 +89,7 @@ namespace GenBOE.DataBridge.DTO
         /// Saves an update to a destination
         /// </summary>
         /// <param name="inDestination">Destination to be updated</param>
-        virtual public void SaveDestination(MSTZoneTravelDestinationDTO inDestination)
+        public virtual void SaveDestination(MSTZoneTravelDestinationDTO inDestination)
         {
             if (inDestination == null)
             {

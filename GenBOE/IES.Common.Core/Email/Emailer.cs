@@ -331,6 +331,7 @@ namespace IES.Common.Core.Email
 
 						using (SmtpClient smtp = new(ConfigurationUtilities.GetAppSetting("EmailServer")))
 						{
+							smtp.EnableSsl = true;
 							smtp.Send(message);
 						}
 

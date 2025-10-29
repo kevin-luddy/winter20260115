@@ -32,7 +32,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inOriginID">ID of the Origin</param>
         /// <returns>DTO for Origin of the given ID</returns>
         [DbQuery]
-        virtual public MSTZoneTravelOriginDTO GetOriginByOriginID(int inOriginID)
+        public virtual MSTZoneTravelOriginDTO GetOriginByOriginID(int inOriginID)
         {
             return this.GetByIDs(new Collection<int> { inOriginID }).FirstOrDefault();
         }
@@ -43,7 +43,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="originIDs">IDs of the Origins</param>
         /// <returns>Collection of DTOs for the Origins of the given IDs</returns>
         [DbQuery]
-        virtual public ICollection<MSTZoneTravelOriginDTO> GetByIDs(ICollection<int> originIDs)
+        public virtual ICollection<MSTZoneTravelOriginDTO> GetByIDs(ICollection<int> originIDs)
         {
             ICollection<MSTZoneTravelOriginDTO> toReturn = new Collection<MSTZoneTravelOriginDTO>();
 
@@ -67,7 +67,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <returns>Collection of DTOs for all Origins in the database</returns>
         [DbQuery]
-        virtual public ICollection<MSTZoneTravelOriginDTO> GetAllOrigins()
+        public virtual ICollection<MSTZoneTravelOriginDTO> GetAllOrigins()
         {
             ICollection<MSTZoneTravelOriginDTO> toReturn = new Collection<MSTZoneTravelOriginDTO>();
 
@@ -91,7 +91,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inOriginID">ID of the Origin</param>
         /// <returns>Collection of resources for the given Origin</returns>
         [DbQuery]
-        virtual public ICollection<MSTZoneTravelResourceDTO> GetOriginResourcesByOriginID(int inOriginID)
+        public virtual ICollection<MSTZoneTravelResourceDTO> GetOriginResourcesByOriginID(int inOriginID)
         {
             ICollection<MSTZoneTravelResourceDTO> toReturn = new Collection<MSTZoneTravelResourceDTO>();
 
@@ -120,7 +120,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="origin">Origin to check</param>
         /// <returns>True if an Origin already exists with that name, false if not</returns>
         [DbQuery]
-        virtual public bool originExists(MSTZoneTravelOriginDTO origin)
+        public virtual bool originExists(MSTZoneTravelOriginDTO origin)
         {
             bool toReturn = false;
 
@@ -140,7 +140,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inOrigin">Origin to be saved</param>
         /// <param name="inResources">Resources for the origin - can be null for deletes</param>
         /// <returns>Dictionary of old ID, new ID</returns>
-        virtual public Dictionary<int, int> SaveOrigin(MSTZoneTravelOriginDTO inOrigin, ICollection<MSTZoneTravelResourceDTO> inResources)
+        public virtual Dictionary<int, int> SaveOrigin(MSTZoneTravelOriginDTO inOrigin, ICollection<MSTZoneTravelResourceDTO> inResources)
         {
             if (inOrigin == null)
             {

@@ -40,12 +40,12 @@ namespace GenBOE.DataBridge.DTO.SkillMixSummary
 								  SkillMixSummaryID = cdsm.SkillMixSummaryID,
 								  Rationale = cdsm.Rationale,
 								  Included = cdsm.Included,
-								  ProposedHours = cdsm.ProposedHours,
+								  ProposedLegacyResource = cdsm.ProposedHours,
 								  HistoricalHours = cdsm.HistoricalHours,
 								  ResourceHours = cdsm.ResourceHours,
-								  BusinessResourceHours = cdsm.BusinessResourceHours,
-								  BOESkillMix = cdsm.BOESkillMix,
-								  LaborSkillMix = cdsm.LaborSkillMix,
+								  ProposedBrc = cdsm.BusinessResourceHours,
+								  ProposedSkillMix = cdsm.BOESkillMix,
+								  HistoricalSkillMix = cdsm.LaborSkillMix,
 								  ResourceID = cdsm.ResourceID,
 								  BusinessResourceID = cdsm.BusinessResourceID,
 								  BOEID = cdsm.BOEID,
@@ -81,12 +81,12 @@ namespace GenBOE.DataBridge.DTO.SkillMixSummary
 								  SkillMixSummaryID = cdsm.SkillMixSummaryID,
 								  Rationale = cdsm.Rationale,
 								  Included = cdsm.Included,
-								  ProposedHours = cdsm.ProposedHours,
+								  ProposedLegacyResource = cdsm.ProposedHours,
 								  HistoricalHours = cdsm.HistoricalHours,
 								  ResourceHours = cdsm.ResourceHours,
-								  BusinessResourceHours = cdsm.BusinessResourceHours,
-								  BOESkillMix = cdsm.BOESkillMix,
-								  LaborSkillMix = cdsm.LaborSkillMix,
+								  ProposedBrc = cdsm.BusinessResourceHours,
+								  ProposedSkillMix = cdsm.BOESkillMix,
+								  HistoricalSkillMix = cdsm.LaborSkillMix,
 								  ResourceID = cdsm.ResourceID,
 								  BusinessResourceID = cdsm.BusinessResourceID,
 								  BOEID = cdsm.BOEID,
@@ -121,12 +121,12 @@ namespace GenBOE.DataBridge.DTO.SkillMixSummary
 								  SkillMixSummaryID = cdsm.SkillMixSummaryID,
 								  Rationale = cdsm.Rationale,
 								  Included = cdsm.Included,
-								  ProposedHours = cdsm.ProposedHours,
+								  ProposedLegacyResource = cdsm.ProposedHours,
 								  HistoricalHours = cdsm.HistoricalHours,
 								  ResourceHours = cdsm.ResourceHours,
-								  BusinessResourceHours = cdsm.BusinessResourceHours,
-								  BOESkillMix = cdsm.BOESkillMix,
-								  LaborSkillMix = cdsm.LaborSkillMix,
+								  ProposedBrc = cdsm.BusinessResourceHours,
+								  ProposedSkillMix = cdsm.BOESkillMix,
+								  HistoricalSkillMix = cdsm.LaborSkillMix,
 								  ResourceID = cdsm.ResourceID,
 								  BusinessResourceID = cdsm.BusinessResourceID,
 								  BOEID = cdsm.BOEID,
@@ -160,12 +160,12 @@ namespace GenBOE.DataBridge.DTO.SkillMixSummary
 								  SkillMixSummaryID = cdsm.SkillMixSummaryID,
 								  Rationale = cdsm.Rationale,
 								  Included = cdsm.Included,
-								  ProposedHours = cdsm.ProposedHours,
+								  ProposedLegacyResource = cdsm.ProposedHours,
 								  HistoricalHours = cdsm.HistoricalHours,
 								  ResourceHours = cdsm.ResourceHours,
-								  BusinessResourceHours = cdsm.BusinessResourceHours,
-								  BOESkillMix = cdsm.BOESkillMix,
-								  LaborSkillMix = cdsm.LaborSkillMix,
+								  ProposedBrc = cdsm.BusinessResourceHours,
+								  ProposedSkillMix = cdsm.BOESkillMix,
+								  HistoricalSkillMix = cdsm.LaborSkillMix,
 								  ResourceID = cdsm.ResourceID,
 								  BusinessResourceID = cdsm.BusinessResourceID,
 								  BOEID = cdsm.BOEID,
@@ -226,8 +226,9 @@ namespace GenBOE.DataBridge.DTO.SkillMixSummary
 			{
 				Collection<string> skillMixSummaryVariablesPropertiesToIncludeInTable = new Collection<string>()
 				{
-					"Rationale", "Included", "ProposedHours", "HistoricalHours", "ResourceHours", "BusinessResourceHours", "BOESkillMix", "LaborSkillMix", "ResourceID", "BusinessResourceID", "BOEID", "BOETaskElementID", "IsUserInput"
+					"Rationale", "Included", "ProposedLegacyResource", "HistoricalHours", "ResourceHours", "ProposedBrc", "ProposedSkillMix", "HistoricalSkillMix", "ResourceID", "BusinessResourceID", "BOEID", "BOETaskElementID", "IsUserInput"
 				};
+
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
 					DataTable skillMixSummaryVariablesDataTable = StoredProcedureHelper.ToDataTable<SkillMixSummaryDTO>(skillMixSummaries, skillMixSummaryVariablesPropertiesToIncludeInTable);
@@ -261,7 +262,7 @@ namespace GenBOE.DataBridge.DTO.SkillMixSummary
 				{
 					foreach (SkillMixSummaryDTO dto in grouping)
 					{
-						dto.LaborSkillMix = dto.HistoricalHours * 100m / totalGroupHours;
+						dto.HistoricalSkillMix = dto.HistoricalHours * 100m / totalGroupHours;
 					}
 				}
 			}

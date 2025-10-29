@@ -178,6 +178,122 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
+		/// Initializes a controller action with default null workspace and boeID.
+		/// </summary>
+		/// <param name="logger">The logger for the controller calling the action</param>
+		/// <param name="functionName">The name of the function being initialized</param>
+		/// <param name="page">The security page being initialized</param>
+		/// <param name="authorizationRequired">The minimum required to perform the action</param>
+		/// <returns>A stopwatch to track the action start</returns>
+		protected Stopwatch InitializeAction(Logger logger, string functionName, SecurityPage page, SecurityAuthorization authorizationRequired)
+		{
+			if (logger == null)
+			{
+				throw new ArgumentNullException(nameof(logger));
+			}
+
+			Stopwatch sw = new Stopwatch();
+			sw.Start();
+
+			Dictionary<SecurityPage, SecurityAuthorization> securityDictionary = new Dictionary<SecurityPage, SecurityAuthorization>();
+
+			UserDTO user = this.UserLoader.GetUserForActiveUser();
+			string overrideNonUsString = ConfigurationUtilities.GetAppSetting("OverrideSubNonUs");
+			bool overrideNonUs = !string.IsNullOrEmpty(overrideNonUsString) && overrideNonUsString.ToLower() == "true";
+			bool? isUsPerson = overrideNonUs ? true : user.IsUsPerson;
+
+			if (isUsPerson == null)
+			{
+				throw new ValidationException("IsUsPerson cannot be null");
+			}
+
+			IReadOnlyCollection<SecurityPermissionsResponse> rolesForUser = this.Factory.GetPermissionsForUser(user.NTID);
+
+			SecurityAuthorization authorizationForUser;
+
+			if ((bool)isUsPerson)
+			{
+				authorizationForUser = SecurityAccess.IsAuthorized(
+					new SecurityPermissionsRequested { PageToCheck = page, WorkspaceId = null, BOEId = null }, null, rolesForUser);
+
+				if (authorizationForUser < authorizationRequired)
+				{
+					throw new AuthorizationException(functionName + " was not authorized");
+				}
+
+				securityDictionary.Add(page, authorizationForUser);
+			}
+			else
+			{
+				throw new UnauthorizedAccessException("Access is denied for non-US users.");
+			}
+
+			return sw;
+		}
+
+		/// <summary>
+		/// Initializes a controller action with optional workspace and boeID parameters.
+		/// </summary>
+		/// <param name="logger">The logger for the controller calling the action</param>
+		/// <param name="functionName">The name of the function being initialized</param>
+		/// <param name="page">The security page being initialized</param>
+		/// <param name="authorizationRequired">The minimum required to perform the action</param>
+		/// <param name="workspace">Optional workspace parameter (can be null)</param>
+		/// <param name="boeID">Optional BOE ID parameter (can be null)</param>
+		/// <returns>A stopwatch to track the action start</returns>
+		protected Stopwatch InitializeAction(Logger logger, string functionName, SecurityPage page, SecurityAuthorization authorizationRequired, WorkspaceDTO workspace, int? boeID)
+		{
+			if (logger == null)
+			{
+				throw new ArgumentNullException(nameof(logger));
+			}
+
+			Stopwatch sw = new Stopwatch();
+			sw.Start();
+
+			if (workspace != null)
+			{
+				SecurityAuthorization authorization = this.CheckPermission(page, workspace, boeID);
+
+				if (authorization < authorizationRequired)
+				{
+					throw new AuthorizationException(functionName + " was not authorized");
+				}
+			}
+			else
+			{
+				// Handle case with null workspace
+				UserDTO user = this.UserLoader.GetUserForActiveUser();
+				string overrideNonUsString = ConfigurationUtilities.GetAppSetting("OverrideSubNonUs");
+				bool overrideNonUs = string.IsNullOrEmpty(overrideNonUsString) ? false : overrideNonUsString.ToLower() == "true";
+				bool? isUsPerson = overrideNonUs ? true : user.IsUsPerson;
+
+				if (isUsPerson == null)
+				{
+					throw new ValidationException("IsUsPerson cannot be null");
+				}
+
+				if ((bool)isUsPerson)
+				{
+					IReadOnlyCollection<SecurityPermissionsResponse> rolesForUser = this.Factory.GetPermissionsForUser(user.NTID);
+					SecurityAuthorization authorizationForUser = SecurityAccess.IsAuthorized(
+						new SecurityPermissionsRequested { PageToCheck = page, WorkspaceId = null, BOEId = null }, null, rolesForUser);
+
+					if (authorizationForUser < authorizationRequired)
+					{
+						throw new AuthorizationException(functionName + " was not authorized");
+					}
+				}
+				else
+				{
+					throw new UnauthorizedAccessException("Access is denied for non-US users.");
+				}
+			}
+
+			return sw;
+		}
+
+		/// <summary>
 		/// Finalizes a controller action
 		/// </summary>
 		/// <param name="logger"></param>

@@ -4887,7 +4887,7 @@ namespace GenBOE.Tests.ActionLogic
 					Included = true,
 					IsUserInput = true,
 					Rationale = "Rationale1",
-					BOESkillMix = null
+					ProposedSkillMix = null
 				}
 			};
 			taskElement.taskElementLabors = new Collection<ResourceTypeDto>
@@ -4922,7 +4922,7 @@ namespace GenBOE.Tests.ActionLogic
 						Included = false,
 						IsUserInput = true,
 						Rationale = "Rationale1",
-						BOESkillMix = 0
+						ProposedSkillMix = 0
 					}
 				},
 				taskElementLabors = new Collection<ResourceTypeDto>
@@ -4958,7 +4958,7 @@ namespace GenBOE.Tests.ActionLogic
 					Included = false,
 					IsUserInput = true,
 					Rationale = "Rationale1",
-					BOESkillMix = 0
+					ProposedSkillMix = 0
 					}
 				},
 				taskElementLabors = new Collection<ResourceTypeDto>(),
@@ -4987,7 +4987,7 @@ namespace GenBOE.Tests.ActionLogic
 						Included = true,
 						IsUserInput = true,
 						Rationale = "Rationale1",
-						BOESkillMix = 50
+						ProposedSkillMix = 50
 					}
 				},
 				taskElementLabors = new Collection<ResourceTypeDto>
@@ -5023,7 +5023,7 @@ namespace GenBOE.Tests.ActionLogic
 						Included = true,
 						IsUserInput = true,
 						Rationale = "Rationale1",
-						BOESkillMix = 50
+						ProposedSkillMix = 50
 					},
 					new SkillMixSummaryModelView {
 						ResourceID = "HISTORICAL_R",
@@ -5032,7 +5032,7 @@ namespace GenBOE.Tests.ActionLogic
 						Included = true,
 						IsUserInput = true,
 						Rationale = "Rationale2",
-						BOESkillMix = 50
+						ProposedSkillMix = 50
 					}
 				},
 				taskElementLabors = new Collection<ResourceTypeDto>
@@ -5068,7 +5068,7 @@ namespace GenBOE.Tests.ActionLogic
 					Included = true,
 					IsUserInput = true,
 					Rationale = string.Empty,
-					BOESkillMix = 100
+					ProposedSkillMix = 100
 					}
 				},
 				taskElementLabors = new Collection<ResourceTypeDto>
@@ -5103,7 +5103,7 @@ namespace GenBOE.Tests.ActionLogic
 					Included = true,
 					IsUserInput = true,
 					Rationale = string.Empty,
-					BOESkillMix = 100
+					ProposedSkillMix = 100
 					}
 				},
 				taskElementLabors = new Collection<ResourceTypeDto>
@@ -5139,7 +5139,7 @@ namespace GenBOE.Tests.ActionLogic
 					Included = true,
 					IsUserInput = true,
 					Rationale = "Rationale1",
-					BOESkillMix = 100
+					ProposedSkillMix = 100
 					}
 				},
 				taskElementLabors = new Collection<ResourceTypeDto>
@@ -5174,7 +5174,7 @@ namespace GenBOE.Tests.ActionLogic
 					Included = true,
 					IsUserInput = true,
 					Rationale = "Rationale1",
-					BOESkillMix = 100
+					ProposedSkillMix = 100
 					}
 				},
 				taskElementLabors = new Collection<ResourceTypeDto>

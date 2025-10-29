@@ -29,7 +29,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inBoeID">Workspace ID</param>
         /// <returns>all the Workspace History logs</returns>
         [DbQuery]
-        virtual public Collection<WorkspaceHistoryDTO> GetWorkspaceHistory(int inWorkspaceID)
+        public virtual Collection<WorkspaceHistoryDTO> GetWorkspaceHistory(int inWorkspaceID)
         {
             Collection<WorkspaceHistoryDTO> toReturn = new Collection<WorkspaceHistoryDTO>();
 

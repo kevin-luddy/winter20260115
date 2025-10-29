@@ -72,7 +72,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="boeID">ID of BOE that contains the zone travel element</param>
         /// <param name="travelElementID">ID of the Zone Travel element</param>
         /// <returns>Zone Travel Composite view</returns>
-        virtual public ViewResult DisplayBOEZoneTravelComposite(string workspace, int boeID, int? travelElementID)
+        public virtual ViewResult DisplayBOEZoneTravelComposite(string workspace, int boeID, int? travelElementID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -319,7 +319,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="workspace">current workspace</param>
         /// <param name="boeID">boe id</param>
         /// <returns></returns>
-        virtual public JsonResult SaveReorderZoneTravelTaskElements(TaskElementOrderCollection theModelView, string workspace, int boeID)
+        public virtual JsonResult SaveReorderZoneTravelTaskElements(TaskElementOrderCollection theModelView, string workspace, int boeID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
             FullBoe boeObject = this.Factory.CreateFullBoe(boeID);
@@ -360,7 +360,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="dialogInputs">Inputs from the Add/Edit Trip dialog</param>
         /// <returns>JsonResult containing any nonzone costs and validation errors - if there are no errors, none are returned and the trip is added</returns>
         [HttpPost]
-        virtual public JsonResult VerifyAndCalculateZoneTravelTrip(string workspace, int boeID, DateTime taskStartDate, DateTime taskEndDate, Collection<BOEZoneTravelTripsGridModelView> dialogInputs)
+        public virtual JsonResult VerifyAndCalculateZoneTravelTrip(string workspace, int boeID, DateTime taskStartDate, DateTime taskEndDate, Collection<BOEZoneTravelTripsGridModelView> dialogInputs)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -405,7 +405,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="inDetailsMV">Travel Details Model View</param>
         /// <param name="inTravelTripsCollection">Trips Grid Model View</param>
         /// <returns>result of save</returns>
-        virtual public ActionResult SaveEditZoneTravelDetailsComposite(string workspace, int boeID, BOETravelElementDetailsModelView inDetailsMV, Collection<BOEZoneTravelTripsGridModelView> inTravelTripsCollection)
+        public virtual ActionResult SaveEditZoneTravelDetailsComposite(string workspace, int boeID, BOETravelElementDetailsModelView inDetailsMV, Collection<BOEZoneTravelTripsGridModelView> inTravelTripsCollection)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
