@@ -221,11 +221,10 @@
 							row.metadata = {
 								ManuallySetIncluded: false
 							};
-							sumHours += row.ProposedHours + row.BusinessResourceHours;
+							sumHours += row.ProposedLegacyResource + row.ProposedBrc;
 						}
 					});
 				}
-
 				$scope.totalSkillMixHours = sumHours;
 				$scope.deltaSkillMixHours = $scope.getMOQTotal().minus($scope.totalSkillMixHours).toString();
 				$scope.updateDropdowns();
