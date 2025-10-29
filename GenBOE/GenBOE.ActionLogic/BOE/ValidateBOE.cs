@@ -467,8 +467,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
 					foreach (OtherDirectCostDTO odc in odcs)
 					{
 						// Validate Task Element
-						Collection<string> returnMessages = this._ValidateStartAndEndDates(boe.StartDate, boe.EndDate, boe, odc.StartDate, odc.EndDate, ws);
-						if (returnMessages.Count() > 0)
+						Collection<string> odcValidationMessages = this._ValidateStartAndEndDates(boe.StartDate, boe.EndDate, boe, odc.StartDate, odc.EndDate, ws);
+						if (odcValidationMessages.Count() > 0)
 						{
 							return false;
 						}
@@ -476,8 +476,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
 						// Validate Resource Types
 						foreach (OtherDirectCostType type in odc.ODCTypes)
 						{
-							Collection<string> ReturnMsgs = this._ValidateStartAndEndDates(odc.StartDate, odc.EndDate, boe, type.StartDate, type.EndDate, ws);
-							if (returnMessages.Count() > 0)
+							Collection<string> odcTypeValidationMessages = this._ValidateStartAndEndDates(odc.StartDate, odc.EndDate, boe, type.StartDate, type.EndDate, ws);
+							if (odcTypeValidationMessages.Count() > 0)
 							{
 								return false;
 							}
