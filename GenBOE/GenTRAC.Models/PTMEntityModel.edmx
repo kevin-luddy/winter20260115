@@ -4032,7 +4032,7 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
           <Property Type="DateTime" Name="Date_Assigned" Nullable="true" />
           <Property Type="DateTime" Name="Estimated_Ship_Date__Due_Date_" Nullable="true" />
           <Property Type="DateTime" Name="ChecklistCompleteDate" Nullable="true" />
-          <Property Type="DateTime" Name="Proposal_Submit_Date" Nullable="true" />
+          <Property Type="DateTime" Name="Date_Est_Submits_to_Contracts" Nullable="true" />
           <Property Type="String" Name="Proposal_Status" Nullable="false" MaxLength="50" />
           <Property Type="DateTime" Name="Revised_Submittal_Date" Nullable="true" />
           <Property Type="Int32" Name="DocumentId" Nullable="true" />
@@ -5337,7 +5337,7 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
                 <ScalarProperty Name="Date_Assigned" ColumnName="Date Assigned" />
                 <ScalarProperty Name="Estimated_Ship_Date__Due_Date_" ColumnName="Estimated Ship Date (Due Date)" />
                 <ScalarProperty Name="ChecklistCompleteDate" ColumnName="ChecklistCompleteDate" />
-                <ScalarProperty Name="Proposal_Submit_Date" ColumnName="Proposal Submit Date" />
+                <ScalarProperty Name="Date_Est_Submits_to_Contracts" ColumnName="Date Est. Submits to Contracts" />
                 <ScalarProperty Name="Proposal_Status" ColumnName="Proposal Status" />
                 <ScalarProperty Name="Revised_Submittal_Date" ColumnName="Revised Submittal Date" />
                 <ScalarProperty Name="DocumentId" ColumnName="DocumentId" />
