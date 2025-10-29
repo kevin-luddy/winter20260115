@@ -257,7 +257,6 @@ namespace GenBOE.Web.Controllers
 
 			try
 			{
-				//FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 				Stream importFile = HttpContext.Current.Request.Files[0].InputStream;
 
 				// If a file was uploaded successfully
