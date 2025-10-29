@@ -338,6 +338,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 			}
 
 			ws.LoadBoesAndTaskElementsRTEData();
+			ws.LoadODCsRTEData();
 
 			// Check BOE falls within the CLIN Start Date and End Date
 			foreach (FullBoe boe in ws.Boes)
