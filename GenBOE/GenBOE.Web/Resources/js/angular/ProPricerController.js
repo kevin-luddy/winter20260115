@@ -1,15 +1,9 @@
 ﻿angular.module('genboe').controller('ProPricerController', ['$scope', '$document', 'ProPricerModel', '$http', function ($scope, $document, ProPricerModel, $http) {
     $scope.dataIsLoading = true;
-    console.log(ProPricerModel);
     $scope.model = ProPricerModel;
     $scope.model.sendToProPricerModalOpen = false;
     $scope.showInstanceLoader = true;
     $scope.errors = [];
-
-    if (!$scope.model.EnableProPricer) {
-        var error = { ValidationIssue: 'There are Children objects (i.e. CLIN, BOE, Task, Resource) that are outside the PoP of their Parents, please open the Validate All BOEs report and fix before exporting' };
-        $scope.errors.push(error);
-    }
 
     /* Send To Pro Pricer Dialog variables */
     $scope.proPricerDataIsLoading = false;

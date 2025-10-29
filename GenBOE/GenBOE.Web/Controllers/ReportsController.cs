@@ -1153,11 +1153,6 @@ namespace GenBOE.Web.Controllers
 			// Initialize Action
 			Stopwatch sw = this.InitializeAction(this.log, "DisplayProPricerGrid", SecurityPage.ExportToProPricer, SecurityAuthorization.Read, ws, null);
 
-			// PROP-3389: Check if workspace's children objects are valid before ProPricer is visible
-			// Check if ProPricer should even be enabled from validation
-			ValidationAllBOEModelView validationAllBOEModelView = this.validateBOE.ValidateAllBOEs(ws);
-			ViewData["EnableProPricer"] = validationAllBOEModelView.AllBOEs.All(x => x.isValid);
-
 			this.ViewData["EnableSendDirectly"] = !ws.IsProjectMapWorkspace && ConfigurationUtilities.GetAppSetting<bool>("EnableSendToProPricerDirectly", false);
 
 			SendToProPricerModelView sendToProPricerModelView = new SendToProPricerModelView();
