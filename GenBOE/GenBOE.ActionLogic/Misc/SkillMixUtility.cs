@@ -689,8 +689,8 @@
 			{
 				// reset Included status, hours at the start, this will be set later on
 				skillMixSummaryModel.Included = false;
-				skillMixSummaryModel.ProposedHours = 0m;
-				skillMixSummaryModel.BusinessResourceHours = 0m;
+				skillMixSummaryModel.ProposedLegacyResource = 0m;
+				skillMixSummaryModel.ProposedBrc = 0m;
 				skillMixSummaryModel.UCOTHours = 0m;
 
 				// Remove bad resource
