@@ -44,7 +44,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <returns>Partially filled wsDtos</returns>
 		[DbQuery]
-		virtual public Collection<WorkspaceDTO> GetAllWsNamesAndTrackingNumberInfo()
+		public virtual Collection<WorkspaceDTO> GetAllWsNamesAndTrackingNumberInfo()
 		{
 			Collection<WorkspaceDTO> toReturn;
 
@@ -109,7 +109,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="userId">The user id.</param>
 		/// <returns>workspaces</returns>
 		[DbQuery]
-		virtual public ICollection<GenBOEHomepageWorkspaceRowModelView> GetAllWsForHomepageGrid(int userId)
+		public virtual ICollection<GenBOEHomepageWorkspaceRowModelView> GetAllWsForHomepageGrid(int userId)
 		{
 			Collection<GenBOEHomepageWorkspaceRowModelView> toReturn = null;
 
@@ -323,7 +323,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="shortName">shortname</param>
 		/// <returns>workspace DTO</returns>
 		[DbQuery]
-		virtual public WorkspaceDTO GetByShortname(string shortName)
+		public virtual WorkspaceDTO GetByShortname(string shortName)
 		{
 			WorkspaceDTO toReturn = null;
 
@@ -422,7 +422,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="wsId">The ws id.</param>
 		/// <returns>A list of fields that exceed the RTE limit</returns>
 		[DbQuery]
-		virtual public ICollection<RTEValidationMV> GetRteFieldsExceedingLimit(int wsId)
+		public virtual ICollection<RTEValidationMV> GetRteFieldsExceedingLimit(int wsId)
 		{
 			List<RTEValidationMV> data = null;
 			int? rteSizeLimit;

@@ -37,7 +37,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <returns>Collection of BOE Ids</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		[DbQuery(2)]
-		virtual public ICollection<BoeDTO> GetByClinIds(ICollection<int> clinIds, bool includeRTEFields = false)
+		public virtual ICollection<BoeDTO> GetByClinIds(ICollection<int> clinIds, bool includeRTEFields = false)
 		{
 			// The BOEDTO to return
 			List<BoeDTO> toReturn = null;
@@ -128,7 +128,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="wbsId">Wbs Id</param>
 		/// <returns>Corresponding Boe Elements</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-		virtual public ICollection<BoeDTO> GetByWbsId(int wbsId)
+		public virtual ICollection<BoeDTO> GetByWbsId(int wbsId)
 		{
 			// The BOEDTO to return
 			List<BoeDTO> toReturn = null;
@@ -495,7 +495,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <returns>Boe DTO</returns>
 		[DbQuery]
-		virtual public Collection<BoeDTO> GetAllBoesForMetrics()
+		public virtual Collection<BoeDTO> GetAllBoesForMetrics()
 		{
 			Collection<BoeDTO> toReturn = null;
 
@@ -523,7 +523,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="inBoeID">BOE ID</param>
 		/// <returns>task variable IDs</returns>
 		[DbQuery]
-		virtual public ICollection<int> GetTaskVariableIdsByBoeId(int inBoeID)
+		public virtual ICollection<int> GetTaskVariableIdsByBoeId(int inBoeID)
 		{
 			using (StopwatchTimer sw = new StopwatchTimer(Log))
 			{
@@ -549,7 +549,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="inBoeID">BOE ID</param>
 		/// <returns>workspace variable IDs</returns>
 		[DbQuery]
-		virtual public ICollection<int> GetWorkspaceVariableIdsByBoeId(int inBoeID)
+		public virtual ICollection<int> GetWorkspaceVariableIdsByBoeId(int inBoeID)
 		{
 			using (StopwatchTimer sw = new StopwatchTimer(Log))
 			{
@@ -576,7 +576,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="boeID">BOE id</param>
 		/// <returns>XREF id</returns>
 		[DbQuery]
-		virtual public int GetWbsClinBoeXrefId(int? wbsID, int? clinID, int? boeID)
+		public virtual int GetWbsClinBoeXrefId(int? wbsID, int? clinID, int? boeID)
 		{
 			using (StopwatchTimer sw = new StopwatchTimer(Log))
 			{
@@ -611,7 +611,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="inCustomFieldID">custom field ID</param>
 		/// <returns>true if it exists, false if not</returns>
 		[DbQuery]
-		virtual public bool CheckIfBoeExistsByCustomFieldId(int inBOEID, int inCustomFieldID)
+		public virtual bool CheckIfBoeExistsByCustomFieldId(int inBOEID, int inCustomFieldID)
 		{
 			using (StopwatchTimer sw = new StopwatchTimer(Log))
 			{
@@ -636,7 +636,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <returns>BOE IDs whose children elements use a given resource ID</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		[DbQuery]
-		virtual public ICollection<int> GetIdsByResourceId(int inResourceID)
+		public virtual ICollection<int> GetIdsByResourceId(int inResourceID)
 		{
 			using (StopwatchTimer sw = new StopwatchTimer(Log))
 			{
@@ -677,7 +677,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="inBoeID"></param>
 		/// <returns></returns>
 		[DbQuery]
-		virtual public bool BoeContainsMaterialElement(int inBoeID)
+		public virtual bool BoeContainsMaterialElement(int inBoeID)
 		{
 			using (StopwatchTimer sw = new StopwatchTimer(Log))
 			{
@@ -701,7 +701,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="inBoeID"></param>
 		/// <returns></returns>
 		[DbQuery]
-		virtual public bool BoeContainsLaborCostElement(int inBoeID)
+		public virtual bool BoeContainsLaborCostElement(int inBoeID)
 		{
 			using (StopwatchTimer sw = new StopwatchTimer(Log))
 			{
@@ -732,7 +732,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="boeId">Boe Id</param>
 		/// <returns>True/False</returns>
 		[DbQuery]
-		virtual public bool DoesWorkspaceContainBoe(int workspaceId, int boeId)
+		public virtual bool DoesWorkspaceContainBoe(int workspaceId, int boeId)
 		{
 			using (StopwatchTimer sw = new StopwatchTimer(Log))
 			{
@@ -752,7 +752,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="boeId">Boe Id</param>
 		/// <returns>Boe's State</returns>
 		[DbQuery]
-		virtual public BOEState GetBoeState(int boeId)
+		public virtual BOEState GetBoeState(int boeId)
 		{
 			using (StopwatchTimer sw = new StopwatchTimer(Log))
 			{
@@ -773,7 +773,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="clinId"></param>
 		/// <returns>BOEIds that are found</returns>
 		[DbQuery]
-		virtual public ICollection<int> GetMultiClinBOEIdsByClins(int clinId, ICollection<int> boeIds)
+		public virtual ICollection<int> GetMultiClinBOEIdsByClins(int clinId, ICollection<int> boeIds)
 		{
 			ICollection<int> result;
 			using (GenBoeEntities gbe = new GenBoeEntities())
@@ -951,7 +951,7 @@ namespace GenBOE.DataBridge.DTO
 		/// Update custom field value container
 		/// </summary>
 		/// <param name="inCustomFieldValueContainer">CustomFieldValueContainer data</param>
-		virtual public void UpdateBoeCustomFieldValueContainer(CustomFieldValueContainer inCustomFieldValueContainer, int inBOEID)
+		public virtual void UpdateBoeCustomFieldValueContainer(CustomFieldValueContainer inCustomFieldValueContainer, int inBOEID)
 		{
 			if (inCustomFieldValueContainer == null)
 			{
@@ -977,7 +977,7 @@ namespace GenBOE.DataBridge.DTO
 		/// Delete custom field value container
 		/// </summary>
 		/// <param name="inCustomFieldValueContainer">CustomFieldValueContainer data</param>
-		virtual public void DeleteBoeCustomFieldValueContainer(CustomFieldValueContainer inCustomFieldValueContainer, int inBOEID)
+		public virtual void DeleteBoeCustomFieldValueContainer(CustomFieldValueContainer inCustomFieldValueContainer, int inBOEID)
 		{
 			if (inCustomFieldValueContainer == null)
 			{

@@ -22,10 +22,10 @@ namespace GenBOE.Dtos
 			this.SkillMixSummaryID = -1;
 			this.Rationale = String.Empty;
 			this.Included = false;
-			this.ProposedHours = 0m;
+			this.ProposedLegacyResource = 0m;
 			this.HistoricalHours = 0m;
-			this.BOESkillMix = 0m;
-			this.LaborSkillMix = 0m;
+			this.ProposedSkillMix = 0m;
+			this.HistoricalSkillMix = 0m;
 			this.ResourceID = String.Empty;
 			this.BusinessResourceID = String.Empty;
 			this.BOEID = -1;
@@ -49,9 +49,9 @@ namespace GenBOE.Dtos
 		public bool Included { get; set; }
 
 		/// <summary>
-		/// Proposed hours to match related Skill Mix equation
+		/// Proposed Legacy Resource hours to match related Skill Mix equation
 		/// </summary>
-		public decimal ProposedHours { get; set; }
+		public decimal ProposedLegacyResource { get; set; }
 
 		/// <summary>
 		/// Historical hours to match related Skill Mix equation
@@ -64,19 +64,19 @@ namespace GenBOE.Dtos
 		public decimal ResourceHours { get; set; }
 
 		/// <summary>
-		/// BRC hours to match related Skill Mix equation
+		/// Proposed BRC hours to match related Skill Mix equation
 		/// </summary>
-		public decimal BusinessResourceHours { get; set; }
+		public decimal ProposedBrc { get; set; }
 
 		/// <summary>
-		/// BOE SKill Mix percentage
+		/// Proposed BOE Skill Mix percentage
 		/// </summary>
-		public decimal? BOESkillMix { get; set; }
+		public decimal? ProposedSkillMix { get; set; }
 
 		/// <summary>
-		/// Labor Skill Mix percentage
+		/// Historical Labor Skill Mix percentage
 		/// </summary>
-		public decimal LaborSkillMix { get; set; }
+		public decimal HistoricalSkillMix { get; set; }
 
 		/// <summary>
 		/// Resource ID matching related row in Skill Mix table if included is yes

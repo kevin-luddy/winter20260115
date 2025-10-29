@@ -144,7 +144,7 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 		/// Delete workspaces
 		/// </summary>
 		/// <param name="toBeDeleted">workspaces to be deleted</param>
-		/// <returns>bool to indicate if operation is successfull</returns>
+		/// <returns>bool to indicate if operation is successful</returns>
 		public bool DeleteWorkspaces(GenBOEHomepageWorkspaceRowModelView[] toBeDeleted)
 		{
 			bool result = false;
@@ -174,7 +174,7 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 		/// Restore workspace when not PTM Integrated
 		/// </summary>
 		/// <param name="toBeRestored">workspace to be restored</param>
-		/// <returns>bool to indicate if operation is successfull</returns>
+		/// <returns>bool to indicate if operation is successful</returns>
 		public bool RestoreWorkspace(GenBOEHomepageWorkspaceRowModelView toBeRestored)
 		{
 			bool result = false;
@@ -202,7 +202,7 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 		/// Restore workspace when PTM Integrated
 		/// </summary>
 		/// <param name="toBeRestored">workspace to be restored</param>
-		/// <returns>bool to indicate if operation is successfull</returns>
+		/// <returns>bool to indicate if operation is successful</returns>
 		public bool RestorePtmWorkspace(GenBOEHomepageWorkspaceRowModelView toBeRestored)
 		{
 			bool result = false;

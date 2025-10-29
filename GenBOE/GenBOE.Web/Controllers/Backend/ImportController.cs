@@ -66,7 +66,7 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <summary>
 		/// Import File
 		/// </summary>
-		/// <returns>True/False to indicate if operation is successfull</returns>
+		/// <returns>True/False to indicate if operation is successful</returns>
 		[HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]

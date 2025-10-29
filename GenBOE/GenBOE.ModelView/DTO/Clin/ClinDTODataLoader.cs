@@ -86,7 +86,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="clinID">CLIN ID</param>
         /// <returns>the number of BOEs associated with the CLIN </returns>
         [DbQuery]
-        virtual public int GetBoeCountByClinID(int clinID)
+        public virtual int GetBoeCountByClinID(int clinID)
         {
             int toReturn = 0;
 
@@ -107,7 +107,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="wsId">the WorkSpace to get ClinS</param>
         /// <returns>list of Clin DTOs</returns>
         [DbQuery]
-        virtual public Collection<ClinDTO> GetByWorkspaceId(int wsId)
+        public virtual Collection<ClinDTO> GetByWorkspaceId(int wsId)
         {
             Collection<ClinDTO> toReturn = new Collection<ClinDTO>();
 
@@ -149,7 +149,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="clinID"></param>
         /// <returns></returns>
         [DbQuery]
-        virtual public Collection<int> GetTaskVariableIDsByClinID(int clinID)
+        public virtual Collection<int> GetTaskVariableIDsByClinID(int clinID)
         {
             Collection<int> toReturn = new Collection<int>();
 
@@ -170,7 +170,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="clindId"></param>
         /// <returns></returns>
         [DbQuery]
-        virtual public Collection<int> GetWorkspaceVariableIDsByClinID(int clinId)
+        public virtual Collection<int> GetWorkspaceVariableIDsByClinID(int clinId)
         {
             Collection<int> toReturn = new Collection<int>();
 

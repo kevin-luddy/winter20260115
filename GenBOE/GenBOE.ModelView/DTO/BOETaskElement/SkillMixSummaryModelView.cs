@@ -15,28 +15,35 @@ namespace GenBOE.DataBridge.DTO
 	[Serializable]
 	public class SkillMixSummaryModelView : SkillMixSummaryDTO
 	{
+		/// <summary>
+		/// Constructor
+		/// </summary>
 		public SkillMixSummaryModelView()
 		{
 		}
 
-		public SkillMixSummaryModelView(SkillMixSummaryDTO disclosureDTO)
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="summaryDTO">Skill Mix Summary DTO used to populate modelview</param>
+		public SkillMixSummaryModelView(SkillMixSummaryDTO summaryDTO)
 		{
-			if (disclosureDTO != null)
+			if (summaryDTO != null)
 			{
-				this.Included = disclosureDTO.Included;
-				this.Rationale = disclosureDTO.Rationale;
-				this.ProposedHours = disclosureDTO.ProposedHours;
-				this.HistoricalHours = disclosureDTO.HistoricalHours;
-				this.ResourceHours = disclosureDTO.ResourceHours;
-				this.BusinessResourceHours = disclosureDTO.BusinessResourceHours;
-				this.BOESkillMix = disclosureDTO.BOESkillMix;
-				this.LaborSkillMix = disclosureDTO.LaborSkillMix;
-				this.SkillMixSummaryID = disclosureDTO.SkillMixSummaryID;
-				this.BOEID = disclosureDTO.BOEID;
-				this.BOETaskElementID = disclosureDTO.BOETaskElementID;
-				this.BusinessResourceID = disclosureDTO.BusinessResourceID;
-				this.ResourceID = disclosureDTO.ResourceID;
-				this.IsUserInput = disclosureDTO.IsUserInput;
+				this.Included = summaryDTO.Included;
+				this.Rationale = summaryDTO.Rationale;
+				this.ProposedLegacyResource = summaryDTO.ProposedLegacyResource;
+				this.HistoricalHours = summaryDTO.HistoricalHours;
+				this.ResourceHours = summaryDTO.ResourceHours;
+				this.ProposedBrc = summaryDTO.ProposedBrc;
+				this.ProposedSkillMix = summaryDTO.ProposedSkillMix;
+				this.HistoricalSkillMix = summaryDTO.HistoricalSkillMix;
+				this.SkillMixSummaryID = summaryDTO.SkillMixSummaryID;
+				this.BOEID = summaryDTO.BOEID;
+				this.BOETaskElementID = summaryDTO.BOETaskElementID;
+				this.BusinessResourceID = summaryDTO.BusinessResourceID;
+				this.ResourceID = summaryDTO.ResourceID;
+				this.IsUserInput = summaryDTO.IsUserInput;
 			}
 		}
 
@@ -50,12 +57,12 @@ namespace GenBOE.DataBridge.DTO
 			{
 				Included = this.Included,
 				Rationale = this.Rationale ?? string.Empty,
-				ProposedHours = this.ProposedHours,
+				ProposedLegacyResource = this.ProposedLegacyResource,
 				HistoricalHours = this.HistoricalHours,
 				ResourceHours = this.ResourceHours,
-				BusinessResourceHours = this.BusinessResourceHours,
-				BOESkillMix = this.BOESkillMix,
-				LaborSkillMix = this.LaborSkillMix,
+				ProposedBrc = this.ProposedBrc,
+				ProposedSkillMix = this.ProposedSkillMix,
+				HistoricalSkillMix = this.HistoricalSkillMix,
 				ResourceID = this.ResourceID ?? string.Empty,
 				BusinessResourceID = this.BusinessResourceID ?? string.Empty,
 				SkillMixSummaryID = this.SkillMixSummaryID,
@@ -73,11 +80,11 @@ namespace GenBOE.DataBridge.DTO
 		/// <summary>
 		/// Grand Total Hours (proposed + UCOT Hours), Space only
 		/// </summary>
-		public decimal GrandTotalHours => this.TotalProposedHours + this.UCOTHours;
+		public decimal GrandTotalHours => this.TotalProposedLegacyBrc + this.UCOTHours;
 
 		/// <summary>
-		/// Total Proposed Hours (resource + BRC Hours), Space only
+		/// Total Proposed Hours (Legacy + BRC Hours), Space only
 		/// </summary>
-		public decimal TotalProposedHours => this.ProposedHours + this.BusinessResourceHours;
+		public decimal TotalProposedLegacyBrc => this.ProposedLegacyResource + this.ProposedBrc;
 	}
 }
