@@ -9,6 +9,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
 	using System.Runtime.Remoting.Messaging;
@@ -365,20 +366,64 @@ namespace GenBOE.ActionLogic.WBS.BOE
 				if (ws.Travels.Any(x => x.BoeID == boe.Id))
 				{
 					List<TravelDTO> travelTaskElements = ws.Travels.Where(x => x.BoeID == boe.Id).ToList();
-					foreach (TravelDTO travelTask in travelTaskElements)
+					// For Space
+					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 					{
-						if (!this._ValidateTaskElementStartDateComparedToBOEStartDate(boe.StartDate, travelTask.StartDate.Value) || !this._ValidateTaskElementEndDateComparedToBOEStartDate(boe.EndDate, travelTask.EndDate.Value))
+						foreach (TravelDTO travelTask in travelTaskElements)
 						{
-							return false;
-						}
+							if (!this._ValidateTaskElementStartDateComparedToBOEStartDate(boe.StartDate, travelTask.StartDate.Value) || !this._ValidateTaskElementEndDateComparedToBOEStartDate(boe.EndDate, travelTask.EndDate.Value))
+							{
+								return false;
+							}
 
-						// validate LT Start/End Date
-						foreach (TravelTripType travel in travelTask.TravelTrips)
+							// validate LT Start/End Date
+							foreach (TravelTripType travel in travelTask.TravelTrips)
+							{
+								Collection<string> returnedMessages = this._ValidateTravelTripDate(travelTask, travel, ws, boe);
+								if (returnedMessages.Count() > 0)
+								{
+									return false;
+								}
+							}
+						}
+					}
+					// For RMS
+					else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+					{
+						foreach (TravelDTO travelTask in travelTaskElements)
 						{
-							Collection<string> returnedMessages = this._ValidateTravelTripDate(travelTask, travel, ws, boe);
+							StartEndDateTypeValidator validator = new StartEndDateTypeValidator(boe.StartDate, boe.EndDate, "BOE", "Task", true);
+							ICollection<IStartEndDates> toValidate = new List<IStartEndDates> { travelTask };
+							Collection<string> returnedMessages = validator.validation(toValidate, (Collection<Dictionary<string, string>>)null);
 							if (returnedMessages.Count() > 0)
 							{
 								return false;
+							}
+
+							foreach (MSTTravelTripType msttravel in travelTask.MSTTravelTrips)
+							{
+								if (GenBOEUtilities.AdjustDateTimePrecision(msttravel.TripDate, DateTimePrecision.Month) < GenBOEUtilities.AdjustDateTimePrecision((travelTask.StartDate ?? boe.StartDate), DateTimePrecision.Month) && msttravel.Updateable != UpdateType.Deleted)
+								{
+									return false;
+								}
+
+								if (GenBOEUtilities.AdjustDateTimePrecision(msttravel.TripDate, DateTimePrecision.Month) > GenBOEUtilities.AdjustDateTimePrecision((travelTask.EndDate ?? boe.EndDate), DateTimePrecision.Month) && msttravel.Updateable != UpdateType.Deleted)
+								{
+									return false;
+								}
+
+								if (msttravel.ModeID == MSTTravelMode.NonZoneDomestic || msttravel.ModeID == MSTTravelMode.NonZoneInternational)
+								{
+									if (GenBOEUtilities.AdjustDateTimePrecision(msttravel.EstimateDate, DateTimePrecision.Month) > GenBOEUtilities.AdjustDateTimePrecision((msttravel.TripDate), DateTimePrecision.Month) && msttravel.Updateable != UpdateType.Deleted)
+									{
+										return false;
+									}
+
+									if (GenBOEUtilities.AdjustDateTimePrecision(msttravel.EstimateDate, DateTimePrecision.Month) > GenBOEUtilities.AdjustDateTimePrecision((travelTask.EndDate ?? boe.EndDate), DateTimePrecision.Month) && msttravel.Updateable != UpdateType.Deleted)
+									{
+										return false;
+									}
+								}
 							}
 						}
 					}
