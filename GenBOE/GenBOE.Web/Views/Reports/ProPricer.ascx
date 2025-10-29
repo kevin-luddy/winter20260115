@@ -629,8 +629,7 @@
 <div id="ExportToProPricerElementDialog" class="export-to-propricer-element-dialog display-none">
     <div class="container">
  
-        <% using (Html.BeginForm("", "", FormMethod.Post, new { id = "ExportToProPricerElementForm"
-            }))
+        <% using (Html.BeginForm("", "", FormMethod.Post, new { id = "ExportToProPricerElementForm" }))
             { %>
             <ul class="validation-box"> </ul>
              <div id="CopyFromRow" class="form-row display-none">

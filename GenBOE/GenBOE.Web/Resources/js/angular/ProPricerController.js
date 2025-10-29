@@ -80,8 +80,11 @@
             $scope.showInstanceLoader = false;
         }, function (response) {
             // error handler
+            var errors = [];
             var error = { ValidationIssue: 'Could not connect to Pro Pricer Service.' };
-            $scope.errors.push(error);
+            errors.push(error);
+
+            $scope.errors = errors;
             $scope.showInstanceLoader = false;
             $('.send').hide();
         });

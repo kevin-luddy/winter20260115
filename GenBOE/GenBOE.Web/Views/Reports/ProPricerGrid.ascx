@@ -3,7 +3,6 @@
 <%
     bool enableSendDirectly = (bool) ViewData["EnableSendDirectly"];
     bool isSystemAdmin = (bool)ViewData["IsSystemAdmin"];
-
     SendToProPricerModelView sendData = (SendToProPricerModelView)ViewData["SendToProPricerData"];
     JavaScriptSerializer serializer = new JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };
 %>
