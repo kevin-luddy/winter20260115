@@ -23,10 +23,12 @@ namespace IES.Common
 		/// The name of the property to check
 		/// </summary>
 		private string DependentProperty { get; set; }
+
 		/// <summary>
 		/// The value needed to satisfy the dependent property
 		/// </summary>
 		private object DesiredValue { get; set; }
+
 		/// <summary>
 		/// The Regular Expression pattern to match
 		/// </summary>
@@ -65,7 +67,7 @@ namespace IES.Common
 			object dependentValue = validationContext.ObjectInstance.GetType().GetProperty(DependentProperty).GetValue(validationContext.ObjectInstance, null);
 
 			// Check values of the dependent vs. desired
-			if (Regex.IsMatch(dependentValue.ToString(), DesiredValue.ToString()))
+			if (Regex.IsMatch(dependentValue.ToString(), DesiredValue.ToString(), RegexOptions.IgnoreCase))
 			{
 				if (!Regex.IsMatch(value.ToString(), RegExp))
 				{ 
@@ -87,7 +89,7 @@ namespace IES.Common
 			ModelClientValidationRule rule = new ModelClientValidationRule
 			{
 				ErrorMessage = ErrorMessageString,
-				ValidationType = "requiredif",
+				ValidationType = "regularExpression",
 			};
 			rule.ValidationParameters["dependentproperty"] = GetPropertyId(metadata, context as ViewContext);
 			rule.ValidationParameters["desiredvalue"] = DesiredValue is bool ? DesiredValue.ToString().ToLower() : DesiredValue;
