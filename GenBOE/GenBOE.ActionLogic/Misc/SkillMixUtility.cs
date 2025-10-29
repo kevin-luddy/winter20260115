@@ -188,23 +188,42 @@
 		/// <param name="laborTypes">The labor type/spreads data</param>
 		/// <param name="resourceHours">MOQ Table Resource Hours</param>
 		/// <param name="currentSkillMixSummaryData">The current skill mix summary data</param>
-		/// <param name="isBRCEnabled">Is BRC Enabled for CD row check.</param>
 		/// <returns>Refreshed/Recalculated Skill Mix Model View</returns>
 		private static RefreshSkillMixModelView RefreshSpaceSkillMix(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData)
 		{
-			// Filter bad data
-			FilterBadDataSpace(laborTypes, currentSkillMixSummaryData, resourceHours);
-
-			// Add missing Resources
-			AddMissingSpaceHistoricalResources(resourceHours, currentSkillMixSummaryData);
+			List<SkillMixSummaryModelView> newSummaryRows = new List<SkillMixSummaryModelView>();
 
 			// Add missing Labor Types
-			AddMissingSpaceResources(laborTypes, currentSkillMixSummaryData);
+			AddMissingSpaceResources(laborTypes, newSummaryRows);
+			
+			// Add missing Historical Resources
+			AddMissingSpaceHistoricalResources(resourceHours, newSummaryRows);
+						
+			// Copy over Rationale
+			AddRationale(currentSkillMixSummaryData, newSummaryRows);
 
 			RefreshSkillMixModelView refreshSkillMixModel = new RefreshSkillMixModelView();
-			refreshSkillMixModel.SkillMixSummaryRows = currentSkillMixSummaryData;
+			refreshSkillMixModel.SkillMixSummaryRows = newSummaryRows;
 
 			return refreshSkillMixModel;
+		}
+
+		/// <summary>
+		/// Adds rationale from old rows to new rows
+		/// </summary>
+		/// <param name="currentSkillMixSummaryData">The old summary rows</param>
+		/// <param name="newSummaryRows">The new summary rows</param>
+		private static void AddRationale(ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData, List<SkillMixSummaryModelView> newSummaryRows)
+		{
+			foreach (SkillMixSummaryModelView newRow in newSummaryRows)
+			{
+				SkillMixSummaryModelView oldRow = currentSkillMixSummaryData.FirstOrDefault(s => s.ResourceID.NullEmptyEquals(newRow.ResourceID) &&
+				s.BusinessResourceID.NullEmptyEquals(newRow.BusinessResourceID));
+				if (oldRow != null)
+				{
+					newRow.Rationale = oldRow.Rationale;
+				}
+			}
 		}
 
 		/// <summary>
@@ -668,73 +687,6 @@
 			{
 				currentSkillMixData.Clear();
 				currentCommonDisclosureData.Clear();
-			}
-		}
-
-		/// <summary>
-		/// Filter out bad data inside the current lists
-		/// </summary>
-		/// <param name="currentSkillMixSummaryData">Current Skill Mix Summary data</param>
-		/// <param name="resourceHours">The Resource Hours</param>
-		private static void FilterBadDataSpace(ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData, ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours)
-		{
-			HashSet<string> resources = laborTypes.Select(l => l.ResourceName).Distinct().ToHashSet();
-			HashSet<string> brcs = laborTypes.Select(l => l.BusinessResourceCodeName).Distinct().ToHashSet();
-			HashSet<string> historicalResources = resourceHours.Select(r => r.ResourceName).Distinct().ToHashSet();
-
-			// Keep track of used combinations
-			List<Tuple<string, string>> usedCombos = new List<Tuple<string, string>>();
-
-			foreach (SkillMixSummaryModelView skillMixSummaryModel in currentSkillMixSummaryData.ToList())
-			{
-				// reset Included status, hours at the start, this will be set later on
-				skillMixSummaryModel.Included = false;
-				skillMixSummaryModel.ProposedLegacyResource = 0m;
-				skillMixSummaryModel.ProposedBrc = 0m;
-				skillMixSummaryModel.UCOTHours = 0m;
-
-				// Remove bad resource
-				if (!string.IsNullOrWhiteSpace(skillMixSummaryModel.ResourceID) && !resources.Contains(skillMixSummaryModel.ResourceID))
-				{
-					skillMixSummaryModel.ResourceHours = 0m;
-					skillMixSummaryModel.HistoricalSkillMix = 0m;
-				}
-
-				// Remove bad historical resource
-				if (!string.IsNullOrWhiteSpace(skillMixSummaryModel.ResourceID) && !historicalResources.Contains(skillMixSummaryModel.ResourceID))
-				{
-					skillMixSummaryModel.HistoricalHours = 0m;
-				}
-
-				// Remove bad resources
-				if (!string.IsNullOrWhiteSpace(skillMixSummaryModel.ResourceID) && !resources.Contains(skillMixSummaryModel.ResourceID) && !historicalResources.Contains(skillMixSummaryModel.ResourceID))
-				{
-					skillMixSummaryModel.ResourceID = string.Empty;
-				}
-
-				if (!string.IsNullOrWhiteSpace(skillMixSummaryModel.BusinessResourceID) && !brcs.Contains(skillMixSummaryModel.BusinessResourceID))
-				{
-					// this skill mix summary model is pointing towards a missing Resource, remove the resource name
-					skillMixSummaryModel.BusinessResourceID = string.Empty;
-					skillMixSummaryModel.ProposedBrc = 0m;
-					skillMixSummaryModel.UCOTHours = 0m;
-					skillMixSummaryModel.ProposedSkillMix = 0m;
-				}
-
-				// if the row does not have resource or BRC set, then delete it
-				if (string.IsNullOrEmpty(skillMixSummaryModel.ResourceID) && string.IsNullOrEmpty(skillMixSummaryModel.BusinessResourceID))
-				{
-					currentSkillMixSummaryData.Remove(skillMixSummaryModel);
-				}
-				else if (usedCombos.Any(c => c.Item1 == skillMixSummaryModel.ResourceID && c.Item2 == skillMixSummaryModel.BusinessResourceID))
-				{
-					// this is a duplicate row, delete it
-					currentSkillMixSummaryData.Remove(skillMixSummaryModel);
-				}
-				else
-				{
-					usedCombos.Add(new Tuple<string, string>(skillMixSummaryModel.ResourceID, skillMixSummaryModel.BusinessResourceID));
-				}
 			}
 		}
 
