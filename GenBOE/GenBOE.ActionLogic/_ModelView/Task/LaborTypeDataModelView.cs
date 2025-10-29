@@ -334,14 +334,15 @@ namespace GenBOE.ActionLogic.ModelView
 		/// <summary>
 		/// Gets/Sets StartDate
 		/// </summary>
-		[RegularExpression(ValidationConstants.DATE_MONTH_YEAR, ErrorMessage = "Start Date must be in MM/YYYY format.")]
+		//[RegularExpression(ValidationConstants.DATE_MONTH_YEAR, ErrorMessage = "Start Date must be in MM/YYYY format.")]
+		[RegExpConditional("Deleted", false, ValidationConstants.DATE_MONTH_YEAR, ErrorMessage = "Start Date must be in MM/YYYY format.")]
 		[DisplayFormat(DataFormatString = "{0:MM/yyyy}", ApplyFormatInEditMode = true)]
 		public string StartDate { get; set; }
 
 		/// <summary>
 		/// Gets/Sets EndDate
 		/// </summary>
-		[RegularExpression(ValidationConstants.DATE_MONTH_YEAR, ErrorMessage = "End Date must be in MM/YYYY format.")]
+		[RegExpConditional("Deleted", false, ValidationConstants.DATE_MONTH_YEAR, ErrorMessage = "End Date must be in MM/YYYY format.")]
 		[DisplayFormat(DataFormatString = "{0:MM/yyyy}", ApplyFormatInEditMode = true)]
 		public string EndDate { get; set; }
 
