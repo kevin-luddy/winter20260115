@@ -2991,7 +2991,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 						Included = true,
 						IsUserInput = true,
 						Rationale = "Rationale1",
-						BOESkillMix = 100
+						ProposedSkillMix = 100
 					}
 				}
 			};
@@ -3149,7 +3149,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 						Included = true,
 						IsUserInput = true,
 						Rationale = "Rationale1",
-						BOESkillMix = 100
+						ProposedSkillMix = 100
 					}
 				}
 			};
@@ -6133,9 +6133,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 					SkillMixSummaryID = 1,
 					ResourceID = RESOURCE_NAME1,
 					BusinessResourceID = BRC_RESOURCE_NAME1,
-					ProposedHours = 0,
+					ProposedLegacyResource = 0,
 					ResourceHours = 0,
-					BusinessResourceHours = 0,
+					ProposedBrc = 0,
 					Included = true,
 					Rationale = Rationale2
 				},
@@ -6143,9 +6143,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 					SkillMixSummaryID = 2,
 					ResourceID = RESOURCE_NAME2,
 					BusinessResourceID = BRC_RESOURCE_NAME2,
-					ProposedHours = 0,
+					ProposedLegacyResource = 0,
 					ResourceHours = 0,
-					BusinessResourceHours = 0,
+					ProposedBrc = 0,
 					Included = true,
 					Rationale = Rationale2
 				}
@@ -6165,37 +6165,37 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		{
 			if (result.SkillMixRows.Any(r => r.LaborSkillMix != 0m))
 			{
-				AssertHelpers.AssertAreEqualEpsilon(100m, result.SkillMixTotals.LaborSkillMix);
+				AssertHelpers.AssertAreEqualEpsilon(100m, result.SkillMixTotals.HistoricalSkillMix);
 			}
 			else
 			{
-				AssertHelpers.AssertAreEqualEpsilon(0m, result.SkillMixTotals.LaborSkillMix);
+				AssertHelpers.AssertAreEqualEpsilon(0m, result.SkillMixTotals.HistoricalSkillMix);
 			}
 			if (result.SkillMixRows.Any(r => r.BOESkillMix != 0m))
 			{
-				AssertHelpers.AssertAreEqualEpsilon(100m, result.SkillMixTotals.BoeSkillMix);
+				AssertHelpers.AssertAreEqualEpsilon(100m, result.SkillMixTotals.ProposedSkillMix);
 			}
 			else
 			{
-				AssertHelpers.AssertAreEqualEpsilon(0m, result.SkillMixTotals.BoeSkillMix);
+				AssertHelpers.AssertAreEqualEpsilon(0m, result.SkillMixTotals.ProposedSkillMix);
 			}
 
 			if (result.CommonDisclosureRows.Any(r => r.BOESkillMix != 0m))
 			{
-				AssertHelpers.AssertAreEqualEpsilon(100m, result.CommonDisclosureTotals.LaborSkillMix);
+				AssertHelpers.AssertAreEqualEpsilon(100m, result.CommonDisclosureTotals.HistoricalSkillMix);
 			}
 			else
 			{
-				AssertHelpers.AssertAreEqualEpsilon(0m, result.CommonDisclosureTotals.LaborSkillMix);
+				AssertHelpers.AssertAreEqualEpsilon(0m, result.CommonDisclosureTotals.HistoricalSkillMix);
 			}
 
 			if (result.CommonDisclosureRows.Any(r => r.BOESkillMix != 0m))
 			{
-				AssertHelpers.AssertAreEqualEpsilon(100m, result.CommonDisclosureTotals.BoeSkillMix);
+				AssertHelpers.AssertAreEqualEpsilon(100m, result.CommonDisclosureTotals.ProposedSkillMix);
 			}
 			else
 			{
-				AssertHelpers.AssertAreEqualEpsilon(0m, result.CommonDisclosureTotals.BoeSkillMix);
+				AssertHelpers.AssertAreEqualEpsilon(0m, result.CommonDisclosureTotals.ProposedSkillMix);
 			}
 		}
 
