@@ -4554,6 +4554,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					{
 						boeExportTaskElement.SkillMixTable = boeTaskElement.SkillMixTable;
 						boeExportTaskElement.CommonDisclosureTable = boeTaskElement.CommonDisclosureTable;
+						boeExportTaskElement.SkillMixSummaryTable = boeTaskElement.SkillMixSummaryTable;
 						boeExportTaskElement.HasTMRates = boeTaskElement.HasTMRates;
 					}
 				}

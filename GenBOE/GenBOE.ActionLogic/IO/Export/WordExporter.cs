@@ -1017,7 +1017,6 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="skillMixTablesContainer">SDT Element container for the Skill Mix Tables</param>
 		/// <param name="exportInputs">Export Inputs</param>
 		/// <param name="laborTaskElement">BOE Export Task Element</param>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		private void ProcessSummarySkillMixTable(SdtElement skillMixTablesContainer, BOEExportTaskElement laborTaskElement, BOEExportInputs exportInputs)
 		{
 			// Remove the other skill mix tables if they exist in the template
