@@ -777,7 +777,12 @@ namespace GenBOE.Web.Controllers
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = this.InitializeAction(this.log, "DisplayProPricer", SecurityPage.ExportToProPricer, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = this.InitializeAction(this.log, WebConstants.ACTION_DISPLAY_EXPORT_TO_PROPRICER, SecurityPage.ExportToProPricer, SecurityAuthorization.Read, ws, null);
+
+			// PROP-3389: Check if workspace's children objects are valid before ProPricer is visible
+			// Check if ProPricer should even be enabled from validation
+			bool isWorkspacePoPValid = this.validateBOE.ValidateWorkspacePoP(ws);
+			ViewData["EnableProPricer"] = isWorkspacePoPValid;
 
 			this.ViewData["EnableSendDirectly"] = !ws.IsProjectMapWorkspace && ConfigurationUtilities.GetAppSetting<bool>("EnableSendToProPricerDirectly", false);
 
@@ -857,7 +862,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = this.View(WebConstants.VIEW_EXPORT_TO_PROPRICER);
 
 			// Finalize Action
-			this.FinalizeAction(this.log, "DisplayProPricer", sw);
+			this.FinalizeAction(this.log, WebConstants.ACTION_DISPLAY_EXPORT_TO_PROPRICER, sw);
 			return toReturn;
 		}
 
