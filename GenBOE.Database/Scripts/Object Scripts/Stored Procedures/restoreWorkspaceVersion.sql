@@ -59,6 +59,7 @@ AS
 **		9/30/25		e378233				PROPH-3302 Updated for Skill Mix Summary
 **		10/14/25	ranzalon			PROPH-3286 Enable LM Nav Workspace Setting
 **		10/28/2025	twilson3			proph-3411 ALways set PerformingOrganizationChangeFlag to true (1) to fix any false negatives
+**		10/30/25	ranzalon			PROPH-3422 Update Skill Mix Summary Column Names
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -2659,12 +2660,12 @@ BEGIN
 		([SkillMixSummaryID],
 		[Rationale],
 		[Included],
-		[ProposedHours],
+		[ProposedLegacyResource],
 		[HistoricalHours],
 		[ResourceHours],
-		[BusinessResourceHours],
-		[BOESkillMix],
-		[LaborSkillMix],
+		[ProposedBrc],
+		[ProposedSkillMix],
+		[HistoricalSkillMix],
 		[ResourceID],
 		[BusinessResourceID],
 		[BOEID],
@@ -2673,12 +2674,12 @@ BEGIN
 		SELECT SMS.[SkillMixSummaryID],
 			SMS.[Rationale],
 			SMS.[Included],
-			SMS.[ProposedHours],
+			SMS.[ProposedLegacyResource],
 			SMS.[HistoricalHours],
 			SMS.[ResourceHours],
-			SMS.[BusinessResourceHours],
-			SMS.[BOESkillMix],
-			SMS.[LaborSkillMix],
+			SMS.[ProposedBrc],
+			SMS.[ProposedSkillMix],
+			SMS.[HistoricalSkillMix],
 			SMS.[ResourceID],
 			SMS.[BusinessResourceID],
 			SMS.[BOEID],

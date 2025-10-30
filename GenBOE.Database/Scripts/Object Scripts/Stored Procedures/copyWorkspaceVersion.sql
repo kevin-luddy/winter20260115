@@ -58,6 +58,7 @@ AS
 **		2/4/2025	twilson3			PROPH-2786 Link BRCs to new workspace, not old workspace
 **		9/30/25		e378233				PROPH-3302 Updated Copy Workspace Version for Skill Mix Summary
 **		10/14/25	ranzalon			PROPH-3286 Enable LM Nav Workspace Setting
+**		10/30/25	ranzalon			PROPH-3422 Update Skill Mix Summary Column Names
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -2139,19 +2140,18 @@ BEGIN TRY
 	
 	END
 	
-
 	/** [dbo].[SkillMixSummary] **/
 	DECLARE @SkillMixSummary TABLE
 	(
 		[SkillMixSUmmaryID] [int] NOT NULL,
 		[Rationale] varchar(255) NOT NULL,
 		[Included] [bit] NOT NULL,
-		[ProposedHours] decimal(11,2) NOT NULL,
+		[ProposedLegacyResource] decimal(11,2) NOT NULL,
 		[HistoricalHours] decimal(11,2) NOT NULL,
 		[ResourceHours] decimal(11,2) NOT NULL,
-		[BusinessResourceHours] decimal(11,2) NOT NULL,
-		[BOESkillMix] decimal(5,2) NOT NULL,
-		[LaborSkillMix] decimal(5,2) NOT NULL,
+		[ProposedBrc] decimal(11,2) NOT NULL,
+		[ProposedSkillMix] decimal(5,2) NOT NULL,
+		[HistoricalSkillMix] decimal(5,2) NOT NULL,
 		[ResourceID] varchar(20) NOT NULL,
 		[BusinessResourceID] varchar(20) NOT NULL,
 	    [BOEID] [int] NOT NULL,
@@ -2166,12 +2166,12 @@ BEGIN TRY
 		SMS.[SkillMixSummaryID],
 		SMS.[Rationale],
 		SMS.[Included],
-		SMS.[ProposedHours],
+		SMS.[ProposedLegacyResource],
 		SMS.[HistoricalHours],
 		SMS.[ResourceHours],
-		SMS.[BusinessResourceHours],
-		SMS.[BOESkillMix],
-		SMS.[LaborSkillMix],
+		SMS.[ProposedBrc],
+		SMS.[ProposedSkillMix],
+		SMS.[HistoricalSkillMix],
 	    SMS.[ResourceID],
 	    SMS.[BusinessResourceID],
 	    SMS.[BOEID],
@@ -2192,12 +2192,12 @@ BEGIN TRY
 	INSERT INTO [dbo].[SkillMixSummary]
 				([Rationale],
 				[Included],
-				[ProposedHours],
+				[ProposedLegacyResource],
 				[HistoricalHours],
 				[ResourceHours],
-				[BusinessResourceHours],
-				[BOESkillMix],
-				[LaborSkillMix],
+				[ProposedBrc],
+				[ProposedSkillMix],
+				[HistoricalSkillMix],
 	            [ResourceID],
 	            [BusinessResourceID],
 	            [BOEID],
@@ -2207,12 +2207,12 @@ BEGIN TRY
 	SELECT
 		[Rationale],
 		[Included],
-		[ProposedHours],
+		[ProposedLegacyResource],
 		[HistoricalHours],
 		[ResourceHours],
-		[BusinessResourceHours],
-		[BOESkillMix],
-		[LaborSkillMix],
+		[ProposedBrc],
+		[ProposedSkillMix],
+		[HistoricalSkillMix],
 	    [ResourceID],
 	    [BusinessResourceID],
 	    [NewBOEID],
