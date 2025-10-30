@@ -424,6 +424,14 @@ namespace GenTRAC.ActionLogic
 			dto.NegotiationsSubmitted = model.NegotiationsSubmitted == null ? (DateTime?)null : DateTime.Parse(model.NegotiationsSubmitted);
 			dto.UpdateDateLong = model.LastUpdatedDateLong;
 			dto.EppDelegationAuthority = model.EppDelegationAuthority == null ? (int?)null : (int)model.EppDelegationAuthority;
+			dto.ScheduledActualBidEppDate = model.ScheduledActualBidEppDate;
+			dto.ScheduledActualProgramEppDate = model.ScheduledActualProgramEppDate;
+			dto.ScheduledActualMissionSegmentEppDate = model.ScheduledActualMissionSegmentEppDate;
+			dto.ScheduledActualLobEppDate = model.ScheduledActualLobEppDate;
+			dto.ScheduledActualPreSpaceEppDate = model.ScheduledActualPreSpaceEppDate;
+			dto.ScheduledActualSpaceEppDate = model.ScheduledActualSpaceEppDate;
+			dto.ScheduledActualPreCorporateEppDate = model.ScheduledActualPreCorporateEppDate;
+			dto.ScheduledActualCorporateEppDate = model.ScheduledActualCorporateEppDate;
 			dto.PlannedBidEppDate = model.PlannedBidEppDate;
 			dto.PlannedProgramEppDate = model.PlannedProgramEppDate;
 			dto.PlannedMissionSegmentEppDate = model.PlannedMissionSegmentEppDate;
@@ -432,14 +440,6 @@ namespace GenTRAC.ActionLogic
 			dto.PlannedSpaceEppDate = model.PlannedSpaceEppDate;
 			dto.PlannedPreCorporateEppDate = model.PlannedPreCorporateEppDate;
 			dto.PlannedCorporateEppDate = model.PlannedCorporateEppDate;
-			dto.ScheduledBidEppDate = model.ScheduledBidEppDate;
-			dto.ScheduledProgramEppDate = model.ScheduledProgramEppDate;
-			dto.ScheduledMissionSegmentEppDate = model.ScheduledMissionSegmentEppDate;
-			dto.ScheduledLobEppDate = model.ScheduledLobEppDate;
-			dto.ScheduledPreSpaceEppDate = model.ScheduledPreSpaceEppDate;
-			dto.ScheduledSpaceEppDate = model.ScheduledSpaceEppDate;
-			dto.ScheduledPreCorporateEppDate = model.ScheduledPreCorporateEppDate;
-			dto.ScheduledCorporateEppDate = model.ScheduledCorporateEppDate;
 			dto.EppRosDelegationNotes = model.EppRosDelegationNotes;
 			dto.LmWon = model.LmWon;
 			dto.ModCompletedDate = model.ModCompletedDate;
@@ -481,6 +481,14 @@ namespace GenTRAC.ActionLogic
 			model.NegotiationsSubmittedDt = dto.NegotiationsSubmitted;
 			model.LastUpdatedDateLong = dto.UpdateDateLong;
 			model.EppDelegationAuthority = dto.EppDelegationAuthority == null ? (EppDelegationAuthority?)null : (EppDelegationAuthority)dto.EppDelegationAuthority;
+			model.ScheduledActualBidEppDate = dto.ScheduledActualBidEppDate;
+			model.ScheduledActualProgramEppDate = dto.ScheduledActualProgramEppDate;
+			model.ScheduledActualMissionSegmentEppDate = dto.ScheduledActualMissionSegmentEppDate;
+			model.ScheduledActualLobEppDate = dto.ScheduledActualLobEppDate;
+			model.ScheduledActualPreSpaceEppDate = dto.ScheduledActualPreSpaceEppDate;
+			model.ScheduledActualSpaceEppDate = dto.ScheduledActualSpaceEppDate;
+			model.ScheduledActualPreCorporateEppDate = dto.ScheduledActualPreCorporateEppDate;
+			model.ScheduledActualCorporateEppDate = dto.ScheduledActualCorporateEppDate;
 			model.PlannedBidEppDate = dto.PlannedBidEppDate;
 			model.PlannedProgramEppDate = dto.PlannedProgramEppDate;
 			model.PlannedMissionSegmentEppDate = dto.PlannedMissionSegmentEppDate;
@@ -489,14 +497,6 @@ namespace GenTRAC.ActionLogic
 			model.PlannedSpaceEppDate = dto.PlannedSpaceEppDate;
 			model.PlannedPreCorporateEppDate = dto.PlannedPreCorporateEppDate;
 			model.PlannedCorporateEppDate = dto.PlannedCorporateEppDate;
-			model.ScheduledBidEppDate = dto.ScheduledBidEppDate;
-			model.ScheduledProgramEppDate = dto.ScheduledProgramEppDate;
-			model.ScheduledMissionSegmentEppDate = dto.ScheduledMissionSegmentEppDate;
-			model.ScheduledLobEppDate = dto.ScheduledLobEppDate;
-			model.ScheduledPreSpaceEppDate = dto.ScheduledPreSpaceEppDate;
-			model.ScheduledSpaceEppDate = dto.ScheduledSpaceEppDate;
-			model.ScheduledPreCorporateEppDate = dto.ScheduledPreCorporateEppDate;
-			model.ScheduledCorporateEppDate = dto.ScheduledCorporateEppDate;
 			model.EppRosDelegationNotes = dto.EppRosDelegationNotes;
 			model.LmWon = dto.LmWon;
 			model.ModCompletedDate = dto.ModCompletedDate;
@@ -920,44 +920,44 @@ namespace GenTRAC.ActionLogic
 		/// <param name="validationMessages">Validation Messages Collection</param>
 		private static void EppDateValidations(ContractsModelView model, ICollection<string> validationMessages)
 		{
-			if (model.ScheduledBidEppDate.HasValue && !model.PlannedBidEppDate.HasValue)
+			if (model.PlannedBidEppDate.HasValue && !model.ScheduledActualBidEppDate.HasValue)
 			{
-				validationMessages.Add(Constants.INVALID_PLANNED_BID_EPP_DATE);
+				validationMessages.Add(Constants.INVALID_SCHEDULED_ACTUAL_BID_EPP_DATE);
 			}
 
-			if (model.ScheduledMissionSegmentEppDate.HasValue && !model.PlannedMissionSegmentEppDate.HasValue)
+			if (model.PlannedMissionSegmentEppDate.HasValue && !model.ScheduledActualMissionSegmentEppDate.HasValue)
 			{
-				validationMessages.Add(Constants.INVALID_PLANNED_MISSION_SEGMENT_EPP_DATE);
+				validationMessages.Add(Constants.INVALID_SCHEDULED_ACTUAL_MISSION_SEGMENT_EPP_DATE);
 			}
 
-			if (model.ScheduledLobEppDate.HasValue && !model.PlannedLobEppDate.HasValue)
+			if (model.PlannedLobEppDate.HasValue && !model.ScheduledActualLobEppDate.HasValue)
 			{
-				validationMessages.Add(Constants.INVALID_PLANNED_LOB_EPP_DATE);
+				validationMessages.Add(Constants.INVALID_SCHEDULED_ACTUAL_LOB_EPP_DATE);
 			}
 
-			if (model.ScheduledProgramEppDate.HasValue && !model.PlannedProgramEppDate.HasValue)
+			if (model.PlannedProgramEppDate.HasValue && !model.ScheduledActualProgramEppDate.HasValue)
 			{
-				validationMessages.Add(Constants.INVALID_PLANNED_PROGRAM_EPP_DATE);
+				validationMessages.Add(Constants.INVALID_SCHEDULED_ACTUAL_PROGRAM_EPP_DATE);
 			}
 
-			if (model.ScheduledPreSpaceEppDate.HasValue && !model.PlannedPreSpaceEppDate.HasValue)
+			if (model.PlannedPreSpaceEppDate.HasValue && !model.ScheduledActualPreSpaceEppDate.HasValue)
 			{
-				validationMessages.Add(Constants.INVALID_PLANNED_PRE_SPACE_EPP_DATE);
+				validationMessages.Add(Constants.INVALID_SCHEDULED_ACTUAL_PRE_SPACE_EPP_DATE);
 			}
 
-			if (model.ScheduledSpaceEppDate.HasValue && !model.PlannedSpaceEppDate.HasValue)
+			if (model.PlannedSpaceEppDate.HasValue && !model.ScheduledActualSpaceEppDate.HasValue)
 			{
-				validationMessages.Add(Constants.INVALID_PLANNED_SPACE_EPP_DATE);
+				validationMessages.Add(Constants.INVALID_SCHEDULED_ACTUAL_SPACE_EPP_DATE);
 			}
 
-			if (model.ScheduledPreCorporateEppDate.HasValue && !model.PlannedPreCorporateEppDate.HasValue)
+			if (model.PlannedPreCorporateEppDate.HasValue && !model.ScheduledActualPreCorporateEppDate.HasValue)
 			{
-				validationMessages.Add(Constants.INVALID_PLANNED_PRE_CORPORATE_EPP_DATE);
+				validationMessages.Add(Constants.INVALID_SCHEDULED_ACTUAL_PRE_CORPORATE_EPP_DATE);
 			}
 
-			if (model.ScheduledCorporateEppDate.HasValue && !model.PlannedCorporateEppDate.HasValue)
+			if (model.PlannedCorporateEppDate.HasValue && !model.ScheduledActualCorporateEppDate.HasValue)
 			{
-				validationMessages.Add(Constants.INVALID_PLANNED_CORPORATE_EPP_DATE);
+				validationMessages.Add(Constants.INVALID_SCHEDULED_ACTUAL_CORPORATE_EPP_DATE);
 			}
 		}
 
