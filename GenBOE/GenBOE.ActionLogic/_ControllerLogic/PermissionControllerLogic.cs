@@ -14,6 +14,7 @@ namespace GenBOE.ActionLogic
 	using System.IO;
 	using System.Linq;
 	using System.Transactions;
+	using System.Web.Mvc;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.IO.Export;
 	using GenBOE.ActionLogic.IO.Import;
@@ -838,5 +839,41 @@ namespace GenBOE.ActionLogic
 			return errorMessage;
 		}
 
+		/// <summary>
+		/// Get Users for Dropdown list "Users" in BulkAssign BOEs page
+		/// </summary>
+		/// <param name="workspaceId">Workspace ID to get ALL Users for</param>
+		/// <returns>Tuple of Users for the Workspace</returns>
+		[SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
+		public ICollection<Tuple<Role, Collection<SelectListItem>>> GetDropdownUsers(int workspaceId)
+		{
+			ICollection<Tuple<Role, Collection<SelectListItem>>> dropdownUserGroups = new List<Tuple<Role, Collection<SelectListItem>>>();
+
+			Collection<PermissionsDTO> potentialBOEPermissions = this.permissionLoader.GetBOEPotentialPermissionsForWorkspace(workspaceId);
+			// Approver Names
+			IEnumerable<int> approverIDs = (from p in potentialBOEPermissions
+											where p.Role == Role.Approver
+											select p.ETIUserId).Distinct();
+			Collection<SelectListItem> approvers = ActionLogicUtility.CreateUserSelectList(approverIDs.ToCollection(), false, _UserDTODataLoader, ADUtils);
+
+			dropdownUserGroups.Add(new Tuple<Role, Collection<SelectListItem>>(Role.Approver, approvers));
+
+			// Author Names
+			IEnumerable<int> authorIDs = (from p in potentialBOEPermissions
+										  where p.Role == Role.Author
+										  select p.ETIUserId).Distinct();
+			Collection<SelectListItem> authors = ActionLogicUtility.CreateUserSelectList(authorIDs.ToCollection(), false, _UserDTODataLoader, ADUtils);
+			dropdownUserGroups.Add(new Tuple<Role, Collection<SelectListItem>>(Role.Author, authors));
+
+
+			// Subcontractor Author Names
+			IEnumerable<int> subcontractorAuthorIDs = (from p in potentialBOEPermissions
+													   where p.Role == Role.SubcontractorAuthor
+													   select p.ETIUserId).Distinct();
+			Collection<SelectListItem> subcontractorAuthors = ActionLogicUtility.CreateUserSelectList(subcontractorAuthorIDs.ToCollection(), true, _UserDTODataLoader, ADUtils);
+			dropdownUserGroups.Add(new Tuple<Role, Collection<SelectListItem>>(Role.SubcontractorAuthor, subcontractorAuthors));
+
+			return dropdownUserGroups;
+		}
 	}
 }
