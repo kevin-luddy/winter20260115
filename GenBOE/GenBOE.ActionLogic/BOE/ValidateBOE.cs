@@ -974,7 +974,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 					LaborTypeMessages.Add(BoeDTO.PERFORM_ORG_REQUIRED);
 				}
 
-				// need to verfy a Resource or Business Resource Code exists
+				// need to verify a Resource or Business Resource Code exists
 				string requiredMessage = BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(labor, resourceIdToSegmentRegion, workspace.Shortname);
 				if (!string.IsNullOrEmpty(requiredMessage))
 				{

@@ -1963,20 +1963,33 @@
 		}
 		else {
 			if (!item.NewLaborType) {
-				if (endDate < $scope.oneLmxCutOff) {
-					if (input === undefined || (typeof input === 'string' && (input.length === 0
-						|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
-						item.IsResourceValid = false;
+				if ($scope.ManageTaskModel.IsSpace) {
+					if (endDate < $scope.oneLmxCutOff) {
+						if (input === undefined || (typeof input === 'string' && (input.length === 0
+							|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
+							item.IsResourceValid = false;
+						}
+					}
+
+					if (startDate < $scope.oneLmxCutOff && endDate >= $scope.oneLmxCutOff) {
+						if (input === undefined || (typeof input === 'string' && (input.length === 0
+							|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
+							item.IsResourceValid = false;
+						}
+
+						if (callBusinessResourceCode) {
+							item.IsBusinessResourceCodeValid = $scope.getAndSetIsBusinessResourceCodeValid(item, $scope.BusinessResourceCodeModels, false);
+						}
 					}
 				}
-
-				if (startDate < $scope.oneLmxCutOff && endDate >= $scope.oneLmxCutOff) {
+				else {
+					// Resources for RMS are always required regardless of start/end date
 					if (input === undefined || (typeof input === 'string' && (input.length === 0
 						|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
 						item.IsResourceValid = false;
 					}
 
-					if (callBusinessResourceCode) {
+					if (endDate >= $scope.oneLmxCutOff && callBusinessResourceCode) {
 						item.IsBusinessResourceCodeValid = $scope.getAndSetIsBusinessResourceCodeValid(item, $scope.BusinessResourceCodeModels, false);
 					}
 				}
