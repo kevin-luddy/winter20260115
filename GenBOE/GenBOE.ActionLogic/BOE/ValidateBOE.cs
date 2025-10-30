@@ -347,52 +347,65 @@ namespace GenBOE.ActionLogic.WBS.BOE
 				DateTime? clinStartDate = clin.StartDate.HasValue ? GenBOEUtilities.AdjustDateTimePrecision((DateTime)clin.StartDate, DateTimePrecision.Day) : clin.StartDate;
 				DateTime? clinEndDate = clin.EndDate.HasValue ? GenBOEUtilities.AdjustDateTimePrecision((DateTime)clin.EndDate, DateTimePrecision.Day) : clin.EndDate;
 				// Check CLIN falls within the Workspace Start and End Date
-				if (clinStartDate < wsStartDate || clinEndDate > wsEndDate)
+				if (clinStartDate.HasValue && (clinStartDate < wsStartDate))
+				{
+					return false;
+				}
+
+				if (clinEndDate.HasValue && (clinEndDate > wsEndDate))
 				{
 					return false;
 				}
 
 				// Check BOE falls within the CLIN Start Date and End Date
-				foreach (FullBoe boe in clin.Boes)
+				foreach (FullBoe boe in ws.Boes)
 				{
-					DateTime boeStartDate = GenBOEUtilities.AdjustDateTimePrecision(boe.StartDate, DateTimePrecision.Day);
-					DateTime boeStartMonth = GenBOEUtilities.AdjustDateTimePrecision(boe.StartDate, DateTimePrecision.Month);
-					DateTime boeEndDate = GenBOEUtilities.AdjustDateTimePrecision(boe.EndDate, DateTimePrecision.Day);
-					DateTime boeEndMonth = GenBOEUtilities.AdjustDateTimePrecision(boe.EndDate, DateTimePrecision.Month);
-
-					// Check if the BOE falls within the Workspace Start Date and End Date        
-					if (boeStartMonth < wsStartMonth || boeEndMonth > wsEndMonth)
+					if (clin.Id == boe.Clin.Id)
 					{
-						return false;
-					}
+						DateTime boeStartDate = GenBOEUtilities.AdjustDateTimePrecision(boe.StartDate, DateTimePrecision.Day);
+						DateTime boeStartMonth = GenBOEUtilities.AdjustDateTimePrecision(boe.StartDate, DateTimePrecision.Month);
+						DateTime boeEndDate = GenBOEUtilities.AdjustDateTimePrecision(boe.EndDate, DateTimePrecision.Day);
+						DateTime boeEndMonth = GenBOEUtilities.AdjustDateTimePrecision(boe.EndDate, DateTimePrecision.Month);
 
-					if (boeStartDate < clinStartDate || boeEndDate > clinEndDate)
-					{
-						return false;
-					}
-
-					// Validate dates for Labor Task Elements
-					if (ws.TaskElements.Any(x => x.BoeID == boe.Id))
-					{
-						IEnumerable<BoeTaskElementDTO> boeTaskElements = ws.TaskElements.Where(x => x.BoeID == boe.Id);
-						foreach (BoeTaskElementDTO boeTask in boeTaskElements)
+						// Check if the BOE falls within the Workspace Start Date and End Date        
+						if (boeStartMonth < wsStartMonth || boeEndMonth > wsEndMonth)
 						{
-							if (boeTask.TaskElementType == TaskElementType.Labor)
-							{
-								Collection<string> returnedMessages = this._ValidateStartAndEndDates(boe.StartDate, boe.EndDate, boe, boeTask.StartDate, boeTask.EndDate, ws);
-								if (returnedMessages.Count() > 0)
-								{
-									return false;
-								}
-							}
+							return false;
+						}
 
-							// Validate Resource Types
-							foreach (ResourceTypeDto labor in boeTask.taskElementLabors)
+						if (clinStartDate.HasValue && (boeStartDate < clinStartDate))
+						{
+							return false;
+						}
+
+						if (clinEndDate.HasValue && (boeEndDate > clinEndDate))
+						{
+							return false;
+						}
+
+						// Validate dates for Labor Task Elements
+						if (ws.TaskElements.Any(x => x.BoeID == boe.Id))
+						{
+							IEnumerable<BoeTaskElementDTO> boeTaskElements = ws.TaskElements.Where(x => x.BoeID == boe.Id);
+							foreach (BoeTaskElementDTO boeTask in boeTaskElements)
 							{
-								Collection<string> returnedMessages = this._ValidateStartAndEndDates(boeTask.StartDate, boeTask.EndDate, boe, labor.StartDate, labor.EndDate, ws);
-								if (returnedMessages.Count() > 0)
+								if (boeTask.TaskElementType == TaskElementType.Labor)
 								{
-									return false;
+									Collection<string> returnedMessages = this._ValidateStartAndEndDates(boe.StartDate, boe.EndDate, boe, boeTask.StartDate, boeTask.EndDate, ws);
+									if (returnedMessages.Count() > 0)
+									{
+										return false;
+									}
+								}
+
+								// Validate Resource Types
+								foreach (ResourceTypeDto labor in boeTask.taskElementLabors)
+								{
+									Collection<string> returnedMessages = this._ValidateStartAndEndDates(boeTask.StartDate, boeTask.EndDate, boe, labor.StartDate, labor.EndDate, ws);
+									if (returnedMessages.Count() > 0)
+									{
+										return false;
+									}
 								}
 							}
 						}
