@@ -1324,14 +1324,14 @@ namespace GenTRAC.Tests.ActionLogic
 			validationMessages = sut.ValidateContractModelView(contractsModelView, proposal);
 
 			Assert.IsTrue(validationMessages.Count == 8);
-			Assert.IsTrue(validationMessages.Contains(Constants.INVALID_PLANNED_BID_EPP_DATE));
-			Assert.IsTrue(validationMessages.Contains(Constants.INVALID_PLANNED_MISSION_SEGMENT_EPP_DATE));
-			Assert.IsTrue(validationMessages.Contains(Constants.INVALID_PLANNED_LOB_EPP_DATE));
-			Assert.IsTrue(validationMessages.Contains(Constants.INVALID_PLANNED_PROGRAM_EPP_DATE));
-			Assert.IsTrue(validationMessages.Contains(Constants.INVALID_PLANNED_PRE_SPACE_EPP_DATE));
-			Assert.IsTrue(validationMessages.Contains(Constants.INVALID_PLANNED_SPACE_EPP_DATE));
-			Assert.IsTrue(validationMessages.Contains(Constants.INVALID_PLANNED_PRE_CORPORATE_EPP_DATE));
-			Assert.IsTrue(validationMessages.Contains(Constants.INVALID_PLANNED_CORPORATE_EPP_DATE));
+			Assert.IsTrue(validationMessages.Contains(Constants.INVALID_SCHEDULED_ACTUAL_BID_EPP_DATE));
+			Assert.IsTrue(validationMessages.Contains(Constants.INVALID_SCHEDULED_ACTUAL_MISSION_SEGMENT_EPP_DATE));
+			Assert.IsTrue(validationMessages.Contains(Constants.INVALID_SCHEDULED_ACTUAL_LOB_EPP_DATE));
+			Assert.IsTrue(validationMessages.Contains(Constants.INVALID_SCHEDULED_ACTUAL_PROGRAM_EPP_DATE));
+			Assert.IsTrue(validationMessages.Contains(Constants.INVALID_SCHEDULED_ACTUAL_PRE_SPACE_EPP_DATE));
+			Assert.IsTrue(validationMessages.Contains(Constants.INVALID_SCHEDULED_ACTUAL_SPACE_EPP_DATE));
+			Assert.IsTrue(validationMessages.Contains(Constants.INVALID_SCHEDULED_ACTUAL_PRE_CORPORATE_EPP_DATE));
+			Assert.IsTrue(validationMessages.Contains(Constants.INVALID_SCHEDULED_ACTUAL_CORPORATE_EPP_DATE));
 
 			// Now lets one by one add the planned dates and see that the messages should dwindle to 0
 			contractsModelView.ScheduledActualBidEppDate = DateTime.Now;
