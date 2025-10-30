@@ -46,7 +46,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Object Scripts\Stored Procedures\copyWorkspace - Copy.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteWorkspace.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteSkillMixSummary.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteAllRequest.sql" />
