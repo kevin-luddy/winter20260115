@@ -1,67 +1,22 @@
 PRINT '###### SCRIPT IS STARTING ######';
 /*
-    This file was auto-generated for Release: 2025.5, on 10/2/2025.
+    This file was auto-generated for Release: 2025.8, on 10/30/2025.
     It contains all of the Release specific scripts, modifying data/tables as well as all of the Stored Procedures and User Defined Table Types.
 */
 
 /*
-    File: \Release 2025.5\1 - Release 2025.5 Script.sql
+    File: \Release 2025.8\1 - Release 2025.8 Script.sql
 */
-PRINT '### Starting file: \Release 2025.5\1 - Release 2025.5 Script.sql';
-EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2025.5';
+PRINT '### Starting file: \Release 2025.8\1 - Release 2025.8 Script.sql';
+EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2025.8';
 GO
 
--- Author: Hazrat Rafiqzadah (e403038)
--- PROPH-2994-Additional EPP Dates - 10/01/2025
--- PROPH-3406 Label Modifications => Current Planned renamed to ScheduledActual and Current Scheduled renamed to Planned
--- First Step: Update Existing EPP Date columns in ProposalContractsData Table to show as Planned
-GO
+/******************************************************************************
+** This only serves the purpose of allowing the full release script to be generated
+** with required changes for Stored Procedures and Views
+** 10/30/25		e403038				PROPH-3406 Label Modifications => Current Planned renamed to ScheduledActual and Current Scheduled renamed to Planned
 
-EXEC sp_rename '[dbo].[ProposalContractsData].[ProgramEppDate]',  'ScheduledActualProgramEppDate', 'COLUMN';
-
-EXEC sp_rename '[dbo].[ProposalContractsData].[LobEppDate]',  'ScheduledActualLobEppDate', 'COLUMN';
-
-EXEC sp_rename '[dbo].[ProposalContractsData].[PreSpaceEppDate]',  'ScheduledActualPreSpaceEppDate', 'COLUMN';
-
-EXEC sp_rename '[dbo].[ProposalContractsData].[SpaceEppDate]',  'ScheduledActualSpaceEppDate', 'COLUMN';
-
-EXEC sp_rename '[dbo].[ProposalContractsData].[PreCorporateEppDate]',  'ScheduledActualPreCorporateEppDate', 'COLUMN';
-
-EXEC sp_rename '[dbo].[ProposalContractsData].[CorporateEppDate]',  'ScheduledActualCorporateEppDate', 'COLUMN';
-
-EXEC sp_rename '[dbo].[ProposalContractsData].[BidEppDate]',  'ScheduledActualBidEppDate', 'COLUMN';
-
-EXEC sp_rename '[dbo].[ProposalContractsData].[MissionSegmentEppDate]',  'ScheduledActualMissionSegmentEppDate', 'COLUMN';
-
-
--- Second Step: Add Scheduled EPP Date columns in ProposalContractsData Table
-GO
-
-ALTER TABLE [dbo].[ProposalContractsData]
-ADD PlannedProgramEppDate date NULL;
-
-ALTER TABLE [dbo].[ProposalContractsData]
-ADD PlannedLobEppDate date NULL;
-
-ALTER TABLE [dbo].[ProposalContractsData]
-ADD PlannedPreSpaceEppDate date NULL;
-
-ALTER TABLE [dbo].[ProposalContractsData]
-ADD PlannedSpaceEppDate date NULL;
-
-ALTER TABLE [dbo].[ProposalContractsData]
-ADD PlannedPreCorporateEppDate date NULL;
-
-ALTER TABLE [dbo].[ProposalContractsData]
-ADD PlannedCorporateEppDate date NULL;
-
-ALTER TABLE [dbo].[ProposalContractsData]
-ADD PlannedBidEppDate date NULL;
-
-ALTER TABLE [dbo].[ProposalContractsData]
-ADD PlannedMissionSegmentEppDate date NULL;
-
-GO
+*/
 
 /*
     File: \1 Views\genTracData.view.sql
@@ -631,9 +586,10 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 **		12/3/24		twilson3			proph-2544 Add SetupComments, Backup Estimator Name
 **		02/27/25	Carlos				PROPH-2642 Add checklist question 11 to log report
 **		05/13/25	ranzalon			PROPH-3038 Added Bid and Mission Segment EPP Dates
+**		07/21/25	e378233				PROPH-2835/2836 Added MSAC POC and Program Manager
 **		10/02/25	e403038				PROPH-2994 Additional EPP Dates (Original to Planned and add Scheduled)
+**		10/13/25	ranzalon			PROPH-3375 PPR Questions 13 and 14
 **		10/30/25	e403038				PROPH-3406 Label Modifications => Current Planned renamed to ScheduledActual and Current Scheduled renamed to Planned
-**		10/30/25	e403038				PROPH-3406 - THIS CHANGE IN THE FULL SCRIPT IS ONLY TO FIX THE RENAME AND GET EVERYTHING ALIGNED
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
@@ -668,6 +624,8 @@ SELECT
 	CoverSheetApprover.DisplayName AS [CoverSheetApproverName],
 	LOBMgr.DisplayName AS [LOBMgrName],
 	ProposalMgr.DisplayName AS [ProposalMgrName],
+	ProgramMgr.DisplayName AS [ProgramMgrName],
+	MsacPoc.DisplayName AS [MSAC POC],
 	TechLead.DisplayName AS [TechLeadName],
 	LeadEstimator.DisplayName AS [LeadEstimatorName],
     PC.[LMLaborHours] AS [LMLaborHours],
@@ -816,6 +774,8 @@ SELECT
 	PC.CostThroughCom,
 	ppr.Response AS NlfResponse,
 	ppr11.Response AS SupplierMilestoneDatesResponse,
+	ppr13.Response AS ScopeVerifiedThru2028Response,
+	ppr14.Response AS ScopeVerified2029BeyondResponse,
 	P.IsSupportDefinitizingUCA,
 	CASE
 		WHEN pCD.IsInsuranceDirect = 1 THEN 'Yes'
@@ -908,6 +868,18 @@ SELECT
 	(
 		SELECT PUR.ProposalID,	U.DisplayName, U.UserID, U.NTID
 			FROM ProposalUserRole PUR JOIN genTRACUser U ON PUR.UserID = U.UserID
+			WHERE PUR.RoleID = 25
+	) ProgramMgr ON P.ProposalID = ProgramMgr.ProposalID
+	LEFT OUTER JOIN
+	(
+		SELECT PUR.ProposalID,	U.DisplayName, U.UserID, U.NTID
+			FROM ProposalUserRole PUR JOIN genTRACUser U ON PUR.UserID = U.UserID
+			WHERE PUR.RoleID = 26
+	) MsacPoc ON P.ProposalID = MsacPoc.ProposalID
+	LEFT OUTER JOIN
+	(
+		SELECT PUR.ProposalID,	U.DisplayName, U.UserID, U.NTID
+			FROM ProposalUserRole PUR JOIN genTRACUser U ON PUR.UserID = U.UserID
 			WHERE PUR.RoleID = 17
 	) ProposalMgr ON P.ProposalID = ProposalMgr.ProposalID
 	LEFT OUTER JOIN
@@ -977,6 +949,18 @@ SELECT
 					INNER JOIN PPRChecklistContent ppr ON (xref.PPRChecklistContentID = ppr.PPRChecklistContentID AND ppr.ChecklistText LIKE '%Does the proposal include subcontractors of any dollar value or material supplier > CCoPD threshold with planned dates that go beyond proposal submittal%')) AS ppr11
 			ON ppr11.ProposalId = p.ProposalId 
 	LEFT OUTER JOIN [CcopdReasonsNo] cNo ON P.ReasonCcopdNo = cNO.Id
+	LEFT OUTER JOIN
+			(SELECT xref.ProposalID, ppr.SortOrder, ppr.ChecklistText, r.Response
+				FROM ProposalPPRChecklistXREF xref 
+					INNER JOIN ResponseLU r ON r.ResponseID = xref.ResponseID
+					INNER JOIN PPRChecklistContent ppr ON (xref.PPRChecklistContentID = ppr.PPRChecklistContentID AND ppr.ChecklistText LIKE '%scope through 2028%')) AS ppr13
+			ON ppr13.ProposalId = p.ProposalId 
+	LEFT OUTER JOIN
+			(SELECT xref.ProposalID, ppr.SortOrder, ppr.ChecklistText, r.Response
+				FROM ProposalPPRChecklistXREF xref 
+					INNER JOIN ResponseLU r ON r.ResponseID = xref.ResponseID
+					INNER JOIN PPRChecklistContent ppr ON (xref.PPRChecklistContentID = ppr.PPRChecklistContentID AND ppr.ChecklistText LIKE '%scope in 2029 and beyond%')) AS ppr14
+			ON ppr14.ProposalId = p.ProposalId 
 GO
 
 
@@ -2155,9 +2139,10 @@ AS
 **		11/21/24	twilson3			proph-2357 Add Insurance fields
 **		02/27/25	Carlos				PROPH-2642 Added SupplierMilestoneDatesResponse field
 **		05/13/25	ranzalon			PROPH-3038 Added Bid and Mission Segment EPP Dates
+**		07/21/25	e378233				PROPH-2835/2836 Added MSAC POC and Program Manager
 **		10/02/25	e403038				PROPH-2994 Additional EPP Dates (Original to Planned and add Scheduled)
+**		10/13/25	ranzalon			PROPH-3375 PPR Questions 13 and 14
 **		10/30/25	e403038				PROPH-3406 Label Modifications => Current Planned renamed to ScheduledActual and Current Scheduled renamed to Planned
-**		10/30/25	e403038				PROPH-3406 - THIS CHANGE IN THE FULL SCRIPT IS ONLY TO FIX THE RENAME AND GET EVERYTHING ALIGNED
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -2320,8 +2305,10 @@ SELECT V.[ProposalID]
 	  ,V.CoverSheetApproverName
 	  ,V.LOBMgrName
 	  ,V.ProposalMgrName
+	  ,V.ProgramMgrName
 	  ,V.TechLeadName
 	  ,V.LeadEstimatorName
+	  ,V.[MSAC POC]
       ,V.[Cost Volume Lead]
       ,V.[Additional Pricing Resource 1]
       ,V.[Additional Pricing Resource 2]
@@ -2461,6 +2448,8 @@ SELECT V.[ProposalID]
 	 ,V.CustomerDueDate
 	 ,V.NlfResponse
 	 ,V.SupplierMilestoneDatesResponse
+	 ,V.ScopeVerifiedThru2028Response
+	 ,V.ScopeVerified2029BeyondResponse
 	 ,AdditionalClassification =
 		CASE V.[AdditionalClassification]
 			WHEN 1 THEN 'Yes'
@@ -3601,6 +3590,7 @@ AS
 **			2/2/2021	ranzalon				BOEJ-4861 - Add submitted value
 **			2/28/2022	koovackal				IES-846 Create 2 new statuses
 **			11/14/2022	twilson3				IES-1976 - Fix missing parens
+**			10/28/2025	e426263					PROPH-3376 - Update PTM Dashboard
 ******************************************************************************/
 	SET NOCOUNT ON 
 
@@ -3661,7 +3651,7 @@ AS
 		P.DateAssigned AS [Date Assigned],
 		CASE WHEN P.RevisedSubmittalDate IS NOT NULL THEN P.RevisedSubmittalDate ELSE P.AnticipatedDeliveryDate END AS [Estimated Ship Date (Due Date)],
 		CAST(CC.ChecklistCompleteDate AS DATE) AS [ChecklistCompleteDate],
-		CAST(PC.ProposalSubmittalDate AS DATE) AS [Proposal Submit Date],
+		CAST(PC.ProposalSubmittalDate AS DATE) AS [Date Est. Submits to Contracts],
 		S.ProposalStatus AS [Proposal Status],
 		P.RevisedSubmittalDate AS [Revised Submittal Date],
 		P.DocumentId AS DocumentId,
@@ -7125,7 +7115,6 @@ AS
 **		05/12/25	ranzalon			Add Bid and Mission Segment EPP Dates
 **		10/02/25	e403038				PROPH-2994 Additional EPP Dates (Original to Planned and add Scheduled)
 **		10/30/25	e403038				PROPH-3406 Label Modifications => Current Planned renamed to ScheduledActual and Current Scheduled renamed to Planned
-**		10/30/25	e403038				PROPH-3406 - THIS CHANGE IN THE FULL SCRIPT IS ONLY TO FIX THE RENAME AND GET EVERYTHING ALIGNED
 *******************************************************************************/
 SET NOCOUNT ON
 
