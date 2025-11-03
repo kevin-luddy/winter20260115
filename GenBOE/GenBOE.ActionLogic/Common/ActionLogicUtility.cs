@@ -56,7 +56,7 @@ namespace GenBOE.ActionLogic.Common
 			IList<SkillMixModelView> skillMixRowsExceedChars = skillMixModels.Where(x => !string.IsNullOrEmpty(x.Rationale) && x.Rationale.Length > 255).ToList();
 			IList<SkillMixModelView> skillMixRowsResourceOldExceedChars = skillMixModels.Where(x => !string.IsNullOrEmpty(x.ResourceOld) && x.ResourceOld.Length > 20).ToList();
 
-			bool doesEmptyNullCurrentResourceExist = skillMixModels.Any(x => string.IsNullOrEmpty(x.ResourceNew) && x.Included);
+			bool doesEmptyNullProposedResourceExist = skillMixModels.Any(x => string.IsNullOrEmpty(x.ResourceNew) && x.Included);
 			decimal totalSKillMixRowsBOESkillMix = skillMixModels.Where(p => p.BOESkillMix.HasValue).Sum(p => p.BOESkillMix.Value);
 
 			// Applies the proper name for the Skill Mix table and the BOE Skill Mix column based on the company configuration mode.
@@ -64,9 +64,9 @@ namespace GenBOE.ActionLogic.Common
 			string BoeSkillMixColumnName = isSpace ? Constants.SPACE_BOE_SKILL_MIX_COLUMN_NAME : Constants.RMS_BOE_SKILL_MIX_COLUMN_NAME;
 
 			// This check applies to both Space and RMS
-			if (doesEmptyNullCurrentResourceExist)
+			if (doesEmptyNullProposedResourceExist)
 			{
-				errorMessages.Add($"{skillMixTableName}: Included cannot be set to 'Yes' for an empty/null Current Resource.");
+				errorMessages.Add($"{skillMixTableName}: Included cannot be set to 'Yes' for an empty/null Proposed Resource.");
 			}
 
 			foreach (string skillMixResourceOld in skillMixRowsEmptyBoeMixWhenIncluded.Select(x => x.ResourceOld))

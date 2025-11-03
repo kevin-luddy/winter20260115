@@ -1490,7 +1490,7 @@
 
 	$scope.autoMatchResources = function () {
 		$scope.model.SkillMixData.forEach(x => {
-			// Skip over any rows that already have a current resource selected
+			// Skip over any rows that already have a proposed resource selected
 			if (!$scope.checkEmptyString(x.ResourceNew)) {
 				return;
 			}
