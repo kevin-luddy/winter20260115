@@ -18,9 +18,4 @@
     <None Remove="Release Scripts\Older\OlderClassifiedReleases\**" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Release Scripts\Release 2025.7\" />
-    <Folder Include="Release Scripts\Release 2025.6\" />
-  </ItemGroup>
-
 </Project>
