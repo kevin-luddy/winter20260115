@@ -785,14 +785,6 @@ SELECT
 	pCD.PlannedCorporateEppDate AS ContractsPlannedCorporateEppDate,
 	pCD.PlannedBidEppDate AS ContractsPlannedBidEppDate,
 	pCD.PlannedMissionSegmentEppDate AS ContractsPlannedMissionSegmentEppDate,
-	pCD.ScheduledProgramEppDate AS ContractsScheduledProgramEppDate,
-	pCD.ScheduledLobEppDate AS ContractsScheduledLobEppDate,
-	pCD.ScheduledPreSpaceEppDate AS ContractsScheduledPreSpaceEppDate,
-	pCD.ScheduledSpaceEppDate AS ContractsScheduledSpaceEppDate,
-	pCD.ScheduledPreCorporateEppDate AS ContractsScheduledPreCorporateEppDate,
-	pCD.ScheduledCorporateEppDate AS ContractsScheduledCorporateEppDate,
-	pCD.ScheduledBidEppDate AS ContractsScheduledBidEppDate,
-	pCD.ScheduledMissionSegmentEppDate AS ContractsScheduledMissionSegmentEppDate,
 	-- end of Proposal Contract Data
 	pCD.CageCode,
 	CASE
@@ -2467,19 +2459,8 @@ SELECT V.[ProposalID]
 	 ,V.ContractsPlannedSpaceEppDate
 	 ,V.ContractsPlannedPreCorporateEppDate
 	 ,V.ContractsPlannedCorporateEppDate
-	 ,V.ContractsEppRosDelegationNotes
-	 ,V.ContractsLmWon
-	 ,V.ContractsModCompletedDate
 	 ,V.ContractsPlannedBidEppDate
 	 ,V.ContractsPlannedMissionSegmentEppDate
-	 ,V.ContractsScheduledProgramEppDate
-	 ,V.ContractsScheduledLobEppDate
-	 ,V.ContractsScheduledPreSpaceEppDate
-	 ,V.ContractsScheduledSpaceEppDate
-	 ,V.ContractsScheduledPreCorporateEppDate
-	 ,V.ContractsScheduledCorporateEppDate
-	 ,V.ContractsScheduledBidEppDate
-	 ,V.ContractsScheduledMissionSegmentEppDate
 	 -- end of Proposal Contract Data
 	 ,V.CageCode
 	 ,V.ContractActionType
@@ -7122,14 +7103,6 @@ CREATE PROCEDURE [dbo].[upsertProposalContractsData]
 	@PlannedSpaceEppDate [date],
 	@PlannedPreCorporateEppDate [date],
 	@PlannedCorporateEppDate [date],
-	@ScheduledBidEppDate [date],
-	@ScheduledProgramEppDate [date],
-	@ScheduledMissionSegmentEppDate [date],
-	@ScheduledLobEppDate [date],
-	@ScheduledPreSpaceEppDate [date],
-	@ScheduledSpaceEppDate [date],
-	@ScheduledPreCorporateEppDate [date],
-	@ScheduledCorporateEppDate [date],
 	@EppRosDelegationNotes [varchar](1000),
 	@LmWon [bit],
 	@ModCompletedDate [date],
@@ -7214,14 +7187,6 @@ SET NOCOUNT ON
 						PlannedSpaceEppDate = @PlannedSpaceEppDate,
 						PlannedPreCorporateEppDate = @PlannedPreCorporateEppDate,
 						PlannedCorporateEppDate = @PlannedCorporateEppDate,
-						ScheduledBidEppDate = @ScheduledBidEppDate,
-						ScheduledProgramEppDate = @ScheduledProgramEppDate,
-						ScheduledMissionSegmentEppDate = @ScheduledMissionSegmentEppDate,
-						ScheduledLobEppDate = @ScheduledLobEppDate,
-						ScheduledPreSpaceEppDate = @ScheduledPreSpaceEppDate,
-						ScheduledSpaceEppDate = @ScheduledSpaceEppDate,
-						ScheduledPreCorporateEppDate = @ScheduledPreCorporateEppDate,
-						ScheduledCorporateEppDate = @ScheduledCorporateEppDate,
 						EppRosDelegationNotes = @EppRosDelegationNotes,
 						LmWon = @LmWon,
 						ModCompletedDate = @ModCompletedDate,
