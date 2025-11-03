@@ -42,14 +42,14 @@ namespace GenTRAC.ActionLogic.GeneralHelper
 			// Property-Friendly name mapping
 			EppDateNames = new Dictionary<string, string>
             {
-                { nameof(ContractsDto.ScheduledActualCorporateEppDate), "ScheduledActual Corporate EPP Date" },
-                { nameof(ContractsDto.ScheduledActualPreCorporateEppDate), "ScheduledActual Pre-Corporate EPP Date" },
-                { nameof(ContractsDto.ScheduledActualSpaceEppDate), "ScheduledActual Space EPP Date" },
-                { nameof(ContractsDto.ScheduledActualPreSpaceEppDate), "ScheduledActual Pre-Space EPP Date" },
-                { nameof(ContractsDto.ScheduledActualLobEppDate), "ScheduledActual Line of Business EPP Date" },
-				{ nameof(ContractsDto.ScheduledActualMissionSegmentEppDate), "ScheduledActual Mission Segment EPP Date" },
-                { nameof(ContractsDto.ScheduledActualProgramEppDate), "ScheduledActual Program EPP Date" },
-				{ nameof(ContractsDto.ScheduledActualBidEppDate), "ScheduledActual Bid EPP Date" }
+                { nameof(ContractsDto.ScheduledActualCorporateEppDate), "Scheduled/Actual Corporate EPP Date" },
+                { nameof(ContractsDto.ScheduledActualPreCorporateEppDate), "Scheduled/Actual Pre-Corporate EPP Date" },
+                { nameof(ContractsDto.ScheduledActualSpaceEppDate), "Scheduled/Actual Space EPP Date" },
+                { nameof(ContractsDto.ScheduledActualPreSpaceEppDate), "Scheduled/Actual Pre-Space EPP Date" },
+                { nameof(ContractsDto.ScheduledActualLobEppDate), "Scheduled/Actual Line of Business EPP Date" },
+				{ nameof(ContractsDto.ScheduledActualMissionSegmentEppDate), "Scheduled/Actual Mission Segment EPP Date" },
+                { nameof(ContractsDto.ScheduledActualProgramEppDate), "Scheduled/Actual Program EPP Date" },
+				{ nameof(ContractsDto.ScheduledActualBidEppDate), "Scheduled/Actual Bid EPP Date" }
 			};
         }
 
