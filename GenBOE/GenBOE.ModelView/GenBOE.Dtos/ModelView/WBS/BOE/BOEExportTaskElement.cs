@@ -42,6 +42,7 @@ namespace GenBOE.Dtos
             this.MOQTypes = new Collection<MoqTypeSelection>();
 			SkillMixTable = new Collection<SkillMixModelView>();
 			CommonDisclosureTable = new Collection<CommonDisclosureModelView>();
+			SkillMixSummaryTable = new Collection<SkillMixSummaryModelView>();
         }
 
         public void SetTaskElementType(TaskElementType taskElementType)
@@ -121,6 +122,11 @@ namespace GenBOE.Dtos
 		/// Common Disclosure table
 		/// </summary>
 		public ICollection<CommonDisclosureModelView> CommonDisclosureTable { get; set; }
+
+		/// <summary>
+		/// Skill Mix Summary table
+		/// </summary>
+		public ICollection<SkillMixSummaryModelView> SkillMixSummaryTable { get; set; }
 	}
 
 	public enum BOEExportTaskElementType

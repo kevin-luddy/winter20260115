@@ -51,7 +51,7 @@ namespace GenBOE.DataBridge.DTO
 		}
 
 		[DbQuery]
-		virtual public Collection<UserDTO> GetAllUsers()
+		public virtual Collection<UserDTO> GetAllUsers()
 		{
 			Collection<UserDTO> toReturn = null;
 
@@ -84,7 +84,7 @@ namespace GenBOE.DataBridge.DTO
 		}
 
 		[DbQuery]
-		virtual public Collection<int> GetAllUserIds()
+		public virtual Collection<int> GetAllUserIds()
 		{
 			Collection<int> toReturn = null;
 
@@ -145,7 +145,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="outUserId">if the group exists, return the id</param>
 		/// <returns>true/false user exists</returns>
 		[DbQuery]
-		virtual public bool UserExists(string inUserNTID, out int outUserId)
+		public virtual bool UserExists(string inUserNTID, out int outUserId)
 		{
 			using (GenBoeEntities gbe = new GenBoeEntities())
 			{
@@ -166,7 +166,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="inUserId">id in the database</param>
 		/// <returns>user if found, null if not</returns>
 		[DbQuery]
-		virtual public UserDTO GetUserByID(int inUserId)
+		public virtual UserDTO GetUserByID(int inUserId)
 		{
 			UserDTO toReturn = null;
 
@@ -204,7 +204,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="inUserIds">Ids in the database.</param>
 		/// <returns>List of users if found, empty list if not.</returns>
 		[DbQuery]
-		virtual public ICollection<UserDTO> GetByIds(ICollection<int> inUserIds)
+		public virtual ICollection<UserDTO> GetByIds(ICollection<int> inUserIds)
 		{
 			ICollection<UserDTO> toReturn = new Collection<UserDTO>();
 
@@ -373,7 +373,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="inUserData">Users AD information</param>
 		/// <returns>User found, null if not found</returns>
-		virtual public UserDTO GetUserByUserData(UserData inUserData)
+		public virtual UserDTO GetUserByUserData(UserData inUserData)
 		{
 			if (inUserData == null)
 			{
@@ -387,7 +387,7 @@ namespace GenBOE.DataBridge.DTO
 		/// Return the user dto for the actively logged in user
 		/// </summary>
 		/// <returns>user found, null if not found</returns>
-		virtual public UserDTO GetUserForActiveUser()
+		public virtual UserDTO GetUserForActiveUser()
 		{
 			return this.GetOrCreateUserByNtid(_SecurityInformation.ActiveUserNTID);
 		}
@@ -398,7 +398,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="inUserNTID">group id to locate users for</param>
 		/// <returns>user IDs found, null if not found</returns>
 		[DbQuery(3)]
-		virtual public Collection<int> GetUserIDsByGroupID(int inGroupID)
+		public virtual Collection<int> GetUserIDsByGroupID(int inGroupID)
 		{
 			Collection<int> toReturn = null;
 
@@ -443,7 +443,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="inGroupID">Group ID to retrieve members of</param>
 		/// <returns>Collection of group members, or an empty set if there are none</returns>
-		virtual public ICollection<UserDTO> GetUsersByGroupID(int inGroupID)
+		public virtual ICollection<UserDTO> GetUsersByGroupID(int inGroupID)
 		{
 			Collection<UserDTO> toReturn = new Collection<UserDTO>();
 
@@ -462,7 +462,7 @@ namespace GenBOE.DataBridge.DTO
 			return toReturn;
 		}
 
-		virtual public UserDTO SaveUser(UserDTO inUserDto)
+		public virtual UserDTO SaveUser(UserDTO inUserDto)
 		{
 			if (inUserDto == null)
 			{

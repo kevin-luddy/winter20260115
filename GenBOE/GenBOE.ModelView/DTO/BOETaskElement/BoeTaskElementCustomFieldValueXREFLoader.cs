@@ -131,7 +131,7 @@ namespace GenBOE.DataBridge.DTO
         /// Save BOE Task Element Custom Field Value Containers
         /// </summary>
         /// <param name="inBOETaskElementCustomFieldValueContainers"></param>
-        virtual public void SaveBOETaskElementCustomFieldValueContainers(Collection<CustomFieldValueContainer> inBOETaskElementCustomFieldValueContainers, int inBoeTaskElementID)
+        public virtual void SaveBOETaskElementCustomFieldValueContainers(Collection<CustomFieldValueContainer> inBOETaskElementCustomFieldValueContainers, int inBoeTaskElementID)
         {
             using (StopwatchTimer sw = new StopwatchTimer(this.log))
             {
@@ -151,7 +151,7 @@ namespace GenBOE.DataBridge.DTO
         /// Save a single BOE Task Element Custom Field Value Container
         /// </summary>
         /// <param name="inCustomFieldValueContainer"></param>
-        virtual public void SaveBOETaskElementCustomFieldValueContainer(CustomFieldValueContainer inCustomFieldValueContainer, int inBoeTaskElementID)
+        public virtual void SaveBOETaskElementCustomFieldValueContainer(CustomFieldValueContainer inCustomFieldValueContainer, int inBoeTaskElementID)
         {
             using (StopwatchTimer sw = new StopwatchTimer(this.log))
             {

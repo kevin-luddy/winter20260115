@@ -9,7 +9,9 @@ namespace GenTRAC
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Threading;
+	using System.Net.Security;
+	using System.Security.Cryptography.X509Certificates;
+	using System.Threading;
     using System.Web.Http;
     using System.Web.Mvc;
     using System.Web.Optimization;
@@ -97,16 +99,73 @@ namespace GenTRAC
                 this.logger.Info("Finished warming cache.. took " + timespent.Elapsed.TotalSeconds + " seconds.");
             });
 
+			System.Net.ServicePointManager.ServerCertificateValidationCallback = new System.Net.Security.RemoteCertificateValidationCallback(RemoteServerCertificateValidationCallback);
+
 			// Log environment variables and config app settings
 			Utilities.LogEnvironmentSettings(this.logger);
 
 			warmThread.Start();
         }
 
-        /// <summary>
-        /// Configures Web Api 2 "things" to work in an MVC application
-        /// </summary>
-        private static void ConfigureWebApi()
+		/// <summary>
+		/// Check for self-signed cert errors and remote cert name mismatch and disregard
+		/// Remote cert name can mismatch because we are using a DNS CName that is pointing towards 1 or more VMs behind the scenes
+		/// courtesy of Microsoft - https://learn.microsoft.com/en-us/previous-versions/office/developer/exchange-server-2010/dd633677(v=exchg.80)
+		/// </summary>
+		/// <param name="sender">The sender</param>
+		/// <param name="certificate">The certificate</param>
+		/// <param name="chain">The x509 chain</param>
+		/// <param name="sslPolicyErrors">the policy errors if any</param>
+		/// <returns></returns>
+		private bool RemoteServerCertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+		{
+			// If the certificate is a valid, signed certificate, return true.
+			if (sslPolicyErrors == System.Net.Security.SslPolicyErrors.None || sslPolicyErrors == SslPolicyErrors.RemoteCertificateNameMismatch)
+			{
+				return true;
+			}
+
+			// If there are errors in the certificate chain, look at each error to determine the cause.
+			if ((sslPolicyErrors & System.Net.Security.SslPolicyErrors.RemoteCertificateChainErrors) != 0)
+			{
+				if (chain != null && chain.ChainStatus != null)
+				{
+					foreach (System.Security.Cryptography.X509Certificates.X509ChainStatus status in chain.ChainStatus)
+					{
+						if ((certificate.Subject == certificate.Issuer) &&
+						   (status.Status == System.Security.Cryptography.X509Certificates.X509ChainStatusFlags.UntrustedRoot))
+						{
+							// Self-signed certificates with an untrusted root are valid. 
+							continue;
+						}
+						else
+						{
+							if (status.Status != System.Security.Cryptography.X509Certificates.X509ChainStatusFlags.NoError)
+							{
+								// If there are any other errors in the certificate chain, the certificate is invalid,
+								// so the method returns false.
+								return false;
+							}
+						}
+					}
+				}
+
+				// When processing reaches this line, the only errors in the certificate chain are 
+				// untrusted root errors for self-signed certificates. These certificates are valid
+				// for default Exchange server installations, so return true.
+				return true;
+			}
+			else
+			{
+				// In all other cases, return false.
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// Configures Web Api 2 "things" to work in an MVC application
+		/// </summary>
+		private static void ConfigureWebApi()
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
             GlobalConfiguration.Configuration.DependencyResolver = new UnityResolver(GenBOEUnityContainer.Container);

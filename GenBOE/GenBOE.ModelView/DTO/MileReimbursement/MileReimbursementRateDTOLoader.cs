@@ -20,7 +20,7 @@ namespace GenBOE.DataBridge.DTO
         /// Saves an updated Mile Reimbursement Rate
         /// </summary>
         /// <param name="inMileReimbursementRateDTO">The Rate DTO</param>
-        virtual public void SaveMileReimbursementRateDTO(MileReimbursementRateDTO inMileReimbursementRateDTO)
+        public virtual void SaveMileReimbursementRateDTO(MileReimbursementRateDTO inMileReimbursementRateDTO)
         {
             using (StopwatchTimer sw = new StopwatchTimer(this._log))
             {
@@ -41,7 +41,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <returns>The rate for the system</returns>
         [DbQuery]
-        virtual public MileReimbursementRateDTO GetMileReimbursementRateDTO()
+        public virtual MileReimbursementRateDTO GetMileReimbursementRateDTO()
         {
             MileReimbursementRateDTO toReturn = null;
             using (StopwatchTimer sw = new StopwatchTimer(this._log))

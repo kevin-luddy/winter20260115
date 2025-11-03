@@ -52,6 +52,7 @@ AS
 **		07/21/25	e378233				PROPH-2835/2836 Added MSAC POC and Program Manager
 **		10/02/25	e403038				PROPH-2994 Additional EPP Dates (Original to Planned and add Scheduled)
 **		10/13/25	ranzalon			PROPH-3375 PPR Questions 13 and 14
+**		10/30/25	e403038				PROPH-3406 Label Modifications => Current Planned renamed to ScheduledActual and Current Scheduled renamed to Planned
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -331,25 +332,25 @@ SELECT V.[ProposalID]
 	 ,V.ContractsFinalNegotiatedValue
 	 ,V.ContractsFinalNegotiatedDate
 	 ,V.ContractsEppDelegationAuthority
- 	 ,V.ContractsPlannedProgramEppDate
+ 	 ,V.ContractsScheduledActualProgramEppDate
+	 ,V.ContractsScheduledActualLobEppDate
+	 ,V.ContractsScheduledActualPreSpaceEppDate
+	 ,V.ContractsScheduledActualSpaceEppDate
+	 ,V.ContractsScheduledActualPreCorporateEppDate
+	 ,V.ContractsScheduledActualCorporateEppDate
+	 ,V.ContractsEppRosDelegationNotes
+	 ,V.ContractsLmWon
+	 ,V.ContractsModCompletedDate
+	 ,V.ContractsScheduledActualBidEppDate
+	 ,V.ContractsScheduledActualMissionSegmentEppDate
+	 ,V.ContractsPlannedProgramEppDate
 	 ,V.ContractsPlannedLobEppDate
 	 ,V.ContractsPlannedPreSpaceEppDate
 	 ,V.ContractsPlannedSpaceEppDate
 	 ,V.ContractsPlannedPreCorporateEppDate
 	 ,V.ContractsPlannedCorporateEppDate
-	 ,V.ContractsEppRosDelegationNotes
-	 ,V.ContractsLmWon
-	 ,V.ContractsModCompletedDate
 	 ,V.ContractsPlannedBidEppDate
 	 ,V.ContractsPlannedMissionSegmentEppDate
-	 ,V.ContractsScheduledProgramEppDate
-	 ,V.ContractsScheduledLobEppDate
-	 ,V.ContractsScheduledPreSpaceEppDate
-	 ,V.ContractsScheduledSpaceEppDate
-	 ,V.ContractsScheduledPreCorporateEppDate
-	 ,V.ContractsScheduledCorporateEppDate
-	 ,V.ContractsScheduledBidEppDate
-	 ,V.ContractsScheduledMissionSegmentEppDate
 	 -- end of Proposal Contract Data
 	 ,V.CageCode
 	 ,V.ContractActionType

@@ -1368,7 +1368,7 @@ namespace GenTRAC.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteProposalContractsOffer", proposalContractsOfferIdParameter, updateDTParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> upsertProposalContractsData(Nullable<int> proposalContractsDataId, Nullable<System.DateTime> updateDT, Nullable<int> proposalID, Nullable<int> previouslySubmittedROM, Nullable<System.DateTime> customerSubmittalDate, string contractsCorrespondLogNumber, Nullable<long> finalNegotiatedValue, Nullable<System.DateTime> finalNegotiatedDate, Nullable<int> eppDelegationAuthority, Nullable<System.DateTime> plannedBidEppDate, Nullable<System.DateTime> plannedProgramEppDate, Nullable<System.DateTime> plannedMissionSegmentEppDate, Nullable<System.DateTime> plannedLobEppDate, Nullable<System.DateTime> plannedPreSpaceEppDate, Nullable<System.DateTime> plannedSpaceEppDate, Nullable<System.DateTime> plannedPreCorporateEppDate, Nullable<System.DateTime> plannedCorporateEppDate, Nullable<System.DateTime> scheduledBidEppDate, Nullable<System.DateTime> scheduledProgramEppDate, Nullable<System.DateTime> scheduledMissionSegmentEppDate, Nullable<System.DateTime> scheduledLobEppDate, Nullable<System.DateTime> scheduledPreSpaceEppDate, Nullable<System.DateTime> scheduledSpaceEppDate, Nullable<System.DateTime> scheduledPreCorporateEppDate, Nullable<System.DateTime> scheduledCorporateEppDate, string eppRosDelegationNotes, Nullable<bool> lmWon, Nullable<System.DateTime> modCompletedDate, string cageCode, Nullable<System.DateTime> customerDueDate, Nullable<int> isInsuranceDirect, Nullable<int> insuranceType, Nullable<long> proposedInsurance, Nullable<long> negotiatedInsurance)
+        public virtual ObjectResult<Nullable<int>> upsertProposalContractsData(Nullable<int> proposalContractsDataId, Nullable<System.DateTime> updateDT, Nullable<int> proposalID, Nullable<int> previouslySubmittedROM, Nullable<System.DateTime> customerSubmittalDate, string contractsCorrespondLogNumber, Nullable<long> finalNegotiatedValue, Nullable<System.DateTime> finalNegotiatedDate, Nullable<int> eppDelegationAuthority, Nullable<System.DateTime> scheduledActualBidEppDate, Nullable<System.DateTime> scheduledActualProgramEppDate, Nullable<System.DateTime> scheduledActualMissionSegmentEppDate, Nullable<System.DateTime> scheduledActualLobEppDate, Nullable<System.DateTime> scheduledActualPreSpaceEppDate, Nullable<System.DateTime> scheduledActualSpaceEppDate, Nullable<System.DateTime> scheduledActualPreCorporateEppDate, Nullable<System.DateTime> scheduledActualCorporateEppDate, Nullable<System.DateTime> plannedBidEppDate, Nullable<System.DateTime> plannedProgramEppDate, Nullable<System.DateTime> plannedMissionSegmentEppDate, Nullable<System.DateTime> plannedLobEppDate, Nullable<System.DateTime> plannedPreSpaceEppDate, Nullable<System.DateTime> plannedSpaceEppDate, Nullable<System.DateTime> plannedPreCorporateEppDate, Nullable<System.DateTime> plannedCorporateEppDate, string eppRosDelegationNotes, Nullable<bool> lmWon, Nullable<System.DateTime> modCompletedDate, string cageCode, Nullable<System.DateTime> customerDueDate, Nullable<int> isInsuranceDirect, Nullable<int> insuranceType, Nullable<long> proposedInsurance, Nullable<long> negotiatedInsurance)
         {
             var proposalContractsDataIdParameter = proposalContractsDataId.HasValue ?
                 new ObjectParameter("ProposalContractsDataId", proposalContractsDataId) :
@@ -1406,6 +1406,38 @@ namespace GenTRAC.Models
                 new ObjectParameter("EppDelegationAuthority", eppDelegationAuthority) :
                 new ObjectParameter("EppDelegationAuthority", typeof(int));
     
+            var scheduledActualBidEppDateParameter = scheduledActualBidEppDate.HasValue ?
+                new ObjectParameter("ScheduledActualBidEppDate", scheduledActualBidEppDate) :
+                new ObjectParameter("ScheduledActualBidEppDate", typeof(System.DateTime));
+    
+            var scheduledActualProgramEppDateParameter = scheduledActualProgramEppDate.HasValue ?
+                new ObjectParameter("ScheduledActualProgramEppDate", scheduledActualProgramEppDate) :
+                new ObjectParameter("ScheduledActualProgramEppDate", typeof(System.DateTime));
+    
+            var scheduledActualMissionSegmentEppDateParameter = scheduledActualMissionSegmentEppDate.HasValue ?
+                new ObjectParameter("ScheduledActualMissionSegmentEppDate", scheduledActualMissionSegmentEppDate) :
+                new ObjectParameter("ScheduledActualMissionSegmentEppDate", typeof(System.DateTime));
+    
+            var scheduledActualLobEppDateParameter = scheduledActualLobEppDate.HasValue ?
+                new ObjectParameter("ScheduledActualLobEppDate", scheduledActualLobEppDate) :
+                new ObjectParameter("ScheduledActualLobEppDate", typeof(System.DateTime));
+    
+            var scheduledActualPreSpaceEppDateParameter = scheduledActualPreSpaceEppDate.HasValue ?
+                new ObjectParameter("ScheduledActualPreSpaceEppDate", scheduledActualPreSpaceEppDate) :
+                new ObjectParameter("ScheduledActualPreSpaceEppDate", typeof(System.DateTime));
+    
+            var scheduledActualSpaceEppDateParameter = scheduledActualSpaceEppDate.HasValue ?
+                new ObjectParameter("ScheduledActualSpaceEppDate", scheduledActualSpaceEppDate) :
+                new ObjectParameter("ScheduledActualSpaceEppDate", typeof(System.DateTime));
+    
+            var scheduledActualPreCorporateEppDateParameter = scheduledActualPreCorporateEppDate.HasValue ?
+                new ObjectParameter("ScheduledActualPreCorporateEppDate", scheduledActualPreCorporateEppDate) :
+                new ObjectParameter("ScheduledActualPreCorporateEppDate", typeof(System.DateTime));
+    
+            var scheduledActualCorporateEppDateParameter = scheduledActualCorporateEppDate.HasValue ?
+                new ObjectParameter("ScheduledActualCorporateEppDate", scheduledActualCorporateEppDate) :
+                new ObjectParameter("ScheduledActualCorporateEppDate", typeof(System.DateTime));
+    
             var plannedBidEppDateParameter = plannedBidEppDate.HasValue ?
                 new ObjectParameter("PlannedBidEppDate", plannedBidEppDate) :
                 new ObjectParameter("PlannedBidEppDate", typeof(System.DateTime));
@@ -1437,38 +1469,6 @@ namespace GenTRAC.Models
             var plannedCorporateEppDateParameter = plannedCorporateEppDate.HasValue ?
                 new ObjectParameter("PlannedCorporateEppDate", plannedCorporateEppDate) :
                 new ObjectParameter("PlannedCorporateEppDate", typeof(System.DateTime));
-    
-            var scheduledBidEppDateParameter = scheduledBidEppDate.HasValue ?
-                new ObjectParameter("ScheduledBidEppDate", scheduledBidEppDate) :
-                new ObjectParameter("ScheduledBidEppDate", typeof(System.DateTime));
-    
-            var scheduledProgramEppDateParameter = scheduledProgramEppDate.HasValue ?
-                new ObjectParameter("ScheduledProgramEppDate", scheduledProgramEppDate) :
-                new ObjectParameter("ScheduledProgramEppDate", typeof(System.DateTime));
-    
-            var scheduledMissionSegmentEppDateParameter = scheduledMissionSegmentEppDate.HasValue ?
-                new ObjectParameter("ScheduledMissionSegmentEppDate", scheduledMissionSegmentEppDate) :
-                new ObjectParameter("ScheduledMissionSegmentEppDate", typeof(System.DateTime));
-    
-            var scheduledLobEppDateParameter = scheduledLobEppDate.HasValue ?
-                new ObjectParameter("ScheduledLobEppDate", scheduledLobEppDate) :
-                new ObjectParameter("ScheduledLobEppDate", typeof(System.DateTime));
-    
-            var scheduledPreSpaceEppDateParameter = scheduledPreSpaceEppDate.HasValue ?
-                new ObjectParameter("ScheduledPreSpaceEppDate", scheduledPreSpaceEppDate) :
-                new ObjectParameter("ScheduledPreSpaceEppDate", typeof(System.DateTime));
-    
-            var scheduledSpaceEppDateParameter = scheduledSpaceEppDate.HasValue ?
-                new ObjectParameter("ScheduledSpaceEppDate", scheduledSpaceEppDate) :
-                new ObjectParameter("ScheduledSpaceEppDate", typeof(System.DateTime));
-    
-            var scheduledPreCorporateEppDateParameter = scheduledPreCorporateEppDate.HasValue ?
-                new ObjectParameter("ScheduledPreCorporateEppDate", scheduledPreCorporateEppDate) :
-                new ObjectParameter("ScheduledPreCorporateEppDate", typeof(System.DateTime));
-    
-            var scheduledCorporateEppDateParameter = scheduledCorporateEppDate.HasValue ?
-                new ObjectParameter("ScheduledCorporateEppDate", scheduledCorporateEppDate) :
-                new ObjectParameter("ScheduledCorporateEppDate", typeof(System.DateTime));
     
             var eppRosDelegationNotesParameter = eppRosDelegationNotes != null ?
                 new ObjectParameter("EppRosDelegationNotes", eppRosDelegationNotes) :
@@ -1506,7 +1506,7 @@ namespace GenTRAC.Models
                 new ObjectParameter("NegotiatedInsurance", negotiatedInsurance) :
                 new ObjectParameter("NegotiatedInsurance", typeof(long));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertProposalContractsData", proposalContractsDataIdParameter, updateDTParameter, proposalIDParameter, previouslySubmittedROMParameter, customerSubmittalDateParameter, contractsCorrespondLogNumberParameter, finalNegotiatedValueParameter, finalNegotiatedDateParameter, eppDelegationAuthorityParameter, plannedBidEppDateParameter, plannedProgramEppDateParameter, plannedMissionSegmentEppDateParameter, plannedLobEppDateParameter, plannedPreSpaceEppDateParameter, plannedSpaceEppDateParameter, plannedPreCorporateEppDateParameter, plannedCorporateEppDateParameter, scheduledBidEppDateParameter, scheduledProgramEppDateParameter, scheduledMissionSegmentEppDateParameter, scheduledLobEppDateParameter, scheduledPreSpaceEppDateParameter, scheduledSpaceEppDateParameter, scheduledPreCorporateEppDateParameter, scheduledCorporateEppDateParameter, eppRosDelegationNotesParameter, lmWonParameter, modCompletedDateParameter, cageCodeParameter, customerDueDateParameter, isInsuranceDirectParameter, insuranceTypeParameter, proposedInsuranceParameter, negotiatedInsuranceParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertProposalContractsData", proposalContractsDataIdParameter, updateDTParameter, proposalIDParameter, previouslySubmittedROMParameter, customerSubmittalDateParameter, contractsCorrespondLogNumberParameter, finalNegotiatedValueParameter, finalNegotiatedDateParameter, eppDelegationAuthorityParameter, scheduledActualBidEppDateParameter, scheduledActualProgramEppDateParameter, scheduledActualMissionSegmentEppDateParameter, scheduledActualLobEppDateParameter, scheduledActualPreSpaceEppDateParameter, scheduledActualSpaceEppDateParameter, scheduledActualPreCorporateEppDateParameter, scheduledActualCorporateEppDateParameter, plannedBidEppDateParameter, plannedProgramEppDateParameter, plannedMissionSegmentEppDateParameter, plannedLobEppDateParameter, plannedPreSpaceEppDateParameter, plannedSpaceEppDateParameter, plannedPreCorporateEppDateParameter, plannedCorporateEppDateParameter, eppRosDelegationNotesParameter, lmWonParameter, modCompletedDateParameter, cageCodeParameter, customerDueDateParameter, isInsuranceDirectParameter, insuranceTypeParameter, proposedInsuranceParameter, negotiatedInsuranceParameter);
         }
     
         public virtual int upsertProposalContractsOffer(Nullable<int> proposalContractsOfferId, Nullable<System.DateTime> updateDT, Nullable<int> contractsDataId, Nullable<long> customerOfferAmount, Nullable<System.DateTime> customerOfferDate, Nullable<System.DateTime> lMCounterOfferDate, Nullable<long> lMCounterOfferCost, Nullable<long> lMCounterOfferCOM, Nullable<long> lMCounterOfferProfitFee)

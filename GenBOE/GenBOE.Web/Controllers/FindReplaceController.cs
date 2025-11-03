@@ -190,7 +190,7 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
-        virtual public JsonResult SaveReplacedValues(string workspace, FindReplaceResultsModelView ReplacedTextModelViews)
+        public virtual JsonResult SaveReplacedValues(string workspace, FindReplaceResultsModelView ReplacedTextModelViews)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -282,7 +282,7 @@ namespace GenBOE.Web.Controllers
         }
         #endregion Actions
 
-        virtual public Collection<FindReplaceDTO> getFindReferences(FindReplaceDTO inFindParams, int inWorkspaceId)
+        public virtual Collection<FindReplaceDTO> getFindReferences(FindReplaceDTO inFindParams, int inWorkspaceId)
         {
             if (inFindParams == null)
             {

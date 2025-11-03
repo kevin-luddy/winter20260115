@@ -382,6 +382,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		internal const string Container_SkillMixTables = "SkillMixTablesContainer";
 		internal const string Table_CurrentSkillMix = "CurrentSkillMixTable";
 		internal const string Table_LmEnterpriseSkillMix = "LmEnterpriseSkillMixTable";
+		internal const string Table_SummarySkillMix = "SummarySkillMixTable";
 		internal const string FieldName_CurrentResource = "CurrentResource";
 		internal const string FieldName_HistoricalHours = "HistoricalHours";
 		internal const string FieldName_LaborSkillMix = "LaborSkillMix";
@@ -391,6 +392,11 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		internal const string FieldName_BusinessResourceCode = "BusinessResourceCode";
 		internal const string FieldName_UCOTHours = "UCOTHours";
 		internal const string FieldName_GrandTotalHours = "GrandTotalHours";
+		internal const string FieldName_HistoricalSkillMix = "HistoricalSkillMix";
+		internal const string FieldName_ProposedSkillMix = "ProposedSkillMix";
+		internal const string FieldName_ProposedLegacyResource = "ProposedLegacyResource";
+		internal const string FieldName_ProposedBrc = "ProposedBrc";
+		internal const string FieldName_TotalProposedLegacyBrc = "TotalProposedLegacyBrc";
 
 		#endregion Skill Mix Table Constants
 

@@ -46,7 +46,7 @@ namespace GenTRAC.Models
         public Nullable<System.DateTime> Date_Assigned { get; set; }
         public Nullable<System.DateTime> Estimated_Ship_Date__Due_Date_ { get; set; }
         public Nullable<System.DateTime> ChecklistCompleteDate { get; set; }
-        public Nullable<System.DateTime> Proposal_Submit_Date { get; set; }
+        public Nullable<System.DateTime> Date_Est_Submits_to_Contracts { get; set; }
         public string Proposal_Status { get; set; }
         public Nullable<System.DateTime> Revised_Submittal_Date { get; set; }
         public Nullable<int> DocumentId { get; set; }

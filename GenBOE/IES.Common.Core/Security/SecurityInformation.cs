@@ -169,7 +169,7 @@ namespace IES.Common.Core.Security
 		/// Returns .Net System.Security.WindowsIdentity object for the resource account running the application
 		/// (ex. acct04\genboed) - Always returns resource account name
 		/// </summary>
-		virtual public string ResourceAccount
+		public virtual string ResourceAccount
 		{
 			get
 			{
@@ -181,7 +181,7 @@ namespace IES.Common.Core.Security
 		/// Query the AD for more detailed information.  This method is slower and less performant than just 
 		/// retrieving the username via the ActiveUserNTID method.
 		/// </summary>
-		virtual public UserData ActiveUserData
+		public virtual UserData ActiveUserData
 		{
 			get
 			{
@@ -192,7 +192,7 @@ namespace IES.Common.Core.Security
 		/// <summary>
 		/// Returns the name of the currently logged on user (ex. jsmith)
 		/// </summary>
-		virtual public string ActiveUserNTID
+		public virtual string ActiveUserNTID
 		{
 			get
 			{
@@ -212,7 +212,7 @@ namespace IES.Common.Core.Security
 		/// <summary>
 		/// Returns the name of the currently logged on user (ex. acct04\jsmith)
 		/// </summary>
-		virtual public string ActiveUserNTIDWithDomain
+		public virtual string ActiveUserNTIDWithDomain
 		{
 			get
 			{
@@ -232,7 +232,7 @@ namespace IES.Common.Core.Security
 		/// </summary>
 		/// <param name="inRoles">roles to emit</param>
 		/// <returns>comma separated flat string</returns>
-		virtual public string GetRoleAsString(Collection<Role> inRoles)
+		public virtual string GetRoleAsString(Collection<Role> inRoles)
 		{
 			if (inRoles == null)
 			{
@@ -248,7 +248,7 @@ namespace IES.Common.Core.Security
 		/// </summary>
 		/// <param name="inPrincipal">User ID</param>
 		/// <returns></returns>
-		virtual public bool IsDomesticUser(IPrincipal inPrincipal)
+		public virtual bool IsDomesticUser(IPrincipal inPrincipal)
 		{
 			if (inPrincipal == null)
 			{
@@ -278,7 +278,7 @@ namespace IES.Common.Core.Security
 		/// <param name="ntid">NTID</param>
 		/// <param name="isSubcontractor">bool from db if user is subcontractor</param>
 		/// <returns>true if user is a subcontractor and not overridden</returns>
-		virtual public bool IsSubcontractorUser(string ntid, bool? isSubcontractor)
+		public virtual bool IsSubcontractorUser(string ntid, bool? isSubcontractor)
 		{
 			if (string.IsNullOrEmpty(ntid))
 			{
@@ -329,7 +329,7 @@ namespace IES.Common.Core.Security
 		/// </summary>
 		/// <param name="inUserName">The NTID of the user trying to gain access</param>
 		/// <returns>true if user is a member of one of the RDM Admin groups; false otherwise</returns>
-		virtual public bool IsRdmAdminUser(string inUserName)
+		public virtual bool IsRdmAdminUser(string inUserName)
 		{
 			if (inUserName == null)
 			{
@@ -352,7 +352,7 @@ namespace IES.Common.Core.Security
 		/// </summary>
 		/// <param name="inUserName">The NTID of the user trying to gain access</param>
 		/// <returns>true if user is a member of one of the RDM COBRA Admin groups; false otherwise</returns>
-		virtual public bool IsRdmCobraAdminUser(string inUserName)
+		public virtual bool IsRdmCobraAdminUser(string inUserName)
 		{
 			if (inUserName == null)
 			{
@@ -375,7 +375,7 @@ namespace IES.Common.Core.Security
 		/// </summary>
 		/// <param name="inUserName">The NTID of the user trying to gain access</param>
 		/// <returns>true if user is a member of one of the IES Portal Admin groups; false otherwise</returns>
-		virtual public bool IsIESPortalAdminUser(string inUserName)
+		public virtual bool IsIESPortalAdminUser(string inUserName)
 		{
 			if (string.IsNullOrEmpty(inUserName))
 			{
@@ -398,7 +398,7 @@ namespace IES.Common.Core.Security
 		/// </summary>
 		/// <param name="inUserName">The NTID of the user trying to gain access</param>
 		/// <returns>true if user is a member of one of the RDM Viewer groups; false otherwise</returns>
-		virtual public bool IsRdmViewerUser(string inUserName)
+		public virtual bool IsRdmViewerUser(string inUserName)
 		{
 			if (inUserName == null)
 			{
@@ -421,7 +421,7 @@ namespace IES.Common.Core.Security
 		/// </summary>
 		/// <param name="userName"></param>
 		/// <returns></returns>
-		virtual public bool IsAllowedProPricerAccess(string userName)
+		public virtual bool IsAllowedProPricerAccess(string userName)
 		{
 			if (userName == null)
 			{
@@ -445,7 +445,7 @@ namespace IES.Common.Core.Security
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        virtual public bool IsSystemOrSubcontractAdmin(string userName)
+        public virtual bool IsSystemOrSubcontractAdmin(string userName)
         {
             if (userName == null)
             {

@@ -47,7 +47,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <returns>All per diems.</returns>
         [DbQuery]
-        virtual public ICollection<PerDiemDTO> GetAllPerDiem()
+        public virtual ICollection<PerDiemDTO> GetAllPerDiem()
         {
             ICollection<PerDiemDTO> diems = new Collection<PerDiemDTO>();
             using (StopwatchTimer sw = new StopwatchTimer(this._log))
@@ -67,7 +67,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <param name="inPerDiem">Per diem to save.</param>
         /// <returns>Id of the saved per diem.</returns>
-        virtual public int SavePerDiem(PerDiemDTO inPerDiem)
+        public virtual int SavePerDiem(PerDiemDTO inPerDiem)
         {
             if (inPerDiem == null)
             {

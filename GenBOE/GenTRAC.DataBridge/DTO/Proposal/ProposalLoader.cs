@@ -416,7 +416,7 @@ namespace GenTRAC.DataBridge.DTO
 								CostVolumeLeadDisplayName = entity.Cost_Volume_Lead,
 								PeerReviewerDisplayName = entity.Peer_Reviewer,
 								PricerDisplayName = entity.Pricer_Name,
-								ProposalSubmittalDate = entity.Proposal_Submit_Date,
+								ProposalSubmittalDate = entity.Date_Est_Submits_to_Contracts,
 								ChecklistCompleteDate = entity.ChecklistCompleteDate,
 								ProposalDateAssigned = entity.Date_Assigned,
 								ProposalDueDate = entity.Estimated_Ship_Date__Due_Date_.Value,

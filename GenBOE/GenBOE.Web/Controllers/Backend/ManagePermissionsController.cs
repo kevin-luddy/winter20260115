@@ -8,6 +8,7 @@ namespace GenBOE.Web.Controllers
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Diagnostics;
 	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
@@ -93,7 +94,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		///<param name="workspace">The workspace to delete permissions from.</param>
 		///<param name="inUserID">The User ID to delete permissions from.</param>
-		/// <returns>Object to indicate if operation is successfull</returns>
+		/// <returns>Object to indicate if operation is successful</returns>
 		[HttpDelete]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<bool> DeleteUserPermissions(string workspace, string inUserID)
@@ -245,7 +246,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">The workspace name</param>
 		/// <returns>boolean</returns>
-		[System.Web.Http.HttpPost]
+		[HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes"), SuppressMessage("Microsoft.Design", "CA1011: Consider passing base types as parameters")]
 		public IESSingleResponse<bool> ImportPermissions(string workspace)
 		{
@@ -256,7 +257,6 @@ namespace GenBOE.Web.Controllers
 
 			try
 			{
-				//FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 				Stream importFile = HttpContext.Current.Request.Files[0].InputStream;
 
 				// If a file was uploaded successfully
@@ -323,6 +323,47 @@ namespace GenBOE.Web.Controllers
 			}
 
 			FinalizeAction(logger, WebConstants.ACTION_EDIT_PERMISSIONS, sw);
+			return result;
+		}
+
+		/// <summary>
+		/// Gets Users for Bulk Assign Page "Users" Dropdown List
+		/// </summary>
+		///<param name="workspaceShortName">The Workspace to get users for</param>
+		/// <returns>List of Users</returns>
+		[HttpGet]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		public IESResponse<Tuple<Role, Collection<System.Web.Mvc.SelectListItem>>> GetUsersForDropdown(string workspaceShortName)
+		{
+			// Adding the full reference for "SelectListItem" because there will end up being ambiguity between .Mvc and .Http for the "HttpGet" "HttpPost" and etc attributes
+			IESResponse<Tuple<Role, Collection<System.Web.Mvc.SelectListItem>>> result = new IESResponse<Tuple<Role, Collection<System.Web.Mvc.SelectListItem>>>();
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortName);
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_GET_DROPDOWN_USERS_BULK_ASSIGN, SecurityPage.ManageBOEs, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, null);
+
+			try
+			{
+				ICollection<Tuple<Role, Collection<System.Web.Mvc.SelectListItem>>> roles  = this.PermissionControllerLogic.GetDropdownUsers(ws.Id);
+
+				if (roles.Count > 0)
+				{
+					result.Data = roles;
+					result.IsSuccessful = true;
+				}
+				else
+				{
+					result.Messages.Add("Failed to get Users for Dropdown List");
+					result.IsSuccessful = false;
+				}
+			}
+			catch (GenValidationException ex)
+			{
+				logger.Error(ex);
+				result.Messages = ex.GetValidationMessages(ex.ValidationList);
+			}
+
+			FinalizeAction(logger, WebConstants.ACTION_GET_DROPDOWN_USERS_BULK_ASSIGN, sw);
 			return result;
 		}
 	}

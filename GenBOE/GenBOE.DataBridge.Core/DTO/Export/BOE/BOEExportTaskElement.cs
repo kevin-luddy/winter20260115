@@ -43,6 +43,7 @@ namespace GenBOE.DataBridge.Core.DTO.Export.BOE
 			MOQTypes = new Collection<MoqTypeSelection>();
 			SkillMixTable = new Collection<SkillMixModelView>();
 			CommonDisclosureTable = new Collection<CommonDisclosureModelView>();
+			SkillMixSummaryTable = new Collection<SkillMixSummaryModelView>();
 			HasTMRates = false;
 		}
 
@@ -123,6 +124,11 @@ namespace GenBOE.DataBridge.Core.DTO.Export.BOE
 		/// Common Disclosure table
 		/// </summary>
 		public ICollection<CommonDisclosureModelView> CommonDisclosureTable { get; set; }
+
+		/// <summary>
+		/// Skill Mix Summary table
+		/// </summary>
+		public ICollection<SkillMixSummaryModelView> SkillMixSummaryTable { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether this task instance has any T&M rates.

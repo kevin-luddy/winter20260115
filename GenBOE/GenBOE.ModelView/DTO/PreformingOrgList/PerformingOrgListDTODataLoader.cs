@@ -24,7 +24,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inPerfOrgListID">performing org list ID</param>
         /// <returns>performing org list data</returns>
         [DbQuery]
-        virtual public PerformingOrgListDTO GetPerfOrgList(int inPerfOrgListID)
+        public virtual PerformingOrgListDTO GetPerfOrgList(int inPerfOrgListID)
         {
             PerformingOrgListDTO toReturn = null;
 
@@ -56,7 +56,7 @@ namespace GenBOE.DataBridge.DTO
         /// Save the Performing Organization List
         /// </summary>
         /// <param name="inDefaultPerformingOrg">default performing org</param>
-        virtual public int SavePerformingOrgList(PerformingOrgListDTO inPerformingOrgList)
+        public virtual int SavePerformingOrgList(PerformingOrgListDTO inPerformingOrgList)
         {
             if (inPerformingOrgList == null)
             {
@@ -99,7 +99,7 @@ namespace GenBOE.DataBridge.DTO
         /// Clear all performing orgs from the given list
         /// </summary>
         /// <param name="inPerformingOrgList"></param>
-        virtual public void ClearPerformingOrgList(PerformingOrgListDTO inPerformingOrgList)
+        public virtual void ClearPerformingOrgList(PerformingOrgListDTO inPerformingOrgList)
         {
             if (inPerformingOrgList == null)
             {

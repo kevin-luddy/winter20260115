@@ -25,7 +25,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inTripID">Trip Id.</param>
         /// <returns>Trip or null if not found.</returns>
         [DbQuery]
-        virtual public TripDTO GetTripByTripID(int inTripID)
+        public virtual TripDTO GetTripByTripID(int inTripID)
         {
             return this.GetByIds(new Collection<int> { inTripID }).FirstOrDefault();
         }
@@ -54,7 +54,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <returns>All trips from the DB.</returns>
         [DbQuery(2)]
-        virtual public ICollection<TripDTO> GetAllTrips()
+        public virtual ICollection<TripDTO> GetAllTrips()
         {
             ICollection<TripDTO> toReturn = new Collection<TripDTO>();
 
@@ -89,7 +89,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="Qualification">qualification</param>
         /// <returns></returns>
         [DbQuery(3)]
-        virtual public ICollection<TripData> GetTripByUniqueTripDataUsingLocationNames(int? ModeID, string DestinationName, string DepartureName, string Qualification)
+        public virtual ICollection<TripData> GetTripByUniqueTripDataUsingLocationNames(int? ModeID, string DestinationName, string DepartureName, string Qualification)
         {
             List<TripData> tripListResults = null;
 
@@ -157,7 +157,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inTripID">The ID of the requested <see cref="TripDTO"/></param>
         /// <param name="inWorkspace">The <see cref="WorkspaceDTO"/> to determine the state.</param>
         /// <returns>The requested <see cref="TripDTO"/></returns>
-        virtual public TripDTO GetTripDTOByTripID(int inTripID, WorkspaceDTO inWorkspace)
+        public virtual TripDTO GetTripDTOByTripID(int inTripID, WorkspaceDTO inWorkspace)
         {
             if (inWorkspace == null)
             {
@@ -234,7 +234,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <param name="inTrips">Trips to save.</param>
         /// <returns>Dictionary of original Id by new Id.</returns>
-        virtual public Dictionary<int, int> SaveTrips(Collection<TripDTO> inTrips)
+        public virtual Dictionary<int, int> SaveTrips(Collection<TripDTO> inTrips)
       
         {
             if (inTrips == null)

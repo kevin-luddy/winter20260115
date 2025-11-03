@@ -9,8 +9,10 @@ namespace GenBOE.ActionLogic.WBS.BOE
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
+	using System.Runtime.Remoting.Messaging;
 	using Common;
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.IO.Import;
@@ -192,14 +194,16 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 			// validate if there is at least one task element associated with the BOE. it can be cost or labor, just needs at least one of either
 			// need to place so it's a "task" for purposes of validation
-			if (!ws.TaskElements.Any(x => (x.BoeID == inBOE.Id)) &&
+			if (!ws.TaskElements.Any(x => x.BoeID == inBOE.Id) &&
 				!ws.Odcs.Any(x => x.BoeID == inBOE.Id) &&
 				!ws.Materials.Any(x => x.BoeID == inBOE.Id) &&
 				!ws.Travels.Any(x => x.BoeID == inBOE.Id))
 			{
 				boeTasks = new ValidationBOETasks();
-				TaskElementMessages = new Collection<string>();
-				TaskElementMessages.Add(BoeDTO.ONE_TASK_ELEMENT_REQUIRED);
+				TaskElementMessages = new Collection<string>
+				{
+					BoeDTO.ONE_TASK_ELEMENT_REQUIRED
+				};
 				boeTasks.TaskMessage = "Task: ";
 				boeTasks.TaskElementDetails.TaskElementDetailValidationMessages = TaskElementMessages;
 				ValidationBOE.Tasks.Add(boeTasks);
@@ -228,7 +232,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 			// Valid Comments and Approvals
 			// validate that all boe comments have a response
 			bool boeCommentResponseValidator = this._BOECommentsResponsesValidator.AllBOEAuthorCommentsResponses(inBOE.Id);
-			if (boeCommentResponseValidator == false)
+			if (!boeCommentResponseValidator)
 			{
 				ValidationBOE.BOECommentandApprovals.Add("All BOE Comments do not have a response from the Author.");
 			}
@@ -241,7 +245,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 				{
 					ICollection<string> errorMessages = new List<string>();
 
-					if(SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 					{
 						errorMessages.AddRange(ActionLogicUtility.ValidateSkillMixSummaryTable(task, ws.EnableSAPConnection, task.taskElementLabors.Any()));
 					}
@@ -319,6 +323,97 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 			// return the collection of error messages.
 			return CollectionOfErrors;
+		}
+
+		/// <summary>
+		/// Validation of all Child objects (i.e. CLIN, BOE, Task, Resource) to be within the PoP of a workspace
+		/// For ProPricer Export Report
+		/// </summary>
+		/// <param name="ws">Full Workspace</param>
+		/// <returns>boolean value to check if is valid</returns>
+		public virtual bool ValidateWorkspacePoP(FullWorkspace ws)
+		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
+
+			DateTime wsStartDate = GenBOEUtilities.AdjustDateTimePrecision(ws.ContractStartDate, DateTimePrecision.Day);
+			DateTime wsStartMonth = GenBOEUtilities.AdjustDateTimePrecision(ws.ContractStartDate, DateTimePrecision.Month);
+			DateTime wsEndDate = GenBOEUtilities.AdjustDateTimePrecision(ws.ContractEndDate, DateTimePrecision.Day);
+			DateTime wsEndMonth = GenBOEUtilities.AdjustDateTimePrecision(ws.ContractEndDate, DateTimePrecision.Month);
+			foreach (FullClin clin in ws.Clins)
+			{
+				DateTime? clinStartDate = clin.StartDate.HasValue ? GenBOEUtilities.AdjustDateTimePrecision((DateTime)clin.StartDate, DateTimePrecision.Day) : clin.StartDate;
+				DateTime? clinEndDate = clin.EndDate.HasValue ? GenBOEUtilities.AdjustDateTimePrecision((DateTime)clin.EndDate, DateTimePrecision.Day) : clin.EndDate;
+				// Check CLIN falls within the Workspace Start and End Date
+				if (clinStartDate.HasValue && (clinStartDate < wsStartDate))
+				{
+					return false;
+				}
+
+				if (clinEndDate.HasValue && (clinEndDate > wsEndDate))
+				{
+					return false;
+				}
+
+				// Check BOE falls within the CLIN Start Date and End Date
+				foreach (FullBoe boe in ws.Boes)
+				{
+					if (clin.Id == boe.Clin.Id)
+					{
+						DateTime boeStartDate = GenBOEUtilities.AdjustDateTimePrecision(boe.StartDate, DateTimePrecision.Day);
+						DateTime boeStartMonth = GenBOEUtilities.AdjustDateTimePrecision(boe.StartDate, DateTimePrecision.Month);
+						DateTime boeEndDate = GenBOEUtilities.AdjustDateTimePrecision(boe.EndDate, DateTimePrecision.Day);
+						DateTime boeEndMonth = GenBOEUtilities.AdjustDateTimePrecision(boe.EndDate, DateTimePrecision.Month);
+
+						// Check if the BOE falls within the Workspace Start Date and End Date        
+						if (boeStartMonth < wsStartMonth || boeEndMonth > wsEndMonth)
+						{
+							return false;
+						}
+
+						if (clinStartDate.HasValue && (boeStartDate < clinStartDate))
+						{
+							return false;
+						}
+
+						if (clinEndDate.HasValue && (boeEndDate > clinEndDate))
+						{
+							return false;
+						}
+
+						// Validate dates for Labor Task Elements
+						if (ws.TaskElements.Any(x => x.BoeID == boe.Id))
+						{
+							IEnumerable<BoeTaskElementDTO> boeTaskElements = ws.TaskElements.Where(x => x.BoeID == boe.Id);
+							foreach (BoeTaskElementDTO boeTask in boeTaskElements)
+							{
+								if (boeTask.TaskElementType == TaskElementType.Labor)
+								{
+									Collection<string> returnedMessages = this._ValidateStartAndEndDates(boe.StartDate, boe.EndDate, boe, boeTask.StartDate, boeTask.EndDate, ws);
+									if (returnedMessages.Count() > 0)
+									{
+										return false;
+									}
+								}
+
+								// Validate Resource Types
+								foreach (ResourceTypeDto labor in boeTask.taskElementLabors)
+								{
+									Collection<string> returnedMessages = this._ValidateStartAndEndDates(boeTask.StartDate, boeTask.EndDate, boe, labor.StartDate, labor.EndDate, ws);
+									if (returnedMessages.Count() > 0)
+									{
+										return false;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			return true;
 		}
 
 		/// <summary>
@@ -974,7 +1069,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 					LaborTypeMessages.Add(BoeDTO.PERFORM_ORG_REQUIRED);
 				}
 
-				// need to verfy a Resource or Business Resource Code exists
+				// need to verify a Resource or Business Resource Code exists
 				string requiredMessage = BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(labor, resourceIdToSegmentRegion, workspace.Shortname);
 				if (!string.IsNullOrEmpty(requiredMessage))
 				{

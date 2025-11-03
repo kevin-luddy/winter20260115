@@ -87,8 +87,8 @@
             if (navigator.userAgent.indexOf("MSIE") > -1 || !!document.documentMode === true || navigator.userAgent.indexOf("Firefox") > -1) {
                 document.getElementById("BrowserBanner").classList.remove("display-none");
             }
-        }
-    </script>
+		}
+	</script>
 
     <%: Scripts.Render("~/bundles/initialization") %>
 </head>
@@ -180,6 +180,12 @@
                 <div class="notification">
                     <div class="text">Notify Me!</div>
                     <div id="MessageClose" class="button message-close-button"></div>
+                </div>
+            </div>
+            <div id="Notification-Fixed" class="notification-bar-fixed display-none">
+                <div class="notification">
+                    <div class="text">Notify Me!</div>
+                    <div id="MessageFixedClose" class="button message-close-button"></div>
                 </div>
             </div>
             <asp:ContentPlaceHolder ID="MainContent" runat="server" />
@@ -298,6 +304,15 @@
                 $('#Notification').addClass('display-none');
             });
 
+			$(document).bind('DISPLAY_NOTIFICATION_FIXED', function (event, text) {
+				$('#Notification-Fixed div.text').html(text);
+				$('#Notification-Fixed').removeClass('display-none');
+			});
+
+			$('#MessageFixedClose').click(function () {
+				$('#Notification-Fixed').addClass('display-none');
+			});
+
             /*** This utility is for a browser alert 
             the session var ensures single prompt per session */
             var reminder = '<%: SiteMasterUtilities.GetBrowserReminder() %>';
@@ -347,7 +362,7 @@
 		            undefined,
 	            );
 			}
-        });
+		});
 	</script>
 
     <% 
