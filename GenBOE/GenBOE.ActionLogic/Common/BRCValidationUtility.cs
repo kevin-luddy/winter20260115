@@ -132,6 +132,11 @@ namespace GenBOE.ActionLogic.Common
 					{
 						requiredMessage = BoeDTO.BUSINESS_RESOURCE_CODE_REQUIRED;
 					}
+					else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && !labor.ResourceID.HasValue)
+					{
+						// Resource ID is always required for RMS
+						requiredMessage = BoeDTO.RESOURCE_CODE_REQUIRED;
+					}
 				}
 			}
 

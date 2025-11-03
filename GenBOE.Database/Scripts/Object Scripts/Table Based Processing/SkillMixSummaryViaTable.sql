@@ -10,12 +10,12 @@ GO
 CREATE TYPE [dbo].[TT_SkillMixSummary] AS TABLE(
 	[Rationale] [varchar](255) NOT NULL,
 	[Included] [bit] NOT NULL DEFAULT ((0)),
-	[ProposedHours] [decimal](11, 2) NOT NULL,
-	[HistoricalHours] [decimal](11, 2) NOT NULL,
-	[ResourceHours] [decimal](11, 2) NOT NULL,
-	[BusinessResourceHours] [decimal](11, 2) NOT NULL,
-	[BOESkillMix] [decimal](5, 2) NOT NULL,
-	[LaborSkillMix] [decimal](5, 2) NOT NULL,
+	[ProposedLegacyResource] decimal(11,2) NOT NULL,
+	[HistoricalHours] decimal(11,2) NOT NULL,
+	[ResourceHours] decimal(11,2) NOT NULL,
+	[ProposedBrc] decimal(11,2) NOT NULL,
+	[ProposedSkillMix] decimal(5,2) NOT NULL,
+	[HistoricalSkillMix] decimal(5,2) NOT NULL,
 	[ResourceID] [varchar](20) NOT NULL,
 	[BusinessResourceID] [varchar](20) NOT NULL,
 	[BOEID] [int] NOT NULL,
@@ -50,6 +50,7 @@ AS
 **		Date:		Author:				Description:
 **		--------	--------			-------------------------------------------
 **      9/24/25		e378233 			PROPH-3302 Skill Mix Summary DB Table
+**		10/30/25	ranzalon			PROPH-3422 Update Skill Mix Summary Column Names
 *****************************************************************************/
 BEGIN
 	DECLARE @DistinctBOETaskElementID int
@@ -65,12 +66,12 @@ BEGIN
 	INSERT INTO [dbo].[SkillMixSummary]
 		([Rationale]
 		 ,[Included]
-		 ,[ProposedHours]
+		 ,[ProposedLegacyResource]
 		 ,[HistoricalHours]
 		 ,[ResourceHours]
-		 ,[BusinessResourceHours]
-		 ,[BOESkillMix]
-		 ,[LaborSkillMix]
+		 ,[ProposedBrc]
+		 ,[ProposedSkillMix]
+		 ,[HistoricalSkillMix]
 		 ,[ResourceID]
 		 ,[BusinessResourceID]
 		 ,[BOEID]
@@ -79,12 +80,12 @@ BEGIN
 		)
 	SELECT T.[Rationale]
 		 ,T.[Included]
-		 ,T.[ProposedHours]
+		 ,T.[ProposedLegacyResource]
 		 ,T.[HistoricalHours]
 		 ,T.[ResourceHours]
-		 ,T.[BusinessResourceHours]
-		 ,T.[BOESkillMix]
-		 ,T.[LaborSkillMix]
+		 ,T.[ProposedBrc]
+		 ,T.[ProposedSkillMix]
+		 ,T.[HistoricalSkillMix]
 		 ,T.[ResourceID]
 		 ,T.[BusinessResourceID]
 		 ,T.[BOEID]

@@ -369,6 +369,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_COPY_MOQ_EQUATION = "CopyMoqEquation";
 		public static readonly string ACTION_DELETE_ALL_BOE_TASK_ELEMENTS = "DeleteAllBOETaskElements";
 		public static readonly string ACTION_SAVE_BULK_ROLE_ASSIGN = "SaveBoeBulkRoles";
+		public static readonly string ACTION_GET_DROPDOWN_USERS_BULK_ASSIGN = "GetDropdownUsersForBulkAssign";
 
 		// BOEComments Controller
 		public static readonly string ACTION_DISPLAY_BOE_COMMENTS = "DisplayBOEComments";

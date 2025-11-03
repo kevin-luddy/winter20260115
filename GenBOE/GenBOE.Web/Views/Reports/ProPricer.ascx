@@ -1,6 +1,7 @@
 ﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<ExportToProPricerModelView>" %>
 <%
-    var enableSendDirectly = (bool) ViewData["EnableSendDirectly"];
+    var enableSendDirectly = (bool)ViewData["EnableSendDirectly"];
+    var enableProPricer = (bool)ViewData["EnableProPricer"];
 %>
 <script type="text/javascript">
     var ExportToProPricerWidget = new Widget('ExportToProPricer');
@@ -48,7 +49,9 @@
     ExportToProPricerWidget.BindEvents = function () {
         // Object Events
 
-        $('#ExportToProPricer-Add').click(ExportToProPricerWidget.AddNewExportFormat);
+        <% if (enableProPricer) { %>
+			$('#ExportToProPricer-Add').click(ExportToProPricerWidget.AddNewExportFormat);
+        <% } %>
         $('#ExportToProPricerElementDialog-Cancel').click(function () {
             ExportToProPricerWidget.CloseDialog(ExportToProPricerWidget.ExportToProPricerElementDialog);
         });
@@ -602,14 +605,24 @@
         <br />
         <div class="buttons">
             <button class="ies-action disabled" name="delete-button" type="button" id="ExportToProPricer-Delete">Delete</button>
-            <button class="ies-action" id="ExportToProPricer-Add" type="button">+ Add</button>
+            <button class="ies-action" data-ng-class="{disabled: !enableProPricer }" id="ExportToProPricer-Add" type="button">+ Add</button>
         </div>
-        <div id="ProPricerGridContent" class="clear" >
-            <% Html.RenderAction(
-                    WebConstants.ACTION_DISPLAY_EXPORT_TO_PROPRICER_GRID,
-                    WebConstants.CONTROLLER_REPORTS,
-                    new { workspace = SiteMasterUtilities.GetCurrentWorkspace() }); %>
-        </div>
+        <% if ((bool)ViewData["EnableProPricer"]) { %>
+            <div id="ProPricerGridContent" class="clear" >
+                <% Html.RenderAction(
+                        WebConstants.ACTION_DISPLAY_EXPORT_TO_PROPRICER_GRID,
+                        WebConstants.CONTROLLER_REPORTS,
+                        new { workspace = SiteMasterUtilities.GetCurrentWorkspace() }); %>
+            </div>
+        <% } else { %>
+            <ul class="validation-directive validation-box">
+                <li class="ng-scope">
+                    <div class="ng-binding">
+                        There are Children objects (i.e. CLIN, BOE, Task, Resource) that are outside the PoP of their Parents, please open the Validate All BOEs report and fix before exporting
+                    </div>
+                </li>
+            </ul>
+        <% } %>
     </div>
 </div>
 
@@ -617,7 +630,7 @@
     <div class="container">
  
         <% using (Html.BeginForm("", "", FormMethod.Post, new { id = "ExportToProPricerElementForm" }))
-           { %>
+            { %>
             <ul class="validation-box"> </ul>
              <div id="CopyFromRow" class="form-row display-none">
                 <div class="form-label">

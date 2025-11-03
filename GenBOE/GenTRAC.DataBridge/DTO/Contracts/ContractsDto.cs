@@ -70,14 +70,19 @@ namespace GenTRAC.DataBridge.DTO
 		public int? EppDelegationAuthority { get; set; }
 
 		/// <summary>
+		/// Scheduled/Actual Bid EPP Date
+		/// </summary>
+		public DateTime? ScheduledActualBidEppDate { get; set; }
+
+		/// <summary>
 		/// Planned Bid EPP Date
 		/// </summary>
 		public DateTime? PlannedBidEppDate { get; set; }
 
 		/// <summary>
-		/// Scheduled Bid EPP Date
+		/// Scheduled/Actual Program EPP Date
 		/// </summary>
-		public DateTime? ScheduledBidEppDate { get; set; }
+		public DateTime? ScheduledActualProgramEppDate { get; set; }
 
 		/// <summary>
 		/// Planned Program EPP Date
@@ -85,9 +90,9 @@ namespace GenTRAC.DataBridge.DTO
 		public DateTime? PlannedProgramEppDate { get; set; }
 
 		/// <summary>
-		/// Scheduled Program EPP Date
+		/// Scheduled/Actual Mission Segment EPP Date
 		/// </summary>
-		public DateTime? ScheduledProgramEppDate { get; set; }
+		public DateTime? ScheduledActualMissionSegmentEppDate { get; set; }
 
 		/// <summary>
 		/// Planned Mission Segment EPP Date
@@ -95,9 +100,9 @@ namespace GenTRAC.DataBridge.DTO
 		public DateTime? PlannedMissionSegmentEppDate { get; set; }
 
 		/// <summary>
-		/// Scheduled Mission Segment EPP Date
+		/// Scheduled/Actual LOB EPP Date
 		/// </summary>
-		public DateTime? ScheduledMissionSegmentEppDate { get; set; }
+		public DateTime? ScheduledActualLobEppDate { get; set; }
 
 		/// <summary>
 		/// Planned LOB EPP Date
@@ -105,9 +110,9 @@ namespace GenTRAC.DataBridge.DTO
 		public DateTime? PlannedLobEppDate { get; set; }
 
 		/// <summary>
-		/// Scheduled LOB EPP Date
+		/// Scheduled/Actual Pre Space EPP Date
 		/// </summary>
-		public DateTime? ScheduledLobEppDate { get; set; }
+		public DateTime? ScheduledActualPreSpaceEppDate { get; set; }
 
 		/// <summary>
 		/// Planned Pre Space EPP Date
@@ -115,9 +120,9 @@ namespace GenTRAC.DataBridge.DTO
 		public DateTime? PlannedPreSpaceEppDate { get; set; }
 
 		/// <summary>
-		/// Scheduled Pre Space EPP Date
+		/// Scheduled/Actual Space EPP Date
 		/// </summary>
-		public DateTime? ScheduledPreSpaceEppDate { get; set; }
+		public DateTime? ScheduledActualSpaceEppDate { get; set; }
 
 		/// <summary>
 		/// Planned Space EPP Date
@@ -125,9 +130,9 @@ namespace GenTRAC.DataBridge.DTO
 		public DateTime? PlannedSpaceEppDate { get; set; }
 
 		/// <summary>
-		/// Scheduled Space EPP Date
+		/// Scheduled/Actual Pre Corporate EPP Date
 		/// </summary>
-		public DateTime? ScheduledSpaceEppDate { get; set; }
+		public DateTime? ScheduledActualPreCorporateEppDate { get; set; }
 
 		/// <summary>
 		/// Planned Pre Corporate EPP Date
@@ -135,19 +140,14 @@ namespace GenTRAC.DataBridge.DTO
 		public DateTime? PlannedPreCorporateEppDate { get; set; }
 
 		/// <summary>
-		/// Scheduled Pre Corporate EPP Date
+		/// Scheduled/Actual Corporate Epp Date
 		/// </summary>
-		public DateTime? ScheduledPreCorporateEppDate { get; set; }
+		public DateTime? ScheduledActualCorporateEppDate { get; set; }
 
 		/// <summary>
 		/// Planned Corporate Epp Date
 		/// </summary>
 		public DateTime? PlannedCorporateEppDate { get; set; }
-
-		/// <summary>
-		/// Scheduled Corporate Epp Date
-		/// </summary>
-		public DateTime? ScheduledCorporateEppDate { get; set; }
 
 		/// <summary>
 		/// EPP ROS Delegation Notes

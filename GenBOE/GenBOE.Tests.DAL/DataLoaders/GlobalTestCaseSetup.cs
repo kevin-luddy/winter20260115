@@ -2170,12 +2170,12 @@ namespace GenBOE.Tests.DAL.DataLoaders
 				cdsm.SkillMixSummaryID = -1;
 				cdsm.Included = false;
 				cdsm.Rationale = rat;
-				cdsm.ProposedHours = 100;
+				cdsm.ProposedLegacyResource = 100;
 				cdsm.HistoricalHours = 100;
 				cdsm.ResourceHours = 100;
-				cdsm.BusinessResourceHours = 100;
-				cdsm.BOESkillMix = 100;
-				cdsm.LaborSkillMix = 100;
+				cdsm.ProposedBrc = 100;
+				cdsm.ProposedSkillMix = 100;
+				cdsm.HistoricalSkillMix = 100;
 				cdsm.ResourceID = resource;
 				cdsm.BusinessResourceID = businessResource;
 				cdsm.BOEID = GlobalBOEID;

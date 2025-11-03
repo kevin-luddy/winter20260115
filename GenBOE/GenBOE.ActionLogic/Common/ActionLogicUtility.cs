@@ -11,11 +11,13 @@ namespace GenBOE.ActionLogic.Common
 	using System;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
+	using System.Web.Mvc;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Objects;
 	using IES.Common;
 	using Microsoft.Practices.ObjectBuilder2;
 	using IES.Common.classes;
+	using GenBOE.Dtos;
 
 	/// <summary>
 	/// Utility Class to hold Action Logic Methods
@@ -222,6 +224,88 @@ namespace GenBOE.ActionLogic.Common
 			}
 
 			return errorMessages;
+		}
+
+		/// <summary>
+		/// Creates the select list for authors/approvers when creating/managing a BOE
+		/// </summary>
+		/// <param name="inUserIds">UserIDs for the select list</param>
+		/// <param name="isSubcontractors">True if the list is for subcontractors</param>
+		/// <returns>select list for authors/approvers</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
+		public static Collection<SelectListItem> CreateUserSelectList(Collection<int> inUserIds, bool isSubcontractors, IUserDTODataLoader userLoader, IActiveDirectoryUtilities ADUtils)
+		{
+			if (inUserIds == null)
+			{
+				throw new ArgumentNullException(nameof(inUserIds));
+			}
+
+			if (userLoader == null)
+			{
+				throw new ArgumentNullException(nameof(userLoader));
+			}
+
+			if (ADUtils == null)
+			{
+				throw new ArgumentNullException(nameof(ADUtils));
+			}
+
+			Collection<SelectListItem> returnList = new Collection<SelectListItem>();
+
+			ICollection<UserDTO> allUsers = userLoader.GetByIds(inUserIds);
+
+			foreach (int user in inUserIds)
+			{
+				UserDTO selectedUser = allUsers.First(x => x.UserID == user);
+				string userDisplayName = selectedUser.DisplayName;
+
+				if (selectedUser.NTID.Contains('.')) // AD group name
+				{
+					ICollection<UserData> members = ADUtils.GetAdGroupUsers(userDisplayName);
+
+					List<UserData> orderedMembers = members.OrderBy(m => m.DisplayName).ToList();
+					foreach (UserData member in orderedMembers)
+					{
+						// Load the user's information.  If the user does not currently exist in the database, create it and use its new ID.
+						UserDTO userInfo = userLoader.GetOrCreateUserByNtid(member.Ntid);
+						returnList.Add(new SelectListItem
+						{
+							Value = userInfo.UserID.ToString(),
+							Text = userInfo.DisplayName
+						});
+					}
+				}
+				else
+				{
+					if (isSubcontractors)
+					{
+						returnList.Add(new SelectListItem
+						{
+							Text = selectedUser.DisplayName + CommonConstants.SUBCONTRACTOR_AUTHOR_SUFFIX,
+							Value = selectedUser.UserID.ToString()
+						});
+					}
+					else
+					{
+						returnList.Add(new SelectListItem
+						{
+							Text = selectedUser.DisplayName,
+							Value = selectedUser.UserID.ToString()
+						});
+					}
+				}
+
+				returnList = (from a in returnList
+							  group a by new { Selected = a.Selected, Value = a.Value, Text = a.Text } into g
+							  select new SelectListItem
+							  {
+								  Value = g.Key.Value,
+								  Text = g.Key.Text,
+								  Selected = g.Key.Selected
+							  }).ToCollection();
+			}
+
+			return returnList;
 		}
 
 		#region Private Methods

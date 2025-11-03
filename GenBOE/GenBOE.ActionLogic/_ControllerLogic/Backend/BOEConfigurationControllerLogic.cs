@@ -106,6 +106,7 @@ namespace GenBOE.ActionLogic.ControllerLogic.Backend
 			workspaceSettings.ShowSkillMixForWorkspace = Utilities.ShowSkillMixForWorkspace(ws.CreationDate, ws.Shortname);
 			workspaceSettings.IsHistoricalReferenceExplanationRequired = Utilities.IsHistoricalReferenceExplanationRequired(ws.CreationDate);
 			workspaceSettings.IsLmNavigatorEnabled = Utilities.IsLmNavigatorRteLinkEnabledForSystem && ws.EnableLmNavigator;
+			workspaceSettings.EnableTaskAuthors = Utilities.IsAssignTaskAuthorEnabledForSystem && ws.EnableAssignTaskAuthor;
 
 			if (ws.Id == 0)
 			{

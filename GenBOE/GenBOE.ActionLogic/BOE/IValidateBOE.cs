@@ -15,22 +15,22 @@ namespace GenBOE.ActionLogic.WBS.BOE
 	/// IValidate Interface
 	/// </summary>
 	public interface IValidateBOE
-    {
-        /// <summary>
-        /// Validate all BOE data (BOE Header, task element details, labor type, and labor spreads)
-        /// when the user selects the Validate button
-        /// </summary>
-        /// <param name="inBOE">the BOE DTO to validate</param>
-        /// <param name="ws">Full WS</param>
-        /// <returns>all possible validation messages</returns>
-        ValidationBOEModelView ValidateBOE_OnValidateBtnClick(FullBoe inBOE, FullWorkspace ws);
+	{
+		/// <summary>
+		/// Validate all BOE data (BOE Header, task element details, labor type, and labor spreads)
+		/// when the user selects the Validate button
+		/// </summary>
+		/// <param name="inBOE">the BOE DTO to validate</param>
+		/// <param name="ws">Full WS</param>
+		/// <returns>all possible validation messages</returns>
+		ValidationBOEModelView ValidateBOE_OnValidateBtnClick(FullBoe inBOE, FullWorkspace ws);
 
-        /// <summary>
-        /// Validate all BOE data (BOE Header, task element details, labor type, and labor spreads) in the workspace
-        /// </summary>
-        /// <param name="ws">Full Ws</param>
-        /// <returns>Validation data</returns>
-        ValidationAllBOEModelView ValidateAllBOEs(FullWorkspace ws);
+		/// <summary>
+		/// Validate all BOE data (BOE Header, task element details, labor type, and labor spreads) in the workspace
+		/// </summary>
+		/// <param name="ws">Full Ws</param>
+		/// <returns>Validation data</returns>
+		ValidationAllBOEModelView ValidateAllBOEs(FullWorkspace ws);
 
 		/// <summary>
 		/// Validate MOQ Template data on a Task Level. Does NOT validate Labor Type level selection
@@ -42,5 +42,13 @@ namespace GenBOE.ActionLogic.WBS.BOE
 		/// <param name="showSkillMixTable">Variable that determines whether the skill mix table is shown or not</param>
 		/// <returns>Errors, if any</returns>
 		ICollection<string> ValidateTemplateMoqForTask(ICollection<MoqTypeSelection> moqTypesForTask, FullWorkspace ws, bool onButtonPress, decimal? moqEquationTotal = null, bool showSkillMixTable = false);
+
+		/// <summary>
+		/// Validation of all Child objects (i.e. CLIN, BOE, Task, Resource) to be within the PoP of a workspace
+		/// For ProPricer Export Report
+		/// </summary>
+		/// <param name="ws">Full Workspace</param>
+		/// <returns>boolean value to check if is valid</returns>
+		bool ValidateWorkspacePoP(FullWorkspace ws);
 	}
 }

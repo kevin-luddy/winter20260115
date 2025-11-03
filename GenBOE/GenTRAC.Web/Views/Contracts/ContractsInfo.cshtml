@@ -7,6 +7,14 @@
         'CustomerDueDate',
         'CustomerSubmittalDate',
 		'NegotiationsSubmitted',
+		'ScheduledActualBidEppDate',
+		'ScheduledActualProgramEppDate',
+		'ScheduledActualMissionSegmentEppDate',
+		'ScheduledActualLobEppDate',
+		'ScheduledActualPreSpaceEppDate',
+		'ScheduledActualSpaceEppDate',
+		'ScheduledActualPreCorporateEppDate',
+		'ScheduledActualCorporateEppDate',
 		'PlannedBidEppDate',
 		'PlannedProgramEppDate',
 		'PlannedMissionSegmentEppDate',
@@ -15,14 +23,6 @@
         'PlannedSpaceEppDate',
         'PlannedPreCorporateEppDate',
 		'PlannedCorporateEppDate',
-		'ScheduledBidEppDate',
-		'ScheduledProgramEppDate',
-		'ScheduledMissionSegmentEppDate',
-		'ScheduledLobEppDate',
-		'ScheduledPreSpaceEppDate',
-		'ScheduledSpaceEppDate',
-		'ScheduledPreCorporateEppDate',
-		'ScheduledCorporateEppDate',
         'ModCompletedDate'
     ];
 
@@ -374,56 +374,56 @@
 				@* Planned EPP Dates *@
 				<div class="form-label date-container planned-date">
 					<div class="form-row header-row">
-						<div class="form-element date-container-label planned-label">Planned EPP Dates</div>
+						<div class="form-element date-container-label planned-label">Scheduled / Actual</div>
 					</div>
 
 					@* Dates *@
 					<div class="form-row">
 						<div class="form-label">@Constants.BID_EPP_DATE_DISPLAY_STRING</div>
 						<div class="form-element">
-							@Html.TextBoxFor(x => x.PlannedBidEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+							@Html.TextBoxFor(x => x.ScheduledActualBidEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 						</div>
 					</div>
 					<div class="form-row">
 						<div class="form-label">@Constants.PROGRAM_EPP_DATE_DISPLAY_STRING</div>
 						<div class="form-element">
-							@Html.TextBoxFor(x => x.PlannedProgramEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+							@Html.TextBoxFor(x => x.ScheduledActualProgramEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 						</div>
 					</div>
 					<div class="form-row">
 						<div class="form-label">@Constants.MISSION_SEGMENT_EPP_DATE_DISPLAY_STRING</div>
 						<div class="form-element">
-							@Html.TextBoxFor(x => x.PlannedMissionSegmentEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+							@Html.TextBoxFor(x => x.ScheduledActualMissionSegmentEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 						</div>
 					</div>
 					<div class="form-row">
 						<div class="form-label">@Constants.LOB_EPP_DATE_DISPLAY_STRING</div>
 						<div class="form-element">
-							@Html.TextBoxFor(x => x.PlannedLobEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+							@Html.TextBoxFor(x => x.ScheduledActualLobEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 						</div>
 					</div>
 					<div class="form-row">
 						<div class="form-label">@Constants.PRE_SPACE_EPP_DATE_DISPLAY_STRING</div>
 						<div class="form-element">
-							@Html.TextBoxFor(x => x.PlannedPreSpaceEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+							@Html.TextBoxFor(x => x.ScheduledActualPreSpaceEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 						</div>
 					</div>
 					<div class="form-row">
 						<div class="form-label">@Constants.SPACE_EPP_DATE_DISPLAY_STRING</div>
 						<div class="form-element">
-							@Html.TextBoxFor(x => x.PlannedSpaceEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+							@Html.TextBoxFor(x => x.ScheduledActualSpaceEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 						</div>
 					</div>
 					<div class="form-row">
 						<div class="form-label">@Constants.PRE_CORPORATE_EPP_DATE_DISPLAY_STRING</div>
 						<div class="form-element">
-							@Html.TextBoxFor(x => x.PlannedPreCorporateEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+							@Html.TextBoxFor(x => x.ScheduledActualPreCorporateEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 						</div>
 					</div>
 					<div class="form-row">
 						<div class="form-label">@Constants.CORPORATE_EPP_DATE_DISPLAY_STRING</div>
 						<div class="form-element">
-							@Html.TextBoxFor(x => x.PlannedCorporateEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+							@Html.TextBoxFor(x => x.ScheduledActualCorporateEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 						</div>
 					</div>
 
@@ -434,48 +434,48 @@
 					@* Scheduled EPP Dates *@
 					<div class="form-label date-container scheduled-date">
 						<div class="form-row header-row">
-							<div class="form-label date-container-label">Scheduled EPP Dates</div>
+							<div class="form-label date-container-label">Planned</div>
 						</div>
 
 						@* Dates *@
 						<div class="form-row">
 							<div class="form-element">
-								@Html.TextBoxFor(x => x.ScheduledBidEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+								@Html.TextBoxFor(x => x.PlannedBidEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 							</div>
 						</div>
 						<div class="form-row">
 							<div class="form-element">
-								@Html.TextBoxFor(x => x.ScheduledProgramEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+								@Html.TextBoxFor(x => x.PlannedProgramEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 							</div>
 						</div>
 						<div class="form-row">
 							<div class="form-element">
-								@Html.TextBoxFor(x => x.ScheduledMissionSegmentEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+								@Html.TextBoxFor(x => x.PlannedMissionSegmentEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 							</div>
 						</div>
 						<div class="form-row">
 							<div class="form-element">
-								@Html.TextBoxFor(x => x.ScheduledLobEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+								@Html.TextBoxFor(x => x.PlannedLobEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 							</div>
 						</div>
 						<div class="form-row">
 							<div class="form-element">
-								@Html.TextBoxFor(x => x.ScheduledPreSpaceEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+								@Html.TextBoxFor(x => x.PlannedPreSpaceEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 							</div>
 						</div>
 						<div class="form-row">
 							<div class="form-element">
-								@Html.TextBoxFor(x => x.ScheduledSpaceEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+								@Html.TextBoxFor(x => x.PlannedSpaceEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 							</div>
 						</div>
 						<div class="form-row">
 							<div class="form-element">
-								@Html.TextBoxFor(x => x.ScheduledPreCorporateEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+								@Html.TextBoxFor(x => x.PlannedPreCorporateEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 							</div>
 						</div>
 						<div class="form-row">
 							<div class="form-element">
-								@Html.TextBoxFor(x => x.ScheduledCorporateEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+								@Html.TextBoxFor(x => x.PlannedCorporateEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 							</div>
 						</div>
 					</div>
