@@ -360,7 +360,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 				// Check BOE falls within the CLIN Start Date and End Date
 				foreach (FullBoe boe in ws.Boes)
 				{
-					if (boe.Clin != null && (clin.Id == boe.Clin.Id))
+					if (boe.Clin != null && (clin.Id == boe.CLINID))
 					{
 						DateTime boeStartDate = GenBOEUtilities.AdjustDateTimePrecision(boe.StartDate, DateTimePrecision.Day);
 						DateTime boeStartMonth = GenBOEUtilities.AdjustDateTimePrecision(boe.StartDate, DateTimePrecision.Month);
