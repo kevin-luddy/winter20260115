@@ -8,6 +8,7 @@ namespace GenBOE.Web.Controllers.Backend
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Diagnostics;
 	using System.Linq;
 	using System.Web.Http;
@@ -276,7 +277,19 @@ namespace GenBOE.Web.Controllers.Backend
 			{
 				FullBoe boe = this.Factory.CreateFullBoe(saveBOEHeader.boeHeader.BOEID);
 
-				boeControllerLogic.SaveEditBoeHeader(ws, boe, (IBOEHeaderModelView)saveBOEHeader.boeHeader, saveBOEHeader.boeHeader.Description, descriptionOnly);
+				IBOEHeaderModelView boeHeader = new BOEHeaderModelView();
+				boeHeader.BOEID = saveBOEHeader.boeHeader.BOEID;
+				boeHeader.CLIN = saveBOEHeader.boeHeader.CLIN;
+				boeHeader.State = saveBOEHeader.boeHeader.State;
+				boeHeader.Title = saveBOEHeader.boeHeader.Title;
+				boeHeader.CustomFieldValues = new Collection<CustomFieldSelectionModelView>();
+
+				foreach (RTECustomTemplateQuestionAnswerModelView item in saveBOEHeader.boeHeader.HeaderRteTemplateAnswers)
+				{
+					boeHeader.HeaderRteTemplateAnswers.Add(item);
+				}
+
+				boeControllerLogic.SaveEditBoeHeader(ws, boe, boeHeader, saveBOEHeader.boeHeader.Description, descriptionOnly);
 
 				result.IsSuccessful = true;
 				result.Data = true;

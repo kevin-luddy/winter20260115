@@ -153,5 +153,9 @@ namespace GenBOE.ActionLogic._ModelView.Backend
 		/// Gets BOEHeaderDescriptionModelView
 		/// </summary>
 		public BOEHeaderDescriptionModelView Description { get; set; }
+
+		public AdjacentItems AdjacentBoeIds { get; set; }
+
+		
 	}
 }

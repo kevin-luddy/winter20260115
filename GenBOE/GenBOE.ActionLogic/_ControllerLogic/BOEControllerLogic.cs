@@ -30,6 +30,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.BOE;
 	using GenBOE.ActionLogic.ModelView.Clin;
+	using GenBOE.ActionLogic.ModelView.Workspace;
 	using GenBOE.ActionLogic.NewValidation;
 	using GenBOE.ActionLogic.Validation;
 	using GenBOE.ActionLogic.WBS;
@@ -85,6 +86,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		private readonly IMaterialDTODataLoader _MaterialLoader;
 		private readonly IWbsDTODataLoader wbsLoader;
 		private readonly ICommonDataMapper _CommonDataMapper;
+		private readonly IWorkspaceControllerLogic WorkspaceControllerLogic;
 
 		/// <summary>
 		/// Memory Cache
@@ -155,7 +157,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			IMaterialDTODataLoader inMaterialLoader,
 			ITravelDTODataLoader travelLoader,
 			IWorkspaceVersionMetaDataDTODataLoader versionLoader,
-			IWbsDTODataLoader wbsLoader)
+			IWbsDTODataLoader wbsLoader,
+			IWorkspaceControllerLogic workspaceControllerLogic)
 		{
 			this._BOESummary = inBOESummary;
 			this.UserLoader = inUserLoader;
@@ -195,6 +198,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			this._TravelDTOLoader = travelLoader;
 			this.versionLoader = versionLoader;
 			this.wbsLoader = wbsLoader;
+			this.WorkspaceControllerLogic = workspaceControllerLogic;
 			memCache = new MemoryCache();
 		}
 
@@ -306,6 +310,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					}
 				}
 			}
+
+			// Get adjacent boe ids
+			HomeWorkspaceGridModelView wsModelView = this.WorkspaceControllerLogic.GetHomeWorkspaceGridData(ws);
+			theModelView.AdjacentBoeIds = this.WorkspaceControllerLogic.FindAdjacentBoes(wsModelView, boe.Id, "WbsText", SortOrder.Ascending);
+
 
 			return theModelView;
 		}
