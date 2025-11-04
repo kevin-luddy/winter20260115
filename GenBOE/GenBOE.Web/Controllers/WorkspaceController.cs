@@ -706,9 +706,10 @@ namespace GenBOE.Web.Controllers
 				// retrieve valid tracking numbers for the current user
 				IReadOnlyCollection<GenTRAC.DataBridge.Common.Security.SecurityPermissionsResponse> roles = this.ptmSecurityMapper.GetRolesForLoggedInUser();
 				bool isAdmin = roles.Any(r => r.AuthorizedRole == PtmRole.Admin);
-				
+
 				ICollection<ProposalDto> proposals = (isAdmin ? this.proposalLoader.GetAllSlim() : this.proposalLoader.GetProposalsByUser(this._securityInformation.ActiveUserNTID, true))
 																	.Where(p => !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.NoBid && p.ProposalStatus != ProposalStatus.Revised).ToList();
+
 
 				foreach (ProposalDto proposal in proposals)
 				{
@@ -717,14 +718,17 @@ namespace GenBOE.Web.Controllers
 						Text = proposal.TrackingNumber + " - " + proposal.ProposalTitle,
 						Value = proposal.TrackingNumber
 					});
+
+					model.CostVolumeLeadPricerDisplayName = proposal.CostVolumeToolName;
 				}
 			}
 
 			model.TrackingNumbers = trackingNumbers;
-			
+
+
 			IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(this._securityInformation.ActiveUserNTID);
 			model.IsAdmin = permissions.Any(p => p.AuthorizedRole == Role.SystemAdmin);
-			
+
 			model.PtmTrackingNumberNotRequired = string.IsNullOrEmpty(ConfigurationUtilities.GetAppSetting("CanCreateWorkspaceWithoutPtmTrackingNumber")) ?
 				false :
 				_securityInformation.IsMemberOfADGroupInAppSettingsList(this._securityInformation.ActiveUserNTID, "CanCreateWorkspaceWithoutPtmTrackingNumber");
@@ -760,7 +764,7 @@ namespace GenBOE.Web.Controllers
 			FinalizeAction(_log, WebConstants.ACTION_SEARCH_PLD_PROPOSALS, sw);
 
 			return Json(results, JsonRequestBehavior.AllowGet);
-				
+
 		}
 
 
@@ -781,6 +785,7 @@ namespace GenBOE.Web.Controllers
 			return Json(result, JsonRequestBehavior.AllowGet);
 		}
 
+
 		/// <summary>
 		/// Get Short Name Workspace from Tracking Number  PLD 
 		/// </summary>
@@ -790,8 +795,8 @@ namespace GenBOE.Web.Controllers
 		public JsonResult GetNextPLDWorkspaceShortNameFromTrackingNumber(string paNumber)
 		{
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_NEXT_PLD_WORKSPACE_SHORTNAME_FROM_TRACKING_NUMBER, SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.Read, null, null);
-			
-			ICollection<WorkspaceDTO> workspaces  = this.workspaceLoader.GetAllWsNamesForTrackingNumber(paNumber);
+
+			ICollection<WorkspaceDTO> workspaces = this.workspaceLoader.GetAllWsNamesForTrackingNumber(paNumber);
 
 			Dictionary<string, object> payload = _ControllerLogic.NextPLDTrackingNumber(workspaces, paNumber);
 
@@ -1324,7 +1329,7 @@ namespace GenBOE.Web.Controllers
 
 			// Retrieving from Workspace first to make sure the workspace has access to this template Id
 			WorkspaceExportFormatNameDTO templateName = ws.WorkspaceExportFormatNames.FirstOrDefault(x => x.Id == id.Value);
-			
+
 			// Then retrieve from the database
 			WorkspaceExportFormatDTO template = this.retriever.GetWorkspaceExportFormatByTemplateId(templateName.Id);
 
@@ -1642,7 +1647,7 @@ namespace GenBOE.Web.Controllers
 		[HttpPost]
 		public ViewResult DisplayBOECustomFieldPerfOrg(string workspace)
 		{
-			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);	// Force a cache clear
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);   // Force a cache clear
 
 			// Initialize Action
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CUSTOM_FIELD_PERFORMING_ORG, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
@@ -2383,7 +2388,8 @@ namespace GenBOE.Web.Controllers
 			if (CheckPermissions(SecurityPage.SystemAdmin, null, null) == SecurityAuthorization.CreateReadUpdateDelete)
 			{
 				theModelView.isReadOnly = false;
-			};
+			}
+			;
 
 			// Action Finalize
 			FinalizeAction(_log, WebConstants.ACTION_GET_WORKSPACE_HOME_MODEL, sw);
@@ -4345,10 +4351,29 @@ namespace GenBOE.Web.Controllers
 
 			List<ValidationMessage> errors = new List<ValidationMessage>();
 
+			bool isPLDIntegrated = !string.IsNullOrEmpty(data.TrackingNumber) && !data.IsAttemptingToImport;
+
 			// do basic validation check
 			if (!ModelState.IsValid && (data.WSExactCopy == null || data.WSExactCopy == false))
 			{
-				errors.AddRange(Utilities.CreateModelStateValidationErrorList(ModelState));
+				List<ValidationMessage> modelErrors = Utilities.CreateModelStateValidationErrorList(ModelState).ToList();
+
+				// For PLD mode, filter out validation errors for fields that are auto-populated
+				if (isPLDIntegrated)
+				{
+					// Fields that PLD populates automatically:
+					// - WorkspaceName: Set from PLD proposal title/PA number
+					// - Shortname: Set from GetNextPLDWorkspaceShortName (nextRevision)
+					// - UsingTemplateBoe: Has default value of false
+					modelErrors = modelErrors.Where(e =>
+						e.FieldName != "WorkspaceName" &&
+						e.FieldName != "Shortname" &&
+						e.FieldName != "LineOfBusiness" &&
+						e.FieldName != "UsingTemplateBoe").ToList();
+
+				}
+
+				errors.AddRange(modelErrors);
 			}
 
 			// Bug 6899
@@ -4706,6 +4731,7 @@ namespace GenBOE.Web.Controllers
 								newWorkspaceDTO.RevisedSubmittalDate = !string.IsNullOrEmpty(spaceWorkspace.RevisedSubmittalDate)
 									? (DateTime?)Convert.ToDateTime(spaceWorkspace.RevisedSubmittalDate) : null;
 								newWorkspaceDTO.CurrentPTMWorkspace = spaceWorkspace.CurrentPTMWorkspace;
+								newWorkspace.ProposalSubmittalDate = spaceWorkspace.ProposalSubmittalDate;
 
 								this.workspaceLoader.SaveWorkspaceSettings(createdByUserDTO.UserID, newWorkspaceDTO);
 							}

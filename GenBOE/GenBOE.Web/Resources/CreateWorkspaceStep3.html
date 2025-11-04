@@ -1,57 +1,57 @@
-﻿<div class="form-row">
-	<div class="form-label">
-		<span>Workspace/Proposal Name *</span>
-		<div class="help-icon" id="WorkspaceName-Help" onclick="CreateWorkspace.ToggleHelp(this);">
-		</div>
-		<!-- This comment is needed for the jquery animation to work in IE8... -->
-		<div class="help-dialog" id="WorkspaceName-HelpDialog" style="width: 200px;">
-			<div class="help-dialog-close"></div>
-			<div class="help-dialog-text">
-				Proposal or group name. Name is used in BOEs, reports and to identify your workspace.
-			</div>
-		</div>
-	</div>
+﻿<div class="form-row" style="display: flex; align-items: center;">
+    <div class="form-label" style="margin-right: 10px;">
+        <span>Workspace/Proposal Name *</span>
+        <div class="help-icon" id="WorkspaceName-Help" onclick="CreateWorkspace.ToggleHelp(this);">
+        </div>
+        <!-- This comment is needed for the jquery animation to work in IE8... -->
+        <div class="help-dialog" id="WorkspaceName-HelpDialog" style="width: 200px;">
+            <div class="help-dialog-close"></div>
+            <div class="help-dialog-text">
+                Proposal or group name. Name is used in BOEs, reports and to identify your workspace.
+            </div>
+        </div>
+    </div>
 
-	<div class="form-element">
-		<div data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber !=''">
-			<span>{{model.nextRevision}} </span><input name="WorkspaceName" data-ng-trim="false" class="half" id="WorkspaceName" data-ng-keyup="workspaceNameKeyUp()" data-ng-model="data.WorkspaceName" type="text" maxlength="88" />
-		</div>
-		<div data-ng-show="model.isPTMIntegrated && model.ptmTrackingNumber !== ''">
-			<span>{{model.nextRevision}} </span><input class="half" data-ng-trim="false" data-ng-model="data.RevisionWorkspaceName" type="text" maxlength="88" />
-		</div>
-		<input ng-if="!model.IsPLDIntegrated" data-ng-hide="model.isPTMIntegrated && model.ptmTrackingNumber !== ''" name="WorkspaceName" class="full" id="WorkspaceName" data-ng-keyup="workspaceNameKeyUp()" data-ng-model="data.WorkspaceName" type="text" maxlength="100" />
-	</div>
+    <div style="flex: 1;">
+        <div data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber !=''" style="display: flex; align-items: center;">
+            <span style="margin-right: 5px; white-space: nowrap;">{{model.nextRevision}} </span><input name="WorkspaceName" data-ng-trim="false" class="half" id="WorkspaceName" data-ng-keyup="workspaceNameKeyUp()" data-ng-model="data.WorkspaceName" type="text" maxlength="88" />
+        </div>
+        <div data-ng-show="model.isPTMIntegrated && model.ptmTrackingNumber !== ''" style="display: flex; align-items: center;">
+            <span style="margin-right: 5px; white-space: nowrap;">{{model.nextRevision}} </span><input class="half" data-ng-trim="false" data-ng-model="data.RevisionWorkspaceName" type="text" maxlength="88" />
+        </div>
+        <input ng-if="!model.IsPLDIntegrated" data-ng-hide="model.isPTMIntegrated && model.ptmTrackingNumber !== ''" name="WorkspaceName" class="full" id="WorkspaceName" data-ng-keyup="workspaceNameKeyUp()" data-ng-model="data.WorkspaceName" type="text" maxlength="100" />
+    </div>
 </div>
 <div class="form-row">
-	<div class="form-label">
-		Description
-	</div>
-	<div class="form-element">
-		<textarea ng-readonly="model.IsPLDIntegrated" data-ng-model="data.Description" name="Description" class="full ignoreValidation" id="Description" maxlength="1000" rows="2" cols="20"></textarea>
-	</div>
+    <div class="form-label">
+        Description
+    </div>
+    <div class="form-element">
+        <textarea data-ng-disabled="isPLDFieldReadonly('Description')" data-ng-model="data.Description" name="Description" class="full ignoreValidation" id="Description" maxlength="1000" rows="2" cols="20"></textarea>
+    </div>
 </div>
 <div class="form-row">
-	<div class="form-label">
-		URL *
-		<div class="help-icon" id="URL-Help" onclick="CreateWorkspace.ToggleHelp(this);">
-		</div>
-		<!-- This comment is needed for the jquery animation to work in IE8... -->
-		<div class="help-dialog" id="URL-HelpDialog" style="width: 200px;">
-			<div class="help-dialog-close"></div>
-			<div class="help-dialog-text">
-				The URL to navigate to the Workspace. Must begin with a letter or number and can only contain letters, numbers, blanks, underscores and hyphens.
-			</div>
-		</div>
-	</div>
-	<div class="form-element">
-		<span class="url">
-			{{ !model.IsPLDIntegrated ? model.applicationURL : getSantizedUrl() }}
-			<span data-ng-show="model.isPTMIntegrated && model.ptmTrackingNumber !== ''">{{model.nextRevision}}</span>
-		</span>
-		<span data-ng-show="!model.IsPLDIntegrated">
-			<input data-ng-hide="model.isPTMIntegrated && model.ptmTrackingNumber !== ''" name="ShortName" class="quarter" id="ShortName" data-ng-model="data.Shortname" type="text" maxlength="15">
-		</span>
-	</div>
+    <div class="form-label">
+        URL *
+        <div class="help-icon" id="URL-Help" onclick="CreateWorkspace.ToggleHelp(this);">
+        </div>
+        <!-- This comment is needed for the jquery animation to work in IE8... -->
+        <div class="help-dialog" id="URL-HelpDialog" style="width: 200px;">
+            <div class="help-dialog-close"></div>
+            <div class="help-dialog-text">
+                The URL to navigate to the Workspace. Must begin with a letter or number and can only contain letters, numbers, blanks, underscores and hyphens.
+            </div>
+        </div>
+    </div>
+    <div class="form-element">
+        <span class="url">
+            {{ !model.IsPLDIntegrated ? model.applicationURL : getSantizedUrl() }}
+            <span data-ng-show="model.isPTMIntegrated && model.ptmTrackingNumber !== ''">{{model.nextRevision}}</span>
+        </span>
+        <span data-ng-show="!model.IsPLDIntegrated">
+            <input data-ng-hide="model.isPTMIntegrated && model.ptmTrackingNumber !== ''" name="ShortName" class="quarter" id="ShortName" data-ng-model="data.Shortname" type="text" maxlength="15">
+        </span>
+    </div>
 </div>
 <div class="form-row" data-ng-show="model.showProjectMap && !model.isSSC">
 	<div class="form-label">Workspace Type</div>
@@ -60,30 +60,29 @@
 	</div>
 </div>
 <div class="form-row">
-	<div class="form-label">
-		<span>Line of Business *</span>
-		<div id="LOB-Help" data-ng-show="model.isPTMIntegrated" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
-		</div>
-		<!-- This comment is needed for the jquery animation to work in IE8... -->
-		<div id="LOB-HelpDialog" data-ng-show="model.isPTMIntegrated" class="help-dialog" style="width: 200px;">
-			<div class="help-dialog-close"></div>
-			<div class="help-dialog-text">
-				Line of Business is driven by the Tracking Number selected.
-			</div>
-		</div>
-	</div>
-	<div class="form-element" ng-if="model.IsPLDIntegrated">
-		<div class="readonly-value" ng-init="data.LineOfBusinessID = model.LineOfBusiness && model.LineOfBusiness.trim()">
-			{{ model.LineOfBusiness ? model.LineOfBusiness.trim() : 'NA'}}
-		</div>
-	</div>
-	<div class="form-element" ng-if="!model.IsPLDIntegrated">
-		<span data-ng-show="model.isPTMIntegrated && !model.isAdmin">{{getLOB()}}</span>
-		<select data-ng-hide="model.isPTMIntegrated && !model.isAdmin" name="LineOfBusiness" id="LineOfBusiness"
-				data-ng-options="item.Id as item.Text for item in model.lobs | isActiveOrInitialPickListItem:data.LineOfBusinessID"
-				data-ng-model="data.LineOfBusinessID"></select>
-	</div>
-</div>
+    <div class="form-label">
+        <span>Line of Business *</span>
+        <div id="LOB-Help" data-ng-show="model.isPTMIntegrated" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
+        </div>
+        <!-- This comment is needed for the jquery animation to work in IE8... -->
+        <div id="LOB-HelpDialog" data-ng-show="model.isPTMIntegrated" class="help-dialog" style="width: 200px;">
+            <div class="help-dialog-close"></div>
+            <div class="help-dialog-text">
+                Line of Business is driven by the Tracking Number selected.
+            </div>
+        </div>
+    </div>
+    <div class="form-element" ng-if="model.IsPLDIntegrated">
+        <div class="readonly-value" ng-init="data.LineOfBusinessID = model.LineOfBusiness && model.LineOfBusiness.trim()">
+            {{ model.LineOfBusiness ? model.LineOfBusiness.trim() : 'NA'}}
+        </div>
+        <div class="form-element" ng-if="!model.IsPLDIntegrated">
+            <span data-ng-show="model.isPTMIntegrated && !model.isAdmin">{{getLOB()}}</span>
+            <select ng-readonly="isPLDFieldReadonly('LineOfBusiness')" data-ng-hide="model.isPTMIntegrated && !model.isAdmin" name="LineOfBusiness" id="LineOfBusiness"
+                    data-ng-options="item.Id as item.Text for item in model.lobs | isActiveOrInitialPickListItem:data.LineOfBusinessID"
+                    data-ng-model="data.LineOfBusinessID"></select>
+        </div>
+    </div>
 <div class="form-row" data-ng-show="model.isSSC">
 	<div class="form-label">
 		<span>Proposal Class *</span>
@@ -126,22 +125,24 @@
 	</div>
 </div>
 <div class="form-row">
-	<div class="form-label">
-		<span>{{model.labelLeadPricer}} *</span>
-		<div id="CostVolumeLead-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
-		</div>
-		<!-- This comment is needed for the jquery animation to work in IE8... -->
-		<div id="CostVolumeLead-HelpDialog" class="help-dialog" style="width: 200px;">
-			<div class="help-dialog-close"></div>
-			<div class="help-dialog-text">
-				The individual who will perform the initial setup procedures before the BOE Authors
-				begin the writing process.
-			</div>
-		</div>
-	</div>
-	<div class="form-element">
-		<input id="CostVolumeLeadPricerDisplayName" name="CostVolumeLeadPricerDisplayName" type="text" class="half" maxlength="50" data-ng-model="data.CostVolumeLeadPricerDisplayName" />
-	</div>
+    <div class="form-label">
+        <span>{{model.labelLeadPricer}} *</span>
+        <div id="CostVolumeLead-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
+        </div>
+        <!-- This comment is needed for the jquery animation to work in IE8... -->
+        <div id="CostVolumeLead-HelpDialog" class="help-dialog" style="width: 200px;">
+            <div class="help-dialog-close"></div>
+            <div class="help-dialog-text">
+                The individual who will perform the initial setup procedures before the BOE Authors
+                begin the writing process.
+            </div>
+        </div>
+    </div>
+    <div class="form-element">
+        <span class="readonly-value">
+            {{ model.Pricer ? model.Pricer : model.CostVolumeLeadPricerDisplayName }}
+        </span>
+    </div>
 </div>
 <div ng-if="model.IsPLDIntegrated" class="form-row" id="ContractDates" data-ng-show="!data.IsAttemptingToImport && (model.isSSC || data.ProjectMapType == '1' || data.ProjectMapType == '2')">
 	<div class="form-label contract-start-date-label">
@@ -186,17 +187,17 @@
 		<label for="AllowGridEdit-No">No</label>
 	</div>
 </div>
-<div class="form-row" ng-if="!model.IsPLDIntegrated">
-	<div class="form-label" data-ng-hide="model.isSSC">
-		Proposal Submittal Date
-	</div>
-	<div class="form-label" data-ng-show="model.isSSC">
-		Anticipated Delivery Date
-	</div>
-	<div class="form-element proposal-submittal">
-		<input data-ng-hide="model.isPTMIntegrated && !model.isAdmin" class="normal-date" id="ProposalSubmittalDate" name="ProposalSubmittalDate" placeholder="mm/dd/yyyy" type="text" data-ng-model="data.ProposalSubmittalDate">
-		<span data-ng-show="model.isPTMIntegrated && !model.isAdmin">{{data.ProposalSubmittalDate}}</span>
-	</div>
+<div class="form-row" ng-if="model.IsPLDIntegrated">
+    <div class="form-label" data-ng-hide="model.isSSC">
+        Proposal Submittal Date
+    </div>
+    <div class="form-label" data-ng-show="model.isSSC">
+        Anticipated Delivery Date
+    </div>
+    <div class="form-element proposal-submittal">
+        <input ng-readonly="isPLDFieldReadonly('ProposalSubmittalDate')" data-ng-hide="model.isPTMIntegrated && !model.isAdmin" class="normal-date" id="ProposalSubmittalDate" name="ProposalSubmittalDate" placeholder="mm/dd/yyyy" type="text" data-ng-model="data.ProposalSubmittalDate">
+        <span data-ng-show="model.isPTMIntegrated && !model.isAdmin">{{data.ProposalSubmittalDate}}</span>
+    </div>
 </div>
 <div class="form-row" data-ng-show="model.isSSC && model.isPTMIntegrated">
 	<div class="form-label">
@@ -245,48 +246,48 @@
 	</div>
 </div>
 <div class="form-row" data-ng-show="model.IsPLDIntegrated">
-	<div class="form-label">
-		<span>PLD PA Number</span>
-		<div id="Tracking-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
-		</div>
-		<div id="Tracking-HelpDialog" class="help-dialog" style="width: 200px;">
-			<div class="help-dialog-close"></div>
-			<div class="help-dialog-text">
-				The Proposal Log Database  "PA Number".
-			</div>
-		</div>
-	</div>
-	<div class="form-element">
-		<div class="readonly-value">
-			{{ model.PLD_PANumber}}
-		</div>
-	</div>
+    <div class="form-label">
+        <span>PLD PA Number</span>
+        <div id="Tracking-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
+        </div>
+        <div id="Tracking-HelpDialog" class="help-dialog" style="width: 200px;">
+            <div class="help-dialog-close"></div>
+            <div class="help-dialog-text">
+                The Proposal Log Database  "PA Number".
+            </div>
+        </div>
+    </div>
+    <div class="form-element">
+        <div class="readonly-value">
+            {{ model.PLD_PANumber}}
+        </div>
+    </div>
 </div>
 <div class="form-row" data-ng-hide="model.isSSC">
-	<div class="form-label">
-		RFP #
-	</div>
-	<div class="form-element">
-		<input ng-readonly="model.IsPLDIntegrated" class="full ignoreValidation" id="RFPNumber" maxlength="100" name="RFPNumber" type="text" data-ng-model="data.RFPNumber">
-	</div>
+    <div class="form-label">
+        RFP #
+    </div>
+    <div class="form-element">
+        <input ng-readonly="isPLDFieldReadonly('RFPNumber')" class="full ignoreValidation" id="RFPNumber" maxlength="100" name="RFPNumber" type="text" data-ng-model="data.RFPNumber">
+    </div>
 </div>
 <div class="form-row" data-ng-show="model.IsPLDIntegrated">
-	<div class="form-label">
-		<span>PLD PA Title</span>
-		<div id="Tracking-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
-		</div>
-		<div id="Tracking-HelpDialog" class="help-dialog" style="width: 200px;">
-			<div class="help-dialog-close"></div>
-			<div class="help-dialog-text">
-				The Proposal Log Database "PA Title".
-			</div>
-		</div>
-	</div>
-	<div class="form-element">
-		<div class="readonly-value">
-			{{ model.PLD_PATitle}}
-		</div>
-	</div>
+    <div class="form-label">
+        <span>PLD PA Title</span>
+        <div id="Tracking-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
+        </div>
+        <div id="Tracking-HelpDialog" class="help-dialog" style="width: 200px;">
+            <div class="help-dialog-close"></div>
+            <div class="help-dialog-text">
+                The Proposal Log Database "PA Title".
+            </div>
+        </div>
+    </div>
+    <div class="form-element">
+        <div class="readonly-value">
+            {{ model.PLD_PATitle}}
+        </div>
+    </div>
 
 </div>
 
@@ -325,19 +326,19 @@
 	<div class="form-element static">{{data.RFPNumber}}</div>
 </div>
 <div class="form-row" data-ng-show="model.isPTMIntegrated">
-	<div class="form-label">
-		<span>PTM Proposal Title</span>
-		<div id="Title-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
-		</div>
-		<!-- This comment is needed for the jquery animation to work in IE8... -->
-		<div id="Title-HelpDialog" class="help-dialog" style="width: 200px;">
-			<div class="help-dialog-close"></div>
-			<div class="help-dialog-text">
-				Proposal Title is driven by the Tracking Number selected.
-			</div>
-		</div>
-	</div>
-	<div class="form-element static">{{data.ProposalTitle}}</div>
+    <div class="form-label">
+        <span>PTM Proposal Title</span>
+        <div id="Title-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
+        </div>
+        <!-- This comment is needed for the jquery animation to work in IE8... -->
+        <div id="Title-HelpDialog" class="help-dialog" style="width: 200px;">
+            <div class="help-dialog-close"></div>
+            <div class="help-dialog-text">
+                Proposal Title is driven by the Tracking Number selected.
+            </div>
+        </div>
+    </div>
+    <div class="form-element static">{{data.ProposalTitle}}</div>
 </div>
 <div class="form-row" data-ng-show="model.isSSC && model.showEquivalentPersonsOption && !data.IsAttemptingToImport">
 	<div class="form-label">
@@ -439,23 +440,23 @@
 	</div>
 </div>
 <div class="form-row" data-ng-show="model.isAssignTaskAuthorEnabled">
-	<div class="form-label">
-		<span>Authors Assignable at Task<br />Level *</span>
-		<div id="using-template-boe-help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);"></div>
-		<div id="using-template-boe-help-dialog" class="help-dialog" style="width: 200px;">
-			<div class="help-dialog-close"></div>
-			<div class="help-dialog-text">
-				When "Yes" is selected, Authors are prompted to choose their name from the BOE Author list and assign themselves to the task as the Task Author.
-				When "No" is selected, Author Assignment is BOE Level only. No additional Author steps.
-			</div>
-		</div>
-	</div>
-	<div class="form-element">
-		<select name="EnableAssignTaskAuthor" id="EnableAssignTaskAuthor" data-ng-model="data.EnableAssignTaskAuthor" data-ng-disabled="data.WorkspaceToCopyID > 0">
-			<option data-ng-value="true">Yes</option>
-			<option data-ng-value="false">No</option>
-		</select>
-	</div>
+    <div class="form-label">
+        <span>Authors Assignable at Task<br />Level *</span>
+        <div id="using-template-boe-help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);"></div>
+        <div id="using-template-boe-help-dialog" class="help-dialog" style="width: 200px;">
+            <div class="help-dialog-close"></div>
+            <div class="help-dialog-text">
+                When "Yes" is selected, Authors are prompted to choose their name from the BOE Author list and assign themselves to the task as the Task Author.
+                When "No" is selected, Author Assignment is BOE Level only. No additional Author steps.
+            </div>
+        </div>
+    </div>
+    <div class="form-element">
+        <select name="EnableAssignTaskAuthor" id="EnableAssignTaskAuthor" data-ng-model="data.EnableAssignTaskAuthor" data-ng-disabled="data.WorkspaceToCopyID > 0">
+            <option data-ng-value="true">Yes</option>
+            <option data-ng-value="false">No</option>
+        </select>
+    </div>
 </div>
 <div class="form-row" data-ng-show="model.isLmNavigatorEnabled">
 	<div class="form-label">
@@ -476,9 +477,3 @@
 	</div>
 </div>
 {{setupIdentificationPage()}}
-<script type="text/javascript">
-	(function () {
-		SetupMonthPicker("#ContractStartDate");
-		SetupMonthPicker("#ContractEndDate");
-	})();
-</script>
