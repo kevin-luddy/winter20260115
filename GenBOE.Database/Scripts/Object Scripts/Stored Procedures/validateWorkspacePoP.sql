@@ -257,9 +257,14 @@ BEGIN
                 1
             );
         END
+
+        SELECT @IsValid AS IsValid;
     END TRY
     BEGIN CATCH
         SET @IsValid = 0;
+
+        SELECT @IsValid AS IsValid;
+
         THROW;
     END CATCH
 END
