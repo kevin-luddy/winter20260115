@@ -5693,7 +5693,6 @@ warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' do
           <Parameter Name="WorkspaceID" Type="int" Mode="In" />
           <Parameter Name="ContractStartDate" Type="date" Mode="In" />
           <Parameter Name="ContractEndDate" Type="date" Mode="In" />
-          <Parameter Name="IsValid" Type="bit" Mode="In" />
         </Function>
         <EntityContainer Name="GenBOEModelsStoreContainer">
           <EntitySet Name="BOE" EntityType="Self.BOE" Schema="dbo" store:Type="Tables" />
@@ -11888,7 +11887,6 @@ warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' do
             <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
             <Parameter Name="ContractStartDate" Mode="In" Type="DateTime" />
             <Parameter Name="ContractEndDate" Mode="In" Type="DateTime" />
-            <Parameter Name="IsValid" Mode="In" Type="Boolean" />
           </FunctionImport>
           </EntityContainer>
 		<ComplexType Name="getBOEForFindReplace_Result">

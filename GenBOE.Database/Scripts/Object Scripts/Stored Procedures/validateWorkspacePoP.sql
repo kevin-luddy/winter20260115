@@ -87,7 +87,7 @@ BEGIN
           AND B.BOEStartDate IS NOT NULL
           AND B.BOEEndDate IS NOT NULL;
 
-        -- BOEs not tied to a CLIN, but tied to the Workspace, make sure to filter out if it's already in @BOE
+        -- BOEs not tied to a CLIN, but tied to the Workspace
         INSERT INTO @BOEs (BOEID, BOEStartDate, BOEEndDate, IsValid)
         SELECT
             B.BOEID,
@@ -99,6 +99,11 @@ BEGIN
         WHERE B.WorkspaceID = @WorkspaceID
           AND B.BOEStartDate IS NOT NULL
           AND B.BOEEndDate IS NOT NULL
+          AND NOT EXISTS (
+              SELECT 1 
+              FROM dbo.WBS_CLIN_BOE_XREF X 
+              WHERE X.BOEID = B.BOEID
+          );
 
         -- Check if any BOEs are invalid
         IF EXISTS (SELECT 1 FROM @BOEs WHERE IsValid = 0)
@@ -169,3 +174,4 @@ BEGIN
         THROW;
     END CATCH
 END
+GO
