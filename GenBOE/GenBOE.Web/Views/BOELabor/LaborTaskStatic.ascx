@@ -589,7 +589,7 @@
                             <thead>
                                 <tr>
                                     <th class="resourceCol">Resource</th>
-                                    <th class="currentResourceCol">Current Resource</th>
+                                    <th class="ProposedResourceCol">Proposed Resource</th>
                                     <th class="historicalHoursCol">Historical Hours</th>
                                     <th class="laborSkillMixCol">Labor Skill Mix</th>
                                     <th class="includedCol">Included</th>
