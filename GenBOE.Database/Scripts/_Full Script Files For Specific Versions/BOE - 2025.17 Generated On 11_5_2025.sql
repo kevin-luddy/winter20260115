@@ -36107,9 +36107,28 @@ BEGIN
         JOIN @CLINs C ON X.CLINID = C.CLINID
         WHERE B.WorkspaceID = @WorkspaceID
           AND B.BOEStartDate IS NOT NULL
-          AND B.BOEEndDate IS NOT NULL;
+          AND B.BOEEndDate IS NOT NULL
+          AND C.CLINStartDate IS NOT NULL
+          AND C.CLINEndDate IS NOT NULL;
 
-        -- BOEs not tied to a CLIN, but tied to the Workspace
+        -- BOEs tied to a CLIN, but CLIN Start and End Date are NULL so checked against the Workspace dates
+        INSERT INTO @BOEs (BOEID, BOEStartDate, BOEEndDate, IsValid)
+        SELECT
+            B.BOEID,
+            CAST(B.BOEStartDate AS DATE),
+            CAST(B.BOEEndDate AS DATE),
+            CASE WHEN (CAST(B.BOEStartDate AS DATE) >= @ContractStartDate AND CAST(B.BOEEndDate AS DATE) <= @ContractEndDate)
+                 THEN 1 ELSE 0 END
+        FROM dbo.BOE B
+        JOIN dbo.WBS_CLIN_BOE_XREF X ON B.BOEID = X.BOEID
+        JOIN @CLINs C ON X.CLINID = C.CLINID
+        WHERE B.WorkspaceID = @WorkspaceID
+          AND B.BOEStartDate IS NOT NULL
+          AND B.BOEEndDate IS NOT NULL
+          AND C.CLINStartDate IS NULL
+          AND C.CLINEndDate IS NULL;
+
+        -- BOEs not tied to a CLIN, so checked against the Workspace dates
         INSERT INTO @BOEs (BOEID, BOEStartDate, BOEEndDate, IsValid)
         SELECT
             B.BOEID,
