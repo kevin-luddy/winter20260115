@@ -59,7 +59,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <returns></returns>
         [DbQuery]
-        virtual public ICollection<LocationDTO> GetAllLocations()
+        public virtual ICollection<LocationDTO> GetAllLocations()
         {
             ICollection<LocationDTO> locations = new Collection<LocationDTO>();
 
@@ -88,7 +88,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inLocationId"></param>
         /// <returns></returns>
         [DbQuery]
-        virtual public string GetLocationName(int inLocationId)
+        public virtual string GetLocationName(int inLocationId)
         {
             string LocationName = string.Empty;
 
@@ -107,7 +107,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <returns></returns>
         [DbQuery]
-        virtual public ICollection<int> GetAllLocationIds()
+        public virtual ICollection<int> GetAllLocationIds()
         {
             ICollection<int> LocationIds = new Collection<int>();
             using (GenBoeEntities gbe = new GenBoeEntities())

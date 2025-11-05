@@ -14,6 +14,7 @@ namespace GenBOE.Tests.DAL.Other
 	using GenBOE.ActionLogic.ControllerLogic;
 	using GenBOE.DataBridge.Common;
 	using GenBOE.DataBridge.DTO;
+	using GenBOE.DataBridge.DTO.SkillMixSummary;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using GenBOE.Tests.ActionLogic;
@@ -49,7 +50,7 @@ namespace GenBOE.Tests.DAL.Other
 		public void Init()
 		{
 			boeTaskElementDTODataLoader = new BoeTaskElementDTODataLoader(new ResourceTypeLoader(), new ResourceSpreadLoader(),
-				new OrdinaryVariableLoader(), new BoeTaskElementCustomFieldValueXREFLoader(), new LaborTypeCustomFieldValueXREFLoader(), new SkillMixDTOLoader(), new CommonDisclosureSMDTODataLoader());
+				new OrdinaryVariableLoader(), new BoeTaskElementCustomFieldValueXREFLoader(), new LaborTypeCustomFieldValueXREFLoader(), new SkillMixDTOLoader(), new SkillMixSummaryDTOLoader(), new CommonDisclosureSMDTODataLoader());
 			resourceLoader = new Mock<IResourceDTODataLoader>();
 			perfLoader = new Mock<IPerformingOrgDTODataLoader>();
 			perfListLoader = new Mock<IPerformingOrgListDTODataLoader>();

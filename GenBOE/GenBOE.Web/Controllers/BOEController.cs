@@ -679,6 +679,7 @@ namespace GenBOE.Web.Controllers
 			ViewData["WSPERFORGS"] = _BoeLaborControllerLogic.GetPerformingOrgs(ws);
 			ViewBag.WsClins = ws.Clins.Where(x => !x.ClinNumber.Equals("MULTI")).Select(x => new { ClinId = x.Id, ClinName = x.ClinString }).ToList();
 			ViewBag.WsWbss = ws.WbsElements.Where(x => !x.WbsNumber.Equals("MULTI")).Select(x => new { WbsId = x.Id, WbsName = x.WbsString }).ToList();
+			ViewData["EnableLmNavigator"] = Utilities.IsLmNavigatorRteLinkEnabledForSystem && ws.EnableLmNavigator;
 
 			// display when you are not a sub, the boe is not summary or multi & ODC items exist
 			ViewData["displayODCTab"] = !(IsSubContractor || boe.IsMultiClinWbs) && boe.OtherDirectCosts.Any();
@@ -807,6 +808,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace Shortname</param>
 		/// <param name="boeID">BOE ID</param>
 		/// <returns>ViewResult for Confidence Report Button</returns>
+		[ChildActionOnly]
 		public ViewResult DisplayConfidenceReportButton(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);

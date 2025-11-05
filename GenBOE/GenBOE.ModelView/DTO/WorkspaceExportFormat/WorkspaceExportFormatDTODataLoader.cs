@@ -32,7 +32,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="inWorkspaceId">the workspace id of interest</param>
 		/// <returns>the Ids of the export formats for this workspace</returns>
 		[DbQuery]
-		virtual public Collection<WorkspaceExportFormatNameDTO> GetWorkspaceExportFormatNamesForWorkspace(int inWorkspaceId)
+		public virtual Collection<WorkspaceExportFormatNameDTO> GetWorkspaceExportFormatNamesForWorkspace(int inWorkspaceId)
 		{
 			Collection<WorkspaceExportFormatNameDTO> toReturn = new Collection<WorkspaceExportFormatNameDTO>();
 
@@ -86,7 +86,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <returns>the Ids of the export formats known to the system</returns>
 		[DbQuery]
-		virtual public Collection<WorkspaceExportFormatNameDTO> GetAllWorkspaceExportFormatIds()
+		public virtual Collection<WorkspaceExportFormatNameDTO> GetAllWorkspaceExportFormatIds()
 		{
 			Collection<WorkspaceExportFormatNameDTO> toReturn = null;
 
@@ -195,7 +195,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="inExportFormatId">The export format id to filter workspaces on</param>
 		/// <returns>the workspace ids that can be assigned for a given export format id</returns>
 		[DbQuery(2)]
-		virtual public Collection<int> GetAvailableWorkspaceIdsForExportFormatId(int inExportFormatId)
+		public virtual Collection<int> GetAvailableWorkspaceIdsForExportFormatId(int inExportFormatId)
 		{
 			Collection<int> toReturn = null;
 
@@ -222,7 +222,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="inExportFormatId">The export format id to filter workspaces on</param>
 		/// <returns>the workspace ids that are already assigned for a given export format id</returns>
 		[DbQuery(2)]
-		virtual public Collection<int> GetAssignedWorkspaceIdsForExportTemplateId(int inExportFormatId)
+		public virtual Collection<int> GetAssignedWorkspaceIdsForExportTemplateId(int inExportFormatId)
 		{
 			Collection<int> toReturn = null;
 
@@ -250,7 +250,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="inExportFormatId">The export format id to filter workspaces on</param>
 		/// <returns>the workspace ids that are already assigned for a given export format id</returns>
 		[DbQuery]
-		virtual public Collection<int> GetWorkspaceIdsByExportTemplateId(int inExportFormatId)
+		public virtual Collection<int> GetWorkspaceIdsByExportTemplateId(int inExportFormatId)
 		{
 			Collection<int> toReturn = null;
 
@@ -307,7 +307,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="inWorkspaceIds">The workspaces to remove the associate for </param>
 		/// <param name="inTemplateIdForWorkspaces">The template whose associatiation is being removed</param>
-		virtual public void DeleteWorkspaceExportFormatPicklist(Collection<int> inWorkspaceIds, int inTemplateIdForWorkspaces)
+		public virtual void DeleteWorkspaceExportFormatPicklist(Collection<int> inWorkspaceIds, int inTemplateIdForWorkspaces)
 		{
 			if (inWorkspaceIds == null)
 			{
@@ -373,7 +373,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="inWorkspaceIds">The workspaces to associate the template to</param>
 		/// <param name="inTemplateIdForWorkspaces">The template being associated to the workspaces</param>
-		virtual public void InsertWorkspaceExportFormatPicklist(Collection<int> inWorkspaceIds, int inTemplateIdForWorkspaces)
+		public virtual void InsertWorkspaceExportFormatPicklist(Collection<int> inWorkspaceIds, int inTemplateIdForWorkspaces)
 		{
 			if (inWorkspaceIds == null)
 			{
@@ -400,7 +400,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="inTemplatesForWorkspaces">The templates being associated to the workspaces</param>
 		/// <param name="inWorkspaceId">The workspace to associate the templates to</param>
-		virtual public void InsertWorkspaceExportFormatsPickList(Collection<WorkspaceExportFormatNameDTO> inTemplatesForWorkspaces, int inWorkspaceId)
+		public virtual void InsertWorkspaceExportFormatsPickList(Collection<WorkspaceExportFormatNameDTO> inTemplatesForWorkspaces, int inWorkspaceId)
 		{
 			if (inTemplatesForWorkspaces == null)
 			{

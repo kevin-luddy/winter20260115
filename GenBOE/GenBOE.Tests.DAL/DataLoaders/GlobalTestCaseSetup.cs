@@ -8,7 +8,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
 {
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
+	using GenBOE.DataBridge.DTO.SkillMixSummary;
+	using GenBOE.Dtos;
     using GenBOE.Models;
     using IES.Common;
     using System;
@@ -1436,8 +1437,9 @@ namespace GenBOE.Tests.DAL.DataLoaders
             ILaborTypeCustomFieldValueXREFLoader laborTypeCustomFieldLoader = new LaborTypeCustomFieldValueXREFLoader();
 			SkillMixDTOLoader skillMixDTOLoader = new SkillMixDTOLoader();
 			CommonDisclosureSMDTODataLoader commonDisclosureLoader = new CommonDisclosureSMDTODataLoader();
+			SkillMixSummaryDTOLoader skillMixSummaryDTOLoader = new SkillMixSummaryDTOLoader();
 
-			BoeTaskElementDTODataLoader boeTaskElementLoader = new BoeTaskElementDTODataLoader(resourceTypeLoader, resourceSpreadLoader, ordinaryVariableLoader, taskElementCustomFieldLoader, laborTypeCustomFieldLoader, skillMixDTOLoader, commonDisclosureLoader);
+			BoeTaskElementDTODataLoader boeTaskElementLoader = new BoeTaskElementDTODataLoader(resourceTypeLoader, resourceSpreadLoader, ordinaryVariableLoader, taskElementCustomFieldLoader, laborTypeCustomFieldLoader, skillMixDTOLoader, skillMixSummaryDTOLoader, commonDisclosureLoader);
             BoeTaskElementDTO newElement = new BoeTaskElementDTO();
             newElement.Id = -1;
             newElement.BOETaskID = "B4";
@@ -1532,8 +1534,9 @@ namespace GenBOE.Tests.DAL.DataLoaders
             ILaborTypeCustomFieldValueXREFLoader laborTypeCustomFieldLoader = new LaborTypeCustomFieldValueXREFLoader();
 			SkillMixDTOLoader skillMixDTOLoader = new SkillMixDTOLoader();
 			CommonDisclosureSMDTODataLoader commonDisclosureLoader = new CommonDisclosureSMDTODataLoader();
+			SkillMixSummaryDTOLoader skillMixSummaryDTOLoader = new SkillMixSummaryDTOLoader();
 
-			BoeTaskElementDTODataLoader boeTaskElementLoader = new BoeTaskElementDTODataLoader(resourceTypeLoader, resourceSpreadLoader, ordinaryVariableLoader, taskElementCustomFieldLoader, laborTypeCustomFieldLoader, skillMixDTOLoader, commonDisclosureLoader);
+			BoeTaskElementDTODataLoader boeTaskElementLoader = new BoeTaskElementDTODataLoader(resourceTypeLoader, resourceSpreadLoader, ordinaryVariableLoader, taskElementCustomFieldLoader, laborTypeCustomFieldLoader, skillMixDTOLoader, skillMixSummaryDTOLoader, commonDisclosureLoader);
 
             createLaborType.Id = -1;
             //createLaborType.BOETaskElementID = GlobalTestCaseSetup.GlobalTaskElementID;
@@ -2167,12 +2170,12 @@ namespace GenBOE.Tests.DAL.DataLoaders
 				cdsm.SkillMixSummaryID = -1;
 				cdsm.Included = false;
 				cdsm.Rationale = rat;
-				cdsm.ProposedHours = 100;
+				cdsm.ProposedLegacyResource = 100;
 				cdsm.HistoricalHours = 100;
 				cdsm.ResourceHours = 100;
-				cdsm.BusinessResourceHours = 100;
-				cdsm.BOESkillMix = 100;
-				cdsm.LaborSkillMix = 100;
+				cdsm.ProposedBrc = 100;
+				cdsm.ProposedSkillMix = 100;
+				cdsm.HistoricalSkillMix = 100;
 				cdsm.ResourceID = resource;
 				cdsm.BusinessResourceID = businessResource;
 				cdsm.BOEID = GlobalBOEID;

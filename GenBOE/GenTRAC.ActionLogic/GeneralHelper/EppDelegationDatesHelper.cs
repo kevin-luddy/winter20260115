@@ -31,40 +31,25 @@ namespace GenTRAC.ActionLogic.GeneralHelper
         public EppDelegationDatesHelper()
         {
             // Property-Enum mapping
-            Add(EppDelegationAuthority.Corporate, nameof(ContractsDto.PlannedCorporateEppDate));
-            Add(EppDelegationAuthority.Corporate, nameof(ContractsDto.PlannedPreCorporateEppDate));
-            Add(EppDelegationAuthority.Space, nameof(ContractsDto.PlannedSpaceEppDate));
-            Add(EppDelegationAuthority.Space, nameof(ContractsDto.PlannedPreSpaceEppDate));
-            Add(EppDelegationAuthority.LoB, nameof(ContractsDto.PlannedLobEppDate));
-			Add(EppDelegationAuthority.MissionSegment, nameof(ContractsDto.PlannedMissionSegmentEppDate));
-            Add(EppDelegationAuthority.Program, nameof(ContractsDto.PlannedProgramEppDate));
-			Add(EppDelegationAuthority.Corporate, nameof(ContractsDto.ScheduledCorporateEppDate));
-            Add(EppDelegationAuthority.Corporate, nameof(ContractsDto.ScheduledPreCorporateEppDate));
-            Add(EppDelegationAuthority.Space, nameof(ContractsDto.ScheduledSpaceEppDate));
-            Add(EppDelegationAuthority.Space, nameof(ContractsDto.ScheduledPreSpaceEppDate));
-            Add(EppDelegationAuthority.LoB, nameof(ContractsDto.ScheduledLobEppDate));
-			Add(EppDelegationAuthority.MissionSegment, nameof(ContractsDto.ScheduledMissionSegmentEppDate));
-            Add(EppDelegationAuthority.Program, nameof(ContractsDto.ScheduledProgramEppDate));
+            Add(EppDelegationAuthority.Corporate, nameof(ContractsDto.ScheduledActualCorporateEppDate));
+            Add(EppDelegationAuthority.Corporate, nameof(ContractsDto.ScheduledActualPreCorporateEppDate));
+            Add(EppDelegationAuthority.Space, nameof(ContractsDto.ScheduledActualSpaceEppDate));
+            Add(EppDelegationAuthority.Space, nameof(ContractsDto.ScheduledActualPreSpaceEppDate));
+            Add(EppDelegationAuthority.LoB, nameof(ContractsDto.ScheduledActualLobEppDate));
+			Add(EppDelegationAuthority.MissionSegment, nameof(ContractsDto.ScheduledActualMissionSegmentEppDate));
+            Add(EppDelegationAuthority.Program, nameof(ContractsDto.ScheduledActualProgramEppDate));
 
 			// Property-Friendly name mapping
 			EppDateNames = new Dictionary<string, string>
             {
-                { nameof(ContractsDto.PlannedCorporateEppDate), "Planned Corporate EPP Date" },
-                { nameof(ContractsDto.PlannedPreCorporateEppDate), "Planned Pre-Corporate EPP Date" },
-                { nameof(ContractsDto.PlannedSpaceEppDate), "Planned Space EPP Date" },
-                { nameof(ContractsDto.PlannedPreSpaceEppDate), "Planned Pre-Space EPP Date" },
-                { nameof(ContractsDto.PlannedLobEppDate), "Planned Line of Business EPP Date" },
-				{ nameof(ContractsDto.PlannedMissionSegmentEppDate), "Planned Mission Segment EPP Date" },
-                { nameof(ContractsDto.PlannedProgramEppDate), "Planned Program EPP Date" },
-				{ nameof(ContractsDto.PlannedBidEppDate), "Planned Bid EPP Date" },
-				{ nameof(ContractsDto.ScheduledCorporateEppDate), "Scheduled Corporate EPP Date" },
-                { nameof(ContractsDto.ScheduledPreCorporateEppDate), "Scheduled Pre-Corporate EPP Date" },
-                { nameof(ContractsDto.ScheduledSpaceEppDate), "Scheduled Space EPP Date" },
-                { nameof(ContractsDto.ScheduledPreSpaceEppDate), "Scheduled Pre-Space EPP Date" },
-                { nameof(ContractsDto.ScheduledLobEppDate), "Scheduled Line of Business EPP Date" },
-				{ nameof(ContractsDto.ScheduledMissionSegmentEppDate), "Scheduled Mission Segment EPP Date" },
-                { nameof(ContractsDto.ScheduledProgramEppDate), "Scheduled Program EPP Date" },
-				{ nameof(ContractsDto.ScheduledBidEppDate), "Scheduled Bid EPP Date" }
+                { nameof(ContractsDto.ScheduledActualCorporateEppDate), "Scheduled/Actual Corporate EPP Date" },
+                { nameof(ContractsDto.ScheduledActualPreCorporateEppDate), "Scheduled/Actual Pre-Corporate EPP Date" },
+                { nameof(ContractsDto.ScheduledActualSpaceEppDate), "Scheduled/Actual Space EPP Date" },
+                { nameof(ContractsDto.ScheduledActualPreSpaceEppDate), "Scheduled/Actual Pre-Space EPP Date" },
+                { nameof(ContractsDto.ScheduledActualLobEppDate), "Scheduled/Actual Line of Business EPP Date" },
+				{ nameof(ContractsDto.ScheduledActualMissionSegmentEppDate), "Scheduled/Actual Mission Segment EPP Date" },
+                { nameof(ContractsDto.ScheduledActualProgramEppDate), "Scheduled/Actual Program EPP Date" },
+				{ nameof(ContractsDto.ScheduledActualBidEppDate), "Scheduled/Actual Bid EPP Date" }
 			};
         }
 
@@ -124,7 +109,7 @@ namespace GenTRAC.ActionLogic.GeneralHelper
             List<string> requiredDates = this.GetRequiredEppDatesForDelegation(EppDelegationAuthority.Corporate);
 
 			// Bid EPP date is never required, but if it is entered then it must be sequential so it's added here
-			requiredDates.Add(nameof(ContractsDto.PlannedBidEppDate));
+			requiredDates.Add(nameof(ContractsDto.ScheduledActualBidEppDate));
 
 			// now get a list of the date names that have actually been provided
 			List<string> givenDates = requiredDates.Where(x => dto.GetType().GetProperty(x).GetValue(dto, null) != null).ToList();
@@ -166,14 +151,9 @@ namespace GenTRAC.ActionLogic.GeneralHelper
 			if (!isNss)
 			{
 				// Mission Segment EPP Date is only required if the Proposal's LOB is National Security Space
-				if (requiredDates.Contains(nameof(ContractsDto.PlannedMissionSegmentEppDate)))
+				if (requiredDates.Contains(nameof(ContractsDto.ScheduledActualMissionSegmentEppDate)))
 				{
-					requiredDates.Remove(nameof(ContractsDto.PlannedMissionSegmentEppDate));
-				}
-
-				if (requiredDates.Contains(nameof(ContractsDto.ScheduledMissionSegmentEppDate)))
-				{
-					requiredDates.Remove(nameof(ContractsDto.ScheduledMissionSegmentEppDate));
+					requiredDates.Remove(nameof(ContractsDto.ScheduledActualMissionSegmentEppDate));
 				}
 			}
 

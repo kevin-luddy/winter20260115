@@ -27,7 +27,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <summary>
 		/// Global List Id
 		/// </summary>
-		virtual public int GlobalListID
+		public virtual int GlobalListID
 		{
 			get
 			{
@@ -46,7 +46,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="inResourceListID">resource list ID</param>
 		/// <returns>resource dtos</returns>
 		[DbQuery]
-		virtual public ICollection<ResourceDTO> GetByListId(int inResourceListID)
+		public virtual ICollection<ResourceDTO> GetByListId(int inResourceListID)
 		{
 			List<ResourceDTO> result = new List<ResourceDTO>();
 
@@ -108,7 +108,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="inResourceIDs">resource IDs</param>
 		/// <returns>resource data</returns>
 		[DbQuery]
-		virtual public ICollection<ResourceDTO> GetByIds(ICollection<int> inResourceIDs)
+		public virtual ICollection<ResourceDTO> GetByIds(ICollection<int> inResourceIDs)
 		{
 			if (inResourceIDs == null) { throw new ArgumentNullException(nameof(inResourceIDs)); }
 
@@ -151,7 +151,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="inResourceIDs">Resource IDs</param>
 		/// <returns>Collection of Resource Names</returns>
 		/// <exception cref="ArgumentNullException">Null exception on no resource IDs.</exception>
-		virtual public IList<string> GetResourceNamesByIds(IList<int> inResourceIDs)
+		public virtual IList<string> GetResourceNamesByIds(IList<int> inResourceIDs)
 		{
 			if (inResourceIDs == null) { throw new ArgumentNullException(nameof(inResourceIDs)); }
 
@@ -177,7 +177,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="inResourceListID">List Id</param>
 		/// <returns>Resource Dto</returns>
 		[DbQuery]
-		virtual public ResourceDTO GetByNameAndListId(string inResourceName, int inResourceListID)
+		public virtual ResourceDTO GetByNameAndListId(string inResourceName, int inResourceListID)
 		{
 			ResourceDTO result = null;
 
@@ -242,7 +242,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="inResourceListID">List Id</param>
 		/// <returns>Resource Dto</returns>
 		[DbQuery]
-		virtual public ResourceDTO GetByDescriptionAndListId(string inResourceDescription, int inResourceListID)
+		public virtual ResourceDTO GetByDescriptionAndListId(string inResourceDescription, int inResourceListID)
 		{
 			ResourceDTO result = null;
 
@@ -306,7 +306,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="inElementOfCostType"></param>
 		/// <returns></returns>
 		[DbQuery]
-		virtual public ICollection<ResourceDTO> GetByListIdAndElementOfCost(int inResourceListID, ICollection<ElementOfCostType> inElementOfCostTypes)
+		public virtual ICollection<ResourceDTO> GetByListIdAndElementOfCost(int inResourceListID, ICollection<ElementOfCostType> inElementOfCostTypes)
 		{
 			if (inElementOfCostTypes == null) { throw new ArgumentNullException(nameof(inElementOfCostTypes)); }
 
@@ -375,7 +375,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="resourceID">Resource Id</param>
 		/// <returns>Is resource name unique</returns>
 		[DbQuery]
-		virtual public bool IsResourceNameUnique(string resourceName, int resourceListID, int? resourceID)
+		public virtual bool IsResourceNameUnique(string resourceName, int resourceListID, int? resourceID)
 		{
 			bool alreadyExists = false;
 
@@ -419,7 +419,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="resourceID">Resource Id</param>
 		/// <returns>Is resource description unique</returns>
 		[DbQuery]
-		virtual public bool IsResourceDescriptionUnique(string resourceDesc, int resourceListID, int? resourceID)
+		public virtual bool IsResourceDescriptionUnique(string resourceDesc, int resourceListID, int? resourceID)
 		{
 			bool alreadyExists = false;
 
@@ -461,7 +461,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="inResourceListID">List Id</param>
 		/// <param name="inElementOfCostType">Element of Cost</param>
 		/// <returns>Resource Dtos</returns>
-		virtual public ICollection<ResourceDTO> GetByListIdAndElementOfCost(int inResourceListID, ElementOfCostType inElementOfCostType)
+		public virtual ICollection<ResourceDTO> GetByListIdAndElementOfCost(int inResourceListID, ElementOfCostType inElementOfCostType)
 		{
 			return this.GetByListIdAndElementOfCost(inResourceListID, new Collection<ElementOfCostType>() { inElementOfCostType });
 		}
@@ -470,7 +470,7 @@ namespace GenBOE.DataBridge.DTO
 		/// Get Global Resources
 		/// </summary>
 		/// <returns>Global Resources</returns>
-		virtual public ICollection<ResourceDTO> GetGlobalResources()
+		public virtual ICollection<ResourceDTO> GetGlobalResources()
 		{
 			return this.GetByListId(GLOBAL_LIST_ID);
 		}
@@ -480,7 +480,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="inResourceID">Resource Id</param>
 		/// <returns>Resource Dto</returns>
-		virtual public ResourceDTO GetById(int inResourceID)
+		public virtual ResourceDTO GetById(int inResourceID)
 		{
 			return this.GetByIds(new Collection<int>() { inResourceID }).FirstOrDefault();
 		}
@@ -493,7 +493,7 @@ namespace GenBOE.DataBridge.DTO
 		/// Save the system resources
 		/// </summary>
 		/// <param name="inSystemResources">the system Resources</param>
-		virtual public Dictionary<int, int> SaveSystemResources(ICollection<ResourceDTO> inSystemResources)
+		public virtual Dictionary<int, int> SaveSystemResources(ICollection<ResourceDTO> inSystemResources)
 		{
 			if (inSystemResources == null)
 			{
@@ -534,7 +534,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="inWorkspaceResources">workspace resources</param>
 		/// <returns></returns>
-		virtual public IDictionary<int, int> SaveWorkspaceResources(WorkspaceDTO inWorkspace, ICollection<ResourceDTO> inWorkspaceResources)
+		public virtual IDictionary<int, int> SaveWorkspaceResources(WorkspaceDTO inWorkspace, ICollection<ResourceDTO> inWorkspaceResources)
 		{
 
 			if (inWorkspaceResources == null)

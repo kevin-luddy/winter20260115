@@ -41,12 +41,12 @@
 			SkillMixSummaryDTO updateSkillMixSummary = new SkillMixSummaryDTO();
 			updateSkillMixSummary.Rationale = "Updated Rationale";
 			updateSkillMixSummary.Included = false;
-			updateSkillMixSummary.ProposedHours = 100;
+			updateSkillMixSummary.ProposedLegacyResource = 100;
 			updateSkillMixSummary.HistoricalHours = 100;
 			updateSkillMixSummary.ResourceHours = 100;
-			updateSkillMixSummary.BusinessResourceHours = 100;
-			updateSkillMixSummary.BOESkillMix = 100;
-			updateSkillMixSummary.LaborSkillMix = 100;
+			updateSkillMixSummary.ProposedBrc = 100;
+			updateSkillMixSummary.ProposedSkillMix = 100;
+			updateSkillMixSummary.HistoricalSkillMix = 100;
 			updateSkillMixSummary.ResourceID = "Resource";
 			updateSkillMixSummary.BusinessResourceID = "Business Resource";
 			updateSkillMixSummary.BOEID = GlobalTestCaseSetup.GlobalBOEID;

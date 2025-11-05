@@ -7,9 +7,9 @@
     </am:CreatedBy>
     <am:UpdatedBy>
       <am:Name>SSDTRS</am:Name>
-      <am:Version>17.14.36518.9</am:Version>
+      <am:Version>17.14.36603.0</am:Version>
     </am:UpdatedBy>
-    <am:LastModifiedTimestamp>2025-10-14T19:26:28.3097472Z</am:LastModifiedTimestamp>
+    <am:LastModifiedTimestamp>2025-10-30T18:31:13.9597415Z</am:LastModifiedTimestamp>
   </am:AuthoringMetadata>
   <AutoRefresh>0</AutoRefresh>
   <DataSources>
@@ -412,28 +412,28 @@
           <DataField>ContractsEppDelegationAuthority</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="ContractsPlannedProgramEppDate">
-          <DataField>ContractsPlannedProgramEppDate</DataField>
+        <Field Name="ContractsScheduledActualProgramEppDate">
+          <DataField>ContractsScheduledActualProgramEppDate</DataField>
           <rd:TypeName>System.DateTime</rd:TypeName>
         </Field>
-        <Field Name="ContractsPlannedLobEppDate">
-          <DataField>ContractsPlannedLobEppDate</DataField>
+        <Field Name="ContractsScheduledActualLobEppDate">
+          <DataField>ContractsScheduledActualLobEppDate</DataField>
           <rd:TypeName>System.DateTime</rd:TypeName>
         </Field>
-        <Field Name="ContractsPlannedPreSpaceEppDate">
-          <DataField>ContractsPlannedPreSpaceEppDate</DataField>
+        <Field Name="ContractsScheduledActualPreSpaceEppDate">
+          <DataField>ContractsScheduledActualPreSpaceEppDate</DataField>
           <rd:TypeName>System.DateTime</rd:TypeName>
         </Field>
-        <Field Name="ContractsPlannedSpaceEppDate">
-          <DataField>ContractsPlannedSpaceEppDate</DataField>
+        <Field Name="ContractsScheduledActualSpaceEppDate">
+          <DataField>ContractsScheduledActualSpaceEppDate</DataField>
           <rd:TypeName>System.DateTime</rd:TypeName>
         </Field>
-        <Field Name="ContractsPlannedPreCorporateEppDate">
-          <DataField>ContractsPlannedPreCorporateEppDate</DataField>
+        <Field Name="ContractsScheduledActualPreCorporateEppDate">
+          <DataField>ContractsScheduledActualPreCorporateEppDate</DataField>
           <rd:TypeName>System.DateTime</rd:TypeName>
         </Field>
-        <Field Name="ContractsPlannedCorporateEppDate">
-          <DataField>ContractsPlannedCorporateEppDate</DataField>
+        <Field Name="ContractsScheduledActualCorporateEppDate">
+          <DataField>ContractsScheduledActualCorporateEppDate</DataField>
           <rd:TypeName>System.DateTime</rd:TypeName>
         </Field>
         <Field Name="ContractsEppRosDelegationNotes">
@@ -460,12 +460,12 @@
           <DataField>CostThroughCom</DataField>
           <rd:TypeName>System.Int64</rd:TypeName>
         </Field>
-        <Field Name="ContractsPlannedBidEppDate">
-          <DataField>ContractsPlannedBidEppDate</DataField>
+        <Field Name="ContractsScheduledActualBidEppDate">
+          <DataField>ContractsScheduledActualBidEppDate</DataField>
           <rd:TypeName>System.DateTime</rd:TypeName>
         </Field>
-        <Field Name="ContractsPlannedMissionSegmentEppDate">
-          <DataField>ContractsPlannedMissionSegmentEppDate</DataField>
+        <Field Name="ContractsScheduledActualMissionSegmentEppDate">
+          <DataField>ContractsScheduledActualMissionSegmentEppDate</DataField>
           <rd:TypeName>System.DateTime</rd:TypeName>
         </Field>
         <Field Name="COM">
@@ -532,36 +532,36 @@
           <DataField>NegotiatedInsurance</DataField>
           <rd:UserDefined>true</rd:UserDefined>
         </Field>
-        <Field Name="ContractsScheduledBidEppDate">
-          <DataField>ContractsScheduledBidEppDate</DataField>
+        <Field Name="ContractsPlannedBidEppDate">
+          <DataField>ContractsPlannedBidEppDate</DataField>
           <rd:UserDefined>true</rd:UserDefined>
         </Field>
-        <Field Name="ContractsScheduledMissionSegmentEppDate">
-          <DataField>ContractsScheduledMissionSegmentEppDate</DataField>
+        <Field Name="ContractsPlannedMissionSegmentEppDate">
+          <DataField>ContractsPlannedMissionSegmentEppDate</DataField>
           <rd:UserDefined>true</rd:UserDefined>
         </Field>
-        <Field Name="ContractsScheduledProgramEppDate">
-          <DataField>ContractsScheduledProgramEppDate</DataField>
+        <Field Name="ContractsPlannedProgramEppDate">
+          <DataField>ContractsPlannedProgramEppDate</DataField>
           <rd:UserDefined>true</rd:UserDefined>
         </Field>
-        <Field Name="ContractsScheduledLobEppDate">
-          <DataField>ContractsScheduledLobEppDate</DataField>
+        <Field Name="ContractsPlannedLobEppDate">
+          <DataField>ContractsPlannedLobEppDate</DataField>
           <rd:UserDefined>true</rd:UserDefined>
         </Field>
-        <Field Name="ContractsScheduledPreSpaceEppDate">
-          <DataField>ContractsScheduledPreSpaceEppDate</DataField>
+        <Field Name="ContractsPlannedPreSpaceEppDate">
+          <DataField>ContractsPlannedPreSpaceEppDate</DataField>
           <rd:UserDefined>true</rd:UserDefined>
         </Field>
-        <Field Name="ContractsScheduledSpaceEppDate">
-          <DataField>ContractsScheduledSpaceEppDate</DataField>
+        <Field Name="ContractsPlannedSpaceEppDate">
+          <DataField>ContractsPlannedSpaceEppDate</DataField>
           <rd:UserDefined>true</rd:UserDefined>
         </Field>
-        <Field Name="ContractsScheduledPreCorporateEppDate">
-          <DataField>ContractsScheduledPreCorporateEppDate</DataField>
+        <Field Name="ContractsPlannedPreCorporateEppDate">
+          <DataField>ContractsPlannedPreCorporateEppDate</DataField>
           <rd:UserDefined>true</rd:UserDefined>
         </Field>
-        <Field Name="ContractsScheduledCorporateEppDate">
-          <DataField>ContractsScheduledCorporateEppDate</DataField>
+        <Field Name="ContractsPlannedCorporateEppDate">
+          <DataField>ContractsPlannedCorporateEppDate</DataField>
           <rd:UserDefined>true</rd:UserDefined>
         </Field>
       </Fields>
@@ -924,49 +924,49 @@
                   <Width>1in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1in</Width>
+                  <Width>1.5in</Width>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>1in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1in</Width>
+                  <Width>1.47917in</Width>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>1in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1in</Width>
+                  <Width>1.46875in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.13542in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.47917in</Width>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>1in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1in</Width>
+                  <Width>1.52083in</Width>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>1in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1in</Width>
+                  <Width>1.50834in</Width>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>1in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.09167in</Width>
+                  <Width>1.53541in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1in</Width>
+                  <Width>1.10417in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.06666in</Width>
-                </TablixColumn>
-                <TablixColumn>
-                  <Width>1in</Width>
-                </TablixColumn>
-                <TablixColumn>
-                  <Width>1.08333in</Width>
+                  <Width>1.51041in</Width>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>1in</Width>
@@ -4471,7 +4471,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Planned Bid EPP Date</Value>
+                                  <Value>Scheduled/Actual Bid EPP Date</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -4509,7 +4509,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Scheduled Bid EPP Date</Value>
+                                  <Value>Planned Bid EPP Date</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -4547,7 +4547,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Planned Program EPP Date</Value>
+                                  <Value>Scheduled/Actual Program EPP Date</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -4585,7 +4585,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Scheduled Program EPP Date</Value>
+                                  <Value>Planned Program EPP Date</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -4623,7 +4623,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Planned Mission Segment EPP Date</Value>
+                                  <Value>Scheduled/Actual Mission Segment EPP Date</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -4661,7 +4661,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Scheduled Mission Segment EPP Date</Value>
+                                  <Value>Planned Mission Segment EPP Date</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -4699,7 +4699,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Planned LOB EPP Date</Value>
+                                  <Value>Scheduled/Actual LOB EPP Date</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -4737,7 +4737,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Scheduled LOB EPP Date</Value>
+                                  <Value>Planned LOB EPP Date</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -4775,7 +4775,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Planned Pre-Space EPP Date</Value>
+                                  <Value>Scheduled/Actual Pre-Space EPP Date</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -4813,7 +4813,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Scheduled Pre-Space EPP Date</Value>
+                                  <Value>Planned Pre-Space EPP Date</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -4851,7 +4851,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Planned Space EPP Date</Value>
+                                  <Value>Scheduled/Actual Space EPP Date</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -4889,7 +4889,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Scheduled Space EPP Date</Value>
+                                  <Value>Planned Space EPP Date</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -4927,7 +4927,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Planned Pre-Corporate EPP Date</Value>
+                                  <Value>Scheduled/Actual Pre-Corporate EPP Date</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -4965,7 +4965,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Scheduled  Pre-Corporate EPP Date</Value>
+                                  <Value>Planned Pre-Corporate EPP Date</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -5003,7 +5003,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Planned Corporate EPP Date</Value>
+                                  <Value>Scheduled/Actual Corporate EPP Date</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -5041,7 +5041,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Scheduled Corporate EPP Date</Value>
+                                  <Value>Planned Corporate EPP Date</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -8429,6 +8429,39 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
+                        <Textbox Name="ContractsScheduledActualBidEppDate">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!ContractsScheduledActualBidEppDate.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <Format>d</Format>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>ContractsScheduledActualBidEppDate</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>DimGray</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
                         <Textbox Name="ContractsPlannedBidEppDate">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
@@ -8462,14 +8495,14 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="ContractsScheduledBidEppDate">
+                        <Textbox Name="ContractsScheduledActualProgramEppDate">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!ContractsScheduledBidEppDate.Value</Value>
+                                  <Value>=Fields!ContractsScheduledActualProgramEppDate.Value</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <Format>d</Format>
@@ -8479,7 +8512,7 @@
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>ContractsScheduledBidEppDate</rd:DefaultName>
+                          <rd:DefaultName>ContractsScheduledActualProgramEppDate</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>DimGray</Color>
@@ -8528,14 +8561,14 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="ContractsScheduledProgramEppDate">
+                        <Textbox Name="ContractsScheduledActualMissionSegmentEppDate">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!ContractsScheduledProgramEppDate.Value</Value>
+                                  <Value>=Fields!ContractsScheduledActualMissionSegmentEppDate.Value</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <Format>d</Format>
@@ -8545,7 +8578,7 @@
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>ContractsScheduledProgramEppDate</rd:DefaultName>
+                          <rd:DefaultName>ContractsScheduledActualMissionSegmentEppDate</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>DimGray</Color>
@@ -8594,14 +8627,14 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="ContractsScheduledMissionSegmentEppDate">
+                        <Textbox Name="ContractsScheduledActualLobEppDate">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!ContractsScheduledMissionSegmentEppDate.Value</Value>
+                                  <Value>=Fields!ContractsScheduledActualLobEppDate.Value</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <Format>d</Format>
@@ -8611,7 +8644,7 @@
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>ContractsScheduledMissionSegmentEppDate</rd:DefaultName>
+                          <rd:DefaultName>ContractsScheduledActualLobEppDate</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>DimGray</Color>
@@ -8660,14 +8693,14 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="ContractsScheduledLobEppDate">
+                        <Textbox Name="ContractsScheduledActualPreSpaceEppDate">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!ContractsScheduledLobEppDate.Value</Value>
+                                  <Value>=Fields!ContractsScheduledActualPreSpaceEppDate.Value</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <Format>d</Format>
@@ -8677,7 +8710,7 @@
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>ContractsScheduledLobEppDate</rd:DefaultName>
+                          <rd:DefaultName>ContractsScheduledActualPreSpaceEppDate</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>DimGray</Color>
@@ -8726,14 +8759,14 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="ContractsScheduledPreSpaceEppDate">
+                        <Textbox Name="ContractsScheduledActualSpaceEppDate">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!ContractsScheduledPreSpaceEppDate.Value</Value>
+                                  <Value>=Fields!ContractsScheduledActualSpaceEppDate.Value</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <Format>d</Format>
@@ -8743,7 +8776,7 @@
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>ContractsScheduledPreSpaceEppDate</rd:DefaultName>
+                          <rd:DefaultName>ContractsScheduledActualSpaceEppDate</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>DimGray</Color>
@@ -8792,14 +8825,14 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="ContractsScheduledSpaceEppDate">
+                        <Textbox Name="ContractsScheduledActualPreCorporateEppDate">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!ContractsScheduledSpaceEppDate.Value</Value>
+                                  <Value>=Fields!ContractsScheduledActualPreCorporateEppDate.Value</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <Format>d</Format>
@@ -8809,7 +8842,7 @@
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>ContractsScheduledSpaceEppDate</rd:DefaultName>
+                          <rd:DefaultName>ContractsScheduledActualPreCorporateEppDate</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>DimGray</Color>
@@ -8858,14 +8891,14 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="ContractsScheduledPreCorporateEppDate">
+                        <Textbox Name="ContractsScheduledActualCorporateEppDate">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!ContractsScheduledPreCorporateEppDate.Value</Value>
+                                  <Value>=Fields!ContractsScheduledActualCorporateEppDate.Value</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <Format>d</Format>
@@ -8875,7 +8908,7 @@
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>ContractsScheduledPreCorporateEppDate</rd:DefaultName>
+                          <rd:DefaultName>ContractsScheduledActualCorporateEppDate</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>DimGray</Color>
@@ -8920,39 +8953,7 @@
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="ContractsScheduledCorporateEppDate">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>=Fields!ContractsScheduledCorporateEppDate.Value</Value>
-                                  <Style>
-                                    <FontFamily>Tahoma</FontFamily>
-                                    <Format>d</Format>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>ContractsScheduledCorporateEppDate</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>DimGray</Color>
-                              <Style>Solid</Style>
-                            </Border>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
+                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
@@ -9429,7 +9430,7 @@
             <DataSetName>createProposalLogReport_StoredProcedure</DataSetName>
             <Top>2.705in</Top>
             <Height>1.22167in</Height>
-            <Width>155.15005in</Width>
+            <Width>159.15005in</Width>
             <Style />
           </Tablix>
           <Textbox Name="textbox1">
@@ -9730,7 +9731,7 @@
         <Height>3.92667in</Height>
         <Style />
       </Body>
-      <Width>156.47297in</Width>
+      <Width>159.15005in</Width>
       <Page>
         <LeftMargin>1in</LeftMargin>
         <RightMargin>1in</RightMargin>

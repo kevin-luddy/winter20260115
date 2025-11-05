@@ -4320,10 +4320,10 @@ namespace GenBOE.Tests.ActionLogic
 		}
 
 		/// <summary>
-		/// Test Null Current Resource with included set to 'Yes'
+		/// Test Null Proposed Resource with included set to 'Yes'
 		/// </summary>
 		[TestMethod]
-		public void ValidateSkillMix_NullCurrentResource()
+		public void ValidateSkillMix_NullProposedResource()
 		{
 			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
 			{
@@ -4341,7 +4341,7 @@ namespace GenBOE.Tests.ActionLogic
 			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
-			Assert.IsTrue(messages.First().Contains("Included cannot be set to 'Yes' for an empty/null Current Resource"));
+			Assert.IsTrue(messages.First().Contains("Included cannot be set to 'Yes' for an empty/null Proposed Resource"));
 		}
 
 		/// <summary>
@@ -4868,6 +4868,328 @@ namespace GenBOE.Tests.ActionLogic
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
 			Assert.IsTrue(messages.First().Contains("The Rationale field") && messages.First().Contains("required"));
+		}
+
+		/// <summary>
+		/// Test BOE Skill Mix missing
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMixSummary_BoeSkillMixMissing()
+		{
+			BoeTaskElementDTO taskElement = new BoeTaskElementDTO();
+			taskElement.SkillMixSummaryTable = new List<SkillMixSummaryModelView>
+			{
+				new SkillMixSummaryModelView {
+					ResourceID = "HISTORICAL_R",
+					HistoricalHours = 100,
+					BusinessResourceID = null,
+					ResourceHours = 100,
+					Included = true,
+					IsUserInput = true,
+					Rationale = "Rationale1",
+					ProposedSkillMix = null
+				}
+			};
+			taskElement.taskElementLabors = new Collection<ResourceTypeDto>
+			{
+				new ResourceTypeDto
+				{
+					Updateable = UpdateType.Upsert,
+				}
+			};
+			taskElement.MOQTotalRelevantHours = 100;
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixSummaryTable(taskElement, true, true);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains("BOE Skill Mix is missing"));
+		}
+
+		/// <summary>
+		/// Test at least one resource included
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMixSummary_MissingResource()
+		{
+			BoeTaskElementDTO taskElement = new BoeTaskElementDTO()
+			{
+				SkillMixSummaryTable = new List<SkillMixSummaryModelView>
+				{
+					new SkillMixSummaryModelView {
+						ResourceID = "HISTORICAL_R",
+						HistoricalHours = 100,
+						BusinessResourceID = null,
+						Included = false,
+						IsUserInput = true,
+						Rationale = "Rationale1",
+						ProposedSkillMix = 0
+					}
+				},
+				taskElementLabors = new Collection<ResourceTypeDto>
+				{
+					new ResourceTypeDto
+					{
+						Updateable = UpdateType.Upsert,
+					}
+				},
+				MOQTotalRelevantHours = 100
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixSummaryTable(taskElement, true, true);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains("At least one Resource has to be included"));
+		}
+
+		/// <summary>
+		/// Test at least one resource included not validated with no resources
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMixSummary_MissingResourceNoResources()
+		{
+			BoeTaskElementDTO taskElement = new BoeTaskElementDTO()
+			{
+				SkillMixSummaryTable = new List<SkillMixSummaryModelView>
+				{
+					new SkillMixSummaryModelView {
+						ResourceID = "HISTORICAL_R",
+					HistoricalHours = 100,
+					BusinessResourceID = null,
+					Included = false,
+					IsUserInput = true,
+					Rationale = "Rationale1",
+					ProposedSkillMix = 0
+					}
+				},
+				taskElementLabors = new Collection<ResourceTypeDto>(),
+				MOQTotalRelevantHours = 100
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixSummaryTable(taskElement, true, true);
+			Assert.IsNotNull(messages);
+			Assert.IsFalse(messages.Any());
+		}
+
+		/// <summary>
+		/// Test Boe Skill Mix total must be 0 or 100
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMixSummary_BoeSkillMixTotal()
+		{
+			BoeTaskElementDTO taskElement = new BoeTaskElementDTO()
+			{
+				SkillMixSummaryTable = new List<SkillMixSummaryModelView>
+				{
+					new SkillMixSummaryModelView {
+						ResourceID = "HISTORICAL_R",
+						HistoricalHours = 100,
+						BusinessResourceID = null,
+						Included = true,
+						IsUserInput = true,
+						Rationale = "Rationale1",
+						ProposedSkillMix = 50
+					}
+				},
+				taskElementLabors = new Collection<ResourceTypeDto>
+				{
+					new ResourceTypeDto
+					{
+						Updateable = UpdateType.Upsert,
+					}
+				},
+				MOQTotalRelevantHours = 100
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixSummaryTable(taskElement, true, true);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains("BOE Skill Mix total must be either 0% or 100%"));
+		}
+
+		/// <summary>
+		/// Test each BRC unique for each resource
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMixSummary_EachBrcUniqueForResource()
+		{
+			BoeTaskElementDTO taskElement = new BoeTaskElementDTO()
+			{
+				SkillMixSummaryTable = new List<SkillMixSummaryModelView>
+				{
+					new SkillMixSummaryModelView {
+						ResourceID = "HISTORICAL_R",
+						HistoricalHours = 100,
+						BusinessResourceID = "NEW",
+						Included = true,
+						IsUserInput = true,
+						Rationale = "Rationale1",
+						ProposedSkillMix = 50
+					},
+					new SkillMixSummaryModelView {
+						ResourceID = "HISTORICAL_R",
+						HistoricalHours = 100,
+						BusinessResourceID = "NEW",
+						Included = true,
+						IsUserInput = true,
+						Rationale = "Rationale2",
+						ProposedSkillMix = 50
+					}
+				},
+				taskElementLabors = new Collection<ResourceTypeDto>
+				{
+					new ResourceTypeDto
+					{
+						Updateable = UpdateType.Upsert,
+					}
+				},
+				MOQTotalRelevantHours = 200
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixSummaryTable(taskElement, true, true);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains("Each BRC must be unique for Resource"));
+		}
+
+		/// <summary>
+		/// Test Rationale being empty on save (valid)
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMixSummary_RationaleEmptyOnSave()
+		{
+			BoeTaskElementDTO taskElement = new BoeTaskElementDTO()
+			{
+				SkillMixSummaryTable = new List<SkillMixSummaryModelView>
+				{
+					new SkillMixSummaryModelView {
+					ResourceID = "HISTORICAL_R",
+					HistoricalHours = 100,
+					BusinessResourceID = null,
+					Included = true,
+					IsUserInput = true,
+					Rationale = string.Empty,
+					ProposedSkillMix = 100
+					}
+				},
+				taskElementLabors = new Collection<ResourceTypeDto>
+				{
+					new ResourceTypeDto
+					{
+						Updateable = UpdateType.Upsert,
+					}
+				},
+				MOQTotalRelevantHours = 100
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixSummaryTable(taskElement, true, false);
+			Assert.IsNotNull(messages);
+			Assert.IsTrue(messages.None());
+		}
+
+		/// <summary>
+		/// Test Rationale being empty on validate button click (invalid)
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMixSummary_RationaleEmptyOnValidate()
+		{
+			BoeTaskElementDTO taskElement = new BoeTaskElementDTO()
+			{
+				SkillMixSummaryTable = new List<SkillMixSummaryModelView>
+				{
+					new SkillMixSummaryModelView {
+					ResourceID = "HISTORICAL_R",
+					HistoricalHours = 100,
+					BusinessResourceID = null,
+					Included = true,
+					IsUserInput = true,
+					Rationale = string.Empty,
+					ProposedSkillMix = 100
+					}
+				},
+				taskElementLabors = new Collection<ResourceTypeDto>
+				{
+					new ResourceTypeDto
+					{
+						Updateable = UpdateType.Upsert,
+					}
+				},
+				MOQTotalRelevantHours = 100
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixSummaryTable(taskElement, true, true);
+			Assert.IsNotNull(messages);
+			Assert.AreEqual(1, messages.Count);
+			Assert.IsTrue(messages.First().Contains("The Rationale field") && messages.First().Contains("required"));
+		}
+
+		/// <summary>
+		/// Test Total_Historical_Hours_not_matching_relevant_hours when SAP connection is enabled
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMixSummary_Total_Historical_Hours_not_matching_relevant_hours()
+		{
+			BoeTaskElementDTO taskElement = new BoeTaskElementDTO()
+			{
+				SkillMixSummaryTable = new List<SkillMixSummaryModelView>
+				{
+					new SkillMixSummaryModelView {
+					ResourceID = "HISTORICAL_R",
+					HistoricalHours = 100,
+					BusinessResourceID = null,
+					Included = true,
+					IsUserInput = true,
+					Rationale = "Rationale1",
+					ProposedSkillMix = 100
+					}
+				},
+				taskElementLabors = new Collection<ResourceTypeDto>
+				{
+					new ResourceTypeDto
+					{
+						Updateable = UpdateType.Upsert,
+					}
+				},
+				MOQTotalRelevantHours = 50
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixSummaryTable(taskElement, true, false);
+			Assert.IsNotNull(messages);
+			Assert.IsTrue(messages.Contains("Total Historical Hours in Skill Mix Summary Table do not match the sum of the Total Relevant Hours."));
+		}
+
+		/// <summary>
+		/// Test Total_Historical_Hours_not_matching_relevant_hours when SAP connection is not enabled
+		/// </summary>
+		[TestMethod]
+		public void ValidateSkillMixSummary_Total_Historical_Hours_not_matching_relevant_hours_SapConnectionNotEnabled()
+		{
+			BoeTaskElementDTO taskElement = new BoeTaskElementDTO()
+			{
+				SkillMixSummaryTable = new List<SkillMixSummaryModelView>
+				{
+					new SkillMixSummaryModelView {
+					ResourceID = "HISTORICAL_R",
+					HistoricalHours = 100,
+					BusinessResourceID = null,
+					Included = true,
+					IsUserInput = true,
+					Rationale = "Rationale1",
+					ProposedSkillMix = 100
+					}
+				},
+				taskElementLabors = new Collection<ResourceTypeDto>
+				{
+					new ResourceTypeDto
+					{
+						Updateable = UpdateType.Upsert,
+					}
+				},
+				MOQTotalRelevantHours = 50
+			};
+
+			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixSummaryTable(taskElement, false, false);
+			Assert.IsNotNull(messages);
+			Assert.IsTrue(messages.None());
 		}
 
 		/// <summary>

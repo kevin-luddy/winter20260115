@@ -319,7 +319,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		{
 			// Create the data validation dropdowns for custom fields
 			uint startDataRowIndex = 2;
-			uint endDataRowIndex = (uint)(laborResourcesCount + 11); // all of the data rows and ten extra
+			uint endDataRowIndex = (uint)(laborResourcesCount + ImportExportConstants.LABOR_TYPES_DROPDOWN_VALIDATION_OFFSET); // all of the data rows and 100 extra for offset.
 			int customFieldOffset = 1;
 			int performingOrgCellColumnOffset = ImportExportConstants.RESOURCETYPE_PERFORG_CELL_COLUMN_OFFSET;
 			

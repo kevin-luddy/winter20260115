@@ -966,33 +966,23 @@
                                     </div>
                         <%  }  %>
                     <!-- Skill Mix Table -->
-                    <div class="form-label">
-                        <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-                            {  %>
-                                    Legacy Skill Mix Table (Thru 2028)
-                                    <div class="help-icon" data-ng-click="openHelp('SpaceLegacySkillMixTable');"></div>
-                        <%  }  %>
-                        <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-                            {  %>
-                                    Current Skill Mix Table
-                                    <div class="help-icon" data-ng-click="openHelp('RMSCurrentSkillMixTable');"></div>
-                        <%  }  %>
+                    <div class="form-label" data-ng-show="!ManageTaskModel.IsSpace">
+                        Current Skill Mix Table
+                        <div class="help-icon" data-ng-click="openHelp('RMSCurrentSkillMixTable');"></div>
                     </div>
-                    <div class="SkillMixTable skillMixTable">
+                    <div class="SkillMixTable skillMixTable" data-ng-show="!ManageTaskModel.IsSpace">
 						<table name="currentSkillMix" class="grid editable" style="width: 100%;">
                             <thead>
                                 <tr>
                                     <th class="resourceCol">Resource</th>
-                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="currentResourceCol">Current Resource</th>
+                                    <th class="ProposedResourceCol">Proposed Resource</th>
                                     <th class="historicalHoursCol">Historical Hours</th>
-                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="laborSkillMixCol">Labor Skill Mix</th>
-                                    <th data-ng-if="ManageTaskModel.IsSpace" class="historicalSkillMixCol">Historical Skill Mix</th>
-                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="includedCol">Included</th>
-                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="boeSkillMixCol">BOE Skill Mix</th>
-                                    <th data-ng-if="ManageTaskModel.IsSpace" class="proposedSkillMixCol">Proposed Skill Mix</th>
+                                    <th class="laborSkillMixCol">Labor Skill Mix</th>
+                                    <th class="includedCol">Included</th>
+                                    <th class="boeSkillMixCol">BOE Skill Mix</th>
                                     <th class="proposedHoursCol">Proposed Hours</th>
                                     <th>Rationale**</th>
-                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="rmsButtonCol"></th>
+                                    <th class="rmsButtonCol"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1000,8 +990,8 @@
                                 <tr ng-repeat="row in skillMixRationale.data.SkillMixRows">
                                     <td data-ng-if="!isSkillMixManual()">{{row.ResourceOld}}</td>
                                     <td data-ng-if="isSkillMixManual()" class="bootstrap"><input type="text" data-ng-blur="refreshSkillMixTables()" class="form-control" data-ng-model="row.ResourceOld" style="width: 100%; height: 14px;" maxlength="20" /></td>
-                                    <td data-ng-if="!ManageTaskModel.IsSpace">
-                                        <!-- Select for Current Resource ID will change the Included column and IsUserInput backend value. -->
+                                    <td>
+                                        <!-- Select for Proposed Resource ID will change the Included column and IsUserInput backend value. -->
                                         <select
                                             data-ng-options="option for option in skillMixRationaleLaborTypeSelections track by option"
                                             ng-model="row.ResourceNew"
@@ -1011,7 +1001,7 @@
                                     <td data-ng-if="!isSkillMixManual()" style="text-align: right">{{row.HistoricalHours | number:2}}</td>
                                     <td data-ng-if="isSkillMixManual()" style="text-align: right"><input type="number" data-ng-blur="setDirty()" data-ng-model="row.HistoricalHours" step="any" style="width: 100%; height: 14px;" /></td>
                                     <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
-                                    <td data-ng-if="!ManageTaskModel.IsSpace">{{row.Included | yesNo}}</td>
+                                    <td>{{row.Included | yesNo}}</td>
                                     <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{row.ProposedHours}}</td>
                                     <td>
@@ -1020,7 +1010,7 @@
                                         </div>
                                     </td>
                                     <!-- Action Buttons for adding (+) and deleting (-) rows. -->
-                                    <td data-ng-if="!ManageTaskModel.IsSpace">
+                                    <td>
                                         <button ng-click="addSkillMixRow($index)" ng-show="showSkillMixAddButton(row.ResourceNew)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">+</button>
                                         <button ng-click="deleteSkillMixRow($index)" ng-show="showSkillMixDeleteButton(row.ResourceOld)" style="width: 18px; height: 18px; font-size: 12px; padding: 0; margin: 0; display: inline-block; vertical-align: top;">-</button>
                                     </td>
@@ -1028,50 +1018,35 @@
                                 <!-- Display the Skill Mix Totals row. -->
                                 <tr>
                                     <td>Totals</td>
-                                    <td data-ng-if="!ManageTaskModel.IsSpace"></td>
+                                    <td></td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.LaborSkillMix | number:1}}%</td>
-                                    <td data-ng-if="!ManageTaskModel.IsSpace"></td>
+                                    <td ></td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.BoeSkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{skillMixRationale.data.SkillMixTotals.ProposedHours}}</td>
                                     <td></td>
-                                    <td data-ng-if="!ManageTaskModel.IsSpace"></td>
+                                    <td></td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
 					
                     <!-- Common Disclosure Skill Mix Table -->
-                    <div class="form-label" data-ng-show="IsCommonDisclosureEnabled">
+                    <div class="form-label" data-ng-show="IsCommonDisclosureEnabled && !ManageTaskModel.IsSpace">
                         LM Enterprise Skill Mix Table
-                        <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-							{  %>
-                                   (2029+) <div class="help-icon" data-ng-click="openHelp('SpaceLMEnterpriseSkillMixTable');"></div>
-                        <%  }  %>
-                        <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-                            {  %>
-                                    <div class="help-icon" data-ng-click="openHelp('RMSLMEnterpriseSkillMixTable');"></div>
-                        <%  }  %>
+                        <div class="help-icon" data-ng-click="openHelp('RMSLMEnterpriseSkillMixTable');"></div>
                     </div>
-                    <div class="SkillMixTable skillMixTable" data-ng-show="IsCommonDisclosureEnabled">
+                    <div class="SkillMixTable skillMixTable" data-ng-show="IsCommonDisclosureEnabled && !ManageTaskModel.IsSpace">
                         <table name="currentSkillMix" class="grid editable" style="width: 100%;">
                             <thead>
                                 <tr>
                                     <th class="resourceCol">Resource</th>
                                     <th class="brcCol">Business Resource Code</th>
                                     <th class="historicalHoursCol">Historical Hours</th>
-                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="laborSkillMixCol">Labor Skill Mix</th>
-                                    <th data-ng-if="ManageTaskModel.IsSpace" class="historicalSkillMixCol">Historical Skill Mix</th>
-                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="includedCol">Included</th>
-                                    <th data-ng-if="!ManageTaskModel.IsSpace" class="boeSkillMixCol">BOE Skill Mix</th>
-                                    <th data-ng-if="ManageTaskModel.IsSpace" class="proposedSkillMixCol">Proposed Skill Mix</th>
+                                    <th class="laborSkillMixCol">Labor Skill Mix</th>
+                                    <th class="includedCol">Included</th>
+                                    <th class="boeSkillMixCol">BOE Skill Mix</th>
                                     <th class="proposedHoursCol">Proposed Hours</th>
-                                    <!-- UCOT Hours is Space only -->
-                                    <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-                                    {  %>
-                                        <th class="ucotCol">UCOT Hours</th>
-                                        <th class="ucotGrandTotalCol">Grand Total Hours</th>
-                                    <% } %>
                                     <th>Rationale**</th>
                                 </tr>
                             </thead>
@@ -1083,14 +1058,9 @@
                                     <td data-ng-if="!isSkillMixManual()" style="text-align: right">{{row.HistoricalHours | number:2}}</td>
                                     <td data-ng-if="isSkillMixManual()" style="text-align: right"><input type="number" data-ng-model="row.HistoricalHours" step="any" style="width: 100%; height: 14px;" /></td>
                                     <td style="text-align: right">{{row.LaborSkillMix | number:1}}%</td>
-                                    <td data-ng-if="!ManageTaskModel.IsSpace">{{row.Included | yesNo}}</td>
+                                    <td>{{row.Included | yesNo}}</td>
                                     <td style="text-align: right">{{row.BOESkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{row.ProposedHours}}</td>
-                                    <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-                                        {  %>
-                                        <td style="text-align: right">{{row.UCOTHours}}</td>
-                                        <td style="text-align: right">{{row.GrandTotalHours}}</td>
-                                    <% } %>
                                     <td>
                                         <div id="cd-table-rationale">
                                             <textarea id="cd-rationale" data-ng-model="row.Rationale" data-ng-blur="rationaleUpdated()" style="width: 100%; height: 14px; max-height: 45px; overflow-y: auto; resize: vertical;" maxlength="255"></textarea>
@@ -1103,19 +1073,73 @@
                                     <td></td>
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.LaborSkillMix | number:1}}%</td>
-                                    <td data-ng-if="!ManageTaskModel.IsSpace"></td>
+                                    <td></td>
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.BoeSkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.ProposedHours}}</td>
-                                    <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-                                        {  %>
-                                        <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.UCOTHours }}</td>
-                                        <td style="text-align: right">{{skillMixRationale.data.CommonDisclosureTotals.GrandTotalHours}}</td>
-                                    <% } %>
                                     <td></td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Skill Mix Summary Table -->
+                    <div class="form-label" data-ng-show="ManageTaskModel.IsSpace">
+                        Summary Table <div class="help-icon" data-ng-click="openHelp('SpaceLMEnterpriseSkillMixTable');"></div>
+                    </div>
+                    <div class="SkillMixTable skillMixTable" data-ng-show="ManageTaskModel.IsSpace">
+                        <table name="currentSkillMix" class="grid editable" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th class="resourceCol">Resource</th>
+                                    <th class="brcCol">Business Resource Code</th>
+                                    <th class="historicalHoursCol">Historical Hours</th>
+                                    <th class="historicalSkillMixCol">Historical Skill Mix</th>
+                                    <th class="proposedSkillMixCol">Proposed Skill Mix</th>
+                                    <th class="proposedLegacyResorceCol">Proposed Legacy Resource</th>
+                                    <th class="proposedBrcCol">Proposed BRC</th>
+                                    <th class="totalProposedLegacyBrcCol">Total Proposed Legacy & BRC</th>
+                                    <th class="ucotCol">UCOT Hours</th>
+                                    <th class="ucotGrandTotalCol">Grand Total Hours</th>
+                                    <th>Rationale**</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Display the data for each of the Skill Mix Summary Table rows. -->
+                                <tr ng-repeat="row in skillMixRationale.data.SkillMixSummaryRows">
+                                    <td>{{row.ResourceID}}</td>
+                                    <td>{{row.BusinessResourceID}}</td>
+                                    <td data-ng-if="!isSkillMixManual()" style="text-align: right">{{row.HistoricalHours | number:2}}</td>
+                                    <td style="text-align: right">{{row.HistoricalSkillMix | number:1}}%</td>
+                                    <td style="text-align: right">{{row.ProposedSkillMix | number:2}}%</td>
+                                    <td style="text-align: right">{{row.ProposedLegacyResource}}</td>
+                                    <td style="text-align: right">{{row.ProposedBrc}}</td>
+                                    <td style="text-align: right">{{row.TotalProposedLegacyBrc}}</td>
+                                    <td style="text-align: right">{{row.UCOTHours}}</td>
+                                    <td style="text-align: right">{{row.GrandTotalHours}}</td>
+                                    <td>
+                                        <div id="cd-table-rationale">
+                                            <textarea id="cd-rationale" data-ng-model="row.Rationale" data-ng-blur="rationaleUpdated()" style="width: 100%; height: 14px; max-height: 45px; overflow-y: auto; resize: vertical;" maxlength="255"></textarea>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- Display the SKill Mix Summary Totals row. -->
+                                <tr>
+                                    <td>Totals</td>
+                                    <td></td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.HistoricalHours | number:2}}</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.HistoricalSkillMix | number:2}}%</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.ProposedSkillMix | number:2}}%</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.ProposedLegacyResource}}</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.ProposedBrc}}</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.TotalProposedLegacyBrc}}</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.UCOTHours}}</td>
+                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.GrandTotalHours}}</td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
 				<div class="disable-save-text" data-ng-show="skillMixHelperText.length > 0">{{skillMixHelperText}}</div>
             </div>

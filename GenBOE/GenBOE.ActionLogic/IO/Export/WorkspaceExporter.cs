@@ -48,6 +48,11 @@ namespace GenBOE.ActionLogic.IO.Export
 		protected virtual string SkillMixTableSheetName { get { return CommonConstants.WORKSPACE_REPORT_WORKSHEET_LEGACY_SKILL_MIX; } }
 
 		/// <summary>
+		/// Skill Mix Summary's Sheet Name
+		/// </summary>
+		protected virtual string SkillMixSummaryTableSheetName { get { return CommonConstants.WORKSPACE_REPORT_WORKSHEET_SKILL_MIX_SUMMARY; } }
+
+		/// <summary>
 		/// Common Disclosure Table's Sheet Name
 		/// </summary>
 		private string CommonDisclosureSheetName { get { return CommonConstants.WORKSPACE_REPORT_WORKSHEET_ENTERPRISE_SKILL_MIX; } }
@@ -143,7 +148,14 @@ namespace GenBOE.ActionLogic.IO.Export
 				// Hide Skill Mix sheets if it's not enabled for the workspace
 				using (SpreadsheetDocument document = SpreadsheetDocument.Open(toReturn, true))
 				{
-					ExcelUtilities.HideWorksheets(document, new List<string>() { SkillMixTableSheetName, CommonDisclosureSheetName });
+					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+					{
+						ExcelUtilities.HideWorksheets(document, new List<string>() { SkillMixSummaryTableSheetName });
+					}
+					else
+					{
+						ExcelUtilities.HideWorksheets(document, new List<string>() { SkillMixTableSheetName, CommonDisclosureSheetName });
+					}
 				}
 			}
 
@@ -188,7 +200,14 @@ namespace GenBOE.ActionLogic.IO.Export
 			{
 				if (usingSkillMix)
 				{
-					return new int?[] { null, null, 1, null, null, null, null, null, null, null, null, null };
+					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+					{
+						return new int?[] { null, null, 1, null, null, null, null, null, null, null, null, };
+					}
+					else
+					{
+						return new int?[] { null, null, 1, null, null, null, null, null, null, null, null, null };
+					}
 				}
 				else
 				{
@@ -400,8 +419,15 @@ namespace GenBOE.ActionLogic.IO.Export
 
 					if (Utilities.ShowSkillMixForWorkspace(exportInputs.Workspace.CreationDate, exportInputs.Workspace.Shortname))
 					{
-						toReturn.Add(GetCurrentSkillMixTableData(exportInputs));
-						toReturn.Add(GetCommonDisclosureSkillMixTableData(exportInputs));
+						if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+						{
+							toReturn.Add(GetSkillMixSummaryTableData(exportInputs));
+						}
+						else
+						{
+							toReturn.Add(GetCurrentSkillMixTableData(exportInputs));
+							toReturn.Add(GetCommonDisclosureSkillMixTableData(exportInputs));
+						}
 					}
 				}
 
@@ -422,6 +448,67 @@ namespace GenBOE.ActionLogic.IO.Export
 				{
 					travelExtendedCostSheetData.WorksheetName = "Travel Extended Cost";
 					toReturn.Add(travelExtendedCostSheetData);
+				}
+			}
+
+			return toReturn;
+		}
+
+		/// <summary>
+		/// Get the row data for the Skill Mix Summary sheet
+		/// </summary>
+		/// <param name="exportInputs">Export Inputs</param>
+		/// <returns>Common Disclosure Skill Mix sheet</returns>
+		private ExcelExportWorksheet GetSkillMixSummaryTableData(BOEExportInputs exportInputs)
+		{
+			ExcelExportWorksheet toReturn = new ExcelExportWorksheet(SkillMixSummaryTableSheetName);
+
+			foreach (BoeDTO boe in exportInputs.Boes)
+			{
+				foreach (BoeTaskElementDTO task in exportInputs.TaskElements.Where(x => x.BoeID == boe.Id))
+				{
+					if (BOETaskUtility.ShowSkillMixForTask(exportInputs.FullWorkspace, task))
+					{
+						ICollection<MoqTypeSelection> moqTypesForTask = exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).ToList();
+
+						if (moqTypesForTask.Count == 1)
+						{
+							string selectedMOQTypeText = moqTypesForTask.First().SelectedMOQTypeText;
+
+							foreach (SkillMixSummaryModelView summary in task.SkillMixSummaryTable)
+							{
+								decimal historicalSkillMix = summary.HistoricalSkillMix != 0m ? summary.HistoricalSkillMix / 100m : 0m;
+								decimal proposedSkillMix = 0m;
+								if (summary.ProposedSkillMix.HasValue && summary.ProposedSkillMix != 0m)
+								{
+									proposedSkillMix = summary.ProposedSkillMix.Value / 100m;
+								}
+
+								IList<string> row = new List<string>()
+								{
+									boe.Id.ToString(),
+									boe.Title ?? this.sEmpty,
+									string.Format(TaskUrlString, exportInputs.Workspace.Shortname, task.BoeID, task.Id),
+									task.BOETaskID,
+									task.TaskTitle,
+									selectedMOQTypeText,
+									summary.ResourceID,
+									summary.BusinessResourceID,
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + summary.HistoricalHours,
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + historicalSkillMix,
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + proposedSkillMix,
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + summary.ProposedLegacyResource.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)),
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + summary.ProposedBrc.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)),
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + summary.TotalProposedLegacyBrc.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)),
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + summary.UCOTHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)),
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + summary.GrandTotalHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)),
+									summary.Rationale
+								};
+
+								toReturn.Add(row);
+							}
+						}
+					}
 				}
 			}
 

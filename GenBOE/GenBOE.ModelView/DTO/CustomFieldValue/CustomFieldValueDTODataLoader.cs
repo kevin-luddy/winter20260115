@@ -29,7 +29,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inCustomFieldID">Custom field id.</param>
         /// <returns>Collection of custom field value ids</returns>
         [DbQuery]
-        virtual public ICollection<CustomFieldValueDTO> GetCustomFieldValueDTOsByCustomFieldID(int inCustomFieldID)
+        public virtual ICollection<CustomFieldValueDTO> GetCustomFieldValueDTOsByCustomFieldID(int inCustomFieldID)
         {
             using (StopwatchTimer sw = new StopwatchTimer(Log))
             {
@@ -61,7 +61,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inCustomFieldID">Custom field ids.</param>
         /// <returns>Collection of custom field value ids</returns>
         [DbQuery]
-        virtual public ICollection<CustomFieldValueDTO> GetCustomFieldValueDTOsByCustomFieldIds(ICollection<int> inCustomFieldIds)
+        public virtual ICollection<CustomFieldValueDTO> GetCustomFieldValueDTOsByCustomFieldIds(ICollection<int> inCustomFieldIds)
         {
             using (StopwatchTimer sw = new StopwatchTimer(Log))
             {
@@ -124,7 +124,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inTaskElementIDs">Task element Ids.</param>
         /// <returns>Mapping of task element to custom field value Id.</returns>
         [DbQuery]
-        virtual public Dictionary<int, ICollection<KeyValuePair<int, int>>> GetCustomFieldValueIDsContainerIDsByTaskElementIDs(Collection<int> inTaskElementIDs)
+        public virtual Dictionary<int, ICollection<KeyValuePair<int, int>>> GetCustomFieldValueIDsContainerIDsByTaskElementIDs(Collection<int> inTaskElementIDs)
         {
             using (StopwatchTimer sw = new StopwatchTimer(Log))
             {
@@ -164,7 +164,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="moqTypeTableIds">MOQ Type Table IDs</param>
         /// <returns>Mapping of MOQ Type Table to Custom Field Value ID</returns>
         [DbQuery]
-        virtual public Dictionary<int, ICollection<KeyValuePair<int, int>>> GetCustomFieldValueIDsContainerIDsByMoqTypeTableIds(ICollection<int> moqTypeTableIds)
+        public virtual Dictionary<int, ICollection<KeyValuePair<int, int>>> GetCustomFieldValueIDsContainerIDsByMoqTypeTableIds(ICollection<int> moqTypeTableIds)
         {
             using (StopwatchTimer sw = new StopwatchTimer(Log))
             {
@@ -204,7 +204,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inLaborTypeIDs">Labor Type Ids.</param>
         /// <returns>Mapping of task element to custom field value Id.</returns>
         [DbQuery]
-        virtual public Dictionary<int, ICollection<KeyValuePair<int, int>>> GetCustomFieldValueIDsContainerIDsByLaborTypeIDs(Collection<int> inLaborTypeIDs)
+        public virtual Dictionary<int, ICollection<KeyValuePair<int, int>>> GetCustomFieldValueIDsContainerIDsByLaborTypeIDs(Collection<int> inLaborTypeIDs)
         {
             using (StopwatchTimer sw = new StopwatchTimer(Log))
             {
@@ -244,7 +244,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inTravelElementIDs">travel element Ids.</param>
         /// <returns>Mapping of travel element to custom field value Id.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), DbQuery]
-        virtual public Dictionary<int, ICollection<KeyValuePair<int, int>>> GetCustomFieldValueIDsContainerIDsByTravelElementIDs(Collection<int> inTravelElementIDs)
+        public virtual Dictionary<int, ICollection<KeyValuePair<int, int>>> GetCustomFieldValueIDsContainerIDsByTravelElementIDs(Collection<int> inTravelElementIDs)
         {
             using (StopwatchTimer sw = new StopwatchTimer(Log))
             {
@@ -283,7 +283,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inTravelTripIDs">travel trip Ids.</param>
         /// <returns>Mapping of travel trip to custom field value Id.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), DbQuery]
-        virtual public Dictionary<int, ICollection<KeyValuePair<int, int>>> GetCustomFieldValueIDsContainerIDsByTravelTripIDs(Collection<int> inTravelTripIDs)
+        public virtual Dictionary<int, ICollection<KeyValuePair<int, int>>> GetCustomFieldValueIDsContainerIDsByTravelTripIDs(Collection<int> inTravelTripIDs)
         {
             using (StopwatchTimer sw = new StopwatchTimer(Log))
             {
@@ -322,7 +322,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inResourceIDs">Resource Ids</param>
         /// <returns>Mapping of resource to custom field value Id</returns>
         [DbQuery]
-        virtual public Dictionary<int, ICollection<KeyValuePair<int, int>>> GetCustomFieldValueIDsContainerIDsByResourceIDs(Collection<int> inResourceIDs)
+        public virtual Dictionary<int, ICollection<KeyValuePair<int, int>>> GetCustomFieldValueIDsContainerIDsByResourceIDs(Collection<int> inResourceIDs)
         {
             using (StopwatchTimer sw = new StopwatchTimer(Log))
             {
@@ -357,7 +357,7 @@ namespace GenBOE.DataBridge.DTO
         }
 
         [DbQuery]
-        virtual public Dictionary<int, ICollection<KeyValuePair<int, int>>> GetLaborTypeCustomFieldValueIDsContainerIDsByTaskElementIDs(Collection<int> inTaskElementIDs)
+        public virtual Dictionary<int, ICollection<KeyValuePair<int, int>>> GetLaborTypeCustomFieldValueIDsContainerIDsByTaskElementIDs(Collection<int> inTaskElementIDs)
         {
             using (StopwatchTimer sw = new StopwatchTimer(Log))
             {
@@ -399,7 +399,7 @@ namespace GenBOE.DataBridge.DTO
             }
         }
 
-        virtual public IList<CustomFieldContainerFieldValueMapping> GetBOECustomFieldContainerFieldValueMappings(int boeID)
+        public virtual IList<CustomFieldContainerFieldValueMapping> GetBOECustomFieldContainerFieldValueMappings(int boeID)
         {
             IList<CustomFieldContainerFieldValueMapping> results;
 
@@ -421,7 +421,7 @@ namespace GenBOE.DataBridge.DTO
             return results;
         }
 
-        virtual public IList<CustomFieldContainerFieldValueMapping> GetTaskElementCustomFieldContainerFieldValueMappings(int taskElementID)
+        public virtual IList<CustomFieldContainerFieldValueMapping> GetTaskElementCustomFieldContainerFieldValueMappings(int taskElementID)
         {
             IList<CustomFieldContainerFieldValueMapping> results;
 
@@ -443,7 +443,7 @@ namespace GenBOE.DataBridge.DTO
             return results;
         }
 
-        virtual public IList<CustomFieldContainerFieldValueMapping> GetResourceCustomFieldContainerFieldValueMappings(int laborTypeID)
+        public virtual IList<CustomFieldContainerFieldValueMapping> GetResourceCustomFieldContainerFieldValueMappings(int laborTypeID)
         {
             IList<CustomFieldContainerFieldValueMapping> results;
 

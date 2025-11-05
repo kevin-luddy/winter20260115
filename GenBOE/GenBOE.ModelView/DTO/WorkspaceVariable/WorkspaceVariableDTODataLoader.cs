@@ -28,7 +28,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="wsId">Workspace Id.</param>
         /// <returns>Collection of workspace variables for a workspace.</returns>
         [DbQuery]
-        virtual public ICollection<WorkspaceVariableDTO> GetByWorkspaceID(int wsId)
+        public virtual ICollection<WorkspaceVariableDTO> GetByWorkspaceID(int wsId)
         {
             List<WorkspaceVariableDTO> toReturn = new List<WorkspaceVariableDTO>();
 
@@ -80,7 +80,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <param name="inWorkspaceVarID">workspace variable ID</param>
         /// <returns>DTO</returns>
-        virtual public WorkspaceVariableDTO GetById(int inWorkspaceVarID)
+        public virtual WorkspaceVariableDTO GetById(int inWorkspaceVarID)
         {
             return this.GetByIds(new List<int>() { inWorkspaceVarID }).FirstOrDefault();
         }
@@ -144,7 +144,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inWorkspaceVarID">workspace variable ID</param>
         /// <returns>Collection of distinct BOE IDs</returns>
         [DbQuery]
-        virtual public Collection<int> GetBOEIDsUsingWorkspaceVarID(int inWorkspaceVarID)
+        public virtual Collection<int> GetBOEIDsUsingWorkspaceVarID(int inWorkspaceVarID)
         {
             Collection<int> toReturn = new Collection<int>();
 
@@ -174,7 +174,7 @@ namespace GenBOE.DataBridge.DTO
         /// Save a collection of workspace variable DTOs
         /// </summary>
         /// <param name="inWorkspaceVars">collection of Workspace variable DTOs</param>
-        virtual public Dictionary<int, int> SaveWorkspaceVariables(Collection<WorkspaceVariableDTO> inWorkspaceVars)
+        public virtual Dictionary<int, int> SaveWorkspaceVariables(Collection<WorkspaceVariableDTO> inWorkspaceVars)
         {
             if (inWorkspaceVars == null)
             {

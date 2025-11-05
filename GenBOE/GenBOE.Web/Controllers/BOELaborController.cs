@@ -228,7 +228,7 @@ namespace GenBOE.Web.Controllers
 			return toReturn;
 		}
 
-		virtual public ActionResult ValidateResource(string workspace, string searchTerm)
+		public virtual ActionResult ValidateResource(string workspace, string searchTerm)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			ResourceDTO resource = _ResourceDTODataLoader.GetByNameAndListId(searchTerm, ws.ResourceListID);
@@ -237,7 +237,7 @@ namespace GenBOE.Web.Controllers
 
 		}
 
-		virtual public ActionResult ValidateResourceByID(string workspace, int inResourceID)
+		public virtual ActionResult ValidateResourceByID(string workspace, int inResourceID)
 		{
 			ResourceDTO resource = _ResourceDTODataLoader.GetById(inResourceID);
 
@@ -245,7 +245,7 @@ namespace GenBOE.Web.Controllers
 
 		}
 
-		virtual public ActionResult ValidatePerformingOrgs(string workspace, string searchTerm)
+		public virtual ActionResult ValidatePerformingOrgs(string workspace, string searchTerm)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -257,7 +257,7 @@ namespace GenBOE.Web.Controllers
 		}
 
 
-		virtual public ActionResult GetPerformingOrgIDByName(string workspace, int boeID, string Name)
+		public virtual ActionResult GetPerformingOrgIDByName(string workspace, int boeID, string Name)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -271,7 +271,7 @@ namespace GenBOE.Web.Controllers
 		/// Loads the Labor Curve View
 		/// </summary>
 		/// <returns>Labor Curve View</returns>
-		virtual public ViewResult DisplayLaborCurves()
+		public virtual ViewResult DisplayLaborCurves()
 		{
 			return View();
 		}
@@ -900,7 +900,7 @@ namespace GenBOE.Web.Controllers
 		/// <returns>A collection of variables, if the equation contained any. The collection always begins
 		/// with the equation reformatted with tagged variable names.</returns>
 		[HttpPost]
-		virtual public JsonResult MOQValidate(string workspace, int boeID, String moqEquation)
+		public virtual JsonResult MOQValidate(string workspace, int boeID, String moqEquation)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -978,7 +978,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="moqEquation">The MOQ Equation</param>
 		/// <returns>A string version of the Int64 result</returns>
 		[HttpPost]
-		virtual public ActionResult MOQCalculate(string workspace, int boeID, String moqEquation)
+		public virtual ActionResult MOQCalculate(string workspace, int boeID, String moqEquation)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -1017,7 +1017,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeID"></param>
 		/// <param name="moqEquation"></param>
 		/// <returns></returns>
-		virtual public ActionResult MarkWarningMessageAsConfirmed(string workspace, int boeID, int TaskID)
+		public virtual ActionResult MarkWarningMessageAsConfirmed(string workspace, int boeID, int TaskID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -1052,7 +1052,7 @@ namespace GenBOE.Web.Controllers
 		/// <returns></returns>
 		/// <exception cref="GenValidationException"></exception>
 		/// <exception cref="System.ArgumentNullException">importResults</exception>
-		virtual public ActionResult ImportLaborTypeAndSpread(string workspace, int boeID, int taskElementID, Collection<ImportLaborTypeModelView> importResults, string moqEquation)
+		public virtual ActionResult ImportLaborTypeAndSpread(string workspace, int boeID, int taskElementID, Collection<ImportLaborTypeModelView> importResults, string moqEquation)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -1093,7 +1093,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="laborTypeImportType">Type of the labor type import: new or update</param>
 		/// <returns></returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		virtual public ActionResult ImportPreviewLaborTypeAndSpread(string workspace, int boeID, int taskElementID, string laborTypeImportType)
+		public virtual ActionResult ImportPreviewLaborTypeAndSpread(string workspace, int boeID, int taskElementID, string laborTypeImportType)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -1160,7 +1160,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="isTemplate">Whether the export is for just the template or includes the data.</param>
 		/// <returns>An Excel export containing the Labor Type and Labor Spread data.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-		virtual public ActionResult ExportLaborTypeAndSpread(string workspace, int boeID, int taskElementID, bool isTemplate)
+		public virtual ActionResult ExportLaborTypeAndSpread(string workspace, int boeID, int taskElementID, bool isTemplate)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -1247,7 +1247,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="taskElementID">Task Element Id</param>
 		/// <returns>Validation Messages or a status of true if all are valid</returns>
 		[HttpPost]
-		virtual public JsonResult ValidateSpreadDatesAndValues(string workspace, int boeId, int taskElementID)
+		public virtual JsonResult ValidateSpreadDatesAndValues(string workspace, int boeId, int taskElementID)
 		{
 			JsonResult result = Json(new { Status = true });
 
@@ -1642,7 +1642,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="isManual">If the Historical Resource/Hours are Manually input or not</param>
 		/// <returns></returns>
 		public ActionResult RefreshSkillMixTables(string workspace, int boeId, ICollection<MoqTypeSelection> selectedMoqTypes,
-			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData,
+			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData,
 			bool isManual, DateTime? taskEndDate)
 		{
 			// Initialize Action
@@ -1658,7 +1658,7 @@ namespace GenBOE.Web.Controllers
 				.ToList();
 
 			// Call to Controller Logic
-			RefreshSkillMixModelView response = SkillMixUtility.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData, 
+			RefreshSkillMixModelView response = SkillMixUtility.RefreshSkillMixTables(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData, currentSkillMixSummaryData,
 				isBRCEnabled, isManual, taskEndDate);
 
 			JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });

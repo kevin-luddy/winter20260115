@@ -141,7 +141,7 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="inUserData">users AD information</param>
         /// <returns>user found, null if not found</returns>
-        virtual public UserDTO GetByUserData(UserData inUserData)
+        public virtual UserDTO GetByUserData(UserData inUserData)
         {
             if (inUserData == null)
             {
@@ -155,7 +155,7 @@ namespace GenTRAC.DataBridge.DTO
         /// Return the user dto for the actively logged in user
         /// </summary>
         /// <returns>user found, null if not found</returns>
-        virtual public UserDTO GetActiveUser()
+        public virtual UserDTO GetActiveUser()
         {
             return this.GetByNtid(this.securityInformation.ActiveUserNTID);
         }
@@ -167,7 +167,7 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="inNtid">users domain to locate them by</param>
         /// <returns>user found, null if not found</returns>
-        virtual public UserDTO GetByNtid(string inNtid)
+        public virtual UserDTO GetByNtid(string inNtid)
         {
             if (string.IsNullOrEmpty(inNtid))
             {
@@ -254,7 +254,7 @@ namespace GenTRAC.DataBridge.DTO
         /// <param name="inUserNtid">user Ntid to check for</param>
         /// <param name="outUserId">if the user exists, return the id</param>
         /// <returns>true/false user exists</returns>
-        virtual public bool UserExists(string inUserNtid, out int outUserId)
+        public virtual bool UserExists(string inUserNtid, out int outUserId)
         {
             string key = CacheConstants.USER_EXISTS + inUserNtid;
 
@@ -325,7 +325,7 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="userIds">collection of user ids</param>
         /// <returns>collection of user dtos</returns>
-        virtual public ICollection<UserDTO> GetUserDtosByUserIds(ICollection<int> userIds)
+        public virtual ICollection<UserDTO> GetUserDtosByUserIds(ICollection<int> userIds)
         {
             ICollection<UserDTO> toReturn = null;
 			// go through mapper so we take advantage of cache

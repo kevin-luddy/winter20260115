@@ -165,6 +165,7 @@
 				laborTypes: laborTypesData,
 				currentSkillMixData: $scope.model.SkillMixData,
 				currentCommonDisclosureData: $scope.model.CommonDisclosureSkillMixData,
+				currentSkillMixSummaryData: $scope.model.SkillMixSummaryData,
 				isManual: $scope.isSkillMixManual(),
 				taskEndDate: $scope.model.TaskElementData.EndDate.toDate()
 			};
@@ -177,35 +178,53 @@
 				$scope.skillMixRationale = response.data;
 				$scope.model.SkillMixData = $scope.skillMixRationale.data.SkillMixRows;
 				$scope.model.CommonDisclosureSkillMixData = $scope.skillMixRationale.data.CommonDisclosureRows;
+				$scope.model.SkillMixSummaryData = $scope.skillMixRationale.data.SkillMixSummaryRows;
 
 				// Set ManuallySetIncluded (flag to show dropdown) to true for rows where Included is false and ResourceNew is false.
 				let sumHours = 0;
-				$scope.skillMixRationale.data.SkillMixRows.forEach(function (row) {
-					if (row.Included === false || row.ResourceNew === '') {
-						row.metadata = {
-							ManuallySetIncluded: true
-						};
-					} else {
-						row.metadata = {
-							ManuallySetIncluded: false
-						};
-						sumHours += row.ProposedHours;
-					}
-				});
+				if (!$scope.ManageTaskModel.IsSpace)
+				{
+					$scope.skillMixRationale.data.SkillMixRows.forEach(function (row) {
+						if (row.Included === false || row.ResourceNew === '') {
+							row.metadata = {
+								ManuallySetIncluded: true
+							};
+						} else {
+							row.metadata = {
+								ManuallySetIncluded: false
+							};
+							sumHours += row.ProposedHours;
+						}
+					});
 
-				$scope.skillMixRationale.data.CommonDisclosureRows.forEach(function (row) {
-					if (row.Included === false || row.BusinessResourceID === '' || row.BusinessResourceID === null) {
-						row.metadata = {
-							ManuallySetIncluded: true
-						};
-					} else {
-						row.metadata = {
-							ManuallySetIncluded: false
-						};
-						sumHours += row.ProposedHours;
-					}
-				});
-
+					$scope.skillMixRationale.data.CommonDisclosureRows.forEach(function (row) {
+						if (row.Included === false || row.BusinessResourceID === '' || row.BusinessResourceID === null) {
+							row.metadata = {
+								ManuallySetIncluded: true
+							};
+						} else {
+							row.metadata = {
+								ManuallySetIncluded: false
+							};
+							sumHours += row.ProposedHours;
+						}
+					});
+				}
+				else
+				{
+					$scope.skillMixRationale.data.SkillMixSummaryRows.forEach(function (row) {
+						if (row.Included === false || row.BusinessResourceID === '' || row.BusinessResourceID === null) {
+							row.metadata = {
+								ManuallySetIncluded: true
+							};
+						} else {
+							row.metadata = {
+								ManuallySetIncluded: false
+							};
+							sumHours += row.ProposedLegacyResource + row.ProposedBrc;
+						}
+					});
+				}
 				$scope.totalSkillMixHours = sumHours;
 				$scope.deltaSkillMixHours = $scope.getMOQTotal().minus($scope.totalSkillMixHours).toString();
 				$scope.updateDropdowns();
@@ -223,6 +242,7 @@
 			$scope.skillMixRationale = [];
 			$scope.model.SkillMixData = [];
 			$scope.model.CommonDisclosureSkillMixData = [];
+			$scope.model.SkillMixSummaryData = [];
 			$scope.totalSkillMixHours = 0;
 			$scope.deltaSkillMixHours = 0;
 		}
@@ -234,7 +254,11 @@
 		if ($scope.ManageTaskModel.IsSkillMixFeatureEnabled) {
 			if (!$scope.ManageTaskModel.IsSkillMixEnabled) {
 				let skillMixStart = ManageTaskModel.SkillMixStartDate.split(' ')[0].toDate();
-				$scope.skillMixHelperText = "Skill Mix Tables are not showing because either Skill Mix is not enabled or blacklisted for this Workspace, or Workspace Creation Date is before " + skillMixStart.toLocaleDateString("en-US") + ".";
+				if ($scope.ManageTaskModel.IsSpace) {
+					$scope.skillMixHelperText = "Skill Mix Tables are not showing because either Skill Mix is not enabled or blacklisted for this Workspace, or Workspace Creation Date is before " + skillMixStart.toLocaleDateString("en-US") + ".";
+				} else {
+					$scope.skillMixHelperText = "Skill Mix Tables are not showing because either Skill Mix is not enabled or Workspace Creation Date is before " + skillMixStart.toLocaleDateString("en-US") + ".";
+				}
 			} else if (!$scope.ManageTaskModel.UsingTemplateBOE) {
 				$scope.skillMixHelperText = "Skill Mix Tables are not showing because Workspace is not setup to use MOQ Templates.";
 			} else if ($scope.ManageTaskModel.IsSpace && !$scope.ManageTaskModel.SapConnectionEnabled) {
@@ -1470,7 +1494,7 @@
 
 	$scope.autoMatchResources = function () {
 		$scope.model.SkillMixData.forEach(x => {
-			// Skip over any rows that already have a current resource selected
+			// Skip over any rows that already have a proposed resource selected
 			if (!$scope.checkEmptyString(x.ResourceNew)) {
 				return;
 			}
@@ -1943,20 +1967,33 @@
 		}
 		else {
 			if (!item.NewLaborType) {
-				if (endDate < $scope.oneLmxCutOff) {
-					if (input === undefined || (typeof input === 'string' && (input.length === 0
-						|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
-						item.IsResourceValid = false;
+				if ($scope.ManageTaskModel.IsSpace) {
+					if (endDate < $scope.oneLmxCutOff) {
+						if (input === undefined || (typeof input === 'string' && (input.length === 0
+							|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
+							item.IsResourceValid = false;
+						}
+					}
+
+					if (startDate < $scope.oneLmxCutOff && endDate >= $scope.oneLmxCutOff) {
+						if (input === undefined || (typeof input === 'string' && (input.length === 0
+							|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
+							item.IsResourceValid = false;
+						}
+
+						if (callBusinessResourceCode) {
+							item.IsBusinessResourceCodeValid = $scope.getAndSetIsBusinessResourceCodeValid(item, $scope.BusinessResourceCodeModels, false);
+						}
 					}
 				}
-
-				if (startDate < $scope.oneLmxCutOff && endDate >= $scope.oneLmxCutOff) {
+				else {
+					// Resources for RMS are always required regardless of start/end date
 					if (input === undefined || (typeof input === 'string' && (input.length === 0
 						|| models.filter(function (r) { return r.ResourceDesc.toUpperCase() === input.toUpperCase() }).length < 1))) {
 						item.IsResourceValid = false;
 					}
 
-					if (callBusinessResourceCode) {
+					if (endDate >= $scope.oneLmxCutOff && callBusinessResourceCode) {
 						item.IsBusinessResourceCodeValid = $scope.getAndSetIsBusinessResourceCodeValid(item, $scope.BusinessResourceCodeModels, false);
 					}
 				}

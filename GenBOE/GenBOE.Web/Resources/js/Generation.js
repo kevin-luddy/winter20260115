@@ -2492,7 +2492,7 @@ GenWidget.prototype.ajaxRequest = function (options, formElement) {
                 var response = jqXHR.responseText;
                 var error = {};
                 if (!(response.indexOf('{') < 0 || response.indexOf('{') > 2)) {
-                    error = $.parseJSON(response);
+                    error = jqXHR.responseJSON; 
                     if (error.ReturnType == "GenValidationException") {
                         // First clear all validation boxes that are in that widget.
                         // this has been upgraded to clear all forms wven those that have been moved to a dialog.

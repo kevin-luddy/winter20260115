@@ -23,7 +23,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inResourceListID">resource List ID</param>
         /// <returns>resource List DTO</returns>
         [DbQuery]
-        virtual public ResourceListDTO GetResourceList(int inResourceListID)
+        public virtual ResourceListDTO GetResourceList(int inResourceListID)
         {
             ResourceListDTO toReturn = null;
 
@@ -55,7 +55,7 @@ namespace GenBOE.DataBridge.DTO
         /// Save the Resource List
         /// </summary>
         /// <param name="inResourceList">default resource list</param>
-        virtual public int SaveResourceList(ResourceListDTO inResourceList)
+        public virtual int SaveResourceList(ResourceListDTO inResourceList)
         {
             if (inResourceList == null)
             {
@@ -86,7 +86,7 @@ namespace GenBOE.DataBridge.DTO
         /// Clear all resources from the given list
         /// </summary>
         /// <param name="inResourceList"></param>
-        virtual public void ClearResourceList(ResourceListDTO inResourceList)
+        public virtual void ClearResourceList(ResourceListDTO inResourceList)
         {
             if (inResourceList == null)
             {

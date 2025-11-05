@@ -86,5 +86,15 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// Gets or sets a value indicating whether or not authors are assignable at task level
 		/// </summary>
 		public bool IsAuthorAssignableAtTaskLevelEnabled { get; set; }
+
+		/// <summary>
+		/// Is the LM Navigator link enabled at the system level via the web.config
+		/// </summary>
+		public bool IsLmNavigatorEnabled { get; set; }
+
+		/// <summary>
+		/// Is LM Navigator Enabled for RTE Fields in the Workspace
+		/// </summary>
+		public bool LmNavigatorEnabled { get; set; }
 	}
 }

@@ -14,7 +14,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
     using GenBOE.ActionLogic.ControllerLogic;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
+	using GenBOE.DataBridge.DTO.SkillMixSummary;
+	using GenBOE.Dtos;
     using GenBOE.Models;
     using GenBOE.Objects;
     using GenBOE.Tests.ActionLogic;
@@ -330,7 +331,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
 
             Assert.AreEqual(workspaces.Count, results.Count);
 
-            foreach (var result in results)
+            foreach (WorkspaceDTO result in results)
             {
                 Workspace workspace = workspaces.First(x => x.WorkspaceID == result.Id);
                 // 0
@@ -396,10 +397,12 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 // 50
                 Assert.AreEqual(workspace.WorkspaceCreationDate, result.CreationDate);
                 Assert.AreEqual(workspace.EnableSAPConnection, result.EnableSAPConnection);
+				Assert.AreEqual(workspace.EnableAssignTaskAuthor, result.EnableAssignTaskAuthor);
+				Assert.AreEqual(workspace.EnableLmNavigator, result.EnableLmNavigator);
             }
             Type dtoType = typeof(WorkspaceDTO);
             int numProperties = dtoType.GetProperties().Count();
-            Assert.AreEqual(52, numProperties, "Untested properties exist in the Workspace DTO");
+            Assert.AreEqual(54, numProperties, "Untested properties exist in the Workspace DTO");
         }
 
         [TestMethod]
@@ -1126,7 +1129,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             WorkspaceVariableDTODataLoader wsVarLoader = new WorkspaceVariableDTODataLoader();
             RteTemplateDataLoader rteLoader = new RteTemplateDataLoader();
             ProPricerDTODataLoader ppLoader = new ProPricerDTODataLoader();
-            BoeTaskElementDTODataLoader taskLoader = new BoeTaskElementDTODataLoader(new ResourceTypeLoader(), new ResourceSpreadLoader(), new OrdinaryVariableLoader(), new BoeTaskElementCustomFieldValueXREFLoader(), new LaborTypeCustomFieldValueXREFLoader(), new SkillMixDTOLoader(), new CommonDisclosureSMDTODataLoader());
+            BoeTaskElementDTODataLoader taskLoader = new BoeTaskElementDTODataLoader(new ResourceTypeLoader(), new ResourceSpreadLoader(), new OrdinaryVariableLoader(), new BoeTaskElementCustomFieldValueXREFLoader(), new LaborTypeCustomFieldValueXREFLoader(), new SkillMixDTOLoader(), new SkillMixSummaryDTOLoader(), new CommonDisclosureSMDTODataLoader());
             IRetriever retriever = new Retriever(null, null, wsLoader, null, null, null, null, null, null, taskLoader, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
             FullObjectFactory fullObjectFactory = new FullObjectFactory(null, null, null, null, null, null, null, null, null, null, null, null);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever);

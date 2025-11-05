@@ -15,7 +15,7 @@
         $.ajax({
             type: 'POST',
             url: CreateSystemAdminPostURL('<%:WebConstants.CONTROLLER_ADMIN%>',
-                            '<%:WebConstants.ACTION_CHECK_IS_USER_WILL_LOOSE_THEIR_SYSTEM_ADMIN_ACCESS%>', ''),
+                            '<%:WebConstants.ACTION_CHECK_IS_USER_WILL_LOSE_THEIR_SYSTEM_ADMIN_ACCESS%>', ''),
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
             data: dataToSend,

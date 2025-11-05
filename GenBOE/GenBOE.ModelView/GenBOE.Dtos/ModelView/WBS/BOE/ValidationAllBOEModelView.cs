@@ -17,14 +17,15 @@ namespace GenBOE.Dtos
 	/// to a user after the "Validate All BOE's" button has been selected
 	/// </summary>
 	[ExcludeFromCodeCoverage]
-    public class ValidationAllBOEModelView 
-    {
-        public ValidationAllBOEModelView()
-        {
-            AllBOEs = new Collection<ValidationBOEModelView>();
-        }
-        //Collection of each BOE validation method.
-        public ICollection<ValidationBOEModelView> AllBOEs { get; set; }
+	public class ValidationAllBOEModelView
+	{
+		public ValidationAllBOEModelView()
+		{
+			AllBOEs = new Collection<ValidationBOEModelView>();
+		}
+
+		//Collection of each BOE validation method.
+		public ICollection<ValidationBOEModelView> AllBOEs { get; set; }
 
 		/// <summary>
 		/// Flatten the BOEs
@@ -89,7 +90,7 @@ namespace GenBOE.Dtos
 				BOEId = boe.BOEID,
 				BOE = boe.BOEName,
 				IsHeader = true,
-				Level = sectionHeader 
+				Level = sectionHeader
 			};
 			flattenedValidateAllBOEs.Add(flatHeader);
 
