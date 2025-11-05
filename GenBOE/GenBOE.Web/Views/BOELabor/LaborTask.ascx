@@ -975,7 +975,7 @@
                             <thead>
                                 <tr>
                                     <th class="resourceCol">Resource</th>
-                                    <th class="currentResourceCol">Current Resource</th>
+                                    <th class="ProposedResourceCol">Proposed Resource</th>
                                     <th class="historicalHoursCol">Historical Hours</th>
                                     <th class="laborSkillMixCol">Labor Skill Mix</th>
                                     <th class="includedCol">Included</th>
@@ -991,7 +991,7 @@
                                     <td data-ng-if="!isSkillMixManual()">{{row.ResourceOld}}</td>
                                     <td data-ng-if="isSkillMixManual()" class="bootstrap"><input type="text" data-ng-blur="refreshSkillMixTables()" class="form-control" data-ng-model="row.ResourceOld" style="width: 100%; height: 14px;" maxlength="20" /></td>
                                     <td>
-                                        <!-- Select for Current Resource ID will change the Included column and IsUserInput backend value. -->
+                                        <!-- Select for Proposed Resource ID will change the Included column and IsUserInput backend value. -->
                                         <select
                                             data-ng-options="option for option in skillMixRationaleLaborTypeSelections track by option"
                                             ng-model="row.ResourceNew"
