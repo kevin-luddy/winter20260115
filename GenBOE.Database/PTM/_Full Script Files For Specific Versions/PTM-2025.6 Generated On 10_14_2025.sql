@@ -8,7 +8,7 @@ PRINT '###### SCRIPT IS STARTING ######';
     File: \Release 2025.6\1 - Release 2025.6 Script.sql
 */
 PRINT '### Starting file: \Release 2025.6\1 - Release 2025.6 Script.sql';
-EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2025.5';
+EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2025.6';
 GO
 
 -- Author: RJ Anzalone (ranzalon)
