@@ -36117,7 +36117,7 @@ BEGIN
             B.BOEID,
             CAST(B.BOEStartDate AS DATE),
             CAST(B.BOEEndDate AS DATE),
-            CASE WHEN (CAST(B.BOEStartDate AS DATE) >= CAST('2022-02-15' AS DATE) AND CAST(B.BOEEndDate AS DATE) <= CAST('2034-06-15' AS DATE))
+            CASE WHEN (CAST(B.BOEStartDate AS DATE) >= @ContractStartDate AND CAST(B.BOEEndDate AS DATE) <= @ContractEndDate)
                     THEN 1 ELSE 0 END
         FROM dbo.BOE B
         JOIN dbo.WBS_CLIN_BOE_XREF X ON B.BOEID = X.BOEID
@@ -36138,7 +36138,7 @@ BEGIN
             B.BOEID,
             CAST(B.BOEStartDate AS DATE),
             CAST(B.BOEEndDate AS DATE),
-            CASE WHEN (CAST(B.BOEStartDate AS DATE) >= CAST('2022-02-15' AS DATE) AND CAST(B.BOEEndDate AS DATE) <= CAST('2034-06-15' AS DATE))
+            CASE WHEN (CAST(B.BOEStartDate AS DATE) >= @ContractStartDate AND CAST(B.BOEEndDate AS DATE) <= @ContractEndDate)
                     THEN 1 ELSE 0 END
         FROM dbo.BOE AS B
         WHERE B.WorkspaceID = @WorkspaceID
