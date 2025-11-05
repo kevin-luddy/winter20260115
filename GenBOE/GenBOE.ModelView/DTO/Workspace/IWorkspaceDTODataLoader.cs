@@ -67,21 +67,33 @@ namespace GenBOE.DataBridge.DTO
         /// <returns>A list of fields that exceed the RTE limit</returns>
         ICollection<RTEValidationMV> GetRteFieldsExceedingLimit(int wsId);
 
-        /// <summary>
-        /// Get Workspace Data For Proposal
-        /// 
-        /// Used by ACV
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		/// <summary>
+		/// Get Current Workspace Data For Proposal
+		/// 
+		/// Used by ACV
+		/// </summary>
+		/// <param name="ptmTrackingNumber">PTM Tracking Number</param>
+		/// <returns>Current Workspace Data</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         [DbQuery]
-        ICollection<(int Id, string shortName, string longName, bool containsOCI)> GetWorkspaceDataForProposal(string ptmTrackingNumber);
+        ICollection<(int Id, string shortName, string longName, bool containsOCI, string ptmTrackingNumber)> GetWorkspaceDataForProposal(string ptmTrackingNumber);
 
-        /// <summary>
-        /// Get Workspace data by NTID to be used in NLF home grid
-        /// </summary>
-        /// <param name="ntid">user NTID</param>
-        /// <returns>Collection of Workspace IDs, URLs, and Names where user is WS or GSCO admin</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		/// <summary>
+		/// Get Current Workspace Data 
+		///  
+		/// Used by ACV
+		/// </summary>
+		/// <returns>Current Workspace Data List</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		[DbQuery]
+		ICollection<(int Id, string shortName, string longName, bool containsOCI, string ptmTrackingNumber)> GetWorkspaceData();
+
+		/// <summary>
+		/// Get Workspace data by NTID to be used in NLF home grid
+		/// </summary>
+		/// <param name="ntid">user NTID</param>
+		/// <returns>Collection of Workspace IDs, URLs, and Names where user is WS or GSCO admin</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         [DbQuery]
 		ICollection<NlfWorkspaceDataDTO> GetWorkspaceDataByNtidForNlf(string ntid);
 
