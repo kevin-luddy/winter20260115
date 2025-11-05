@@ -36105,7 +36105,7 @@ BEGIN
         FROM dbo.BOE B
         JOIN dbo.WBS_CLIN_BOE_XREF X ON B.BOEID = X.BOEID
         JOIN @CLINs C ON X.CLINID = C.CLINID
-        WHERE B.WorkspaceID = 32864
+        WHERE B.WorkspaceID = @WorkspaceID
             AND B.BOEStartDate IS NOT NULL
             AND B.BOEEndDate IS NOT NULL
 	        AND C.CLINStartDate IS NOT NULL
@@ -36122,7 +36122,7 @@ BEGIN
         FROM dbo.BOE B
         JOIN dbo.WBS_CLIN_BOE_XREF X ON B.BOEID = X.BOEID
         JOIN @CLINs C ON X.CLINID = C.CLINID
-        WHERE B.WorkspaceID = 32864
+        WHERE B.WorkspaceID = @WorkspaceID
             AND B.BOEStartDate IS NOT NULL
             AND B.BOEEndDate IS NOT NULL
 	        AND C.CLINStartDate IS NULL
@@ -36141,7 +36141,7 @@ BEGIN
             CASE WHEN (CAST(B.BOEStartDate AS DATE) >= CAST('2022-02-15' AS DATE) AND CAST(B.BOEEndDate AS DATE) <= CAST('2034-06-15' AS DATE))
                     THEN 1 ELSE 0 END
         FROM dbo.BOE AS B
-        WHERE B.WorkspaceID = 32864
+        WHERE B.WorkspaceID = @WorkspaceID
             AND B.BOEStartDate IS NOT NULL
             AND B.BOEEndDate IS NOT NULL
             AND NOT EXISTS (
