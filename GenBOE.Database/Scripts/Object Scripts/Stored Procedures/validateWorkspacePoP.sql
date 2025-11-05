@@ -50,12 +50,12 @@ BEGIN
             C.CLINID,
             CAST(C.CLINStartDate AS DATE),
             CAST(C.CLINEndDate AS DATE),
-            CASE WHEN (CAST(C.CLINStartDate AS DATE) >= @ContractStartDate AND CAST(C.CLINEndDate AS DATE) <= @ContractEndDate) 
-                 THEN 1 ELSE 0 END
+            CASE 
+                WHEN C.CLINStartDate IS NULL AND C.CLINEndDate IS NULL THEN 1
+                WHEN (CAST(C.CLINStartDate AS DATE) >= @ContractStartDate AND CAST(C.CLINEndDate AS DATE) <= @ContractEndDate) THEN 1 ELSE 0 
+            END
         FROM dbo.CLIN AS C
-        WHERE C.WorkspaceID = @WorkspaceID
-          AND C.CLINStartDate IS NOT NULL
-          AND C.CLINEndDate IS NOT NULL;
+        WHERE C.WorkspaceID = @WorkspaceID;
 
         -- Check if any CLINs are invalid
         IF EXISTS (SELECT 1 FROM @CLINs WHERE IsValid = 0)
@@ -79,15 +79,15 @@ BEGIN
             CAST(B.BOEStartDate AS DATE),
             CAST(B.BOEEndDate AS DATE),
             CASE WHEN (CAST(B.BOEStartDate AS DATE) >= C.CLINStartDate AND CAST(B.BOEEndDate AS DATE) <= C.CLINEndDate)
-                 THEN 1 ELSE 0 END
+                    THEN 1 ELSE 0 END
         FROM dbo.BOE B
         JOIN dbo.WBS_CLIN_BOE_XREF X ON B.BOEID = X.BOEID
         JOIN @CLINs C ON X.CLINID = C.CLINID
         WHERE B.WorkspaceID = @WorkspaceID
-          AND B.BOEStartDate IS NOT NULL
-          AND B.BOEEndDate IS NOT NULL
-          AND C.CLINStartDate IS NOT NULL
-          AND C.CLINEndDate IS NOT NULL;
+            AND B.BOEStartDate IS NOT NULL
+            AND B.BOEEndDate IS NOT NULL
+	        AND C.CLINStartDate IS NOT NULL
+	        AND C.CLINEndDate IS NOT NULL;
 
         -- BOEs tied to a CLIN, but CLIN Start and End Date are NULL so checked against the Workspace dates
         INSERT INTO @BOEs (BOEID, BOEStartDate, BOEEndDate, IsValid)
@@ -96,15 +96,19 @@ BEGIN
             CAST(B.BOEStartDate AS DATE),
             CAST(B.BOEEndDate AS DATE),
             CASE WHEN (CAST(B.BOEStartDate AS DATE) >= @ContractStartDate AND CAST(B.BOEEndDate AS DATE) <= @ContractEndDate)
-                 THEN 1 ELSE 0 END
+                    THEN 1 ELSE 0 END
         FROM dbo.BOE B
         JOIN dbo.WBS_CLIN_BOE_XREF X ON B.BOEID = X.BOEID
         JOIN @CLINs C ON X.CLINID = C.CLINID
         WHERE B.WorkspaceID = @WorkspaceID
-          AND B.BOEStartDate IS NOT NULL
-          AND B.BOEEndDate IS NOT NULL
-          AND C.CLINStartDate IS NULL
-          AND C.CLINEndDate IS NULL;
+            AND B.BOEStartDate IS NOT NULL
+            AND B.BOEEndDate IS NOT NULL
+	        AND C.CLINStartDate IS NULL
+	        AND C.CLINEndDate IS NULL
+	        AND NOT EXISTS(
+		        SELECT 1 FROM @BOEs AS BE
+		        WHERE B.BOEID = BE.BOEID
+	        );
 
         -- BOEs not tied to a CLIN, so checked against the Workspace dates
         INSERT INTO @BOEs (BOEID, BOEStartDate, BOEEndDate, IsValid)
@@ -113,16 +117,16 @@ BEGIN
             CAST(B.BOEStartDate AS DATE),
             CAST(B.BOEEndDate AS DATE),
             CASE WHEN (CAST(B.BOEStartDate AS DATE) >= @ContractStartDate AND CAST(B.BOEEndDate AS DATE) <= @ContractEndDate)
-                 THEN 1 ELSE 0 END
+                    THEN 1 ELSE 0 END
         FROM dbo.BOE AS B
         WHERE B.WorkspaceID = @WorkspaceID
-          AND B.BOEStartDate IS NOT NULL
-          AND B.BOEEndDate IS NOT NULL
-          AND NOT EXISTS (
-              SELECT 1 
-              FROM dbo.WBS_CLIN_BOE_XREF X 
-              WHERE X.BOEID = B.BOEID
-          );
+            AND B.BOEStartDate IS NOT NULL
+            AND B.BOEEndDate IS NOT NULL
+            AND NOT EXISTS (
+                SELECT 1 
+                FROM @BOEs AS X
+                WHERE X.BOEID = B.BOEID
+        );
 
         -- Check if any BOEs are invalid
         IF EXISTS (SELECT 1 FROM @BOEs WHERE IsValid = 0)
