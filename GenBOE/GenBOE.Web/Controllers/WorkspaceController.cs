@@ -4368,8 +4368,7 @@ namespace GenBOE.Web.Controllers
 					modelErrors = modelErrors.Where(e =>
 						e.FieldName != "WorkspaceName" &&
 						e.FieldName != "Shortname" &&
-						e.FieldName != "LineOfBusiness" &&
-						e.FieldName != "UsingTemplateBoe").ToList();
+						e.FieldName != "LineOfBusiness").ToList();
 
 				}
 
