@@ -492,7 +492,7 @@
 						$scope.setStepSpecificElements(5);
 						break;
 				}
-			}1
+			}
 		}
 	};
 
