@@ -371,12 +371,12 @@ namespace GenTRAC.ActionLogic.Validation
 			/// <summary>
 			/// Program Manager is required
 			/// </summary>
-			public const string PROGRAMMGR_REQUIRED = USER_INFO_VALDIATION + "Program Manager is required if LOB is set to National Security Space.";
+			public const string PROGRAMMGR_REQUIRED = USER_INFO_VALDIATION + "Program Manager is required if LOB is set to National Security Space and Proposal Type is set to New Business - Competitive/Non-Competitive.";
 
 			/// <summary>
 			/// MSAC POC is required
 			/// </summary>
-			public const string MSAC_POC_REQUIRED = USER_INFO_VALDIATION + "MSAC POC is required if LOB is set to National Security Space.";
+			public const string MSAC_POC_REQUIRED = USER_INFO_VALDIATION + "MSAC POC is required if LOB is set to National Security Space and Proposal Type is set to New Business - Competitive/Non-Competitive.";
 
 			/// <summary>
 			/// contracts POC is required
