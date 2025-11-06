@@ -6,12 +6,12 @@
 
 namespace GenBOE.ActionLogic
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using System.Transactions;
-    using GenBOE.ActionLogic.BLL;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Linq;
+	using System.Transactions;
+	using GenBOE.ActionLogic.BLL;
     using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.Email;
@@ -338,9 +338,9 @@ namespace GenBOE.ActionLogic
                             commentDTO = this.boeCommentDTOLoader.GetByIds(new List<int>() { boeComment.AuthorResponseID }).First();
                             DataRelationshipVerifier.VerifyDataRelation(commentDTO, boeDto.Id);
 
-                            // set the UpdateDate for optimistic locking purposes
-                            commentDTO.UpdateDate = new DateTime(boeComment.AuthorResponseUpdateDTLong);
-                        }
+							// set the UpdateDate for optimistic locking purposes
+							commentDTO.UpdateDate = new DateTime(long.Parse(boeComment.AuthorResponseUpdateDTLong));
+						}
 
                         commentDTO.FieldID = (int)FieldType.AuthorResponse;
                         commentDTO.BOEComment = boeComment.AuthorResponse;
@@ -365,8 +365,8 @@ namespace GenBOE.ActionLogic
 
                             commentDTO.Id = boeComment.ReviewerCommentID;
 
-                            // set the UpdateDate for optimistic locking purposes
-                            commentDTO.UpdateDate = new DateTime(boeComment.ReviewerCommentUpdateDTLong);
+							// set the UpdateDate for optimistic locking purposes
+							commentDTO.UpdateDate = new DateTime(long.Parse(boeComment.ReviewerCommentUpdateDTLong));
                         }
 
                         commentDTO.FieldID = (int)FieldType.Comment;
