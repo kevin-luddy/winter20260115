@@ -220,6 +220,16 @@ namespace IES.Common
 		public const string PROPOSAL_CLASS_NTE = "NTE";
 
 		/// <summary>
+		/// Proposal Type - New Business - Competitive
+		/// </summary>
+		public const int PROPOSAL_TYPE_NEW_BUSINESS_COMPETITIVE = 2;
+
+		/// <summary>
+		/// Proposal Type - New Business - Non-Competitive
+		/// </summary>
+		public const int PROPOSAL_TYPE_NEW_BUSINESS_NON_COMPETITIVE = 3;
+
+		/// <summary>
 		/// The length of the YYYY-NNNNN legacy tracking number
 		/// </summary>
 		public const int LEGACY_TRACKING_NUMBER_LENGTH = 10;
