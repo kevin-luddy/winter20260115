@@ -1416,7 +1416,8 @@ namespace GenBOE
 																																new ResolvedParameter(typeof(IMSTZoneTravelValidator)),
 																																new ResolvedParameter(typeof(RMSZoneTravelRatesFeesDataLoader)),
 																																new ResolvedParameter(typeof(IOffloadRatesDTOLoader)),
-																																new ResolvedParameter(typeof(IRteTemplateDataLoader))));
+																																new ResolvedParameter(typeof(IRteTemplateDataLoader)),
+																																new ResolvedParameter(typeof(IValidateWorkspaceDataLoader))));
 					break;
 				case CompanyConfiguration.SpaceSystems:
 					GenBOEUnityContainer.Container.RegisterType(typeof(IValidateBOE), typeof(ValidateBOESpaceSystems), GetLifetimeManager(), new InjectionConstructor(
@@ -1426,7 +1427,8 @@ namespace GenBOE
 																																new ResolvedParameter(typeof(IMiscTravelRateDTOLoader)),
 																																new ResolvedParameter(typeof(ILocationDTODataLoader)),
 																																new ResolvedParameter(typeof(IOffloadRatesDTOLoader)),
-																																new ResolvedParameter(typeof(IRteTemplateDataLoader))));
+																																new ResolvedParameter(typeof(IRteTemplateDataLoader)),
+																																new ResolvedParameter(typeof(IValidateWorkspaceDataLoader))));
 					break;
 
 				default:
@@ -1437,7 +1439,8 @@ namespace GenBOE
 																																new ResolvedParameter(typeof(IMiscTravelRateDTOLoader)),
 																																new ResolvedParameter(typeof(ILocationDTODataLoader)),
 																																new ResolvedParameter(typeof(IOffloadRatesDTOLoader)),
-																																new ResolvedParameter(typeof(IRteTemplateDataLoader))));
+																																new ResolvedParameter(typeof(IRteTemplateDataLoader)),
+																																new ResolvedParameter(typeof(IValidateWorkspaceDataLoader))));
 					break;
 			}
 
@@ -1583,7 +1586,7 @@ namespace GenBOE
 			GenBOEUnityContainer.Container.RegisterType(typeof(IRteTemplateDataLoader), typeof(RteTemplateDataLoader), GetLifetimeManager());
 			GenBOEUnityContainer.Container.RegisterType(typeof(IMOQTypeSelectionTableDataResourceHoursDTOLoader), typeof(MOQTypeSelectionTableDataResourceHoursDTOLoader), GetLifetimeManager());
 			GenBOEUnityContainer.Container.RegisterType(typeof(IMoqTypeDataLoader), typeof(MoqTypeDataLoader), this.GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IMoqTypeTableCustomFieldValueXREFLoader)), new ResolvedParameter(typeof(IMOQTypeSelectionTableDataResourceHoursDTOLoader)))).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
-
+			GenBOEUnityContainer.Container.RegisterType(typeof(IValidateWorkspaceDataLoader), typeof(ValidateWorkspaceDataLoader), this.GetLifetimeManager());
 		}
 
 		protected ContainerControlledLifetimeManager GetLifetimeManager()
