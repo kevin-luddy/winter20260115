@@ -780,11 +780,11 @@
 				throw new ArgumentNullException(nameof(refreshedModel));
 			}
 
-			// Check for duplicate Current Resources
-			HashSet<string> distinctCurrentResources = new HashSet<string>();
+			// Check for duplicate Proposed Resources
+			HashSet<string> distinctProposedResources = new HashSet<string>();
 			foreach (SkillMixModelView row in refreshedModel.SkillMixRows.Where(x => !string.IsNullOrEmpty(x.ResourceNew)))
 			{
-				if (!distinctCurrentResources.Add(row.ResourceNew))
+				if (!distinctProposedResources.Add(row.ResourceNew))
 				{
 					// Duplicate found - Set proposed hours to 0
 					row.ProposedHours = 0;

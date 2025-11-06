@@ -4320,10 +4320,10 @@ namespace GenBOE.Tests.ActionLogic
 		}
 
 		/// <summary>
-		/// Test Null Current Resource with included set to 'Yes'
+		/// Test Null Proposed Resource with included set to 'Yes'
 		/// </summary>
 		[TestMethod]
-		public void ValidateSkillMix_NullCurrentResource()
+		public void ValidateSkillMix_NullProposedResource()
 		{
 			List<SkillMixModelView> skillmix = new List<SkillMixModelView>
 			{
@@ -4341,7 +4341,7 @@ namespace GenBOE.Tests.ActionLogic
 			ICollection<string> messages = ActionLogicUtility.ValidateSkillMixTable(skillmix, false);
 			Assert.IsNotNull(messages);
 			Assert.AreEqual(1, messages.Count);
-			Assert.IsTrue(messages.First().Contains("Included cannot be set to 'Yes' for an empty/null Current Resource"));
+			Assert.IsTrue(messages.First().Contains("Included cannot be set to 'Yes' for an empty/null Proposed Resource"));
 		}
 
 		/// <summary>

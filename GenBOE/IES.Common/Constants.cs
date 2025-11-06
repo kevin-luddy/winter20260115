@@ -220,6 +220,16 @@ namespace IES.Common
 		public const string PROPOSAL_CLASS_NTE = "NTE";
 
 		/// <summary>
+		/// Proposal Type - New Business - Competitive
+		/// </summary>
+		public const int PROPOSAL_TYPE_NEW_BUSINESS_COMPETITIVE = 2;
+
+		/// <summary>
+		/// Proposal Type - New Business - Non-Competitive
+		/// </summary>
+		public const int PROPOSAL_TYPE_NEW_BUSINESS_NON_COMPETITIVE = 3;
+
+		/// <summary>
 		/// The length of the YYYY-NNNNN legacy tracking number
 		/// </summary>
 		public const int LEGACY_TRACKING_NUMBER_LENGTH = 10;
@@ -562,11 +572,6 @@ namespace IES.Common
 		/// Length for MOQ Type Historical Program Name field (matches db length)
 		/// </summary>
 		public const int MOQ_HISTORICAL_PROG_NAME_FIELD_LENGTH = 125;
-
-		/// <summary>
-		/// Length for MOQ Type WBS Element field for RMS (matches db length)
-		/// </summary>
-		public const int MOQ_WBS_ELEMENT_RMS_SAP_DISABLED_FIELD_LENGTH = 12;
 
 		/// <summary>
 		/// Length for MOQ Type WBS Element field for SSC (matches db length)

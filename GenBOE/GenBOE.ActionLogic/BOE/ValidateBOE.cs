@@ -360,7 +360,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 				// Check BOE falls within the CLIN Start Date and End Date
 				foreach (FullBoe boe in ws.Boes)
 				{
-					if (clin.Id == boe.Clin.Id)
+					if (boe.Clin != null && (clin.Id == boe.CLINID))
 					{
 						DateTime boeStartDate = GenBOEUtilities.AdjustDateTimePrecision(boe.StartDate, DateTimePrecision.Day);
 						DateTime boeStartMonth = GenBOEUtilities.AdjustDateTimePrecision(boe.StartDate, DateTimePrecision.Month);
@@ -936,15 +936,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 				if (row.DateOfReport.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} must be on or before today's date."); }
 
 				ValidateRequiredField(moqType.SelectedMOQType, row.HistoricalProgramName, labels.HistoricalProgramName, Constants.MOQ_HISTORICAL_PROG_NAME_FIELD_LENGTH, errorMessages);
-
-				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && (!Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate)))
-				{
-					ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, Constants.MOQ_WBS_ELEMENT_RMS_SAP_DISABLED_FIELD_LENGTH, errorMessages);
-				}
-				else
-				{
-					ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, Constants.MOQ_WBS_ELEMENT_FIELD_LENGTH, errorMessages);
-				}
+				ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, Constants.MOQ_WBS_ELEMENT_FIELD_LENGTH, errorMessages);
 
 				// If using Monthly Query Type, must compare dates against a mid-month date to allow using the current month
 				DateTime today = row.QueryType == MoqTableData.MONTHLY ? DateTime.Now.ToString("MM/yyyy").ToDateTimeMidMonth() : DateTime.Now;

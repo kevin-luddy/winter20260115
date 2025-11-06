@@ -383,7 +383,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		internal const string Table_CurrentSkillMix = "CurrentSkillMixTable";
 		internal const string Table_LmEnterpriseSkillMix = "LmEnterpriseSkillMixTable";
 		internal const string Table_SummarySkillMix = "SummarySkillMixTable";
-		internal const string FieldName_CurrentResource = "CurrentResource";
+		internal const string FieldName_ProposedResource = "CurrentResource";
 		internal const string FieldName_HistoricalHours = "HistoricalHours";
 		internal const string FieldName_LaborSkillMix = "LaborSkillMix";
 		internal const string FieldName_Included = "Included";

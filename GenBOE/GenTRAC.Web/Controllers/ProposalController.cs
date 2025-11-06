@@ -309,7 +309,8 @@ namespace GenTRAC.Web.Controllers
 				ICollection<SelectListItem> lobList = pickListMapper.GetSelectListPickList(PickListEnum.LineOfBusiness);
 				SelectListItem nssLob = lobList.FirstOrDefault(x => x.Text == Constants.NSS_LOB_NAME);
 				bool isNss = nssLob != null && proposalGeneralInfo.LineOfBusiness.ToString() == nssLob.Value;
-				invalidUnsavedUsers = this.proposalLogic.ValidateUserTypes(proposalId, proposalApprovalsInfo, proposalUserInfo, validationErrors, isNss);
+				bool isNewBusiness = proposalInfo.ProposalType == Constants.PROPOSAL_TYPE_NEW_BUSINESS_COMPETITIVE || proposalInfo.ProposalType == Constants.PROPOSAL_TYPE_NEW_BUSINESS_NON_COMPETITIVE;
+				invalidUnsavedUsers = this.proposalLogic.ValidateUserTypes(proposalId, proposalApprovalsInfo, proposalUserInfo, validationErrors, isNss, isNewBusiness);
             }
 
             validationErrors.ForEach(x => x.FormIDToTarget = GenTRAC.ActionLogic.ProposalControllerLogic.PROPOSAL_INFO_FORM);

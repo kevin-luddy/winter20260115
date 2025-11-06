@@ -526,22 +526,49 @@ namespace GenBOE.DataBridge.DTO
 		}
 
 		/// <summary>
-		/// Get Workspace Data For Proposal
+		/// Get Current Workspace Data For Proposal
 		/// 
 		/// Used by ACV
 		/// </summary>
+		/// <param name="ptmTrackingNumber">PTM Tracking Number</param>
+		/// <returns>Current Workspace Data List or single item when PTM Tracking Number is provided </returns>
 		[DbQuery]
-		public virtual ICollection<(int Id, string shortName, string longName, bool containsOCI)> GetWorkspaceDataForProposal(string ptmTrackingNumber)
+		public virtual ICollection<(int Id, string shortName, string longName, bool containsOCI, string ptmTrackingNumber)> GetWorkspaceDataForProposal(string ptmTrackingNumber)
 		{
-			ICollection<(int Id, string shortName, string longName, bool containsOCI)> result;
+			ICollection<(int Id, string shortName, string longName, bool containsOCI, string ptmTrackingNumber)> result;
 
 			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
-					result = gbe.Workspaces.Where(x => x.TrackingNumber == ptmTrackingNumber && x.IsDeleted != true)
-									.Select(x => new { Id = x.WorkspaceID, shortName = x.WorkspaceShortName, longName = x.WorkspaceName, containsOCI = x.ContainsOCI }).ToList()
-									.Select(x => (Id: x.Id, shortName: x.shortName, longName: x.longName, containsOCI: x.containsOCI)).ToList();
+					result = gbe.Workspaces.Where(x => x.TrackingNumber == ptmTrackingNumber && x.IsDeleted != true && x.CurrentPTMWorkspace)
+									.Select(x => new { Id = x.WorkspaceID, shortName = x.WorkspaceShortName, longName = x.WorkspaceName, containsOCI = x.ContainsOCI, ptmTrackingNumber = x.TrackingNumber }).ToList()
+									.Select(x => (Id: x.Id, shortName: x.shortName, longName: x.longName, containsOCI: x.containsOCI, ptmTrackingNumber = x.ptmTrackingNumber)).ToList();
+
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get All Current Workspace Data
+		/// 
+		/// Used by ACV
+		/// </summary>
+		/// <returns>Current Workspace Data List</returns>
+		[DbQuery]
+		public virtual ICollection<(int Id, string shortName, string longName, bool containsOCI, string ptmTrackingNumber)> GetWorkspaceData()
+		{
+			ICollection<(int Id, string shortName, string longName, bool containsOCI, string ptmTrackingNumber)> result;
+
+			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+			{
+				using (GenBoeEntities gbe = new GenBoeEntities())
+				{
+					result = gbe.Workspaces.Where(x => x.IsDeleted != true && x.CurrentPTMWorkspace)
+									.Select(x => new { Id = x.WorkspaceID, shortName = x.WorkspaceShortName, longName = x.WorkspaceName, containsOCI = x.ContainsOCI, ptmTrackingNumber = x.TrackingNumber }).ToList()
+									.Select(x => (Id: x.Id, shortName: x.shortName, longName: x.longName, containsOCI: x.containsOCI, ptmTrackingNumber: x.ptmTrackingNumber)).ToList();
 				}
 			}
 
@@ -563,15 +590,15 @@ namespace GenBOE.DataBridge.DTO
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
 					result = (from w in gbe.Workspaces
-						join wur in gbe.WorkspaceUserRoles on w.WorkspaceID equals wur.WorkspaceID
-						join eu in gbe.ETIusers on wur.ETIUserID equals eu.ETIUserID
-						where eu.NTID == ntid
-						&& (wur.RoleID == (int)Role.WorkspaceAdmin || wur.RoleID == (int)Role.SubcontractAdmin)
-						&& w.IsDeleted == false
-							  select new NlfWorkspaceDataDTO 
+							  join wur in gbe.WorkspaceUserRoles on w.WorkspaceID equals wur.WorkspaceID
+							  join eu in gbe.ETIusers on wur.ETIUserID equals eu.ETIUserID
+							  where eu.NTID == ntid
+							  && (wur.RoleID == (int)Role.WorkspaceAdmin || wur.RoleID == (int)Role.SubcontractAdmin)
+							  && w.IsDeleted == false
+							  select new NlfWorkspaceDataDTO
 							  {
-								  WorkspaceId = w.WorkspaceID, 
-								  WorkspaceUrl = w.WorkspaceShortName, 
+								  WorkspaceId = w.WorkspaceID,
+								  WorkspaceUrl = w.WorkspaceShortName,
 								  WorkspaceName = w.WorkspaceName
 							  }).ToList();
 				}
@@ -595,10 +622,10 @@ namespace GenBOE.DataBridge.DTO
 				{
 					result = (from w in gbe.Workspaces
 							  where w.IsDeleted == false
-							  select new NlfWorkspaceDataDTO 
-							  { 
-								  WorkspaceId = w.WorkspaceID, 
-								  WorkspaceUrl = w.WorkspaceShortName, 
+							  select new NlfWorkspaceDataDTO
+							  {
+								  WorkspaceId = w.WorkspaceID,
+								  WorkspaceUrl = w.WorkspaceShortName,
 								  WorkspaceName = w.WorkspaceName
 							  }).ToList();
 				}
@@ -806,7 +833,7 @@ namespace GenBOE.DataBridge.DTO
 		{
 			ICollection<MPBoeDataDTO> result;
 
-			using (StopwatchTimer sw = new StopwatchTimer(this.Log)) 
+			using (StopwatchTimer sw = new StopwatchTimer(this.Log))
 			{
 				using (GenBoeEntities gbe = new GenBoeEntities())
 				{
@@ -1036,7 +1063,7 @@ namespace GenBOE.DataBridge.DTO
 						// Save the workspace identification and output format template
 						DateTime? spaceSAPCutoff = null;
 
-						if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && 
+						if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems &&
 							Utilities.IsSAPEnabledForSystem)
 						{
 							spaceSAPCutoff = Utilities.SAPSpaceStartDate;

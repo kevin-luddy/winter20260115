@@ -858,18 +858,18 @@ namespace GenBOE.ActionLogic.IO.Export
 			_ = laborTaskElement ?? throw new ArgumentNullException(nameof(laborTaskElement));
 			_ = selectedComponents ?? throw new ArgumentNullException(nameof(selectedComponents));
 			_ = exportInputs ?? throw new ArgumentNullException(nameof(exportInputs));
-						
-			SdtElement skillMixTablesContainer = WordUtilities.GetTaggedChildElement(taskContainer, BOEExporterConstants.Container_SkillMixTables);
-			if (skillMixTablesContainer != null)
+
+			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 			{
-				if ((selectedComponents.Contains(BoeCustomReportComponent.SkillMixTables) || !selectedComponents.Any())
-					&& BOETaskUtility.ShowSkillMixForTask(exportInputs.FullWorkspace, task))
+				ProcessSummarySkillMixTable(taskContainer, laborTaskElement, exportInputs, selectedComponents, task);
+			}
+			else
+			{
+				SdtElement skillMixTablesContainer = WordUtilities.GetTaggedChildElement(taskContainer, BOEExporterConstants.Container_SkillMixTables);
+				if (skillMixTablesContainer != null)
 				{
-					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
-					{
-						ProcessSummarySkillMixTable(skillMixTablesContainer, laborTaskElement, exportInputs);
-					}
-					else
+					if ((selectedComponents.Contains(BoeCustomReportComponent.SkillMixTables) || !selectedComponents.Any())
+						&& BOETaskUtility.ShowSkillMixForTask(exportInputs.FullWorkspace, task))
 					{
 						// populate Current/Legacy Skill Mix Table
 						SdtElement currentTableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_CurrentSkillMix);
@@ -891,7 +891,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
 									// Populate the row
 									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Resource), skillMixRow.ResourceOld);
-									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_CurrentResource), skillMixRow.ResourceNew);
+									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_ProposedResource), skillMixRow.ResourceNew);
 									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_HistoricalHours), skillMixRow.HistoricalHours.ToString("F"));
 									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_LaborSkillMix), (skillMixRow.LaborSkillMix / 100m).ToString("P1"));
 									WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Included), skillMixRow.Included ? "Yes" : "No");
@@ -1003,10 +1003,10 @@ namespace GenBOE.ActionLogic.IO.Export
 							RemoveElement(WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_LmEnterpriseSkillMix));
 						}
 					}
-				}
-				else
-				{
-					RemoveElement(skillMixTablesContainer);
+					else
+					{
+						RemoveElement(skillMixTablesContainer);
+					}
 				}
 			}
 		}
@@ -1014,79 +1014,87 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <summary>
 		/// Populate the Summary Skill Mix Table for SSC
 		/// </summary>
-		/// <param name="skillMixTablesContainer">SDT Element container for the Skill Mix Tables</param>
+		/// <param name="taskContainer">SDT Element container for the Task</param>
 		/// <param name="exportInputs">Export Inputs</param>
 		/// <param name="laborTaskElement">BOE Export Task Element</param>
-		private void ProcessSummarySkillMixTable(SdtElement skillMixTablesContainer, BOEExportTaskElement laborTaskElement, BOEExportInputs exportInputs)
+		/// <param name="selectedComponents">Selected components for a custom export</param>
+		/// <param name="task">Task DTO</param>
+		private void ProcessSummarySkillMixTable(SdtElement taskContainer, BOEExportTaskElement laborTaskElement, BOEExportInputs exportInputs, ICollection<BoeCustomReportComponent> selectedComponents, BoeTaskElementDTO task)
 		{
 			// Remove the other skill mix tables if they exist in the template
-			RemoveElement(WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_CurrentSkillMix));
-			RemoveElement(WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_LmEnterpriseSkillMix));
+			RemoveElement(WordUtilities.GetTaggedChildElement(taskContainer, BOEExporterConstants.Container_SkillMixTables));
 
 			// populate Current/Legacy Skill Mix Table
-			SdtElement tableElement = WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_SummarySkillMix);
+			SdtElement tableElement = WordUtilities.GetTaggedChildElement(taskContainer, BOEExporterConstants.Table_SummarySkillMix);
 			string hoursStringFormat = Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision);
 
 			if (tableElement != null)
 			{
-				// get template row
-				TableRow templateDataRow = WordUtilities.GetTaggedChildElement(tableElement, BOEExporterConstants.Marker_DataRow).Ancestors<TableRow>().FirstOrDefault();
-
-				if (templateDataRow != null)
+				if ((selectedComponents.Contains(BoeCustomReportComponent.SkillMixTables) || !selectedComponents.Any())	&& BOETaskUtility.ShowSkillMixForTask(exportInputs.FullWorkspace, task))
 				{
-					// initialize insertion row
-					TableRow currentInsertionRow = templateDataRow;
+					// get template row
+					TableRow templateDataRow = WordUtilities.GetTaggedChildElement(tableElement, BOEExporterConstants.Marker_DataRow).Ancestors<TableRow>().FirstOrDefault();
 
-					foreach (SkillMixSummaryModelView skillMixRow in laborTaskElement.SkillMixSummaryTable)
+					if (templateDataRow != null)
 					{
-						// Create a new row
-						TableRow dataRow = CloneMarkedTemplateRow(templateDataRow);
+						// initialize insertion row
+						TableRow currentInsertionRow = templateDataRow;
 
-						// Populate the row
-						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Resource), skillMixRow.ResourceID);
-						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_BusinessResourceCode), skillMixRow.BusinessResourceID);
-						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_HistoricalHours), skillMixRow.HistoricalHours.ToString("F"));
-						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_HistoricalSkillMix), (skillMixRow.HistoricalSkillMix / 100m).ToString("P1"));
-						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_ProposedSkillMix), (skillMixRow.ProposedSkillMix / 100m)?.ToString("P1"));
-						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_ProposedLegacyResource), skillMixRow.ProposedLegacyResource.ToString(hoursStringFormat));
-						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_ProposedBrc), skillMixRow.ProposedBrc.ToString(hoursStringFormat));
-						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_TotalProposedLegacyBrc), skillMixRow.TotalProposedLegacyBrc.ToString(hoursStringFormat));
-						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_UCOTHours), skillMixRow.UCOTHours.ToString(hoursStringFormat));
-						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_GrandTotalHours), skillMixRow.GrandTotalHours.ToString(hoursStringFormat));
-						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Rationale), skillMixRow.Rationale);
+						foreach (SkillMixSummaryModelView skillMixRow in laborTaskElement.SkillMixSummaryTable)
+						{
+							// Create a new row
+							TableRow dataRow = CloneMarkedTemplateRow(templateDataRow);
 
-						// Add the row to the table
-						currentInsertionRow.InsertAfterSelf(dataRow);
-						currentInsertionRow = dataRow;
+							// Populate the row
+							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Resource), skillMixRow.ResourceID);
+							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_BusinessResourceCode), skillMixRow.BusinessResourceID);
+							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_HistoricalHours), skillMixRow.HistoricalHours.ToString("F"));
+							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_HistoricalSkillMix), (skillMixRow.HistoricalSkillMix / 100m).ToString("P1"));
+							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_ProposedSkillMix), (skillMixRow.ProposedSkillMix / 100m)?.ToString("P1"));
+							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_ProposedLegacyResource), skillMixRow.ProposedLegacyResource.ToString(hoursStringFormat));
+							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_ProposedBrc), skillMixRow.ProposedBrc.ToString(hoursStringFormat));
+							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_TotalProposedLegacyBrc), skillMixRow.TotalProposedLegacyBrc.ToString(hoursStringFormat));
+							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_UCOTHours), skillMixRow.UCOTHours.ToString(hoursStringFormat));
+							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_GrandTotalHours), skillMixRow.GrandTotalHours.ToString(hoursStringFormat));
+							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Rationale), skillMixRow.Rationale);
+
+							// Add the row to the table
+							currentInsertionRow.InsertAfterSelf(dataRow);
+							currentInsertionRow = dataRow;
+						}
+
+						// remove template row
+						this.RemoveElement(templateDataRow);
 					}
 
-					// remove template row
-					this.RemoveElement(templateDataRow);
+					// get total row
+					TableRow totalRow = WordUtilities.GetTaggedChildElement(tableElement, BOEExporterConstants.Marker_TotalsRow).Ancestors<TableRow>().FirstOrDefault();
+
+					if (totalRow != null)
+					{
+						//get totals
+						string historicalHoursTotal = laborTaskElement.SkillMixSummaryTable.Sum(x => x.HistoricalHours).ToString("F");
+						string proposedSkillMixTotal = (laborTaskElement.SkillMixSummaryTable.Where(x => x.Included).Sum(x => x.ProposedSkillMix ?? 0.0m) / 100m).ToString("P1");
+						string proposedLegacyResourceTotal = laborTaskElement.SkillMixSummaryTable.Where(x => x.Included).Sum(x => x.ProposedLegacyResource).ToString(hoursStringFormat);
+						string proposedBrcTotal = laborTaskElement.SkillMixSummaryTable.Where(x => x.Included).Sum(x => x.ProposedBrc).ToString(hoursStringFormat);
+						string totalProposedLegacyBrcTotal = laborTaskElement.SkillMixSummaryTable.Where(x => x.Included).Sum(x => x.TotalProposedLegacyBrc).ToString(hoursStringFormat);
+						string ucotHoursTotal = laborTaskElement.SkillMixSummaryTable.Where(x => x.Included).Sum(x => x.UCOTHours).ToString(hoursStringFormat);
+						string grandTotalHoursTotal = laborTaskElement.SkillMixSummaryTable.Where(x => x.Included).Sum(x => x.GrandTotalHours).ToString(hoursStringFormat);
+
+						// populate totals
+						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_HistoricalHours), historicalHoursTotal);
+						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_HistoricalSkillMix), 1.0m.ToString("P1"));
+						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_ProposedSkillMix), proposedSkillMixTotal);
+						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_ProposedLegacyResource), proposedLegacyResourceTotal);
+						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_ProposedBrc), proposedBrcTotal);
+						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_TotalProposedLegacyBrc), totalProposedLegacyBrcTotal);
+						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_UCOTHours), ucotHoursTotal);
+						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_GrandTotalHours), grandTotalHoursTotal);
+					}
 				}
-
-				// get total row
-				TableRow totalRow = WordUtilities.GetTaggedChildElement(tableElement, BOEExporterConstants.Marker_TotalsRow).Ancestors<TableRow>().FirstOrDefault();
-
-				if (totalRow != null)
+				else
 				{
-					//get totals
-					string historicalHoursTotal = laborTaskElement.SkillMixSummaryTable.Sum(x => x.HistoricalHours).ToString("F");
-					string proposedSkillMixTotal = (laborTaskElement.SkillMixSummaryTable.Where(x => x.Included).Sum(x => x.ProposedSkillMix ?? 0.0m) / 100m).ToString("P1");
-					string proposedLegacyResourceTotal = laborTaskElement.SkillMixSummaryTable.Where(x => x.Included).Sum(x => x.ProposedLegacyResource).ToString(hoursStringFormat);
-					string proposedBrcTotal = laborTaskElement.SkillMixSummaryTable.Where(x => x.Included).Sum(x => x.ProposedBrc).ToString(hoursStringFormat);
-					string totalProposedLegacyBrcTotal = laborTaskElement.SkillMixSummaryTable.Where(x => x.Included).Sum(x => x.TotalProposedLegacyBrc).ToString(hoursStringFormat);
-					string ucotHoursTotal = laborTaskElement.SkillMixSummaryTable.Where(x => x.Included).Sum(x => x.UCOTHours).ToString(hoursStringFormat);
-					string grandTotalHoursTotal = laborTaskElement.SkillMixSummaryTable.Where(x => x.Included).Sum(x => x.GrandTotalHours).ToString(hoursStringFormat);
-
-					// populate totals
-					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_HistoricalHours), historicalHoursTotal);
-					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_HistoricalSkillMix), 1.0m.ToString("P1"));
-					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_ProposedSkillMix), proposedSkillMixTotal);
-					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_ProposedLegacyResource), proposedLegacyResourceTotal);
-					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_ProposedBrc),proposedBrcTotal);
-					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_TotalProposedLegacyBrc), totalProposedLegacyBrcTotal);
-					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_UCOTHours), ucotHoursTotal);
-					WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, BOEExporterConstants.FieldName_GrandTotalHours), grandTotalHoursTotal);
+					RemoveElement(tableElement);
 				}
 			}
 		}

@@ -254,7 +254,11 @@
 		if ($scope.ManageTaskModel.IsSkillMixFeatureEnabled) {
 			if (!$scope.ManageTaskModel.IsSkillMixEnabled) {
 				let skillMixStart = ManageTaskModel.SkillMixStartDate.split(' ')[0].toDate();
-				$scope.skillMixHelperText = "Skill Mix Tables are not showing because either Skill Mix is not enabled or blacklisted for this Workspace, or Workspace Creation Date is before " + skillMixStart.toLocaleDateString("en-US") + ".";
+				if ($scope.ManageTaskModel.IsSpace) {
+					$scope.skillMixHelperText = "Skill Mix Tables are not showing because either Skill Mix is not enabled or blacklisted for this Workspace, or Workspace Creation Date is before " + skillMixStart.toLocaleDateString("en-US") + ".";
+				} else {
+					$scope.skillMixHelperText = "Skill Mix Tables are not showing because either Skill Mix is not enabled or Workspace Creation Date is before " + skillMixStart.toLocaleDateString("en-US") + ".";
+				}
 			} else if (!$scope.ManageTaskModel.UsingTemplateBOE) {
 				$scope.skillMixHelperText = "Skill Mix Tables are not showing because Workspace is not setup to use MOQ Templates.";
 			} else if ($scope.ManageTaskModel.IsSpace && !$scope.ManageTaskModel.SapConnectionEnabled) {
@@ -1490,7 +1494,7 @@
 
 	$scope.autoMatchResources = function () {
 		$scope.model.SkillMixData.forEach(x => {
-			// Skip over any rows that already have a current resource selected
+			// Skip over any rows that already have a proposed resource selected
 			if (!$scope.checkEmptyString(x.ResourceNew)) {
 				return;
 			}
