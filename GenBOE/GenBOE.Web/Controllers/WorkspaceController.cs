@@ -97,7 +97,6 @@ namespace GenBOE.Web.Controllers
 		private IWbsDTODataLoader wbsLoader;
 		private IPerformingOrgDTODataLoader perfOrgLoader;
 		private PackageUtilities _PackageUtilities;
-		private IBoeApproverResponseDTODataLoader _IBoeApproverResponseDTODataLoader;
 		private RMSZoneTravelRatesFeesDataLoader travelRatesFeesDataLoader;
 		private IOffloadRatesDTOLoader offloadRatesDTOLoader;
 		private IRetriever retriever;
@@ -196,7 +195,6 @@ namespace GenBOE.Web.Controllers
 			IGenBOEControllerLogic inControllerLogic,
 			IFullWorkspaceRecalculation fullWsRecalc,
 			PackageUtilities inPackageUtilities,
-			IBoeApproverResponseDTODataLoader inBoeApproverResponseDTODataLoader,
 			RMSZoneTravelRatesFeesDataLoader travelRatesFeesDataLoader,
 			IOffloadRatesDTOLoader offloadRatesDTOLoader,
 			IRetriever retriever,
@@ -250,7 +248,6 @@ namespace GenBOE.Web.Controllers
 			this.perfOrgLoader = perfOrgLoader;
 			this.FullWsRecalc = fullWsRecalc;
 			_PackageUtilities = inPackageUtilities;
-			_IBoeApproverResponseDTODataLoader = inBoeApproverResponseDTODataLoader;
 			this.travelRatesFeesDataLoader = travelRatesFeesDataLoader;
 			this.offloadRatesDTOLoader = offloadRatesDTOLoader;
 			this.retriever = retriever;
