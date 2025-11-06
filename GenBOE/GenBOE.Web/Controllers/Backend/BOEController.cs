@@ -26,6 +26,7 @@ namespace GenBOE.Web.Controllers.Backend
 	using GenBOE.Web.Common;
 	using GenBOE.Web.ModelView;
 	using IES.Common;
+	using IES.Common.Exceptions;
 
 	/// <summary>
 	/// BOEController used for /boe/editboeindex/boe/
@@ -81,7 +82,7 @@ namespace GenBOE.Web.Controllers.Backend
 
 			Stopwatch sw = InitializeAction(logger, WebConstants.GET_BOE_HEADER, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, boeId);
 
-			FullBoe boe = ws.Boes.First(x => x.Id == boeId);
+			FullBoe boe = this.Factory.CreateFullBoe(boeId);
 
 			try
 			{
@@ -279,14 +280,27 @@ namespace GenBOE.Web.Controllers.Backend
 
 				IBOEHeaderModelView boeHeader = new BOEHeaderModelView();
 				boeHeader.BOEID = saveBOEHeader.boeHeader.BOEID;
-				boeHeader.CLIN = saveBOEHeader.boeHeader.CLIN;
-				boeHeader.State = saveBOEHeader.boeHeader.State;
 				boeHeader.Title = saveBOEHeader.boeHeader.Title;
 				boeHeader.CustomFieldValues = new Collection<CustomFieldSelectionModelView>();
 
-				foreach (RTECustomTemplateQuestionAnswerModelView item in saveBOEHeader.boeHeader.HeaderRteTemplateAnswers)
+
+				foreach (BOECustomFieldModelView item in saveBOEHeader.boeHeader.CustomFieldValues)
 				{
-					boeHeader.HeaderRteTemplateAnswers.Add(item);
+					CustomFieldSelectionModelView field = new CustomFieldSelectionModelView();
+
+					if (item.CustomFieldMetaData.CustomFieldValueID != 0 && item.CustomFieldMetaData.SelectionID != 0)
+					{
+						BOECustomFieldOptionModelView selectedOption = item.CustomFieldOptions.First(option => option.CustomFieldOptionID == item.CustomFieldMetaData.CustomFieldValueID);
+						field.CustomFieldID = item.CustomFieldMetaData.isOpenEnded ? item.CustomFieldMetaData.CustomFieldID : -1;
+						field.CustomFieldValueID = item.CustomFieldMetaData.CustomFieldValueID;
+						field.IsOpenEnded = item.CustomFieldMetaData.isOpenEnded;
+						field.OpenEndedValue = selectedOption.Description;
+						field.SelectionID = item.CustomFieldMetaData.SelectionID;
+						field.UpdateDate = item.UpdateDate;
+						field.UpdateDateLong = item.UpdateDateLong;
+
+						boeHeader.CustomFieldValues.Add(field);
+					}
 				}
 
 				boeControllerLogic.SaveEditBoeHeader(ws, boe, boeHeader, saveBOEHeader.boeHeader.Description, descriptionOnly);
@@ -294,81 +308,14 @@ namespace GenBOE.Web.Controllers.Backend
 				result.IsSuccessful = true;
 				result.Data = true;
 			}
-			catch (Exception ex)
+			catch (GenValidationException ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add(ex.Message);
+				result.Messages = ex.ValidationList.Select(x => x.ValidationIssue).ToList();
 			}
 
 			FinalizeAction(logger, "SaveEditBOEHeader", sw);
 			return result;
-
-			//IESSingleResponse<bool> result = new IESSingleResponse<bool>();
-			//FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-			//Stopwatch sw;
-
-			//// Initialize Action
-			//bool descriptionOnly = false;
-			//try
-			//{
-			//	FullBoe boe = this.Factory.CreateFullBoe(inBOEHeader.BOEID);
-			//	sw = InitializeAction(logger, "SaveEditBOEHeader", SecurityPage.EditBOEHeader, SecurityAuthorization.ReadUpdate, new List<WorkspaceDTO> { ws }, boe.Id);
-			//}
-			//catch (AuthorizationException)
-			//{
-			//	// we failed saving at the 'edit boe header' level .. let's see if the EditBOEHeaderDescription is allowed
-			//	sw = InitializeAction(logger, "SaveEditBOEHeader", SecurityPage.EditBOEHeaderDescription, SecurityAuthorization.ReadUpdate, new List<WorkspaceDTO> { ws }, boe.Id);
-
-			//	descriptionOnly = true;
-			//}
-
-
-			//// validate RTE field length
-			//if (ws.RteSizeLimit.HasValue)
-			//{
-			//	if (!string.IsNullOrEmpty(inBOEHeader.Description.Description) && ws.RteSizeLimit < GenBOEUtilities.ConvertHtmlToText(inBOEHeader.Description.Description).Length)
-			//	{
-			//		ModelState.AddModelError("Description", string.Format("The maximum length of BOE Description is {0} characters.", ws.RteSizeLimit.Value));
-			//	}
-
-			//	if (!descriptionOnly && !string.IsNullOrEmpty(inBOEHeader.DataSource) && ws.RteSizeLimit < GenBOEUtilities.ConvertHtmlToText(inBOEHeader.DataSource).Length)
-			//	{
-			//		ModelState.AddModelError("DataSource", string.Format("The maximum length of BOE Source of Data is {0} characters.", ws.RteSizeLimit.Value));
-			//	}
-			//}
-
-			//if (inBOEHeader.HeaderRteTemplateAnswers != null && inBOEHeader.HeaderRteTemplateAnswers.Any())
-			//{
-			//	ICollection<RteCustomTemplateSourceModelView> sources = this.rteTemplateDataLoader.GetSources(ws.UsingTemplateBOE);
-			//	ICollection<ValidationMessage> rteValidationErrors = this.genBoeControllerLogic.ValidateRteAnswers(inBOEHeader.Description.RteTemplateAnswers, sources, ws.RteSizeLimit);
-
-			//	// convert from validationmessage to modelerror
-			//	if (rteValidationErrors.Any())
-			//	{
-			//		foreach (ValidationMessage message in rteValidationErrors)
-			//		{
-			//			ModelState.AddModelError(message.FieldName, message.ValidationIssue);
-			//		}
-			//	}
-			//}
-
-			//JsonResult toReturn;
-			//if (ModelState.IsValid)
-			//{
-			//	_ControllerLogic.SaveEditBoeHeader(ws, boe, inBOEHeader, inBOEHeaderDescription, descriptionOnly);
-			//	boe = this.Factory.CreateFullBoe(boeID);
-			//	toReturn = Json(_ControllerLogic.CreateBOEHeaderMV(boe, ws));
-			//}
-			//else
-			//{
-			//	throw new GenValidationException(Utilities.CreateModelStateValidationErrorList(ModelState));
-			//}
-
-			//// Finalize Action
-			//FinalizeAction(_log, "SaveEditBOEHeader", sw);
-
-			//toReturn.MaxJsonLength = int.MaxValue;
-			//return toReturn;
 		}
 	}
 }

@@ -27,7 +27,7 @@ namespace GenBOE.ActionLogic._ModelView.Backend
 			this.BOEID = -1;
 			this.CLIN = string.Empty;
 			this.WBS = string.Empty;
-			this.CustomFieldValues = new Collection<BOECustomFieldViewModel>();
+			this.CustomFieldValues = new Collection<BOECustomFieldModelView>();
 			this.HeaderRteTemplateAnswers = new List<RTECustomTemplateQuestionAnswerModelView>();
 			this.DataSource = string.Empty;
 			this.HistoricMetricDisclosureChecked = false;
@@ -126,7 +126,7 @@ namespace GenBOE.ActionLogic._ModelView.Backend
 		/// <summary>
 		/// Gets or sets Custom Field Values
 		/// </summary>
-		public Collection<BOECustomFieldViewModel> CustomFieldValues { get; set; }
+		public Collection<BOECustomFieldModelView> CustomFieldValues { get; set; }
 
 		/// <summary>
 		/// Sources of Data
