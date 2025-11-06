@@ -60,16 +60,16 @@
 	$scope.model.PLD_ContractStatus = '';
 
 	$scope.isPLDFieldReadonly = function (fieldName) {
-		if (!$scope.model.IsPLDIntegrated || ($scope.model.PLD_PANumber == "''")) {
-			return "false";
+		if (!$scope.model.IsPLDIntegrated || ($scope.model.PLD_PANumber.trim() === '')) {
+			return false;
 		}
 
 		// Fields that are readonly when PLD is integrated and PA Number is set
 		var readonlyFields = ['WorkspaceName', 'LineOfBusiness', 'ContractStartDate', 'ContractEndDate', 'ProposalSubmittalDate', 'Description', 'RFPNumber', 'CostVolumeLeadPricerDisplayName'];
 		if (readonlyFields.indexOf(fieldName) !== -1) {
-			return "true";
+			return true;
 		} else {
-			return "false";
+			return false;
 		}
 	};
 
@@ -205,6 +205,7 @@
 			Shortname: '',
 			WorkspaceID: -1,                        // integer
 			WorkspaceName: '',
+			OriginalWorkspaceName: '',
 			RevisionWorkspaceName: '',
 			WorkspaceToCopyID: -1,                  // integer
 			WSExactCopy: null,
@@ -216,7 +217,7 @@
 			TrackingNumber: $scope.model.ptmTrackingNumber, // SSC only
 			ProposalClass: '-1',                    // SSC only
 			SelectedContractTypes: [],              // SSC only, array of strings
-			UsingTemplateBoe: false,
+			UsingTemplateBoe: '',
 			EnableSAPConnection: false,
 			CurrentPTMWorkspace: false,
 			EnableAssignTaskAuthor: false,
@@ -244,7 +245,6 @@
 
 	$scope.setStepSpecificElements = function (newStep) {
 		if ($scope.model.IsPLDIntegrated) {
-			$scope.data.WorkspaceName = $scope.model.WorkspaceName;
 			$scope.data.netRevision = $scope.model.netRevision;
 			$scope.data.TrackingNumber = $scope.model.PLD_PANumber;
 			$scope.data.ProposalTitle = $scope.model.PLD_PATitle;
@@ -252,12 +252,33 @@
 		}
 
 		if ($scope.model.IsPLDIntegrated && newStep === 5) {
-
-			$scope.data.WorkspaceName = $scope.data.nextRevision + " " + $scope.data.WorkspaceName;
+			// Store the original user-entered workspace name if not already stored
+			if (!$scope.data.OriginalWorkspaceName) {
+				$scope.data.OriginalWorkspaceName = $scope.data.WorkspaceName;
+			}
+			// Concatenate PLD_PANumber with the user-entered workspace name
+			$scope.data.WorkspaceName = $scope.data.PLD_PANumber + " " + $scope.data.OriginalWorkspaceName;
 			$scope.data.Shortname = $scope.data.nextRevision;
 		}
 
+		if ($scope.model.IsPLDIntegrated && newStep !== 5) {
+			// When not step 5, restore the original workspace name for editing
+			if ($scope.data.OrignalWorkspaceName) {
+				$scope.data.WorkspaceName = $scope.data.OriginalWorkspaceName;
+			}
+		}
+
 		if ($scope.model.IsPLDIntegrated && newStep === 3) {
+			// Initialize UsingTemplateBoe with default value if not already set
+			if ($scope.data.UsingTemplateBoe == null || $scope.data.UsingTemplateBoe === undefined) {
+				$scope.data.UsingTemplateBoe = false;
+			}
+
+			// Initialize ResourceDecimalPrecision with default value if not already set
+			if ($scope.data.ResourceDecimalPrecision === null || $scope.data.ResourceDecimalPrecision === undefined) {
+				$scope.data.ResourceDecimalPrecision = 2;
+			}
+
 			var getPLDProposalDetails = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.GetPLDProposalDetails);
 
 			$http({
