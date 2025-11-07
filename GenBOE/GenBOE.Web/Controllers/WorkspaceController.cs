@@ -97,7 +97,6 @@ namespace GenBOE.Web.Controllers
 		private IWbsDTODataLoader wbsLoader;
 		private IPerformingOrgDTODataLoader perfOrgLoader;
 		private PackageUtilities _PackageUtilities;
-		private IBoeApproverResponseDTODataLoader _IBoeApproverResponseDTODataLoader;
 		private RMSZoneTravelRatesFeesDataLoader travelRatesFeesDataLoader;
 		private IOffloadRatesDTOLoader offloadRatesDTOLoader;
 		private IRetriever retriever;
@@ -196,7 +195,6 @@ namespace GenBOE.Web.Controllers
 			IGenBOEControllerLogic inControllerLogic,
 			IFullWorkspaceRecalculation fullWsRecalc,
 			PackageUtilities inPackageUtilities,
-			IBoeApproverResponseDTODataLoader inBoeApproverResponseDTODataLoader,
 			RMSZoneTravelRatesFeesDataLoader travelRatesFeesDataLoader,
 			IOffloadRatesDTOLoader offloadRatesDTOLoader,
 			IRetriever retriever,
@@ -250,7 +248,6 @@ namespace GenBOE.Web.Controllers
 			this.perfOrgLoader = perfOrgLoader;
 			this.FullWsRecalc = fullWsRecalc;
 			_PackageUtilities = inPackageUtilities;
-			_IBoeApproverResponseDTODataLoader = inBoeApproverResponseDTODataLoader;
 			this.travelRatesFeesDataLoader = travelRatesFeesDataLoader;
 			this.offloadRatesDTOLoader = offloadRatesDTOLoader;
 			this.retriever = retriever;
@@ -2287,7 +2284,7 @@ namespace GenBOE.Web.Controllers
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_FIND_ADJACENT_BOES, SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, null);
 
 			// get all data
-			HomeWorkspaceGridModelView theModelView = _GetHomeWorkspaceGridData(ws);
+			HomeWorkspaceGridModelView theModelView = _ControllerLogic.GetHomeWorkspaceGridData(ws);
 			SortOrder order = SortOrder.Ascending;
 			if (sortOrder.ToLower() == "desc")
 			{
@@ -2376,7 +2373,7 @@ namespace GenBOE.Web.Controllers
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_WORKSPACE_HOME_MODEL, SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, null);
 
 			// get all data
-			HomeWorkspaceGridModelView theModelView = _GetHomeWorkspaceGridData(ws);
+			HomeWorkspaceGridModelView theModelView = _ControllerLogic.GetHomeWorkspaceGridData(ws);
 
 			theModelView.isReadOnly = SiteMasterUtilities.IsReadOnly();
 
@@ -6630,84 +6627,6 @@ namespace GenBOE.Web.Controllers
 			}
 
 			theModelView.TotalResults = filteredResources.Count;
-			return theModelView;
-		}
-
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-		private HomeWorkspaceGridModelView _GetHomeWorkspaceGridData(FullWorkspace workspace)
-		{
-			HomeWorkspaceGridModelView theModelView = new HomeWorkspaceGridModelView() { };
-
-			#region Load Data from the DB
-
-			UserDTO currentUser = workspace.CurrentActiveUser;
-			theModelView.CurrentUserDisplayName = currentUser.DisplayName;
-			HashSet<PermissionsDTO> workspacePermissions = new HashSet<PermissionsDTO>(this.PermissionsLoader.GetBOEPotentialPermissionsForWorkspace(workspace.Id));
-
-			bool isUserPotentialBOESubcontractorAuthor = (from p in workspacePermissions
-														  where p.ETIUserId == currentUser.UserID && p.Role == Role.SubcontractorAuthor
-														  select p).Any();
-
-			List<int> boeIds = workspace.Boes.Select(x => x.Id).ToList();
-			HashSet<PermissionsDTO> rolesForBoes = new HashSet<PermissionsDTO>(this.PermissionsLoader.GetBOEPermissions(boeIds));
-			HashSet<BoeApproverResponseDTO> allBoeApprovals = new HashSet<BoeApproverResponseDTO>(this._IBoeApproverResponseDTODataLoader.GetByBoeIds(boeIds));
-
-			HashSet<UserDTO> allUsersForBoes = new HashSet<UserDTO>(this.UserLoader.GetByIds(rolesForBoes.Select(x => x.ETIUserId).Distinct().ToList()));
-
-			#endregion
-
-			foreach (BoeDTO data in workspace.Boes)
-			{
-				HashSet<PermissionsDTO> boeRoles = new HashSet<PermissionsDTO>(rolesForBoes.Where(x => x.BOEId == data.Id).Where(x => x.BOEId.HasValue).ToCollection());
-				HashSet<BoeApproverResponseDTO> boeApprovals = new HashSet<BoeApproverResponseDTO>(allBoeApprovals.Where(x => x.BoeID == data.Id).ToCollection());
-
-				// Subcontractors view of a Workspace Home is filtered to show only those BOEs assigned to the subcontractor
-				// Notes:
-				//  Subcontractors will be limited to the "Subcontractor Author" permission.
-				//  When you go to the Manage BOEs page you can add/update BOEs.  Their status can be unassigned (no author or approver), Draft, Awaiting Approval or Approved.
-				//  Subcontractors should only see those BOEs (on the workspace homepage) they are assigned to and they should only ever be assigned the "Subcontractor Author" role.
-				if (isUserPotentialBOESubcontractorAuthor &&
-					!(from b in boeRoles
-					  where b.ETIUserId == currentUser.UserID && b.Role == Role.SubcontractorAuthor
-					  select b).Any())
-				{
-					continue;   // Skip this BOE -- Subcontractor is not assigned the "Subcontractor Author" role
-				}
-
-				WbsDTO wbsDTO = workspace.WbsElements.FirstOrDefault(x => x.Id == data.WBSID);
-				ClinDTO clinDTO = workspace.Clins.FirstOrDefault(x => x.Id == data.CLINID);
-
-				// get the list of Authors
-				HashSet<int> authorIds = new HashSet<int>(boeRoles.Where(x => x.Role == Role.Author).Select(x => x.ETIUserId).Distinct().ToList());
-				ICollection<UserDTO> distinctAuthors = allUsersForBoes.Where(x => authorIds.Contains(x.UserID)).ToList();
-				List<string> authorNames = distinctAuthors.Select(x => x.DisplayName).ToList();
-
-				// get the list of Subcontractors and append the string (Sub) to the end
-				HashSet<int> subcontractorAuthorIds = new HashSet<int>(boeRoles.Where(x => x.Role == Role.SubcontractorAuthor).Select(x => x.ETIUserId).Distinct().ToList());
-				ICollection<UserDTO> distinctSubcontractorAuthors = allUsersForBoes.Where(x => subcontractorAuthorIds.Contains(x.UserID)).ToList();
-				List<string> subcontractorNames = distinctSubcontractorAuthors.Select(x => x.DisplayName + CommonConstants.SUBCONTRACTOR_AUTHOR_SUFFIX).ToList();
-
-				// get the list of approvers
-				HashSet<int> approverIds = new HashSet<int>(boeRoles.Where(x => x.Role == Role.Approver).Select(x => x.ETIUserId).Distinct().ToList());
-				ICollection<UserDTO> distinctApprovers = allUsersForBoes.Where(x => approverIds.Contains(x.UserID)).OrderBy(x => x.DisplayName).ToList();
-
-				// combine the Authors and Subcontractor Authors lists and order it
-				ICollection<string> allAuthorNames = new Collection<string>((subcontractorNames.Union(authorNames).OrderBy(x => x).Distinct().ToList()));
-				ICollection<HomeWorkspaceGridApproverModelView> allApprovers = new Collection<HomeWorkspaceGridApproverModelView>();
-
-				foreach (UserDTO approver in distinctApprovers)
-				{
-					BoeApproverResponseDTO response = boeApprovals.FirstOrDefault(x => x.ETIUserID == approver.UserID);
-					if (response != null)
-					{
-						allApprovers.Add(new HomeWorkspaceGridApproverModelView(response.ApproverResponse, response.ApproverResponded, approver.DisplayName));
-					}
-				}
-
-				// add the data to our model
-				theModelView.items.Add(new HomeWorkspaceModelView(data, wbsDTO, clinDTO, allAuthorNames, allApprovers));
-			}
-
 			return theModelView;
 		}
 
