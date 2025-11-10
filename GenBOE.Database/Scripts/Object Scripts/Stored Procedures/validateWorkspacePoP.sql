@@ -190,10 +190,10 @@ BEGIN
         END
 
         -- If we got here, everything is valid
-        SELECT 1 AS IsValid;
+        SELECT CAST(1 AS bit) AS IsValid;
     END TRY
     BEGIN CATCH
-        SELECT 0 AS IsValid;
+        SELECT CAST(0 AS bit) AS IsValid;
     END CATCH
 END
 GO
