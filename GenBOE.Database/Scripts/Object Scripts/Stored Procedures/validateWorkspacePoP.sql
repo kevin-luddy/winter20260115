@@ -194,7 +194,6 @@ BEGIN
     END TRY
     BEGIN CATCH
         SELECT 0 AS IsValid;
-        THROW;
     END CATCH
 END
 GO

@@ -7,6 +7,7 @@
 namespace GenBOE.DataBridge.DTO
 {
 	using System;
+	using System.Linq;
 	using GenBOE.Models;
 	using IES.Common;
 
@@ -25,15 +26,11 @@ namespace GenBOE.DataBridge.DTO
 		[DbQuery]
 		public bool ValidateWorkspacePoP(int workspaceID, DateTime contractStartDate, DateTime contractEndDate)
 		{
-			bool toReturn = false;
-
 			using (GenBoeEntities gbe = new GenBoeEntities())
 			{
-				int sprocResult = gbe.validateWorkspacePoP(workspaceID, contractStartDate, contractEndDate);
-				toReturn = sprocResult == 1;
+				bool? sprocResult = gbe.validateWorkspacePoP(workspaceID, contractStartDate, contractEndDate).First();
+				return sprocResult != null && (bool)sprocResult;
 			}
-
-			return toReturn;
 		}
 	}
 }

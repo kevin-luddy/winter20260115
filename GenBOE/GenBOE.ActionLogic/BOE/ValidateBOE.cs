@@ -345,15 +345,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 			DateTime wsStartDate = GenBOEUtilities.AdjustDateTimePrecision(ws.ContractStartDate, DateTimePrecision.Day);
 			DateTime wsEndDate = GenBOEUtilities.AdjustDateTimePrecision(ws.ContractEndDate, DateTimePrecision.Day);
 
-			bool isValid;
-			try
-			{
-				isValid = validateWorkspaceLoader.ValidateWorkspacePoP(ws.Id, wsStartDate, wsEndDate);
-			}
-			catch (Exception)
-			{
-				isValid = false;
-			}
+			bool isValid = validateWorkspaceLoader.ValidateWorkspacePoP(ws.Id, wsStartDate, wsEndDate);
 
 			return isValid;
 		}
