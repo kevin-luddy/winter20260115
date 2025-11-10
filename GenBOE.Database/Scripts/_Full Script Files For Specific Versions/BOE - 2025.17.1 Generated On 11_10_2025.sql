@@ -1,14 +1,14 @@
 PRINT '###### SCRIPT IS STARTING ######';
 /*
-    This file was auto-generated for Release: 2025.17, on 11/10/2025.
+    This file was auto-generated for Release: 2025.17.1, on 11/10/2025.
     It contains all of the Release specific scripts, modifying data/tables as well as all of the Stored Procedures and User Defined Table Types.
 */
 
 /*
-    File: \Release 2025.17\1 - Release 2025.17 Script.sql
+    File: \Release 2025.17.1\1 - Release 2025.17.1 Script.sql
 */
-PRINT '### Starting file: \Release 2025.17\1 - Release 2025.17 Script.sql';
-EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2025.17';
+PRINT '### Starting file: \Release 2025.17.1\1 - Release 2025.17.1 Script.sql';
+EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2025.17.1';
 GO
 
 -- 11/4/2025 Tommy (e374897) PROPH-3389 Workspace PoP for ProPricer Validation
