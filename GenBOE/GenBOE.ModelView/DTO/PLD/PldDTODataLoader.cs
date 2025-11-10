@@ -22,12 +22,12 @@ namespace GenBOE.DataBridge.DTO
 	{
 
 		#region Fields
-		
+
 		/// <summary>
 		/// activeStatuses is for the known Active States that the Column in the View returns
 		/// </summary>
 		private static readonly string[] ACTIVE_STATUSES = new[] { "Open", "Submitted", "Negotiated", "In Negotiation" };
-		
+
 		/// <summary>
 		/// boolean for dispose
 		/// </summary>
@@ -79,7 +79,9 @@ namespace GenBOE.DataBridge.DTO
 					p.PA_Title.Contains(search));
 				}
 
-				query = query.Where(p => p.Last_Modified_Date >= Utilities.GetPLDCutoffDate())
+				DateTime cutoffDate = Utilities.GetPLDCutoffDate();
+
+				query = query.Where(p => p.Last_Modified_Date >= cutoffDate)
 					.OrderByDescending(p => p.Last_Modified_Date);
 
 
@@ -94,7 +96,7 @@ namespace GenBOE.DataBridge.DTO
 
 				return results;
 			}
-						
+
 		}
 
 		/// <summary>
@@ -143,7 +145,7 @@ namespace GenBOE.DataBridge.DTO
 		public ICollection<PLDProposalDTO> GetAllActiveProposals()
 		{
 			List<PLDProposalDTO> results = new List<PLDProposalDTO>();
-			
+
 			using (StopwatchTimer sw = new StopwatchTimer(logger))
 			{
 				try
@@ -251,7 +253,7 @@ namespace GenBOE.DataBridge.DTO
 			{
 				string lobConvertedName = string.Empty;
 
-				switch (proposal.LineOfBusiness.Trim())
+				switch (proposal.LineOfBusiness.ToLower().Trim())
 				{
 					case "sac":
 						lobConvertedName = "Sikorsky";
@@ -275,7 +277,7 @@ namespace GenBOE.DataBridge.DTO
 					default:
 						lobConvertedName = string.Empty;
 						break;
-				}				
+				}
 
 				PickListDto match = this.lobPickList.FirstOrDefault(p => string.Equals(p.Text.Trim(), lobConvertedName.Trim(), StringComparison.OrdinalIgnoreCase));
 
@@ -287,6 +289,8 @@ namespace GenBOE.DataBridge.DTO
 				else
 				{
 					proposal.LineOfBusiness = string.Empty;
+					proposal.LineOfBusinessId = (int)0;
+					continue;
 				}
 			}
 		}
