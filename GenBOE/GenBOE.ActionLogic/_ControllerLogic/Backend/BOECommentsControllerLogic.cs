@@ -1,4 +1,10 @@
-﻿namespace GenBOE.ActionLogic._ControllerLogic.Backend
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2025 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
+
+namespace GenBOE.ActionLogic._ControllerLogic.Backend
 {
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
