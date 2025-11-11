@@ -1,4 +1,9 @@
-﻿namespace GenBOE.Tests.DAL.DataLoaders
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2025 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
+namespace GenBOE.Tests.DAL.DataLoaders
 {
 	using System;
 	using System.Collections.Generic;
@@ -8,9 +13,15 @@
 	using GenBOE.DataBridge.DTO;
 	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+	/// <summary>
+	/// Workspace Validation Test
+	/// </summary>
 	[TestClass]
 	public class ValidateWorkspaceDataLoaderTest
 	{
+		/// <summary>
+		/// Workspace validation on a valid workspace
+		/// </summary>
 		[TestMethod]
 		public void L_ValidateWorkspacePoPValid()
 		{
@@ -25,6 +36,9 @@
 			Assert.IsTrue(isValid, "Workspace should be valid within the given date range");
 		}
 
+		/// <summary>
+		/// Workspace validation on invalid workspace
+		/// </summary>
 		[TestMethod]
 		public void L_ValidateWorkspacePoPInvalid()
 		{
