@@ -2007,8 +2007,9 @@ namespace GenTRAC.ActionLogic
 		/// <param name="proposalUserInfo">the proposal users to be verified</param>
 		/// <param name="inValidationErrors">validation errors collection</param>
 		/// <param name="isNss">indicates if LOB is set to National Security Space</param>
+		/// <param name="isNewBusiness">indicates if proposal type is New Business Competitive OR Non-Competitive</param>
 		/// <returns>True if there are invalid users on an update but were not changed, false otherwise.</returns>
-		public bool ValidateUserTypes(int? proposalId, ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, ICollection<ValidationMessage> inValidationErrors, bool isNss = false)
+		public bool ValidateUserTypes(int? proposalId, ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, ICollection<ValidationMessage> inValidationErrors, bool isNss = false, bool isNewBusiness = false)
 		{
 			if (proposalApprovalsInfo == null)
 			{
@@ -2055,12 +2056,12 @@ namespace GenTRAC.ActionLogic
 				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.PROPOSALMGR_REQUIRED));
 			}
 
-			if (isNss && string.IsNullOrWhiteSpace(proposalUserInfo.ProgramMgrNtid))
+			if (isNss && isNewBusiness && string.IsNullOrWhiteSpace(proposalUserInfo.ProgramMgrNtid))
 			{
 				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.PROGRAMMGR_REQUIRED));
 			}
 
-			if (isNss && string.IsNullOrWhiteSpace(proposalUserInfo.MsacPOCNtid))
+			if (isNss && isNewBusiness && string.IsNullOrWhiteSpace(proposalUserInfo.MsacPOCNtid))
 			{
 				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.MSAC_POC_REQUIRED));
 			}

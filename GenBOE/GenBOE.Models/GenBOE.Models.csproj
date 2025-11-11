@@ -563,6 +563,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </None>
     <None Include="App.Config">
       <SubType>Designer</SubType>
     </None>

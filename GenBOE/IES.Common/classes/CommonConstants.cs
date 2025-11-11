@@ -163,6 +163,11 @@ namespace IES.Common.classes
 		public static readonly string WORKSPACE_REPORT_WORKSHEET_ENTERPRISE_SKILL_MIX = "LM Enterprise Skill Mix";
 
 		/// <summary>
+		/// The workspace data report Skill Mix Summary worksheet
+		/// </summary>
+		public static readonly string WORKSPACE_REPORT_WORKSHEET_SKILL_MIX_SUMMARY = "Skill Mix Summary";
+
+		/// <summary>
 		/// The workspace data report WBS worksheet
 		/// </summary>
 		public static readonly string WORKSPACE_REPORT_WORKSHEET_WBS = "WBS";

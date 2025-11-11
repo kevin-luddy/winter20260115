@@ -4799,10 +4799,10 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		}
 
 		/// <summary>
-		/// Test Refresh SkillMix cleanup method to handle duplicate Current Resources for RMS
+		/// Test Refresh SkillMix cleanup method to handle duplicate Proposed Resources for RMS
 		/// </summary>
 		[TestMethod]
-		public void RefreshSkillMix_All_Cleanup_RMS_DuplicateCurrentResource_Test()
+		public void RefreshSkillMix_All_Cleanup_RMS_DuplicateProposedResource_Test()
 		{
 			BOELaborControllerLogic sut = CreateSystemMST();
 

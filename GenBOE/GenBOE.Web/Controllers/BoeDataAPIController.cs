@@ -181,10 +181,10 @@ namespace GenBOE.Web.Controllers
 		#endregion
 
 		/// <summary>
-		/// Get Proposal data for ACV. Limits the number of records returned to 100.
+		/// Get Workspace data for ACV. Limits the number of records returned to 100.
 		/// </summary>
 		/// <param name="ptmTrackingNumber">PTM Tracking Number</param>
-		/// <returns>Proposal Data</returns>
+		/// <returns>Workspace Data</returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESResponse<AcvWorkspaceData> GetWorkspaceDataForProposal(string ptmTrackingNumber)
@@ -195,38 +195,34 @@ namespace GenBOE.Web.Controllers
 			{
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-				ICollection<(int Id, string shortName, string longName, bool containsOCI)> data = this.loader.GetWorkspaceDataForProposal(ptmTrackingNumber);
-				List<AcvWorkspaceData> acvWorkspaces = data.Select(x => new AcvWorkspaceData() { Id = x.Id, ShortName = x.shortName, LongName = x.longName }).ToList();
+				ICollection<(int Id, string shortName, string longName, bool containsOCI, string ptmTrackingNumber)> data = this.loader.GetWorkspaceDataForProposal(ptmTrackingNumber);
+				ParseAcvWorkspaceData(result, data);
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown error occurred returning Workspace data: {ex.Message}");
+			}
 
-				foreach ((int Id, string shortName, string longName, bool containsOCI) workspace in data)
-				{
-					if (workspace.containsOCI)
-					{
-						// do permission check if OCI
-						// permission check throws exceptions so we need to catch them and handle
-						FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace.shortName);
-						try
-						{
-							SecurityAuthorization permission = this.CheckPermission(SecurityPage.WorkspaceHome, ws);
+			return result;
+		}
 
-							if (permission < SecurityAuthorization.Read)
-							{
-								acvWorkspaces.RemoveAll(x => x.Id == workspace.Id);
-							}
-						}
-						catch (ValidationException)
-						{
-							acvWorkspaces.RemoveAll(x => x.Id == workspace.Id);
-						}
-						catch (UnauthorizedAccessException)
-						{
-							acvWorkspaces.RemoveAll(x => x.Id == workspace.Id);
-						}
-					}
-				}
+		/// <summary>
+		/// Get Workspace data for ACV. Limits the number of records returned to 100.
+		/// </summary>
+		/// <returns>Workspace Data List</returns>
+		[HttpGet]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESResponse<AcvWorkspaceData> GetWorkspaceData()
+		{
+			IESResponse<AcvWorkspaceData> result = new IESResponse<AcvWorkspaceData>();
 
-				result.Data = acvWorkspaces;
-				result.IsSuccessful = true;
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				ICollection<(int Id, string shortName, string longName, bool containsOCI, string ptmTrackingNumber)> data = this.loader.GetWorkspaceData();
+				ParseAcvWorkspaceData(result, data);
 			}
 			catch (Exception ex)
 			{
@@ -1783,6 +1779,46 @@ namespace GenBOE.Web.Controllers
 					TotalCost = workspace.IsUsingTM ? p.TotalCost + p.TMCost : p.TotalCost,
 					IsIncomplete = p.IsIncomplete
 				}).ToList();
-		}		
+		}
+
+		/// <summary>
+		/// Parse out Workspace Data to AcvWorkspaceData Model and populate Result
+		/// </summary>
+		/// <param name="result">Response to send back to caller</param>
+		/// <param name="data">Data to parse out</param>
+		private void ParseAcvWorkspaceData(IESResponse<AcvWorkspaceData> result, ICollection<(int Id, string shortName, string longName, bool containsOCI, string ptmTrackingNumber)> data)
+		{
+			List<AcvWorkspaceData> acvWorkspaces = data.Select(x => new AcvWorkspaceData() { Id = x.Id, ShortName = x.shortName, LongName = x.longName, PtmTrackingNumber = x.ptmTrackingNumber, IsCurrentWorkspace = true }).ToList();
+
+			foreach ((int Id, string shortName, string longName, bool containsOCI, string ptmTrackingNumber) workspace in data)
+			{
+				if (workspace.containsOCI)
+				{
+					// do permission check if OCI
+					// permission check throws exceptions so we need to catch them and handle
+					FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace.shortName);
+					try
+					{
+						SecurityAuthorization permission = this.CheckPermission(SecurityPage.WorkspaceHome, ws);
+
+						if (permission < SecurityAuthorization.Read)
+						{
+							acvWorkspaces.RemoveAll(x => x.Id == workspace.Id);
+						}
+					}
+					catch (ValidationException)
+					{
+						acvWorkspaces.RemoveAll(x => x.Id == workspace.Id);
+					}
+					catch (UnauthorizedAccessException)
+					{
+						acvWorkspaces.RemoveAll(x => x.Id == workspace.Id);
+					}
+				}
+			}
+
+			result.Data = acvWorkspaces;
+			result.IsSuccessful = true;
+		}
 	}
 }
