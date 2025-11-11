@@ -2682,7 +2682,6 @@ namespace GenTRAC.Tests.ActionLogic
 		public void C_ValidateGeneralInfoTypes_AlternativePricingMethodology_Valid()
 		{
 			ProposalControllerLogic sut = this.CreateSystem();
-			List<ValidationMessage> inValidationErrors = new List<ValidationMessage>();
 			ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
 			SystemConfiguration.Instance().CompanyConfigurationSettings.AppSettings["AltPricingMethodStartDate"] = DateTime.UtcNow.AddDays(-1).ToShortDateString();
 
@@ -2754,7 +2753,6 @@ namespace GenTRAC.Tests.ActionLogic
 		public void C_ValidateGeneralInfoTypes_AlternativePricingMethodology_Invalid_SubjectToApmRequired()
 		{
 			ProposalControllerLogic sut = this.CreateSystem();
-			List<ValidationMessage> inValidationErrors = new List<ValidationMessage>();
 			ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
 			SystemConfiguration.Instance().CompanyConfigurationSettings.AppSettings["AltPricingMethodStartDate"] = DateTime.UtcNow.AddDays(-1).ToShortDateString();
 
@@ -2799,7 +2797,6 @@ namespace GenTRAC.Tests.ActionLogic
 		public void C_ValidateGeneralInfoTypes_AlternativePricingMethodology_Invalid_ApmSelectionRequired()
 		{
 			ProposalControllerLogic sut = this.CreateSystem();
-			List<ValidationMessage> inValidationErrors = new List<ValidationMessage>();
 			ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
 			SystemConfiguration.Instance().CompanyConfigurationSettings.AppSettings["AltPricingMethodStartDate"] = DateTime.UtcNow.AddDays(-1).ToShortDateString();
 
@@ -2845,7 +2842,6 @@ namespace GenTRAC.Tests.ActionLogic
 		public void C_ValidateGeneralInfoTypes_AlternativePricingMethodology_Invalid_ApmOtherTextRequired()
 		{
 			ProposalControllerLogic sut = this.CreateSystem();
-			List<ValidationMessage> inValidationErrors = new List<ValidationMessage>();
 			ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
 			SystemConfiguration.Instance().CompanyConfigurationSettings.AppSettings["AltPricingMethodStartDate"] = DateTime.UtcNow.AddDays(-1).ToShortDateString();
 
@@ -2892,7 +2888,6 @@ namespace GenTRAC.Tests.ActionLogic
 		public void C_ValidateGeneralInfoTypes_AlternativePricingMethodology_Invalid_ApmOtherTextLength()
 		{
 			ProposalControllerLogic sut = this.CreateSystem();
-			List<ValidationMessage> inValidationErrors = new List<ValidationMessage>();
 			ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
 			SystemConfiguration.Instance().CompanyConfigurationSettings.AppSettings["AltPricingMethodStartDate"] = DateTime.UtcNow.AddDays(-1).ToShortDateString();
 
@@ -2939,7 +2934,6 @@ namespace GenTRAC.Tests.ActionLogic
 		public void C_ValidateGeneralInfoTypes_AlternativePricingMethodology_Invalid_ApmOtherTextAlphanumeric()
 		{
 			ProposalControllerLogic sut = this.CreateSystem();
-			List<ValidationMessage> inValidationErrors = new List<ValidationMessage>();
 			ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
 			SystemConfiguration.Instance().CompanyConfigurationSettings.AppSettings["AltPricingMethodStartDate"] = DateTime.UtcNow.AddDays(-1).ToShortDateString();
 
@@ -2986,7 +2980,6 @@ namespace GenTRAC.Tests.ActionLogic
 		public void C_ValidateGeneralInfoTypes_AlternativePricingMethodology_StartDateTests()
 		{
 			ProposalControllerLogic sut = this.CreateSystem();
-			List<ValidationMessage> inValidationErrors = new List<ValidationMessage>();
 			ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
 			SystemConfiguration.Instance().CompanyConfigurationSettings.AppSettings["AltPricingMethodStartDate"] = DateTime.UtcNow.AddDays(1).ToShortDateString();
 
