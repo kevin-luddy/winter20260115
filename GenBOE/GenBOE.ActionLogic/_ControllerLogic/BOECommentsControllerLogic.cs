@@ -24,8 +24,10 @@ namespace GenBOE.ActionLogic
     using IES.Common.Exceptions;
 
     public class BOECommentsControllerLogic
-    {
-        private IBOECommentDTODataLoader boeCommentDTOLoader;
+	{
+		private IFullObjectFactory factory; 
+		private BOEHistoryDTODataLoader boeHistoryLoader;
+		private IBOECommentDTODataLoader boeCommentDTOLoader;
         private IUserDTODataLoader userDTOLoader;
         private ISecurityInformation securityInformation;
         private IBoeEmailer emailer;
@@ -35,7 +37,9 @@ namespace GenBOE.ActionLogic
         private IPermissionsDTODataLoader permissionsDTOLoader;
 
         public BOECommentsControllerLogic(
-            IBOECommentDTODataLoader boeCommentDTOLoader,
+			IFullObjectFactory factory,
+			BOEHistoryDTODataLoader boeHistoryLoader,
+			IBOECommentDTODataLoader boeCommentDTOLoader,
             IUserDTODataLoader userDTOLoader,
             ISecurityInformation securityInformation,
             IBoeEmailer inEmailer,
@@ -44,6 +48,8 @@ namespace GenBOE.ActionLogic
             IBOEStateMachine inBoeStateMachine,
             IPermissionsDTODataLoader permissionsDTOLoader)
         {
+			this.factory = factory;
+			this.boeHistoryLoader = boeHistoryLoader;
             this.boeCommentDTOLoader = boeCommentDTOLoader;
             this.userDTOLoader = userDTOLoader;
             this.securityInformation = securityInformation;
@@ -54,7 +60,89 @@ namespace GenBOE.ActionLogic
             this.permissionsDTOLoader = permissionsDTOLoader;
         }
 
-        public Collection<BOEComment> GetCommentsByBOEId(int boeID)
+		/// <summary>
+		/// Gets BOE comments view data
+		/// </summary>
+		/// <param name="ws">Full workspace</param>
+		/// <param name="boeID">BOE ID</param>
+		/// <param name="pagesToCheckExtraPermissionDictionary">Extra permissions for pages to check</param>
+		public BOECommentsModelView GetBOEComments(FullWorkspace ws, int boeID, Dictionary<SecurityPage, SecurityAuthorization> pagesToCheckExtraPermissionDictionary)
+		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
+
+			if (pagesToCheckExtraPermissionDictionary == null)
+			{
+				throw new ArgumentNullException(nameof(pagesToCheckExtraPermissionDictionary));
+			}
+			FullBoe boe = this.factory.CreateFullBoe(boeID);
+
+			int currentUserID = ws.CurrentActiveUser.UserID;
+
+			BOECommentsModelView theModelView = new BOECommentsModelView(currentUserID, boe.ApproverResponses);
+			SecurityAuthorization permission;
+
+			if (pagesToCheckExtraPermissionDictionary.TryGetValue(SecurityPage.BOEApproval, out permission))
+			{
+				theModelView.ApprovalsReadOnly = this.GetReadOnlyAttribute(permission);
+			}
+			if (pagesToCheckExtraPermissionDictionary.TryGetValue(SecurityPage.BOEComment, out permission))
+			{
+				theModelView.CommentsReadOnly = this.GetReadOnlyAttribute(permission);
+			}
+			if (pagesToCheckExtraPermissionDictionary.TryGetValue(SecurityPage.BOECommentResponse, out permission))
+			{
+				theModelView.ResponsesReadOnly = this.GetReadOnlyAttribute(permission);
+			}
+			theModelView.CurrentUserId = currentUserID;
+			if (Utilities.IsReadOnly())
+			{
+				SecurityAuthorization systemAdminSecurityAuthorization = pagesToCheckExtraPermissionDictionary.First(p => p.Key == SecurityPage.SystemAdmin).Value;
+				if (systemAdminSecurityAuthorization != SecurityAuthorization.CreateReadUpdateDelete)
+				{
+					theModelView.ApprovalsReadOnly = true;
+					theModelView.CommentsReadOnly = true;
+					theModelView.ResponsesReadOnly = true;
+				}
+			}
+
+			theModelView.WorkspaceState = ws.WorkspaceState;
+			theModelView.Comments = GetCommentsByBOEId(boeID);
+
+			// Get all History entries
+			ICollection<BOEHistoryDTO> boeHistories = boeHistoryLoader.GetBOEHistory(boeID);
+
+			// Initialize a list of field types that we want to display in the comments grid
+			Collection<FieldType> fieldTypes = new Collection<FieldType>
+			{
+				FieldType.ApproverResponse
+			};
+
+			// Add each history item with a desired field type to the list of comments to render
+			foreach (BOEHistoryDTO boeHistory in boeHistories)
+			{
+				if (fieldTypes.Contains(boeHistory.Field))
+				{
+					BOEComment comment = new BOEComment
+					{
+						CommentType = BOECommentType.Approval,
+						ReviewerComment = boeHistory.NewValue,
+						ReviewerName = userDTOLoader.GetUserByID(boeHistory.PerformedByETIUserId).DisplayName,
+						ReviewerCommentUpdateDT = boeHistory.Date
+					};
+					theModelView.Comments.Add(comment);
+				}
+			}
+
+			// Sort the Comments so that Approvals/Rejections are interweaved with true reviewer comments by date
+			theModelView.Comments = new Collection<BOEComment>(theModelView.Comments.OrderBy(c => c.ReviewerCommentUpdateDT).ToArray());
+
+			return theModelView;
+		}
+
+		public Collection<BOEComment> GetCommentsByBOEId(int boeID)
         {
             Collection<BOEComment> toReturn = new Collection<BOEComment>();
 
@@ -295,96 +383,113 @@ namespace GenBOE.ActionLogic
                     int boeCommenter = boeCommentsToSave.First().BOECommentETIUserID;
                     this.emailer.SendBOEAuthorReviewerCommented(fullBOE, boeCommenter);
                 }
-            }
-        }
+			}
+		}
 
-        /// <summary>
-        /// Validates and prepares comments for a save
-        /// </summary>
-        /// <param name="boeDto">Boe</param>
-        /// <param name="boeComments">Comments</param>
-        /// <param name="currentUserID">Current User Id</param>
-        /// <param name="boeCommentsToSave">Comments (if any) that need to be saved will be placed into this collection</param>
-        /// <returns>An indication whether an email needs to be sent (SendBOEAuthorReviewerCommentedEmailed)</returns>
-        internal bool ValidateAndPreProcessCommentsForSave(BoeDTO boeDto, BOECommentsModelView boeComments, int currentUserID, ref Collection<BOECommentDTO> boeCommentsToSave)
-        {
-            if (boeCommentsToSave == null) { boeCommentsToSave = new Collection<BOECommentDTO>(); }
+		/// <summary>
+		/// Validates and prepares comments for a save
+		/// </summary>
+		/// <param name="boeDto">Boe</param>
+		/// <param name="boeComments">Comments</param>
+		/// <param name="currentUserID">Current User Id</param>
+		/// <param name="boeCommentsToSave">Comments (if any) that need to be saved will be placed into this collection</param>
+		/// <returns>An indication whether an email needs to be sent (SendBOEAuthorReviewerCommentedEmailed)</returns>
+		internal bool ValidateAndPreProcessCommentsForSave(BoeDTO boeDto, BOECommentsModelView boeComments, int currentUserID, ref Collection<BOECommentDTO> boeCommentsToSave)
+		{
+			if (boeCommentsToSave == null) { boeCommentsToSave = new Collection<BOECommentDTO>(); }
 
-            bool SendBOEAuthorReviewerCommentedEmailed = false;
+			bool SendBOEAuthorReviewerCommentedEmailed = false;
 
-            if (boeComments.Comments.Any())
-            {
-                int insertIndex = -1;
-                foreach (BOEComment boeComment in boeComments.Comments)
-                {
-                    // Create the DTOs to save
-                    BOECommentDTO commentDTO = null;
+			if (boeComments.Comments.Any())
+			{
+				int insertIndex = -1;
+				foreach (BOEComment boeComment in boeComments.Comments)
+				{
+					// Create the DTOs to save
+					BOECommentDTO commentDTO = null;
 
-                    // Create a DTO for the author response, if it exists
-                    if (!string.IsNullOrEmpty(boeComment.AuthorResponse))
-                    {
-                        // If the ID passed in is negative, this is a new comment.
-                        // So, we need to set the ID to a unique negative count.
-                        if (boeComment.AuthorResponseID < 0)
-                        {
-                            commentDTO = new BOECommentDTO();
-                            commentDTO.Id = insertIndex;
-                            commentDTO.UpdateDate = DateTime.Now;
-                            insertIndex--;
-                        }
-                        else
-                        {
-                            // get the comment from the existing comments.
-                            commentDTO = this.boeCommentDTOLoader.GetByIds(new List<int>() { boeComment.AuthorResponseID }).First();
-                            DataRelationshipVerifier.VerifyDataRelation(commentDTO, boeDto.Id);
+					// Create a DTO for the author response, if it exists
+					if (!string.IsNullOrEmpty(boeComment.AuthorResponse))
+					{
+						// If the ID passed in is negative, this is a new comment.
+						// So, we need to set the ID to a unique negative count.
+						if (boeComment.AuthorResponseID < 0)
+						{
+							commentDTO = new BOECommentDTO();
+							commentDTO.Id = insertIndex;
+							commentDTO.UpdateDate = DateTime.Now;
+							insertIndex--;
+						}
+						else
+						{
+							// get the comment from the existing comments.
+							commentDTO = this.boeCommentDTOLoader.GetByIds(new List<int>() { boeComment.AuthorResponseID }).First();
+							DataRelationshipVerifier.VerifyDataRelation(commentDTO, boeDto.Id);
 
 							// set the UpdateDate for optimistic locking purposes
 							commentDTO.UpdateDate = new DateTime(long.Parse(boeComment.AuthorResponseUpdateDTLong));
 						}
 
-                        commentDTO.FieldID = (int)FieldType.AuthorResponse;
-                        commentDTO.BOEComment = boeComment.AuthorResponse;
-                        commentDTO.BOEResponseToCommentID = boeComment.ReviewerCommentID;
-                    }
-                    // Create a DTO for the reviewer comment
-                    else if (!string.IsNullOrEmpty(boeComment.ReviewerComment))
-                    {
-                        // If the ID passed in is negative, this is a new comment.
-                        // So, we need to set the ID to a unique negative count.
-                        if (boeComment.ReviewerCommentID < 0)
-                        {
-                            commentDTO = new BOECommentDTO();
-                            commentDTO.Id = insertIndex--;
-                            commentDTO.UpdateDate = DateTime.Now;
-                        }
-                        else
-                        {
-                            // get the comment from the existing comments.
-                            commentDTO = this.boeCommentDTOLoader.GetByIds(new List<int>() { boeComment.ReviewerCommentID }).First();
-                            DataRelationshipVerifier.VerifyDataRelation(commentDTO, boeDto.Id);
+						commentDTO.FieldID = (int)FieldType.AuthorResponse;
+						commentDTO.BOEComment = boeComment.AuthorResponse;
+						commentDTO.BOEResponseToCommentID = boeComment.ReviewerCommentID;
+					}
+					// Create a DTO for the reviewer comment
+					else if (!string.IsNullOrEmpty(boeComment.ReviewerComment))
+					{
+						// If the ID passed in is negative, this is a new comment.
+						// So, we need to set the ID to a unique negative count.
+						if (boeComment.ReviewerCommentID < 0)
+						{
+							commentDTO = new BOECommentDTO();
+							commentDTO.Id = insertIndex--;
+							commentDTO.UpdateDate = DateTime.Now;
+						}
+						else
+						{
+							// get the comment from the existing comments.
+							commentDTO = this.boeCommentDTOLoader.GetByIds(new List<int>() { boeComment.ReviewerCommentID }).First();
+							DataRelationshipVerifier.VerifyDataRelation(commentDTO, boeDto.Id);
 
-                            commentDTO.Id = boeComment.ReviewerCommentID;
+							commentDTO.Id = boeComment.ReviewerCommentID;
 
 							// set the UpdateDate for optimistic locking purposes
 							commentDTO.UpdateDate = new DateTime(long.Parse(boeComment.ReviewerCommentUpdateDTLong));
-                        }
+						}
 
-                        commentDTO.FieldID = (int)FieldType.Comment;
-                        commentDTO.BOEComment = boeComment.ReviewerComment;
-                        SendBOEAuthorReviewerCommentedEmailed = true;
-                    }
+						commentDTO.FieldID = (int)FieldType.Comment;
+						commentDTO.BOEComment = boeComment.ReviewerComment;
+						SendBOEAuthorReviewerCommentedEmailed = true;
+					}
 
-                    if (commentDTO != null)
-                    {
-                        commentDTO.BOECommentETIUserID = currentUserID;
-                        commentDTO.BoeID = boeDto.Id;
-                        commentDTO.Updateable = UpdateType.Upsert;
-                        boeCommentsToSave.Add(commentDTO);
-                    }
-                }
-            }
+					if (commentDTO != null)
+					{
+						commentDTO.BOECommentETIUserID = currentUserID;
+						commentDTO.BoeID = boeDto.Id;
+						commentDTO.Updateable = UpdateType.Upsert;
+						boeCommentsToSave.Add(commentDTO);
+					}
+				}
+			}
 
-            return SendBOEAuthorReviewerCommentedEmailed;
-        }
-    }
+			return SendBOEAuthorReviewerCommentedEmailed;
+		}
+
+
+		/// <summary>
+		/// Get the read only attribute for the given workspace
+		/// </summary>
+		/// <param name="workspace">The workspace ID</param>
+		/// <returns>False if the workspace is in the 'Working' state, true otherwise</returns>
+		private bool GetReadOnlyAttribute(SecurityAuthorization securityAuthorization)
+		{
+			// Default is read-only
+			bool toReturn = true;
+
+			// Return true if the Security Authorization is Read or None
+			toReturn = (securityAuthorization == SecurityAuthorization.Read || securityAuthorization == SecurityAuthorization.None);
+
+			return toReturn;
+		}
+	}
 }

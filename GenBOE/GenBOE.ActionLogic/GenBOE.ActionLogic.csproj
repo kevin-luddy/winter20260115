@@ -289,7 +289,6 @@
     <Compile Include="Reporting\ConfidenceReportConstants.cs" />
     <Compile Include="Reporting\FullBOEStatusReportModelView.cs" />
     <Compile Include="Reporting\IBOEConfidenceReport.cs" />
-    <Compile Include="_ControllerLogic\Backend\BOECommentsControllerLogic.cs" />
     <Compile Include="_ControllerLogic\Backend\BOEConfigurationControllerLogic.cs" />
     <Compile Include="_ControllerLogic\Backend\CLINControllerLogic.cs" />
     <Compile Include="_ControllerLogic\Backend\WBSControllerLogic.cs" />

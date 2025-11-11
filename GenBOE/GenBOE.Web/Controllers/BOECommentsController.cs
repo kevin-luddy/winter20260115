@@ -19,8 +19,8 @@ namespace GenBOE.Web.Controllers
     using GenBOE.DataBridge.DTO;
     using GenBOE.Objects;
     using GenBOE.Web.Common;
-	using GenBOE.ActionLogic._ControllerLogic.Backend;
 	using GenBOE.ActionLogic.ControllerLogic;
+	using GenBOE.ActionLogic;
 
 	public class BOECommentsController : GenBOEController
     {

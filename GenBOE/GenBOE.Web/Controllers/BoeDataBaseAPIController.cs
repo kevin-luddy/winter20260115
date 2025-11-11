@@ -138,80 +138,6 @@ namespace GenBOE.Web.Controllers
 			return securityDictionary.Values.First();
 		}
 
-
-
-		/// <summary>
-		/// Check permissions and return the authorization of the user
-		/// </summary>
-		/// <param name="inPage">The page to check</param>
-		/// <param name="inWorkspace">The workspace id (optional, null if not required)</param>
-		/// <param name="inBOEId">The BOE ID (optional, null if not required)</param>
-		/// <returns>The view to redirect to if security error, NULL otherwise (i.e. NULL indicates the user is allowed to proceed</returns>
-		protected SecurityAuthorization CheckPermissions(SecurityPage inPage, WorkspaceDTO workspace, int? inBOEId)
-		{
-			Dictionary<SecurityPage, SecurityAuthorization> securityPermission = CheckPermissions(new Collection<SecurityPage>() { inPage }, workspace, inBOEId);
-
-			// NOTE: If you want to turn security "off" uncomment the next line.  everyone accessing the system will get CRUD access...
-			// authorizationForUser = SecurityAuthorization.CreateReadUpdateDelete;
-
-			return securityPermission.Values.First();
-		}
-
-		/// <summary>
-		/// Check permissions and return the authorization of the user
-		/// </summary>
-		/// <param name="inPage">The page to check</param>
-		/// <param name="inWorkspace">The workspace id (optional, null if not required)</param>
-		/// <param name="inBOEId">The BOE ID (optional, null if not required)</param>
-		/// <returns>The view to redirect to if security error, NULL otherwise (i.e. NULL indicates the user is allowed to proceed</returns>
-		protected Dictionary<SecurityPage, SecurityAuthorization> CheckPermissions(Collection<SecurityPage> inPages, WorkspaceDTO workspace, int? inBOEId)
-		{
-			if (inPages == null)
-			{
-				throw new ArgumentNullException(nameof(inPages));
-			}
-			if (inBOEId.HasValue)
-			{
-				if (workspace == null) { throw new ArgumentNullException(nameof(workspace), "If BOEId is specified, workspace must be specified as well"); }
-				if (!this.Factory.BoeLoader.DoesWorkspaceContainBoe(workspace.Id, inBOEId.Value))
-				{ throw new InvalidDataRelationException("The requested BOE: " + inBOEId.Value + " does not belong to the current workspace: " + workspace.Id + "."); }
-			}
-
-			Dictionary<SecurityPage, SecurityAuthorization> securityDictionary = new Dictionary<SecurityPage, SecurityAuthorization>();
-			int? wsId = workspace == null ? null : (int?)workspace.Id;
-
-			UserDTO user = this.UserLoader.GetUserForActiveUser();
-			string overrideNonUsString = ConfigurationUtilities.GetAppSetting("OverrideSubNonUs");
-			bool overrideNonUs = string.IsNullOrEmpty(overrideNonUsString) ? false : overrideNonUsString.ToLower() == "true";
-			bool? isUsPerson = overrideNonUs ? true : user.IsUsPerson;
-
-			if (isUsPerson == null)
-			{
-				throw new ValidationException("IsUsPerson cannot be null");
-			}
-
-			IReadOnlyCollection<SecurityPermissionsResponse> rolesForUser = this.Factory.GetPermissionsForUser(user.NTID);
-
-			foreach (SecurityPage page in inPages)
-			{
-				SecurityAuthorization authorizationForUser;
-
-				if ((bool)isUsPerson)
-				{
-					authorizationForUser = SecurityAccess.IsAuthorized(
-						new SecurityPermissionsRequested { PageToCheck = page, WorkspaceId = wsId, BOEId = inBOEId }, workspace, rolesForUser);
-				}
-				else
-				{
-					throw new UnauthorizedAccessException("Access is denied for non-US users.");
-				}
-
-				securityDictionary.Add(page, authorizationForUser);
-			}
-
-			return securityDictionary;
-		}
-
 		/// <summary>
 		/// Initializes a controller action.
 		/// </summary>
@@ -304,8 +230,17 @@ namespace GenBOE.Web.Controllers
 			return sw;
 		}
 
-		protected Stopwatch InitializeActionWithAnyPermission(Logger logger, string functionName, Collection<SecurityPage> pages, SecurityAuthorization authorizationRequired,
-			WorkspaceDTO ws, int? boeID)
+		/// <summary>
+		/// Initializes a controller action
+		/// </summary>
+		/// <param name="logger">The logger for the controller calling the action</param>
+		/// <param name="functionName">The name of the function being initialized</param>
+		/// <param name="pages">The security pages being initialized</param>
+		/// <param name="authorizationRequired">The minimum required to perform the action</param>
+		/// <param name="ws">Optional workspace parameter (can be null)</param>
+		/// <param name="boeID">Optional BOE ID parameter (can be null)</param>
+		/// <returns>A stopwatch to track the action start</returns>
+		protected Stopwatch InitializeActionWithAnyPermission(Logger logger, string functionName, Collection<SecurityPage> pages, SecurityAuthorization authorizationRequired, WorkspaceDTO ws, int? boeID)
 		{
 			if (logger == null)
 			{
@@ -323,7 +258,7 @@ namespace GenBOE.Web.Controllers
 
 			foreach (SecurityPage page in pages)
 			{
-				SecurityAuthorization authorization = CheckPermissions(page, ws, boeID);
+				SecurityAuthorization authorization = CheckPermission(page, ws, boeID);
 
 				if (authorization >= authorizationRequired)
 				{

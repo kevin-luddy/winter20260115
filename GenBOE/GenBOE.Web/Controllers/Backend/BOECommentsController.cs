@@ -1,20 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Web.Http;
-using GenBOE.ActionLogic._ControllerLogic.Backend;
-using GenBOE.ActionLogic.Common;
-using GenBOE.ActionLogic.ModelView.BOE;
-using GenBOE.DataBridge.Common.Interfaces;
-using GenBOE.DataBridge.DTO;
-using GenBOE.Objects;
-using IES.Common;
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2025 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace GenBOE.Web.Controllers.Backend
 {
-    public class BOECommentsController : BoeDataBaseAPIController
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Diagnostics;
+	using System.Web.Http;
+	using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.ModelView.BOE;
+	using GenBOE.DataBridge.Common.Interfaces;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Objects;
+	using IES.Common;
+
+	/// <summary>
+	/// BOE Comments Controller
+	/// </summary>
+	public class BOECommentsController : BoeDataBaseAPIController
 	{
 		/// <summary>
 		/// Logger
@@ -25,6 +33,15 @@ namespace GenBOE.Web.Controllers.Backend
 		/// BOE Comments Controller Logic
 		/// </summary>
 		private BOECommentsControllerLogic boeCommentsControllerLogic { get; set; }
+
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="securityAccess"></param>
+		/// <param name="factory"></param>
+		/// <param name="userLoader"></param>
+		/// <param name="permissionsLoader"></param>
+		/// <param name="boeCommentsControllerLogic"></param>
 
 		public BOECommentsController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader,
 			IPermissionsDTODataLoader permissionsLoader, BOECommentsControllerLogic boeCommentsControllerLogic)
@@ -40,7 +57,6 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <param name="boeId">BOE ID</param>
 		/// <returns>BOECommentsModelView</returns>
 		[System.Web.Http.HttpGet]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
 		public IESSingleResponse<BOECommentsModelView> GetBOEComments(string workspaceShortname, int boeID)
 		{
@@ -83,7 +99,6 @@ namespace GenBOE.Web.Controllers.Backend
 		/// added or updated by the user</param>
 		/// <returns></returns>
 		[System.Web.Http.HttpPost]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
 		public IESSingleResponse<bool> SaveBoeComments([FromBody] BOECommentsModelView boeComments)
 		{
