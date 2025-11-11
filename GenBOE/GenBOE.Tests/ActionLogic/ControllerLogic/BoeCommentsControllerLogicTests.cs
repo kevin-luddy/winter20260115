@@ -43,8 +43,9 @@ namespace GenBOE.Tests.Objects
         private Mock<IBoeMediator> _boeMediator;
         private Mock<IBOEStateMachine> _boeStateMachine;
         private Mock<IRetriever> _retriever;
-        private Mock<IFullObjectFactory> _factory;
-        private Mock<IPermissionsDTODataLoader> _perissionsDtoDataLoader;
+		private Mock<IFullObjectFactory> _factory;
+		private Mock<BOEHistoryDTODataLoader> _boeHistoryLoader;
+		private Mock<IPermissionsDTODataLoader> _perissionsDtoDataLoader;
         private Mock<ICommonDataMapper> _commonDataMapper;
 
         /// <summary>
@@ -53,8 +54,9 @@ namespace GenBOE.Tests.Objects
         [TestInitialize]
         public void Initialize()
         {
-            _boeCommentDTOLoader = new Mock<IBOECommentDTODataLoader>();
-            _userDTOLoader = new Mock<IUserDTODataLoader>();
+			_boeHistoryLoader = new Mock<BOEHistoryDTODataLoader>();
+			_boeCommentDTOLoader = new Mock<IBOECommentDTODataLoader>();
+			_userDTOLoader = new Mock<IUserDTODataLoader>();
             _securityInformation = new Mock<ISecurityInformation>();
             _emailer = new Mock<IBoeEmailer>();
             _boeApproverResponseLoader = new Mock<IBoeApproverResponseDTODataLoader>();
@@ -69,7 +71,7 @@ namespace GenBOE.Tests.Objects
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), _factory.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _perissionsDtoDataLoader.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _commonDataMapper.Object);
-            _commentsControllerLogic = new BOECommentsControllerLogic(_boeCommentDTOLoader.Object, _userDTOLoader.Object, _securityInformation.Object,
+            _commentsControllerLogic = new BOECommentsControllerLogic(_factory.Object, _boeHistoryLoader.Object, _boeCommentDTOLoader.Object, _userDTOLoader.Object, _securityInformation.Object,
                 _emailer.Object, _boeApproverResponseLoader.Object, _boeMediator.Object, _boeStateMachine.Object, _perissionsDtoDataLoader.Object);
 
             BOECommentDTO comment = new BOECommentDTO
