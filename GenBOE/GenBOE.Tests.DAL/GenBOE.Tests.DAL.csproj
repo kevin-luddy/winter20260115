@@ -189,6 +189,7 @@
     <Compile Include="DataLoaders\PerfOrgDTODataLoaderTest.cs" />
     <Compile Include="DataLoaders\PerformingOrgListDTODataLoaderTest.cs" />
     <Compile Include="DataLoaders\PermissionsDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\ValidateWorkspaceDataLoaderTest.cs" />
     <Compile Include="DataMappers\CommonDataMapperTest.cs" />
     <Compile Include="Other\MemoryCacheTest.cs" />
     <Compile Include="Other\SecurityAccessTest.cs" />

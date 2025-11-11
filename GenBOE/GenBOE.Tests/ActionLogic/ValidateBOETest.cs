@@ -2743,8 +2743,8 @@ namespace GenBOE.Tests.ActionLogic
 																			TripDate = Convert.ToDateTime("01/01/2030"),
 																			SystemTripID=idToUse,
 																			PerfOrgID = 1}}},
-                // travelDTO with no traveltrips to create 1 error message
-                new TravelDTO{
+				// travelDTO with no traveltrips to create 1 error message
+				new TravelDTO{
 								Id = 2,
 								BoeID = boe.Id,
 								Description = "moq travel2",
@@ -2769,8 +2769,8 @@ namespace GenBOE.Tests.ActionLogic
 																			TripDate = Convert.ToDateTime("01/01/2030"),
 																			SystemTripID=idToUse,
 																			PerfOrgID = 1}}},
-                // travelDTO with no traveltrips to create 1 error message
-                new TravelDTO{
+				// travelDTO with no traveltrips to create 1 error message
+				new TravelDTO{
 								Id = 2,
 								BoeID = boe.Id,
 								Description = "moq travel2",
@@ -3517,8 +3517,8 @@ namespace GenBOE.Tests.ActionLogic
 							HistoricalProgramName = "Test Name",
 							WbsElement = "Test WBS",
 							PoPStart = new DateTime(2022, 1, 3), // Monday
-                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
-                            AdditionalQueryFilters = "TestFilter",
+							PoPEnd = new DateTime(2022, 1, 9), // Sunday
+							AdditionalQueryFilters = "TestFilter",
 							TotalRelevantHours = 1000,
 							TotalWbsHours = 2000
 						}
@@ -3581,8 +3581,8 @@ namespace GenBOE.Tests.ActionLogic
 							HistoricalProgramName = "Test Name",
 							WbsElement = "Test WBS",
 							PoPStart = new DateTime(2022, 1, 2), // Sunday
-                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
-                            AdditionalQueryFilters = "TestFilter",
+							PoPEnd = new DateTime(2022, 1, 9), // Sunday
+							AdditionalQueryFilters = "TestFilter",
 							TotalRelevantHours = 1000
 						}
 					},
@@ -3634,8 +3634,8 @@ namespace GenBOE.Tests.ActionLogic
 							HistoricalProgramName = "Test Name",
 							WbsElement = "Test WBS",
 							PoPStart = new DateTime(2022, 1, 2), // Sunday
-                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
-                            AdditionalQueryFilters = "TestFilter",
+							PoPEnd = new DateTime(2022, 1, 9), // Sunday
+							AdditionalQueryFilters = "TestFilter",
 							TotalRelevantHours = 1000
 						}
 					},
@@ -3684,8 +3684,8 @@ namespace GenBOE.Tests.ActionLogic
 							HistoricalProgramName = "Test Name",
 							WbsElement = "Test WBS",
 							PoPStart = new DateTime(2022, 1, 3), // Monday
-                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
-                            AdditionalQueryFilters = "TestFilter",
+							PoPEnd = new DateTime(2022, 1, 9), // Sunday
+							AdditionalQueryFilters = "TestFilter",
 							TotalRelevantHours = 1000,
 							TotalWbsHours = 2000
 						}
@@ -3748,8 +3748,8 @@ namespace GenBOE.Tests.ActionLogic
 							HistoricalProgramName = "Test Name",
 							WbsElement = "Test WBS",
 							PoPStart = new DateTime(2022, 1, 2), // Sunday
-                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
-                            AdditionalQueryFilters = "TestFilter",
+							PoPEnd = new DateTime(2022, 1, 9), // Sunday
+							AdditionalQueryFilters = "TestFilter",
 							TotalRelevantHours = 1000
 						}
 					},
@@ -3801,8 +3801,8 @@ namespace GenBOE.Tests.ActionLogic
 							HistoricalProgramName = "Test Name",
 							WbsElement = "Test WBS",
 							PoPStart = new DateTime(2022, 1, 3), // Sunday
-                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
-                            AdditionalQueryFilters = "TestFilter",
+							PoPEnd = new DateTime(2022, 1, 9), // Sunday
+							AdditionalQueryFilters = "TestFilter",
 							TotalRelevantHours = 1000
 						}
 					},
@@ -3853,8 +3853,8 @@ namespace GenBOE.Tests.ActionLogic
 							HistoricalProgramName = "Test Name",
 							WbsElement = "Test WBS",
 							PoPStart = DateTime.Today,
-                            PoPEnd = DateTime.Today,
-                            AdditionalQueryFilters = "TestFilter",
+							PoPEnd = DateTime.Today,
+							AdditionalQueryFilters = "TestFilter",
 							TotalRelevantHours = 1000
 						}
 					},
@@ -3903,8 +3903,8 @@ namespace GenBOE.Tests.ActionLogic
 							HistoricalProgramName = "Test Name",
 							WbsElement = "Test WBS",
 							PoPStart = new DateTime(2022, 1, 3), // Sunday
-                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
-                            AdditionalQueryFilters = "TestFilter",
+							PoPEnd = new DateTime(2022, 1, 9), // Sunday
+							AdditionalQueryFilters = "TestFilter",
 							TotalRelevantHours = 1000
 						}
 					},
@@ -3993,8 +3993,8 @@ namespace GenBOE.Tests.ActionLogic
 							HistoricalProgramName = "Test Name",
 							WbsElement = "Test WBS",
 							PoPStart = new DateTime(2022, 1, 3), // Monday
-                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
-                            AdditionalQueryFilters = "aaa",
+							PoPEnd = new DateTime(2022, 1, 9), // Sunday
+							AdditionalQueryFilters = "aaa",
 							TotalWbsHours = 2000,
 							TotalRelevantHours = 1000
 						}
@@ -4053,8 +4053,8 @@ namespace GenBOE.Tests.ActionLogic
 							HistoricalProgramName = "Test Name",
 							WbsElement = "Test WBS",
 							PoPStart = new DateTime(2022, 1, 2), // Sunday
-                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
-                            AdditionalQueryFilters = "aaa",
+							PoPEnd = new DateTime(2022, 1, 9), // Sunday
+							AdditionalQueryFilters = "aaa",
 							TotalRelevantHours = 1000
 						}
 					},
@@ -4118,8 +4118,8 @@ namespace GenBOE.Tests.ActionLogic
 							HistoricalProgramName = "Test Name",
 							WbsElement = "Test WBS",
 							PoPStart = new DateTime(2022, 1, 2), // Sunday
-                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
-                            AdditionalQueryFilters = "aaa",
+							PoPEnd = new DateTime(2022, 1, 9), // Sunday
+							AdditionalQueryFilters = "aaa",
 							TotalRelevantHours = 1000
 						}
 					},
@@ -4174,8 +4174,8 @@ namespace GenBOE.Tests.ActionLogic
 							HistoricalProgramName = "Test Name",
 							WbsElement = "Test WBS",
 							PoPStart = new DateTime(2022, 1, 3), // Monday
-                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
-                            AdditionalQueryFilters = "aaa",
+							PoPEnd = new DateTime(2022, 1, 9), // Sunday
+							AdditionalQueryFilters = "aaa",
 							TotalWbsHours = 2000,
 							TotalRelevantHours = 1000,
 							RepositoryName = "aa",
@@ -4258,8 +4258,8 @@ namespace GenBOE.Tests.ActionLogic
 							HistoricalProgramName = "Test Name",
 							WbsElement = "Test WBS",
 							PoPStart = new DateTime(2022, 1, 2), // Sunday
-                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
-                            AdditionalQueryFilters = "aaa",
+							PoPEnd = new DateTime(2022, 1, 9), // Sunday
+							AdditionalQueryFilters = "aaa",
 							TotalRelevantHours = 1000
 						}
 					},
@@ -4305,8 +4305,8 @@ namespace GenBOE.Tests.ActionLogic
 							HistoricalProgramName = "Test Name",
 							WbsElement = "Test WBS",
 							PoPStart = new DateTime(2022, 1, 2), // Sunday
-                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
-                            AdditionalQueryFilters = "aaa",
+							PoPEnd = new DateTime(2022, 1, 9), // Sunday
+							AdditionalQueryFilters = "aaa",
 							TotalRelevantHours = 1000
 						}
 					},
