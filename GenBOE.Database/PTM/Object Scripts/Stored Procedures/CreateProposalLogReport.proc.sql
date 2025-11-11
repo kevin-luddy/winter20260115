@@ -53,6 +53,7 @@ AS
 **		10/02/25	e403038				PROPH-2994 Additional EPP Dates (Original to Planned and add Scheduled)
 **		10/13/25	ranzalon			PROPH-3375 PPR Questions 13 and 14
 **		10/30/25	e403038				PROPH-3406 Label Modifications => Current Planned renamed to ScheduledActual and Current Scheduled renamed to Planned
+**		11/4/25		ranzalon			PROPH-3420: Added Alternative Pricing Methodology
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -384,6 +385,13 @@ SELECT V.[ProposalID]
 	,V.InsuranceType
 	,V.ProposedInsurance
 	,V.NegotiatedInsurance
+	,SubjectToAlternativePricingMethodology = 
+		CASE V.SubjectToAlternativePricingMethodology
+			WHEN 1 THEN 'Yes'
+			WHEN 0 THEN 'No'
+			ELSE NULL
+			END
+	,V.AlternativePricingMethodology
 FROM [dbo].[vwProposalLogReport] V
 	LEFT OUTER JOIN @MaxRev M ON 
 		(
