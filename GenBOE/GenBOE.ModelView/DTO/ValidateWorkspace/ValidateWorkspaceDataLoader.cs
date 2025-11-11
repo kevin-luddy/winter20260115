@@ -28,7 +28,7 @@ namespace GenBOE.DataBridge.DTO
 		{
 			using (GenBoeEntities gbe = new GenBoeEntities())
 			{
-				bool? sprocResult = gbe.validateWorkspacePoP(workspaceID, contractStartDate, contractEndDate).First();
+				bool? sprocResult = gbe.validateWorkspacePoP(workspaceID, contractStartDate, contractEndDate).FirstOrDefault();
 				return sprocResult != null && (bool)sprocResult;
 			}
 		}
