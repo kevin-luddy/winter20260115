@@ -277,7 +277,7 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 							CcopdNoOtherReason = entity.ReasonCcopdNoOther,
 							IsSupportOfUndefinitized = entity.IsSupportDefinitizingUCA,
 							SubjectToAlternativePricingMethodology = entity.SubjectToAlternativePricingMethodology,
-							AlternativePricingMethodology = (IES.Common.AlternativePricingMethodology?)entity.AlternativePricingMethodology,
+							AlternativePricingMethodology = (IES.Common.Core.Enums.AlternativePricingMethodology?)entity.AlternativePricingMethodology,
 							AlternativePricingMethodologyOtherText = entity.AlternativePricingMethodologyOtherText
 						}).ToList();
 				}
