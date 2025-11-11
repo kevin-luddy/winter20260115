@@ -208,7 +208,7 @@ namespace IES.ActionLogic.Core.ControllerLogic
 					{
 						numAddressInSection++;
 
-						if ((bool)child.IncludeInCoversheet)
+						if (child.IncludeInCoversheet.HasValue && child.IncludeInCoversheet.Value)
 						{
 							coverSheetIncludesCaoTable = true;
 						}
