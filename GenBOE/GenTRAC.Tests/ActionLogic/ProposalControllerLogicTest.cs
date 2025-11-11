@@ -24,7 +24,8 @@ namespace GenTRAC.Tests.ActionLogic
     using GenTRAC.Objects;
     using GenTRAC.Objects.FullObject;
     using IES.Common;
-    using IES.Common.Exceptions;
+	using IES.Common.classes;
+	using IES.Common.Exceptions;
     using IES.Common.PickList;
     using Microsoft.Practices.Unity;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -255,7 +256,7 @@ namespace GenTRAC.Tests.ActionLogic
             };
             security.Setup(x => x.ActiveUserData).Returns(user);
 
-            return new ProposalControllerLogic(this.securityAccess.Object, this.proposalLoader.Object, this.validationMethods.Object,
+			return new ProposalControllerLogic(this.securityAccess.Object, this.proposalLoader.Object, this.validationMethods.Object,
                 this.proposalMediator.Object, this.userMapper.Object, this.objectFactory.Object,
                 this.orgStructureDataMapper.Object, this.proposalPermissionMediator.Object, this.securityInformation.Object, this.cacheDataLoader.Object,
                 this.pickListMapper.Object, this.userLoader.Object, this.approvalsLoader.Object, this.proposalChecklistLoader.Object,
@@ -1701,7 +1702,9 @@ namespace GenTRAC.Tests.ActionLogic
         {
             ProposalControllerLogic sut = this.CreateSystem();
 
-            int? proposalId = 5;
+			SystemConfiguration.Instance().CompanyConfigurationSettings.AppSettings["AltPricingMethodStartDate"] = DateTime.UtcNow.AddDays(-1).ToShortDateString();
+
+			int? proposalId = 5;
 
             ProposalDto proposal = new ProposalDto()
             {
@@ -1717,7 +1720,11 @@ namespace GenTRAC.Tests.ActionLogic
                 ProgramProposalStatus = ProgramProposalStatus.LMRetainedMST,
                 IsCCPDRequired = true,
                 IsCostVolumeClassified = false,
-                CostVolumeTool = CostVolumeTool.ACV
+                CostVolumeTool = CostVolumeTool.ACV,
+				DateCreated = DateTime.UtcNow,
+				SubjectToAlternativePricingMethodology = true,
+				AlternativePricingMethodology = AlternativePricingMethodology.Other,
+				AlternativePricingMethodologyOtherText = "Test"
             };
 
             PickListDto lineOfBusiness = new PickListDto()
@@ -1792,8 +1799,12 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(proposal.IsCostVolumeClassified, proposalGeneralInfo.IsCostVolumeClassified);
             Assert.AreEqual(proposal.CostVolumeTool, proposalGeneralInfo.CostVolumeTool);
             Assert.IsTrue(string.IsNullOrEmpty(proposalGeneralInfo.CostVolumeToolName));
+			Assert.AreEqual(proposal.SubjectToAlternativePricingMethodology, proposalGeneralInfo.SubjectToAlternativePricingMethodology);
+			Assert.AreEqual(proposal.AlternativePricingMethodology, proposalGeneralInfo.AlternativePricingMethodology);
+			Assert.AreEqual(proposal.AlternativePricingMethodologyOtherText, proposalGeneralInfo.AlternativePricingMethodologyOtherText);
+			Assert.IsTrue(proposalGeneralInfo.DisplayAlternativePricingMethodology);
 
-            Assert.AreEqual(lineOfBusiness.Text, proposalGeneralInfo.LineOfBusinessSelectedText);
+			Assert.AreEqual(lineOfBusiness.Text, proposalGeneralInfo.LineOfBusinessSelectedText);
             Assert.AreEqual(programArea.Text, proposalGeneralInfo.ProgramAreaSelectedText);
 
             // verify values for ProposalLocation, PricingTool, and BOETool Other
@@ -1838,9 +1849,13 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.IsNull(proposalGeneralInfo.IsCostVolumeClassified);
             Assert.AreEqual(CostVolumeTool.NotSet, proposalGeneralInfo.CostVolumeTool);
             Assert.IsTrue(string.IsNullOrEmpty(proposalGeneralInfo.CostVolumeToolName));
+			Assert.IsNull(proposalGeneralInfo.SubjectToAlternativePricingMethodology);
+			Assert.IsNull(proposalGeneralInfo.AlternativePricingMethodology);
+			Assert.IsNull(proposalGeneralInfo.AlternativePricingMethodologyOtherText);
+			Assert.IsTrue(proposalGeneralInfo.DisplayAlternativePricingMethodology);
 
-            // Assert CCoPD is cleared when getting data for a new revision
-            proposalGeneralInfo = sut.GetDataForProposalGeneralInformation(proposalId, true);
+			// Assert CCoPD is cleared when getting data for a new revision
+			proposalGeneralInfo = sut.GetDataForProposalGeneralInformation(proposalId, true);
             Assert.IsNull(proposalGeneralInfo.IsCCPDRequired);
             Assert.IsFalse(proposalGeneralInfo.IsCCPDReadOnly);
         }
@@ -2660,10 +2675,386 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.IsTrue(validationErrors.Select(x => x.ValidationIssue).Contains(ValidationConstants.ProposalValidationConstants.BOE_TOOL_REQUIRED));
         }
 
-        /// <summary>
-        /// Test the ValidateUserTypes functionality, completed proposal
-        /// </summary>
-        [TestMethod]
+		/// <summary>
+		/// Test ValidateGeneralInfoTypes for fields related to "Is the proposal subject to an alternative pricing methodology?" being valid
+		/// </summary>
+		[TestMethod]
+		public void C_ValidateGeneralInfoTypes_AlternativePricingMethodology_Valid()
+		{
+			ProposalControllerLogic sut = this.CreateSystem();
+			List<ValidationMessage> inValidationErrors = new List<ValidationMessage>();
+			ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+			SystemConfiguration.Instance().CompanyConfigurationSettings.AppSettings["AltPricingMethodStartDate"] = DateTime.UtcNow.AddDays(-1).ToShortDateString();
+
+			// Initially test CCoPD 'yes' and "Is the proposal subject to an alternative pricing methodology?" set to 'No' is valid
+			ProposalGeneralInformationModelView proposalGeneralInfo = new ProposalGeneralInformationModelView()
+			{
+				ProposalID = 1,
+				LineOfBusiness = "My line of business",
+				ProgramArea = "Now you're talkin'",
+				ProgramName = "Awesome Program",
+				ProposalLocation = ProposalLocation.Other,
+				ProposalLocationName = null,
+				PricingTool = PricingTool.Excel,
+				PricingToolName = null,
+				BOETool = BOETool.genBOE,
+				BOEToolName = null,
+				CostVolumeTool = CostVolumeTool.ACV,
+				CostVolumeToolName = null,
+				IsCCPDRequired = true,
+				IsCostVolumeClassified = false,
+				IsSupportOfUndefinitized = false,
+				SubjectToAlternativePricingMethodology = false
+			};
+
+			ProposalDto proposal = new ProposalDto()
+			{
+				Id = 1,
+				DateCreated = DateTime.UtcNow
+			};
+
+			proposalLoader.Setup(x => x.GetById(proposalGeneralInfo.ProposalID)).Returns(proposal);
+
+			sut.ValidateGeneralInfoTypes(proposalGeneralInfo, validationErrors, false, 1);
+
+			Assert.IsFalse(validationErrors.Any());
+
+			// "Is the proposal subject to an alternative pricing methodology?" set to 'Yes' with an APM selected is valid
+			proposalGeneralInfo.SubjectToAlternativePricingMethodology = true;
+			proposalGeneralInfo.AlternativePricingMethodology = AlternativePricingMethodology.Far52Alternate;
+
+			sut.ValidateGeneralInfoTypes(proposalGeneralInfo, validationErrors, false, 1);
+
+			Assert.IsFalse(validationErrors.Any());
+
+			// "Is the proposal subject to an alternative pricing methodology?" set to 'Yes' with Other APM selected and other text set is valid
+			proposalGeneralInfo.AlternativePricingMethodology = AlternativePricingMethodology.Other;
+			proposalGeneralInfo.AlternativePricingMethodologyOtherText = "Test";
+
+			sut.ValidateGeneralInfoTypes(proposalGeneralInfo, validationErrors, false, 1);
+
+			Assert.IsFalse(validationErrors.Any());
+
+			// CCoPD "No" - no validation needed
+			proposalGeneralInfo.IsCCPDRequired = false;
+			proposalGeneralInfo.CcopdNoReason = CcopdOptionalReason.CommercialException;
+			proposalGeneralInfo.SubjectToAlternativePricingMethodology = null;
+			proposalGeneralInfo.AlternativePricingMethodology = null;
+			proposalGeneralInfo.AlternativePricingMethodologyOtherText = null;
+
+			sut.ValidateGeneralInfoTypes(proposalGeneralInfo, validationErrors, false, 1);
+
+			Assert.IsFalse(validationErrors.Any());
+		}
+
+		/// <summary>
+		/// Test ValidateGeneralInfoTypes for "Is the proposal subject to an alternative pricing methodology?" being required if CCoPD is Yes
+		/// </summary>
+		[TestMethod]
+		public void C_ValidateGeneralInfoTypes_AlternativePricingMethodology_Invalid_SubjectToApmRequired()
+		{
+			ProposalControllerLogic sut = this.CreateSystem();
+			List<ValidationMessage> inValidationErrors = new List<ValidationMessage>();
+			ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+			SystemConfiguration.Instance().CompanyConfigurationSettings.AppSettings["AltPricingMethodStartDate"] = DateTime.UtcNow.AddDays(-1).ToShortDateString();
+
+			// Initially test CCoPD 'yes' and "Is the proposal subject to an alternative pricing methodology?" set to 'No' is valid
+			ProposalGeneralInformationModelView proposalGeneralInfo = new ProposalGeneralInformationModelView()
+			{
+				ProposalID = 1,
+				LineOfBusiness = "My line of business",
+				ProgramArea = "Now you're talkin'",
+				ProgramName = "Awesome Program",
+				ProposalLocation = ProposalLocation.Other,
+				ProposalLocationName = null,
+				PricingTool = PricingTool.Excel,
+				PricingToolName = null,
+				BOETool = BOETool.genBOE,
+				BOEToolName = null,
+				CostVolumeTool = CostVolumeTool.ACV,
+				CostVolumeToolName = null,
+				IsCCPDRequired = true,
+				IsCostVolumeClassified = false,
+				IsSupportOfUndefinitized = false,
+				SubjectToAlternativePricingMethodology = null // this is required if IsCCPDRequired is true
+			};
+
+			ProposalDto proposal = new ProposalDto()
+			{
+				Id = 1,
+				DateCreated = DateTime.UtcNow
+			};
+
+			proposalLoader.Setup(x => x.GetById(proposalGeneralInfo.ProposalID)).Returns(proposal);
+
+			sut.ValidateGeneralInfoTypes(proposalGeneralInfo, validationErrors, false, 1);
+
+			Assert.IsTrue(validationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.SUBJECT_TO_APM_REQUIRED));
+		}
+
+		/// <summary>
+		/// Test ValidateGeneralInfoTypes for AlternativePricingMethodology being required if "Is the proposal subject to an alternative pricing methodology?" is Yes
+		/// </summary>
+		[TestMethod]
+		public void C_ValidateGeneralInfoTypes_AlternativePricingMethodology_Invalid_ApmSelectionRequired()
+		{
+			ProposalControllerLogic sut = this.CreateSystem();
+			List<ValidationMessage> inValidationErrors = new List<ValidationMessage>();
+			ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+			SystemConfiguration.Instance().CompanyConfigurationSettings.AppSettings["AltPricingMethodStartDate"] = DateTime.UtcNow.AddDays(-1).ToShortDateString();
+
+			// Initially test CCoPD 'yes' and "Is the proposal subject to an alternative pricing methodology?" set to 'No' is valid
+			ProposalGeneralInformationModelView proposalGeneralInfo = new ProposalGeneralInformationModelView()
+			{
+				ProposalID = 1,
+				LineOfBusiness = "My line of business",
+				ProgramArea = "Now you're talkin'",
+				ProgramName = "Awesome Program",
+				ProposalLocation = ProposalLocation.Other,
+				ProposalLocationName = null,
+				PricingTool = PricingTool.Excel,
+				PricingToolName = null,
+				BOETool = BOETool.genBOE,
+				BOEToolName = null,
+				CostVolumeTool = CostVolumeTool.ACV,
+				CostVolumeToolName = null,
+				IsCCPDRequired = true,
+				IsCostVolumeClassified = false,
+				IsSupportOfUndefinitized = false,
+				SubjectToAlternativePricingMethodology = true,
+				AlternativePricingMethodology = null // required if SubjectToAlternativePricingMethodology is true
+			};
+
+			ProposalDto proposal = new ProposalDto()
+			{
+				Id = 1,
+				DateCreated = DateTime.UtcNow
+			};
+
+			proposalLoader.Setup(x => x.GetById(proposalGeneralInfo.ProposalID)).Returns(proposal);
+
+			sut.ValidateGeneralInfoTypes(proposalGeneralInfo, validationErrors, false, 1);
+
+			Assert.IsTrue(validationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.APM_SELECTION_REQUIRED));
+		}
+
+		/// <summary>
+		/// Test ValidateGeneralInfoTypes for AlternativePricingMethodologyOtherText being required if AlternativePricingMethodology is "other"
+		/// </summary>
+		[TestMethod]
+		public void C_ValidateGeneralInfoTypes_AlternativePricingMethodology_Invalid_ApmOtherTextRequired()
+		{
+			ProposalControllerLogic sut = this.CreateSystem();
+			List<ValidationMessage> inValidationErrors = new List<ValidationMessage>();
+			ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+			SystemConfiguration.Instance().CompanyConfigurationSettings.AppSettings["AltPricingMethodStartDate"] = DateTime.UtcNow.AddDays(-1).ToShortDateString();
+
+			// Initially test CCoPD 'yes' and "Is the proposal subject to an alternative pricing methodology?" set to 'No' is valid
+			ProposalGeneralInformationModelView proposalGeneralInfo = new ProposalGeneralInformationModelView()
+			{
+				ProposalID = 1,
+				LineOfBusiness = "My line of business",
+				ProgramArea = "Now you're talkin'",
+				ProgramName = "Awesome Program",
+				ProposalLocation = ProposalLocation.Other,
+				ProposalLocationName = null,
+				PricingTool = PricingTool.Excel,
+				PricingToolName = null,
+				BOETool = BOETool.genBOE,
+				BOEToolName = null,
+				CostVolumeTool = CostVolumeTool.ACV,
+				CostVolumeToolName = null,
+				IsCCPDRequired = true,
+				IsCostVolumeClassified = false,
+				IsSupportOfUndefinitized = false,
+				SubjectToAlternativePricingMethodology = true,
+				AlternativePricingMethodology = AlternativePricingMethodology.Other,
+				AlternativePricingMethodologyOtherText = string.Empty // required if AlternativePricingMethodology is Other
+			};
+
+			ProposalDto proposal = new ProposalDto()
+			{
+				Id = 1,
+				DateCreated = DateTime.UtcNow
+			};
+
+			proposalLoader.Setup(x => x.GetById(proposalGeneralInfo.ProposalID)).Returns(proposal);
+
+			sut.ValidateGeneralInfoTypes(proposalGeneralInfo, validationErrors, false, 1);
+
+			Assert.IsTrue(validationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.APM_OTHER_TEXT_REQUIRED));
+		}
+
+		/// <summary>
+		/// Test ValidateGeneralInfoTypes for AlternativePricingMethodologyOtherText length validation
+		/// </summary>
+		[TestMethod]
+		public void C_ValidateGeneralInfoTypes_AlternativePricingMethodology_Invalid_ApmOtherTextLength()
+		{
+			ProposalControllerLogic sut = this.CreateSystem();
+			List<ValidationMessage> inValidationErrors = new List<ValidationMessage>();
+			ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+			SystemConfiguration.Instance().CompanyConfigurationSettings.AppSettings["AltPricingMethodStartDate"] = DateTime.UtcNow.AddDays(-1).ToShortDateString();
+
+			// Initially test CCoPD 'yes' and "Is the proposal subject to an alternative pricing methodology?" set to 'No' is valid
+			ProposalGeneralInformationModelView proposalGeneralInfo = new ProposalGeneralInformationModelView()
+			{
+				ProposalID = 1,
+				LineOfBusiness = "My line of business",
+				ProgramArea = "Now you're talkin'",
+				ProgramName = "Awesome Program",
+				ProposalLocation = ProposalLocation.Other,
+				ProposalLocationName = null,
+				PricingTool = PricingTool.Excel,
+				PricingToolName = null,
+				BOETool = BOETool.genBOE,
+				BOEToolName = null,
+				CostVolumeTool = CostVolumeTool.ACV,
+				CostVolumeToolName = null,
+				IsCCPDRequired = true,
+				IsCostVolumeClassified = false,
+				IsSupportOfUndefinitized = false,
+				SubjectToAlternativePricingMethodology = true,
+				AlternativePricingMethodology = AlternativePricingMethodology.Other,
+				AlternativePricingMethodologyOtherText = "Lorem ipsum dolor sit amet consectetuer adipiscing elit" // 55 characters is invalid (50 is max)
+			};
+
+			ProposalDto proposal = new ProposalDto()
+			{
+				Id = 1,
+				DateCreated = DateTime.UtcNow
+			};
+
+			proposalLoader.Setup(x => x.GetById(proposalGeneralInfo.ProposalID)).Returns(proposal);
+
+			sut.ValidateGeneralInfoTypes(proposalGeneralInfo, validationErrors, false, 1);
+
+			Assert.IsTrue(validationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.APM_OTHER_TEXT_LENGTH));
+		}
+
+		/// <summary>
+		/// Test ValidateGeneralInfoTypes for AlternativePricingMethodologyOtherText alphanumeric validation
+		/// </summary>
+		[TestMethod]
+		public void C_ValidateGeneralInfoTypes_AlternativePricingMethodology_Invalid_ApmOtherTextAlphanumeric()
+		{
+			ProposalControllerLogic sut = this.CreateSystem();
+			List<ValidationMessage> inValidationErrors = new List<ValidationMessage>();
+			ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+			SystemConfiguration.Instance().CompanyConfigurationSettings.AppSettings["AltPricingMethodStartDate"] = DateTime.UtcNow.AddDays(-1).ToShortDateString();
+
+			// Initially test CCoPD 'yes' and "Is the proposal subject to an alternative pricing methodology?" set to 'No' is valid
+			ProposalGeneralInformationModelView proposalGeneralInfo = new ProposalGeneralInformationModelView()
+			{
+				ProposalID = 1,
+				LineOfBusiness = "My line of business",
+				ProgramArea = "Now you're talkin'",
+				ProgramName = "Awesome Program",
+				ProposalLocation = ProposalLocation.Other,
+				ProposalLocationName = null,
+				PricingTool = PricingTool.Excel,
+				PricingToolName = null,
+				BOETool = BOETool.genBOE,
+				BOEToolName = null,
+				CostVolumeTool = CostVolumeTool.ACV,
+				CostVolumeToolName = null,
+				IsCCPDRequired = true,
+				IsCostVolumeClassified = false,
+				IsSupportOfUndefinitized = false,
+				SubjectToAlternativePricingMethodology = true,
+				AlternativePricingMethodology = AlternativePricingMethodology.Other,
+				AlternativePricingMethodologyOtherText = "ABC-123" // '-' is not an alphanumeric character and is invalid
+			};
+
+			ProposalDto proposal = new ProposalDto()
+			{
+				Id = 1,
+				DateCreated = DateTime.UtcNow
+			};
+
+			proposalLoader.Setup(x => x.GetById(proposalGeneralInfo.ProposalID)).Returns(proposal);
+
+			sut.ValidateGeneralInfoTypes(proposalGeneralInfo, validationErrors, false, 1);
+
+			Assert.IsTrue(validationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.APM_OTHER_TEXT_ALPHANUMERIC));
+		}
+
+		/// <summary>
+		/// Test ValidateGeneralInfoTypes for not running for fields related to "Is the proposal subject to an alternative pricing methodology?" based on the start date
+		/// </summary>
+		[TestMethod]
+		public void C_ValidateGeneralInfoTypes_AlternativePricingMethodology_StartDateTests()
+		{
+			ProposalControllerLogic sut = this.CreateSystem();
+			List<ValidationMessage> inValidationErrors = new List<ValidationMessage>();
+			ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+			SystemConfiguration.Instance().CompanyConfigurationSettings.AppSettings["AltPricingMethodStartDate"] = DateTime.UtcNow.AddDays(1).ToShortDateString();
+
+			// Initially test CCoPD 'yes' and "Is the proposal subject to an alternative pricing methodology?" set to 'No' is valid
+			ProposalGeneralInformationModelView proposalGeneralInfo = new ProposalGeneralInformationModelView()
+			{
+				ProposalID = 1,
+				LineOfBusiness = "My line of business",
+				ProgramArea = "Now you're talkin'",
+				ProgramName = "Awesome Program",
+				ProposalLocation = ProposalLocation.Other,
+				ProposalLocationName = null,
+				PricingTool = PricingTool.Excel,
+				PricingToolName = null,
+				BOETool = BOETool.genBOE,
+				BOEToolName = null,
+				CostVolumeTool = CostVolumeTool.ACV,
+				CostVolumeToolName = null,
+				IsCCPDRequired = true,
+				IsCostVolumeClassified = false,
+				IsSupportOfUndefinitized = false,
+				SubjectToAlternativePricingMethodology = null
+			};
+
+			// Set Proposal to be created before the start date in the AltPricingMethodStartDate setting
+			ProposalDto proposal = new ProposalDto()
+			{
+				Id = 1,
+				DateCreated = DateTime.UtcNow.AddDays(-1)
+			};
+
+			proposalLoader.Setup(x => x.GetById(proposalGeneralInfo.ProposalID)).Returns(proposal);
+
+			sut.ValidateGeneralInfoTypes(proposalGeneralInfo, validationErrors, false, 1);
+
+			// SubjectToAlternativePricingMethodology is null while CCoPD is yes, which would be invalid if the proposal was created on/after the start date
+			// Since the proposal was created before the start date, it should pass
+			Assert.IsFalse(validationErrors.Any());
+
+			// Now test for a new proposal being created before the start date (today's date is before the start date)
+			proposalGeneralInfo.ProposalID = -1;
+
+			sut.ValidateGeneralInfoTypes(proposalGeneralInfo, validationErrors, false, 1);
+
+			Assert.IsFalse(validationErrors.Any());
+
+			// Now adjust the start date to an earlier date to confirm the validation is run
+			SystemConfiguration.Instance().CompanyConfigurationSettings.AppSettings["AltPricingMethodStartDate"] = DateTime.UtcNow.AddDays(-2).ToShortDateString();
+
+			// Test for new proposals where today's date is after the start date
+			sut.ValidateGeneralInfoTypes(proposalGeneralInfo, validationErrors, false, 1);
+
+			Assert.IsTrue(validationErrors.Any());
+
+			// And lastly test for existing proposals created after the the start date
+			proposal.Id = 1;
+			proposal.DateCreated = DateTime.UtcNow;
+			proposalLoader.Setup(x => x.GetById(proposalGeneralInfo.ProposalID)).Returns(proposal);
+
+			sut.ValidateGeneralInfoTypes(proposalGeneralInfo, validationErrors, false, 1);
+
+			Assert.IsTrue(validationErrors.Any());
+		}
+
+		/// <summary>
+		/// Test the ValidateUserTypes functionality, completed proposal
+		/// </summary>
+		[TestMethod]
         public void C_ValidateUserTypesCompletedProposalTest()
         {
             ProposalControllerLogic sut = this.CreateSystem();

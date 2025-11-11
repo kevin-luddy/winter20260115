@@ -36,6 +36,7 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 **		10/02/25	e403038				PROPH-2994 Additional EPP Dates (Original to Planned and add Scheduled)
 **		10/13/25	ranzalon			PROPH-3375 PPR Questions 13 and 14
 **		10/30/25	e403038				PROPH-3406 Label Modifications => Current Planned renamed to ScheduledActual and Current Scheduled renamed to Planned
+**		11/4/25		ranzalon			PROPH-3420: Added Alternative Pricing Methodology
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
@@ -236,7 +237,13 @@ SELECT
 		ELSE 'N/A'
 	END AS InsuranceType,
 	pCD.ProposedInsurance,
-	pCD.NegotiatedInsurance
+	pCD.NegotiatedInsurance,
+	P.SubjectToAlternativePricingMethodology,
+	CASE
+		WHEN P.AlternativePricingMethodology = null THEN ''
+		WHEN P.AlternativePricingMethodology = 4 THEN P.AlternativePricingMethodologyOtherText
+		ELSE apm.Text
+	END AS AlternativePricingMethodology
   FROM [dbo].[Proposal] P
     INNER JOIN [dbo].[ProgramAreaLU] PA ON P.ProgramAreaID = PA.ProgramAreaID
 	INNER JOIN [dbo].[LineOfBusinessLU] LOB ON P.LineOfBusinessID = LOB.LineOfBusinessID
@@ -406,5 +413,6 @@ SELECT
 				FROM ProposalPPRChecklistXREF xref 
 					INNER JOIN ResponseLU r ON r.ResponseID = xref.ResponseID
 					INNER JOIN PPRChecklistContent ppr ON (xref.PPRChecklistContentID = ppr.PPRChecklistContentID AND ppr.ChecklistText LIKE '%scope in 2029 and beyond%')) AS ppr14
-			ON ppr14.ProposalId = p.ProposalId 
+			ON ppr14.ProposalId = p.ProposalId
+	LEFT OUTER JOIN [AlternativePricingMethodology] apm on P.AlternativePricingMethodology = apm.Id
 GO

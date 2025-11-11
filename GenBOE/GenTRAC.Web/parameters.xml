@@ -52,6 +52,10 @@
 	<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='DocumentReminderCutoffDate']/@value">
 	</parameterentry>
   </parameter>
+  <parameter name="AltPricingMethodStartDate" description="doesn't matter" defaultvalue="__AltPricingMethodStartDate__" tags="">
+	<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='AltPricingMethodStartDate']/@value">
+	</parameterentry>
+  </parameter>
   <parameter name="IESHomeUrl" description="doesn't matter" defaultvalue="__IESHomeUrl__" tags="">
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IESHomeUrl']/@value">
     </parameterentry>

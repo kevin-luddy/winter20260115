@@ -444,5 +444,20 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		/// Is this proposal in support of definitizing an Undefinitized Contract Action
 		/// </summary>
 		public bool? IsSupportOfUndefinitized { get; set; }
+
+		/// <summary>
+		/// Is the Proposal subject to alternative pricing methodology?
+		/// </summary>
+		public bool? SubjectToAlternativePricingMethodology { get; set; }
+
+		/// <summary>
+		/// Selected alternative pricing methodology
+		/// </summary>
+		public AlternativePricingMethodology? AlternativePricingMethodology { get; set; }
+
+		/// <summary>
+		/// Text for "Other" Alternative Pricing Methodology
+		/// </summary>
+		public string AlternativePricingMethodologyOtherText { get; set; }
 	}
 }

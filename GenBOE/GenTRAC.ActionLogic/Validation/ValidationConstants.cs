@@ -22,9 +22,9 @@ namespace GenTRAC.ActionLogic.Validation
         public const string INTEGER_WITH_COMMAS_FORMAT = @"\-?[\d,]*$";
 
         /// <summary>
-        /// Contains only alphanumeric characters
+        /// Whole string contains only alphanumeric characters
         /// </summary>
-        public const string ALPHANUMERIC_FORMAT = @"[a-zA-Z0-9 ]*$";
+        public const string ALPHANUMERIC_FORMAT = @"^[a-zA-Z0-9 ]+$";
 
         /// <summary>
         /// percent format, 00.00 to +-99.00, decimal value up to 2 whole number digits and up to two (optional) decimal places
@@ -144,13 +144,38 @@ namespace GenTRAC.ActionLogic.Validation
             /// </summary>
             public const string COST_VOLUME_TOOL_REQUIRED = GENERAL_INFO_VALIDATION + "\"What application will be used to prepare the Cost Volume?\" response is required.";
 
-            #endregion Proposal General Info Section
+			/// <summary>
+			/// Response to "Is the proposal subject to an alternative pricing methodology?" is required (if CCoPD is Yes)
+			/// </summary>
+			public const string SUBJECT_TO_APM_REQUIRED = GENERAL_INFO_VALIDATION + "\"Is the proposal subject to an alternative pricing methodology?\" response is required.";
 
-            #region Proposal Info section
-            /// <summary>
-            /// text to be concated to the front of a validation message 
-            /// </summary>
-            private const string PROPOSAL_INFO_VALDIATION = "(Proposal Information) - ";
+			/// <summary>
+			/// Selection for "Is the proposal subject to an alternative pricing methodology?" dropdown is required if set to Yes
+			/// </summary>
+			public const string APM_SELECTION_REQUIRED = GENERAL_INFO_VALIDATION + "A methodology must be selected when \"Is the proposal subject to an alternative pricing methodology?\" is set to Yes.";
+
+			/// <summary>
+			/// If "Is the proposal subject to an alternative pricing methodology?" is set to Other, text field is required
+			/// </summary>
+			public const string APM_OTHER_TEXT_REQUIRED = GENERAL_INFO_VALIDATION + "\"Is the proposal subject to an alternative pricing methodology? - Other Exception\" response is required.";
+
+			/// <summary>
+			/// "Is the proposal subject to an alternative pricing methodology?" Other text is limited to 50 characters
+			/// </summary>
+			public const string APM_OTHER_TEXT_LENGTH = GENERAL_INFO_VALIDATION + "\"Is the proposal subject to an alternative pricing methodology? - Other Exception\" response must be 50 characters or less.";
+
+			/// <summary>
+			/// "Is the proposal subject to an alternative pricing methodology?" Other text is limited to 50 characters
+			/// </summary>
+			public const string APM_OTHER_TEXT_ALPHANUMERIC = GENERAL_INFO_VALIDATION + "\"Is the proposal subject to an alternative pricing methodology? - Other Exception\" response must be alphanumeric.";
+
+			#endregion Proposal General Info Section
+
+			#region Proposal Info section
+			/// <summary>
+			/// text to be concated to the front of a validation message 
+			/// </summary>
+			private const string PROPOSAL_INFO_VALDIATION = "(Proposal Information) - ";
 
             /// <summary>
             /// proposal title is required
