@@ -88,14 +88,17 @@ namespace GenBOE.ActionLogic
 			{
 				theModelView.ApprovalsReadOnly = this.GetReadOnlyAttribute(permission);
 			}
+
 			if (pagesToCheckExtraPermissionDictionary.TryGetValue(SecurityPage.BOEComment, out permission))
 			{
 				theModelView.CommentsReadOnly = this.GetReadOnlyAttribute(permission);
 			}
+
 			if (pagesToCheckExtraPermissionDictionary.TryGetValue(SecurityPage.BOECommentResponse, out permission))
 			{
 				theModelView.ResponsesReadOnly = this.GetReadOnlyAttribute(permission);
 			}
+
 			theModelView.CurrentUserId = currentUserID;
 			if (Utilities.IsReadOnly())
 			{
