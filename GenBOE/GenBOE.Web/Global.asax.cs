@@ -922,6 +922,8 @@ namespace GenBOE
 																														));
 
 			GenBOEUnityContainer.Container.RegisterType(typeof(BOECommentsControllerLogic), typeof(BOECommentsControllerLogic), GetLifetimeManager(), new InjectionConstructor(
+																														  new ResolvedParameter(typeof(IFullObjectFactory)),
+																														  new ResolvedParameter(typeof(BOEHistoryDTODataLoader)),
 																														  new ResolvedParameter(typeof(BOECommentDTODataLoader)),
 																														  new ResolvedParameter(typeof(UserDTODataLoader)),
 																														  new ResolvedParameter(typeof(ISecurityInformation)),
