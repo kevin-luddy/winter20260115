@@ -2964,7 +2964,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="copyBOEID">ID of BOE being copied</param>
 		/// <param name="taskElementsToCopy">Task elements being copied</param>
 		/// <returns>Modelview of copy BOE conflicts</returns>
-		public BOECopyConflictsModelView DisplayCopyBOEConflicts(FullWorkspace ws, int boeID, int copyBOEID, ICollection<int> taskElementsToCopy, ICollection<int> travelElementsToCopy)
+		public BOECopyConflictsModelView DisplayCopyBOEConflicts(FullWorkspace ws, int boeID, int copyBOEID, ICollection<int> taskElementsToCopy)
         {
             if (ws == null)
             {
@@ -2975,7 +2975,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			boeCopyConflictsModelView.BoeId = boeID;
 			boeCopyConflictsModelView.CopyBoeId = copyBOEID;
 			boeCopyConflictsModelView.TaskElementsToCopy = taskElementsToCopy;
-			boeCopyConflictsModelView.TravelElementsToCopy = travelElementsToCopy;
 
 			FullBoe copyBoe = this.Factory.CreateFullBoe(copyBOEID);
 			FullBoe boe = this.Factory.CreateFullBoe(boeID);
@@ -3113,8 +3112,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			// Get candidate task elements to copy.
 			Collection<TaskElementModelView> taskElementModelViews = this.GetCandidateTaskElementsToCopy(boe, ws);
-			Collection<TravelElementModelView> travelElementModelViews = this.GetCandidateTravelElementsToCopy(boe);
-
+			
 			return new BOESearchResult()
 			{
 				WBSNumber = wbsNum,
@@ -3128,8 +3126,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				BOEDescription = boe.Description ?? string.Empty,
 				BOEID = boe.Id,
 				AuthorDisplayName = authors.Any() ? string.Join("; ", authors.Select(x => x.DisplayName)) : string.Empty,
-				TaskElements = taskElementModelViews,
-				TravelElements = travelElementModelViews
+				TaskElements = taskElementModelViews
 			};
 		}
 
@@ -3164,28 +3161,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			}
 
 			return taskElementModelViews;
-		}
-
-		/// <summary>
-		/// Gets a list of travel elements from a BOE that are candidates to copy to another BOE.
-		/// </summary>
-		/// <param name="boe">Source BOE.</param>
-		/// <returns>Candidate travel elements to copy.</returns>
-		private Collection<TravelElementModelView> GetCandidateTravelElementsToCopy(FullBoe boe)
-		{
-			// Get candidate travel elements to copy.
-			Collection<TravelElementModelView> travelElementModelViews = new Collection<TravelElementModelView>();
-
-			// Weed out any travel elements that are N/A: i.e. Those in Material BOEs, others?
-			if (!boe.isMaterial && boe.Travels != null && boe.Travels.Any())
-			{
-				foreach (TravelDTO travelElement in boe.Travels)
-				{
-					travelElementModelViews.Add(new TravelElementModelView(travelElement));
-				}
-			}
-
-			return travelElementModelViews;
 		}
 
 		/// <summary>

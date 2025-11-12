@@ -1782,7 +1782,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
-		[ChildActionOnly]
+		[ChildActionOnly, HttpGet]
 		public ViewResult DisplayWorkspaceHomeHelp(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -2152,7 +2152,7 @@ namespace GenBOE.Web.Controllers
 		/// Displays the Search for Workspace to Copy dialog
 		/// </summary>
 		/// <returns></returns>
-		[ChildActionOnly]
+		[ChildActionOnly, HttpGet]
 		public ViewResult DisplayWorkspaceSearch()
 		{
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_WORKSPACE_SEARCH, SecurityPage.Home, SecurityAuthorization.Read, null, null);
