@@ -7,17 +7,16 @@
 namespace GenBOE.ActionLogic.ModelView.Workspace
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.ComponentModel.DataAnnotations;
 	using System.Diagnostics.CodeAnalysis;
-	using GenBOE.ActionLogic.ValidationAttributes;
 	using GenBOE.ActionLogic.Validation;
+	using GenBOE.ActionLogic.ValidationAttributes;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using IES.Common;
 	using IES.Common.classes;
-	using System.Collections.Generic;
-	using IES.Common.PickList;
 
 	/// <summary>
 	/// Workspace Identification (Space Systems Company) ModelView that extends WorkspaceIdentificationModelView
@@ -49,7 +48,6 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 				this.TrackingNumber = workspaceDTO.TrackingNumber;
 				this.IsUsingTM = workspaceDTO.IsUsingTM;
 				this.ProposalTitle = workspaceDTO.ProposalTitle;
-				this.UsingTemplateBoe = false;
 				this.RevisedSubmittalDate = workspaceDTO.RevisedSubmittalDate.HasValue?
 					workspaceDTO.RevisedSubmittalDate.Value.ToString("MM/dd/yyyy") : 
 					string.Empty;
