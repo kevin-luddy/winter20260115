@@ -6,6 +6,7 @@
 
 namespace GenBOE.ActionLogic.ModelView.Backend
 {
+	using System;
 	using IES.Common;
 
 	/// <summary>
@@ -164,5 +165,35 @@ namespace GenBOE.ActionLogic.ModelView.Backend
 		/// Service Central Link
 		/// </summary>
 		public string ServiceCentralLink { get; set; }
+
+		/// <summary>
+		/// Is UCOT enabled
+		/// </summary>
+		public bool EnableUCOT { get; set; }
+
+		/// <summary>
+		/// Cut off date for workspaces for UCOT
+		/// </summary>
+		public string UCOTStartDate { get; set; }
+
+		/// <summary>
+		/// Comma separated list of workspaces that should not have UCOT enabled
+		/// </summary>
+		public string UcotExcludedWorkspaces { get; set; }
+
+		/// <summary>
+		/// Is Task Author feature enabled for the system?
+		/// </summary>
+		public bool IsTaskAuthorEnabled { get; set; }
+
+		/// <summary>
+		/// Is the LM Navigator RTE Button feature enabled for the system?
+		/// </summary>
+		public bool IsLmNavigatorEnabled { get; set; }
+
+		/// <summary>
+		/// URL for LM Navigator
+		/// </summary>
+		public string LmNavigatorUrl { get; set; }
 	}
 }

@@ -11,19 +11,24 @@
 		public decimal HistoricalHours { get; set; }
 
 		/// <summary>
-		/// Labor skill Mix totals
+		/// Historical Labor skill Mix totals
 		/// </summary>
-		public decimal LaborSkillMix { get; set; }
+		public decimal HistoricalSkillMix { get; set; }
 
 		/// <summary>
-		/// BOE Skill Mix Totals
+		/// Proposed BOE Skill Mix Totals
 		/// </summary>
-		public decimal BoeSkillMix { get; set; }
+		public decimal ProposedSkillMix { get; set; }
 
 		/// <summary>
-		/// Proposed Hours Totals
+		/// Proposed Legacy Hours Totals
 		/// </summary>
-		public decimal ProposedHours { get; set; }
+		public decimal ProposedLegacyResource { get; set; }
+
+		/// <summary>
+		/// BRC Proposed Hours Totals
+		/// </summary>
+		public decimal ProposedBrc { get; set; }
 
 		/// <summary>
 		/// UCOT Hours Totals, Space only
@@ -31,8 +36,13 @@
 		public decimal UCOTHours { get; set; }
 
 		/// <summary>
-		/// Grand Total Hours (Sum UCOT + Proposed Hours), Space only
+		/// Grand Total Hours (Sum UCOT + total Proposed Hours), Space only
 		/// </summary>
-		public decimal GrandTotalHours { get; set; }
+		public decimal GrandTotalHours => UCOTHours + TotalProposedLegacyBrc;
+
+		/// <summary>
+		/// Total proposed hours (BRC + resource hours)
+		/// </summary>
+		public decimal TotalProposedLegacyBrc => ProposedBrc + ProposedLegacyResource;
 	}
 }

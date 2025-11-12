@@ -93,7 +93,7 @@
 	var widgetConfig = {};
 	widgetConfig.ContextID = "WorkspaceIdentification";
 	widgetConfig.isReadOnly = <%: ViewData["READONLY"] %>;
-	widgetConfig.MultipleCurrentWorkspace = <%: ViewData["DoesPTMMultipleWorkspaces"] %>; 
+	widgetConfig.MultipleCurrentWorkspace = <%: ViewData["DoesPTMMultipleWorkspaces"] %>;
 	widgetConfig.IsModule = true;
 	widgetConfig.FormConfigs = formConfigs;
 	widgetConfig.DialogConfigs = dialogConfigs;
@@ -348,7 +348,7 @@
 		}
 	};
 
-	WorkspaceIdentificationWidget.OnCurrentWorkspaceChange = function(selection) {
+	WorkspaceIdentificationWidget.OnCurrentWorkspaceChange = function (selection) {
 		if ($(selection).val() == 'True' && widgetConfig.MultipleCurrentWorkspace) {
 			GenSession.confirmDialog("Enable Workspace As Current",
 				"Only one workspace should be marked Current at a time, unless multiple workspaces are required for the Proposal",
@@ -416,30 +416,30 @@
 			}
 		});
 
-	   var selectedContractTypeIds = $('input[name=SelectedContractTypeIds]').val().split(',');
-	   for (var contractTypeIndex = 0; contractTypeIndex < selectedContractTypeIds.length; contractTypeIndex++) {
-		   $('input[id=ContractType_' + selectedContractTypeIds[contractTypeIndex] + ']').prop('checked', true);
-	   }
+		var selectedContractTypeIds = $('input[name=SelectedContractTypeIds]').val().split(',');
+		for (var contractTypeIndex = 0; contractTypeIndex < selectedContractTypeIds.length; contractTypeIndex++) {
+			$('input[id=ContractType_' + selectedContractTypeIds[contractTypeIndex] + ']').prop('checked', true);
+		}
 
-	   // The second check is necessary to make the page work well in read-only mode. It shows a textbox, which would be an issue.
-	   if ($('#TrackingNumber').val() !== '' && !WorkspaceIdentificationWidget.isReadOnly()) {
-		   WorkspaceIdentificationWidget.LockFields();
-	   }
+		// The second check is necessary to make the page work well in read-only mode. It shows a textbox, which would be an issue.
+		if ($('#TrackingNumber').val() !== '' && !WorkspaceIdentificationWidget.isReadOnly()) {
+			WorkspaceIdentificationWidget.LockFields();
+		}
 
-	   if ('<%: Model.RteSizeLimit.HasValue %>' === "True") {
-		   displayApproxPages('<%: Model.RteSizeLimit %>');
-	   }
+		if ('<%: Model.RteSizeLimit.HasValue %>' === "True") {
+			displayApproxPages('<%: Model.RteSizeLimit %>');
+		}
 
-	   if ('<%: Model.EnableTemplateBoeSelect %>' == "True") {
-		   var dropdown = $('#UsingTemplateBoe');
-		   dropdown.removeClass('disabled');
-		   dropdown.removeAttr('disabled');
-	   }
+		if ('<%: Model.EnableTemplateBoeSelect %>' == "True") {
+			var dropdown = $('#UsingTemplateBoe');
+			dropdown.removeClass('disabled');
+			dropdown.removeAttr('disabled');
+		}
 
-	   originalTrackingNumber = $('#TrackingNumber').val();
-	   originalSapConnectionEnabled = $('#EnableSAPConnection').val();
-	   
-   });
+		originalTrackingNumber = $('#TrackingNumber').val();
+		originalSapConnectionEnabled = $('#EnableSAPConnection').val();
+
+	});
 
 	// Dynamically set disabled/readonly dropdown for SAP connection
 	var usingTemplateBoeInit = '<%:Model.UsingTemplateBoe%>'.isTrue();
@@ -771,23 +771,24 @@
 				<%} %>
 			</div>
 		</div>
-		<%if ((bool)ViewData["ShowSAP"]) { %>
-			<div class="form-row">
-				<div class="form-label">
-					<span helptext="Does this Workspace use the SAP in its BOEs?">SAP Connection Enabled</span>
-				</div>
-				<div class="form-element">
-					<%: Html.DropDownListFor(c => c.EnableSAPConnection, new List<SelectListItem>()
+		<%if ((bool)ViewData["ShowSAP"])
+			{ %>
+		<div class="form-row">
+			<div class="form-label">
+				<span helptext="Does this Workspace use the SAP in its BOEs?">SAP Connection Enabled</span>
+			</div>
+			<div class="form-element">
+				<%: Html.DropDownListFor(c => c.EnableSAPConnection, new List<SelectListItem>()
 						{
 							new SelectListItem() { Text = "Yes", Value = "True" },
 							new SelectListItem() { Text = "No", Value = "False" }
 						}, new { onchange="WorkspaceIdentificationWidget.OnSapConnectionChange(this)" }) %>
-				</div>
-				<%if (disabledEnableSAPConnectionDropdown)
-					{%>
-						<%: Html.HiddenFor(c => c.EnableSAPConnection) %>
-					<%} %>
 			</div>
+			<%if (disabledEnableSAPConnectionDropdown)
+				{%>
+			<%: Html.HiddenFor(c => c.EnableSAPConnection) %>
+			<%} %>
+		</div>
 		<% } %>
 		<div class="form-row">
 			<div class="form-label">
@@ -801,14 +802,34 @@
 				}, new { onchange="WorkspaceIdentificationWidget.OnCurrentWorkspaceChange(this)" }) %>
 			</div>
 		</div>
-		<% if ((bool)Utilities.IsAssignTaskAuthorEnabledForSystem) { %>
-			<div class="form-row">
+		<% if ((bool)Utilities.IsAssignTaskAuthorEnabledForSystem)
+			{ %>
+		<div class="form-row">
 			<div class="form-label">
 				<span helptext="When &quot;Yes&quot; is selected, Authors are prompted to choose their name from the BOE Author list and assign themselves to the task as the Task Author. 
-					When &quot;No&quot; is selected, Author Assignment is BOE Level only. No additional Author steps.">Authors Assignable at Task<br />Level *</span>
+					When &quot;No&quot; is selected, Author Assignment is BOE Level only. No additional Author steps.">Authors Assignable at Task<br />
+					Level *
+				</span>
 			</div>
 			<div class="form-element">
 				<%: Html.DropDownListFor(c => c.EnableAssignTaskAuthor, new List<SelectListItem>()
+				{
+					new SelectListItem() { Text = "Yes", Value = "True" },
+					new SelectListItem() { Text = "No", Value = "False" }
+				}) %>
+			</div>
+		</div>
+		<% } %>
+		<% if ((bool)Utilities.IsLmNavigatorRteLinkEnabledForSystem)
+			{ %>
+		<div class="form-row">
+			<div class="form-label">
+				<span helptext="Display a link to LM Navigator in all Rich Text Editors?"> <%--TODO - update if able to pass in text--%>
+				LM Navigator Enabled
+				</span>
+			</div>
+			<div class="form-element">
+				<%: Html.DropDownListFor(c => c.EnableLmNavigator, new List<SelectListItem>()
 				{
 					new SelectListItem() { Text = "Yes", Value = "True" },
 					new SelectListItem() { Text = "No", Value = "False" }

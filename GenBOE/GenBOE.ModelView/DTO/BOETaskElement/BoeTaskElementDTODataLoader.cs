@@ -12,9 +12,11 @@ namespace GenBOE.DataBridge.DTO
 	using System.Data;
 	using System.Linq;
 	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.DataBridge.DTO.SkillMixSummary;
 	using GenBOE.Dtos;
 	using GenBOE.Models;
 	using IES.Common;
+	using IES.Common.classes;
 	using IES.Common.Exceptions;
 	using static IES.Common.Constants;
 
@@ -28,6 +30,7 @@ namespace GenBOE.DataBridge.DTO
 		private readonly IBoeTaskElementCustomFieldValueXREFLoader boeTaskElementCustomFieldLoader = null;
 		private readonly ILaborTypeCustomFieldValueXREFLoader boeLaborTypeCustomFieldLoader = null;
 		private readonly ISkillMixDTOLoader skillMixDTOLoader = null;
+		private readonly ISkillMixSummaryDTOLoader skillMixSummaryDTOLoader = null;
 		private readonly ICommonDisclosureSMDTODataLoader commonDisclosureSMDTODataLoader = null;
 
 		/// <summary>
@@ -38,6 +41,9 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="ordinaryVariableLoader">Ordinary variable loader</param>
 		/// <param name="taskElementCustomFieldLoader">Custom field loader for tasks</param>
 		/// <param name="laborTypeCustomFieldLoader">Custom field loader for labor types</param>
+		/// <param name="skillMixDTOLoader">Loader for skill mix data</param>
+		/// <param name="skillMixSummaryDTOLoader">Loader for skill mix summary data</param>
+		/// <param name="commonDisclosureSMDTODataLoader">Loader for common disclosure data</param>
 		public BoeTaskElementDTODataLoader(
 			IResourceTypeLoader resourceTypeLoader,
 			IResourceSpreadLoader resourceSpreadLoader,
@@ -45,6 +51,7 @@ namespace GenBOE.DataBridge.DTO
 			IBoeTaskElementCustomFieldValueXREFLoader taskElementCustomFieldLoader,
 			ILaborTypeCustomFieldValueXREFLoader laborTypeCustomFieldLoader,
 			ISkillMixDTOLoader skillMixDTOLoader,
+			ISkillMixSummaryDTOLoader skillMixSummaryDTOLoader,
 			ICommonDisclosureSMDTODataLoader commonDisclosureSMDTODataLoader)
 		{
 			this.resourceTypeLoader = resourceTypeLoader;
@@ -53,6 +60,7 @@ namespace GenBOE.DataBridge.DTO
 			this.boeTaskElementCustomFieldLoader = taskElementCustomFieldLoader;
 			this.boeLaborTypeCustomFieldLoader = laborTypeCustomFieldLoader;
 			this.skillMixDTOLoader = skillMixDTOLoader;
+			this.skillMixSummaryDTOLoader = skillMixSummaryDTOLoader;
 			this.commonDisclosureSMDTODataLoader = commonDisclosureSMDTODataLoader;
 		}
 
@@ -115,6 +123,7 @@ namespace GenBOE.DataBridge.DTO
 				List<CustomFieldValueContainer> customFieldValueContainers;
 				List<ResourceTypeDto> taskElementLabors;
 				List<SkillMixDTO> skillMixDTOs = null;
+				List<SkillMixSummaryDTO> skillMixSummaryDTOs = null;
 				List<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = null;
 
 				using (GenBoeEntities gbe = new GenBoeEntities())
@@ -154,7 +163,7 @@ namespace GenBOE.DataBridge.DTO
 					this.LoadSikorskyFields(gbe, result);
 				}
 
-				DoPostProcessing(result, ordinaryVariables, workspaceVariableIds, customFieldValueContainers, taskElementLabors, hoursPrecision, costPrecision, skillMixDTOs, commonDisclosureSkillMixDTOs, skillMixDTOLoader, commonDisclosureSMDTODataLoader);
+				DoPostProcessing(result, ordinaryVariables, workspaceVariableIds, customFieldValueContainers, taskElementLabors, hoursPrecision, costPrecision, skillMixDTOs, commonDisclosureSkillMixDTOs, skillMixSummaryDTOs, skillMixDTOLoader, skillMixSummaryDTOLoader, commonDisclosureSMDTODataLoader);
 				return result;
 			}
 		}
@@ -181,6 +190,7 @@ namespace GenBOE.DataBridge.DTO
 				List<OrdinaryVariableDto> ordinaryVariables;
 				List<ResourceTypeDto> taskElementLabors;
 				ICollection<SkillMixDTO> skillMixDTOs = this.skillMixDTOLoader.GetByBOEIDs(boeIds);
+				ICollection<SkillMixSummaryDTO> skillMixSummaryDTOs = this.skillMixSummaryDTOLoader.GetByBOEIDs(boeIds);
 				ICollection<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = this.commonDisclosureSMDTODataLoader.GetByBOEIDs(boeIds);
 
 				using (GenBoeEntities gbe = new GenBoeEntities())
@@ -222,7 +232,7 @@ namespace GenBOE.DataBridge.DTO
 					this.LoadSikorskyFields(gbe, result);
 				}
 
-				DoPostProcessing(result, ordinaryVariables, workspaceVariableIds, customFieldValueContainers, taskElementLabors, hoursPrecision, costPrecision, skillMixDTOs, commonDisclosureSkillMixDTOs, skillMixDTOLoader, commonDisclosureSMDTODataLoader);
+				DoPostProcessing(result, ordinaryVariables, workspaceVariableIds, customFieldValueContainers, taskElementLabors, hoursPrecision, costPrecision, skillMixDTOs, commonDisclosureSkillMixDTOs, skillMixSummaryDTOs, skillMixDTOLoader, skillMixSummaryDTOLoader, commonDisclosureSMDTODataLoader);
 
 				return result;
 			}
@@ -248,6 +258,7 @@ namespace GenBOE.DataBridge.DTO
 				List<OrdinaryVariableDto> ordinaryVariables;
 				List<ResourceTypeDto> taskElementLabors;
 				ICollection<SkillMixDTO> skillMixDTOs = this.skillMixDTOLoader.GetByWorkspaceId(wsId);
+				ICollection<SkillMixSummaryDTO> skillMixSummaryDTOs = this.skillMixSummaryDTOLoader.GetByWorkspaceId(wsId);
 				ICollection<CommonDisclosureSkillMixDTO> commonDisclosureSkillMixDTOs = this.commonDisclosureSMDTODataLoader.GetByWorkspaceId(wsId); ;
 
 				using (GenBoeEntities gbe = new GenBoeEntities())
@@ -289,7 +300,7 @@ namespace GenBOE.DataBridge.DTO
 					this.LoadSikorskyFields(gbe, result);
 				}
 
-				DoPostProcessing(result, ordinaryVariables, workspaceVariableIds, customFieldValueContainers, taskElementLabors, hoursPrecision, costPrecision, skillMixDTOs, commonDisclosureSkillMixDTOs, skillMixDTOLoader, commonDisclosureSMDTODataLoader);
+				DoPostProcessing(result, ordinaryVariables, workspaceVariableIds, customFieldValueContainers, taskElementLabors, hoursPrecision, costPrecision, skillMixDTOs, commonDisclosureSkillMixDTOs, skillMixSummaryDTOs, skillMixDTOLoader, skillMixSummaryDTOLoader, commonDisclosureSMDTODataLoader);
 
 				return result;
 			}
@@ -401,7 +412,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <returns>task variable data (no BOE)</returns>
 		[DbQuery]
 		[Obsolete("This is only used by unit tests")]
-		virtual public OrdinaryVariableDto GetTaskVariableByTaskVariableID(int inTaskVariableID)
+		public virtual OrdinaryVariableDto GetTaskVariableByTaskVariableID(int inTaskVariableID)
 		{
 			return this.ordinaryVariableLoader.GetById(inTaskVariableID);
 		}
@@ -732,44 +743,69 @@ namespace GenBOE.DataBridge.DTO
 		{
 			foreach (BoeTaskElementDTO inTaskDetail in dtosToSave)
 			{
-				// Save the Skill Mix tables
-				if (inTaskDetail.SkillMixTable != null && inTaskDetail.SkillMixTable.Any())
+				if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
 				{
-					List<SkillMixDTO> dtos = new List<SkillMixDTO>();
-					foreach (SkillMixModelView skillMixModelView in inTaskDetail.SkillMixTable)
+					// Save the Skill Mix Summary tables
+					if (inTaskDetail.SkillMixSummaryTable != null && inTaskDetail.SkillMixSummaryTable.Any())
 					{
-						SkillMixDTO dto = skillMixModelView.ToDto();
-						dto.BOEID = inTaskDetail.BoeID;
-						dto.BOETaskElementID = inTaskDetail.Id;
-						dtos.Add(dto);
-					}
+						List<SkillMixSummaryDTO> dtos = new List<SkillMixSummaryDTO>();
+						foreach (SkillMixSummaryModelView skillMixSummaryModelView in inTaskDetail.SkillMixSummaryTable)
+						{
+							SkillMixSummaryDTO dto = skillMixSummaryModelView.ToDto();
+							dto.BOEID = inTaskDetail.BoeID;
+							dto.BOETaskElementID = inTaskDetail.Id;
+							dtos.Add(dto);
+						}
 
-					this.skillMixDTOLoader.InsertSkillMix(dtos);
+						this.skillMixSummaryDTOLoader.InsertSkillMixSummary(dtos);
+					}
+					else
+					{
+						// If the dto has no skill mix summary tables, it's possible they were cleared out, so make sure old data is deleted
+						this.skillMixSummaryDTOLoader.DeleteSkillMixSummaryByBOETaskElementID(inTaskDetail.Id);
+					}
 				}
 				else
 				{
-					// If the dto has no skill mix tables, it's possible they were cleared out, so make sure old data is deleted
-					this.skillMixDTOLoader.DeleteSkillMixByBOETaskElementID(inTaskDetail.Id);
-				}
-
-				// Save the Common Disclosure DTOs
-				if (inTaskDetail.CommonDisclosureTable != null && inTaskDetail.CommonDisclosureTable.Any())
-				{
-					List<CommonDisclosureSkillMixDTO> dtos = new List<CommonDisclosureSkillMixDTO>();
-					foreach (CommonDisclosureModelView commonDisclosure in inTaskDetail.CommonDisclosureTable)
+					// Save the Skill Mix tables
+					if (inTaskDetail.SkillMixTable != null && inTaskDetail.SkillMixTable.Any())
 					{
-						CommonDisclosureSkillMixDTO dto = commonDisclosure.ToDto();
-						dto.BOEID = inTaskDetail.BoeID;
-						dto.BOETaskElementID = inTaskDetail.Id;
-						dtos.Add(dto);
+						List<SkillMixDTO> dtos = new List<SkillMixDTO>();
+						foreach (SkillMixModelView skillMixModelView in inTaskDetail.SkillMixTable)
+						{
+							SkillMixDTO dto = skillMixModelView.ToDto();
+							dto.BOEID = inTaskDetail.BoeID;
+							dto.BOETaskElementID = inTaskDetail.Id;
+							dtos.Add(dto);
+						}
+
+						this.skillMixDTOLoader.InsertSkillMix(dtos);
+					}
+					else
+					{
+						// If the dto has no skill mix tables, it's possible they were cleared out, so make sure old data is deleted
+						this.skillMixDTOLoader.DeleteSkillMixByBOETaskElementID(inTaskDetail.Id);
 					}
 
-					this.commonDisclosureSMDTODataLoader.InsertCommonDisclosureSM(dtos);
-				}
-				else
-				{
-					// If the dto has no common disclosure tables, it's possible they were cleared out, so make sure old data is deleted
-					this.commonDisclosureSMDTODataLoader.DeleteCommonDisclosureSkillMixByBOETaskElementID(inTaskDetail.Id);
+					// Save the Common Disclosure DTOs
+					if (inTaskDetail.CommonDisclosureTable != null && inTaskDetail.CommonDisclosureTable.Any())
+					{
+						List<CommonDisclosureSkillMixDTO> dtos = new List<CommonDisclosureSkillMixDTO>();
+						foreach (CommonDisclosureModelView commonDisclosure in inTaskDetail.CommonDisclosureTable)
+						{
+							CommonDisclosureSkillMixDTO dto = commonDisclosure.ToDto();
+							dto.BOEID = inTaskDetail.BoeID;
+							dto.BOETaskElementID = inTaskDetail.Id;
+							dtos.Add(dto);
+						}
+
+						this.commonDisclosureSMDTODataLoader.InsertCommonDisclosureSM(dtos);
+					}
+					else
+					{
+						// If the dto has no common disclosure tables, it's possible they were cleared out, so make sure old data is deleted
+						this.commonDisclosureSMDTODataLoader.DeleteCommonDisclosureSkillMixByBOETaskElementID(inTaskDetail.Id);
+					}
 				}
 			}
 		}
@@ -780,7 +816,7 @@ namespace GenBOE.DataBridge.DTO
 		/// takes in a collection
 		/// </summary>
 		/// <param name="inBoeTaskElementDTOs">BOE Task Element DTOs to save</param>
-		virtual public Dictionary<int, int> SaveBoeTaskElements(Collection<BoeTaskElementDTO> inBoeTaskElementDTOs)
+		public virtual Dictionary<int, int> SaveBoeTaskElements(Collection<BoeTaskElementDTO> inBoeTaskElementDTOs)
 		{
 			if (inBoeTaskElementDTOs == null) { throw new ArgumentNullException(nameof(inBoeTaskElementDTOs)); }
 
@@ -942,7 +978,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="inTaskDetail">the element to save</param>
 		/// <returns>the task element details</returns>
-		virtual public int CreateOrSaveTaskElementDetail(int BoeID, BoeTaskElementDTO inTaskDetail)
+		public virtual int CreateOrSaveTaskElementDetail(int BoeID, BoeTaskElementDTO inTaskDetail)
 		{
 			if (inTaskDetail == null)
 			{
@@ -1012,34 +1048,54 @@ namespace GenBOE.DataBridge.DTO
 
 				if (Utilities.IsSkillMixEnabledForSystem)
 				{
-					// Save the Skill Mix tables
-					if (inTaskDetail.SkillMixTable != null && inTaskDetail.SkillMixTable.Any())
+					if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
 					{
-						List<SkillMixDTO> dtos = new List<SkillMixDTO>();
-						foreach (SkillMixModelView skillMixModelView in inTaskDetail.SkillMixTable)
+						// Save the skill mix summary DTOs
+						if (inTaskDetail.SkillMixSummaryTable != null && inTaskDetail.SkillMixSummaryTable.Any())
 						{
-							SkillMixDTO dto = skillMixModelView.ToDto();
-							dto.BOEID = inTaskDetail.BoeID;
-							dto.BOETaskElementID = inTaskDetail.Id;
-							dtos.Add(dto);
-						}
+							List<SkillMixSummaryDTO> dtos = new List<SkillMixSummaryDTO>();
+							foreach (SkillMixSummaryModelView skillMixSummary in inTaskDetail.SkillMixSummaryTable)
+							{
+								SkillMixSummaryDTO dto = skillMixSummary.ToDto();
+								dto.BOEID = inTaskDetail.BoeID;
+								dto.BOETaskElementID = inTaskDetail.Id;
+								dtos.Add(dto);
+							}
 
-						this.skillMixDTOLoader.InsertSkillMix(dtos);
+							this.skillMixSummaryDTOLoader.InsertSkillMixSummary(dtos);
+						}
 					}
-
-					// Save the Common Disclosure DTOs
-					if (inTaskDetail.CommonDisclosureTable != null && inTaskDetail.CommonDisclosureTable.Any())
+					else
 					{
-						List<CommonDisclosureSkillMixDTO> dtos = new List<CommonDisclosureSkillMixDTO>();
-						foreach (CommonDisclosureModelView commonDisclosure in inTaskDetail.CommonDisclosureTable)
+						// Save the Skill Mix tables
+						if (inTaskDetail.SkillMixTable != null && inTaskDetail.SkillMixTable.Any())
 						{
-							CommonDisclosureSkillMixDTO dto = commonDisclosure.ToDto();
-							dto.BOEID = inTaskDetail.BoeID;
-							dto.BOETaskElementID = inTaskDetail.Id;
-							dtos.Add(dto);
+							List<SkillMixDTO> dtos = new List<SkillMixDTO>();
+							foreach (SkillMixModelView skillMixModelView in inTaskDetail.SkillMixTable)
+							{
+								SkillMixDTO dto = skillMixModelView.ToDto();
+								dto.BOEID = inTaskDetail.BoeID;
+								dto.BOETaskElementID = inTaskDetail.Id;
+								dtos.Add(dto);
+							}
+
+							this.skillMixDTOLoader.InsertSkillMix(dtos);
 						}
 
-						this.commonDisclosureSMDTODataLoader.InsertCommonDisclosureSM(dtos);
+						// Save the Common Disclosure DTOs
+						if (inTaskDetail.CommonDisclosureTable != null && inTaskDetail.CommonDisclosureTable.Any())
+						{
+							List<CommonDisclosureSkillMixDTO> dtos = new List<CommonDisclosureSkillMixDTO>();
+							foreach (CommonDisclosureModelView commonDisclosure in inTaskDetail.CommonDisclosureTable)
+							{
+								CommonDisclosureSkillMixDTO dto = commonDisclosure.ToDto();
+								dto.BOEID = inTaskDetail.BoeID;
+								dto.BOETaskElementID = inTaskDetail.Id;
+								dtos.Add(dto);
+							}
+
+							this.commonDisclosureSMDTODataLoader.InsertCommonDisclosureSM(dtos);
+						}
 					}
 				}
 
@@ -1052,7 +1108,7 @@ namespace GenBOE.DataBridge.DTO
 		/// delete the task element detail
 		/// </summary>
 		/// <param name="inTaskElementDetail">task element detail</param>
-		virtual public void DeleteTaskElementDetail(BoeTaskElementDTO inTaskElementDetail)
+		public virtual void DeleteTaskElementDetail(BoeTaskElementDTO inTaskElementDetail)
 		{
 			using (StopwatchTimer sw = new StopwatchTimer(this.log))
 			{
@@ -1084,7 +1140,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="inWorkspaceVars">workspace variable IDs</param>
 		/// <param name="inTaskElementID">the task element ID</param>
-		virtual public void SaveWorkspaceVariables(Collection<int> inWorkspaceVars, int inTaskElementID, GenBoeEntities gbe)
+		public virtual void SaveWorkspaceVariables(Collection<int> inWorkspaceVars, int inTaskElementID, GenBoeEntities gbe)
 		{
 			using (StopwatchTimer sw = new StopwatchTimer(this.log))
 			{
@@ -1116,7 +1172,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="inBOETaskElementID"></param>
 		/// <param name="inLaborTypeWarningFlag"></param>
-		virtual public void SaveBOETaskElementLaborTypeWarning(int inBOETaskElementID, bool inLaborTypeWarningFlag)
+		public virtual void SaveBOETaskElementLaborTypeWarning(int inBOETaskElementID, bool inLaborTypeWarningFlag)
 		{
 			using (StopwatchTimer sw = new StopwatchTimer(this.log))
 			{
@@ -1137,7 +1193,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="inLMLaborType"></param>
 		/// <returns>a single LM void Type</returns>
-		virtual public int CreateorSaveLMLaborType(int TaskElementID, ResourceTypeDto inSaveLMLaborType)
+		public virtual int CreateorSaveLMLaborType(int TaskElementID, ResourceTypeDto inSaveLMLaborType)
 		{
 			// HACK: This is only in place until the Full Object is complete.
 			if (inSaveLMLaborType == null)
@@ -1152,7 +1208,7 @@ namespace GenBOE.DataBridge.DTO
 		/// Delete a selected LM Labor type
 		/// </summary>
 		/// <param name="inLMLaborTypeID">the LM Labor type to delete</param>
-		virtual public void DeleteLMLaborType(ResourceTypeDto inDeleteLaborType)
+		public virtual void DeleteLMLaborType(ResourceTypeDto inDeleteLaborType)
 		{
 			// HACK: This is only in place until the Full Object is complete.
 			this.resourceTypeLoader.Save(inDeleteLaborType);
@@ -1162,7 +1218,7 @@ namespace GenBOE.DataBridge.DTO
 		/// Save BOE Labor Type Custom Field Containers
 		/// </summary>
 		/// <param name="inBOELaborTypeCustomFieldValueContainers"></param>
-		virtual public void SaveBOELaborTypeCustomFieldValueContainers(Collection<CustomFieldValueContainer> inBOELaborTypeCustomFieldValueContainers, int inLaborTypeID)
+		public virtual void SaveBOELaborTypeCustomFieldValueContainers(Collection<CustomFieldValueContainer> inBOELaborTypeCustomFieldValueContainers, int inLaborTypeID)
 		{
 			using (StopwatchTimer sw = new StopwatchTimer(this.log))
 			{
@@ -1182,7 +1238,7 @@ namespace GenBOE.DataBridge.DTO
 		/// Save a single BOE Labor Type Field Container
 		/// </summary>
 		/// <param name="inCustomFieldValueXrefDTO"></param>
-		virtual public void SaveBOELaborTypeCustomFieldValueXref(CustomFieldValueContainer inCustomFieldValueXrefDTO, int inLaborTypeID)
+		public virtual void SaveBOELaborTypeCustomFieldValueXref(CustomFieldValueContainer inCustomFieldValueXrefDTO, int inLaborTypeID)
 		{
 			using (StopwatchTimer sw = new StopwatchTimer(this.log))
 			{
@@ -1206,7 +1262,7 @@ namespace GenBOE.DataBridge.DTO
 		/// Upsert a BOE Labor Type Custom Field Value Container
 		/// </summary>
 		/// <param name="inCustomFieldValueContainer"></param>
-		virtual public void UpdateBoeLaborTypeCustomFieldValueContainer(CustomFieldValueContainer inCustomFieldValueContainer, int inLaborTypeID)
+		public virtual void UpdateBoeLaborTypeCustomFieldValueContainer(CustomFieldValueContainer inCustomFieldValueContainer, int inLaborTypeID)
 		{
 			using (StopwatchTimer sw = new StopwatchTimer(this.log))
 			{
@@ -1233,7 +1289,7 @@ namespace GenBOE.DataBridge.DTO
 		/// Delete a BOE Labor Type custom field container
 		/// </summary>
 		/// <param name="inCustomFieldValueContainer"></param>
-		virtual public void DeleteBoeLaborTypeCustomFieldValueContainer(CustomFieldValueContainer inCustomFieldValueContainer, int inLaborTypeID)
+		public virtual void DeleteBoeLaborTypeCustomFieldValueContainer(CustomFieldValueContainer inCustomFieldValueContainer, int inLaborTypeID)
 		{
 			using (StopwatchTimer sw = new StopwatchTimer(this.log))
 			{
@@ -1258,7 +1314,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="inSaveLaborSpread">Labor Spread Id</param>
 		/// <returns>Labor Spread ID Created or Saved</returns>
-		virtual public int CreateOrSaveLMLaborSpread(int LaborTypeID, ResourceSpreadDto inSaveLaborSpread)
+		public virtual int CreateOrSaveLMLaborSpread(int LaborTypeID, ResourceSpreadDto inSaveLaborSpread)
 		{
 			// HACK: This is only in place until the Full Object is complete.
 			if (inSaveLaborSpread == null)
@@ -1274,7 +1330,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="inSaveLaborSpread">Labor Spread Id</param>
 		/// <returns>Labor Spread ID Created or Saved</returns>
-		virtual public int DeleteLMLaborSpreadsByLaborTypeID(int LaborTypeID)
+		public virtual int DeleteLMLaborSpreadsByLaborTypeID(int LaborTypeID)
 		{
 			// HACK: This is only in place until the Full Object is complete.
 			return this.resourceSpreadLoader.DeleteByResourceTypeId(LaborTypeID);
@@ -1455,7 +1511,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="costPrecision">The Cost precision for the workspace.</param>
 		/// <param name="hoursPrecision">The Hours precision for the workspace.</param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-		private static void DoPostProcessing(List<BoeTaskElementDTO> result, List<OrdinaryVariableDto> ordinaryVariables, List<Tuple<int, int>> workspaceVariableIds, List<CustomFieldValueContainer> customFieldValueContainers, List<ResourceTypeDto> taskElementLabors, int hoursPrecision, int costPrecision, ICollection<SkillMixDTO> skillMix, ICollection<CommonDisclosureSkillMixDTO> commonDisclosures, ISkillMixDTOLoader skillMixDTOLoader, ICommonDisclosureSMDTODataLoader commonDisclosureSMDTODataLoader)
+		private static void DoPostProcessing(List<BoeTaskElementDTO> result, List<OrdinaryVariableDto> ordinaryVariables, List<Tuple<int, int>> workspaceVariableIds, List<CustomFieldValueContainer> customFieldValueContainers, List<ResourceTypeDto> taskElementLabors, int hoursPrecision, int costPrecision, ICollection<SkillMixDTO> skillMix, ICollection<CommonDisclosureSkillMixDTO> commonDisclosures, ICollection<SkillMixSummaryDTO> skillMixSummaries, ISkillMixDTOLoader skillMixDTOLoader, ISkillMixSummaryDTOLoader skillMixSummariesDTOLoader, ICommonDisclosureSMDTODataLoader commonDisclosureSMDTODataLoader)
 		{
 			result.AsParallel().ForAll(
 				bT =>
@@ -1533,22 +1589,36 @@ namespace GenBOE.DataBridge.DTO
 					bT.StartDate = bT.StartDate.Normalize();
 					bT.EndDate = bT.EndDate.Normalize();
 
-					if (skillMix == null)
+					if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
 					{
-						bT.SkillMixTable = skillMixDTOLoader.GetByBOETaskElementID(bT.Id).Select(x => new SkillMixModelView(x)).OrderBy(x => x.ResourceOld).ThenBy(y => y.ResourceNew).ToCollection();
+						if (skillMixSummaries == null)
+						{
+							bT.SkillMixSummaryTable = skillMixSummariesDTOLoader.GetByBOETaskElementID(bT.Id).Select(x => new SkillMixSummaryModelView(x)).OrderBy(d => d.ResourceID).ThenBy(e => e.BusinessResourceID).ToCollection();
+						}
+						else
+						{
+							bT.SkillMixSummaryTable = skillMixSummaries.Where(r => r.BOETaskElementID == bT.Id).Select(x => new SkillMixSummaryModelView(x)).OrderBy(d => d.ResourceID).ThenBy(e => e.BusinessResourceID).ToCollection();
+						}
 					}
 					else
 					{
-						bT.SkillMixTable = skillMix.Where(r => r.BOETaskElementID == bT.Id).Select(x => new SkillMixModelView(x)).OrderBy(x => x.ResourceOld).ThenBy(y => y.ResourceNew).ToCollection();
-					}
+						if (skillMix == null)
+						{
+							bT.SkillMixTable = skillMixDTOLoader.GetByBOETaskElementID(bT.Id).Select(x => new SkillMixModelView(x)).OrderBy(x => x.ResourceOld).ThenBy(y => y.ResourceNew).ToCollection();
+						}
+						else
+						{
+							bT.SkillMixTable = skillMix.Where(r => r.BOETaskElementID == bT.Id).Select(x => new SkillMixModelView(x)).OrderBy(x => x.ResourceOld).ThenBy(y => y.ResourceNew).ToCollection();
+						}
 
-					if (commonDisclosures == null)
-					{
-						bT.CommonDisclosureTable = commonDisclosureSMDTODataLoader.GetByBOETaskElementID(bT.Id).Select(x => new CommonDisclosureModelView(x)).OrderBy(d => d.ResourceID).ThenBy(e => e.BusinessResourceID).ToCollection();
-					}
-					else
-					{
-						bT.CommonDisclosureTable = commonDisclosures.Where(r => r.BOETaskElementID == bT.Id).Select(x => new CommonDisclosureModelView(x)).OrderBy(d => d.ResourceID).ThenBy(e => e.BusinessResourceID).ToCollection();
+						if (commonDisclosures == null)
+						{
+							bT.CommonDisclosureTable = commonDisclosureSMDTODataLoader.GetByBOETaskElementID(bT.Id).Select(x => new CommonDisclosureModelView(x)).OrderBy(d => d.ResourceID).ThenBy(e => e.BusinessResourceID).ToCollection();
+						}
+						else
+						{
+							bT.CommonDisclosureTable = commonDisclosures.Where(r => r.BOETaskElementID == bT.Id).Select(x => new CommonDisclosureModelView(x)).OrderBy(d => d.ResourceID).ThenBy(e => e.BusinessResourceID).ToCollection();
+						}
 					}
 				});
 		}

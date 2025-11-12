@@ -17,12 +17,12 @@ namespace GenBOE.Models
         public int SkillMixSummaryID { get; set; }
         public string Rationale { get; set; }
         public bool Included { get; set; }
-        public decimal ProposedHours { get; set; }
+        public decimal ProposedLegacyResource { get; set; }
         public decimal HistoricalHours { get; set; }
         public decimal ResourceHours { get; set; }
-        public decimal BusinessResourceHours { get; set; }
-        public decimal BOESkillMix { get; set; }
-        public decimal LaborSkillMix { get; set; }
+        public decimal ProposedBrc { get; set; }
+        public decimal ProposedSkillMix { get; set; }
+        public decimal HistoricalSkillMix { get; set; }
         public string ResourceID { get; set; }
         public string BusinessResourceID { get; set; }
         public int BOEID { get; set; }

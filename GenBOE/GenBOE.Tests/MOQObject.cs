@@ -243,7 +243,7 @@ namespace GenBOE.Tests
         /// <summary>
         /// Reset test data with empty values
         /// </summary>
-        virtual public void ResetTestData()
+        public virtual void ResetTestData()
         {
             this.ResetTestData(new ObjectGraph());
         }
@@ -253,7 +253,7 @@ namespace GenBOE.Tests
         /// set to NULL will be initialized with defaults.
         /// </summary>
         /// <param name="inObjectGraph">Class containing seed data for tests</param>
-        virtual public void ResetTestData(ObjectGraph inObjectGraph)
+        public virtual void ResetTestData(ObjectGraph inObjectGraph)
         {
             using (TransactionScope scope = new TransactionScope())
             {
@@ -271,7 +271,7 @@ namespace GenBOE.Tests
         /// (will only reseed if _INITIALIZED is false)
         /// </summary>
         [TestInitialize()]
-        virtual public void Setup()
+        public virtual void Setup()
         {
             if (!_INITIALIZED)
             {
@@ -495,7 +495,7 @@ namespace GenBOE.Tests
             return word;
         }
 
-        virtual public void Cleanup()
+        public virtual void Cleanup()
         {
             this._Initialize(new ObjectGraph());
         }
@@ -504,7 +504,7 @@ namespace GenBOE.Tests
         /// Always reset MOQObjects after a test (barely any time since not connected to db)
         /// </summary>
         [TestCleanup()]
-        virtual public void TestCleanup()
+        public virtual void TestCleanup()
         {
             _INITIALIZED = false;
         }

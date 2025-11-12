@@ -11,6 +11,8 @@ namespace GenBOE
 	using System.IO.IsolatedStorage;
 	using System.Linq;
 	using System.Net.Http;
+	using System.Net.Security;
+	using System.Security.Cryptography.X509Certificates;
 	using System.Text.RegularExpressions;
 	using System.Web;
 	using System.Web.Http;
@@ -356,8 +358,65 @@ namespace GenBOE
 				_log.Error(ex, "Error setting Regex cache size.");
 			}
 
+			System.Net.ServicePointManager.ServerCertificateValidationCallback = new System.Net.Security.RemoteCertificateValidationCallback(RemoteServerCertificateValidationCallback);
+
 			// Log environment variables and config app settings
 			Utilities.LogEnvironmentSettings(_log);
+		}
+
+		/// <summary>
+		/// Check for self-signed cert errors and remote cert name mismatch and disregard
+		/// Remote cert name can mismatch because we are using a DNS CName that is pointing towards 1 or more VMs behind the scenes
+		/// courtesy of Microsoft - https://learn.microsoft.com/en-us/previous-versions/office/developer/exchange-server-2010/dd633677(v=exchg.80)
+		/// </summary>
+		/// <param name="sender">The sender</param>
+		/// <param name="certificate">The certificate</param>
+		/// <param name="chain">The x509 chain</param>
+		/// <param name="sslPolicyErrors">the policy errors if any</param>
+		/// <returns></returns>
+		private bool RemoteServerCertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+		{
+			// If the certificate is a valid, signed certificate, return true.
+			if (sslPolicyErrors == System.Net.Security.SslPolicyErrors.None || sslPolicyErrors == SslPolicyErrors.RemoteCertificateNameMismatch)
+			{
+				return true;
+			}
+
+			// If there are errors in the certificate chain, look at each error to determine the cause.
+			if ((sslPolicyErrors & System.Net.Security.SslPolicyErrors.RemoteCertificateChainErrors) != 0)
+			{
+				if (chain != null && chain.ChainStatus != null)
+				{
+					foreach (System.Security.Cryptography.X509Certificates.X509ChainStatus status in chain.ChainStatus)
+					{
+						if ((certificate.Subject == certificate.Issuer) &&
+						   (status.Status == System.Security.Cryptography.X509Certificates.X509ChainStatusFlags.UntrustedRoot))
+						{
+							// Self-signed certificates with an untrusted root are valid. 
+							continue;
+						}
+						else
+						{
+							if (status.Status != System.Security.Cryptography.X509Certificates.X509ChainStatusFlags.NoError)
+							{
+								// If there are any other errors in the certificate chain, the certificate is invalid,
+								// so the method returns false.
+								return false;
+							}
+						}
+					}
+				}
+
+				// When processing reaches this line, the only errors in the certificate chain are 
+				// untrusted root errors for self-signed certificates. These certificates are valid
+				// for default Exchange server installations, so return true.
+				return true;
+			}
+			else
+			{
+				// In all other cases, return false.
+				return false;
+			}
 		}
 
 		/// <summary>
@@ -452,6 +511,7 @@ namespace GenBOE
 					new ResolvedParameter(typeof(IBoeTaskElementCustomFieldValueXREFLoader)),
 					new ResolvedParameter(typeof(ILaborTypeCustomFieldValueXREFLoader)),
 					new ResolvedParameter(typeof(ISkillMixDTOLoader)),
+					new ResolvedParameter(typeof(ISkillMixSummaryDTOLoader)),
 					new ResolvedParameter(typeof(ICommonDisclosureSMDTODataLoader)))).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());
 
 			GenBOEUnityContainer.Container.RegisterType(typeof(IProPricerDTODataLoader), typeof(ProPricerDTODataLoader), GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<IWorkspaceDTODataLoader>(new InterfaceInterceptor());

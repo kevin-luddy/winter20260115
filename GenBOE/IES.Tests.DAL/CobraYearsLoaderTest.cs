@@ -127,7 +127,7 @@ namespace IES.Tests
             if (startYear == 2017)
             {
                 DateTime dt2017 = cobraYears.Single(x => x.Year == 2017).CobraDate;
-                Assert.AreEqual(12, cobraExportRows.Count);
+                Assert.AreEqual(13, cobraExportRows.Count);
                 Assert.AreEqual(1, cobraExportRows.Count(x => x.Code1.Equals(svcctr) && x.Date.Date == dt2017.Date && x.Description.Equals("Mock Rate 1a") && x.RateCode.Equals("MockRate1") && x.RateSet.Equals("MockRateSet1") && x.Value == 11.170000m));
                 Assert.AreEqual(1, cobraExportRows.Count(x => x.Code1.Equals(svcctr) && x.Date.Date == dt2017.Date && x.Description.Equals("Mock Rate 2a") && x.RateCode.Equals("MockRate2") && x.RateSet.Equals("MockRateSet2") && x.Value == null));
                 Assert.AreEqual(1, cobraExportRows.Count(x => x.Code1.Equals(indirect) && x.Date.Date == dt2017.Date && x.Description.Equals("Mock Rate 3") && x.RateCode.Equals("MockRate3") && x.RateSet.Equals("MockRateSet1") && x.Value == 3.17m));
@@ -137,7 +137,7 @@ namespace IES.Tests
             else
             {
                 // startYear = 2018
-                Assert.AreEqual(7, cobraExportRows.Count);
+                Assert.AreEqual(8, cobraExportRows.Count);
             }
 
             // validate data for 2018 and 2019

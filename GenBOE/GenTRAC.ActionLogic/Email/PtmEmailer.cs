@@ -176,6 +176,7 @@ namespace GenTRAC.ActionLogic.Email
                     string email = string.Format("recipients are [{0}]. Email subject is {1}. Email body is {2}.", inRecipient, message.Subject, message.Body);
                     try
                     {
+						smtp.EnableSsl = true;
                         smtp.Send(message);
                         this.log.Info(string.Format("The following email was sent, {0}", email));
                     }

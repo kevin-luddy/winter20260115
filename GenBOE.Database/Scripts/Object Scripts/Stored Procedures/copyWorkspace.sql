@@ -53,6 +53,8 @@ AS
 **		1/14/25		twilson3			PROPH-2596 - Add UCOT Factor
 **		1/15/25		e309214				PROPH-1854 Database Changes for Assign Author
 **		9/30/25		e378233				PROPH-3302 Updated Copy Workspace for Skill Mix Summary
+**		10/14/25	ranzalon			PROPH-3286 Enable LM Nav Workspace Setting
+**		10/30/25	ranzalon			PROPH-3422 Update Skill Mix Summary Column Names
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -137,6 +139,7 @@ INSERT INTO [dbo].[Workspace]
 		   ,[EnableSAPConnection]
 		   ,[UCOTFactor]
 		   ,[EnableAssignTaskAuthor]
+		   ,[EnableLmNavigator]
            )
 SELECT [UpdateDT]
       ,@WorkspaceName
@@ -185,6 +188,7 @@ SELECT [UpdateDT]
 	  ,[EnableSAPConnection]
 	  ,[UCOTFactor]
 	  ,[EnableAssignTaskAuthor]
+	  ,[EnableLmNavigator]
   FROM [dbo].[Workspace]
 WHERE WorkspaceID = @WorkspaceID
 
@@ -1874,12 +1878,12 @@ DECLARE @SkillMixSummary TABLE
 	[SkillMixSummaryID] [int] NOT NULL,
 	[Rationale] varchar(255) NOT NULL,
 	[Included] [bit] NOT NULL,
-	[ProposedHours] decimal(11,2) NOT NULL,
+	[ProposedLegacyResource] decimal(11,2) NOT NULL,
 	[HistoricalHours] decimal(11,2) NOT NULL,
 	[ResourceHours] decimal(11,2) NOT NULL,
-	[BusinessResourceHours] decimal(11,2) NOT NULL,
-	[BOESkillMix] decimal(5,2) NOT NULL,
-	[LaborSkillMix] decimal(5,2) NOT NULL,
+	[ProposedBrc] decimal(11,2) NOT NULL,
+	[ProposedSkillMix] decimal(5,2) NOT NULL,
+	[HistoricalSkillMix] decimal(5,2) NOT NULL,
     [ResourceID] varchar(20) NOT NULL,
     [BusinessResourceID] varchar(20) NOT NULL,
     [BOEID] [int] NOT NULL,
@@ -1894,12 +1898,12 @@ SELECT
 	SMS.[SkillMixSummaryID],
 	SMS.[Rationale],
 	SMS.[Included],
-	SMS.[ProposedHours],
+	SMS.[ProposedLegacyResource],
 	SMS.[HistoricalHours],
 	SMS.[ResourceHours],
-	SMS.[BusinessResourceHours],
-	SMS.[BOESkillMix],
-	SMS.[LaborSkillMix],
+	SMS.[ProposedBrc],
+	SMS.[ProposedSkillMix],
+	SMS.[HistoricalSkillMix],
     SMS.[ResourceID],
     SMS.[BusinessResourceID],
     SMS.[BOEID],
@@ -1919,12 +1923,12 @@ SELECT TOP 1 @SkillMixSummaryID = SkillMixSummaryID FROM @SkillMixSummary WHERE 
 INSERT INTO [dbo].[SkillMixSummary]
 			([Rationale],
 			[Included],
-			[ProposedHours],
+			[ProposedLegacyResource],
 			[HistoricalHours],
 			[ResourceHours],
-			[BusinessResourceHours],
-			[BOESkillMix],
-			[LaborSkillMix],
+			[ProposedBrc],
+			[ProposedSkillMix],
+			[HistoricalSkillMix],
             [ResourceID],
             [BusinessResourceID],
             [BOEID],
@@ -1934,12 +1938,12 @@ INSERT INTO [dbo].[SkillMixSummary]
 SELECT
 	[Rationale],
 	[Included],
-	[ProposedHours],
+	[ProposedLegacyResource],
 	[HistoricalHours],
 	[ResourceHours],
-	[BusinessResourceHours],
-	[BOESkillMix],
-	[LaborSkillMix],
+	[ProposedBrc],
+	[ProposedSkillMix],
+	[HistoricalSkillMix],
     [ResourceID],
     [BusinessResourceID],
     [NewBOEID],

@@ -25,7 +25,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="boeTaskElementID"></param>
 		/// <returns>List of SkillMix</returns>
 		[DbQuery]
-		virtual public ICollection<SkillMixDTO> GetByBOETaskElementID(int boeTaskElementID)
+		public virtual ICollection<SkillMixDTO> GetByBOETaskElementID(int boeTaskElementID)
 		{
 			List<SkillMixDTO> result = new List<SkillMixDTO>();
 
@@ -63,7 +63,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="boeIDs">collection of BOE Ids</param>
 		/// <returns>List of SkillMix</returns>
 		[DbQuery]
-		virtual public ICollection<SkillMixDTO> GetByBOEIDs(ICollection<int> boeIDs)
+		public virtual ICollection<SkillMixDTO> GetByBOEIDs(ICollection<int> boeIDs)
 		{
 			List<SkillMixDTO> result = new List<SkillMixDTO>();
 
@@ -101,7 +101,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="skillMixIDs">ICollection<int></param>
 		/// <returns>List of SkillMix</returns>
 		[DbQuery]
-		virtual public ICollection<SkillMixDTO> GetByIds(ICollection<int> skillMixIDs)
+		public virtual ICollection<SkillMixDTO> GetByIds(ICollection<int> skillMixIDs)
 		{
 			List<SkillMixDTO> result = new List<SkillMixDTO>();
 
@@ -138,7 +138,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="skillMixID"></param>
 		/// <returns>SkillMix</returns>
-		virtual public SkillMixDTO GetById(int skillMixID)
+		public virtual SkillMixDTO GetById(int skillMixID)
 		{
 			return this.GetByIds(new Collection<int>() { skillMixID }).FirstOrDefault();
 		}
@@ -148,7 +148,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="boeTaskElementID">int</param>
 		/// <returns>Number of SkillMixes deleted</returns>
-		virtual public int? DeleteSkillMixByBOETaskElementID(int boeTaskElementID)
+		public virtual int? DeleteSkillMixByBOETaskElementID(int boeTaskElementID)
 		{
 			int? toReturn = null;
 
@@ -209,7 +209,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="skillMixes">SkillMixDTO</param>
 		/// <returns>Num rows that were inserted</returns>
-		virtual public int? InsertSkillMix(ICollection<SkillMixDTO> skillMixes)
+		public virtual int? InsertSkillMix(ICollection<SkillMixDTO> skillMixes)
 		{
 			int? toReturn = null;
 			if (skillMixes == null || skillMixes.Count == 0) { throw new ArgumentNullException(nameof(skillMixes)); }

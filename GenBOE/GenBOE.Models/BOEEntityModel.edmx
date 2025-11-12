@@ -1168,12 +1168,12 @@ warning 6002: The table/view 'genBOESpace_DEV.dbo.BOEFormPBOEResourcesXREF' does
           <Property Name="SkillMixSummaryID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Rationale" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="Included" Type="bit" Nullable="false" />
-          <Property Name="ProposedHours" Type="decimal" Precision="11" Scale="2" Nullable="false" />
+          <Property Name="ProposedLegacyResource" Type="decimal" Precision="11" Scale="2" Nullable="false" />
           <Property Name="HistoricalHours" Type="decimal" Precision="11" Scale="2" Nullable="false" />
           <Property Name="ResourceHours" Type="decimal" Precision="11" Scale="2" Nullable="false" />
-          <Property Name="BusinessResourceHours" Type="decimal" Precision="11" Scale="2" Nullable="false" />
-          <Property Name="BOESkillMix" Type="decimal" Precision="5" Scale="2" Nullable="false" />
-          <Property Name="LaborSkillMix" Type="decimal" Precision="5" Scale="2" Nullable="false" />
+          <Property Name="ProposedBrc" Type="decimal" Precision="11" Scale="2" Nullable="false" />
+          <Property Name="ProposedSkillMix" Type="decimal" Precision="5" Scale="2" Nullable="false" />
+          <Property Name="HistoricalSkillMix" Type="decimal" Precision="5" Scale="2" Nullable="false" />
           <Property Name="ResourceID" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="BusinessResourceID" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="BOEID" Type="int" Nullable="false" />
@@ -1498,6 +1498,7 @@ warning 6002: The table/view 'genBOESpace_DEV.dbo.UserLog' does not have a prima
           <Property Name="CurrentPTMWorkspace" Type="bit" Nullable="false" />
           <Property Name="UCOTFactor" Type="decimal" Precision="7" Scale="2" Nullable="false" />
           <Property Name="EnableAssignTaskAuthor" Type="bit" Nullable="false" />
+          <Property Name="EnableLmNavigator" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="WorkspaceContractTypeXREF">
           <Key>
@@ -5623,6 +5624,7 @@ warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' do
           <Parameter Name="CurrentPTMWorkspace" Type="bit" Mode="In" />
           <Parameter Name="UCOTFactor" Type="decimal" Mode="In" />
           <Parameter Name="EnableAssignTaskAuthor" Type="bit" Mode="In" />
+          <Parameter Name="EnableLmNavigator" Type="bit" Mode="In" />
         </Function>
         <Function Name="upsertWorkspaceEmail" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="WorkspaceEmailID" Type="int" Mode="In" />
@@ -11031,6 +11033,7 @@ warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' do
             <Parameter Name="CurrentPTMWorkspace" Mode="In" Type="Boolean" />
             <Parameter Name="UCOTFactor" Mode="In" Type="Decimal" />
             <Parameter Name="EnableAssignTaskAuthor" Mode="In" Type="Boolean" />
+            <Parameter Name="EnableLmNavigator" Mode="In" Type="Boolean" />
           </FunctionImport>
 		  <FunctionImport Name="upsertWorkspacePerformingOrganization" ReturnType="Collection(Int32)">
             <Parameter Name="PerformingOrganizationID" Mode="In" Type="Int32" />
@@ -12338,6 +12341,7 @@ warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' do
           <NavigationProperty Name="BOEs" Relationship="GenBOE.Models.FK_BOE_Workspace" FromRole="Workspace" ToRole="BOE" />
           <Property Name="UCOTFactor" Type="Decimal" Nullable="false" Precision="7" Scale="2" />
           <Property Name="EnableAssignTaskAuthor" Type="Boolean" Nullable="false" />
+          <Property Name="EnableLmNavigator" Type="Boolean" Nullable="false" />
 		</EntityType>
 		<Association Name="FK_BOEPotentialRole_Workspace">
 		  <End Type="GenBOE.Models.Workspace" Role="Workspace" Multiplicity="1" />
@@ -13927,12 +13931,12 @@ warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' do
           <Property Name="SkillMixSummaryID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Rationale" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="Included" Type="Boolean" Nullable="false" />
-          <Property Name="ProposedHours" Type="Decimal" Nullable="false" Precision="11" Scale="2" />
+          <Property Name="ProposedLegacyResource" Type="Decimal" Nullable="false" Precision="11" Scale="2" />
           <Property Name="HistoricalHours" Type="Decimal" Nullable="false" Precision="11" Scale="2" />
           <Property Name="ResourceHours" Type="Decimal" Nullable="false" Precision="11" Scale="2" />
-          <Property Name="BusinessResourceHours" Type="Decimal" Nullable="false" Precision="11" Scale="2" />
-          <Property Name="BOESkillMix" Type="Decimal" Nullable="false" Precision="5" Scale="2" />
-          <Property Name="LaborSkillMix" Type="Decimal" Nullable="false" Precision="5" Scale="2" />
+          <Property Name="ProposedBrc" Type="Decimal" Nullable="false" Precision="11" Scale="2" />
+          <Property Name="ProposedSkillMix" Type="Decimal" Nullable="false" Precision="5" Scale="2" />
+          <Property Name="HistoricalSkillMix" Type="Decimal" Nullable="false" Precision="5" Scale="2" />
           <Property Name="ResourceID" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="BusinessResourceID" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="BOEID" Type="Int32" Nullable="false" />
@@ -15580,7 +15584,8 @@ warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' do
 		  <EntitySetMapping Name="Workspaces">
 			<EntityTypeMapping TypeName="GenBOE.Models.Workspace">
 			  <MappingFragment StoreEntitySet="Workspace">
-				<ScalarProperty Name="EnableAssignTaskAuthor" ColumnName="EnableAssignTaskAuthor" />
+				<ScalarProperty Name="EnableLmNavigator" ColumnName="EnableLmNavigator" />
+                <ScalarProperty Name="EnableAssignTaskAuthor" ColumnName="EnableAssignTaskAuthor" />
                 <ScalarProperty Name="UCOTFactor" ColumnName="UCOTFactor" />
                 <ScalarProperty Name="CurrentPTMWorkspace" ColumnName="CurrentPTMWorkspace" />
 				<ScalarProperty Name="EnableSAPConnection" ColumnName="EnableSAPConnection" />
@@ -16100,12 +16105,12 @@ warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' do
                 <ScalarProperty Name="BOEID" ColumnName="BOEID" />
                 <ScalarProperty Name="BusinessResourceID" ColumnName="BusinessResourceID" />
                 <ScalarProperty Name="ResourceID" ColumnName="ResourceID" />
-                <ScalarProperty Name="LaborSkillMix" ColumnName="LaborSkillMix" />
-                <ScalarProperty Name="BOESkillMix" ColumnName="BOESkillMix" />
-                <ScalarProperty Name="BusinessResourceHours" ColumnName="BusinessResourceHours" />
+                <ScalarProperty Name="HistoricalSkillMix" ColumnName="HistoricalSkillMix" />
+                <ScalarProperty Name="ProposedSkillMix" ColumnName="ProposedSkillMix" />
+                <ScalarProperty Name="ProposedBrc" ColumnName="ProposedBrc" />
                 <ScalarProperty Name="ResourceHours" ColumnName="ResourceHours" />
                 <ScalarProperty Name="HistoricalHours" ColumnName="HistoricalHours" />
-                <ScalarProperty Name="ProposedHours" ColumnName="ProposedHours" />
+                <ScalarProperty Name="ProposedLegacyResource" ColumnName="ProposedLegacyResource" />
                 <ScalarProperty Name="Included" ColumnName="Included" />
                 <ScalarProperty Name="Rationale" ColumnName="Rationale" />
                 <ScalarProperty Name="SkillMixSummaryID" ColumnName="SkillMixSummaryID" />

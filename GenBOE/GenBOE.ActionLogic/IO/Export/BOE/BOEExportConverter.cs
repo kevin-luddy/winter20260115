@@ -452,6 +452,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 				{
 					boeExportTaskElement.SkillMixTable = boeTaskElement.SkillMixTable;
 					boeExportTaskElement.CommonDisclosureTable = boeTaskElement.CommonDisclosureTable;
+					boeExportTaskElement.SkillMixSummaryTable = boeTaskElement.SkillMixSummaryTable;
 				}
 
 				boeExportTaskElement.SetTaskElementType(boeTaskElement.TaskElementType);

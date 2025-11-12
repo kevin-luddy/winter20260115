@@ -40,14 +40,14 @@ namespace GenTRAC.Models
         public Nullable<System.DateTime> PlannedCorporateEppDate { get; set; }
         public Nullable<System.DateTime> PlannedBidEppDate { get; set; }
         public Nullable<System.DateTime> PlannedMissionSegmentEppDate { get; set; }
-        public Nullable<System.DateTime> ScheduledProgramEppDate { get; set; }
-        public Nullable<System.DateTime> ScheduledLobEppDate { get; set; }
-        public Nullable<System.DateTime> ScheduledPreSpaceEppDate { get; set; }
-        public Nullable<System.DateTime> ScheduledSpaceEppDate { get; set; }
-        public Nullable<System.DateTime> ScheduledPreCorporateEppDate { get; set; }
-        public Nullable<System.DateTime> ScheduledCorporateEppDate { get; set; }
-        public Nullable<System.DateTime> ScheduledBidEppDate { get; set; }
-        public Nullable<System.DateTime> ScheduledMissionSegmentEppDate { get; set; }
+        public Nullable<System.DateTime> ScheduledActualProgramEppDate { get; set; }
+        public Nullable<System.DateTime> ScheduledActualLobEppDate { get; set; }
+        public Nullable<System.DateTime> ScheduledActualPreSpaceEppDate { get; set; }
+        public Nullable<System.DateTime> ScheduledActualSpaceEppDate { get; set; }
+        public Nullable<System.DateTime> ScheduledActualPreCorporateEppDate { get; set; }
+        public Nullable<System.DateTime> ScheduledActualCorporateEppDate { get; set; }
+        public Nullable<System.DateTime> ScheduledActualBidEppDate { get; set; }
+        public Nullable<System.DateTime> ScheduledActualMissionSegmentEppDate { get; set; }
     
         public virtual EppDelegationAuthorityLU EppDelegationAuthorityLU { get; set; }
         public virtual Proposal Proposal { get; set; }

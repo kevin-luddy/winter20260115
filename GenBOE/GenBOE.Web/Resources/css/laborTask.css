@@ -17,6 +17,21 @@
     text-wrap: wrap;
 }
 
+.proposedLegacyResorceCol {
+    width: 77px;
+    text-wrap: wrap;
+}
+
+.proposedBrcCol {
+    width: 77px;
+    text-wrap: wrap;
+}
+
+.totalProposedLegacyBrcCol {
+    width: 77px;
+    text-wrap: wrap;
+}
+
 /*RMS Only*/
 .laborSkillMixCol {
     width: 70px;
@@ -30,8 +45,8 @@
     width: 65px;
 }
 
-.currentResourceCol {
-    width: 86px;
+.ProposedResourceCol {
+    width: 96px;
 }
 
 .rmsButtonCol {

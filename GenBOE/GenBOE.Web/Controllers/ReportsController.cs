@@ -777,7 +777,12 @@ namespace GenBOE.Web.Controllers
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = this.InitializeAction(this.log, "DisplayProPricer", SecurityPage.ExportToProPricer, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = this.InitializeAction(this.log, WebConstants.ACTION_DISPLAY_EXPORT_TO_PROPRICER, SecurityPage.ExportToProPricer, SecurityAuthorization.Read, ws, null);
+
+			// PROP-3389: Check if workspace's children objects are valid before ProPricer is visible
+			// Check if ProPricer should even be enabled from validation
+			bool isWorkspacePoPValid = this.validateBOE.ValidateWorkspacePoP(ws);
+			ViewData["EnableProPricer"] = isWorkspacePoPValid;
 
 			this.ViewData["EnableSendDirectly"] = !ws.IsProjectMapWorkspace && ConfigurationUtilities.GetAppSetting<bool>("EnableSendToProPricerDirectly", false);
 
@@ -857,7 +862,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = this.View(WebConstants.VIEW_EXPORT_TO_PROPRICER);
 
 			// Finalize Action
-			this.FinalizeAction(this.log, "DisplayProPricer", sw);
+			this.FinalizeAction(this.log, WebConstants.ACTION_DISPLAY_EXPORT_TO_PROPRICER, sw);
 			return toReturn;
 		}
 
@@ -1391,6 +1396,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The workspace</param>
 		/// <returns>json result</returns>
 		[ProPricerExportAccess]
+		[HttpPost]
 		public JsonResult SaveProPricerExportFormat(ExportToProPricerModelView inModelView, string workspace)
 		{
 			if (inModelView == null) { throw new ArgumentNullException(nameof(inModelView)); }
@@ -1445,12 +1451,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="inFormatsToDelete">The collection of export formats to delete</param>
 		/// <returns>True</returns>
 		[ProPricerExportAccess]
+		[HttpPost]
 		public JsonResult DeleteProPricerExportFormats(ICollection<ExportToProPricerModelView> inFormatsToDelete, string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(log, "DeleteProPricerExportFormats", SecurityPage.ExportToProPricer, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_DELETE_PROPRICER_EXPORT_FORMATS, SecurityPage.ExportToProPricer, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			if (inFormatsToDelete == null)
 			{
@@ -1470,7 +1477,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(log, "DeleteProPricerExportFormats", sw);
+			FinalizeAction(log, WebConstants.ACTION_DELETE_PROPRICER_EXPORT_FORMATS, sw);
 			return Json(true);
 		}
 

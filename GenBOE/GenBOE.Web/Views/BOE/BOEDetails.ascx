@@ -22,6 +22,8 @@
 	BOEDetails.WSPerfOrgs = <%= serializer.Serialize(ViewData["WSPERFORGS"])%>;
 	BOEDetails.WSClins = <%= serializer.Serialize(ViewBag.WsClins)%>;
 	BOEDetails.WSWbss = <%= serializer.Serialize(ViewBag.WsWbss)%>;
+	BOEDetails.EnableLmNavigator = '<%= (bool)ViewData["EnableLmNavigator"] %>'.isTrue();
+	BOEDetails.LmNavigatorUrl = '<%: Utilities.LmNavigatorAgentUrl %>';
 
 	BOEDetails.autocompletePerformingOrgs = function (request, response) {
 		var toSearch = request.term.toLowerCase();

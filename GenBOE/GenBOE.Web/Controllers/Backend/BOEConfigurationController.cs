@@ -117,6 +117,7 @@ namespace GenBOE.Web.Controllers
 				{
 					result.Messages.Add($"Insufficient permissions for returning the Workspace data.");
 				}
+
 				FinalizeAction(logger, WebConstants.GET_WORKSPACE_CONFIGURATION, sw);
 			}
 			catch (Exception ex)

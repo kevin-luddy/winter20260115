@@ -50,7 +50,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inSearchParams">Quick Search parameters</param>
         /// <returns>ids of all matching BOEs</returns>
         [DbQuery]
-        virtual public ICollection<BOESearchResultDTO> GetQuickSearchResults(BOESearchDTO inSearchParams)
+        public virtual ICollection<BOESearchResultDTO> GetQuickSearchResults(BOESearchDTO inSearchParams)
         {
             if (inSearchParams == null)
             {
@@ -88,7 +88,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inSearchParams">Quick Search parameters</param>
         /// <returns>ids of all matching BOEs</returns>
         [DbQuery]
-        virtual public ICollection<BOESearchResultDTO> GetQuickSearchResults(BOEProjectMapSearchDTO inSearchParams)
+        public virtual ICollection<BOESearchResultDTO> GetQuickSearchResults(BOEProjectMapSearchDTO inSearchParams)
         {
             if (inSearchParams == null)
             {
@@ -124,7 +124,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inSearchParams">Advanced Search parameters</param>
         /// <returns>ids of all matching BOEs</returns>
         [DbQuery]
-        virtual public ICollection<BOESearchResultDTO> GetAdvancedSearchResults(BOESearchDTO inSearchParams)
+        public virtual ICollection<BOESearchResultDTO> GetAdvancedSearchResults(BOESearchDTO inSearchParams)
         {
             if (inSearchParams == null)
             {
@@ -181,7 +181,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inSearchParams">Advanced Search parameters</param>
         /// <returns>ids of all matching BOEs</returns>
         [DbQuery]
-        virtual public ICollection<BOESearchResultDTO> GetAdvancedSearchResults(BOEProjectMapSearchDTO inSearchParams)
+        public virtual ICollection<BOESearchResultDTO> GetAdvancedSearchResults(BOEProjectMapSearchDTO inSearchParams)
         {
             if (inSearchParams == null)
             {

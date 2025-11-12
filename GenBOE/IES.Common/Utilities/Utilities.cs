@@ -1055,8 +1055,6 @@ namespace IES.Common
 			}
 		}
 
-
-
 		/// <summary>
 		/// Be able to override for unit test purposes
 		/// </summary>
@@ -1409,6 +1407,56 @@ namespace IES.Common
 			else
 			{
 				return IsUCOTEnabledForSystem && workspaceCreationDate >= UCOTStartDate;
+			}
+		}
+
+		/// <summary>
+		/// Private for IsLmNavigatorRteLinkEnabledForSystem
+		/// </summary>
+		private static bool? isLmNavigatorRteLinkEnabledForSystem;
+
+		/// <summary>
+		/// Is the LM Navigator link in RTEs enabled for the system?
+		/// </summary>
+		public static bool IsLmNavigatorRteLinkEnabledForSystem
+		{
+			get
+			{
+				if (isLmNavigatorRteLinkEnabledForSystem == null)
+				{
+					if (bool.TryParse(ConfigurationUtilities.GetAppSetting("IsLmNavigatorRteLinkEnabled"), out bool value))
+					{
+						isLmNavigatorRteLinkEnabledForSystem = value;
+					}
+					else
+					{
+						// default to false
+						isLmNavigatorRteLinkEnabledForSystem = false;
+					}
+				}
+
+				return isLmNavigatorRteLinkEnabledForSystem.Value;
+			}
+		}
+
+		/// <summary>
+		/// private for LmNavigatorAgentUrl
+		/// </summary>
+		private static string lmNavigatorAgentUrl;
+
+		/// <summary>
+		/// Get the LM Navigator Agent URL
+		/// </summary>
+		public static string LmNavigatorAgentUrl
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(lmNavigatorAgentUrl))
+				{
+					lmNavigatorAgentUrl = ConfigurationUtilities.GetAppSetting("LmNavigatorAgentUrl");
+				}
+
+				return lmNavigatorAgentUrl;
 			}
 		}
 	}

@@ -14,7 +14,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
     using System.Transactions;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
+	using GenBOE.DataBridge.DTO.SkillMixSummary;
+	using GenBOE.Dtos;
     using GenBOE.Models;
     using IES.Common;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -76,15 +77,16 @@ namespace GenBOE.Tests.DAL.DataLoaders
             IOrdinaryVariableLoader ordinaryVariableLoader = new OrdinaryVariableLoader();
             IBoeTaskElementCustomFieldValueXREFLoader taskElementCustomFieldLoader = new BoeTaskElementCustomFieldValueXREFLoader();
             ILaborTypeCustomFieldValueXREFLoader laborTypeCustomFieldLoader = new LaborTypeCustomFieldValueXREFLoader();
-            var _travelTripTaskElementCustomFieldValue = new Mock<ITravelTripTaskElementCustomFieldValueXREFLoader>();
-            var _travelTripCustomFieldValue = new Mock<ITravelTripCustomFieldValueXREFLoader>();
-            var adUtils = new Mock<IActiveDirectoryUtilities>();
-            var memCache = new Mock<MemoryCache>();
+			Mock<ITravelTripTaskElementCustomFieldValueXREFLoader> _travelTripTaskElementCustomFieldValue = new Mock<ITravelTripTaskElementCustomFieldValueXREFLoader>();
+			Mock<ITravelTripCustomFieldValueXREFLoader> _travelTripCustomFieldValue = new Mock<ITravelTripCustomFieldValueXREFLoader>();
+			Mock<IActiveDirectoryUtilities> adUtils = new Mock<IActiveDirectoryUtilities>();
+			Mock<MemoryCache> memCache = new Mock<MemoryCache>();
             SecurityInformation securityInformation = new SecurityInformation(adUtils.Object, memCache.Object);
 			ISkillMixDTOLoader skillMixDTOLoader = new SkillMixDTOLoader();
 			ICommonDisclosureSMDTODataLoader commonDisclosureSMDTODataLoader = new CommonDisclosureSMDTODataLoader();
+			ISkillMixSummaryDTOLoader skillMixSummaryDTOLoader = new SkillMixSummaryDTOLoader();
 
-			_taskElementDL = new BoeTaskElementDTODataLoader(resourceTypeLoader, resourceSpreadLoader, ordinaryVariableLoader, taskElementCustomFieldLoader, laborTypeCustomFieldLoader, skillMixDTOLoader, commonDisclosureSMDTODataLoader);
+			_taskElementDL = new BoeTaskElementDTODataLoader(resourceTypeLoader, resourceSpreadLoader, ordinaryVariableLoader, taskElementCustomFieldLoader, laborTypeCustomFieldLoader, skillMixDTOLoader, skillMixSummaryDTOLoader, commonDisclosureSMDTODataLoader);
 
             // initialize data loaders
             _clinDL = new ClinDTODataLoader();

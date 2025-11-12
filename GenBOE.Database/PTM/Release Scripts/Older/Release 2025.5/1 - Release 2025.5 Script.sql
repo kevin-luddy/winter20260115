@@ -7,48 +7,48 @@ GO
 -- First Step: Update Existing EPP Date columns in ProposalContractsData Table to show as Planned
 GO
 
-EXEC sp_rename '[dbo].[ProposalContractsData].[ProgramEppDate]',  'PlannedProgramEppDate', 'COLUMN';
+EXEC sp_rename '[dbo].[ProposalContractsData].[ProgramEppDate]',  'ScheduledActualProgramEppDate', 'COLUMN';
 
-EXEC sp_rename '[dbo].[ProposalContractsData].[LobEppDate]',  'PlannedLobEppDate', 'COLUMN';
+EXEC sp_rename '[dbo].[ProposalContractsData].[LobEppDate]',  'ScheduledActualLobEppDate', 'COLUMN';
 
-EXEC sp_rename '[dbo].[ProposalContractsData].[PreSpaceEppDate]',  'PlannedPreSpaceEppDate', 'COLUMN';
+EXEC sp_rename '[dbo].[ProposalContractsData].[PreSpaceEppDate]',  'ScheduledActualPreSpaceEppDate', 'COLUMN';
 
-EXEC sp_rename '[dbo].[ProposalContractsData].[SpaceEppDate]',  'PlannedSpaceEppDate', 'COLUMN';
+EXEC sp_rename '[dbo].[ProposalContractsData].[SpaceEppDate]',  'ScheduledActualSpaceEppDate', 'COLUMN';
 
-EXEC sp_rename '[dbo].[ProposalContractsData].[PreCorporateEppDate]',  'PlannedPreCorporateEppDate', 'COLUMN';
+EXEC sp_rename '[dbo].[ProposalContractsData].[PreCorporateEppDate]',  'ScheduledActualPreCorporateEppDate', 'COLUMN';
 
-EXEC sp_rename '[dbo].[ProposalContractsData].[CorporateEppDate]',  'PlannedCorporateEppDate', 'COLUMN';
+EXEC sp_rename '[dbo].[ProposalContractsData].[CorporateEppDate]',  'ScheduledActualCorporateEppDate', 'COLUMN';
 
-EXEC sp_rename '[dbo].[ProposalContractsData].[BidEppDate]',  'PlannedBidEppDate', 'COLUMN';
+EXEC sp_rename '[dbo].[ProposalContractsData].[BidEppDate]',  'ScheduledActualBidEppDate', 'COLUMN';
 
-EXEC sp_rename '[dbo].[ProposalContractsData].[MissionSegmentEppDate]',  'PlannedMissionSegmentEppDate', 'COLUMN';
+EXEC sp_rename '[dbo].[ProposalContractsData].[MissionSegmentEppDate]',  'ScheduledActualMissionSegmentEppDate', 'COLUMN';
 
 
 -- Second Step: Add Scheduled EPP Date columns in ProposalContractsData Table
 GO
 
 ALTER TABLE [dbo].[ProposalContractsData]
-ADD ScheduledProgramEppDate date NULL;
+ADD PlannedProgramEppDate date NULL;
 
 ALTER TABLE [dbo].[ProposalContractsData]
-ADD ScheduledLobEppDate date NULL;
+ADD PlannedLobEppDate date NULL;
 
 ALTER TABLE [dbo].[ProposalContractsData]
-ADD ScheduledPreSpaceEppDate date NULL;
+ADD PlannedPreSpaceEppDate date NULL;
 
 ALTER TABLE [dbo].[ProposalContractsData]
-ADD ScheduledSpaceEppDate date NULL;
+ADD PlannedSpaceEppDate date NULL;
 
 ALTER TABLE [dbo].[ProposalContractsData]
-ADD ScheduledPreCorporateEppDate date NULL;
+ADD PlannedPreCorporateEppDate date NULL;
 
 ALTER TABLE [dbo].[ProposalContractsData]
-ADD ScheduledCorporateEppDate date NULL;
+ADD PlannedCorporateEppDate date NULL;
 
 ALTER TABLE [dbo].[ProposalContractsData]
-ADD ScheduledBidEppDate date NULL;
+ADD PlannedBidEppDate date NULL;
 
 ALTER TABLE [dbo].[ProposalContractsData]
-ADD ScheduledMissionSegmentEppDate date NULL;
+ADD PlannedMissionSegmentEppDate date NULL;
 
 GO

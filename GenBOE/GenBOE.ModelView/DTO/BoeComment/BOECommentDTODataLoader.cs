@@ -59,7 +59,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inBoeID">BOE ID</param>
         /// <returns>list of BOE Comment IDs</returns>
         [DbQuery]
-        virtual public ICollection<BOECommentDTO> GetByBoeId(int inBoeID)
+        public virtual ICollection<BOECommentDTO> GetByBoeId(int inBoeID)
         {
             Collection<BOECommentDTO> toReturn = new Collection<BOECommentDTO>();
 

@@ -23,7 +23,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <returns>Collection of MiscTravelRateDTO</returns>
         [DbQuery]
-        virtual public Collection<MiscTravelRateDTO> GetAll()
+        public virtual Collection<MiscTravelRateDTO> GetAll()
         {
             Collection<MiscTravelRateDTO> toReturn = null;
             using (StopwatchTimer sw = new StopwatchTimer(this._log))
@@ -57,7 +57,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inTravelRateID">Travel Rate Id.</param>
         /// <returns>Travel rate for given Id.</returns>
         [DbQuery]
-        virtual public new MiscTravelRateDTO GetById(int inTravelRateID)
+        public virtual new MiscTravelRateDTO GetById(int inTravelRateID)
         {
             MiscTravelRateDTO toReturn = new MiscTravelRateDTO();
 
@@ -100,7 +100,7 @@ namespace GenBOE.DataBridge.DTO
         }
 
         [DbQuery]
-        virtual public MiscTravelRateDTO GetById(int inTravelRateID, WorkspaceDTO inWorkspace)
+        public virtual MiscTravelRateDTO GetById(int inTravelRateID, WorkspaceDTO inWorkspace)
         {
             if (inWorkspace == null)
             {
@@ -207,7 +207,7 @@ namespace GenBOE.DataBridge.DTO
             return dtoToDelete.Id;
         }
         
-        virtual public Dictionary<int, int> SaveMiscTravelRates(Collection<MiscTravelRateDTO> inMiscTravelRateDTOs)
+        public virtual Dictionary<int, int> SaveMiscTravelRates(Collection<MiscTravelRateDTO> inMiscTravelRateDTOs)
         {
             if (inMiscTravelRateDTOs == null)
             {

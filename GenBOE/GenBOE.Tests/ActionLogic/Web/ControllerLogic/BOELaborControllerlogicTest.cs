@@ -2911,10 +2911,10 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		public void GetLaborTaskDataTest()
 		{
 			BOELaborControllerLogic sut = CreateSystem();
+			List<MoqTypeSelection> moqs = new List<MoqTypeSelection>() { new MoqTypeSelection { SelectedMOQType = MOQType.Historical, Id = 1, TaskId = 1, TableData = new List<MoqTableData>() { new MoqTableData {  RepositoryName = RepositoryName.SapWebi.GetDescription() } } } };
+			FullWorkspace testWorkspace = new FullWorkspace() { WorkspaceName = "Test Workspace", CostDecimalPrecision = 2, ResourceDecimalPrecision = 2, CreationDate = DateTime.Today, Shortname = "testShortName", UCOTFactor = 1 };
 
-			FullWorkspace testWorkspace = new FullWorkspace() { WorkspaceName = "Test Workspace", CostDecimalPrecision = 2, ResourceDecimalPrecision = 2 };
-
-			ResourceSpreadDto testSpread = new ResourceSpreadDto { BoeID = this.Boe1.Id, Id = 1, LaborSpreadDate = DateTime.Now, LaborSpreadValue = 5000 };
+			ResourceSpreadDto testSpread = new ResourceSpreadDto { BoeID = this.Boe1.Id, Id = 1, LaborSpreadDate = DateTime.Today.AddYears(5), LaborSpreadValue = 5000 };
 			tmResourceRateDTODataLoader.Setup(x => x.GetByWorkspaceId(It.IsAny<int>())).Returns(new List<TMResourceRateDTO>());
 
 			CustomFieldValueContainer testLaborCustomField = new CustomFieldValueContainer()
@@ -2940,7 +2940,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				StartDateValue = DateTime.Now,
 				EndDateValue = DateTime.Now,
 				LaborSpreads = new Collection<ResourceSpreadDto> { testSpread },
-				CustomFieldValueContainers = new Collection<CustomFieldValueContainer> { testLaborCustomField }
+				CustomFieldValueContainers = new Collection<CustomFieldValueContainer> { testLaborCustomField },
+				TaskElementId = 1
 			};
 
 			// Add discrete in order to test ContainsDiscrete
@@ -2955,7 +2956,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				ResourceID = this.Resource.Id,
 				StartDateValue = DateTime.Now,
 				EndDateValue = DateTime.Now,
-				LaborSpreads = new Collection<ResourceSpreadDto> { testSpread }
+				LaborSpreads = new Collection<ResourceSpreadDto> { testSpread },
+				TaskElementId = 1
 			};
 
 			this.perfOrgLoader.Setup(x => x.GetById(this.Perforg.Id)).Returns(this.Perforg);
@@ -2978,7 +2980,20 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				MOQHoursEquation = "10000",
 				LaborTypeWarningFlag = false,
 				taskElementLabors = new Collection<ResourceTypeDto> { testLabor, testLaborDiscrete },
-				CustomFieldValueContainers = new Collection<CustomFieldValueContainer>() { testTaskCustomField }
+				CustomFieldValueContainers = new Collection<CustomFieldValueContainer>() { testTaskCustomField },
+				SkillMixSummaryTable = new List<SkillMixSummaryModelView>()
+				{
+					new SkillMixSummaryModelView {
+						ResourceID = "BBBBBBB",
+						HistoricalHours = 10000,
+						BusinessResourceID = null,
+						ResourceHours = 10000,
+						Included = true,
+						IsUserInput = true,
+						Rationale = "Rationale1",
+						ProposedSkillMix = 100
+					}
+				}
 			};
 
 			_ResourceLoader.Setup(x => x.GetById(this.Resource.Id)).Returns(this.Resource);
@@ -2990,7 +3005,10 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new List<CustomFieldValueDTO>());
 			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(this.Boe1.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new List<BoeTaskElementDTO> { testTask });
 			retriever.Setup(x => x.GetFullWorkspaceById(It.IsAny<int>())).Returns(testWorkspace);
-			retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(this.Boe1.Id)).Returns(new List<MoqTypeSelection>());
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new List<BoeTaskElementDTO> { testTask });
+			retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(moqs);
+			retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(this.Boe1.Id)).Returns(moqs);
+
 			LaborTaskDataModelView result = sut.GetLaborTaskData(testWorkspace, new FullBoe(this.Boe1), testTask.Id);
 
 			// Assert task element data
@@ -3053,8 +3071,106 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			Assert.AreEqual(testSpread.LaborSpreadDate.ToMonthString(), result.LaborTypesData.First().Spreads.First().LaborSpreadDate);
 			Assert.AreEqual(testSpread.LaborSpreadValue, result.LaborTypesData.First().Spreads.First().LaborSpreadValue);
 
+			// Assert SkillMixSummary UCOT
+			Assert.AreEqual(result.SkillMixSummaryData.First().UCOTHours, 100);
+
 			// Assert Contains Discrete - true due to test setup
 			Assert.IsTrue(result.ContainsDiscrete);
+		}
+
+		/// <summary>
+		/// Test GetLaborTaskData
+		/// </summary>
+		[TestMethod]
+		public void GetLaborTaskDataTest_MST()
+		{
+			BOELaborControllerLogic sut = CreateSystemMST();
+			List<MoqTypeSelection> moqs = new List<MoqTypeSelection>() { new MoqTypeSelection { SelectedMOQType = MOQType.Historical, Id = 1, TaskId = 1 } };
+			FullWorkspace testWorkspace = new FullWorkspace() { WorkspaceName = "Test Workspace", CostDecimalPrecision = 2, ResourceDecimalPrecision = 2, CreationDate = DateTime.Today, Shortname = "testShortName", UCOTFactor = 1 };
+
+			ResourceSpreadDto testSpread = new ResourceSpreadDto { BoeID = this.Boe1.Id, Id = 1, LaborSpreadDate = DateTime.Today.AddYears(5), LaborSpreadValue = 5000 };
+			tmResourceRateDTODataLoader.Setup(x => x.GetByWorkspaceId(It.IsAny<int>())).Returns(new List<TMResourceRateDTO>());
+
+			CustomFieldValueContainer testLaborCustomField = new CustomFieldValueContainer()
+			{
+				CustomFieldValueID = 2,
+				ContainerID = 2,
+				UpdateDate = DateTime.Now,
+				CustomFieldID = 2,
+				IsOpenEnded = false,
+				OpenEndedValue = string.Empty
+			};
+
+			ResourceTypeDto testLabor = new ResourceTypeDto
+			{
+				SpreadType = IES.Common.SpreadType.Hours,
+				BoeID = this.Boe1.Id,
+				Id = 1,
+				SpreadCurveID = SpreadCurves.SpreadCurve1,
+				ValueSpread = 5000,
+				PercentSpread = 100,
+				PerformingOrgID = this.Perforg.Id,
+				ResourceID = this.Resource.Id,
+				StartDateValue = DateTime.Now,
+				EndDateValue = DateTime.Now,
+				LaborSpreads = new Collection<ResourceSpreadDto> { testSpread },
+				CustomFieldValueContainers = new Collection<CustomFieldValueContainer> { testLaborCustomField },
+				TaskElementId = 1
+			};
+
+			this.perfOrgLoader.Setup(x => x.GetById(this.Perforg.Id)).Returns(this.Perforg);
+			this.perfOrgLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<PerformingOrgDTO> { this.Perforg });
+
+			CustomFieldValueContainer testTaskCustomField = new CustomFieldValueContainer()
+			{
+				CustomFieldValueID = 1,
+				ContainerID = 1,
+				UpdateDate = DateTime.Now,
+				CustomFieldID = 1,
+				IsOpenEnded = false,
+				OpenEndedValue = string.Empty
+			};
+
+			BoeTaskElementDTO testTask = new BoeTaskElementDTO
+			{
+				Id = 1,
+				BoeID = this.Boe1.Id,
+				MOQHoursEquation = "10000",
+				LaborTypeWarningFlag = false,
+				taskElementLabors = new Collection<ResourceTypeDto> { testLabor },
+				CustomFieldValueContainers = new Collection<CustomFieldValueContainer>() { testTaskCustomField },
+				SkillMixSummaryTable = new List<SkillMixSummaryModelView>()
+				{
+					new SkillMixSummaryModelView {
+						ResourceID = "BBBBBBB",
+						HistoricalHours = 10000,
+						BusinessResourceID = null,
+						ResourceHours = 10000,
+						Included = true,
+						IsUserInput = true,
+						Rationale = "Rationale1",
+						ProposedSkillMix = 100
+					}
+				}
+			};
+
+			_ResourceLoader.Setup(x => x.GetById(this.Resource.Id)).Returns(this.Resource);
+			this._ResourceLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<ResourceDTO> { this.Resource });
+			factory.Setup(x => x.CreateFullWorkspace(testWorkspace.WorkspaceName, It.IsAny<bool>())).Returns(testWorkspace);
+			factory.Setup(x => x.CreateTaskElement(testTask.Id, testWorkspace.DecimalPrecision, testWorkspace.CostDecimalPrecision)).Returns(testTask);
+			_TaskElementValidation.Setup(x => x.ValidateTaskElementsWithErrorMessages(It.IsAny<FullWorkspace>(), It.IsAny<ICollection<BoeTaskElementDTO>>())).Returns(new List<LaborValidationClass>());
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(testWorkspace.Id)).Returns(new List<CustomFieldDTO>());
+			retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new List<CustomFieldValueDTO>());
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(this.Boe1.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new List<BoeTaskElementDTO> { testTask });
+			retriever.Setup(x => x.GetFullWorkspaceById(It.IsAny<int>())).Returns(testWorkspace);
+
+			retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(moqs);
+			retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(this.Boe1.Id)).Returns(moqs);
+
+			LaborTaskDataModelView result = sut.GetLaborTaskData(testWorkspace, new FullBoe(this.Boe1), testTask.Id);
+
+			// Assert SkillMixSummary UCOT
+			Assert.AreEqual(result.SkillMixSummaryData.First().UCOTHours, 0);
 		}
 
 		/// <summary>
@@ -3480,7 +3596,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		public void RefreshSkillMix_Empty_Test_RMS()
 		{
 			BOELaborControllerLogic sut = CreateSystemMST();
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(null, null, null, null, true, false, DateTime.Now);
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(null, null, null, null, null, true, false, DateTime.Now);
 			Assert.IsNotNull(result);
 		}
 
@@ -3491,7 +3607,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		public void RefreshSkillMix_Empty_Test_SSC()
 		{
 			BOELaborControllerLogic sut = CreateSystemSSC();
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(null, null, null, null, true, false, DateTime.Now);
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(null, null, null, null, null, true, false, DateTime.Now);
 			Assert.IsNotNull(result);
 		}
 
@@ -3534,7 +3650,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, null, null, null, true, false, DateTime.Now);
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, null, null, null, null, true, false, DateTime.Now);
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -3598,7 +3714,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, null, null, null, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, null, null, null, null, true, false, Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -3685,7 +3801,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, null, null, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, null, null, null, true, false, Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -3775,7 +3891,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, null, null, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, null, null, null, true, false, Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -3871,7 +3987,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, null, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, null, null, true, false, Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -3962,7 +4078,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			{
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, null, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, null, null, true, false, Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -4061,7 +4177,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, null, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, null, null, true, false, Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -4156,7 +4272,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			{
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, null, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, null, null, true, false, Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -4274,7 +4390,17 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			List<SkillMixSummaryModelView> skillMixSummaries = new List<SkillMixSummaryModelView>
+			{
+				new SkillMixSummaryModelView {
+					ResourceID = RESOURCE_NAME1,
+					BusinessResourceID = BRC_RESOURCE_NAME1,
+					Included = true,
+					Rationale = Rationale2
+				}
+			};
+
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -4399,7 +4525,17 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			List<SkillMixSummaryModelView> skillMixSummaries = new List<SkillMixSummaryModelView>
+			{
+				new SkillMixSummaryModelView {
+					ResourceID = RESOURCE_NAME1,
+					BusinessResourceID = BRC_RESOURCE_NAME1,
+					Included = true,
+					Rationale = Rationale2
+				}
+			};
+
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -4541,7 +4677,17 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			List<SkillMixSummaryModelView> skillMixSummaries = new List<SkillMixSummaryModelView>
+			{
+				new SkillMixSummaryModelView {
+					ResourceID = RESOURCE_NAME1,
+					BusinessResourceID = BRC_RESOURCE_NAME1,
+					Included = true,
+					Rationale = Rationale2
+				}
+			};
+
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.AreEqual(4, result.SkillMixRows.Count);
@@ -4635,7 +4781,17 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			List<SkillMixSummaryModelView> skillMixSummaries = new List<SkillMixSummaryModelView>
+			{
+				new SkillMixSummaryModelView {
+					ResourceID = RESOURCE_NAME1,
+					BusinessResourceID = BRC_RESOURCE_NAME1,
+					Included = true,
+					Rationale = Rationale2
+				}
+			};
+
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.AreEqual(3, result.SkillMixRows.Count);
@@ -4643,10 +4799,10 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		}
 
 		/// <summary>
-		/// Test Refresh SkillMix cleanup method to handle duplicate Current Resources for RMS
+		/// Test Refresh SkillMix cleanup method to handle duplicate Proposed Resources for RMS
 		/// </summary>
 		[TestMethod]
-		public void RefreshSkillMix_All_Cleanup_RMS_DuplicateCurrentResource_Test()
+		public void RefreshSkillMix_All_Cleanup_RMS_DuplicateProposedResource_Test()
 		{
 			BOELaborControllerLogic sut = CreateSystemMST();
 
@@ -4764,7 +4920,17 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			List<SkillMixSummaryModelView> skillMixSummaries = new List<SkillMixSummaryModelView>
+			{
+				new SkillMixSummaryModelView {
+					ResourceID = RESOURCE_NAME1,
+					BusinessResourceID = BRC_RESOURCE_NAME1,
+					Included = true,
+					Rationale = Rationale2
+				}
+			};
+
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(1));
 			List<SkillMixModelView> duplicates = result.SkillMixRows.Where(x => x.ResourceNew == RESOURCE_NAME1).ToList();
 
 			Assert.IsTrue(duplicates.Any());
@@ -4904,7 +5070,23 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			List<SkillMixSummaryModelView> skillMixSummaries = new List<SkillMixSummaryModelView>
+			{
+				new SkillMixSummaryModelView {
+					ResourceID = RESOURCE_NAME1,
+					BusinessResourceID = BRC_RESOURCE_NAME1,
+					Included = true,
+					Rationale = Rationale2
+				},
+				new SkillMixSummaryModelView {
+					ResourceID = RESOURCE_NAME1,
+					BusinessResourceID = BRC_RESOURCE_NAME2,
+					Included = true,
+					Rationale = Rationale3
+				}
+			};
+
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -5091,7 +5273,23 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			List<SkillMixSummaryModelView> skillMixSummaries = new List<SkillMixSummaryModelView>
+			{
+				new SkillMixSummaryModelView {
+					ResourceID = HISTORICAL_RESOURCE_NAME1,
+					BusinessResourceID = BRC_RESOURCE_NAME1,
+					Included = true,
+					Rationale = Rationale2
+				},
+				new SkillMixSummaryModelView {
+					ResourceID = HISTORICAL_RESOURCE_NAME1,
+					BusinessResourceID = BRC_RESOURCE_NAME2,
+					Included = true,
+					Rationale = Rationale3
+				}
+			};
+
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -5284,7 +5482,23 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			List<SkillMixSummaryModelView> skillMixSummaries = new List<SkillMixSummaryModelView>
+			{
+				new SkillMixSummaryModelView {
+					ResourceID = RESOURCE_NAME1,
+					BusinessResourceID = BRC_RESOURCE_NAME1,
+					Included = true,
+					Rationale = Rationale2
+				},
+				new SkillMixSummaryModelView {
+					ResourceID = RESOURCE_NAME1,
+					BusinessResourceID = BRC_RESOURCE_NAME2,
+					Included = true,
+					Rationale = Rationale3
+				}
+			};
+
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -5493,7 +5707,23 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			List<SkillMixSummaryModelView> skillMixSummaries = new List<SkillMixSummaryModelView>
+			{
+				new SkillMixSummaryModelView {
+					ResourceID = HISTORICAL_RESOURCE_NAME1,
+					BusinessResourceID = BRC_RESOURCE_NAME1,
+					Included = true,
+					Rationale = Rationale2
+				},
+				new SkillMixSummaryModelView {
+					ResourceID = HISTORICAL_RESOURCE_NAME1,
+					BusinessResourceID = BRC_RESOURCE_NAME2,
+					Included = true,
+					Rationale = Rationale3
+				}
+			};
+
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -5693,7 +5923,23 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			List<SkillMixSummaryModelView> skillMixSummaries = new List<SkillMixSummaryModelView>
+			{
+				new SkillMixSummaryModelView {
+					ResourceID = RESOURCE_NAME1,
+					BusinessResourceID = BRC_RESOURCE_NAME1,
+					Included = true,
+					Rationale = Rationale3
+				},
+				new SkillMixSummaryModelView {
+					ResourceID = RESOURCE_NAME2,
+					BusinessResourceID = BRC_RESOURCE_NAME2,
+					Included = true,
+					Rationale = Rationale1
+				}
+			};
+
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(1));
 
 			Assert.IsNotNull(result);
 			Assert.IsNotNull(result.SkillMixRows);
@@ -5881,7 +6127,31 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				}
 			};
 
-			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, true, false, Utilities.OneLmxStartDate.AddDays(1));
+			List<SkillMixSummaryModelView> skillMixSummaries = new List<SkillMixSummaryModelView>
+			{
+				new SkillMixSummaryModelView {
+					SkillMixSummaryID = 1,
+					ResourceID = RESOURCE_NAME1,
+					BusinessResourceID = BRC_RESOURCE_NAME1,
+					ProposedLegacyResource = 0,
+					ResourceHours = 0,
+					ProposedBrc = 0,
+					Included = true,
+					Rationale = Rationale2
+				},
+				new SkillMixSummaryModelView {
+					SkillMixSummaryID = 2,
+					ResourceID = RESOURCE_NAME2,
+					BusinessResourceID = BRC_RESOURCE_NAME2,
+					ProposedLegacyResource = 0,
+					ResourceHours = 0,
+					ProposedBrc = 0,
+					Included = true,
+					Rationale = Rationale2
+				}
+			};
+
+			RefreshSkillMixModelView result = SkillMixUtility.RefreshSkillMixTables(hours, laborTypes, skillmix, commonDisclosures, skillMixSummaries, true, false, Utilities.OneLmxStartDate.AddDays(1));
 
 			// Assert none of the rows were set to 0 historical hours
 			Assert.IsFalse(result.CommonDisclosureRows.Any(x => x.HistoricalHours == 0.0m));
@@ -5895,37 +6165,37 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		{
 			if (result.SkillMixRows.Any(r => r.LaborSkillMix != 0m))
 			{
-				AssertHelpers.AssertAreEqualEpsilon(100m, result.SkillMixTotals.LaborSkillMix);
+				AssertHelpers.AssertAreEqualEpsilon(100m, result.SkillMixTotals.HistoricalSkillMix);
 			}
 			else
 			{
-				AssertHelpers.AssertAreEqualEpsilon(0m, result.SkillMixTotals.LaborSkillMix);
+				AssertHelpers.AssertAreEqualEpsilon(0m, result.SkillMixTotals.HistoricalSkillMix);
 			}
 			if (result.SkillMixRows.Any(r => r.BOESkillMix != 0m))
 			{
-				AssertHelpers.AssertAreEqualEpsilon(100m, result.SkillMixTotals.BoeSkillMix);
+				AssertHelpers.AssertAreEqualEpsilon(100m, result.SkillMixTotals.ProposedSkillMix);
 			}
 			else
 			{
-				AssertHelpers.AssertAreEqualEpsilon(0m, result.SkillMixTotals.BoeSkillMix);
+				AssertHelpers.AssertAreEqualEpsilon(0m, result.SkillMixTotals.ProposedSkillMix);
 			}
 
 			if (result.CommonDisclosureRows.Any(r => r.BOESkillMix != 0m))
 			{
-				AssertHelpers.AssertAreEqualEpsilon(100m, result.CommonDisclosureTotals.LaborSkillMix);
+				AssertHelpers.AssertAreEqualEpsilon(100m, result.CommonDisclosureTotals.HistoricalSkillMix);
 			}
 			else
 			{
-				AssertHelpers.AssertAreEqualEpsilon(0m, result.CommonDisclosureTotals.LaborSkillMix);
+				AssertHelpers.AssertAreEqualEpsilon(0m, result.CommonDisclosureTotals.HistoricalSkillMix);
 			}
 
 			if (result.CommonDisclosureRows.Any(r => r.BOESkillMix != 0m))
 			{
-				AssertHelpers.AssertAreEqualEpsilon(100m, result.CommonDisclosureTotals.BoeSkillMix);
+				AssertHelpers.AssertAreEqualEpsilon(100m, result.CommonDisclosureTotals.ProposedSkillMix);
 			}
 			else
 			{
-				AssertHelpers.AssertAreEqualEpsilon(0m, result.CommonDisclosureTotals.BoeSkillMix);
+				AssertHelpers.AssertAreEqualEpsilon(0m, result.CommonDisclosureTotals.ProposedSkillMix);
 			}
 		}
 

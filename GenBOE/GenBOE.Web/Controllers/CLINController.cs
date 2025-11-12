@@ -168,7 +168,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">The workspace the CLINs are assoicated with</param>
 		/// <param name="inDeletedClins">Collection of deleted CLINs</param>
-		/// <returns>If successfull,empty string is return. Otherwise, exception error text to be handled in the post:error </returns>
+		/// <returns>If successful,empty string is return. Otherwise, exception error text to be handled in the post:error </returns>
 		public virtual JsonResult DeleteCLINs(string workspace, Collection<ManageCLINModelView> inDeletedClins)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -203,9 +203,9 @@ namespace GenBOE.Web.Controllers
 		/// This function will check if the input is valid and clean up any of the data if any newly 
 		/// created CLINs is deleted=true which is not valid
 		/// </summary>
-		/// <param name="workspace">the workspace the CLINs are assoicated with</param>
+		/// <param name="workspace">the workspace the CLINs are associated with</param>
 		/// <param name="inUpdatedClin">collection of new or edited CLINs</param>
-		/// <returns>If successfull,empty string is return. Otherwise, exception error text to be handled in the post:error </returns>
+		/// <returns>If successful,empty string is return. Otherwise, exception error text to be handled in the post:error </returns>
 		public virtual JsonResult SaveClin(string workspace, ManageCLINModelView inUpdatedClin)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);

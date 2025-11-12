@@ -32,13 +32,13 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inODCID">ODC Id</param>
         /// <param name="includeRTEFields">Indicates whether RTE fields should be retrieved as a part of the data pull</param>
         /// <returns>Corresponding data</returns>
-        virtual public OtherDirectCostDTO GetById(int inODCID, bool includeRTEFields = false)
+        public virtual OtherDirectCostDTO GetById(int inODCID, bool includeRTEFields = false)
         {
             return this.GetByIds(new List<int>() { inODCID }).FirstOrDefault();
         }
 
         [DbQuery(2)]
-        virtual public ICollection<OtherDirectCostDTO> GetByIds(ICollection<int> odcIds, bool includeRTEFields = false)
+        public virtual ICollection<OtherDirectCostDTO> GetByIds(ICollection<int> odcIds, bool includeRTEFields = false)
         {
             List<OtherDirectCostDTO> result = new List<OtherDirectCostDTO>();
 
@@ -118,7 +118,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="includeRTEFields">Indicates whether RTE fields should be retrieved as a part of the data pull</param>
         /// <returns>Corresponding data</returns>
         [DbQuery(2)]
-        virtual public ICollection<OtherDirectCostDTO> GetByBoeIds(ICollection<int> boeIds, bool includeRTEFields = false)
+        public virtual ICollection<OtherDirectCostDTO> GetByBoeIds(ICollection<int> boeIds, bool includeRTEFields = false)
         {
             List<OtherDirectCostDTO> result = new List<OtherDirectCostDTO>();
 

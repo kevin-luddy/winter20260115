@@ -82,7 +82,7 @@ namespace GenBOE.Web.Controllers
             this._BoeLaborControllerLogic = inBoeLaborControllerLogic;
         }
 
-        virtual public ViewResult DisplayBOETravelComposite(string workspace, int boeID, int? travelElementID)
+        public virtual ViewResult DisplayBOETravelComposite(string workspace, int boeID, int? travelElementID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -491,7 +491,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="workspace">current workspace</param>
         /// <param name="boeID">boe id</param>
         /// <returns></returns>
-        virtual public JsonResult SaveReorderTravelTaskElements(TaskElementOrderCollection theModelView, string workspace, int boeID)
+        public virtual JsonResult SaveReorderTravelTaskElements(TaskElementOrderCollection theModelView, string workspace, int boeID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
             FullBoe boeObject = this.Factory.CreateFullBoe(boeID);
@@ -522,7 +522,7 @@ namespace GenBOE.Web.Controllers
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-        virtual public ActionResult SaveEditTravelDetailsComposite(string workspace, int boeID, BOETravelElementDetailsModelView inDetailsWV, Collection<BOETravelTripsGridModelView> inTravelTripsCollection)
+        public virtual ActionResult SaveEditTravelDetailsComposite(string workspace, int boeID, BOETravelElementDetailsModelView inDetailsWV, Collection<BOETravelTripsGridModelView> inTravelTripsCollection)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 

@@ -25,7 +25,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="moqTypeSelectionTableDataId"></param>
 		/// <returns>List of MOQ Type Selection Table Data Resource Hours</returns>
 		[DbQuery]
-		virtual public ICollection<MOQTypeSelectionTableDataResourceHoursDTO> GetByMOQTypeSelectionTableDataId(int moqTypeSelectionTableDataId)
+		public virtual ICollection<MOQTypeSelectionTableDataResourceHoursDTO> GetByMOQTypeSelectionTableDataId(int moqTypeSelectionTableDataId)
 		{
 			List<MOQTypeSelectionTableDataResourceHoursDTO> result = new List<MOQTypeSelectionTableDataResourceHoursDTO>();
 
@@ -91,7 +91,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="boeID"></param>
 		/// <returns>List of MOQ Type Selection Table Data Resource Hours</returns>
 		[DbQuery]
-		virtual public ICollection<MOQTypeSelectionTableDataResourceHoursDTO> GetByBOEID(int boeID)
+		public virtual ICollection<MOQTypeSelectionTableDataResourceHoursDTO> GetByBOEID(int boeID)
 		{
 			List<MOQTypeSelectionTableDataResourceHoursDTO> result = new List<MOQTypeSelectionTableDataResourceHoursDTO>();
 
@@ -123,7 +123,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="boeTaskElementID"></param>
 		/// <returns>List of MOQ Type Selection Table Data Resource Hours</returns>
 		[DbQuery]
-		virtual public ICollection<MOQTypeSelectionTableDataResourceHoursDTO> GetByBOETaskElementID(int boeTaskElementID)
+		public virtual ICollection<MOQTypeSelectionTableDataResourceHoursDTO> GetByBOETaskElementID(int boeTaskElementID)
 		{
 			List<MOQTypeSelectionTableDataResourceHoursDTO> result = new List<MOQTypeSelectionTableDataResourceHoursDTO>();
 
@@ -155,7 +155,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="moqTypeSelectionTableDataResourceHoursIds"></param>
 		/// <returns>List of MOQ Type Selection Table Data Resource Hours</returns>
 		[DbQuery]
-		virtual public ICollection<MOQTypeSelectionTableDataResourceHoursDTO> GetByIds(ICollection<int> moqTypeSelectionTableDataResourceHoursIds)
+		public virtual ICollection<MOQTypeSelectionTableDataResourceHoursDTO> GetByIds(ICollection<int> moqTypeSelectionTableDataResourceHoursIds)
 		{
 			List<MOQTypeSelectionTableDataResourceHoursDTO> result = new List<MOQTypeSelectionTableDataResourceHoursDTO>();
 
@@ -186,7 +186,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="moqTypeSelectionTableDataResourceHoursId"></param>
 		/// <returns>MOQ Type Selection Table Data Resource Hours</returns>
-		virtual public MOQTypeSelectionTableDataResourceHoursDTO GetById(int moqTypeSelectionTableDataResourceHoursId)
+		public virtual MOQTypeSelectionTableDataResourceHoursDTO GetById(int moqTypeSelectionTableDataResourceHoursId)
 		{
 			return this.GetByIds(new Collection<int>() { moqTypeSelectionTableDataResourceHoursId }).FirstOrDefault();
 		}
@@ -196,7 +196,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="moqTypeSelectionTableDataId"></param>
 		/// <returns>Number of MOQ Type Selection Table Data Resource Hours deleted</returns>
-		virtual public int? DeleteByMoqTypeSelectionTableDataId(int moqTypeSelectionTableDataId)
+		public virtual int? DeleteByMoqTypeSelectionTableDataId(int moqTypeSelectionTableDataId)
 		{
 			int? toReturn = null;
 
@@ -218,7 +218,7 @@ namespace GenBOE.DataBridge.DTO
 		/// </summary>
 		/// <param name="moqTypeSelectionTableDataResourceHours">MOQ Type Selection Table Data Resource Hours DTOs</param>
 		/// <returns>Num rows that were inserted</returns>
-		virtual public int? InsertMOQTypeSelectionTableDataResourceHours(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> moqTypeSelectionTableDataResourceHours)
+		public virtual int? InsertMOQTypeSelectionTableDataResourceHours(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> moqTypeSelectionTableDataResourceHours)
 		{
 			int? toReturn = null;
 			if (moqTypeSelectionTableDataResourceHours == null || moqTypeSelectionTableDataResourceHours.Count == 0) { throw new ArgumentNullException(nameof(moqTypeSelectionTableDataResourceHours)); }
