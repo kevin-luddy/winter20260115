@@ -182,6 +182,31 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
 		public ICollection<SelectListItem> ReasonsForCcopdBeingNo { get; set; }
 
 		/// <summary>
+		/// Is the Proposal subject to alternative pricing methodology?
+		/// </summary>
+		public bool? SubjectToAlternativePricingMethodology { get; set; }
+
+		/// <summary>
+		/// Selected alternative pricing methodology
+		/// </summary>
+		public AlternativePricingMethodology? AlternativePricingMethodology { get; set; }
+
+		/// <summary>
+		/// Text for "Other" Alternative Pricing Methodology
+		/// </summary>
+		public string AlternativePricingMethodologyOtherText { get; set; }
+
+		/// <summary>
+		/// If "Is the proposal subject to an alternative pricing methodology?" should be displayed when CCoPD is Yes
+		/// </summary>
+		public bool DisplayAlternativePricingMethodology { get; set; }
+
+		/// <summary>
+		/// List of Alternative Pricing Methodologies
+		/// </summary>
+		public ICollection<SelectListItem> AlternativePricingMethodologies { get; set; }
+
+		/// <summary>
 		/// Is this proposal in support of definitizing an Undefinitized Contract Action
 		/// </summary>
 		public bool? IsSupportOfUndefinitized { get; set; }

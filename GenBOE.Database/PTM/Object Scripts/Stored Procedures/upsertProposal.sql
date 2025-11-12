@@ -87,7 +87,10 @@ CREATE PROCEDURE [dbo].[upsertProposal]
 	  @AdditionalClassification BIT,
 	  @ReasonCcopdNo INT,
 	  @ReasonCcopdNoOther VARCHAR(100),
-	  @IsSupportDefinitizingUCA BIT
+	  @IsSupportDefinitizingUCA BIT,
+	  @SubjectToAlternativePricingMethodology bit = NULL,
+	  @AlternativePricingMethodology int = NULL,
+	  @AlternativePricingMethodologyOtherText varchar(50) = NULL
 )
 AS
 /******************************************************************************
@@ -129,6 +132,7 @@ AS
 **			7/9/23		Dusan					PROPH-1563 - Added an Additional Classification Column
 **			7/14/24		Dusan					PROPH-1559: Added reason for CCOPD = No
 **			8/19/24		Dusan					PROPH-2080: Added IsSupportDefinitizingUCA field
+**			11/4/25		ranzalon				PROPH-3420: Added Alternative Pricing Methodology
 ******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -281,6 +285,9 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,ReasonCcopdNo
 		,ReasonCcopdNoOther
 		,IsSupportDefinitizingUCA
+		,SubjectToAlternativePricingMethodology
+	    ,AlternativePricingMethodology
+	    ,AlternativePricingMethodologyOtherText
 		)
 	OUTPUT inserted.ProposalID INTO @Inserted
 	VALUES
@@ -356,6 +363,9 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,@ReasonCcopdNo
 		,@ReasonCcopdNoOther
 		,@IsSupportDefinitizingUCA
+		,@SubjectToAlternativePricingMethodology
+	    ,@AlternativePricingMethodology
+	    ,@AlternativePricingMethodologyOtherText
 		)
 
 		SELECT @ProposalID = ID FROM @Inserted
@@ -465,6 +475,9 @@ ELSE
 						,ReasonCcopdNo = @ReasonCcopdNo
 						,ReasonCcopdNoOther = @ReasonCcopdNoOther
 						,IsSupportDefinitizingUCA = @IsSupportDefinitizingUCA
+						,SubjectToAlternativePricingMethodology = @SubjectToAlternativePricingMethodology
+						,AlternativePricingMethodology = @AlternativePricingMethodology
+						,AlternativePricingMethodologyOtherText = @AlternativePricingMethodologyOtherText
 						WHERE 
 							ProposalID = @ProposalID;
 
