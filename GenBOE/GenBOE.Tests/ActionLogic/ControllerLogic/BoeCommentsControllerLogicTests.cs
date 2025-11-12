@@ -97,13 +97,75 @@ namespace GenBOE.Tests.Objects
             };
             _commentDtos.Add(comment);
             _commentDtos.Add(commentResponse);
-            
-        }
 
-        /// <summary>
-        /// Get comments by BOE Id test.
-        /// </summary>
-        [TestMethod]
+		}
+
+		/// <summary>
+		/// Get comments view model test.
+		/// </summary>
+		[TestMethod]
+		public void GetCommentsViewModel()
+		{
+			UserDTO reviewerUser = new UserDTO { DisplayName = "I. M. Auser", NTID = "imauser", UserID = 1 };
+			UserDTO authorUser = new UserDTO { DisplayName = "I. M. Aresponder", NTID = "imaresponder", UserID = 2 };
+			FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+			Dictionary<SecurityPage, SecurityAuthorization> permissionDictionary = new Dictionary<SecurityPage, SecurityAuthorization>
+			{
+				{ SecurityPage.BOEApproval, SecurityAuthorization.Read },
+				{ SecurityPage.BOEComment, SecurityAuthorization.Read },
+				{ SecurityPage.BOECommentResponse, SecurityAuthorization.Read }
+			};
+			List<BoeApproverResponseDTO> ApproverResponses = new List<BoeApproverResponseDTO>
+			{
+				new BoeApproverResponseDTO{ ETIUserID = 1 }
+			};
+			ICollection<BOEHistoryDTO> histories = new List<BOEHistoryDTO>();
+			FullBoe testFullBoe = new FullBoe() { Id = 1};
+			_boeCommentDTOLoader.Setup(x => x.GetByBoeId(1)).Returns(_commentDtos);
+			_userDTOLoader.Setup(x => x.GetUserByID(reviewerUser.UserID)).Returns(reviewerUser);
+			_securityInformation.Setup(x => x.IsSubcontractorUser(reviewerUser.NTID, reviewerUser.IsSubcontractor)).Returns(false);
+			_userDTOLoader.Setup(x => x.GetUserByID(authorUser.UserID)).Returns(authorUser);
+			_securityInformation.Setup(x => x.IsSubcontractorUser(authorUser.NTID, authorUser.IsSubcontractor)).Returns(false);
+			this._factory.Setup(x => x.CreateFullBoe(1)).Returns(testFullBoe);
+			this._retriever.Setup(x => x.GetApproverResponseCollectionByBoeId(1)).Returns(ApproverResponses);
+			this._retriever.Setup(x => x.GetCurrentActiveUser()).Returns(new UserDTO { UserID = 3});
+			this._boeHistoryLoader.Setup(x => x.GetBOEHistory(1)).Returns(histories);
+
+			// Invoke
+			BOECommentsModelView boeCommentViewModel = _commentsControllerLogic.GetBOEComments(ws, 1, permissionDictionary);
+
+			Assert.AreEqual(boeCommentViewModel.WorkspaceState, WorkspaceState.Working);
+			Assert.AreEqual(boeCommentViewModel.ResponsesReadOnly, true);
+			Assert.AreEqual(boeCommentViewModel.ApprovalsReadOnly, true);
+			Assert.AreEqual(boeCommentViewModel.CommentsReadOnly, true);
+
+			Assert.IsTrue(boeCommentViewModel.Comments.Count == 1);
+
+			// Assert reviewerUser & authorUser are populated in the model.
+			BOEComment commentModel = boeCommentViewModel.Comments.FirstOrDefault(x => x.AuthorNtId == authorUser.NTID);
+			Assert.IsNotNull(commentModel);
+			BOECommentDTO authorComment = _commentDtos.First(x => x.BOECommentETIUserID == authorUser.UserID);
+			BOECommentDTO reviewerComment = _commentDtos.First(x => x.BOECommentETIUserID == reviewerUser.UserID);
+
+			// Assert Reviewer's comment (the original comment)
+			Assert.AreEqual(commentModel.ReviewerID, 1);
+			Assert.AreEqual(commentModel.ReviewerName, "I. M. Auser");
+			Assert.AreEqual(commentModel.ReviewerNtId, "imauser");
+			Assert.AreEqual(commentModel.ReviewerComment, reviewerComment.BOEComment);
+			Assert.AreEqual(commentModel.CommentType, BOECommentType.Comment);
+
+			// Assert Author's comment (the respone to the original comment)
+			Assert.AreEqual(commentModel.AuthorID, 2);
+			Assert.AreEqual(commentModel.AuthorName, "I. M. Aresponder");
+			Assert.AreEqual(commentModel.AuthorNtId, "imaresponder");
+			Assert.AreEqual(commentModel.AuthorResponse, authorComment.BOEComment);
+			Assert.AreEqual(commentModel.CommentType, BOECommentType.Comment);
+		}
+
+		/// <summary>
+		/// Get comments by BOE Id test.
+		/// </summary>
+		[TestMethod]
         public void GetCommentsByBOEIdTest()
         {
             UserDTO reviewerUser = new UserDTO { DisplayName = "I. M. Auser", NTID="imauser", UserID=1 };

@@ -231,7 +231,7 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
-		/// Initializes a controller action
+		/// Initializes a controller action and makes sure user has permissions to at least 1 of multiple pages passed in parameter
 		/// </summary>
 		/// <param name="logger">The logger for the controller calling the action</param>
 		/// <param name="functionName">The name of the function being initialized</param>

@@ -58,6 +58,7 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <returns>BOECommentsModelView</returns>
 		[System.Web.Http.HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<BOECommentsModelView> GetBOEComments(string workspaceShortname, int boeID)
 		{
 			IESSingleResponse<BOECommentsModelView> result = new IESSingleResponse<BOECommentsModelView>();
@@ -67,25 +68,34 @@ namespace GenBOE.Web.Controllers.Backend
 			// Initialize Action
 			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_DISPLAY_BOE_COMMENTS, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
 
-			Collection<SecurityPage> pagesToCheck = new Collection<SecurityPage>() {
-				SecurityPage.BOEApproval,
-				SecurityPage.BOEComment,
-				SecurityPage.BOECommentResponse
-			};
-			Dictionary<SecurityPage, SecurityAuthorization> extraPermissionDictionary = new Dictionary<SecurityPage, SecurityAuthorization>();
-			foreach (SecurityPage page in pagesToCheck)
+			try
 			{
-				SecurityAuthorization securityAuthorization = CheckPermission(page, ws, boeID);
-				extraPermissionDictionary.Add(page, securityAuthorization);
+				Collection<SecurityPage> pagesToCheck = new Collection<SecurityPage>() 
+				{
+					SecurityPage.BOEApproval,
+					SecurityPage.BOEComment,
+					SecurityPage.BOECommentResponse
+				};
+				Dictionary<SecurityPage, SecurityAuthorization> extraPermissionDictionary = new Dictionary<SecurityPage, SecurityAuthorization>();
+				foreach (SecurityPage page in pagesToCheck)
+				{
+					SecurityAuthorization securityAuthorization = CheckPermission(page, ws, boeID);
+					extraPermissionDictionary.Add(page, securityAuthorization);
+				}
+				if (Utilities.IsReadOnly())
+				{
+					SecurityAuthorization securityAuthorization = CheckPermission(SecurityPage.SystemAdmin, null, null);
+					extraPermissionDictionary.Add(SecurityPage.SystemAdmin, securityAuthorization);
+				}
+				result.Data = boeCommentsControllerLogic.GetBOEComments(ws, boeID, extraPermissionDictionary);
+				result.Data.ContainsOCI = ws.ContainsOCI;
+				result.IsSuccessful = true;
 			}
-			if (Utilities.IsReadOnly())
+			catch (Exception ex)
 			{
-				SecurityAuthorization securityAuthorization = CheckPermission(SecurityPage.SystemAdmin, null, null); 
-				extraPermissionDictionary.Add(SecurityPage.SystemAdmin, securityAuthorization);
+				logger.Error(ex);
+				result.IsSuccessful = false;
 			}
-			result.Data = boeCommentsControllerLogic.GetBOEComments(ws, boeID, extraPermissionDictionary);
-			result.Data.ContainsOCI = ws.ContainsOCI;
-			result.IsSuccessful = true;
 
 			// Finalize Action
 			FinalizeAction(logger, WebConstants.ACTION_DISPLAY_BOE_COMMENTS, sw);
@@ -100,6 +110,7 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <returns></returns>
 		[System.Web.Http.HttpPost]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<bool> SaveBoeComments([FromBody] BOECommentsModelView boeComments)
 		{
 			if (boeComments == null)
@@ -116,11 +127,18 @@ namespace GenBOE.Web.Controllers.Backend
 			Stopwatch sw = InitializeActionWithAnyPermission(logger, WebConstants.ACTION_SAVE_BOE_COMMENTS,
 				new Collection<SecurityPage>() { SecurityPage.BOEApproval, SecurityPage.BOEComment, SecurityPage.BOECommentResponse },
 				SecurityAuthorization.CreateReadUpdateDelete, ws, boeComments.BoeId);
+			try
+			{
+				boeCommentsControllerLogic.SaveBOEComments(ws, fullBOE, boeComments);
 
-			boeCommentsControllerLogic.SaveBOEComments(ws, fullBOE, boeComments);
-
-			result.IsSuccessful = true;
-			result.Data = true;
+				result.IsSuccessful = true;
+				result.Data = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.IsSuccessful = false;
+			}
 
 			// Finalize Action
 			FinalizeAction(logger, WebConstants.ACTION_SAVE_BOE_COMMENTS, sw);

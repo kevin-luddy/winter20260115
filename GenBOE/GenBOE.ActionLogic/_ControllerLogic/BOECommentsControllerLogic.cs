@@ -137,7 +137,7 @@ namespace GenBOE.ActionLogic
 			}
 
 			// Sort the Comments so that Approvals/Rejections are interweaved with true reviewer comments by date
-			theModelView.Comments = new Collection<BOEComment>(theModelView.Comments.OrderBy(c => c.ReviewerCommentUpdateDT).ToArray());
+			theModelView.Comments = theModelView.Comments.OrderBy(c => c.ReviewerCommentUpdateDT).ToCollection();
 
 			return theModelView;
 		}
@@ -483,11 +483,8 @@ namespace GenBOE.ActionLogic
 		/// <returns>False if the workspace is in the 'Working' state, true otherwise</returns>
 		private bool GetReadOnlyAttribute(SecurityAuthorization securityAuthorization)
 		{
-			// Default is read-only
-			bool toReturn = true;
-
 			// Return true if the Security Authorization is Read or None
-			toReturn = (securityAuthorization == SecurityAuthorization.Read || securityAuthorization == SecurityAuthorization.None);
+			bool toReturn = securityAuthorization == SecurityAuthorization.Read || securityAuthorization == SecurityAuthorization.None;
 
 			return toReturn;
 		}
