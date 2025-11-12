@@ -5,12 +5,12 @@
 // -----------------------------------------------------------------------
 
 using System;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using IES.Common;
 using GenBOE.Dtos;
+using IES.Common;
 
 namespace GenBOE.ActionLogic.ModelView.BOE
 {
@@ -35,9 +35,50 @@ namespace GenBOE.ActionLogic.ModelView.BOE
                     this.Approver = new BOEApprover(currentApprover);
                 }
             }
-        }
+		}
 
-        public BOEApprover Approver { get; set; }
+
+		/// <summary>
+		/// Workspace short name
+		/// </summary>
+		public string WorkspaceShortName { get; set; }
+
+		/// <summary>
+		/// boeId where the Task Element is being sorted
+		/// </summary>
+		public int BoeId { get; set; }
+
+		/// <summary>
+		/// Indicates whether workspace contain ContainsOCI
+		/// </summary>
+		public bool ContainsOCI { get; set; }
+
+		/// <summary>
+		/// loged in user Id
+		/// </summary>
+		public int CurrentUserId { get; set; }
+
+		/// <summary>
+		/// Indicates whether comment is readonly
+		/// </summary>
+		public bool CommentsReadOnly { get; set; }
+
+		/// <summary>
+		/// Indicates whether approval is readonly
+		/// </summary>
+		public bool ApprovalsReadOnly { get; set; }
+
+		/// <summary>
+		/// Indicates whether response is readonly
+		/// </summary>
+		public bool ResponsesReadOnly { get; set; }
+
+		/// <summary>
+		/// workspace state
+		/// </summary>
+		public WorkspaceState WorkspaceState { get; set; }
+
+		public BOEApprover Approver { get; set; }
 
         public Collection<BOEComment> Comments { get; set; }
     }
@@ -152,19 +193,26 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         [DisplayFormat(DataFormatString = "{0:g}")]
         public DateTime ReviewerCommentUpdateDT { get; set; }
 
-        public long ReviewerCommentUpdateDTLong
-        {
-            get
-            {
-                return this.ReviewerCommentUpdateDT.Ticks;
-            }
-            set
-            {
-                this.ReviewerCommentUpdateDT = new DateTime(value);
-            }
-        }
+		public string ReviewerCommentUpdateDTLong
+		{
+			get
+			{
+				return this.ReviewerCommentUpdateDT.Ticks.ToString();
+			}
+			set
+			{
+				if (long.TryParse(value, out long ticks))
+				{
+					this.ReviewerCommentUpdateDT = new DateTime(ticks);
+				}
+				else
+				{
+					this.ReviewerCommentUpdateDT = default;
+				}
+			}
+		}
 
-        public int AuthorResponseID { get; set; }
+		public int AuthorResponseID { get; set; }
 
         public string AuthorResponse { get; set; }
 
@@ -178,15 +226,23 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         [DisplayFormat(DataFormatString = "{0:g}")]
         public DateTime? AuthorResponseUpdateDT { get; set; }
 
-        public long AuthorResponseUpdateDTLong
+		public string AuthorResponseUpdateDTLong
         {
             get
             {
-                return this.AuthorResponseUpdateDT.GetValueOrDefault().Ticks;
+                return this.AuthorResponseUpdateDT.GetValueOrDefault().Ticks.ToString();
             }
             set
             {
-                this.AuthorResponseUpdateDT = new DateTime(value);
+
+				if (long.TryParse(value, out long ticks))
+				{
+					this.AuthorResponseUpdateDT = new DateTime(ticks);
+				}
+				else
+				{
+					this.AuthorResponseUpdateDT = null;
+				}
             }
         }
         
