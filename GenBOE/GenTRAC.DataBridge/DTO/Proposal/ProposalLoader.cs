@@ -190,7 +190,10 @@ namespace GenTRAC.DataBridge.DTO
 							AdditionalClassification = entity.AdditionalClassification,
 							entity.ReasonCcopdNo,
 							entity.ReasonCcopdNoOther,
-							entity.IsSupportDefinitizingUCA
+							entity.IsSupportDefinitizingUCA,
+							entity.SubjectToAlternativePricingMethodology,
+							entity.AlternativePricingMethodology,
+							entity.AlternativePricingMethodologyOtherText
 						}).ToList()
 						.Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
 						{
@@ -270,7 +273,10 @@ namespace GenTRAC.DataBridge.DTO
 							AdditionalClassification = entity.AdditionalClassification,
 							CcopdNoReason = (CcopdOptionalReason?)entity.ReasonCcopdNo,
 							CcopdNoOtherReason = entity.ReasonCcopdNoOther,
-							IsSupportOfUndefinitized = entity.IsSupportDefinitizingUCA
+							IsSupportOfUndefinitized = entity.IsSupportDefinitizingUCA,
+							SubjectToAlternativePricingMethodology = entity.SubjectToAlternativePricingMethodology,
+							AlternativePricingMethodology = (IES.Common.AlternativePricingMethodology?)entity.AlternativePricingMethodology,
+							AlternativePricingMethodologyOtherText = entity.AlternativePricingMethodologyOtherText
 						}).ToList();
 				}
 			}
@@ -587,7 +593,10 @@ namespace GenTRAC.DataBridge.DTO
 							dtoToUpsert.AdditionalClassification,
 							dtoToUpsert.CcopdNoReason == CcopdOptionalReason.NotSet ? null : (int?)dtoToUpsert.CcopdNoReason,
 							dtoToUpsert.CcopdNoOtherReason,
-							dtoToUpsert.IsSupportOfUndefinitized
+							dtoToUpsert.IsSupportOfUndefinitized,
+							dtoToUpsert.SubjectToAlternativePricingMethodology,
+							(int?)dtoToUpsert.AlternativePricingMethodology,
+							dtoToUpsert.AlternativePricingMethodologyOtherText
 							).FirstOrDefault();
 					}
 				}

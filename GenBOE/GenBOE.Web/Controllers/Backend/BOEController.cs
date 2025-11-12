@@ -8,6 +8,7 @@ namespace GenBOE.Web.Controllers.Backend
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Diagnostics;
 	using System.Linq;
 	using System.Web.Http;
@@ -16,6 +17,7 @@ namespace GenBOE.Web.Controllers.Backend
 	using GenBOE.ActionLogic._ModelView.Backend;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.ActionLogic.ModelView.BOE;
 	using GenBOE.ActionLogic.Validation;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
@@ -24,6 +26,7 @@ namespace GenBOE.Web.Controllers.Backend
 	using GenBOE.Web.Common;
 	using GenBOE.Web.ModelView;
 	using IES.Common;
+	using IES.Common.Exceptions;
 
 	/// <summary>
 	/// BOEController used for /boe/editboeindex/boe/
@@ -79,7 +82,7 @@ namespace GenBOE.Web.Controllers.Backend
 
 			Stopwatch sw = InitializeAction(logger, WebConstants.GET_BOE_HEADER, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, new List<WorkspaceDTO> { ws }, boeId);
 
-			FullBoe boe = ws.Boes.First(x => x.Id == boeId);
+			FullBoe boe = this.Factory.CreateFullBoe(boeId);
 
 			try
 			{
@@ -256,6 +259,62 @@ namespace GenBOE.Web.Controllers.Backend
 			}
 
 			FinalizeAction(logger, WebConstants.GET_BOE_HEADER, sw);
+			return result;
+		}
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpPost]
+		public IESSingleResponse<bool> SaveEditBOEHeader([FromBody] SaveBoeHeaderModelView saveBOEHeader)
+		{
+			_ = saveBOEHeader ?? throw new ArgumentNullException(nameof(saveBOEHeader));
+
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+			bool descriptionOnly = false;
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(saveBOEHeader.workspaceShortName);
+			Stopwatch sw = InitializeAction(logger, "SaveEditBOEHeader", SecurityPage.BOELaborGrid, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, saveBOEHeader.boeHeader.BOEID);
+
+			try
+			{
+				FullBoe boe = this.Factory.CreateFullBoe(saveBOEHeader.boeHeader.BOEID);
+
+				IBOEHeaderModelView boeHeader = new BOEHeaderModelView();
+				boeHeader.BOEID = saveBOEHeader.boeHeader.BOEID;
+				boeHeader.Title = saveBOEHeader.boeHeader.Title;
+				boeHeader.CustomFieldValues = new Collection<CustomFieldSelectionModelView>();
+
+
+				foreach (BOECustomFieldModelView item in saveBOEHeader.boeHeader.CustomFieldValues)
+				{
+					CustomFieldSelectionModelView field = new CustomFieldSelectionModelView();
+
+					if (item.CustomFieldMetaData.CustomFieldValueID != 0 && item.CustomFieldMetaData.SelectionID != 0)
+					{
+						BOECustomFieldOptionModelView selectedOption = item.CustomFieldOptions.First(option => option.CustomFieldOptionID == item.CustomFieldMetaData.CustomFieldValueID);
+						field.CustomFieldID = item.CustomFieldMetaData.isOpenEnded ? item.CustomFieldMetaData.CustomFieldID : -1;
+						field.CustomFieldValueID = item.CustomFieldMetaData.CustomFieldValueID;
+						field.IsOpenEnded = item.CustomFieldMetaData.isOpenEnded;
+						field.OpenEndedValue = selectedOption.Description;
+						field.SelectionID = item.CustomFieldMetaData.SelectionID;
+						field.UpdateDate = item.UpdateDate;
+						field.UpdateDateLong = item.UpdateDateLong;
+
+						boeHeader.CustomFieldValues.Add(field);
+					}
+				}
+
+				boeControllerLogic.SaveEditBoeHeader(ws, boe, boeHeader, saveBOEHeader.boeHeader.Description, descriptionOnly);
+
+				result.IsSuccessful = true;
+				result.Data = true;
+			}
+			catch (GenValidationException ex)
+			{
+				logger.Error(ex);
+				result.Messages = ex.ValidationList.Select(x => x.ValidationIssue).ToList();
+			}
+
+			FinalizeAction(logger, "SaveEditBOEHeader", sw);
 			return result;
 		}
 	}

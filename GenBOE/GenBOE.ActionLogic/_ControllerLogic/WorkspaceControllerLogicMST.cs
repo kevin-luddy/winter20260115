@@ -93,7 +93,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			IBOEStateMachine boeStateMachine,
 			IBoeMediator boeMediator,
 			ISystemSettingDTODataLoader systemSettingDTODataLoader,
-			WorkspaceStateMachine workspaceStateMachine
+			WorkspaceStateMachine workspaceStateMachine,
+			IBoeApproverResponseDTODataLoader inBoeApproverResponseDTODataLoader
 			)
 			: base(
 				workspaceLoader,
@@ -119,7 +120,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				boeStateMachine,
 				boeMediator,
 				systemSettingDTODataLoader,
-				workspaceStateMachine
+				workspaceStateMachine,
+				inBoeApproverResponseDTODataLoader
 		)
 		{
 			this.zoneTravelRatesFeesLoader = zoneTravelRatesFeesLoader;
