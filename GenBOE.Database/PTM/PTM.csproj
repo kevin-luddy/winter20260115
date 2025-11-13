@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Release Scripts\Release 2025.10\" />
     <Folder Include="Release Scripts\Release 2025.6\" />
   </ItemGroup>
 
