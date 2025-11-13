@@ -247,6 +247,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 					ICollection<string> errorMessages = new List<string>();
 
 					// Set the task's MOQTotalRelevantHours
+					task.MOQTotalRelevantHours = 0;
 					ICollection<MoqTypeSelection> moqTypes = ws.MoqTypeSelections.Where(m => m.TaskId == task.Id).ToList();
 					// Space will get the total moq total relevant hours if it is from a Sap Webi moq table data.
 					if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
