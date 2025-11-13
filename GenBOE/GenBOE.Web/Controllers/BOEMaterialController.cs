@@ -6,35 +6,31 @@
 
 namespace GenBOE.Web.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Diagnostics;
-    using System.Linq;
-    using System.Transactions;
-    using System.Web.Mvc;
-    using GenBOE.ActionLogic.Common;
-    using GenBOE.ActionLogic.ControllerLogic;
-    using GenBOE.ActionLogic.IO.Export;
-    using GenBOE.ActionLogic.Metrics;
-    using GenBOE.ActionLogic.ModelView.BOE;
-    using GenBOE.DataBridge.Common;
-    using GenBOE.DataBridge.Common.Interfaces;
-    using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
-    using GenBOE.Objects;
-    using GenBOE.Web.Common;
-    using GenBOE.Web.ModelView;
-    using IES.Common;
-    using IES.Common.Exceptions;
-    using IES.Common.OfficeUtilities;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Diagnostics;
+	using System.Linq;
+	using System.Transactions;
+	using System.Web.Mvc;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.ControllerLogic;
+	using GenBOE.ActionLogic.Metrics;
+	using GenBOE.ActionLogic.ModelView.BOE;
+	using GenBOE.DataBridge.Common;
+	using GenBOE.DataBridge.Common.Interfaces;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Objects;
+	using GenBOE.Web.Common;
+	using GenBOE.Web.ModelView;
+	using IES.Common;
+	using IES.Common.Exceptions;
 
-    public class BOEMaterialController : GenBOEController
+	public class BOEMaterialController : GenBOEController
     {
-        private Logger _log = new Logger(typeof(BOEMaterialController));
-
-        private IMaterialDTODataLoader _materialDTODataLoader = null;
-        private IBOEMaterialControllerLogic _BOEMaterialControllerLogic = null;
+        private readonly Logger _log = new Logger(typeof(BOEMaterialController));
+        private readonly IMaterialDTODataLoader _materialDTODataLoader = null;
+        private readonly IBOEMaterialControllerLogic _BOEMaterialControllerLogic = null;
 
         /// <summary>
         /// Constructor
@@ -68,7 +64,7 @@ namespace GenBOE.Web.Controllers
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DisplayBOEMaterialComposite", SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_MATERIAL_COMPOSITE, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
 
             // Perform Action
             ViewData["BOEID"] = boeID;
@@ -81,7 +77,7 @@ namespace GenBOE.Web.Controllers
             ViewResult toReturn = View(WebConstants.VIEW_MATERIAL_COMPOSITE);
 
             // Finalize Action
-            FinalizeAction(_log, "DisplayBOEMaterialComposite", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_MATERIAL_COMPOSITE, sw);
             return toReturn;
         }
 

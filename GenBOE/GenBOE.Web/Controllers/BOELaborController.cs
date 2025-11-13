@@ -1338,6 +1338,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace"></param>
 		/// <param name="taskElementID"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public JsonResult SaveReorderLaborTypes(LaborTypeOrderCollection modelView, string workspace, int taskElementID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1354,14 +1355,14 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "SaveReorderLaborTypes", SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, taskElement.BoeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_REORDER_LABOR_TYPES, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, taskElement.BoeID);
 
 			this._BoeLaborControllerLogic.ReOrderLaborTypeOrder(ws, taskElement, modelView);
 
 			JsonResult toReturn = Json(new { Status = true });
 
 			// Finalize Action
-			FinalizeAction(_log, "SaveReorderLaborTypes", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SAVE_REORDER_LABOR_TYPES, sw);
 			return toReturn;
 		}
 
@@ -1372,6 +1373,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="taskElementID">Task ID</param>
 		/// <returns>View with imported MOQ Table data</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "moqTypeId")]
+		[HttpPost]
 		public async Task<ViewResult> ImportMoqTables(string workspace, int taskElementID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1403,6 +1405,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace name</param>
 		/// <param name="taskElementID">Task element ID</param>
 		/// <returns>Json result</returns>
+		[HttpPost]
 		public JsonResult CompleteImportMoqTables(ICollection<ImportMoqTableResultsModelView> importResults, int moqTypeId, string workspace, int taskElementID)
 		{
 			// TODO - fix dates, reload page
@@ -1431,6 +1434,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="taskElementID">Task ID</param>
 		/// <returns>Export</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		[HttpGet]
 		public ActionResult ExportMoqTables(int moqTypeId, string workspace, int taskElementID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1461,6 +1465,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace name</param>
 		/// <param name="boeId">BOE Id</param>
 		/// <returns></returns>
+		[HttpPost]
 		public async Task<ActionResult> ParseSapFilter(string text, string workspace, int boeId)
 		{
 			// Initialize Action
@@ -1484,6 +1489,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace name</param>
 		/// <param name="boeId">BOE Id</param>
 		/// <returns></returns>
+		[HttpPost]
 		public async Task<ActionResult> ConvertSapFilter(ICollection<QueryViewModel> filters, string workspace, int boeId)
 		{
 			// Initialize Action
@@ -1508,6 +1514,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="tableData">The MOQ Table Data</param>
 		/// <returns>Validation Response with file as byte array</returns>
 
+		[HttpPost]
 		public async Task<ActionResult> ExportActualsSap(string workspace, int boeId, MoqTableDataModelView tableData)
 		{
 			if (tableData == null)
@@ -1548,6 +1555,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeId">BOE Id</param>
 		/// <param name="tableData">The MOQ Table Data</param>
 		/// <returns>Validation Response</returns>
+		[HttpPost]
 		public async Task<ActionResult> CalculateAllActualsSap(string workspace, int boeId, ICollection<MoqTableDataModelView> tableData)
 		{
 			if (tableData == null || !tableData.Any())
@@ -1588,6 +1596,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeId">BOE Id</param>
 		/// <param name="tableData">The MOQ Table Data</param>
 		/// <returns>Validation Response</returns>
+		[HttpPost]
 		public async Task<ActionResult> CalculateAllActualsSapWithSkillMix(string workspace, int boeId, ICollection<MoqTableDataModelView> tableData)
 		{
 			if (tableData == null || !tableData.Any())
@@ -1631,6 +1640,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="currentSkillMixData">The current skill mix data</param>
 		/// <param name="isManual">If the Historical Resource/Hours are Manually input or not</param>
 		/// <returns></returns>
+		[HttpPost]
 		public ActionResult RefreshSkillMixTables(string workspace, int boeId, ICollection<MoqTypeSelection> selectedMoqTypes,
 			ICollection<LaborTypeDataModelView> laborTypes, ICollection<SkillMixModelView> currentSkillMixData, ICollection<CommonDisclosureModelView> currentCommonDisclosureData, ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData,
 			bool isManual, DateTime? taskEndDate)
@@ -1666,6 +1676,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="laborTypes">The labor type/spreads data</param>
 
 		/// <returns></returns>
+		[HttpPost]
 		public ActionResult CheckTMRates(string workspace, int boeId, ICollection<LaborTypeDataModelView> laborTypes)
 		{
 			// Initialize Action
