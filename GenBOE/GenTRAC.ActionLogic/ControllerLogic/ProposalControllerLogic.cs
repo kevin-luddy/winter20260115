@@ -323,7 +323,10 @@ namespace GenTRAC.ActionLogic
 					AdditionalClassification = proposalGeneralInfo.AdditionalClassification,
 					CcopdNoOtherReason = proposalGeneralInfo.CcopdNoOtherReason,
 					CcopdNoReason = proposalGeneralInfo.CcopdNoReason,
-					IsSupportOfUndefinitized = proposalGeneralInfo.IsSupportOfUndefinitized
+					IsSupportOfUndefinitized = proposalGeneralInfo.IsSupportOfUndefinitized,
+					SubjectToAlternativePricingMethodology = proposalGeneralInfo.SubjectToAlternativePricingMethodology,
+					AlternativePricingMethodology = proposalGeneralInfo.AlternativePricingMethodology,
+					AlternativePricingMethodologyOtherText = proposalGeneralInfo.AlternativePricingMethodologyOtherText
 				};
 
 				// copy the old values for approvals/certification (comments, workflow status, signatures, additionalapprovalemailtext)
@@ -1508,6 +1511,9 @@ namespace GenTRAC.ActionLogic
 			model.CostVolumeToolsList = EnumUtilities.GetListItemsForEnumSorted(typeof(CostVolumeTool), false, model.CostVolumeTool.ToString());
 			model.ReasonsForCcopdBeingNo = EnumUtilities.GetListItemsForEnumSorted(typeof(CcopdOptionalReason), false, model.CcopdNoReason.HasValue ? model.CcopdNoReason.ToString() : string.Empty);
 
+			DateTime apmStartDate = ConfigurationUtilities.GetAppSetting<DateTime>("AltPricingMethodStartDate");
+			model.AlternativePricingMethodologies = EnumUtilities.GetListItemsForEnumSorted(typeof(AlternativePricingMethodology), false, model.AlternativePricingMethodology.HasValue ? model.AlternativePricingMethodology.ToString() : string.Empty);
+
 			model.IsReadOnly = isNewRevision ? false.ToString().ToLower() : this.IsProposalReadOnly(proposalId, fullProposalDto);
 			model.IsPTMChecklistUIEnabled = (!proposalId.HasValue || proposalId < 0 || fullProposalDto.ProposalChecklistPPRData == null) ? true : this.IsPTMChecklistUIEnabled(fullProposalDto.ProposalChecklistPPRData.Version);
 
@@ -1534,6 +1540,9 @@ namespace GenTRAC.ActionLogic
 				model.CcopdNoOtherReason = fullProposalDto.CcopdNoOtherReason;
 				model.CcopdNoReason = fullProposalDto.CcopdNoReason;
 				model.IsSupportOfUndefinitized = fullProposalDto.IsSupportOfUndefinitized;
+				model.SubjectToAlternativePricingMethodology = fullProposalDto.SubjectToAlternativePricingMethodology;
+				model.AlternativePricingMethodology = fullProposalDto.AlternativePricingMethodology;
+				model.AlternativePricingMethodologyOtherText = fullProposalDto.AlternativePricingMethodologyOtherText;
 
 				// Automatically adds selected option, even if the option is not active.
 				model.ProposalLocationsList = EnumUtilities.GetListItemsForEnumSorted(typeof(ProposalLocation), false, model.ProposalLocation.ToString());
@@ -1544,11 +1553,14 @@ namespace GenTRAC.ActionLogic
 				model.LineOfBusiness = fullProposalDto.LineOfBusinessID.ToString();
 
 				model.ProgramAreaHtmlOptions = this.GetProgramAreasForLineOfBusiness(fullProposalDto.LineOfBusinessID, fullProposalDto.ProgramAreaId);
+
+				model.DisplayAlternativePricingMethodology = apmStartDate != DateTime.MinValue && fullProposalDto.DateCreated.HasValue && fullProposalDto.DateCreated.Value.Date >= apmStartDate.Date;
 			}
 			else
 			{
 				model.ProposalLocationsList = EnumUtilities.GetListItemsForEnumSorted(typeof(ProposalLocation), false);
 				model.ProgramAreaHtmlOptions = this.GetProgramAreasForLineOfBusiness(null, null);
+				model.DisplayAlternativePricingMethodology = apmStartDate != DateTime.MinValue && DateTime.UtcNow.Date >= apmStartDate;
 			}
 
 			// get dynamic help text for Program Areas
@@ -1996,6 +2008,46 @@ namespace GenTRAC.ActionLogic
 			{
 				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.ADITIONAL_CLASSIFICATION_REQUIRED));
 			}
+
+			// "Is the proposal subject to an alternative pricing methodology?" is only available if CCOPD Required is set to Yes
+			if (proposalGeneralInfo.IsCCPDRequired.HasValue && proposalGeneralInfo.IsCCPDRequired.Value)
+			{
+				// Only validate "Is the proposal subject to an alternative pricing methodology?" if Proposal created after the start date
+				DateTime apmStartDate = ConfigurationUtilities.GetAppSetting<DateTime>("AltPricingMethodStartDate");
+				ProposalDto proposal = proposalGeneralInfo.ProposalID > 0 ? this.ProposalLoader.GetById(proposalGeneralInfo.ProposalID) : null;
+				if (apmStartDate != DateTime.MinValue
+					&& ((proposal != null && proposal.DateCreated.HasValue && proposal.DateCreated.Value.Date >= apmStartDate.Date)
+					|| (proposal == null && DateTime.UtcNow.Date >= apmStartDate.Date)))
+				{
+					if (!proposalGeneralInfo.SubjectToAlternativePricingMethodology.HasValue)
+					{
+						inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.SUBJECT_TO_APM_REQUIRED));
+					}
+
+					if (proposalGeneralInfo.SubjectToAlternativePricingMethodology.HasValue && proposalGeneralInfo.SubjectToAlternativePricingMethodology.Value
+						&& (!proposalGeneralInfo.AlternativePricingMethodology.HasValue || proposalGeneralInfo.AlternativePricingMethodology.Value == AlternativePricingMethodology.NotSet))
+					{
+						inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.APM_SELECTION_REQUIRED));
+					}
+
+					if (proposalGeneralInfo.AlternativePricingMethodology.HasValue && proposalGeneralInfo.AlternativePricingMethodology.Value == AlternativePricingMethodology.Other
+						&& string.IsNullOrEmpty(proposalGeneralInfo.AlternativePricingMethodologyOtherText))
+					{
+						inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.APM_OTHER_TEXT_REQUIRED));
+					}
+
+					if (!string.IsNullOrEmpty(proposalGeneralInfo.AlternativePricingMethodologyOtherText) && proposalGeneralInfo.AlternativePricingMethodologyOtherText.Length > 50)
+					{
+						inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.APM_OTHER_TEXT_LENGTH));
+					}
+
+					Regex alphanumericRegex = new Regex(ValidationConstants.ALPHANUMERIC_FORMAT);
+					if (!string.IsNullOrEmpty(proposalGeneralInfo.AlternativePricingMethodologyOtherText) && !alphanumericRegex.IsMatch(proposalGeneralInfo.AlternativePricingMethodologyOtherText))
+					{
+						inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.APM_OTHER_TEXT_ALPHANUMERIC));
+					}
+				}
+			}
 		}
 
 		/// <summary>
@@ -2007,8 +2059,9 @@ namespace GenTRAC.ActionLogic
 		/// <param name="proposalUserInfo">the proposal users to be verified</param>
 		/// <param name="inValidationErrors">validation errors collection</param>
 		/// <param name="isNss">indicates if LOB is set to National Security Space</param>
+		/// <param name="isNewBusiness">indicates if proposal type is New Business Competitive OR Non-Competitive</param>
 		/// <returns>True if there are invalid users on an update but were not changed, false otherwise.</returns>
-		public bool ValidateUserTypes(int? proposalId, ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, ICollection<ValidationMessage> inValidationErrors, bool isNss = false)
+		public bool ValidateUserTypes(int? proposalId, ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, ICollection<ValidationMessage> inValidationErrors, bool isNss = false, bool isNewBusiness = false)
 		{
 			if (proposalApprovalsInfo == null)
 			{
@@ -2055,12 +2108,12 @@ namespace GenTRAC.ActionLogic
 				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.PROPOSALMGR_REQUIRED));
 			}
 
-			if (isNss && string.IsNullOrWhiteSpace(proposalUserInfo.ProgramMgrNtid))
+			if (isNss && isNewBusiness && string.IsNullOrWhiteSpace(proposalUserInfo.ProgramMgrNtid))
 			{
 				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.PROGRAMMGR_REQUIRED));
 			}
 
-			if (isNss && string.IsNullOrWhiteSpace(proposalUserInfo.MsacPOCNtid))
+			if (isNss && isNewBusiness && string.IsNullOrWhiteSpace(proposalUserInfo.MsacPOCNtid))
 			{
 				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.MSAC_POC_REQUIRED));
 			}

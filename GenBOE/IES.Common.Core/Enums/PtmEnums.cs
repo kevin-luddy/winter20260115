@@ -1497,4 +1497,21 @@ namespace IES.Common.Core.Enums
 		[Description("Other Exception applies (explain)")]
 		Other = 5
 	}
+
+	/// <summary>
+	/// Alternative Pricing Methodology
+	/// </summary>
+	public enum AlternativePricingMethodology
+	{
+		[Description("")]
+		NotSet = 0,
+		[Description("FAR 52-215-20 Alternate 1")]
+		Far52Alternate = 1,
+		[Description("NDAA Section 890/TINA Lite")]
+		NdaaSection890 = 2,
+		[Description("Price Based Negotiations")]
+		PriceBasedNegotiations = 3,
+		[Description("Other Exception")]
+		Other = 4
+	}
 }

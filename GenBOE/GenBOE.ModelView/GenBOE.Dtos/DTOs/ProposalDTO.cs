@@ -26,9 +26,11 @@ namespace GenBOE.Dtos
 			Title = string.Empty;
 			Description = string.Empty;
 			LineOfBusiness = string.Empty;
+			LineOfBusinessId = null;
 			Pricing = string.Empty;
 			ProjectStartDate = DateTime.MinValue;
 			ProjectEndDate = DateTime.MinValue;
+			ProposalSubmittalDate = DateTime.MinValue;
 			RFPNumber = string.Empty;
 			LastModifiedDate = DateTime.MinValue;
 			ProposalStatus = string.Empty;
@@ -78,6 +80,11 @@ namespace GenBOE.Dtos
 		/// Project End Date
 		/// </summary>
 		public DateTime? ProjectEndDate { get; set; }
+
+		/// <summary>
+		/// Proposal Submittal Date
+		/// </summary>
+		public DateTime? ProposalSubmittalDate { get; set; }
 
 		/// <summary>
 		///  RFP Number

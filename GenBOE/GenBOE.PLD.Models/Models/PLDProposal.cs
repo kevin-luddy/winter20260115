@@ -10,7 +10,7 @@ namespace GenBOE.PLD.Models.Models
 {
 	[Table("V_PLD_GenBOE", Schema = "dbo")]
 	public class PLDProposal
-    {
+	{
 		[Column("PA Number")]
 		public string PA_Number { get; set; }
 
@@ -35,6 +35,9 @@ namespace GenBOE.PLD.Models.Models
 
 		[Column("Project End Date")]
 		public DateTime? Project_End_Date { get; set; }
+
+		[Column("Due Date")]
+		public DateTime? Due_Date { get; set; }
 
 		[Column("RFP Number")]
 		public string RFP_Number { get; set; }

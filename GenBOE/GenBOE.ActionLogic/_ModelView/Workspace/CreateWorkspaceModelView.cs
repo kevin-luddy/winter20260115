@@ -80,6 +80,62 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 				", WSExactCopy=" + this.WSExactCopy;
 		}
 
+
+		/// <summary>
+		/// Maximum length for Workspace Name
+		/// </summary>
+		public const int MAX_COST_VOLUME_LEAD_PRICER = 100;
+
+		/// <summary>
+		/// Maximum length for Workspace Name
+		/// </summary>
+		public const int MAX_WORKSPACE_NAME = 100;
+
+		/// <summary>
+		/// Maximum length for Workspace Name
+		/// </summary>
+		public const int MAX_WORKSPACE_SHORTNAME = 50;
+
+		/// <summary>
+		/// Maximum length for RFP Number
+		/// </summary>
+		public const int MAX_RFP_NUMBER = 100;
+
+		/// <summary>
+		/// Maximum length for Tracking Number
+		/// </summary>
+		public const int MAX_TRACKING_NUMBER = 100;
+
+		/// <summary>
+		/// Maximum length for Proposal Title
+		/// </summary>
+		public const int MAX_PROPOSAL_TITLE = 100;
+
+		/// <summary>
+		/// Maximum length for LOB Name
+		/// </summary>
+		public const int MAX_LOB_NAME = 50;
+
+		/// <summary>
+		/// Maximum length for LOB Long Name
+		/// </summary>
+		public const int MAX_LOB_LONG_NAME = 100;
+
+		/// <summary>
+		/// Maximum length for Version Name
+		/// </summary>
+		public const int MAX_VERSION_NAME = 50;
+
+		/// <summary>
+		/// Maximum length for Description
+		/// </summary>
+		public const int MAX_DESCRIPTION = 1000;
+
+		/// <summary>
+		/// Maximum length for Resource
+		/// </summary>
+		public const int MAX_RESOURCE = 20;
+
 		/// <summary>
 		/// Gets or sets a value indicating whether this instance is using equivalent person (or hours).
 		/// </summary>
@@ -108,20 +164,31 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 
 		public int CostDecimalPrecision { get; set; }
 
+		private string _workspaceName = "";
 		/// <summary>
 		/// The name of the workspace
 		/// </summary>
 		[Required(ErrorMessage = "Workspace Name is required.")]
 		[StringLength(100, ErrorMessage = "Workspace Name must not exceed 100 chars.")]
 		[ServerValidation(ErrorMessage = "Workspace Name must be Unique", ValidationToPerform = ValidationType.WorkspaceUniqueName)]
-		public string WorkspaceName { get; set; }
+		public string WorkspaceName
+		{ 
+			get => _workspaceName;
+			set => _workspaceName = TruncateString(value,MAX_WORKSPACE_NAME);
+		}
 
+		private string _description = "";
 		/// <summary>
 		/// Get/Set the Description
 		/// </summary>
 		[StringLength(1000, ErrorMessage = "Description must not exceed 1000 chars.")]
-		public string Description { get; set; }
+		public string Description
+		{
+			get => _description;
+			set => _description = TruncateString(value, MAX_DESCRIPTION);
+		}
 
+		private string _shortname = "";
 		/// <summary>
 		/// Get/Set the Shortname
 		/// </summary>
@@ -130,13 +197,22 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		// Verifies first character is alphanumeric and Verifies all characters are alphanumeric, -, _, or space
 		[RegularExpression(@"^[a-zA-Z0-9][a-zA-Z0-9-_ ]*$", ErrorMessage = "URL must begin with a letter or number and URL format can only contain letters, numbers, blanks, underscores and hyphens.")]
 		[StringLength(21, ErrorMessage = "URL must not exceed 21 chars.")]
-		public string Shortname { get; set; }
+		public string Shortname
+		{
+			get => _shortname;
+			set => _shortname = TruncateString(value, MAX_WORKSPACE_SHORTNAME);
+		}
 
+		private string _cvlpdn = "";
 		/// <summary>
 		/// Get/Set the CostVolumeLeadPricerDisplayName
 		/// </summary>
-		public string CostVolumeLeadPricerDisplayName { get; set; }
-
+		/// 
+		public string CostVolumeLeadPricerDisplayName
+		{
+			get => _cvlpdn;
+			set => _cvlpdn = TruncateString(value, MAX_COST_VOLUME_LEAD_PRICER);
+		}
 		/// <summary>
 		/// Get/Set the ContractStartDate
 		/// </summary>
@@ -161,18 +237,27 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		[RegularExpression(ValidationConstants.DATE_FULL, ErrorMessage = "Proposal Submittal Date format must be mm/dd/yyyy.")]
 		public string ProposalSubmittalDate { get; set; }
 
+		private string _trackingNumber = "";
 		/// <summary>
 		/// Get/Set the TrackingNumber
 		/// </summary>
 		[StringLength(100, ErrorMessage = "A maximum of 100 characters are allowed for the Tracking#")]
-		public string TrackingNumber { get; set; }
+		public string TrackingNumber
+		{
+			get => _trackingNumber;
+			set => _trackingNumber = TruncateString(value, MAX_TRACKING_NUMBER);
+		}
 
+		private string _rfpNumber = "";
 		/// <summary>
 		/// Get/Set the RFPNumber
 		/// </summary>
 		[StringLength(100, ErrorMessage = "A maximum of 100 characters are allowed for the RFP#")]
-		public string RFPNumber { get; set; }
-
+		public string RFPNumber
+		{
+			get => _rfpNumber;
+			set => _rfpNumber = TruncateString(value, MAX_RFP_NUMBER);
+		}
 		/// <summary>
 		/// Get/Set the ContainsOCI
 		/// </summary>
@@ -221,10 +306,15 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// </summary>
 		public Boolean? WSExactCopy { get; set; }
 
+		private string _proposalTitle = "";
 		/// <summary>
 		/// When import from PTM is the PTM proposals' Title.  Otherwise blank.
 		/// </summary>
-		public string ProposalTitle { get; set; }
+		public string ProposalTitle
+		{
+			get => _proposalTitle;
+			set => _proposalTitle = TruncateString(value, MAX_PROPOSAL_TITLE);
+		}
 
 		/// <summary>
 		/// Get/Set the applications url
@@ -278,5 +368,19 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// </summary>
 		[Required(ErrorMessage = "Enable LM Navigator is required.")]
 		public bool EnableLmNavigator { get; set; }
+
+		/// <summary>
+		/// TruncateString Utility
+		/// </summary>
+		/// 
+		private string TruncateString(string text, int maxLength)
+		{
+			if (String.IsNullOrEmpty(text))
+			{
+				return text;
+			}
+
+			return text.Length <= maxLength ? text : text.Substring(0, maxLength);
+		}
 	}
 }
