@@ -32,13 +32,13 @@ namespace GenBOE.ActionLogic.WBS.BOE
 		public const string DATE_RANGE_INVALID = "End Date must be on or after the Start Date.";
 		public const string CLIN_TEXT = "CLIN";
 		public const string CONTRACT_TEXT = "Contract";
-		private IVariableSelectBOEtoSumCalculation _VariableSelectBOEtoSumCalculation;
-		private BOECommentsResponsesValidator _BOECommentsResponsesValidator;
-		private ITripDTODataLoader _TripDTODataLoader;
-		private IMiscTravelRateDTOLoader miscTravelRateDTOLoader;
-		private ILocationDTODataLoader _LocationDTODataLoader;
-		private IOffloadRatesDTOLoader offloadRatesDTOLoader;
-		private IRteTemplateDataLoader rteTemplateDataLoader;
+		private readonly IVariableSelectBOEtoSumCalculation _VariableSelectBOEtoSumCalculation;
+		private readonly BOECommentsResponsesValidator _BOECommentsResponsesValidator;
+		private readonly ITripDTODataLoader _TripDTODataLoader;
+		private readonly IMiscTravelRateDTOLoader miscTravelRateDTOLoader;
+		private readonly ILocationDTODataLoader _LocationDTODataLoader;
+		private readonly IOffloadRatesDTOLoader offloadRatesDTOLoader;
+		private readonly IRteTemplateDataLoader rteTemplateDataLoader;
 
 		/// <summary>
 		/// Default constructor
@@ -71,6 +71,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 		/// <param name="ws">Full WS</param>
 		/// <returns>all possible validation messages</returns>
 		/// Suppressed the following messages because 1) I do use BoeLabor just not in the way the code analysis wants me too and 2) if you can make this less complex, go for it!
+		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		public virtual ValidationBOEModelView ValidateBOE_OnValidateBtnClick(FullBoe inBOE, FullWorkspace ws)
 		{
 			// See wireframes for what should be checked on "Validate" button click.
@@ -244,6 +245,19 @@ namespace GenBOE.ActionLogic.WBS.BOE
 				if (BOETaskUtility.ShowSkillMixForTask(ws, task))
 				{
 					ICollection<string> errorMessages = new List<string>();
+
+					// Set the task's MOQTotalRelevantHours
+					task.MOQTotalRelevantHours = 0;
+					ICollection<MoqTypeSelection> moqTypes = ws.MoqTypeSelections.Where(m => m.TaskId == task.Id).ToList();
+					// Space will get the total moq total relevant hours if it is from a Sap Webi moq table data.
+					if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
+					{
+						task.MOQTotalRelevantHours += moqTypes.Sum(t => t.TableData?.Where(td => td.RepositoryName == RepositoryName.SapWebi.GetDescription()).Sum(td => td.TotalRelevantHours) ?? 0);
+					}
+					else
+					{
+						task.MOQTotalRelevantHours += moqTypes.Sum(t => t.TableData?.Sum(td => td.TotalRelevantHours) ?? 0);
+					}
 
 					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 					{
