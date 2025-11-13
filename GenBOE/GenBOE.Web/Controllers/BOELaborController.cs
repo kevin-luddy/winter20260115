@@ -71,7 +71,7 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Task Element Validation Class
 		/// </summary>
-		private TaskElementValidation taskElementValidation { get; set; }
+		private readonly TaskElementValidation taskElementValidation;
 
 		/// <summary>
 		/// Constructor
@@ -117,6 +117,7 @@ namespace GenBOE.Web.Controllers
 
 		#region Display
 
+		[HttpPost]
 		public virtual ViewResult DisplayTask(string workspace, int boeID, int? taskElementID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -228,35 +229,8 @@ namespace GenBOE.Web.Controllers
 			return toReturn;
 		}
 
-		public virtual ActionResult ValidateResource(string workspace, string searchTerm)
-		{
-			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-			ResourceDTO resource = _ResourceDTODataLoader.GetByNameAndListId(searchTerm, ws.ResourceListID);
-
-			return Json(resource);
-
-		}
-
-		public virtual ActionResult ValidateResourceByID(string workspace, int inResourceID)
-		{
-			ResourceDTO resource = _ResourceDTODataLoader.GetById(inResourceID);
-
-			return Json(new { Status = resource.ResourceDesc });
-
-		}
-
-		public virtual ActionResult ValidatePerformingOrgs(string workspace, string searchTerm)
-		{
-			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-
-			PerformingOrgDTO perfOrg = this.perfOrgLoader.GetByListIdAndName(ws.PerfOrgListID, searchTerm);
-			int? perfOrgID = perfOrg != null ? (int?)perfOrg.Id : null;
-
-			return Json(new { Status = perfOrgID.Value });
-
-		}
-
-
+		[HttpPost]
+		[Obsolete("Used only by ODC")]
 		public virtual ActionResult GetPerformingOrgIDByName(string workspace, int boeID, string Name)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -271,6 +245,7 @@ namespace GenBOE.Web.Controllers
 		/// Loads the Labor Curve View
 		/// </summary>
 		/// <returns>Labor Curve View</returns>
+		[HttpGet]
 		public virtual ViewResult DisplayLaborCurves()
 		{
 			return View();
@@ -280,6 +255,7 @@ namespace GenBOE.Web.Controllers
 		/// Loads the Labor Resources View
 		/// </summary>
 		/// <returns>Labor Resources View</returns>
+		[HttpGet]
 		public virtual ViewResult DisplayResources(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -306,6 +282,7 @@ namespace GenBOE.Web.Controllers
 		/// Loads the Labor Business Resource Codes View
 		/// </summary>
 		/// <returns>Labor Business Resource Codes View</returns>
+		[HttpGet]
 		public virtual ViewResult DisplayBusinessResourceCodes(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -332,6 +309,7 @@ namespace GenBOE.Web.Controllers
 		/// Loads the Labor Perf Orgs View
 		/// </summary>
 		/// <returns>Labor Perf Orgs View</returns>
+		[HttpGet]
 		public virtual ViewResult DisplayPerfOrgs(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -352,12 +330,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">Current workspace</param>
 		/// <returns>The view</returns>
+		[HttpPost]
 		public ViewResult DisplayVariableBOESumByWBS(string workspace, int? boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayVariableBOESumByWBS", SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_VARIABLE_BOE_SUM_BY_WBS, SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, null);
 
 			ViewData["SumVariableResourceTypes"] = _CommonDataMapper.GetSumVariableResourceTypes();
 			ViewData["HoursLabel"] = FullObjectHelper.HoursLabel(ws);
@@ -369,7 +348,7 @@ namespace GenBOE.Web.Controllers
 									boeID));
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayVariableBOESumByWBS", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_VARIABLE_BOE_SUM_BY_WBS, sw);
 
 			return toReturn;
 		}
@@ -381,18 +360,19 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeID">Optional BOE ID</param>
 		/// <param name="resourceTypes">Resource types to use for calculation</param>
 		/// <returns>Updated list of sums</returns>
+		[HttpPost]
 		public JsonResult RefreshVariableBOESumByWBS(string workspace, ICollection<SumVariableResourceType> resourceTypes)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "RefreshVariableBOESumByWBS", SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_REFRESH_VARIABLE_BOE_SUM_BY_WBS, SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, null);
 
 			// Return the View using the generated ModelViews
 			JsonResult toReturn = Json(RefreshVariableBOESumByWBSModelViews(ws, resourceTypes));
 
 			// Finalize Action
-			FinalizeAction(_log, "RefreshVariableBOESumByWBS", sw);
+			FinalizeAction(_log, WebConstants.ACTION_REFRESH_VARIABLE_BOE_SUM_BY_WBS, sw);
 
 			return toReturn;
 		}
@@ -403,12 +383,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">Current workspace</param>
 		/// <returns>The view</returns>
+		[HttpPost]
 		public ViewResult DisplayVariableBOESumByCLIN(string workspace, int? boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayVariableBOESumByCLIN", SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_VARIABLE_BOE_SUM_BY_CLIN, SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, null);
 
 			ViewData["SumVariableResourceTypes"] = _CommonDataMapper.GetSumVariableResourceTypes();
 			ViewData["HoursLabel"] = FullObjectHelper.HoursLabel(ws);
@@ -417,7 +398,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_VARIABLE_BOE_SUM_BY_CLIN, DisplayVariableBOESumByCLINModelViews(ws, boeID));
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayVariableBOESumByCLIN", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_VARIABLE_BOE_SUM_BY_CLIN, sw);
 
 			return toReturn;
 		}
@@ -429,23 +410,22 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeID">Optional BOE ID</param>
 		/// <param name="resourceTypes">Resource types to use for calculation</param>
 		/// <returns>Updated list of sums</returns>
+		[HttpPost]
 		public JsonResult RefreshVariableBOESumByCLIN(string workspace, int? boeID, ICollection<SumVariableResourceType> resourceTypes)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "RefreshVariableBOESumByCLIN", SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_REFRESH_VARIABLE_BOE_SUM_BY_CLIN, SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, boeID);
 
 			// Return the View using the generated ModelViews
 			JsonResult toReturn = Json(RefreshVariableBOESumByCLINModelViews(ws, resourceTypes));
 
 			// Finalize Action
-			FinalizeAction(_log, "RefreshVariableBOESumByCLIN", sw);
+			FinalizeAction(_log, WebConstants.ACTION_REFRESH_VARIABLE_BOE_SUM_BY_CLIN, sw);
 
 			return toReturn;
 		}
-
-
 
 		/// <summary>
 		/// Displays data for the boe to sum dialog
@@ -516,18 +496,17 @@ namespace GenBOE.Web.Controllers
 			return toReturn;
 		}
 
+		[HttpPost]
 		public ViewResult DisplayMOQHoursEquationField(string workspace, int boeID, int taskElementID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-			FullBoe boe = this.Factory.CreateFullBoe(boeID);
-
-			bool overrideReadOnly = _BoeLaborControllerLogic.OverrideReadOnly(ws, boe);
-
-			ViewData["ShouldMoqReadOnlyBeReversed"] = overrideReadOnly;
-
+			
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayMOQEquationField", SecurityPage.MOQEquationField, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_MOQ_HOURS_EQUATION_FIELD, SecurityPage.MOQEquationField, SecurityAuthorization.Read, ws, boeID);
 
+			FullBoe boe = this.Factory.CreateFullBoe(boeID);
+			bool overrideReadOnly = _BoeLaborControllerLogic.OverrideReadOnly(ws, boe);
+			ViewData["ShouldMoqReadOnlyBeReversed"] = overrideReadOnly;
 			MOQEquationModelView theModelView = CreateMOQModelView(ws, boe, taskElementID);
 			ViewBag.RteFieldSize = ws.RteSizeLimit ?? Constants.MAX_RTE_LENGTH;
 			ViewData["EnableSAP"] = Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate);
@@ -554,7 +533,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_MOQ_EQUATION_FIELD, theModelView);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayTaskElementDetails", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_MOQ_HOURS_EQUATION_FIELD, sw);
 			return toReturn;
 		}
 
@@ -566,12 +545,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="copyBoeId">(Source Boe) BOE Id the MOQ equation is being copied from.</param>
 		/// <param name="taskElementId">(Source Task) The source MOQ equation task element Id.</param>
 		/// <param name="destinationTaskElementId">(Target Task) Task Element Id the MOQ equiation is being copied to.</param>
-		/// <returns>Patial view containing a MOQ equation from another task element.</returns>
+		/// <returns>Partial view containing a MOQ equation from another task element.</returns>
+		[HttpPost]
 		public ViewResult CopyMoqEquation(string workspace, int boeID, int copyBoeId, int taskElementId, int destinationTaskElementId)
 		{
 			FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(workspace);
 
-			Stopwatch sw = InitializeAction(_log, "CopyMoqEquation", SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, fullWorkspace, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_COPY_MOQ_EQUATION, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, fullWorkspace, boeID);
 			FullBoe boe = this.Factory.CreateFullBoe(copyBoeId);
 
 			BoeTaskElementDTO copyTaskElement = this.Factory.CreateTaskElement(taskElementId, fullWorkspace.DecimalPrecision, fullWorkspace.CostDecimalPrecision);
@@ -606,7 +586,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_MOQ_EQUATION_FIELD, modelView);
 
 			// Finalize Action
-			FinalizeAction(_log, "CopyMoqEquation", sw);
+			FinalizeAction(_log, WebConstants.ACTION_COPY_MOQ_EQUATION, sw);
 			return toReturn;
 		}
 
@@ -621,6 +601,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="moqTotalHours">The total MOQ Hours</param>
 		/// <param name="calculateUCOT">Whether to calculate UCOT</param>
 		/// <returns></returns>
+		[HttpPost]
 		public ActionResult CalculateSpread(string workspace, RecalcSpreadModelView[] items, decimal moqTotalHours, bool calculateUCOT)
 		{
 			if (ReferenceEquals(items, null))
@@ -674,6 +655,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="items">The items to calculate spread for.</param>
 		/// <param name="calculateUCOT">Whether to calculate UCOT</param>
 		/// <returns></returns>
+		[HttpPost]
 		public ActionResult CalculateDiscreteUCOTSpread(string workspace, RecalcSpreadModelView item)
 		{
 			if (item is null)
@@ -729,6 +711,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The workspace.</param>
 		/// <param name="modelView">The model view.</param>
 		/// <returns></returns>
+		[HttpPost]
 		public ActionResult SaveTaskDataModel(string workspace, LaborTaskDataModelView modelView, bool isLocked = false)
 		{
 			_ = modelView ?? throw new ArgumentNullException(nameof(modelView));
@@ -847,6 +830,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The workspace.</param>
 		/// <param name="modelView">The model view.</param>
 		/// <returns></returns>
+		[HttpPost]
 		public ActionResult SaveLockedTaskDataModel(string workspace, LaborTaskDataModelView modelView)
 		{
 			if (modelView == null)
@@ -877,18 +861,19 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The workspace.</param>
 		/// <param name="taskElementId">The task element identifier.</param>
 		/// <returns></returns>
+		[HttpPost]
 		public ActionResult GetTaskDataModel(string workspace, int boeId, int taskElementId)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = this.InitializeAction(this._log, "GetTaskDataModel", SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeId);
+			Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_GET_TASK_DATA_MODEL, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeId);
 			FullBoe boe = this.Factory.CreateFullBoe(boeId);
 
 			LaborTaskDataModelView modelView = this._BoeLaborControllerLogic.GetLaborTaskData(ws, boe, taskElementId);
 
 			// Finalize Action
-			this.FinalizeAction(this._log, "GetTaskDataModel", sw);
+			this.FinalizeAction(this._log, WebConstants.ACTION_GET_TASK_DATA_MODEL, sw);
 
 			return this.Json(modelView);
 		}
@@ -905,7 +890,7 @@ namespace GenBOE.Web.Controllers
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "MOQValidate", SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_MOQ_VALIDATE, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
 
 			// Perform Action
 			ICollection<string> result;
@@ -968,7 +953,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "MOQValidate", sw);
+			FinalizeAction(_log, WebConstants.ACTION_MOQ_VALIDATE, sw);
 			return toReturn;
 		}
 
@@ -983,9 +968,9 @@ namespace GenBOE.Web.Controllers
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "MOQCalculate", SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_MOQ_CALCULATE, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
 
-			JsonResult toReturn = null;
+			JsonResult toReturn;
 
 			// Perform Action
 			try
@@ -1006,7 +991,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "MOQCalculate", sw);
+			FinalizeAction(_log, WebConstants.ACTION_MOQ_CALCULATE, sw);
 			return toReturn;
 		}
 
@@ -1017,12 +1002,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeID"></param>
 		/// <param name="moqEquation"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public virtual ActionResult MarkWarningMessageAsConfirmed(string workspace, int boeID, int TaskID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "MarkWarningMessageAsConfirmed", SecurityPage.TaskElements, SecurityAuthorization.ReadUpdate, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_MARK_WARNING_AS_CONFIRMED, SecurityPage.TaskElements, SecurityAuthorization.ReadUpdate, ws, boeID);
 
 			JsonResult toReturn = Json(new { Status = true });
 
@@ -1036,7 +1022,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "MarkWarningMessageAsConfirmed", sw);
+			FinalizeAction(_log, WebConstants.ACTION_MARK_WARNING_AS_CONFIRMED, sw);
 			return toReturn;
 		}
 
@@ -1052,14 +1038,15 @@ namespace GenBOE.Web.Controllers
 		/// <returns></returns>
 		/// <exception cref="GenValidationException"></exception>
 		/// <exception cref="System.ArgumentNullException">importResults</exception>
+		[HttpPost]
 		public virtual ActionResult ImportLaborTypeAndSpread(string workspace, int boeID, int taskElementID, Collection<ImportLaborTypeModelView> importResults, string moqEquation)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "ImportLaborTypeAndSpread", SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_IMPORT_LABOR_TYPE_AND_SPREAD, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
 
-			JsonResult toReturn = Json(new { Status = false });
+			JsonResult toReturn;
 
 			/** Valid Model Check */
 			if (ModelState.IsValid && (importResults != null))
@@ -1080,7 +1067,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "ImportLaborTypeAndSpread", sw);
+			FinalizeAction(_log, WebConstants.ACTION_IMPORT_LABOR_TYPE_AND_SPREAD, sw);
 			return toReturn;
 		}
 
@@ -1093,14 +1080,15 @@ namespace GenBOE.Web.Controllers
 		/// <param name="laborTypeImportType">Type of the labor type import: new or update</param>
 		/// <returns></returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpPost]
 		public virtual ActionResult ImportPreviewLaborTypeAndSpread(string workspace, int boeID, int taskElementID, string laborTypeImportType)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "ImportPreviewLaborTypeAndSpread", SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_PREVIEW_IMPORT_LABOR_TYPE_AND_SPREAD, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
 
-			ContentResult toReturn = null;
+			ContentResult toReturn;
 
 			// If a file was uploaded successfully
 			if (Request.Files.Count > 0 && Request.Files[0].FileName.Length > 0)
@@ -1146,7 +1134,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "ImportPreviewLaborTypeAndSpread", sw);
+			FinalizeAction(_log, WebConstants.ACTION_PREVIEW_IMPORT_LABOR_TYPE_AND_SPREAD, sw);
 
 			return toReturn;
 		}
@@ -1160,12 +1148,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="isTemplate">Whether the export is for just the template or includes the data.</param>
 		/// <returns>An Excel export containing the Labor Type and Labor Spread data.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		[HttpGet]
 		public virtual ActionResult ExportLaborTypeAndSpread(string workspace, int boeID, int taskElementID, bool isTemplate)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "ExportLaborTypeAndSpread", SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_LABOR_TYPE_AND_SPREAD, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
 
 			BoeTaskElementDTO thisTaskElement = null;
 
@@ -1193,7 +1182,7 @@ namespace GenBOE.Web.Controllers
 			FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
 			// Finalize Action
-			FinalizeAction(_log, "ExportLaborTypeAndSpread", sw);
+			FinalizeAction(_log, WebConstants.ACTION_EXPORT_LABOR_TYPE_AND_SPREAD, sw);
 
 			return File(
 				fileStream: fs,
@@ -1207,6 +1196,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <returns>Download Result for the Offload Rates.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		[HttpGet]
 		public ActionResult ExportOffloadRates(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);

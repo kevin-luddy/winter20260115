@@ -403,6 +403,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="boeFormsVM">Collection of BOE Forms marked for deletion</param>
 		/// <returns>If successful,empty string is return. Otherwise, exception error text to be handled in the post:error </returns>
+		[HttpPost]
 		public virtual JsonResult DeleteBOEForms(string workspace, Collection<BOEFormModelView> boeFormsVM)
 		{
 			if (boeFormsVM == null)
@@ -440,6 +441,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The workspace for the IBOE.</param>
 		/// <param name="boeFormsVM">The view model for the IBOE.</param>
 		/// <returns>JSON status message.</returns>
+		[HttpPost]
 		public virtual JsonResult SaveIBOE(string workspace, BOEFormIBOEModelView boeFormsVM)
 		{
 			if (boeFormsVM == null)
@@ -483,6 +485,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The workspace for the PBOE.</param>
 		/// <param name="boeFormsVM">The view model for the PBOE.</param>
 		/// <returns>JSON status message.</returns>
+		[HttpPost]
 		public virtual JsonResult SavePBOE(string workspace, BOEFormPBOEModelView boeFormsVM)
 		{
 			if (boeFormsVM == null)
@@ -537,6 +540,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The workspace.</param>
 		/// <param name="boeFormsVM">The BOE form viewmodel.</param>
 		/// <returns>Json result success or validation errors.</returns>
+		[HttpPost]
 		public virtual JsonResult ValidateIBOEForm(string workspace, BOEFormIBOEModelView boeFormsVM)
 		{
 			if (boeFormsVM == null)
@@ -575,6 +579,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The workspace.</param>
 		/// <param name="boeFormsVM">The BOE form viewmodel.</param>
 		/// <returns>Json result success or validation errors.</returns>
+		[HttpPost]
 		public virtual JsonResult ValidatePBOEForm(string workspace, BOEFormPBOEModelView boeFormsVM)
 		{
 			if (boeFormsVM == null)

@@ -394,10 +394,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_EXPORT_LABOR_TYPE_AND_SPREAD = "ExportLaborTypeAndSpread";
 		public static readonly string ACTION_MOQ_VALIDATE = "MOQValidate";
 		public static readonly string ACTION_MOQ_CALCULATE = "MOQCalculate";
-		public static readonly string ACTION_VALIDATE_PERFORMING_ORGS = "ValidatePerformingOrgs";
 		public static readonly string ACTION_GET_PERFORMING_ORG_ID_BYNAME = "GetPerformingOrgIDByName";
-		public static readonly string ACTION_VALIDATE_RESOURCE = "ValidateResource";
-		public static readonly string ACTION_VALIDATE_RESOURCE_BY_ID = "ValidateResourceByID";
 		public static readonly string ACTION_MARK_WARNING_AS_CONFIRMED = "MarkWarningMessageAsConfirmed";
 		public static readonly string ACTION_GET_SEARCH_TYPE_AHEAD = "GetTypeAheadTerms";
 		public static readonly string ACTION_SAVE_REORDER_LABOR_TASK_ELEMENTS = "SaveReorderLaborTaskElements";
