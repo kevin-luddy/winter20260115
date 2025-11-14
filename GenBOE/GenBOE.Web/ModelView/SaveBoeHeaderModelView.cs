@@ -6,9 +6,7 @@
 namespace GenBOE.Web.ModelView
 {
 	using System;
-	using System.Collections.Generic;
 	using GenBOE.ActionLogic._ModelView.Backend;
-	using GenBOE.ActionLogic.ModelView;
 
 	/// <summary>
 	/// Payload for Http POST SaveEditBoeHeader 

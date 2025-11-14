@@ -11,11 +11,13 @@ namespace GenBOE.Web.Controllers.Backend
 	using System.Collections.ObjectModel;
 	using System.Diagnostics;
 	using System.Linq;
+	using System.Transactions;
 	using System.Web.Http;
 	using System.Web.Http.Cors;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic._ModelView.Backend;
 	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.CopyBOE;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.BOE;
 	using GenBOE.ActionLogic.Validation;
@@ -45,9 +47,26 @@ namespace GenBOE.Web.Controllers.Backend
 		private IBOEControllerLogic boeControllerLogic { get; set; }
 
 		/// <summary>
+		/// Travel Controller Logic
+		/// </summary>
+		private ITravelControllerLogic travelControllerLogic { get; set; }
+
+		/// <summary>
+		/// BOE Labor Controller Logic
+		/// </summary>
+		private IBOELaborControllerLogic boeLaborControllerLogic { get; set; }
+
+		/// <summary>
 		/// Task Element Validation
 		/// </summary>
 		private TaskElementValidation taskElementValidation { get; set; }
+
+		/// <summary>
+		/// BOE Copier
+		/// </summary>
+		private BOECopier boeCopier { get; set; }
+
+
 
 		/// <summary>
 		/// Ctor
@@ -58,11 +77,14 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <param name="permissionsLoader">Permission loader</param>
 		/// <param name="homeControllerLogic">Home Controller Logic</param>
 		public BOEController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader,
-			IBOEControllerLogic boeControllerLogic, TaskElementValidation taskElementValidation)
+			IBOEControllerLogic boeControllerLogic, ITravelControllerLogic travelControllerLogic, IBOELaborControllerLogic boeLaborControllerLogic, TaskElementValidation taskElementValidation, BOECopier boeCopier)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.boeControllerLogic = boeControllerLogic;
+			this.travelControllerLogic = travelControllerLogic;
+			this.boeLaborControllerLogic = boeLaborControllerLogic;
 			this.taskElementValidation = taskElementValidation;
+			this.boeCopier = boeCopier;
 		}
 
 		/// <summary>
@@ -272,7 +294,7 @@ namespace GenBOE.Web.Controllers.Backend
 			bool descriptionOnly = false;
 
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(saveBOEHeader.workspaceShortName);
-			Stopwatch sw = InitializeAction(logger, "SaveEditBOEHeader", SecurityPage.BOELaborGrid, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, saveBOEHeader.boeHeader.BOEID);
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_SAVE_EDIT_BOE_HEADER, SecurityPage.BOELaborGrid, SecurityAuthorization.CreateReadUpdateDelete, new List<WorkspaceDTO> { ws }, saveBOEHeader.boeHeader.BOEID);
 
 			try
 			{
@@ -314,7 +336,88 @@ namespace GenBOE.Web.Controllers.Backend
 				result.Messages = ex.ValidationList.Select(x => x.ValidationIssue).ToList();
 			}
 
-			FinalizeAction(logger, "SaveEditBOEHeader", sw);
+			FinalizeAction(logger, WebConstants.ACTION_SAVE_EDIT_BOE_HEADER, sw);
+			return result;
+		}
+
+		/// <summary>
+		/// Save duplicates of Task Elements
+		/// </summary>
+		/// <returns></returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<bool> SaveDuplicateTaskElements([FromBody] SaveDuplicateTaskElementModelView modelView)
+		{
+			_ = modelView ?? throw new ArgumentNullException(nameof(modelView));
+
+			IESSingleResponse<bool> result = new IESSingleResponse<bool>();
+
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(modelView.workspace);
+			FullBoe boeObject = this.Factory.CreateFullBoe(modelView.boeId);
+
+			TaskElementDuplicateFormCollection duplicateCollection = modelView.taskElementDuplicateFormCollection;
+			duplicateCollection.TaskType = modelView.taskType;
+
+			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_SAVE_DUPLICATE_TASK_ELEMENTS, SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, modelView.boeId);
+
+			try
+			{
+				Dictionary<int, int> duplicateRequest = duplicateCollection.DuplicateTaskRequests.ToDictionary(x => x.TaskID, y => y.DuplicateCount);
+
+				switch (duplicateCollection.TaskType)
+				{
+					case TaskType.Labor:
+						{
+							boeObject.LoadTaskElementRTEData();
+
+							using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("CopyWorkspaceTransactionTimeout", Constants.DB_COPY_WORKSPACE_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+							{
+								boeCopier.DuplicateTasksInABoe(duplicateRequest, boeObject, ws);
+								scope.Complete();
+							}
+
+							break;
+						}
+					case TaskType.Travel:
+						{
+							boeObject.LoadTravelRTEData();
+
+							using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("CopyWorkspaceTransactionTimeout", Constants.DB_COPY_WORKSPACE_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+							{
+								travelControllerLogic.DuplicateTravelTaskElements(duplicateRequest, boeObject);
+								scope.Complete();
+							}
+							break;
+						}
+					default:
+						{
+							throw new GenValidationException("An invalid Task Type was used.");
+						}
+				}
+			}
+			catch (SystemException ex)
+			{   // Catch any timeout exceptions and request user to make fewer duplicates
+				// There are several exceptions that could be thrown, but all seem to have 1 of 2 base exceptions:
+				if (ex.GetBaseException() is System.InvalidOperationException ||
+					ex.GetBaseException() is System.TimeoutException)
+				{
+					string exceptionMessage = "Duplicate Task request could not be completed. Please decrease the number of tasks being duplicated, or the number of copies per task and try again.";
+					logger.Error(exceptionMessage);
+					result.Messages.Add(exceptionMessage);
+				}
+				else
+				{
+					logger.Error(ex.Message);
+					result.Messages.Add(ex.Message);
+				}
+			}
+
+			if (duplicateCollection.TaskType == TaskType.Labor)
+			{
+				this.boeLaborControllerLogic.ProcessAllVariableDependencies(modelView.boeId, ws);
+			}
+
+
+			FinalizeAction(logger, WebConstants.ACTION_SAVE_DUPLICATE_TASK_ELEMENTS, sw);
 			return result;
 		}
 	}
