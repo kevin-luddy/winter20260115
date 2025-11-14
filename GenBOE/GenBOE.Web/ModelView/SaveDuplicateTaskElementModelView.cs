@@ -6,6 +6,7 @@
 namespace GenBOE.Web.ModelView
 {
 	using System;
+	using System.Collections.Generic;
 	using GenBOE.ActionLogic.ModelView;
 	using IES.Common;
 
@@ -29,7 +30,7 @@ namespace GenBOE.Web.ModelView
 		/// <summary>
 		/// Task elements about to be duplicated
 		/// </summary>
-		public TaskElementDuplicateFormCollection taskElementDuplicateFormCollection { get; set; }
+		public ICollection<TaskElementDuplicateFormModelView> taskElementDuplicateFormCollection { get; set; }
 
 		/// <summary>
 		/// workspace shortname

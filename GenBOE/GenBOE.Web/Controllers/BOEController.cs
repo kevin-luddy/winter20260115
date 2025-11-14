@@ -2515,7 +2515,7 @@ namespace GenBOE.Web.Controllers
 			theModelView.TaskType = taskType;
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "SaveDuplicateTaskElements", SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_DUPLICATE_TASK_ELEMENTS, SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
 
 			try
 			{
@@ -2575,7 +2575,7 @@ namespace GenBOE.Web.Controllers
 			JsonResult toReturn = Json(new { Status = true });
 
 			// Finalize Action
-			FinalizeAction(_log, "SaveDuplicateTaskElements", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SAVE_DUPLICATE_TASK_ELEMENTS, sw);
 			return toReturn;
 		}
 

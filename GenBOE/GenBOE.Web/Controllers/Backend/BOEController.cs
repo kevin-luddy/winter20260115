@@ -354,16 +354,13 @@ namespace GenBOE.Web.Controllers.Backend
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(modelView.workspace);
 			FullBoe boeObject = this.Factory.CreateFullBoe(modelView.boeId);
 
-			TaskElementDuplicateFormCollection duplicateCollection = modelView.taskElementDuplicateFormCollection;
-			duplicateCollection.TaskType = modelView.taskType;
-
 			Stopwatch sw = InitializeAction(logger, WebConstants.ACTION_SAVE_DUPLICATE_TASK_ELEMENTS, SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, modelView.boeId);
 
 			try
 			{
-				Dictionary<int, int> duplicateRequest = duplicateCollection.DuplicateTaskRequests.ToDictionary(x => x.TaskID, y => y.DuplicateCount);
+				Dictionary<int, int> duplicateRequest = modelView.taskElementDuplicateFormCollection.ToDictionary(x => x.TaskID, y => y.DuplicateCount);
 
-				switch (duplicateCollection.TaskType)
+				switch (modelView.taskType)
 				{
 					case TaskType.Labor:
 						{
@@ -411,11 +408,12 @@ namespace GenBOE.Web.Controllers.Backend
 				}
 			}
 
-			if (duplicateCollection.TaskType == TaskType.Labor)
+			if (modelView.taskType == TaskType.Labor)
 			{
 				this.boeLaborControllerLogic.ProcessAllVariableDependencies(modelView.boeId, ws);
 			}
-
+			result.IsSuccessful = true;
+			result.Data = true;
 
 			FinalizeAction(logger, WebConstants.ACTION_SAVE_DUPLICATE_TASK_ELEMENTS, sw);
 			return result;
