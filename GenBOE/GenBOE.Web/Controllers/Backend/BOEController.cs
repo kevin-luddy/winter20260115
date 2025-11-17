@@ -50,11 +50,6 @@ namespace GenBOE.Web.Controllers.Backend
 		private TaskElementValidation taskElementValidation { get; set; }
 
 		/// <summary>
-		/// BOE Labor Controller Logic
-		/// </summary>
-		private IBOELaborControllerLogic boeLaborControllerLogic { get; set; }
-
-		/// <summary>
 		/// Ctor
 		/// </summary>
 		/// <param name="securityAccess">Security Access</param>
@@ -63,12 +58,11 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <param name="permissionsLoader">Permission loader</param>
 		/// <param name="homeControllerLogic">Home Controller Logic</param>
 		public BOEController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader,
-			IBOEControllerLogic boeControllerLogic, TaskElementValidation taskElementValidation, IBOELaborControllerLogic boeLaborControllerLogic)
+			IBOEControllerLogic boeControllerLogic, TaskElementValidation taskElementValidation)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.boeControllerLogic = boeControllerLogic;
 			this.taskElementValidation = taskElementValidation;
-			this.boeLaborControllerLogic = boeLaborControllerLogic;
 		}
 
 		/// <summary>
@@ -321,41 +315,6 @@ namespace GenBOE.Web.Controllers.Backend
 			}
 
 			FinalizeAction(logger, "SaveEditBOEHeader", sw);
-			return result;
-		}
-
-		/// <summary>
-		/// Get BOE Task Element Data
-		/// </summary>
-		/// <param name="workspaceShortname">Workspace Short Name</param>
-		/// <param name="boeId">BOE ID</param>
-		/// <param name="taskElementId">Task Element ID</param>
-		/// <returns>LaborTaskDataModelView</returns>
-		[HttpGet]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public IESSingleResponse<LaborTaskDataModelView> GetTaskDataModel(string workspaceShortname, int boeId, int taskElementId)
-		{
-			IESSingleResponse<LaborTaskDataModelView> result = new IESSingleResponse<LaborTaskDataModelView>();
-			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceShortname);
-
-			// Initialize Action
-			Stopwatch sw = this.InitializeAction(logger, "GetTaskDataModel", SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeId);
-			FullBoe boe = this.Factory.CreateFullBoe(boeId);
-
-			try
-			{
-				result.Data = this.boeLaborControllerLogic.GetLaborTaskData(ws, boe, taskElementId);
-				result.IsSuccessful = true;
-			}
-			catch (Exception ex)
-			{
-				logger.Error(ex);
-				result.Messages.Add(ex.Message);
-			}
-
-			// Finalize Action
-			this.FinalizeAction(logger, "GetTaskDataModel", sw);
-
 			return result;
 		}
 	}
