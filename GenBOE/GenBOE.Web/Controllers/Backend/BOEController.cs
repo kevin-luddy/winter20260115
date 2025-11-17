@@ -47,11 +47,6 @@ namespace GenBOE.Web.Controllers.Backend
 		private IBOEControllerLogic boeControllerLogic { get; set; }
 
 		/// <summary>
-		/// Travel Controller Logic
-		/// </summary>
-		private ITravelControllerLogic travelControllerLogic { get; set; }
-
-		/// <summary>
 		/// BOE Labor Controller Logic
 		/// </summary>
 		private IBOELaborControllerLogic boeLaborControllerLogic { get; set; }
@@ -77,11 +72,10 @@ namespace GenBOE.Web.Controllers.Backend
 		/// <param name="permissionsLoader">Permission loader</param>
 		/// <param name="homeControllerLogic">Home Controller Logic</param>
 		public BOEController(ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader,
-			IBOEControllerLogic boeControllerLogic, ITravelControllerLogic travelControllerLogic, IBOELaborControllerLogic boeLaborControllerLogic, TaskElementValidation taskElementValidation, BOECopier boeCopier)
+			IBOEControllerLogic boeControllerLogic, IBOELaborControllerLogic boeLaborControllerLogic, TaskElementValidation taskElementValidation, BOECopier boeCopier)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.boeControllerLogic = boeControllerLogic;
-			this.travelControllerLogic = travelControllerLogic;
 			this.boeLaborControllerLogic = boeLaborControllerLogic;
 			this.taskElementValidation = taskElementValidation;
 			this.boeCopier = boeCopier;
