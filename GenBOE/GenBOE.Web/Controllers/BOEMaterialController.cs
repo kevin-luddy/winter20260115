@@ -59,7 +59,8 @@ namespace GenBOE.Web.Controllers
         /// <param name="boeID"></param>
         /// <param name="materialID"></param>
         /// <returns></returns>
-        public ViewResult DisplayBOEMaterialComposite(string workspace, int boeID, int? materialID)
+        [HttpPost]
+		public ViewResult DisplayBOEMaterialComposite(string workspace, int boeID, int? materialID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -81,19 +82,20 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
-        /// <summary>
-        /// Display the overview Material Grid 
-        /// </summary>
-        /// <param name="workspace"></param>
-        /// <param name="boeID"></param>
-        /// <returns></returns>
-        public ViewResult DisplayBOEMaterialGrid(string workspace, int boeID)
+		/// <summary>
+		/// Display the overview Material Grid 
+		/// </summary>
+		/// <param name="workspace"></param>
+		/// <param name="boeID"></param>
+		/// <returns></returns>
+		[HttpPost]
+		public ViewResult DisplayBOEMaterialGrid(string workspace, int boeID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
             FullBoe fullBoe = this.Factory.CreateFullBoe(boeID);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DisplayBOEMaterialGrid", SecurityPage.BOETravelGrid, SecurityAuthorization.Read, ws, boeID);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_MATERIAL_GRID, SecurityPage.BOETravelGrid, SecurityAuthorization.Read, ws, boeID);
 
             // Perform Action
 
@@ -119,23 +121,24 @@ namespace GenBOE.Web.Controllers
             ViewResult toReturn = View(WebConstants.VIEW_BOE_MATERIAL_GRID, theModelView);
 
             // Finalize Action
-            FinalizeAction(_log, "DisplayBOEMaterialGrid", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_MATERIAL_GRID, sw);
             return toReturn;
         }
 
-        /// <summary>
-        /// Display the Material Task Element Details
-        /// </summary>
-        /// <param name="workspace"></param>
-        /// <param name="boeID"></param>
-        /// <param name="materialID"></param>
-        /// <returns></returns>
-        public ViewResult DisplayBOEMaterialElementDetails(string workspace, int boeID, int? materialID)
+		/// <summary>
+		/// Display the Material Task Element Details
+		/// </summary>
+		/// <param name="workspace"></param>
+		/// <param name="boeID"></param>
+		/// <param name="materialID"></param>
+		/// <returns></returns>
+		[ChildActionOnly, HttpGet]
+		public ViewResult DisplayBOEMaterialElementDetails(string workspace, int boeID, int? materialID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DisplayBOEMaterialElementDetails", SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_MATERIAL_ELEMENT_DETAILS, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
 
             // Perform Action
             MaterialDetailsModelView mv = new MaterialDetailsModelView();
@@ -161,15 +164,16 @@ namespace GenBOE.Web.Controllers
             ViewResult toReturn = View(WebConstants.VIEW_MATERIAL_ELEMENT_DETAILS, mv);
 
             // Finalize Action
-            FinalizeAction(_log, "DisplayBOEMaterialElementDetails", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_MATERIAL_ELEMENT_DETAILS, sw);
             return toReturn;
         }
 
-        public JsonResult DeleteBOEMaterial(string workspace, int boeID, int MaterialID)
+		[HttpPost]
+		public JsonResult DeleteBOEMaterial(string workspace, int boeID, int MaterialID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-            Stopwatch sw = InitializeAction(_log, "DeleteBOEMaterial", SecurityPage.BOEMaterialsTypes,
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DELETE_BOE_MATERIAL, SecurityPage.BOEMaterialsTypes,
                 SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
 
             MaterialDTO dtoToDelete = this.Factory.GetMaterialById(MaterialID);
@@ -181,26 +185,27 @@ namespace GenBOE.Web.Controllers
 
             JsonResult toReturn = Json(new { Status = true });
 
-            FinalizeAction(_log, "DeleteBOEMaterial", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DELETE_BOE_MATERIAL, sw);
 
             return toReturn;
         }
 
-        /// <summary>
-        /// Save Materials
-        /// </summary>
-        /// <param name="workspace"></param>
-        /// <param name="boeID"></param>
-        /// <param name="inDetailsWV"></param>
-        /// <param name="inTypesGridMVCollection"></param>
-        /// <returns></returns>
-        public ActionResult SaveEditMaterialDetailsComposite(string workspace, int boeID, MaterialDetailsModelView inDetailsWV)
+		/// <summary>
+		/// Save Materials
+		/// </summary>
+		/// <param name="workspace"></param>
+		/// <param name="boeID"></param>
+		/// <param name="inDetailsWV"></param>
+		/// <param name="inTypesGridMVCollection"></param>
+		/// <returns></returns>
+		[HttpPost]
+		public ActionResult SaveEditMaterialDetailsComposite(string workspace, int boeID, MaterialDetailsModelView inDetailsWV)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
             FullBoe boe = this.Factory.CreateFullBoe(boeID);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "SaveEditMaterialDetailsComposite", SecurityPage.TaskElements,
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_EDIT_MATERIAL_DETAILS_COMPOSITE, SecurityPage.TaskElements,
                 SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
 
             if (inDetailsWV == null)
@@ -241,7 +246,7 @@ namespace GenBOE.Web.Controllers
                 throw new GenValidationException(Utilities.CreateModelStateValidationErrorList(ModelState));
             }
 
-            FinalizeAction(_log, "SaveEditMaterialDetailsComposite", sw);
+            FinalizeAction(_log, WebConstants.ACTION_SAVE_EDIT_MATERIAL_DETAILS_COMPOSITE, sw);
             return Json(new { Status = true });
 
         }
@@ -254,12 +259,13 @@ namespace GenBOE.Web.Controllers
         /// <param name="inDetailsWV"></param>
         /// <param name="inTypesGridMVCollection"></param>
         /// <returns></returns>
-        public ActionResult DeleteAllMaterials(string workspace, int boeID)
+        [HttpDelete]
+		public ActionResult DeleteAllMaterials(string workspace, int boeID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DeleteAllMaterials", SecurityPage.BOEMaterialsTypes, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DELETE_ALL_MATERIAL_TYPES, SecurityPage.BOEMaterialsTypes, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
             {
@@ -267,7 +273,7 @@ namespace GenBOE.Web.Controllers
                 scope.Complete();
             }
 
-            FinalizeAction(_log, "DeleteAllMaterials", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DELETE_ALL_MATERIAL_TYPES, sw);
             return Json(new { Status = true });
 
         }

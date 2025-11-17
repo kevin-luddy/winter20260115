@@ -32,18 +32,17 @@ namespace GenBOE.Web.Controllers
 
     public class BOETravelController : GenBOEController
     {
-        Logger _log = new Logger(typeof(BOETravelController));
-        TravelDTODataLoader _travelDTODataLoader = null;
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        TripDTODataLoader _tripDTODataLoader = null;
-        IMiscTravelRateDTOLoader miscTravelLoader = null;
-        ILocationDTODataLoader _LocationDTODataLoader;
-        PerDiemDTODataLoader _PerDiemLoader = null;
-        ResourceDTODataLoader _ResourceLoader = null;
-        private TravelTripCostCalculation _TravelTripCostCalculator;
-        IPerformingOrgDTODataLoader perfOrgLoader;
-        private ITravelControllerLogic _TravelControllerLogic;
-        private IBOELaborControllerLogic _BoeLaborControllerLogic = null;
+		private readonly Logger _log = new Logger(typeof(BOETravelController));
+		private readonly TravelDTODataLoader _travelDTODataLoader = null;
+        private readonly TripDTODataLoader _tripDTODataLoader = null;
+		private readonly IMiscTravelRateDTOLoader miscTravelLoader = null;
+		private readonly ILocationDTODataLoader _LocationDTODataLoader;
+		private readonly PerDiemDTODataLoader _PerDiemLoader = null;
+		private readonly ResourceDTODataLoader _ResourceLoader = null;
+        private readonly TravelTripCostCalculation _TravelTripCostCalculator;
+		private readonly IPerformingOrgDTODataLoader perfOrgLoader;
+        private readonly ITravelControllerLogic _TravelControllerLogic;
+        private readonly IBOELaborControllerLogic _BoeLaborControllerLogic = null;
 
         #region public methods
 
@@ -82,12 +81,13 @@ namespace GenBOE.Web.Controllers
             this._BoeLaborControllerLogic = inBoeLaborControllerLogic;
         }
 
-        public virtual ViewResult DisplayBOETravelComposite(string workspace, int boeID, int? travelElementID)
+        [HttpPost]
+		public virtual ViewResult DisplayBOETravelComposite(string workspace, int boeID, int? travelElementID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DisplayBOETravelComposite", SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_TRAVEL_COMPOSITE, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
 
             bool IsSubContractor = (from p in this.PermissionsLoader.GetBOEPotentialPermissionsForWorkspace(ws.Id)
                                     where p.Role == Role.SubcontractorAuthor && p.ETIUserId == ws.CurrentActiveUser.UserID
@@ -108,11 +108,12 @@ namespace GenBOE.Web.Controllers
             ViewResult toReturn = View(WebConstants.VIEW_TRAVEL_ELEMENT_COMPOSITE);
 
             // Finalize Action
-            FinalizeAction(_log, "DisplayTravelComposite", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_TRAVEL_COMPOSITE, sw);
             return toReturn;
         }
 
-        public ViewResult DisplayBOETravelGrid(string workspace, int boeID)
+		[HttpPost]
+		public ViewResult DisplayBOETravelGrid(string workspace, int boeID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -124,7 +125,7 @@ namespace GenBOE.Web.Controllers
             try
             {
                 // Initialize Action
-                sw = InitializeAction(_log, "DisplayBOETravelGrid", SecurityPage.BOETravelGrid, SecurityAuthorization.Read, ws, boeID);
+                sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_TRAVEL_GRID, SecurityPage.BOETravelGrid, SecurityAuthorization.Read, ws, boeID);
             }
             catch (AuthorizationException)
             {
@@ -196,16 +197,17 @@ namespace GenBOE.Web.Controllers
                 toReturn = View(WebConstants.VIEW_BOE_TRAVEL_GRID, theModelViews);
             }
             // Finalize Action
-            FinalizeAction(_log, "DisplayBOETravelGrid", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_TRAVEL_GRID, sw);
             return toReturn;
         }
 
+		[ChildActionOnly, HttpGet]
         public ViewResult DisplayBOETravelElementDetails(string workspace, int boeID, int? travelElementID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DisplayBOETravelElementDetails", SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_TRAVEL_ELEMENT_DETAILS, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
 
 
             // Perform Action
@@ -264,17 +266,18 @@ namespace GenBOE.Web.Controllers
             ViewResult toReturn = View(WebConstants.VIEW_TRAVEL_ELEMENT_DETAILS, theModelView);
 
             // Finalize Action
-            FinalizeAction(_log, "DisplayBOETravelElementDetails", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_TRAVEL_ELEMENT_DETAILS, sw);
             return toReturn;
 
         }
 
-        public ViewResult DisplayBOETravelTrips(string workspace, int boeID, int? travelElementID)
+		[ChildActionOnly, HttpGet]
+		public ViewResult DisplayBOETravelTrips(string workspace, int boeID, int? travelElementID)
         {
             FullWorkspace workspaceObject = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DisplayBOETravelTrips", SecurityPage.BoeLaborTypes, SecurityAuthorization.Read, workspaceObject, boeID);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_TRAVEL_TRIPS, SecurityPage.BoeLaborTypes, SecurityAuthorization.Read, workspaceObject, boeID);
 
             ViewData["BOEID"] = boeID;
             ViewData["TRAVELID"] = travelElementID;
@@ -282,18 +285,19 @@ namespace GenBOE.Web.Controllers
             ViewResult toReturn = View(WebConstants.VIEW_TRAVEL_TRIPS);
 
             // Finalize Action
-            FinalizeAction(_log, "DisplayBOETravelTrips", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_TRAVEL_TRIPS, sw);
             return toReturn;
 
         }
 
+		[HttpPost]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
         public ViewResult DisplayBOETravelTripsGrid(string workspace, int boeID, int? travelElementID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DisplayBOETravelTripsGrid", SecurityPage.BoeLaborTypes, SecurityAuthorization.Read, ws, boeID);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_TRAVEL_TRIPS_GRID, SecurityPage.BoeLaborTypes, SecurityAuthorization.Read, ws, boeID);
 
             ViewData["BOEID"] = boeID;
             ViewData["TravelElementId"] = travelElementID;
@@ -416,15 +420,16 @@ namespace GenBOE.Web.Controllers
             ViewResult toReturn = View(WebConstants.VIEW_TRAVEL_TRIPS_GRID, theModelViews);
 
             // Finalize Action
-            FinalizeAction(_log, "DisplayBOETravelTripsGrid", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_TRAVEL_TRIPS_GRID, sw);
             return toReturn;
         }
 
-        public JsonResult DeleteAllBOETravel(string workspace, int boeID)
+		[HttpPost]
+		public JsonResult DeleteAllBOETravel(string workspace, int boeID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-            Stopwatch sw = InitializeAction(_log, "DeleteAllBOETravel", SecurityPage.BoeLaborTypes,
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DELETE_ALL_BOE_TRAVEL, SecurityPage.BoeLaborTypes,
                SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
@@ -436,29 +441,31 @@ namespace GenBOE.Web.Controllers
             JsonResult toReturn = Json(new { Status = true });
 
             // Finalize Action
-            FinalizeAction(_log, "DeleteAllBOETravel", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DELETE_ALL_BOE_TRAVEL, sw);
 
             return toReturn;
         }
 
-        public JsonResult CalculateBOETravelTripCost(string workspace, int boeID, TravelTripType TravelTrip)
+		[HttpPost]
+		public JsonResult CalculateBOETravelTripCost(string workspace, int boeID, TravelTripType TravelTrip)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-            Stopwatch sw = InitializeAction(_log, "CalculateBOETravelTripCost", SecurityPage.TaskElements,
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_CALCULATE_TRAVEL_TRIPS, SecurityPage.TaskElements,
                 SecurityAuthorization.Read, ws, boeID);
 
             JsonResult toReturn = Json(new { Status = (long)(_TravelTripCostCalculator.CalculateTravelCost(TravelTrip, ws).CostTotal * 100) });
 
-            FinalizeAction(_log, "CalculateBOETravelTripCost", sw);
+            FinalizeAction(_log, WebConstants.ACTION_CALCULATE_TRAVEL_TRIPS, sw);
             return toReturn;
         }
 
-        public JsonResult DeleteBOETravel(string workspace, int boeID, int TravelID)
+		[HttpPost]
+		public JsonResult DeleteBOETravel(string workspace, int boeID, int TravelID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-            Stopwatch sw = InitializeAction(_log, "DeleteBOETravel", SecurityPage.BoeLaborTypes, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DELETE_BOE_TRAVEL, SecurityPage.BoeLaborTypes, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
 
             TravelDTO dtoToDelete = this.Factory.CreateTravel(TravelID);
 
@@ -475,23 +482,23 @@ namespace GenBOE.Web.Controllers
                 scope.Complete();
             }
 
-
             JsonResult toReturn = Json(new { Status = true });
 
             // Finalize Action
-            FinalizeAction(_log, "DeleteBOETravel", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DELETE_BOE_TRAVEL, sw);
 
             return toReturn;
         }
 
-        /// <summary>
-        /// reorders travel elements
-        /// </summary>
-        /// <param name="theModelView">user order</param>
-        /// <param name="workspace">current workspace</param>
-        /// <param name="boeID">boe id</param>
-        /// <returns></returns>
-        public virtual JsonResult SaveReorderTravelTaskElements(TaskElementOrderCollection theModelView, string workspace, int boeID)
+		/// <summary>
+		/// reorders travel elements
+		/// </summary>
+		/// <param name="theModelView">user order</param>
+		/// <param name="workspace">current workspace</param>
+		/// <param name="boeID">boe id</param>
+		/// <returns></returns>
+		[HttpPost]
+		public virtual JsonResult SaveReorderTravelTaskElements(TaskElementOrderCollection theModelView, string workspace, int boeID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
             FullBoe boeObject = this.Factory.CreateFullBoe(boeID);
@@ -508,7 +515,7 @@ namespace GenBOE.Web.Controllers
             }
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "GetDateShiftData", SecurityPage.BoeTaskDates, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_REORDER_TRAVEL_TASK_ELEMENTS, SecurityPage.BoeLaborTypes, SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
 
 
             _TravelControllerLogic.ReOrderTaskElementOrder(boeObject, theModelView);
@@ -517,17 +524,18 @@ namespace GenBOE.Web.Controllers
 
 
             // Finalize Action
-            FinalizeAction(_log, "GetDateShiftData", sw);
+            FinalizeAction(_log, WebConstants.ACTION_SAVE_REORDER_TRAVEL_TASK_ELEMENTS, sw);
             return toReturn;
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-        public virtual ActionResult SaveEditTravelDetailsComposite(string workspace, int boeID, BOETravelElementDetailsModelView inDetailsWV, Collection<BOETravelTripsGridModelView> inTravelTripsCollection)
+		[HttpPost]
+		public virtual ActionResult SaveEditTravelDetailsComposite(string workspace, int boeID, BOETravelElementDetailsModelView inDetailsWV, Collection<BOETravelTripsGridModelView> inTravelTripsCollection)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "SaveEditTravelDetailsComposite", SecurityPage.TaskElements,
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_EDIT_TRAVEL_DETAILS_COMPOSITE, SecurityPage.TaskElements,
                 SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
 
             if (inDetailsWV == null)
@@ -883,7 +891,7 @@ namespace GenBOE.Web.Controllers
             }
 
             // Finalize Action
-            FinalizeAction(_log, "SaveEditODCDetailsComposite", sw);
+            FinalizeAction(_log, WebConstants.ACTION_SAVE_EDIT_TRAVEL_DETAILS_COMPOSITE, sw);
             return toReturn;
 
         }
@@ -946,7 +954,8 @@ namespace GenBOE.Web.Controllers
             return travelTripType;
         }
 
-        public JsonResult GetFilteredTripData(string departure, string destination, string mode, string qualification)
+		[HttpPost]
+		public JsonResult GetFilteredTripData(string departure, string destination, string mode, string qualification)
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -1039,7 +1048,8 @@ namespace GenBOE.Web.Controllers
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-        public JsonResult GetTripID(BOETravelTripsGridModelView inTrip, String destination, String workspace, String qualification, string startDate, string endDate)
+		[HttpPost]
+		public JsonResult GetTripID(BOETravelTripsGridModelView inTrip, String destination, String workspace, String qualification, string startDate, string endDate)
         {
 
             JsonResult toReturn = Json(new { Status = false });
@@ -1094,9 +1104,6 @@ namespace GenBOE.Web.Controllers
                     }
                 }
             }
-
-
-
 
             this.ValidateTripMultipleOccurences(inTrip);
 
@@ -1182,7 +1189,7 @@ namespace GenBOE.Web.Controllers
         #region private methods
 
         /// <summary>
-        /// Validates the multiple occurences properties of a <see cref="BOETravelTripsGridModelView"/>
+        /// Validates the multiple occurrences properties of a <see cref="BOETravelTripsGridModelView"/>
         /// and adds ModelError objects to the ModelState if needed
         /// </summary>
         /// <param name="inTrip">the <see cref="BOETravelTripsGridModelView"/> object to validate</param>
@@ -1236,9 +1243,7 @@ namespace GenBOE.Web.Controllers
         private static Collection<SegmentTypeModelView> CreateViewDataTravelTripSegments(ICollection<ResourceDTO> travelResources)
         {
             Dictionary<int, SegmentTypeModelView> oneSegment = new Dictionary<int, SegmentTypeModelView>();
-            Collection<SegmentTypeModelView> wsTravelSegmentModelViews = null;
-
-            foreach (ResourceDTO travelResource in travelResources)
+			foreach (ResourceDTO travelResource in travelResources)
             {
                 SegmentTypeModelView tempSegment = new SegmentTypeModelView();
                 tempSegment.SegmentTypeID = (int)travelResource.Segment;
@@ -1248,8 +1253,8 @@ namespace GenBOE.Web.Controllers
                     oneSegment.Add(tempSegment.SegmentTypeID, tempSegment);
                 }
             }
-            wsTravelSegmentModelViews = oneSegment.Values.ToCollection();
-            return wsTravelSegmentModelViews;
+			Collection<SegmentTypeModelView> wsTravelSegmentModelViews = oneSegment.Values.ToCollection();
+			return wsTravelSegmentModelViews;
         }
 
         #endregion private methods
