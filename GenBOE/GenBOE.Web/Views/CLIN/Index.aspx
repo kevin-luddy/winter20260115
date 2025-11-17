@@ -25,7 +25,6 @@
 		exportAction: '<%:WebConstants.ACTION_EXPORT_CLINS %>',
 		workspaceState: '<%: ((GenBOEMasterModelView)Model).WorkspaceState %>',
 		completeImportAction: '<%: WebConstants.ACTION_COMPLETE_IMPORT_CLINS %>',
-		getBOECountForClinAction: '<%: WebConstants.ACTION_GET_BOE_COUNT_FOR_CLIN%>',
 		dateShiftUrl: dateShiftUrl,
 		clinLevel: '/level/<%: ((int)IES.Common.Level.CLIN).ToString() %>',
 	});

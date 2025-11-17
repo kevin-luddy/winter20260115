@@ -12,8 +12,8 @@
         });
     </script>
 
-    <% Html.RenderAction("DisplayFindReplace", 
-        "FindReplace",
+    <% Html.RenderAction(WebConstants.ACTION_DISPLAY_FIND_REPLACE, 
+        WebConstants.CONTROLLER_FIND_REPLACE,
         new { workspace = SiteMasterUtilities.GetCurrentWorkspace()  }); %>
 
 </asp:Content>

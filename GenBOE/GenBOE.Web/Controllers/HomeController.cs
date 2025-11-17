@@ -34,20 +34,20 @@ namespace GenBOE.Web.Controllers
 
     public class HomeController : GenBOEController
     {
-        private Logger _log = new Logger(typeof(HomeController));
-        private ValidationFactory _ValidationFactory = null;
-        private IGenBOEMetricsDataLoader boeMetricsLoader = null;
-        private ISecurityInformation _SecInfo;
-        private GenTRAC.DataBridge.Common.Security.ISecurityMapper ptmSecurityMapper;
-        private GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader;
-        private IWorkspaceControllerLogic workspaceLogic;
+        private readonly Logger _log = new Logger(typeof(HomeController));
+        private readonly ValidationFactory _ValidationFactory = null;
+        private readonly IGenBOEMetricsDataLoader boeMetricsLoader = null;
+        private readonly ISecurityInformation _SecInfo;
+        private readonly GenTRAC.DataBridge.Common.Security.ISecurityMapper ptmSecurityMapper;
+        private readonly GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader;
+        private readonly IWorkspaceControllerLogic workspaceLogic;
 
         /// <summary>
         /// Home Controller Logic
         /// </summary>
-        private IHomeControllerLogic homeLogic = null;
-        private IWorkspaceDTODataLoader _WorkspaceDTODataLoader = null;
-        private ActiveDirectoryUtilities _ADUtils = null;
+        private readonly IHomeControllerLogic homeLogic = null;
+        private readonly IWorkspaceDTODataLoader _WorkspaceDTODataLoader = null;
+        private readonly ActiveDirectoryUtilities _ADUtils = null;
 
         /// <summary>
         /// Constructor
@@ -82,7 +82,8 @@ namespace GenBOE.Web.Controllers
             this.workspaceLogic = workspaceLogic;
         }
 
-        public JsonResult GetUserMetricsModel()
+        [HttpPost]
+		public JsonResult GetUserMetricsModel()
         {
             UserDTO currentUser = this.UserLoader.GetUserForActiveUser();
             bool userIsSubcontractor = _SecInfo.IsSubcontractorUser(currentUser.NTID, currentUser.IsSubcontractor);
@@ -112,7 +113,8 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
-        public JsonResult DeleteWorkspaces(GenBOEHomepageWorkspaceRowModelView[] toBeDeleted)
+		[HttpPost]
+		public JsonResult DeleteWorkspaces(GenBOEHomepageWorkspaceRowModelView[] toBeDeleted)
         {
             if (toBeDeleted == null || !toBeDeleted.Any())
             {
@@ -126,10 +128,10 @@ namespace GenBOE.Web.Controllers
                 foreach (GenBOEHomepageWorkspaceRowModelView wsToDelete in toBeDeleted)
                 {
                     FullWorkspace ws = this.Factory.CreateFullWorkspace(wsToDelete.WorkspaceShortName);
-                    Stopwatch sw = InitializeAction(_log, "DeleteWorkspaces", SecurityPage.WorkspaceDelete, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+                    Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_HOME_DELETE_WORKSPACES, SecurityPage.WorkspaceDelete, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
                     _WorkspaceDTODataLoader.UpdateDeletedStatus(wsToDelete.WorkspaceId, ws.UpdateDate, true, currentUser.UserID);
                     this.Factory.ClearWorkspaceCache(ws.Shortname);
-                    FinalizeAction(_log, "DeleteWorkspaces", sw);
+                    FinalizeAction(_log, WebConstants.ACTION_HOME_DELETE_WORKSPACES, sw);
                 }
                 scope.Complete();
             }
@@ -138,12 +140,13 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
-        /// <summary>
-        /// Gets the tracking numbers allowed for an NT Id.
-        /// </summary>
-        /// <param name="leadEstimatorNtId">The lead estimator nt identifier.</param>
-        /// <returns></returns>
-        public JsonResult GetTrackingNumbers(string leadEstimatorNtId, int workspaceId)
+		/// <summary>
+		/// Gets the tracking numbers allowed for an NT Id.
+		/// </summary>
+		/// <param name="leadEstimatorNtId">The lead estimator nt identifier.</param>
+		/// <returns></returns>
+		[HttpPost]
+		public JsonResult GetTrackingNumbers(string leadEstimatorNtId, int workspaceId)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspaceId);
             Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_HOME_GET_TRACKING_NUMBERS, SecurityPage.WorkspaceRestore, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
@@ -170,7 +173,8 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
-        public JsonResult RestorePtmWorkspace(GenBOEHomepageWorkspaceRowModelView toBeRestored)
+		[HttpPost]
+		public JsonResult RestorePtmWorkspace(GenBOEHomepageWorkspaceRowModelView toBeRestored)
         {
             if (toBeRestored == null)
             {
@@ -250,7 +254,8 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="toBeRestored">Workspace to be restored</param>
 		/// <returns>Json result with restore status</returns>
-        public JsonResult RestoreWorkspace(GenBOEHomepageWorkspaceRowModelView toBeRestored)
+		[HttpPost]
+		public JsonResult RestoreWorkspace(GenBOEHomepageWorkspaceRowModelView toBeRestored)
         {
             if (toBeRestored == null)
             {
@@ -276,13 +281,14 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
-        /// <summary>
-        /// Changes the favorite.
-        /// </summary>
-        /// <param name="workspaceId">The workspace identifier.</param>
-        /// <param name="isFavorite">if set to <c>true</c> [is favorite].</param>
-        /// <returns>The JsonResult</returns>
-        public JsonResult ChangeFavorite(int workspaceId, bool isFavorite)
+		/// <summary>
+		/// Changes the favorite.
+		/// </summary>
+		/// <param name="workspaceId">The workspace identifier.</param>
+		/// <param name="isFavorite">if set to <c>true</c> [is favorite].</param>
+		/// <returns>The JsonResult</returns>
+		[HttpPost]
+		public JsonResult ChangeFavorite(int workspaceId, bool isFavorite)
         {
             try
             {
@@ -304,7 +310,7 @@ namespace GenBOE.Web.Controllers
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults")]
         private ICollection<GenBOEHomepageWorkspaceRowModelView> _GetHomepageGrid(bool isSystemAdmin)
         {
-            ICollection<GenBOEHomepageWorkspaceRowModelView> toReturn = new Collection<GenBOEHomepageWorkspaceRowModelView>();
+            ICollection<GenBOEHomepageWorkspaceRowModelView> toReturn;
 
             // get current user
             UserDTO currentUser = this.UserLoader.GetUserForActiveUser();
@@ -353,7 +359,8 @@ namespace GenBOE.Web.Controllers
         /// If the user is a Subcontractor, return a limited view with only the Getting Started and Announcements sections.
         /// Otherwise, return the Employee view including all sections.
         /// </returns>
-        public ViewResult Index()
+        [HttpGet]
+		public ViewResult Index()
         {
             ViewData.Add("CanCreateWS", CheckPermissions(SecurityPage.CreateWorkspacePermissions, null, null) == SecurityAuthorization.CreateReadUpdateDelete);
 
@@ -377,14 +384,15 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="inView">The view to return</param>
         /// <returns></returns>
-        public virtual ViewResult DisplayHomeMasterMenu()
+        [ChildActionOnly, HttpGet]
+		public virtual ViewResult DisplayHomeMasterMenu()
         {
 			Collection<GenBOEMasterMenuItemModelView> theModelViews = new Collection<GenBOEMasterMenuItemModelView>();
 
             Collection<GenBOEMasterMenuItemModelView> MenuItems = GenBOEMasterMenuItemModelView.BuildHomeMasterMenuItems();
 
 			// get the Metric Admin menu so we can add company specific info to it
-			GenBOEMasterMenuItemModelView AdminMenuItem = MenuItems.Where(x => x.linkText == "Admin").Single().subMenuItems.Where(y => y.linkText == "Metrics Administration").SingleOrDefault();
+			GenBOEMasterMenuItemModelView AdminMenuItem = MenuItems.Single(x => x.linkText == "Admin").subMenuItems.SingleOrDefault(y => y.linkText == "Metrics Administration");
 
             if (AdminMenuItem != null)
             {
@@ -461,10 +469,11 @@ namespace GenBOE.Web.Controllers
         #region Partial Views
         
         /// <summary>
-        /// Set up the inital display of "Who's online?".
+        /// Set up the initial display of "Who's online?".
         /// </summary>
         /// <returns>results for display</returns>
-        public ViewResult DisplayWhosOnline()
+        [HttpGet]
+		public ViewResult DisplayWhosOnline()
         {
             GenBOEUsersOnlineDTO systemMetricInfo = boeMetricsLoader.GetOnlineUserDetails();
             WhosOnlineGridModelView viewModel = new WhosOnlineGridModelView(systemMetricInfo);
@@ -472,12 +481,13 @@ namespace GenBOE.Web.Controllers
             return View(WebConstants.VIEW_HOME_WHOS_ONLINE_INDEX, viewModel);
         }
 
-        /// <summary>
-        /// Provides paging support of the Who's online dialog.
-        /// </summary>
-        /// <param name="users">WhosOnlineGridModelView</param>
-        /// <returns>Paged ViewResult</returns>
-        public ViewResult PageGenBOEMetricsWhosOnline(WhosOnlineGridModelView users)
+		/// <summary>
+		/// Provides paging support of the Who's online dialog.
+		/// </summary>
+		/// <param name="users">WhosOnlineGridModelView</param>
+		/// <returns>Paged ViewResult</returns>
+		[HttpPost]
+		public ViewResult PageGenBOEMetricsWhosOnline(WhosOnlineGridModelView users)
         {
             if (users == null)
             {
@@ -506,12 +516,12 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
-        /// <summary>
-        /// Populates Boe Metrics numbers
-        /// </summary>
-        /// <param name="selectedLob">Selected Line Of Business</param>
-        /// <returns>Data</returns>
-        public ViewResult GenBoeMetrics()
+		/// <summary>
+		/// Populates Boe Metrics numbers
+		/// </summary>
+		/// <returns>Data</returns>
+		[HttpGet]
+		public ViewResult GenBoeMetrics()
         {
             GenBOEMetricsDTO DTOtoSend = boeMetricsLoader.GetGenBOEMetrics();
             GenBOEMetricsModelView genBOEMetricsModelView = new GenBOEMetricsModelView(DTOtoSend);
@@ -523,39 +533,6 @@ namespace GenBOE.Web.Controllers
 
         #endregion Display
 
-        #region AJAX Calls
-
-        /// <summary>
-        /// Calls a custom server validator to validate anything on the UI using [ServerValidation] Attribute in the Model View
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        public JsonResult Validate(string value, int type, Collection<Collection<String[]>> data)
-        {
-            if (data == null) { data = new Collection<Collection<String[]>>(); }
-            Collection<Dictionary<String, String>> returnedData = new Collection<Dictionary<string, string>>();
-
-            foreach (Collection<String[]> dicData in data)
-            {
-                Dictionary<String, String> aDictonary = new Dictionary<String, String>();
-                foreach (String[] fields in dicData)
-                {
-                    aDictonary.Add(fields[0], fields[1]);
-
-                }
-                returnedData.Add(aDictonary);
-            }
-
-            Validator validator = _ValidationFactory.getValidator((ValidationType)type);
-            Collection<String> messages = validator.validation(value, returnedData);
-
-            return Json(messages);
-        }
-
-        #endregion AJAX Calls
-
         #region Active Directory lookup
 
         /// <summary>
@@ -565,7 +542,8 @@ namespace GenBOE.Web.Controllers
         /// <param name="searchBy">Search by last name or account</param>
         /// <param name="matchBy">Starts-with or exact match</param>
         /// <returns>Active Directory search results view</returns>
-        public ActionResult Search(string userSearchString, ActiveDirectorySearchBy searchBy, ActiveDirectoryMatchType matchBy)
+        [HttpGet]
+		public ActionResult Search(string userSearchString, ActiveDirectorySearchBy searchBy, ActiveDirectoryMatchType matchBy)
         {
             ICollection<UserData> matchingUsers = string.IsNullOrEmpty(userSearchString) ? new List<UserData>() : this.homeLogic.SearchUsers(userSearchString, searchBy, matchBy);
 
@@ -579,7 +557,8 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="userAccount">The user's NT account name</param>
         /// <returns>Exact match (only)</returns>
-        public JsonResult SearchUserName(string userAccount)
+        [HttpPost]
+		public JsonResult SearchUserName(string userAccount)
         {
             ICollection<UserData> matchingUsers = string.IsNullOrEmpty(userAccount) ? new List<UserData>() : this.homeLogic.SearchUsers(userAccount, ActiveDirectorySearchBy.Account, ActiveDirectoryMatchType.Exact);
 
@@ -608,81 +587,6 @@ namespace GenBOE.Web.Controllers
             }
 
             return result;
-        }
-
-        #endregion
-
-        #region Performance Tests
-
-        private static object FileTestLock = new object();
-
-        public ActionResult FileTest(int? seconds, bool? locked)
-        {
-            string requestId = System.Guid.NewGuid().ToString();
-            _log.Debug(string.Format("START FileTest [{0}]", requestId));
-
-            #region Execute the request
-
-            DateTime dtStart = DateTime.Now;
-
-            bool useLocking = locked.HasValue && locked.Value;
-            bool lockObtained = false;
-
-            try
-            {
-                if (useLocking)
-                {
-                    lockObtained = System.Threading.Monitor.TryEnter(FileTestLock, 1000);
-                    _log.Debug(string.Format("FileTest [{0}] - Lock {1}obtained", requestId, lockObtained ? string.Empty : "NOT "));
-                }
-                else
-                {
-                    lockObtained = false;
-                }
-
-                if (seconds.HasValue && (!useLocking || lockObtained))
-                {
-                    int msecs = seconds.Value * 1000;
-                    _log.Debug(string.Format("FileTest [{0}] - Sleeping for {1} seconds", requestId, seconds.Value));
-                    System.Threading.Thread.Sleep(msecs);
-                }
-            }
-            finally
-            {
-                if (lockObtained)
-                {
-                    System.Threading.Monitor.Exit(FileTestLock);
-                }
-            }
-
-            #endregion
-
-            #region Result
-
-            ActionResult result;
-
-            if (!useLocking || lockObtained)
-            {
-                string elapsedTime = (DateTime.Now - dtStart).ToString();
-
-                _log.Debug(string.Format("END FileTest [{0}], Duration = {1}", requestId, elapsedTime));
-
-                string message = string.Format("FileTest:  Request=[{0}], Duration={1}", requestId, elapsedTime);
-
-                result = this.CreateTextFileWithErrorMessage(message);
-            }
-            else
-            {
-                _log.Debug(string.Format("END FileTest [{0}], Another request is current in progress", requestId));
-
-                string message = string.Format("FileTest:  Request=[{0}], Another request is current in progress.", requestId);
-
-                result = this.CreateTextFileWithErrorMessage(message);
-            }
-
-            return result;
-
-            #endregion
         }
 
         #endregion

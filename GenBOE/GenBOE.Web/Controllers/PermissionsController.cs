@@ -58,12 +58,13 @@ namespace GenBOE.Web.Controllers
 
 		#region Display
 
+		[HttpGet]
 		public ViewResult ManagePermissions(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "ManagePermissions", SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_MANAGE_PERMISSIONS, SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.Read, ws, null);
 
 			ViewData["CurrentUser"] = ws.CurrentActiveUser.DisplayName;
 			ViewBag.IsProjectMapWs = ws.IsProjectMapWorkspace;
@@ -72,7 +73,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = GetMasterView(WebConstants.VIEW_MANAGE_PERMISSIONS, workspace);
 
 			// Finalize Action
-			FinalizeAction(_log, "ManagePermissions", sw);
+			FinalizeAction(_log, WebConstants.ACTION_MANAGE_PERMISSIONS, sw);
 			return toReturn;
 		}
 
@@ -81,19 +82,20 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">workspace</param>
 		/// <returns>model</returns>
+		[HttpPost]
 		public JsonResult GetManagePermissionsModel(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "GetManagePermissionsModel", SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_WORKSPACE_PERMISSION_MODEL, SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.Read, ws, null);
 
 			// Perform Action
 			PermissionModelView theModelView = _GetPermissionsGrid(ws);
 			JsonResult toReturn = Json(theModelView);
 
 			// Finalize Action
-			FinalizeAction(_log, "GetManagePermissionsModel", sw);
+			FinalizeAction(_log, WebConstants.ACTION_GET_WORKSPACE_PERMISSION_MODEL, sw);
 			return toReturn;
 		}
 
@@ -107,12 +109,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">workspace for permissions</param>
 		/// <param name="inPermission">SavePermission MV</param>
 		/// <returns>A Json value</returns>
+		[HttpPost]
 		public JsonResult SaveNewPermissions(string workspace, SavePermissionsModelView inPermission)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "SaveNewPermissions", SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_PERMISSIONS, SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			if (inPermission == null)
 			{
@@ -135,7 +138,7 @@ namespace GenBOE.Web.Controllers
 			JsonResult toReturn = Json(theModelView);
 
 			// Finalize Action
-			FinalizeAction(_log, "SaveNewPermissions", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SAVE_PERMISSIONS, sw);
 			return toReturn;
 		}
 
@@ -148,6 +151,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="inEntityId">the id of the user or group</param>
 		/// <returns>A Json value, if the user is actively assigned a BOE role (Approver, Author) the edit will fail</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
+		[HttpPost]
 		public JsonResult EditPermissions(string workspace, Collection<Role> inRoles, EntityType inType, int inEntityId)
 		{
 			//this method basically will create a USERDTO based on if the thing beign updated is a group or user.
@@ -161,7 +165,7 @@ namespace GenBOE.Web.Controllers
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "EditPermissions", SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EDIT_PERMISSIONS, SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			if (ModelState.IsValid)
 			{
@@ -176,67 +180,8 @@ namespace GenBOE.Web.Controllers
 			JsonResult toReturn = Json(theModelView);
 
 			// Finalize Action
-			FinalizeAction(_log, "EditPermissions", sw);
+			FinalizeAction(_log, WebConstants.ACTION_EDIT_PERMISSIONS, sw);
 			return toReturn;
-		}
-
-		/// <summary>
-		/// Checks to see if the action will remove the persons admin access for that workspace.
-		/// </summary>
-		/// <param name="workspace">The workspace name</param>
-		/// <param name="inType">the type of entity the action is beign performed on.</param>
-		/// <param name="inEntityId">The entity ID</param>
-		/// <param name="inRoles">The list of roles(if this is null a delete is being performed)</param>
-		/// <returns></returns>
-		public JsonResult CheckIfUserWillLoseTheirAdminAccess(String workspace, int inEntityId, Collection<Role> inRoles)
-		{
-			if (workspace == null)
-			{
-				throw new ArgumentNullException(nameof(workspace));
-			}
-
-			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-
-			Stopwatch sw = InitializeAction(_log, "CheckIfUserWillLoseTheirAdminAccess", SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
-
-			int currentUserID = ws.CurrentActiveUser.UserID;
-
-
-			if (inRoles != null)
-			{//means we are editing a person or group
-				if (inRoles.Contains(Role.WorkspaceAdmin))
-				{
-					//if they contain WS admin then just return false since they will not loose it.
-					return Json(new { Status = false });
-				}
-			}
-
-			// Get the users current roles
-			ICollection<PermissionsDTO> allCurrentUsersAdminRoleForThisWorkspace = (from permission in this.PermissionsLoader.GetWorkspacePermissions(ws.Id)
-																					where permission.ETIUserId == currentUserID && permission.WorkspaceId == ws.Id && permission.Role == Role.WorkspaceAdmin
-																					select new PermissionsDTO
-																					{
-																						ETIUserId = permission.ETIUserId,
-																						Role = permission.Role,
-																						WorkspaceId = ws.Id,
-																						UpdateDate = permission.UpdateDate
-																					}).ToList();
-
-			if (inEntityId != currentUserID)
-			{
-				return Json(new { Status = false });
-			}
-
-			if (allCurrentUsersAdminRoleForThisWorkspace.Count() > 1)
-			{
-				FinalizeAction(_log, "CheckIfUserWillLoseTheirAdminAccess", sw);
-				return Json(new { Status = false });
-			}
-			else
-			{
-				FinalizeAction(_log, "CheckIfUserWillLoseTheirAdminAccess", sw);
-				return Json(new { Status = true });
-			}
 		}
 
 		/// <summary>
@@ -245,12 +190,13 @@ namespace GenBOE.Web.Controllers
 		///<param name="workspace">The workspace to delete permissions from.</param>
 		///<param name="inUserID">The User ID to delete permissions from.</param>
 		/// <returns></returns>
+		[HttpPost]
 		public JsonResult DeleteUserPermissions(string workspace, int inUserID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DeleteUserPermissions", SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DELETE_USER_PERMISSIONS, SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			// Perform Action
 			JsonResult toReturn = Json(new { Status = false });
@@ -330,7 +276,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(_log, "DeleteUserPermissions", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DELETE_USER_PERMISSIONS, sw);
 			return toReturn;
 		}
 		#endregion AJAX Calls
@@ -435,6 +381,7 @@ namespace GenBOE.Web.Controllers
 		///Get members of group
 		///</summary>
 		///<param name="groupName">Name of the group to get users from</param>
+		[HttpPost]
 		public JsonResult GetGroupMembers(string groupName)
 		{
 			// Member list - string for user's name, bool for having genBOE access
@@ -457,6 +404,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The workspace</param>
 		/// <returns>The permissions export</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		[HttpGet]
 		public ActionResult ExportPermissions(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -485,6 +433,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The workspace</param>
 		/// <returns>Import Permission results</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpPost]
 		public JsonResult ImportPermissions(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -519,6 +468,5 @@ namespace GenBOE.Web.Controllers
 			FinalizeAction(_log, WebConstants.ACTION_IMPORT_PERMISSIONS, sw);
 			return toReturn;
 		}
-
 	}
 }

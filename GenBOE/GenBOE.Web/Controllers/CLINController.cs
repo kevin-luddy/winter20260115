@@ -35,13 +35,11 @@ namespace GenBOE.Web.Controllers
 
 	public class CLINController : GenBOEController
 	{
-		private Logger _log = new Logger(typeof(CLINController));
-
-		private ICLINExporter _ClinExporter;
-		private IClinDTODataLoader clinLoader;
-		private ICommonDataLoader _CommonDataLoader;
-		private ContractTypeLoader contractTypeLoader;
-		private CLINControllerLogic _clinControllerLogic;
+		private readonly Logger _log = new Logger(typeof(CLINController));
+		private readonly ICLINExporter _ClinExporter;
+		private readonly ICommonDataLoader _CommonDataLoader;
+		private readonly ContractTypeLoader contractTypeLoader;
+		private readonly CLINControllerLogic _clinControllerLogic;
 
 		/// <summary>
 		/// The constructor
@@ -52,7 +50,6 @@ namespace GenBOE.Web.Controllers
 			ICLINExporter inClinExporter,
 			SystemMetrics inSystemMetrics,
 			IFullObjectFactory factory,
-			IClinDTODataLoader clinLoader,
 			IUserDTODataLoader userLoader,
 			IPermissionsDTODataLoader permissionLoader,
 			IGenBOEControllerLogic inControllerLogic,
@@ -63,7 +60,6 @@ namespace GenBOE.Web.Controllers
 			: base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, userLoader, permissionLoader, inControllerLogic)
 		{
 			this._ClinExporter = inClinExporter;
-			this.clinLoader = clinLoader;
 			this._CommonDataLoader = inCommonDataLoader;
 			this.contractTypeLoader = contractTypeLoader;
 			this._clinControllerLogic = clinControllerLogic;
@@ -74,21 +70,23 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
+		[HttpGet]
 		public ViewResult Index(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = this.InitializeAction(this._log, "Index", SecurityPage.ManageCLINs, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_INDEX, SecurityPage.ManageCLINs, SecurityAuthorization.Read, ws, null);
 
 			// Perform Action
 			ViewResult toReturn = this.GetMasterView(WebConstants.VIEW_INDEX, workspace);
 
 			// Finalize Action
-			this.FinalizeAction(this._log, "Index", sw);
+			this.FinalizeAction(this._log, WebConstants.ACTION_INDEX, sw);
 			return toReturn;
 		}
 
+		[HttpPost]
 		public JsonResult GetManageClinGridModel(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -132,49 +130,18 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
-		/// Get the BOE count associated with the CLIN
-		/// </summary>
-		/// <param name="workspace">The Workspace.</param>
-		/// <param name="ClinID">CLIN ID</param>
-		/// <returns>number of BOEs associated with the CLIN</returns>
-		public ActionResult GetBOECountForClin(string workspace, int ClinID)
-		{
-			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-
-			Stopwatch sw = this.InitializeAction(this._log, "GetBOECountForClin", SecurityPage.ManageCLINs, SecurityAuthorization.Read, ws, null);
-
-			JsonResult toReturn;
-
-			/** Valid Model Check */
-			if (this.ModelState.IsValid)
-			{
-				// Perform Action
-				DataRelationshipVerifier.VerifyDataRelation(this.Factory.CreateFullClin(ClinID), ws.Id);
-				int result = this.clinLoader.GetBoeCountByClinID(ClinID);
-				toReturn = this.Json(new { Status = result });
-			}
-			else
-			{
-				throw new GenValidationException(Utilities.CreateModelStateValidationErrorList(this.ModelState));
-			}
-
-			// Finalize Action
-			this.FinalizeAction(this._log, "GetBOECountForClin", sw);
-			return toReturn;
-		}
-
-		/// <summary>
 		/// Deletes a group of CLINs.
 		/// </summary>
 		/// <param name="workspace">The workspace the CLINs are assoicated with</param>
 		/// <param name="inDeletedClins">Collection of deleted CLINs</param>
 		/// <returns>If successful,empty string is return. Otherwise, exception error text to be handled in the post:error </returns>
+		[HttpPost]
 		public virtual JsonResult DeleteCLINs(string workspace, Collection<ManageCLINModelView> inDeletedClins)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = this.InitializeAction(this._log, "DeleteCLINs", SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_DELETE_CLINS, SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			JsonResult toReturn = this.Json(new { Status = true });
 
@@ -193,7 +160,7 @@ namespace GenBOE.Web.Controllers
 				}
 			}
 			// Finalize Action
-			this.FinalizeAction(this._log, "DeleteCLINs", sw);
+			this.FinalizeAction(this._log, WebConstants.ACTION_DELETE_CLINS, sw);
 
 			return toReturn;
 		}
@@ -206,12 +173,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">the workspace the CLINs are associated with</param>
 		/// <param name="inUpdatedClin">collection of new or edited CLINs</param>
 		/// <returns>If successful,empty string is return. Otherwise, exception error text to be handled in the post:error </returns>
+		[HttpPost]
 		public virtual JsonResult SaveClin(string workspace, ManageCLINModelView inUpdatedClin)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = this.InitializeAction(this._log, "SaveClin", SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_SAVE_CLIN, SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			// Perform Action
 			// check if the input is null
@@ -242,7 +210,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			this.FinalizeAction(this._log, "SaveClin", sw);
+			this.FinalizeAction(this._log, WebConstants.ACTION_SAVE_CLIN, sw);
 			return toReturn;
 		}
 
@@ -254,13 +222,14 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace"></param>
 		/// <returns>JSON formatted results from import operation</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpPost]
 		public JsonResult ImportCLINs(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			Stopwatch sw = this.InitializeAction(this._log, "ImportCLINs", SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_IMPORT_CLINS, SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
-			JsonResult toReturn = null;
+			JsonResult toReturn;
 
 			// If a file was uploaded successfully
 			if (this.Request.Files.Count > 0 && this.Request.Files[0].FileName.Length > 0)
@@ -294,7 +263,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			this.FinalizeAction(this._log, "ImportCLINs", sw);
+			this.FinalizeAction(this._log, WebConstants.ACTION_IMPORT_CLINS, sw);
 
 			return toReturn;
 		}
@@ -305,19 +274,20 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace"></param>
 		/// <param name="importResults">The CLIN import data to be saved</param>
 		/// <returns>True</returns>
+		[HttpPost]
 		public JsonResult CompleteImportCLINs(string workspace, Collection<ImportedClin> importResults)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = this.InitializeAction(this._log, "CompleteImportCLINs", SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+			Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_COMPLETE_IMPORT_CLINS, SecurityPage.ManageCLINs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
 			JsonResult toReturn = this.Json(new { Status = true });
 
 			this._clinControllerLogic.CompleteImportCLIN(ws, importResults);
 
 			// Finalize Action
-			this.FinalizeAction(this._log, "CompleteImportCLINs", sw);
+			this.FinalizeAction(this._log, WebConstants.ACTION_COMPLETE_IMPORT_CLINS, sw);
 
 			return toReturn;
 		}
@@ -328,11 +298,12 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace"></param>
 		/// <returns>An ActionResult for the file being exported</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		[HttpGet]
 		public ActionResult ExportCLINs(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			Stopwatch sw = this.InitializeAction(this._log, "ExportCLINs", SecurityPage.ManageCLINs, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_EXPORT_CLINS, SecurityPage.ManageCLINs, SecurityAuthorization.Read, ws, null);
 
 			ActionResult toReturn = null;
 
@@ -360,7 +331,7 @@ namespace GenBOE.Web.Controllers
 					FileStream fs = new FileStream(exportFile, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
 					// Finalize Action
-					FinalizeAction(_log, "ExportCLINs", sw);
+					FinalizeAction(_log, WebConstants.ACTION_EXPORT_CLINS, sw);
 
 					toReturn = File(
 						fileStream: fs,
