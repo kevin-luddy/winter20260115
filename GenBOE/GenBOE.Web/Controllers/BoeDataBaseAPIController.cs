@@ -8,6 +8,7 @@ namespace GenBOE.Web.Controllers
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.Diagnostics;
 	using System.Linq;
 	using System.Web.Http;
@@ -137,8 +138,6 @@ namespace GenBOE.Web.Controllers
 			return securityDictionary.Values.First();
 		}
 
-
-
 		/// <summary>
 		/// Initializes a controller action.
 		/// </summary>
@@ -226,6 +225,50 @@ namespace GenBOE.Web.Controllers
 			else
 			{
 				throw new UnauthorizedAccessException("Access is denied for non-US users.");
+			}
+
+			return sw;
+		}
+
+		/// <summary>
+		/// Initializes a controller action and makes sure user has permissions to at least 1 of multiple pages passed in parameter
+		/// </summary>
+		/// <param name="logger">The logger for the controller calling the action</param>
+		/// <param name="functionName">The name of the function being initialized</param>
+		/// <param name="pages">The security pages being initialized</param>
+		/// <param name="authorizationRequired">The minimum required to perform the action</param>
+		/// <param name="ws">Optional workspace parameter (can be null)</param>
+		/// <param name="boeID">Optional BOE ID parameter (can be null)</param>
+		/// <returns>A stopwatch to track the action start</returns>
+		protected Stopwatch InitializeActionWithAnyPermission(Logger logger, string functionName, Collection<SecurityPage> pages, SecurityAuthorization authorizationRequired, WorkspaceDTO ws, int? boeID)
+		{
+			if (logger == null)
+			{
+				throw new ArgumentNullException(nameof(logger));
+			}
+			if (pages == null)
+			{
+				throw new ArgumentNullException(nameof(pages));
+			}
+
+			Stopwatch sw = new Stopwatch();
+			sw.Start();
+
+			bool authorizationFound = false;
+
+			foreach (SecurityPage page in pages)
+			{
+				SecurityAuthorization authorization = CheckPermission(page, ws, boeID);
+
+				if (authorization >= authorizationRequired)
+				{
+					authorizationFound = true;
+				}
+			}
+
+			if (!authorizationFound)
+			{
+				throw new AuthorizationException(functionName + " was not authorized");
 			}
 
 			return sw;

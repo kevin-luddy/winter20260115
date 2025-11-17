@@ -276,6 +276,7 @@
     <Compile Include="Common\SimpleFileDownloadResult.cs" />
     <Compile Include="Common\StringNonPrintableCharRemovalModelBinder.cs" />
     <Compile Include="Common\WorkspaceIdentificationModelBinder.cs" />
+    <Compile Include="Controllers\Backend\BOECommentsController.cs" />
     <Compile Include="Controllers\Backend\BOEConfigurationController.cs" />
     <Compile Include="Controllers\Backend\BOEController.cs" />
     <Compile Include="Controllers\Backend\CLINController.cs" />
