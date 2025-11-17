@@ -328,6 +328,7 @@
     <Compile Include="ModelView\PBOEData.cs" />
     <Compile Include="ModelView\RteTemplateModelView.cs" />
     <Compile Include="ModelView\SaveBoeHeaderModelView.cs" />
+    <Compile Include="ModelView\SaveDuplicateTaskElementModelView.cs" />
     <Compile Include="ModelView\SaveNewPermissionsModelView.cs" />
     <Compile Include="ModelView\SendToProPricerModelView.cs" />
     <Compile Include="ModelView\BOEFormData.cs" />
