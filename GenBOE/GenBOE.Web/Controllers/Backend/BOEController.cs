@@ -376,14 +376,7 @@ namespace GenBOE.Web.Controllers.Backend
 						}
 					case TaskType.Travel:
 						{
-							boeObject.LoadTravelRTEData();
-
-							using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("CopyWorkspaceTransactionTimeout", Constants.DB_COPY_WORKSPACE_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
-							{
-								travelControllerLogic.DuplicateTravelTaskElements(duplicateRequest, boeObject);
-								scope.Complete();
-							}
-							break;
+							throw new GenValidationException("Travel type elements are no longer supported");
 						}
 					default:
 						{
