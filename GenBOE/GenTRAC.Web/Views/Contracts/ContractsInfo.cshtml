@@ -382,73 +382,49 @@
 
 						@* Dates *@
 						<div class="form-row">
-							@if (Model.IsNSS)
-							{
-								<div class="form-label">@Constants.BID_EPP_DATE_DISPLAY_STRING</div>
-							}
+							<div class="form-label">@Constants.BID_EPP_DATE_DISPLAY_STRING</div>
 							<div class="form-element">
 								@Html.TextBoxFor(x => x.PlannedBidEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 							</div>
 						</div>
 						<div class="form-row">
-							@if (Model.IsNSS)
-							{
-								<div class="form-label">@Constants.PROGRAM_EPP_DATE_DISPLAY_STRING</div>
-							}
+							<div class="form-label">@Constants.PROGRAM_EPP_DATE_DISPLAY_STRING</div>
 							<div class="form-element">
 								@Html.TextBoxFor(x => x.PlannedProgramEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 							</div>
 						</div>
 						<div class="form-row">
-							@if (Model.IsNSS)
-							{
-								<div class="form-label">@Constants.MISSION_SEGMENT_EPP_DATE_DISPLAY_STRING</div>
-							}
+							<div class="form-label">@Constants.MISSION_SEGMENT_EPP_DATE_DISPLAY_STRING</div>
 							<div class="form-element">
 								@Html.TextBoxFor(x => x.PlannedMissionSegmentEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 							</div>
 						</div>
 						<div class="form-row">
-							@if (Model.IsNSS)
-							{
-								<div class="form-label">@Constants.LOB_EPP_DATE_DISPLAY_STRING</div>
-							}
+							<div class="form-label">@Constants.LOB_EPP_DATE_DISPLAY_STRING</div>
 							<div class="form-element">
 								@Html.TextBoxFor(x => x.PlannedLobEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 							</div>
 						</div>
 						<div class="form-row">
-							@if (Model.IsNSS)
-							{
-								<div class="form-label">@Constants.PRE_SPACE_EPP_DATE_DISPLAY_STRING</div>
-							}
+							<div class="form-label">@Constants.PRE_SPACE_EPP_DATE_DISPLAY_STRING</div>
 							<div class="form-element">
 								@Html.TextBoxFor(x => x.PlannedPreSpaceEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 							</div>
 						</div>
 						<div class="form-row">
-							@if (Model.IsNSS)
-							{
-								<div class="form-label">@Constants.SPACE_EPP_DATE_DISPLAY_STRING</div>
-							}
+							<div class="form-label">@Constants.SPACE_EPP_DATE_DISPLAY_STRING</div>
 							<div class="form-element">
 								@Html.TextBoxFor(x => x.PlannedSpaceEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 							</div>
 						</div>
 						<div class="form-row">
-							@if (Model.IsNSS)
-							{
-								<div class="form-label">@Constants.PRE_CORPORATE_EPP_DATE_DISPLAY_STRING</div>
-							}
+							<div class="form-label">@Constants.PRE_CORPORATE_EPP_DATE_DISPLAY_STRING</div>
 							<div class="form-element">
 								@Html.TextBoxFor(x => x.PlannedPreCorporateEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 							</div>
 						</div>
 						<div class="form-row">
-							@if (Model.IsNSS)
-							{
-								<div class="form-label">@Constants.CORPORATE_EPP_DATE_DISPLAY_STRING</div>
-							}
+							<div class="form-label">@Constants.CORPORATE_EPP_DATE_DISPLAY_STRING</div>
 							<div class="form-element">
 								@Html.TextBoxFor(x => x.PlannedCorporateEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 							</div>
