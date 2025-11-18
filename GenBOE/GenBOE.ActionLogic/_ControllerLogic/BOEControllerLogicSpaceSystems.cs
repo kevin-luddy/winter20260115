@@ -75,7 +75,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			IMaterialDTODataLoader inMaterialLoader,
 			ITravelDTODataLoader travelLoader,
 			IWorkspaceVersionMetaDataDTODataLoader versionLoader,
-			IWbsDTODataLoader wbsLoader
+			IWbsDTODataLoader wbsLoader,
+			IWorkspaceControllerLogic workspaceControllerLogic
 			)
             : base(inBOESummary, inUserLoader, inActiveDirectoryUtil,
             inPermissionsLoader, inFactory, inBOEExporter, inBoeCustomExporter, inGenBOEControllerLogic,
@@ -83,7 +84,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             inVariableSelectBOEtoSumCalculation, inBOELaborControllerLogic, inValidateBOE, inSecurityInformation, inBoeSearchLoader, inSecurityAccess,
             inBoeTaskElementRecalculation, inBOEImporter, inVariableCircularReferenceChecker, inConflictBOE, inNestedWBSUtilities, projectMapLoader, zoneTravelRatesFeesDataLoader,
             rteTemplateDataLoader, moqTypeDataLoader, boeApproverResponseLoader, iesSapClient, tokenService, inCommonDataMapper, inMaterialLoader, travelLoader,
-			versionLoader, wbsLoader)
+			versionLoader, wbsLoader, workspaceControllerLogic)
         {
         }
 

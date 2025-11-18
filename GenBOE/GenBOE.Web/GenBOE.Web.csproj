@@ -276,8 +276,10 @@
     <Compile Include="Common\SimpleFileDownloadResult.cs" />
     <Compile Include="Common\StringNonPrintableCharRemovalModelBinder.cs" />
     <Compile Include="Common\WorkspaceIdentificationModelBinder.cs" />
+    <Compile Include="Controllers\Backend\BOECommentsController.cs" />
     <Compile Include="Controllers\Backend\BOEConfigurationController.cs" />
     <Compile Include="Controllers\Backend\BOEController.cs" />
+    <Compile Include="Controllers\Backend\BOELaborController.cs" />
     <Compile Include="Controllers\Backend\CLINController.cs" />
     <Compile Include="Controllers\Backend\ImportController.cs" />
     <Compile Include="Controllers\Backend\ManagePermissionsController.cs" />
@@ -326,6 +328,8 @@
     <Compile Include="ModelView\PagedSystemOffloadRateModelView.cs" />
     <Compile Include="ModelView\PBOEData.cs" />
     <Compile Include="ModelView\RteTemplateModelView.cs" />
+    <Compile Include="ModelView\SaveBoeHeaderModelView.cs" />
+    <Compile Include="ModelView\SaveDuplicateTaskElementModelView.cs" />
     <Compile Include="ModelView\SaveNewPermissionsModelView.cs" />
     <Compile Include="ModelView\SendToProPricerModelView.cs" />
     <Compile Include="ModelView\BOEFormData.cs" />

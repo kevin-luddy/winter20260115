@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\GenTRAC.Models\AlternativePricingMethodology.cs" Link="AlternativePricingMethodology.cs" />
     <Compile Include="..\GenTRAC.Models\Attachment.cs" Link="Attachment.cs" />
     <Compile Include="..\GenTRAC.Models\AttachmentTypeLU.cs" Link="AttachmentTypeLU.cs" />
     <Compile Include="..\GenTRAC.Models\BoeDatabaseVersion.cs" Link="BoeDatabaseVersion.cs" />

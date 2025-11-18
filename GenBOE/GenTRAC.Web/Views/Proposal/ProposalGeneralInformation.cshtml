@@ -12,7 +12,7 @@
             $('#CcopdNoOtherReason').val('').hide();
         }
     }
-    
+
     // Updates Is Support Of Undefinitized ... field based on CCOPD value
     UpdateIsSupportOfUndefinitized = function (ccopd) {
         if (ccopd === true && $('#ProposalClass').val() == 1) {
@@ -34,14 +34,48 @@
             $('#CcopdNoReasonOuter').show();
             CcopdReasonChanged();
         }
-    }
+	}
+
+	UpdateAlternativePricingMethodologies = function (ccopd) {
+		if (ccopd === true && '@Model.DisplayAlternativePricingMethodology'.isTrue()) {
+			$('#AltPricingMethodOuter').show();
+			AltPricingMethodChanged();
+		} else {
+			$('#AltPricingMethodOuter').hide();
+			$('#SubjectToApm-Yes').prop('checked', false);
+			$('#SubjectToApm-No').prop('checked', false);
+		}
+
+		SubjectToApmChanged();
+	}
+
+	AltPricingMethodChanged = function () {
+		if ($('#AlternativePricingMethodology').val() == @AlternativePricingMethodology.Other.GetNullableIntValue()) {
+			$('#AlternativePricingMethodologyOtherText').show();
+		} else {
+			$('#AlternativePricingMethodologyOtherText').val('').hide();
+		}
+	}
+
+	SubjectToApmChanged = function () {
+		if ($('#SubjectToApm-Yes').is(":checked")) {
+			$('#SubjectToApmYesSelection').show();
+		} else {
+			$('#SubjectToApmYesSelection').hide();
+			$('#AlternativePricingMethodology').val('');
+			$('#AlternativePricingMethodologyOtherText').val('').hide();
+		}
+
+		ProposalGeneralInformationWidget.refreshModule();
+	}
 
     // Updates items based on CCOPD value
     ShowHideItemsBasedOnCcopd = function () {
 		var ccopd = $('#IsCCPDRequired-Yes').is(":checked") || ($('#IsCCPDRequired').val() && $('#IsCCPDRequired').val().isTrue());
 
         UpdateReasonWhyCcopdNo(ccopd);
-        UpdateIsSupportOfUndefinitized(ccopd);
+		UpdateIsSupportOfUndefinitized(ccopd);
+		UpdateAlternativePricingMethodologies(ccopd);
     }
 
     var ProposalGeneralInformationWidget;
@@ -172,7 +206,15 @@
         }
         else {
             $('#CcopdNoReasonOuter').show();
+		}
+
+		$('#AlternativePricingMethodologyOtherText').val('@Model.AlternativePricingMethodologyOtherText');
+        if ('@(Model.IsCCPDRequired.HasValue && Model.IsCCPDRequired.Value && Model.DisplayAlternativePricingMethodology)'.isTrue()) {
+			$('#AltPricingMethodOuter').show();
         }
+		else {
+			$('#AltPricingMethodOuter').hide();
+		}
 
         // Define functionality based on whether or not we are displaying new (PTM) or old (GenTRAC) checklists
         if (isPTMChecklistUIEnabled) {
@@ -221,159 +263,178 @@
 
 <div id="proposalGeneralInformationSection" class="composite module expanded full">
     <div class="module-header-data">General Information</div>
-    <div class="module-content-data expanded-content">
-        @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ProposalControllerLogic.PROPOSAL_GENERAL_INFO_FORM, name = GenTRAC.ActionLogic.ProposalControllerLogic.PROPOSAL_GENERAL_INFO_FORM }))
-        {
-            <input name="ProposalID" value="@Model.ProposalID" type="hidden" />
-            <div class="form-row">
-                <div class="form-label">
-                    Line of Business*
-                </div>
-                <div class="form-element">
-                    @Html.DropDownListFor(model => model.LineOfBusiness, Model.LinesOfBusinessList, new { name = "LineOfBusiness" })
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label ProgramAreaHelpText">
-                    <span helptext="@Model.ProgramAreaHelpText">Program Area*</span>
-                </div>
-                <div class="form-element" id="ProgramArea">
-                    <select name="ProgramArea">
-                        @Html.Raw(Model.ProgramAreaHtmlOptions)
-                    </select>
-                </div>
-            </div>
-            <div class="form-row" data-proposal-type="standard">
-                <div class="form-label">
-                    Program Name
-                </div>
-                <div class="form-element">
-                    @Html.TextBoxFor(model => model.ProgramName, new { maxlength = 50, size = 50, style = "width:324px" })
-                </div>
-            </div>
-            <div class="form-row" data-proposal-type="standard">
-                <div class="form-label">
-                    Space Bridge Opportunity ID
-                </div>
-                <div class="form-element">
-                    @Html.TextBoxFor(model => model.OTISOpportunityID, new { maxlength = 25, style = "width:250px" })
-                </div>
-            </div>
-            <div class="form-row" data-proposal-type="standard">
-                <div class="form-label">
-                    Where is the proposal team located?
-                </div>
-                <div class="form-element">
-                    @Html.DropDownListFor(model => model.ProposalLocation, Model.ProposalLocationsList, new { maxlength = 50, @name = "ProposalLocation" })
-                </div>
-                <div class="form-element">
-                    <input class="free-text" id="ProposalLocationName" name="ProposalLocationName" type="text" maxlength="50" />
-                </div>
-            </div>
-            <div class="form-row" data-proposal-type="standard">
-                <div class="form-label">
-                    What pricing tool will be utilized? *
-                </div>
-                <div class="form-element">
-                    @Html.DropDownListFor(model => model.PricingTool, Model.PricingToolsList, new { maxlength = 50, @class = "selection-width", @name = "PricingTool" })
-                </div>
-                <div class="form-element">
-                    <input class="free-text" id="PricingToolName" name="PricingToolName" type="text" maxlength="50" />
-                </div>
-            </div>
-            <div class="form-row" data-proposal-type="standard">
-                <div class="form-label">
-                    What BOE tool will be utilized? *
-                </div>
-                <div class="form-element">
-                    @Html.DropDownListFor(model => model.BOETool, Model.BOEToolsList, new { maxlength = 50, @class = "selection-width", @name = "BOETool" })
-                </div>
-                <div class="form-element">
-                    <input class="free-text" id="BOEToolName" name="BOEToolName" type="text" maxlength="50" />
-                </div>
-            </div>
-            <div class="form-row" data-proposal-type="standard">
-                <div class="form-label">
-                    What application will be used to prepare the Cost Volume? *
-                </div>
-                <div class="form-element">
-                    @Html.DropDownListFor(model => model.CostVolumeTool, Model.CostVolumeToolsList, new { maxlength = 50, @class = "selection-width", @name = "CostVolumeTool" })
-                </div>
-                <div class="form-element">
-                    <input class="free-text" id="CostVolumeToolName" name="CostVolumeToolName" type="text" maxlength="50" />
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">
-                    <span helptext="Select “Yes” if this proposal requires Certified Cost and Pricing Data. Otherwise, select “No”.">Is Certified Cost and Pricing Data Required?*:</span>
-                </div>
-                <div class="form-element">
-                    <div>
-                        @if (Model.IsCCPDReadOnly)
-                        {
-                            bool ccpdRequired = (Model.ProposalID > 0 && Model.IsCCPDRequired.HasValue && Model.IsCCPDRequired.Value);
-                            string ccpdString = ccpdRequired ? "Yes" : "No";
-                            <input type="hidden" id="IsCCPDRequired" name="IsCCPDRequired" value="@ccpdRequired.ToString().ToLower()" />
-                            <span>@ccpdString</span>
-                        }
-                        else
-                        {
-                            <label for="IsCCPDRequired-Yes">Yes</label>
-                            <input type="radio" class="radio" id="IsCCPDRequired-Yes" value="true" name="IsCCPDRequired" @if (Model.ProposalID > 0 && Model.IsCCPDRequired.HasValue && Model.IsCCPDRequired.Value) { <text> checked</text>} onclick="ProposalGeneralInformationWidget.ValidateCCPDRequiredYes();" />
-                            <label for="IsCCPDRequired-No">No</label>
-                            <input type="radio" class="radio" id="IsCCPDRequired-No" value="false" name="IsCCPDRequired" @if (Model.ProposalID > 0 && Model.IsCCPDRequired.HasValue && !Model.IsCCPDRequired.Value) { <text> checked</text>} onclick="ProposalGeneralInformationWidget.ValidateCCPDRequiredNo();" />
-                        }
-                    </div>
-                </div>
-            </div>
-            <div class="form-row" id="CcopdNoReasonOuter">
-                <div class="form-label">
-                    Please provide reason why CCoPD is not required: *
-                </div>
-                <div class="form-element">
-                    @Html.DropDownListFor(model => model.CcopdNoReason, Model.ReasonsForCcopdBeingNo, new { maxlength = 100, @class = "selection-width", @name = "CcopdNoReason", @onchange = "CcopdReasonChanged()" })
-                </div>
-                <div class="form-element">
-                    <input class="free-text" id="CcopdNoOtherReason" name="CcopdNoOtherReason" type="text" maxlength="50" />
-                </div>
-            </div>
-            <div class="form-row" id="IsSupportOfUndefinitizedOuter">
-                <div class="form-label">
-                    Is this proposal in support of definitizing an Undefinitized Contract Action (UCA) per FAR 16.603 / DFARS 217.74? *
-                </div>
-                <div class="form-element">
-                    <label for="IsSupportOfUndefinitized-Yes">Yes</label>
-                    <input type="radio" class="radio" id="IsSupportOfUndefinitized-Yes" value="true" name="IsSupportOfUndefinitized" @if (Model.ProposalID > 0 && Model.IsSupportOfUndefinitized.HasValue && Model.IsSupportOfUndefinitized.Value) { <text> checked</text>} />
-                    <label for="IsSupportOfUndefinitized-No">No</label>
-                    <input type="radio" class="radio" id="IsSupportOfUndefinitized-No" value="false" name="IsSupportOfUndefinitized" @if (Model.ProposalID > 0 && Model.IsSupportOfUndefinitized.HasValue && !Model.IsSupportOfUndefinitized.Value) { <text> checked</text>} />
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-label">
-                    <span helptext="Select “Yes” if the Cost Volume is classified for this proposal. Otherwise, select “No”.">Is the Cost Volume for this proposal Classified?*:</span>
-                </div>
-                <div class="form-element">
-                    <div>
-                        <label for="IsCostVolumeClassified-Yes">Yes</label>
-                        <input type="radio" class="radio" id="IsCostVolumeClassified-Yes" onchange="ClassificationChanged(true)" value="true" name="IsCostVolumeClassified" @if (Model.ProposalID > 0 && Model.IsCostVolumeClassified.HasValue && Model.IsCostVolumeClassified.Value) { <text> checked</text>} />
-                        <label for="IsCCPDClassified-No">No</label>
-                        <input type="radio" class="radio" id="IsCostVolumeClassified-No" onchange="ClassificationChanged(false)" value="false" name="IsCostVolumeClassified" @if (Model.ProposalID > 0 && Model.IsCostVolumeClassified.HasValue && !Model.IsCostVolumeClassified.Value) { <text> checked</text>} />
-                    </div>
-                </div>
-            </div>
-            <div class="form-row" id="AdditionalClassificationField">
-                <div class="form-label">
-                    <span helptext="Select “Yes” if a higher level of classification is required. Otherwise, select “No”.">Higher level clearance required beyond standard clearance requirements?*:</span>
-                </div>
-                <div class="form-element">
-                    <div>
-                        <label for="AdditionalClassification-Yes">Yes</label>
-                        <input type="radio" class="radio" id="AdditionalClassification-Yes" value="true" name="AdditionalClassification" @if (Model.ProposalID > 0 && Model.AdditionalClassification.HasValue && Model.AdditionalClassification.Value) { <text> checked</text>} />
-                        <label for="AdditionalClassification-No">No</label>
-                        <input type="radio" class="radio" id="AdditionalClassification-No" value="false" name="AdditionalClassification" @if (Model.ProposalID > 0 && Model.AdditionalClassification.HasValue && !Model.AdditionalClassification.Value) { <text> checked</text>} />
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
+	<div class="module-content-data expanded-content">
+		@using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ProposalControllerLogic.PROPOSAL_GENERAL_INFO_FORM, name = GenTRAC.ActionLogic.ProposalControllerLogic.PROPOSAL_GENERAL_INFO_FORM }))
+		{
+			<input name="ProposalID" value="@Model.ProposalID" type="hidden" />
+			<div class="form-row">
+				<div class="form-label">
+					Line of Business*
+				</div>
+				<div class="form-element">
+					@Html.DropDownListFor(model => model.LineOfBusiness, Model.LinesOfBusinessList, new { name = "LineOfBusiness" })
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label ProgramAreaHelpText">
+					<span helptext="@Model.ProgramAreaHelpText">Program Area*</span>
+				</div>
+				<div class="form-element" id="ProgramArea">
+					<select name="ProgramArea">
+						@Html.Raw(Model.ProgramAreaHtmlOptions)
+					</select>
+				</div>
+			</div>
+			<div class="form-row" data-proposal-type="standard">
+				<div class="form-label">
+					Program Name
+				</div>
+				<div class="form-element">
+					@Html.TextBoxFor(model => model.ProgramName, new { maxlength = 50, size = 50, style = "width:324px" })
+				</div>
+			</div>
+			<div class="form-row" data-proposal-type="standard">
+				<div class="form-label">
+					Space Bridge Opportunity ID
+				</div>
+				<div class="form-element">
+					@Html.TextBoxFor(model => model.OTISOpportunityID, new { maxlength = 25, style = "width:250px" })
+				</div>
+			</div>
+			<div class="form-row" data-proposal-type="standard">
+				<div class="form-label">
+					Where is the proposal team located?
+				</div>
+				<div class="form-element">
+					@Html.DropDownListFor(model => model.ProposalLocation, Model.ProposalLocationsList, new { maxlength = 50, @name = "ProposalLocation" })
+				</div>
+				<div class="form-element">
+					<input class="free-text" id="ProposalLocationName" name="ProposalLocationName" type="text" maxlength="50" />
+				</div>
+			</div>
+			<div class="form-row" data-proposal-type="standard">
+				<div class="form-label">
+					What pricing tool will be utilized? *
+				</div>
+				<div class="form-element">
+					@Html.DropDownListFor(model => model.PricingTool, Model.PricingToolsList, new { maxlength = 50, @class = "selection-width", @name = "PricingTool" })
+				</div>
+				<div class="form-element">
+					<input class="free-text" id="PricingToolName" name="PricingToolName" type="text" maxlength="50" />
+				</div>
+			</div>
+			<div class="form-row" data-proposal-type="standard">
+				<div class="form-label">
+					What BOE tool will be utilized? *
+				</div>
+				<div class="form-element">
+					@Html.DropDownListFor(model => model.BOETool, Model.BOEToolsList, new { maxlength = 50, @class = "selection-width", @name = "BOETool" })
+				</div>
+				<div class="form-element">
+					<input class="free-text" id="BOEToolName" name="BOEToolName" type="text" maxlength="50" />
+				</div>
+			</div>
+			<div class="form-row" data-proposal-type="standard">
+				<div class="form-label">
+					What application will be used to prepare the Cost Volume? *
+				</div>
+				<div class="form-element">
+					@Html.DropDownListFor(model => model.CostVolumeTool, Model.CostVolumeToolsList, new { maxlength = 50, @class = "selection-width", @name = "CostVolumeTool" })
+				</div>
+				<div class="form-element">
+					<input class="free-text" id="CostVolumeToolName" name="CostVolumeToolName" type="text" maxlength="50" />
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label">
+					<span helptext="Select “Yes” if this proposal requires Certified Cost and Pricing Data. Otherwise, select “No”.">Is Certified Cost and Pricing Data Required?*:</span>
+				</div>
+				<div class="form-element">
+					<div>
+						@if (Model.IsCCPDReadOnly)
+						{
+							bool ccpdRequired = (Model.ProposalID > 0 && Model.IsCCPDRequired.HasValue && Model.IsCCPDRequired.Value);
+							string ccpdString = ccpdRequired ? "Yes" : "No";
+							<input type="hidden" id="IsCCPDRequired" name="IsCCPDRequired" value="@ccpdRequired.ToString().ToLower()" />
+							<span>@ccpdString</span>
+						}
+						else
+						{
+							<label for="IsCCPDRequired-Yes">Yes</label>
+							<input type="radio" class="radio" id="IsCCPDRequired-Yes" value="true" name="IsCCPDRequired" @if (Model.ProposalID > 0 && Model.IsCCPDRequired.HasValue && Model.IsCCPDRequired.Value) { <text> checked</text>} onclick="ProposalGeneralInformationWidget.ValidateCCPDRequiredYes();" />
+							<label for="IsCCPDRequired-No">No</label>
+							<input type="radio" class="radio" id="IsCCPDRequired-No" value="false" name="IsCCPDRequired" @if (Model.ProposalID > 0 && Model.IsCCPDRequired.HasValue && !Model.IsCCPDRequired.Value) { <text> checked</text>} onclick="ProposalGeneralInformationWidget.ValidateCCPDRequiredNo();" />
+						}
+					</div>
+				</div>
+			</div>
+			<div class="form-row" id="CcopdNoReasonOuter">
+				<div class="form-label">
+					Please provide reason why CCoPD is not required: *
+				</div>
+				<div class="form-element">
+					@Html.DropDownListFor(model => model.CcopdNoReason, Model.ReasonsForCcopdBeingNo, new { maxlength = 100, @class = "selection-width", @name = "CcopdNoReason", @onchange = "CcopdReasonChanged()" })
+				</div>
+				<div class="form-element">
+					<input class="free-text" id="CcopdNoOtherReason" name="CcopdNoOtherReason" type="text" maxlength="50" />
+				</div>
+			</div>
+			<div class="form-row" id="IsSupportOfUndefinitizedOuter">
+				<div class="form-label">
+					Is this proposal in support of definitizing an Undefinitized Contract Action (UCA) per FAR 16.603 / DFARS 217.74? *
+				</div>
+				<div class="form-element">
+					<label for="IsSupportOfUndefinitized-Yes">Yes</label>
+					<input type="radio" class="radio" id="IsSupportOfUndefinitized-Yes" value="true" name="IsSupportOfUndefinitized" @if (Model.ProposalID > 0 && Model.IsSupportOfUndefinitized.HasValue && Model.IsSupportOfUndefinitized.Value) { <text> checked</text>} />
+					<label for="IsSupportOfUndefinitized-No">No</label>
+					<input type="radio" class="radio" id="IsSupportOfUndefinitized-No" value="false" name="IsSupportOfUndefinitized" @if (Model.ProposalID > 0 && Model.IsSupportOfUndefinitized.HasValue && !Model.IsSupportOfUndefinitized.Value) { <text> checked</text>} />
+				</div>
+			</div>
+			<div class="form-row" id="AltPricingMethodOuter">
+				<div class="form-label">
+					Is the proposal subject to an alternative pricing methodology? *
+				</div>
+				<div class="form-element">
+					<label for="SubjectToApm-Yes">Yes</label>
+					<input type="radio" class="radio" id="SubjectToApm-Yes" value="true" name="SubjectToAlternativePricingMethodology" @if (Model.ProposalID > 0 && Model.SubjectToAlternativePricingMethodology.HasValue && Model.SubjectToAlternativePricingMethodology.Value) { <text> checked</text>} onclick="SubjectToApmChanged();" />
+					<label for="SubjectToApm-No">No</label>
+					<input type="radio" class="radio" id="SubjectToApm-No" value="false" name="SubjectToAlternativePricingMethodology" @if (Model.ProposalID > 0 && Model.SubjectToAlternativePricingMethodology.HasValue && !Model.SubjectToAlternativePricingMethodology.Value) { <text> checked</text>} onclick="SubjectToApmChanged();" />
+					<div id="SubjectToApmYesSelection">
+						<div class="form-element">
+							@Html.DropDownListFor(model => model.AlternativePricingMethodology, Model.AlternativePricingMethodologies, new { maxlength = 100, @class = "selection-width", @name = "AltPricingMethod", @onchange = "AltPricingMethodChanged()" })
+						</div>
+						<div class="form-element">
+							<input class="free-text" id="AlternativePricingMethodologyOtherText" name="AlternativePricingMethodologyOtherText" type="text" maxlength="50" />
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="form-row">
+				<div class="form-label">
+					<span helptext="Select “Yes” if the Cost Volume is classified for this proposal. Otherwise, select “No”.">Is the Cost Volume for this proposal Classified?*:</span>
+				</div>
+				<div class="form-element">
+					<div>
+						<label for="IsCostVolumeClassified-Yes">Yes</label>
+						<input type="radio" class="radio" id="IsCostVolumeClassified-Yes" onchange="ClassificationChanged(true)" value="true" name="IsCostVolumeClassified" @if (Model.ProposalID > 0 && Model.IsCostVolumeClassified.HasValue && Model.IsCostVolumeClassified.Value) { <text> checked</text>} />
+						<label for="IsCCPDClassified-No">No</label>
+						<input type="radio" class="radio" id="IsCostVolumeClassified-No" onchange="ClassificationChanged(false)" value="false" name="IsCostVolumeClassified" @if (Model.ProposalID > 0 && Model.IsCostVolumeClassified.HasValue && !Model.IsCostVolumeClassified.Value) { <text> checked</text>} />
+					</div>
+				</div>
+			</div>
+			<div class="form-row" id="AdditionalClassificationField">
+				<div class="form-label">
+					<span helptext="Select “Yes” if a higher level of classification is required. Otherwise, select “No”.">Higher level clearance required beyond standard clearance requirements?*:</span>
+				</div>
+				<div class="form-element">
+					<div>
+						<label for="AdditionalClassification-Yes">Yes</label>
+						<input type="radio" class="radio" id="AdditionalClassification-Yes" value="true" name="AdditionalClassification" @if (Model.ProposalID > 0 && Model.AdditionalClassification.HasValue && Model.AdditionalClassification.Value) { <text> checked</text>} />
+						<label for="AdditionalClassification-No">No</label>
+						<input type="radio" class="radio" id="AdditionalClassification-No" value="false" name="AdditionalClassification" @if (Model.ProposalID > 0 && Model.AdditionalClassification.HasValue && !Model.AdditionalClassification.Value) { <text> checked</text>} />
+					</div>
+				</div>
+			</div>
+		}
+	</div>
 </div>

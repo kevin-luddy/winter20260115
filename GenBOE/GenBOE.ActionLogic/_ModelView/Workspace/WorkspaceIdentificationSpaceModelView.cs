@@ -7,17 +7,16 @@
 namespace GenBOE.ActionLogic.ModelView.Workspace
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
 	using System.ComponentModel.DataAnnotations;
 	using System.Diagnostics.CodeAnalysis;
-	using GenBOE.ActionLogic.ValidationAttributes;
 	using GenBOE.ActionLogic.Validation;
+	using GenBOE.ActionLogic.ValidationAttributes;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using IES.Common;
 	using IES.Common.classes;
-	using System.Collections.Generic;
-	using IES.Common.PickList;
 
 	/// <summary>
 	/// Workspace Identification (Space Systems Company) ModelView that extends WorkspaceIdentificationModelView
