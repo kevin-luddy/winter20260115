@@ -151,18 +151,6 @@ namespace RDM.Backend.Controllers
 					response.Messages = validationResponse.Messages;
 				}
 			}
-			catch (FileFormatException ex)
-			{
-				response.Messages.Add(ex.Message);
-			}
-			catch (ColumnMissingException ex)
-			{
-				response.Messages.Add(ex.Message);
-			}
-			catch (CellValueMissingException ex)
-			{
-				response.Messages.Add(ex.Message);
-			}
 			catch (Exception ex)
 			{
 				response.Messages.Add($"{ex.Message}");
