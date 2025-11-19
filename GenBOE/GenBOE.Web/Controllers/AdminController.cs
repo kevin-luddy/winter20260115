@@ -1652,8 +1652,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">the workspace</param>
 		/// <returns>the ProPricer grid view</returns>
-		[HttpPost]
-        public ViewResult DisplayProPricerGrid()
+		public ViewResult DisplayProPricerGrid()
         {
             // Initialize Action
             Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_DISPLAY_EXPORT_TO_PROPRICER_GRID, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);

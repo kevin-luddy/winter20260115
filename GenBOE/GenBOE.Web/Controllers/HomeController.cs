@@ -35,7 +35,6 @@ namespace GenBOE.Web.Controllers
     public class HomeController : GenBOEController
     {
         private readonly Logger _log = new Logger(typeof(HomeController));
-        private readonly ValidationFactory _ValidationFactory = null;
         private readonly IGenBOEMetricsDataLoader boeMetricsLoader = null;
         private readonly ISecurityInformation _SecInfo;
         private readonly GenTRAC.DataBridge.Common.Security.ISecurityMapper ptmSecurityMapper;
@@ -55,7 +54,6 @@ namespace GenBOE.Web.Controllers
         public HomeController(ISecurityAccess inSecurityAccess,
             CommonDataMapper inCommonDataMapper,
             SiteMasterUtilities inSiteMasterUtilities,
-            ValidationFactory inValidationFactory,
             IGenBOEMetricsDataLoader boeMetricsLoader,
             ISecurityInformation inSecurityInformation,
             SystemMetrics inSystemMetrics,
@@ -71,7 +69,6 @@ namespace GenBOE.Web.Controllers
             IWorkspaceControllerLogic workspaceLogic)
             : base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inUserDTODataLoader, permissionsLoader, inControllerLogic)
         {
-            _ValidationFactory = inValidationFactory;
             this.boeMetricsLoader = boeMetricsLoader;
             _SecInfo = inSecurityInformation;
             _WorkspaceDTODataLoader = inWorkspaceDTODataLoader;

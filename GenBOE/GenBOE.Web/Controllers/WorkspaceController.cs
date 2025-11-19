@@ -61,72 +61,72 @@ namespace GenBOE.Web.Controllers
 	public class WorkspaceController : GenBOEController
 	{
 		private Logger _log = new Logger(typeof(WorkspaceController));
-		private WorkspaceStateMachine _WorkspaceStateMachine = null;
-		private ActiveDirectoryUtilities _ADUtils = null;
-		private ResourceDTODataLoader _ResourceLoader = null;
-		private IResourceListDTODataLoader _ResourceListLoader = null;
-		private PerformingOrgListDTODataLoader _PerformingOrgListLoader = null;
-		private RestoreDefaultOptions _RestoreDefaultOptions = null;
-		private CustomFieldDTODataLoader _CustomFieldLoader = null;
-		private CustomFieldValueDTODataLoader _CustomFieldValueLoader = null;
-		private IWorkspaceVariableDTODataLoader _WorkspaceVariableLoader = null;
-		private BoeEmailer _emailer = null;
-		private WorkspaceVariableUniqueNameValidator _WSVarUniqueValidator = null;
-		private IVariableSelectBOEtoSumCalculation _VariableSelectBOEtoSumCalculation = null;
-		private BOEStateMachine _BOEStateMachine = null;
-		private WorkspaceExportFormatDTODataLoader _WorkspaceExportFormatDTOLoader = null;
-		private WorkspaceVersionMetaDataDTODataLoader _WorkspaceVersionMetaDataDTODataLoader = null;
-		private VariableCircularReferenceChecker _VariableCircularReferenceChecker = null;
-		private BoeTaskElementRecalculation _BoeTaskElementRecalculation = null;
-		private ArtemisImporter _ArtemisImporter = null;
-		private ProjectImporter _ProjectImporter = null;
-		private CustomFieldImporter _CustomFieldImporter = null;
-		private ResourcesImporter _ResourcesImporter = null;
-		private PerformingOrgImporter _PerformingOrgImporter = null;
-		private BoeTaskElementMediator _BoeTaskElementMediator = null;
-		private BoeMediator _BoeMediator = null;
-		private ISecurityInformation _securityInformation = null;
-		private WorkspaceSearchDTODataLoader _WorkspaceSearchDTOLoader = null;
-		private WorkspaceCopier _WorkspaceCopier = null;
-		private TMResourceRateDTODataLoader tmResourceRateLoader = null;
-		private IWorkspaceControllerLogic _ControllerLogic = null;
-		private TMResourceRateImporter tmResourceRateImporter = null;
-		private InUseDataLoader _InUseDataLoader = null;
-		private IClinDTODataLoader clinLoader;
-		private IWorkspaceDTODataLoader workspaceLoader;
-		private IWbsDTODataLoader wbsLoader;
-		private IPerformingOrgDTODataLoader perfOrgLoader;
-		private PackageUtilities _PackageUtilities;
-		private RMSZoneTravelRatesFeesDataLoader travelRatesFeesDataLoader;
-		private IOffloadRatesDTOLoader offloadRatesDTOLoader;
-		private IRetriever retriever;
-		private GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader;
-		private GenTRAC.DataBridge.Common.Security.ISecurityMapper ptmSecurityMapper;
-		private BoePickListMapper boePickListMapper;
-		private CommentsAndResponsesExporter _commentsAndResponsesExporter = null;
-		private BOECommentsControllerLogic _boeCommentsControllerLogic = null;
+		private readonly WorkspaceStateMachine _WorkspaceStateMachine = null;
+		private readonly ActiveDirectoryUtilities _ADUtils = null;
+		private readonly ResourceDTODataLoader _ResourceLoader = null;
+		private readonly IResourceListDTODataLoader _ResourceListLoader = null;
+		private readonly PerformingOrgListDTODataLoader _PerformingOrgListLoader = null;
+		private readonly RestoreDefaultOptions _RestoreDefaultOptions = null;
+		private readonly CustomFieldDTODataLoader _CustomFieldLoader = null;
+		private readonly CustomFieldValueDTODataLoader _CustomFieldValueLoader = null;
+		private readonly IWorkspaceVariableDTODataLoader _WorkspaceVariableLoader = null;
+		private readonly BoeEmailer _emailer = null;
+		private readonly WorkspaceVariableUniqueNameValidator _WSVarUniqueValidator = null;
+		private readonly IVariableSelectBOEtoSumCalculation _VariableSelectBOEtoSumCalculation = null;
+		private readonly BOEStateMachine _BOEStateMachine = null;
+		private readonly WorkspaceExportFormatDTODataLoader _WorkspaceExportFormatDTOLoader = null;
+		private readonly WorkspaceVersionMetaDataDTODataLoader _WorkspaceVersionMetaDataDTODataLoader = null;
+		private readonly VariableCircularReferenceChecker _VariableCircularReferenceChecker = null;
+		private readonly BoeTaskElementRecalculation _BoeTaskElementRecalculation = null;
+		private readonly ArtemisImporter _ArtemisImporter = null;
+		private readonly ProjectImporter _ProjectImporter = null;
+		private readonly CustomFieldImporter _CustomFieldImporter = null;
+		private readonly ResourcesImporter _ResourcesImporter = null;
+		private readonly PerformingOrgImporter _PerformingOrgImporter = null;
+		private readonly BoeTaskElementMediator _BoeTaskElementMediator = null;
+		private readonly BoeMediator _BoeMediator = null;
+		private readonly ISecurityInformation _securityInformation = null;
+		private readonly WorkspaceSearchDTODataLoader _WorkspaceSearchDTOLoader = null;
+		private readonly WorkspaceCopier _WorkspaceCopier = null;
+		private readonly TMResourceRateDTODataLoader tmResourceRateLoader = null;
+		private readonly IWorkspaceControllerLogic _ControllerLogic = null;
+		private readonly TMResourceRateImporter tmResourceRateImporter = null;
+		private readonly InUseDataLoader _InUseDataLoader = null;
+		private readonly IClinDTODataLoader clinLoader;
+		private readonly IWorkspaceDTODataLoader workspaceLoader;
+		private readonly IWbsDTODataLoader wbsLoader;
+		private readonly IPerformingOrgDTODataLoader perfOrgLoader;
+		private readonly PackageUtilities _PackageUtilities;
+		private readonly RMSZoneTravelRatesFeesDataLoader travelRatesFeesDataLoader;
+		private readonly IOffloadRatesDTOLoader offloadRatesDTOLoader;
+		private readonly IRetriever retriever;
+		private readonly GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader;
+		private readonly GenTRAC.DataBridge.Common.Security.ISecurityMapper ptmSecurityMapper;
+		private readonly BoePickListMapper boePickListMapper;
+		private readonly CommentsAndResponsesExporter _commentsAndResponsesExporter = null;
+		private readonly BOECommentsControllerLogic _boeCommentsControllerLogic = null;
 		private readonly GenBOE.DataBridge.DTO.IPldDTODataLoader _pldDTODataLoader;
 
 
 		/// <summary>
 		/// Workspace Exporter
 		/// </summary>
-		private WorkspaceExporter workspaceExporter;
+		private readonly WorkspaceExporter workspaceExporter;
 
 		/// <summary>
 		/// Reports Controller Logic
 		/// </summary>
-		private IReportsControllerLogic reportsControllerLogic;
+		private readonly IReportsControllerLogic reportsControllerLogic;
 
 		/// <summary>
 		/// BOE Exporter
 		/// </summary>
-		private IBOEExporter boeExporter;
+		private readonly IBOEExporter boeExporter;
 
 		/// <summary>
 		/// BOE Custom Exporter
 		/// </summary>
-		private IBOECustomExporter boeCustomExporter;
+		private readonly IBOECustomExporter boeCustomExporter;
 
 		/// <summary>
 		/// Full WS Recalculation
@@ -829,6 +829,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="useCookie">If a cookie should be used</param>
 		/// <param name="workspace">Workspace to display dialogs for</param>
 		/// <returns>View Result</returns>
+		[ChildActionOnly, HttpGet]
 		public ViewResult DisplayUpdateWorkspaceRatesDialog(bool useCookie, string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1206,20 +1207,21 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The workspace containing the variable</param>
 		/// <param name="workspaceVariableID">The variable to check</param>
 		/// <returns></returns>
+		[HttpPost]
 		public JsonResult FindValidBOEsForWorkspaceVariable(string workspace, int workspaceVariableID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			WorkspaceVariableDTO workspaceVariable = ws.WorkspaceVariables.FirstOrDefault(i => i.Id == workspaceVariableID);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "FindValidBOEsForWorkspaceVariable", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_FIND_VALID_BOES_FOR_WORKSPACE_VARIABLE, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			DataRelationshipVerifier.VerifyDataRelation(workspaceVariable, ws.Id);
 
 			JsonResult toReturn = Json(_VariableCircularReferenceChecker.FindValidBOEsForWorkspaceVariable(new VariableCircularReferenceCheckerCache(), workspaceVariable, ws));
 
 			// Finalize Action
-			FinalizeAction(_log, "FindValidBOEsForWorkspaceVariable", sw);
+			FinalizeAction(_log, WebConstants.ACTION_FIND_VALID_BOES_FOR_WORKSPACE_VARIABLE, sw);
 
 			return toReturn;
 		}
@@ -1229,17 +1231,18 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">the workspace containing the variable</param>
 		/// <returns>valid BOE IDs</returns>
+		[HttpPost]
 		public JsonResult FindValidBOEsForNotInUseWorkspaceVariable(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "FindValidBOEsForNotInUseWorkspaceVariable", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_FIND_VALID_BOES_FOR_NOT_IN_USE_WORKSPACE_VARIABLE, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 
 			JsonResult toReturn = Json(_VariableCircularReferenceChecker.FindValidBOEsForNotInUseWorkspaceVariable(ws));
 
 			// Finalize Action
-			FinalizeAction(_log, "FindValidBOEsForNotInUseWorkspaceVariable", sw);
+			FinalizeAction(_log, WebConstants.ACTION_FIND_VALID_BOES_FOR_NOT_IN_USE_WORKSPACE_VARIABLE, sw);
 
 			return toReturn;
 		}
@@ -1444,12 +1447,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The Workspace</param>
 		/// <param name="boeCustomFieldID">The Custom Field ID</param>
 		/// <returns>View Result for the Custom Field page</returns>
+		[HttpPost]
 		public ViewResult DisplayBOECustomField(string workspace, int? boeCustomFieldID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayBOECustomField", SecurityPage.BoeCustomFields, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CUSTOM_FIELD, SecurityPage.BoeCustomFields, SecurityAuthorization.Read, ws, null);
 
 			BOECustomFieldsInUseGridModelView metaData;
 			Collection<BOECustomFieldOptionModelView> options = new Collection<BOECustomFieldOptionModelView>();
@@ -1487,7 +1491,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_CUSTOM_FIELD, theModelView);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayBOECustomField", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CUSTOM_FIELD, sw);
 
 			return toReturn;
 		}
@@ -1536,19 +1540,20 @@ namespace GenBOE.Web.Controllers
 			return toReturn;
 		}
 
+		[HttpPost]
 		public ViewResult DisplayBOECustomFieldResourceGrid(string workspace, string searchText, bool showLabor, bool showIWTA, bool showSub, bool showODC, bool showTravel, bool showMaterials)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayBOECustomFieldResourceGrid", SecurityPage.BoeCustomFieldResource, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CUSTOM_FIELD_RESOURCE_GRID, SecurityPage.BoeCustomFieldResource, SecurityAuthorization.Read, ws, null);
 
 			BOECustomFieldResourceGridModelView theModelView = _GetAndFilterCustomFieldResources(workspace, searchText, showLabor, showIWTA, showSub, showODC, showTravel, showMaterials);
 
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_CUSTOM_FIELD_RESOURCE_GRID, theModelView);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayBOECustomFieldResourceGrid", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CUSTOM_FIELD_RESOURCE_GRID, sw);
 
 			return toReturn;
 		}
@@ -1558,12 +1563,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public ViewResult DisplayBOECustomFieldResourceViewDefault(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayBOECustomFieldResourceViewDefault", SecurityPage.BoeCustomFieldResource, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CUSTOM_FIELD_RESOURCE_VIEW_DEFAULT, SecurityPage.BoeCustomFieldResource, SecurityAuthorization.Read, ws, null);
 
 			Collection<BOECustomFieldResourceModelView> theModelViews = new Collection<BOECustomFieldResourceModelView>();
 			IDictionary<int, ElementOfCostTypeModelView> allElementOfCostTypes = this._CommonDataMapper.GetElementOfCostTypesDictionary();
@@ -1581,7 +1587,7 @@ namespace GenBOE.Web.Controllers
 			// Finalize Action
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_CUSTOM_FIELD_RESOURCE_VIEW_DEFAULT, theModelViews);
 
-			FinalizeAction(_log, "DisplayBOECustomFieldResourceViewDefault", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_CUSTOM_FIELD_RESOURCE_VIEW_DEFAULT, sw);
 
 			return toReturn;
 		}
@@ -1607,12 +1613,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public ViewResult DisplayBackupVersionsGrid(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayBackupVersionsGrid", SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BACKUP_VERSIONS_GRID, SecurityPage.WorkspaceSettings, SecurityAuthorization.Read, ws, null);
 			Collection<WorkspaceVersionModelView> model = new Collection<WorkspaceVersionModelView>();
 
 			Collection<WorkspaceVersionMetaDataDTO> backupVersionDTOs = _WorkspaceVersionMetaDataDTODataLoader.GetByWorkspaceID(ws.Id);
@@ -1631,7 +1638,7 @@ namespace GenBOE.Web.Controllers
 			// Finalize Action
 			ViewResult toReturn = View(WebConstants.VIEW_BACKUP_VERSIONS_GRID, model);
 
-			FinalizeAction(_log, "DisplayBackupVersionsGrid", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BACKUP_VERSIONS_GRID, sw);
 
 			return toReturn;
 		}
@@ -2121,6 +2128,7 @@ namespace GenBOE.Web.Controllers
 		/// Currently both HttpPost and HttpGet
 		/// </summary>
 		/// <returns>The Choose Workspace Partial View</returns>
+		// Works with both HttpGet and HttpPost
 		public ViewResult DisplayChooseWorkspace(int? workspaceStatus)
 		{
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_CHOOSE_WORKSPACE, SecurityPage.Home, SecurityAuthorization.Read, null, null);

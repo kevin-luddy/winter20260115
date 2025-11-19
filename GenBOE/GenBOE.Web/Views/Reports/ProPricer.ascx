@@ -455,7 +455,7 @@
 
     ExportToProPricerWidget.ReloadExportGrid = function () {
         $.ajax({
-            type: 'POST',
+            type: 'GET',
             url: CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
             '<%:WebConstants.CONTROLLER_REPORTS %>',
             '<%:WebConstants.ACTION_DISPLAY_EXPORT_TO_PROPRICER_GRID %>', ''),

@@ -583,7 +583,6 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_DISPLAY_IMPORT_WBS = "DisplayImportWBSButton";
 		public static readonly string ACTION_EXPORT_WBS = "ExportWBS";
 		public static readonly string ACTION_EXPORT_WBS_TEMPLATE = "ExportWBSTemplate";
-		public static readonly string ACTION_GET_BOE_COUNT_FOR_WBS = "GetBOECountForWBS";
 		public static readonly string ACTION_IMPORT_WBS = "ImportWBS";
 		public static readonly string ACTION_PAGE_MANAGE_WBS = "PageManageWBS";
 		public static readonly string ACTION_SAVE_MANAGE_WBS_UPDATES = "SaveManageWBSUpdates";
