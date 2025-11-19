@@ -969,10 +969,10 @@ namespace GenBOE.DataBridge.Core.IO.Export
 							RemoveElement(WordUtilities.GetTaggedChildElement(skillMixTablesContainer, BOEExporterConstants.Table_LmEnterpriseSkillMix));
 						}
 					}
-				}
-				else
-				{
-					RemoveElement(skillMixTablesContainer);
+					else
+					{
+						RemoveElement(skillMixTablesContainer);
+					}
 				}
 			}
 		}
