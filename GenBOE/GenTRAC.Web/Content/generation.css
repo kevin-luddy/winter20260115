@@ -1037,9 +1037,13 @@ div.create-workspace.buttons.full
 }
 
 .planned-label {
-	margin: auto;
-    margin-right: 45px;
-	margin-top: 3px;
+	margin-left: auto;
+    margin-right: 98px;
+}
+
+.scheduled-only-label {
+	margin-left: auto;
+	margin-right: 45px;
 }
 
 .date-container-label {
