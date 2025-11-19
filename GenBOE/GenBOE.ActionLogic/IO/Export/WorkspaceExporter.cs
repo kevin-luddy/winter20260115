@@ -497,11 +497,11 @@ namespace GenBOE.ActionLogic.IO.Export
 									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + summary.HistoricalHours,
 									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + historicalSkillMix,
 									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + proposedSkillMix,
-									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + summary.ProposedLegacyResource.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)),
-									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + summary.ProposedBrc.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)),
-									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + summary.TotalProposedLegacyBrc.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)),
-									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + summary.UCOTHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)),
-									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + summary.GrandTotalHours.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision)),
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + summary.ProposedLegacyResource.ToString(Utilities.PrecisionFormattingString(exportInputs.Workspace.DecimalPrecision)),
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + summary.ProposedBrc.ToString(Utilities.PrecisionFormattingString(exportInputs.Workspace.DecimalPrecision)),
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + summary.TotalProposedLegacyBrc.ToString(Utilities.PrecisionFormattingString(exportInputs.Workspace.DecimalPrecision)),
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + summary.UCOTHours.ToString(Utilities.PrecisionFormattingString(exportInputs.Workspace.DecimalPrecision)),
+									CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + summary.GrandTotalHours.ToString(Utilities.PrecisionFormattingString(exportInputs.Workspace.DecimalPrecision)),
 									summary.Rationale
 								};
 
