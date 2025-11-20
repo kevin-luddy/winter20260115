@@ -112,8 +112,11 @@
                                 var importedSpread = importedSpreads[spreadNdx];
 
                                 //fix resource and performing org for new spreads
-                                importedSpread.Resource = ImportLaborType.ImportedData[ltresultNdx].Resource;
-                                importedSpread.PerformingOrg = ImportLaborType.ImportedData[ltresultNdx].PerformingOrg;
+								importedSpread.Resource = (ImportLaborType.ImportedData[ltresultNdx].Resource ||
+									                       ImportLaborType.ImportedData[ltresultNdx].InvalidResource);
+
+								importedSpread.PerformingOrg = (ImportLaborType.ImportedData[ltresultNdx].PerformingOrg ||
+									                            ImportLaborType.ImportedData[ltresultNdx].InvalidPerformingOrg);
 
                                 ImportLaborType.ImportedSpreadData.push(importedSpread);
                             }
