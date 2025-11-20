@@ -18,6 +18,14 @@ CREATE PROCEDURE [dbo].[upsertProposalContractsData]
 	@FinalNegotiatedValue [bigint],
 	@FinalNegotiatedDate [date],
 	@EppDelegationAuthority [int],
+	@ScheduledActualBidEppDate [date],
+	@ScheduledActualProgramEppDate [date],
+	@ScheduledActualMissionSegmentEppDate [date],
+	@ScheduledActualLobEppDate [date],
+	@ScheduledActualPreSpaceEppDate [date],
+	@ScheduledActualSpaceEppDate [date],
+	@ScheduledActualPreCorporateEppDate [date],
+	@ScheduledActualCorporateEppDate [date],
 	@PlannedBidEppDate [date],
 	@PlannedProgramEppDate [date],
 	@PlannedMissionSegmentEppDate [date],
@@ -26,14 +34,6 @@ CREATE PROCEDURE [dbo].[upsertProposalContractsData]
 	@PlannedSpaceEppDate [date],
 	@PlannedPreCorporateEppDate [date],
 	@PlannedCorporateEppDate [date],
-	@ScheduledBidEppDate [date],
-	@ScheduledProgramEppDate [date],
-	@ScheduledMissionSegmentEppDate [date],
-	@ScheduledLobEppDate [date],
-	@ScheduledPreSpaceEppDate [date],
-	@ScheduledSpaceEppDate [date],
-	@ScheduledPreCorporateEppDate [date],
-	@ScheduledCorporateEppDate [date],
 	@EppRosDelegationNotes [varchar](1000),
 	@LmWon [bit],
 	@ModCompletedDate [date],
@@ -65,6 +65,7 @@ AS
 **		11/12/24	twilson3			Add Insurance fields
 **		05/12/25	ranzalon			Add Bid and Mission Segment EPP Dates
 **		10/02/25	e403038				PROPH-2994 Additional EPP Dates (Original to Planned and add Scheduled)
+**		10/30/25	e403038				PROPH-3406 Label Modifications => Current Planned renamed to ScheduledActual and Current Scheduled renamed to Planned
 *******************************************************************************/
 SET NOCOUNT ON
 
@@ -73,20 +74,20 @@ SET NOCOUNT ON
 			DECLARE @Inserted AS Table (Id int)
 			INSERT INTO [dbo].[ProposalContractsData] (UpdateDT, ProposalID, PreviouslySubmittedROM, CustomerSubmittalDate,
 														ContractsCorrespondLogNumber, FinalNegotiatedValue, FinalNegotiatedDate,
-														EppDelegationAuthority, PlannedProgramEppDate, PlannedLobEppDate, PlannedPreSpaceEppDate, 
-														PlannedSpaceEppDate, PlannedPreCorporateEppDate, PlannedCorporateEppDate, EppRosDelegationNotes, 
+														EppDelegationAuthority, ScheduledActualProgramEppDate, ScheduledActualLobEppDate, ScheduledActualPreSpaceEppDate, 
+														ScheduledActualSpaceEppDate, ScheduledActualPreCorporateEppDate, ScheduledActualCorporateEppDate, EppRosDelegationNotes, 
 														LmWon, ModCompletedDate, CageCode, CustomerDueDate, IsInsuranceDirect, 
-														InsuranceType, ProposedInsurance, NegotiatedInsurance, PlannedBidEppDate, PlannedMissionSegmentEppDate,
-														ScheduledProgramEppDate, ScheduledLobEppDate, ScheduledPreSpaceEppDate, 
-														ScheduledSpaceEppDate, ScheduledPreCorporateEppDate, ScheduledCorporateEppDate, ScheduledBidEppDate, ScheduledMissionSegmentEppDate)
+														InsuranceType, ProposedInsurance, NegotiatedInsurance, ScheduledActualBidEppDate, ScheduledActualMissionSegmentEppDate,
+														PlannedProgramEppDate, PlannedLobEppDate, PlannedPreSpaceEppDate, 
+														PlannedSpaceEppDate, PlannedPreCorporateEppDate, PlannedCorporateEppDate, PlannedBidEppDate, PlannedMissionSegmentEppDate)
 				OUTPUT inserted.ProposalContractsDataId INTO @Inserted
 				VALUES (GETDATE(), @ProposalID, @PreviouslySubmittedROM, @CustomerSubmittalDate, @ContractsCorrespondLogNumber,
-						@FinalNegotiatedValue, @FinalNegotiatedDate, @EppDelegationAuthority, @PlannedProgramEppDate, @PlannedLobEppDate, 
-						@PlannedPreSpaceEppDate, @PlannedSpaceEppDate, @PlannedPreCorporateEppDate, @PlannedCorporateEppDate, @EppRosDelegationNotes, @LmWon, 
+						@FinalNegotiatedValue, @FinalNegotiatedDate, @EppDelegationAuthority, @ScheduledActualProgramEppDate, @ScheduledActualLobEppDate, 
+						@ScheduledActualPreSpaceEppDate, @ScheduledActualSpaceEppDate, @ScheduledActualPreCorporateEppDate, @ScheduledActualCorporateEppDate, @EppRosDelegationNotes, @LmWon, 
 						@ModCompletedDate, @CageCode, @CustomerDueDate, @IsInsuranceDirect, @InsuranceType, @ProposedInsurance, 
-						@NegotiatedInsurance, @PlannedBidEppDate, @PlannedMissionSegmentEppDate,
-						@ScheduledProgramEppDate, @ScheduledLobEppDate, @ScheduledPreSpaceEppDate, 
-						@ScheduledSpaceEppDate, @ScheduledPreCorporateEppDate, @ScheduledCorporateEppDate, @ScheduledBidEppDate, @ScheduledMissionSegmentEppDate)
+						@NegotiatedInsurance, @ScheduledActualBidEppDate, @ScheduledActualMissionSegmentEppDate,
+						@PlannedProgramEppDate, @PlannedLobEppDate, @PlannedPreSpaceEppDate, 
+						@PlannedSpaceEppDate, @PlannedPreCorporateEppDate, @PlannedCorporateEppDate, @PlannedBidEppDate, @PlannedMissionSegmentEppDate)
 			SELECT @ProposalContractsDataId = Id FROM @Inserted
 		END
 	ELSE -- updating existing
@@ -101,6 +102,14 @@ SET NOCOUNT ON
 						FinalNegotiatedValue = @FinalNegotiatedValue, 
 						FinalNegotiatedDate = @FinalNegotiatedDate,
 						EppDelegationAuthority = @EppDelegationAuthority,
+						ScheduledActualBidEppDate = @ScheduledActualBidEppDate,
+						ScheduledActualProgramEppDate = @ScheduledActualProgramEppDate,
+						ScheduledActualMissionSegmentEppDate = @ScheduledActualMissionSegmentEppDate,
+						ScheduledActualLobEppDate = @ScheduledActualLobEppDate,
+						ScheduledActualPreSpaceEppDate = @ScheduledActualPreSpaceEppDate,
+						ScheduledActualSpaceEppDate = @ScheduledActualSpaceEppDate,
+						ScheduledActualPreCorporateEppDate = @ScheduledActualPreCorporateEppDate,
+						ScheduledActualCorporateEppDate = @ScheduledActualCorporateEppDate,
 						PlannedBidEppDate = @PlannedBidEppDate,
 						PlannedProgramEppDate = @PlannedProgramEppDate,
 						PlannedMissionSegmentEppDate = @PlannedMissionSegmentEppDate,
@@ -109,14 +118,6 @@ SET NOCOUNT ON
 						PlannedSpaceEppDate = @PlannedSpaceEppDate,
 						PlannedPreCorporateEppDate = @PlannedPreCorporateEppDate,
 						PlannedCorporateEppDate = @PlannedCorporateEppDate,
-						ScheduledBidEppDate = @ScheduledBidEppDate,
-						ScheduledProgramEppDate = @ScheduledProgramEppDate,
-						ScheduledMissionSegmentEppDate = @ScheduledMissionSegmentEppDate,
-						ScheduledLobEppDate = @ScheduledLobEppDate,
-						ScheduledPreSpaceEppDate = @ScheduledPreSpaceEppDate,
-						ScheduledSpaceEppDate = @ScheduledSpaceEppDate,
-						ScheduledPreCorporateEppDate = @ScheduledPreCorporateEppDate,
-						ScheduledCorporateEppDate = @ScheduledCorporateEppDate,
 						EppRosDelegationNotes = @EppRosDelegationNotes,
 						LmWon = @LmWon,
 						ModCompletedDate = @ModCompletedDate,

@@ -40,6 +40,7 @@ AS
 **			2/2/2021	ranzalon				BOEJ-4861 - Add submitted value
 **			2/28/2022	koovackal				IES-846 Create 2 new statuses
 **			11/14/2022	twilson3				IES-1976 - Fix missing parens
+**			10/28/2025	e426263					PROPH-3376 - Update PTM Dashboard
 ******************************************************************************/
 	SET NOCOUNT ON 
 
@@ -100,7 +101,7 @@ AS
 		P.DateAssigned AS [Date Assigned],
 		CASE WHEN P.RevisedSubmittalDate IS NOT NULL THEN P.RevisedSubmittalDate ELSE P.AnticipatedDeliveryDate END AS [Estimated Ship Date (Due Date)],
 		CAST(CC.ChecklistCompleteDate AS DATE) AS [ChecklistCompleteDate],
-		CAST(PC.ProposalSubmittalDate AS DATE) AS [Proposal Submit Date],
+		CAST(PC.ProposalSubmittalDate AS DATE) AS [Date Est. Submits to Contracts],
 		S.ProposalStatus AS [Proposal Status],
 		P.RevisedSubmittalDate AS [Revised Submittal Date],
 		P.DocumentId AS DocumentId,

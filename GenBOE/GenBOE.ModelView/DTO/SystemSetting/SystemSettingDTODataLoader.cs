@@ -45,7 +45,7 @@ namespace GenBOE.DataBridge.DTO
         /// Get all system setting DTOs
         /// </summary>
         /// <returns>All system settings</returns>
-        virtual public ICollection<SystemSettingDTO> GetSystemSettings()
+        public virtual ICollection<SystemSettingDTO> GetSystemSettings()
         {
             ICollection<SystemSettingDTO> toReturn = new Collection<SystemSettingDTO>();
             using (StopwatchTimer sw = new StopwatchTimer(this._log))
@@ -67,7 +67,7 @@ namespace GenBOE.DataBridge.DTO
         }
 
 
-		virtual public ICollection<SystemSettingDTO> GetSkillMixSettings()
+		public virtual ICollection<SystemSettingDTO> GetSkillMixSettings()
 		{
 			ICollection<SystemSettingDTO> toReturn = new Collection<SystemSettingDTO>();
 			using (StopwatchTimer sw = new StopwatchTimer(this._log))
@@ -95,7 +95,7 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="key">system setting key to retrieve</param>
 		/// <returns>system setting value</returns>
 		[DbQuery]
-        virtual public SystemSettingDTO GetSystemSetting(string key)
+        public virtual SystemSettingDTO GetSystemSetting(string key)
         {
             if (string.IsNullOrEmpty(key))
             {
@@ -144,7 +144,7 @@ namespace GenBOE.DataBridge.DTO
         /// Save the System Setting
         /// </summary>
         /// <param name="systemSetting">system setting to save</param>
-        virtual public string SaveSystemSetting(SystemSettingDTO systemSetting)
+        public virtual string SaveSystemSetting(SystemSettingDTO systemSetting)
         {
             if (systemSetting == null)
             {
@@ -175,7 +175,7 @@ namespace GenBOE.DataBridge.DTO
         /// Clear (delete) the system setting
         /// </summary>
         /// <param name="key">system setting key to clear</param>
-        virtual public void ClearSystemSetting(string key)
+        public virtual void ClearSystemSetting(string key)
         {
             if (string.IsNullOrEmpty(key))
             {

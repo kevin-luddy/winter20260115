@@ -267,6 +267,16 @@
 		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IsReportGenerationExternal']/@value">
 		</parameterentry>
 	</parameter>
+	<parameter name="IsLmNavigatorRteLinkEnabled" description="doesn't matter" defaultvalue="__IsLmNavigatorRteLinkEnabled__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IsLmNavigatorRteLinkEnabled']/@value">
+		</parameterentry>
+	</parameter>
+	<parameter name="LmNavigatorAgentUrl" description="doesn't matter" defaultvalue="__LmNavigatorAgentUrl__" tags="">
+		<parameterValidation kind="AllowEmpty" />
+		<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='LmNavigatorAgentUrl']/@value">
+		</parameterentry>
+	</parameter>
 	
 	<!--system.web-->
 	<parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">

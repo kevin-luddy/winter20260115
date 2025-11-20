@@ -175,6 +175,11 @@ namespace GenBOE.DataBridge.Core.DTO
 		public ICollection<CommonDisclosureModelView> CommonDisclosureTable { get; set; } = new List<CommonDisclosureModelView>();
 
 		/// <summary>
+		/// Skill Mix Summary table
+		/// </summary>
+		public ICollection<SkillMixSummaryModelView> SkillMixSummaryTable { get; set; } = new List<SkillMixSummaryModelView>();
+
+		/// <summary>
 		/// Gets or sets a value indicating whether this task instance has any T&M rates.
 		/// </summary>
 		public bool HasTMRates { get; set; }

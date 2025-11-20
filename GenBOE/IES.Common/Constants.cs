@@ -500,44 +500,44 @@ namespace IES.Common
 		#region EPP Date Validation Messages
 
 		/// <summary>
-		/// Planned Bid EPP Date is missing
+		/// Scheduled/Actual Bid EPP Date is missing
 		/// </summary>
-		public const string INVALID_PLANNED_BID_EPP_DATE = "Planned Bid EPP Date selection required.";
+		public const string INVALID_SCHEDULED_ACTUAL_BID_EPP_DATE = "Scheduled/Actual Bid EPP Date selection required.";
 
 		/// <summary>
-		/// Planned Mission Segment EPP Date is missing
+		/// Scheduled/Actual Mission Segment EPP Date is missing
 		/// </summary>
-		public const string INVALID_PLANNED_MISSION_SEGMENT_EPP_DATE = "Planned Mission Segment EPP Date selection required.";
+		public const string INVALID_SCHEDULED_ACTUAL_MISSION_SEGMENT_EPP_DATE = "Scheduled/Actual Mission Segment EPP Date selection required.";
 
 		/// <summary>
-		/// Planned Line of Business EPP Date is missing
+		/// Scheduled/Actual Line of Business EPP Date is missing
 		/// </summary>
-		public const string INVALID_PLANNED_LOB_EPP_DATE = "Planned Line of Business EPP Date selection required.";
+		public const string INVALID_SCHEDULED_ACTUAL_LOB_EPP_DATE = "Scheduled/Actual Line of Business EPP Date selection required.";
 
 		/// <summary>
-		/// Planned Pre-Space EPP Date is missing
+		/// Scheduled/Actual Pre-Space EPP Date is missing
 		/// </summary>
-		public const string INVALID_PLANNED_PRE_SPACE_EPP_DATE = "Planned Pre-Space EPP Date selection required.";
+		public const string INVALID_SCHEDULED_ACTUAL_PRE_SPACE_EPP_DATE = "Scheduled/Actual Pre-Space EPP Date selection required.";
 
 		/// <summary>
-		/// Planned Space EPP Date is missing
+		/// Scheduled/Actual Space EPP Date is missing
 		/// </summary>
-		public const string INVALID_PLANNED_SPACE_EPP_DATE = "Planned Space EPP Date selection required.";
+		public const string INVALID_SCHEDULED_ACTUAL_SPACE_EPP_DATE = "Scheduled/Actual Space EPP Date selection required.";
 
 		/// <summary>
-		/// Planned Pre-Corporate EPP Date is missing
+		/// Scheduled/Actual Pre-Corporate EPP Date is missing
 		/// </summary>
-		public const string INVALID_PLANNED_PRE_CORPORATE_EPP_DATE = "Planned Pre-Corporate EPP Date selection required.";
+		public const string INVALID_SCHEDULED_ACTUAL_PRE_CORPORATE_EPP_DATE = "Scheduled/Actual Pre-Corporate EPP Date selection required.";
 
 		/// <summary>
-		/// Planned Corporate EPP Date is missing
+		/// Scheduled/Actual Corporate EPP Date is missing
 		/// </summary>
-		public const string INVALID_PLANNED_CORPORATE_EPP_DATE = "Planned Corporate EPP Date selection required.";
+		public const string INVALID_SCHEDULED_ACTUAL_CORPORATE_EPP_DATE = "Scheduled/Actual Corporate EPP Date selection required.";
 
 		/// <summary>
-		/// Planned Program EPP Date is missing
+		/// Scheduled/Actual Program EPP Date is missing
 		/// </summary>
-		public const string INVALID_PLANNED_PROGRAM_EPP_DATE = "Planned Program EPP Date selection required.";
+		public const string INVALID_SCHEDULED_ACTUAL_PROGRAM_EPP_DATE = "Scheduled/Actual Program EPP Date selection required.";
 
 		#endregion
 
@@ -562,11 +562,6 @@ namespace IES.Common
 		/// Length for MOQ Type Historical Program Name field (matches db length)
 		/// </summary>
 		public const int MOQ_HISTORICAL_PROG_NAME_FIELD_LENGTH = 125;
-
-		/// <summary>
-		/// Length for MOQ Type WBS Element field for RMS (matches db length)
-		/// </summary>
-		public const int MOQ_WBS_ELEMENT_RMS_SAP_DISABLED_FIELD_LENGTH = 12;
 
 		/// <summary>
 		/// Length for MOQ Type WBS Element field for SSC (matches db length)

@@ -14,8 +14,9 @@ namespace GenBOE.Tests.DAL.DataLoaders
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using GenBOE.DataBridge.DTO.SkillMixSummary;
 
-    [TestClass]
+	[TestClass]
     public class WorkspaceVariableDTODataLoaderTest : MOQLoaderObject
     {
         [TestMethod]
@@ -53,10 +54,11 @@ namespace GenBOE.Tests.DAL.DataLoaders
             ILaborTypeCustomFieldValueXREFLoader laborTypeCustomFieldLoader = new LaborTypeCustomFieldValueXREFLoader();
 			ISkillMixDTOLoader skillMixDTOLoader = new SkillMixDTOLoader();
 			ICommonDisclosureSMDTODataLoader commonDisclosureSMDTODataLoader = new CommonDisclosureSMDTODataLoader();
+			ISkillMixSummaryDTOLoader skillMixSummaryDTOLoader = new SkillMixSummaryDTOLoader();
 
-			BoeTaskElementDTODataLoader _BoeTaskElementDTODataLoader = new BoeTaskElementDTODataLoader(resourceTypeLoader, resourceSpreadLoader, ordinaryVariableLoader, taskElementCustomFieldLoader, laborTypeCustomFieldLoader, skillMixDTOLoader, commonDisclosureSMDTODataLoader);
+			BoeTaskElementDTODataLoader _BoeTaskElementDTODataLoader = new BoeTaskElementDTODataLoader(resourceTypeLoader, resourceSpreadLoader, ordinaryVariableLoader, taskElementCustomFieldLoader, laborTypeCustomFieldLoader, skillMixDTOLoader, skillMixSummaryDTOLoader, commonDisclosureSMDTODataLoader);
 
-            var sut = new WorkspaceVariableDTODataLoader();
+			WorkspaceVariableDTODataLoader sut = new WorkspaceVariableDTODataLoader();
 
             Collection<int> workspaceVarIDs = sut.GetByWorkspaceID(Workspace.Id).Select(x => x.Id).ToCollection();
 

@@ -3,11 +3,12 @@
 //     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
-using IES.Common;
-using System;
 
 namespace GenBOE.ActionLogic.ModelView.Workspace
 {
+	using System;
+	using IES.Common;
+
 	public interface ICreateWorkspaceModelView
 	{
 		// Only fields used by all company configurations should be declared here
@@ -203,5 +204,10 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// Gets or sets a value indicating whether or not authors are assignable at task level
 		/// </summary>
 		bool EnableAssignTaskAuthor { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating if the LM Navigator link is enabled for the workspace
+		/// </summary>
+		bool EnableLmNavigator { get; set; }
 	}
 }

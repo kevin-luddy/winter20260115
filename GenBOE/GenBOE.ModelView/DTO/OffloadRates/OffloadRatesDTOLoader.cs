@@ -66,7 +66,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <returns>All of the System offload rates</returns>
         [DbQuery]
-        virtual public ICollection<OffloadRatesDTO> GetAllSystemRates()
+        public virtual ICollection<OffloadRatesDTO> GetAllSystemRates()
         {
             Collection<OffloadRatesDTO> toReturn = new Collection<OffloadRatesDTO>();
             using (StopwatchTimer sw = new StopwatchTimer(this.logger))

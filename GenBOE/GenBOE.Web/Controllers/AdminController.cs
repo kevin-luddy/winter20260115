@@ -6,42 +6,41 @@
 
 namespace GenBOE.Web.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Data.Entity.Core;
-    using System.Diagnostics;
-    using System.IO;
-    using System.Linq;
-    using System.Text;
-    using System.Text.RegularExpressions;
-    using System.Threading.Tasks;
-    using System.Transactions;
-    using System.Web.Mvc;
-    using System.Web.Script.Serialization;
-    using ActionLogic.ModelView;
-    using GenBOE.ActionLogic;
-    using GenBOE.ActionLogic.Common;
-    using GenBOE.ActionLogic.Common.Search;
-    using GenBOE.ActionLogic.ControllerLogic;
-    using GenBOE.ActionLogic.IO.Export;
-    using GenBOE.ActionLogic.IO.Import;
-    using GenBOE.ActionLogic.Metrics;
-    using GenBOE.ActionLogic.ModelView.Admin;
-    using GenBOE.ActionLogic.Validation;
-    using GenBOE.DataBridge.Common;
-    using GenBOE.DataBridge.Common.Interfaces;
-    using GenBOE.DataBridge.DTO;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Data.Entity.Core;
+	using System.Diagnostics;
+	using System.IO;
+	using System.Linq;
+	using System.Text;
+	using System.Text.RegularExpressions;
+	using System.Threading.Tasks;
+	using System.Transactions;
+	using System.Web.Mvc;
+	using System.Web.Script.Serialization;
+	using ActionLogic.ModelView;
+	using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.Common.Search;
+	using GenBOE.ActionLogic.ControllerLogic;
+	using GenBOE.ActionLogic.IO.Export;
+	using GenBOE.ActionLogic.IO.Import;
+	using GenBOE.ActionLogic.Metrics;
+	using GenBOE.ActionLogic.ModelView.Admin;
+	using GenBOE.ActionLogic.Validation;
+	using GenBOE.DataBridge.Common;
+	using GenBOE.DataBridge.Common.Interfaces;
+	using GenBOE.DataBridge.DTO;
 	using GenBOE.DataBridge.Reference;
-    using GenBOE.Dtos;
-    using GenBOE.Models;
-    using GenBOE.Objects;
-    using GenBOE.Web.Common;
-    using GenBOE.Web.ModelView;
-    using IES.Common;
-    using IES.Common.classes;
-    using IES.Common.Exceptions;
-    using IES.Common.OfficeUtilities;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
+	using GenBOE.Web.Common;
+	using GenBOE.Web.ModelView;
+	using IES.Common;
+	using IES.Common.classes;
+	using IES.Common.Exceptions;
+	using IES.Common.OfficeUtilities;
 
 	/// <summary>
 	/// Implementation note: 
@@ -49,7 +48,7 @@ namespace GenBOE.Web.Controllers
 	/// Since our code is not calling these methods directly, all logging should be on the Info level instead of the Debug level.
 	/// This is true ONLY for this controller.
 	/// </summary>
-    public class AdminController : GenBOEController
+	public class AdminController : GenBOEController
     {
         private readonly Logger _log = new Logger(typeof(AdminController));
         private readonly PermissionControllerLogic _PermissionControllerLogic;
@@ -132,28 +131,28 @@ namespace GenBOE.Web.Controllers
             ITokenService tokenService)
             : base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inIUserDTODataLoader, inIPermissionsDTOLoader, inControllerLogic)
         {
-            _WorkspaceExportFormatDTOLoader = inIWorkspaceExportFormatDTOLoader;
-            _PermissionControllerLogic = inPermissionControllerLogic;
-            _ActiveDirectoryUtilities = inIActiveDirectoryUtilities;
-            _SecurityInformation = inISecurityInformation;
-            _ResourceDTODataLoader = inIResourceDTODataLoader;
-            _PerformingOrgListDTODataLoader = inIPerformingOrgListDTODataLoader;
-            _ResourceListDTODataLoader = inIResourceListDTODataLoader;
+			this._WorkspaceExportFormatDTOLoader = inIWorkspaceExportFormatDTOLoader;
+			this._PermissionControllerLogic = inPermissionControllerLogic;
+			this._ActiveDirectoryUtilities = inIActiveDirectoryUtilities;
+			this._SecurityInformation = inISecurityInformation;
+			this._ResourceDTODataLoader = inIResourceDTODataLoader;
+			this._PerformingOrgListDTODataLoader = inIPerformingOrgListDTODataLoader;
+			this._ResourceListDTODataLoader = inIResourceListDTODataLoader;
             this.miscTravelRateDTOLoader = inIMiscTravelRateDTOLoader;
             this.escalationRatesDTOLoader = inEscalationRatesDTOLoader;
             this.offloadRatesDTOLoader = inOffloadRatesDTOLoader;
-            _MileReimbursementRateDTOLoader = inIMileReimbursementRateDTOLoader;
-            _TripDTODataLoader = inITripDTODataLoader;
-            _TripsExporter = inTripsExporer;
-            _TripsImporter = inTripsImporter;
-            _PerDiemDTODataLoader = inIPerDiemDTODataLoader;
-            _LocationDTODataLoader = inILocationDTODataLoader;
-            _ResourcesImporter = inResourcesImporter;
-            _PerformingOrgImporter = inPerformingOrgImporter;
-            _InUseDataLoader = InUseDataLoader;
+			this._MileReimbursementRateDTOLoader = inIMileReimbursementRateDTOLoader;
+			this._TripDTODataLoader = inITripDTODataLoader;
+			this._TripsExporter = inTripsExporer;
+			this._TripsImporter = inTripsImporter;
+			this._PerDiemDTODataLoader = inIPerDiemDTODataLoader;
+			this._LocationDTODataLoader = inILocationDTODataLoader;
+			this._ResourcesImporter = inResourcesImporter;
+			this._PerformingOrgImporter = inPerformingOrgImporter;
+			this._InUseDataLoader = InUseDataLoader;
             this.workspaceLoader = workspaceLoader;
-            _PackageUtilities = inPackageUtilities;
-            _ControllerLogic = inAdminControllerLogic;
+			this._PackageUtilities = inPackageUtilities;
+			this._ControllerLogic = inAdminControllerLogic;
             this.perfOrgLoader = perfOrgLoader;
             this.userDataLoader = inIUserDTODataLoader;
             this.systemSettingLoader = systemSettingLoader;
@@ -167,6 +166,7 @@ namespace GenBOE.Web.Controllers
         /// My Info View for an Admin
         /// </summary>
         /// <returns>My Info view for an Admin</returns>
+		[HttpGet]
         public async Task<ViewResult> MyInfo()
         {
             // Action Init
@@ -195,6 +195,7 @@ namespace GenBOE.Web.Controllers
         /// Displays the System Admin View
         /// </summary>
         /// <returns>View</returns>
+		[HttpGet]
         public ViewResult SystemAdmin()
         {
             // Action Init
@@ -209,31 +210,33 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
-        /// <summary>
-        /// Displays the System Admin Jump Page
-        /// </summary>
-        /// <returns></returns>
-        public ViewResult DisplaySystemAdminJump()
+		/// <summary>
+		/// Displays the System Admin Jump Page
+		/// </summary>
+		/// <returns></returns>
+		[HttpPost]
+		public ViewResult DisplaySystemAdminJump()
         {
             // Action Initialize
-            Stopwatch sw = InitializeAction(_log, "DisplaySystemAdminJump", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_SYSTEM_ADMIN_JUMP, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             ViewResult toReturn = View(WebConstants.VIEW_SYSTEM_ADMIN_JUMP);
 
             // Action Finalize
-            FinalizeAction(_log, "DisplaySystemAdminJump", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_SYSTEM_ADMIN_JUMP, sw);
 
             return toReturn;
         }
 
-        /// <summary>
-        /// Displays the System Admin Jump Page
-        /// </summary>
-        /// <returns></returns>
-        public ViewResult DisplaySystemPermissions()
+		/// <summary>
+		/// Displays the System Admin Jump Page
+		/// </summary>
+		/// <returns></returns>
+		[HttpPost]
+		public ViewResult DisplaySystemPermissions()
         {
             // Action Initialize
-            Stopwatch sw = InitializeAction(_log, "DisplaySystemPermissions", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_SYSTEM_PERMISSIONS, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             Collection<PermissionsGridModelView> permissions = _GetPermissionsGrid(Role.SystemAdmin);
 
@@ -241,7 +244,7 @@ namespace GenBOE.Web.Controllers
             ViewResult toReturn = View(WebConstants.VIEW_SYSTEM_PERMISSIONS_GRID, permissions);
 
             // Action Finalize
-            FinalizeAction(_log, "DisplaySystemPermissions", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_SYSTEM_PERMISSIONS, sw);
 
             return toReturn;
         }
@@ -250,7 +253,8 @@ namespace GenBOE.Web.Controllers
         ///Get members of group
         ///</summary>
         ///<param name="groupName">Name of the group to get users from</param>
-        public JsonResult GetGroupMembers(string groupName)
+        [HttpPost]
+		public JsonResult GetGroupMembers(string groupName)
         {
             Collection<string> memberList = new Collection<string>();
             ICollection<UserData> members = _ActiveDirectoryUtilities.GetAdGroupUsers(groupName);
@@ -264,11 +268,12 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
-        /// <summary>
-        /// Displays the Create Workspace Permissions Page
-        /// </summary>
-        /// <returns></returns>
-        public ViewResult DisplayCreateWorkspacePermissions()
+		/// <summary>
+		/// Displays the Create Workspace Permissions Page
+		/// </summary>
+		/// <returns></returns>
+		[HttpPost]
+		public ViewResult DisplayCreateWorkspacePermissions()
         {
             // Action Initialize
             Stopwatch sw = InitializeAction(_log, "DisplayCreateWorkspacePermissions", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
@@ -289,9 +294,10 @@ namespace GenBOE.Web.Controllers
         /// <param name="templateId">id to delete</param>
         /// <param name="updateDate">Update date</param>
         /// <returns>json success result</returns>
-        public JsonResult ArchiveOutputFormatTemplate(int templateId, long updateDate)
+		[HttpPost]
+		public JsonResult ArchiveOutputFormatTemplate(int templateId, long updateDate)
         {
-            Stopwatch sw = this.InitializeAction(this._log, "ArchiveOutputFormatTemplate", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_ARCHIVE_OUTPUT_FORMAT_TEMPLATE, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
             JsonResult toReturn = this.Json(new { Success = true });
 
             WorkspaceExportFormatDTO template = this._WorkspaceExportFormatDTOLoader.GetById(templateId);
@@ -304,20 +310,21 @@ namespace GenBOE.Web.Controllers
                 scope.Complete();
             }
                         
-            this.FinalizeAction(this._log, "ArchiveOutputFormatTemplate", sw);
+            this.FinalizeAction(this._log, WebConstants.ACTION_ARCHIVE_OUTPUT_FORMAT_TEMPLATE, sw);
 
             return toReturn;
         }
 
-        /// <summary>
-        /// Restore an archived output format template
-        /// </summary>
-        /// <param name="templateId">Template ID</param>
-        /// <param name="updateDate">Update Date</param>
-        /// <returns>json success result</returns>
-        public JsonResult RestoreOutputFormatTemplate(int templateId, long updateDate)
+		/// <summary>
+		/// Restore an archived output format template
+		/// </summary>
+		/// <param name="templateId">Template ID</param>
+		/// <param name="updateDate">Update Date</param>
+		/// <returns>json success result</returns>
+		[HttpPost]
+		public JsonResult RestoreOutputFormatTemplate(int templateId, long updateDate)
         {
-            Stopwatch sw = this.InitializeAction(this._log, "RestoreOutputFormatTemplate", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_RESTORE_OUTPUT_FORMAT_TEMPLATE, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
             JsonResult toReturn = this.Json(new { Success = true });
 
             WorkspaceExportFormatDTO template = this._WorkspaceExportFormatDTOLoader.GetById(templateId);
@@ -325,13 +332,14 @@ namespace GenBOE.Web.Controllers
 
             this._WorkspaceExportFormatDTOLoader.RestoreTemplate(template);
 
-            this.FinalizeAction(this._log, "RestoreOutputFormatTemplate", sw);
+            this.FinalizeAction(this._log, WebConstants.ACTION_RESTORE_OUTPUT_FORMAT_TEMPLATE, sw);
 
             return toReturn;
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        public ContentResult EditOutputFormatTemplate(string templateName, string templateDescription, int templateId, long updateDate)
+        [HttpPost]
+		public ContentResult EditOutputFormatTemplate(string templateName, string templateDescription, int templateId, long updateDate)
         {
             Stopwatch sw = InitializeAction(_log, "EditOutputFormatTemplate", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
             
@@ -422,9 +430,10 @@ namespace GenBOE.Web.Controllers
         /// <param name="TemplateDescription">the template description</param>
         /// <returns>success or failure to be interpreted by iframe code</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        public ContentResult SaveNewOutputFormatTemplate(string TemplateName, string TemplateDescription)
+        [HttpPost]
+		public ContentResult SaveNewOutputFormatTemplate(string TemplateName, string TemplateDescription)
         {
-            Stopwatch sw = InitializeAction(_log, "SaveNewOutputFormatTemplate", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_WORKSPACE_OUTPUT_FORMAT_NEW_TEMPLATE, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
             
             ContentResult toReturn = null;
 
@@ -497,19 +506,20 @@ namespace GenBOE.Web.Controllers
                 toReturn = GenerateUploadResponse(Utilities.CreateModelStateValidationErrorList(ModelState));
             }
 
-            FinalizeAction(_log, "SaveNewOutputFormatTemplate", sw);
+            FinalizeAction(_log, WebConstants.ACTION_SAVE_WORKSPACE_OUTPUT_FORMAT_NEW_TEMPLATE, sw);
 
             return toReturn;
         }
 
-        /// <summary>
-        /// Get the output format template as a word document content type
-        /// </summary>
-        /// <param name="id">the template id from the database</param>
-        /// <returns>The word file, complete with correct content type</returns>
-        public FileContentResult GetOutputFormatTemplate(int? id)
+		/// <summary>
+		/// Get the output format template as a word document content type
+		/// </summary>
+		/// <param name="id">the template id from the database</param>
+		/// <returns>The word file, complete with correct content type</returns>
+		[HttpGet]
+		public FileContentResult GetOutputFormatTemplate(int? id)
         {
-            Stopwatch sw = InitializeAction(_log, "GetOutputFormatTemplate", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_OUTPUT_FORMAT_TEMPLATE, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             FileContentResult toReturn = null;
 
@@ -522,16 +532,17 @@ namespace GenBOE.Web.Controllers
                 toReturn.FileDownloadName = template.ExportFormatName + ".docx";
             }
 
-            FinalizeAction(_log, "GetOutputFormatTemplate", sw);
+            FinalizeAction(_log, WebConstants.ACTION_GET_OUTPUT_FORMAT_TEMPLATE, sw);
 
             return toReturn;
         }
 
-        /// <summary>
-        /// Displays the System Admin Manage Output Template
-        /// </summary>
-        /// <returns></returns>
-        public ViewResult DisplayManageOutputFormatTemplates()
+		/// <summary>
+		/// Displays the System Admin Manage Output Template
+		/// </summary>
+		/// <returns></returns>
+		[HttpPost]
+		public ViewResult DisplayManageOutputFormatTemplates()
         {
             // Action Initialize
             Stopwatch sw = InitializeAction(_log, "DisplayManageOutputFormatTemplates", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
@@ -545,124 +556,51 @@ namespace GenBOE.Web.Controllers
         }
 
 		/// <summary>
-		/// Checks if users have access to GenBoe
+		/// Displays the partial view for the default resources page
 		/// </summary>
-		/// <param name="usersToCheck">Users to check</param>
-		/// <returns>A dictionary of users and a bool indicating if they have access or not</returns>
-		private Dictionary<UserData, bool> GetGenBOEAccess(ICollection<UserData> usersToCheck)
-		{
-			ICollection<GroupData> groups = this._ActiveDirectoryUtilities.GetAuthorizationGroupsFromWebConfig();
-
-			Dictionary<UserData, bool> result = _ActiveDirectoryUtilities.CheckUsersBoeAccess(usersToCheck, groups);
-
-			return result;
-		}
-
-		private Collection<PermissionsGridModelView> _GetPermissionsGrid(Role inRole)
+		/// <returns></returns>
+		[HttpPost]
+		public ViewResult DisplayDefaultResources()
         {
-            // get the permissions dtos for each area
-            Collection<PermissionsDTO> permissionsForSystem = this.PermissionsLoader.GetAdminPermissions();
-
-            // combine them into one list
-            List<PermissionsDTO> allPerms = new List<PermissionsDTO>();
-            allPerms.AddRange(permissionsForSystem);
-
-            //get rid of all the roles that aren't managed in this view.
-            allPerms = allPerms
-                        .Where(onlyRolesWeCareAbout =>
-                            onlyRolesWeCareAbout.Role == inRole)
-                            .Select(onlyRolesWeCareAbout => onlyRolesWeCareAbout).ToList<PermissionsDTO>();
-
-            Collection<PermissionsGridModelView> permissions = new Collection<PermissionsGridModelView>();
-
-            List<int> distinctUsers = (from u in allPerms
-                                        select u.ETIUserId).Distinct().ToList();
-            IDictionary<int, RoleModelView> roleModelViews = this._CommonDataMapper.getRolesDictionary();
-
-            foreach (int distinctUser in distinctUsers)
-            {
-                // for each group grab the users for the group.  note this will include the 'null' group
-                PermissionsGridModelView modelViewToAdd = new PermissionsGridModelView();
-
-                UserDTO user = this.UserLoader.GetUserByID(distinctUser);
-                modelViewToAdd.isGroup = user.NTID.Contains(".");
-                modelViewToAdd.Users = new Collection<PermissionUserModelView>{
-	(from u in allPerms
-	where u.ETIUserId == distinctUser
-	orderby u.ETIUserId
-	select new PermissionUserModelView
-	{
-	    DisplayName = user.DisplayName,
-	    UserID = distinctUser
-	}).FirstOrDefault()};
-
-                // convert the  role into the proper modelview class
-                Collection<PermissionRoleModelView> rolesToAdd = new Collection<PermissionRoleModelView>();
-                rolesToAdd.Add(new PermissionRoleModelView()
-                {
-                    RoleID = (int)inRole,
-                    RoleName = roleModelViews[(int)inRole].RoleName
-                });
-                modelViewToAdd.Roles = rolesToAdd;
-
-                permissions.Add(modelViewToAdd);
-            } // foreach distinct user
-
-            IEnumerable<PermissionsGridModelView> nonGroups = from t in permissions
-                            from u in t.Users
-                            orderby u.DisplayName
-                            select t;
-
-            List<PermissionsGridModelView> reGrouping = new List<PermissionsGridModelView>();
-            reGrouping.AddRange(nonGroups);
-
-            return new Collection<PermissionsGridModelView>(reGrouping);
-        
-        } // end GetPermissionsGridForGroups
-
-        /// <summary>
-        /// Displays the partial view for the default resources page
-        /// </summary>
-        /// <returns></returns>
-        public ViewResult DisplayDefaultResources()
-        {
-            Stopwatch sw = InitializeAction(_log, "DisplayDefaultResources", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_DEFAULT_RESOURCES, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             DefaultResourcesModelView theModelView = this._ControllerLogic.DisplayDefaultResourcesLogic();
 
-            ViewData["RateTypes"] = theModelView.rateTypes;
-            ViewData["ElementOfCostTypes"] = theModelView.elementOfCostTypes;
+			ViewData["RateTypes"] = theModelView.rateTypes;
+			ViewData["ElementOfCostTypes"] = theModelView.elementOfCostTypes;
             
             ViewResult toReturn = View(WebConstants.VIEW_MANAGE_DEFAULT_RESOURCES, theModelView);
 
-            FinalizeAction(_log, "DisplayDefaultResources", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_DEFAULT_RESOURCES, sw);
             return toReturn;
         }
 
-        /// <summary>
-        /// Displays the partial view for the Manage Misc Rates page
-        /// </summary>
-        /// <returns></returns>
-        public ViewResult DisplayManageMiscRates()
+		/// <summary>
+		/// Displays the partial view for the Manage Misc Rates page
+		/// </summary>
+		/// <returns></returns>
+		[HttpPost]
+		public ViewResult DisplayManageMiscRates()
         {
-            Stopwatch sw = InitializeAction(_log, "DisplayManageMiscRates", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_MANAGE_MISC_RATES, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             // Initialize modelView to return
             MiscRateModelView theModelView = new MiscRateModelView();
 
             ViewResult toReturn = View(WebConstants.VIEW_MANAGE_MISC_RATES, theModelView);
 
-            FinalizeAction(_log, "DisplayManageMiscRates", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_MANAGE_MISC_RATES, sw);
             return toReturn;
         }
 
-        /// <summary>
-        /// Displays the partial view for the Manage Misc Rates page
-        /// </summary>
-        /// <returns></returns>
-        public ViewResult DisplayManageMiscRatesGrid()
+		/// <summary>
+		/// Displays the partial view for the Manage Misc Rates page
+		/// </summary>
+		/// <returns></returns>
+		[HttpPost]
+		public ViewResult DisplayManageMiscRatesGrid()
         {
-            Stopwatch sw = InitializeAction(_log, "DisplayManageMiscRatesGrid", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_MANAGE_MISC_RATES_GRID, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             // Initialize modelView to return
             ManageMiscRatesGridModelView theModelView = new ManageMiscRatesGridModelView();
@@ -693,17 +631,18 @@ namespace GenBOE.Web.Controllers
 
             ViewResult toReturn = View(WebConstants.VIEW_MANAGE_MISC_RATES_GRID, theModelView);
 
-            FinalizeAction(_log, "DisplayManageMiscRatesGrid", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_MANAGE_MISC_RATES_GRID, sw);
             return toReturn;
         }
 
-        /// <summary>
-        /// Displays the partial view for the Trips for travel page
-        /// </summary>
-        /// <returns></returns>
-        public ViewResult DisplayManageTripsForTravel()
+		/// <summary>
+		/// Displays the partial view for the Trips for travel page
+		/// </summary>
+		/// <returns></returns>
+		[HttpPost]
+		public ViewResult DisplayManageTripsForTravel()
         {
-            Stopwatch sw = InitializeAction(_log, "DisplayManageTripsForTravel", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_MANAGE_TRIPS, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             Collection<SelectListItem> modeSelects = new Collection<SelectListItem>();
 
@@ -724,15 +663,16 @@ namespace GenBOE.Web.Controllers
 
             ViewResult toReturn = View(WebConstants.VIEW_MANAGE_TRIPS, theModelView);
 
-            FinalizeAction(_log, "DisplayManageTripsForTravel", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_MANAGE_TRIPS, sw);
             return toReturn;
         }
 
-        /// <summary>
-        /// Displays the partial view for the Manage Trips for travel page
-        /// </summary>
-        /// <returns></returns>
-        public ViewResult DisplayManageTripsForTravelGrid(
+		/// <summary>
+		/// Displays the partial view for the Manage Trips for travel page
+		/// </summary>
+		/// <returns></returns>
+		[HttpPost]
+		public ViewResult DisplayManageTripsForTravelGrid(
             string tripIDSearchText,
             string departureSearchText,
             string destinationSearchText,
@@ -743,7 +683,7 @@ namespace GenBOE.Web.Controllers
             string destinationCodeSearchText,
             string sortField, string sortDirection)
         {
-            Stopwatch sw = InitializeAction(_log, "DisplayManageTripsForTravelGrid", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_MANAGE_TRIPS_GRID, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             ManageTripsForTravelGridModelView theModelView =
                 this._GetManageTripsForTravelGridData(
@@ -766,7 +706,7 @@ namespace GenBOE.Web.Controllers
 
             ViewResult toReturn = View(WebConstants.VIEW_MANAGE_TRIPS_GRID, theModelView);
 
-            FinalizeAction(_log, "DisplayManageTripsForTravelGrid", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_MANAGE_TRIPS_GRID, sw);
             return toReturn;
         }
 
@@ -1634,10 +1574,11 @@ namespace GenBOE.Web.Controllers
         /// Page the output format
         /// </summary>
         /// <returns></returns>
+		[HttpPost]
         public ViewResult PageOutputFormat(ManageOutputFormatTemplatesModelView inOutputFormat)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "PageOutputFormat", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_PAGE_OUTPUT_FORMAT, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             if (inOutputFormat == null)
             {
@@ -1655,15 +1596,16 @@ namespace GenBOE.Web.Controllers
             ViewResult toReturn = View(WebConstants.VIEW_MANAGE_OUTPUT_TEMPLATES_GRID, inOutputFormat);
 
             // Action Finalize
-            FinalizeAction(_log, "PageOutputFormat", sw);
+            FinalizeAction(_log, WebConstants.ACTION_PAGE_OUTPUT_FORMAT, sw);
 
             return toReturn;
         }
 
-        public ViewResult DisplayManageDefaultPerfOrgsGrid()
+		[HttpPost]
+		public ViewResult DisplayManageDefaultPerfOrgsGrid()
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DisplayManageDefaultPerfOrgsGrid", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_MANAGE_DEFAULT_PERF_ORGS_GRID, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             // Get the global performing orgs
             Collection<PerformingOrgDTO> globalPerformingOrgs = this.perfOrgLoader.GetGlobalPerformingOrgs();
@@ -1684,31 +1626,33 @@ namespace GenBOE.Web.Controllers
             ViewResult toReturn = View(WebConstants.VIEW_MANAGE_DEFAULT_PERF_ORGS_GRID, theModelView);
 
             // Action Finalize
-            FinalizeAction(_log, "DisplaySystemPermissions", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_MANAGE_DEFAULT_PERF_ORGS_GRID, sw);
 
             return toReturn;
         }
 
-        public ViewResult DisplayManageDefaultResourcesGrid(string searchText, bool showLabor, bool showIWTA, bool showSub, bool showODC, bool showTravel, bool showMaterials)
+		[HttpPost]
+		public ViewResult DisplayManageDefaultResourcesGrid(string searchText, bool showLabor, bool showIWTA, bool showSub, bool showODC, bool showTravel, bool showMaterials)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DisplayManageDefaultResourcesGrid", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_MANAGE_DEFAULT_RESOURCES_GRID, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             DefaultResourcesGridModelView theModelView = _GetAndFilterResources(searchText, showLabor, showIWTA, showSub, showODC, showTravel, showMaterials);
 
             ViewResult toReturn = View(WebConstants.VIEW_MANAGE_DEFAULT_RESOURCES_GRID, theModelView);
 
             // Action Finalize
-            FinalizeAction(_log, "DisplayManageDefaultResourcesGrid", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_MANAGE_DEFAULT_RESOURCES_GRID, sw);
 
             return toReturn;
         }
 
-        /// <summary>
-        /// Display the System ProPricer Grid
-        /// </summary>
-        /// <param name="workspace">the workspace</param>
-        /// <returns>the propricer grid view</returns>
+		/// <summary>
+		/// Display the System ProPricer Grid
+		/// </summary>
+		/// <param name="workspace">the workspace</param>
+		/// <returns>the ProPricer grid view</returns>
+		[HttpPost]
         public ViewResult DisplayProPricerGrid()
         {
             // Initialize Action
@@ -1738,6 +1682,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="inModelView">The export format to save/delete</param>
         /// <param name="workspace">The workspace</param>
         /// <returns>json result</returns>
+		[HttpPost]
         public JsonResult SaveProPricerExportFormat(ExportToProPricerModelView inModelView)
         {
             if (inModelView == null) { throw new ArgumentNullException(nameof(inModelView)); }
@@ -1781,6 +1726,7 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="originalName">The original name.</param>
         /// <param name="updatedName">The updated name.</param>
+		[HttpPost]
         public JsonResult SaveProPricerCustomField(string originalName, string updatedName)
         {
             if (string.IsNullOrEmpty(originalName))
@@ -1809,15 +1755,16 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
-        /// <summary>
-        /// Deletes a collection of ProPricer Export Formats.
-        /// </summary>
-        /// <param name="inFormatsToDelete">The collection of export formats to delete</param>
-        /// <returns>True</returns>
-        public JsonResult DeleteProPricerExportFormats(ICollection<ExportToProPricerModelView> inFormatsToDelete)
+		/// <summary>
+		/// Deletes a collection of ProPricer Export Formats.
+		/// </summary>
+		/// <param name="inFormatsToDelete">The collection of export formats to delete</param>
+		/// <returns>True</returns>
+		[HttpPost]
+		public JsonResult DeleteProPricerExportFormats(ICollection<ExportToProPricerModelView> inFormatsToDelete)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DeleteProPricerExportFormats", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DELETE_PROPRICER_EXPORT_FORMATS, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             if (inFormatsToDelete == null)
             {
@@ -1838,7 +1785,7 @@ namespace GenBOE.Web.Controllers
             }
 
             // Finalize Action
-            FinalizeAction(_log, "DeleteProPricerExportFormats", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DELETE_PROPRICER_EXPORT_FORMATS, sw);
             return Json(true);
         }
 
@@ -1847,6 +1794,7 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <returns>Json result for import</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpPost]
         public JsonResult ImportOverdueTraining(string courseName)
         {
             // Initialize Action
@@ -1904,6 +1852,7 @@ namespace GenBOE.Web.Controllers
         /// Gets the system email preferences.
         /// </summary>
         /// <returns>Json result of the system email preferences.</returns>
+		[HttpPost]
         public JsonResult GetSystemEmailPreferences()
         {
             Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_SYSTEM_EMAIL_PREFERENCES, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
@@ -1927,9 +1876,10 @@ namespace GenBOE.Web.Controllers
             public int AttrVal { get; set; }
         }
 
+		[HttpPost]
         public ContentResult GetAssignedWorkspaceInfo(int templateId)
         {
-            Stopwatch sw = InitializeAction(_log, "GetAssignedWorkspaceInfo", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_ASSIGNED_WORKSPACE_INFO, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             // gather up the workspaces that are assigned to this template
             Collection<int> assignedWorkspaceIds = _WorkspaceExportFormatDTOLoader.GetWorkspaceIdsByExportTemplateId(templateId);
@@ -1958,14 +1908,15 @@ namespace GenBOE.Web.Controllers
                 html.Append("<tr><td colspan=\"3\">No workspace are using this template.</td></tr>");
             }
 
-            FinalizeAction(_log, "GetAssignedWorkspaceInfo", sw);
+            FinalizeAction(_log, WebConstants.ACTION_GET_ASSIGNED_WORKSPACE_INFO, sw);
 
             return Content(html.ToString());
         }
 
+		[HttpPost]
         public JsonResult GetWorkspacesUsingTemplate(int templateId)
         {
-            Stopwatch sw = InitializeAction(_log, "GetAssignedWorkspaceInfo", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_WORKSPACES_USING_TEMPLATE, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             // gather up the workspaces that are assigned to this template
             Collection<int> workspaceIds = _WorkspaceExportFormatDTOLoader.GetWorkspaceIdsByExportTemplateId(templateId);
@@ -1977,7 +1928,7 @@ namespace GenBOE.Web.Controllers
                 Id = x.Id
             });
 
-            FinalizeAction(_log, "GetWorspacesUsingTemplate", sw);
+            FinalizeAction(_log, WebConstants.ACTION_GET_WORKSPACES_USING_TEMPLATE, sw);
 
             return Json(toReturn);
         }
@@ -1988,9 +1939,10 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="inExportFormatId">The export format id to filter workspaces on</param>
         /// <returns>information about the workspaces that are already assigned for a given export format id</returns>
+		[HttpPost]
         public JsonResult GetWorkspacesAssignedForExportTemplateId(int inExportTemplateId)
         {
-            Stopwatch sw = InitializeAction(_log, "GetWorkspacesAssignedForExportTemplateId", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_ASSIGNED_WORKSPACES_FOR_OUTPUT_FORMAT_TEMPLATE, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             // gather up the workspaces that are assigned to this template
             Collection<int> assignedWorkspaceIds = _WorkspaceExportFormatDTOLoader.GetAssignedWorkspaceIdsForExportTemplateId(inExportTemplateId);
@@ -2009,7 +1961,7 @@ namespace GenBOE.Web.Controllers
 	                      orderby w.ElVal
 	                      select w).ToArray());
 
-            FinalizeAction(_log, "GetWorkspacesAssignedForExportTemplateId", sw);
+            FinalizeAction(_log, WebConstants.ACTION_ASSIGNED_WORKSPACES_FOR_OUTPUT_FORMAT_TEMPLATE, sw);
 
             return Json(wsInfos);
         }
@@ -2020,9 +1972,10 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="inExportFormatId">The export format id to filter workspaces on</param>
         /// <returns>information about the workspaces that are available to be assigned for a given export format id</returns>
+		[HttpPost]
         public JsonResult GetAvailableWorkspaceIdsForExportFormatId(int inExportTemplateId)
         {
-            Stopwatch sw = InitializeAction(_log, "GetAvailableWorkspaceIdsForExportFormatId", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_AVAILABLE_WORKSPACES_FOR_OUTPUT_FORMAT_TEMPLATE, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             // gather up the workspaces that are available to be assigned for this template
             Collection<int> assignedWorkspaceIds = _WorkspaceExportFormatDTOLoader.GetAvailableWorkspaceIdsForExportFormatId(inExportTemplateId);
@@ -2041,7 +1994,7 @@ namespace GenBOE.Web.Controllers
 	                      orderby w.ElVal
 	                      select w).ToArray());
 
-            FinalizeAction(_log, "GetAvailableWorkspaceIdsForExportFormatId", sw);
+            FinalizeAction(_log, WebConstants.ACTION_AVAILABLE_WORKSPACES_FOR_OUTPUT_FORMAT_TEMPLATE, sw);
 
             return Json(wsInfos);
         }
@@ -2053,9 +2006,10 @@ namespace GenBOE.Web.Controllers
         /// <param name="isAvailableToAllWorkspaces">Whether template is available to all workspaces or workspaces were manually selected</param>
         /// <param name="inUserSelectedAssignedWsIds">Selected Workspace Ids</param>
         /// <returns></returns>
+		[HttpPost]
         public JsonResult SaveExportTemplatesForWorkspaces(int inTemplateId, bool isAvailableToAllWorkspaces, int[] inUserSelectedAssignedWsIds)
         {
-            Stopwatch sw = this.InitializeAction(this._log, "SaveExportTemplatesForWorkspaces", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_SAVE_WORKSPACES_FOR_OUTPUT_TEMPLATES, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             WorkspaceExportFormatDTO template = this._WorkspaceExportFormatDTOLoader.GetById(inTemplateId);
 
@@ -2107,7 +2061,7 @@ namespace GenBOE.Web.Controllers
                 } 
             }
 
-            this.FinalizeAction(_log, "SaveExportTemplatesForWorkspaces", sw);
+            this.FinalizeAction(_log, WebConstants.ACTION_SAVE_WORKSPACES_FOR_OUTPUT_TEMPLATES, sw);
 
             return this.Json(new { Status = true });
         }
@@ -2117,6 +2071,7 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="emails">The emails.</param>
         /// <returns>A Json value</returns>
+		[HttpPost]
         public JsonResult SaveSystemEmailPreferences(ICollection<EmailModelDomain> emails)
         {
             if (emails == null)
@@ -2149,6 +2104,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="emails">The emails.</param>
 		/// <returns>A Json value</returns>
+		[HttpPost]
 		public JsonResult SaveUCOT(decimal? ucot)
 		{
 			if (ucot == null)
@@ -2169,10 +2125,11 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="inPermission">SavePermission MV</param>
 		/// <returns>A Json value</returns>
+		[HttpPost]
 		public JsonResult SaveNewSystemPermissions(SavePermissionsModelView inPermission)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "SaveNewSystemPermissions", SecurityPage.SystemAdmin,
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_NEW_SYSTEM_PERMISSIONS, SecurityPage.SystemAdmin,
                 SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             Role inRole = Role.SystemAdmin;
@@ -2180,7 +2137,7 @@ namespace GenBOE.Web.Controllers
 
 
             // Finalize Action
-            FinalizeAction(_log, "SaveNewSystemPermissions", sw);
+            FinalizeAction(_log, WebConstants.ACTION_SAVE_NEW_SYSTEM_PERMISSIONS, sw);
             return toReturn;
         }
 
@@ -2189,10 +2146,11 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="inPermission">SavePermission MV</param>
         /// <returns>A Json value</returns>
+		[HttpPost]
         public JsonResult SaveNewCreateWorkspacePermissions(SavePermissionsModelView inPermission)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "SaveNewCreateWorkspacePermissions", SecurityPage.SystemAdmin,
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_NEW_CREATE_WORKSPACE_PERMISSIONS, SecurityPage.SystemAdmin,
                 SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             Role inRole = Role.CreateWorkspacePermissions;
@@ -2200,7 +2158,7 @@ namespace GenBOE.Web.Controllers
 
 
             // Finalize Action
-            FinalizeAction(_log, "SaveNewCreateWorkspacePermissions", sw);
+            FinalizeAction(_log, WebConstants.ACTION_SAVE_NEW_CREATE_WORKSPACE_PERMISSIONS, sw);
             return toReturn;
         }
 
@@ -2209,9 +2167,10 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="inPermission">SavePermission MV</param>
         /// <returns>A Json value</returns>
+		[HttpPost]
         private JsonResult SaveNewPermissions(SavePermissionsModelView inPermission, Role inRole)
         {
-            Stopwatch sw = InitializeAction(_log, "SaveNewPermissions", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_PERMISSIONS, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             if (inPermission == null)
             {
@@ -2341,7 +2300,7 @@ namespace GenBOE.Web.Controllers
                 throw new GenValidationException(Utilities.CreateModelStateValidationErrorList(ModelState));
             }
 
-            FinalizeAction(_log, "SaveNewPermissions", sw);
+            FinalizeAction(_log, WebConstants.ACTION_SAVE_PERMISSIONS, sw);
 
             return toReturn;
         }
@@ -2349,13 +2308,13 @@ namespace GenBOE.Web.Controllers
         /// <summary>
         /// Checks to see if the action will remove the persons System admin access.
         /// </summary>
-        /// <param name="inType">the type of entity the action is beign performed on.</param>
         /// <param name="inEntityId">The entity ID</param>
         /// <param name="inRoles">The list of roles(if this is null a delete is being performed)</param>
         /// <returns>json true or false</returns>
-        public JsonResult CheckIfUserWillLooseTheirSystemAdminAccess(int inEntityId, Collection<Role> inRoles)
+		[HttpPost]
+        public JsonResult CheckIfUserWillLoseTheirSystemAdminAccess(int inEntityId, Collection<Role> inRoles)
         {
-            Stopwatch sw = InitializeAction(_log, "CheckIfUserWillLooseTheirSystemAdminAccess", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_CHECK_IS_USER_WILL_LOSE_THEIR_SYSTEM_ADMIN_ACCESS, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
             JsonResult result;
 
             int currentUserID = this.UserLoader.GetUserForActiveUser().UserID;
@@ -2382,7 +2341,7 @@ namespace GenBOE.Web.Controllers
                 result = Json(new { Status = onlyOneCopyOfThisUserWithSystemAdmin });
             }
 
-            FinalizeAction(_log, "CheckIfUserWillLooseTheirSystemAdminAccess", sw);
+            FinalizeAction(_log, WebConstants.ACTION_CHECK_IS_USER_WILL_LOSE_THEIR_SYSTEM_ADMIN_ACCESS, sw);
 
             return result;
         }
@@ -2394,9 +2353,10 @@ namespace GenBOE.Web.Controllers
         /// <param name="inEntityId">The entity ID</param>
         /// <param name="inRoles">The list of roles(if this is null a delete is being performed)</param>
         /// <returns>json true or false</returns>
+		[HttpPost]
         public JsonResult CheckIfUserWillLoseTheirCreateWorkspacePermissionsAccess(int inEntityId, Collection<Role> inRoles)
         {
-            Stopwatch sw = InitializeAction(_log, "CheckIfUserWillLoseTheirCreateWorkspacePermissionsAccess", SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_CHECK_IS_USER_WILL_LOSE_THEIR_CREATE_WORKSPACE_PERMISSIONS_ACCESS, SecurityPage.CreateWorkspacePermissions, SecurityAuthorization.CreateReadUpdateDelete, null, null);
             JsonResult result;
 
             int currentUserID = this.UserLoader.GetUserForActiveUser().UserID;
@@ -2421,7 +2381,7 @@ namespace GenBOE.Web.Controllers
                 return Json(new { Status = allowed });
             }
 
-            FinalizeAction(_log, "CheckIfUserWillLoseTheirCreateWorkspacePermissionsAccess", sw);
+            FinalizeAction(_log, WebConstants.ACTION_CHECK_IS_USER_WILL_LOSE_THEIR_CREATE_WORKSPACE_PERMISSIONS_ACCESS, sw);
 
             return result;
         }
@@ -2431,16 +2391,17 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         ///<param name="inUserID">The User ID to delete permissions from.</param>
         /// <returns></returns>
+		[HttpPost]
         public JsonResult DeleteUserSystemPermissions(int inUserID)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DeleteUserSystemPermissions", SecurityPage.SystemAdmin,
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DELETE_USER_SYSTEM_PERMISSIONS, SecurityPage.SystemAdmin,
                 SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             JsonResult toReturn = DeleteUserPermissions(inUserID, Role.SystemAdmin);
 
             // Finalize Action
-            FinalizeAction(_log, "DeleteUserSystemPermissions", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DELETE_USER_SYSTEM_PERMISSIONS, sw);
             return toReturn;
         }
 
@@ -2449,16 +2410,17 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         ///<param name="inUserID">The User ID to delete permissions from.</param>
         /// <returns></returns>
+		[HttpPost]
         public JsonResult DeleteUserCreateWorkspacePermissions(int inUserID)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DeleteUserCreateWorkspacePermissions", SecurityPage.SystemAdmin,
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DELETE_USER_CREATE_WORKSPACE_PERMISSIONS, SecurityPage.SystemAdmin,
                 SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             JsonResult toReturn = DeleteUserPermissions(inUserID, Role.CreateWorkspacePermissions);
 
             // Finalize Action
-            FinalizeAction(_log, "DeleteUserCreateWorkspacePermissions", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DELETE_USER_CREATE_WORKSPACE_PERMISSIONS, sw);
             return toReturn;
         }
 
@@ -2471,7 +2433,7 @@ namespace GenBOE.Web.Controllers
         {
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DeleteUserPermissions", SecurityPage.SystemAdmin,
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DELETE_USER_PERMISSIONS, SecurityPage.SystemAdmin,
                 SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             // Perform Action
@@ -2481,17 +2443,15 @@ namespace GenBOE.Web.Controllers
                 // keep a running list of permissions to save .. so we can do them all at 
                 // once and not individually where we would be flushing cache after each save
                 List<PermissionsDTO> permissionsToSave = new List<PermissionsDTO>();
-                List<PermissionsDTO> Admins = this.PermissionsLoader.GetAdminPermissions().Where(x => x.Role == inRole).Select(x => x).ToList();
+                List<PermissionsDTO> admins = this.PermissionsLoader.GetAdminPermissions().Where(x => x.Role == inRole).Select(x => x).ToList();
 
-                if (Admins.Count < 2 && inRole == Role.SystemAdmin)
+                if (admins.Count < 2 && inRole == Role.SystemAdmin)
                 {
                     throw new ValidationException("The System Administrator cannot be deleted. In order to delete the user, at least one other System Administrator must exist.", "Cannot Delete System Administrator");
                 }
 
                 //find and mark the user to delete.
-                PermissionsDTO permissionForUser = Admins
-	.Where(x => x.ETIUserId == inUserID && x.Role == inRole)
-	.FirstOrDefault();
+                PermissionsDTO permissionForUser = admins.FirstOrDefault(x => x.ETIUserId == inUserID && x.Role == inRole);
 
                 // adjust updateable field and then add to our save list if permission exists
                 if (permissionForUser != null)
@@ -2521,7 +2481,7 @@ namespace GenBOE.Web.Controllers
             }
 
             // Finalize Action
-            FinalizeAction(_log, "DeleteUserPermissions", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DELETE_USER_PERMISSIONS, sw);
             return toReturn;
         }
 
@@ -2530,10 +2490,11 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="resources">The Default Resources Model View</param>
         /// <returns></returns>
+		[HttpPost]
         public virtual JsonResult SaveResources(Collection<DefaultResourceModelView> resources)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "SaveResources", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_DEFAULT_RESOURCES, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             if (resources == null)
             {
@@ -2653,7 +2614,7 @@ namespace GenBOE.Web.Controllers
             }
 
             // Finalize Action
-            FinalizeAction(_log, "SaveResources", sw);
+            FinalizeAction(_log, WebConstants.ACTION_SAVE_DEFAULT_RESOURCES, sw);
             return toReturn;
         }
 
@@ -2661,10 +2622,11 @@ namespace GenBOE.Web.Controllers
         /// Saves a mileage reimbursement rate
         /// </summary>
         /// <returns></returns>
-        virtual public JsonResult SaveMileageReimbursement(ManageMileageReimbursementModelView mileageMV)
+		[HttpPost]
+        public virtual JsonResult SaveMileageReimbursement(ManageMileageReimbursementModelView mileageMV)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "SaveMileageReimbursement", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_MILEAGE_REIMBURSEMENT, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             if (mileageMV == null)
             {
@@ -2699,7 +2661,7 @@ namespace GenBOE.Web.Controllers
             }
 
             // Finalize Action
-            FinalizeAction(_log, "SaveMileageReimbursement", sw);
+            FinalizeAction(_log, WebConstants.ACTION_SAVE_MILEAGE_REIMBURSEMENT, sw);
             return toReturn;
         }
 
@@ -2707,10 +2669,11 @@ namespace GenBOE.Web.Controllers
         /// Saves changes to misc rates list
         /// </summary>
         /// <returns></returns>
+		[HttpPost]
         public virtual JsonResult SaveMiscRates(Collection<MiscRateModelView> miscRates)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "SaveMiscRates", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_MISC_RATES, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             if (miscRates == null)
             {
@@ -2818,7 +2781,7 @@ namespace GenBOE.Web.Controllers
             toReturn = Json(new { Status = true });
 
             // Finalize Action
-            FinalizeAction(_log, "SaveMiscRates", sw);
+            FinalizeAction(_log, WebConstants.ACTION_SAVE_MISC_RATES, sw);
             return toReturn;
         }
 
@@ -2826,10 +2789,11 @@ namespace GenBOE.Web.Controllers
         /// Saves changes to misc rates list
         /// </summary>
         /// <returns></returns>
+		[HttpPost]
         public virtual JsonResult SaveEscalationRates(Collection<EscalationRateModelView> escRates)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "SaveEscalationRates", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_ESCALATION_RATES, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             if (escRates == null)
             {
@@ -2911,7 +2875,7 @@ namespace GenBOE.Web.Controllers
             JsonResult toReturn = Json(new { Status = true });
 
             // Finalize Action
-            FinalizeAction(_log, "SaveEscalationRates", sw);
+            FinalizeAction(_log, WebConstants.ACTION_SAVE_ESCALATION_RATES, sw);
             return toReturn;
         }
 
@@ -2919,10 +2883,11 @@ namespace GenBOE.Web.Controllers
         /// Saves changes to Offload Rates.
         /// </summary>
         /// <returns>JsonResult of the save.</returns>
+		[HttpPost]
         public virtual JsonResult SaveOffloadRates(Collection<OffloadRateModelView> offloadRates)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "SaveOffloadRates", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_OFFLOAD_RATES, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             if (offloadRates == null)
             {
@@ -3023,7 +2988,7 @@ namespace GenBOE.Web.Controllers
             toReturn = Json(new { Status = true });
 
             // Finalize Action
-            FinalizeAction(_log, "SaveOffloadRates", sw);
+            FinalizeAction(_log, WebConstants.ACTION_SAVE_OFFLOAD_RATES, sw);
             return toReturn;
         }
 
@@ -3032,7 +2997,8 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="systemSettings">System settings to save</param>
         /// <returns>JsonResult of the save.</returns>
-        virtual public JsonResult SaveSystemSettings(ICollection<SystemSettingDTO> systemSettings)
+		[HttpPost]
+        public virtual JsonResult SaveSystemSettings(ICollection<SystemSettingDTO> systemSettings)
         {
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_SYSTEM_SETTINGS, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
@@ -3090,10 +3056,11 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="resourceList"></param>
         /// <returns></returns>
-        virtual public JsonResult SaveResourceList(DefaultResourcesModelView resourceList)
+		[HttpPost]
+        public virtual JsonResult SaveResourceList(DefaultResourcesModelView resourceList)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "SaveResourceList", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_RESOURCE_LIST, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
             if (resourceList == null)
             {
                 throw new ArgumentNullException(nameof(resourceList));
@@ -3126,7 +3093,7 @@ namespace GenBOE.Web.Controllers
             }
 
             // Finalize Action
-            FinalizeAction(_log, "SaveResourceList", sw);
+            FinalizeAction(_log, WebConstants.ACTION_SAVE_RESOURCE_LIST, sw);
             return toReturn;
         }
 
@@ -3135,11 +3102,12 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <returns>A string indicating the result of the import operation.</returns>
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        virtual public ContentResult ImportResources()
+        [HttpPost]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        public virtual ContentResult ImportResources()
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ImportResources", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_IMPORT_DEFAULT_RESOURCES, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             // Perform Action
             ContentResult toReturn = null;
@@ -3385,7 +3353,7 @@ namespace GenBOE.Web.Controllers
             }
 
             // Finalize Action
-            FinalizeAction(_log, "ImportResources", sw);
+            FinalizeAction(_log, WebConstants.ACTION_IMPORT_DEFAULT_RESOURCES, sw);
             return toReturn;
         }
 
@@ -3394,10 +3362,11 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <returns>Download Result for the Zone Travel Origins.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		[HttpGet]
         public ActionResult ExportZoneTravelOrigins()
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ExportZoneTravelOrigins", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_ZONE_TRAVEL_ORIGINS, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             ICollection<MSTZoneTravelOriginModelView> origins = _ControllerLogic.GetZoneTravelOrigins();
 
@@ -3412,7 +3381,7 @@ namespace GenBOE.Web.Controllers
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
             
             // Finalize Action
-            FinalizeAction(_log, "ExportZoneTravelOrigins", sw);
+            FinalizeAction(_log, WebConstants.ACTION_EXPORT_ZONE_TRAVEL_ORIGINS, sw);
 
             return File(
                 fileStream: fs,
@@ -3425,10 +3394,11 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <returns>Content Result housing the errors or the success.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpPost]
         public ContentResult ImportOrigins()
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ImportOrigins", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_IMPORT_ORIGINS, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             // Perform Action
             ContentResult toReturn = null;
@@ -3504,7 +3474,7 @@ namespace GenBOE.Web.Controllers
             }
 
             // Finalize Action
-            FinalizeAction(_log, "ImportOrigins", sw);
+            FinalizeAction(_log, WebConstants.ACTION_IMPORT_ORIGINS, sw);
             return toReturn;
         }
 
@@ -3514,10 +3484,11 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <returns>Download Result for the Escalation Rates.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		[HttpGet]
         public ActionResult ExportEscalationRates()
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ExportEscalationRates", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_ESCALATION_RATES, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             // Get the rates list
             ICollection<EscalationRatesDTO> ratesForMV = escalationRatesDTOLoader.GetAll().OrderBy(r => r.Year).ToList();
@@ -3533,7 +3504,7 @@ namespace GenBOE.Web.Controllers
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
-            FinalizeAction(_log, "ExportEscalationRates", sw);
+            FinalizeAction(_log, WebConstants.ACTION_EXPORT_ESCALATION_RATES, sw);
 
             return File(
                 fileStream: fs,
@@ -3547,10 +3518,11 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <returns>Content Result housing the errors or the success.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpPost]
         public ContentResult ImportEscalationRates()
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ImportEscalationRates", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_IMPORT_ESCALATION_RATES, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             // Perform Action
             ContentResult toReturn = null;
@@ -3639,7 +3611,7 @@ namespace GenBOE.Web.Controllers
             }
 
             // Finalize Action
-            FinalizeAction(_log, "ImportEscalationRates", sw);
+            FinalizeAction(_log, WebConstants.ACTION_IMPORT_ESCALATION_RATES, sw);
             return toReturn;
         }
 
@@ -3649,6 +3621,7 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <returns>Download Result for the Offload Rates.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		[HttpGet]
         public ActionResult ExportOffloadRates()
         {
             // Initialize Action
@@ -3685,10 +3658,11 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <returns>Content Result housing the errors or the success.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpPost]
         public ContentResult ImportOffloadRates()
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ImportOffloadRates", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_IMPORT_OFFLOAD_RATES, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             // Perform Action
             ContentResult toReturn = null;
@@ -3778,7 +3752,7 @@ namespace GenBOE.Web.Controllers
             }
 
             // Finalize Action
-            FinalizeAction(_log, "ImportOffloadRates", sw);
+            FinalizeAction(_log, WebConstants.ACTION_IMPORT_OFFLOAD_RATES, sw);
             return toReturn;
         }
 
@@ -3789,10 +3763,11 @@ namespace GenBOE.Web.Controllers
         /// <returns>A special ActionResult that generates a file download for the user to download the
         /// populated Excel template.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		[HttpGet]
         public ActionResult ExportResources(bool showLabor, bool showIWTA, bool showSub, bool showODC, bool showTravel, bool showMaterials, string searchText)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ExportResources", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_DEFAULT_RESOURCES, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             // Perform Action
 
@@ -3819,7 +3794,7 @@ namespace GenBOE.Web.Controllers
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
-            FinalizeAction(_log, "ExportResources", sw);
+            FinalizeAction(_log, WebConstants.ACTION_EXPORT_DEFAULT_RESOURCES, sw);
 
             return File(
                 fileStream: fs,
@@ -3831,18 +3806,13 @@ namespace GenBOE.Web.Controllers
         /// Download the default resources exmport template
         /// </summary>
         /// <param name="searchText"></param>
-        /// <param name="showLabor"></param>
-        /// <param name="showIWTA"></param>
-        /// <param name="showSub"></param>
-        /// <param name="showODC"></param>
-        /// <param name="showTravel"></param>
-        /// <param name="showMaterials"></param>
         /// <returns></returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        public ActionResult ExportDefaultResourcesTemplate(string searchText)
+		[HttpGet]
+		public ActionResult ExportDefaultResourcesTemplate(string searchText)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ExportDefaultResourcesTemplate", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_DEFAULT_RESOURCES_TEMPLATE, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             // Perform Action
 
@@ -3865,7 +3835,7 @@ namespace GenBOE.Web.Controllers
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
-            FinalizeAction(_log, "ExportDefaultResourcesTemplate", sw);
+            FinalizeAction(_log, WebConstants.ACTION_EXPORT_DEFAULT_RESOURCES_TEMPLATE, sw);
 
             return File(
                 fileStream: fs,
@@ -3877,11 +3847,12 @@ namespace GenBOE.Web.Controllers
         /// Allows uploads of Excel files for importing new Performing Org elements
         /// </summary>
         /// <returns>A string indicating the result of the import operation.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes"), HttpPost]
-        virtual public ContentResult ImportPerformingOrgs()
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpPost]
+        public virtual ContentResult ImportPerformingOrgs()
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ImportPerformingOrgs", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_IMPORT_DEFAULT_PERFORMING_ORGS, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             // Perform Action
             ContentResult toReturn = null;
@@ -3988,7 +3959,7 @@ namespace GenBOE.Web.Controllers
             }
 
             // Finalize Action
-            FinalizeAction(_log, "ImportPerformingOrgs", sw);
+            FinalizeAction(_log, WebConstants.ACTION_IMPORT_DEFAULT_PERFORMING_ORGS, sw);
             return toReturn;
         }
 
@@ -3999,10 +3970,11 @@ namespace GenBOE.Web.Controllers
         /// <returns>A special ActionResult that generates a file download for the user to download the
         /// populated Excel template.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		[HttpGet]
         public ActionResult ExportPerformingOrgs()
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ExportPerformingOrgs", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_DEFAULT_PERFORMING_ORGS, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             // Perform Action
             Collection<PerformingOrgDTO> performingOrgs = this.perfOrgLoader.GetGlobalPerformingOrgs();
@@ -4019,7 +3991,7 @@ namespace GenBOE.Web.Controllers
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
-            FinalizeAction(_log, "ExportPerformingOrgs", sw);
+            FinalizeAction(_log, WebConstants.ACTION_EXPORT_DEFAULT_PERFORMING_ORGS, sw);
 
             return File(
                 fileStream: fs,
@@ -4032,10 +4004,11 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="inPerfOrg">data on the partial view</param>
         /// <returns></returns>
+		[HttpPost]
         public virtual JsonResult SavePerfOrgs(DefaultPerfOrgModelView inPerfOrg)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "SavePerfOrgs", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_DEFAULT_PERF_ORGS, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
             if (inPerfOrg == null)
             {
                 throw new ArgumentNullException(nameof(inPerfOrg));
@@ -4116,7 +4089,7 @@ namespace GenBOE.Web.Controllers
             }
 
             // Finalize Action
-            FinalizeAction(_log, "SavePerfOrgs", sw);
+            FinalizeAction(_log, WebConstants.ACTION_SAVE_DEFAULT_PERF_ORGS, sw);
             return toReturn;
         }
 
@@ -4125,9 +4098,10 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="inSearchText">search string</param>
         /// <returns>list that contains the search string in either the Name or Description column</returns>
-        public virtual ActionResult SearchPerfOrgs(string inSearchText)
+        [HttpPost]
+		public virtual ActionResult SearchPerfOrgs(string inSearchText)
         {
-            Stopwatch sw = InitializeAction(_log, "SearchPerfOrgs", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SEARCH_PERF_ORGS, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             ViewResult toReturn = null;
 
@@ -4166,7 +4140,7 @@ namespace GenBOE.Web.Controllers
                 throw new ValidationException(SiteMasterUtilities.CreateValidationErrorResponse(ModelState));
             }
 
-            FinalizeAction(_log, "SearchPerfOrgs", sw);
+            FinalizeAction(_log, WebConstants.ACTION_SEARCH_PERF_ORGS, sw);
             return toReturn;
         }
 
@@ -4174,10 +4148,11 @@ namespace GenBOE.Web.Controllers
         /// Page the performing orgs
         /// </summary>
         /// <returns></returns>
+		[HttpPost]
         public ViewResult PagePerfOrgs(DefaultPerfOrgGridModelView performingOrgs)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "PagePerfOrgs", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_PAGE_PERF_ORGS, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             if (performingOrgs == null)
             {
@@ -4204,7 +4179,7 @@ namespace GenBOE.Web.Controllers
             ViewResult toReturn = View(WebConstants.VIEW_MANAGE_DEFAULT_PERF_ORGS_GRID, performingOrgs);
 
             // Action Finalize
-            FinalizeAction(_log, "PagePerfOrgs", sw);
+            FinalizeAction(_log, WebConstants.ACTION_PAGE_PERF_ORGS, sw);
 
             return toReturn;
         }
@@ -4214,9 +4189,10 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="inSearchText">search string</param>
         /// <returns>list that contains the search string in either the Name or Description column</returns>
-        public virtual ActionResult SearchResources(string searchText, bool showLabor, bool showIWTA, bool showSub, bool showODC, bool showTravel, bool showMaterials)
+        [HttpPost]
+		public virtual ActionResult SearchResources(string searchText, bool showLabor, bool showIWTA, bool showSub, bool showODC, bool showTravel, bool showMaterials)
         {
-            Stopwatch sw = InitializeAction(_log, "SearchResources", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SEARCH_RESOURCES, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             ViewResult toReturn = null;
 
@@ -4234,7 +4210,7 @@ namespace GenBOE.Web.Controllers
             }
 
 
-            FinalizeAction(_log, "SearchResources", sw);
+            FinalizeAction(_log, WebConstants.ACTION_SEARCH_RESOURCES, sw);
             return toReturn;
         }
 
@@ -4327,10 +4303,11 @@ namespace GenBOE.Web.Controllers
         /// Page the resources
         /// </summary>
         /// <returns></returns>
+		[HttpPost]
         public ViewResult PageResources(DefaultResourcesGridModelView resources)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "PageResources", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_PAGE_RESOURCES, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             if (resources == null)
             {
@@ -4385,15 +4362,16 @@ namespace GenBOE.Web.Controllers
             }
 
             // Action Finalize
-            FinalizeAction(_log, "PageResources", sw);
+            FinalizeAction(_log, WebConstants.ACTION_PAGE_RESOURCES, sw);
 
             return toReturn;
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
+		[HttpPost]
         public ViewResult PageTripResults(ManageTripsForTravelGridModelView tripResults)
         {
-            Stopwatch sw = InitializeAction(_log, "PageTripResults", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_PAGE_TRIP_RESULTS, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             if (tripResults == null)
             {
@@ -4427,7 +4405,7 @@ namespace GenBOE.Web.Controllers
 
             ViewResult toReturn = View(WebConstants.VIEW_MANAGE_TRIPS_GRID, tripResults);
 
-            FinalizeAction(_log, "PageTripResults", sw);
+            FinalizeAction(_log, WebConstants.ACTION_PAGE_TRIP_RESULTS, sw);
             return toReturn;
         }
 
@@ -4435,11 +4413,12 @@ namespace GenBOE.Web.Controllers
         /// Deletes a group of Trips.
         /// </summary>
         /// <param name="inDeletedTrips">Collection of deleted Trips</param>
-        /// <returns>If successfull,empty string is return. Otherwise, exception error text to be handled in the post:error </returns>
-        virtual public JsonResult DeleteTrips(Collection<TripForTravelModelView> inDeletedTrips)
+        /// <returns>If successful,empty string is return. Otherwise, exception error text to be handled in the post:error </returns>
+        [HttpPost]
+		public virtual JsonResult DeleteTrips(Collection<TripForTravelModelView> inDeletedTrips)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DeleteTrips", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DELETE_TRIPS, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             // Perform Action
             // check if the input is null
@@ -4462,7 +4441,7 @@ namespace GenBOE.Web.Controllers
 
 
             // Finalize Action
-            FinalizeAction(_log, "DeleteTrips", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DELETE_TRIPS, sw);
 
             return toReturn;
         }
@@ -4471,11 +4450,12 @@ namespace GenBOE.Web.Controllers
         /// Saves a Trip.
         /// </summary>
         /// <param name="inTrip">Trip to save.</param>
-        /// <returns>If successfull,empty string is return. Otherwise, exception error text to be handled in the post:error </returns>
-        virtual public JsonResult SaveTrip(TripForTravelModelView inTrip)
+        /// <returns>If successful,empty string is return. Otherwise, exception error text to be handled in the post:error </returns>
+        [HttpPost]
+		public virtual JsonResult SaveTrip(TripForTravelModelView inTrip)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "SaveTrip", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_TRIP, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             // Perform Action
             // check if the input is null
@@ -4554,15 +4534,16 @@ namespace GenBOE.Web.Controllers
             }
 
             // Finalize Action
-            FinalizeAction(_log, "SaveTrip", sw);
+            FinalizeAction(_log, WebConstants.ACTION_SAVE_TRIP, sw);
 
             return toReturn;
         }
 
-        virtual public JsonResult AutocompleteTripLocationName(string searchTerm)
+		[HttpPost]
+        public virtual JsonResult AutocompleteTripLocationName(string searchTerm)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "AutocompleteTripLocationName", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_AUTOCOMPLETE_LOCATION_NAME, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             // Perform Action
             IEnumerable<string> locations = (from t in _LocationDTODataLoader.GetAllLocations()
@@ -4571,15 +4552,16 @@ namespace GenBOE.Web.Controllers
                              select t.LocationName).Distinct();
 
             // Finalize Action
-            FinalizeAction(_log, "AutocompleteTripLocationName", sw);
+            FinalizeAction(_log, WebConstants.ACTION_AUTOCOMPLETE_LOCATION_NAME, sw);
 
             return Json(locations);
         }
 
-        virtual public JsonResult AutocompleteTripDepartureLocationCode(string searchTerm, string locationName)
+		[HttpPost]
+        public virtual JsonResult AutocompleteTripDepartureLocationCode(string searchTerm, string locationName)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "AutocompleteTripDepartureLocationCode", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_AUTOCOMPLETE_DEP_LOCATION_CODE, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             // Perform Action
             IEnumerable<string> locationCodes = (from l in _LocationDTODataLoader.GetAllLocations()
@@ -4592,15 +4574,16 @@ namespace GenBOE.Web.Controllers
                 
 
             // Finalize Action
-            FinalizeAction(_log, "AutocompleteTripdepartureLocationCode", sw);
+            FinalizeAction(_log, WebConstants.ACTION_AUTOCOMPLETE_DEP_LOCATION_CODE, sw);
 
             return Json(locationCodes);
         }
 
-        virtual public JsonResult AutocompleteTripDestinationLocationCode(string searchTerm, string locationName)
+		[HttpPost]
+        public virtual JsonResult AutocompleteTripDestinationLocationCode(string searchTerm, string locationName)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "AutocompleteTripDestinationLocationCode", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_AUTOCOMPLETE_DES_LOCATION_CODE, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             // Perform Action
             IEnumerable<string> locationCodes = (from l in _LocationDTODataLoader.GetAllLocations()
@@ -4613,16 +4596,16 @@ namespace GenBOE.Web.Controllers
 
 
             // Finalize Action
-            FinalizeAction(_log, "AutocompleteTripDestinationLocationCode", sw);
+            FinalizeAction(_log, WebConstants.ACTION_AUTOCOMPLETE_DES_LOCATION_CODE, sw);
 
             return Json(locationCodes);
         }
 
-
-        virtual public JsonResult GetLocationDetails(string name, string code)
+		[HttpPost]
+        public virtual JsonResult GetLocationDetails(string name, string code)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "GetLocationDetails", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_LOCATION_DETAILS, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             JsonResult toReturn = new JsonResult();
 
@@ -4645,15 +4628,16 @@ namespace GenBOE.Web.Controllers
             }
 
             // Finalize Action
-            FinalizeAction(_log, "GetLocationDetails", sw);
+            FinalizeAction(_log, WebConstants.ACTION_GET_LOCATION_DETAILS, sw);
 
             return toReturn;
         }
 
-        virtual public JsonResult AutocompleteTripPerDiemLocation(string searchTerm)
+		[HttpPost]
+        public virtual JsonResult AutocompleteTripPerDiemLocation(string searchTerm)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "AutocompleteTripPerDiemLocation", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_AUTOCOMPLETE_PER_DIEM, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             // Perform Action
             IEnumerable<string> locations = (from t in _PerDiemDTODataLoader.GetAllPerDiem()
@@ -4661,15 +4645,16 @@ namespace GenBOE.Web.Controllers
                              select t.PerDiemDestination).Distinct();
 
             // Finalize Action
-            FinalizeAction(_log, "AutocompleteTripPerDiemLocation", sw);
+            FinalizeAction(_log, WebConstants.ACTION_AUTOCOMPLETE_PER_DIEM, sw);
 
             return Json(locations);
         }
 
-        virtual public JsonResult GetPerDiemLocationDetails(string name, string qualification)
+		[HttpPost]
+        public virtual JsonResult GetPerDiemLocationDetails(string name, string qualification)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "GetPerDiemLocationDetails", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_PER_DIEM_LOCATION_DETAILS, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             JsonResult toReturn = new JsonResult();
 
@@ -4698,15 +4683,16 @@ namespace GenBOE.Web.Controllers
             }
 
             // Finalize Action
-            FinalizeAction(_log, "GetPerDiemLocationDetails", sw);
+            FinalizeAction(_log, WebConstants.ACTION_GET_PER_DIEM_LOCATION_DETAILS, sw);
 
             return toReturn;
         }
 
-        virtual public JsonResult AutocompleteTripQualification(string searchTerm)
+		[HttpPost]
+        public virtual JsonResult AutocompleteTripQualification(string searchTerm)
         {
             //Initialize Action
-            Stopwatch sw = InitializeAction(_log, "AutocompleteTripQualification", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_AUTOCOMPLETE_QUALIFICATION, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             // Perform Action
             IEnumerable<string> locations = (from t in _PerDiemDTODataLoader.GetAllPerDiem()
@@ -4715,7 +4701,7 @@ namespace GenBOE.Web.Controllers
                              select t.Qualification).Distinct();
 
             // Finalize Action
-            FinalizeAction(_log, "AutocompleteTripQualification", sw);
+            FinalizeAction(_log, WebConstants.ACTION_AUTOCOMPLETE_QUALIFICATION, sw);
 
             return Json(locations);
         }
@@ -4725,10 +4711,12 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        public ActionResult ExportTrips()
+        [HttpGet]
+		[Obsolete("No longer used")]
+		public ActionResult ExportTrips()
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ExportTrips", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_TRIPS, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             // Get Performing Orgs template file name
             string templateFileName = Server.MapPath("~/Templates/Export/Trips.xlsx");
@@ -4741,7 +4729,7 @@ namespace GenBOE.Web.Controllers
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
-            FinalizeAction(_log, "ExportTrips", sw);
+            FinalizeAction(_log, WebConstants.ACTION_EXPORT_TRIPS, sw);
 
             return File(
                 fileStream: fs,
@@ -4754,10 +4742,12 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        public ActionResult ExportTripsTemplate()
+        [HttpGet]
+		[Obsolete("No longer used")]
+		public ActionResult ExportTripsTemplate()
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ExportTripsTemplate", SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_TRIPS_TEMPLATE, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
 
             // Get Performing Orgs template file name
             string templateFileName = Server.MapPath("~/Templates/Export/Trips.xlsx");
@@ -4770,7 +4760,7 @@ namespace GenBOE.Web.Controllers
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
-            FinalizeAction(_log, "ExportTripsTemplate", sw);
+            FinalizeAction(_log, WebConstants.ACTION_EXPORT_TRIPS_TEMPLATE, sw);
 
             return File(
                 fileStream: fs,
@@ -4783,10 +4773,12 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <returns></returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        public ViewResult ImportTrips()
+		[HttpPost]
+		[Obsolete("No longer used")]
+		public ViewResult ImportTrips()
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ImportTrips", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_IMPORT_TRIPS, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             ViewResult toReturn = null;
             ImportTripsResultsModelView theModelView = new ImportTripsResultsModelView();
@@ -4893,15 +4885,17 @@ namespace GenBOE.Web.Controllers
             toReturn = View(WebConstants.VIEW_MANAGE_TRIPS_IMPORT_VERIFICATION, theModelView);
 
             // Finalize Action
-            FinalizeAction(_log, "ImportTrips", sw);
+            FinalizeAction(_log, WebConstants.ACTION_IMPORT_TRIPS, sw);
 
             return toReturn;
         }
 
-        public JsonResult CompleteTripsImport(ImportTripsResultsModelView importResults)
+		[HttpPost]
+		[Obsolete("No longer used")]
+		public JsonResult CompleteTripsImport(ImportTripsResultsModelView importResults)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "CompleteTripsImport", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_COMPLETE_TRIPS_IMPORT, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             if (importResults == null)
             {
@@ -5030,7 +5024,7 @@ namespace GenBOE.Web.Controllers
             toReturn = Json(new { Status = true });
 
             // Finalize Action
-            FinalizeAction(_log, "CompleteTripsImport", sw);
+            FinalizeAction(_log, WebConstants.ACTION_COMPLETE_TRIPS_IMPORT, sw);
 
             return toReturn;
         }
@@ -5040,10 +5034,11 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="inOrigin">Origin to save</param>
         /// <returns></returns>
-        virtual public JsonResult SaveOrigin(MSTZoneTravelOriginModelView inOrigin)
+		[HttpPost]
+        public virtual JsonResult SaveOrigin(MSTZoneTravelOriginModelView inOrigin)
         {
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "SaveOrigin", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_ORIGIN, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             // Perform Action
             // check if the input is null
@@ -5062,7 +5057,7 @@ namespace GenBOE.Web.Controllers
             _ControllerLogic.SaveOriginData(new Collection<MSTZoneTravelOriginModelView> { inOrigin });         
 
             // Finalize Action
-            FinalizeAction(_log, "SaveOrigin", sw);
+            FinalizeAction(_log, WebConstants.ACTION_SAVE_ORIGIN, sw);
 
             return toReturn;
         }
@@ -5072,10 +5067,11 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="inDeletedOrigins">Origins to delete</param>
         /// <returns></returns>
-        virtual public JsonResult DeleteOrigins(Collection<MSTZoneTravelOriginModelView> inDeletedOrigins)
+		[HttpPost]
+        public virtual JsonResult DeleteOrigins(Collection<MSTZoneTravelOriginModelView> inDeletedOrigins)
         {
             //Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DeleteOrigins", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DELETE_ORIGINS, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             //Perform Action
             //check if the input is null
@@ -5096,7 +5092,7 @@ namespace GenBOE.Web.Controllers
             }
 
             //Finalize Action
-            FinalizeAction(_log, "DeleteOrigins", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DELETE_ORIGINS, sw);
 
             return toReturn;
         }
@@ -5106,10 +5102,11 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="inDestination">Destination to save</param>
         /// <returns></returns>
-        virtual public JsonResult SaveDestination(MSTZoneTravelDestinationModelView inDestination)
+        [HttpPost]
+		public virtual JsonResult SaveDestination(MSTZoneTravelDestinationModelView inDestination)
         {
             //Initialize Action
-            Stopwatch sw = InitializeAction(_log, "SaveDestination", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_DESTINATION, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             //Perform Action
             //check if input is null
@@ -5130,7 +5127,7 @@ namespace GenBOE.Web.Controllers
             _ControllerLogic.SaveDestinationData(inDestination);
 
             //Finalize Action
-            FinalizeAction(_log, "SaveDestination", sw);
+            FinalizeAction(_log, WebConstants.ACTION_SAVE_DESTINATION, sw);
 
             return toReturn;
         }
@@ -5140,10 +5137,11 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="feesAndCosts">Fees and Costs modelview</param>
         /// <returns></returns>
-        virtual public JsonResult SaveFeesAndCosts(NonzoneFeesAndCostsModelView feesAndCosts)
+        [HttpPost]
+		public virtual JsonResult SaveFeesAndCosts(NonzoneFeesAndCostsModelView feesAndCosts)
         {
             //Initialize Action
-            Stopwatch sw = InitializeAction(_log, "SaveFeesAndCosts", SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_FEES_AND_COSTS, SecurityPage.SystemAdmin, SecurityAuthorization.CreateReadUpdateDelete, null, null);
 
             //Perform Action
             if (feesAndCosts == null)
@@ -5164,7 +5162,7 @@ namespace GenBOE.Web.Controllers
             }
 
             //Finalize Action
-            FinalizeAction(_log, "SaveFeesAndCosts", sw);
+            FinalizeAction(_log, WebConstants.ACTION_SAVE_FEES_AND_COSTS, sw);
 
             return toReturn;
         }
@@ -5223,9 +5221,9 @@ namespace GenBOE.Web.Controllers
                 {
                     ICollection<PerDiemDTO> perDiems = _PerDiemDTODataLoader.GetAllPerDiem();
                     PerDiemDTO perDiemExists = (from p in perDiems
-	    where p.PerDiemDestination.ToLower().Equals(perDiemDTO.PerDiemDestination.ToLower()) &&
-	        p.Qualification.IsEquivalentTo(perDiemDTO.Qualification)
-	    select p).FirstOrDefault();
+						where p.PerDiemDestination.ToLower().Equals(perDiemDTO.PerDiemDestination.ToLower()) &&
+							p.Qualification.IsEquivalentTo(perDiemDTO.Qualification)
+						select p).FirstOrDefault();
 
                     if (perDiemExists != null)
                     {
@@ -5288,7 +5286,83 @@ namespace GenBOE.Web.Controllers
             }
         }
 
-        #endregion
-    }
+		/// <summary>
+		/// Checks if users have access to GenBoe
+		/// </summary>
+		/// <param name="usersToCheck">Users to check</param>
+		/// <returns>A dictionary of users and a bool indicating if they have access or not</returns>
+		private Dictionary<UserData, bool> GetGenBOEAccess(ICollection<UserData> usersToCheck)
+		{
+			ICollection<GroupData> groups = this._ActiveDirectoryUtilities.GetAuthorizationGroupsFromWebConfig();
+
+			Dictionary<UserData, bool> result = _ActiveDirectoryUtilities.CheckUsersBoeAccess(usersToCheck, groups);
+
+			return result;
+		}
+
+		private Collection<PermissionsGridModelView> _GetPermissionsGrid(Role inRole)
+		{
+			// get the permissions dtos for each area
+			Collection<PermissionsDTO> permissionsForSystem = this.PermissionsLoader.GetAdminPermissions();
+
+			// combine them into one list
+			List<PermissionsDTO> allPerms = new List<PermissionsDTO>();
+			allPerms.AddRange(permissionsForSystem);
+
+			//get rid of all the roles that aren't managed in this view.
+			allPerms = allPerms
+						.Where(onlyRolesWeCareAbout =>
+							onlyRolesWeCareAbout.Role == inRole)
+							.Select(onlyRolesWeCareAbout => onlyRolesWeCareAbout).ToList<PermissionsDTO>();
+
+			Collection<PermissionsGridModelView> permissions = new Collection<PermissionsGridModelView>();
+
+			List<int> distinctUsers = (from u in allPerms
+									   select u.ETIUserId).Distinct().ToList();
+			IDictionary<int, RoleModelView> roleModelViews = this._CommonDataMapper.getRolesDictionary();
+
+			foreach (int distinctUser in distinctUsers)
+			{
+				// for each group grab the users for the group.  note this will include the 'null' group
+				PermissionsGridModelView modelViewToAdd = new PermissionsGridModelView();
+
+				UserDTO user = this.UserLoader.GetUserByID(distinctUser);
+				modelViewToAdd.isGroup = user.NTID.Contains(".");
+				modelViewToAdd.Users = new Collection<PermissionUserModelView>{
+					(from u in allPerms
+					where u.ETIUserId == distinctUser
+					orderby u.ETIUserId
+					select new PermissionUserModelView
+					{
+						DisplayName = user.DisplayName,
+						UserID = distinctUser
+					}).FirstOrDefault()};
+
+				// convert the  role into the proper modelview class
+				Collection<PermissionRoleModelView> rolesToAdd = new Collection<PermissionRoleModelView>();
+				rolesToAdd.Add(new PermissionRoleModelView()
+				{
+					RoleID = (int)inRole,
+					RoleName = roleModelViews[(int)inRole].RoleName
+				});
+				modelViewToAdd.Roles = rolesToAdd;
+
+				permissions.Add(modelViewToAdd);
+			} // foreach distinct user
+
+			IEnumerable<PermissionsGridModelView> nonGroups = from t in permissions
+															  from u in t.Users
+															  orderby u.DisplayName
+															  select t;
+
+			List<PermissionsGridModelView> reGrouping = new List<PermissionsGridModelView>();
+			reGrouping.AddRange(nonGroups);
+
+			return new Collection<PermissionsGridModelView>(reGrouping);
+
+		} // end GetPermissionsGridForGroups
+
+		#endregion
+	}
 }
  

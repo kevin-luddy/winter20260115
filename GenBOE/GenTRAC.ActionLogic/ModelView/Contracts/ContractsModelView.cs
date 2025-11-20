@@ -200,16 +200,22 @@ namespace GenTRAC.ActionLogic.ModelView
 		public EppDelegationAuthority? EppDelegationAuthority { get; set; }
 
 		/// <summary>
+		/// Scheduled/Actual Bid EPP Date
+		/// </summary>
+		[Display(Name = "Scheduled/Actual Bid EPP Date")]
+		public DateTime? ScheduledActualBidEppDate { get; set; }
+
+		/// <summary>
 		/// Planned Bid EPP Date
 		/// </summary>
 		[Display(Name = "Planned Bid EPP Date")]
 		public DateTime? PlannedBidEppDate { get; set; }
 
 		/// <summary>
-		/// Scheduled Bid EPP Date
+		/// Scheduled/Actual Program EPP Date
 		/// </summary>
-		[Display(Name = "Scheduled Bid EPP Date")]
-		public DateTime? ScheduledBidEppDate { get; set; }
+		[Display(Name = "Scheduled/Actual Program EPP Date")]
+		public DateTime? ScheduledActualProgramEppDate { get; set; }
 
 		/// <summary>
 		/// Planned Program EPP Date
@@ -218,10 +224,10 @@ namespace GenTRAC.ActionLogic.ModelView
 		public DateTime? PlannedProgramEppDate { get; set; }
 
 		/// <summary>
-		/// Scheduled Program EPP Date
+		/// Scheduled/Actual Mission Segment EPP Date
 		/// </summary>
-		[Display(Name = "Scheduled Program EPP Date")]
-		public DateTime? ScheduledProgramEppDate { get; set; }
+		[Display(Name = "Scheduled/Actual Mission Segment EPP Date")]
+		public DateTime? ScheduledActualMissionSegmentEppDate { get; set; }
 
 		/// <summary>
 		/// Planned Mission Segment EPP Date
@@ -230,10 +236,10 @@ namespace GenTRAC.ActionLogic.ModelView
 		public DateTime? PlannedMissionSegmentEppDate { get; set; }
 
 		/// <summary>
-		/// Scheduled Mission Segment EPP Date
+		/// Scheduled/Actual Line of Business EPP Date
 		/// </summary>
-		[Display(Name = "Scheduled Mission Segment EPP Date")]
-		public DateTime? ScheduledMissionSegmentEppDate { get; set; }
+		[Display(Name = "Scheduled/Actual Line of Business EPP Date")]
+		public DateTime? ScheduledActualLobEppDate { get; set; }
 
 		/// <summary>
 		/// Planned Line of Business EPP Date
@@ -242,10 +248,10 @@ namespace GenTRAC.ActionLogic.ModelView
 		public DateTime? PlannedLobEppDate { get; set; }
 
 		/// <summary>
-		/// Scheduled Line of Business EPP Date
+		/// Scheduled/Actual Pre-Space EPP Date
 		/// </summary>
-		[Display(Name = "Scheduled Line of Business EPP Date")]
-		public DateTime? ScheduledLobEppDate { get; set; }
+		[Display(Name = "Scheduled/Actual Pre-Space EPP Date")]
+		public DateTime? ScheduledActualPreSpaceEppDate { get; set; }
 
 		/// <summary>
 		/// Planned Pre-Space EPP Date
@@ -254,10 +260,10 @@ namespace GenTRAC.ActionLogic.ModelView
 		public DateTime? PlannedPreSpaceEppDate { get; set; }
 
 		/// <summary>
-		/// Scheduled Pre-Space EPP Date
+		/// Scheduled/Actual Space EPP Date
 		/// </summary>
-		[Display(Name = "Scheduled Pre-Space EPP Date")]
-		public DateTime? ScheduledPreSpaceEppDate { get; set; }
+		[Display(Name = "Scheduled/Actual Space EPP Date")]
+		public DateTime? ScheduledActualSpaceEppDate { get; set; }
 
 		/// <summary>
 		/// Planned Space EPP Date
@@ -266,10 +272,10 @@ namespace GenTRAC.ActionLogic.ModelView
 		public DateTime? PlannedSpaceEppDate { get; set; }
 
 		/// <summary>
-		/// Scheduled Space EPP Date
+		/// Scheduled/Actual Pre-Corporate EPP Date
 		/// </summary>
-		[Display(Name = "Scheduled Space EPP Date")]
-		public DateTime? ScheduledSpaceEppDate { get; set; }
+		[Display(Name = "Scheduled/Actual Pre-Corporate EPP Date")]
+		public DateTime? ScheduledActualPreCorporateEppDate { get; set; }
 
 		/// <summary>
 		/// Planned Pre-Corporate EPP Date
@@ -278,22 +284,16 @@ namespace GenTRAC.ActionLogic.ModelView
 		public DateTime? PlannedPreCorporateEppDate { get; set; }
 
 		/// <summary>
-		/// Scheduled Pre-Corporate EPP Date
+		/// Scheduled/Actual Corporate EPP Date
 		/// </summary>
-		[Display(Name = "Scheduled Pre-Corporate EPP Date")]
-		public DateTime? ScheduledPreCorporateEppDate { get; set; }
+		[Display(Name = "Scheduled/Actual Corporate EPP Date")]
+		public DateTime? ScheduledActualCorporateEppDate { get; set; }
 
 		/// <summary>
 		/// Planned Corporate EPP Date
 		/// </summary>
 		[Display(Name = "Planned Corporate EPP Date")]
 		public DateTime? PlannedCorporateEppDate { get; set; }
-
-		/// <summary>
-		/// Scheduled Corporate EPP Date
-		/// </summary>
-		[Display(Name = "Scheduled Corporate EPP Date")]
-		public DateTime? ScheduledCorporateEppDate { get; set; }
 
 		/// <summary>
 		/// EPP ROS Delegation Notes

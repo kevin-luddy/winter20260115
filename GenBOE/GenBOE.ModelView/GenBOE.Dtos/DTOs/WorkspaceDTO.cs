@@ -237,5 +237,10 @@ namespace GenBOE.Dtos
 		/// Gets or sets the Enable Assign Task Author setting
 		/// </summary>
 		public bool EnableAssignTaskAuthor { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Enable LM Navigator setting
+		/// </summary>
+		public bool EnableLmNavigator { get; set; }
 	}
 }

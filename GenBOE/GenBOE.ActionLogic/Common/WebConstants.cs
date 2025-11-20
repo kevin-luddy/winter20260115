@@ -189,7 +189,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_ASSIGNED_WORKSPACES_FOR_OUTPUT_FORMAT_TEMPLATE = "GetWorkspacesAssignedForExportTemplateId";
 		public static readonly string ACTION_AVAILABLE_WORKSPACES_FOR_OUTPUT_FORMAT_TEMPLATE = "GetAvailableWorkspaceIdsForExportFormatId";
 		public static readonly string ACTION_GET_ASSIGNED_WORKSPACE_INFO = "GetAssignedWorkspaceInfo";
-		public static readonly string ACTION_CHECK_IS_USER_WILL_LOOSE_THEIR_SYSTEM_ADMIN_ACCESS = "CheckIfUserWillLooseTheirSystemAdminAccess";
+		public static readonly string ACTION_CHECK_IS_USER_WILL_LOSE_THEIR_SYSTEM_ADMIN_ACCESS = "CheckIfUserWillLoseTheirSystemAdminAccess";
 		public static readonly string ACTION_CHECK_IS_USER_WILL_LOSE_THEIR_CREATE_WORKSPACE_PERMISSIONS_ACCESS = "CheckIfUserWillLoseTheirCreateWorkspacePermissionsAccess";
 		public static readonly string ACTION_COMPLETE_TRIPS_IMPORT = "CompleteTripsImport";
 		public static readonly string ACTION_CREATE_EDIT_METRICS_ADMIN_GROUP = "CreateEditMetricAdminGroup";
@@ -294,7 +294,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_SEARCH_RESOURCES = "SearchResources";
 		public static readonly string ACTION_SYSTEM_ADMIN = "SystemAdmin";
 		public static readonly string ACTION_EXPORT_DEFAULT_RESOURCES_TEMPLATE = "ExportDefaultResourcesTemplate";
-		public static readonly string ACTION_DISPLAY_WHOS_ONELINE = "WhosOnline";
+		public static readonly string ACTION_DISPLAY_WHOS_ONLINE = "WhosOnline";
 		public static readonly string ACTION_CONVERT_HTML_TO_TEXT = "ConvertHtmlToText";
 		public static readonly string ACTION_DISPLAY_MANAGE_UCOT = "DisplayManageUCOT";
 
@@ -369,6 +369,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_COPY_MOQ_EQUATION = "CopyMoqEquation";
 		public static readonly string ACTION_DELETE_ALL_BOE_TASK_ELEMENTS = "DeleteAllBOETaskElements";
 		public static readonly string ACTION_SAVE_BULK_ROLE_ASSIGN = "SaveBoeBulkRoles";
+		public static readonly string ACTION_GET_DROPDOWN_USERS_BULK_ASSIGN = "GetDropdownUsersForBulkAssign";
 
 		// BOEComments Controller
 		public static readonly string ACTION_DISPLAY_BOE_COMMENTS = "DisplayBOEComments";
@@ -473,6 +474,8 @@ namespace GenBOE.ActionLogic.Common
 		// BOE Controller
 		public static readonly string GET_BOE_HEADER = "GetBOEHeader";
 		public static readonly string GET_TASK_ELEMENT_GRID = "GetTaskElementGrid";
+		public static readonly string DELETE_TASK_ELEMENT = "DeleteTaskElement";
+		public static readonly string SAVE_SORTED_TASK_ELEMENTS = "SaveSortedTaskElements";
 
 		#endregion BOE ACTIONS
 

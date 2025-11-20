@@ -27,7 +27,7 @@ namespace GenBOE.DataBridge.DTO
         /// Gets all users
         /// </summary>
         /// <returns>Users</returns>
-        virtual public int GetUsersTotal()
+        public virtual int GetUsersTotal()
         {
             int result = -1;
 
@@ -46,7 +46,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <returns>Data for the Boe Metrics Table</returns>
         [DbQuery(2)]
-        virtual public GenBOEMetricsDTO GetGenBOEMetrics()
+        public virtual GenBOEMetricsDTO GetGenBOEMetrics()
         {
             GenBOEMetricsDTO toReturn = new GenBOEMetricsDTO();
             using (StopwatchTimer sw = new StopwatchTimer(this._log))
@@ -86,7 +86,7 @@ namespace GenBOE.DataBridge.DTO
         /// <summary>
         /// Updates the database with the latest access time of the current user.
         /// </summary>
-        virtual public void UpdateLastAccessTime(UserData userData)
+        public virtual void UpdateLastAccessTime(UserData userData)
         {
             if (userData == null)
             {
@@ -105,7 +105,7 @@ namespace GenBOE.DataBridge.DTO
         }
 
 
-        virtual public GenBOEUsersOnlineDTO GetOnlineUserDetails()
+        public virtual GenBOEUsersOnlineDTO GetOnlineUserDetails()
         {
             GenBOEUsersOnlineDTO toReturn = new GenBOEUsersOnlineDTO();
 

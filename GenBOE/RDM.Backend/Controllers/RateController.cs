@@ -133,14 +133,28 @@ namespace RDM.Backend.Controllers
 		[HttpPost("[action]")]
 		public ActionResult ValidateRateCodes()
 		{
-			IESResponse <ICollection <RateDetailModelView >>  validationResponse = this.ValidateRateCodesInternal();
-			IESResponse<ValidateRateCodesViewModel> response = new(); 
-			
-			response.Data = new()
+			IESResponse<ValidateRateCodesViewModel> response = new();
+			try
 			{
-				InsertRateCodes = validationResponse.Data.Where(x => x.Id < 0).OrderBy(x => x.RateCode).Select(x => new RateCodeValidationViewModel() { RateCode = x.RateCode, Description = x.Description }).ToList(),
-				UpdateRateCodes = validationResponse.Data.Where(x => x.Id >= 0).OrderBy(x => x.RateCode).Select(x => new RateCodeValidationViewModel() { RateCode = x.RateCode, Description = x.Description }).ToList()
-			};
+				IESResponse<ICollection<RateDetailModelView>> validationResponse = this.ValidateRateCodesInternal();
+				if (validationResponse.IsSuccessful)
+				{
+					response.Data = new()
+					{
+						InsertRateCodes = validationResponse.Data.Where(x => x.Id < 0).OrderBy(x => x.RateCode).Select(x => new RateCodeValidationViewModel() { RateCode = x.RateCode, Description = x.Description }).ToList(),
+						UpdateRateCodes = validationResponse.Data.Where(x => x.Id >= 0).OrderBy(x => x.RateCode).Select(x => new RateCodeValidationViewModel() { RateCode = x.RateCode, Description = x.Description }).ToList()
+					};
+					response.IsSuccessful = true;
+				}
+				else
+				{
+					response.Messages = validationResponse.Messages;
+				}
+			}
+			catch (Exception ex)
+			{
+				response.Messages.Add($"{ex.Message}");
+			}
 			return this.Json(response);
 		}
 

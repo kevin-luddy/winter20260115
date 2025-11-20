@@ -36,7 +36,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inBoeID">BOE ID</param>
         /// <returns>all the BOE History logs</returns>
         [DbQuery]
-        virtual public ICollection<BOEHistoryDTO> GetBOEHistory(int inBoeID)
+        public virtual ICollection<BOEHistoryDTO> GetBOEHistory(int inBoeID)
         {
             ICollection<BOEHistoryDTO> toReturn = new Collection<BOEHistoryDTO>();
 
@@ -65,7 +65,7 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <param name="wsId">Workspace Id</param>
         /// <returns>Mapping of BoeIds and UserIds</returns>
-        virtual public Dictionary<int, UserDTO> GetBoeIdsAndAuthorsThatLastSubmittedItForApprovalForWs(int wsId)
+        public virtual Dictionary<int, UserDTO> GetBoeIdsAndAuthorsThatLastSubmittedItForApprovalForWs(int wsId)
         {
             Dictionary<int, UserDTO> result = new Dictionary<int, UserDTO>();
 

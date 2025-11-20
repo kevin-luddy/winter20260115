@@ -57,6 +57,8 @@ AS
 **		1/14/25		twilson3			PROPH-2596 - Add UCOT Factor
 **		1/15/25		e309214				PROPH-1854 Database Changes for Assign Author
 **		9/30/25		e378233				PROPH-3302 Updated for Skill Mix Summary
+**		10/14/25	ranzalon			PROPH-3286 Enable LM Nav Workspace Setting
+**		10/30/25	ranzalon			PROPH-3422 Update Skill Mix Summary Column Names
 *******************************************************************************/
 SET NOCOUNT ON 
 --BEGIN TRANSACTION 
@@ -161,7 +163,8 @@ INSERT INTO [version].[Workspace]
 ,[TemplateBoe]
 ,[EnableSAPConnection]
 ,[UCOTFactor]
-,[EnableAssignTaskAuthor])
+,[EnableAssignTaskAuthor]
+,[EnableLmNavigator])
 SELECT [WorkspaceID]
 ,[WorkspaceName]
 ,[WorkspaceShortName]
@@ -212,6 +215,7 @@ SELECT [WorkspaceID]
 ,[EnableSAPConnection]
 ,[UCOTFactor]
 ,[EnableAssignTaskAuthor]
+,[EnableLmNavigator]
 FROM [dbo].[Workspace]
 WHERE WorkspaceID = @WorkspaceID
 
@@ -1296,12 +1300,12 @@ INSERT INTO [version].[SkillMixSummary]
 ([SkillMixSummaryID],
 [Rationale],
 [Included],
-[ProposedHours],
+[ProposedLegacyResource],
 [HistoricalHours],
 [ResourceHours],
-[BusinessResourceHours],
-[BOESkillMix],
-[LaborSkillMix],
+[ProposedBrc],
+[ProposedSkillMix],
+[HistoricalSkillMix],
 [ResourceID],
 [BusinessResourceID],
 [BOETaskElementID],
@@ -1312,12 +1316,12 @@ INSERT INTO [version].[SkillMixSummary]
 SELECT SMS.[SkillMixSummaryID],
 SMS.[Rationale],
 SMS.[Included],
-SMS.[ProposedHours],
+SMS.[ProposedLegacyResource],
 SMS.[HistoricalHours],
 SMS.[ResourceHours],
-SMS.[BusinessResourceHours],
-SMS.[BOESkillMix],
-SMS.[LaborSkillMix],
+SMS.[ProposedBrc],
+SMS.[ProposedSkillMix],
+SMS.[HistoricalSkillMix],
 SMS.[ResourceID],
 SMS.[BusinessResourceID],
 SMS.[BOETaskElementID],

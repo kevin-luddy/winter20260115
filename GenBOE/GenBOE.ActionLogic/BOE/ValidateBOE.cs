@@ -9,8 +9,10 @@ namespace GenBOE.ActionLogic.WBS.BOE
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.ComponentModel;
 	using System.Diagnostics.CodeAnalysis;
 	using System.Linq;
+	using System.Runtime.Remoting.Messaging;
 	using Common;
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.IO.Import;
@@ -30,13 +32,13 @@ namespace GenBOE.ActionLogic.WBS.BOE
 		public const string DATE_RANGE_INVALID = "End Date must be on or after the Start Date.";
 		public const string CLIN_TEXT = "CLIN";
 		public const string CONTRACT_TEXT = "Contract";
-		private IVariableSelectBOEtoSumCalculation _VariableSelectBOEtoSumCalculation;
-		private BOECommentsResponsesValidator _BOECommentsResponsesValidator;
-		private ITripDTODataLoader _TripDTODataLoader;
-		private IMiscTravelRateDTOLoader miscTravelRateDTOLoader;
-		private ILocationDTODataLoader _LocationDTODataLoader;
-		private IOffloadRatesDTOLoader offloadRatesDTOLoader;
-		private IRteTemplateDataLoader rteTemplateDataLoader;
+		private readonly IVariableSelectBOEtoSumCalculation _VariableSelectBOEtoSumCalculation;
+		private readonly BOECommentsResponsesValidator _BOECommentsResponsesValidator;
+		private readonly ITripDTODataLoader _TripDTODataLoader;
+		private readonly IMiscTravelRateDTOLoader miscTravelRateDTOLoader;
+		private readonly ILocationDTODataLoader _LocationDTODataLoader;
+		private readonly IOffloadRatesDTOLoader offloadRatesDTOLoader;
+		private readonly IRteTemplateDataLoader rteTemplateDataLoader;
 
 		/// <summary>
 		/// Default constructor
@@ -69,6 +71,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 		/// <param name="ws">Full WS</param>
 		/// <returns>all possible validation messages</returns>
 		/// Suppressed the following messages because 1) I do use BoeLabor just not in the way the code analysis wants me too and 2) if you can make this less complex, go for it!
+		[SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
 		public virtual ValidationBOEModelView ValidateBOE_OnValidateBtnClick(FullBoe inBOE, FullWorkspace ws)
 		{
 			// See wireframes for what should be checked on "Validate" button click.
@@ -192,14 +195,16 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 			// validate if there is at least one task element associated with the BOE. it can be cost or labor, just needs at least one of either
 			// need to place so it's a "task" for purposes of validation
-			if (!ws.TaskElements.Any(x => (x.BoeID == inBOE.Id)) &&
+			if (!ws.TaskElements.Any(x => x.BoeID == inBOE.Id) &&
 				!ws.Odcs.Any(x => x.BoeID == inBOE.Id) &&
 				!ws.Materials.Any(x => x.BoeID == inBOE.Id) &&
 				!ws.Travels.Any(x => x.BoeID == inBOE.Id))
 			{
 				boeTasks = new ValidationBOETasks();
-				TaskElementMessages = new Collection<string>();
-				TaskElementMessages.Add(BoeDTO.ONE_TASK_ELEMENT_REQUIRED);
+				TaskElementMessages = new Collection<string>
+				{
+					BoeDTO.ONE_TASK_ELEMENT_REQUIRED
+				};
 				boeTasks.TaskMessage = "Task: ";
 				boeTasks.TaskElementDetails.TaskElementDetailValidationMessages = TaskElementMessages;
 				ValidationBOE.Tasks.Add(boeTasks);
@@ -228,7 +233,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 			// Valid Comments and Approvals
 			// validate that all boe comments have a response
 			bool boeCommentResponseValidator = this._BOECommentsResponsesValidator.AllBOEAuthorCommentsResponses(inBOE.Id);
-			if (boeCommentResponseValidator == false)
+			if (!boeCommentResponseValidator)
 			{
 				ValidationBOE.BOECommentandApprovals.Add("All BOE Comments do not have a response from the Author.");
 			}
@@ -240,11 +245,33 @@ namespace GenBOE.ActionLogic.WBS.BOE
 				if (BOETaskUtility.ShowSkillMixForTask(ws, task))
 				{
 					ICollection<string> errorMessages = new List<string>();
-					errorMessages = ActionLogicUtility.ValidateSkillMixTable(task.SkillMixTable, true);
 
-					if (Utilities.IsBRCEnabledForWorkspace(ws.Shortname) && task.EndDate >= Utilities.OneLmxStartDate)
+					// Set the task's MOQTotalRelevantHours
+					task.MOQTotalRelevantHours = 0;
+					ICollection<MoqTypeSelection> moqTypes = ws.MoqTypeSelections.Where(m => m.TaskId == task.Id).ToList();
+					// Space will get the total moq total relevant hours if it is from a Sap Webi moq table data.
+					if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
 					{
-						errorMessages.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(task.CommonDisclosureTable, true, task.taskElementLabors.Any()));
+						task.MOQTotalRelevantHours += moqTypes.Sum(t => t.TableData?.Where(td => td.RepositoryName == RepositoryName.SapWebi.GetDescription()).Sum(td => td.TotalRelevantHours) ?? 0);
+					}
+					else
+					{
+						task.MOQTotalRelevantHours += moqTypes.Sum(t => t.TableData?.Sum(td => td.TotalRelevantHours) ?? 0);
+					}
+
+					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+					{
+						errorMessages.AddRange(ActionLogicUtility.ValidateSkillMixSummaryTable(task, ws.EnableSAPConnection, task.taskElementLabors.Any()));
+					}
+
+					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+					{
+						errorMessages = ActionLogicUtility.ValidateSkillMixTable(task.SkillMixTable, true);
+
+						if (Utilities.IsBRCEnabledForWorkspace(ws.Shortname) && task.EndDate >= Utilities.OneLmxStartDate)
+						{
+							errorMessages.AddRange(ActionLogicUtility.ValidateCommonDisclosureSkillMixTable(task.CommonDisclosureTable, true, task.taskElementLabors.Any()));
+						}
 					}
 
 					if (errorMessages.Any())
@@ -310,6 +337,97 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 			// return the collection of error messages.
 			return CollectionOfErrors;
+		}
+
+		/// <summary>
+		/// Validation of all Child objects (i.e. CLIN, BOE, Task, Resource) to be within the PoP of a workspace
+		/// For ProPricer Export Report
+		/// </summary>
+		/// <param name="ws">Full Workspace</param>
+		/// <returns>boolean value to check if is valid</returns>
+		public virtual bool ValidateWorkspacePoP(FullWorkspace ws)
+		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException(nameof(ws));
+			}
+
+			DateTime wsStartDate = GenBOEUtilities.AdjustDateTimePrecision(ws.ContractStartDate, DateTimePrecision.Day);
+			DateTime wsStartMonth = GenBOEUtilities.AdjustDateTimePrecision(ws.ContractStartDate, DateTimePrecision.Month);
+			DateTime wsEndDate = GenBOEUtilities.AdjustDateTimePrecision(ws.ContractEndDate, DateTimePrecision.Day);
+			DateTime wsEndMonth = GenBOEUtilities.AdjustDateTimePrecision(ws.ContractEndDate, DateTimePrecision.Month);
+			foreach (FullClin clin in ws.Clins)
+			{
+				DateTime? clinStartDate = clin.StartDate.HasValue ? GenBOEUtilities.AdjustDateTimePrecision((DateTime)clin.StartDate, DateTimePrecision.Day) : clin.StartDate;
+				DateTime? clinEndDate = clin.EndDate.HasValue ? GenBOEUtilities.AdjustDateTimePrecision((DateTime)clin.EndDate, DateTimePrecision.Day) : clin.EndDate;
+				// Check CLIN falls within the Workspace Start and End Date
+				if (clinStartDate.HasValue && (clinStartDate < wsStartDate))
+				{
+					return false;
+				}
+
+				if (clinEndDate.HasValue && (clinEndDate > wsEndDate))
+				{
+					return false;
+				}
+
+				// Check BOE falls within the CLIN Start Date and End Date
+				foreach (FullBoe boe in ws.Boes)
+				{
+					if (boe.Clin != null && (clin.Id == boe.CLINID))
+					{
+						DateTime boeStartDate = GenBOEUtilities.AdjustDateTimePrecision(boe.StartDate, DateTimePrecision.Day);
+						DateTime boeStartMonth = GenBOEUtilities.AdjustDateTimePrecision(boe.StartDate, DateTimePrecision.Month);
+						DateTime boeEndDate = GenBOEUtilities.AdjustDateTimePrecision(boe.EndDate, DateTimePrecision.Day);
+						DateTime boeEndMonth = GenBOEUtilities.AdjustDateTimePrecision(boe.EndDate, DateTimePrecision.Month);
+
+						// Check if the BOE falls within the Workspace Start Date and End Date        
+						if (boeStartMonth < wsStartMonth || boeEndMonth > wsEndMonth)
+						{
+							return false;
+						}
+
+						if (clinStartDate.HasValue && (boeStartDate < clinStartDate))
+						{
+							return false;
+						}
+
+						if (clinEndDate.HasValue && (boeEndDate > clinEndDate))
+						{
+							return false;
+						}
+
+						// Validate dates for Labor Task Elements
+						if (ws.TaskElements.Any(x => x.BoeID == boe.Id))
+						{
+							IEnumerable<BoeTaskElementDTO> boeTaskElements = ws.TaskElements.Where(x => x.BoeID == boe.Id);
+							foreach (BoeTaskElementDTO boeTask in boeTaskElements)
+							{
+								if (boeTask.TaskElementType == TaskElementType.Labor)
+								{
+									Collection<string> returnedMessages = this._ValidateStartAndEndDates(boe.StartDate, boe.EndDate, boe, boeTask.StartDate, boeTask.EndDate, ws);
+									if (returnedMessages.Count() > 0)
+									{
+										return false;
+									}
+								}
+
+								// Validate Resource Types
+								foreach (ResourceTypeDto labor in boeTask.taskElementLabors)
+								{
+									Collection<string> returnedMessages = this._ValidateStartAndEndDates(boeTask.StartDate, boeTask.EndDate, boe, labor.StartDate, labor.EndDate, ws);
+									if (returnedMessages.Count() > 0)
+									{
+										return false;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			return true;
 		}
 
 		/// <summary>
@@ -832,15 +950,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 				if (row.DateOfReport.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} must be on or before today's date."); }
 
 				ValidateRequiredField(moqType.SelectedMOQType, row.HistoricalProgramName, labels.HistoricalProgramName, Constants.MOQ_HISTORICAL_PROG_NAME_FIELD_LENGTH, errorMessages);
-
-				if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && (!Utilities.IsSAPEnabledForWorkspace(ws.EnableSAPConnection, ws.CreationDate)))
-				{
-					ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, Constants.MOQ_WBS_ELEMENT_RMS_SAP_DISABLED_FIELD_LENGTH, errorMessages);
-				}
-				else
-				{
-					ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, Constants.MOQ_WBS_ELEMENT_FIELD_LENGTH, errorMessages);
-				}
+				ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, Constants.MOQ_WBS_ELEMENT_FIELD_LENGTH, errorMessages);
 
 				// If using Monthly Query Type, must compare dates against a mid-month date to allow using the current month
 				DateTime today = row.QueryType == MoqTableData.MONTHLY ? DateTime.Now.ToString("MM/yyyy").ToDateTimeMidMonth() : DateTime.Now;
@@ -965,7 +1075,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 					LaborTypeMessages.Add(BoeDTO.PERFORM_ORG_REQUIRED);
 				}
 
-				// need to verfy a Resource or Business Resource Code exists
+				// need to verify a Resource or Business Resource Code exists
 				string requiredMessage = BRCValidationUtility.ValidateResourceAndBusinessResourceCodeRequired(labor, resourceIdToSegmentRegion, workspace.Shortname);
 				if (!string.IsNullOrEmpty(requiredMessage))
 				{

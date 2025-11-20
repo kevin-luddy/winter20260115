@@ -62,7 +62,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inWorkspaceID">workspace</param>
         /// <returns>Custom Field Dtos associated with the workspace.</returns>
         [DbQuery]
-        virtual public ICollection<CustomFieldDTO> GetByWorkspaceId(int inWorkspaceID)
+        public virtual ICollection<CustomFieldDTO> GetByWorkspaceId(int inWorkspaceID)
         {
             using (StopwatchTimer sw = new StopwatchTimer(Log))
             {

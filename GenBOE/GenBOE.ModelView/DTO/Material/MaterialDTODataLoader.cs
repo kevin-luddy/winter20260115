@@ -31,7 +31,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="includeRTEFields">Indicates whether RTE fields should be retrieved as a part of the data pull</param>
         /// <returns>Material for the id</returns>
         [DbQuery]
-        virtual public MaterialDTO GetById(int inMaterialID, bool includeRTEFields = false)
+        public virtual MaterialDTO GetById(int inMaterialID, bool includeRTEFields = false)
         {
             MaterialDTO result;
 
@@ -88,7 +88,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="includeRTEFields">Indicates whether RTE fields should be retrieved as a part of the data pull</param>
         /// <returns>Material Dtos</returns>
         [DbQuery]
-        virtual public Collection<MaterialDTO> GetByBoeIds(Collection<int> boeIds, bool includeRTEFields = false)
+        public virtual Collection<MaterialDTO> GetByBoeIds(Collection<int> boeIds, bool includeRTEFields = false)
         {
             List<MaterialDTO> result;
 
@@ -217,7 +217,7 @@ namespace GenBOE.DataBridge.DTO
         /// Save materials data
         /// </summary>
         /// <param name="inMaterialDTOs">Materials to save</param>
-        virtual public void SaveMaterials(ICollection<MaterialDTO> inMaterialDTOs)
+        public virtual void SaveMaterials(ICollection<MaterialDTO> inMaterialDTOs)
         {
             if (inMaterialDTOs == null) { throw new ArgumentNullException(nameof(inMaterialDTOs)); }
 

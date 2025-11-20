@@ -156,7 +156,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="boeComments">Collection of BOE Comment Model Views that have been
         /// added or updated by the user</param>
         /// <returns></returns>
-        virtual public JsonResult SaveBoeComments(string workspace, int boeID, BOECommentsModelView boeComments)
+        public virtual JsonResult SaveBoeComments(string workspace, int boeID, BOECommentsModelView boeComments)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
             FullBoe fullBOE = this.Factory.CreateFullBoe(boeID);
