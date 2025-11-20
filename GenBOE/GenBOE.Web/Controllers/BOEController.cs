@@ -626,6 +626,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace short name</param>
 		/// <param name="id">BOE ID</param>
 		/// <returns>BOE Summary view Action Result</returns>
+		[ChildActionOnly, HttpGet]
 		public virtual ViewResult DisplayBOESummary(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -713,12 +714,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">the workspace name</param>
 		/// <param name="boeID">the boeid</param>
 		/// <returns>the button/script</returns>
+		[ChildActionOnly]
 		public ViewResult DisplaySubmitForReviewBOEButton(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplaySubmitForReviewBOEButton", SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_SUBMIT_FOR_REVIEW, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
 
 			ViewData["SubmitForReview_ReadOnly"] = GetReadOnlyAttribute(CheckPermissions(SecurityPage.SubmitForReview, ws, boeID));
 
@@ -737,7 +739,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_BOE_SUBMIT_FOR_REVIEW);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplaySubmitForReviewBOEButton", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_SUBMIT_FOR_REVIEW, sw);
 			return toReturn;
 		}
 
@@ -747,12 +749,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The current workspace ID</param>
 		/// <param name="id">The current BOE ID</param>
 		/// <returns>ActionResult to display the Validate BOE partial</returns>
+		[ChildActionOnly]
 		public ViewResult DisplayValidateBOEButton(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayValidateBOEButton", SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_VALIDATE, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
 
 			ViewData["ValidateBOE_ReadOnly"] = GetReadOnlyAttribute(CheckPermissions(SecurityPage.ValidateBOE, ws, boeID));
 
@@ -763,7 +766,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_BOE_VALIDATE);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayValidateBOEButton", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_VALIDATE, sw);
 			return toReturn;
 		}
 
@@ -773,12 +776,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The current workspace ID</param>
 		/// <param name="id">The current BOE ID</param>
 		/// <returns>ActionResult to display the Offload BOE partial</returns>
+		[ChildActionOnly]
 		public ViewResult DisplayOffloadBOEButton(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplayOffloadBOEButton", SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_OFFLOAD, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
 
 			ViewData["HideOffloadBOE"] = (ws.ProjectMapType == ProjectMapType.StandardWithoutOffload).ToString().ToLower();
 			ViewData["BOEID"] = boeID;
@@ -786,7 +790,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_BOE_OFFLOAD);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplayOffloadBOEButton", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_OFFLOAD, sw);
 			return toReturn;
 		}
 
@@ -796,12 +800,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">the workspace name</param>
 		/// <param name="boeID">the boeid</param>
 		/// <returns>the button/script</returns>
+		[ChildActionOnly]
 		public ViewResult DisplaySubmitForApproval(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "DisplaySubmitForApproval", SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_SUBMIT_FOR_APPROVAL, SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
 			ViewData["SubmitForApproval_ReadOnly"] = GetReadOnlyAttribute(CheckPermissions(SecurityPage.SubmitForApproval, ws, boeID));
 
 			// Pass the BOE ID to the Validate BOE partial
@@ -811,7 +816,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_BOE_SUBMIT_FOR_APPROVAL);
 
 			// Finalize Action
-			FinalizeAction(_log, "DisplaySubmitForApproval", sw);
+			FinalizeAction(_log, WebConstants.ACTION_DISPLAY_SUBMIT_FOR_APPROVAL, sw);
 			return toReturn;
 		}
 

@@ -1205,7 +1205,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace name</param>
 		/// <param name="selections">User's filter selections</param>
 		/// <returns>Dialog view</returns>
-		// This is using both HttpGet and HttpPost 
+		[HttpPost]
 		public PartialViewResult DisplayBoeCustomReportSelector(string workspace, BoeCustomReportSelections selections)
 		{
 			if (selections == null)

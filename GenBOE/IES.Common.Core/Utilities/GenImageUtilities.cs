@@ -243,7 +243,7 @@ namespace IES.Common.Core.Utilities
 				// now convert the image to the designated format ...
 				Tuple<ImageFormat, string> formatMapping = GetImageFormat(emailImageInfo.MimeType);
 				bmp.Save(msout, formatMapping.Item1);
-
+				bmp.Dispose();
 				msin.Close();
 				msin = null;
 			}

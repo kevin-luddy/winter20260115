@@ -6459,15 +6459,17 @@ namespace GenBOE.Web.Controllers
 
 			string fileName = string.Format("{0}_{1}.xlsx", ws.WorkspaceName, customFieldName);
 			// Generate a custom ActionResult to cause a file download to the client
-			FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
+			using (FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose))
+			{
 
-			// Finalize Action
-			FinalizeAction(_log, WebConstants.ACTION_EXPORT_BOE_CUSTOM_FIELD, sw);
+				// Finalize Action
+				FinalizeAction(_log, WebConstants.ACTION_EXPORT_BOE_CUSTOM_FIELD, sw);
 
-			return File(
-				fileStream: fs,
-				contentType: ExportFileDownloadBase.GetContentType(fileName),
-				fileDownloadName: fileName);
+				return File(
+					fileStream: fs,
+					contentType: ExportFileDownloadBase.GetContentType(fileName),
+					fileDownloadName: fileName);
+			}
 		}
 
 		#endregion Imports/Exports
