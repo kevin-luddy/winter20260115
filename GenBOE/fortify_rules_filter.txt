@@ -1,0 +1,13 @@
+#Primary ID to filter from scan output
+#Mass Assignment: Insecure Binder Configuration
+F8FC1712-38E9-435B-BC5E-53DF24BB279A
+#Mass Assignment: Sensitive Field Exposure
+EFC06BE1-6D19-4E55-B8AB-4604FACEDAC7
+#ASP.NET MVC Bad Practices: Model With Required Non-Nullable Property
+C0F7D70E-BB3E-4144-8ED2-6D0524B792FC
+#Server-Side Request Forgery
+5869D907-B3FB-47E1-8E76-9C43E5D9DD2B
+#System Information Leak
+662554C1-22FE-46C9-BBEC-55727BA485680
+#Log Forging
+20ACF15D-2C61-4E85-BFC3-6C1345C42F0D0

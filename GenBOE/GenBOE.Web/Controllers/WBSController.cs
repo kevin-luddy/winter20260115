@@ -518,7 +518,7 @@ namespace GenBOE.Web.Controllers
                              where m.ImportType == (int)WbsImportResult.CreateWbs || m.ImportType == (int)WbsImportResult.UpdateWbs || m.ImportType == (int)WbsImportResult.CreateBoe || m.ImportType == (int)WbsImportResult.DeleteWbs
                              select m;
             ViewData["SERIALIZED_DATA"] = serializer.Serialize(dataToSave);
-            ViewData["DOCUMENT_DOMAIN"] = Request["documentDomain"];
+            ViewData["DOCUMENT_DOMAIN"] = Request.Form["documentDomain"];
 
             toReturn = View(WebConstants.VIEW_WBS_IMPORT_VERIFICATION, theModelViews);
 

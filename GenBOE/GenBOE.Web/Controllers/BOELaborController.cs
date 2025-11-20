@@ -1388,7 +1388,7 @@ namespace GenBOE.Web.Controllers
 
 			this.ViewData["ERRORS_OCCURRED"] = importResults.ErrorsOccurred;
 			this.ViewData["SERIALIZED_DATA"] = serializer.Serialize(importResults.DataToSave());
-			this.ViewData["DOCUMENT_DOMAIN"] = this.Request["documentDomain"];
+			this.ViewData["DOCUMENT_DOMAIN"] = this.Request.Form["documentDomain"];
 
 			ViewResult toReturn = this.View(WebConstants.VIEW_MOQ_TABLE_IMPORT_VERIFICATION, importResults.Result);
 

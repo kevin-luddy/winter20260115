@@ -3866,8 +3866,8 @@ namespace GenBOE.Web.Controllers
                     // was submitted
                     PerformingOrgListDTO listDTO = new PerformingOrgListDTO();
                     listDTO.Updateable = UpdateType.Upsert;
-                    listDTO.UpdateDate = new DateTime(long.Parse(Request["PerformingOrgListUpdateDateLong"]));
-                    listDTO.PerformingOrgListID = int.Parse(Request["PerformingOrgListID"]);
+                    listDTO.UpdateDate = new DateTime(long.Parse(Request.Form["PerformingOrgListUpdateDateLong"]));
+                    listDTO.PerformingOrgListID = int.Parse(Request.Form["PerformingOrgListID"]);
 
                     // Call the business layer to parse the uploaded file
                     // If the file was successfully parsed, add the results to the genBOE database
@@ -4879,7 +4879,7 @@ namespace GenBOE.Web.Controllers
 	                       TripID = x.TripID,
 	                       ImportType = x.ImportType
 	                   });
-            ViewData["DOCUMENT_DOMAIN"] = Request["documentDomain"];
+            ViewData["DOCUMENT_DOMAIN"] = Request.Form["documentDomain"];
 
             toReturn = View(WebConstants.VIEW_MANAGE_TRIPS_IMPORT_VERIFICATION, theModelView);
 

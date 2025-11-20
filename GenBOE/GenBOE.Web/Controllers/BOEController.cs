@@ -1710,7 +1710,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			this.ViewData["SERIALIZED_DATA"] = serializer.Serialize(dataToSave);
-			this.ViewData["DOCUMENT_DOMAIN"] = this.Request["documentDomain"];
+			this.ViewData["DOCUMENT_DOMAIN"] = this.Request.Form["documentDomain"];
 
 			ViewResult toReturn = this.View(WebConstants.VIEW_MANAGE_BOE_IMPORT_VERIFICATION, theModelViews);
 
