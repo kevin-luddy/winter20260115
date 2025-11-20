@@ -11888,6 +11888,11 @@ warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' do
             <Parameter Name="ContractStartDate" Mode="In" Type="DateTime" />
             <Parameter Name="ContractEndDate" Mode="In" Type="DateTime" />
           </FunctionImport>
+          <FunctionImport Name="validateWorkspacePoP1" ReturnType="Collection(Boolean)">
+            <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
+            <Parameter Name="ContractStartDate" Mode="In" Type="DateTime" />
+            <Parameter Name="ContractEndDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
           </EntityContainer>
 		<ComplexType Name="getBOEForFindReplace_Result">
 		  <Property Type="Int32" Name="BOEID" Nullable="true" />
@@ -16127,7 +16132,7 @@ warning 6002: The table/view 'genBOESpace_DEV.version.WorkBreakdownStructure' do
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="validateWorkspacePoP" FunctionName="GenBOE.Models.Store.validateWorkspacePoP" />
+          <FunctionImportMapping FunctionImportName="validateWorkspacePoP1" FunctionName="GenBOE.Models.Store.validateWorkspacePoP" />
 		</EntityContainerMapping>
 	  </Mapping>
 	</edmx:Mappings>

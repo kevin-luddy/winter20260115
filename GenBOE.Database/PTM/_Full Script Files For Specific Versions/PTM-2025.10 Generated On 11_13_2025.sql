@@ -1,20 +1,20 @@
 PRINT '###### SCRIPT IS STARTING ######';
 /*
-    This file was auto-generated for Release: 2025.6, on 10/14/2025.
+    This file was auto-generated for Release: 2025.10, on 11/13/2025.
     It contains all of the Release specific scripts, modifying data/tables as well as all of the Stored Procedures and User Defined Table Types.
 */
 
 /*
-    File: \Release 2025.6\1 - Release 2025.6 Script.sql
+    File: \Release 2025.10\1 - Release 2025.10 Script.sql
 */
-PRINT '### Starting file: \Release 2025.6\1 - Release 2025.6 Script.sql';
-EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2025.5';
+PRINT '### Starting file: \Release 2025.10\1 - Release 2025.10 Script.sql';
+EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2025.10';
 GO
 
 -- Author: RJ Anzalone (ranzalon)
--- PROPH-3306 - 10/13/2025
--- Add Questions 13 and 14 to PPR Checklist
-DECLARE @newChecklistId INT = 20 -- Version 19
+-- PROPH-3306 - 11/13/2025
+-- Remove Question 10 from PPR Checklist
+DECLARE @newChecklistId INT = 21 -- Version 20
 
 IF NOT EXISTS (SELECT 1 FROM ProposalAdequacyReview WHERE ProposalAdequacyReviewID = @newChecklistId)
 BEGIN
@@ -22,24 +22,39 @@ BEGIN
 	EXEC CopyCannedResponsesPAR @newChecklistId;
 	EXEC CopyPPRChecklist @newChecklistId;
 
-	DECLARE @sortOrderIndex INT;
-	
-	-- Get the Sort Order of the last question
-	SELECT @sortOrderIndex = MAX(SortOrder)
-	FROM dbo.PPRChecklistContent
-	WHERE ProposalPricingReviewID = @newChecklistId AND TextTypeID = 4;
+	-- Remove Question 10 
+	-- Sort Order is 3 greater than the question number, so use that to identify the questions
+	DELETE FROM dbo.PPRChecklistContent
+	WHERE ProposalPricingReviewID = @newChecklistId AND SortOrder = 13
 
-	-- Question 13
-	INSERT INTO dbo.PPRChecklistContent (ChecklistText, TextTypeID, SortOrder, ColumnOrder, ProposalPricingReviewID)
-	VALUES ('<p>13. If you are pricing effort that includes <b><u>scope through 2028</u></b>, have you verified that the proposed costs align with the Heritage Space disclosed practices, rates and factors? (NA if no scope prior to 2029)</p>', 4, @sortOrderIndex + 1, 1, @newChecklistId);
-	
-	-- Question 14
-	INSERT INTO dbo.PPRChecklistContent (ChecklistText, TextTypeID, SortOrder, ColumnOrder, ProposalPricingReviewID)
-	VALUES ('<p>14. If you are pricing effort that includes <b><u>scope in 2029 and beyond</u></b>, have you verified that the proposed costs align with the 1LMX disclosed practices, rates and factors? (NA if no scope for 2029 and beyond)</p>', 4, @sortOrderIndex + 2, 1, @newChecklistId);
-
-	-- Update Sort Order of Pricer Comment
+	-- Update numbering and sort order of Questions 11-14 to be 1 less
+	-- Question 11 -> Question 10
 	UPDATE dbo.PPRChecklistContent
-	SET SortOrder = @sortOrderIndex + 3
+	SET ChecklistText = '<p>10. Does the proposal include subcontractors of any dollar value or material supplier > CCoPD threshold with planned dates that go beyond proposal submittal? Click <a href="https://space.p.external.lmco.com/sites/fbo/CCDME/Estimating/SiteLinks/Proposal%20Tracking%20Module%20(PTM)/Proposal%20Pricing%20Review%20Question%20%2311%20-%20Help.docx">here</a> for additional information on applicability.</p>', 
+		SortOrder = 13
+	WHERE ProposalPricingReviewID = @newChecklistId AND SortOrder = 14
+	
+	-- Question 12 -> Question 11
+	UPDATE dbo.PPRChecklistContent
+	SET ChecklistText = '<p>11. Has the NLF Forms tool been used to prepare the PBOE, IBOE, MPBOE, and Subcontractor Summary Table?</p>', 
+		SortOrder = 14
+	WHERE ProposalPricingReviewID = @newChecklistId AND SortOrder = 15
+	
+	-- Question 13 -> Question 12
+	UPDATE dbo.PPRChecklistContent
+	SET ChecklistText = '<p>12. If you are pricing effort that includes <b><u>scope through 2028</u></b>, have you verified that the proposed costs align with the Heritage Space disclosed practices, rates and factors? (NA if no scope prior to 2029)</p>', 
+		SortOrder = 15
+	WHERE ProposalPricingReviewID = @newChecklistId AND SortOrder = 16
+		
+	-- Question 14 -> Question 13
+	UPDATE dbo.PPRChecklistContent
+	SET ChecklistText = '<p>13. If you are pricing effort that includes <b><u>scope in 2029 and beyond</u></b>, have you verified that the proposed costs align with the 1LMX disclosed practices, rates and factors? (NA if no scope for 2029 and beyond)</p>', 
+		SortOrder = 16
+	WHERE ProposalPricingReviewID = @newChecklistId AND SortOrder = 17
+	
+	-- Update Sort Order of Pricer Comment to be one higher than the highest number question (Question 13 - Sort Order 16)
+	UPDATE dbo.PPRChecklistContent
+	SET SortOrder = 17
 	WHERE TextTypeID = 5 and ProposalPricingReviewID = @newChecklistId;
 END
 
@@ -612,7 +627,10 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 **		02/27/25	Carlos				PROPH-2642 Add checklist question 11 to log report
 **		05/13/25	ranzalon			PROPH-3038 Added Bid and Mission Segment EPP Dates
 **		07/21/25	e378233				PROPH-2835/2836 Added MSAC POC and Program Manager
+**		10/02/25	e403038				PROPH-2994 Additional EPP Dates (Original to Planned and add Scheduled)
 **		10/13/25	ranzalon			PROPH-3375 PPR Questions 13 and 14
+**		10/30/25	e403038				PROPH-3406 Label Modifications => Current Planned renamed to ScheduledActual and Current Scheduled renamed to Planned
+**		11/4/25		ranzalon			PROPH-3420: Added Alternative Pricing Methodology
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
@@ -764,12 +782,12 @@ SELECT
 	pCD.FinalNegotiatedValue AS ContractsFinalNegotiatedValue,
 	pCD.FinalNegotiatedDate AS ContractsFinalNegotiatedDate,
 	eppLU.Text AS ContractsEppDelegationAuthority,
-	pCD.ProgramEppDate AS ContractsProgramEppDate,
-	pCD.LobEppDate AS ContractsLobEppDate,
-	pCD.PreSpaceEppDate AS ContractsPreSpaceEppDate,
-	pCD.SpaceEppDate AS ContractsSpaceEppDate,
-	pCD.PreCorporateEppDate AS ContractsPreCorporateEppDate,
-	pCD.CorporateEppDate AS ContractsCorporateEppDate,
+	pCD.ScheduledActualProgramEppDate AS ContractsScheduledActualProgramEppDate,
+	pCD.ScheduledActualLobEppDate AS ContractsScheduledActualLobEppDate,
+	pCD.ScheduledActualPreSpaceEppDate AS ContractsScheduledActualPreSpaceEppDate,
+	pCD.ScheduledActualSpaceEppDate AS ContractsScheduledActualSpaceEppDate,
+	pCD.ScheduledActualPreCorporateEppDate AS ContractsScheduledActualPreCorporateEppDate,
+	pCD.ScheduledActualCorporateEppDate AS ContractsScheduledActualCorporateEppDate,
 	pCD.EppRosDelegationNotes AS ContractsEppRosDelegationNotes,
 	pCD.CustomerDueDate AS CustomerDueDate,
 	CASE
@@ -778,8 +796,16 @@ SELECT
 		ELSE NULL
 	END AS ContractsLmWon,
 	pCD.ModCompletedDate AS ContractsModCompletedDate,
-	pCD.BidEppDate AS ContractsBidEppDate,
-	pCD.MissionSegmentEppDate AS ContractsMissionSegmentEppDate,
+	pCD.ScheduledActualBidEppDate AS ContractsScheduledActualBidEppDate,
+	pCD.ScheduledActualMissionSegmentEppDate AS ContractsScheduledActualMissionSegmentEppDate,
+	pCD.PlannedProgramEppDate AS ContractsPlannedProgramEppDate,
+	pCD.PlannedLobEppDate AS ContractsPlannedLobEppDate,
+	pCD.PlannedPreSpaceEppDate AS ContractsPlannedPreSpaceEppDate,
+	pCD.PlannedSpaceEppDate AS ContractsPlannedSpaceEppDate,
+	pCD.PlannedPreCorporateEppDate AS ContractsPlannedPreCorporateEppDate,
+	pCD.PlannedCorporateEppDate AS ContractsPlannedCorporateEppDate,
+	pCD.PlannedBidEppDate AS ContractsPlannedBidEppDate,
+	pCD.PlannedMissionSegmentEppDate AS ContractsPlannedMissionSegmentEppDate,
 	-- end of Proposal Contract Data
 	pCD.CageCode,
 	CASE
@@ -805,7 +831,13 @@ SELECT
 		ELSE 'N/A'
 	END AS InsuranceType,
 	pCD.ProposedInsurance,
-	pCD.NegotiatedInsurance
+	pCD.NegotiatedInsurance,
+	P.SubjectToAlternativePricingMethodology,
+	CASE
+		WHEN P.AlternativePricingMethodology = null THEN ''
+		WHEN P.AlternativePricingMethodology = 4 THEN P.AlternativePricingMethodologyOtherText
+		ELSE apm.Text
+	END AS AlternativePricingMethodology
   FROM [dbo].[Proposal] P
     INNER JOIN [dbo].[ProgramAreaLU] PA ON P.ProgramAreaID = PA.ProgramAreaID
 	INNER JOIN [dbo].[LineOfBusinessLU] LOB ON P.LineOfBusinessID = LOB.LineOfBusinessID
@@ -975,7 +1007,8 @@ SELECT
 				FROM ProposalPPRChecklistXREF xref 
 					INNER JOIN ResponseLU r ON r.ResponseID = xref.ResponseID
 					INNER JOIN PPRChecklistContent ppr ON (xref.PPRChecklistContentID = ppr.PPRChecklistContentID AND ppr.ChecklistText LIKE '%scope in 2029 and beyond%')) AS ppr14
-			ON ppr14.ProposalId = p.ProposalId 
+			ON ppr14.ProposalId = p.ProposalId
+	LEFT OUTER JOIN [AlternativePricingMethodology] apm on P.AlternativePricingMethodology = apm.Id
 GO
 
 
@@ -2155,7 +2188,10 @@ AS
 **		02/27/25	Carlos				PROPH-2642 Added SupplierMilestoneDatesResponse field
 **		05/13/25	ranzalon			PROPH-3038 Added Bid and Mission Segment EPP Dates
 **		07/21/25	e378233				PROPH-2835/2836 Added MSAC POC and Program Manager
+**		10/02/25	e403038				PROPH-2994 Additional EPP Dates (Original to Planned and add Scheduled)
 **		10/13/25	ranzalon			PROPH-3375 PPR Questions 13 and 14
+**		10/30/25	e403038				PROPH-3406 Label Modifications => Current Planned renamed to ScheduledActual and Current Scheduled renamed to Planned
+**		11/4/25		ranzalon			PROPH-3420: Added Alternative Pricing Methodology
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -2435,17 +2471,25 @@ SELECT V.[ProposalID]
 	 ,V.ContractsFinalNegotiatedValue
 	 ,V.ContractsFinalNegotiatedDate
 	 ,V.ContractsEppDelegationAuthority
- 	 ,V.ContractsProgramEppDate
-	 ,V.ContractsLobEppDate
-	 ,V.ContractsPreSpaceEppDate
-	 ,V.ContractsSpaceEppDate
-	 ,V.ContractsPreCorporateEppDate
-	 ,V.ContractsCorporateEppDate
+ 	 ,V.ContractsScheduledActualProgramEppDate
+	 ,V.ContractsScheduledActualLobEppDate
+	 ,V.ContractsScheduledActualPreSpaceEppDate
+	 ,V.ContractsScheduledActualSpaceEppDate
+	 ,V.ContractsScheduledActualPreCorporateEppDate
+	 ,V.ContractsScheduledActualCorporateEppDate
 	 ,V.ContractsEppRosDelegationNotes
 	 ,V.ContractsLmWon
 	 ,V.ContractsModCompletedDate
-	 ,V.ContractsBidEppDate
-	 ,V.ContractsMissionSegmentEppDate
+	 ,V.ContractsScheduledActualBidEppDate
+	 ,V.ContractsScheduledActualMissionSegmentEppDate
+	 ,V.ContractsPlannedProgramEppDate
+	 ,V.ContractsPlannedLobEppDate
+	 ,V.ContractsPlannedPreSpaceEppDate
+	 ,V.ContractsPlannedSpaceEppDate
+	 ,V.ContractsPlannedPreCorporateEppDate
+	 ,V.ContractsPlannedCorporateEppDate
+	 ,V.ContractsPlannedBidEppDate
+	 ,V.ContractsPlannedMissionSegmentEppDate
 	 -- end of Proposal Contract Data
 	 ,V.CageCode
 	 ,V.ContractActionType
@@ -2479,6 +2523,13 @@ SELECT V.[ProposalID]
 	,V.InsuranceType
 	,V.ProposedInsurance
 	,V.NegotiatedInsurance
+	,SubjectToAlternativePricingMethodology = 
+		CASE V.SubjectToAlternativePricingMethodology
+			WHEN 1 THEN 'Yes'
+			WHEN 0 THEN 'No'
+			ELSE NULL
+			END
+	,V.AlternativePricingMethodology
 FROM [dbo].[vwProposalLogReport] V
 	LEFT OUTER JOIN @MaxRev M ON 
 		(
@@ -3595,6 +3646,7 @@ AS
 **			2/2/2021	ranzalon				BOEJ-4861 - Add submitted value
 **			2/28/2022	koovackal				IES-846 Create 2 new statuses
 **			11/14/2022	twilson3				IES-1976 - Fix missing parens
+**			10/28/2025	e426263					PROPH-3376 - Update PTM Dashboard
 ******************************************************************************/
 	SET NOCOUNT ON 
 
@@ -3655,7 +3707,7 @@ AS
 		P.DateAssigned AS [Date Assigned],
 		CASE WHEN P.RevisedSubmittalDate IS NOT NULL THEN P.RevisedSubmittalDate ELSE P.AnticipatedDeliveryDate END AS [Estimated Ship Date (Due Date)],
 		CAST(CC.ChecklistCompleteDate AS DATE) AS [ChecklistCompleteDate],
-		CAST(PC.ProposalSubmittalDate AS DATE) AS [Proposal Submit Date],
+		CAST(PC.ProposalSubmittalDate AS DATE) AS [Date Est. Submits to Contracts],
 		S.ProposalStatus AS [Proposal Status],
 		P.RevisedSubmittalDate AS [Revised Submittal Date],
 		P.DocumentId AS DocumentId,
@@ -6120,7 +6172,10 @@ CREATE PROCEDURE [dbo].[upsertProposal]
 	  @AdditionalClassification BIT,
 	  @ReasonCcopdNo INT,
 	  @ReasonCcopdNoOther VARCHAR(100),
-	  @IsSupportDefinitizingUCA BIT
+	  @IsSupportDefinitizingUCA BIT,
+	  @SubjectToAlternativePricingMethodology bit = NULL,
+	  @AlternativePricingMethodology int = NULL,
+	  @AlternativePricingMethodologyOtherText varchar(50) = NULL
 )
 AS
 /******************************************************************************
@@ -6162,6 +6217,7 @@ AS
 **			7/9/23		Dusan					PROPH-1563 - Added an Additional Classification Column
 **			7/14/24		Dusan					PROPH-1559: Added reason for CCOPD = No
 **			8/19/24		Dusan					PROPH-2080: Added IsSupportDefinitizingUCA field
+**			11/4/25		ranzalon				PROPH-3420: Added Alternative Pricing Methodology
 ******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -6314,6 +6370,9 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,ReasonCcopdNo
 		,ReasonCcopdNoOther
 		,IsSupportDefinitizingUCA
+		,SubjectToAlternativePricingMethodology
+	    ,AlternativePricingMethodology
+	    ,AlternativePricingMethodologyOtherText
 		)
 	OUTPUT inserted.ProposalID INTO @Inserted
 	VALUES
@@ -6389,6 +6448,9 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,@ReasonCcopdNo
 		,@ReasonCcopdNoOther
 		,@IsSupportDefinitizingUCA
+		,@SubjectToAlternativePricingMethodology
+	    ,@AlternativePricingMethodology
+	    ,@AlternativePricingMethodologyOtherText
 		)
 
 		SELECT @ProposalID = ID FROM @Inserted
@@ -6498,6 +6560,9 @@ ELSE
 						,ReasonCcopdNo = @ReasonCcopdNo
 						,ReasonCcopdNoOther = @ReasonCcopdNoOther
 						,IsSupportDefinitizingUCA = @IsSupportDefinitizingUCA
+						,SubjectToAlternativePricingMethodology = @SubjectToAlternativePricingMethodology
+						,AlternativePricingMethodology = @AlternativePricingMethodology
+						,AlternativePricingMethodologyOtherText = @AlternativePricingMethodologyOtherText
 						WHERE 
 							ProposalID = @ProposalID;
 
@@ -7071,14 +7136,22 @@ CREATE PROCEDURE [dbo].[upsertProposalContractsData]
 	@FinalNegotiatedValue [bigint],
 	@FinalNegotiatedDate [date],
 	@EppDelegationAuthority [int],
-	@BidEppDate [date],
-	@ProgramEppDate [date],
-	@MissionSegmentEppDate [date],
-	@LobEppDate [date],
-	@PreSpaceEppDate [date],
-	@SpaceEppDate [date],
-	@PreCorporateEppDate [date],
-	@CorporateEppDate [date],
+	@ScheduledActualBidEppDate [date],
+	@ScheduledActualProgramEppDate [date],
+	@ScheduledActualMissionSegmentEppDate [date],
+	@ScheduledActualLobEppDate [date],
+	@ScheduledActualPreSpaceEppDate [date],
+	@ScheduledActualSpaceEppDate [date],
+	@ScheduledActualPreCorporateEppDate [date],
+	@ScheduledActualCorporateEppDate [date],
+	@PlannedBidEppDate [date],
+	@PlannedProgramEppDate [date],
+	@PlannedMissionSegmentEppDate [date],
+	@PlannedLobEppDate [date],
+	@PlannedPreSpaceEppDate [date],
+	@PlannedSpaceEppDate [date],
+	@PlannedPreCorporateEppDate [date],
+	@PlannedCorporateEppDate [date],
 	@EppRosDelegationNotes [varchar](1000),
 	@LmWon [bit],
 	@ModCompletedDate [date],
@@ -7109,6 +7182,8 @@ AS
 **		02/22/23	ranzalon			Add CustomerDueDate
 **		11/12/24	twilson3			Add Insurance fields
 **		05/12/25	ranzalon			Add Bid and Mission Segment EPP Dates
+**		10/02/25	e403038				PROPH-2994 Additional EPP Dates (Original to Planned and add Scheduled)
+**		10/30/25	e403038				PROPH-3406 Label Modifications => Current Planned renamed to ScheduledActual and Current Scheduled renamed to Planned
 *******************************************************************************/
 SET NOCOUNT ON
 
@@ -7117,16 +7192,20 @@ SET NOCOUNT ON
 			DECLARE @Inserted AS Table (Id int)
 			INSERT INTO [dbo].[ProposalContractsData] (UpdateDT, ProposalID, PreviouslySubmittedROM, CustomerSubmittalDate,
 														ContractsCorrespondLogNumber, FinalNegotiatedValue, FinalNegotiatedDate,
-														EppDelegationAuthority, ProgramEppDate, LobEppDate, PreSpaceEppDate, 
-														SpaceEppDate, PreCorporateEppDate, CorporateEppDate, EppRosDelegationNotes, 
+														EppDelegationAuthority, ScheduledActualProgramEppDate, ScheduledActualLobEppDate, ScheduledActualPreSpaceEppDate, 
+														ScheduledActualSpaceEppDate, ScheduledActualPreCorporateEppDate, ScheduledActualCorporateEppDate, EppRosDelegationNotes, 
 														LmWon, ModCompletedDate, CageCode, CustomerDueDate, IsInsuranceDirect, 
-														InsuranceType, ProposedInsurance, NegotiatedInsurance, BidEppDate, MissionSegmentEppDate)
+														InsuranceType, ProposedInsurance, NegotiatedInsurance, ScheduledActualBidEppDate, ScheduledActualMissionSegmentEppDate,
+														PlannedProgramEppDate, PlannedLobEppDate, PlannedPreSpaceEppDate, 
+														PlannedSpaceEppDate, PlannedPreCorporateEppDate, PlannedCorporateEppDate, PlannedBidEppDate, PlannedMissionSegmentEppDate)
 				OUTPUT inserted.ProposalContractsDataId INTO @Inserted
 				VALUES (GETDATE(), @ProposalID, @PreviouslySubmittedROM, @CustomerSubmittalDate, @ContractsCorrespondLogNumber,
-						@FinalNegotiatedValue, @FinalNegotiatedDate, @EppDelegationAuthority, @ProgramEppDate, @LobEppDate, 
-						@PreSpaceEppDate, @SpaceEppDate, @PreCorporateEppDate, @CorporateEppDate, @EppRosDelegationNotes, @LmWon, 
+						@FinalNegotiatedValue, @FinalNegotiatedDate, @EppDelegationAuthority, @ScheduledActualProgramEppDate, @ScheduledActualLobEppDate, 
+						@ScheduledActualPreSpaceEppDate, @ScheduledActualSpaceEppDate, @ScheduledActualPreCorporateEppDate, @ScheduledActualCorporateEppDate, @EppRosDelegationNotes, @LmWon, 
 						@ModCompletedDate, @CageCode, @CustomerDueDate, @IsInsuranceDirect, @InsuranceType, @ProposedInsurance, 
-						@NegotiatedInsurance, @BidEppDate, @MissionSegmentEppDate)
+						@NegotiatedInsurance, @ScheduledActualBidEppDate, @ScheduledActualMissionSegmentEppDate,
+						@PlannedProgramEppDate, @PlannedLobEppDate, @PlannedPreSpaceEppDate, 
+						@PlannedSpaceEppDate, @PlannedPreCorporateEppDate, @PlannedCorporateEppDate, @PlannedBidEppDate, @PlannedMissionSegmentEppDate)
 			SELECT @ProposalContractsDataId = Id FROM @Inserted
 		END
 	ELSE -- updating existing
@@ -7141,14 +7220,22 @@ SET NOCOUNT ON
 						FinalNegotiatedValue = @FinalNegotiatedValue, 
 						FinalNegotiatedDate = @FinalNegotiatedDate,
 						EppDelegationAuthority = @EppDelegationAuthority,
-						BidEppDate = @BidEppDate,
-						ProgramEppDate = @ProgramEppDate,
-						MissionSegmentEppDate = @MissionSegmentEppDate,
-						LobEppDate = @LobEppDate,
-						PreSpaceEppDate = @PreSpaceEppDate,
-						SpaceEppDate = @SpaceEppDate,
-						PreCorporateEppDate = @PreCorporateEppDate,
-						CorporateEppDate = @CorporateEppDate,
+						ScheduledActualBidEppDate = @ScheduledActualBidEppDate,
+						ScheduledActualProgramEppDate = @ScheduledActualProgramEppDate,
+						ScheduledActualMissionSegmentEppDate = @ScheduledActualMissionSegmentEppDate,
+						ScheduledActualLobEppDate = @ScheduledActualLobEppDate,
+						ScheduledActualPreSpaceEppDate = @ScheduledActualPreSpaceEppDate,
+						ScheduledActualSpaceEppDate = @ScheduledActualSpaceEppDate,
+						ScheduledActualPreCorporateEppDate = @ScheduledActualPreCorporateEppDate,
+						ScheduledActualCorporateEppDate = @ScheduledActualCorporateEppDate,
+						PlannedBidEppDate = @PlannedBidEppDate,
+						PlannedProgramEppDate = @PlannedProgramEppDate,
+						PlannedMissionSegmentEppDate = @PlannedMissionSegmentEppDate,
+						PlannedLobEppDate = @PlannedLobEppDate,
+						PlannedPreSpaceEppDate = @PlannedPreSpaceEppDate,
+						PlannedSpaceEppDate = @PlannedSpaceEppDate,
+						PlannedPreCorporateEppDate = @PlannedPreCorporateEppDate,
+						PlannedCorporateEppDate = @PlannedCorporateEppDate,
 						EppRosDelegationNotes = @EppRosDelegationNotes,
 						LmWon = @LmWon,
 						ModCompletedDate = @ModCompletedDate,

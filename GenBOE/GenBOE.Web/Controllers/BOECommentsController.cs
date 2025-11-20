@@ -9,38 +9,33 @@ namespace GenBOE.Web.Controllers
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics;
-    using System.Linq;
     using System.Web.Mvc;
-    using GenBOE.ActionLogic;
     using GenBOE.ActionLogic.Common;
-    using GenBOE.ActionLogic.ControllerLogic;
     using GenBOE.ActionLogic.Metrics;
     using GenBOE.ActionLogic.ModelView.BOE;
     using IES.Common;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.Common.Interfaces;
     using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
     using GenBOE.Objects;
     using GenBOE.Web.Common;
+	using GenBOE.ActionLogic.ControllerLogic;
+	using GenBOE.ActionLogic;
 
-    public class BOECommentsController : GenBOEController
+	public class BOECommentsController : GenBOEController
     {
         Logger _log = new Logger(typeof(BOECommentsController));
+		private readonly BOECommentsControllerLogic _BOECommentsLogic = null;
 
-        private BOEHistoryDTODataLoader _boeHistoryLoader = null;
-        private BOECommentsControllerLogic _BOECommentsLogic = null;
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="inSecurityAccess"></param>
-        /// <param name="inCommonDataMapper"></param>
-        /// <param name="inEmailer">Emailer</param>
-        public BOECommentsController(ISecurityAccess inSecurityAccess, 
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="inSecurityAccess"></param>
+		/// <param name="inCommonDataMapper"></param>
+		/// <param name="inEmailer">Emailer</param>
+		public BOECommentsController(ISecurityAccess inSecurityAccess, 
             CommonDataMapper inCommonDataMapper, SiteMasterUtilities inSiteMasterUtilities,
             UserDTODataLoader inUserDTODataLoader,
-            BOEHistoryDTODataLoader inBoeHistoryLoader,
             SystemMetrics inSystemMetrics, 
             IFullObjectFactory factory, 
             BOECommentsControllerLogic inBOECommentsLogic,
@@ -48,7 +43,6 @@ namespace GenBOE.Web.Controllers
             IGenBOEControllerLogic inControllerLogic)
             : base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inUserDTODataLoader, permissionLoader, inControllerLogic)
         {
-            _boeHistoryLoader = inBoeHistoryLoader;
             _BOECommentsLogic = inBOECommentsLogic;
         }
 
@@ -63,7 +57,6 @@ namespace GenBOE.Web.Controllers
 		public ViewResult DisplayBOEComments(string workspace, int boeID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-            FullBoe boe = this.Factory.CreateFullBoe(boeID);
 
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_COMMENTS, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
@@ -81,68 +74,21 @@ namespace GenBOE.Web.Controllers
 
             Dictionary<SecurityPage, SecurityAuthorization> extraPermissionDictionary = CheckPermissions(pagesToCheck, ws, boeID);
 
-            SecurityAuthorization permission;
-            
-            if (extraPermissionDictionary.TryGetValue(SecurityPage.BOEApproval, out permission))
-            {
-                this.ViewData["Approvals_ReadOnly"] = this.GetReadOnlyAttribute(permission);
-            }
-            if (extraPermissionDictionary.TryGetValue(SecurityPage.BOEComment, out permission))
-            {
-                this.ViewData["Comments_ReadOnly"] = this.GetReadOnlyAttribute(permission);
-            }
-            if (extraPermissionDictionary.TryGetValue(SecurityPage.BOECommentResponse, out permission))
-            {
-                this.ViewData["Responses_ReadOnly"] = this.GetReadOnlyAttribute(permission);
-            }
-
             if (SiteMasterUtilities.IsReadOnly())
             {
-                if (CheckPermissions(SecurityPage.SystemAdmin, null, null) != SecurityAuthorization.CreateReadUpdateDelete)
-                {
-					this.ViewData["Approvals_ReadOnly"] = true;
-					this.ViewData["Comments_ReadOnly"] = true;
-					this.ViewData["Responses_ReadOnly"] = true;
-				}
+				extraPermissionDictionary.Add(SecurityPage.SystemAdmin, CheckPermissions(SecurityPage.SystemAdmin, null, null));
 			}
 
             ViewData["WorkspaceState"] = (int)ws.WorkspaceState;
 
-            BOECommentsModelView theModelView = new BOECommentsModelView(currentUserID, boe.ApproverResponses);
+			BOECommentsModelView theModelView = _BOECommentsLogic.GetBOEComments(ws,boeID, extraPermissionDictionary);
 
-            // Get all comments and responses for the current BOE
-            theModelView.Comments = _BOECommentsLogic.GetCommentsByBOEId(boeID);
+			this.ViewData["Approvals_ReadOnly"] = theModelView.ApprovalsReadOnly;
+			this.ViewData["Comments_ReadOnly"] = theModelView.CommentsReadOnly;
+			this.ViewData["Responses_ReadOnly"] = theModelView.ResponsesReadOnly;
 
-            // Get all History entries
-            ICollection<BOEHistoryDTO> boeHistories = _boeHistoryLoader.GetBOEHistory(boeID);
-            
-            // Initialize a list of field types that we want to display in the comments grid
-            Collection<FieldType> fieldTypes = new Collection<FieldType>
-            {
-                FieldType.ApproverResponse
-            };
-
-            // Add each history item with a desired field type to the list of comments to render
-            foreach (BOEHistoryDTO boeHistory in boeHistories)
-            {
-                if (fieldTypes.Contains(boeHistory.Field))
-                {
-                    BOEComment comment = new BOEComment
-                    {
-                        CommentType = BOECommentType.Approval,
-                        ReviewerComment = boeHistory.NewValue,
-                        ReviewerName = this.UserLoader.GetUserByID(boeHistory.PerformedByETIUserId).DisplayName,
-                        ReviewerCommentUpdateDT = boeHistory.Date
-                    };
-                    theModelView.Comments.Add(comment);
-                }
-            }
-
-            // Sort the Comments so that Approvals/Rejections are interweaved with true reviewer comments by date
-            theModelView.Comments = new Collection<BOEComment>(theModelView.Comments.OrderBy(c => c.ReviewerCommentUpdateDT).ToArray());
-
-            // Perform Action
-            ViewResult toReturn = View(WebConstants.VIEW_BOE_COMMENTS_GRID, theModelView);
+			// Perform Action
+			ViewResult toReturn = View(WebConstants.VIEW_BOE_COMMENTS_GRID, theModelView);
 
             // Finalize Action
             FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_COMMENTS, sw);

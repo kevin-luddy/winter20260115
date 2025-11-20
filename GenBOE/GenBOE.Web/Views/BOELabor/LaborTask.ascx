@@ -1111,11 +1111,11 @@
                                     <td data-ng-if="!isSkillMixManual()" style="text-align: right">{{row.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{row.HistoricalSkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{row.ProposedSkillMix | number:2}}%</td>
-                                    <td style="text-align: right">{{row.ProposedLegacyResource}}</td>
-                                    <td style="text-align: right">{{row.ProposedBrc}}</td>
-                                    <td style="text-align: right">{{row.TotalProposedLegacyBrc}}</td>
-                                    <td style="text-align: right">{{row.UCOTHours}}</td>
-                                    <td style="text-align: right">{{row.GrandTotalHours}}</td>
+                                    <td style="text-align: right">{{row.ProposedLegacyResource | number:2}}</td>
+                                    <td style="text-align: right">{{row.ProposedBrc | number:2}}</td>
+                                    <td style="text-align: right">{{row.TotalProposedLegacyBrc | number:2}}</td>
+                                    <td style="text-align: right">{{row.UCOTHours | number:2}}</td>
+                                    <td style="text-align: right">{{row.GrandTotalHours | number:2}}</td>
                                     <td>
                                         <div id="cd-table-rationale">
                                             <textarea id="cd-rationale" data-ng-model="row.Rationale" data-ng-blur="rationaleUpdated()" style="width: 100%; height: 14px; max-height: 45px; overflow-y: auto; resize: vertical;" maxlength="255"></textarea>
@@ -1126,14 +1126,30 @@
                                 <tr>
                                     <td>Totals</td>
                                     <td></td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.HistoricalHours | number:2}}</td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.HistoricalSkillMix | number:2}}%</td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.ProposedSkillMix | number:2}}%</td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.ProposedLegacyResource}}</td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.ProposedBrc}}</td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.TotalProposedLegacyBrc}}</td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.UCOTHours}}</td>
-                                    <td style="text-align: right">{{skillMixRationale.data.SkillMixSummaryTotals.GrandTotalHours}}</td>
+                                         <td style="text-align: right">
+                                             {{skillMixRationale.data.SkillMixSummaryTotals.HistoricalHours | number:2}}
+                                         </td>
+                                         <td style="text-align: right">
+                                             {{skillMixRationale.data.SkillMixSummaryTotals.HistoricalSkillMix | number:2}}%
+                                         </td>
+                                         <td style="text-align: right">
+                                             {{skillMixRationale.data.SkillMixSummaryTotals.ProposedSkillMix | number:2}}%
+                                         </td>
+                                         <td style="text-align: right">
+                                             {{skillMixRationale.data.SkillMixSummaryTotals.ProposedLegacyResource | number:2}}
+                                         </td>
+                                         <td style="text-align: right">
+                                             {{skillMixRationale.data.SkillMixSummaryTotals.ProposedBrc | number:2}}
+                                         </td>
+                                         <td style="text-align: right">
+                                             {{skillMixRationale.data.SkillMixSummaryTotals.TotalProposedLegacyBrc | number:2}}
+                                         </td>
+                                         <td style="text-align: right">
+                                             {{skillMixRationale.data.SkillMixSummaryTotals.UCOTHours | number:2}}
+                                         </td>
+                                         <td style="text-align: right">
+                                             {{skillMixRationale.data.SkillMixSummaryTotals.GrandTotalHours | number:2}}
+                                         </td>
                                     <td></td>
                                 </tr>
                             </tbody>

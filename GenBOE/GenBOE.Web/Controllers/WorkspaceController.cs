@@ -20,7 +20,6 @@ namespace GenBOE.Web.Controllers
 	using System.Web.Mvc;
 	using System.Web.Script.Serialization;
 	using GenBOE.ActionLogic;
-	using GenBOE.ActionLogic._ControllerLogic.Backend;
 	using GenBOE.ActionLogic._ModelView.Backend;
 	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
@@ -136,7 +135,7 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Angular rewrite Workspace settings controller Logic
 		/// </summary>
-		private WorkspaceSettingsControllerLogic _workspaceSettingsControllerLogic { get; set; }
+		private ActionLogic._ControllerLogic.Backend.WorkspaceSettingsControllerLogic _workspaceSettingsControllerLogic { get; set; }
 
 		private const int SYSTEM_PERF_ORG_LIST_ID = 1;
 
@@ -208,7 +207,7 @@ namespace GenBOE.Web.Controllers
 			IBOECustomExporter boeCustomExporter,
 			CommentsAndResponsesExporter commentsAndResponsesExporter,
 			BOECommentsControllerLogic boeCommentsControllerLogic,
-			WorkspaceSettingsControllerLogic workspaceSettingsControllerLogic)
+			ActionLogic._ControllerLogic.Backend.WorkspaceSettingsControllerLogic workspaceSettingsControllerLogic)
 			: base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inUserDTODataLoader, inPermissionsDTOLoader, inControllerLogic)
 		{
 			_WorkspaceStateMachine = inWorkspaceStateMachine;
