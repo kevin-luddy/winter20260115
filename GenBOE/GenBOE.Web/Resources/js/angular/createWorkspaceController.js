@@ -251,7 +251,7 @@
 
 	$scope.setStepSpecificElements = function (newStep) {
 		if ($scope.model.IsPLDIntegrated) {
-			// don't overwrite workspace copoy data with empty values
+			// don't overwrite workspace copy data with empty values
 			if ($scope.model.WorkspaceName === undefined || $scope.model.WorkspaceName === '') {
 				$scope.model.WorkspaceName = $scope.data.WorkspaceName;
 			}
