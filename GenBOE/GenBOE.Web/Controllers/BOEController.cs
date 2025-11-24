@@ -945,6 +945,12 @@ namespace GenBOE.Web.Controllers
 
 			try
 			{
+				// Validate Workspace PoP
+				if (!this._validateBOE.ValidateWorkspacePoP(ws))
+				{
+					throw new GenValidationException(Constants.INVALID_WORKSPACE_POP);
+				}
+
 				// UCOT validation (Space only) - if there are multiple MOQ types assigned to a task and one of those MOQ types falls under a specified type, throw an exception
 				if (Utilities.ShowUCOTForWorkspace(ws.CreationDate, ws.TrackingNumber) && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
 				{
