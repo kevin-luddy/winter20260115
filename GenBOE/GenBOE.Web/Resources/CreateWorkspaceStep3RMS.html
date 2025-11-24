@@ -54,7 +54,7 @@
 	</div>
 	</div> 
 </div>
-<div class="form-row" data-ng-show="model.showProjectMap && !model.isSSC">
+<div class="form-row" data-ng-show="model.showProjectMap">
 	<div class="form-label">Workspace Type</div>
 	<div class="form-element">
 		<select name="ProjectMapType" id="ProjectMapType" data-ng-change="setDecimalPrecisionDefaults(false)" data-ng-options="item.Value as item.Text for item in model.projectMapTypes | filter:{Disabled:false}" data-ng-model="data.ProjectMapType"></select>
@@ -78,25 +78,7 @@
 		<select data-ng-hide="model.isPLDIntegrated && !model.isAdmin" name="LineOfBusiness" id="LineOfBusiness" data-ng-options="item.Id as item.Text for item in model.lobs | isActiveOrInitialPickListItem:data.LineOfBusinessID" data-ng-model="data.LineOfBusinessID"></select>
 	</div>
 </div>
-<div class="form-row" data-ng-show="model.isSSC">
-	<div class="form-label">
-		<span>Proposal Class *</span>
-		<div id="ProposalClass-Help" data-ng-show="model.isPLDIntegrated" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
-		</div>
-		<!-- This comment is needed for the jquery animation to work in IE8... -->
-		<div id="ProposalClass-HelpDialog" data-ng-show="model.isPLDIntegrated" class="help-dialog" style="width: 200px;">
-			<div class="help-dialog-close"></div>
-			<div class="help-dialog-text">
-				Initial Proposal Class is driven by the Tracking Number selected.
-			</div>
-		</div>
-	</div>
-	<div class="form-element">
-		<span data-ng-show="model.isPTMIntegrated && !model.isAdmin">{{getProposalClass()}}</span>
-		<select data-ng-hide="model.isPTMIntegrated && !model.isAdmin" name="ProposalClass" id="ProposalClass" data-ng-options="item.Id as item.Text for item in model.proposalClassTypes | isActiveOrInitialPickListItem:data.ProposalClass" data-ng-model="data.ProposalClass"></select>
-	</div>
-</div>
-<div class="form-row" data-ng-show="model.isSSC">
+<div class="form-row">
 	<div class="form-label">
 		<span>Contract Type *</span>
 		<div id="ContractType-Help" data-ng-show="model.isPTMIntegrated" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
@@ -137,7 +119,7 @@
 		<input id="CostVolumeLeadPricerDisplayName" name="CostVolumeLeadPricerDisplayName" type="text" class="half" maxlength="50" data-ng-model="data.CostVolumeLeadPricerDisplayName" />
 	</div>
 </div>
-<div class="form-row" id="ContractDates" data-ng-show="!data.IsAttemptingToImport && (model.isSSC || data.ProjectMapType == '1' || data.ProjectMapType == '2')">
+<div class="form-row" id="ContractDates" data-ng-show="!data.IsAttemptingToImport && (data.ProjectMapType == '1' || data.ProjectMapType == '2')">
 	<div class="form-label">
 		Contract Start Date *
 	</div>
@@ -163,29 +145,12 @@
 	</div>
 </div>
 <div class="form-row">
-	<div class="form-label" data-ng-hide="model.isSSC">
+	<div class="form-label">
 		Proposal Submittal Date
 	</div>
 	<div class="form-element proposal-submittal">
 		<input data-ng-hide="model.isPTMIntegrated && !model.isAdmin" class="normal-date" id="ProposalSubmittalDate" name="ProposalSubmittalDate" placeholder="mm/dd/yyyy" type="text" data-ng-model="data.ProposalSubmittalDate">
 		<span data-ng-show="model.isPTMIntegrated && !model.isAdmin">{{data.ProposalSubmittalDate}}</span>
-	</div>
-</div>
-<div class="form-row" data-ng-show="model.isSSC && model.isPTMIntegrated">
-	<div class="form-label">
-		<span>Revised Anticipated Delivery Date</span>
-		<div id="RevisedSubmittal-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
-		</div>
-		<!-- This comment is needed for the jquery animation to work in IE8... -->
-		<div id="RevisedSubmittal-HelpDialog" class="help-dialog" style="width: 200px;">
-			<div class="help-dialog-close"></div>
-			<div class="help-dialog-text">
-				Revised Anticipated Delivery Date is driven by the Tracking Number selected.
-			</div>
-		</div>
-	</div>
-	<div class="form-element revised-submittal">
-		<span class="form-element static">{{data.RevisedSubmittalDate}}</span>
 	</div>
 </div>
 <div class="form-row">
@@ -217,46 +182,6 @@
 		</select>
 	</div>
 </div>
-<div class="form-row" data-ng-hide="model.isSSC">
-	<div class="form-label">
-		RFP #
-	</div>
-	<div class="form-element">
-		<input class="full ignoreValidation" id="RFPNumber" maxlength="100" name="RFPNumber" type="text" data-ng-model="data.RFPNumber">
-	</div>
-</div>
-<div class="form-row" data-ng-show="model.isSSC">
-	<div class="form-label">
-		<span>PTM Tracking #</span>
-		<div id="Tracking-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
-		</div>
-		<!-- This comment is needed for the jquery animation to work in IE8... -->
-		<div id="Tracking-HelpDialog" class="help-dialog" style="width: 200px;">
-			<div class="help-dialog-close"></div>
-			<div class="help-dialog-text">
-				The Proposal Tracking System Number.
-			</div>
-		</div>
-	</div>
-	<div class="form-element">
-		<span data-ng-show="model.isPTMIntegrated">{{data.TrackingNumber}}</span>
-		<input data-ng-hide="model.isPTMIntegrated" class="full ignoreValidation" id="TrackingNumber" maxlength="100" name="TrackingNumber" type="text" data-ng-model="data.TrackingNumber">
-	</div>
-</div>
-<div class="form-row" data-ng-show="model.isSSC && model.isPTMIntegrated">
-	<div class="form-label">
-		<span>RFP #</span>
-		<div id="RFP-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
-		</div>
-		<!-- This comment is needed for the jquery animation to work in IE8... -->
-		<div id="RFP-HelpDialog" class="help-dialog" style="width: 200px;">
-			<div class="help-dialog-close"></div>
-			<div class="help-dialog-text">
-				RFP # is driven by the Tracking Number selected.
-			</div>
-		</div>
-	</div>
-	<div class="form-element static">{{data.RFPNumber}}</div>
 </div>
 <div class="form-row" data-ng-show="model.isPTMIntegrated">
 	<div class="form-label">
@@ -272,46 +197,6 @@
 		</div>
 	</div>
 	<div class="form-element static">{{data.ProposalTitle}}</div>
-</div>
-<div class="form-row" data-ng-show="model.isSSC && model.showEquivalentPersonsOption && !data.IsAttemptingToImport">
-	<div class="form-label">
-		<span>Is using Equivalent Person (EP)</span>
-		<div id="UsingEP-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);"></div>
-		<!-- This comment is needed for the jquery animation to work in IE8... -->
-		<div id="UsingEP-HelpDialog" class="help-dialog" style="width: 200px;">
-			<div class="help-dialog-close"></div>
-			<div class="help-dialog-text">
-				Select 'No' if the proposal is being created with the intent of using Hours as Labor Spread values.
-				Select 'Yes' if the proposal is being created with the intent of using Equivalent Person (EP) as Labor Spread values.
-			</div>
-		</div>
-	</div>
-	<div class="radio form-element">
-		<input type="radio" id="UsingEp-Yes" name="UsingEP" data-ng-model="data.IsUsingEquivalentPerson" data-ng-value="true" text="Yes" />
-		<label for="UsingEp-Yes">Yes</label>
-		<input type="radio" id="UsingEp-No" name="UsingEP" data-ng-model="data.IsUsingEquivalentPerson" data-ng-value="false" text="No" />
-		<label for="UsingEp-No">No</label>
-	</div>
-	<br />
-</div>
-<div id="UsingTMRow" class="form-row" data-ng-show="model.isSSC">
-	<div class="form-label">
-		<span>Use T&M Subcontractor/IWTA<br />Labor Rates</span>
-		<div id="UsingTM-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);"></div>
-		<div id="UsingTM-HelpDialog" class="help-dialog" style="width: 200px;">
-			<div class="help-dialog-close"></div>
-			<div class="help-dialog-text">
-				Select 'Yes' if this proposal is being created with the intent of using T&M Subcontractor/IWTA Labor Rates to develop the PBOEs/IBOEs; Otherwise, select 'No'.
-			</div>
-		</div>
-	</div>
-	<div class="radio form-element">
-		<input type="radio" id="UsingTM-Yes" name="UsingTM" data-ng-model="data.IsUsingTM" data-ng-value="true" text="Yes" />
-		<label for="UsingTM-Yes">Yes</label>
-		<input type="radio" id="UsingTM-No" name="UsingTM" data-ng-model="data.IsUsingTM" data-ng-value="false" text="No" />
-		<label for="UsingTM-No">No</label>
-	</div>
-	<br />
 </div>
 <div id="RteSizeRow" class="form-row">
 	<div class="form-label">
@@ -357,17 +242,6 @@
 	<div class="form-element" id="SAPConnectionSelect">
 		<select name="EnableSAPConnection" id="EnableSAPConnection" data-ng-model="data.EnableSAPConnection" data-ng-disabled="data.WorkspaceToCopyID > 0 || !data.UsingTemplateBoe">
 			<option data-ng-if="data.UsingTemplateBoe === true && model.isSAPConfigurationEnabled" data-ng-value="true">Yes</option>
-			<option data-ng-value="false">No</option>
-		</select>
-	</div>
-</div>
-<div id="CurrentPTMWorkspace" class="form-row" data-ng-show="model.isSSC">
-	<div class="form-label">
-		<span>Current Workspace</span>
-	</div>
-	<div class="radio form-element">
-		<select name="CurrentPTMWorkspace" id="CurrentPTMWorkspace" data-ng-model="data.CurrentPTMWorkspace" data-ng-disabled="data.WorkspaceToCopyID > 0">
-			<option data-ng-value="true">Yes</option>
 			<option data-ng-value="false">No</option>
 		</select>
 	</div>

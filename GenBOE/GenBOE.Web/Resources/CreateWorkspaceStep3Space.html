@@ -44,7 +44,7 @@
         <input data-ng-hide="model.isPTMIntegrated && model.ptmTrackingNumber !== ''" name="ShortName" class="quarter" id="ShortName" data-ng-model="data.Shortname" type="text" maxlength="15">
     </div>
 </div>
-<div class="form-row" data-ng-show="model.showProjectMap && !model.isSSC">
+<div class="form-row" data-ng-show="model.showProjectMap">
     <div class="form-label">Workspace Type</div>
     <div class="form-element">
         <select name="ProjectMapType" id="ProjectMapType" data-ng-change="setDecimalPrecisionDefaults(false)" data-ng-options="item.Value as item.Text for item in model.projectMapTypes | filter:{Disabled:false}" data-ng-model="data.ProjectMapType"></select>
@@ -68,7 +68,7 @@
         <select data-ng-hide="model.isPTMIntegrated && !model.isAdmin" name="LineOfBusiness" id="LineOfBusiness" data-ng-options="item.Id as item.Text for item in model.lobs | isActiveOrInitialPickListItem:data.LineOfBusinessID" data-ng-model="data.LineOfBusinessID"></select>
     </div>
 </div>
-<div class="form-row" data-ng-show="model.isSSC">
+<div class="form-row">
     <div class="form-label">
         <span>Proposal Class *</span>
         <div id="ProposalClass-Help" data-ng-show="model.isPTMIntegrated" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
@@ -86,7 +86,7 @@
         <select data-ng-hide="model.isPTMIntegrated && !model.isAdmin" name="ProposalClass" id="ProposalClass" data-ng-options="item.Id as item.Text for item in model.proposalClassTypes | isActiveOrInitialPickListItem:data.ProposalClass" data-ng-model="data.ProposalClass"></select>
     </div>
 </div>
-<div class="form-row" data-ng-show="model.isSSC">
+<div class="form-row">
     <div class="form-label">
         <span>Contract Type *</span>
         <div id="ContractType-Help" data-ng-show="model.isPTMIntegrated" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
@@ -127,7 +127,7 @@
         <input id="CostVolumeLeadPricerDisplayName" name="CostVolumeLeadPricerDisplayName" type="text" class="half" maxlength="50" data-ng-model="data.CostVolumeLeadPricerDisplayName" />
     </div>
 </div>
-<div class="form-row" id="ContractDates" data-ng-show="!data.IsAttemptingToImport && (model.isSSC || data.ProjectMapType == '1' || data.ProjectMapType == '2')">
+<div class="form-row" id="ContractDates" data-ng-show="!data.IsAttemptingToImport && (data.ProjectMapType == '1' || data.ProjectMapType == '2')">
 	<div class="form-label">
 		Contract Start Date *
 	</div>
@@ -141,7 +141,7 @@
 		<input class="normal-date" id="ContractEndDate" placeholder="mm/yyyy" name="ContractEndDate" type="text" data-ng-model="data.ContractEndDate">
     </div>
 </div>
-<div class="form-row" id="AllowGridEdit" data-ng-hide="model.isSSC || data.ProjectMapType == '1' || data.ProjectMapType == '2'">
+<div class="form-row" id="AllowGridEdit" data-ng-hide="data.ProjectMapType == '1' || data.ProjectMapType == '2'">
     <div class="form-label">
         <span helptext="Allows Project Map data to be edited within the web interface grid.">Allow Grid Edit *</span>
     </div>
@@ -153,10 +153,7 @@
     </div>
 </div>
 <div class="form-row">
-    <div class="form-label" data-ng-hide="model.isSSC">
-        Proposal Submittal Date
-    </div>
-    <div class="form-label" data-ng-show="model.isSSC">
+    <div class="form-label">
         Anticipated Delivery Date
     </div>
     <div class="form-element proposal-submittal">
@@ -164,7 +161,7 @@
         <span data-ng-show="model.isPTMIntegrated && !model.isAdmin">{{data.ProposalSubmittalDate}}</span>
     </div>
 </div>
-<div class="form-row" data-ng-show="model.isSSC && model.isPTMIntegrated">
+<div class="form-row" data-ng-show="model.isPTMIntegrated">
     <div class="form-label">
         <span>Revised Anticipated Delivery Date</span>
         <div id="RevisedSubmittal-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
@@ -210,7 +207,7 @@
         </select>
     </div>
 </div>
-<div class="form-row" data-ng-hide="model.isSSC">
+<div class="form-row">
     <div class="form-label">
         RFP #
     </div>
@@ -218,7 +215,7 @@
         <input class="full ignoreValidation" id="RFPNumber" maxlength="100" name="RFPNumber" type="text" data-ng-model="data.RFPNumber">
     </div>
 </div>
-<div class="form-row" data-ng-show="model.isSSC">
+<div class="form-row">
     <div class="form-label">
         <span>PTM Tracking #</span>
         <div id="Tracking-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
@@ -236,7 +233,7 @@
         <input data-ng-hide="model.isPTMIntegrated" class="full ignoreValidation" id="TrackingNumber" maxlength="100" name="TrackingNumber" type="text" data-ng-model="data.TrackingNumber">
     </div>
 </div>
-<div class="form-row" data-ng-show="model.isSSC && model.isPTMIntegrated">
+<div class="form-row" data-ng-show="model.isPTMIntegrated">
     <div class="form-label">
         <span>RFP #</span>
         <div id="RFP-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
@@ -266,7 +263,7 @@
     </div>
     <div class="form-element static">{{data.ProposalTitle}}</div>
 </div>
-<div class="form-row" data-ng-show="model.isSSC && model.showEquivalentPersonsOption && !data.IsAttemptingToImport">
+<div class="form-row" data-ng-show="model.showEquivalentPersonsOption && !data.IsAttemptingToImport">
     <div class="form-label">
         <span>Is using Equivalent Person (EP)</span>
         <div id="UsingEP-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);"></div>
@@ -287,7 +284,7 @@
     </div>
     <br />
 </div>
-<div id="UsingTMRow" class="form-row" data-ng-show="model.isSSC">
+<div id="UsingTMRow" class="form-row">
     <div class="form-label">
         <span>Use T&M Subcontractor/IWTA<br />Labor Rates</span>
         <div id="UsingTM-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);"></div>
@@ -354,7 +351,7 @@
         </select>
     </div>
 </div>
-<div id="CurrentPTMWorkspace" class="form-row" data-ng-show="model.isSSC">
+<div id="CurrentPTMWorkspace" class="form-row">
     <div class="form-label">
         <span>Current Workspace</span>
     </div>

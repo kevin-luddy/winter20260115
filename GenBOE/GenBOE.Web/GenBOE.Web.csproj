@@ -750,7 +750,7 @@
     <Content Include="Scripts\angularjs-dropdown-multiselect.min.js" />
     <Content Include="Scripts\bignumber.js" />
     <Content Include="Scripts\bignumber.min.js" />
-    <Content Include="Resources\CreateWorkspaceStep3Space.hml" />
+    <Content Include="Resources\CreateWorkspaceStep3Space.html" />
     <None Include="Scripts\jquery-1.12.4.intellisense.js" />
     <Content Include="Scripts\jquery-1.12.4.js" />
     <Content Include="Scripts\jquery-1.12.4.min.js" />
