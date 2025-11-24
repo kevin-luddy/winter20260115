@@ -50,7 +50,8 @@
         // Object Events
 
         <% if (enableProPricer) { %>
-			$('#ExportToProPricer-Add').click(ExportToProPricerWidget.AddNewExportFormat);
+           $('#ExportToProPricer-Add').click(ExportToProPricerWidget.AddNewExportFormat);
+           $('#ExportToProPricer-Add').removeClass('disabled');
         <% } %>
         $('#ExportToProPricerElementDialog-Cancel').click(function () {
             ExportToProPricerWidget.CloseDialog(ExportToProPricerWidget.ExportToProPricerElementDialog);
@@ -605,7 +606,7 @@
         <br />
         <div class="buttons">
             <button class="ies-action disabled" name="delete-button" type="button" id="ExportToProPricer-Delete">Delete</button>
-            <button class="ies-action" data-ng-class="{disabled: !enableProPricer }" id="ExportToProPricer-Add" type="button">+ Add</button>
+            <button class="ies-action disabled" id="ExportToProPricer-Add" type="button">+ Add</button>
         </div>
         <% if ((bool)ViewData["EnableProPricer"]) { %>
             <div id="ProPricerGridContent" class="clear" >
