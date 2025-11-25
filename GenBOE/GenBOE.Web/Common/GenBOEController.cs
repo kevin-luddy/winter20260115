@@ -167,13 +167,14 @@ namespace GenBOE.Web.Common
 		/// </summary>
 		/// <param name="inView">The view to return</param>
 		/// <returns></returns>
+		[ChildActionOnly]
 		public virtual ViewResult DisplaySiteMasterMenu(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			bool hideINLMenuItem = ws.CreationDate > Utilities.ShowINLCutoffDate;
 
 			// Action Initialize
-			Stopwatch sw = InitializeAction(_log, "DisplayMasterMenu", SecurityPage.Home, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SHARED_DISPLAY_MASTER_MENU, SecurityPage.Home, SecurityAuthorization.Read, ws, null);
 
 			Collection<GenBOEMasterMenuItemModelView> theModelViews = new Collection<GenBOEMasterMenuItemModelView>();
 
@@ -275,7 +276,7 @@ namespace GenBOE.Web.Common
 			ViewResult toReturn = View(WebConstants.VIEW_SITE_MASTER_MENU, theModelViews);
 
 			// Action Finalize
-			FinalizeAction(_log, "DisplayMasterMenu", sw);
+			FinalizeAction(_log, WebConstants.ACTION_SHARED_DISPLAY_MASTER_MENU, sw);
 
 			return toReturn;
 		}

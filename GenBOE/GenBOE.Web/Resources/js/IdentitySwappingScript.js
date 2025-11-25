@@ -130,7 +130,7 @@ IdentitySwappingClass.prototype = (function () {
             innerText += ', with the following roles: ' + impersonatedRoles;
         }
 
-        document.getElementById('IdentitySwappingBannerText').innerHTML = innerText;
+        document.getElementById('IdentitySwappingBannerText').innerText = innerText;
         document.getElementById('IdentitySwappingBannerDiv').className = '';
         document.getElementById('IdentitySwappingSettingDiv').className = 'hiddenIdentitySwapping';
     }

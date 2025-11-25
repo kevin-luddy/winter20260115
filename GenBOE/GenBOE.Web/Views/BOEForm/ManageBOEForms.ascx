@@ -45,7 +45,7 @@
     
     ManageBOEFormsWidget.ReloadGridData = function() {
         $.ajax({
-            type: 'POST',
+            type: 'GET',
             url: CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
                 '<%:WebConstants.CONTROLLER_BOE_FORMS %>',
                 '<%:WebConstants.ACTION_DISPLAY_MANAGE_BOE_FORMS_GRID %>', ''),

@@ -517,7 +517,7 @@
 
     ManageSystemProPricerExportsWidget.ReloadExportGrid = function () {
         $.ajax({
-            type: 'POST',
+            type: 'GET',
             url: CreateSystemAdminPostURL('<%:WebConstants.CONTROLLER_ADMIN %>',
                 '<%:WebConstants.ACTION_DISPLAY_EXPORT_TO_PROPRICER_GRID %>', ''),
             dataType: 'html',
