@@ -378,6 +378,7 @@
           <Property Name="SubjectToAlternativePricingMethodology" Type="bit" />
           <Property Name="AlternativePricingMethodology" Type="int" />
           <Property Name="AlternativePricingMethodologyOtherText" Type="varchar" MaxLength="50" />
+          <Property Name="DraftRfpIssuedDate" Type="datetime" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
@@ -4338,6 +4339,7 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
           <Property Name="AlternativePricingMethodology" Type="Int32" />
           <Property Name="AlternativePricingMethodologyOtherText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="AlternativePricingMethodology1" Relationship="genTRACModel.FK__Proposal__Altern__63B99E3B" FromRole="Proposal" ToRole="AlternativePricingMethodology" />
+          <Property Name="DraftRfpIssuedDate" Type="DateTime" Precision="3" />
         </EntityType>
         <Association Name="FK_Proposal_BOEToolLU">
           <End Type="genTRACModel.BOEToolLU" Role="BOEToolLU" Multiplicity="1" />
@@ -5550,6 +5552,7 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
           <EntitySetMapping Name="Proposals">
             <EntityTypeMapping TypeName="genTRACModel.Proposal">
               <MappingFragment StoreEntitySet="Proposal">
+                <ScalarProperty Name="DraftRfpIssuedDate" ColumnName="DraftRfpIssuedDate" />
                 <ScalarProperty Name="AlternativePricingMethodologyOtherText" ColumnName="AlternativePricingMethodologyOtherText" />
                 <ScalarProperty Name="AlternativePricingMethodology" ColumnName="AlternativePricingMethodology" />
                 <ScalarProperty Name="SubjectToAlternativePricingMethodology" ColumnName="SubjectToAlternativePricingMethodology" />

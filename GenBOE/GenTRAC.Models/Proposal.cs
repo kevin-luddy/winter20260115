@@ -109,6 +109,7 @@ namespace GenTRAC.Models
         public Nullable<bool> SubjectToAlternativePricingMethodology { get; set; }
         public Nullable<int> AlternativePricingMethodology { get; set; }
         public string AlternativePricingMethodologyOtherText { get; set; }
+        public Nullable<System.DateTime> DraftRfpIssuedDate { get; set; }
     
         public virtual BOEToolLU BOEToolLU { get; set; }
         public virtual ContractTypeGroupLU ContractTypeGroupLU { get; set; }
