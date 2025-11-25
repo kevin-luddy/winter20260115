@@ -252,11 +252,11 @@
     <div class="module-content-data expanded-content">
         @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ProposalControllerLogic.PROPOSAL_INFO_FORM, name = GenTRAC.ActionLogic.ProposalControllerLogic.PROPOSAL_INFO_FORM }))
         {
-            <input name="ProposalID" value="@Model.ProposalID" type="hidden"/>
+            <input name="ProposalID" value="@Model.ProposalID" type="hidden" />
             <input name="UpdateDateLong" value="@Model.UpdateDateLong" type="hidden" />
-            <input name="ProposalTrackingNumber" value="@Model.ProposalTrackingNumber" type="hidden"/>
+            <input name="ProposalTrackingNumber" value="@Model.ProposalTrackingNumber" type="hidden" />
             <input name="ForecastedTrackingNumber" value="@Model.ForecastedTrackingNumber" type="hidden" />
-            <input name="ProposalStatus" value="@Model.ProposalStatus" type="hidden"/>
+            <input name="ProposalStatus" value="@Model.ProposalStatus" type="hidden" />
             <div class="form-row">
                 <div class="form-label">
                     Proposal Title*
@@ -274,7 +274,7 @@
                     @Html.EnumDropDownListFor(model => model.ContractActionType, new { name = "contractActionType", onchange = "ProposalInfoWidget.ContractActionSelected()" })
                 </div>
                 <div class="form-element">
-                    @Html.TextBoxFor(model => model.ContractActionTypeOtherText, new { maxlength = 100, name = "contractActionTypeOtherText"})
+                    @Html.TextBoxFor(model => model.ContractActionTypeOtherText, new { maxlength = 100, name = "contractActionTypeOtherText" })
                 </div>
             </div>
             <div class="form-row">
@@ -306,7 +306,7 @@
                     Proposal Class*
                 </div>
                 <div class="form-element">
-                    @Html.DropDownListFor(model => model.ProposalClass, Model.ProposalClassesList, new { name = "ProposalClass", @onchange="$(document).trigger(\"PROPOSAL_CLASS_CHANGED\");" })
+                    @Html.DropDownListFor(model => model.ProposalClass, Model.ProposalClassesList, new { name = "ProposalClass", @onchange = "$(document).trigger(\"PROPOSAL_CLASS_CHANGED\");" })
                 </div>
             </div>
             <div class="form-row" data-proposal-type="standard">
@@ -325,12 +325,21 @@
                     @Html.TextBoxFor(model => model.RFPNumber, new { maxlength = 40, size = 40 })
                 </div>
             </div>
+            <div class="form-row">
+                <div class="form-label">
+                    
+                    <span helptext="If a draft RFP was not issued, set the Draft RFP Date equal to the RFP Issued Date.">Draft RFP Issue Date*</span>
+                </div>
+                <div class="form-element">
+                    <input name="anticipatedDeliveryDate" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.AnticipatedDeliveryDate" maxlength="10" />
+                </div>
+            </div>
             <div class="form-row" data-proposal-type="standard">
                 <div class="form-label">
                     <span helptext="Date of the (end) customer request (request could be RFP/RFQ, BAA, letter, email, etc.)">RFP Issued Date*</span>
                 </div>
                 <div class="form-element">
-                    <input name="rfpIssuedDate" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.RFPIssuedDate" maxlength="10"/>
+                    <input name="rfpIssuedDate" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.RFPIssuedDate" maxlength="10" />
                 </div>
             </div>
             <div class="form-row" data-proposal-type="standard">
@@ -338,7 +347,7 @@
                     <span helptext="Date the customer request was received by LM Contracts/BD (if unknown, enter the &quot;RFP Issued Date&quot;)">RFP Received Date*</span>
                 </div>
                 <div class="form-element">
-                    <input name="rfpReceivedDate" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.RFPReceivedDate" maxlength="10"/>
+                    <input name="rfpReceivedDate" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.RFPReceivedDate" maxlength="10" />
                 </div>
             </div>
             <div class="form-row">
@@ -346,7 +355,7 @@
                     Anticipated Delivery Date*
                 </div>
                 <div class="form-element">
-                    <input name="anticipatedDeliveryDate" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.AnticipatedDeliveryDate" maxlength="10"/>
+                    <input name="anticipatedDeliveryDate" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.AnticipatedDeliveryDate" maxlength="10" />
                 </div>
             </div>
             <div class="form-row" data-proposal-type="standard">
@@ -365,7 +374,7 @@
                     @Html.DropDownListFor(model => model.ISGSRole, Model.ISGSRolesList, new { name = "ISGSRole" })
                 </div>
             </div>
-           <div class="form-row" data-proposal-type="standard">
+            <div class="form-row" data-proposal-type="standard">
                 <div class="form-label">
                     <span helptext="e.g., GSA Schedule (IT70), GWAC (Alliant), Agency-specific IDIQ (EAGLE)">
                         Is this proposal for a new IDIQ contract<br />
@@ -375,11 +384,11 @@
                 </div>
                 <div class="form-element">
                     <div>
-                     <label for="ScheduleProposal-Yes">Yes</label>
-                     <input type="radio" class="radio" id="ScheduleProposal-Yes" value="true" name="IsScheduleProposal" @if ((Model.ProposalID > 0 || Model.IsNewRevision) && Model.IsScheduleProposal.HasValue && Model.IsScheduleProposal.Value) {<text>checked</text>} />
-                     <label for="ScheduleProposal-No">No</label>
-                     <input type="radio" class="radio" id="ScheduleProposal-No" value="false" name="IsScheduleProposal" @if ((Model.ProposalID > 0 || Model.IsNewRevision) && Model.IsScheduleProposal.HasValue && !Model.IsScheduleProposal.Value) {<text>checked</text>} />
-                   </div>
+                        <label for="ScheduleProposal-Yes">Yes</label>
+                        <input type="radio" class="radio" id="ScheduleProposal-Yes" value="true" name="IsScheduleProposal" @if ((Model.ProposalID > 0 || Model.IsNewRevision) && Model.IsScheduleProposal.HasValue && Model.IsScheduleProposal.Value) { <text> checked</text>} />
+                        <label for="ScheduleProposal-No">No</label>
+                        <input type="radio" class="radio" id="ScheduleProposal-No" value="false" name="IsScheduleProposal" @if ((Model.ProposalID > 0 || Model.IsNewRevision) && Model.IsScheduleProposal.HasValue && !Model.IsScheduleProposal.Value) { <text> checked</text>} />
+                    </div>
                 </div>
             </div>
             <div class="form-row">
