@@ -171,7 +171,11 @@ namespace GenBOE.Web.Controllers
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(log, "DisplayExports", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_DISPLAY_EXPORTS, SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
+
+			// Validate Workspace PoP
+			bool enableExports = this.validateBOE.ValidateWorkspacePoP(ws);
+			ViewData["EnableExports"] = enableExports;
 
 			// Perform Action
 			ExportReportViewModel reportView = reportsControllerLogic.GetDisplayExports(ws);
@@ -188,7 +192,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_EXPORTS, theModelViews);
 
 			// Finalize Action
-			FinalizeAction(log, "DisplayExports", sw);
+			FinalizeAction(log, WebConstants.ACTION_DISPLAY_EXPORTS, sw);
 			return toReturn;
 		}
 

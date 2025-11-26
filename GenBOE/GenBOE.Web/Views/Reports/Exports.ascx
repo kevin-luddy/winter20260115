@@ -10,6 +10,7 @@
     bool supportCustomExport = ViewData.ContainsKey("SupportCustomExport") ? (bool)ViewData["SupportCustomExport"] : false;
     ICollection<string> workspaceAdmins = (ICollection<string>) this.ViewData["WorkspaceAdmins"];
     ICollection<string> outOfSyncMessages = (ICollection<string>) this.ViewData["OutOfSyncMessages"];
+    bool enableExports = (bool)ViewData["EnableExports"];
 %>
 
 <script type="text/javascript">
@@ -270,15 +271,22 @@
                             <td>
                                 <span><%: item.Description %></span>
                             </td>
-                            <td style="text-align: right">
-                                <span><a name="Reports-ExportButton">Export...</a>
-                                <%if (supportCustomExport) {%>
-                                    <% if (!ViewBag.IsProjectMapWs) { %>
-                                      &nbsp;|&nbsp;<a name="Reports-CustomExportButton">Custom Export...</a>
-                                    <%}%>
-                                <%}%>
-                                </span>
-                            </td>
+                            <% if (enableExports) { %>
+                                <td style="text-align: right">
+                                
+                                        <span><a name="Reports-ExportButton">Export...</a>
+                                        <%if (supportCustomExport) {%>
+                                            <% if (!ViewBag.IsProjectMapWs) { %>
+                                              &nbsp;|&nbsp;<a name="Reports-CustomExportButton">Custom Export...</a>
+                                            <%}%>
+                                        <%}%>
+                                    </span>
+                                </td>
+                            <% } else { %>
+                                <td title="There are Children objects (i.e. CLIN, BOE, Task, Resource) that are outside the PoP of their Parents" style="text-align: right">
+                                    <span>Unavailable</span>
+                                </td>
+                            <% } %>
                         </tr>
                     <%} else if (item.ReportID != (int)Reports.WorkbenchOffload) {
                             string ssrs = string.Empty;
@@ -291,17 +299,23 @@
 					    <tr pkid="<%: item.ReportID %>" <%:ssrs %> reportName="<%: item.ReportName %>">
 						    <td><span><%: item.ReportName %></span></td>
 						    <td><span><%: item.Description %></span></td>
-						    <td style="text-align: right">
-							    <%if (item.ReportID == (int)Reports.AllBOEs) { %>
-								    <span><a name="Reports-ExportButton">Export...</a>
-									    <%if (supportCustomExport) {%>
-										    &nbsp;|&nbsp;<a name="Reports-CustomExportButton">Custom Export...</a>
-									    <%}%>
-								    </span>
-							    <% } else { %>
-								    <span><a name="Reports-ExportButton">Export...</a></span>
-							    <% } %>
-						    </td>
+                            <% if (enableExports) { %>
+						        <td style="text-align: right">
+							        <%if (item.ReportID == (int)Reports.AllBOEs) { %>
+								        <span><a name="Reports-ExportButton">Export...</a>
+									        <%if (supportCustomExport) {%>
+										        &nbsp;|&nbsp;<a name="Reports-CustomExportButton">Custom Export...</a>
+									        <%}%>
+								        </span>
+							        <% } else { %>
+								        <span><a name="Reports-ExportButton">Export...</a></span>
+							        <% } %>
+						        </td>
+                            <% } else { %>
+                                <td title="There are Children objects (i.e. CLIN, BOE, Task, Resource) that are outside the PoP of their Parents" style="text-align: right">
+                                    <span>Unavailable</span>
+                                </td>
+                            <% } %>
 					    </tr>
                     <%}%>
                 <% } // end foreach 
