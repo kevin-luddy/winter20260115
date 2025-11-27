@@ -15,7 +15,6 @@ namespace GenBOE.DataBridge.DTO
     public class BOESearchResult
     {
         private Collection<TaskElementModelView> taskElements;
-        private Collection<TravelElementModelView> travelElements;
 
         /// <summary>
         /// Gets or sets the WBS number.
@@ -83,25 +82,6 @@ namespace GenBOE.DataBridge.DTO
         public bool IsCopyAllTaskElementsSelected { get; set; }
 
         /// <summary>
-        /// Gets or sets candidate travel elements to copy.
-        /// </summary>
-        public Collection<TravelElementModelView> TravelElements
-        {
-            get
-            {
-                if (travelElements == null)
-                {
-                    travelElements = new Collection<TravelElementModelView>();
-                }
-                return travelElements;
-            }
-            set
-            {
-                travelElements = value ?? new Collection<TravelElementModelView>();
-            }
-        }
-
-        /// <summary>
         /// Gets or sets candidate task elements to copy.
         /// </summary>
         public Collection<TaskElementModelView> TaskElements
@@ -139,50 +119,6 @@ namespace GenBOE.DataBridge.DTO
         /// Gets or sets the project map task.
         /// </summary>
         public string ProjectMapTask { get; set; }
-    }
-
-    /// <summary>
-    /// Represents a travel element to be copied
-    /// </summary>
-    public class TravelElementModelView
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TravelElementModelView"/> class.
-        /// </summary>
-        public TravelElementModelView()
-        { }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TravelElementModelView"/> class.
-        /// </summary>
-        /// <param name="boeTaskElementDTO">The boe task element dto.</param>
-        /// <exception cref="System.ArgumentNullException">travelDto</exception>
-        public TravelElementModelView(TravelDTO travelDto)
-        {
-            if (travelDto == null)
-            {
-                throw new ArgumentNullException(nameof(travelDto));
-            }
-
-            this.IsCopySelected = true;
-            this.Id = travelDto.Id;
-            this.TaskTitle = travelDto.TaskTitle;
-        }
-
-        /// <summary>
-        /// When true, the checkbox to copy is selected.
-        /// </summary>
-        public bool IsCopySelected { get; set; }
-
-        /// <summary>
-        /// The Id of the task
-        /// </summary>
-        public int Id { get; set; }
-
-        /// <summary>
-        /// Task Title.
-        /// </summary>
-        public string TaskTitle { get; set; }
     }
 
     /// <summary>

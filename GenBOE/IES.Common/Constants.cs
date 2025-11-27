@@ -1183,5 +1183,10 @@ namespace IES.Common
 		/// System Setting for listing which workspaces are blacklisted for Skill Mix
 		/// </summary>
 		public static readonly string SKILL_MIX_BLACKLIST = "SkillMixBlacklist";
+
+		/// <summary>
+		/// Error to display when a workspace has children with invalid PoP
+		/// </summary>
+		public static readonly string INVALID_WORKSPACE_POP = "There are Children objects (i.e. CLIN, BOE, Task, Resource) that are outside the PoP of their Parents";
 	}
 }

@@ -237,7 +237,8 @@
             ProposalGeneralInformationWidget.CancelCCPDRequiredQuestionChange = function () {
                 // if cancelled, change radio button selection back to yes
                 $('#IsCCPDRequired-No').removeAttr('checked');
-                $('#IsCCPDRequired-Yes').attr('checked', true);
+				$('#IsCCPDRequired-Yes').attr('checked', true);
+				ShowHideItemsBasedOnCcopd();
             };
         } else {
             // This function is not used with pre-PTM checklists

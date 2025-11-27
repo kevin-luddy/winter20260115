@@ -394,10 +394,7 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_EXPORT_LABOR_TYPE_AND_SPREAD = "ExportLaborTypeAndSpread";
 		public static readonly string ACTION_MOQ_VALIDATE = "MOQValidate";
 		public static readonly string ACTION_MOQ_CALCULATE = "MOQCalculate";
-		public static readonly string ACTION_VALIDATE_PERFORMING_ORGS = "ValidatePerformingOrgs";
 		public static readonly string ACTION_GET_PERFORMING_ORG_ID_BYNAME = "GetPerformingOrgIDByName";
-		public static readonly string ACTION_VALIDATE_RESOURCE = "ValidateResource";
-		public static readonly string ACTION_VALIDATE_RESOURCE_BY_ID = "ValidateResourceByID";
 		public static readonly string ACTION_MARK_WARNING_AS_CONFIRMED = "MarkWarningMessageAsConfirmed";
 		public static readonly string ACTION_GET_SEARCH_TYPE_AHEAD = "GetTypeAheadTerms";
 		public static readonly string ACTION_SAVE_REORDER_LABOR_TASK_ELEMENTS = "SaveReorderLaborTaskElements";
@@ -482,7 +479,6 @@ namespace GenBOE.ActionLogic.Common
 		#region CLIN
 		public static readonly string ACTION_SAVE_CLIN = "SaveClin";
 		public static readonly string ACTION_DELETE_CLINS = "DeleteCLINs";
-		public static readonly string ACTION_GET_BOE_COUNT_FOR_CLIN = "GetBOECountForClin";
 		public static readonly string ACTION_IMPORT_CLINS = "ImportCLINs";
 		public static readonly string ACTION_COMPLETE_IMPORT_CLINS = "CompleteImportCLINs";
 		public static readonly string ACTION_EXPORT_CLINS = "ExportCLINs";
@@ -587,7 +583,6 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_DISPLAY_IMPORT_WBS = "DisplayImportWBSButton";
 		public static readonly string ACTION_EXPORT_WBS = "ExportWBS";
 		public static readonly string ACTION_EXPORT_WBS_TEMPLATE = "ExportWBSTemplate";
-		public static readonly string ACTION_GET_BOE_COUNT_FOR_WBS = "GetBOECountForWBS";
 		public static readonly string ACTION_IMPORT_WBS = "ImportWBS";
 		public static readonly string ACTION_PAGE_MANAGE_WBS = "PageManageWBS";
 		public static readonly string ACTION_SAVE_MANAGE_WBS_UPDATES = "SaveManageWBSUpdates";
@@ -914,7 +909,6 @@ namespace GenBOE.ActionLogic.Common
 
 		public static readonly string VIEW_MANAGE_PERMISSIONS = "ManagePermissions";
 		public static readonly string VIEW_MANAGE_PERMISSIONS_GRID = "ManagePermissionsGrid";
-		public static readonly string ACTION_CHECK_IF_USER_WILL_LOSE_ADMIN_ACCESS = "CheckIfUserWillLoseTheirAdminAccess";
 		public static readonly string ACTION_SAVE_PERMISSIONS = "SaveNewPermissions";
 		public static readonly string ACTION_EDIT_PERMISSIONS = "EditPermissions";
 		public static readonly string ACTION_DELETE_USER_PERMISSIONS = "DeleteUserPermissions";
