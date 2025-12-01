@@ -23,11 +23,6 @@
              data.taskElementsToCopy.push($(this).data('copy-moq-id'));
          });
 
-         data.travelElementsToCopy = [];
-         $('#TravelElementsToCopyTable' + data.copyBOEID + ' tbody :input:checked').each(function () {
-             data.travelElementsToCopy.push($(this).data('copy-travel-id'));
-         });
-         
          var dataToSend = JSON.stringify(data);
 
          $.ajax({
@@ -171,30 +166,6 @@
                 $('.TasksToCopySelectAll').prop('checked', false);
             }
         });
-
-        // Travel
-        $('.TravelElementsToCopy').click(function() {
-            if ($(this).hasClass('expanded')) {
-                $(this).removeClass('expanded').addClass('collapsed');
-                $(this).next('.TravelElementsToCopyContent').slideUp(400);
-            }  
-            else {
-                $(this).removeClass('collapsed').addClass('expanded');
-                $(this).next('.TravelElementsToCopyContent').slideDown(400);
-            }
-        });
-
-        $('.TravelToCopySelectAll').click(function() {
-            // Uncheck or check all travel elements according to the new setting of the overall checkbox.
-            $(this).closest('table').find('input:checkbox').prop('checked', $(this).prop('checked'));
-        });
-
-        $('.CopyTravelElementCheck').click(function() {
-            if ($(this).prop('checked') == false) {
-                // Clear the "Copy All" checkbox if any individual checkbox is unchecked.
-                $('.TravelToCopySelectAll').prop('checked', false);
-            }
-        });
     });
 
 </script>
@@ -277,30 +248,6 @@
                                    { %>
                                     <td class="TaskCopyRowActionCell"><a class="CopyMoqLink" data-copy-moq-id="<%:taskElement.Id%>">Copy MOQ</a></td>
                                 <% } %>                                
-                            </tr>
-                    <% } %>
-                    </tbody>
-                    </table>
-                </div>
-            <% } 
-
-               if (item.TravelElements.Any() && Model.IsCopyFromBoeContext)
-               { %>
-                <div class="TravelElementsToCopy collapsed"></div>
-                <div class="module-content-data TravelElementsToCopyContent" data-boe-id="<%:item.BOEID%>" style="display:none">
-                    <table id="TravelElementsToCopyTable<%:item.BOEID%>" class="TravelElementsToCopyTable">
-                        <thead>
-                            <tr>
-                                <th>Travel Title</th>
-                                <th style="text-align:center"><input type="checkbox" class="TravelToCopySelectAll" checked="checked"/></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                    <% foreach (TravelElementModelView travelElement in item.TravelElements)
-                    { %>
-                            <tr>
-                                <td class="TaskCopyRowCell"><%:travelElement.TaskTitle%></td>
-                                <td class="TaskCopyRowActionCell"><input class="CopyTravelElementCheck" data-copy-travel-id="<%:travelElement.Id%>" type="checkbox" checked="checked"/></td>
                             </tr>
                     <% } %>
                     </tbody>

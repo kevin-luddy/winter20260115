@@ -77,7 +77,7 @@
             CustomReportSelectorWidget.OpenDialog();
         } else {
             var url = CreatePostURL('<%:SiteMasterUtilities.GetCurrentWorkspace()%>', '<%:WebConstants.CONTROLLER_REPORTS%>', '<%:WebConstants.ACTION_DISPLAY_BOE_CUSTOM_REPORT_SELECTOR%>');
-            $('#BOECustomReportSelectorOuterContainer').load(url);
+            $('#BOECustomReportSelectorOuterContainer').load(url, {});
         }
     };
 

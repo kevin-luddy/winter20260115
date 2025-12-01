@@ -45,29 +45,28 @@ namespace GenBOE.Web.Controllers
 
 	public class ReportsController : GenBOEController
 	{
-		private Logger log = new Logger(typeof(ReportsController));
-
-		private WorkspaceActivityReport _WorkspaceActivityReport;
-		private BOEActivityReport _BOEActivityReport;
-		private IProPricerDTODataLoader proPricerLoader;
-		private ICustomFieldValueDTODataLoader customFieldValueDTODataLoader;
-		private ProPricerExporter proPricerExporter;
-		private WorkspaceExporter workspaceExporter;
-		private ITravelUnitCostExporter travelUnitCostExporter;
-		private IBOEStatusReport _BOEStatusReport;
-		private ITravelExtendedCostExporter travelExtendedCostExporter;
-		private IWorkspaceDTODataLoader workspaceLoader;
-		private IValidateBOE validateBOE;
-		private IBOEFormControllerLogic boeFormControllerLogic;
-		private ISSRSControllerLogic ssrsControllerLogic;
-		private ContractTypeLoader contractTypeLoader;
-		private IBOEConfidenceReport boeConfidenceReport;
-		private IBOEConfidenceReportExporter boeConfidenceReportExporter;
+		private readonly Logger log = new Logger(typeof(ReportsController));
+		private readonly WorkspaceActivityReport _WorkspaceActivityReport;
+		private readonly BOEActivityReport _BOEActivityReport;
+		private readonly IProPricerDTODataLoader proPricerLoader;
+		private readonly ICustomFieldValueDTODataLoader customFieldValueDTODataLoader;
+		private readonly ProPricerExporter proPricerExporter;
+		private readonly WorkspaceExporter workspaceExporter;
+		private readonly ITravelUnitCostExporter travelUnitCostExporter;
+		private readonly IBOEStatusReport _BOEStatusReport;
+		private readonly ITravelExtendedCostExporter travelExtendedCostExporter;
+		private readonly IWorkspaceDTODataLoader workspaceLoader;
+		private readonly IValidateBOE validateBOE;
+		private readonly IBOEFormControllerLogic boeFormControllerLogic;
+		private readonly ISSRSControllerLogic ssrsControllerLogic;
+		private readonly ContractTypeLoader contractTypeLoader;
+		private readonly IBOEConfidenceReport boeConfidenceReport;
+		private readonly IBOEConfidenceReportExporter boeConfidenceReportExporter;
 
 		/// <summary>
 		/// Business logic for the reports controller
 		/// </summary>
-		private IReportsControllerLogic reportsControllerLogic;
+		private readonly IReportsControllerLogic reportsControllerLogic;
 
 		/// <summary>
 		/// Constructor
@@ -122,6 +121,7 @@ namespace GenBOE.Web.Controllers
 		/// 
 		/// </summary>
 		/// <returns></returns>
+		[HttpGet]
 		public ViewResult Index(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -145,17 +145,18 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The Workspace</param>
 		/// <returns>ProPricer Index view</returns>
 		[ProPricerExportAccess]
+		[HttpGet]
 		public ViewResult ProPricerIndex(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(log, "ProPricerIndex", SecurityPage.ExportToProPricer, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_DISPLAY_EXPORT_TO_PROPRICER_INDEX, SecurityPage.ExportToProPricer, SecurityAuthorization.Read, ws, null);
 
 			ViewResult toReturn = GetMasterView(WebConstants.VIEW_EXPORT_TO_PROPRICER_INDEX, workspace);
 
 			// Finalize Action
-			FinalizeAction(log, "ProPricerIndex", sw);
+			FinalizeAction(log, WebConstants.ACTION_DISPLAY_EXPORT_TO_PROPRICER_INDEX, sw);
 			return toReturn;
 		}
 
@@ -166,6 +167,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
+		[ChildActionOnly, HttpGet]
 		public ActionResult DisplayExports(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -200,12 +202,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
+		[ChildActionOnly, HttpGet]
 		public ActionResult DisplayGeneralReports(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(log, "DisplayGeneralReports", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_DISPLAY_GENERAL_REPORTS, SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
 
 			// Validate Workspace PoP
 			ViewData["EnableReports"] = this.validateBOE.ValidateWorkspacePoP(ws);
@@ -216,7 +219,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_GENERAL_REPORTS, theModelViews);
 
 			// Finalize Action
-			FinalizeAction(log, "DisplayGeneralReports", sw);
+			FinalizeAction(log, WebConstants.ACTION_DISPLAY_GENERAL_REPORTS, sw);
 			return toReturn;
 		}
 
@@ -225,12 +228,14 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">workspace shortname</param>
 		/// <returns>action result with modelviews</returns>
+		[ChildActionOnly, HttpGet]
+		[Obsolete("Old Sikorsky Reports")]
 		public ActionResult DisplaySummaryReports(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = this.InitializeAction(this.log, "DisplaySummaryReports", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = this.InitializeAction(this.log, WebConstants.ACTION_DISPLAY_SUMMARY_REPORTS, SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
 
 			ViewResult toReturn = null;
 
@@ -245,7 +250,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			this.FinalizeAction(this.log, "DisplaySummaryReports", sw);
+			this.FinalizeAction(this.log, WebConstants.ACTION_DISPLAY_SUMMARY_REPORTS, sw);
 			return toReturn;
 		}
 
@@ -254,6 +259,8 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">workspace shortname</param>
 		/// <returns>action result with modelviews</returns>
+		[ChildActionOnly, HttpGet]
+		[Obsolete("Old Sikorsky Reports")]
 		public ActionResult DisplayCustomerReports(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -288,6 +295,8 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">workspace shortname</param>
 		/// <returns>action result with modelviews</returns>
+		[ChildActionOnly, HttpGet]
+		[Obsolete("Old Sikorsky Reports")]
 		public ActionResult DisplayFinanceReports(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -316,6 +325,8 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">workspace shortname</param>
 		/// <returns>action result with modelviews</returns>
+		[ChildActionOnly, HttpGet]
+		[Obsolete("Old Sikorsky Reports")]
 		public ActionResult DisplayAdditionalReports(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -344,12 +355,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public ActionResult DisplayWorkspaceActivityReport(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(log, "DisplayWorkspaceActivityReport", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_DISPLAY_WORKSPACE_ACTIVITY_REPORT, SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
 
 			// Call the BL to generate the report
 			WorkspaceActivityReportModelView theModelViews =
@@ -358,7 +370,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_WORKSPACE_ACTIVITY_REPORT, theModelViews);
 
 			// Finalize Action
-			FinalizeAction(log, "DisplayWorkspaceActivityReport", sw);
+			FinalizeAction(log, WebConstants.ACTION_DISPLAY_WORKSPACE_ACTIVITY_REPORT, sw);
 			return toReturn;
 		}
 
@@ -367,12 +379,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public ActionResult DisplayBOEActivityReport(string workspace, string sortField, string sortDirection)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(log, "DisplayBOEActivityReport", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_DISPLAY_BOE_ACTIVITY_REPORT, SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
 
 			// Call the BL to generate the report
 			BOEActivityReportModelView theModelView = _BOEActivityReport.GenerateReport(ws);
@@ -383,7 +396,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_ACTIVITY_REPORT, theModelView);
 
 			// Finalize Action
-			FinalizeAction(log, "DisplayBOEActivityReport", sw);
+			FinalizeAction(log, WebConstants.ACTION_DISPLAY_BOE_ACTIVITY_REPORT, sw);
 			return toReturn;
 		}
 
@@ -673,12 +686,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns></returns>
+		[HttpPost]
 		public ActionResult DisplayBOEStatusReport(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(log, "DisplayBOEStatusReport", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_DISPLAY_BOE_STATUS_REPORT, SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
 
 			ViewData["AllWBS"] = ws.WbsElements;
 			ViewData["AllCLIN"] = ws.Clins;
@@ -696,7 +710,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_STATUS_REPORT, theModelViews);
 
 			// Finalize Action
-			FinalizeAction(log, "DisplayBOEStatusReport", sw);
+			FinalizeAction(log, WebConstants.ACTION_DISPLAY_BOE_STATUS_REPORT, sw);
 			return toReturn;
 		}
 
@@ -705,13 +719,14 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">workspace</param>
 		/// <returns>A Page displaying the boe discrepancy report</returns>
+		[HttpPost]
 		public ActionResult DisplayBoeDiscrepancyReport(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			ViewData["HoursLabel"] = FullObjectHelper.HoursLabel(ws);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(log, "DisplayBoeDiscrepancyReport", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_DISPLAY_BOE_DISCREPANCY, SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
 
 			ViewData.Remove("ExportBoeDiscrepancyReport");
 
@@ -719,7 +734,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_DISCREPANCY_REPORT, theModelViews);
 
 			// Finalize Action
-			FinalizeAction(log, "DisplayBoeDiscrepancyReport", sw);
+			FinalizeAction(log, WebConstants.ACTION_DISPLAY_BOE_DISCREPANCY, sw);
 			return toReturn;
 		}
 
@@ -728,19 +743,20 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">workspace</param>
 		/// <returns>A Page displaying the validation for all boe's</returns>
+		[HttpPost]
 		public ActionResult DisplayValidateAllBOE(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(log, "DisplayValidateAllBOE", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_DISPLAY_VALIDATE_ALL_BOE, SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
 
 
 			ValidationAllBOEModelView theModelViews = this.validateBOE.ValidateAllBOEs(ws);
 			ViewResult toReturn = View(WebConstants.VIEW_VALIDATE_ALL_BOE_REPORT, theModelViews);
 
 			// Finalize Action
-			FinalizeAction(log, "DisplayValidateAllBOE", sw);
+			FinalizeAction(log, WebConstants.ACTION_DISPLAY_VALIDATE_ALL_BOE, sw);
 			return toReturn;
 		}
 
@@ -750,6 +766,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace Shortname</param>
 		/// <param name="id">BOE ID</param>
 		/// <returns>ViewResult for Confidence Report Results</returns>
+		[HttpGet]
 		public virtual ViewResult ConfidenceReport(string workspace, int? boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -778,6 +795,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace"></param>
 		/// <returns></returns>
 		[ProPricerExportAccess]
+		[ChildActionOnly, HttpGet]
 		public ViewResult DisplayProPricer(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -878,6 +896,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The workspace.</param>
 		/// <param name="selectedInstance">The selected instance.</param>
 		/// <returns>The JsonResult</returns>
+		[HttpPost]
 		public ActionResult UpdateProPricerLastInstance(string workspace, int? selectedInstance)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
@@ -908,6 +927,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The workspace.</param>
 		/// <param name="proposalId">The proposal identifier.</param>
 		/// <returns>The JsonResult</returns>
+		[HttpPost]
 		public ActionResult UpdateProPricerLastProposal(string workspace, string proposalId)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
@@ -938,6 +958,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="formatId">The format identifier.</param>
 		/// <returns>ProPricer preview data.</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Inline use, expecting for garbage collection to take care of things.")]
+		[HttpPost]
 		public ActionResult ProPricerPreview(string workspace, int formatId, ProPricerScope scope)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1074,6 +1095,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The workspace.</param>
 		/// <param name="formatId">The format identifier.</param>
 		/// <returns>ProPricer preview data.</returns>
+		[HttpPost]
 		public ActionResult ProPricerExport(string workspace, int formatId, ProPricerScope scope)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1152,12 +1174,13 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">the workspace</param>
 		/// <returns>the propricer grid view</returns>
 		[ProPricerExportAccess]
+		[HttpGet]
 		public ViewResult DisplayProPricerGrid(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = this.InitializeAction(this.log, "DisplayProPricerGrid", SecurityPage.ExportToProPricer, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = this.InitializeAction(this.log, WebConstants.ACTION_DISPLAY_EXPORT_TO_PROPRICER_GRID, SecurityPage.ExportToProPricer, SecurityAuthorization.Read, ws, null);
 
 			this.ViewData["EnableSendDirectly"] = !ws.IsProjectMapWorkspace && ConfigurationUtilities.GetAppSetting<bool>("EnableSendToProPricerDirectly", false);
 
@@ -1178,7 +1201,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = this.View(WebConstants.VIEW_EXPORT_TO_PROPRICER_GRID, theModelViews);
 
 			// Finalize Action
-			this.FinalizeAction(this.log, "DisplayProPricerGrid", sw);
+			this.FinalizeAction(this.log, WebConstants.ACTION_DISPLAY_EXPORT_TO_PROPRICER_GRID, sw);
 			return toReturn;
 		}
 
@@ -1188,6 +1211,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace name</param>
 		/// <param name="selections">User's filter selections</param>
 		/// <returns>Dialog view</returns>
+		[HttpPost]
 		public PartialViewResult DisplayBoeCustomReportSelector(string workspace, BoeCustomReportSelections selections)
 		{
 			if (selections == null)
@@ -1213,12 +1237,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">Workspace name</param>
 		/// <returns>ViewResult</returns>
+		[HttpGet]
 		public ViewResult DisplayInlFormExportGrid(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(log, "DisplayInlFormExportGrid", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_DISPLAY_INL_FORM_EXPORT_GRID, SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
 
 			foreach (ValidationMessage v in reportsControllerLogic.DisplayInlFormExportGrid_Validate(ws))
 			{
@@ -1229,7 +1254,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_INL_FORM_EXPORT_SELECTOR_GRID, forms);
 
 			// Action Finalize
-			FinalizeAction(log, "DisplayInlFormExportGrid", sw);
+			FinalizeAction(log, WebConstants.ACTION_DISPLAY_INL_FORM_EXPORT_GRID, sw);
 
 			return toReturn;
 		}
@@ -1240,17 +1265,18 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">The workspace.</param>
 		/// <param name="reportType">Type of the report.</param>
 		/// <returns>A Json result containing the Nonce generated, the Nonce will be used to retrieve the XML from the Database.</returns>
+		[HttpPost]
 		public JsonResult GenerateReportNonce(string workspace, Reports reportType)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = this.InitializeAction(this.log, "GenerateReportNonce", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = this.InitializeAction(this.log, WebConstants.ACTION_GENERATE_REPORT_NONCE, SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
 
 			string nonce = this.ssrsControllerLogic.GenerateReportNonce(ws, reportType);
 
 			// Finalize Action
-			this.FinalizeAction(this.log, "GenerateReportNonce", sw);
+			this.FinalizeAction(this.log, WebConstants.ACTION_GENERATE_REPORT_NONCE, sw);
 
 			return Json(new { Nonce = nonce });
 		}
@@ -1492,6 +1518,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">The workspace short name.</param>
 		/// <returns>JSON object for the validation data.</returns>
+		[HttpPost]
 		public JsonResult ValidateBoesForDiscrepancies(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1501,23 +1528,24 @@ namespace GenBOE.Web.Controllers
 			if (!ws.IsProjectMapWorkspace)
 			{
 				// Initialize Action
-				Stopwatch sw = this.InitializeAction(this.log, "ValidateBoesForDiscrepancies", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
+				Stopwatch sw = this.InitializeAction(this.log, WebConstants.ACTION_VALIDATE_BOES_FOR_DISCREPANCIES, SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
 
 				theModelViews = this.reportsControllerLogic.GenerateDataForBoeDiscrepancyReport(ws, true, true);
 
 				// Finalize Action
-				this.FinalizeAction(this.log, "ValidateBoesForDiscrepancies", sw);
+				this.FinalizeAction(this.log, WebConstants.ACTION_VALIDATE_BOES_FOR_DISCREPANCIES, sw);
 			}
 
 			return this.Json(theModelViews);
 		}
 
 		/// <summary>
-		/// Copy a Workspace level Propricer Format into System level
+		/// Copy a Workspace level ProPricer Format into System level
 		/// </summary>
 		/// <param name="workspace">The workspace short name.</param>
 		/// <param name="reportId">The id of the report to copy.</param>
 		/// <returns>JSON object for the validation data.</returns>
+		[HttpPost]
 		public JsonResult CopyFormatToSystemLevel(string workspace, int reportId)
 		{
 			if (reportId < 1)
@@ -1600,6 +1628,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="ComponentsSelected">Selected report components</param>
 		/// <param name="summarizeByCustomField">Name of custom field to group by when running All BOEs report with special format template; null otherwise.</param>
 		/// <returns>Report</returns>
+		[HttpPost]
 		public async Task<ActionResult> ExportCustomReport(string workspace, ICollection<int> BoesSelected, ICollection<BoeCustomReportComponent> ComponentsSelected, string summarizeByCustomField)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1657,6 +1686,7 @@ namespace GenBOE.Web.Controllers
 		/// <returns>Excel file of the Confidence Report</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Inline use, expecting for garbage collection to take care of things.")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.")]
+		[HttpGet]
 		public ActionResult ExportConfidenceReport(string workspace, int? boeID)
 		{
 			ActionResult toReturn = null;
@@ -1665,7 +1695,7 @@ namespace GenBOE.Web.Controllers
 			try
 			{
 				// Initialize Action
-				Stopwatch sw = this.InitializeAction(this.log, "ExportConfidenceReport", boeID == null ? SecurityPage.Reports : SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
+				Stopwatch sw = this.InitializeAction(this.log, WebConstants.ACTION_EXPORT_CONFIDENCE_REPORT, boeID == null ? SecurityPage.Reports : SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
 				this.log.Performance("Exporting Confidence Report - ReportsController - Begin", 0);
 
 				ActionLogic.ModelView.ConfidenceReportModelView confidenceReport = boeConfidenceReport.GenerateConfidenceReport(ws, boeID);
@@ -1710,12 +1740,13 @@ namespace GenBOE.Web.Controllers
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2002:DoNotLockOnObjectsWithWeakIdentity")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[ProPricerExportAccess]
+		[HttpGet]
 		public ActionResult ExportProPricerExportFormat(string workspace, int reportID, ProPricerScope scope)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(log, "ExportProPricerExportFormat", SecurityPage.ExportToProPricer, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_EXPORT_PROPRICER_EXPORT_FORMAT, SecurityPage.ExportToProPricer, SecurityAuthorization.Read, ws, null);
 
 			ActionResult toReturn = null;
 
@@ -1824,7 +1855,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(log, "ExportProPricerExportFormat", sw);
+			FinalizeAction(log, WebConstants.ACTION_EXPORT_PROPRICER_EXPORT_FORMAT, sw);
 			return toReturn;
 		}
 
@@ -1838,6 +1869,7 @@ namespace GenBOE.Web.Controllers
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "reportModelView")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.")]
+		[HttpGet]
 		public async Task<ActionResult> Export(string workspace, int reportID, string summarizeByCustomField)
 		{
 			ActionResult toReturn = null;
@@ -1847,7 +1879,7 @@ namespace GenBOE.Web.Controllers
 			{
 
 				// Initialize Action
-				Stopwatch sw = this.InitializeAction(this.log, "Export", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
+				Stopwatch sw = this.InitializeAction(this.log, WebConstants.ACTION_EXPORT, SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
 				this.log.Performance("Exporting - ReportsController - Begin", 0);
 
 				if (reportID == (int)Reports.BOEStatus ||
@@ -2055,7 +2087,7 @@ namespace GenBOE.Web.Controllers
 				}
 
 				// Finalize Action
-				this.FinalizeAction(this.log, "Exporting - ReportsController - End", sw);
+				this.FinalizeAction(this.log, WebConstants.ACTION_EXPORT, sw);
 			}
 			catch (GenValidationException ex)
 			{
@@ -2084,12 +2116,13 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">workspace</param>
 		/// <returns>Excel document for export</returns>
+		[HttpGet]
 		public ActionResult ExportBoeDiscrepancyReport(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(log, "ExportBoeDiscrepancyReport", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_EXPORT_BOE_DISCREPANCY, SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
 
 			ViewData["ExportBoeDiscrepancyReport"] = true;
 			Response.AddHeader("Content-Type", "application/vnd.ms-excel");
@@ -2099,7 +2132,7 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_DISCREPANCY_REPORT, theModelViews);
 
 			// Finalize Action
-			FinalizeAction(log, "ExportBoeDiscrepancyReport", sw);
+			FinalizeAction(log, WebConstants.ACTION_EXPORT_BOE_DISCREPANCY, sw);
 			return toReturn;
 		}
 
@@ -2112,6 +2145,7 @@ namespace GenBOE.Web.Controllers
 		/// <exception cref="ArgumentNullException">downloadReports</exception>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpPost]
 		public ActionResult BulkDownloadReports(string workspace, ICollection<DownloadReportModelView> downloadReports)
 		{
 			if (downloadReports == null || downloadReports.None())
@@ -2122,7 +2156,7 @@ namespace GenBOE.Web.Controllers
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(log, "BulkDownloadReports", SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
+			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_BULK_DOWNLOAD_REPORT, SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
 
 			ActionResult toReturn = null;
 
@@ -2151,7 +2185,7 @@ namespace GenBOE.Web.Controllers
 			}
 
 			// Finalize Action
-			FinalizeAction(log, "BulkDownloadReports", sw);
+			FinalizeAction(log, WebConstants.ACTION_BULK_DOWNLOAD_REPORT, sw);
 			return toReturn;
 
 		}

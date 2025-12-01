@@ -237,6 +237,12 @@
 		$('#urlValidationBox').html('');
 		$scope.step = newStep;
 
+		// Sync lookupUser values when leaving step 3
+		if ($scope.step === 3 && newStep !== 3) {
+			$scope.data.CostVolumeLeadPricerDisplayName = $('#CostVolumeLeadPricerDisplayName').val();
+			$scope.data.CostVolumeLeadPricerNTID = $('#CostVolumeLeadPricerNTID').val();
+		}
+
 		$scope.model.showNextButton = true;
 		$scope.model.showBackButton = newStep !== 1;
 
@@ -245,6 +251,10 @@
 
 	$scope.setStepSpecificElements = function (newStep) {
 		if ($scope.model.IsPLDIntegrated) {
+			// don't overwrite workspace copy data with empty values
+			if ($scope.model.WorkspaceName === undefined || $scope.model.WorkspaceName === '') {
+				$scope.model.WorkspaceName = $scope.data.WorkspaceName;
+			}
 			$scope.data.netRevision = $scope.model.netRevision;
 			$scope.data.TrackingNumber = $scope.model.PLD_PANumber;
 			$scope.data.ProposalTitle = $scope.model.PLD_PATitle;
@@ -253,17 +263,15 @@
 
 		if ($scope.model.IsPLDIntegrated && newStep === 5) {
 			// Store the original user-entered workspace name if not already stored
-			if (!$scope.data.OriginalWorkspaceName) {
-				$scope.data.OriginalWorkspaceName = $scope.data.WorkspaceName;
-			}
+			$scope.data.OriginalWorkspaceName = $scope.data.WorkspaceName;
 			// Concatenate PLD_PANumber with the user-entered workspace name
-			$scope.data.WorkspaceName = $scope.data.PLD_PANumber + " " + $scope.data.OriginalWorkspaceName;
+			$scope.data.WorkspaceName = $scope.model.PLD_PANumber + " " + $scope.data.OriginalWorkspaceName;
 			$scope.data.Shortname = $scope.data.nextRevision;
 		}
 
-		if ($scope.model.IsPLDIntegrated && newStep !== 5) {
+		if ($scope.model.IsPLDIntegrated && newStep === 3) {
 			// When not step 5, restore the original workspace name for editing
-			if ($scope.data.OrignalWorkspaceName) {
+			if ($scope.data.OriginalWorkspaceName) {
 				$scope.data.WorkspaceName = $scope.data.OriginalWorkspaceName;
 			}
 		}
@@ -294,13 +302,19 @@
 					$scope.data.LineOfBusiness = data.LineOfBusiness;
 					$scope.data.LineOfBusinessID = data.LineOfBusinessId;
 
-					$scope.model.Description = data.Description;
-					$scope.data.Description = data.Description;
+					// Truncate description to 1000 characters if needed
+					var description = data.Description || '';
+					if (description.length > 1000) {
+						description = description.substring(0, 1000);
+					}
+					$scope.model.Description = description;
+					$scope.data.Description = description;
 
-					$scope.model.CostVolumeLeadPricerDisplayName = data.Pricing;
-					$scope.data.CostVolumeLeadPricerDisplayName = data.Pricing;
-					$scope.model.Pricer = data.Pricing;
-					$scope.data.Pricer = data.Pricing;
+					// hold on bringing what PLD has for Pricer as it is not clean name data
+					//$scope.model.CostVolumeLeadPricerDisplayName = data.Pricing;
+					//$scope.data.CostVolumeLeadPricerDisplayName = data.Pricing;
+					//$scope.model.Pricer = data.Pricing;
+					//$scope.data.Pricer = data.Pricing;
 
 					$scope.model.ContractStartDate = parseDotNetDate(data.ProjectStartDate);
 					$scope.model.ContractEndDate = parseDotNetDate(data.ProjectEndDate);
@@ -335,6 +349,11 @@
 					//Shortname (URL): Set to nextRevision (auto-generate, read-only for PLD)
 					if ($scope.data.nextRevision) {
 						$scope.data.ShortName = $scope.data.nextRevision;
+					}
+					var shortnameVal = $('#ShortName').val();
+					if (shortnameVal) {
+						$scope.data.Shortname = shortnameVal;
+						$scope.data.nextRevision = shortnameVal;
 					}
 				})
 		};
@@ -412,6 +431,13 @@
 								$scope.model.ptmTrackingNumber = '';
 								$scope.model.selectedPtmTrackingNumber = '';
 							}
+
+							var shortnameVal = $('#ShortName').val().trim();
+							if (shortnameVal) {
+								$scope.data.Shortname = shortnameVal;
+								$scope.data.nextRevision = shortnameVal;
+							}
+
 							$scope.setStepSpecificElements(2);
 						} else {
 							// reset the data in case the user went back and forth
@@ -470,6 +496,19 @@
 
 						break;
 					case 3:
+
+						// get value from user lookup for Pricer
+						$scope.data.CostVolumeLeadPricerDisplayName = $('#CostVolumeLeadPricerDisplayName').val();
+						$scope.model.CostVolumeLeadPricerDisplayName = $('#CostVolumeLeadPricerDisplayName').val();
+						$scope.data.CostVolumeLeadPricerNTID = $('#CostVolumeLeadPricerNTID').val();
+						$scope.model.CostVolumeLeadPricerNTID = $('#CostVolumeLeadPricerNTID').val();
+
+
+						var shortnameVal = $('#ShortName').val().trim();
+						if (shortnameVal) {
+							$scope.data.Shortname = shortnameVal;
+							$scope.data.nextRevision = shortnameVal;
+						}
 
 						if ($scope.model.isPTMIntegrated && $scope.model.ptmTrackingNumber !== '') {
 							// set the real workspacename if we are integrating with PTM (and admin hasn't overwritten with no PTM listed)
@@ -662,7 +701,9 @@
 		if (URLText.length > 15) {
 			URLText = URLText.substr(0, 15);
 		}
-		$scope.data.Shortname = URLText;
+		if (!$scope.model.IsPLDIntegrated) {
+			$scope.data.Shortname = URLText.trim();
+		}
 	};
 
 	$scope.rteSizeKeyUp = function () {
@@ -1205,6 +1246,12 @@
 			} else {
 				$scope.data.EnableLmNavigator = false;
 			}
+
+			// Set Lead Pricer from workspace copy = assign even if values are null or empty
+			// Required field validation will catch missing values on submit
+			$scope.data.CostVolumeLeadPricerNTID = result.CostVolumeLeadPricerNTID || '';
+			$scope.data.CostVolumeLeadPricerDisplayName = result.CostVolumeLeadPricerDisplayName || '';
+			$scope.model.CostVolumeLeadPricerDisplayName = result.CostVolumeLeadPricerDisplayName || '';
 
 			if ($scope.data.WSExactCopy) {
 				$scope.data.ContainsOCI = result.ContainsOCI;

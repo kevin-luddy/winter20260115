@@ -4,7 +4,7 @@ GO
 -- Author: Hazrat Rafiqzadah (e403038)
 -- PROPH-2994-Additional EPP Dates - 10/01/2025
 
--- First Step: Update Existing EPP Date columns in ProposalContractsData Table to show as Planned
+-- First Step: Update Existing EPP Date columns in ProposalContractsData Table to show as ScheduledActual
 GO
 
 EXEC sp_rename '[dbo].[ProposalContractsData].[ProgramEppDate]',  'ScheduledActualProgramEppDate', 'COLUMN';
@@ -24,7 +24,7 @@ EXEC sp_rename '[dbo].[ProposalContractsData].[BidEppDate]',  'ScheduledActualBi
 EXEC sp_rename '[dbo].[ProposalContractsData].[MissionSegmentEppDate]',  'ScheduledActualMissionSegmentEppDate', 'COLUMN';
 
 
--- Second Step: Add Scheduled EPP Date columns in ProposalContractsData Table
+-- Second Step: Add Planned EPP Date columns in ProposalContractsData Table
 GO
 
 ALTER TABLE [dbo].[ProposalContractsData]

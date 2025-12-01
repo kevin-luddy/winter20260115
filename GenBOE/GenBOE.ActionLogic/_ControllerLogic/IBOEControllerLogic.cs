@@ -280,9 +280,8 @@ namespace GenBOE.ActionLogic
 		/// <param name="boeID">ID of BOE being copied to</param>
 		/// <param name="copyBOEID">ID of BOE being copied</param>
 		/// <param name="taskElementsToCopy">Task elements being copied</param>
-		/// <param name="travelElementsToCopy">Travel elements being copied</param>
 		/// <returns>Modelview of copy BOE conflicts</returns>
-		BOECopyConflictsModelView DisplayCopyBOEConflicts(FullWorkspace ws, int boeID, int copyBOEID, ICollection<int> taskElementsToCopy, ICollection<int> travelElementsToCopy);
+		BOECopyConflictsModelView DisplayCopyBOEConflicts(FullWorkspace ws, int boeID, int copyBOEID, ICollection<int> taskElementsToCopy);
 
         /// <summary>
         /// Calculates the defaults for the Manage BOE page

@@ -111,8 +111,10 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 			// Act and Assert
 			try
 			{
-				FileStream result = sut.ExportCLINs(workspaceMock.Object);
-				Assert.Fail("Expected InvalidOperationException to be thrown");
+				using (FileStream result = sut.ExportCLINs(workspaceMock.Object))
+				{
+					Assert.Fail("Expected InvalidOperationException to be thrown");
+				}
 			}
 			catch (InvalidOperationException ex)
 			{

@@ -23,10 +23,8 @@
 		saveAction: '<%:WebConstants.ACTION_SAVE_CLIN %>',
 		deleteAction: '<%:WebConstants.ACTION_DELETE_CLINS %>',
 		exportAction: '<%:WebConstants.ACTION_EXPORT_CLINS %>',
-		exportTemplateAction: '<%:WebConstants.ACTION_EXPORT_MANAGE_BOE_TEMPLATE %>',
 		workspaceState: '<%: ((GenBOEMasterModelView)Model).WorkspaceState %>',
 		completeImportAction: '<%: WebConstants.ACTION_COMPLETE_IMPORT_CLINS %>',
-		getBOECountForClinAction: '<%: WebConstants.ACTION_GET_BOE_COUNT_FOR_CLIN%>',
 		dateShiftUrl: dateShiftUrl,
 		clinLevel: '/level/<%: ((int)IES.Common.Level.CLIN).ToString() %>',
 	});
@@ -60,7 +58,7 @@
 					<button class="ies-action" data-ng-disabled="disableSelected()" data-ng-click="delete()" data-ng-show="isWorkingState" name="delete-button" type="button" id="ManageCLIN-Delete">Delete</button>
 					<button class="ies-action" data-ng-show="isWorkingState" data-ng-disabled="isLoading" data-ng-click="AddCLIN()" id="ManageCLIN-Add" type="button">+ Add</button>
 					<button class="ies-action" data-ng-show="isWorkingState" data-ng-disabled="isLoading" data-ng-click="toggleImport()" id="ManageCLIN-Import" name="import-button" type="button">Import</button>
-					<button class="ies-action" data-ng-click="export(false)" data-ng-disabled="isLoading || isExporting" id="ManageCLIN-Export" type="button">Export</button>
+					<button class="ies-action" data-ng-click="export()" data-ng-disabled="isLoading || isExporting" id="ManageCLIN-Export" type="button">Export</button>
 				</div>
 				<div class="search-box float-right">
 					<input type="text" class="filter" data-ng-model="searchText" data-ng-model-options="{ debounce: 200 }" data-ng-change="searchChanged()" placeholder="Search..." style="float: right" />
@@ -276,12 +274,12 @@
 							<div class="title">Step 2: Download the CLIN template file</div>
 							<div>Start by downloading the CLIN template file. This file has the correct column headings genBOE needs to import the CLINs.</div>
 							<div>If you have CLINs in a different file, in order to use it, it must have the same exact headings as the CLIN template file. The file type must be an Excel .xlsx file.</div>
-							<div><a href="<%= this.ResolveClientUrl("~/Templates/Export/CLINs.xlsx") %>">Download CLIN template file</a></div>
+							<div><a href="<%= (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST) ? this.ResolveClientUrl("~/Templates/Export/CLINsRMS.xlsx") : this.ResolveClientUrl("~/Templates/Export/CLINs.xlsx") %>">Download CLIN template file</a></div>
 						</div>
 						<div class="step two" data-ng-show="dialog.importExisting">
 							<div class="title">Step 2: Export the existing CLINs</div>
 							<div>Start by exporting the existing CLINs. This file has the correct column headings and CLIN IDs genBOE needs to import new CLINs and updates.</div>
-							<div><a id="ManageCLIN-ExportLink" data-ng-click="export(false)">Export existing CLINs</a></div>
+							<div><a id="ManageCLIN-ExportLink" data-ng-click="export()">Export existing CLINs</a></div>
 						</div>
 						<div class="step three" data-ng-hide="dialog.importExisting">
 							<div class="title">Step 3: Enter CLINs into the file</div>
