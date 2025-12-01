@@ -59,12 +59,12 @@ namespace IES.ActionLogic.Core.IO.Export
 		}
 
 		/// <summary>
-		/// Exports the rates to CSV file.  Expanded will expand the rates to their full size.
+		/// Exports the rates to excel file.  Expanded will expand the rates to their full size.
 		/// </summary>
 		/// <param name="templateFileLocation">The location of the Rate Excel file template</param>
 		/// <param name="rates">The rates to export</param>
 		/// <param name="expanded">The expanded rates</param>
-		/// <returns>Filename for csv generated.</returns>
+		/// <returns>Filename for excel generated.</returns>
 		public static string ExportToExcelFileWithYears(string templateFileLocation, ICollection<RateDetailModelView> rates, bool expanded)
         {
 			// Create a new random file name in the specified directory
