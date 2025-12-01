@@ -59,11 +59,62 @@ namespace IES.ActionLogic.Core.IO.Export
 		}
 
 		/// <summary>
-		/// Populates the Rate Codes.
+		/// Exports the rates to CSV file.  Expanded will expand the rates to their full size.
 		/// </summary>
-		/// <param name="rates">The Rate Codes and related data.</param>
-		/// <param name="spreadsheet">The spreadsheet.</param>
-		private static void PopulateRateCodes(RateGridModelView rates, SpreadsheetDocument spreadsheet)
+		/// <param name="templateFileLocation">The location of the Rate Excel file template</param>
+		/// <param name="rates">The rates to export</param>
+		/// <param name="expanded">The expanded rates</param>
+		/// <returns>Filename for csv generated.</returns>
+		public static string ExportToExcelFileWithYears(string templateFileLocation, ICollection<RateDetailModelView> rates, bool expanded)
+        {
+			// Create a new random file name in the specified directory
+			string toReturn = ExcelUtilities.CopyExcelTemplateFile(templateFileLocation);
+
+			// Create the document object in memory
+			using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Open(toReturn, true))
+			{
+				WorkbookPart workbookPart = spreadsheet.WorkbookPart;
+				if (workbookPart == null)
+				{
+					workbookPart = spreadsheet.AddWorkbookPart();
+					workbookPart.Workbook = new Workbook();
+				}
+
+				// Remove existing sheets
+				Sheets sheets = workbookPart.Workbook.GetFirstChild<Sheets>();
+				if (sheets != null)
+				{
+					sheets.RemoveAllChildren<Sheet>();
+				}
+				else
+				{
+					sheets = workbookPart.Workbook.AppendChild(new Sheets());
+				}
+
+				// Add worksheet
+				WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
+				worksheetPart.Worksheet = new Worksheet(new SheetData());
+
+				Sheet sheet = new Sheet()
+				{
+					Id = workbookPart.GetIdOfPart(worksheetPart),
+					SheetId = 1,
+					Name = "Rate Codes"
+				};
+				sheets.Append(sheet);
+
+				PopulateRateCodesWithYears(rates, spreadsheet, expanded);
+			}
+
+			return toReturn;
+        }
+
+        /// <summary>
+        /// Populates the Rate Codes.
+        /// </summary>
+        /// <param name="rates">The Rate Codes and related data.</param>
+        /// <param name="spreadsheet">The spreadsheet.</param>
+        private static void PopulateRateCodes(RateGridModelView rates, SpreadsheetDocument spreadsheet)
 		{
 			// Create collections of strings for each row in the export file
 			ExcelExportWorksheet worksheet = new();
@@ -322,41 +373,6 @@ namespace IES.ActionLogic.Core.IO.Export
 				data.GovernmentBurdenPoolId.HasValue ? rates.GovernmentBurdenPools.Single(x => x.Id == data.GovernmentBurdenPoolId).Label : string.Empty,
 				data.CommercialBurdenPoolId.HasValue ? rates.CommercialBurdenPools.Single(x => x.Id == data.CommercialBurdenPoolId).Label : string.Empty
 			};
-		}
-
-		/// <summary>
-		/// Exports the rates to CSV file.  Expanded will expand the rates to their full size.
-		/// </summary>
-		/// <param name="rates">The rates to export</param>
-		/// <param name="expanded">The expanded rates</param>
-		/// <returns>Filename for csv generated.</returns>
-		public static string ExportToExcelFileWithYears(ICollection<RateDetailModelView> rates, bool expanded)
-		{
-			string toReturn = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "/Templates/Export/" + Path.GetRandomFileName() + ".xlsx");
-
-			// Create the document object in memory
-			using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Create(toReturn, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook))
-			{
-				// Add a WorkbookPart to the document.
-				WorkbookPart workbookPart = spreadsheet.AddWorkbookPart();
-				workbookPart.Workbook = new Workbook();
-
-				// Add a WorksheetPart to the WorkbookPart.
-				WorksheetPart worksheetPart = workbookPart.AddNewPart<WorksheetPart>();
-				worksheetPart.Worksheet = new Worksheet(new SheetData());
-
-				// Add Sheets to the Workbook.
-				Sheets sheets = workbookPart.Workbook.AppendChild(new Sheets());
-
-				// Append a new worksheet and associate it with the workbook.
-				Sheet sheet = new Sheet() { Id = workbookPart.GetIdOfPart(worksheetPart), SheetId = 1, Name = "Rate Codes" };
-				sheets.Append(sheet);
-
-				PopulateRateCodesWithYears(rates, spreadsheet, expanded);
-			}
-
-			// Return the file path
-			return toReturn;
 		}
 
 		/// <summary>
