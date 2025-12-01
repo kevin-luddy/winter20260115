@@ -1,9 +1,5 @@
 ﻿<%@ Control Language="C#" Inherits="System.Web.Mvc.ViewUserControl<IEnumerable<GenBOE.ActionLogic.ModelView.Backend.GeneralReportViewModel>>" %>
 
-<%
-	bool enableReports = (bool)ViewData["EnableReports"];
-%>
-
 <script type="text/javascript">
 
 	var GeneralReportsWidget = new GridWidget("GeneralReports");
@@ -65,13 +61,7 @@
 					<tr pkid="<%: item.ReportID %>" reportname="<%: item.ReportName %>">
 						<td><span><%: item.ReportName %></span></td>
 						<td><span><%: item.Description %></span></td>
-						<% if (enableReports) { %>
-							<td><span><a name="GeneralReports-ViewButton">View</a></span></td>
-						<% } else { %>
-						    <td title="There are Children objects (i.e. CLIN, BOE, Task, Resource) that are outside the PoP of their Parents">
-								<span>Invalid</span>
-							</td>
-						<% } %>
+						<td><span><a name="GeneralReports-ViewButton">View</a></span></td>
 				</tr>
 				<% } %>
 			</tbody>

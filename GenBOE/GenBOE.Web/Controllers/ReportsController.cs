@@ -210,9 +210,6 @@ namespace GenBOE.Web.Controllers
 			// Initialize Action
 			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_DISPLAY_GENERAL_REPORTS, SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
 
-			// Validate Workspace PoP
-			ViewData["EnableReports"] = this.validateBOE.ValidateWorkspacePoP(ws);
-
 			// Perform Action
 			Collection<GeneralReportViewModel> theModelViews = reportsControllerLogic.GetDisplayGeneralReports(ws);
 
