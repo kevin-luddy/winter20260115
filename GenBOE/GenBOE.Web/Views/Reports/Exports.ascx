@@ -283,8 +283,8 @@
                                     </span>
                                 </td>
                             <% } else { %>
-                                <td title="There are Children objects (i.e. CLIN, BOE, Task, Resource) that are outside the PoP of their Parents" style="text-align: right">
-                                    <span>Unavailable</span>
+                                <td title="There are Children objects (i.e. CLIN, BOE, Task, Resource) that are outside the PoP of their Parents" style="text-align: right; padding-right: 15px;">
+                                    <span>Invalid</span>
                                 </td>
                             <% } %>
                         </tr>
@@ -312,8 +312,8 @@
 							        <% } %>
 						        </td>
                             <% } else { %>
-                                <td title="There are Children objects (i.e. CLIN, BOE, Task, Resource) that are outside the PoP of their Parents" style="text-align: right">
-                                    <span>Unavailable</span>
+                                <td title="There are Children objects (i.e. CLIN, BOE, Task, Resource) that are outside the PoP of their Parents" style="text-align: right; padding-right: 15px;">
+                                    <span>Invalid</span>
                                 </td>
                             <% } %>
 					    </tr>
