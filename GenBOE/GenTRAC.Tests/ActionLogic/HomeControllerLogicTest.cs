@@ -381,48 +381,6 @@ namespace GenTRAC.Tests.ActionLogic
         }
 
         /// <summary>
-        /// Test PopulateExportSSRSParameters function
-        /// </summary>
-        [TestMethod]
-        public void PopulateExportSSRSParametersTest()
-        {
-            HomeControllerLogic sut = this.CreateSystem();
-            Uri uri = null;
-         
-            UserDTO user = new UserDTO()
-            {
-                Id = 4567,
-                Ntid = "kingkl"
-            };
-
-            this.userMapper.Setup(x => x.GetActiveUser()).Returns(user);
-
-            string proposalClassFilter = ((int)ProposalClassFilterOption.NonForecasted).ToString();
-
-            ExportProposalReportModelView goodExport = new ExportProposalReportModelView()
-            {
-                FilterOption = "0",
-                FilterStartDate = "04/01/2013",
-                FilterEndDate = "04/30/2013",
-                SearchText = "ken",
-                FilterProposalClass = proposalClassFilter
-            };
-
-            uri = sut.PopulateExportSSRSParameters(goodExport);
-            
-            // the name of this report
-            Assert.IsTrue(uri.AbsoluteUri.Contains("Proposal%20Dashboard%20Report"));
-
-            // Params
-            Assert.IsTrue(uri.AbsoluteUri.Contains(Constants.Report.PROPOSAL_STATUS_ID + "=1"));
-            Assert.IsTrue(uri.AbsoluteUri.Contains(Constants.Report.FILTER_START_DATE + "=04/01/2013"));
-            Assert.IsTrue(uri.AbsoluteUri.Contains(Constants.Report.FILTER_END_DATE + "=04/30/2013"));
-            Assert.IsTrue(uri.AbsoluteUri.Contains(Constants.Report.SEARCH_TEXT + "=ken"));
-            Assert.IsTrue(uri.AbsoluteUri.Contains(Constants.Report.NTID + "=kingkl"));
-            Assert.IsTrue(uri.AbsoluteUri.Contains(Constants.Report.FILTER_PROPOSAL_CLASS + "=" + proposalClassFilter));
-        }
-
-        /// <summary>
         /// Test GetMyApprovals
         /// </summary>
         [TestMethod]

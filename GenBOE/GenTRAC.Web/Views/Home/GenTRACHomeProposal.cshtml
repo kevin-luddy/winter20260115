@@ -182,14 +182,23 @@
         };
 
         HomeProposalWidget.ViewReport = function (buttonPressed) {
-            var data = new Object;
-            data.filterOption = ProposalFiltersWidget.getElement('input[name="proposalFilterOption"]').val();
-            data.viewerFilterOption = null; // ProposalFiltersWidget.getElement('input[name="viewerProposalFilterOption"]').val(); // TODO - BOEJ-4848 - should be added back in
-            data.filterStartDate = ProposalFiltersWidget.getElement('input[name="proposalFilterStart"]').val();
-            data.filterEndDate = ProposalFiltersWidget.getElement('input[name="proposalFilterEnd"]').val();
-            data.searchText = HomeProposalWidget.getElement('input[name=searchString]').val();
-            data.filterProposalClass = ProposalFiltersWidget.getElement('input[name="proposalClassFilterOption"]').val();
-            var dataToSend = JSON.stringify(data);
+            //var data = new Object;
+            //data.filterOption = ProposalFiltersWidget.getElement('input[name="proposalFilterOption"]').val();
+            //data.viewerFilterOption = null; // ProposalFiltersWidget.getElement('input[name="viewerProposalFilterOption"]').val(); // TODO - BOEJ-4848 - should be added back in
+            //data.filterStartDate = ProposalFiltersWidget.getElement('input[name="proposalFilterStart"]').val();
+            //data.filterEndDate = ProposalFiltersWidget.getElement('input[name="proposalFilterEnd"]').val();
+            //data.searchText = HomeProposalWidget.getElement('input[name=searchString]').val();
+            //data.filterProposalClass = ProposalFiltersWidget.getElement('input[name="proposalClassFilterOption"]').val();
+            //var dataToSend = JSON.stringify(data);
+
+			// Setup sent data
+			var dataToSend = {};
+			dataToSend.sortField = $('#SortField').val();
+			dataToSend.order = $('#Order').val();
+			dataToSend.filtersModelView = ProposalFiltersWidget.getForm("proposalFiltersForm").getData();
+			dataToSend.searchText = HomeProposalWidget.SearchText;
+
+			dataToSend = JSON.stringify(dataToSend);
 
             // make the call
             HomeProposalWidget.saveRequest({
@@ -200,6 +209,7 @@
                 }),
                 contentType: 'application/json; charset-utf-8',
                 data: dataToSend,
+				dataType: 'html',
                 success: function (response) {
                     HomeProposalWidget.CallSSRS(response);
                 },
