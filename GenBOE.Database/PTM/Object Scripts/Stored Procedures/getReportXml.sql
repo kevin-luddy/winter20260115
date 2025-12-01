@@ -42,3 +42,6 @@ DELETE FROM [ReportXmlData] WHERE Nonce = @Nonce
 SELECT @RawXml as Xml
 
 GO
+
+GRANT EXECUTE ON OBJECT::dbo.getReportXML TO generationReporter;
+GO
