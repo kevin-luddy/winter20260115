@@ -175,6 +175,9 @@ namespace GenBOE.Web.Controllers
 			// Initialize Action
 			Stopwatch sw = InitializeAction(log, WebConstants.ACTION_DISPLAY_EXPORTS, SecurityPage.Reports, SecurityAuthorization.Read, ws, null);
 
+			// Validate Workspace PoP
+			ViewData["EnableExports"] = this.validateBOE.ValidateWorkspacePoP(ws);
+
 			// Perform Action
 			ExportReportViewModel reportView = reportsControllerLogic.GetDisplayExports(ws);
 			Collection<GeneralReportViewModel> theModelViews = (Collection<GeneralReportViewModel>)reportView.Reports;
