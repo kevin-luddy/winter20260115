@@ -1118,10 +1118,16 @@
                                     <td style="text-align: right">{{row.GrandTotalHours | number:2}}</td>
                                     <td>
                                         <!-- Read only skill mix rationale (uses canned responses)-->
-                                        <span ng-show="row.IsRationaleReadOnly"
-                                            class="text-muted"
-                                            style="display: block; width: 100%; min-height: 14px;">{{row.Rationale}}
-                                        </span>
+                                            <span ng-show="row.IsRationaleReadOnly"
+                                                class="text-muted"
+                                                style="display: block;
+                                                width: 100%;
+                                                min-height: 14px;
+                                                white-space: normal;
+                                                overflow-wrap: break-word;
+                                                ">
+                                                {{row.Rationale}}
+                                            </span>
                                         <!-- Editable skill mix rationale -->
                                         <div id="cd-table-rationale"
                                             ng-hide="row.IsRationaleReadOnly">

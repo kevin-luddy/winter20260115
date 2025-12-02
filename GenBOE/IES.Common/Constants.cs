@@ -1161,13 +1161,15 @@ namespace IES.Common
 
 		/// <summary>
 		/// Canned Skill Mix Rationale message if difference in Proposed Skill Mix and Historical Skill Mix percentage is greater than 5%.
+		/// TODO Thomas: Once we get the official wording from Frank we will change these messages.
 		/// </summary>
-		public readonly static string SPACE_SKILL_MIX_RATIONALE_BELOW_5_PERCENT_DIFF = "The difference in Proposed Skill Mix and Historical Skill Mix percentage is greater than 5%.";
+		public readonly static string SPACE_SKILL_MIX_RATIONALE_BELOW_5_PERCENT_DIFF = "The difference in Proposed and Historical Skill Mix % is greater than 5%.";
 
 		/// <summary>
 		/// Canned Skill Mix Rationale message if the Proposed Hours equals Historical hours.
+		/// TODO Thomas: Once we get the official wording from Frank we will change these messages.
 		/// </summary>
-		public readonly static string SPACE_SKILL_MIX_RATIONALE_HOURS_MATCH = "The Proposed Hours are equal to the Historical Hours.";
+		public readonly static string SPACE_SKILL_MIX_RATIONALE_HOURS_MATCH = "The Proposed and Historical hours are equal.";
 
 		/// <summary>
 		/// Error to display to the user when they encounter an application error.
