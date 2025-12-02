@@ -1160,6 +1160,12 @@ namespace IES.Common
 		public readonly static string RMS_BOE_SKILL_MIX_COLUMN_NAME = "BOE Skill Mix";
 
 		/// <summary>
+		/// Canned Skill Mix Rationale message if difference in Proposed Skill Mix and Historical Skill Mix percentage is less than 5%.
+		/// TODO Thomas: Once we get the official wording from Frank we will change these messages.
+		/// </summary>
+		public readonly static string SPACE_SKILL_MIX_RATIONALE_BELOW_5_PERCENT_DIFF = "The difference in Proposed and Historical Skill Mix % is less than 5%.";
+
+		/// <summary>
 		/// Error to display to the user when they encounter an application error.
 		/// </summary>
 		public static readonly string GENERIC_USER_ERROR = "The requested action could not be completed. If the problem persists, please contact your application administrator.";

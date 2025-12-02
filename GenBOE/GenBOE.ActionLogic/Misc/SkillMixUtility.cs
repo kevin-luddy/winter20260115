@@ -70,8 +70,11 @@
 			CalculateSkillMixTotals(refreshedModel);
 			CalculateBoeSkillMixPercentage(refreshedModel);
 
-			// reorder the lists
-			refreshedModel.SkillMixRows = refreshedModel.SkillMixRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceOld)).ThenBy(r => r.ResourceOld).ToList();
+            // Apply rationale canned responses based on conditions regarding proposed skill mix and historical hours.
+            ApplyRationaleCannedResponses(refreshedModel);
+
+            // reorder the lists
+            refreshedModel.SkillMixRows = refreshedModel.SkillMixRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceOld)).ThenBy(r => r.ResourceOld).ToList();
 			refreshedModel.CommonDisclosureRows = refreshedModel.CommonDisclosureRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceID)).ThenBy(r => r.ResourceID).ThenBy(s => s.BusinessResourceID).ToList();
 			refreshedModel.SkillMixSummaryRows = refreshedModel.SkillMixSummaryRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceID)).ThenBy(r => r.ResourceID).ThenBy(s => s.BusinessResourceID).ToList();
 			
@@ -744,11 +747,35 @@
 			refreshedModel.SkillMixSummaryTotals.ProposedSkillMix = refreshedModel.SkillMixSummaryRows.Sum(s => s.ProposedSkillMix ?? 0.0m);
 		}
 
-		/// <summary>
-		/// Calculates the SkillMix/CD row Totals
-		/// </summary>
-		/// <param name="refreshedModel">The skill mix model view to calculate on</param>
-		private static void CalculateSkillMixTotals(RefreshSkillMixModelView refreshedModel)
+        /// <summary>
+        /// Apply rationale canned responses based on proposed skill mix, proposed hours and historial hours
+        /// </summary>
+        /// <param name="refreshedModel">Skill mix data.</param>
+        private static void ApplyRationaleCannedResponses(RefreshSkillMixModelView refreshedModel)
+        {
+            foreach (SkillMixSummaryModelView row in refreshedModel.SkillMixSummaryRows)
+            {
+                // Get the difference between Proposed Skill Mix and Historical Skill Mix.
+                decimal difference = Math.Abs(row.ProposedSkillMix.Value - row.HistoricalSkillMix);
+
+                // Check if the difference is less than 5%.
+                if (difference < 5m)
+                {
+                    row.Rationale = Constants.SPACE_SKILL_MIX_RATIONALE_BELOW_5_PERCENT_DIFF;
+                    row.IsRationaleReadOnly = true;
+                    continue;
+                }
+
+                // If neither conditions are met then leave it as is.
+                row.IsRationaleReadOnly = false;
+            }
+        }
+
+        /// <summary>
+        /// Calculates the SkillMix/CD row Totals
+        /// </summary>
+        /// <param name="refreshedModel">The skill mix model view to calculate on</param>
+        private static void CalculateSkillMixTotals(RefreshSkillMixModelView refreshedModel)
 		{
 			// Skill Mix Totals
 			refreshedModel.SkillMixTotals.HistoricalHours = refreshedModel.SkillMixRows.Sum(s => s.HistoricalHours);

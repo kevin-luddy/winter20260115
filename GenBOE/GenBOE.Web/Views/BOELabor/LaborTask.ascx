@@ -1117,8 +1117,25 @@
                                     <td style="text-align: right">{{row.UCOTHours | number:2}}</td>
                                     <td style="text-align: right">{{row.GrandTotalHours | number:2}}</td>
                                     <td>
-                                        <div id="cd-table-rationale">
-                                            <textarea id="cd-rationale" data-ng-model="row.Rationale" data-ng-blur="rationaleUpdated()" style="width: 100%; height: 14px; max-height: 45px; overflow-y: auto; resize: vertical;" maxlength="255"></textarea>
+                                        <!-- Read only skill mix rationale (uses canned responses)-->
+                                            <span ng-show="row.IsRationaleReadOnly"
+                                                class="text-muted"
+                                                style="display: block;
+                                                width: 100%;
+                                                min-height: 14px;
+                                                white-space: normal;
+                                                overflow-wrap: break-word;
+                                                ">
+                                                {{row.Rationale}}
+                                            </span>
+                                        <!-- Editable skill mix rationale -->
+                                        <div id="cd-table-rationale"
+                                            ng-hide="row.IsRationaleReadOnly">
+                                            <textarea id="cd-rationale"
+                                                data-ng-model="row.Rationale"
+                                                data-ng-blur="rationaleUpdated()"
+                                                style="width: 100%; height: 14px; max-height: 45px; overflow-y: auto; resize: vertical;"
+                                                maxlength="255"></textarea>
                                         </div>
                                     </td>
                                 </tr>
