@@ -759,16 +759,9 @@
                 decimal difference = Math.Abs(row.ProposedSkillMix.Value - row.HistoricalSkillMix);
 
                 // Check if the difference is greater than 5%.
-                if (difference > 5m)
+                if (difference < 5m)
                 {
                     row.Rationale = Constants.SPACE_SKILL_MIX_RATIONALE_BELOW_5_PERCENT_DIFF;
-                    row.IsRationaleReadOnly = true;
-                    continue;
-                }
-                // Check Proposed Hours equals Historical Hours
-                else if (row.ProposedLegacyResource == row.HistoricalHours)
-                {
-                    row.Rationale = Constants.SPACE_SKILL_MIX_RATIONALE_HOURS_MATCH;
                     row.IsRationaleReadOnly = true;
                     continue;
                 }
