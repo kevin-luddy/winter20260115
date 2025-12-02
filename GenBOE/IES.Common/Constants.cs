@@ -1160,6 +1160,16 @@ namespace IES.Common
 		public readonly static string RMS_BOE_SKILL_MIX_COLUMN_NAME = "BOE Skill Mix";
 
 		/// <summary>
+		/// Canned Skill Mix Rationale message if difference in Proposed Skill Mix and Historical Skill Mix percentage is greater than 5%.
+		/// </summary>
+		public readonly static string SPACE_SKILL_MIX_RATIONALE_BELOW_5_PERCENT_DIFF = "The difference in Proposed Skill Mix and Historical Skill Mix percentage is greater than 5%.";
+
+		/// <summary>
+		/// Canned Skill Mix Rationale message if the Proposed Hours equals Historical hours.
+		/// </summary>
+		public readonly static string SPACE_SKILL_MIX_RATIONALE_HOURS_MATCH = "The Proposed Hours are equal to the Historical Hours.";
+
+		/// <summary>
 		/// Error to display to the user when they encounter an application error.
 		/// </summary>
 		public static readonly string GENERIC_USER_ERROR = "The requested action could not be completed. If the problem persists, please contact your application administrator.";
