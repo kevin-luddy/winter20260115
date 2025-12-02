@@ -124,5 +124,36 @@ namespace GenTRAC.DataBridge.DTO
         /// Proposal either has, or is, a revision
         /// </summary>
         public bool HasOrIsRevision { get; set; }
-    }
+
+		/// <summary>
+		/// Ind. Reviewer Name
+		/// </summary>
+		public string IndependentReviewerName { get; set; }
+
+		/// <summary>
+		/// Pricing Verification Name
+		/// </summary>
+		public string PricingVerificationName { get; set; }
+
+		/// <summary>
+		/// Cover sheet Approver Name
+		/// </summary>
+		public string CoverSheetApproverName { get; set; }
+
+		/// <summary>
+		/// Proposal Manager Name
+		/// </summary>
+		public string ProposalMgrName { get; set; }
+
+		/// <summary>
+		/// Tech Lead Name
+		/// </summary>
+		public string TechLeadName { get; set; }
+
+		/// <summary>
+		/// Date Est Submits to contracts
+		/// </summary>
+		public DateTime? DateEstSubmitsToContracts { get; set; }
+
+	}
 }

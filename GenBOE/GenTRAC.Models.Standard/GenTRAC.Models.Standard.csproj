@@ -68,6 +68,7 @@
 		<DependentUpon>PTMEntityModel.edmx</DependentUpon>
 	</Compile>
     <Compile Include="..\GenTRAC.Models\ReasonCertificationNotRequiredLU.cs" Link="ReasonCertificationNotRequiredLU.cs" />
+	  <Compile Include="..\GenTRAC.Models\ReportXmlData.cs" Link="ReportXmlData.cs" />
     <Compile Include="..\GenTRAC.Models\RequestTypeLU.cs" Link="RequestTypeLU.cs" />
     <Compile Include="..\GenTRAC.Models\ResponseLU.cs" Link="ResponseLU.cs" />
     <Compile Include="..\GenTRAC.Models\ResponseTypeLU.cs" Link="ResponseTypeLU.cs" />

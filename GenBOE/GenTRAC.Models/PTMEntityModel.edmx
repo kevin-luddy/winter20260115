@@ -599,6 +599,18 @@ warning 6002: The table/view 'genTrac_DEV.dbo.ProposalPPRChecklistXREF' does not
           <Property Name="Id" Type="int" Nullable="false" />
           <Property Name="Text" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'genTrac_DEV.dbo.ReportXmlData' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="ReportXmlData">
+          <Key>
+            <PropertyRef Name="Nonce" />
+            <PropertyRef Name="Xml" />
+            <PropertyRef Name="UpdateDT" />
+          </Key>
+          <Property Name="Nonce" Type="varchar" MaxLength="40" Nullable="false" />
+          <Property Name="Xml" Type="varchar(max)" Nullable="false" />
+          <Property Name="UpdateDT" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
         <EntityType Name="RequestTypeLU">
           <Key>
             <PropertyRef Name="RequestTypeID" />
@@ -1633,12 +1645,19 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
         <Function Name="GetProposalRevisionHistory" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalId" Type="int" Mode="In" />
         </Function>
+        <Function Name="getReportXML" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Nonce" Type="varchar" Mode="In" />
+        </Function>
         <Function Name="insertDataMartEmployees" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="insertProposalUserRole" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalID" Type="int" Mode="In" />
           <Parameter Name="RoleID" Type="int" Mode="In" />
           <Parameter Name="RoleTypeID" Type="int" Mode="In" />
           <Parameter Name="UserID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="insertReportXml" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Nonce" Type="varchar" Mode="In" />
+          <Parameter Name="xml" Type="varchar(max)" Mode="In" />
         </Function>
         <Function Name="insertSystemUserRole" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="UserID" Type="int" Mode="In" />
@@ -2012,6 +2031,13 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
     [ProposalPPRChecklistXREF].[ResponseID] AS [ResponseID], 
     [ProposalPPRChecklistXREF].[ResponseTypeID] AS [ResponseTypeID]
     FROM [dbo].[ProposalPPRChecklistXREF] AS [ProposalPPRChecklistXREF]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="ReportXmlData" EntityType="Self.ReportXmlData" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [ReportXmlData].[Nonce] AS [Nonce], 
+    [ReportXmlData].[Xml] AS [Xml], 
+    [ReportXmlData].[UpdateDT] AS [UpdateDT]
+    FROM [dbo].[ReportXmlData] AS [ReportXmlData]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="genTracData" EntityType="Self.genTracData" store:Type="Views" store:Schema="genBOE">
             <DefiningQuery>SELECT 
@@ -3672,6 +3698,14 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
             <End Role="AlternativePricingMethodology" EntitySet="AlternativePricingMethodologies" />
             <End Role="Proposal" EntitySet="Proposals" />
           </AssociationSet>
+          <EntitySet Name="ReportXmlDatas" EntityType="genTRACModel.ReportXmlData" />
+          <FunctionImport Name="getReportXML" ReturnType="Collection(String)">
+            <Parameter Name="Nonce" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="insertReportXml">
+            <Parameter Name="Nonce" Mode="In" Type="String" />
+            <Parameter Name="xml" Mode="In" Type="String" />
+          </FunctionImport>
           </EntityContainer>
         <ComplexType Name="CreatePARChecklistReport_Result">
           <Property Type="String" Name="QuestionNumber" Nullable="true" MaxLength="50" />
@@ -4772,6 +4806,16 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="ReportXmlData">
+          <Key>
+            <PropertyRef Name="Nonce" />
+            <PropertyRef Name="Xml" />
+            <PropertyRef Name="UpdateDT" />
+          </Key>
+          <Property Name="Nonce" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="Xml" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -5701,6 +5745,17 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="ReportXmlDatas">
+            <EntityTypeMapping TypeName="genTRACModel.ReportXmlData">
+              <MappingFragment StoreEntitySet="ReportXmlData">
+                <ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
+                <ScalarProperty Name="Xml" ColumnName="Xml" />
+                <ScalarProperty Name="Nonce" ColumnName="Nonce" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="getReportXML" FunctionName="genTRACModel.Store.getReportXML" />
+          <FunctionImportMapping FunctionImportName="insertReportXml" FunctionName="genTRACModel.Store.insertReportXml" />
           </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

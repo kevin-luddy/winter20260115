@@ -80,6 +80,7 @@ namespace GenTRAC.Models
         public virtual DbSet<CcopdReasonsNo> CcopdReasonsNoes { get; set; }
         public virtual DbSet<InsuranceTypeLU> InsuranceTypeLUs { get; set; }
         public virtual DbSet<AlternativePricingMethodology> AlternativePricingMethodologies { get; set; }
+        public virtual DbSet<ReportXmlData> ReportXmlDatas { get; set; }
     
         public virtual ObjectResult<Nullable<int>> archiveProposal(Nullable<System.DateTime> createStartDate, Nullable<System.DateTime> createEndDate, string lineOfBusinessID, string programAreaID)
         {
@@ -1765,6 +1766,28 @@ namespace GenTRAC.Models
                 new ObjectParameter("AppVersion", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("UpdateDbVersion", dbVersionParameter, appVersionParameter);
+        }
+    
+        public virtual ObjectResult<string> getReportXML(string nonce)
+        {
+            var nonceParameter = nonce != null ?
+                new ObjectParameter("Nonce", nonce) :
+                new ObjectParameter("Nonce", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("getReportXML", nonceParameter);
+        }
+    
+        public virtual int insertReportXml(string nonce, string xml)
+        {
+            var nonceParameter = nonce != null ?
+                new ObjectParameter("Nonce", nonce) :
+                new ObjectParameter("Nonce", typeof(string));
+    
+            var xmlParameter = xml != null ?
+                new ObjectParameter("xml", xml) :
+                new ObjectParameter("xml", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertReportXml", nonceParameter, xmlParameter);
         }
     }
 }
