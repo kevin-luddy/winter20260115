@@ -90,7 +90,8 @@ CREATE PROCEDURE [dbo].[upsertProposal]
 	  @IsSupportDefinitizingUCA BIT,
 	  @SubjectToAlternativePricingMethodology bit = NULL,
 	  @AlternativePricingMethodology int = NULL,
-	  @AlternativePricingMethodologyOtherText varchar(50) = NULL
+	  @AlternativePricingMethodologyOtherText varchar(50) = NULL,
+	  @DraftRfpIssuedDate datetime = NULL
 )
 AS
 /******************************************************************************

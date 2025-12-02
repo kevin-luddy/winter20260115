@@ -106,10 +106,15 @@ using IES.Common;
         /// </summary>
         public string RFPNumber { get; set; }
 
-        /// <summary>
-        /// RFP Issued Date
-        /// </summary>
-        public DateTime? RFPIssuedDate { get; set; }
+		/// <summary>
+		/// Draft RFP Issued Date
+		/// </summary>
+		public DateTime? DraftRfpIssuedDate { get; set; }
+
+		/// <summary>
+		/// RFP Issued Date
+		/// </summary>
+		public DateTime? RFPIssuedDate { get; set; }
 
         /// <summary>
         /// RFP Received Date

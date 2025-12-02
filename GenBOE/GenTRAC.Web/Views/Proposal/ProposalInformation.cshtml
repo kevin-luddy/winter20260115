@@ -81,6 +81,17 @@
             }
         });
 
+        ProposalInfoWidget.getElement('input[name="draftRfpIssuedDate"]').data('previousDateText', '@Model.DraftRfpIssuedDate');
+        ProposalInfoWidget.getElement('input[name="draftRfpIssuedDate"]').datepicker({
+            dateFormat: 'mm/dd/yy',
+            onSelect: function (dateText, inst) {
+                ProposalIndexWidget.setDirty("proposalForm");
+                $(this).blur();
+                $(this).next('button.ui-datepicker-trigger').attr('tabindex', '0');
+                $(this).next('button.ui-datepicker-trigger').focus();
+            }
+        });
+
         ProposalInfoWidget.getElement('input[name="rfpIssuedDate"]').data('previousDateText', '@Model.RFPIssuedDate');
         ProposalInfoWidget.getElement('input[name="rfpIssuedDate"]').datepicker({
             dateFormat: 'mm/dd/yy',
@@ -213,7 +224,7 @@
             } else if (isScheduleProposal === "false") {
                 if (IDIQContractGroup.is('option') && (!IDIQContractGroup.parent().is('span'))){
                     // The span wrapper is needed because hide/show does not work in IE on select option
-                    var wrapper = '<span>'; 
+                    var wrapper = '<span>';
                     IDIQContractGroup.wrap(wrapper).hide();
                 }
             }
@@ -331,7 +342,7 @@
                     <span helptext="If a draft RFP was not issued, set the Draft RFP Date equal to the RFP Issued Date.">Draft RFP Issue Date*</span>
                 </div>
                 <div class="form-element">
-                    <input name="anticipatedDeliveryDate" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.AnticipatedDeliveryDate" maxlength="10" />
+                    <input name="draftRfpIssuedDate" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.DraftRfpIssuedDate" maxlength="10" />
                 </div>
             </div>
             <div class="form-row" data-proposal-type="standard">

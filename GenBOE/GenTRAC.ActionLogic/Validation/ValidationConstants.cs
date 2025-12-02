@@ -175,117 +175,127 @@ namespace GenTRAC.ActionLogic.Validation
 			/// <summary>
 			/// text to be concated to the front of a validation message 
 			/// </summary>
-			private const string PROPOSAL_INFO_VALDIATION = "(Proposal Information) - ";
+			private const string PROPOSAL_INFO_VALIDATION = "(Proposal Information) - ";
 
             /// <summary>
             /// proposal title is required
             /// </summary>
-            public const string PROPOSAL_TITLE_REQUIRED = PROPOSAL_INFO_VALDIATION + "Proposal Title is required.";
+            public const string PROPOSAL_TITLE_REQUIRED = PROPOSAL_INFO_VALIDATION + "Proposal Title is required.";
 
             /// <summary>
             /// Contract Action Type is required
             /// </summary>
-            public const string CONTRACT_ACTION_TYPE_REQUIRED = PROPOSAL_INFO_VALDIATION + "Type of Contract Action is required.";
+            public const string CONTRACT_ACTION_TYPE_REQUIRED = PROPOSAL_INFO_VALIDATION + "Type of Contract Action is required.";
 
             /// <summary>
             /// proposal title must be unique
             /// </summary>
-            public const string PROPOSAL_TITLE_MUST_BE_UNIQUE = PROPOSAL_INFO_VALDIATION + "Proposal Title must be unique.";
+            public const string PROPOSAL_TITLE_MUST_BE_UNIQUE = PROPOSAL_INFO_VALIDATION + "Proposal Title must be unique.";
 
             /// <summary>
             /// proposal contract action type other text required
             /// </summary>
-            public const string PROPOSAL_CONTRACT_ACTION_TYPE_OTHER_TEXT_REQUIRED = PROPOSAL_INFO_VALDIATION + "Type of Contract Action text box is required if 'Other' is selected.";
+            public const string PROPOSAL_CONTRACT_ACTION_TYPE_OTHER_TEXT_REQUIRED = PROPOSAL_INFO_VALIDATION + "Type of Contract Action text box is required if 'Other' is selected.";
 
             /// <summary>
             ///  propsal type is required
             /// </summary>
-            public const string PROPOSAL_TYPE_REQUIRED = PROPOSAL_INFO_VALDIATION + "Proposal Type is required.";
+            public const string PROPOSAL_TYPE_REQUIRED = PROPOSAL_INFO_VALIDATION + "Proposal Type is required.";
 
             /// <summary>
             /// customer is required
             /// </summary>
-            public const string CUSTOMER_REQUIRED = PROPOSAL_INFO_VALDIATION + "Customer is required.";
+            public const string CUSTOMER_REQUIRED = PROPOSAL_INFO_VALIDATION + "Customer is required.";
 
             /// <summary>
             /// customer type is required
             /// </summary>
-            public const string CUSTOMER_TYPE_REQUIRED = PROPOSAL_INFO_VALDIATION + "End Customer Type is required.";
+            public const string CUSTOMER_TYPE_REQUIRED = PROPOSAL_INFO_VALIDATION + "End Customer Type is required.";
 
             /// <summary>
             ///  proposal class is required
             /// </summary>
-            public const string PROPOSAL_CLASS_REQUIRED = PROPOSAL_INFO_VALDIATION + "Proposal Class is required.";
+            public const string PROPOSAL_CLASS_REQUIRED = PROPOSAL_INFO_VALIDATION + "Proposal Class is required.";
 
             /// <summary>
             ///  type of request is required
             /// </summary>
-            public const string TYPE_OF_REQUEST_REQUIRED = PROPOSAL_INFO_VALDIATION + "Type of Request is required.";
+            public const string TYPE_OF_REQUEST_REQUIRED = PROPOSAL_INFO_VALIDATION + "Type of Request is required.";
 
             /// <summary>
             /// RFP Number is required
             /// </summary>
-            public const string RFP_NUMBER_REQUIRED = PROPOSAL_INFO_VALDIATION + "RFP Number is required.";
+            public const string RFP_NUMBER_REQUIRED = PROPOSAL_INFO_VALIDATION + "RFP Number is required.";
 
-            /// <summary>
-            /// RFP Issued Date is required
-            /// </summary>
-            public const string RFP_ISSUED_DATE_REQUIRED = PROPOSAL_INFO_VALDIATION + "RFP Issued Date is required.";
+			/// <summary>
+			/// RFP Issued Date is required
+			/// </summary>
+			public const string DRAFT_RFP_ISSUED_DATE_REQUIRED = PROPOSAL_INFO_VALIDATION + "Draft RFP Issued Date is required.";
+
+			/// <summary>
+			/// RFP Issued Date is required
+			/// </summary>
+			public const string RFP_ISSUED_DATE_REQUIRED = PROPOSAL_INFO_VALIDATION + "RFP Issued Date is required.";
 
             /// <summary>
             /// RFP Received Date is required
             /// </summary>
-            public const string RFP_RECEIVED_DATE_REQUIRED = PROPOSAL_INFO_VALDIATION + "RFP Received Date is required.";
+            public const string RFP_RECEIVED_DATE_REQUIRED = PROPOSAL_INFO_VALIDATION + "RFP Received Date is required.";
 
-            /// <summary>
-            /// RFP issued date format 
-            /// </summary>
-            public const string RFP_ISSUED_DATE_FORMAT = PROPOSAL_INFO_VALDIATION + "RFP Issued Date format must be mm/dd/yyyy";
+			/// <summary>
+			/// RFP Received Date is required
+			/// </summary>
+			public const string DRAFT_RFP_ISSUED_DATE_FORMAT = PROPOSAL_INFO_VALIDATION + "Draft RFP Issued Date format must be mm/dd/yyyy";
+
+			/// <summary>
+			/// RFP issued date format 
+			/// </summary>
+			public const string RFP_ISSUED_DATE_FORMAT = PROPOSAL_INFO_VALIDATION + "RFP Issued Date format must be mm/dd/yyyy";
 
             /// <summary>
             /// RFP received date format 
             /// </summary>
-            public const string RFP_RECEIVED_DATE_FORMAT = PROPOSAL_INFO_VALDIATION + "RFP Received Date format must be mm/dd/yyyy";
+            public const string RFP_RECEIVED_DATE_FORMAT = PROPOSAL_INFO_VALIDATION + "RFP Received Date format must be mm/dd/yyyy";
 
             /// <summary>
             /// Anticipated delivery date is required
             /// </summary>
-            public const string DELIVERY_DATE_REQUIRED = PROPOSAL_INFO_VALDIATION + "Anticipated Delivery Date is required.";
+            public const string DELIVERY_DATE_REQUIRED = PROPOSAL_INFO_VALIDATION + "Anticipated Delivery Date is required.";
 
             /// <summary>
             /// anticipated delivery date format 
             /// </summary>
-            public const string ANTICIPATED_DELIVERY_DATE_FORMAT = PROPOSAL_INFO_VALDIATION + "Anticipated Delivery Date format must be mm/dd/yyyy";
+            public const string ANTICIPATED_DELIVERY_DATE_FORMAT = PROPOSAL_INFO_VALIDATION + "Anticipated Delivery Date format must be mm/dd/yyyy";
 
             /// <summary>
             /// anticipated delivery date for Forecasted too close to today's date. 
             /// </summary>
-            public const string ANTICIPATED_DELIVERY_DATE_INVALID_FORECAST = PROPOSAL_INFO_VALDIATION + "Anticipated Delivery Date must be more than {0} days away for Forecasted Proposals.";
+            public const string ANTICIPATED_DELIVERY_DATE_INVALID_FORECAST = PROPOSAL_INFO_VALIDATION + "Anticipated Delivery Date must be more than {0} days away for Forecasted Proposals.";
 
             /// <summary>
             /// revised submittal date 
             /// </summary>
-            public const string REVISED_SUBMITTAL_DATE_FORMAT = PROPOSAL_INFO_VALDIATION + "Revised Anticipated Delivery Date format must be mm/dd/yyyy";
+            public const string REVISED_SUBMITTAL_DATE_FORMAT = PROPOSAL_INFO_VALIDATION + "Revised Anticipated Delivery Date format must be mm/dd/yyyy";
 
             /// <summary>
             /// Space role is required
             /// </summary>
-            public const string SSC_ROLE_REQUIRED = PROPOSAL_INFO_VALDIATION + "Space Role is required.";
+            public const string SSC_ROLE_REQUIRED = PROPOSAL_INFO_VALIDATION + "Space Role is required.";
 
             /// <summary>
             /// Schedule Proposal is required
             /// </summary>
-            public const string SCHEDULE_PROPOSAL_REQUIRED = PROPOSAL_INFO_VALDIATION + "\"New IDIQ contract vehicle\" (i.e., schedule proposal) response is required.";
+            public const string SCHEDULE_PROPOSAL_REQUIRED = PROPOSAL_INFO_VALIDATION + "\"New IDIQ contract vehicle\" (i.e., schedule proposal) response is required.";
 
             /// <summary>
             /// contract type group is required
             /// </summary>
-            public const string CONTRACT_TYPE_GROUP_REQUIRED = PROPOSAL_INFO_VALDIATION + "Contract Type Group is required.";
+            public const string CONTRACT_TYPE_GROUP_REQUIRED = PROPOSAL_INFO_VALIDATION + "Contract Type Group is required.";
 
             /// <summary>
             /// contract type is required
             /// </summary>
-            public const string CONTRACT_TYPE_REQUIRED = PROPOSAL_INFO_VALDIATION + "Contract Type is required.";
+            public const string CONTRACT_TYPE_REQUIRED = PROPOSAL_INFO_VALIDATION + "Contract Type is required.";
 
             /// <summary>
             /// Estimated Proposal Value is required
@@ -295,27 +305,27 @@ namespace GenTRAC.ActionLogic.Validation
             /// <summary>
             /// Elements of Cost are required
             /// </summary>
-            public const string ELEMENTS_OF_COST_REQUIRED = PROPOSAL_INFO_VALDIATION + "Elements of Cost are required.";
+            public const string ELEMENTS_OF_COST_REQUIRED = PROPOSAL_INFO_VALIDATION + "Elements of Cost are required.";
 
             /// <summary>
             /// estimated proposal value is required
             /// </summary>
-            public const string EST_PROP_VALUE_REQUIRED = PROPOSAL_INFO_VALDIATION + "Estimated Proposal Value is required.";
+            public const string EST_PROP_VALUE_REQUIRED = PROPOSAL_INFO_VALIDATION + "Estimated Proposal Value is required.";
 
             /// <summary>
             /// estimated proposal value validation error if value is not a long
             /// </summary>
-            public const string EST_PROP_VALUE_IN_DOLLARS = PROPOSAL_INFO_VALDIATION + "Please enter Estimated Proposal Value in U.S. whole dollars in the range +- 999,999,999,999.";
+            public const string EST_PROP_VALUE_IN_DOLLARS = PROPOSAL_INFO_VALIDATION + "Please enter Estimated Proposal Value in U.S. whole dollars in the range +- 999,999,999,999.";
 
             /// <summary>
             /// invalid proposal class set to forecast when linked RDSB document.
             /// </summary>
-            public const string INVALID_PROPOSAL_CLASS_FORECAST_DOCUMENT = PROPOSAL_INFO_VALDIATION + "Proposal Class cannot be set to Forecasted because there is a Tailored Rates & Disclosure Document linked to this proposal.";
+            public const string INVALID_PROPOSAL_CLASS_FORECAST_DOCUMENT = PROPOSAL_INFO_VALIDATION + "Proposal Class cannot be set to Forecasted because there is a Tailored Rates & Disclosure Document linked to this proposal.";
 
             /// <summary>
             /// invalid proposal class set to forecast when linked BOE.
             /// </summary>
-            public const string INVALID_PROPOSAL_CLASS_FORECAST_BOE = PROPOSAL_INFO_VALDIATION + "Proposal Class cannot be set to Forecasted because there is a BOE linked to this proposal.";
+            public const string INVALID_PROPOSAL_CLASS_FORECAST_BOE = PROPOSAL_INFO_VALIDATION + "Proposal Class cannot be set to Forecasted because there is a BOE linked to this proposal.";
 
             #endregion Proposal Info section
 
