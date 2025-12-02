@@ -24,6 +24,7 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.ActionLogic.IO.Export.BOE;
 	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.ActionLogic.ModelView.BOE;
+	using GenBOE.ActionLogic.WBS.BOE;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.DataBridge.Reference;
@@ -131,6 +132,11 @@ namespace GenBOE.Web.Controllers
 		private readonly IInUseDataLoader inUseDataLoader;
 
 		/// <summary>
+		/// BOE Validation
+		/// </summary>
+		private readonly IValidateBOE validateBOE;
+
+		/// <summary>
 		/// Logger
 		/// </summary>
 		private Logger logger = new Logger("BoeDataAPIController");
@@ -157,7 +163,29 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeFormControllerLogic">BOE Form Controller logic</param>
 		/// <param name="contractTypeLoader">Pick List loader for Contract Types</param>
 		/// <param name="tmResourceRateLoader">TM Resource Loader</param>
-		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader, IBOEFormIBOEDTODataLoader boeFormIBOEDTODataLoader, IActiveDirectoryUtilities activeDirectoryUtilities, IUserDTODataLoader userDataLoader, ContractTypeLoader contractTypeLoader, IResourceDTODataLoader resourceLoader, TMCalculator tmCalculator, IInUseDataLoader inUseDataLoader, ITMResourceRateDTODataLoader tmResourceRateLoader)
+		public BoeDataAPIController(
+			IWorkspaceDTODataLoader loader,
+			TokenHandling tokenHandler,
+			IReportsControllerLogic reportsControllerLogic,
+			ISecurityAccess securityAccess,
+			IFullObjectFactory factory,
+			IUserDTODataLoader userLoader,
+			IPermissionsDTODataLoader permissionsLoader,
+			IBOEExporter boeExporter,
+			IBOECustomExporter boeCustomExporter,
+			IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader,
+			ITraceTableExporter traceTableExporter,
+			IBOEFormControllerLogic boeFormControllerLogic,
+			IBOEFormPBOEDTODataLoader boeFormPBOEDTODataLoader,
+			IBOEFormIBOEDTODataLoader boeFormIBOEDTODataLoader,
+			IActiveDirectoryUtilities activeDirectoryUtilities,
+			IUserDTODataLoader userDataLoader,
+			ContractTypeLoader contractTypeLoader,
+			IResourceDTODataLoader resourceLoader,
+			TMCalculator tmCalculator,
+			IInUseDataLoader inUseDataLoader,
+			ITMResourceRateDTODataLoader tmResourceRateLoader,
+			IValidateBOE validateBOE)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.loader = loader;
@@ -177,6 +205,7 @@ namespace GenBOE.Web.Controllers
 			this.tmCalculator = tmCalculator;
 			this.inUseDataLoader = inUseDataLoader;
 			this.tmResourceRateLoader = tmResourceRateLoader;
+			this.validateBOE = validateBOE;
 		}
 		#endregion
 
@@ -608,6 +637,29 @@ namespace GenBOE.Web.Controllers
 			}
 
 			return result;
+		}
+
+		[HttpGet]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESSingleResponse<bool> GetWorkspacePoPValidation(string workspaceShortName)
+		{
+			IESSingleResponse<bool> validationResponse = new IESSingleResponse<bool>();
+
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
+				validationResponse.Data = this.validateBOE.ValidateWorkspacePoP(workspace);
+				validationResponse.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				validationResponse.Messages.Add($"Unknown error occurred returning Workspace PoP Validation: {ex.Message}");
+			}
+
+			return validationResponse;
 		}
 
 		/// <summary>
