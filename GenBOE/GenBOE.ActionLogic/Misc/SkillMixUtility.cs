@@ -758,7 +758,7 @@
                 // Get the difference between Proposed Skill Mix and Historical Skill Mix.
                 decimal difference = Math.Abs(row.ProposedSkillMix.Value - row.HistoricalSkillMix);
 
-                // Check if the difference is greater than 5%.
+                // Check if the difference is less than 5%.
                 if (difference < 5m)
                 {
                     row.Rationale = Constants.SPACE_SKILL_MIX_RATIONALE_BELOW_5_PERCENT_DIFF;
