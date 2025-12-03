@@ -287,23 +287,44 @@
 		/// <param name="currentSkillMixSummaryData">The current skill mix summary data</param>
 		private static void AddMissingSpaceHistoricalResources(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData)
 		{
-			ICollection<IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO>> groupedResourceHours = resourceHours.GroupBy(r => r.ResourceName).OrderBy(t => t.Key).ToList();
-			foreach (IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO> grouping in groupedResourceHours)
+			// group the historical together where Resource/BRC both match
+			Dictionary<Tuple<string, string>, ICollection<MOQTypeSelectionTableDataResourceHoursDTO>> groupedHistorical = new Dictionary<Tuple<string, string>, ICollection<MOQTypeSelectionTableDataResourceHoursDTO>>();
+			foreach (MOQTypeSelectionTableDataResourceHoursDTO historical in resourceHours)
 			{
-				decimal totalGroupHours = grouping.Sum(g => g.TotalHours);
+				if (string.IsNullOrEmpty(historical.ResourceName) && string.IsNullOrEmpty(historical.BRCName))
+				{
+					// skip this row, no resources set
+					continue;
+				}
 
-				SkillMixSummaryModelView summary = currentSkillMixSummaryData.FirstOrDefault(s => s.ResourceID.NullEmptyEquals(grouping.Key));
+				Tuple<string, string> key = groupedHistorical.Keys.FirstOrDefault(g => g.Item1.NullEmptyEquals(historical.ResourceName) && g.Item2.NullEmptyEquals(historical.BRCName));
+				if (key == null)
+				{
+					key = new Tuple<string, string>(historical.ResourceName, historical.BRCName);
+					groupedHistorical.Add(key, new List<MOQTypeSelectionTableDataResourceHoursDTO>());
+				}
+
+				groupedHistorical[key].Add(historical);
+			}
+
+			// compare the historical groups against the skill mix summary
+			foreach (KeyValuePair<Tuple<string, string>, ICollection<MOQTypeSelectionTableDataResourceHoursDTO>> kvp in groupedHistorical)
+			{
+				decimal totalHistoricalHours = kvp.Value.Sum(r => r.TotalHours);
+				
+				SkillMixSummaryModelView summary = currentSkillMixSummaryData.FirstOrDefault(s => s.ResourceID.NullEmptyEquals(kvp.Key.Item1) && s.BusinessResourceID.NullEmptyEquals(kvp.Key.Item2));
 				if (summary == null)
 				{
 					summary = new SkillMixSummaryModelView()
 					{
-						ResourceID = grouping.Key
+						ResourceID = kvp.Key.Item1,
+						BusinessResourceID = kvp.Key.Item2
 					};
 					currentSkillMixSummaryData.Add(summary);
 				}
 
 				// update the historical hours from the Resource Hours calculated in SAP
-				summary.HistoricalHours = totalGroupHours;
+				summary.HistoricalHours = totalHistoricalHours;
 			}
 		}
 
