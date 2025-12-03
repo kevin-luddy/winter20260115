@@ -228,7 +228,12 @@ namespace GenTRAC.ActionLogic.Validation
             public const string RFP_NUMBER_REQUIRED = PROPOSAL_INFO_VALIDATION + "RFP Number is required.";
 
 			/// <summary>
-			/// RFP Issued Date is required
+			/// Draft RFP Issued Date range
+			/// </summary>
+			public const string DRAFT_RFP_ISSUED_DATE_RANGE = PROPOSAL_INFO_VALIDATION + "Draft RFP Issued Date needs to be prior or equal to RFP Issued Date and RFP Received Date";
+
+			/// <summary>
+			/// Draft RFP Issued Date is required
 			/// </summary>
 			public const string DRAFT_RFP_ISSUED_DATE_REQUIRED = PROPOSAL_INFO_VALIDATION + "Draft RFP Issued Date is required.";
 
@@ -243,7 +248,7 @@ namespace GenTRAC.ActionLogic.Validation
             public const string RFP_RECEIVED_DATE_REQUIRED = PROPOSAL_INFO_VALIDATION + "RFP Received Date is required.";
 
 			/// <summary>
-			/// RFP Received Date is required
+			/// Draft RFP Issued Date format
 			/// </summary>
 			public const string DRAFT_RFP_ISSUED_DATE_FORMAT = PROPOSAL_INFO_VALIDATION + "Draft RFP Issued Date format must be mm/dd/yyyy";
 

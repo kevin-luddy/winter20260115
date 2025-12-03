@@ -2447,6 +2447,18 @@ namespace GenTRAC.ActionLogic
 				{
 					inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.SCHEDULE_PROPOSAL_REQUIRED));
 				}
+
+				if (!string.IsNullOrEmpty(proposalInfo.DraftRfpIssuedDate) && !string.IsNullOrEmpty(proposalInfo.RFPIssuedDate) && !string.IsNullOrEmpty(proposalInfo.RFPReceivedDate))
+				{
+					DateTime draftRfpIssuedDate = proposalInfo.DraftRfpIssuedDate.ToDateTime("MM/dd/yyyy");
+					DateTime rfpIssuedDate = proposalInfo.RFPIssuedDate.ToDateTime("MM/dd/yyyy");
+					DateTime rfpReceivedDate = proposalInfo.RFPReceivedDate.ToDateTime("MM/dd/yyyy");
+
+					if (draftRfpIssuedDate > rfpIssuedDate || draftRfpIssuedDate > rfpReceivedDate)
+					{
+						inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.DRAFT_RFP_ISSUED_DATE_RANGE));
+					}
+				}
 			}
 
 			if (!string.IsNullOrEmpty(proposalInfo.AnticipatedDeliveryDate))
