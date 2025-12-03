@@ -80,6 +80,10 @@ namespace IES.ActionLogic.Core.IO.Import
 										string columnName = headerDictionary[ExcelUtilities.ParseColumnName(cell.CellReference)];
 										switch (columnName)
 										{
+											case "Category":
+												break;
+											case "Description":
+												break;
 											case "Rate Code":
 												newRateDetail.RateCode = ExcelUtilities.GetCellValue(cell, sharedStringItems, stylesheet);
 												if (!string.IsNullOrEmpty(newRateDetail.RateCode))
