@@ -54,6 +54,7 @@ AS
 **		10/13/25	ranzalon			PROPH-3375 PPR Questions 13 and 14
 **		10/30/25	e403038				PROPH-3406 Label Modifications => Current Planned renamed to ScheduledActual and Current Scheduled renamed to Planned
 **		11/4/25		ranzalon			PROPH-3420: Added Alternative Pricing Methodology
+**		12/3/25		e402751				PROPH-3280: Added Draft Rfp Issued Date
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -392,6 +393,7 @@ SELECT V.[ProposalID]
 			ELSE NULL
 			END
 	,V.AlternativePricingMethodology
+	,V.[Draft RFP Issued Date]
 FROM [dbo].[vwProposalLogReport] V
 	LEFT OUTER JOIN @MaxRev M ON 
 		(
