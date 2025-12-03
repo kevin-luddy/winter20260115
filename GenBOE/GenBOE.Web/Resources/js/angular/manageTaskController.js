@@ -213,7 +213,7 @@
 				else
 				{
 					$scope.skillMixRationale.data.SkillMixSummaryRows.forEach(function (row) {
-						if (row.Included === false || row.BusinessResourceID === '' || row.BusinessResourceID === null) {
+						if (row.Included === false || ((row.BusinessResourceID === '' || row.BusinessResourceID === null) && (row.ResourceID === '' || row.ResourceID === null))) {
 							row.metadata = {
 								ManuallySetIncluded: true
 							};
@@ -1520,6 +1520,7 @@
 	$scope.saveAndContinue = function () {
 		save(function () {
 			$scope.refresh();
+			$(document).trigger('BOESUMMARYGRID_RELOAD');
 		});
 	};
 
