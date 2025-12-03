@@ -38,7 +38,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
 			IMSTZoneTravelValidator mstZoneTravelValidator,
 			RMSZoneTravelRatesFeesDataLoader zoneTravelRatesFeesLoader,
 			IOffloadRatesDTOLoader offloadRatesDTOLoader,
-			IRteTemplateDataLoader rteTemplateDataLoader)
+			IRteTemplateDataLoader rteTemplateDataLoader,
+			IValidateWorkspaceDataLoader validateWorkspaceLoader)
 			: base(
 			inVariableSelectBOEtoSumCalculation,
 			inBOECommentsResponsesValidator,
@@ -46,7 +47,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
 			inMiscTravelRateDTOLoader,
 			inLocationDTODataLoader,
 			offloadRatesDTOLoader,
-			rteTemplateDataLoader)
+			rteTemplateDataLoader,
+			validateWorkspaceLoader)
 		{
 			this.mstZoneTravelValidator = mstZoneTravelValidator;
 			this.zoneTravelRatesFeesLoader = zoneTravelRatesFeesLoader;

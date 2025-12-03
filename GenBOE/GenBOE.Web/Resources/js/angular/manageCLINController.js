@@ -841,13 +841,11 @@
         $scope.edit.isDirty = false;
     };
 
-    $scope.export = function (isTemplate) {
+    $scope.export = function () {
         var timeoutTime = 2000;
         $scope.isExporting = true;
 
-        var action = isTemplate ? ManageCLINModel.exportTemplateAction : ManageCLINModel.exportAction;
-
-        var exportUrl = CreatePostURL(ManageCLINModel.workspace, ManageCLINModel.controller, action, '');
+        var exportUrl = CreatePostURL(ManageCLINModel.workspace, ManageCLINModel.controller, ManageCLINModel.exportAction, '');
         GenWidget.prototype.performExport(exportUrl);
 
         // export is done via attaching an iframe, wait an arbitrary # of seconds (2-3) until showing the export button again to stop double-click

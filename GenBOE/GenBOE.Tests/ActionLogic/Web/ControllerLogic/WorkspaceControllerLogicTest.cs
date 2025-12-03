@@ -68,6 +68,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 		private Mock<IMoqTypeDataLoader> moqTypeDataLoader;
 		private Moq.Mock<ISystemSettingDTODataLoader> systemSettingsLoader;
 		private Mock<WorkspaceStateMachine> workspaceStateMachine;
+		private Mock<IBoeApproverResponseDTODataLoader> inBoeApproverResponseDTODataLoader;
 
 		private WorkspaceControllerLogicSpaceSystems CreateSystemSpaceSystems()
         {
@@ -96,7 +97,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				this._boeStateMachine.Object,
 				this._BoeMediator.Object,
 				this.systemSettingsLoader.Object,
-				null);
+				null,
+				this.inBoeApproverResponseDTODataLoader.Object);
         }
 
         private WorkspaceControllerLogicMST CreateSystemMST()
@@ -129,7 +131,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				this._boeStateMachine.Object,
 				this._BoeMediator.Object,
 				this.systemSettingsLoader.Object,
-				this.workspaceStateMachine.Object);
+				this.workspaceStateMachine.Object,
+				this.inBoeApproverResponseDTODataLoader.Object);
 		}
 
         /// <summary>

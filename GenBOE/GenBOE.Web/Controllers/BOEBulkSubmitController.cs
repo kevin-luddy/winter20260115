@@ -56,7 +56,8 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="workspace">the workspace the view is associated with.</param>
         /// <returns>returns the BOE Bulk Submit view </returns>
-        public ViewResult Index(string workspace)
+        [HttpGet]
+		public ViewResult Index(string workspace)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -71,12 +72,13 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
-        /// <summary>
-        /// Gets the BOE bulk submit model.
-        /// </summary>
-        /// <param name="workspace">The workspace.</param>
-        /// <returns>JSON result containing the model.</returns>
-        public JsonResult GetBOEBulkSubmitModel(string workspace)
+		/// <summary>
+		/// Gets the BOE bulk submit model.
+		/// </summary>
+		/// <param name="workspace">The workspace.</param>
+		/// <returns>JSON result containing the model.</returns>
+		[HttpPost]
+		public JsonResult GetBOEBulkSubmitModel(string workspace)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -124,7 +126,8 @@ namespace GenBOE.Web.Controllers
         /// <param name="boeStates">The BOE states.</param>
         /// <returns></returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        public JsonResult BOEBulkSubmit(string workspace, IDictionary<int, BOEState> boeStates)
+		[HttpPost]
+		public JsonResult BOEBulkSubmit(string workspace, IDictionary<int, BOEState> boeStates)
         {
             if (boeStates == null || boeStates.Count == 0)
             {

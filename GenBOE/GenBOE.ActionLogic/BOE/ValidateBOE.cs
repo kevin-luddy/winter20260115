@@ -39,6 +39,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 		private readonly ILocationDTODataLoader _LocationDTODataLoader;
 		private readonly IOffloadRatesDTOLoader offloadRatesDTOLoader;
 		private readonly IRteTemplateDataLoader rteTemplateDataLoader;
+		private readonly IValidateWorkspaceDataLoader validateWorkspaceLoader;
 
 		/// <summary>
 		/// Default constructor
@@ -50,7 +51,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
 			IMiscTravelRateDTOLoader inMiscTravelRateDTOLoader,
 			ILocationDTODataLoader inLocationDTODataLoader,
 			IOffloadRatesDTOLoader offloadRatesDTOLoader,
-			IRteTemplateDataLoader rteTemplateDataLoader
+			IRteTemplateDataLoader rteTemplateDataLoader,
+			IValidateWorkspaceDataLoader validateWorkspaceLoader
 			)
 		{
 			this.miscTravelRateDTOLoader = inMiscTravelRateDTOLoader;
@@ -61,6 +63,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
 			this.offloadRatesDTOLoader = offloadRatesDTOLoader;
 			this.rteTemplateDataLoader = rteTemplateDataLoader;
+			this.validateWorkspaceLoader = validateWorkspaceLoader;
 		}
 
 		/// <summary>
@@ -247,16 +250,15 @@ namespace GenBOE.ActionLogic.WBS.BOE
 					ICollection<string> errorMessages = new List<string>();
 
 					// Set the task's MOQTotalRelevantHours
-					task.MOQTotalRelevantHours = 0;
 					ICollection<MoqTypeSelection> moqTypes = ws.MoqTypeSelections.Where(m => m.TaskId == task.Id).ToList();
 					// Space will get the total moq total relevant hours if it is from a Sap Webi moq table data.
 					if (SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.SpaceSystems)
 					{
-						task.MOQTotalRelevantHours += moqTypes.Sum(t => t.TableData?.Where(td => td.RepositoryName == RepositoryName.SapWebi.GetDescription()).Sum(td => td.TotalRelevantHours) ?? 0);
+						task.MOQTotalRelevantHours = moqTypes.Sum(t => t.TableData?.Where(td => td.RepositoryName == RepositoryName.SapWebi.GetDescription()).Sum(td => td.TotalRelevantHours) ?? 0);
 					}
 					else
 					{
-						task.MOQTotalRelevantHours += moqTypes.Sum(t => t.TableData?.Sum(td => td.TotalRelevantHours) ?? 0);
+						task.MOQTotalRelevantHours = moqTypes.Sum(t => t.TableData?.Sum(td => td.TotalRelevantHours) ?? 0);
 					}
 
 					if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
@@ -345,6 +347,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 		/// </summary>
 		/// <param name="ws">Full Workspace</param>
 		/// <returns>boolean value to check if is valid</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Need to handle all exceptions here")]
 		public virtual bool ValidateWorkspacePoP(FullWorkspace ws)
 		{
 			if (ws == null)
@@ -353,81 +356,11 @@ namespace GenBOE.ActionLogic.WBS.BOE
 			}
 
 			DateTime wsStartDate = GenBOEUtilities.AdjustDateTimePrecision(ws.ContractStartDate, DateTimePrecision.Day);
-			DateTime wsStartMonth = GenBOEUtilities.AdjustDateTimePrecision(ws.ContractStartDate, DateTimePrecision.Month);
 			DateTime wsEndDate = GenBOEUtilities.AdjustDateTimePrecision(ws.ContractEndDate, DateTimePrecision.Day);
-			DateTime wsEndMonth = GenBOEUtilities.AdjustDateTimePrecision(ws.ContractEndDate, DateTimePrecision.Month);
-			foreach (FullClin clin in ws.Clins)
-			{
-				DateTime? clinStartDate = clin.StartDate.HasValue ? GenBOEUtilities.AdjustDateTimePrecision((DateTime)clin.StartDate, DateTimePrecision.Day) : clin.StartDate;
-				DateTime? clinEndDate = clin.EndDate.HasValue ? GenBOEUtilities.AdjustDateTimePrecision((DateTime)clin.EndDate, DateTimePrecision.Day) : clin.EndDate;
-				// Check CLIN falls within the Workspace Start and End Date
-				if (clinStartDate.HasValue && (clinStartDate < wsStartDate))
-				{
-					return false;
-				}
 
-				if (clinEndDate.HasValue && (clinEndDate > wsEndDate))
-				{
-					return false;
-				}
+			bool isValid = validateWorkspaceLoader.ValidateWorkspacePoP(ws.Id, wsStartDate, wsEndDate);
 
-				// Check BOE falls within the CLIN Start Date and End Date
-				foreach (FullBoe boe in ws.Boes)
-				{
-					if (boe.Clin != null && (clin.Id == boe.CLINID))
-					{
-						DateTime boeStartDate = GenBOEUtilities.AdjustDateTimePrecision(boe.StartDate, DateTimePrecision.Day);
-						DateTime boeStartMonth = GenBOEUtilities.AdjustDateTimePrecision(boe.StartDate, DateTimePrecision.Month);
-						DateTime boeEndDate = GenBOEUtilities.AdjustDateTimePrecision(boe.EndDate, DateTimePrecision.Day);
-						DateTime boeEndMonth = GenBOEUtilities.AdjustDateTimePrecision(boe.EndDate, DateTimePrecision.Month);
-
-						// Check if the BOE falls within the Workspace Start Date and End Date        
-						if (boeStartMonth < wsStartMonth || boeEndMonth > wsEndMonth)
-						{
-							return false;
-						}
-
-						if (clinStartDate.HasValue && (boeStartDate < clinStartDate))
-						{
-							return false;
-						}
-
-						if (clinEndDate.HasValue && (boeEndDate > clinEndDate))
-						{
-							return false;
-						}
-
-						// Validate dates for Labor Task Elements
-						if (ws.TaskElements.Any(x => x.BoeID == boe.Id))
-						{
-							IEnumerable<BoeTaskElementDTO> boeTaskElements = ws.TaskElements.Where(x => x.BoeID == boe.Id);
-							foreach (BoeTaskElementDTO boeTask in boeTaskElements)
-							{
-								if (boeTask.TaskElementType == TaskElementType.Labor)
-								{
-									Collection<string> returnedMessages = this._ValidateStartAndEndDates(boe.StartDate, boe.EndDate, boe, boeTask.StartDate, boeTask.EndDate, ws);
-									if (returnedMessages.Count() > 0)
-									{
-										return false;
-									}
-								}
-
-								// Validate Resource Types
-								foreach (ResourceTypeDto labor in boeTask.taskElementLabors)
-								{
-									Collection<string> returnedMessages = this._ValidateStartAndEndDates(boeTask.StartDate, boeTask.EndDate, boe, labor.StartDate, labor.EndDate, ws);
-									if (returnedMessages.Count() > 0)
-									{
-										return false;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-
-			return true;
+			return isValid;
 		}
 
 		/// <summary>

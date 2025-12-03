@@ -35,7 +35,7 @@ namespace GenBOE.Web.Controllers
         /// <summary>
         /// Controller Logic
         /// </summary>
-        private IRTETemplatesControllerLogic controllerLogic;
+        private readonly IRTETemplatesControllerLogic controllerLogic;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RTETemplatesController" /> class.
@@ -48,7 +48,6 @@ namespace GenBOE.Web.Controllers
         /// <param name="userLoader">The user loader.</param>
         /// <param name="permissionsLoader">The permissions loader.</param>
         /// <param name="controllerLogic">The controller logic.</param>
-        /// <param name="rteTemplateDataLoader">The Template Loader.</param>
         public RTETemplatesController(ISecurityAccess securityAccess,
             ICommonDataMapper commonDataMapper,
             SiteMasterUtilities siteMasterUtilities,
@@ -67,7 +66,8 @@ namespace GenBOE.Web.Controllers
         /// The initial view for performing a DateShift
         /// </summary>
         /// <param name="workspace">The workspace.</param>
-        public ActionResult Index(string workspace)
+        [HttpGet]
+		public ActionResult Index(string workspace)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
             Stopwatch sw = InitializeAction(this.logger, WebConstants.ACTION_DISPLAY_MANAGE_RTE_TEMPLATES, SecurityPage.RTETemplates, SecurityAuthorization.Read, ws, null);
@@ -89,7 +89,8 @@ namespace GenBOE.Web.Controllers
         /// <param name="moveDeletedPromptData">Whether to move the deleted prompt data, or delete it if false</param>
         /// <param name="moveToPrompt">Id of prompt to move deleted Prompt data to</param>
         /// <returns></returns>
-        public JsonResult SaveRTETemplatesModel(string workspace, ICollection<RteCustomTemplateModelView> templates, bool moveDeletedPromptData, int? moveToPrompt)
+        [HttpPost]
+		public JsonResult SaveRTETemplatesModel(string workspace, ICollection<RteCustomTemplateModelView> templates, bool moveDeletedPromptData, int? moveToPrompt)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
             Stopwatch sw = InitializeAction(this.logger, WebConstants.ACTION_SAVE_RTE_TEMPLATES, SecurityPage.RTETemplates, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
@@ -102,13 +103,14 @@ namespace GenBOE.Web.Controllers
             return this.Json(new { Status = true });
         }
 
-        /// <summary>
-        /// Search templates
-        /// </summary>
-        /// <param name="workspace">Workspace</param>
-        /// <param name="search">Search Text</param>
-        /// <returns>Matching results</returns>
-        public JsonResult SearchTemplates(string workspace, string search)
+		/// <summary>
+		/// Search templates
+		/// </summary>
+		/// <param name="workspace">Workspace</param>
+		/// <param name="search">Search Text</param>
+		/// <returns>Matching results</returns>
+		[HttpPost]
+		public JsonResult SearchTemplates(string workspace, string search)
         {
             if (string.IsNullOrWhiteSpace(search)) { throw new ArgumentNullException(nameof(search)); }
 
@@ -121,14 +123,15 @@ namespace GenBOE.Web.Controllers
             return this.Json(templates);
         }
 
-        /// <summary>
-        /// Copy Templates
-        /// </summary>
-        /// <param name="workspace">Workspace</param>
-        /// <param name="templateId">Template To Copy</param>
-        /// <param name="newTemplateName">New Template Name</param>
-        /// <returns>Success / Failure</returns>
-        public JsonResult CopyTemplate(string workspace, int templateId, string newTemplateName)
+		/// <summary>
+		/// Copy Templates
+		/// </summary>
+		/// <param name="workspace">Workspace</param>
+		/// <param name="templateId">Template To Copy</param>
+		/// <param name="newTemplateName">New Template Name</param>
+		/// <returns>Success / Failure</returns>
+		[HttpPost]
+		public JsonResult CopyTemplate(string workspace, int templateId, string newTemplateName)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
             Stopwatch sw = InitializeAction(this.logger, WebConstants.ACTION_COPY_RTE_TEMPLATE, SecurityPage.RTETemplates, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
@@ -139,12 +142,13 @@ namespace GenBOE.Web.Controllers
             return this.Json(new { Status = true });
         }
 
-        /// <summary>
-        /// Gets the RTE Templates Model for this workspace
-        /// </summary>
-        /// <param name="workspace">The workspace to retrieve data from.</param>
-        /// <returns>The model for this workspace.</returns>
-        public JsonResult GetRTETemplatesModel(string workspace)
+		/// <summary>
+		/// Gets the RTE Templates Model for this workspace
+		/// </summary>
+		/// <param name="workspace">The workspace to retrieve data from.</param>
+		/// <returns>The model for this workspace.</returns>
+		[HttpPost]
+		public JsonResult GetRTETemplatesModel(string workspace)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
             Stopwatch sw = InitializeAction(this.logger, WebConstants.ACTION_GET_RTE_TEMPLATES, SecurityPage.RTETemplates, SecurityAuthorization.Read, ws, null);
@@ -155,6 +159,5 @@ namespace GenBOE.Web.Controllers
             FinalizeAction(this.logger, WebConstants.ACTION_DISPLAY_MANAGE_RTE_TEMPLATES, sw);
             return this.Json(templates);
         }
-
     }
 }

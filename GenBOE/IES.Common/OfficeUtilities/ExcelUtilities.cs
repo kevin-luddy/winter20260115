@@ -1767,16 +1767,18 @@ namespace IES.Common.OfficeUtilities
             WorksheetPart sourceSheetPart = GetWorkSheetPartBySheetName(workbookPart, sheetName);
             //Take advantage of AddPart for deep cloning
             WorksheetPart clonedSheet;
-            using (MemoryStream memory = new MemoryStream())
-            {
-                //Take advantage of AddPart for deep cloning
-                SpreadsheetDocument tempSheet = SpreadsheetDocument.Create(memory, spreadsheet.DocumentType);
-                WorkbookPart tempWorkbookPart = tempSheet.AddWorkbookPart();
-                WorksheetPart tempWorksheetPart = tempWorkbookPart.AddPart<WorksheetPart>(sourceSheetPart);
-                //Add cloned sheet and all associated parts to workbook
-                clonedSheet = workbookPart.AddPart<WorksheetPart>(tempWorksheetPart);
-            }
-            if (clonedSheet != null)
+			MemoryStream memory = new MemoryStream();
+            
+			//Take advantage of AddPart for deep cloning
+			using (SpreadsheetDocument tempSheet = SpreadsheetDocument.Create(memory, spreadsheet.DocumentType))
+			{
+				WorkbookPart tempWorkbookPart = tempSheet.AddWorkbookPart();
+				WorksheetPart tempWorksheetPart = tempWorkbookPart.AddPart<WorksheetPart>(sourceSheetPart);
+				//Add cloned sheet and all associated parts to workbook
+				clonedSheet = workbookPart.AddPart<WorksheetPart>(tempWorksheetPart);
+			}
+        
+			if (clonedSheet != null)
             {
                 if (keepData)
                 {

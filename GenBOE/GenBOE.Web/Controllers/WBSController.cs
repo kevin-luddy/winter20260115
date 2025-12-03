@@ -43,20 +43,19 @@ namespace GenBOE.Web.Controllers
 
 	public class WBSController : GenBOEController
     {
-        private Logger _log = new Logger(typeof(WBSController));
-
-        private NestedWBSUtilities _nestedWbsUtilities = null;
-        private BoeEmailer _Emailer = null;
-        private BOEStateMachine _BOEStateMachine = null;
-        private VariableCircularReferenceChecker _variableCircularReferenceChecker = null;
-        private WbsImporter _WbsImporter = null;
-        private BoeMediator _BoeMediator = null;
-        private WbsExporter _WbsExporter = null;
-        private ValidationHelper _ValidationHelper = null;
-        private IBoeDTODataLoader boeLoader;
-        private IWbsDTODataLoader wbsLoader;
+        private readonly Logger _log = new Logger(typeof(WBSController));
+        private readonly NestedWBSUtilities _nestedWbsUtilities = null;
+        private readonly BoeEmailer _Emailer = null;
+        private readonly BOEStateMachine _BOEStateMachine = null;
+        private readonly VariableCircularReferenceChecker _variableCircularReferenceChecker = null;
+        private readonly WbsImporter _WbsImporter = null;
+        private readonly BoeMediator _BoeMediator = null;
+        private readonly WbsExporter _WbsExporter = null;
+        private readonly ValidationHelper _ValidationHelper = null;
+        private readonly IBoeDTODataLoader boeLoader;
+        private readonly IWbsDTODataLoader wbsLoader;
         private const string wbsIDColumn = "genBOE WBS ID";
-        private IWBSControllerLogic _WbsControllerLogic = null;
+        private readonly IWBSControllerLogic _WbsControllerLogic = null;
 
 		/// <summary>
 		/// Backend WBS Controller Logic
@@ -108,7 +107,8 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="workspace"></param>
         /// <returns></returns>
-        public ViewResult Index(string workspace)
+        [HttpGet]
+		public ViewResult Index(string workspace)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -125,34 +125,6 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
-        public ActionResult GetBOECountForWBS(string workspace, int WbsID)
-        {
-            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-            FullWbs wbsObject = this.Factory.CreateFullWbs(WbsID);
-
-            Stopwatch sw = InitializeAction(_log, "GetBOECountForWBS", SecurityPage.ManageWBS, SecurityAuthorization.Read, ws, null);
-
-            // Perform Action
-            int result = wbsObject.Boes.Count;
-
-            JsonResult toReturn = Json(new { Status = false });
-
-            /** Valid Model Check */
-            if (ModelState.IsValid)
-            {
-                toReturn = Json(new { Status = result });
-            }
-            else
-            {
-                throw new GenValidationException(Utilities.CreateModelStateValidationErrorList(ModelState));
-            }
-
-            // Finalize Action
-            FinalizeAction(_log, "GetBOECountForWBS", sw);
-            return toReturn;
-
-        }
-
         #region Display
 
         /// <summary>
@@ -160,7 +132,8 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="workspace">the workspace</param>
         /// <returns>The MV for the Manage WBS grid</returns>
-        public JsonResult GetManageWBSGridModel(string workspace)
+        [HttpPost]
+		public JsonResult GetManageWBSGridModel(string workspace)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -284,18 +257,19 @@ namespace GenBOE.Web.Controllers
             public Collection<FieldChanged> Changes { get; set; }
         }
 
-        /// <summary>
-        /// Saves updates to ManageWBS
-        /// </summary>
-        /// <param name="workspace"></param>
-        /// <param name="inManageWBSModelView"></param>
-        /// <returns></returns>
-        public virtual JsonResult SaveManageWBSUpdates(string workspace, Collection<ManageWBSModelView> wbsCollection)
+		/// <summary>
+		/// Saves updates to ManageWBS
+		/// </summary>
+		/// <param name="workspace"></param>
+		/// <param name="inManageWBSModelView"></param>
+		/// <returns></returns>
+		[HttpPost]
+		public virtual JsonResult SaveManageWBSUpdates(string workspace, Collection<ManageWBSModelView> wbsCollection)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "SaveManageWBSUpdates", SecurityPage.ManageWBS, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_SAVE_MANAGE_WBS_UPDATES, SecurityPage.ManageWBS, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
             if (wbsCollection == null)
             {
@@ -341,17 +315,17 @@ namespace GenBOE.Web.Controllers
                 throw new GenValidationException(Utilities.CreateModelStateValidationErrorList(ModelState));
             }
             // Finalize Action
-            FinalizeAction(_log, "SaveManageWBSUpdates", sw);
+            FinalizeAction(_log, WebConstants.ACTION_SAVE_MANAGE_WBS_UPDATES, sw);
             return toReturn;
         }
 
-
-        public JsonResult CreateBOEs(string workspace, Collection<int> selectedWbsIDs)
+		[HttpPost]
+		public JsonResult CreateBOEs(string workspace, Collection<int> selectedWbsIDs)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "CreateBOEs", SecurityPage.ManageWBS, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_CREATE_BOES, SecurityPage.ManageWBS, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
             if (selectedWbsIDs == null)
             {
@@ -363,18 +337,19 @@ namespace GenBOE.Web.Controllers
             JsonResult toReturn = Json(new { Status = true });
 
             // Finalize Action
-            FinalizeAction(_log, "CreateBOEs", sw);
+            FinalizeAction(_log, WebConstants.ACTION_CREATE_BOES, sw);
 
             return toReturn;
         }
 
+		[HttpGet]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
         public ActionResult ExportWBS(string workspace)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ExportWBS", SecurityPage.ManageWBS, SecurityAuthorization.Read, ws, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_WBS, SecurityPage.ManageWBS, SecurityAuthorization.Read, ws, null);
 
             // Perform Action
             // Get Default Performing Orgs Data
@@ -401,7 +376,7 @@ namespace GenBOE.Web.Controllers
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
-            FinalizeAction(_log, "ExportWBS", sw);
+            FinalizeAction(_log, WebConstants.ACTION_EXPORT_WBS, sw);
 
             return File(
                 fileStream: fs,
@@ -410,12 +385,13 @@ namespace GenBOE.Web.Controllers
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-        public ActionResult ExportWBSTemplate(string workspace)
+		[HttpGet]
+		public ActionResult ExportWBSTemplate(string workspace)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ExportWBSTemplate", SecurityPage.ManageWBS, SecurityAuthorization.Read, ws, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_WBS_TEMPLATE, SecurityPage.ManageWBS, SecurityAuthorization.Read, ws, null);
 
             // Perform Action
 
@@ -435,7 +411,7 @@ namespace GenBOE.Web.Controllers
             FileStream fs = new FileStream(exportedFileName, FileMode.Open, FileAccess.Read, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
             // Finalize Action
-            FinalizeAction(_log, "ExportWBSTemplate", sw);
+            FinalizeAction(_log, WebConstants.ACTION_EXPORT_WBS_TEMPLATE, sw);
 
             return File(
                 fileStream: fs,
@@ -444,12 +420,13 @@ namespace GenBOE.Web.Controllers
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        public ViewResult ImportWBS(string workspace)
+		[HttpPost]
+		public ViewResult ImportWBS(string workspace)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ImportWBS", SecurityPage.ManageWBS, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_IMPORT_WBS, SecurityPage.ManageWBS, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
             ViewResult toReturn = null;
             Collection<ImportWbsResultsModelView> theModelViews = new Collection<ImportWbsResultsModelView>();
@@ -541,22 +518,23 @@ namespace GenBOE.Web.Controllers
                              where m.ImportType == (int)WbsImportResult.CreateWbs || m.ImportType == (int)WbsImportResult.UpdateWbs || m.ImportType == (int)WbsImportResult.CreateBoe || m.ImportType == (int)WbsImportResult.DeleteWbs
                              select m;
             ViewData["SERIALIZED_DATA"] = serializer.Serialize(dataToSave);
-            ViewData["DOCUMENT_DOMAIN"] = Request["documentDomain"];
+            ViewData["DOCUMENT_DOMAIN"] = Request.Form["documentDomain"];
 
             toReturn = View(WebConstants.VIEW_WBS_IMPORT_VERIFICATION, theModelViews);
 
             // Finalize Action
-            FinalizeAction(_log, "ImportWBS", sw);
+            FinalizeAction(_log, WebConstants.ACTION_IMPORT_WBS, sw);
 
             return toReturn;
         }
 
-        public JsonResult CompleteImportWBS(string workspace, Collection<ImportWbsResultsModelView> importResults)
+		[HttpPost]
+		public JsonResult CompleteImportWBS(string workspace, Collection<ImportWbsResultsModelView> importResults)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ImportWBS", SecurityPage.ManageWBS, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_COMPLETE_IMPORT_WBS, SecurityPage.ManageWBS, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
             JsonResult toReturn = Json(new { Status = true });
 
@@ -761,7 +739,7 @@ namespace GenBOE.Web.Controllers
             }
 
             // Finalize Action
-            FinalizeAction(_log, "ImportWBS", sw);
+            FinalizeAction(_log, WebConstants.ACTION_COMPLETE_IMPORT_WBS, sw);
 
             return toReturn;
         }
@@ -772,7 +750,7 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="workspace"></param>
         /// <param name="importResults"></param>
-        public void FindWBSsToBeDeleted(string workspace, Collection<ImportWbsResultsModelView> importResults)
+        private void FindWBSsToBeDeleted(string workspace, Collection<ImportWbsResultsModelView> importResults)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 

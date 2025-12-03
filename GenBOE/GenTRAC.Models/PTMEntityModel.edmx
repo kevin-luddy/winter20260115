@@ -38,6 +38,13 @@
           <Property Name="BUS_AREA_SHORT_NM" Type="varchar" MaxLength="5" />
           <Property Name="BUS_AREA_LONG_NM" Type="varchar" MaxLength="55" />
         </EntityType>
+        <EntityType Name="AlternativePricingMethodology">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Text" Type="varchar" MaxLength="100" Nullable="false" />
+        </EntityType>
         <EntityType Name="Attachment">
           <Key>
             <PropertyRef Name="ID" />
@@ -368,6 +375,9 @@
           <Property Name="ReasonCcopdNo" Type="int" />
           <Property Name="ReasonCcopdNoOther" Type="varchar" MaxLength="100" />
           <Property Name="IsSupportDefinitizingUCA" Type="bit" />
+          <Property Name="SubjectToAlternativePricingMethodology" Type="bit" />
+          <Property Name="AlternativePricingMethodology" Type="int" />
+          <Property Name="AlternativePricingMethodologyOtherText" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
@@ -589,6 +599,18 @@ warning 6002: The table/view 'genTrac_DEV.dbo.ProposalPPRChecklistXREF' does not
           <Property Name="Id" Type="int" Nullable="false" />
           <Property Name="Text" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'genTrac_DEV.dbo.ReportXmlData' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="ReportXmlData">
+          <Key>
+            <PropertyRef Name="Nonce" />
+            <PropertyRef Name="Xml" />
+            <PropertyRef Name="UpdateDT" />
+          </Key>
+          <Property Name="Nonce" Type="varchar" MaxLength="40" Nullable="false" />
+          <Property Name="Xml" Type="varchar(max)" Nullable="false" />
+          <Property Name="UpdateDT" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
         <EntityType Name="RequestTypeLU">
           <Key>
             <PropertyRef Name="RequestTypeID" />
@@ -710,6 +732,18 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
             </Principal>
             <Dependent Role="CannedResponsesPAR">
               <PropertyRef Name="QuestionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Proposal__Altern__63B99E3B">
+          <End Role="AlternativePricingMethodology" Type="Self.AlternativePricingMethodology" Multiplicity="0..1" />
+          <End Role="Proposal" Type="Self.Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AlternativePricingMethodology">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="AlternativePricingMethodology" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1611,12 +1645,19 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
         <Function Name="GetProposalRevisionHistory" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalId" Type="int" Mode="In" />
         </Function>
+        <Function Name="getReportXML" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Nonce" Type="varchar" Mode="In" />
+        </Function>
         <Function Name="insertDataMartEmployees" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="insertProposalUserRole" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalID" Type="int" Mode="In" />
           <Parameter Name="RoleID" Type="int" Mode="In" />
           <Parameter Name="RoleTypeID" Type="int" Mode="In" />
           <Parameter Name="UserID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="insertReportXml" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Nonce" Type="varchar" Mode="In" />
+          <Parameter Name="xml" Type="varchar(max)" Mode="In" />
         </Function>
         <Function Name="insertSystemUserRole" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="UserID" Type="int" Mode="In" />
@@ -1835,6 +1876,9 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
           <Parameter Name="ReasonCcopdNo" Type="int" Mode="In" />
           <Parameter Name="ReasonCcopdNoOther" Type="varchar" Mode="In" />
           <Parameter Name="IsSupportDefinitizingUCA" Type="bit" Mode="In" />
+          <Parameter Name="SubjectToAlternativePricingMethodology" Type="bit" Mode="In" />
+          <Parameter Name="AlternativePricingMethodology" Type="int" Mode="In" />
+          <Parameter Name="AlternativePricingMethodologyOtherText" Type="varchar" Mode="In" />
         </Function>
         <Function Name="upsertProposalChecklist" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalChecklistID" Type="int" Mode="In" />
@@ -1916,6 +1960,7 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
         </Function>
         <EntityContainer Name="genTRACModelStoreContainer">
           <EntitySet Name="DataMartEmployee" EntityType="Self.DataMartEmployee" Schema="DataMart" store:Type="Tables" />
+          <EntitySet Name="AlternativePricingMethodology" EntityType="Self.AlternativePricingMethodology" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Attachment" EntityType="Self.Attachment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AttachmentTypeLU" EntityType="Self.AttachmentTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BoeDatabaseVersion" EntityType="Self.BoeDatabaseVersion" Schema="dbo" store:Type="Tables" />
@@ -1987,6 +2032,13 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
     [ProposalPPRChecklistXREF].[ResponseTypeID] AS [ResponseTypeID]
     FROM [dbo].[ProposalPPRChecklistXREF] AS [ProposalPPRChecklistXREF]</DefiningQuery>
           </EntitySet>
+          <EntitySet Name="ReportXmlData" EntityType="Self.ReportXmlData" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [ReportXmlData].[Nonce] AS [Nonce], 
+    [ReportXmlData].[Xml] AS [Xml], 
+    [ReportXmlData].[UpdateDT] AS [UpdateDT]
+    FROM [dbo].[ReportXmlData] AS [ReportXmlData]</DefiningQuery>
+          </EntitySet>
           <EntitySet Name="genTracData" EntityType="Self.genTracData" store:Type="Views" store:Schema="genBOE">
             <DefiningQuery>SELECT 
     [genTracData].[genTracProposalID] AS [genTracProposalID], 
@@ -2031,6 +2083,10 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
           <AssociationSet Name="FK__CannedRes__Quest__2D87AABC" Association="Self.FK__CannedRes__Quest__2D87AABC">
             <End Role="PARChecklistContent" EntitySet="PARChecklistContent" />
             <End Role="CannedResponsesPAR" EntitySet="CannedResponsesPAR" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Proposal__Altern__63B99E3B" Association="Self.FK__Proposal__Altern__63B99E3B">
+            <End Role="AlternativePricingMethodology" EntitySet="AlternativePricingMethodology" />
+            <End Role="Proposal" EntitySet="Proposal" />
           </AssociationSet>
           <AssociationSet Name="FK__Proposal__Contra__7310F064" Association="Self.FK__Proposal__Contra__7310F064">
             <End Role="ContractActionTypeLU" EntitySet="ContractActionTypeLU" />
@@ -3224,6 +3280,9 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
             <Parameter Name="ReasonCcopdNo" Mode="In" Type="Int32" />
             <Parameter Name="ReasonCcopdNoOther" Mode="In" Type="String" />
             <Parameter Name="IsSupportDefinitizingUCA" Mode="In" Type="Boolean" />
+            <Parameter Name="SubjectToAlternativePricingMethodology" Mode="In" Type="Boolean" />
+            <Parameter Name="AlternativePricingMethodology" Mode="In" Type="Int32" />
+            <Parameter Name="AlternativePricingMethodologyOtherText" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="upsertProposalChecklist" ReturnType="Collection(Int32)">
             <Parameter Name="ProposalChecklistID" Mode="In" Type="Int32" />
@@ -3634,6 +3693,19 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
             <End Role="InsuranceTypeLU" EntitySet="InsuranceTypeLUs" />
             <End Role="ProposalContractsData" EntitySet="ProposalContractsDatas" />
           </AssociationSet>
+          <EntitySet Name="AlternativePricingMethodologies" EntityType="genTRACModel.AlternativePricingMethodology" />
+          <AssociationSet Name="FK__Proposal__Altern__63B99E3B" Association="genTRACModel.FK__Proposal__Altern__63B99E3B">
+            <End Role="AlternativePricingMethodology" EntitySet="AlternativePricingMethodologies" />
+            <End Role="Proposal" EntitySet="Proposals" />
+          </AssociationSet>
+          <EntitySet Name="ReportXmlDatas" EntityType="genTRACModel.ReportXmlData" />
+          <FunctionImport Name="getReportXML" ReturnType="Collection(String)">
+            <Parameter Name="Nonce" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="insertReportXml">
+            <Parameter Name="Nonce" Mode="In" Type="String" />
+            <Parameter Name="xml" Mode="In" Type="String" />
+          </FunctionImport>
           </EntityContainer>
         <ComplexType Name="CreatePARChecklistReport_Result">
           <Property Type="String" Name="QuestionNumber" Nullable="true" MaxLength="50" />
@@ -4296,6 +4368,10 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
           <Property Name="ReasonCcopdNoOther" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="CcopdReasonsNo" Relationship="genTRACModel.FK__Proposal__Reason__43EBED27" FromRole="Proposal" ToRole="CcopdReasonsNo" />
           <Property Name="IsSupportDefinitizingUCA" Type="Boolean" />
+          <Property Name="SubjectToAlternativePricingMethodology" Type="Boolean" />
+          <Property Name="AlternativePricingMethodology" Type="Int32" />
+          <Property Name="AlternativePricingMethodologyOtherText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="AlternativePricingMethodology1" Relationship="genTRACModel.FK__Proposal__Altern__63B99E3B" FromRole="Proposal" ToRole="AlternativePricingMethodology" />
         </EntityType>
         <Association Name="FK_Proposal_BOEToolLU">
           <End Type="genTRACModel.BOEToolLU" Role="BOEToolLU" Multiplicity="1" />
@@ -4710,6 +4786,36 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="AlternativePricingMethodology">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Text" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Proposals" Relationship="genTRACModel.FK__Proposal__Altern__63B99E3B" FromRole="AlternativePricingMethodology" ToRole="Proposal" />
+        </EntityType>
+        <Association Name="FK__Proposal__Altern__63B99E3B">
+          <End Type="genTRACModel.AlternativePricingMethodology" Role="AlternativePricingMethodology" Multiplicity="0..1" />
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AlternativePricingMethodology">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="AlternativePricingMethodology" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="ReportXmlData">
+          <Key>
+            <PropertyRef Name="Nonce" />
+            <PropertyRef Name="Xml" />
+            <PropertyRef Name="UpdateDT" />
+          </Key>
+          <Property Name="Nonce" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="Xml" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -5488,6 +5594,9 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
           <EntitySetMapping Name="Proposals">
             <EntityTypeMapping TypeName="genTRACModel.Proposal">
               <MappingFragment StoreEntitySet="Proposal">
+                <ScalarProperty Name="AlternativePricingMethodologyOtherText" ColumnName="AlternativePricingMethodologyOtherText" />
+                <ScalarProperty Name="AlternativePricingMethodology" ColumnName="AlternativePricingMethodology" />
+                <ScalarProperty Name="SubjectToAlternativePricingMethodology" ColumnName="SubjectToAlternativePricingMethodology" />
                 <ScalarProperty Name="IsSupportDefinitizingUCA" ColumnName="IsSupportDefinitizingUCA" />
                 <ScalarProperty Name="ReasonCcopdNoOther" ColumnName="ReasonCcopdNoOther" />
                 <ScalarProperty Name="ReasonCcopdNo" ColumnName="ReasonCcopdNo" />
@@ -5628,6 +5737,25 @@ warning 6002: The table/view 'genTrac_DEV.genBOE.genTracData' does not have a pr
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="AlternativePricingMethodologies">
+            <EntityTypeMapping TypeName="genTRACModel.AlternativePricingMethodology">
+              <MappingFragment StoreEntitySet="AlternativePricingMethodology">
+                <ScalarProperty Name="Text" ColumnName="Text" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ReportXmlDatas">
+            <EntityTypeMapping TypeName="genTRACModel.ReportXmlData">
+              <MappingFragment StoreEntitySet="ReportXmlData">
+                <ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
+                <ScalarProperty Name="Xml" ColumnName="Xml" />
+                <ScalarProperty Name="Nonce" ColumnName="Nonce" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="getReportXML" FunctionName="genTRACModel.Store.getReportXML" />
+          <FunctionImportMapping FunctionImportName="insertReportXml" FunctionName="genTRACModel.Store.insertReportXml" />
           </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

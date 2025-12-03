@@ -1,6 +1,6 @@
 ﻿[*.cs]
 
-# IDE0052: Remove unread private members
+# IDE0052: Remove unused private members
 dotnet_diagnostic.IDE0052.severity = error
 dotnet_diagnostic.RemoveUnnecessaryImportsFixable.severity=error
 dotnet_diagnostic.IDE0051.severity=error
@@ -329,3 +329,4 @@ dotnet_naming_style.pascal_case.required_prefix =
 dotnet_naming_style.pascal_case.required_suffix = 
 dotnet_naming_style.pascal_case.word_separator = 
 dotnet_naming_style.pascal_case.capitalization = pascal_case
+

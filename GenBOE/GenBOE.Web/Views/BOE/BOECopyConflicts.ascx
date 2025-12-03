@@ -25,8 +25,7 @@
 
         data.copyBOEID = '<%:Model.CopyBoeId %>'; 
         data.taskElementsToCopy = [<%:Model.TaskElementsToCopy != null && Model.TaskElementsToCopy.Any() ? String.Join(",", Model.TaskElementsToCopy) : ""%>];
-        data.travelElementsToCopy = [<%:Model.TravelElementsToCopy != null && Model.TravelElementsToCopy.Any() ? String.Join(",", Model.TravelElementsToCopy) : ""%>];
-          var dataToSend = JSON.stringify(data);
+        var dataToSend = JSON.stringify(data);
 
 		  BOECopyConflictsWidget.ajaxRequest({
 			  type: 'POST',
