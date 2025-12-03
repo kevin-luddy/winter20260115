@@ -639,6 +639,11 @@ namespace GenBOE.Web.Controllers
 			return result;
 		}
 
+		/// <summary>
+		/// Checks the validation on Workspace PoP
+		/// </summary>
+		/// <param name="workspaceShortName">workspace short name</param>
+		/// <returns>true/false</returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public IESSingleResponse<bool> GetWorkspacePoPValidation(string workspaceShortName)
