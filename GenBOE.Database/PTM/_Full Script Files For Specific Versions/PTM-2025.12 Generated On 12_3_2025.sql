@@ -1,13 +1,13 @@
 PRINT '###### SCRIPT IS STARTING ######';
 /*
-    This file was auto-generated for Release: 2025.11, on 12/3/2025.
+    This file was auto-generated for Release: 2025.12, on 12/3/2025.
     It contains all of the Release specific scripts, modifying data/tables as well as all of the Stored Procedures and User Defined Table Types.
 */
 
 /*
-    File: \Release 2025.11\1 - Release 2025.11 Script.sql
+    File: \Release 2025.12\1 - Release 2025.12 Script.sql
 */
-PRINT '### Starting file: \Release 2025.11\1 - Release 2025.11 Script.sql';
+PRINT '### Starting file: \Release 2025.12\1 - Release 2025.12 Script.sql';
 EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2025.11';
 GO
 
@@ -3853,6 +3853,58 @@ GO
 
 
 /*
+    File: \Stored Procedures\getReportXml.sql
+*/
+PRINT '### Starting file: \Stored Procedures\getReportXml.sql';
+IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[getReportXML]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[getReportXML];
+
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[getReportXML]
+(
+	@Nonce varchar(40)
+)
+AS
+/******************************************************************************
+**		 
+**		Name: getReportXML
+**		Desc: Returns XML used for reports
+**			
+**		
+**
+**		Auth: Timothy I. Wilson
+**		Date: 11/25/25
+*******************************************************************************
+**		Change History
+*******************************************************************************
+**		Date:		Author:				Description:
+*******************************************************************************/
+SET NOCOUNT ON 
+
+DECLARE @RawXml VARCHAR(MAX);
+SET @RawXml = 
+(
+    SELECT top(1) [Xml] 
+    FROM [ReportXmlData] 
+    WHERE Nonce = @Nonce
+) 
+
+DELETE FROM [ReportXmlData] WHERE Nonce = @Nonce
+
+SELECT @RawXml as Xml
+
+GO
+
+GRANT EXECUTE ON OBJECT::dbo.getReportXML TO generationReporter;
+GO
+
+/*
     File: \Stored Procedures\insertProposalUserRole.proc.sql
 */
 PRINT '### Starting file: \Stored Procedures\insertProposalUserRole.proc.sql';
@@ -3954,6 +4006,57 @@ Code is now going to do this
 
 IF @@ERROR = 0
 	SELECT @ProposalUserRoleID as ProposalUserRoleID
+
+GO
+
+/*
+    File: \Stored Procedures\insertReportXml.sql
+*/
+PRINT '### Starting file: \Stored Procedures\insertReportXml.sql';
+IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[insertReportXml]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[insertReportXml];
+
+GO
+
+SET ANSI_NULLS OFF
+GO
+SET QUOTED_IDENTIFIER OFF
+GO
+
+CREATE PROCEDURE [dbo].[insertReportXml]
+(
+@Nonce varchar(40),
+@xml VARCHAR(MAX)
+)
+AS
+/******************************************************************************
+**		 
+**		Name:	[insertReportXml]
+**		Desc:	Insert Report XML
+**			
+**		
+**
+**		Auth: Timothy I. Wilson
+**		Date: 11/25/25
+*******************************************************************************
+**		Change History
+*******************************************************************************
+**		Date:		Author:				Description:
+**		--------	--------			---------------------------------------
+*******************************************************************************/
+SET NOCOUNT ON 
+
+INSERT INTO [dbo].[ReportXmlData]
+			([Nonce]
+			,[Xml]
+			,[UpdateDT]
+			)
+VALUES
+		(
+		@Nonce,
+		@xml,
+		GetDate()
+		)
 
 GO
 
@@ -7488,6 +7591,18 @@ GO
 PRINT '### Starting file: \X_Data Cleanup\DeleteOrphanedAttachments.sql';
 -- This should never happen, but just in case, we'll delete orphaned attachments
 DELETE FROM Attachment WHERE Id NOT IN (SELECT DISTINCT AttachmentId FROM ProposalsAttachments);
+GO
+
+/*
+    File: \X_Data Cleanup\ReportXmlData.sql
+*/
+PRINT '### Starting file: \X_Data Cleanup\ReportXmlData.sql';
+--This data should be deleted as soon as it's retrieved, so clean out any data older than a day
+
+DELETE
+  FROM [dbo].[ReportXmlData]
+  WHERE UpdateDT <= DATEADD(DAY, -1, GETDATE())
+
 GO
 
 PRINT '###### SCRIPT FINISHED ######';
