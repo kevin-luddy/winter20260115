@@ -87,7 +87,7 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Gets the site menu items based on the workspace short name.
 		/// </summary>
-		/// <param name="workspaceShortname">Shortspace Name</param>
+		/// <param name="workspaceShortname">Workspace Short Name</param>
 		/// <returns>Workspace menu items.</returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]

@@ -1,13 +1,17 @@
 EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2025.11';
 GO
 
--- Author: Yansen Tjandra (e402751)
--- PROPH-3280 - 12/03/2025
--- Add new column DraftRfpIssuedDate to Proposal table
-	IF COL_LENGTH('dbo.Proposal', 'DraftRfpIssuedDate') IS NULL
-		BEGIN	
+-- Author: Tim Wilson
+-- PROPH-3244 - 11/25/2025
+-- Overhaul PTM Dashboard Report -- Store SSRS Xml in DB
 
-		ALTER TABLE [dbo].[Proposal]
-		ADD DraftRfpIssuedDate datetime;
-	
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ReportXmlData]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE [dbo].[ReportXmlData](
+		Nonce VARCHAR(40) NOT NULL,
+		[Xml] VARCHAR(MAX) NOT NULL,
+		UpdateDT Datetime2(7) NOT NULL,
+	)
 END
+GO
+

@@ -53,12 +53,13 @@ namespace GenBOE.Web.Controllers
         /// <param name="workspace"></param>
         /// <param name="boeID"></param>
         /// <returns></returns>
-        public ViewResult DisplayBOEComments(string workspace, int boeID)
+        [HttpPost]
+		public ViewResult DisplayBOEComments(string workspace, int boeID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DisplayBOEComments", SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_DISPLAY_BOE_COMMENTS, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, boeID);
 
 			int currentUserID = ws.CurrentActiveUser.UserID;
 
@@ -90,25 +91,26 @@ namespace GenBOE.Web.Controllers
 			ViewResult toReturn = View(WebConstants.VIEW_BOE_COMMENTS_GRID, theModelView);
 
             // Finalize Action
-            FinalizeAction(_log, "DisplayBOEComments", sw);
+            FinalizeAction(_log, WebConstants.ACTION_DISPLAY_BOE_COMMENTS, sw);
             return toReturn;
         }
 
-        /// <summary>
-        /// Saves a list of updated or new BOE Comments from the UI
-        /// </summary>
-        /// <param name="workspace"></param>
-        /// <param name="boeID"></param>
-        /// <param name="boeComments">Collection of BOE Comment Model Views that have been
-        /// added or updated by the user</param>
-        /// <returns></returns>
-        public virtual JsonResult SaveBoeComments(string workspace, int boeID, BOECommentsModelView boeComments)
+		/// <summary>
+		/// Saves a list of updated or new BOE Comments from the UI
+		/// </summary>
+		/// <param name="workspace"></param>
+		/// <param name="boeID"></param>
+		/// <param name="boeComments">Collection of BOE Comment Model Views that have been
+		/// added or updated by the user</param>
+		/// <returns></returns>
+		[HttpPost]
+		public virtual JsonResult SaveBoeComments(string workspace, int boeID, BOECommentsModelView boeComments)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
             FullBoe fullBOE = this.Factory.CreateFullBoe(boeID);
 
             // Initialize Action
-            Stopwatch sw = InitializeActionWithAnyPermission(_log, "SaveBoeComments",
+            Stopwatch sw = InitializeActionWithAnyPermission(_log, WebConstants.ACTION_SAVE_BOE_COMMENTS,
                 new Collection<SecurityPage>() { SecurityPage.BOEApproval, SecurityPage.BOEComment, SecurityPage.BOECommentResponse },
                 SecurityAuthorization.CreateReadUpdateDelete, ws, boeID);
 
@@ -117,7 +119,7 @@ namespace GenBOE.Web.Controllers
             JsonResult toReturn = Json(new { Status = true });
 
             // Finalize Action
-            FinalizeAction(_log, "SaveBoeComments", sw);
+            FinalizeAction(_log, WebConstants.ACTION_SAVE_BOE_COMMENTS, sw);
             return toReturn;
         }
     }

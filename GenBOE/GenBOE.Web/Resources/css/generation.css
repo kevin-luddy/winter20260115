@@ -752,7 +752,6 @@ div.rottenEgg {
 .module-content-data.outer .collapsed .module-header-data,
 .boe-details .collapsed .module-header-data,
 .TaskElementsToCopy.collapsed,
-.TravelElementsToCopy.collapsed,
 .collapsiblePanel.collapsed
 {
 	background: transparent url(/Resources/css/images/expand_light.png) no-repeat 0 center;
@@ -761,7 +760,6 @@ div.rottenEgg {
 .module-content-data.outer .expanded .module-header-data,
 .boe-details .expanded .module-header-data,
 .TaskElementsToCopy.expanded,
-.TravelElementsToCopy.expanded,
 .collapsiblePanel.expanded
 {
 	background: transparent url(/Resources/css/images/collapse_light.png) no-repeat 0 center;
@@ -4089,6 +4087,10 @@ div#LaborTypeWarningFlag .warning-message
 	width: 225px;
 }
 
+tr.skillmix-no-historical {
+	background-color: #c3c3c3 !important;
+}
+
 .module-content {
 	display: table-row;
 }
@@ -6805,8 +6807,7 @@ table.moduled-table {
 	text-decoration: none;
 }
 
-.TaskElementsToCopy,
-.TravelElementsToCopy {
+.TaskElementsToCopy {
 	cursor: pointer;
 	margin-right: 650px;
 	height: 14px;
@@ -6819,8 +6820,7 @@ table.moduled-table {
 	padding-left: 25px;
 }
 
-.TaskElementsToCopyTable,
-.TravelElementsToCopyTable {
+.TaskElementsToCopyTable {
 	width: 100%;
 	margin-left: 13px;
 	margin-top: -18px;

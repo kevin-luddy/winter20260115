@@ -133,14 +133,28 @@ namespace RDM.Backend.Controllers
 		[HttpPost("[action]")]
 		public ActionResult ValidateRateCodes()
 		{
-			IESResponse <ICollection <RateDetailModelView >>  validationResponse = this.ValidateRateCodesInternal();
-			IESResponse<ValidateRateCodesViewModel> response = new(); 
-			
-			response.Data = new()
+			IESResponse<ValidateRateCodesViewModel> response = new();
+			try
 			{
-				InsertRateCodes = validationResponse.Data.Where(x => x.Id < 0).OrderBy(x => x.RateCode).Select(x => new RateCodeValidationViewModel() { RateCode = x.RateCode, Description = x.Description }).ToList(),
-				UpdateRateCodes = validationResponse.Data.Where(x => x.Id >= 0).OrderBy(x => x.RateCode).Select(x => new RateCodeValidationViewModel() { RateCode = x.RateCode, Description = x.Description }).ToList()
-			};
+				IESResponse<ICollection<RateDetailModelView>> validationResponse = this.ValidateRateCodesInternal();
+				if (validationResponse.IsSuccessful)
+				{
+					response.Data = new()
+					{
+						InsertRateCodes = validationResponse.Data.Where(x => x.Id < 0).OrderBy(x => x.RateCode).Select(x => new RateCodeValidationViewModel() { RateCode = x.RateCode, Description = x.Description }).ToList(),
+						UpdateRateCodes = validationResponse.Data.Where(x => x.Id >= 0).OrderBy(x => x.RateCode).Select(x => new RateCodeValidationViewModel() { RateCode = x.RateCode, Description = x.Description }).ToList()
+					};
+					response.IsSuccessful = true;
+				}
+				else
+				{
+					response.Messages = validationResponse.Messages;
+				}
+			}
+			catch (Exception ex)
+			{
+				response.Messages.Add($"{ex.Message}");
+			}
 			return this.Json(response);
 		}
 
@@ -363,7 +377,9 @@ namespace RDM.Backend.Controllers
 				}
 				ICollection<RateDetailModelView> rates = this.rateDetailLoader.GetRatesByRevision(revision);
 				// Call the export function and get back the file name of the populated file.
-				string exportedFileName = RateCodeExporter.ExportToExcelFileWithYears(rates, expanded);
+
+				string serverFileName = Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "/Templates/Export/RatesImportExample.xlsx");
+				string exportedFileName = RateCodeExporter.ExportToExcelFileWithYears(serverFileName, rates, expanded);
 
 				string dateString = DateTime.Now.ToShortDateString().Replace('\\', '-').Replace('/', '-');
 				string fileName = "Rates_RDM_" + revision.Revision + "_" + dateString + ".xlsx";

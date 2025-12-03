@@ -693,12 +693,12 @@
                             </thead>
                             <tbody>
                                 <!-- Display the data for each of the Skill Mix Summary Table rows. -->
-                                <tr ng-repeat="row in skillMixRationale.data.SkillMixSummaryRows">
+                                <tr ng-repeat="row in skillMixRationale.data.SkillMixSummaryRows" data-ng-class="{'skillmix-no-historical': row.HistoricalSkillMix == 0.0, 'bold': row.ProposedSkillMix != 0.0}">
                                     <td>{{row.ResourceID}}</td>
                                     <td>{{row.BusinessResourceID}}</td>
                                     <td style="text-align: right">{{row.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{row.HistoricalSkillMix | number:1}}%</td>
-                                    <td style="text-align: right">{{row.ProposedSkillMix | number:2}}%</td>
+                                    <td style="text-align: right">{{row.ProposedSkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{row.ProposedLegacyResource}}</td>
                                     <td style="text-align: right">{{row.ProposedBrc}}</td>
                                     <td style="text-align: right">{{row.TotalProposedLegacyBrc}}</td>

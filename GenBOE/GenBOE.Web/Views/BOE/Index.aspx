@@ -14,7 +14,6 @@
         action: '<%:WebConstants.ACTION_GET_MANAGE_BOE_MODEL %>',
         saveAction: '<%:WebConstants.ACTION_SAVE_MANAGE_BOE %>',
 		resetDraftAction: '<%:WebConstants.ACTION_RESET_DRAFT_BOE %>',
-        saveState: '<%:WebConstants.ACTION_SAVE_BOE_STATES %>',
         exportAction: '<%:WebConstants.ACTION_EXPORT_MANAGE_BOE %>',
         exportTemplateAction: '<%:WebConstants.ACTION_EXPORT_MANAGE_BOE_TEMPLATE %>',
         workspaceState: '<%: ((GenBOEMasterModelView)Model).WorkspaceState %>',

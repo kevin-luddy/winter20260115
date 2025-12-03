@@ -423,6 +423,12 @@ namespace GenTRAC.DataBridge.DTO
 								CaptureManagerDisplayName = entity.Capture_Manager,
 								CostVolumeLeadDisplayName = entity.Cost_Volume_Lead,
 								PeerReviewerDisplayName = entity.Peer_Reviewer,
+								IndependentReviewerName = entity.IndependentReviewerName,
+								PricingVerificationName = entity.PricingVerificationName,
+								CoverSheetApproverName = entity.CoverSheetApproverName,
+								ProposalMgrName = entity.ProposalMgrName,
+								TechLeadName = entity.TechLeadName,
+								DateEstSubmitsToContracts = entity.Date_Est_Submits_to_Contracts,
 								PricerDisplayName = entity.Pricer_Name,
 								ProposalSubmittalDate = entity.Date_Est_Submits_to_Contracts,
 								ChecklistCompleteDate = entity.ChecklistCompleteDate,
@@ -2399,6 +2405,29 @@ namespace GenTRAC.DataBridge.DTO
 			}
 
 			return names;
+		}
+
+		/// <summary>
+		/// Inserts the report XML.
+		/// </summary>
+		/// <param name="nonce">The nonce.</param>
+		/// <param name="reportXml">The report XML.</param>
+		public virtual void InsertReportXml(string nonce, string reportXml)
+		{
+			if (nonce == null)
+			{
+				throw new ArgumentNullException(nameof(nonce));
+			}
+
+			if (reportXml == null)
+			{
+				throw new ArgumentNullException(nameof(reportXml));
+			}
+
+			using (genTRACEntities gbe = new genTRACEntities())
+			{
+				gbe.insertReportXml(nonce, reportXml);
+			}
 		}
 	}
 }

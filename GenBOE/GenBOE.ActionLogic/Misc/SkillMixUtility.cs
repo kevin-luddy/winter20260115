@@ -74,7 +74,10 @@
 			refreshedModel.SkillMixRows = refreshedModel.SkillMixRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceOld)).ThenBy(r => r.ResourceOld).ToList();
 			refreshedModel.CommonDisclosureRows = refreshedModel.CommonDisclosureRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceID)).ThenBy(r => r.ResourceID).ThenBy(s => s.BusinessResourceID).ToList();
 			refreshedModel.SkillMixSummaryRows = refreshedModel.SkillMixSummaryRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceID)).ThenBy(r => r.ResourceID).ThenBy(s => s.BusinessResourceID).ToList();
-			
+
+			// Apply rationale canned responses based on conditions regarding proposed skill mix and historical hours.
+			ApplyRationaleCannedResponses(refreshedModel);
+
 			return refreshedModel;
 		}
 
@@ -287,23 +290,44 @@
 		/// <param name="currentSkillMixSummaryData">The current skill mix summary data</param>
 		private static void AddMissingSpaceHistoricalResources(ICollection<MOQTypeSelectionTableDataResourceHoursDTO> resourceHours, ICollection<SkillMixSummaryModelView> currentSkillMixSummaryData)
 		{
-			ICollection<IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO>> groupedResourceHours = resourceHours.GroupBy(r => r.ResourceName).OrderBy(t => t.Key).ToList();
-			foreach (IGrouping<string, MOQTypeSelectionTableDataResourceHoursDTO> grouping in groupedResourceHours)
+			// group the historical together where Resource/BRC both match
+			Dictionary<Tuple<string, string>, ICollection<MOQTypeSelectionTableDataResourceHoursDTO>> groupedHistorical = new Dictionary<Tuple<string, string>, ICollection<MOQTypeSelectionTableDataResourceHoursDTO>>();
+			foreach (MOQTypeSelectionTableDataResourceHoursDTO historical in resourceHours)
 			{
-				decimal totalGroupHours = grouping.Sum(g => g.TotalHours);
+				if (string.IsNullOrEmpty(historical.ResourceName) && string.IsNullOrEmpty(historical.BRCName))
+				{
+					// skip this row, no resources set
+					continue;
+				}
 
-				SkillMixSummaryModelView summary = currentSkillMixSummaryData.FirstOrDefault(s => s.ResourceID.NullEmptyEquals(grouping.Key));
+				Tuple<string, string> key = groupedHistorical.Keys.FirstOrDefault(g => g.Item1.NullEmptyEquals(historical.ResourceName) && g.Item2.NullEmptyEquals(historical.BRCName));
+				if (key == null)
+				{
+					key = new Tuple<string, string>(historical.ResourceName, historical.BRCName);
+					groupedHistorical.Add(key, new List<MOQTypeSelectionTableDataResourceHoursDTO>());
+				}
+
+				groupedHistorical[key].Add(historical);
+			}
+
+			// compare the historical groups against the skill mix summary
+			foreach (KeyValuePair<Tuple<string, string>, ICollection<MOQTypeSelectionTableDataResourceHoursDTO>> kvp in groupedHistorical)
+			{
+				decimal totalHistoricalHours = kvp.Value.Sum(r => r.TotalHours);
+				
+				SkillMixSummaryModelView summary = currentSkillMixSummaryData.FirstOrDefault(s => s.ResourceID.NullEmptyEquals(kvp.Key.Item1) && s.BusinessResourceID.NullEmptyEquals(kvp.Key.Item2));
 				if (summary == null)
 				{
 					summary = new SkillMixSummaryModelView()
 					{
-						ResourceID = grouping.Key
+						ResourceID = kvp.Key.Item1,
+						BusinessResourceID = kvp.Key.Item2
 					};
 					currentSkillMixSummaryData.Add(summary);
 				}
 
 				// update the historical hours from the Resource Hours calculated in SAP
-				summary.HistoricalHours = totalGroupHours;
+				summary.HistoricalHours = totalHistoricalHours;
 			}
 		}
 
@@ -742,6 +766,30 @@
 			refreshedModel.SkillMixTotals.ProposedSkillMix = refreshedModel.SkillMixRows.Where(d => d.Included).Sum(s => s.BOESkillMix ?? 0.0m);
 			refreshedModel.CommonDisclosureTotals.ProposedSkillMix = refreshedModel.CommonDisclosureRows.Where(d => d.Included).Sum(s => s.BOESkillMix ?? 0.0m);
 			refreshedModel.SkillMixSummaryTotals.ProposedSkillMix = refreshedModel.SkillMixSummaryRows.Sum(s => s.ProposedSkillMix ?? 0.0m);
+		}
+
+		/// <summary>
+		/// Apply rationale canned responses based on proposed skill mix, proposed hours and historial hours
+		/// </summary>
+		/// <param name="refreshedModel">Skill mix data.</param>
+		private static void ApplyRationaleCannedResponses(RefreshSkillMixModelView refreshedModel)
+		{
+			foreach (SkillMixSummaryModelView row in refreshedModel.SkillMixSummaryRows)
+			{
+				// Get the difference between Proposed Skill Mix and Historical Skill Mix.
+				decimal difference = Math.Abs(row.ProposedSkillMix.Value - row.HistoricalSkillMix);
+
+				// Check if the difference is less than 5%.
+				if (difference < 5m)
+				{
+					row.Rationale = Constants.SPACE_SKILL_MIX_RATIONALE_BELOW_5_PERCENT_DIFF;
+					row.IsRationaleReadOnly = true;
+					continue;
+				}
+
+				// If neither conditions are met then leave it as is.
+				row.IsRationaleReadOnly = false;
+			}
 		}
 
 		/// <summary>
