@@ -542,6 +542,7 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 							string.Join(",", dtoToUpsert.ContractTypeIds),
 							dtoToUpsert.UpdateDateAssigned,
 							dtoToUpsert.CreatedByUserId,
+							dtoToUpsert.DraftRfpIssuedDate,
 							dtoToUpsert.RFPIssuedDate,
 							dtoToUpsert.RFPReceivedDate,
 							dtoToUpsert.Comments,
