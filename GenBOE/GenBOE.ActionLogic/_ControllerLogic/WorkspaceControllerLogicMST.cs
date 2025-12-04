@@ -337,6 +337,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			{
 				workspace.AllowGridEdit = workspaceIdentificationMSTModelView.AllowGridEdit;
 			}
+
+			if (!string.IsNullOrWhiteSpace(workspaceIdentificationMSTModelView.WorkspaceNameInput))
+			{
+				workspace.WorkspaceName = workspaceIdentificationMSTModelView.WorkspaceName + workspaceIdentificationMSTModelView.WorkspaceNameInput;
+			}
 		}
 
 		/// <summary>

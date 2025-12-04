@@ -115,11 +115,6 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		[StringLength(88, ErrorMessage = "A maximum of 88 characters are allowed for the Workspace Name")]
 		public string RevisionWorkspaceName { get; set; }
 
-		/// <summary>
-		/// Proposal title.  
-		/// </summary>
-		public string ProposalTitle { get; set; }
-
 		public String LabelLeadPricer
 		{
 			get
