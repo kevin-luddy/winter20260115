@@ -136,6 +136,11 @@ namespace GenBOE.ActionLogic.ModelView
 		/// </summary>
 		public int? AuthorUserId { get; set; }
 
+		/// <summary>
+		/// Get or set RTE field size character limit
+		/// </summary>
+		public int RteSizeLimit { get; set; }
+
 		#region ISGS Versus SSC terminology
 
 		public string MOQEquationLabel

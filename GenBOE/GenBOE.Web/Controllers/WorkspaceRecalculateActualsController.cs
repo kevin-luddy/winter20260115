@@ -59,6 +59,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace"></param>
 		/// <returns>Main page for workspace recalculate actuals</returns>
+		[HttpGet]
 		public ViewResult Index(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -83,6 +84,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">the workspace</param>
 		/// <returns>The MV for the Workspace Calculate Actuals grid</returns>
+		[HttpPost]
 		public async Task<JsonResult> GetWorkspaceRecalculateActualsModel(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);

@@ -1463,7 +1463,7 @@ function AfterDomLoadBOEDetailsWidget(BOEDetails, displayTaskElementDetailsEvent
     BOEDetails.registerForEvent('LOAD_REFRESH_SUMMARY_BOE_SUMMARY', function (e) {
         $('#BOESummary').html('<div class="loader" />');
         $.ajax({
-            type: "POST",
+            type: "GET",
             dataType: 'html',
             contentType: 'application/json; charset=utf-8',
             url: displayBoeSummaryUrl,

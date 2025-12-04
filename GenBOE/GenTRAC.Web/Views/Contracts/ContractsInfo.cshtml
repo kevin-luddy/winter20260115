@@ -244,25 +244,25 @@
         });
 
         $('#FinalNegotiatedValue').on('change', function () {
-            const dollarValue = $('#FinalNegotiatedValue').val().trim().replace('$', '').replace(/\,/g, '');
+            const dollarValue = ($('#FinalNegotiatedValue').val() || '').trim().replace('$', '').replace(/\,/g, '');
             GenTRAC.numericCommaSeparator(ContractsInfoWidget, dollarValue, 'input[name="FinalNegotiatedValue"]', false);
             $('#FinalNegotiatedValue').val('$' + $('#FinalNegotiatedValue').val());
         });
 
 		$('#ProposedInsurance').on('change', function () {
-			const dollarValue = $('#ProposedInsurance').val().trim().replace('$', '').replace(/\,/g, '');
+            const dollarValue = ($('#ProposedInsurance').val() || '').trim().replace('$', '').replace(/\,/g, '');
 			GenTRAC.numericCommaSeparator(ContractsInfoWidget, dollarValue, 'input[name="ProposedInsurance"]', false);
         });
 
 		$('#NegotiatedInsurance').on('change', function () {
-			const dollarValue = $('#NegotiatedInsurance').val().trim().replace('$', '').replace(/\,/g, '');
+            const dollarValue = ($('#NegotiatedInsurance').val() || '').trim().replace('$', '').replace(/\,/g, '');
 			GenTRAC.numericCommaSeparator(ContractsInfoWidget, dollarValue, 'input[name="NegotiatedInsurance"]', false);
 		});
 
         // can't trigger change event so we don't make form dirty
-		var dollarVal = $('#ProposedInsurance').val().trim().replace('$', '').replace(/\,/g, '');
+        var dollarVal = ($('#ProposedInsurance').val() || '').trim().replace('$', '').replace(/,/g, '');
 		GenTRAC.numericCommaSeparator(ContractsInfoWidget, dollarVal, 'input[name="ProposedInsurance"]', false);
-		dollarVal = $('#NegotiatedInsurance').val().trim().replace('$', '').replace(/\,/g, '');
+        dollarVal = ($('#NegotiatedInsurance').val() || '').trim().replace('$', '').replace(/\,/g, '');
 		GenTRAC.numericCommaSeparator(ContractsInfoWidget, dollarVal, 'input[name="NegotiatedInsurance"]', false);
         ContractsInfoWidget.insuranceChanged();
     });

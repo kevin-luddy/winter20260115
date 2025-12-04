@@ -992,7 +992,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 
 			// populate Current/Legacy Skill Mix Table
 			StructuredDocumentTag tableElement = WordUtilities.GetTaggedChildElement(taskContainer, BOEExporterConstants.Table_SummarySkillMix);
-			string hoursStringFormat = CommonUtilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision);
+			string hoursStringFormat = CommonUtilities.PrecisionFormattingString(exportInputs.Workspace.DecimalPrecision);
+			string historicalHoursFormat = CommonUtilities.PrecisionFormattingStringWithTrailingZeros(2);
 
 			if (tableElement != null)
 			{
@@ -1019,7 +1020,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 							// Populate the row
 							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Resource), skillMixRow.ResourceID);
 							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_BusinessResourceCode), skillMixRow.BusinessResourceID);
-							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_HistoricalHours), skillMixRow.HistoricalHours.ToString("F"));
+							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_HistoricalHours), skillMixRow.HistoricalHours.ToString(historicalHoursFormat));
 							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_HistoricalSkillMix), (skillMixRow.HistoricalSkillMix / 100m).ToString("P1"));
 							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_ProposedSkillMix), (skillMixRow.ProposedSkillMix / 100m)?.ToString("P1"));
 							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_ProposedLegacyResource), skillMixRow.ProposedLegacyResource.ToString(hoursStringFormat));
@@ -1072,7 +1073,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					if (totalRow != null)
 					{
 						//get totals
-						string historicalHoursTotal = laborTaskElement.SkillMixSummaryTable.Sum(x => x.HistoricalHours).ToString("F");
+						string historicalHoursTotal = laborTaskElement.SkillMixSummaryTable.Sum(x => x.HistoricalHours).ToString(historicalHoursFormat);
 						string proposedSkillMixTotal = (laborTaskElement.SkillMixSummaryTable.Where(x => x.Included).Sum(x => x.ProposedSkillMix ?? 0.0m) / 100m).ToString("P1");
 						string proposedLegacyResourceTotal = laborTaskElement.SkillMixSummaryTable.Where(x => x.Included).Sum(x => x.ProposedLegacyResource).ToString(hoursStringFormat);
 						string proposedBrcTotal = laborTaskElement.SkillMixSummaryTable.Where(x => x.Included).Sum(x => x.ProposedBrc).ToString(hoursStringFormat);

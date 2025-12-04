@@ -305,20 +305,26 @@ namespace GenTRAC.ActionLogic
                     ProposalId = proposal.ProposalId,
                     ProposalTitle = proposal.ProposalTitle,
                     TrackingNumber = proposal.TrackingNumber,
-                    ForecastedTrackingNumber = proposal.ForecastedTrackingNumber,
+                    ForecastedTrackingNumber = proposal.ForecastedTrackingNumber ?? string.Empty,
                     EstValue = proposal.EstValue,
                     SubmittedValue = proposal.SubmittedValue,
-                    CaptureManagerDisplayName = proposal.CaptureManagerDisplayName,
-                    PricerDisplayName = proposal.PricerDisplayName,
-                    PeerReviewerDisplayName = proposal.PeerReviewerDisplayName,
-                    CostVolumeLeadDisplayName = proposal.CostVolumeLeadDisplayName,
+                    CaptureManagerDisplayName = proposal.CaptureManagerDisplayName ?? string.Empty,
+                    PricerDisplayName = proposal.PricerDisplayName ?? string.Empty,
+                    PeerReviewerDisplayName = proposal.PeerReviewerDisplayName ?? string.Empty,
+                    CostVolumeLeadDisplayName = proposal.CostVolumeLeadDisplayName ?? string.Empty,
+					IndependentReviewerName = proposal.IndependentReviewerName ?? string.Empty,
+					PricingVerificationName = proposal.PricingVerificationName ?? string.Empty,
+					CoverSheetApproverName = proposal.CoverSheetApproverName ?? string.Empty,
+					ProposalMgrName = proposal.ProposalMgrName ?? string.Empty,
+					TechLeadName = proposal.TechLeadName ?? string.Empty,
+					DateEstSubmitsToContracts = proposal.DateEstSubmitsToContracts,
                     ProposalDateAssigned = proposal.ProposalDateAssigned,
                     ProposalDueDate = proposal.ProposalDueDate,
                     ProposalCompletedDate = proposal.ProposalSubmittalDate,
                     ChecklistCompleteDate = proposal.ChecklistCompleteDate,
                     Status = proposal.Status,
-                    ProgramArea = proposal.ProgramArea,
-                    Customer = proposal.Customer,
+                    ProgramArea = proposal.ProgramArea ?? string.Empty,
+                    Customer = proposal.Customer ?? string.Empty,
                     IsCommercialCustomer = proposal.IsCommercialCustomer,
                     HasLinkedDocument = proposal.HasLinkedDocument,
                     IsForecastProposal = proposal.IsForecastProposal,
@@ -426,11 +432,11 @@ namespace GenTRAC.ActionLogic
         /// </summary>
         /// <param name="reportParameters">json stringified export parameters</param>
         /// <returns>Uri parameters to open the SSRS report in</returns>
-        public Uri PopulateExportSSRSParameters(ExportProposalReportModelView reportParameters)
+        public Uri PopulateExportSSRSParameters(ICollection<HomeProposalGridModelView> homeModelView)
         {
-            if (reportParameters == null)
+            if (homeModelView == null)
             {
-                throw new ArgumentNullException(nameof(reportParameters));
+                throw new ArgumentNullException(nameof(homeModelView));
             }
 
             StringBuilder sb = new StringBuilder();
@@ -438,51 +444,20 @@ namespace GenTRAC.ActionLogic
             // do not show report parameters
             sb.Append(Constants.Report.NO_REPORT_PARAMETERS);
 
-            // get proposal status, send null if All is selected
-            if (!(reportParameters.FilterOption == ProposalFilterOption.All.ToString()))
-            {
-                ProposalFilterOption option = (ProposalFilterOption)Enum.Parse(typeof(ProposalFilterOption), reportParameters.FilterOption);
-                sb.Append(string.Format("&{0}={1}", Constants.Report.PROPOSAL_STATUS_ID, (int)option + 1));
-            }
+			string nonce = Guid.NewGuid().ToString("N");
+			sb.Append($"&nonce={nonce}");
 
-            if (!string.IsNullOrEmpty(reportParameters.FilterStartDate) && reportParameters.FilterStartDate != Constants.Report.PROPOSAL_DATE_FORMAT)
-            {
-                sb.Append(string.Format("&{0}={1}", Constants.Report.FILTER_START_DATE, reportParameters.FilterStartDate));
-            }
+			string reportXml = homeModelView.ToList().ToXmlString();
 
-            if (!string.IsNullOrEmpty(reportParameters.FilterEndDate) && reportParameters.FilterEndDate != Constants.Report.PROPOSAL_DATE_FORMAT)
-            {
-                sb.Append(string.Format("&{0}={1}", Constants.Report.FILTER_END_DATE, reportParameters.FilterEndDate));
-            }
+			// remove the xml version/encoding tag since that will cause problems inside SSRS
+			reportXml = reportXml.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>", string.Empty);
+			reportXml = reportXml.Replace("\r\n", string.Empty);
 
-            if (!(reportParameters.FilterProposalClass == ProposalClassFilterOption.All.ToString()))
-            {
-                ProposalClassFilterOption option = (ProposalClassFilterOption)Enum.Parse(typeof(ProposalClassFilterOption), reportParameters.FilterProposalClass);
-                sb.Append(string.Format("&{0}={1}", Constants.Report.FILTER_PROPOSAL_CLASS, (int)option));
-            }
-
-            if (!string.IsNullOrEmpty(reportParameters.SearchText))
-            {
-                sb.Append(string.Format("&{0}={1}", Constants.Report.SEARCH_TEXT, reportParameters.SearchText));
-            }
-
-            DataBridge.DTO.UserDTO user = this.UserMapper.GetActiveUser();
-            sb.Append(string.Format("&{0}={1}", Constants.Report.NTID, user.Ntid));
-
-            // TODO - BOEJ-4848 - needs to send user and group IDs as a smaller param than the xml
-            //if (!string.IsNullOrEmpty(reportParameters.ViewerFilterOption))
-            //{
-            //    bool showProposalsForMyOrganization = reportParameters.ViewerFilterOption == Constants.Report.SHOW_PROPOSALS_FOR_MY_ORGANIZATION;
-            //    sb.Append(string.Format("&{0}={1}", Constants.Report.SHOW_PROPOSALS_FOR_MY_ORGANIZATION, showProposalsForMyOrganization ? "true" : "false"));
-
-            //    if (showProposalsForMyOrganization)
-            //    {
-            //        string userAndGroupIDs = this.activeDirectoryUtils.GetUserAndGroupIdsAsXml(user.Ntid, this.activeDirectoryUtils.GetGroupsForUser(user.Ntid));
-            //        sb.Append(string.Format("&{0}=\"{1}\"", Constants.Report.USER_AND_GROUP_IDS, userAndGroupIDs));
-            //    }
-            //}
-
-            Uri toReturn = SafeUriUtility.safeUri(string.Format("{0}/{1}/{2}{3}", WebConfigurationManager.AppSettings["ReportServerLocation"], WebConfigurationManager.AppSettings["ReportServerFolderName"], "Proposal Dashboard Report", sb));
+			// Save xml
+			this.ProposalLoader.InsertReportXml(nonce, reportXml);
+			
+			// Create the URI to return with the one-time use nonce
+			Uri toReturn = SafeUriUtility.safeUri(string.Format("{0}/{1}/{2}{3}", WebConfigurationManager.AppSettings["ReportServerLocation"], WebConfigurationManager.AppSettings["ReportServerFolderName"], "Proposal Dashboard Report Nonce", sb));
             return toReturn;
         }
 

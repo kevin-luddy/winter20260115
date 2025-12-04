@@ -397,6 +397,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			// Convert to ModelView
 			LaborTaskDataModelView toReturn = this.ConvertDtoToModelView(ws, boe, taskElementDto);
+			toReturn.TaskElementData.RteSizeLimit = ws.RteSizeLimit ?? Constants.MAX_RTE_LENGTH;
 			toReturn.AdjacentItems = this.FindAdjacentTasks(boe, taskElementId);
 			toReturn.ValidationErrors = this.taskElementValidation.ValidateTaskElementsWithErrorMessages(ws, new List<BoeTaskElementDTO>() { taskElementDto }).Select(e => e.ErrorMessage).ToList();
 			toReturn.IsUsingTMRatesInTask = CheckTMRates(ws, toReturn.LaborTypesData);

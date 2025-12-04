@@ -4814,5 +4814,22 @@ namespace GenBOE.Models
         {
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertSkillMixSummaryviaTableParameter");
         }
+    
+        public virtual ObjectResult<Nullable<bool>> validateWorkspacePoP(Nullable<int> workspaceID, Nullable<System.DateTime> contractStartDate, Nullable<System.DateTime> contractEndDate)
+        {
+            var workspaceIDParameter = workspaceID.HasValue ?
+                new ObjectParameter("WorkspaceID", workspaceID) :
+                new ObjectParameter("WorkspaceID", typeof(int));
+    
+            var contractStartDateParameter = contractStartDate.HasValue ?
+                new ObjectParameter("ContractStartDate", contractStartDate) :
+                new ObjectParameter("ContractStartDate", typeof(System.DateTime));
+    
+            var contractEndDateParameter = contractEndDate.HasValue ?
+                new ObjectParameter("ContractEndDate", contractEndDate) :
+                new ObjectParameter("ContractEndDate", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<bool>>("validateWorkspacePoP1", workspaceIDParameter, contractStartDateParameter, contractEndDateParameter);
+        }
     }
 }

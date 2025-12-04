@@ -12,7 +12,6 @@ namespace GenBOE.ActionLogic.ModelView
         {
             this.BOECopyConflictModelViews = new Collection<BOECopyConflictModelView>();
             this.TaskElementsToCopy = new Collection<int>();
-            this.TravelElementsToCopy = new Collection<int>();
         }
 
         /// <summary>
@@ -24,11 +23,6 @@ namespace GenBOE.ActionLogic.ModelView
         /// Individual task elements to copy from this BOE.
         /// </summary>
         public ICollection<int> TaskElementsToCopy { get; set; }
-
-        /// <summary>
-        /// Individual travel elements to copy from this BOE.
-        /// </summary>
-        public ICollection<int> TravelElementsToCopy { get; set; }
 
         /// <summary>
         /// The source copy BOE Id.

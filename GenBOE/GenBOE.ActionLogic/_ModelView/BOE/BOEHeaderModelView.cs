@@ -10,7 +10,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel.DataAnnotations;
-    using GenBOE.ActionLogic.Validation;
+	using GenBOE.ActionLogic.Validation;
     using GenBOE.ActionLogic.ValidationAttributes;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -52,9 +52,9 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             }
         }
 
-        public ICollection<RTECustomTemplateQuestionAnswerModelView> HeaderRteTemplateAnswers { get; }
+		public ICollection<RTECustomTemplateQuestionAnswerModelView> HeaderRteTemplateAnswers { get; }
 
-        public string CLIN { get; set; }
+		public string CLIN { get; set; }
   
         [DisplayFormat(DataFormatString = "{0:MM/yyyy}")]
         public DateTime? StartDate { get; set; }
@@ -140,5 +140,5 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             }
 
         }
-    }
+	}
 }

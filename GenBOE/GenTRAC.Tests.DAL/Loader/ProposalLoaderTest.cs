@@ -139,7 +139,10 @@ namespace GenTRAC.Tests.DAL.Loader
 				ModExecutedLastEmailed = DateTime.UtcNow,
 				ContractActionType = ContractActionType.Other,
 				ContractActionTypeOtherText = "Other text.",
-				CostVolumeTool = CostVolumeTool.ACV
+				CostVolumeTool = CostVolumeTool.ACV,
+				SubjectToAlternativePricingMethodology = true,
+				AlternativePricingMethodology = IES.Common.AlternativePricingMethodology.Other,
+				AlternativePricingMethodologyOtherText = "Other Text"
 			};
 
 			int? newProposalID;

@@ -41,6 +41,7 @@ namespace GenBOE.Tests.DAL.Other
 		private BoeTaskElementDTODataLoader boeTaskElementDTODataLoader;
 		private Mock<IOffloadRatesDTOLoader> offloadRatesLoader;
 		private Mock<IRteTemplateDataLoader> rteTemplateDataLoader;
+		private Mock<IBoeApproverResponseDTODataLoader> inBoeApproverResponseDTODataLoader;
 		private readonly Mock<IActiveDirectoryUtilities> _ADUtils = new Mock<IActiveDirectoryUtilities>();
 
 		/// <summary>
@@ -120,7 +121,7 @@ namespace GenBOE.Tests.DAL.Other
 				null, null, new ProjectMapDataLoader(new ProjectMapSpreadLoader()), new BoePickListMapper(new LineOfBusinessDataLoader(), new ProposalClassLoader(),
 				new ContractTypeLoader()), new GenTRAC.DataBridge.DTO.PtmPickListMapper(new GenTRAC.DataBridge.DTO.ProposalTypeLULoader(), new GenTRAC.DataBridge.DTO.ProposalClassLULoader(),
 				new GenTRAC.DataBridge.DTO.TypeOfRequestLULoader(), new GenTRAC.DataBridge.DTO.LineOfBusinessDataLoader(), new GenTRAC.DataBridge.DTO.ProgramAreaDataLoader(),
-				new GenTRAC.DataBridge.DTO.ContractTypeLULoader(), new GenTRAC.DataBridge.DTO.ContractTypeGroupLULoader()), null, null, null, null, null, null, null);
+				new GenTRAC.DataBridge.DTO.ContractTypeLULoader(), new GenTRAC.DataBridge.DTO.ContractTypeGroupLULoader()), null, null, null, null, null, null, null, inBoeApproverResponseDTODataLoader.Object);
 		}
 
 

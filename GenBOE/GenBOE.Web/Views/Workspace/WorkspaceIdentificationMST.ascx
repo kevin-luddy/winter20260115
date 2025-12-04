@@ -80,6 +80,39 @@
         '<%: WebConstants.ACTION_WORKSPACE_SETTINGS %>');
 	WorkspaceIdentificationWidget = InitializeWorkspaceIdentificationWidget(widgetConfig, jumpUrl);
 
+	WorkspaceIdentificationWidget.LockFields = function () {
+		<% if (Utilities.ShowPLDIsIntegrated)
+	{ %>
+		// break up WorkspaceName and WorkspaceNameInput if needed
+		var paNumber = $('#PaNumber').val();
+		var paTitle = $('#PaTitle').val();
+		var workspaceName = $('#WorkspaceName').val();
+
+		// only show the workspacename broken up if it actually starts with the tracking number
+		if (workspaceName.indexOf(paNumber) == 0) {
+			if ($('#WorkspaceName').hasClass('full')) {
+				// The fields could be locked already, but this needs to be shrunk and the workspace name input shown so the user can update
+				$('#WorkspaceName').removeClass('full').addClass('half');
+				$('#WorkspaceNameInput').removeClass('display-none');
+			}
+
+			// Get length of PA Number and Title, +1 for space between them
+			var paNumberTitleLength = paNumber.length + paTitle.length + 1; 
+
+			// Set width based on character length since it's variable unlike space
+			$('#WorkspaceName').addClass('disabled').prop('readonly', 'readonly').addClass('labelLookFeelRms');
+			$('#WorkspaceName')[0].style.width = paNumberTitleLength + "ch";
+
+			if (workspaceName.length > paNumberTitleLength) {
+				$('#WorkspaceNameInput').val(workspaceName.substr(paNumberTitleLength + 1));
+				$('#WorkspaceName').val(workspaceName.substr(0, paNumberTitleLength + 1));
+			} else {
+				$('#WorkspaceName').val(workspaceName + " ");
+			}
+		}
+		<% } %>
+	}
+
 	$('#RteSizeLimit').keyup(function () {
 		displayApproxPages($(this).val());
 	});
@@ -195,25 +228,29 @@
 			}
 		});
 
-	   // Need to put up warning message if set to true
-	   if ($('#WorkspaceIdentification').find('input[name=AllowGridEdit]:checked').val() == "True") {
-		   $("#ProjectMapEditGridWarning").show();
-	   } else {
-		   $("#ProjectMapEditGridWarning").hide();
-	   }
+		// Need to put up warning message if set to true
+		if ($('#WorkspaceIdentification').find('input[name=AllowGridEdit]:checked').val() == "True") {
+			$("#ProjectMapEditGridWarning").show();
+		} else {
+			$("#ProjectMapEditGridWarning").hide();
+		}
 
-	   if ('<%: Model.RteSizeLimit.HasValue %>' === "True") {
-		   displayApproxPages('<%: Model.RteSizeLimit %>');
-	   }
+		if ($('#PaNumber').val() !== '' && !WorkspaceIdentificationWidget.isReadOnly()) {
+			WorkspaceIdentificationWidget.LockFields();
+		}
 
-	   if ('<%: Model.EnableTemplateBoeSelect %>' == "True") {
-		   var dropdown = $('#UsingTemplateBoe');
-		   dropdown.removeClass('disabled');
-		   dropdown.removeAttr('disabled');
-	   }
+		if ('<%: Model.RteSizeLimit.HasValue %>' === "True") {
+			displayApproxPages('<%: Model.RteSizeLimit %>');
+		}
 
-	   originalSapConnectionEnabled = $('#EnableSAPConnection').val();
-   });
+		if ('<%: Model.EnableTemplateBoeSelect %>' == "True") {
+			var dropdown = $('#UsingTemplateBoe');
+			dropdown.removeClass('disabled');
+			dropdown.removeAttr('disabled');
+		}
+
+		originalSapConnectionEnabled = $('#EnableSAPConnection').val();
+	});
 
 	// Dynamically set disabled/readonly dropdown for SAP connection
 	var usingTemplateBoeInit = '<%:Model.UsingTemplateBoe%>'.isTrue();
@@ -274,6 +311,7 @@
 			</div>
 			<div class="form-element">
 				<%: Html.TextBox("WorkspaceName", Model.WorkspaceName, new { @class = "full", @maxlength="100" })%>
+				<input id="WorkspaceNameInput" name="WorkspaceNameInput" class="half display-none" type="text" maxlength="40" />
 			</div>
 		</div>
 		<div class="form-row">
@@ -284,7 +322,12 @@
 				<%: Html.TextArea("Description", Model.Description, new { @class = "full", onkeyup="Helper.textAreaLimit(this, 1000)" })%>
 			</div>
 		</div>
-
+		<% if (Utilities.ShowPLDIsIntegrated)
+			{ %>
+		<%-- TODO - PA Number field will go here in PROPH-2986 --%>
+		<%: Html.Hidden("PaNumber", Model.TrackingNumber) %>
+		<%: Html.Hidden("PaTitle", Model.ProposalTitle) %>
+		<% } %>
 		<%if (SiteMasterUtilities.IsProjectMapEnabled)
 			{%>
 

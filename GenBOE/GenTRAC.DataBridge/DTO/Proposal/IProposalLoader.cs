@@ -238,5 +238,12 @@ namespace GenTRAC.DataBridge.DTO
 		/// </summary>
 		/// <param name="ptmTrackingNumber">PTM tracking number</param>
 		ICollection<ProposalRoleDto> GetAuthorNames(string ptmTrackingNumber);
+
+		/// <summary>
+		/// Inserts the report XML.
+		/// </summary>
+		/// <param name="nonce">The nonce.</param>
+		/// <param name="reportXml">The report XML.</param>
+		void InsertReportXml(string nonce, string reportXml);
 	}
 }
