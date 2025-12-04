@@ -453,6 +453,15 @@ namespace GenBOE.ActionLogic.BOE
 		/// </summary>
 		public TripleBooleanState? SupplierCCoPDProposalValueConditionMet { get; set; }
 
+		/// <summary>
+		/// Creation Date
+		/// </summary>
+		public DateTime CreationDate { get; set; }
+
+		/// <summary>
+		/// The dollar threshold, if CCOPD applies
+		/// </summary>
+		public CCOPDDollarThreshold CCOPDDollarThreshold { get; set; }
 	}
 }
 
