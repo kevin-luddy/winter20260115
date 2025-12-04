@@ -67,7 +67,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         private Mock<ContractTypeLoader> contractTypeLoader;
 		private Mock<IMoqTypeDataLoader> moqTypeDataLoader;
 		private Moq.Mock<ISystemSettingDTODataLoader> systemSettingsLoader;
-		private Mock<WorkspaceStateMachine> workspaceStateMachine;
+		private Mock<IWorkspaceStateMachine> workspaceStateMachine;
 		private Mock<IBoeApproverResponseDTODataLoader> inBoeApproverResponseDTODataLoader;
 
 		private WorkspaceControllerLogicSpaceSystems CreateSystemSpaceSystems()
@@ -131,7 +131,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				this._boeStateMachine.Object,
 				this._BoeMediator.Object,
 				this.systemSettingsLoader.Object,
-				this.workspaceStateMachine.Object,
+				this.workspaceStateMachine.Object as WorkspaceStateMachine,
 				this.inBoeApproverResponseDTODataLoader.Object);
 		}
 
@@ -186,8 +186,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			this.moqTypeDataLoader = new Mock<IMoqTypeDataLoader>();
 
 			this._permissionLoader.Setup(x => x.GetCreateWorkspaceRolesForPtm(It.IsAny<string>(), It.IsAny<string>())).Returns(new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("test", "") });
-			this.workspaceStateMachine = new Mock<WorkspaceStateMachine>();
-
+			this.workspaceStateMachine = new Mock<IWorkspaceStateMachine>();
+			this.inBoeApproverResponseDTODataLoader = new Mock<IBoeApproverResponseDTODataLoader>();
 		}
 
         private void DoGetWorkspaceIdentificationTest(IWorkspaceControllerLogic sut, CompanyConfiguration config)
@@ -629,10 +629,28 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             WorkspaceControllerLogicMST sut = CreateSystemMST();
             ICreateWorkspaceModelView theModel2 = new CreateWorkspaceMSTModelView();
             sut.PopulateCompanySpecificWorkspaceProperties(theModel2, null);
-        }
-        #endregion
+		}
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
+		/// <summary>
+		/// Test the Workspace Identification version of PopulateCompanySpecificWorkspaceProperties properly sets the Workspace Name for PLD
+		/// </summary>
+		[TestMethod]
+		public void PopulateCompanySpecificWorkspaceProperties_PldWorkspaceName()
+		{
+			WorkspaceControllerLogicMST sut = CreateSystemMST();
+			WorkspaceIdentificationMSTModelView theModel = new WorkspaceIdentificationMSTModelView();
+			WorkspaceDTO theDto = new WorkspaceDTO();
+
+			theModel.WorkspaceName = "panumber patitle ";
+			theModel.WorkspaceNameInput = "userinput";
+
+			sut.PopulateCompanySpecificWorkspaceProperties(theModel, theDto);
+
+			Assert.AreEqual(theModel.WorkspaceName + theModel.WorkspaceNameInput, theDto.WorkspaceName);
+		}
+		#endregion
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
         private void DoGetWorkspaceResourceRateGridTMModelViewsTest(IWorkspaceControllerLogic sut)
         {
             WorkspaceDTO workspaceDTO = new WorkspaceDTO()
