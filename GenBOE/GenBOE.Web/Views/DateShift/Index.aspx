@@ -142,7 +142,10 @@
 					<div class="form-label">Fix child outside Parent POP 
 						<select data-ng-model="errorHandling.error2">
 							<option data-ng-value="undefined"></option>
+							<% if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+								{ %>
 							<option data-ng-value="0">No Change (Author to manually correct)</option>
+							<%  } %>
 							<option data-ng-value="2">To POP (Period of Performance)</option>
 							<option data-ng-value="3">To Start</option>
 							<option data-ng-value="4">To End</option>
