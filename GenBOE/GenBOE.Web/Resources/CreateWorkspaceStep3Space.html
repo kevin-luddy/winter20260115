@@ -128,17 +128,17 @@
     </div>
 </div>
 <div class="form-row" id="ContractDates" data-ng-show="!data.IsAttemptingToImport && (data.ProjectMapType == '1' || data.ProjectMapType == '2')">
-	<div class="form-label">
-		Contract Start Date *
-	</div>
-	<div class="form-element contract-start-date">
-		<input class="normal-date" id="ContractStartDate" placeholder="mm/yyyy" name="ContractStartDate" type="text" data-ng-model="data.ContractStartDate">
+    <div class="form-label">
+        Contract Start Date *
     </div>
-	<div class="form-label contract-end-date-label">
-		Contract End Date *
-	</div>
-	<div class="form-element contract-end-date">
-		<input class="normal-date" id="ContractEndDate" placeholder="mm/yyyy" name="ContractEndDate" type="text" data-ng-model="data.ContractEndDate">
+    <div class="form-element contract-start-date">
+        <input class="normal-date" id="ContractStartDate" placeholder="mm/yyyy" name="ContractStartDate" type="text" data-ng-model="data.ContractStartDate">
+    </div>
+    <div class="form-label contract-end-date-label">
+        Contract End Date *
+    </div>
+    <div class="form-element contract-end-date">
+        <input class="normal-date" id="ContractEndDate" placeholder="mm/yyyy" name="ContractEndDate" type="text" data-ng-model="data.ContractEndDate">
     </div>
 </div>
 <div class="form-row" id="AllowGridEdit" data-ng-hide="data.ProjectMapType == '1' || data.ProjectMapType == '2'">
@@ -369,9 +369,9 @@
         <div id="using-template-boe-help-dialog" class="help-dialog" style="width: 200px;">
             <div class="help-dialog-close"></div>
             <div class="help-dialog-text">
-				When "Yes" is selected, Authors are prompted to choose their name from the BOE Author list and assign themselves to the task as the Task Author.
-				When "No" is selected, Author Assignment is BOE Level only. No additional Author steps.
-			</div>
+                When "Yes" is selected, Authors are prompted to choose their name from the BOE Author list and assign themselves to the task as the Task Author.
+                When "No" is selected, Author Assignment is BOE Level only. No additional Author steps.
+            </div>
         </div>
     </div>
     <div class="form-element">
@@ -382,27 +382,29 @@
     </div>
 </div>
 <div class="form-row" data-ng-show="model.isLmNavigatorEnabled">
-	<div class="form-label">
-		<span>LM Navigator Enabled *</span>
-		<div id="using-template-boe-help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);"></div>
-		<div id="using-template-boe-help-dialog" class="help-dialog" style="width: 200px;">
-			<div class="help-dialog-close"></div>
-			<div class="help-dialog-text">
-				Display a link to LM Navigator in all Rich Text Editors?
-			</div>
-		</div>
-	</div>
-	<div class="form-element">
-		<select name="EnableLmNavigator" id="EnableLmNavigator" data-ng-model="data.EnableLmNavigator" data-ng-disabled="data.WorkspaceToCopyID > 0">
-			<option data-ng-value="true">Yes</option>
-			<option data-ng-value="false">No</option>
-		</select>
-	</div>
+    <div class="form-label">
+        <span>LM Navigator Enabled *</span>
+        <div id="using-template-boe-help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);"></div>
+        <div id="using-template-boe-help-dialog" class="help-dialog" style="width: 200px;">
+            <div class="help-dialog-close"></div>
+            <div class="help-dialog-text">
+                Display a link to LM Navigator in all Rich Text Editors?
+            </div>
+        </div>
+    </div>
+    <div class="form-element">
+        <select name="EnableLmNavigator" id="EnableLmNavigator" data-ng-model="data.EnableLmNavigator" data-ng-disabled="data.WorkspaceToCopyID > 0">
+            <option data-ng-value="true">Yes</option>
+            <option data-ng-value="false">No</option>
+        </select>
+    </div>
 </div>
 {{setupIdentificationPage()}}
 <script type="text/javascript">
-    (function () {
-        SetupMonthPicker("#ContractStartDate");
-        SetupMonthPicker("#ContractEndDate");
-    })();
+    if (typeof SetupMonthPicker === 'function') {
+        (function () {
+            SetupMonthPicker("#ContractStartDate");
+            SetupMonthPicker("#ContractEndDate");
+        })();
+    }
 </script>

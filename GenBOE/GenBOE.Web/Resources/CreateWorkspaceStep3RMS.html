@@ -12,14 +12,11 @@
 		</div>
 	</div>
 	<div class="form-element" style="flex">
-		<div style="display: flex" data-ng-show="!(model.isPTMIntegrated && model.ptmTrackingNumber !== '')">
-			<span>{{model.PLD_PANumber}}</span><input class="half" data-ng-trim="false" id="WorkspaceName" name="WorkspaceName" data-ng-model="data.WorkspaceName"  data-ng-keyup="workspaceNameKeyUp()" type="text" maxlength="88" />
+		<div style="display: flex" data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">
+			<span> {{model.PLD_PANumber}} {{model.PLD_PATitle}}</span>
 		</div>
-		<div data-ng-show="model.isPTMIntegrated && model.ptmTrackingNumber !== ''">
-			<div data-ng-show="model.isPTMIntegrated && model.ptmTrackingNumber !== ''">
-				<span>{{model.nextRevision}} </span><input class="half" id="WorkspaceName" name="WorkspaceName" data-ng-trim="false" data-ng-model="data.RevisionWorkspaceName"  data-ng-keyup="workspaceNameKeyUp()" type="text" maxlength="88" />
-			</div>
-			<input data-ng-hide="(model.isPTMIntegrated && model.ptmTrackingNumber !== '') || model.PLD_PANumber !== ''" name="WorkspaceName" class="full" id="WorkspaceName" data-ng-keyup="workspaceNameKeyUp()" data-ng-model="data.WorkspaceName" type="text" maxlength="100" />
+		<div data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">
+			<span>{{model.nextRevision}} </span><input class="half" id="WorkspaceName" name="WorkspaceName" data-ng-trim="false" data-ng-model="data.WorkspaceName" data-ng-keyup="workspaceNameKeyUp()" type="text" maxlength="88" />
 		</div>
 	</div>
 </div>
@@ -28,8 +25,8 @@
 		Description
 	</div>
 	<div class="form-element">
-		<textarea data-ng-show="!model.isAdmin" data-ng-model="data.Description" name="Description" class="full ignoreValidation" id="Description" maxlength="1000" rows="2" cols="20" readonly="readonly"></textarea>
-		<textarea data-ng-hide="!model.isAdmin" data-ng-model="data.Description" name="Description" class="full ignoreValidation" id="Description" maxlength="1000" rows="2" cols="20"></textarea>
+		<textarea data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''" data-ng-model="data.Description" name="Description" class="full ignoreValidation" id="Description" maxlength="1000" rows="2" cols="20" readonly="readonly"></textarea>
+		<textarea data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''" data-ng-model="data.Description" name="Description" class="full ignoreValidation" id="Description" maxlength="1000" rows="2" cols="20"></textarea>
 	</div>
 </div>
 <div class="form-row">
@@ -47,12 +44,9 @@
 	</div>
 	<div class="form-element">
 
-		<span class="url">{{model.applicationUrl}}<span data-ng-show="(model.isPTMIntegrated && model.ptmTrackingNumber !== '') || model.PLD_PANumber === ''">{{model.nextRevision}}</span></span>
-		<input data-ng-hide="(model.isPTMIntegrated && model.ptmTrackingNumber !== '') || model.PLD_PANumber === ''" name="ShortName" class="quarter" id="ShortName" data-ng-model="data.Shortname" type="text" maxlength="15"  value="{{ model.nextRevision }}">
-		<input data-ng-hide="(model.isPTMIntegrated && model.ptmTrackingNumber !== '') || model.PLD_PANumber !== ''" name="ShortName" class="quarter" id="ShortName" data-ng-model="data.Shortname" type="text" maxlength="15" value="{{ model.nextRevision }}" />
+		<span class="url">{{ model.applicationUrl }}</span><span data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">{{model.PLD_PANumber}}</span><input data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''" name="ShortName" class="quarter" id="ShortName" data-ng-model="data.Shortname" type="text" maxlength="15" value="{{ model.nextRevision }}" />
 
 	</div>
-	</div> 
 </div>
 <div class="form-row" data-ng-show="model.showProjectMap">
 	<div class="form-label">Workspace Type</div>
@@ -74,31 +68,8 @@
 		</div>
 	</div>
 	<div class="form-element">
-		<span data-ng-show="model.isPLDIntegrated && !model.isAdmin">{{getLOB()}}</span>
-		<select data-ng-hide="model.isPLDIntegrated && !model.isAdmin" name="LineOfBusiness" id="LineOfBusiness" data-ng-options="item.Id as item.Text for item in model.lobs | isActiveOrInitialPickListItem:data.LineOfBusinessID" data-ng-model="data.LineOfBusinessID"></select>
-	</div>
-</div>
-<div class="form-row">
-	<div class="form-label">
-		<span>Contract Type *</span>
-		<div id="ContractType-Help" data-ng-show="model.isPTMIntegrated" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
-		</div>
-		<!-- This comment is needed for the jquery animation to work in IE8... -->
-		<div id="ContractType-HelpDialog" data-ng-show="model.isPTMIntegrated" class="help-dialog" style="width: 200px;">
-			<div class="help-dialog-close"></div>
-			<div class="help-dialog-text">
-				Initial Contract Type(s) is driven by the Tracking Number selected.
-			</div>
-		</div>
-	</div>
-	<div class="form-element">
-		<div data-ng-show="model.isPTMIntegrated && !model.isAdmin" class="form-element static" style="width:745px">{{getSelectedContractTypes()}}</div>
-		<div data-ng-hide="model.isPTMIntegrated && !model.isAdmin" class="approver-selection-box">
-			<div data-ng-repeat="item in model.contractTypes">
-				<input type="checkbox" data-ng-show="item.IsActive || data.SelectedContractTypes.includes(item.Id)" checklist-value="item.Id" checklist-model="data.SelectedContractTypes" name="SelectedContractTypes" id="ContractType_{{item.Id}}" />
-				<label data-ng-show="item.IsActive || data.SelectedContractTypes.includes(item.Id)" for="ContractType_{{item.Id}}">{{item.Text}}</label>
-			</div>
-		</div>
+		<span data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">{{getLOB()}}</span>
+		<select data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''" name="LineOfBusiness" id="LineOfBusiness" data-ng-options="item.Id as item.Text for item in model.lobs | isActiveOrInitialPickListItem:data.LineOfBusinessID" data-ng-model="data.LineOfBusinessID"></select>
 	</div>
 </div>
 <div class="form-row">
@@ -119,7 +90,23 @@
 		<input id="CostVolumeLeadPricerDisplayName" name="CostVolumeLeadPricerDisplayName" type="text" class="half" maxlength="50" data-ng-model="data.CostVolumeLeadPricerDisplayName" />
 	</div>
 </div>
-<div class="form-row" id="ContractDates" data-ng-show="!data.IsAttemptingToImport && (data.ProjectMapType == '1' || data.ProjectMapType == '2')">
+<!-- Pull from PLD -->
+<div class="form-row" id="ContractDates" data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">
+	<div class="form-label">
+		Contract Start Date *
+	</div>
+	<div class="form-element contract-start-date">
+		{{ data.ContractStartDate }}
+	</div>
+	<div class="form-label contract-end-date-label">
+		Contract End Date *
+	</div>
+	<div class="form-element contract-end-date">
+		{{ data.ContractEndDate }}
+	</div>
+</div>
+<!-- Edit -->
+<div class="form-row" id="ContractDates" data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== '')">
 	<div class="form-label">
 		Contract Start Date *
 	</div>
@@ -149,8 +136,7 @@
 		Proposal Submittal Date
 	</div>
 	<div class="form-element proposal-submittal">
-		<input data-ng-hide="model.isPTMIntegrated && !model.isAdmin" class="normal-date" id="ProposalSubmittalDate" name="ProposalSubmittalDate" placeholder="mm/dd/yyyy" type="text" data-ng-model="data.ProposalSubmittalDate">
-		<span data-ng-show="model.isPTMIntegrated && !model.isAdmin">{{data.ProposalSubmittalDate}}</span>
+		<input class="normal-date" id="ProposalSubmittalDate" name="ProposalSubmittalDate" placeholder="mm/dd/yyyy" type="text" data-ng-model="data.ProposalSubmittalDate">
 	</div>
 </div>
 <div class="form-row">
@@ -183,9 +169,9 @@
 	</div>
 </div>
 </div>
-<div class="form-row" data-ng-show="model.isPTMIntegrated">
+<div class="form-row" data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">
 	<div class="form-label">
-		<span>PTM Proposal Title</span>
+		<span>PLD Proposal Title</span>
 		<div id="Title-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
 		</div>
 		<!-- This comment is needed for the jquery animation to work in IE8... -->
@@ -266,3 +252,11 @@
 	</div>
 </div>
 {{setupIdentificationPage()}}
+<script type="text/javascript">
+	if (typeof SetupMonthPicker === 'function') {
+		(function () {
+			SetupMonthPicker("#ContractStartDate");
+			SetupMonthPicker("#ContractEndDate");
+		})();
+	}
+</script>
