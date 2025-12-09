@@ -1182,6 +1182,30 @@ namespace IES.Common
 	}
 
 	/// <summary>
+	/// The CCOPD Dollar Threshold, for NLF
+	/// </summary>
+	public enum CCOPDDollarThreshold
+	{
+		/// <summary>
+		/// No dollar threshold selected
+		/// </summary>
+		[Description("")]
+		Blank = 0,
+
+		/// <summary>
+		/// $15M threshold 
+		/// </summary>
+		[Description("$15M")]
+		FifteenMillionDollarThreshold = 1,
+
+		/// <summary>
+		/// $20M threshold
+		/// </summary>
+		[Description("$20M")]
+		TwentyMillionDollarThreshold = 2
+	}
+
+	/// <summary>
 	/// Target areas used in RateFormatter definitions.
 	/// </summary>
 	public enum RateTarget

@@ -304,6 +304,8 @@ namespace GenTRAC.ActionLogic
 					ProposalType = proposalInfo.ProposalType,
 					Request = proposalInfo.RequestType,
 					RFPNumber = proposalInfo.RFPNumber,
+					DraftRfpIssuedDate = string.IsNullOrEmpty(proposalInfo.DraftRfpIssuedDate) ? (DateTime?)null
+						: proposalInfo.DraftRfpIssuedDate.ToDateTime("MM/dd/yyyy"),
 					RFPIssuedDate = string.IsNullOrEmpty(proposalInfo.RFPIssuedDate) ? (DateTime?)null
 						: proposalInfo.RFPIssuedDate.ToDateTime("MM/dd/yyyy"),
 					RFPReceivedDate = string.IsNullOrEmpty(proposalInfo.RFPReceivedDate) ? (DateTime?)null
@@ -1265,6 +1267,8 @@ namespace GenTRAC.ActionLogic
 				}
 
 				model.ContractActionTypeOtherText = fullProposalDto.ContractActionTypeOtherText;
+				model.DraftRfpIssuedDate = fullProposalDto.DraftRfpIssuedDate.HasValue ?
+					fullProposalDto.DraftRfpIssuedDate.Value.ToString("MM/dd/yyyy") : string.Empty;
 				model.RFPIssuedDate = fullProposalDto.RFPIssuedDate.HasValue ?
 					fullProposalDto.RFPIssuedDate.Value.ToString("MM/dd/yyyy") : string.Empty;
 				model.RFPReceivedDate = fullProposalDto.RFPReceivedDate.HasValue ?
@@ -2280,6 +2284,18 @@ namespace GenTRAC.ActionLogic
 					inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.TYPE_OF_REQUEST_REQUIRED));
 				}
 
+				if (!string.IsNullOrEmpty(proposalInfo.DraftRfpIssuedDate))
+				{
+					try
+					{
+						proposalInfo.DraftRfpIssuedDate.ToDateTime("MM/dd/yyyy");
+					}
+					catch (FormatException)
+					{
+						inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.DRAFT_RFP_ISSUED_DATE_FORMAT));
+					}
+				}
+
 				if (!string.IsNullOrEmpty(proposalInfo.RFPIssuedDate))
 				{
 					try
@@ -2412,6 +2428,11 @@ namespace GenTRAC.ActionLogic
 					inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.RFP_NUMBER_REQUIRED));
 				}
 
+				if (string.IsNullOrWhiteSpace(proposalInfo.DraftRfpIssuedDate))
+				{
+					inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.DRAFT_RFP_ISSUED_DATE_REQUIRED));
+				}
+
 				if (string.IsNullOrWhiteSpace(proposalInfo.RFPIssuedDate))
 				{
 					inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.RFP_ISSUED_DATE_REQUIRED));
@@ -2425,6 +2446,18 @@ namespace GenTRAC.ActionLogic
 				if (!proposalInfo.IsScheduleProposal.HasValue)
 				{
 					inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.SCHEDULE_PROPOSAL_REQUIRED));
+				}
+
+				if (!string.IsNullOrEmpty(proposalInfo.DraftRfpIssuedDate) && !string.IsNullOrEmpty(proposalInfo.RFPIssuedDate) && !string.IsNullOrEmpty(proposalInfo.RFPReceivedDate))
+				{
+					DateTime draftRfpIssuedDate = proposalInfo.DraftRfpIssuedDate.ToDateTime("MM/dd/yyyy");
+					DateTime rfpIssuedDate = proposalInfo.RFPIssuedDate.ToDateTime("MM/dd/yyyy");
+					DateTime rfpReceivedDate = proposalInfo.RFPReceivedDate.ToDateTime("MM/dd/yyyy");
+
+					if (draftRfpIssuedDate > rfpIssuedDate || draftRfpIssuedDate > rfpReceivedDate)
+					{
+						inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.DRAFT_RFP_ISSUED_DATE_RANGE));
+					}
 				}
 			}
 

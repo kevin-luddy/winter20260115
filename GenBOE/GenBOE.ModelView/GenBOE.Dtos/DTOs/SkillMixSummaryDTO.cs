@@ -31,6 +31,7 @@ namespace GenBOE.Dtos
 			this.BOEID = -1;
 			this.BOETaskElementID = -1;
 			this.IsUserInput = false;
+			this.IsRationaleReadOnly = false;
 		}
 
 		/// <summary>
@@ -102,5 +103,10 @@ namespace GenBOE.Dtos
 		/// Is this data User Input
 		/// </summary>
 		public bool IsUserInput { get; set; }
+
+		/// <summary>
+		/// Is the skill mix rationale read only?
+		/// </summary>
+		public bool IsRationaleReadOnly { get; set; }
 	}
 }
