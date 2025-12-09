@@ -274,6 +274,12 @@ namespace GenBOE.DataBridge.DTO
 					case "cyber, ships & advanced technologies":
 						lobConvertedName = "Cyber, Ships & Advanced Technologies";
 						break;
+					case "mic2":
+						lobConvertedName = "Mission Integrated Command and Control (MIC2)";
+						break;
+					case "sems":
+						lobConvertedName = "Sensors, Effectors & Mission Systems (SEMS)";
+						break;
 					default:
 						lobConvertedName = string.Empty;
 						break;
