@@ -70,8 +70,11 @@
 			CalculateSkillMixTotals(refreshedModel);
 			CalculateBoeSkillMixPercentage(refreshedModel);
 
-			// reorder the lists
-			refreshedModel.SkillMixRows = refreshedModel.SkillMixRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceOld)).ThenBy(r => r.ResourceOld).ToList();
+            // Apply rationale canned responses based on conditions regarding proposed skill mix and historical hours.
+            ApplyRationaleCannedResponses(refreshedModel);
+
+            // reorder the lists
+            refreshedModel.SkillMixRows = refreshedModel.SkillMixRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceOld)).ThenBy(r => r.ResourceOld).ToList();
 			refreshedModel.CommonDisclosureRows = refreshedModel.CommonDisclosureRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceID)).ThenBy(r => r.ResourceID).ThenBy(s => s.BusinessResourceID).ToList();
 			refreshedModel.SkillMixSummaryRows = refreshedModel.SkillMixSummaryRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceID)).ThenBy(r => r.ResourceID).ThenBy(s => s.BusinessResourceID).ToList();
 
