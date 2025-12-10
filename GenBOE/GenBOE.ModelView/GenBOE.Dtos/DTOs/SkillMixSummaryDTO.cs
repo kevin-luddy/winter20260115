@@ -108,5 +108,20 @@ namespace GenBOE.Dtos
 		/// Is the skill mix rationale read only?
 		/// </summary>
 		public bool IsRationaleReadOnly { get; set; }
+
+		/// <summary>
+		/// Does the line item (row) use a mixture of cannned responses and user input.
+		/// </summary>
+		public bool UsesMixedCannedResponseAndUserInput { get; set; }
+
+		/// <summary>
+		/// Does the line item (row) need a placeholder text?
+		/// </summary>
+		public string RationalePlaceholderText { get; set; }
+
+		/// <summary>
+		/// The mixed canned response used when the histrocial and proposed skill mix difference is greater than 5%.
+		/// </summary>
+		public string RationaleMixedCannedResponse { get; set; }
 	}
 }

@@ -768,35 +768,133 @@
 			refreshedModel.SkillMixSummaryTotals.ProposedSkillMix = refreshedModel.SkillMixSummaryRows.Sum(s => s.ProposedSkillMix ?? 0.0m);
 		}
 
-        /// <summary>
-        /// Apply rationale canned responses based on proposed skill mix, proposed hours and historial hours
-        /// </summary>
-        /// <param name="refreshedModel">Skill mix data.</param>
-        private static void ApplyRationaleCannedResponses(RefreshSkillMixModelView refreshedModel)
-        {
-            foreach (SkillMixSummaryModelView row in refreshedModel.SkillMixSummaryRows)
-            {
-                // Get the difference between Proposed Skill Mix and Historical Skill Mix.
-                decimal difference = Math.Abs(row.ProposedSkillMix.Value - row.HistoricalSkillMix);
+		/// <summary>
+		/// Apply the appropriate canned‑response rationale for each skill‑mix row.
+		/// </summary>
+		/// <param name="refreshedModel">Skill‑mix data (contains the rows to evaluate).</param>
+		private static void ApplyRationaleCannedResponses(RefreshSkillMixModelView refreshedModel)
+		{
+			foreach (SkillMixSummaryModelView row in refreshedModel.SkillMixSummaryRows)
+			{
 
-                // Check if the difference is less than 5%.
-                if (difference < 5m)
-                {
-                    row.Rationale = Constants.SPACE_SKILL_MIX_RATIONALE_BELOW_5_PERCENT_DIFF;
-                    row.IsRationaleReadOnly = true;
-                    continue;
-                }
+				// Checks if the proposed skill mix and historical are equal.
+				bool proposedSkillMixAndHistoricalEqual = row.ProposedSkillMix.HasValue && row.ProposedSkillMix.Value == row.HistoricalSkillMix;
 
-                // If neither conditions are met then leave it as is.
-                row.IsRationaleReadOnly = false;
-            }
-        }
+				// Difference expressed as an absolute percentage.
+				decimal percentDifference = Math.Abs(row.ProposedSkillMix.GetValueOrDefault() - row.HistoricalSkillMix);
 
-        /// <summary>
-        /// Calculates the SkillMix/CD row Totals
-        /// </summary>
-        /// <param name="refreshedModel">The skill mix model view to calculate on</param>
-        private static void CalculateSkillMixTotals(RefreshSkillMixModelView refreshedModel)
+				// Get the range of dates for Resource level.
+				//bool hasHoursThrough2028Only = HasProposedHoursInRange(row, 2020, 2028) && !HasProposedHoursInRange(row, 2029, int.MaxValue);
+				//bool hasHoursThrough2028AndPast2029 = HasProposedHoursInRange(row, 2020, 2028) && HasProposedHoursInRange(row, 2029, int.MaxValue);
+				//bool hasHoursPast2029 = !HasProposedHoursInRange(row, 2020, 2028) && HasProposedHoursInRange(row, 2029, int.MaxValue);
+
+				bool hasHoursThrough2028Only = true;
+				bool hasHoursThrough2028AndPast2029 = true;
+				bool hasHoursPast2029 = true;
+
+				string cannedRationale = null;
+
+				// Historical = Proposed.
+				if (proposedSkillMixAndHistoricalEqual)
+				{
+					if (hasHoursThrough2028Only)
+					{
+						cannedRationale = Constants.SPACE_SKILL_MIX_SUMMARY_RATIONALE_EQUAL_TO_2028;
+					}
+					else if (hasHoursThrough2028AndPast2029)
+					{
+						cannedRationale = Constants.SPACE_SKILL_MIX_SUMMARY_RATIONALE_EQUAL_2028_2029;
+					}
+					else if (hasHoursPast2029)
+					{
+						cannedRationale = Constants.SPACE_SKILL_MIX_SUMMARY_RATIONALE_EQUAL_2029;
+					}
+				}
+				// Historical <= 5% difference from Skill Mix
+				else if (percentDifference <= 5m)
+				{
+					if (hasHoursThrough2028Only)
+					{
+						cannedRationale = Constants.SPACE_SKILL_MIX_SUMMARY_RATIONALE_LESS_THAN_5_PERCENT_TO_2028;
+					}
+					else if (hasHoursThrough2028AndPast2029)
+					{
+						cannedRationale = Constants.SPACE_SKILL_SUMMARY_RATIONALE_LESS_THAN_5_PERCENT_2028_2029;
+					}
+					else if (hasHoursPast2029)
+					{
+						cannedRationale = Constants.SPACE_SKILL_SUMMARY_RATIONALE_LESS_THAN_5_PERCENT_2029;
+					}
+				}
+				// Historical > 5% difference from Skill Mix
+				else if (percentDifference > 5m)
+				{
+					if (hasHoursThrough2028Only)
+					{
+						//row.RationalePlaceholderText = Constants.SPACE_SKILL_SUMMARY_RATIONALE_PLACEHOLDER_INCLUDE_GREATER_THAN_5_PERCENT;
+						row.UsesMixedCannedResponseAndUserInput = true;
+						row.RationalePlaceholderText = Constants.SPACE_SKILL_SUMMARY_RATIONALE_PLACEHOLDER_GREATER_THAN_5_PERCENT;
+						row.RationaleMixedCannedResponse = Constants.SPACE_SKILL_SUMMARY_RATIONALE_GREATER_THAN_5_PERCENT_2028_2029;
+					}
+					else if (hasHoursThrough2028AndPast2029)
+					{
+						row.UsesMixedCannedResponseAndUserInput = true;
+						row.RationalePlaceholderText = Constants.SPACE_SKILL_SUMMARY_RATIONALE_PLACEHOLDER_GREATER_THAN_5_PERCENT;
+						row.RationaleMixedCannedResponse = Constants.SPACE_SKILL_SUMMARY_RATIONALE_GREATER_THAN_5_PERCENT_2028_2029;
+					}
+					else if (hasHoursPast2029)
+					{
+						row.UsesMixedCannedResponseAndUserInput = true;
+						row.RationalePlaceholderText = Constants.SPACE_SKILL_SUMMARY_RATIONALE_PLACEHOLDER_GREATER_THAN_5_PERCENT;
+						row.RationaleMixedCannedResponse = Constants.SPACE_SKILL_SUMMARY_RATIONALE_GREATER_THAN_5_PERCENT_2029;
+					}
+				}
+
+				// If canned rationale is provided then set it, otherwise keep it the same.
+				if (cannedRationale != null && !row.UsesMixedCannedResponseAndUserInput)
+				{
+					row.Rationale = cannedRationale;
+					row.IsRationaleReadOnly = true;
+				}
+				else
+				{
+					row.IsRationaleReadOnly = false;
+				}
+			}
+		}
+
+		///// <summary>
+		///// Returns true if the row has **any** proposed hours > 0 in the inclusive
+		///// year range <paramref name="startYear"/> … <paramref name="endYear"/>.
+		///// </summary>
+		//private static bool HasProposedHoursInRange(SkillMixSummaryModelView row, int startYear, int endYear)
+		//{
+		//	// Assume a dictionary; replace with your actual storage mechanism.
+		//	if (row.ProposedHoursByYear == null)
+		//	{
+		//		return false;
+		//	}
+
+		//	foreach (var kvp in row.ProposedHoursByYear)
+		//	{
+		//		int year = kvp.Key;
+		//		decimal hrs = kvp.Value;
+
+		//		if (year >= startYear && year <= endYear && hrs > 0m)
+		//		{
+		//			return true;
+		//		}
+
+		//	}
+
+		//	return false;
+		//}
+
+		/// <summary>
+		/// Calculates the SkillMix/CD row Totals
+		/// </summary>
+		/// <param name="refreshedModel">The skill mix model view to calculate on</param>
+		private static void CalculateSkillMixTotals(RefreshSkillMixModelView refreshedModel)
 		{
 			// Skill Mix Totals
 			refreshedModel.SkillMixTotals.HistoricalHours = refreshedModel.SkillMixRows.Sum(s => s.HistoricalHours);
