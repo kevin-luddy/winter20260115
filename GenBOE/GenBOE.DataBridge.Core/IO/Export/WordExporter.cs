@@ -11,6 +11,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 	using System.Collections.ObjectModel;
 	using System.Data;
 	using System.Diagnostics.CodeAnalysis;
+	using System.Drawing;
 	using System.IO;
 	using System.Linq;
 	using System.Text.RegularExpressions;
@@ -1030,6 +1031,36 @@ namespace GenBOE.DataBridge.Core.IO.Export
 							WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(dataRow, BOEExporterConstants.FieldName_Rationale), skillMixRow.Rationale);
 
 							currentInsertionRow = dataRow;
+
+							if (skillMixRow.ProposedSkillMix.HasValue && skillMixRow.ProposedSkillMix.Value > 0m)
+							{
+								foreach (Cell cell in dataRow.Cells)
+								{
+									if (cell.Paragraphs != null && cell.Paragraphs.Any())
+									{
+										foreach (Paragraph para in cell.Paragraphs)
+										{
+											if (para.Runs != null && para.Runs.Any())
+											{
+												foreach (Run run in para.Runs)
+												{
+													run.Font.Bold = true;
+												}
+											}
+										}
+									}
+								}
+							}
+
+							if (skillMixRow.HistoricalSkillMix == 0m)
+							{
+								Color backgroundColor = ColorTranslator.FromHtml("#C3C3C3");
+								// no historical for this row, change the background to #c3c3c3
+								foreach (Cell cell in dataRow.Cells)
+								{
+									cell.CellFormat.Shading.BackgroundPatternColor = backgroundColor;
+								}
+							}
 						}
 
 						// remove template row
