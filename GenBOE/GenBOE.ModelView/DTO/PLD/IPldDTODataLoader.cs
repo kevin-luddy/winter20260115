@@ -6,6 +6,7 @@
 
 namespace GenBOE.DataBridge.DTO
 {
+	using System;
 	using System.Collections.Generic;
 	using GenBOE.Dtos;
 
@@ -41,5 +42,12 @@ namespace GenBOE.DataBridge.DTO
 		/// <param name="activeNames"></param>
 		/// <returns></returns>
 		ICollection<string> GetAllActiveProposalNames();
+
+		/// <summary>
+		/// Get the Last Modified Date for the Proposal with the given PA Number
+		/// </summary>
+		/// <param name="PaNumber">PA Number of the proposal</param>
+		/// <returns>Last Modified Date if exists, otherwise null</returns>
+		DateTime? GetLastModifiedDate(string PaNumber);
 	}
 }

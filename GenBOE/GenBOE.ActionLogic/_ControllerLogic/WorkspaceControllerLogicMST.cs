@@ -15,7 +15,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.Common.Calculations;
 	using GenBOE.ActionLogic.IO.Export;
-	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.ModelView.Workspace;
 	using GenBOE.ActionLogic.WorkspaceTransitions;
 	using GenBOE.DataBridge.Common;
@@ -36,6 +35,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		private IEscalationRatesDTOLoader systemEscalationRatesLoader;
 		private IMSTTravelNonzoneFeesAndCostsDTODataLoader systemFeesLoader;
 		private IOffloadRatesDTOLoader offloadRatesLoader;
+		private IPldDTODataLoader pldDTODataLoader;
 
 		/// <summary>
 		/// Constructor
@@ -64,6 +64,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="contractTypeLoader">Contract Type Loader</param>
 		/// <param name="workspaceExporter">WS Exporter</param>
 		/// <param name="moqTypeLoader">Moq Type Loader</param>
+		/// <param name="pldDTODataLoader">PLD DTO Data Loader</param>
 		/// <param name="systemSettingDTODataLoader">System Settings data loader</param>
 		public WorkspaceControllerLogicMST(
 			IWorkspaceDTODataLoader workspaceLoader,
@@ -94,7 +95,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			IBoeMediator boeMediator,
 			ISystemSettingDTODataLoader systemSettingDTODataLoader,
 			WorkspaceStateMachine workspaceStateMachine,
-			IBoeApproverResponseDTODataLoader inBoeApproverResponseDTODataLoader
+			IBoeApproverResponseDTODataLoader inBoeApproverResponseDTODataLoader,
+			IPldDTODataLoader pldDTODataLoader
 			)
 			: base(
 				workspaceLoader,
@@ -128,6 +130,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			this.systemEscalationRatesLoader = systemEscalationRatesLoader;
 			this.systemFeesLoader = systemFeesLoader;
 			this.offloadRatesLoader = offloadRatesDTOLoader;
+			this.pldDTODataLoader = pldDTODataLoader;
 		}
 
 		/// <summary>
@@ -144,7 +147,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			UserDTO costVolumeLeadDTO = this.UserLoader.GetUserByID(workspace.CostVolumeLeadPricerUserID);
 
-			return new WorkspaceIdentificationMSTModelView(workspace, costVolumeLeadDTO);
+			WorkspaceIdentificationMSTModelView modelView = new WorkspaceIdentificationMSTModelView(workspace, costVolumeLeadDTO);
+
+			if (Utilities.ShowPLDIsIntegrated && !string.IsNullOrEmpty(modelView.TrackingNumber))
+			{
+				modelView.PldLastUpdateDate = pldDTODataLoader.GetLastModifiedDate(modelView.TrackingNumber);
+			}
+
+			return modelView;
 		}
 
 		/// <summary>

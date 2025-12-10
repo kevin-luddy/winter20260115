@@ -1024,6 +1024,8 @@ namespace IES.Common
 
 				return isPLDIntegrated.Value;
 			}
+			// Internal set for testing purposes
+			internal set => isPLDIntegrated = value;
 		}
 
 
