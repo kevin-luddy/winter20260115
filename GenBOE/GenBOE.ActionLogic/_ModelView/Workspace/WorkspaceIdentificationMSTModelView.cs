@@ -103,6 +103,11 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		[StringLength(40, ErrorMessage = "A maximum of 40 characters are allowed for the Workspace Name")]
 		public string WorkspaceNameInput { get; set; }
 
+		/// <summary>
+		/// Gets/Sets date PLD Proposal was last updated
+		/// </summary>
+		public DateTime? PldLastUpdateDate { get; set; }
+
 		#region new genBOE UI
 		/// <summary>
 		/// Hours Label depending on system and workpace preferences

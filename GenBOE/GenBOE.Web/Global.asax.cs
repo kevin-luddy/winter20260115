@@ -837,7 +837,8 @@ namespace GenBOE
 																															  new ResolvedParameter(typeof(IBoeMediator)),
 																															  new ResolvedParameter(typeof(ISystemSettingDTODataLoader)),
 																															  new ResolvedParameter(typeof(WorkspaceStateMachine)),
-																															  new ResolvedParameter(typeof(IBoeApproverResponseDTODataLoader))));
+																															  new ResolvedParameter(typeof(IBoeApproverResponseDTODataLoader)),
+																															  new ResolvedParameter(typeof(IPldDTODataLoader))));
 
 					GenBOEUnityContainer.Container.RegisterType(typeof(IAdminControllerLogic), typeof(AdminControllerLogicMST), GetLifetimeManager(), new InjectionConstructor(
 																															  new ResolvedParameter(typeof(ICommonDataMapper)),

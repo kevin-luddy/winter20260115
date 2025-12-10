@@ -81,15 +81,13 @@
 	WorkspaceIdentificationWidget = InitializeWorkspaceIdentificationWidget(widgetConfig, jumpUrl);
 
 	WorkspaceIdentificationWidget.LockFields = function () {
-		<% if (Utilities.ShowPLDIsIntegrated)
-	{ %>
 		// break up WorkspaceName and WorkspaceNameInput if needed
 		var paNumber = $('#PaNumber').val();
 		var paTitle = $('#PaTitle').val();
 		var workspaceName = $('#WorkspaceName').val();
 
 		// only show the workspacename broken up if it actually starts with the tracking number
-		if (workspaceName.indexOf(paNumber) == 0) {
+		if (workspaceName.indexOf(paNumber) == 0 && !WorkspaceIdentificationWidget.isReadOnly()) {
 			if ($('#WorkspaceName').hasClass('full')) {
 				// The fields could be locked already, but this needs to be shrunk and the workspace name input shown so the user can update
 				$('#WorkspaceName').removeClass('full').addClass('half');
@@ -110,7 +108,24 @@
 				$('#WorkspaceName').val(workspaceName + " ");
 			}
 		}
-		<% } %>
+
+		$('#PaNumberRow').removeClass('display-none');
+		$('#PaTitleRow').removeClass('display-none');
+		$('#Description').addClass('disabled').prop('readonly', 'readonly').addClass('labelLookFeelRms');
+		$('#LineOfBusinessTypeID').prop('disabled', 'disabled');
+		// create a hidden input field for post data
+		$('<input>').attr({
+			type: 'hidden',
+			id: 'LineOfBusinessTypeID',
+			name: 'LineOfBusinessTypeID',
+			value: $('#LineOfBusinessTypeID').val()
+		}).appendTo('form');
+		$('#AdjustDatesLink').addClass('display-none');
+		$("#ProposalSubmittalDate").datepicker('destroy');
+		$('#ProposalSubmittalDate').addClass('disabled').prop('readonly', 'readonly').addClass('labelLookFeelRms');
+		$('#RFPNumber').addClass('disabled').prop('readonly', 'readonly').addClass('labelLookFeelRms');
+		$('#ProposalStatusRow').addClass('display-none');
+		$('#PaLastModifiedDateRow').removeClass('display-none');
 	}
 
 	$('#RteSizeLimit').keyup(function () {
@@ -235,7 +250,7 @@
 			$("#ProjectMapEditGridWarning").hide();
 		}
 
-		if ($('#PaNumber').val() !== '' && !WorkspaceIdentificationWidget.isReadOnly()) {
+		if ('<%: Utilities.ShowPLDIsIntegrated %>' == "True" && $('#PaNumber').val() !== '') {
 			WorkspaceIdentificationWidget.LockFields();
 		}
 
@@ -318,19 +333,29 @@
 			<div class="form-label">
 				Description
 			</div>
-			<div class="form-element">
+			<div id="DescriptionInput" class="form-element">
 				<%: Html.TextArea("Description", Model.Description, new { @class = "full", onkeyup="Helper.textAreaLimit(this, 1000)" })%>
 			</div>
+			<div id="PldDescription" class="form-element display-none">
+				<%: Model.Description %>
+			</div>
 		</div>
-		<% if (Utilities.ShowPLDIsIntegrated)
-			{ %>
-		<%-- TODO - PA Number field will go here in PROPH-2986 --%>
-		<%: Html.Hidden("PaNumber", Model.TrackingNumber) %>
-		<%: Html.Hidden("PaTitle", Model.ProposalTitle) %>
-		<% } %>
+		<div id="PaNumberRow" class="form-row display-none">
+			<div class="form-label">PA Number</div>
+			<div class="form-element">
+				<%: Model.TrackingNumber %>
+			</div>
+			<%: Html.Hidden("PaNumber", Model.TrackingNumber) %>
+		</div>
+		<div id="PaTitleRow" class="form-row display-none">
+			<div class="form-label">PA Proposal Title</div>
+			<div class="form-element">
+				<%: Model.ProposalTitle %>
+			</div>
+			<%: Html.Hidden("PaTitle", Model.ProposalTitle) %>
+		</div>
 		<%if (SiteMasterUtilities.IsProjectMapEnabled)
 			{%>
-
 		<div class="form-row">
 			<div class="form-label">Workspace Type</div>
 			<div class="form-element">
@@ -449,7 +474,7 @@
 				<label for="ContainsOCI-No">No</label>
 			</div>
 		</div>
-		<div class="form-row">
+		<div id="ProposalStatusRow" class="form-row">
 			<div class="form-label">
 				<span>Proposal Status *</span>
 			</div>
@@ -572,6 +597,16 @@
 					new SelectListItem() { Text = "Yes", Value = "True" },
 					new SelectListItem() { Text = "No", Value = "False" }
 				}) %>
+			</div>
+		</div>		
+		<div id="PaLastModifiedDateRow" class="form-row display-none">
+			<div class="form-label">
+				<span helptext="Date that the PA was last modified in PLD">
+				PA Last Modified Date
+				</span>
+			</div>
+			<div class="form-element">
+				<%: Model.PldLastUpdateDate.HasValue ? Model.PldLastUpdateDate.Value.ToString("MM/dd/yyyy") : "N/A" %>
 			</div>
 		</div>
 		<% } %>

@@ -8160,9 +8160,17 @@ button:hover:not(.disabled):not([disabled]) {
 }
 
 input.labelLookFeel,
-input.labelLookFeelRms {
+input.labelLookFeelRms,
+textarea.labelLookFeelRms {
+	padding: 0px;
 	border: none;
 	background-color: white !important;
+}
+
+textarea.labelLookFeelRms {
+	height: auto;
+	padding: 0px;
+	resize: none;
 }
 
 input.labelLookFeel {
