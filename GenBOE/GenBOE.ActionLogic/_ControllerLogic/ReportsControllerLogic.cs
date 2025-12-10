@@ -239,6 +239,16 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			exportInputs = new BOEExportInputs(boes, workspace.Boes.ToList(), tasks, workspace, rteTemplateOverrides, workspace.MoqTypeSelections.ToList(), true, true);
 			exportInputs.SummarizeByCustomField = summarizeByCustomField;
+			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && !string.IsNullOrWhiteSpace(workspace.TrackingNumber))
+			{
+				// retrieve from the database directly
+				int propasalId = this.proposalLoader.GetIdByTrackingNumber(workspace.TrackingNumber);
+				ProposalDto proposal = this.proposalLoader.GetById(propasalId);
+				if(proposal != null)
+				{
+					exportInputs.IncludeCostVolumeUCOTText = proposal.CostVolumeTool != CostVolumeTool.NA;
+				}
+			}
 
 			if (isCustomExport)
 			{

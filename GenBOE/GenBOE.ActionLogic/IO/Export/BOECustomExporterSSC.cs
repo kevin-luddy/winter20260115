@@ -45,7 +45,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
         #region Resource summary
 
-        protected override void PopulateResourceSummaryByElementOfCostTable(SdtElement tableContainerElement, BOEExportModelView boeExportModelView, ICollection<BOESummaryGridModelView> data)
+        protected override void PopulateResourceSummaryByElementOfCostTable(SdtElement tableContainerElement, BOEExportModelView boeExportModelView, ICollection<BOESummaryGridModelView> data, BOEExportInputs exportInputs)
         {
             if (boeExportModelView == null)
             {
@@ -80,7 +80,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         })
                         .OrderBy(x => x.GroupKey).ToList();
 
-				this.PopulateResourceSummaryTable(tableContainerElement, rollupData);
+				this.PopulateResourceSummaryTable(tableContainerElement, rollupData, exportInputs);
             }
             else
             {
