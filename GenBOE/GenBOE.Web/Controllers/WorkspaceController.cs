@@ -5939,7 +5939,7 @@ namespace GenBOE.Web.Controllers
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults")]
-		[HttpPost]
+		[HttpGet]
 		public ActionResult ExportWorkspaceResourceRatesTM(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -5979,7 +5979,7 @@ namespace GenBOE.Web.Controllers
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1806:DoNotIgnoreMethodResults")]
-		[HttpPost]
+		[HttpGet]
 		public ActionResult ExportBlankWorkspaceResourceRatesTM(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
