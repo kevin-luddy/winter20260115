@@ -122,6 +122,6 @@ namespace GenBOE.Dtos
 		/// <summary>
 		/// The mixed canned response used when the histrocial and proposed skill mix difference is greater than 5%.
 		/// </summary>
-		public string RationaleMixedCannedResponse { get; set; }
+		public string MixedCannedRationaleResponse { get; set; }
 	}
 }
