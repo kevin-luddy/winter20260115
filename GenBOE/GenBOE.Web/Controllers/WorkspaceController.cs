@@ -763,12 +763,11 @@ namespace GenBOE.Web.Controllers
 
 		}
 
-
 		/// <summary>
 		///  Get Proposal Detail by paNumber 
 		/// </summary>
-		/// <param name="paNumber"></param>
-		/// <returns></returns>
+		/// <param name="paNumber">PLD Proposal PA Number</param>
+		/// <returns>Proposal details from PLD</returns>
 		[HttpGet]
 		public JsonResult GetPLDProposalDetails(string paNumber)
 		{
@@ -780,7 +779,6 @@ namespace GenBOE.Web.Controllers
 
 			return Json(result, JsonRequestBehavior.AllowGet);
 		}
-
 
 		/// <summary>
 		/// Get Short Name Workspace from Tracking Number  PLD 

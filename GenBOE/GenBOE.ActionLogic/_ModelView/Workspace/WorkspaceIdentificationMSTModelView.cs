@@ -106,7 +106,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		/// <summary>
 		/// Gets/Sets date PLD Proposal was last updated
 		/// </summary>
-		public DateTime? PldLastUpdateDate { get; set; }
+		public string PldLastUpdateDate { get; set; }
 
 		#region new genBOE UI
 		/// <summary>
