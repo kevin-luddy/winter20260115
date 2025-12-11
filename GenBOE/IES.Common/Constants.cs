@@ -1190,22 +1190,22 @@ namespace IES.Common
 		public readonly static string SPACE_SKILL_SUMMARY_RATIONALE_LESS_THAN_5_PERCENT_2029 = "Current hours have been converted to the appropriate Business Resource Code. Less than or equal to 5% change from historical mix and not material. Proposed skill mix is appropriate to complete this task.";
 
 		/// <summary>
-		/// 
+		/// If proposed hours >0 through 2028 and 2029+, canned text will state “Current hours have been converted to the appropriate Business Resource Code.”  
 		/// </summary>
 		public readonly static string SPACE_SKILL_SUMMARY_RATIONALE_GREATER_THAN_5_PERCENT_2028_2029 = "Current hours have been converted to the appropriate Business Resource Code.";
 
 		/// <summary>
-		/// 
+		/// If proposed hours >0 for 2029+ only, canned text will state “Current hours have been converted to the appropriate Business Resource Code.”
 		/// </summary>
 		public readonly static string SPACE_SKILL_SUMMARY_RATIONALE_GREATER_THAN_5_PERCENT_2029 = "Current hours have been converted to the appropriate Business Resource Code.";
 
 		/// <summary>
-		/// 
+		/// If proposed hours >0 through 2028 only, placeholder text will state “Include robust rationale here” 
 		/// </summary>
 		public readonly static string SPACE_SKILL_SUMMARY_RATIONALE_PLACEHOLDER_INCLUDE_GREATER_THAN_5_PERCENT = "Include robust rationale here";
 
 		/// <summary>
-		/// 
+		/// If proposed hours >0 through 2028 and 2029+ the placeholder text says “Add the aforementioned statement and additional robust rationale here”
 		/// </summary>
 		public readonly static string SPACE_SKILL_SUMMARY_RATIONALE_PLACEHOLDER_GREATER_THAN_5_PERCENT = "Add the aforementioned statement and additional robust rationale here";
 
