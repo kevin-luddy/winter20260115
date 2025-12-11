@@ -1827,7 +1827,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				StructuredDocumentTag element = alias;
 				if (element != null)
 				{
-					PopulateResourceSummaryByResourceIDTable(element, boeExportModelView);
+					PopulateResourceSummaryByResourceIDTable(element, boeExportModelView, exportInputs);
 					// instead of deleting the stdAlias, we are setting title to empty
 					element.Title = string.Empty;
 				}
@@ -2818,7 +2818,8 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// </summary>
 		/// <param name="element">Element to set</param>
 		/// <param name="boeExportModelView">Export model view for the BOE</param>
-		private void PopulateResourceSummaryByResourceIDTable(StructuredDocumentTag element, BOEExportModelView boeExportModelView)
+		/// <param name="exportInputs">Export inputs</param>
+		private void PopulateResourceSummaryByResourceIDTable(StructuredDocumentTag element, BOEExportModelView boeExportModelView, BOEExportInputs exportInputs)
 		{
 			if (boeExportModelView == null)
 			{
@@ -2841,7 +2842,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						})
 						.OrderBy(x => x.GroupKey).ToList();
 
-				PopulateResourceSummaryTable(element, rollupData);
+				PopulateResourceSummaryTable(element, rollupData, exportInputs);
 			}
 			else
 			{
@@ -2876,7 +2877,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 						})
 						.OrderBy(x => x.GroupKeyWithLaborCategoryAndLocation).ToList();
 
-				PopulateResourceSummaryTable(element, rollupData);
+				PopulateResourceSummaryTable(element, rollupData, exportInputs);
 			}
 			else
 			{
@@ -2947,7 +2948,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 		/// </summary>
 		/// <param name="element">Element to set</param>
 		/// <param name="rollupData">data to use to populate table</param>
-		private void PopulateResourceSummaryTable(StructuredDocumentTag element, List<ResourceSummaryRowData> rollupData)
+		private void PopulateResourceSummaryTable(StructuredDocumentTag element, List<ResourceSummaryRowData> rollupData, BOEExportInputs exportInputs)
 		{
 			if (rollupData != null && rollupData.Any())
 			{
@@ -3036,7 +3037,7 @@ namespace GenBOE.DataBridge.Core.IO.Export
 					// These resources are only added if UCOT is enabled for the workspace, so no need to pass the FullWorkspace all the way to this method to check additionally
 					if (CommonUtilities.IsUCOTEnabledForSystem && rollupData.Any(x => x.ResourceName.EndsWith($"-{CommonConstants.UCOT_LABEL}")))
 					{
-						WordUtilities.AddUcotLabelToContainer(element);
+						WordUtilities.AddUcotLabelToContainer(element, exportInputs.IncludeCostVolumeUCOTText);
 					}
 
 					// remove template rows

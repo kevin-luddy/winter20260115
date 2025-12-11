@@ -51,16 +51,17 @@ namespace GenBOE.ActionLogic.IO.Export
             this.rmsZoneTravelRatesFeesDataLoader = rmsZoneTravelRatesFeesDataLoader;
         }
 
-        #region Method Overrides
+		#region Method Overrides
 
-        #region Resource Summary
+		#region Resource Summary
 
-        /// <summary>
-        /// Populate the Resource Summary by Resource ID Table
-        /// </summary>
-        /// <param name="tableContainerElement">container element for the table</param>
-        /// <param name="boeExportModelView">Model View for the BOE Export with the resources to use</param>
-        protected override void PopulateResourceSummaryByResourceIDTable(SdtElement tableContainerElement, BOEExportModelView boeExportModelView)
+		/// <summary>
+		/// Populate the Resource Summary by Resource ID Table
+		/// </summary>
+		/// <param name="tableContainerElement">container element for the table</param>
+		/// <param name="boeExportModelView">Model View for the BOE Export with the resources to use</param>
+		/// <param name="exportInputs">Export inputs</param>
+		protected override void PopulateResourceSummaryByResourceIDTable(SdtElement tableContainerElement, BOEExportModelView boeExportModelView, BOEExportInputs exportInputs)
         {
             if (boeExportModelView != null)
             {
@@ -90,7 +91,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         })
                         .OrderBy(x => x.ResourceType).ToList();
 
-                this.PopulateResourceSummaryTable(tableContainerElement, rollupData);
+                this.PopulateResourceSummaryTable(tableContainerElement, rollupData, exportInputs);
             }
             else
             {
@@ -103,7 +104,8 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// </summary>
 		/// <param name="tableContainerElement">container element for the table</param>
 		/// <param name="rollupData">rollup data to be displayed in the table</param>
-		protected override void PopulateResourceSummaryTable(SdtElement tableContainerElement, ICollection<ResourceSummaryRowData> rollupData)
+		/// <param name="exportInputs">Export inputs</param>
+		protected override void PopulateResourceSummaryTable(SdtElement tableContainerElement, ICollection<ResourceSummaryRowData> rollupData, BOEExportInputs exportInputs)
 		{
 			if (rollupData != null && rollupData.Any())
 			{
@@ -229,7 +231,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     })
                     .OrderBy(x => x.ResourceType).ToList();
 
-            this.PopulateResourceSummaryTable(tableElement, rollupData);
+            this.PopulateResourceSummaryTable(tableElement, rollupData, exportInputs);
         }
 
         #endregion
