@@ -87,6 +87,11 @@
 		/// <param name="skillMixSummaryRows">Skill mix summary row data.</param>
 		public static void AppendMixedRationalesForExports(ICollection<SkillMixSummaryModelView> skillMixSummaryRows)
 		{
+			if (skillMixSummaryRows == null)
+			{
+				return;
+			}
+
 			foreach (SkillMixSummaryModelView skillMixSummaryRow in skillMixSummaryRows)
 			{
 				if (skillMixSummaryRow.UsesMixedCannedResponseAndUserInput)
@@ -887,8 +892,6 @@
 				return false;
 			}
 
-			const string monthYearFormat = "MM/yyyy";
-
 			foreach (LaborTypeDataModelView laborType in laborTypes)
 			{
 				// Skip rows that don’t belong to the current resource.
@@ -901,14 +904,14 @@
 				// Try to parse the month‑year strings.
 				bool startOk = DateTime.TryParseExact(
 								   laborType.StartDate,
-								   monthYearFormat,
+								   "MM/yyyy",
 								   System.Globalization.CultureInfo.InvariantCulture,
 								   System.Globalization.DateTimeStyles.None,
 								   out DateTime parsedStart);
 
 				bool endOk = DateTime.TryParseExact(
 								 laborType.EndDate,
-								 monthYearFormat,
+								 "MM/yyyy",
 								 System.Globalization.CultureInfo.InvariantCulture,
 								 System.Globalization.DateTimeStyles.None,
 								 out DateTime parsedEnd);
@@ -919,7 +922,6 @@
 					continue;
 				}
 
-				// Compare only the **year** portion.
 				if (parsedStart.Year >= startYear && parsedEnd.Year <= endYear)
 				{
 					return true;
