@@ -805,10 +805,13 @@
 				// Difference expressed as an absolute percentage.
 				decimal percentDifference = Math.Abs(row.ProposedSkillMix.GetValueOrDefault() - row.HistoricalSkillMix);
 
-				// Get the range of dates for Resource level.
-				bool hasHoursThrough2028Only = HasResourceTypeInRange(row, laborTypes, 0, 2028) && !HasResourceTypeInRange(row, laborTypes, 2029, int.MaxValue);
-				bool hasHoursThrough2028AndPast2029 = HasResourceTypeInRange(row, laborTypes, 0, 2028) && HasResourceTypeInRange(row, laborTypes, 2029, int.MaxValue);
-				bool hasHoursPast2029 = !HasResourceTypeInRange(row, laborTypes, 0, 2028) && HasResourceTypeInRange(row, laborTypes, 2029, int.MaxValue);
+				// Get the range of dates for Resources.
+				bool hasIn0to2028 = HasResourceTypeInRange(row, laborTypes, 0, 2028);
+				bool hasIn2029plus = HasResourceTypeInRange(row, laborTypes, 2029, int.MaxValue);
+
+				bool hasHoursThrough2028Only = hasIn0to2028 && !hasIn2029plus;
+				bool hasHoursThrough2028AndPast2029 = hasIn0to2028 && hasIn2029plus;
+				bool hasHoursPast2029 = !hasIn0to2028 && hasIn2029plus;
 
 				string cannedRationale = null;
 

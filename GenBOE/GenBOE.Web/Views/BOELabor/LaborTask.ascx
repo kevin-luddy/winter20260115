@@ -1146,9 +1146,9 @@
                                         </div>
 
                                         <!-- Fully editable (no read‑only flag) -->
-                                        <div ng-hide="row.IsRationaleReadOnly || row.UsesMixedCannedResponseAndUserInput"
+                                        <div ng-show="!row.IsRationaleReadOnly && !row.UsesMixedCannedResponseAndUserInput"
                                             style="width: 100%;">
-                                            <textarea"
+                                            <textarea
                                                 data-ng-model="row.Rationale"
                                                 placeholder="{{row.RationalePlaceholderText}}"
                                                 style="width: 100%; height: 14px; max-height: 45px; overflow-y: auto; resize: vertical;"
