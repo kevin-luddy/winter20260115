@@ -96,6 +96,7 @@ namespace GenBOE.ActionLogic.IO.Export
             toReturn.Add("Proposal Comments", workspace.StatusComment);
             toReturn.Add("MOQ Template BOEs", workspace.UsingTemplateBOE ? this.sYes : this.sNo);
             toReturn.Add("SAP Connection Enabled", workspace.EnableSAPConnection ? this.sYes : this.sNo);
+			toReturn.Add("Current Workspace", workspace.CurrentPTMWorkspace ? this.sYes : this.sNo);
 
             if (!FullObjectHelper.ShowEquivalentPersonsOption)
             {
