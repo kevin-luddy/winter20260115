@@ -11,9 +11,9 @@
             </div>
         </div>
     </div>
-    <div class="form-element">
+    <div class="form-element" style="display: inline-flex">
         <div data-ng-show="model.isPTMIntegrated && model.ptmTrackingNumber !== ''">
-            <span>{{model.nextRevision}} </span><input class="half" data-ng-trim="false" data-ng-model="data.RevisionWorkspaceName" type="text" maxlength="88" />
+            <span>{{model.nextRevision}} </span><input class="half" data-ng-trim="false" data-ng-model="data.WorkspaceName" type="text" maxlength="88" />
         </div>
         <input data-ng-hide="model.isPTMIntegrated && model.ptmTrackingNumber !== ''" name="WorkspaceName" class="full" id="WorkspaceName" data-ng-keyup="workspaceNameKeyUp()" data-ng-model="data.WorkspaceName" type="text" maxlength="100" />
     </div>
@@ -39,9 +39,9 @@
             </div>
         </div>
     </div>
-    <div class="form-element">
-        <span class="url">{{model.applicationUrl}}<span data-ng-show="model.isPTMIntegrated && model.ptmTrackingNumber !== ''">{{model.nextRevision}}</span></span>
-        <input data-ng-hide="model.isPTMIntegrated && model.ptmTrackingNumber !== ''" name="ShortName" class="quarter" id="ShortName" data-ng-model="data.Shortname" type="text" maxlength="15">
+    <div style="display: inline-flex">
+        <span data-ng-show="model.isPTMIntegrated && model.ptmTrackingNumber !== ''">{{ model.applicationUrl}}{{model.PLD_PANumber }}</span></span>
+        <span data-ng-hide="model.isPTMIntegrated && model.ptmTrackingNumber !== ''">{{ model.applicationUrl }}</span><input data-ng-hide="model.isPTMIntegrated && model.ptmTrackingNumber !== ''" name="ShortName" class="quarter" id="ShortName" data-ng-model="data.Shortname" type="text" maxlength="15" value="{{ model.nextRevision }}" />
     </div>
 </div>
 <div class="form-row" data-ng-show="model.showProjectMap">
@@ -207,7 +207,7 @@
         </select>
     </div>
 </div>
-<div class="form-row">
+<div class="form-row" data-ng-show="model.isPTMIntegrated">
     <div class="form-label">
         RFP #
     </div>
@@ -233,7 +233,7 @@
         <input data-ng-hide="model.isPTMIntegrated" class="full ignoreValidation" id="TrackingNumber" maxlength="100" name="TrackingNumber" type="text" data-ng-model="data.TrackingNumber">
     </div>
 </div>
-<div class="form-row" data-ng-show="model.isPTMIntegrated">
+<div class="form-row" data-ng-hide="model.isPTMIntegrated">
     <div class="form-label">
         <span>RFP #</span>
         <div id="RFP-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">

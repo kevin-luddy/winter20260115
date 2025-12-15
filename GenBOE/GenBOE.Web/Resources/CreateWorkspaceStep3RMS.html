@@ -42,10 +42,9 @@
 			</div>
 		</div>
 	</div>
-	<div class="form-element">
-
-		<span class="url">{{ model.applicationUrl }}</span><span data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">{{model.PLD_PANumber}}</span><input data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''" name="ShortName" class="quarter" id="ShortName" data-ng-model="data.Shortname" type="text" maxlength="15" value="{{ model.nextRevision }}" />
-
+	<div style="display: inline-flex">
+		<span data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">{{ model.applicationUrl}}{{model.PLD_PANumber }}</span></span>
+		<span data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">{{ model.applicationUrl }}</span><input data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''" name="ShortName" class="quarter" id="ShortName" data-ng-model="data.Shortname" type="text" maxlength="15" value="{{ model.nextRevision }}" />
 	</div>
 </div>
 <div class="form-row" data-ng-show="model.showProjectMap">
@@ -68,8 +67,8 @@
 		</div>
 	</div>
 	<div class="form-element">
-		<span data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">{{getLOB()}}</span>
-		<select data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''" name="LineOfBusiness" id="LineOfBusiness" data-ng-options="item.Id as item.Text for item in model.lobs | isActiveOrInitialPickListItem:data.LineOfBusinessID" data-ng-model="data.LineOfBusinessID"></select>
+		<span data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== '' && model.LineOfBusiness.Contains('Select')">{{getLOB()}}</span>
+		<select data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== '' && model.LineOfBusiness.Contains('Select')" name="LineOfBusiness" id="LineOfBusiness" data-ng-options="item.Id as item.Text for item in model.lobs | isActiveOrInitialPickListItem:data.LineOfBusinessID" data-ng-model="data.LineOfBusinessID"></select>
 	</div>
 </div>
 <div class="form-row">
@@ -91,33 +90,38 @@
 	</div>
 </div>
 <!-- Pull from PLD -->
-<div class="form-row" id="ContractDates" data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">
-	<div class="form-label">
-		Contract Start Date *
-	</div>
-	<div class="form-element contract-start-date">
-		{{ data.ContractStartDate }}
-	</div>
-	<div class="form-label contract-end-date-label">
-		Contract End Date *
-	</div>
-	<div class="form-element contract-end-date">
-		{{ data.ContractEndDate }}
+<div data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">
+	<div class="form-row" id="ContractDates" data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">
+		<div class="form-label">
+			Contract Start Date *
+		</div>
+		<div class="form-element contract-start-date">
+			<span style="vertical-align: sub;" data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">{{ data.ContractStartDate }}</span>
+		</div>
+		<div class="form-label contract-end-date-label">
+			Contract End Date *
+		</div>
+		<div class="form-element contract-end-date">
+			<span style="vertical-align: sub;" data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">{{ data.ContractEndDate }}</span>
+
+		</div>
 	</div>
 </div>
 <!-- Edit -->
-<div class="form-row" id="ContractDates" data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== '')">
-	<div class="form-label">
-		Contract Start Date *
-	</div>
-	<div class="form-element contract-start-date">
-		<input class="normal-date" id="ContractStartDate" placeholder="mm/yyyy" name="ContractStartDate" type="text" data-ng-model="data.ContractStartDate">
-	</div>
-	<div class="form-label contract-end-date-label">
-		Contract End Date *
-	</div>
-	<div class="form-element contract-end-date">
-		<input class="normal-date" id="ContractEndDate" placeholder="mm/yyyy" name="ContractEndDate" type="text" data-ng-model="data.ContractEndDate">
+<div data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">
+	<div class="form-row" id="ContractDates" data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== '')">
+		<div class="form-label">
+			Contract Start Date *
+		</div>
+		<div class="form-element contract-start-date">
+			<input class="normal-date" id="ContractStartDate" placeholder="mm/yyyy" name="ContractStartDate" data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''" type="text" data-ng-model="data.ContractStartDate">
+		</div>
+		<div class="form-label contract-end-date-label">
+			Contract End Date *
+		</div>
+		<div class="form-element contract-end-date">
+			<input class="normal-date" id="ContractEndDate" placeholder="mm/yyyy" name="ContractEndDate" data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''" type="text" data-ng-model="data.ContractEndDate">
+		</div>
 	</div>
 </div>
 <div class="form-row" id="AllowGridEdit" data-ng-hide="data.ProjectMapType == '1' || data.ProjectMapType == '2'">
@@ -131,12 +135,26 @@
 		<label for="AllowGridEdit-No">No</label>
 	</div>
 </div>
-<div class="form-row">
-	<div class="form-label">
-		Proposal Submittal Date
+<!-- pulled from PLD -->
+<div data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">
+	<div class="form-row">
+		<div class="form-label">
+			Proposal Submittal Date
+		</div>
+		<div class="form-element proposal-submittal">
+			<span style="vertical-align: sub;" data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">{{ data.ProposalSubmittalDate }}</span>
+		</div>
 	</div>
-	<div class="form-element proposal-submittal">
-		<input class="normal-date" id="ProposalSubmittalDate" name="ProposalSubmittalDate" placeholder="mm/dd/yyyy" type="text" data-ng-model="data.ProposalSubmittalDate">
+</div>
+<!-- Edit -->
+<div data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">
+	<div class="form-row">
+		<div class="form-label">
+			Proposal Submittal Date
+		</div>
+		<div class="form-element proposal-submittal">
+			<input class="normal-date" data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''" id="ProposalSubmittalDate" name="ProposalSubmittalDate" placeholder="mm/dd/yyyy" type="text" data-ng-model="data.ProposalSubmittalDate">
+		</div>
 	</div>
 </div>
 <div class="form-row">
@@ -168,6 +186,13 @@
 		</select>
 	</div>
 </div>
+<div class="form-row">
+	<div class="form-label">
+		RFP #
+	</div>
+	<div class="form-element">
+		<input class="full ignoreValidation" id="RFPNumber" maxlength="100" name="RFPNumber" type="text" data-ng-model="data.RFPNumber">
+	</div>
 </div>
 <div class="form-row" data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">
 	<div class="form-label">
