@@ -757,7 +757,7 @@
 				row.HistoricalSkillMix = refreshedModel.SkillMixSummaryTotals.HistoricalHours == 0m ? 0m : row.HistoricalHours * 100.0m / refreshedModel.SkillMixSummaryTotals.HistoricalHours;
 				if (refreshedModel.SkillMixSummaryTotals.ProposedLegacyResource != 0.0m)
 				{
-					row.ProposedSkillMix = row.ProposedLegacyResource * 100.0m / refreshedModel.SkillMixSummaryTotals.ProposedLegacyResource;
+					row.ProposedSkillMix = row.TotalProposedLegacyBrc * 100.0m / refreshedModel.SkillMixSummaryTotals.TotalProposedLegacyBrc;
 				}
 				else
 				{
