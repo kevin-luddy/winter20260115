@@ -279,7 +279,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 				Assert.AreEqual(workspace.IsProjectMapWorkspace, result.IsProjectMapWorkspace);
 				if (pldIntegrated)
 				{
-					Assert.AreEqual(pldLastModified, result.PldLastUpdateDate);
+					Assert.AreEqual(pldLastModified.ToString("MM/dd/yyyy"), result.PldLastUpdateDate);
+					Assert.AreEqual(workspace.ProposalTitle, result.ProposalTitle);
 				}
 			}
 

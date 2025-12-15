@@ -87,6 +87,11 @@ namespace GenBOE.Dtos
 		public DateTime? ProposalSubmittalDate { get; set; }
 
 		/// <summary>
+		/// Proposal Submittal Date as a string for the UI
+		/// </summary>
+		public string ProposalSubmittalDateString => ProposalSubmittalDate.HasValue && ProposalSubmittalDate.Value != DateTime.MinValue ? ProposalSubmittalDate.Value.ToString("MM/dd/yyyy") : string.Empty;
+
+		/// <summary>
 		///  RFP Number
 		/// </summary>
 		public string RFPNumber { get; set; }
@@ -97,9 +102,13 @@ namespace GenBOE.Dtos
 		public DateTime? LastModifiedDate { get; set; }
 
 		/// <summary>
+		/// Last Modified Date as a string for the UI
+		/// </summary>
+		public string LastModifiedDateString => LastModifiedDate.HasValue ? LastModifiedDate.Value.ToString("MM/dd/yyyy") : "N/A";
+
+		/// <summary>
 		/// Proposal Status
 		/// </summary>
 		public string ProposalStatus { get; set; }
-
 	}
 }

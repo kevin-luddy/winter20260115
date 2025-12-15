@@ -44,7 +44,19 @@
 					}, buttonPressed);
 				},
 				Stateful: true
-			}, {
+			}
+			<% if (Utilities.ShowPLDIsIntegrated && !string.IsNullOrEmpty(Model.TrackingNumber))
+			{ %>
+			, {
+				ButtonClass: 'ies-action',
+				ButtonText: 'Refresh PLD Data',
+				ButtonName: 'refresh-pld-button',
+				ButtonAction: function () {
+					WorkspaceIdentificationWidget.RefresPldData()
+				},
+			}
+			<%}%>
+			, {
 				ButtonClass: 'ies',
 				ButtonText: 'Cancel',
 				ButtonName: 'cancel-button',
@@ -83,7 +95,7 @@
 	WorkspaceIdentificationWidget.LockFields = function () {
 		// break up WorkspaceName and WorkspaceNameInput if needed
 		var paNumber = $('#PaNumber').val();
-		var paTitle = $('#PaTitle').val();
+		var paTitle = $('#ProposalTitle').val();
 		var workspaceName = $('#WorkspaceName').val();
 
 		// only show the workspacename broken up if it actually starts with the tracking number
@@ -95,7 +107,7 @@
 			}
 
 			// Get length of PA Number and Title, +1 for space between them
-			var paNumberTitleLength = paNumber.length + paTitle.length + 1; 
+			var paNumberTitleLength = paNumber.length + paTitle.length + 1;
 
 			// Set width based on character length since it's variable unlike space
 			$('#WorkspaceName').addClass('disabled').prop('readonly', 'readonly').addClass('labelLookFeelRms');
@@ -126,6 +138,47 @@
 		$('#RFPNumber').addClass('disabled').prop('readonly', 'readonly').addClass('labelLookFeelRms');
 		$('#ProposalStatusRow').addClass('display-none');
 		$('#PaLastModifiedDateRow').removeClass('display-none');
+	}
+
+	WorkspaceIdentificationWidget.RefresPldData = function () {
+		$(document).trigger("SHOW_LOADING_BOX");
+		var postData = { paNumber: $('#PaNumber').val() };
+
+		WorkspaceIdentificationWidget.ajaxRequest({
+			type: 'GET',
+			url: GenSession.CreateUrl({
+				controller: '<%: WebConstants.CONTROLLER_WORKSPACE %>',
+				action: '<%: WebConstants.ACTION_GET_PLD_PROPOSAL_DETAILS %>',
+				workspace: '<%: SiteMasterUtilities.GetCurrentWorkspace() %>'
+			}),
+			performValidation: true,
+			contentType: 'application/json; charset=utf-8',
+			data: postData,
+			success: function (result) {
+				if (result) {
+					var wsName = result.PANumber + " " + result.Title.trim();
+					$('#WorkspaceName').val(wsName);
+					$('#WorkspaceName')[0].style.width = wsName.length + "ch";
+					$('#ProposalTitle').val(result.Title.trim());
+					$('#Description').val(result.Description);
+					$('input[name=LineOfBusinessTypeID], select[name=LineOfBusinessTypeID]').val(result.LineOfBusinessId);
+					$('#ProposalSubmittalDate').val(result.ProposalSubmittalDateString);
+					$('#RFPNumber').val(result.RFPNumber);
+					$('#PldLastUpdateDate').val(result.LastModifiedDateString);
+					// TODO in another story - Contract Start/End Date - once it's determined if a date adjust will be needed
+
+					WorkspaceIdentificationWidget.setDirty('WorkspaceIdentificationForm');
+				} else {
+					GenSession.alertDialog('PA Number Not Found', 'There was no Proposal found for this PA Number. It is possible the Proposal no longer exists in PLD.')
+				}
+
+				$(document).trigger("HIDE_LOADING_BOX");
+			},
+			error: function () {
+				GenSession.alertDialog('Error Getting PLD Data', 'There was an error getting PLD data for PA Number. Please try again.');
+				$(document).trigger("HIDE_LOADING_BOX");
+			}
+		});
 	}
 
 	$('#RteSizeLimit').keyup(function () {
@@ -350,9 +403,8 @@
 		<div id="PaTitleRow" class="form-row display-none">
 			<div class="form-label">PA Proposal Title</div>
 			<div class="form-element">
-				<%: Model.ProposalTitle %>
+				<%: Html.TextBox("ProposalTitle", Model.ProposalTitle, new { @class = "full labelLookFeelRms"}) %>
 			</div>
-			<%: Html.Hidden("PaTitle", Model.ProposalTitle) %>
 		</div>
 		<%if (SiteMasterUtilities.IsProjectMapEnabled)
 			{%>
@@ -598,15 +650,15 @@
 					new SelectListItem() { Text = "No", Value = "False" }
 				}) %>
 			</div>
-		</div>		
+		</div>
 		<div id="PaLastModifiedDateRow" class="form-row display-none">
 			<div class="form-label">
 				<span helptext="Date that the PA was last modified in PLD">
-				PA Last Modified Date
+					PA Last Modified Date
 				</span>
 			</div>
 			<div class="form-element">
-				<%: Model.PldLastUpdateDate.HasValue ? Model.PldLastUpdateDate.Value.ToString("MM/dd/yyyy") : "N/A" %>
+				<%: Html.TextBox("PldLastUpdateDate", Model.PldLastUpdateDate, new { @class = "normal-date labelLookFeelRms" })%>
 			</div>
 		</div>
 		<% } %>

@@ -151,7 +151,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			if (Utilities.ShowPLDIsIntegrated && !string.IsNullOrEmpty(modelView.TrackingNumber))
 			{
-				modelView.PldLastUpdateDate = pldDTODataLoader.GetLastModifiedDate(modelView.TrackingNumber);
+				DateTime? lastModifiedDate = pldDTODataLoader.GetLastModifiedDate(modelView.TrackingNumber);
+				modelView.PldLastUpdateDate = lastModifiedDate.HasValue ? lastModifiedDate.Value.ToString("MM/dd/yyyy") : "N/A";
 			}
 
 			return modelView;
@@ -348,9 +349,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 				workspace.AllowGridEdit = workspaceIdentificationMSTModelView.AllowGridEdit;
 			}
 
-			if (!string.IsNullOrWhiteSpace(workspaceIdentificationMSTModelView.WorkspaceNameInput))
+			if (Utilities.ShowPLDIsIntegrated && !string.IsNullOrEmpty(workspace.TrackingNumber))
 			{
-				workspace.WorkspaceName = workspaceIdentificationMSTModelView.WorkspaceName + workspaceIdentificationMSTModelView.WorkspaceNameInput;
+				if (!string.IsNullOrWhiteSpace(workspaceIdentificationMSTModelView.WorkspaceNameInput))
+				{
+					workspace.WorkspaceName = workspaceIdentificationMSTModelView.WorkspaceName.Trim() + " " + workspaceIdentificationMSTModelView.WorkspaceNameInput.Trim();
+				}
+
+				workspace.ProposalTitle = workspaceIdentificationMSTModelView.ProposalTitle;
 			}
 		}
 
