@@ -636,6 +636,13 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		tableData.PoPMonthsString = '';
 	}
 
+	$scope.enableCalculateAllActualsButton = function () {
+		return $scope.model.SAPEnabled && 
+			$scope.model.SelectedMoqTypes &&
+			$scope.model.SelectedMoqTypes.length === 1 &&
+			$scope.DisplayMoqTables($scope.model.SelectedMoqTypes[0].SelectedMOQType);
+	};
+
 	$scope.disableHistoricalComparativeConvertButtons = function () {
 		// Disable the buttons if task already has both Historical and Comparative MOQ Types
 		return $scope.model.SelectedMoqTypes.some(function (moqType) {
