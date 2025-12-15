@@ -1136,7 +1136,7 @@
                                         <div ng-show="!row.IsRationaleReadOnly && row.UsesMixedCannedResponseAndUserInput"
                                             style="display: flex; flex-direction: column; gap: 5px;">
                                             <label style="margin: 0; white-space: normal; word-break: break-word; width: 100%;">
-                                                {{row.RationaleMixedCannedResponse}}
+                                                {{row.MixedCannedRationaleResponse}}
                                             </label>
                                             <textarea data-ng-model="row.Rationale"
                                                 placeholder="{{row.RationalePlaceholderText}}"

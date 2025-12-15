@@ -798,7 +798,6 @@
 		{
 			foreach (SkillMixSummaryModelView row in refreshedModel.SkillMixSummaryRows)
 			{
-
 				// Checks if the proposed skill mix and historical are equal.
 				bool proposedSkillMixAndHistoricalEqual = row.ProposedSkillMix.HasValue && row.ProposedSkillMix.Value == row.HistoricalSkillMix;
 
@@ -806,12 +805,9 @@
 				decimal percentDifference = Math.Abs(row.ProposedSkillMix.GetValueOrDefault() - row.HistoricalSkillMix);
 
 				// Get the range of dates for Resources.
-				bool hasIn0to2028 = HasResourceTypeInRange(row, laborTypes, 0, 2028);
-				bool hasIn2029plus = HasResourceTypeInRange(row, laborTypes, 2029, int.MaxValue);
-
-				bool hasHoursThrough2028Only = hasIn0to2028 && !hasIn2029plus;
-				bool hasHoursThrough2028AndPast2029 = hasIn0to2028 && hasIn2029plus;
-				bool hasHoursPast2029 = !hasIn0to2028 && hasIn2029plus;
+				bool hasHoursThrough2028Only = HasResourceTypeInRange(row, laborTypes, 0, 2028);
+				bool hasHoursThrough2028AndPast2029 = HasResourceTypeInRange(row, laborTypes, 0, int.MaxValue);
+				bool hasHoursPast2029 = HasResourceTypeInRange(row, laborTypes, 2029, int.MaxValue);
 
 				string cannedRationale = null;
 
@@ -889,7 +885,6 @@
 		/// <returns>If it is in range.</returns>
 		private static bool HasResourceTypeInRange(SkillMixSummaryModelView skillMixSummaryRow, ICollection<LaborTypeDataModelView> laborTypes, int startYear, int endYear)
 		{
-			// No hours – nothing to evaluate.
 			if (skillMixSummaryRow.ProposedLegacyResource <= 0)
 			{
 				return false;
