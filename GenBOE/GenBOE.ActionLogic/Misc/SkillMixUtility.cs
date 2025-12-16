@@ -66,22 +66,39 @@
 				refreshedModel = RefreshRMSSkillMix(resourceHours, laborTypes, currentSkillMixData, currentCommonDisclosureData, isBRCEnabled, isManual);
 				CleanupData(refreshedModel);
 			}
-						
+
 			CalculateSkillMixTotals(refreshedModel);
 			CalculateBoeSkillMixPercentage(refreshedModel);
 
-            // Apply rationale canned responses based on conditions regarding proposed skill mix and historical hours.
-            ApplyRationaleCannedResponses(refreshedModel);
+			// Apply rationale canned responses based on conditions regarding proposed skill mix and historical hours.
+			ApplyCannedRationaleResponses(refreshedModel, laborTypes);
 
-            // reorder the lists
-            refreshedModel.SkillMixRows = refreshedModel.SkillMixRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceOld)).ThenBy(r => r.ResourceOld).ToList();
+			// reorder the lists
+			refreshedModel.SkillMixRows = refreshedModel.SkillMixRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceOld)).ThenBy(r => r.ResourceOld).ToList();
 			refreshedModel.CommonDisclosureRows = refreshedModel.CommonDisclosureRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceID)).ThenBy(r => r.ResourceID).ThenBy(s => s.BusinessResourceID).ToList();
 			refreshedModel.SkillMixSummaryRows = refreshedModel.SkillMixSummaryRows.OrderBy(r => string.IsNullOrWhiteSpace(r.ResourceID)).ThenBy(r => r.ResourceID).ThenBy(s => s.BusinessResourceID).ToList();
 
-			// Apply rationale canned responses based on conditions regarding proposed skill mix and historical hours.
-			ApplyRationaleCannedResponses(refreshedModel);
-
 			return refreshedModel;
+		}
+
+		/// <summary>
+		/// Appends the mixed canned rationale response to the rationale.
+		/// </summary>
+		/// <param name="skillMixSummaryRows">Skill mix summary row data.</param>
+		public static void AppendMixedRationalesForExports(ICollection<SkillMixSummaryModelView> skillMixSummaryRows)
+		{
+			if (skillMixSummaryRows == null)
+			{
+				return;
+			}
+
+			foreach (SkillMixSummaryModelView skillMixSummaryRow in skillMixSummaryRows)
+			{
+				if (skillMixSummaryRow.UsesMixedCannedResponseAndUserInput)
+				{
+					skillMixSummaryRow.Rationale = $"{skillMixSummaryRow.MixedCannedRationaleResponse} {skillMixSummaryRow.Rationale}";
+				}
+			}
 		}
 
 		/// <summary>
@@ -159,7 +176,7 @@
 
 				CopyMatchingSkillMixRowDataRMS(resourceHours, laborTypes, currentSkillMixData, refreshedModel, isBRCEnabled, isManual);
 				CleanupNewSkillMixRow(currentSkillMixData);
-				
+
 
 				if (isBRCEnabled)
 				{
@@ -201,10 +218,10 @@
 
 			// Add missing Labor Types
 			AddMissingSpaceResources(laborTypes, newSummaryRows);
-			
+
 			// Add missing Historical Resources
 			AddMissingSpaceHistoricalResources(resourceHours, newSummaryRows);
-						
+
 			// Copy over Rationale
 			AddRationale(currentSkillMixSummaryData, newSummaryRows);
 
@@ -317,7 +334,7 @@
 			foreach (KeyValuePair<Tuple<string, string>, ICollection<MOQTypeSelectionTableDataResourceHoursDTO>> kvp in groupedHistorical)
 			{
 				decimal totalHistoricalHours = kvp.Value.Sum(r => r.TotalHours);
-				
+
 				SkillMixSummaryModelView summary = currentSkillMixSummaryData.FirstOrDefault(s => s.ResourceID.NullEmptyEquals(kvp.Key.Item1) && s.BusinessResourceID.NullEmptyEquals(kvp.Key.Item2));
 				if (summary == null)
 				{
@@ -344,7 +361,7 @@
 			currentSkillMixData = currentSkillMixData.OrderBy(sm => sm.ResourceOld).ThenBy(sm => string.IsNullOrWhiteSpace(sm.ResourceNew) ? 1 : 0).ToArray();
 			foreach (SkillMixModelView item in currentSkillMixData)
 			{
-				if(resourceOldList.Contains(item.ResourceOld))
+				if (resourceOldList.Contains(item.ResourceOld))
 				{
 					item.HistoricalHours = 0;
 				}
@@ -367,7 +384,8 @@
 				if (newLinkedResourceIds.Contains(item.ResourceID))
 				{
 					item.HistoricalHours = currentSkillMixData.Where(sm => item.ResourceID == sm.ResourceNew).Sum(l => l.HistoricalHours);
-				} else
+				}
+				else
 				{
 					IEnumerable<SkillMixModelView> currentData = currentSkillMixData.Where(sm => item.ResourceID == sm.ResourceOld && string.IsNullOrWhiteSpace(sm.ResourceNew));
 					item.HistoricalHours = currentData.Any() ? currentData.Select(l => l.HistoricalHours).First() : item.HistoricalHours;
@@ -429,8 +447,8 @@
 
 					refreshedRow.ProposedHours = laborTypeDataModelViews.SelectMany(x => x.Spreads).Where(s => DateTime.Parse(s.LaborSpreadDate).Normalize(DateTimePrecision.Month) >= Utilities.OneLmxStartDate).Sum(sp => sp.LaborSpreadValue.HasValue ? sp.LaborSpreadValue.Value : 0.0m);
 					refreshedRow.GrandTotalHours = refreshedRow.ProposedHours; // RMS does not do UCOT
-					// If this is not a Manual Skill Mix and the BRC is set, then the historical hours is a percentage of the real Historical Hours
-					// Percentage is calculated based off the % calculated by BRC Sum / total BRCs Sum for this Resource
+																			   // If this is not a Manual Skill Mix and the BRC is set, then the historical hours is a percentage of the real Historical Hours
+																			   // Percentage is calculated based off the % calculated by BRC Sum / total BRCs Sum for this Resource
 					if (!isManual && !string.IsNullOrWhiteSpace(refreshedRow.BusinessResourceID))
 					{
 						ICollection<string> legacyLinkedResourceIds = refreshedModel.SkillMixRows.Where(r => r.ResourceNew == resourceName && r.Included).Select(l => l.ResourceOld).ToList();
@@ -440,7 +458,7 @@
 						{
 							brcHistoricalHours = refreshedRow.ProposedHours / totalHoursBRCs;
 						}
-						
+
 						refreshedRow.HistoricalHours = realHistoricalHours * brcHistoricalHours;
 					}
 
@@ -772,27 +790,144 @@
 		}
 
 		/// <summary>
-		/// Apply rationale canned responses based on proposed skill mix, proposed hours and historial hours
+		/// Apply the appropriate canned‑response rationale for each skill‑mix row.
 		/// </summary>
-		/// <param name="refreshedModel">Skill mix data.</param>
-		private static void ApplyRationaleCannedResponses(RefreshSkillMixModelView refreshedModel)
+		/// <param name="refreshedModel">Skill‑mix data (contains the rows to evaluate).</param>
+		/// <param name="laborTypes">Resource types</param>
+		private static void ApplyCannedRationaleResponses(RefreshSkillMixModelView refreshedModel, ICollection<LaborTypeDataModelView> laborTypes)
 		{
 			foreach (SkillMixSummaryModelView row in refreshedModel.SkillMixSummaryRows)
 			{
-				// Get the difference between Proposed Skill Mix and Historical Skill Mix.
-				decimal difference = Math.Abs(row.ProposedSkillMix.Value - row.HistoricalSkillMix);
+				// Checks if the proposed skill mix and historical are equal.
+				bool proposedSkillMixAndHistoricalEqual = row.ProposedSkillMix.HasValue && row.ProposedSkillMix.Value == row.HistoricalSkillMix;
 
-				// Check if the difference is less than 5%.
-				if (difference < 5m)
+				// Difference expressed as an absolute percentage.
+				decimal percentDifference = Math.Abs(row.ProposedSkillMix.GetValueOrDefault() - row.HistoricalSkillMix);
+
+				// Get the range of dates for Resources.
+				bool hasHoursThrough2028Only = HasResourceTypeInRange(row, laborTypes, 0, 2028);
+				bool hasHoursThrough2028AndPast2029 = HasResourceTypeInRange(row, laborTypes, 0, int.MaxValue);
+				bool hasHoursPast2029 = HasResourceTypeInRange(row, laborTypes, 2029, int.MaxValue);
+
+				string cannedRationale = null;
+
+				// Historical = Proposed.
+				if (proposedSkillMixAndHistoricalEqual)
 				{
-					row.Rationale = Constants.SPACE_SKILL_MIX_RATIONALE_BELOW_5_PERCENT_DIFF;
+					if (hasHoursThrough2028Only)
+					{
+						cannedRationale = Constants.SPACE_SKILL_MIX_SUMMARY_RATIONALE_EQUAL_TO_2028;
+					}
+					else if (hasHoursThrough2028AndPast2029)
+					{
+						cannedRationale = Constants.SPACE_SKILL_MIX_SUMMARY_RATIONALE_EQUAL_2028_2029;
+					}
+					else if (hasHoursPast2029)
+					{
+						cannedRationale = Constants.SPACE_SKILL_MIX_SUMMARY_RATIONALE_EQUAL_2029;
+					}
+				}
+				// Historical <= 5% difference from Skill Mix
+				else if (percentDifference <= 5m)
+				{
+					if (hasHoursThrough2028Only)
+					{
+						cannedRationale = Constants.SPACE_SKILL_MIX_SUMMARY_RATIONALE_LESS_THAN_5_PERCENT_TO_2028;
+					}
+					else if (hasHoursThrough2028AndPast2029)
+					{
+						cannedRationale = Constants.SPACE_SKILL_SUMMARY_RATIONALE_LESS_THAN_5_PERCENT_2028_2029;
+					}
+					else if (hasHoursPast2029)
+					{
+						cannedRationale = Constants.SPACE_SKILL_SUMMARY_RATIONALE_LESS_THAN_5_PERCENT_2029;
+					}
+				}
+				// Historical > 5% difference from Skill Mix
+				else if (percentDifference > 5m)
+				{
+					if (hasHoursThrough2028Only)
+					{
+						row.RationalePlaceholderText = Constants.SPACE_SKILL_SUMMARY_RATIONALE_PLACEHOLDER_INCLUDE_GREATER_THAN_5_PERCENT;
+					}
+					else if (hasHoursThrough2028AndPast2029)
+					{
+						row.UsesMixedCannedResponseAndUserInput = true;
+						row.RationalePlaceholderText = Constants.SPACE_SKILL_SUMMARY_RATIONALE_PLACEHOLDER_GREATER_THAN_5_PERCENT;
+						row.MixedCannedRationaleResponse = Constants.SPACE_SKILL_SUMMARY_RATIONALE_GREATER_THAN_5_PERCENT_2028_2029;
+					}
+					else if (hasHoursPast2029)
+					{
+						row.UsesMixedCannedResponseAndUserInput = true;
+						row.RationalePlaceholderText = Constants.SPACE_SKILL_SUMMARY_RATIONALE_PLACEHOLDER_GREATER_THAN_5_PERCENT;
+						row.MixedCannedRationaleResponse = Constants.SPACE_SKILL_SUMMARY_RATIONALE_GREATER_THAN_5_PERCENT_2029;
+					}
+				}
+
+				// If canned rationale is provided then set it, otherwise keep it the same.
+				if (cannedRationale != null && !row.UsesMixedCannedResponseAndUserInput)
+				{
+					row.Rationale = cannedRationale;
 					row.IsRationaleReadOnly = true;
+				}
+				else
+				{
+					row.IsRationaleReadOnly = false;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Checks if the Resource is in a certain range for the Skill Mix rationale conditions.
+		/// </summary>
+		/// <param name="skillMixSummaryRow">Skill mix summary row.</param>
+		/// <param name="laborTypes">Resource types.</param>
+		/// <returns>If it is in range.</returns>
+		private static bool HasResourceTypeInRange(SkillMixSummaryModelView skillMixSummaryRow, ICollection<LaborTypeDataModelView> laborTypes, int startYear, int endYear)
+		{
+			if (skillMixSummaryRow.ProposedLegacyResource <= 0)
+			{
+				return false;
+			}
+
+			foreach (LaborTypeDataModelView laborType in laborTypes)
+			{
+				// Skip rows that don’t belong to the current resource.
+				if (laborType.ResourceName != skillMixSummaryRow.ResourceID &&
+					laborType.BusinessResourceCodeName != skillMixSummaryRow.BusinessResourceID)
+				{
 					continue;
 				}
 
-				// If neither conditions are met then leave it as is.
-				row.IsRationaleReadOnly = false;
+				// Try to parse the month‑year strings.
+				bool startOk = DateTime.TryParseExact(
+								   laborType.StartDate,
+								   "MM/yyyy",
+								   System.Globalization.CultureInfo.InvariantCulture,
+								   System.Globalization.DateTimeStyles.None,
+								   out DateTime parsedStart);
+
+				bool endOk = DateTime.TryParseExact(
+								 laborType.EndDate,
+								 "MM/yyyy",
+								 System.Globalization.CultureInfo.InvariantCulture,
+								 System.Globalization.DateTimeStyles.None,
+								 out DateTime parsedEnd);
+
+				// If either value isn’t a valid date, ignore this entry.
+				if (!startOk || !endOk)
+				{
+					continue;
+				}
+
+				if (parsedStart.Year >= startYear && parsedEnd.Year <= endYear)
+				{
+					return true;
+				}
 			}
+
+			// No matching LaborType found in the supplied year range.
+			return false;
 		}
 
 		/// <summary>
