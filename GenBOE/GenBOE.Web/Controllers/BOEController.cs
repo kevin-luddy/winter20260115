@@ -626,7 +626,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace short name</param>
 		/// <param name="id">BOE ID</param>
 		/// <returns>BOE Summary view Action Result</returns>
-		[ChildActionOnly, HttpGet]
+		[HttpGet]
 		public virtual ViewResult DisplayBOESummary(string workspace, int boeID)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);

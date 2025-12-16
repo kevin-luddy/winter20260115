@@ -260,6 +260,9 @@
     <Compile Include="ReasonCertificationNotRequiredLU.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="ReportXmlData.cs">
+      <DependentUpon>PTMEntityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="RequestTypeLU.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>

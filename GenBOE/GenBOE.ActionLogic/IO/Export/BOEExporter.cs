@@ -1944,7 +1944,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 SdtElement element = alias.Ancestors<SdtElement>().FirstOrDefault();
                 if (element != null)
                 {
-                    this.PopulateResourceSummaryByResourceIDTable(element, boeExportModelView);
+                    this.PopulateResourceSummaryByResourceIDTable(element, boeExportModelView, exportInputs);
                     alias.RemoveIt();
                 }
             }
@@ -3015,12 +3015,13 @@ namespace GenBOE.ActionLogic.IO.Export
             return resourceCustomFields;
         }
 
-        /// <summary>
-        /// Populates the resource summary by resource ids in the form of a table, sets up rollup data
-        /// </summary>
-        /// <param name="element">Element to set</param>
-        /// <param name="boeExportModelView">Export model view for the BOE</param>
-        private void PopulateResourceSummaryByResourceIDTable(SdtElement element, BOEExportModelView boeExportModelView)
+		/// <summary>
+		/// Populates the resource summary by resource ids in the form of a table, sets up rollup data
+		/// </summary>
+		/// <param name="element">Element to set</param>
+		/// <param name="boeExportModelView">Export model view for the BOE</param>
+		/// <param name="exportInputs">Export Inputs</param>
+		private void PopulateResourceSummaryByResourceIDTable(SdtElement element, BOEExportModelView boeExportModelView, BOEExportInputs exportInputs)
         {
             if (boeExportModelView == null)
             {
@@ -3043,7 +3044,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         })
                         .OrderBy(x => x.GroupKey).ToList();
 
-                this.PopulateResourceSummaryTable(element, rollupData);
+                this.PopulateResourceSummaryTable(element, rollupData, exportInputs);
             }
             else
             {
@@ -3078,7 +3079,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         })
                         .OrderBy(x => x.GroupKeyWithLaborCategoryAndLocation).ToList();
 
-                this.PopulateResourceSummaryTable(element, rollupData);
+                this.PopulateResourceSummaryTable(element, rollupData, exportInputs);
             }
             else
             {
@@ -3144,12 +3145,13 @@ namespace GenBOE.ActionLogic.IO.Export
             return resourceData;
         }
 
-        /// <summary>
-        /// Pupulates resource summary table with rollupData
-        /// </summary>
-        /// <param name="element">Element to set</param>
-        /// <param name="rollupData">data to use to populate table</param>
-        private void PopulateResourceSummaryTable(SdtElement element, List<ResourceSummaryRowData> rollupData)
+		/// <summary>
+		/// Pupulates resource summary table with rollupData
+		/// </summary>
+		/// <param name="element">Element to set</param>
+		/// <param name="rollupData">data to use to populate table</param>
+		/// <param name="exportInputs">The export inputs.</param>
+		private void PopulateResourceSummaryTable(SdtElement element, List<ResourceSummaryRowData> rollupData, BOEExportInputs exportInputs)
         {
             if (rollupData != null && rollupData.Any())
             {
@@ -3241,7 +3243,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					// These resources are only added if UCOT is enabled for the workspace, so no need to pass the FullWorkspace all the way to this method to check additionally
 					if (Utilities.IsUCOTEnabledForSystem && rollupData.Any(x => x.ResourceName.EndsWith($"-{Constants.UCOT_LABEL}")))
 					{
-						WordUtilities.AddUcotLabelToContainer(element);
+						WordUtilities.AddUcotLabelToContainer(element, exportInputs.IncludeCostVolumeUCOTText);
 					}
 
 					// remove template rows

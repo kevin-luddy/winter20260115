@@ -13,52 +13,64 @@
 %>
 
 <script type="text/javascript">
-    var formConfigs = [];
-    var originalSapConnectionEnabled = false;
-    var onLoadAssignAuthorsValue = '<%:Model.EnableAssignTaskAuthor%>';
-    var workspaceContainsTaskAuthor = '<%:Model.WorkspaceContainsTaskAuthor%>';
+	var formConfigs = [];
+	var originalSapConnectionEnabled = false;
+	var onLoadAssignAuthorsValue = '<%:Model.EnableAssignTaskAuthor%>';
+	var workspaceContainsTaskAuthor = '<%:Model.WorkspaceContainsTaskAuthor%>';
 
-    formConfigs.push({
-        ElementID: 'WorkspaceIdentificationForm',
-        Buttons: [
-            {
-                ButtonClass: 'ies-action',
-                ButtonText: 'Save',
-                ButtonName: 'save-button',
-                ButtonAction: function (buttonPressed) {
-                    var dataToSend = JSON.stringify(WorkspaceIdentificationWidget.getForm('WorkspaceIdentificationForm').getData());
+	formConfigs.push({
+		ElementID: 'WorkspaceIdentificationForm',
+		Buttons: [
+			{
+				ButtonClass: 'ies-action',
+				ButtonText: 'Save',
+				ButtonName: 'save-button',
+				ButtonAction: function (buttonPressed) {
+					var dataToSend = JSON.stringify(WorkspaceIdentificationWidget.getForm('WorkspaceIdentificationForm').getData());
 
-                    WorkspaceIdentificationWidget.saveRequest({
-                        url: CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
+					WorkspaceIdentificationWidget.saveRequest({
+						url: CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
                             '<%: WebConstants.CONTROLLER_WORKSPACE %>',
                             '<%: WebConstants.ACTION_SAVE_WORKSPACE_IDENTIFICATION %>', ''),
-                        data: dataToSend,
-                        success: function (result) {
-                            var message = '';
-                            if (result.Status == true && result.Message) {
-                                message = result.Message;
-                            }
+						data: dataToSend,
+						success: function (result) {
+							var message = '';
+							if (result.Status == true && result.Message) {
+								message = result.Message;
+							}
 
-                            WorkspaceIdentificationWidget.BackToJumpPage(message);
-                        }
-                    }, buttonPressed);
-                },
-                Stateful: true
-            }, {
-                ButtonClass: 'ies',
-                ButtonText: 'Cancel',
-                ButtonName: 'cancel-button',
-                ButtonAction: function (buttonPressed) {
-                    WorkspaceIdentificationWidget.Cancel();
-                }
-            }
-        ],
-        ContainsOCI: <%: ViewData["ContainsOCI"] %>,
-        HideOCI: false,
-        // We Load both OCI and NON OCI texts so that the Generation.JS will use the ContainsOCI to display the correct text
-        BannerTextWithOCI: '<%: SiteMasterUtilities.GetBannerText() %>',
-        BannerTextWithoutOCI: '<%: SiteMasterUtilities.GetBannerText(true) %>'
-    });
+							WorkspaceIdentificationWidget.BackToJumpPage(message);
+						}
+					}, buttonPressed);
+				},
+				Stateful: true
+			}
+			<% if (Utilities.ShowPLDIsIntegrated && !string.IsNullOrEmpty(Model.TrackingNumber))
+			{ %>
+			, {
+				ButtonClass: 'ies-action',
+				ButtonText: 'Refresh PLD Data',
+				ButtonName: 'refresh-pld-button',
+				ButtonAction: function () {
+					WorkspaceIdentificationWidget.RefresPldData()
+				},
+			}
+			<%}%>
+			, {
+				ButtonClass: 'ies',
+				ButtonText: 'Cancel',
+				ButtonName: 'cancel-button',
+				ButtonAction: function (buttonPressed) {
+					WorkspaceIdentificationWidget.Cancel();
+				}
+			}
+		],
+		ContainsOCI: <%: ViewData["ContainsOCI"] %>,
+		HideOCI: false,
+		// We Load both OCI and NON OCI texts so that the Generation.JS will use the ContainsOCI to display the correct text
+		BannerTextWithOCI: '<%: SiteMasterUtilities.GetBannerText() %>',
+		BannerTextWithoutOCI: '<%: SiteMasterUtilities.GetBannerText(true) %>'
+	});
 
 	var dialogConfigs = [];
 
@@ -79,6 +91,95 @@
         '<%: WebConstants.CONTROLLER_WORKSPACE %>',
         '<%: WebConstants.ACTION_WORKSPACE_SETTINGS %>');
 	WorkspaceIdentificationWidget = InitializeWorkspaceIdentificationWidget(widgetConfig, jumpUrl);
+
+	WorkspaceIdentificationWidget.LockFields = function () {
+		// break up WorkspaceName and WorkspaceNameInput if needed
+		var paNumber = $('#PaNumber').val();
+		var paTitle = $('#ProposalTitle').val();
+		var workspaceName = $('#WorkspaceName').val();
+
+		// only show the workspacename broken up if it actually starts with the tracking number
+		if (workspaceName.indexOf(paNumber) == 0 && !WorkspaceIdentificationWidget.isReadOnly()) {
+			if ($('#WorkspaceName').hasClass('full')) {
+				// The fields could be locked already, but this needs to be shrunk and the workspace name input shown so the user can update
+				$('#WorkspaceName').removeClass('full').addClass('half');
+				$('#WorkspaceNameInput').removeClass('display-none');
+			}
+
+			// Get length of PA Number and Title, +1 for space between them
+			var paNumberTitleLength = paNumber.length + paTitle.length + 1;
+
+			// Set width based on character length since it's variable unlike space
+			$('#WorkspaceName').addClass('disabled').prop('readonly', 'readonly').addClass('labelLookFeelRms');
+			$('#WorkspaceName')[0].style.width = paNumberTitleLength + "ch";
+
+			if (workspaceName.length > paNumberTitleLength) {
+				$('#WorkspaceNameInput').val(workspaceName.substr(paNumberTitleLength + 1));
+				$('#WorkspaceName').val(workspaceName.substr(0, paNumberTitleLength + 1));
+			} else {
+				$('#WorkspaceName').val(workspaceName + " ");
+			}
+		}
+
+		$('#PaNumberRow').removeClass('display-none');
+		$('#PaTitleRow').removeClass('display-none');
+		$('#Description').addClass('disabled').prop('readonly', 'readonly').addClass('labelLookFeelRms');
+		$('#LineOfBusinessTypeID').prop('disabled', 'disabled');
+		// create a hidden input field for post data
+		$('<input>').attr({
+			type: 'hidden',
+			id: 'LineOfBusinessTypeID',
+			name: 'LineOfBusinessTypeID',
+			value: $('#LineOfBusinessTypeID').val()
+		}).appendTo('form');
+		$('#AdjustDatesLink').addClass('display-none');
+		$("#ProposalSubmittalDate").datepicker('destroy');
+		$('#ProposalSubmittalDate').addClass('disabled').prop('readonly', 'readonly').addClass('labelLookFeelRms');
+		$('#RFPNumber').addClass('disabled').prop('readonly', 'readonly').addClass('labelLookFeelRms');
+		$('#ProposalStatusRow').addClass('display-none');
+		$('#PaLastModifiedDateRow').removeClass('display-none');
+	}
+
+	WorkspaceIdentificationWidget.RefresPldData = function () {
+		$(document).trigger("SHOW_LOADING_BOX");
+		var postData = { paNumber: $('#PaNumber').val() };
+
+		WorkspaceIdentificationWidget.ajaxRequest({
+			type: 'GET',
+			url: GenSession.CreateUrl({
+				controller: '<%: WebConstants.CONTROLLER_WORKSPACE %>',
+				action: '<%: WebConstants.ACTION_GET_PLD_PROPOSAL_DETAILS %>',
+				workspace: '<%: SiteMasterUtilities.GetCurrentWorkspace() %>'
+			}),
+			performValidation: true,
+			contentType: 'application/json; charset=utf-8',
+			data: postData,
+			success: function (result) {
+				if (result) {
+					var wsName = result.PANumber + " " + result.Title.trim();
+					$('#WorkspaceName').val(wsName);
+					$('#WorkspaceName')[0].style.width = wsName.length + "ch";
+					$('#ProposalTitle').val(result.Title.trim());
+					$('#Description').val(result.Description);
+					$('input[name=LineOfBusinessTypeID], select[name=LineOfBusinessTypeID]').val(result.LineOfBusinessId);
+					$('#ProposalSubmittalDate').val(result.ProposalSubmittalDateString);
+					$('#RFPNumber').val(result.RFPNumber);
+					$('#PldLastUpdateDate').val(result.LastModifiedDateString);
+					// TODO in another story - Contract Start/End Date - once it's determined if a date adjust will be needed
+
+					WorkspaceIdentificationWidget.setDirty('WorkspaceIdentificationForm');
+				} else {
+					GenSession.alertDialog('PA Number Not Found', 'There was no Proposal found for this PA Number. It is possible the Proposal no longer exists in PLD.')
+				}
+
+				$(document).trigger("HIDE_LOADING_BOX");
+			},
+			error: function () {
+				GenSession.alertDialog('Error Getting PLD Data', 'There was an error getting PLD data for PA Number. Please try again.');
+				$(document).trigger("HIDE_LOADING_BOX");
+			}
+		});
+	}
 
 	$('#RteSizeLimit').keyup(function () {
 		displayApproxPages($(this).val());
@@ -144,31 +245,31 @@
 	$(function () {
 		WorkspaceIdentificationWidget.registerForEvent('CLEAN_WORKSPACE_SETTINGS_DIRTY', function () { WorkspaceIdentificationWidget.cleanDirty('WorkspaceIdentificationForm'); });
 
-        if (!WorkspaceIdentificationWidget.isReadOnly()) {
-    $("#ProposalSubmittalDate").datepicker({ dateFormat: 'mm/dd/yy' });
-    $('#ResourceDecimalPrecision').on('change', WorkspaceIdentificationWidget.WarnPrecisionChange);
-    $('#CostDecimalPrecision').on('change', WorkspaceIdentificationWidget.WarnCostPrecisionChange);
-}
-       
-        $('#WorkspaceIdentification').find('select[name=Segment]').on('change', function () {
-            // Need to put up warning message
-            $("#WorkspaceSegmentWarning").show();
-        });
-                
-        $('#WorkspaceIdentification').find('input[name=AllowGridEdit]').on('change', function () {
-            // Need to put up warning message
-            if ($('#WorkspaceIdentification').find('input[name=AllowGridEdit]:checked').val() == "True"){
-                $("#ProjectMapEditGridWarning").show();
-            } else {
-                $("#ProjectMapEditGridWarning").hide();
-            }
-        });
-                
-        $('input[name=ContainsOCI]').click(WorkspaceIdentificationWidget.ContainsOCIRadioClick);
-                
-        $('#AdjustDatesLink').on('click', function() {
-            window.location = dateShiftUrl;
-        });
+		if (!WorkspaceIdentificationWidget.isReadOnly()) {
+			$("#ProposalSubmittalDate").datepicker({ dateFormat: 'mm/dd/yy' });
+			$('#ResourceDecimalPrecision').on('change', WorkspaceIdentificationWidget.WarnPrecisionChange);
+			$('#CostDecimalPrecision').on('change', WorkspaceIdentificationWidget.WarnCostPrecisionChange);
+		}
+
+		$('#WorkspaceIdentification').find('select[name=Segment]').on('change', function () {
+			// Need to put up warning message
+			$("#WorkspaceSegmentWarning").show();
+		});
+
+		$('#WorkspaceIdentification').find('input[name=AllowGridEdit]').on('change', function () {
+			// Need to put up warning message
+			if ($('#WorkspaceIdentification').find('input[name=AllowGridEdit]:checked').val() == "True") {
+				$("#ProjectMapEditGridWarning").show();
+			} else {
+				$("#ProjectMapEditGridWarning").hide();
+			}
+		});
+
+		$('input[name=ContainsOCI]').click(WorkspaceIdentificationWidget.ContainsOCIRadioClick);
+
+		$('#AdjustDatesLink').on('click', function () {
+			window.location = dateShiftUrl;
+		});
 
 		$('#Back-WorkspaceIdentification').click(WorkspaceIdentificationWidget.Cancel);
 
@@ -195,64 +296,68 @@
 			}
 		});
 
-	   // Need to put up warning message if set to true
-	   if ($('#WorkspaceIdentification').find('input[name=AllowGridEdit]:checked').val() == "True") {
-		   $("#ProjectMapEditGridWarning").show();
-	   } else {
-		   $("#ProjectMapEditGridWarning").hide();
-	   }
+		// Need to put up warning message if set to true
+		if ($('#WorkspaceIdentification').find('input[name=AllowGridEdit]:checked').val() == "True") {
+			$("#ProjectMapEditGridWarning").show();
+		} else {
+			$("#ProjectMapEditGridWarning").hide();
+		}
 
-	   if ('<%: Model.RteSizeLimit.HasValue %>' === "True") {
-		   displayApproxPages('<%: Model.RteSizeLimit %>');
-	   }
+		if ('<%: Utilities.ShowPLDIsIntegrated %>' == "True" && $('#PaNumber').val() !== '') {
+			WorkspaceIdentificationWidget.LockFields();
+		}
 
-	   if ('<%: Model.EnableTemplateBoeSelect %>' == "True") {
-		   var dropdown = $('#UsingTemplateBoe');
-		   dropdown.removeClass('disabled');
-		   dropdown.removeAttr('disabled');
-	   }
+		if ('<%: Model.RteSizeLimit.HasValue %>' === "True") {
+			displayApproxPages('<%: Model.RteSizeLimit %>');
+		}
 
-	   originalSapConnectionEnabled = $('#EnableSAPConnection').val();
-   });
+		if ('<%: Model.EnableTemplateBoeSelect %>' == "True") {
+			var dropdown = $('#UsingTemplateBoe');
+			dropdown.removeClass('disabled');
+			dropdown.removeAttr('disabled');
+		}
+
+		originalSapConnectionEnabled = $('#EnableSAPConnection').val();
+	});
 
 	// Dynamically set disabled/readonly dropdown for SAP connection
 	var usingTemplateBoeInit = '<%:Model.UsingTemplateBoe%>'.isTrue();
-    var enableSAPDropdown = $('#EnableSAPConnection');
+	var enableSAPDropdown = $('#EnableSAPConnection');
 
-    if (!usingTemplateBoeInit) {
-        enableSAPDropdown.addClass('disabled').attr('disabled', true);
-    }
+	if (!usingTemplateBoeInit) {
+		enableSAPDropdown.addClass('disabled').attr('disabled', true);
+	}
 
-    $('#UsingTemplateBoe').change(function () {
-        if ($('#UsingTemplateBoe').val() === 'False') {
-            enableSAPDropdown.addClass('disabled').attr('disabled', true);
-            enableSAPDropdown.val('False');
-            disabledEnableSAPConnectionDropdown = true;
-        } else {
-            enableSAPDropdown.removeClass('disabled').removeAttr('disabled');
-            enableSAPDropdown.val('True');
-            disabledEnableSAPConnectionDropdown = false;
-        }
-    });
+	$('#UsingTemplateBoe').change(function () {
+		if ($('#UsingTemplateBoe').val() === 'False') {
+			enableSAPDropdown.addClass('disabled').attr('disabled', true);
+			enableSAPDropdown.val('False');
+			disabledEnableSAPConnectionDropdown = true;
+		} else {
+			enableSAPDropdown.removeClass('disabled').removeAttr('disabled');
+			enableSAPDropdown.val('True');
+			disabledEnableSAPConnectionDropdown = false;
+		}
+	});
 
-    // Show the popup if the load value is set to true, but user changes it to false
-    $('#EnableAssignTaskAuthor').change(function () {
-        var isAuthorsAssignedSetToTrue = $('#EnableAssignTaskAuthor').val() === 'True';
-        if (onLoadAssignAuthorsValue === 'True' && !isAuthorsAssignedSetToTrue && workspaceContainsTaskAuthor === 'True') {
-            Session.confirmDialog(
-                'Delete Assigned Task Authors',
-                'At least one Task has an Author assigned. All assigned Authors for Tasks will be deleted and the BOEs containing those Tasks will have their Status changed to Draft.<br/><br/>Are you sure you want to delete the Assigned Task Authors?',
-                function () {
-                    // This is a confirmation, do nothing
-                    null
-                },
-                // Revert back to Yes if canceled
-                function () {
-                    $('#EnableAssignTaskAuthor').val('True')
-                }
-            );
-        }
-    });
+	// Show the popup if the load value is set to true, but user changes it to false
+	$('#EnableAssignTaskAuthor').change(function () {
+		var isAuthorsAssignedSetToTrue = $('#EnableAssignTaskAuthor').val() === 'True';
+		if (onLoadAssignAuthorsValue === 'True' && !isAuthorsAssignedSetToTrue && workspaceContainsTaskAuthor === 'True') {
+			Session.confirmDialog(
+				'Delete Assigned Task Authors',
+				'At least one Task has an Author assigned. All assigned Authors for Tasks will be deleted and the BOEs containing those Tasks will have their Status changed to Draft.<br/><br/>Are you sure you want to delete the Assigned Task Authors?',
+				function () {
+					// This is a confirmation, do nothing
+					null
+				},
+				// Revert back to Yes if canceled
+				function () {
+					$('#EnableAssignTaskAuthor').val('True')
+				}
+			);
+		}
+	});
 </script>
 
 <div id="WorkspaceIdentification" class="workspace-identification module ">
@@ -274,20 +379,35 @@
 			</div>
 			<div class="form-element">
 				<%: Html.TextBox("WorkspaceName", Model.WorkspaceName, new { @class = "full", @maxlength="100" })%>
+				<input id="WorkspaceNameInput" name="WorkspaceNameInput" class="half display-none" type="text" maxlength="40" />
 			</div>
 		</div>
 		<div class="form-row">
 			<div class="form-label">
 				Description
 			</div>
-			<div class="form-element">
+			<div id="DescriptionInput" class="form-element">
 				<%: Html.TextArea("Description", Model.Description, new { @class = "full", onkeyup="Helper.textAreaLimit(this, 1000)" })%>
 			</div>
+			<div id="PldDescription" class="form-element display-none">
+				<%: Model.Description %>
+			</div>
 		</div>
-
+		<div id="PaNumberRow" class="form-row display-none">
+			<div class="form-label">PA Number</div>
+			<div class="form-element">
+				<%: Model.TrackingNumber %>
+			</div>
+			<%: Html.Hidden("PaNumber", Model.TrackingNumber) %>
+		</div>
+		<div id="PaTitleRow" class="form-row display-none">
+			<div class="form-label">PA Proposal Title</div>
+			<div class="form-element">
+				<%: Html.TextBox("ProposalTitle", Model.ProposalTitle, new { @class = "full labelLookFeelRms"}) %>
+			</div>
+		</div>
 		<%if (SiteMasterUtilities.IsProjectMapEnabled)
 			{%>
-
 		<div class="form-row">
 			<div class="form-label">Workspace Type</div>
 			<div class="form-element">
@@ -357,42 +477,44 @@
 				<input type="text" disabled="disabled" value="<%: Model.ContractEndDate %>" class="small-date" name="EndDate" />
 				&nbsp;&nbsp;<a id="AdjustDatesLink" style="float: right;">Adjust Dates</a>
 
-            </div>
-        </div>
-        <%}%>
-  <div class="form-row">
-     <div class="form-label">
-         Proposal Submittal Date
-     </div>
-     <div class="form-element">
-         <%: Html.TextBox("ProposalSubmittalDate", Model.ProposalSubmittalDate, new { @class = "normal-date" })%>
-     </div>
- </div>       
-        <div class="form-row">
-            <div class="form-label">
-                <span helptext="The number of decimal places to use for resource hours in the workspace. (0-6)">Resource Decimal Precision</span>
-            </div>
-            <div class="form-element">
-                <%: Html.TextBox("ResourceDecimalPrecision", Model.ResourceDecimalPrecision )%>
-            </div>
-        </div>    
-        <div class="form-row">
-            <div class="form-label">
-                <span helptext="The number of decimal places to use for resource costs in the workspace. (0 or 2)">Cost Decimal Precision</span>
-            </div>
-            <div class="form-element" id="CostPrecisionSelect">
-                <%: Html.DropDownListFor(c => c.CostDecimalPrecision, Model.CostPrecisionSelect)%>                                
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-label">
-                RFP#</div>
-            <div class="form-element">
-                <%: Html.TextBox("RFPNumber", Model.RFPNumber, new { @class = "full", @maxlength="100" })%></div>
-        </div>
-        <div class="form-row">
-            <div class="form-label">
-                <span helptext="Information subject to contractual organization conflict of interest (OCI) limitations.
+			</div>
+		</div>
+		<%}%>
+		<div class="form-row">
+			<div class="form-label">
+				Proposal Submittal Date
+			</div>
+			<div class="form-element">
+				<%: Html.TextBox("ProposalSubmittalDate", Model.ProposalSubmittalDate, new { @class = "normal-date" })%>
+			</div>
+		</div>
+		<div class="form-row">
+			<div class="form-label">
+				<span helptext="The number of decimal places to use for resource hours in the workspace. (0-6)">Resource Decimal Precision</span>
+			</div>
+			<div class="form-element">
+				<%: Html.TextBox("ResourceDecimalPrecision", Model.ResourceDecimalPrecision )%>
+			</div>
+		</div>
+		<div class="form-row">
+			<div class="form-label">
+				<span helptext="The number of decimal places to use for resource costs in the workspace. (0 or 2)">Cost Decimal Precision</span>
+			</div>
+			<div class="form-element" id="CostPrecisionSelect">
+				<%: Html.DropDownListFor(c => c.CostDecimalPrecision, Model.CostPrecisionSelect)%>
+			</div>
+		</div>
+		<div class="form-row">
+			<div class="form-label">
+				RFP#
+			</div>
+			<div class="form-element">
+				<%: Html.TextBox("RFPNumber", Model.RFPNumber, new { @class = "full", @maxlength="100" })%>
+			</div>
+		</div>
+		<div class="form-row">
+			<div class="form-label">
+				<span helptext="Information subject to contractual organization conflict of interest (OCI) limitations.
                         Access must be restricted to authorized employees who have executed non-disclosure
                         agreements. The information is limited for use solely in the performance of the
                         contract on which it was provided or created.">Contains OCI Information *</span>
@@ -404,7 +526,7 @@
 				<label for="ContainsOCI-No">No</label>
 			</div>
 		</div>
-		<div class="form-row">
+		<div id="ProposalStatusRow" class="form-row">
 			<div class="form-label">
 				<span>Proposal Status *</span>
 			</div>
@@ -527,6 +649,16 @@
 					new SelectListItem() { Text = "Yes", Value = "True" },
 					new SelectListItem() { Text = "No", Value = "False" }
 				}) %>
+			</div>
+		</div>
+		<div id="PaLastModifiedDateRow" class="form-row display-none">
+			<div class="form-label">
+				<span helptext="Date that the PA was last modified in PLD">
+					PA Last Modified Date
+				</span>
+			</div>
+			<div class="form-element">
+				<%: Html.TextBox("PldLastUpdateDate", Model.PldLastUpdateDate, new { @class = "normal-date labelLookFeelRms" })%>
 			</div>
 		</div>
 		<% } %>

@@ -4087,6 +4087,10 @@ div#LaborTypeWarningFlag .warning-message
 	width: 225px;
 }
 
+tr.skillmix-no-historical {
+	background-color: #c3c3c3 !important;
+}
+
 .module-content {
 	display: table-row;
 }
@@ -8155,9 +8159,21 @@ button:hover:not(.disabled):not([disabled]) {
 	padding: 0;
 }
 
-input.labelLookFeel {
+input.labelLookFeel,
+input.labelLookFeelRms,
+textarea.labelLookFeelRms {
+	padding: 0px;
 	border: none;
 	background-color: white !important;
+}
+
+textarea.labelLookFeelRms {
+	height: auto;
+	padding: 0px;
+	resize: none;
+}
+
+input.labelLookFeel {
 	width: 80px !important;
 }
 

@@ -381,7 +381,11 @@ namespace GenBOE.Web.Controllers
 
         private bool CheckOutsidePop(IEnumerable<BoeTaskElementDTO> taskElements)
         {
-            return taskElements.Any(t => t.StartDate.HasValue && t.EndDate.HasValue && t.taskElementLabors.Any(l => l.StartDate.HasValue && l.EndDate.HasValue && (!l.StartDate.Value.IsInRange(t.StartDate.Value, t.EndDate.Value) || !l.EndDate.Value.IsInRange(t.StartDate.Value, t.EndDate.Value))));
+            return taskElements.Any(t => t.StartDate.HasValue && t.EndDate.HasValue && 
+				t.taskElementLabors.Any(l => (l.StartDate.HasValue && l.EndDate.HasValue && (!l.StartDate.Value.IsInRange(t.StartDate.Value, t.EndDate.Value) || !l.EndDate.Value.IsInRange(t.StartDate.Value, t.EndDate.Value))) ||
+					((l.SpreadCurveID == SpreadCurves.DiscreteHours || l.SpreadCurveID == SpreadCurves.DiscreteCost) && l.LaborSpreads != null && 
+						l.LaborSpreads.Any(s => s.LaborSpreadValue != 0m && !s.LaborSpreadDate.IsInRange(l.StartDateValue, l.EndDateValue))
+					)));
         }
     }
 }

@@ -37,6 +37,7 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 **		10/13/25	ranzalon			PROPH-3375 PPR Questions 13 and 14
 **		10/30/25	e403038				PROPH-3406 Label Modifications => Current Planned renamed to ScheduledActual and Current Scheduled renamed to Planned
 **		11/4/25		ranzalon			PROPH-3420: Added Alternative Pricing Methodology
+**		12/3/25		e402751				PROPH-3280: Added Draft Rfp Issued Date
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
@@ -243,7 +244,8 @@ SELECT
 		WHEN P.AlternativePricingMethodology = null THEN ''
 		WHEN P.AlternativePricingMethodology = 4 THEN P.AlternativePricingMethodologyOtherText
 		ELSE apm.Text
-	END AS AlternativePricingMethodology
+	END AS AlternativePricingMethodology,
+	CAST(P.DraftRfpIssuedDate AS DATE) AS [Draft RFP Issued Date]
   FROM [dbo].[Proposal] P
     INNER JOIN [dbo].[ProgramAreaLU] PA ON P.ProgramAreaID = PA.ProgramAreaID
 	INNER JOIN [dbo].[LineOfBusinessLU] LOB ON P.LineOfBusinessID = LOB.LineOfBusinessID

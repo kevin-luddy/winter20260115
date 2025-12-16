@@ -1,0 +1,287 @@
+﻿<div class="form-row" style="display: flex; align-items: center;">
+	<div class="form-label" style="margin-right: 10px;">
+		<span>Workspace/Proposal Name *</span>
+		<div class="help-icon" id="WorkspaceName-Help" onclick="CreateWorkspace.ToggleHelp(this);">
+		</div>
+		<!-- This comment is needed for the jquery animation to work in IE8... -->
+		<div class="help-dialog" id="WorkspaceName-HelpDialog" style="width: 200px;">
+			<div class="help-dialog-close"></div>
+			<div class="help-dialog-text">
+				Proposal or group name. Name is used in BOEs, reports and to identify your workspace.
+			</div>
+		</div>
+	</div>
+	<div class="form-element" style="flex">
+		<div style="display: flex" data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">
+			<span> {{model.PLD_PANumber}} {{model.PLD_PATitle}}</span>
+		</div>
+		<div data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">
+			<span>{{model.nextRevision}} </span><input class="half" id="WorkspaceName" name="WorkspaceName" data-ng-trim="false" data-ng-model="data.WorkspaceName" data-ng-keyup="workspaceNameKeyUp()" type="text" maxlength="88" />
+		</div>
+	</div>
+</div>
+<div class="form-row">
+	<div class="form-label">
+		Description
+	</div>
+	<div class="form-element">
+		<textarea data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''" data-ng-model="data.Description" name="Description" class="full ignoreValidation" id="Description" maxlength="1000" rows="2" cols="20" readonly="readonly"></textarea>
+		<textarea data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''" data-ng-model="data.Description" name="Description" class="full ignoreValidation" id="Description" maxlength="1000" rows="2" cols="20"></textarea>
+	</div>
+</div>
+<div class="form-row">
+	<div class="form-label">
+		URL *
+		<div class="help-icon" id="URL-Help" onclick="CreateWorkspace.ToggleHelp(this);">
+		</div>
+		<!-- This comment is needed for the jquery animation to work in IE8... -->
+		<div class="help-dialog" id="URL-HelpDialog" style="width: 200px;">
+			<div class="help-dialog-close"></div>
+			<div class="help-dialog-text">
+				The URL to navigate to the Workspace. Must begin with a letter or number and can only contain letters, numbers, blanks, underscores and hyphens.
+			</div>
+		</div>
+	</div>
+	<div style="display: inline-flex">
+		<span data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">{{ model.applicationUrl}}{{model.PLD_PANumber }}</span></span>
+		<span data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">{{ model.applicationUrl }}</span><input data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''" name="ShortName" class="quarter" id="ShortName" data-ng-model="data.Shortname" type="text" maxlength="15" value="{{ model.nextRevision }}" />
+	</div>
+</div>
+<div class="form-row" data-ng-show="model.showProjectMap">
+	<div class="form-label">Workspace Type</div>
+	<div class="form-element">
+		<select name="ProjectMapType" id="ProjectMapType" data-ng-change="setDecimalPrecisionDefaults(false)" data-ng-options="item.Value as item.Text for item in model.projectMapTypes | filter:{Disabled:false}" data-ng-model="data.ProjectMapType"></select>
+	</div>
+</div>
+<div class="form-row">
+	<div class="form-label">
+		<span>Line of Business *</span>
+		<div id="LOB-Help" data-ng-show="model.isPTMIntegrated" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
+		</div>
+		<!-- This comment is needed for the jquery animation to work in IE8... -->
+		<div id="LOB-HelpDialog" data-ng-show="model.isPTMIntegrated" class="help-dialog" style="width: 200px;">
+			<div class="help-dialog-close"></div>
+			<div class="help-dialog-text">
+				Line of Business is driven by the Tracking Number selected.
+			</div>
+		</div>
+	</div>
+	<div class="form-element">
+		<span data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== '' && model.LineOfBusiness.Contains('Select')">{{getLOB()}}</span>
+		<select data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== '' && model.LineOfBusiness.Contains('Select')" name="LineOfBusiness" id="LineOfBusiness" data-ng-options="item.Id as item.Text for item in model.lobs | isActiveOrInitialPickListItem:data.LineOfBusinessID" data-ng-model="data.LineOfBusinessID"></select>
+	</div>
+</div>
+<div class="form-row">
+	<div class="form-label">
+		<span>{{model.labelLeadPricer}} *</span>
+		<div id="CostVolumeLead-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
+		</div>
+		<!-- This comment is needed for the jquery animation to work in IE8... -->
+		<div id="CostVolumeLead-HelpDialog" class="help-dialog" style="width: 200px;">
+			<div class="help-dialog-close"></div>
+			<div class="help-dialog-text">
+				The individual who will perform the initial setup procedures before the BOE Authors
+				begin the writing process.
+			</div>
+		</div>
+	</div>
+	<div class="form-element">
+		<input id="CostVolumeLeadPricerDisplayName" name="CostVolumeLeadPricerDisplayName" type="text" class="half" maxlength="50" data-ng-model="data.CostVolumeLeadPricerDisplayName" />
+	</div>
+</div>
+<!-- Pull from PLD -->
+<div data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">
+	<div class="form-row" id="ContractDates" data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">
+		<div class="form-label">
+			Contract Start Date *
+		</div>
+		<div class="form-element contract-start-date">
+			<span style="vertical-align: sub;" data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">{{ data.ContractStartDate }}</span>
+		</div>
+		<div class="form-label contract-end-date-label">
+			Contract End Date *
+		</div>
+		<div class="form-element contract-end-date">
+			<span style="vertical-align: sub;" data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">{{ data.ContractEndDate }}</span>
+
+		</div>
+	</div>
+</div>
+<!-- Edit -->
+<div data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">
+	<div class="form-row" id="ContractDates" data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== '')">
+		<div class="form-label">
+			Contract Start Date *
+		</div>
+		<div class="form-element contract-start-date">
+			<input class="normal-date" id="ContractStartDate" placeholder="mm/yyyy" name="ContractStartDate" data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''" type="text" data-ng-model="data.ContractStartDate">
+		</div>
+		<div class="form-label contract-end-date-label">
+			Contract End Date *
+		</div>
+		<div class="form-element contract-end-date">
+			<input class="normal-date" id="ContractEndDate" placeholder="mm/yyyy" name="ContractEndDate" data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''" type="text" data-ng-model="data.ContractEndDate">
+		</div>
+	</div>
+</div>
+<div class="form-row" id="AllowGridEdit" data-ng-hide="data.ProjectMapType == '1' || data.ProjectMapType == '2'">
+	<div class="form-label">
+		<span helptext="Allows Project Map data to be edited within the web interface grid.">Allow Grid Edit *</span>
+	</div>
+	<div class="form-element radio">
+		<input id="AllowGridEdit-Yes" name="AllowGridEdit" text="Yes" type="radio" data-ng-model="data.AllowGridEdit" data-ng-value="true">
+		<label for="AllowGridEdit-Yes">Yes</label>
+		<input id="AllowGridEdit-No" name="AllowGridEdit" text="No" type="radio" data-ng-model="data.AllowGridEdit" data-ng-value="false">
+		<label for="AllowGridEdit-No">No</label>
+	</div>
+</div>
+<!-- pulled from PLD -->
+<div data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">
+	<div class="form-row">
+		<div class="form-label">
+			Proposal Submittal Date
+		</div>
+		<div class="form-element proposal-submittal">
+			<span style="vertical-align: sub;" data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">{{ data.ProposalSubmittalDate }}</span>
+		</div>
+	</div>
+</div>
+<!-- Edit -->
+<div data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">
+	<div class="form-row">
+		<div class="form-label">
+			Proposal Submittal Date
+		</div>
+		<div class="form-element proposal-submittal">
+			<input class="normal-date" data-ng-hide="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''" id="ProposalSubmittalDate" name="ProposalSubmittalDate" placeholder="mm/dd/yyyy" type="text" data-ng-model="data.ProposalSubmittalDate">
+		</div>
+	</div>
+</div>
+<div class="form-row">
+	<div class="form-label">
+		<span>Resource Decimal Precision</span>
+		<div id="resource-decimal-precision-help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);"></div>
+		<div id="resource-decimal-precision-help-dialog" class="help-dialog" style="width: 200px;">
+			<div class="help-dialog-close"></div>
+			<div class="help-dialog-text">The number of decimal places to use for resource {{model.hoursLabel}} in the workspace. (0-6)</div>
+		</div>
+	</div>
+	<div class="form-element">
+		<input type="text" id="ResourceDecimalPrecision" name="ResourceDecimalPrecision" data-ng-model="data.ResourceDecimalPrecision" data-ng-change="warnPrecisionChange()" />
+	</div>
+</div>
+<div class="form-row">
+	<div class="form-label">
+		<span>Cost Decimal Precision</span>
+		<div id="cost-decimal-precision-help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);"></div>
+		<div id="cost-decimal-precision-help-dialog" class="help-dialog" style="width: 200px;">
+			<div class="help-dialog-close"></div>
+			<div class="help-dialog-text">The number of decimal places to use for resource costs in the workspace. (0 or 2)</div>
+		</div>
+	</div>
+	<div class="form-element" id="CostPrecisionSelect">
+		<select name="CostDecimalPrecision" id="CostDecimalPrecision" data-ng-model="data.CostDecimalPrecision" data-ng-change="warnCostPrecisionChange()">
+			<option data-ng-value="0">0</option>
+			<option data-ng-value="2">2</option>
+		</select>
+	</div>
+</div>
+<div class="form-row">
+	<div class="form-label">
+		RFP #
+	</div>
+	<div class="form-element">
+		<input class="full ignoreValidation" id="RFPNumber" maxlength="100" name="RFPNumber" type="text" data-ng-model="data.RFPNumber">
+	</div>
+</div>
+<div class="form-row" data-ng-show="model.IsPLDIntegrated && model.PLD_PANumber && model.PLD_PANumber !== ''">
+	<div class="form-label">
+		<span>PLD Proposal Title</span>
+		<div id="Title-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
+		</div>
+		<!-- This comment is needed for the jquery animation to work in IE8... -->
+		<div id="Title-HelpDialog" class="help-dialog" style="width: 200px;">
+			<div class="help-dialog-close"></div>
+			<div class="help-dialog-text">
+				Proposal Title is driven by the Tracking Number selected.
+			</div>
+		</div>
+	</div>
+	<div class="form-element static">{{data.ProposalTitle}}</div>
+</div>
+<div id="RteSizeRow" class="form-row">
+	<div class="form-label">
+		<span>Rich Text Editor Character<br />Limit</span>
+		<div id="RteSizeLimit-Help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);"></div>
+		<div id="RteSizeLimit-HelpDialog" class="help-dialog" style="width: 200px;">
+			<div class="help-dialog-close"></div>
+			<div class="help-dialog-text">
+				The maximum number of characters (between 100 and 100,000) per dialog box using Rich Text, excluding any HTML markup. One single-spaced page is approximately 3000 characters. This limit does not account for images and tables that an author may include which will increase the page count.
+			</div>
+		</div>
+	</div>
+	<div class="form-element">
+		<input name="RteSizeLimit" class="quarter" id="RteSizeLimit" data-ng-keyup="rteSizeKeyUp()" data-ng-model="data.RteSizeLimit" type="text" />
+		<span id="approxPages" data-ng-bind-html-unsafe="approxPages"></span>
+	</div>
+</div>
+<div class="form-row">
+	<div class="form-label">
+		<span>MOQ Template BOEs *</span>
+		<div id="using-template-boe-help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);"></div>
+		<div id="using-template-boe-help-dialog" class="help-dialog" style="width: 200px;">
+			<div class="help-dialog-close"></div>
+			<div class="help-dialog-text">Will this Workspace use the MOQ Template in its BOEs?</div>
+		</div>
+	</div>
+	<div class="form-element" id="TemplateBoeSelect">
+		<select name="UsingTemplateBoe" id="UsingTemplateBoe" data-ng-change="templateBoeChange()" data-ng-model="data.UsingTemplateBoe" data-ng-disabled="data.WorkspaceToCopyID > 0 && data.InitialUsingTemplateBoe == true">
+			<option data-ng-value="true">Yes</option>
+			<option data-ng-value="false">No</option>
+		</select>
+	</div>
+</div>
+<div class="form-row" data-ng-show="model.isSAPConfigurationEnabled">
+	<div class="form-label">
+		<span>SAP Connection Enabled *</span>
+		<div id="using-template-boe-help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);"></div>
+		<div id="using-template-boe-help-dialog" class="help-dialog" style="width: 200px;">
+			<div class="help-dialog-close"></div>
+			<div class="help-dialog-text">Will this Workspace use SAP in its BOE?</div>
+		</div>
+	</div>
+	<div class="form-element" id="SAPConnectionSelect">
+		<select name="EnableSAPConnection" id="EnableSAPConnection" data-ng-model="data.EnableSAPConnection" data-ng-disabled="data.WorkspaceToCopyID > 0 || !data.UsingTemplateBoe">
+			<option data-ng-if="data.UsingTemplateBoe === true && model.isSAPConfigurationEnabled" data-ng-value="true">Yes</option>
+			<option data-ng-value="false">No</option>
+		</select>
+	</div>
+</div>
+<div class="form-row" data-ng-show="model.isAssignTaskAuthorEnabled">
+	<div class="form-label">
+		<span>Authors Assignable at Task<br />Level *</span>
+		<div id="using-template-boe-help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);"></div>
+		<div id="using-template-boe-help-dialog" class="help-dialog" style="width: 200px;">
+			<div class="help-dialog-close"></div>
+			<div class="help-dialog-text">
+				When "Yes" is selected, Authors are prompted to choose their name from the BOE Author list and assign themselves to the task as the Task Author.
+				When "No" is selected, Author Assignment is BOE Level only. No additional Author steps.
+			</div>
+		</div>
+	</div>
+	<div class="form-element">
+		<select name="EnableAssignTaskAuthor" id="EnableAssignTaskAuthor" data-ng-model="data.EnableAssignTaskAuthor" data-ng-disabled="data.WorkspaceToCopyID > 0">
+			<option data-ng-value="true">Yes</option>
+			<option data-ng-value="false">No</option>
+		</select>
+	</div>
+</div>
+{{setupIdentificationPage()}}
+<script type="text/javascript">
+	if (typeof SetupMonthPicker === 'function') {
+		(function () {
+			SetupMonthPicker("#ContractStartDate");
+			SetupMonthPicker("#ContractEndDate");
+		})();
+	}
+</script>

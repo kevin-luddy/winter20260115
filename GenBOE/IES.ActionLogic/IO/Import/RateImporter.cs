@@ -80,8 +80,10 @@ namespace IES.ActionLogic.IO.Import
                                     {
                                         string columnName = headerDictionary[ExcelUtilities.ParseColumnName(cell.CellReference)];
                                         switch (columnName)
-                                        {
-                                            case "Rate Code":
+										{
+											case "Category":
+												break;
+											case "Rate Code":
                                                 newRateDetail.RateCode = ExcelUtilities.GetCellValue(cell, sharedStringItems, stylesheet);
                                                 if (!string.IsNullOrEmpty(newRateDetail.RateCode))
                                                 {
@@ -90,7 +92,9 @@ namespace IES.ActionLogic.IO.Import
                                                 }
 
                                                 break;
-                                            default:
+											case "Description":
+												break;
+											default:
                                                 // Years
                                                 int year;
 

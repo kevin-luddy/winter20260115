@@ -10,17 +10,26 @@
     <Compile Remove="Release Scripts\Older\ClassifiedReleaseBOE2024.12\**" />
     <Compile Remove="Release Scripts\Older\ClassifiedReleaseBOE2025.03\**" />
     <Compile Remove="Release Scripts\Older\OlderClassifiedReleases\**" />
+    <Compile Remove="Release Scripts\Release 2025.6\**" />
     <EmbeddedResource Remove="Release Scripts\Older\ClassifiedReleaseBOE2024.12\**" />
     <EmbeddedResource Remove="Release Scripts\Older\ClassifiedReleaseBOE2025.03\**" />
     <EmbeddedResource Remove="Release Scripts\Older\OlderClassifiedReleases\**" />
+    <EmbeddedResource Remove="Release Scripts\Release 2025.6\**" />
     <None Remove="Release Scripts\Older\ClassifiedReleaseBOE2024.12\**" />
     <None Remove="Release Scripts\Older\ClassifiedReleaseBOE2025.03\**" />
     <None Remove="Release Scripts\Older\OlderClassifiedReleases\**" />
+    <None Remove="Release Scripts\Release 2025.6\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Object Scripts\Stored Procedures\getReportXml.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertReportXml.sql" />
+    <Content Include="Object Scripts\X_Data Cleanup\ReportXmlData.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Release Scripts\Release 2025.11\" />
     <Folder Include="Release Scripts\Release 2025.10\" />
-    <Folder Include="Release Scripts\Release 2025.6\" />
   </ItemGroup>
 
 </Project>

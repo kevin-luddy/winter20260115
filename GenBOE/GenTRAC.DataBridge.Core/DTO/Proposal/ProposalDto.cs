@@ -108,6 +108,11 @@ namespace GenTRAC.DataBridge.Core.DTO.Proposal
 		public string RFPNumber { get; set; }
 
 		/// <summary>
+		/// Draft RFP Issued Date
+		/// </summary>
+		public DateTime? DraftRfpIssuedDate { get; set; }
+
+		/// <summary>
 		/// RFP Issued Date
 		/// </summary>
 		public DateTime? RFPIssuedDate { get; set; }

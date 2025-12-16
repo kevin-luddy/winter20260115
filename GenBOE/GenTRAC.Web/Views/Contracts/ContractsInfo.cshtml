@@ -370,6 +370,7 @@
 					@Html.DropDownListFor(model => model.EppDelegationAuthority, Model.EppOptions, new { name = "EppDelegationAuthority" })
 				</div>
 			</div>
+
 			<div class="form-row epp-date-container">
 				@* Planned EPP Dates *@
 				@if (Model.IsNSS)
@@ -429,7 +430,7 @@
 								@Html.TextBoxFor(x => x.PlannedCorporateEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
 							</div>
 						</div>
-						
+
 					</div>
 				}
 

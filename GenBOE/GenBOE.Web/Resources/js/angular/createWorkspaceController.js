@@ -228,11 +228,111 @@
 	};
 
 	// NOTE:  All scope variables that are used inside ng-model must be objects and not primitives so that they can be used inside of ng-switch
-	// https://stackoverflow.com/a/15593652 
+	// https://stackoverflow.com/a/15593652
 
 	/////////////////////////////////////// WIZARD STEPS /////////////////////////////////////////////
 
+	// Helper function to sync jQuery-managed field values to $scope.data when leaving step 3.  This
+	// preserves data when back/next are used after data has been entered
+
+	$scope.saveUserEnteredValues = function () {
+		if ($scope.step !== 3) {
+			return; // Only sync when currently on step 3
+		}
+
+		// Sync lookupUser values (Lead Pricer)
+		var leadPricerDisplayName = $('#CostVolumeLeadPricerDisplayName').val();
+		var leadPricerNTID = $('#CostVolumeLeadPricerNTID').val();
+		if (leadPricerDisplayName !== undefined) {
+			$scope.data.CostVolumeLeadPricerDisplayName = leadPricerDisplayName;
+			$scope.model.CostVolumeLeadPricerDisplayName = leadPricerDisplayName;
+		}
+		if (leadPricerNTID !== undefined) {
+			$scope.data.CostVolumeLeadPricerNTID = leadPricerNTID;
+			$scope.model.CostVolumeLeadPricerNTID = leadPricerNTID;
+		}
+
+		// Shortname
+		var Shortname = $('#Shortname').val();
+		if (Shortname !== undefined && Shortname !== '') {
+			Shortname = Shortname.trim();
+			$scope.data.Shortname = Shortname;
+			$scope.model.Shortname = Shortname;
+			$scope.data.nextRevision = Shortname;
+			$scope.model.nextRevision = Shortname;
+		}
+
+		// Contract dates and Proposal Submittal Date
+		var contractStartDate = $('#ContractStartDate').val();
+		if (contractStartDate !== undefined && contractStartDate !== '') {
+			$scope.data.ContractStartDate = contractStartDate;
+			$scope.model.ContractStartDate = contractStartDate;
+		}
+
+		var contractEndDate = $('#ContractEndDate').val();
+		if (contractEndDate !== undefined && contractEndDate !== '') {
+			$scope.data.ContractEndDate = contractEndDate;
+			$scope.model.ContractEndDate = contractEndDate;
+		}
+
+		var proposalSubmittalDate = $('#ProposalSubmittalDate').val();
+		if (proposalSubmittalDate !== undefined && proposalSubmittalDate !== '') {
+			$scope.data.ProposalSubmittalDate = proposalSubmittalDate;
+			$scope.model.ProposalSubmittalDate = proposalSubmittalDate;
+		}
+
+		// WorkspaceName
+		var workspaceName = $('#WorkspaceName').val();
+		if (workspaceName !== undefined && workspaceName !== '') {
+			$scope.data.WorkspaceName = workspaceName;
+			$scope.model.WorkspaceName = workspaceName;
+			$scope.data.nextRevision = workspaceName;
+			$scope.model.nextRevision = workspaceName;
+		}
+
+		// Description
+		var Description = $('#Description').val();
+		if (Description !== undefined && Description !== '') {
+			$scope.data.Description = Description;
+			$scope.model.Description = Description;
+		}
+
+		// RFPNumber
+		var RFPNumber = $('#RFPNumber').val();
+		if (RFPNumber !== undefined && RFPNumber !== '') {
+			$scope.data.RFPNumber = RFPNumber;
+			$scope.model.RFPNumber = RFPNumber;
+		}
+
+		// UsingTemplateBoe
+		var UsingTemplateBoe = $('#UsingTemplateBoe').val();
+		if (UsingTemplateBoe !== undefined && UsingTemplateBoe !== '') {
+			$scope.data.UsingTemplateBoe = UsingTemplateBoe;
+			$scope.model.UsingTemplateBoe = UsingTemplateBoe;
+		}
+
+		// LineOfBusiness
+		var LineOfBusiness = $('#LineOfBusiness').val();
+		if (LineOfBusiness !== undefined && LineOfBusiness !== '') {
+			$scope.data.LineOfBusiness = LineOfBusiness;
+			$scope.model.LineOfBusiness = LineOfBusiness;
+		}
+
+		// LineOfBusinessId
+		var LineOfBusinessId = $('#LineOfBusinessId').val();
+		if (LineOfBusinessId !== undefined && LineOfBusinessId !== '') {
+			$scope.data.LineOfBusinessId = LineOfBusinessId;
+			$scope.model.LineOfBusinessId = LineOfBusinessId;
+		}
+	}
+
 	$scope.goToStep = function (newStep) {
+
+		// Sync Step 3 data BEFORE changing the step
+		if ($scope.step === 3 && newStep !== 3) {
+			$scope.saveUserEnteredValues();
+		}
+
 		$scope.errors = [];
 		$('#urlValidationBox').html('');
 		$scope.step = newStep;
@@ -289,18 +389,30 @@
 				.then(function (res) {
 					const data = res.data;
 
-					$scope.model.LineOfBusiness = data.LineOfBusiness;
-					$scope.model.LineOfBusinessID = data.LineOfBusinessId;
-					$scope.data.LineOfBusiness = data.LineOfBusiness;
-					$scope.data.LineOfBusinessID = data.LineOfBusinessId;
+					$scope.model.LineOfBusiness = data.LineOfBusiness || '';
+					$scope.data.LineOfBusiness = data.LineOfBusiness || '';
+					if (data.LineOfBusinessId && data.LineOfBusinessId > 0) {
+						$scope.model.LineOfBusinessID = data.LineOfBusinessId;
+						$scope.data.LineOfBusinessID = data.LineOfBusinessId;
+					} else {
+						$scope.model.LineOfBusinessID = -1;
+						$scope.data.LineOfBusinessID = -1;
+					}
 
-					$scope.model.Description = data.Description;
-					$scope.data.Description = data.Description;
+					var description = data.Description || '';
+					if (description.length > 1000) {
+						description = description.substr(0, 1000);
+					}
+					$scope.model.Description = description;
+					$scope.data.Description = description;
 
-					$scope.model.CostVolumeLeadPricerDisplayName = data.Pricing;
-					$scope.data.CostVolumeLeadPricerDisplayName = data.Pricing;
-					$scope.model.Pricer = data.Pricing;
-					$scope.data.Pricer = data.Pricing;
+
+					// TODO: re-evaluate Pricer data pull after customer weighs in on need / bad data handling
+					// hold on bringing what PLD has for Pricer as it is not clean name data
+					//$scope.model.CostVolumeLeadPricerDisplayName = data.Pricing;
+					//$scope.data.CostVolumeLeadPricerDisplayName = data.Pricing;
+					//$scope.model.Pricer = data.Pricing;
+					//$scope.data.Pricer = data.Pricing;
 
 					$scope.model.ContractStartDate = parseDotNetDate(data.ProjectStartDate);
 					$scope.model.ContractEndDate = parseDotNetDate(data.ProjectEndDate);
@@ -372,6 +484,12 @@
 	$scope.back = function () {
 		$scope.errors = [];
 		$('#urlValidationBox').html('');
+
+		// Sync Step 3 data BEFORE leaving
+		if ($scope.step === 3) {
+			$scope.saveUserEnteredValues();
+		}
+
 		switch ($scope.step) {
 			case 2:
 				$scope.setStepSpecificElements(1);
@@ -415,7 +533,8 @@
 							$scope.setStepSpecificElements(2);
 						} else {
 							// reset the data in case the user went back and forth
-							$scope.data = $scope.resetData();
+
+							//$scope.data = $scope.resetData();
 							$scope.data.IsAttemptingToImport = false;
 
 							var pa = ($scope.model.PLD_PANumber || '').toString().trim();
@@ -470,6 +589,9 @@
 
 						break;
 					case 3:
+
+						// Sync all JQuery-managed and angular bound field values before leaving Step 3
+						$scope.saveUserEnteredValues();
 
 						if ($scope.model.isPTMIntegrated && $scope.model.ptmTrackingNumber !== '') {
 							// set the real workspacename if we are integrating with PTM (and admin hasn't overwritten with no PTM listed)
@@ -634,8 +756,7 @@
 	};
 
 	$scope.initAnticipatedDatepicker = function () {
-		if (!$scope.model.isPTMIntegrated || $scope.model.isAdmin)
-			$("#ProposalSubmittalDate").datepicker({ dateFormat: 'mm/dd/yy' });
+		$("#ProposalSubmittalDate").datepicker({ dateFormat: 'mm/dd/yy' });
 	};
 
 	$scope.workspaceNameKeyUp = function () {
@@ -655,7 +776,6 @@
 			if (typeof SetupMonthPicker === 'function') {
 				SetupMonthPicker('#ContractStartDate');
 				SetupMonthPicker('#ContractEndDate');
-				SetupMonthPicker('#ProposalSubmittalDate');
 			}
 		}
 		var URLText = workspaceNameCharArray.join("");

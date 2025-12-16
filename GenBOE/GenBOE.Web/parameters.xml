@@ -9,7 +9,7 @@
 	<!--appSettings-->
 
 
-	<parameter name="IsPLDIntegrated" description="Feature Flag for PLD Integration" defaultvalue="__IsPLDIntegrated__">
+	<parameter name="IsPLDIntegrated" description="Feature Flag for PLD Integration" defaultvalue="__IsPLDIntegrated__" tags="">
 		<paremeterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IsPLDIntegrated']/@value">			
 		</paremeterentry>
 	</parameter>

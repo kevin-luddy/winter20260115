@@ -1538,6 +1538,7 @@ namespace GenTRAC.Tests.ActionLogic
                 Request = 1,
                 ProposalClass = 1,
                 RFPNumber = "myRFP",
+				DraftRfpIssuedDate = new DateTime(2014, 1, 1),
                 RFPIssuedDate = new DateTime(2014, 2, 2),
                 RFPReceivedDate = new DateTime(2014, 3, 3),
                 ContractActionType = ContractActionType.NewContract,
@@ -1602,21 +1603,29 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(proposal.Request, proposalInfo.RequestType);
             Assert.AreEqual(proposal.ProposalClass, proposalInfo.ProposalClass);
             Assert.AreEqual(proposal.RFPNumber, proposalInfo.RFPNumber);
-            Assert.AreEqual(proposal.RFPIssuedDate.Value.ToString("MM/dd/yyyy"), proposalInfo.RFPIssuedDate);
+			Assert.AreEqual(proposal.DraftRfpIssuedDate.Value.ToString("MM/dd/yyyy"), proposalInfo.DraftRfpIssuedDate);
+			Assert.AreEqual(proposal.RFPIssuedDate.Value.ToString("MM/dd/yyyy"), proposalInfo.RFPIssuedDate);
             Assert.AreEqual(proposal.RFPReceivedDate.Value.ToString("MM/dd/yyyy"), proposalInfo.RFPReceivedDate);
             Assert.AreEqual(ContractActionType.NewContract.GetDescription<ContractActionType>(), proposalInfo.ContractActionType.Value.GetDescription<ContractActionType>());
             Assert.AreEqual(proposal.ContractActionTypeOtherText, proposalInfo.ContractActionTypeOtherText);
             Assert.IsFalse(proposalInfo.IsNewRevision);
 
-            // test null dates (should never happen with proposal created through UI)
-            fullProposal.RFPIssuedDate = null;
+			// test null dates (should never happen with proposal created through UI)
+			fullProposal.DraftRfpIssuedDate = null;
+			fullProposal.RFPIssuedDate = null;
             fullProposal.RFPReceivedDate = null;
-            proposalInfo = sut.GetDataForProposalInformation(proposalId);
-            Assert.IsTrue(string.IsNullOrEmpty(proposalInfo.RFPIssuedDate));
+			proposalInfo = sut.GetDataForProposalInformation(proposalId);
+			Assert.IsTrue(string.IsNullOrEmpty(proposalInfo.DraftRfpIssuedDate));
+			Assert.IsTrue(string.IsNullOrEmpty(proposalInfo.RFPIssuedDate));
             Assert.IsTrue(string.IsNullOrEmpty(proposalInfo.RFPReceivedDate));
 
-            // verify values for new proposal
-            proposalInfo = sut.GetDataForProposalInformation(null);
+			// test draft rfp issued dates prior to or equal to rfp issued date and rfp received date
+			Assert.IsTrue(proposal.DraftRfpIssuedDate < proposal.RFPIssuedDate && proposal.DraftRfpIssuedDate < proposal.RFPReceivedDate);
+			proposal.DraftRfpIssuedDate = new DateTime(2014, 2, 5);
+			Assert.IsFalse(proposal.DraftRfpIssuedDate < proposal.RFPIssuedDate && proposal.DraftRfpIssuedDate < proposal.RFPReceivedDate);
+
+			// verify values for new proposal
+			proposalInfo = sut.GetDataForProposalInformation(null);
             Assert.AreEqual(-1, proposalInfo.ProposalID);
             Assert.IsTrue(string.IsNullOrEmpty(proposalInfo.AnticipatedDeliveryDate));
             Assert.IsTrue(string.IsNullOrEmpty(proposalInfo.RevisedSubmittalDate));

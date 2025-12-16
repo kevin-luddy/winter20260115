@@ -1105,21 +1105,37 @@
                             </thead>
                             <tbody>
                                 <!-- Display the data for each of the Skill Mix Summary Table rows. -->
-                                <tr ng-repeat="row in skillMixRationale.data.SkillMixSummaryRows">
+                                <tr ng-repeat="row in skillMixRationale.data.SkillMixSummaryRows" data-ng-class="{'skillmix-no-historical': row.HistoricalSkillMix == 0.0, 'bold': row.ProposedSkillMix != 0.0}">
                                     <td>{{row.ResourceID}}</td>
                                     <td>{{row.BusinessResourceID}}</td>
                                     <td data-ng-if="!isSkillMixManual()" style="text-align: right">{{row.HistoricalHours | number:2}}</td>
                                     <td style="text-align: right">{{row.HistoricalSkillMix | number:1}}%</td>
-                                    <td style="text-align: right">{{row.ProposedSkillMix | number:2}}%</td>
+                                    <td style="text-align: right">{{row.ProposedSkillMix | number:1}}%</td>
                                     <td style="text-align: right">{{row.ProposedLegacyResource | number:2}}</td>
                                     <td style="text-align: right">{{row.ProposedBrc | number:2}}</td>
                                     <td style="text-align: right">{{row.TotalProposedLegacyBrc | number:2}}</td>
                                     <td style="text-align: right">{{row.UCOTHours | number:2}}</td>
                                     <td style="text-align: right">{{row.GrandTotalHours | number:2}}</td>
                                     <td>
-                                        <div id="cd-table-rationale">
-                                            <textarea id="cd-rationale" data-ng-model="row.Rationale" data-ng-blur="rationaleUpdated()" style="width: 100%; height: 14px; max-height: 45px; overflow-y: auto; resize: vertical;" maxlength="255"></textarea>
-                                        </div>
+                                        <!-- Read only skill mix rationale (uses canned responses)-->
+                                            <span ng-show="row.IsRationaleReadOnly"
+                                                class="text-muted"
+                                                style="display: block;
+                                                width: 100%;
+                                                min-height: 14px;
+                                                white-space: normal;
+                                                overflow-wrap: break-word;
+                                                ">
+                                                {{row.Rationale}}
+                                            </span>
+                                        <!-- Editable skill mix rationale -->
+                                        <div id="cd-table-rationale"
+                                            ng-hide="row.IsRationaleReadOnly">
+                                            <textarea id="cd-rationale"
+                                                data-ng-model="row.Rationale"
+                                                data-ng-blur="rationaleUpdated()"
+                                                style="width: 100%; height: 14px; max-height: 45px; overflow-y: auto; resize: vertical;"
+                                                maxlength="255"></textarea>
                                     </td>
                                 </tr>
                                 <!-- Display the SKill Mix Summary Totals row. -->

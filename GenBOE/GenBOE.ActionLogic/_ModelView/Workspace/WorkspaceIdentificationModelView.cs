@@ -167,6 +167,11 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 		public string RFPNumber { get; set; }
 
 		/// <summary>
+		/// Proposal title.  
+		/// </summary>
+		public string ProposalTitle { get; set; }
+
+		/// <summary>
 		/// Gets or sets a value indicating whether this instance is using equivalent person (true) or hours (false).
 		/// </summary>
 		public bool IsUsingEquivalentPerson { get; set; }

@@ -250,19 +250,42 @@ namespace GenTRAC.Web.Controllers
             return this.Json(new { Result = proposalId.ToString() });
         }
 
-        /// <summary>
-        /// View the Export Proposals report
-        /// </summary>
-        /// <param name="reportParameters">Export Proposal filter and search values</param>
-        /// <returns>Json result with status of request</returns>
-        public JsonResult ViewExportProposalsReport(ExportProposalReportModelView reportParameters)
+		/// <summary>
+		/// View the Export Proposals report
+		/// </summary>
+		/// <param name="reportParameters">Export Proposal filter and search values</param>
+		/// <returns>Json result with status of request</returns>
+		public JsonResult ViewExportProposalsReport(string sortField, System.Data.SqlClient.SortOrder? order, HomeProposalFiltersModelView filtersModelView, string searchText) 
+			//ExportProposalReportModelView reportParameters)
         {
-            if (reportParameters == null)
-            {
-                throw new ArgumentNullException(nameof(reportParameters));
-            }
+			// first, make sure there are no filter validation errors (like with dates) 
+			List<ValidationMessage> validationErrors = HttpContext.Items["ValidationErrors"] as List<ValidationMessage>;
+			if (validationErrors.Any())
+			{
+				throw new ValidationException(validationErrors);
+			}
 
-            Uri reportUri = this.homeLogic.PopulateExportSSRSParameters(reportParameters);
+			ProposalFiltersCookie cookie = null;
+			if (filtersModelView != null)
+			{
+				this.SaveProposalFiltersCookie(filtersModelView);
+				cookie = new ProposalFiltersCookie()
+				{
+					FilterOption = filtersModelView.FilterOption,
+					ViewerFilterOption = filtersModelView.ViewerFilterOption,
+					FilterStartDate = filtersModelView.FilterStartDate,
+					FilterEndDate = filtersModelView.FilterEndDate,
+					ProposalClassFilterOption = filtersModelView.ProposalClassFilterOption
+				};
+			}
+			else
+			{
+				cookie = this.GetProposalFiltersCookie();
+			}
+
+			HomeProposalModelView model = this.homeLogic.GetDataForHomeProposal(sortField, order, cookie, searchText);
+
+			Uri reportUri = this.homeLogic.PopulateExportSSRSParameters(model.DataRows);
             return this.Json(new { Status = true, Url = reportUri });
         }
 

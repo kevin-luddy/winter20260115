@@ -469,9 +469,9 @@ namespace GenBOE.ActionLogic.IO.Export
 						this.ProcessBOEHeader(document, boeContainer, boeExportModelView, selectedComponents, ref counters);
 						this.ProcessBOECustomFields(boeContainer, boeExportModelView, selectedComponents, exportInputs);
 						this.ProcessTaskSummaryTable(boeContainer, boeExportModelView);
-						this.ProcessResourceSummaryByResourceTypeTable(boeContainer, boeSummaryGridModelView, selectedComponents);
-						this.ProcessResourceSummaryByResourceIDTable(boeContainer, boeExportModelView, selectedComponents);
-						this.ProcessResourceSummaryByElementOfCostTable(boeContainer, boeExportModelView, boeSummaryGridModelView, selectedComponents);
+						this.ProcessResourceSummaryByResourceTypeTable(boeContainer, boeSummaryGridModelView, selectedComponents, exportInputs);
+						this.ProcessResourceSummaryByResourceIDTable(boeContainer, boeExportModelView, selectedComponents, exportInputs);
+						this.ProcessResourceSummaryByElementOfCostTable(boeContainer, boeExportModelView, boeSummaryGridModelView, selectedComponents, exportInputs);
 						this.ProcessLaborHoursSummaryByCustomFieldTable(boeContainer, boeExportModelView, exportInputs.CustomFields, taskElementCollection, exportInputs, FullObjectHelper.ShowEquivalentPersonsOption && exportInputs.Workspace.IsUsingEquivalentPerson, exportInputs.SummarizeByCustomField);
 
 						// Called twice, once for Calendar Year table, once for Govt Fiscal Year version of the table since both can be included
@@ -1668,7 +1668,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
 		#region Resource summary tables
 
-		private void ProcessResourceSummaryByResourceTypeTable(SdtElement boeContainer, ICollection<BOESummaryGridModelView> boeSummaryGridModelView, ICollection<BoeCustomReportComponent> selectedComponents)
+		private void ProcessResourceSummaryByResourceTypeTable(SdtElement boeContainer, ICollection<BOESummaryGridModelView> boeSummaryGridModelView, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs)
 		{
 			if (selectedComponents == null)
 			{
@@ -1686,7 +1686,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			}
 			else if (selectedComponents.Contains(BoeCustomReportComponent.BOEResourceSummaryTable))
 			{
-				this.PopulateResourceSummaryByResourceTypeTable(resourceSummaryByResourceTypeTableElement, boeSummaryGridModelView);
+				this.PopulateResourceSummaryByResourceTypeTable(resourceSummaryByResourceTypeTableElement, boeSummaryGridModelView, exportInputs);
 			}
 			else
 			{
@@ -1698,7 +1698,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			#endregion
 		}
 
-		private void ProcessResourceSummaryByElementOfCostTable(SdtElement boeContainer, BOEExportModelView boeExportModelView, ICollection<BOESummaryGridModelView> boeSummaryGridModelView, ICollection<BoeCustomReportComponent> selectedComponents)
+		private void ProcessResourceSummaryByElementOfCostTable(SdtElement boeContainer, BOEExportModelView boeExportModelView, ICollection<BOESummaryGridModelView> boeSummaryGridModelView, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs)
 		{
 			if (selectedComponents == null)
 			{
@@ -1716,7 +1716,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			}
 			else if (selectedComponents.Contains(BoeCustomReportComponent.BOEResourceSummaryTable))
 			{
-				this.PopulateResourceSummaryByElementOfCostTable(resourceSummaryByElementOfCostTableElement, boeExportModelView, boeSummaryGridModelView);
+				this.PopulateResourceSummaryByElementOfCostTable(resourceSummaryByElementOfCostTableElement, boeExportModelView, boeSummaryGridModelView, exportInputs);
 			}
 			else
 			{
@@ -1734,7 +1734,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="boeContainer">container for the BOE</param>
 		/// <param name="boeExportModelView">Model View for the BOE Export</param>
 		/// <param name="selectedComponents">selected components for the export</param>
-		private void ProcessResourceSummaryByResourceIDTable(SdtElement boeContainer, BOEExportModelView boeExportModelView, ICollection<BoeCustomReportComponent> selectedComponents)
+		private void ProcessResourceSummaryByResourceIDTable(SdtElement boeContainer, BOEExportModelView boeExportModelView, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs)
 		{
 			if (selectedComponents == null)
 			{
@@ -1751,7 +1751,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
 				if (selectedComponents.Contains(BoeCustomReportComponent.BOEResourceSummaryTable))
 				{
-					this.PopulateResourceSummaryByResourceIDTable(resourceSummaryByResourceIDTableElement, boeExportModelView);
+					this.PopulateResourceSummaryByResourceIDTable(resourceSummaryByResourceIDTableElement, boeExportModelView, exportInputs);
 				}
 				else
 				{
@@ -4180,7 +4180,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
 		#region Resource Summary tables
 
-		protected virtual void PopulateResourceSummaryByElementOfCostTable(SdtElement tableContainerElement, BOEExportModelView boeExportModelView, ICollection<BOESummaryGridModelView> data)
+		protected virtual void PopulateResourceSummaryByElementOfCostTable(SdtElement tableContainerElement, BOEExportModelView boeExportModelView, ICollection<BOESummaryGridModelView> data, BOEExportInputs exportInputs)
 		{
 			if (data.Any())
 			{
@@ -4198,7 +4198,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						})
 						.OrderBy(x => x.ResourceType).ToList();
 
-				this.PopulateResourceSummaryTable(tableContainerElement, rollupData);
+				this.PopulateResourceSummaryTable(tableContainerElement, rollupData, exportInputs);
 			}
 			else
 			{
@@ -4206,7 +4206,7 @@ namespace GenBOE.ActionLogic.IO.Export
 			}
 		}
 
-		private void PopulateResourceSummaryByResourceTypeTable(SdtElement tableContainerElement, ICollection<BOESummaryGridModelView> data)
+		private void PopulateResourceSummaryByResourceTypeTable(SdtElement tableContainerElement, ICollection<BOESummaryGridModelView> data, BOEExportInputs exportInputs)
 		{
 			if (data.Any())
 			{
@@ -4224,7 +4224,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						})
 						.OrderBy(x => x.ResourceType).ToList();
 
-				this.PopulateResourceSummaryTable(tableContainerElement, rollupData);
+				this.PopulateResourceSummaryTable(tableContainerElement, rollupData, exportInputs);
 			}
 			else
 			{
@@ -4237,7 +4237,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// </summary>
 		/// <param name="tableContainerElement">container element for the table</param>
 		/// <param name="boeExportModelView">Model View for the BOE Export with the resources to use</param>
-		protected virtual void PopulateResourceSummaryByResourceIDTable(SdtElement tableContainerElement, BOEExportModelView boeExportModelView)
+		protected virtual void PopulateResourceSummaryByResourceIDTable(SdtElement tableContainerElement, BOEExportModelView boeExportModelView, BOEExportInputs exportInputs)
 		{
 			if (boeExportModelView != null)
 			{
@@ -4261,7 +4261,7 @@ namespace GenBOE.ActionLogic.IO.Export
 						})
 						.OrderBy(x => x.ResourceType).ToList();
 
-				this.PopulateResourceSummaryTable(tableContainerElement, rollupData);
+				this.PopulateResourceSummaryTable(tableContainerElement, rollupData, exportInputs);
 			}
 			else
 			{
@@ -4274,8 +4274,13 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// </summary>
 		/// <param name="tableContainerElement">container element for the table</param>
 		/// <param name="rollupData">rollup data to be displayed in the table</param>
-		protected virtual void PopulateResourceSummaryTable(SdtElement tableContainerElement, ICollection<ResourceSummaryRowData> rollupData)
+		protected virtual void PopulateResourceSummaryTable(SdtElement tableContainerElement, ICollection<ResourceSummaryRowData> rollupData, BOEExportInputs exportInputs)
 		{
+			if (exportInputs == null)
+			{
+				throw new ArgumentNullException(nameof(exportInputs));
+			}
+
 			if (rollupData != null && rollupData.Any())
 			{
 				// locate the table markers
@@ -4352,7 +4357,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				// These resources are only added if UCOT is enabled for the workspace, so no need to pass the FullWorkspace all the way to this method to check additionally
 				if (Utilities.IsUCOTEnabledForSystem && rollupData.Any(x => x.ResourceName.EndsWith($"-{Constants.UCOT_LABEL}")))
 				{
-					WordUtilities.AddUcotLabelToContainer(tableContainerElement);
+					WordUtilities.AddUcotLabelToContainer(tableContainerElement, exportInputs.IncludeCostVolumeUCOTText);
 				}
 
 				// remove template rows

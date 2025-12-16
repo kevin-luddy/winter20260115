@@ -67,6 +67,7 @@
 			this.WorkspaceExportFormat = requestModel.ExportFormatDTO;
 			this.WorkspaceVariables = requestModel.WorkspaceVariables;
 			this.WorkspaceHistory = requestModel.WorkspaceHistory;
+			this.IncludeCostVolumeUCOTText = requestModel.IncludeCostVolumeUCOTText;
 		}
 
 		/// <summary>
@@ -133,6 +134,11 @@
 		/// Gets the boes.
 		/// </summary>
 		public IReadOnlyCollection<BoeDTO> Boes { get; private set; }
+
+		/// <summary>
+		/// Indicates if to include Cost Volume UCOT Text in export
+		/// </summary>
+		public bool IncludeCostVolumeUCOTText { get; private set; }
 
 		/// <summary>
 		/// Gets the task elements.

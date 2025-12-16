@@ -98,10 +98,15 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         [StringLength(40)]
         public string RFPNumber { get; set; }
 
-        /// <summary>
-        /// Gets or sets RFP Issued Date
-        /// </summary>
-        public string RFPIssuedDate { get; set; }
+		/// <summary>
+		/// Draft RFP Issued Date
+		/// </summary>
+		public string DraftRfpIssuedDate { get; set; }
+
+		/// <summary>
+		/// Gets or sets RFP Issued Date
+		/// </summary>
+		public string RFPIssuedDate { get; set; }
 
         /// <summary>
         /// Gets or sets RFP Received Date
