@@ -704,7 +704,19 @@
                                     <td style="text-align: right">{{row.TotalProposedLegacyBrc}}</td>
                                     <td style="text-align: right">{{row.UCOTHours}}</td>
                                     <td style="text-align: right">{{row.GrandTotalHours}}</td>
-                                    <td>{{row.Rationale}}</td>
+                                    <td>
+                                        <!-- Rationale -->
+                                        <span ng-show="!row.UsesMixedCannedResponseAndUserInput">
+                                            {{row.Rationale}}
+                                        </span>
+                                        <!-- Canned response + Rationale -->
+                                        <div ng-show="row.UsesMixedCannedResponseAndUserInput"
+                                            style="display: flex; flex-direction: column; gap: 5px;">
+                                            <label style="margin: 0; white-space: normal; word-break: break-word; width: 100%;">
+                                                {{row.MixedCannedRationaleResponse}} {{row.Rationale}}
+                                            </label>
+                                        </div>
+                                    </td>
                                 </tr>
                                 <!-- Display the SKill Mix Summary Totals row. -->
                                 <tr>
