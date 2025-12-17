@@ -1104,6 +1104,27 @@ namespace GenBOE.Tests.DAL.DataLoaders
 										&& x.WBSNumbers.Count == ws.WorkBreakdownStructures.Count
 										&& x.WBSNumbers.All(ws.WorkBreakdownStructures.Select(w => w.DisplayedWBSNumber).Contains)));
 		}
+
+		/// <summary>
+		/// Test GetAllWorkspacesWithTrackingNumbers successfully returns all workspaces containing tracking numbers
+		/// </summary>
+		[TestMethod]
+		public void GetAllWorkspacesWithTrackingNumbers()
+		{
+			IWorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
+
+			int totalWorkspacesFromDB;
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				totalWorkspacesFromDB = (from w in gbe.Workspaces
+										 where !string.IsNullOrEmpty(w.TrackingNumber)
+										 select w).Count();
+			}
+
+			ICollection<WorkspaceDTO> results = sut.GetAllWorkspacesWithTrackingNumbers();
+
+			Assert.AreEqual(totalWorkspacesFromDB, results.Count);
+		}
 	}
 
     /// <summary>

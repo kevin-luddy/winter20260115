@@ -313,7 +313,7 @@ namespace GenBOE.DataBridge.DTO
 				else
 				{
 					proposal.LineOfBusiness = string.Empty;
-					proposal.LineOfBusinessId = (int)0;
+					proposal.LineOfBusinessId = 0;
 					continue;
 				}
 			}
