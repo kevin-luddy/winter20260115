@@ -307,8 +307,18 @@
 		// UsingTemplateBoe
 		var UsingTemplateBoe = $('#UsingTemplateBoe').val();
 		if (UsingTemplateBoe !== undefined && UsingTemplateBoe !== '') {
-			$scope.data.UsingTemplateBoe = UsingTemplateBoe;
-			$scope.model.UsingTemplateBoe = UsingTemplateBoe;
+			if (UsingTemplateBoe === 'boolean:true') {
+				$scope.data.UsingTemplateBoe = true;
+				$scope.model.UsingTemplateBoe = true;
+			}
+			else if (UsingTemplateBoe === 'boolean:false') {
+				$scope.data.UsingTemplateBoe = false;
+				$scope.model.UsingTemplateBoe = false;
+			}
+			else if (UsingTemplateBoe === '? string: ?') {
+				$scope.data.UsingTemplateBoe = undefined;
+				$scope.model.UsingTemplateBoe = undefined;
+			}
 		}
 
 		// LineOfBusiness
