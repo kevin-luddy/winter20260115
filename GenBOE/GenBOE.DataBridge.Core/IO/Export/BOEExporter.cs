@@ -50,7 +50,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 	public class BOEExporter : WordExporter, IBOEExporter
 	{
 		#region private attributes
-		
+
+		public const string GREY_BACKGROUND_COLOR = "#BFBFBF";
+
 		/// <summary>
 		/// The ad utilities class.
 		/// </summary>
@@ -2445,9 +2447,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				tableStyle.LeftPadding = 0;
 				tableStyle.RightPadding = 0;
 				tableStyle.TopPadding = 7.2;
-				tableStyle.ConditionalStyles[ConditionalStyleType.FirstColumn].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
-				tableStyle.ConditionalStyles[ConditionalStyleType.FirstRow].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
-				tableStyle.ConditionalStyles[ConditionalStyleType.OddRowBanding].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
+				tableStyle.ConditionalStyles[ConditionalStyleType.FirstColumn].Shading.BackgroundPatternColor = ColorTranslator.FromHtml(GREY_BACKGROUND_COLOR);
+				tableStyle.ConditionalStyles[ConditionalStyleType.FirstRow].Shading.BackgroundPatternColor = ColorTranslator.FromHtml(GREY_BACKGROUND_COLOR);
+				tableStyle.ConditionalStyles[ConditionalStyleType.OddRowBanding].Shading.BackgroundPatternColor = ColorTranslator.FromHtml(GREY_BACKGROUND_COLOR);
 			}
 
 			table.PreferredWidth = PreferredWidth.FromPercent(4995/50);
@@ -2473,9 +2475,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				tableStyle.TopPadding = 58d / 20d;
 				tableStyle.BottomPadding = 58d / 20d;
 				tableStyle.Alignment = TableAlignment.Center;
-				tableStyle.ConditionalStyles[ConditionalStyleType.FirstColumn].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
-				tableStyle.ConditionalStyles[ConditionalStyleType.FirstRow].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
-				tableStyle.ConditionalStyles[ConditionalStyleType.OddRowBanding].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
+				tableStyle.ConditionalStyles[ConditionalStyleType.FirstColumn].Shading.BackgroundPatternColor = ColorTranslator.FromHtml(GREY_BACKGROUND_COLOR);
+				tableStyle.ConditionalStyles[ConditionalStyleType.FirstRow].Shading.BackgroundPatternColor = ColorTranslator.FromHtml(GREY_BACKGROUND_COLOR);
+				tableStyle.ConditionalStyles[ConditionalStyleType.OddRowBanding].Shading.BackgroundPatternColor = ColorTranslator.FromHtml(GREY_BACKGROUND_COLOR);
 			}
 
 			table.AllowAutoFit = autoFitLayout;
@@ -4648,9 +4650,9 @@ namespace GenBOE.DataBridge.Core.IO.Export
 				tableStyle.TopPadding = 58d / 20d;
 				tableStyle.BottomPadding = 58d / 20d;
 				tableStyle.Alignment = TableAlignment.Center;
-				tableStyle.ConditionalStyles[ConditionalStyleType.FirstColumn].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
-				tableStyle.ConditionalStyles[ConditionalStyleType.FirstRow].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
-				tableStyle.ConditionalStyles[ConditionalStyleType.OddRowBanding].Shading.BackgroundPatternColor = ColorTranslator.FromHtml("#04A0");
+				tableStyle.ConditionalStyles[ConditionalStyleType.FirstColumn].Shading.BackgroundPatternColor = ColorTranslator.FromHtml(GREY_BACKGROUND_COLOR);
+				tableStyle.ConditionalStyles[ConditionalStyleType.FirstRow].Shading.BackgroundPatternColor = ColorTranslator.FromHtml(GREY_BACKGROUND_COLOR);
+				tableStyle.ConditionalStyles[ConditionalStyleType.OddRowBanding].Shading.BackgroundPatternColor = ColorTranslator.FromHtml(GREY_BACKGROUND_COLOR);
 			}
 
 			table.PreferredWidth = PreferredWidth.FromPoints(497d/ 20d);
